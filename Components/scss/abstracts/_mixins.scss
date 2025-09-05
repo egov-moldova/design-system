@@ -1,0 +1,15 @@
+@mixin down($breakpoint) {
+  $breakpoints: (
+    sm: 576px,
+    md: 768px,
+    lg: 992px,
+    xl: 1200px
+  );
+
+  $max: map-get($breakpoints, $breakpoint);
+  @if $max {
+    @media (max-width: $max) {
+      @content;
+    }
+  }
+}

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Border Width Preview</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+
+  </style>
+</head>
+<body class="p-24">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-7">
+        <h1>
+          Borders
+        </h1>
+        <p class="text-gray-400">
+          Border tokens define the width and curvature of element edges. 
+          Border radius controls the roundness of corners for components like buttons, cards, and input fields, while border width sets the thickness of those edges.
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+         <h2 class="mb-32 border-bottom-1 border-bottom-solid border-gray-200">Border Width Tokens</h2> 
+        <table class="token-table">
+          <thead>
+            <tr>
+              <th class="fw-regular">Token Name</th>
+              <th class="fw-regular">Value, rem</th>
+              <th class="fw-regular">Value, px</th>
+              <th class="fw-regular">CSS Class</th>
+              <th class="fw-regular">Border Preview</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code class="token-name radius-8 py-2 px-6">--border-width-0</code></td>
+              <td>0</td>
+              <td>0px</td>
+              <td><code>.border-0</code></td>
+              <td class="border-preview-box bg-gray-100 radius-8 my-32">
+                <div class="border-preview-inner border-0"></div>
+              </td>
+            </tr>
+            <tr>
+              <td><code class="token-name radius-8 py-2 px-6">--border-width-1</code></td>
+              <td>0.0625rem</td>
+              <td>1px</td>
+              <td><code>.border-1</code></td>
+              <td class="border-preview-box bg-gray-100 radius-8 my-32">
+                <div class="border-preview-inner border border-1"></div>
+              </td>
+            </tr>
+            <tr>
+              <td><code class="token-name radius-8 py-2 px-6">--border-width-1.5</code></td>
+              <td>0.09375rem</td>
+              <td>1.5px</td>
+              <td><code>.border-1-5</code></td>
+              <td class="border-preview-box bg-gray-100 radius-8 my-32">
+                <div class="border-preview-inner border border-1-5"></div>
+              </td>
+            </tr>
+            <tr>
+              <td><code class="token-name radius-8 py-2 px-6">--border-width-2</code></td>
+              <td>0.125rem</td>
+              <td>2px</td>
+              <td><code>.border-2</code></td>
+              <td class="border-preview-box bg-gray-100 radius-8 my-32">
+                <div class="border-preview-inner border border-2"></div>
+              </td>
+            </tr>
+            <tr>
+              <td><code class="token-name radius-8 py-2 px-6">--border-width-3</code></td>
+              <td>0.1875rem</td>
+              <td>3px</td>
+              <td><code>.border-3</code></td>
+              <td class="border-preview-box bg-gray-100 radius-8 my-32">
+                <div class="border-preview-inner border border-3"></div>
+              </td>
+            </tr>
+            <tr>
+              <td><code class="token-name radius-8 py-2 px-6">--border-width-4</code></td>
+              <td>0.25rem</td>
+              <td>4px</td>
+              <td><code>.border-4</code></td>
+              <td class="border-preview-box bg-gray-100 radius-8 my-32">
+                <div class="border-preview-inner border border-4"></div>
+              </td>
+            </tr>
+            <tr>
+              <td><code class="token-name radius-8 py-2 px-6">--border-width-8</code></td>
+              <td>0.5rem</td>
+              <td>8px</td>
+              <td><code>.border-8</code></td>
+              <td class="border-preview-box bg-gray-100 radius-8 my-32">
+                <div class="border-preview-inner border border-8"></div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="mt-32">
+          <h2 class="text-xl pb-6 mb-32 border-bottom-1 border-bottom-solid border-gray-200">Border Styles</h2>
+          <table class="token-table">
+            <thead>
+              <tr>
+               <th class="fw-regular" colspan="3">Token Name</th> 
+              <th class="fw-regular">CSS Class</th>
+              <th class="fw-regular">Border Preview</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td colspan="3">
+                  <code class="token-name radius-8 py-2 px-6">--border-style-none</code>
+                </td>
+                <td><code>.border-none</code></td>
+                <td class="border-preview-box bg-gray-100 radius-8 my-32">
+                  <div class="border-preview-inner border border-none border-2"></div>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <code class="token-name radius-8 py-2 px-6">--border-style-solid</code>
+                </td>
+                <td><code>.border-solid</code></td>
+                <td class="border-preview-box bg-gray-100 radius-8 my-32">
+                  <div class="border-preview-inner border border-solid border-2"></div>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <code class="token-name radius-8 py-2 px-6">--border-style-dashed</code>
+                </td>
+                <td><code>.border-dashed</code></td>
+                <td class="border-preview-box bg-gray-100 radius-8 my-32">
+                  <div class="border-preview-inner border border-dashed border-2"></div>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <code class="token-name radius-8 py-2 px-6">--border-style-dotted</code>
+                </td>
+                <td><code>.border-dotted</code></td>
+                <td class="border-preview-box bg-gray-100 radius-8 my-32">
+                  <div class="border-preview-inner border border-dotted border-2"></div>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <code class="token-name radius-8 py-2 px-6">--border-style-double</code>
+                </td>
+                <td><code>.border-double</code></td>
+                <td class="border-preview-box bg-gray-100 radius-8 my-32">
+                  <div class="border-preview-inner border border-double border-4"></div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+      </div>
+    </div>
+  </div>
+</body>
+</html>

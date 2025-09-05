@@ -1,0 +1,79 @@
+@use '../abstracts/variables' as vars;
+
+// ======================================
+// 🌐 CSS Variables for Borders
+// ======================================
+:root {
+  /* Border widths */
+  @each $key, $value in vars.$border-widths {
+    --border-width-#{$key}: #{$value};
+  }
+
+  /* Border radius */
+  @each $key, $value in vars.$radius {
+    --border-radius-#{$key}: #{$value};
+  }
+
+  /* Border styles */
+  @each $key, $value in vars.$border-styles {
+    --border-style-#{$key}: #{$value};
+  }
+
+  /* Default general border variables */
+  --border-width: var(--border-width-1);
+  --border-style: var(--border-style-solid);
+  --border-radius: var(--border-radius-0);
+  --border-color: currentColor;
+}
+
+// ======================================
+// 🌟 General border class
+// ======================================
+.border {
+  border: var(--border-width) var(--border-style) var(--border-color);
+  border-radius: var(--border-radius);
+}
+
+// ======================================
+// 🌟 Border width utilities
+// ======================================
+@each $key, $value in vars.$border-widths {
+  .border-#{$key} { border-width: #{$value} !important; }
+  .border-top-#{$key} { border-top-width: #{$value} !important; }
+  .border-right-#{$key} { border-right-width: #{$value} !important; }
+  .border-bottom-#{$key} { border-bottom-width: #{$value} !important; }
+  .border-left-#{$key} { border-left-width: #{$value} !important; }
+}
+
+// ======================================
+// 🌟 Border radius utilities
+// ======================================
+@each $key, $value in vars.$radius {
+  .radius-#{$key} { border-radius: #{$value} !important; }
+  .radius-top-left-#{$key} { border-top-left-radius: #{$value} !important; }
+  .radius-top-right-#{$key} { border-top-right-radius: #{$value} !important; }
+  .radius-bottom-left-#{$key} { border-bottom-left-radius: #{$value} !important; }
+  .radius-bottom-right-#{$key} { border-bottom-right-radius: #{$value} !important; }
+}
+
+// ======================================
+// 🌟 Border style utilities
+// ======================================
+@each $key, $value in vars.$border-styles {
+  .border-style-#{$key} { border-style: #{$value} !important; }
+  .border-top-style-#{$key} { border-top-style: #{$value} !important; }
+  .border-right-style-#{$key} { border-right-style: #{$value} !important; }
+  .border-bottom-style-#{$key} { border-bottom-style: #{$value} !important; }
+  .border-left-style-#{$key} { border-left-style: #{$value} !important; }
+}
+
+// ======================================
+// 🌟 Border style shortcuts
+// ======================================
+@each $key, $value in vars.$border-styles {
+  .border-#{$key} { border-style: #{$value} !important; }
+  .border-top-#{$key} { border-top-style: #{$value} !important; }
+  .border-right-#{$key} { border-right-style: #{$value} !important; }
+  .border-bottom-#{$key} { border-bottom-style: #{$value} !important; }
+  .border-left-#{$key} { border-left-style: #{$value} !important; }
+}

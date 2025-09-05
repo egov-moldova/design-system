@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Display Utilities Preview</title>
+  <link rel="stylesheet" href="css/main.css">
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2rem; }
+    h1 { margin-bottom: 1.5rem; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 2rem; }
+    th, td {
+       
+      padding: .75rem;
+      text-align: left;
+    }
+    th { background: #f8f9fa; }
+    .preview-box {
+      background: #4dabf7;
+      color: white;
+      padding: .5rem 1rem;
+      border-radius: .375rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Display Utilities Preview</h1>
+  <p>Redimensionează fereastra browserului ca să vezi cum se schimbă clasele responsive (<code>d-sm-*</code>, <code>d-md-*</code>, etc.).</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Class</th>
+        <th>Description</th>
+        <th>Preview</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>.d-none</code></td>
+        <td>Elementul este ascuns</td>
+        <td><div class="preview-box d-none">hidden</div></td>
+      </tr>
+      <tr>
+        <td><code>.d-block</code></td>
+        <td>Elementul devine <code>display: block</code></td>
+        <td><div class="preview-box d-block">block</div></td>
+      </tr>
+      <tr>
+        <td><code>.d-inline</code></td>
+        <td>Elementul devine <code>display: inline</code></td>
+        <td><div class="preview-box d-inline">inline</div></td>
+      </tr>
+      <tr>
+        <td><code>.d-flex</code></td>
+        <td>Activează flexbox</td>
+        <td><div class="preview-box d-flex">flex</div></td>
+      </tr>
+      <tr>
+        <td><code>.d-grid</code></td>
+        <td>Activează grid</td>
+        <td><div class="preview-box d-grid">grid</div></td>
+      </tr>
+      <tr>
+        <td><code>.d-md-none</code></td>
+        <td>Ascuns pe <code>md+</code> (≥768px)</td>
+        <td><div class="preview-box d-md-none">hidden on md+</div></td>
+      </tr>
+      <tr>
+        <td><code>.d-lg-block</code></td>
+        <td><code>display: block</code> doar pe <code>lg+</code> (≥992px)</td>
+        <td><div class="preview-box d-none d-lg-block">block on lg+</div></td>
+      </tr>
+      <tr>
+        <td><code>.d-xl-flex</code></td>
+        <td><code>display: flex</code> doar pe <code>xl+</code> (≥1200px)</td>
+        <td><div class="preview-box d-none d-xl-flex">flex on xl+</div></td>
+      </tr>
+      <tr>
+        <td><code>.d-sm-inline d-md-flex d-lg-grid</code></td>
+        <td>Se schimbă la fiecare breakpoint</td>
+        <td><div class="preview-box d-sm-inline d-md-flex d-lg-grid">changes by breakpoint</div></td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+</html>

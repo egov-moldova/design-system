@@ -1,0 +1,125 @@
+/* ++++++++++++++++++++ TEXT ++++++++++++++++++++ */
+[data-theme='dark'] {
+     //BASE
+     --color-text-base-default: var(--white);
+     --color-text-base-secondary: var(--gray-200);
+     --color-text-base-tertiary: var(--gray-300);
+ 
+     --color-text-base-default-on-color: var(--black-1000);
+     --color-text-base-secondary-on-color: var(--gray-600);
+ 
+     //BASE INVERSE
+     --color-background-base-inverse-default: var(--black-1000);
+     --color-background-base-inverse-on-color: var(--white-1000);
+ 
+     //BRAND
+     --color-text-brand-default: var(--blue-sky-400);
+     --color-text-brand-default-hover: var(--blue-sky-700);
+     --color-text-brand-on-secondary: var(--blue-sky-700);
+     --color-text-brand-visited: var(--magenta-400);
+ 
+     //DISABLED
+     --color-text-disabled-default: var(--gray-600);
+     --color-text-disabled-on-disabled: var(--gray-400);
+ 
+     //POSITIVE
+     --color-text-positive-default: var(-green-500);
+     --color-text-positive-on-secondary: var(--green-800);
+ 
+     //WARNING
+     --color-text-warning-default: var(--apricot-500);
+     --color-text-warning-on-secondary: var(--apricot-800);
+ 
+     //DANGER
+     --color-text-danger-default: var(--red-500);
+     --color-text-danger-on-secondary: var(--red-800); 
+}
+/* ++++++++++++++++++++ END TEXT ++++++++++++++++++++ */
+
+/* ++++++++++++++++++++ BACKGROUNDS ++++++++++++++++++++ */
+[data-theme='dark'] {
+    /* Base */
+  --color-background-base-default: var(--gray-900);
+  --color-background-base-default-hover: var(--gray-800);
+  --color-background-base-default-active: var(--gray-700);
+
+  --color-background-base-secondary: var(--gray-800);
+  --color-background-base-secondary-hover: var(--gray-700);
+  --color-background-base-secondary-active: var(--gray-600);
+
+  --color-background-base-tertiary: var(--gray-700);
+  --color-background-base-tertiary-hover: var(--gray-600);
+  --color-background-base-tertiary-active: var(--gray-500);
+
+  /* Base Inverse */
+  --color-background-base-inverse-default: var(--gray-100);
+  --color-background-base-inverse-default-hover: var(--gray-200);
+  --color-background-base-inverse-default-active: var(--gray-250);
+
+  /* Brand */
+  --color-background-brand-default: var(--blue-sky-600);
+  --color-background-brand-default-hover: var(--blue-sky-700);
+  --color-background-brand-default-active: var(--blue-sky-800);
+
+  --color-background-brand-secondary: var(--blue-sky-200);
+  --color-background-brand-secondary-hover: var(--blue-sky-300);
+  --color-background-brand-secondary-active: var(--blue-sky-400);
+
+  --color-background-brand-tertiary: var(--blue-sky-900);
+
+  /* Disabled */
+  --color-background-disabled-default: var(--gray-700);
+  --color-background-disabled-secondary: var(--gray-400);
+
+  /* Positive */
+  --color-background-positive-default: var(--green-700);
+  --color-background-positive-default-hover: var(--green-800);
+  --color-background-positive-default-active: var(--green-900);
+
+  --color-background-positive-secondary: var(--green-200);
+  --color-background-positive-secondary-active: var(--green-300);
+
+  /*  Warnings */
+  --color-background-warning-default: var(--apricot-500);
+  --color-background-warning-default-hover: var(--apricot-600);
+  --color-background-warning-default-active: var(--apricot-700);
+
+  --color-background-warning-secondary: var(--apricot-200);
+  --color-background-warning-secondary-active: var(--apricot-300);
+  --color-background-warning-accent: var(--apricot-400);
+
+  /* Danger */
+  --color-background-danger-default: var(--red-700);
+  --color-background-danger-default-hover: var(--red-800);
+  --color-background-danger-default-active: var(--red-900);
+
+  --color-background-danger-secondary: var(--red-200);
+  --color-background-danger-secondary-hover: var(--red-300);
+  --color-background-danger-secondary-active: var(--red-400);
+}
+/* ++++++++++++++++++++ END BACKGROUNDS ++++++++++++++++++++ */
+
+/* ++++++++++++++++++++ BORDERS ++++++++++++++++++++ */
+[data-theme='dark'] {
+     // BASE
+     --color-border-base-default: var(--gray-600);
+     --color-border-base-secondary: var(--gray-400);
+     --color-border-base-tertiary: var(--gray-250);
+     --color-border-base-strong: var(--gray-100);
+ 
+     //Brand
+     --color-border-brand-default: var(--blue-sky-500);
+ 
+     //Disabled
+     --color-border-disabled-default: var(--gray-600);
+ 
+     //Positive
+     --color-border-positive-default: var(--green-500);
+ 
+     //Warning
+     --color-border-warning-default: var(--apricot-500);
+ 
+     //Danger
+     --color-border-danger-default: var(--red-500);
+}
+/* ++++++++++++++++++++ END BORDERS ++++++++++++++++++++ */ 

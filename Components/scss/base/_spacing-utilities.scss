@@ -1,0 +1,91 @@
+@use "../abstracts/tokens" as tokens;
+@use "../abstracts/variables" as vars;
+@use "sass:map";
+:root {
+  --spacing-0: 0px;
+  --spacing-2: 2px;
+  --spacing-4: 4px;
+  --spacing-6: 6px;
+  --spacing-8: 8px;
+  --spacing-12: 12px;
+  --spacing-16: 16px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-48: 48px;
+  --spacing-56: 56px;
+  --spacing-64: 64px;
+}
+// ===============================
+// Spacing token map
+// ===============================
+$spacing-map: (
+  0: tokens.$token-spacing-0,
+  2: tokens.$token-spacing-2,
+  4: tokens.$token-spacing-4,
+  6: tokens.$token-spacing-6,
+  8: tokens.$token-spacing-8,
+  12: tokens.$token-spacing-12,
+  16: tokens.$token-spacing-16,
+  20: tokens.$token-spacing-20,
+  24: tokens.$token-spacing-24,
+  32: tokens.$token-spacing-32,
+  40: tokens.$token-spacing-40,
+  48: tokens.$token-spacing-48,
+  56: tokens.$token-spacing-56,
+  64: tokens.$token-spacing-64
+);
+
+// ===============================
+// Base utilities (no breakpoint)
+// ===============================
+@each $name, $value in $spacing-map {
+  .p-#{$name} { padding: $value; }
+  .pt-#{$name} { padding-top: $value; }
+  .pr-#{$name} { padding-right: $value; }
+  .pb-#{$name} { padding-bottom: $value; }
+  .pl-#{$name} { padding-left: $value; }
+  .px-#{$name} { padding-left: $value; padding-right: $value; }
+  .py-#{$name} { padding-top: $value; padding-bottom: $value; }
+
+  .m-#{$name} { margin: $value; }
+  .mt-#{$name} { margin-top: $value; }
+  .mr-#{$name} { margin-right: $value; }
+  .mb-#{$name} { margin-bottom: $value; }
+  .ml-#{$name} { margin-left: $value; }
+  .mx-#{$name} { margin-left: $value; margin-right: $value; }
+  .my-#{$name} { margin-top: $value; margin-bottom: $value; }
+
+  .gap-#{$name} { gap: $value; }
+}
+
+// ===============================
+// Responsive utilities
+// ===============================
+@each $bp-name, $bp-value in vars.$breakpoints {
+  @media (min-width: $bp-value) {
+    @each $name, $value in $spacing-map {
+      // Padding
+      .p-#{$bp-name}-#{$name} { padding: $value; }
+      .pt-#{$bp-name}-#{$name} { padding-top: $value; }
+      .pr-#{$bp-name}-#{$name} { padding-right: $value; }
+      .pb-#{$bp-name}-#{$name} { padding-bottom: $value; }
+      .pl-#{$bp-name}-#{$name} { padding-left: $value; }
+      .px-#{$bp-name}-#{$name} { padding-left: $value; padding-right: $value; }
+      .py-#{$bp-name}-#{$name} { padding-top: $value; padding-bottom: $value; }
+
+      // Margin
+      .m-#{$bp-name}-#{$name} { margin: $value; }
+      .mt-#{$bp-name}-#{$name} { margin-top: $value; }
+      .mr-#{$bp-name}-#{$name} { margin-right: $value; }
+      .mb-#{$bp-name}-#{$name} { margin-bottom: $value; }
+      .ml-#{$bp-name}-#{$name} { margin-left: $value; }
+      .mx-#{$bp-name}-#{$name} { margin-left: $value; margin-right: $value; }
+      .my-#{$bp-name}-#{$name} { margin-top: $value; margin-bottom: $value; }
+
+      // Gap
+      .gap-#{$bp-name}-#{$name} { gap: $value; }
+    }
+  }
+}

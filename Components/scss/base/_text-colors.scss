@@ -1,0 +1,26 @@
+@use '../abstracts/variables' as vars;
+@use 'sass:list';
+
+// 🔹 Text color — palete normale
+@each $color, $shades in vars.$color-palettes {
+  @if list.length($shades) > 0 {
+    @each $shade in $shades {
+      .text-#{$color}-#{$shade} {
+        color: var(--#{$color}-#{$shade}) !important;
+      }
+    }
+  } @else {
+    .text-#{$color} {
+      color: var(--#{$color}) !important;
+    }
+  }
+}
+
+// 🔹 Text color — culori alpha
+@each $color, $shades in vars.$alpha-palettes {
+  @each $shade in $shades {
+    .text-#{$color}-#{$shade} {
+      color: var(--#{$color}-#{$shade}) !important;
+    }
+  }
+}

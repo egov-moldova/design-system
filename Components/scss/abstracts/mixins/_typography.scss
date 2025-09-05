@@ -1,0 +1,19 @@
+@use '../mixins' as mix; // asigură-te că 'media' e forward-at
+
+@mixin generate-text-class($style) {
+  .#{$style} {
+    font-family: "Onest", sans-serif;
+    font-size: var(--text-#{$style}-font-size);
+    font-weight: var(--text-#{$style}-font-weight);
+    line-height: var(--text-#{$style}-line-height);
+    letter-spacing: var(--text-#{$style}-letter-spacing);
+
+    // Responsive: pentru mobil (sub 768px)
+    @include mix.down(md) {
+      font-size: var(--text-#{$style}-font-size-mobile, var(--text-#{$style}-font-size));
+      font-weight: var(--text-#{$style}-font-weight-mobile, var(--text-#{$style}-font-weight));
+      line-height: var(--text-#{$style}-line-height-mobile, var(--text-#{$style}-line-height));
+      letter-spacing: var(--text-#{$style}-letter-spacing-mobile, var(--text-#{$style}-letter-spacing));
+    }
+  }
+}

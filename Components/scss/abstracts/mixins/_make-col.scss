@@ -1,0 +1,19 @@
+// abstracts/mixins/_make-col.scss
+@use "sass:math";
+
+@mixin make-col($size, $columns: 12, $gutter: 16px) {
+  padding-left: math.div($gutter, 2);
+  padding-right: math.div($gutter, 2);
+  box-sizing: border-box;
+
+  @if $size == auto {
+    width: auto;
+    flex: 0 0 auto;
+  } @else {
+    $w: math.percentage(math.div($size, $columns)); // folosește math.div
+    width: $w;
+    flex: 0 0 $w;
+  }
+
+  max-width: 100%;
+}

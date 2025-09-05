@@ -1,0 +1,30 @@
+.spacing-table {
+    width: 100%;
+    border-collapse: collapse;
+  
+    th,
+    td {
+      //border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    td:first-child code {
+        background-color: #F6F6F6;
+        border-radius: 8px;
+        font-family: inherit;
+    }
+  }
+  
+  .preview-box {
+    display: inline-block;
+    background: #f5f5f5;
+    border-radius: 0.5rem;
+  }
+
+  .preview-inner {
+    background: rgba(255, 0, 128, 0.2);
+    border: 1px dashed deeppink;
+    width: 2rem;
+    height: 2rem;
+  }
+  

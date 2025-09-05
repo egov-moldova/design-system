@@ -1,0 +1,37 @@
+// abstracts/_typography.scss
+
+// Lista stilurilor tipografice
+$typography-styles: (
+  'display-lg',
+  'display-md',
+  'heading-h1-lg',
+  'heading-h2-md',
+  'heading-h3-sm',
+  'heading-h4-xs',
+  'heading-h5-2xs',
+  'body-lg',
+  'body-lg-500',
+  'body-md',
+  'body-md-500',
+  'body-sm',
+  'body-sm-500',
+  'caption-md',
+  'caption-md-500',
+  'caption-sm'
+);
+
+// Mixin pentru generat clase
+@mixin generate-text-class($style) {
+  .text-#{$style} {
+    font-family: var(--text-#{$style}-font-family, 'Onest', sans-serif);
+    font-size: var(--text-#{$style}-font-size);
+    font-weight: var(--text-#{$style}-font-weight);
+    line-height: var(--text-#{$style}-line-height);
+    letter-spacing: var(--text-#{$style}-letter-spacing);
+  }
+}
+
+// Generează clasele pentru toate stilurile
+@each $style in $typography-styles {
+  @include generate-text-class($style);
+}

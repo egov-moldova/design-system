@@ -1,0 +1,3 @@
+@function breakpoint-infix($breakpoint, $breakpoints) {
+  @return if($breakpoint == "xs", "", "-#{$breakpoint}");
+}

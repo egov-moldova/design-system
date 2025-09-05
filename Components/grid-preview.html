@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grid System Preview</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <style>
+    .demo-box {
+      background-color: var(--blue-sky-100);
+      border: 1px solid var(--blue-sky-400);
+      text-align: center;
+      padding: 1rem;
+      color: var(--blue-sky-900);
+      font-family: sans-serif;
+    }
+
+    body {
+      padding: 2rem;
+      font-family: sans-serif;
+    }
+
+    h2 {
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .row + .row {
+      margin-top: 1.5rem;
+    }
+
+    hr {
+      margin: 2rem 0;
+      border-color: var(--gray-200);
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Grid system preview</h2>
+
+  <div class="container">
+    <!-- Basic .row with 2 equal columns -->
+    <div class="row">
+      <div class="col-12 col-md-6">
+        <div class="demo-box bg-blue-sky-100 border border-blue-sky-400 text-blue-sky-900 p-16">.col-md-6</div>
+      </div>
+      <div class="col-12 col-md-6">
+        <div class="demo-box bg-blue-sky-100 border border-blue-sky-400 text-blue-sky-900 p-16">.col-md-6</div>
+      </div>
+    </div>
+
+    <!-- Mixed columns -->
+    <div class="row">
+      <div class="col-12 col-md-4">
+        <div class="demo-box">.col-md-4</div>
+      </div>
+      <div class="col-12 col-md-8">
+        <div class="demo-box">.col-md-8</div>
+      </div>
+    </div>
+
+    <!-- Offset example -->
+    <div class="row">
+      <div class="col-12 col-md-6 offset-md-3">
+        <div class="demo-box">.col-md-6.offset-md-3</div>
+      </div>
+    </div>
+
+    <!-- Auto-width column -->
+    <div class="row">
+      <div class="col-12 col-md-auto">
+        <div class="demo-box">.col-md (auto)</div>
+      </div>
+      <div class="col-12 col-md-auto">
+        <div class="demo-box">.col-md (auto)</div>
+      </div>
+    </div>
+
+    <hr />
+
+    <h2>Spacing utilities</h2>
+    <div class="row gap-4">
+      <div class="col-12 col-md-4">
+        <div class="demo-box p-4 m-2">.p-4 .m-2</div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="demo-box pt-8 mb-6">.pt-8 .mb-6</div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="demo-box px-6 py-2">.px-6 .py-2</div>
+      </div>
+    </div>
+
+    <hr />
+
+    <h2>Color utilities</h2>
+    <div class="row">
+      <div class="col-12 col-md-4">
+        <div class="demo-box text-red-600 bg-yellow-100 border-red-600">
+          .text-red-600 .bg-yellow-100 .border-red-600
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="demo-box text-green-600 bg-green-100 border-green-600">
+          .text-green-600 .bg-green-100 .border-green-600
+        </div>
+      </div>
+      <div class="col-12 col-md-4">
+        <div class="demo-box text-blue-700 bg-blue-100 border-blue-700">
+          .text-blue-700 .bg-blue-100 .border-blue-700
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+@use 'sass:map';
+@use '../abstracts/variables' as vars;
+@use '../abstracts/mixins/media' as media;
+
+// ==========================
+// 🔹 Display utilities
+// ==========================
+$displays: (
+  none,
+  block,
+  inline,
+  inline-block,
+  flex,
+  inline-flex,
+  grid,
+  inline-grid,
+  table,
+  table-cell
+);
+
+// 🔹 Clase de bază
+@each $display in $displays {
+  .d-#{$display} {
+    display: $display !important;
+  }
+}
+
+// 🔹 Clase responsive
+@each $breakpoint in map.keys(vars.$breakpoints) {
+  @include media.media-breakpoint-up($breakpoint, vars.$breakpoints) {
+    @each $display in $displays {
+      .d-#{$breakpoint}-#{$display} {
+        display: $display !important;
+      }
+    }
+  }
+}

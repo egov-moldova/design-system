@@ -1,0 +1,121 @@
+﻿@use '../abstracts/variables' as *;
+
+html {
+    font-size: 16px;
+}
+body {
+    background-color: var(--color-background-base-default);
+    color: var(--color-text-base-default);
+    font-size: 1rem; //18px
+    font-family: "Onest", sans-serif;
+    font-weight: $font-weight-regular; // implicit Regular
+  }
+  
+  .button {
+    background-color: var(--color-background-brand-default);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  
+    &:hover {
+      background-color: var(--color-background-brand-default-hover);
+    }
+  
+    &:active {
+      background-color: var(--color-background-brand-default-active);
+    }
+  }
+  .color-palette {
+    font-family: sans-serif; 
+
+    .color-row {
+      display: flex;
+    }
+  
+    .color {
+      width: 100px;
+      height: 100px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center; 
+      //border: 1px solid var(--color-border-base-strong);
+      font-size: 0.75rem;
+      text-align: center;
+      box-sizing: border-box;
+    }
+  
+    .border {
+      border: 1px solid #ddd;
+    }
+  }
+  
+
+  //SHADOW EFFECTS
+.token-table{
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: left;
+
+  .border-preview-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 135px;
+    height: 95px;
+  }
+
+  .border-preview-inner {
+    background-color: #E245AF1A;
+    border-color: #E245AF;
+    width: 2rem;
+    height: 2rem;
+  }   
+}
+
+.token {
+  margin: 15px;
+  text-align: center;
+  background-color: white;
+  padding: 20px;  
+  border-radius: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 200px;
+}
+
+.shadow-box {
+  width: 136px;
+  height: 96px;   
+}
+
+.token-name {
+  background-color: #f6f6f6;
+  padding: 2px 6px; 
+  margin-bottom: 10px;
+}
+
+.value {
+  font-size: 0.9em;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.shadow-preview {
+  display: block;
+  width: 100%;
+  height: 50px;
+  margin-top: 10px;
+}
+
+.text-preview {
+     overflow: hidden;
+   text-overflow: ellipsis;
+   display: -webkit-box;
+   -webkit-line-clamp: 2;
+           line-clamp: 2;
+   -webkit-box-orient: vertical;
+}

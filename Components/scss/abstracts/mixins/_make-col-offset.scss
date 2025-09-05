@@ -1,0 +1,9 @@
+@use 'sass:math';
+
+@mixin make-col-offset($size, $columns: 12) {
+  @if $size == auto {
+    margin-left: auto;
+  } @else {
+    margin-left: math.percentage(math.div($size, $columns));
+  }
+}

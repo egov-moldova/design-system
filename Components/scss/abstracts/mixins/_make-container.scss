@@ -1,0 +1,23 @@
+// abstracts/mixins/_make-container.scss
+@use 'sass:map' as map;
+
+@mixin make-container($max-widths, $breakpoints) {
+  @at-root {
+    .container {
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      box-sizing: border-box;
+
+      @each $bp, $max in $max-widths {
+        @if $bp != default {
+          @media (min-width: map.get($breakpoints, $bp)) {
+            max-width: $max;
+          }
+        } @else {
+          max-width: $max;
+        }
+      }
+    }
+  }
+}

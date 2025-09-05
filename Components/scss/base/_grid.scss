@@ -1,0 +1,52 @@
+// base/_grid.scss
+@use 'sass:map' as map;
+@use '../abstracts/variables' as vars;
+@use '../abstracts/mixins/make-col' as make-col;
+@use '../abstracts/mixins/make-row' as make-row;
+@use '../abstracts/mixins/make-container' as make-container;
+@use '../abstracts/mixins/media' as media;
+
+/// Setările de bază
+$columns: vars.$grid-columns;
+$gutter: map.get(vars.$gutters, md);
+
+/// Generăm container-ul
+@include make-container.make-container(vars.$container-max-widths, vars.$breakpoints);
+
+/// Generăm clasa .row
+.row {
+  @include make-row.make-row($gutter);
+}
+
+/// Funcție pentru lista de breakpoint-uri
+@function breakpoint-list($breakpoints) {
+  @return map.keys($breakpoints);
+}
+
+/// Mixin pentru coloanele grid-ului
+@mixin make-grid-columns($columns, $gutter, $breakpoints) {
+
+  // Coloane default
+  @for $i from 1 through $columns {
+    .col-#{$i} {
+      @include make-col.make-col($i, $columns, $gutter);
+    }
+  }
+  .col-auto {
+    @include make-col.make-col(auto, $columns, $gutter);
+  }
+
+  // Coloane responsive pentru fiecare breakpoint
+  @each $bp in breakpoint-list($breakpoints) {
+    @include media.media-breakpoint-up($bp, $breakpoints) {
+      @for $i from 1 through $columns {
+        .col-#{$bp}-#{$i} {
+          @include make-col.make-col($i, $columns, $gutter);
+        }
+      }
+      .col-#{$bp}-auto {
+        @include make-col.make-col(auto, $columns, $gutter);
+      }
+    }
+  }
+}

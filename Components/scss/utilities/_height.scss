@@ -1,0 +1,21 @@
+@use '../abstracts/variables' as vars;
+@use '../abstracts/mixins/media' as media;
+
+$breakpoints: vars.$breakpoints;
+$width-scale: vars.$width-scale; // folosim aceeași scară și pentru height
+
+@each $key, $value in $width-scale {
+  .h-#{$key} {
+    height: $value;
+  }
+}
+
+@each $breakpoint, $bp-value in $breakpoints {
+  @include media.media-breakpoint-up($breakpoint, $breakpoints) {
+    @each $key, $value in $width-scale {
+      .h-#{$breakpoint}-#{$key} {
+        height: $value;
+      }
+    }
+  }
+}

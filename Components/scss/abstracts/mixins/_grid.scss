@@ -1,0 +1,68 @@
+@use 'sass:math';
+@use 'sass:map';
+@use '../mixins/media' as *;
+@use '../mixins/make-col' as *;
+@use '../mixins/make-col-offset' as *;
+
+@mixin make-grid-columns($columns, $gutter, $breakpoints) {
+  %grid-column {
+    position: relative;
+    width: 100%;
+    min-height: 1px;
+    padding-right: math.div($gutter, 2);
+    padding-left: math.div($gutter, 2);
+  }
+
+  @each $breakpoint in map.keys($breakpoints) {
+    @for $i from 1 through $columns {
+      .col-#{$breakpoint}-#{$i} {
+        @extend %grid-column;
+      }
+    }
+
+    .col-#{$breakpoint},
+    .col-#{$breakpoint}-auto {
+      @extend %grid-column;
+    }
+
+    @include media-breakpoint-up($breakpoint, $breakpoints) {
+      .col-#{$breakpoint} {
+        flex-basis: 0;
+        flex-grow: 1;
+        max-width: 100%;
+      }
+
+      .col-#{$breakpoint}-auto {
+        flex: 0 0 auto;
+        width: auto;
+        max-width: none;
+      }
+
+      @for $i from 1 through $columns {
+        .col-#{$breakpoint}-#{$i} {
+          @include make-col($i, $columns);
+        }
+      }
+
+      .order-#{$breakpoint}-first {
+        order: -1;
+      }
+
+      .order-#{$breakpoint}-last {
+        order: $columns + 1;
+      }
+
+      @for $i from 0 through $columns {
+        .order-#{$breakpoint}-#{$i} {
+          order: $i;
+        }
+      }
+
+      @for $i from 0 through ($columns - 1) {
+        .offset-#{$breakpoint}-#{$i} {
+          @include make-col-offset($i, $columns);
+        }
+      }
+    }
+  }
+}
