@@ -1,0 +1,13 @@
+$align-items-values: (
+  start,
+  center,
+  end,
+  baseline,
+  stretch
+);
+
+@each $value in $align-items-values {
+  .align-items-#{$value} {
+    align-items: $value !important;
+  }
+}
