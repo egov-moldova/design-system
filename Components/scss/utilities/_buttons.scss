@@ -1,0 +1,123 @@
+// ==============================================
+// 🔘 Buttons SCSS (Functional)
+// ==============================================
+
+.btn {
+  display: var(--inline-flex, inline-flex);
+  align-items: var(--align-items-center, center);
+  justify-content: center; 
+  font-size: var(--text-body-md-500-font-size);
+  line-height: 1.375;
+  border-radius: var(--radius-md, 8px);
+  padding: var(--spacing-12, 0.75rem) var(--spacing-16, 1rem);
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+
+  &:disabled {
+    background-color: var(--gray-200);
+    color: var(--gray-300);
+    border-color: var(--gray-200);
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.btn-filled {
+  background-color: var(--blue-sky-600, #0058D2);
+  color: var(--white, #ffffff);
+  border: 1px solid transparent;
+  
+  &:hover:not(:disabled) {
+    background-color: var(--blue-sky-500, #3379DB);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--blue-sky-700, #0046A8);
+  }
+}
+
+.btn-outlined {
+  background-color: transparent;
+  border: 1px solid var(--blue-sky-600, #0058D2);
+  color: var(--blue-sky-600, #0058D2);
+
+  &:hover:not(:disabled) {
+    background-color: var(--blue-sky-100, #E8F0FB);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--blue-sky-150, #D6E5F8);
+  }
+}
+
+.btn-text {
+  background-color: transparent;
+  border: none;
+  color: var(--blue-sky-600, #0058D2);
+
+  &:hover:not(:disabled) {
+    background-color: var(--blue-sky-100, #E8F0FB);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--blue-sky-150, #D6E5F8);
+  }
+}
+
+.btn-icon {
+  background-color: transparent;
+  border: none;
+  padding: var(--spacing-8, 0.5rem);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  justify-content: center;
+
+  &:hover:not(:disabled) {
+    background-color: var(--gray-100, #F5F5F5);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--gray-200, #F1F1F1);
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+  }
+}
+
+/* Sizes */
+.btn-sm { padding: var(--spacing-4, 0.25rem) var(--spacing-8, 0.5rem); font-size: 14px; }
+.btn-md { padding: var(--spacing-8, 0.5rem) var(--spacing-16, 1rem); font-size: 16px; }
+.btn-lg { padding: var(--spacing-12, 0.75rem) var(--spacing-24, 1.5rem); font-size: 18px; }
+
+/* Shapes */
+.btn-pill { border-radius: 9999px; }
+.btn-rounded { border-radius: var(--radius-md, 8px); }
+
+/* Loading state */
+.btn-loading {
+  position: relative;
+  pointer-events: none;
+  color: transparent !important;
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--white, #ffffff);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

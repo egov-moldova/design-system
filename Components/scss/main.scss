@@ -13,7 +13,7 @@
 @use 'abstracts/colors';
 @use 'themes/light';
 @use 'themes/dark';
- 
+
 // ===============================
 // 🧱 Mixins (Grid, Media, Layout etc.)
 // ===============================
@@ -22,9 +22,9 @@
 @use 'abstracts/mixins/make-col-offset' as make-col-offset;
 @use 'abstracts/mixins/make-row' as make-row;
 @use 'abstracts/mixins/make-container' as make-container;
-@use 'base/grid' as grid;
-@use 'base/offsets';
+//@use 'abstracts/mixins/buttons' as buttons;
 
+ 
 
 // ===============================
 // ✨ Base Styles (Resets, Typography)
@@ -40,18 +40,20 @@
 @use 'base/border-colors';
 @use 'base/text-colors';
 @use 'base/spacing-utilities';
-@use 'base/spacing-preview'; 
+@use 'base/spacing-preview';
 @use 'base/base';
 @use 'base/drop-shadows';
 
-@use 'utilities' as *;
+// ✅ Import corect pentru buttons, care folosește mixin-uri din buttons
+@use 'base/buttons';
 
-  
+// Utilities (dacă ai clase utilitare)
+@use 'utilities' as *;
 
 // ===============================
 // 🟦 Grid Setup
 // ===============================
-
+@use 'base/grid' as grid;
 // Container principal
 @include make-container.make-container(vars.$container-max-widths, vars.$breakpoints);
 
@@ -62,4 +64,3 @@
 
 // Coloane responsive
 @include grid.make-grid-columns(12, map.get(vars.$gutters, md), vars.$breakpoints);
-  

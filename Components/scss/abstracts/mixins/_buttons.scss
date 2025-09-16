@@ -1,0 +1,47 @@
+@mixin button-variant($name, $bg, $color, $border, $hover-bg, $active-bg, $spinner-color: $color, $focus-ring: true) {
+  .btn-#{$name} {
+    background-color: #{$bg};
+    color: #{$color};
+    border: 1px solid #{$border};
+
+    &:hover:not(:disabled) {
+      background-color: #{$hover-bg};
+    }
+
+    &:active:not(:disabled) {
+      background-color: #{$active-bg};
+    }
+
+    @if $focus-ring {
+      &:focus:not(:disabled) {
+        outline: 2px solid var(--white, #ffffff);
+        box-shadow: 0 0 0 4px var(--focus-ring, var(--blue-sky-500, #3379DB ));
+      }
+    }
+
+    &.btn-loading {
+      position: relative;
+      pointer-events: none;
+      color: transparent !important;
+
+      &::after {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #{$spinner-color};
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+    }
+
+    &:disabled {
+      background-color: var(--gray-250, #D9D9D9);
+      color: var(--gray-500, #616161);
+      border-color: var(--gray-250, #D9D9D9);
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  }
+}

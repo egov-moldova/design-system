@@ -19,7 +19,7 @@ $gutter: map.get(vars.$gutters, md);
 }
 
 /// Funcție pentru lista de breakpoint-uri
-@function breakpoint-list($breakpoints) {
+@function breakpoint-list($breakpoints) { 
   @return map.keys($breakpoints);
 }
 

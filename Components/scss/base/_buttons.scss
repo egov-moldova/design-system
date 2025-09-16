@@ -1,0 +1,52 @@
+@use '../abstracts/mixins/buttons' as buttons;
+
+// 🔹 Primary Button
+@include buttons.button-variant(
+  "primary",
+  var(--blue-sky-600),
+  var(--white),
+  transparent,
+  var(--blue-sky-700),
+  var(--blue-sky-800)
+);
+
+// 🔹 Secondary Button
+@include buttons.button-variant(
+  "secondary",
+  var(--blue-sky-100),
+  var(--blue-sky-600),
+  var(--blue-sky-100),
+  var(--blue-sky-150),
+  var(--blue-sky-200)
+);
+
+// 🔹 Strict Button
+@include buttons.button-variant(
+  "strict",
+  var(--gray-900),
+  var(--white),
+  var(--gray-900),
+  var(--gray-700),
+  var(--gray-600)
+);
+
+// 🔹 Neutral Button
+@include buttons.button-variant(
+  "neutral",
+  var(--gray-100),
+  var(--black),
+  var(--gray-100),
+  var(--gray-250),
+  var(--gray-300)
+);
+
+// 🔹 Destructive Button
+@include buttons.button-variant(
+  "destructive",
+  var(--red-600),
+  var(--white),
+  var(--red-600),
+  var(--red-700),
+  var(--red-800),
+  var(--white) // spinner color specific
+);
