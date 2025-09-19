@@ -8,52 +8,279 @@
 </head>
 <body>
   <div class="container">
-    <h1>Button Variants</h1>
     <div class="row">
-      <!-- Filled Buttons -->
-       <div class="col-12 mb-16">
-          <div class="d-flex align-items-center gap-16 mb-16">
-            <div class="text-body-md-500">Button Variants</div>
-            <span class="text-body-md text-gray-400">Primary, Secondary, Strict, Neutral, Destructive</span>
-            <div class="cell"> 
-              <div class="d-flex align-items-center gap-16 mb-16">
+      <div class="col-sm-7">
+        <h1>
+          Buttons
+        </h1>
+        <p class="text-gray-400">
+          Buttons are interactive elements that allow users to perform actions. They can be styled in various ways to indicate their purpose and importance.
+        </p>
+      </div>
+    </div> 
+    <div class="row mb-32 mt-64">
+      <div class="col-12">
+         <div class="text-body-lg-500 mb-32 pb-16 border-bottom-1 border-bottom-solid border-gray-200">Types</div>
+         <div class="d-flex gap-64"> 
+            <div class="d-flex align-items-center gap-16 mb-16">
                 <button class="btn btn-primary" type="button">Button</button>
-                <div>
-                  <div class="text-body-md-500">default</div>
-                  <span class="text-body-md text-gray-400">primary</span>
+                <div> 
+                  <span class="text-body-md text-gray-400">filled-button</span>
                 </div> 
-              </div> 
-              <div class="d-flex align-items-center gap-16 mb-16">
-                <button class="btn btn-primary bg-blue-sky-700" type="button">Button</button>
-                <div>
-                  <div class="text-body-md-500">hover</div>
-                  <span class="text-body-md text-gray-400">primary</span>
-                </div> 
-              </div> 
-              <div class="d-flex align-items-center gap-16 mb-16">
-                <button class="btn btn-primary bg-blue-sky-800" type="button">Button</button>
-                <div>
-                  <div class="text-body-md-500">active</div>
-                  <span class="text-body-md text-gray-400">primary</span>
-                </div> 
-              </div> 
-              <div class="d-flex align-items-center gap-16 mb-16">
-                <button class="btn btn-primary" style="outline: 1px solid var(--white, #ffffff); box-shadow: 0 0 0 3px var(--focus-ring, var(--blue-sky-500, #3379D2));" type="button">Button</button>
-                <div>
-                  <div class="text-body-md-500">focus</div>
-                  <span class="text-body-md text-gray-400">primary</span>
-                </div> 
-              </div>
-              <div class="d-flex align-items-center gap-16 mb-16">
-                <button class="btn btn-primary btn-loading" type="button">Primary</button>
-                <div>
-                  <div class="text-body-md-500">loading</div>
-                  <span class="text-body-md text-gray-400">primary</span>
-                </div> 
-              </div> 
             </div>
+            <div class="d-flex align-items-center gap-16 mb-16">
+                <button class="btn btn-secondary" type="button">Button</button>
+                <div> 
+                  <span class="text-body-md text-gray-400">tonal-button</span>
+                </div> 
+            </div>
+          </div>
+      </div>
+    </div>
+    <div class="row mb-32">
+      <div class="col-12">
+         <div class="text-body-lg-500 mb-32 pb-16 border-bottom-1 border-bottom-solid border-gray-200">Variations</div>
+         <div class="d-flex gap-64"> 
+            <div class="d-flex align-items-center gap-16 mb-16">
+                <button class="btn btn-primary" type="button">Button</button>
+                <div> 
+                  <span class="text-body-md text-gray-400">text only</span>
+                </div> 
+            </div>
+            <div class="d-flex align-items-center gap-16 mb-16">
+                <button class="btn btn-primary" type="button">
+                  <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-plus-small"></use> 
+                  </svg>
+                  Button
+                </button>
+                <div> 
+                  <span class="text-body-md text-gray-400">leading icon</span>
+                </div> 
+            </div>
+            <div class="d-flex align-items-center gap-16 mb-16">
+                <button class="btn btn-primary" type="button"> 
+                  Button
+                   <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
+                  </svg>
+                </button>
+                <div> 
+                  <span class="text-body-md text-gray-400">trailing icon</span>
+                </div> 
+            </div>
+            <div class="d-flex align-items-center gap-16 mb-16">
+                <button class="btn btn-primary" type="button"> 
+                   
+                   <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-plus-large"></use> 
+                  </svg>
+                </button>
+                <div> 
+                  <span class="text-body-md text-gray-400">icon only</span>
+                </div> 
+            </div>
+          </div>
+      </div>
+    </div>
+     <div class="row mb-32">
+      <div class="col-12">
+         <div class="text-body-lg-500 mb-32 pb-16 border-bottom-1 border-bottom-solid border-gray-200">Sizes</div>
+         <div class="Large mb-20">Large</div>
+         <div class="d-flex gap-64"> 
+            <div class="d-flex align-items-center gap-16 mb-16">
+                <button class="btn btn-primary" type="button">Button</button>
+                <div> 
+                  <span class="text-body-md text-gray-400">text only</span>
+                </div> 
+            </div>
+            <div class="d-flex align-items-center gap-16 mb-16">
+                <button class="btn btn-primary" type="button">
+                  <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-plus-small"></use> 
+                  </svg>
+                  Button
+                </button>
+                <div> 
+                  <span class="text-body-md text-gray-400">leading icon</span>
+                </div> 
+            </div>
+            <div class="d-flex align-items-center gap-16 mb-16">
+                <button class="btn btn-primary" type="button"> 
+                  Button
+                   <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
+                  </svg>
+                </button>
+                <div> 
+                  <span class="text-body-md text-gray-400">trailing icon</span>
+                </div> 
+            </div>
+            <div class="d-flex align-items-center gap-16 mb-16">
+                <button class="btn btn-primary" type="button"> 
+                   
+                   <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-plus-large"></use> 
+                  </svg>
+                </button>
+                <div> 
+                  <span class="text-body-md text-gray-400">icon only</span>
+                </div> 
+            </div>
+         </div>
+
+         <!-- Medium Buttons -->
+         <div class="Medium mt-32 mb-20">Medium</div> 
+         <div class="d-flex gap-64"> 
+            <div class="d-flex align-items-center gap-16 mb-16">
+                <button class="btn btn-primary btn-md" type="button">Button</button>
+                <div> 
+                  <span class="text-body-md text-gray-400">text only</span>
+                </div> 
+            </div>
+            <div class="d-flex align-items-center gap-16 mb-16">
+                <button class="btn btn-primary btn-md" type="button">
+                  <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-plus-small"></use> 
+                  </svg>
+                  Button
+                </button>
+                <div> 
+                  <span class="text-body-md text-gray-400">leading icon</span>
+                </div> 
+            </div>
+            <div class="d-flex align-items-center gap-16 mb-16">
+                <button class="btn btn-primary btn-md" type="button"> 
+                  Button
+                   <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
+                  </svg>
+                </button>
+                <div> 
+                  <span class="text-body-md text-gray-400">trailing icon</span>
+                </div> 
+            </div>
+            <div class="d-flex align-items-center gap-16 mb-16">
+                <button class="btn btn-primary btn-md" type="button"> 
+                   
+                   <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-plus-large"></use> 
+                  </svg>
+                </button>
+                <div> 
+                  <span class="text-body-md text-gray-400">icon only</span>
+                </div> 
+            </div>
+         </div>
+
+         <!-- Small Buttons -->
+         <div class="Small mt-32 mb-20">Small</div> 
+         <div class="d-flex gap-64"> 
+            <div class="d-flex align-items-center gap-16 mb-16">
+                <button class="btn btn-primary btn-sm" type="button">Button</button>
+                <div> 
+                  <span class="text-body-md text-gray-400">text only</span>
+                </div> 
+            </div>
+            <div class="d-flex align-items-center gap-16 mb-16">
+                <button class="btn btn-primary btn-sm" type="button">
+                  <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-plus-small"></use> 
+                  </svg>
+                  Button
+                </button>
+                <div> 
+                  <span class="text-body-md text-gray-400">leading icon</span>
+                </div> 
+            </div>
+            <div class="d-flex align-items-center gap-16 mb-16">
+                <button class="btn btn-primary btn-sm" type="button"> 
+                  Button
+                   <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
+                  </svg>
+                </button>
+                <div> 
+                  <span class="text-body-md text-gray-400">trailing icon</span>
+                </div> 
+            </div>
+            <div class="d-flex align-items-center gap-16 mb-16">
+                <button class="btn btn-primary btn-sm" type="button"> 
+                   
+                   <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-plus-large"></use> 
+                  </svg>
+                </button>
+                <div> 
+                  <span class="text-body-md text-gray-400">icon only</span>
+                </div> 
+            </div>
+         </div>
+      </div>
+    </div>
+
+    <div class="row mb-32">
+      <div class="col-12">
+        <div class="text-body-lg-500 mb-32 pb-16 border-bottom-1 border-bottom-solid border-gray-200">Styles</div>
+        <div class="row mb-32">
+               <div class="col-12 col-md-6 col-lg-3 mb-16">
+        <div class="d-flex align-items-center gap-16 mb-16">
+          <button class="btn btn-primary" type="button">Button</button>
+          <div>
+            <div class="text-body-md-500">default</div>
+            <span class="text-body-md text-gray-400">primary</span>
           </div> 
-        </div> 
+        </div>  
+        
+      </div>
+      <div class="col-12 col-md-6 col-lg-3 mb-16">
+        <div class="d-flex align-items-center gap-16 mb-16">
+          <button class="btn btn-secondary" type="button">Button</button>
+          <div>
+            <div class="text-body-md-500">default</div>
+            <span class="text-body-md text-gray-400">secondary</span>
+          </div> 
+        </div>  
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3 mb-16">
+        <div class="d-flex align-items-center gap-16 mb-16">
+          <button class="btn btn-strict" type="button">Button</button>
+          <div>
+            <div class="text-body-md-500">default</div>
+            <span class="text-body-md text-gray-400">strict</span>
+          </div> 
+        </div>  
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3 mb-16">
+        <div class="d-flex align-items-center gap-16 mb-16">
+          <button class="btn btn-neutral" type="button">Button</button>
+          <div>
+            <div class="text-body-md-500">default</div>
+            <span class="text-body-md text-gray-400">neutral</span>
+          </div> 
+        </div>  
+        
+      </div>
+
+      <div class="col-12 col-md-6 col-lg-3 mb-16">
+        <div class="d-flex align-items-center gap-16 mb-16">
+          <button class="btn btn-destructive" type="button">Button</button>
+          <div>
+            <div class="text-body-md-500">default</div>
+            <span class="text-body-md text-gray-400">destructive</span>
+          </div> 
+        </div>  
+        
+      </div>
+    </div>
+
+    <!-- Button States -->
+    <div class="row">
+      <div class="col-12">
+        <div class="text-body-lg-500 mb-32 pb-16 border-bottom-1 border-bottom-solid border-gray-200">States</div>
+      </div>
       <div class="col-12 col-md-6 col-lg-3 mb-16">
         <div class="d-flex align-items-center gap-16 mb-16">
           <button class="btn btn-primary" type="button">Button</button>
@@ -280,38 +507,393 @@
         </div>
         
       </div>
+    </div> 
 
-      <!-- Outline Buttons -->
-      <div class="col-12 col-md-6 col-lg-4 mb-16">
-        <button class="btn btn-outline-primary w-100" type="button">Outline Primary</button>
+    <!-- Button Sizes -->
+    <div class="row mt-64"> 
+      <div class="col-12">
+        <div class="text-body-lg-500 mb-32 pb-16 border-bottom-1 border-bottom-solid border-gray-200">Button Sizes</div>
+        <div class="d-flex gap-64 align-items-center mb-32">
+          <div class="w-25">
+            <button class="btn btn-primary" type="button">Default</button>
+          </div>
+          
+          <div class="w-25">
+            <button class="btn btn-primary btn-lg" type="button">Large</button>
+          </div>
+          <div class="w-25">
+            <button class="btn btn-primary btn-md" type="button">Medium</button>
+          </div>
+          <div class="w-25">
+            <button class="btn btn-primary btn-sm" type="button">Small</button>
+          </div> 
+        </div>
+        <div class="col-12 col-md-6 col-lg-4 mb-16">
+          <button class="btn btn-outline-secondary w-100" type="button">Outline Secondary</button>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4 mb-16">
+          <button class="btn btn-outline-strict w-100" type="button">Outline Strict</button>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4 mb-16">
+          <button class="btn btn-outline-neutral w-100" type="button">Outline Neutral</button>
+        </div>
+        <div class="col-12 col-md-6 col-lg-4 mb-16">
+          <button class="btn btn-outline-destructive w-100" type="button">Outline Destructive</button>
+        </div>
       </div>
-      <div class="col-12 col-md-6 col-lg-4 mb-16">
-        <button class="btn btn-outline-secondary w-100" type="button">Outline Secondary</button>
+    </div>
+
+    <!--Button Shapes-->
+    <div class="row mb-32">
+      <div class="col-12">
+        <div class="text-body-lg-500 mb-32 pb-16 border-bottom-1 border-bottom-solid border-gray-200">Button Shapes</div>
+        <div class="d-flex gap-64 align-items-center mb-32">
+          <div class="w-25">
+            <button class="btn btn-primary rounded-none" type="button">Rectangular</button>
+          </div>  
+          <div class="w-25">
+            <button class="btn btn-primary btn-rounded" type="button">Circular</button>
+          </div>
+          </div>
       </div>
-      <div class="col-12 col-md-6 col-lg-4 mb-16">
-        <button class="btn btn-outline-strict w-100" type="button">Outline Strict</button>
+    </div>
+
+    <!-- Button Circular Sizes -->
+     <div class="row mb-32">
+      <div class="col-12">
+        <div class="text-body-lg-500 mb-32 pb-16 border-bottom-1 border-bottom-solid border-gray-200">Button Circular Sizes</div>
+        <div class="d-flex gap-64 align-items-center mb-32">
+          <div class="w-25">
+            <button class="btn btn-primary btn-rounded btn-lg" type="button">
+              Button 
+            </button>
+          </div>  
+          <div class="w-25">
+            <button class="btn btn-primary btn-rounded btn-md" type="button">
+              Button
+              <svg class="icon small" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-plus-large"></use> 
+              </svg>
+            </button>
+          </div>
+          <div class="w-25">
+            <button class="btn btn-primary btn-rounded btn-sm" type="button">
+              
+              <svg class="icon small" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-plus-large"></use> 
+              </svg>
+            </button>
+          </div>
+          </div>
       </div>
-      <div class="col-12 col-md-6 col-lg-4 mb-16">
-        <button class="btn btn-outline-neutral w-100" type="button">Outline Neutral</button>
+    </div>
+
+    <!-- Outline Buttons -->
+    <div class="row mb-32">
+      <div class="col-12">
+        <div class="text-body-lg-500 mb-32 pb-16 border-bottom-1 border-bottom-solid border-gray-200">Outline Buttons</div>
+        <div class="d-flex gap-64 align-items-center mb-32">
+          <div class="w-25">
+            <button class="btn btn-outline-primary" type="button">Primary</button>
+          </div>
+          
+          <div class="w-25">
+            <button class="btn btn-outline-secondary" type="button">Secondary</button>
+          </div>
+          <div class="w-25">
+            <button class="btn btn-outline-strict" type="button">Strict</button>
+          </div>
+          <div class="w-25">
+            <button class="btn btn-outline-neutral" type="button">Neutral</button>
+          </div> 
+          <div class="w-25">
+            <button class="btn btn-outline-destructive" type="button">Destructive</button>
+          </div>
+          </div>
       </div>
-      <div class="col-12 col-md-6 col-lg-4 mb-16">
-        <button class="btn btn-outline-destructive w-100" type="button">Outline Destructive</button>
+    </div>
+
+    <!-- Loading Buttons -->
+    <div class="row mb-32">
+      <div class="col-12">
+        <div class="text-body-lg-500 mb-32 pb-16 border-bottom-1 border-bottom-solid border-gray-200">Loading Buttons</div>
+        <div class="d-flex gap-64 align-items-center mb-32">
+          <div class="w-25">
+            <button class="btn btn-primary btn-loading" type="button">Primary</button>
+          </div>
+          
+          <div class="w-25">
+            <button class="btn btn-secondary btn-loading" type="button">Secondary</button>
+          </div>
+          <div class="w-25">
+            <button class="btn btn-strict btn-loading" type="button">Strict</button>
+          </div>
+          <div class="w-25">
+            <button class="btn btn-neutral btn-loading" type="button">Neutral</button>
+          </div> 
+          <div class="w-25">
+            <button class="btn btn-destructive btn-loading" type="button">Destructive</button>
+          </div>
+          </div>
+      </div>
+    </div>
+    <!-- Disabled Buttons -->
+    <div class="row mb-32">
+      <div class="col-12">
+        <div class="text-body-lg-500 mb-32 pb-16 border-bottom-1 border-bottom-solid border-gray-200">Disabled Buttons</div>
+        <div class="d-flex gap-64 align-items-center mb-32">
+          <div class="w-25">
+            <button class="btn btn-primary" type="button" disabled>Primary</button>
+          </div>
+          
+          <div class="w-25">
+            <button class="btn btn-secondary" type="button" disabled>Secondary</button>
+          </div>
+          <div class="w-25">
+            <button class="btn btn-strict" type="button" disabled>Strict</button>
+          </div>
+          <div class="w-25">
+            <button class="btn btn-neutral" type="button" disabled>Neutral</button>
+          </div> 
+          <div class="w-25">
+            <button class="btn btn-destructive" type="button" disabled>Destructive</button>
+          </div> 
+        </div>
       </div>
 
-      <!-- Text Buttons -->
-      <div class="col-12 col-md-6 col-lg-4 mb-16">
-        <button class="btn btn-text-primary w-100" type="button">Text Primary</button>
-      </div>
-      <div class="col-12 col-md-6 col-lg-4 mb-16">
-        <button class="btn btn-text-secondary w-100" type="button">Text Secondary</button>
-      </div>
+  
+    </div>
 
-      <!-- Icon Buttons -->
-      <div class="col-12 col-md-6 col-lg-4 mb-16">
-        <button class="btn btn-icon" type="button">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
-        </button>
+    <!--Button Text-->
+    <div class="row mb-32">
+      <div class="col-12">
+        <div class="text-body-lg-500 mb-32 pb-16 border-bottom-1 border-bottom-solid border-gray-200">Button Text</div>
       </div>
+      <div class="col-12 col-md-6 col-lg-3 mb-16">
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-text-primary" type="button">Button</button>
+            <div>
+              <div class="text-body-md-500">default</div>
+              <span class="text-body-md text-gray-400">primary</span>
+            </div> 
+          </div> 
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-text-primary bg-blue-sky-200" type="button">Button</button>
+            <div>
+              <div class="text-body-md-500">hover</div>
+              <span class="text-body-md text-gray-400">primary</span>
+            </div> 
+          </div> 
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-text-primary bg-blue-sky-300" type="button">Button</button>
+            <div>
+              <div class="text-body-md-500">active</div>
+              <span class="text-body-md text-gray-400">primary</span>
+            </div> 
+          </div> 
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-text-primary" style="outline: 1px solid var(--white, #ffffff); box-shadow: 0 0 0 3px var(--focus-ring, var(--blue-sky-500, #3379D2));" type="button">Button</button>
+            <div>
+              <div class="text-body-md-500">focus</div>
+              <span class="text-body-md text-gray-400">primary</span>
+            </div> 
+          </div>
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-text-primary btn-loading" type="button">Primary</button>
+            <div>
+              <div class="text-body-md-500">loading</div>
+              <span class="text-body-md text-gray-400">primary</span>
+            </div> 
+          </div>
+        <div class="d-flex align-items-center gap-16 mb-16">
+          <button class="btn btn-text-primary" type="button" disabled>Button</button>
+          <div>
+            <div class="text-body-md-500">disabled</div>
+            <span class="text-body-md text-gray-400">primary</span>
+          </div> 
+        </div>
+      </div>
+      <div class="col-12 col-md-6 col-lg-3 mb-16 d-none">
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-secondary" type="button">Button</button>
+            <div>
+              <div class="text-body-md-500">default</div>
+              <span class="text-body-md text-gray-400">secondary</span>
+            </div> 
+          </div> 
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-secondary bg-blue-sky-150" type="button">Button</button>
+            <div>
+              <div class="text-body-md-500">hover</div>
+              <span class="text-body-md text-gray-400">secondary</span>
+            </div> 
+          </div> 
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-secondary bg-blue-sky-300" type="button">Button</button>
+            <div>
+              <div class="text-body-md-500">active</div>
+              <span class="text-body-md text-gray-400">secondary</span>
+            </div> 
+          </div> 
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-secondary" style="outline: 2px solid var(--white, #ffffff); box-shadow: 0 0 0 4px var(--focus-ring, var(--blue-sky-500, #3379D2));" type="button">Button</button>
+            <div>
+              <div class="text-body-md-500">focus</div>
+              <span class="text-body-md text-gray-400">secondary</span>
+            </div> 
+          </div>
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-secondary btn-loading" type="button">Secondary</button>
+            <div>
+              <div class="text-body-md-500">loading</div>
+              <span class="text-body-md text-gray-400">secondary</span>
+            </div> 
+          </div>
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-secondary" type="button" disabled>Button</button>
+            <div>
+              <div class="text-body-md-500">disabled</div>
+              <span class="text-body-md text-gray-400">secondary</span>
+            </div> 
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3 mb-16">
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-text-strict" type="button">Button</button>
+            <div>
+              <div class="text-body-md-500">default</div>
+              <span class="text-body-md text-gray-400">strict</span>
+            </div> 
+          </div> 
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-text-strict bg-gray-250" type="button">Button</button>
+            <div>
+              <div class="text-body-md-500">hover</div>
+              <span class="text-body-md text-gray-400">strict</span>
+            </div> 
+          </div> 
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-text-strict bg-gray-300" type="button">Button</button>
+            <div>
+              <div class="text-body-md-500">active</div>
+              <span class="text-body-md text-gray-400">strict</span>
+            </div> 
+          </div> 
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-text-strict" style="outline: 2px solid var(--white, #ffffff); box-shadow: 0 0 0 4px var(--focus-ring, var(--blue-sky-500, #3379D2));" type="button">Button</button>
+            <div>
+              <div class="text-body-md-500">focus</div>
+              <span class="text-body-md text-gray-400">strict</span>
+            </div> 
+          </div>
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-text-strict btn-loading" type="button">Strict</button>
+            <div>
+              <div class="text-body-md-500">loading</div>
+              <span class="text-body-md text-gray-400">strict</span>
+            </div> 
+          </div>
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-text-strict" type="button" disabled>Button</button>
+            <div>
+              <div class="text-body-md-500">disabled</div>
+              <span class="text-body-md text-gray-400">strict</span>
+            </div> 
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3 mb-16 d-none">
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-neutral" type="button">Button</button>
+            <div>
+              <div class="text-body-md-500">default</div>
+              <span class="text-body-md text-gray-400">neutral</span>
+            </div> 
+          </div> 
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-neutral bg-gray-150" type="button">Button</button>
+            <div>
+              <div class="text-body-md-500">hover</div>
+              <span class="text-body-md text-gray-400">neutral</span>
+            </div> 
+          </div> 
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-neutral bg-gray-300" type="button">Button</button>
+            <div>
+              <div class="text-body-md-500">active</div>
+              <span class="text-body-md text-gray-400">neutral</span>
+            </div> 
+          </div> 
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-neutral" style="outline: 2px solid var(--white, #ffffff); box-shadow: 0 0 0 4px var(--focus-ring, var(--blue-sky-500, #3379D2));" type="button">Button</button>
+            <div>
+              <div class="text-body-md-500">focus</div>
+              <span class="text-body-md text-gray-400">neutral</span>
+            </div> 
+          </div>
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-neutral btn-loading" type="button">Neutral</button>
+            <div>
+              <div class="text-body-md-500">loading</div>
+              <span class="text-body-md text-gray-400">neutral</span>
+            </div> 
+          </div>
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-neutral" type="button" disabled>Button</button>
+            <div>
+              <div class="text-body-md-500">disabled</div>
+              <span class="text-body-md text-gray-400">neutral</span>
+            </div> 
+          </div>
+          
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3 mb-16">
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-text-destructive" type="button">Button</button>
+            <div>
+              <div class="text-body-md-500">default</div>
+              <span class="text-body-md text-gray-400">destructive</span>
+            </div> 
+          </div> 
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-text-destructive bg-red-100" type="button">Button</button>
+            <div>
+              <div class="text-body-md-500">hover</div>
+              <span class="text-body-md text-gray-400">destructive</span>
+            </div> 
+          </div> 
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-text-destructive bg-red-300" type="button">Button</button>
+            <div>
+              <div class="text-body-md-500">active</div>
+              <span class="text-body-md text-gray-400">destructive</span>
+            </div> 
+          </div> 
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-text-destructive" style="outline: 2px solid var(--white, #ffffff); box-shadow: 0 0 0 4px var(--focus-ring, var(--blue-sky-500, #3379D2));" type="button">Button</button>
+            <div>
+              <div class="text-body-md-500">focus</div>
+              <span class="text-body-md text-gray-400">destructive</span>
+            </div> 
+          </div>
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-text-destructive btn-loading" type="button">Destructive</button>
+            <div>
+              <div class="text-body-md-500">loading</div>
+              <span class="text-body-md text-gray-400">destructive</span>
+            </div> 
+          </div>
+          <div class="d-flex align-items-center gap-16 mb-16">
+            <button class="btn btn-text-destructive" type="button" disabled>Button</button>
+            <div>
+              <div class="text-body-md-500">disabled</div>
+              <span class="text-body-md text-gray-400">destructive</span>
+            </div> 
+          </div>
+          
+        </div> 
     </div>
   </div>
 </body>

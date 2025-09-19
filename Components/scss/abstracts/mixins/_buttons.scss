@@ -1,4 +1,4 @@
-@mixin button-variant($name, $bg, $color, $border, $hover-bg, $active-bg, $spinner-color: $color, $focus-ring: true) {
+@mixin button-variant($name, $bg, $color, $border, $hover-bg, $hover-color, $active-bg, $spinner-color: $color, $focus-ring: true) {
   .btn-#{$name} {
     background-color: #{$bg};
     color: #{$color};
@@ -6,6 +6,7 @@
 
     &:hover:not(:disabled) {
       background-color: #{$hover-bg};
+      color: #{$hover-color};
     }
 
     &:active:not(:disabled) {

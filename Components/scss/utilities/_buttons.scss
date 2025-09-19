@@ -1,5 +1,5 @@
 // ==============================================
-// 🔘 Buttons SCSS (Functional)
+// 🔘 Buttons SCSS (Functional Utilities)
 // ==============================================
 
 .btn {
@@ -9,7 +9,8 @@
   font-size: var(--text-body-md-500-font-size);
   line-height: 1.375;
   border-radius: var(--radius-md, 8px);
-  padding: var(--spacing-12, 0.75rem) var(--spacing-16, 1rem);
+  padding: var(--spacing-12, 0.75rem) var(--spacing-20, 1.25rem);
+  gap: var(--spacing-4, 0.25rem);
   cursor: pointer;
   text-align: center;
   text-decoration: none;
@@ -24,48 +25,33 @@
   }
 }
 
+// ==============================================
+// 🔹 Tipuri de butoane generice
+// (variantele concrete sunt în base/_buttons.scss)
+// ==============================================
+
 .btn-filled {
   background-color: var(--blue-sky-600, #0058D2);
   color: var(--white, #ffffff);
   border: 1px solid transparent;
-  
-  &:hover:not(:disabled) {
-    background-color: var(--blue-sky-500, #3379DB);
-  }
-
-  &:active:not(:disabled) {
-    background-color: var(--blue-sky-700, #0046A8);
-  }
 }
 
 .btn-outlined {
   background-color: transparent;
   border: 1px solid var(--blue-sky-600, #0058D2);
+  border: var(--blue-sky-600, #0058D2) var(--solid, solid) var(--border-width-2, 2px);
   color: var(--blue-sky-600, #0058D2);
-
-  &:hover:not(:disabled) {
-    background-color: var(--blue-sky-100, #E8F0FB);
-  }
-
-  &:active:not(:disabled) {
-    background-color: var(--blue-sky-150, #D6E5F8);
-  }
 }
 
 .btn-text {
   background-color: transparent;
   border: none;
   color: var(--blue-sky-600, #0058D2);
-
-  &:hover:not(:disabled) {
-    background-color: var(--blue-sky-100, #E8F0FB);
-  }
-
-  &:active:not(:disabled) {
-    background-color: var(--blue-sky-150, #D6E5F8);
-  }
 }
 
+// ==============================================
+// 🔹 Icon Button
+// ==============================================
 .btn-icon {
   background-color: transparent;
   border: none;
@@ -90,34 +76,8 @@
   }
 }
 
-/* Sizes */
-.btn-sm { padding: var(--spacing-4, 0.25rem) var(--spacing-8, 0.5rem); font-size: 14px; }
-.btn-md { padding: var(--spacing-8, 0.5rem) var(--spacing-16, 1rem); font-size: 16px; }
-.btn-lg { padding: var(--spacing-12, 0.75rem) var(--spacing-24, 1.5rem); font-size: 18px; }
-
-/* Shapes */
+// ==============================================
+// 🔹 Forme speciale
+// ==============================================
 .btn-pill { border-radius: 9999px; }
-.btn-rounded { border-radius: var(--radius-md, 8px); }
-
-/* Loading state */
-.btn-loading {
-  position: relative;
-  pointer-events: none;
-  color: transparent !important;
-
-  &::after {
-    content: '';
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--white, #ffffff);
-    border-top-color: transparent;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+.btn-rounded { border-radius: var(--radius-full, 9999px); }

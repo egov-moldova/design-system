@@ -1,52 +1,217 @@
 @use '../abstracts/mixins/buttons' as buttons;
+@use 'sass:map' as map;
 
-// 🔹 Primary Button
+// ===============================
+// 🔹 Variante butoane - Filled
+// ===============================
 @include buttons.button-variant(
   "primary",
-  var(--blue-sky-600),
-  var(--white),
+  var(--blue-sky-600, #0058D2),
+  var(--white, #ffffff),
   transparent,
-  var(--blue-sky-700),
-  var(--blue-sky-800)
+  var(--blue-sky-700, #0046A8),
+  var(--white, #ffffff),
+  var(--blue-sky-800, #003380)
 );
 
-// 🔹 Secondary Button
 @include buttons.button-variant(
   "secondary",
-  var(--blue-sky-100),
-  var(--blue-sky-600),
-  var(--blue-sky-100),
-  var(--blue-sky-150),
-  var(--blue-sky-200)
+  var(--blue-sky-100, #E8F0FB),
+  var(--blue-sky-600, #0058D2),
+  var(--blue-sky-100, #E8F0FB),
+  var(--blue-sky-150, #D6E5F8),
+  var(--blue-sky-600, #0058D2),
+  var(--blue-sky-200, #C4DBF4)
 );
 
-// 🔹 Strict Button
 @include buttons.button-variant(
   "strict",
-  var(--gray-900),
-  var(--white),
-  var(--gray-900),
-  var(--gray-700),
-  var(--gray-600)
+  var(--gray-900, #212121),
+  var(--white, #ffffff),
+  var(--gray-900, #212121),
+  var(--gray-700, #616161),
+  var(--white, #ffffff),
+  var(--gray-600, #757575)
 );
 
-// 🔹 Neutral Button
 @include buttons.button-variant(
   "neutral",
-  var(--gray-100),
-  var(--black),
-  var(--gray-100),
-  var(--gray-250),
-  var(--gray-300)
+  var(--gray-100, #F5F5F5),
+  var(--black, #000000),
+  var(--gray-100, #F5F5F5),
+  var(--gray-250, #E0E0E0),
+  var(--black, #000000),
+  var(--gray-300, #D9D9D9)
 );
 
-// 🔹 Destructive Button
 @include buttons.button-variant(
   "destructive",
-  var(--red-600),
-  var(--white),
-  var(--red-600),
-  var(--red-700),
-  var(--red-800),
-  var(--white) // spinner color specific
+  var(--red-600, #D32F2F),
+  var(--white, #ffffff),
+  var(--red-600, #D32F2F),
+  var(--red-700, #B71C1C),
+  var(--white, #ffffff),
+  var(--red-800, #9C0000),
+  var(--white, #ffffff)
 );
+
+// ===============================
+// 🔹 Variante butoane - Outlined
+// ===============================
+@include buttons.button-variant(
+  "outline-primary",
+  transparent,
+  var(--blue-sky-600, #0058D2),
+  var(--blue-sky-600, #0058D2),
+  var(--blue-sky-700, #0046A8),
+  var(--white, #ffffff),
+  var(--blue-sky-800, #003380)
+);
+
+@include buttons.button-variant(
+  "outline-secondary",
+  transparent,
+  var(--blue-sky-600, #0058D2),
+  var(--blue-sky-100, #E8F0FB),
+  var(--blue-sky-150, #D6E5F8),
+  var(--blue-sky-600, #0058D2),
+  var(--blue-sky-200, #C4DBF4)
+);
+
+@include buttons.button-variant(
+  "outline-strict",
+  transparent,
+  var(--gray-900, #212121),
+  var(--gray-900, #212121),
+  var(--gray-700, #616161), 
+  var(--white, #ffffff),
+  var(--gray-600, #757575)
+);
+
+@include buttons.button-variant(
+  "outline-neutral",
+  transparent,
+  var(--black, #000000),
+  var(--gray-100, #F5F5F5),
+  var(--gray-250, #E0E0E0),
+  var(--black, #000000),
+  var(--gray-300, #D9D9D9)
+);
+
+@include buttons.button-variant(
+  "outline-destructive",
+  transparent,
+  var(--red-600, #D32F2F),
+  var(--red-600, #D32F2F),
+  var(--red-700, #B71C1C),
+  var(--white, #ffffff),
+  var(--red-800, #9C0000)
+);
+
+// ===============================
+// 🔹 Variante butoane - Text
+// ===============================
+@include buttons.button-variant(
+  "text-primary",
+  transparent,
+  var(--blue-sky-600, #0058D2),
+  transparent,
+  var(--blue-sky-200, #C4DBF4),
+  var(--blue-sky-700, #0046A8),
+  var(--blue-sky-300, #99BCED)
+);
+
+@include buttons.button-variant(
+  "text-secondary",
+  transparent,
+  var(--blue-sky-600, #0058D2),
+  transparent,
+  var(--blue-sky-150, #D6E5F8),
+  var(--blue-sky-600, #0058D2),
+  var(--blue-sky-200, #C4DBF4)
+);
+
+@include buttons.button-variant(
+  "text-strict",
+  transparent,
+  var(--black, #121212),
+  transparent,
+  var(--gray-250, #D9D9D9),
+  var(--black, #121212),
+  var(--gray-300, #b2b2b2)
+);
+
+@include buttons.button-variant(
+  "text-neutral", 
+  transparent,
+  var(--black, #000000),
+  transparent,
+  var(--gray-250, #E0E0E0),
+  var(--black, #000000),
+  var(--gray-300, #D9D9D9)
+);
+
+@include buttons.button-variant(
+  "text-destructive",
+  transparent,
+  var(--red-600, #D32F2F),
+  transparent,
+  var(--red-100, #FEE4E2),
+  var(--red-600, #D32F2F),
+  var(--red-300, #FDA19B)
+);
+
+// ===============================
+// 🔹 Dimensiuni butoane
+// ===============================
+$button-sizes: (
+  sm: (padding: var(--spacing-4, 0.25rem) var(--spacing-12, 0.5rem), font-size: 14px),
+  md: (padding: var(--spacing-8, 0.5rem) var(--spacing-16, 1rem), font-size: 16px),
+  lg: (padding: var(--spacing-12, 0.75rem) var(--spacing-24, 1.5rem), font-size: 18px)
+);
+
+@each $size, $values in $button-sizes {
+  .btn.btn-#{$size} {
+    padding: map.get($values, padding);
+    font-size: map.get($values, font-size);
+  }
+}
+
+// ===============================
+// 🔹 Forme butoane
+// ===============================
+.btn-pill { border-radius: 9999px; }
+.btn-rounded { border-radius: var(--radius-full, 9999px); }
+
+// ===============================
+// 🔹 Loading
+// ===============================
+.btn-loading {
+  position: relative;
+  pointer-events: none;
+  color: transparent !important;
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border: 2px solid var(--white, #ffffff);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// ===============================
+// 🔹 Focus implicit
+// ===============================
+.btn:focus:not(:disabled) {
+  outline: 2px solid var(--white, #ffffff);
+  box-shadow: 0 0 0 4px var(--focus-ring, var(--blue-sky-500, #3379DB));
+}
