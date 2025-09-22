@@ -47,8 +47,10 @@
 // ✅ Import corect pentru buttons, care folosește mixin-uri din buttons
 @use 'base/buttons';
 
-// Utilities (dacă ai clase utilitare)
+ 
 @use 'utilities' as *;
+
+@use 'components/search-input';
 
 // ===============================
 // 🟦 Grid Setup
