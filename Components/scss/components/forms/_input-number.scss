@@ -1,0 +1,16 @@
+@use './input' as *;
+.input-number {
+  @include input-style;
+  text-align: right;
+
+  /* ascunde săgețile default (Chrome/Edge/Safari) */
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  /* pentru Firefox */
+  &[type="number"] {
+    -moz-appearance: textfield;
+  }
+}

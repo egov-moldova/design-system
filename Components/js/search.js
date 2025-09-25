@@ -4,29 +4,44 @@ document.querySelectorAll('.search-input').forEach((searchInput) => {
   const loadingIcon = searchInput.querySelector('.btn-icon.loading');
   const searchBtn = searchInput.querySelector('.btn-icon.search');
 
-  // când utilizatorul tastează
+  if (!input) return; // dacă nu e input, nu continuăm
+
+  // Când tastezi ceva
   input.addEventListener('input', () => {
-    clearBtn.style.display = input.value.trim() !== '' ? 'inline-flex' : 'none';
+    if (clearBtn) {
+      clearBtn.classList.toggle('visible', input.value.trim() !== '');
+    }
   });
 
-  // click pe butonul ✖
-  clearBtn.addEventListener('click', () => {
-    input.value = '';
-    clearBtn.style.display = 'none';
-    input.focus();
+  // Când apeși ENTER
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      searchBtn?.click();
+    }
   });
 
-  // click pe butonul de search
-  searchBtn.addEventListener('click', () => {
-    if (input.value.trim() === '') return;
+  // Clear button
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      input.value = '';
+      clearBtn.classList.remove('visible');
+      input.focus();
+    });
+  }
 
-    searchInput.classList.add('loading');
-    loadingIcon.style.display = 'inline-flex';
+  // Search button
+  if (searchBtn && loadingIcon) {
+    searchBtn.addEventListener('click', () => {
+      if (input.value.trim() === '') return;
 
-    setTimeout(() => {
-      searchInput.classList.remove('loading');
-      loadingIcon.style.display = 'none';
-      alert(`Căutare pentru: ${input.value}`);
-    }, 1500);
-  });
+      searchInput.classList.add('loading');
+      loadingIcon.classList.add('visible');
+
+      setTimeout(() => {
+        searchInput.classList.remove('loading');
+        loadingIcon.classList.remove('visible');
+        alert(`Căutare pentru: ${input.value}`);
+      }, 1500);
+    });
+  }
 });

@@ -1,0 +1,83 @@
+@use './input' as *;
+.search-input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: var(--w-100, 100%);
+
+  // Forme
+  &.rectangular { border-radius: var(--radius-md, 8px); }
+  &.circular input{ border-radius: 9999px; }
+
+  // Dimensiuni
+  &.medium .input{ --height: var(--spacing-38, 38px); }
+  &.small .input{ --height: var(--spacing-32, 32px); }
+
+  .input {
+    @include input-style; // mixin-ul tău cu stilul de bază
+    //height: var(--height);
+    padding-left: var(--spacing-32); // loc pentru search icon
+    padding-right: var(--spacing-32); // loc pentru clear/loading icon
+    flex: 1;
+  }
+
+  .icon-search {
+    position: absolute;
+    left: var(--spacing-8, 8px);
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  .icon-loading {
+    position: absolute;
+    right: var(--spacing-16, 16px);
+    display: none;  
+    //animation: spin 1s linear infinite;               
+    position: absolute;
+    pointer-events: none;
+    color: transparent !important;
+
+    &::after {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border: 2px solid var(--blue-sky-600, #0058D2);
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        right: 0;
+    }
+    &.visible {
+      display: inline-flex;
+    }
+  }
+
+  .btn-icon.clear {
+    position: absolute;
+    right: var(--spacing-8, 8px);
+    display: none;
+    border: none;
+    background-color: var(--gray-200, #f1f1f1);
+    border-radius: var(--border-radius-full);
+    height: var(--icon-height, 20px);
+    padding: 0;
+    width: var(--icon-width);
+    cursor: pointer;
+
+     &.visible {
+      display: inline-flex;
+    }
+  }
+
+  // Stări dinamice
+  &.loading .icon-loading { display: flex; }
+  &.filled .btn-icon.clear,
+  &.focus-populated .btn-icon.clear { display: flex; }
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

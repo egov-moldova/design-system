@@ -1,0 +1,222 @@
+@use '../../abstracts/tokens' as tokens;
+
+/* =======================================
+   🔹 Mixin principal pentru input-uri
+======================================= */
+@mixin input-style($variant: default) {
+  $colors: map-get(tokens.$input-colors, $variant);
+
+  border: 1.5px solid map-get($colors, border);
+  background-color: map-get($colors, background);
+  color: map-get($colors, text);
+  width: 100%;
+  height: var(--spacing-48, 48px);
+  padding: 0 var(--spacing-12, 12px);
+  border-radius: var(--border-radius-8, 8px);
+  font-size: var(--font-size-14, 14px);
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: map-get($colors, placeholder);
+  }
+
+  &:hover:not(:disabled) {
+    border-color: map-get($colors, border-hover);
+  }
+
+  // 👇 fiecare variantă își ia focus-ul din tokens
+  &:focus:not(:disabled) {
+    //border-color: map-get($colors, focus);
+    outline: none;
+    box-shadow: 0 0 0 2px map-get($colors, focus);
+  }
+
+  &:disabled {
+    background-color: map-get($colors, disabled-bg);
+    border-color: map-get($colors, disabled-border);
+    color: map-get($colors, disabled-text);
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  &[readonly] {
+    background-color: var(--gray-50, #fafafa);
+    border-color: var(--gray-200);
+    color: var(--gray-700);
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+
+/* =======================================
+   🔹 Label pentru input
+======================================= */
+label {
+  display: block;
+  font-size: var(--text-body-sm-font-size, 14px);
+  margin-bottom: var(--spacing-6, 6px);
+
+  &.required::after {
+    content: '*';
+    margin-left: var(--spacing-4, 4px);
+    color: var(--red-500);
+  }
+}
+
+/* =======================================
+   🔹 Clasa de bază
+======================================= */
+.input {
+  @include input-style(default);
+}
+
+/* Variante vizuale suplimentare */
+.input--warning {
+  @include input-style(warning);
+}
+
+.input--destructive {
+  @include input-style(destructive);
+}
+
+.input--success {
+  @include input-style(success);
+}
+
+/* =======================================
+   🔹 State-uri adiționale
+======================================= */
+
+/* Filled (ex: când inputul are valoare) */
+.input--filled {
+  background-color: var(--white);
+  border-color: var(--gray-300);
+  color: var(--gray-900);
+
+  &::placeholder {
+    color: transparent; // ascunde placeholderul
+  }
+}
+
+/* Focus + populated vs focus + empty */
+.input:focus:not(:placeholder-shown) {
+  border-color: var(--blue-sky-500);
+}
+
+.input:focus:placeholder-shown {
+  border-color: var(--blue-sky-300);
+}
+
+/* =======================================
+   🔹 Iconițe
+======================================= */
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .input {
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+
+  .input-icon--leading,
+  .input-icon--trailing {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    color: var(--gray-500);
+  }
+
+  .input-icon {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+
+    &.left {
+      left: var(--spacing-8);
+    }
+
+    &.right { 
+      right: var(--spacing-8);
+    }
+
+    &:has(.left) { 
+      .input {
+        padding-left: var(--spacing-12);
+      }
+    }
+  }
+
+  .input-icon--leading {
+    left: var(--spacing-8, 8px);
+  }
+
+  .input-icon--trailing {
+    right: var(--spacing-8, 8px);
+  }
+
+  /* Spațiu pentru icon */
+  &.has-leading .input {
+    padding-left: var(--spacing-40, 40px);
+  }
+
+  &.has-trailing .input {
+    padding-right: var(--spacing-40, 40px);
+  }
+
+  &:has(.left) {
+    .input {
+      padding-left: var(--spacing-32);
+    }
+  }
+
+  &:has(.right) {
+    .input {
+      padding-right: var(--spacing-32);
+    }
+  }
+}
+
+/* =======================================
+   🔹 Loading state
+======================================= */
+.input-wrapper.is-loading {
+  //display: block;
+  .input {
+    padding-right: var(--spacing-40);
+  }
+
+  .input-icon--loading {
+    display: block;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: var(--spacing-8);
+    color: transparent !important;
+
+    &::after {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border: 2px solid var(--blue-sky-600, #0058D2);
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        right: 0;
+    }
+    &.visible {
+      display: inline-flex;
+    }
+  }
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}

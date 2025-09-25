@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Search Input Preview</title>
+  <script src="js/search.js"></script>
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-7">
+            <h1>Search Input</h1>
+            <p class="text-gray-400">
+                The Search Input component allows users to enter text queries to quickly find relevant content within an interface. It typically includes a text field and a search icon, and may offer additional features such as auto-suggestions, clear input functionality, or filters.
+                Designed to be lightweight and accessible, this component helps streamline navigation and improve content discoverability.
+            </p>
+        </div>
+    </div>
+
+    <div class="row mb-32">
+        <div class="col-12">
+            <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+                <h2>Shapes</h2>
+            </div>
+            <div class="row">
+                <div class="col-12 col-md-6"> 
+                    <label class="mb-8 d-block">rectangular</label>
+                    <div class="search-input rectangular medium">
+                        <input type="text" class="input" placeholder="Placeholder" />
+                        <button type="button" class="btn-icon clear">
+                            <svg class="icon small" aria-hidden="true"> 
+                                <use href="assets/icons/sprite.svg#icon-cross-small"></use> 
+                            </svg>
+                        </button>
+                        <span class="btn-icon loading">⟳</span>
+                    </div>  
+                </div>
+
+                <div class="col-12 col-md-6">
+                    <label class="mb-8 d-block">circular</label>
+                    <div class="search-input circular medium">
+                        <input type="text" class="input" placeholder="Placeholder" />
+                        <button type="button" class="btn-icon clear">
+                            <svg class="icon small" aria-hidden="true"> 
+                                <use href="assets/icons/sprite.svg#icon-cross-small"></use> 
+                            </svg>
+                        </button>
+                        <span class="btn-icon loading">⟳</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sizes Example -->
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <label class="mb-8 d-block">medium</label>
+            <div class="search-input rectangular medium">
+                <input type="text" class="input" placeholder="Placeholder" />
+                <button type="button" class="btn-icon clear">
+                    <svg class="icon small" aria-hidden="true"> 
+                        <use href="assets/icons/sprite.svg#icon-cross-small"></use> 
+                    </svg>
+                </button>
+                <span class="btn-icon loading">⟳</span>
+            </div>
+        </div>
+        <div class="col-12 col-md-6">
+            <label class="mb-8 d-block">small</label>
+            <div class="search-input rectangular small">
+                <input type="text" class="input" placeholder="Placeholder" /> 
+                <button type="button" class="btn-icon clear">
+                    <svg class="icon small" aria-hidden="true"> 
+                        <use href="assets/icons/sprite.svg#icon-cross-small"></use> 
+                    </svg>
+                </button>
+                <span class="btn-icon loading">⟳</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- States Example -->
+    <div class="row">
+        <div class="col-12 col-md-6 mb-32">
+            <label class="mb-8 d-block">disabled</label>
+            <div class="search-input rectangular medium disabled">
+                <input type="text" class="input" placeholder="Placeholder" disabled />
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
+  <!-- Variations -->
+  <h2>Variations</h2>
+  <div class="inputs-row">
+    <div class="input-group">
+      <label for="icon-none">icon-none</label>
+      <input id="icon-none" type="text" placeholder="Placeholder" class="input" />
+    </div>
+
+    <div class="input-group icon-leading">
+      <label for="icon-leading">icon-leading</label>
+      <span class="icon">🔍</span>
+      <input id="icon-leading" type="text" placeholder="Placeholder" class="input" />
+    </div>
+
+    <div class="input-group icon-trailing">
+      <label for="icon-trailing">icon-trailing</label>
+      <input id="icon-trailing" type="text" placeholder="Placeholder" class="input" />
+      <span class="icon">▼</span>
+    </div>
+
+    <div class="input-group icon-both">
+      <label for="icon-both">icon-both</label>
+      <span class="icon">🔍</span>
+      <input id="icon-both" type="text" placeholder="Placeholder" class="input" />
+      <span class="icon">▼</span>
+    </div>
+  </div>

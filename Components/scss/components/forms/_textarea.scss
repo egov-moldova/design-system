@@ -1,0 +1,8 @@
+@use './input' as *;
+.textarea {
+ @include input-style;
+  height: auto;
+  min-height: var(--spacing-80, 80px);
+  padding: var(--spacing-12, 12px);
+  resize: vertical;
+}

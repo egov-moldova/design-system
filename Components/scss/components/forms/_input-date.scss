@@ -1,0 +1,96 @@
+@use '../../abstracts/tokens' as tokens;
+@use './input' as *;
+
+/* ================================
+   DATE INPUT
+   ================================ */
+.input-date {
+  @include input-style;
+  appearance: none;
+  position: relative;
+  padding-right: var(--spacing-40, 40px);
+
+  // focus (preia tokenul din variantă)
+  &:focus:not(:disabled) {
+    border-color: map-get(map-get(tokens.$input-colors, default), focus);
+    box-shadow: 0 0 0 2px map-get(map-get(tokens.$input-colors, default), focus);
+  }
+
+  &.input--warning:focus:not(:disabled) {
+    border-color: map-get(map-get(tokens.$input-colors, warning), focus);
+    box-shadow: 0 0 0 2px map-get(map-get(tokens.$input-colors, warning), focus);
+  }
+
+  &.input--destructive:focus:not(:disabled) {
+    border-color: map-get(map-get(tokens.$input-colors, destructive), focus);
+    box-shadow: 0 0 0 2px map-get(map-get(tokens.$input-colors, destructive), focus);
+  }
+
+  &.input--success:focus:not(:disabled) {
+    border-color: map-get(map-get(tokens.$input-colors, success), focus);
+    box-shadow: 0 0 0 2px map-get(map-get(tokens.$input-colors, success), focus);
+  }
+
+  &:disabled {
+    background-color: map-get(map-get(tokens.$input-colors, default), disabled-bg);
+    border-color: map-get(map-get(tokens.$input-colors, default), disabled-border);
+    color: map-get(map-get(tokens.$input-colors, default), disabled-text);
+    cursor: not-allowed;
+  }
+
+  &[readonly] {
+    background-color: var(--gray-50, #fafafa);
+    border-color: var(--gray-200);
+    color: var(--gray-700);
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+/* ================================
+   WRAPPER + ICON
+   ================================ */
+.input-date-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  .input-date {
+    width: 100%;
+  }
+}
+
+.input-date-icon {
+  position: absolute;
+  right: var(--spacing-12, 12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--spacing-20, 20px);
+  height: var(--spacing-20, 20px);
+  color: var(--gray-500);
+  pointer-events: none;
+
+  svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+  }
+}
+
+/* ================================
+   NATIVE PICKER CUSTOMIZATION
+   ================================ */
+.input-date::-webkit-calendar-picker-indicator {
+  opacity: 0;
+  position: absolute;
+  right: var(--spacing-12, 12px);
+  width: var(--spacing-20, 20px);
+  height: var(--spacing-20, 20px);
+  cursor: pointer;
+}
+
+.input-date::-moz-focus-inner {
+  border: 0;
+}

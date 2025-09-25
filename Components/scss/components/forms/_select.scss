@@ -1,0 +1,10 @@
+@use './input' as *;
+.select {
+  @include input-style; // nu mai folosim extend
+  appearance: none;
+  background-image: url("data:image/svg+xml,...");
+  background-repeat: no-repeat;
+  background-position: right var(--spacing-12, 12px) center;
+  background-size: 1rem;
+  padding-right: var(--spacing-32, 32px);
+}
