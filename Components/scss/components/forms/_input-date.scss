@@ -9,7 +9,7 @@
   appearance: none;
   position: relative;
   padding-right: var(--spacing-40, 40px);
-
+  
   // focus (preia tokenul din variantă)
   &:focus:not(:disabled) {
     border-color: map-get(map-get(tokens.$input-colors, default), focus);
@@ -52,12 +52,25 @@
    ================================ */
 .input-date-wrapper {
   position: relative;
-  display: flex;
-  align-items: center;
+  //display: flex;
+ // align-items: center;
   width: 100%;
 
-  .input-date {
+  .input-date, input { 
     width: 100%;
+  }
+
+  input::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    position: absolute;
+    right: var(--spacing-12, 12px);
+    width: var(--spacing-20, 20px);
+    height: var(--spacing-20, 20px);
+    cursor: pointer;
+  }
+
+  input::-moz-focus-inner {
+    border: 0;
   }
 }
 

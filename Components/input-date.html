@@ -26,168 +26,65 @@
       </div>
       <div class="col-3">
         <div class="mb-16">default</div>
-        <div class="input-date-wrapper">
+        <div class="input-group input-date-wrapper">
           <label for="date">Label</label>
-          <input type="date" id="date" class="input-date input--default" placeholder="DD/MM/YYYY" />
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--default" placeholder="DD/MM/YYYY" />
           <span class="input-date-icon">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
           </span> 
+          </div> 
         </div>
 
       </div>
       <div class="col-3">
+        <div class="input-group input-date-wrapper">
           <div class="mb-16">warning</div>
-          <div class="input-group">
-          <label for="input-warning">Label</label>
-          <input id="input-warning" type="text" placeholder="Placeholder" class="input--warning" />
-        </div> 
-      </div>
-      <div class="col-3">
-          <div class="mb-16">destructive</div>
-          <div class="input-group">
-          <label for="input-destructive">Label</label>
-          <input id="input-destructive" type="text" placeholder="Placeholder" class=" input--destructive" />
-        </div>
-      </div>
-      <div class="col-3">
-          <div class="mb-16">success</div>
-          <div class="input-group">
-          <label for="input-destructive">Label</label>
-          <input id="input--success" type="text" placeholder="Placeholder" class=" input--success" />
-        </div>
-      </div>
-    </div>
-<section class="preview">
-  <!-- Default -->
-  <div class="input-date-wrapper">
-    <label for="date-default">default: default</label>
-    <input type="date" id="date-default" class="input-date input" />
-    <span class="input-date-icon">
-      <svg><!-- calendar icon --></svg>
-    </span>
-  </div>
-
-  <!-- Hover -->
-  <div class="input-date-wrapper">
-    <label for="date-hover">default: hover</label>
-    <input type="date" id="date-hover" class="input-date input" />
-    <span class="input-date-icon">
-      <svg><!-- calendar icon --></svg>
-    </span>
-  </div>
-
-  <!-- Focus + Populated -->
-  <div class="input-date-wrapper">
-    <label for="date-focus">default: focus-populated</label>
-    <input type="date" id="date-focus" class="input-date input" value="2025-04-15" />
-    <span class="input-date-icon">
-      <svg><!-- calendar icon --></svg>
-    </span>
-  </div>
-
-  <!-- Filled -->
-  <div class="input-date-wrapper">
-    <label for="date-filled">default: filled</label>
-    <input type="date" id="date-filled" class="input-date input" value="2025-04-15" />
-    <span class="input-date-icon">
-      <svg><!-- calendar icon --></svg>
-    </span>
-  </div>
-
-  <!-- Disabled -->
-  <div class="input-date-wrapper">
-    <label for="date-disabled">default: disabled</label>
-    <input type="date" id="date-disabled" class="input-date input" disabled />
-    <span class="input-date-icon">
-      <svg><!-- calendar icon --></svg>
-    </span>
-  </div>
-
-  <!-- Mandatory -->
-  <div class="input-date-wrapper">
-    <label for="date-mandatory">default: mandatory <span style="color:red">*</span></label>
-    <input type="date" id="date-mandatory" class="input-date input" required />
-    <span class="input-date-icon">
-      <svg><!-- calendar icon --></svg>
-    </span>
-  </div>
-
-  <!-- Readonly -->
-  <div class="input-date-wrapper">
-    <label for="date-readonly">default: read-only</label>
-    <input type="date" id="date-readonly" class="input-date input" value="2025-04-15" readonly />
-    <span class="input-date-icon">
-      <svg><!-- calendar icon --></svg>
-    </span>
-  </div>
-
-  <!-- Varianta destructive -->
-  <div class="input-date-wrapper">
-    <label for="date-destructive">destructive: default</label>
-    <input type="date" id="date-destructive" class="input-date input input--destructive" />
-    <span class="input-date-icon">
-      <svg><!-- calendar icon --></svg>
-    </span>
-  </div>
-</section>
-
-    <!-- Variations -->
-    <div class="row">
-      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-          <h2>Variations</h2>
-      </div>
-      <div class="col-3">
-        <div class="mb-16">icon-none</div>
-        <div class="input-group">
-          <label for="icon-none">Label</label>
-          <input id="icon-none" type="text" placeholder="Placeholder" class="input" />
-        </div>
-      </div>
-      <div class="col-3">
-        <div class="mb-16">icon-leading</div>
-        <div class="input-group icon-leading">
-            <label for="icon-leading">Label</label>
-            <div class="search-input rectangular ">
-              <span class="p-2 radius-8 d-inline-flex icon-search icon-search">
-                  <svg class="icon medium" aria-hidden="true"> 
-                      <use href="assets/icons/sprite.svg#icon-search"></use> 
-                  </svg>
-              </span>
-              <input id="icon-leading" type="text" placeholder="Placeholder" class="input" />
-              <span class="icon-loading">⟳</span>
-              <button type="button " class="btn-icon clear">
-                  <svg class="icon small" aria-hidden="true"> 
-                      <use href="assets/icons/sprite.svg#icon-cross-small"></use> 
-                  </svg>
-              </button>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input--warning" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
           </div> 
         </div> 
-          
+      </div>
+
+      <div class="col-3">
+        <div class="input-group input-date-wrapper">
+          <div class="mb-16">destructive</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input--destructive" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
+        </div> 
       </div>
       <div class="col-3">
-        <div class="mb-16">icon-trailing</div>
-        <div class="input-group icon-trailing">
-          <label for="icon-trailing">Label</label>
-          <input id="icon-trailing" type="text" placeholder="Placeholder" class="input" />
-          <span class="icon">▼</span>
-        </div>
-      </div>
-      <div class="col-3">
-        <div class="mb-16">icon-both</div>
-        <div class="input-group icon-both">
-          <label for="icon-both">Label</label>
-          <span class="p-2 radius-8 d-inline-flex icon-search">
-              <svg class="icon small" aria-hidden="true">
-                  <use href="assets/icons/sprite.svg#icon-search"></use>
-              </svg>
-          </span>
-          <input id="icon-both" type="text" placeholder="Placeholder" class="input" />
-          <span class="icon">▼</span>
-        </div>
+        <div class="input-group input-date-wrapper">
+          <div class="mb-16">success</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input--success" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
+        </div> 
       </div>
     </div>
+
+    <!-- States -->
     <div class="row">
       <div class="col-12">
          <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
@@ -196,102 +93,331 @@
       </div>
     </div>
     <div class="row">
-      <!-- default states -->
+      <!-- Default -->
       <div class="col-3">
-        <div class="input-group mb-24">
-          <label for="default-default">default: default</label>
-          <input id="default-default" type="text" placeholder="Placeholder" class="input" />
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">default: default</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--default" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
         </div>
-        <div class="input-group mb-24">
-          <label for="default-hover">default: hover</label>
-          <input id="default-hover" type="text" placeholder="Placeholder" class="input" />
+
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">default: hover</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--default" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
         </div>
-        <div class="input-group mb-24">
-          <label for="default-focus-empty">default: focus-empty</label>
-          <input id="default-focus-empty" type="text" placeholder="Placeholder" class="input" />
+
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">default: focus-populated</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--default" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
         </div>
-        <div class="input-group mb-24">
-          <label for="default-focus-populated">default: focus-populated</label>
-          <input id="default-focus-populated" type="text" placeholder="Placeholder" value="Populated" class="input" />
+
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">default: filled</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--default" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
         </div>
-        <div class="input-group mb-24">
-          <label for="default-loading">default: loading</label>
-          <input id="default-loading" type="text" placeholder="Loading..." class="input" disabled />
+
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">default: disabled</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--default" placeholder="DD/MM/YYYY" disabled/>
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
+        </div>
+
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">default: mandatory</div>
+          <label for="date" class="required">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--default" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
         </div>
       </div>
 
-      <!-- warning states -->
+      <!-- Warning -->
       <div class="col-3">
-        <div class="input-group mb-24">
-          <label for="warning-default">warning: default</label>
-          <input id="input-warning" type="text" placeholder="Placeholder" class=" input--warning" />
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">warning: default</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--warning" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
         </div>
-        <div class="input-group mb-24">
-          <label for="warning-hover">warning: hover</label>
-          <input id="warning-hover" type="text" placeholder="Placeholder" class=" input--warning" />
+
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">warning: hover</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--warning" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
         </div>
-        <div class="input-group mb-24">
-          <label for="warning-focus-empty">warning: focus-empty</label>
-          <input id="warning-focus-empty" type="text" placeholder="Placeholder" class=" input--warning" />
+
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">warning: focus-populated</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--warning" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
         </div>
-        <div class="input-group mb-24">
-          <label for="warning-focus-populated">warning: focus-populated</label>
-          <input id="warning-focus-populated" type="text" placeholder="Placeholder" value="Populated" class=" input--warning" />
+
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">warning: filled</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--warning" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
         </div>
-        <div class="input-group mb-24">
-          <label for="warning-loading">warning: loading</label>
-          <input id="warning-loading" type="text" placeholder="Loading..." class=" input--warning" disabled />
+
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">warning: disabled</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--warning" placeholder="DD/MM/YYYY" disabled/>
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
+        </div>
+
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">warning: mandatory</div>
+          <label for="date" class="required">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--warning" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
         </div>
       </div>
 
-       <!-- destructive states -->
-      <div class="col-3"> 
-        <div class="input-group mb-24">
-          <label for="destructive-default">destructive: default</label>
-          <input id="destructive-default" type="text" placeholder="Placeholder" class=" input--destructive" />
+     <!-- Destructive -->
+      <div class="col-3">
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">destructive: default</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--destructive" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
         </div>
-        <div class="input-group mb-24">
-          <label for="destructive-hover">destructive: hover</label>
-          <input id="destructive-hover" type="text" placeholder="Placeholder" class="input--destructive" />
+
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">destructive: hover</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--destructive" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
         </div>
-        <div class="input-group mb-24">
-          <label for="destructive-focus-empty">destructive: focus-empty</label>
-          <input id="destructive-focus-empty" type="text" placeholder="Placeholder" class="input--destructive" />
+
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">destructive: focus-populated</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--destructive" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
         </div>
-        <div class="input-group mb-24">
-          <label for="destructive-focus-populated">destructive: focus-populated</label>
-          <input id="destructive-focus-populated" type="text" placeholder="Placeholder" value="Populated" class="input--destructive" />
+
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">destructive: filled</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--destructive" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
         </div>
-        <div class="input-group mb-24">
-          <label for="destructive-loading">destructive: loading</label>
-          <input id="destructive-loading" type="text" placeholder="Loading..." class="input--destructive" disabled />
+
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">destructive: disabled</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--destructive" placeholder="DD/MM/YYYY" disabled/>
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
+        </div>
+
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">destructive: mandatory</div>
+          <label for="date" class="required">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--destructive" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
         </div>
       </div>
 
-      <!-- success states -->
+      <!-- Success -->
       <div class="col-3">
-          <div class="input-group mb-24">
-            <label for="success-default">success: default</label>
-            <input id="success-default" type="text" placeholder="Placeholder" class="input--success" />
-          </div>
-          <div class="input-group mb-24">
-            <label for="success-hover">success: hover</label>
-            <input id="success-hover" type="text" placeholder="Placeholder" class="input--success" />
-          </div>
-          <div class="input-group mb-24">
-            <label for="success-focus-empty">success: focus-empty</label>
-            <input id="success-focus-empty" type="text" placeholder="Placeholder" class="input--success" />
-          </div>
-          <div class="input-group mb-24">
-            <label for="success-focus-populated">success: focus-populated</label>
-            <input id="success-focus-populated" type="text" placeholder="Placeholder" value="Populated" class="input--success" />
-          </div>
-          <div class="input-group mb-24">
-            <label for="success-loading">success: loading</label>
-            <input id="success-loading" type="text" placeholder="Loading..." class="input--success" disabled />
-          </div>
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">success: default</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--success" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
+        </div>
+
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">success: hover</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--success" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
+        </div>
+
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">success: focus-populated</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--success" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
+        </div>
+
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">success: filled</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--success" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
+        </div>
+
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">success: disabled</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--success" placeholder="DD/MM/YYYY" disabled/>
+            <span class="input-date-icon">
+              <svg class="icon medium" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+              </svg>
+            </span> 
+          </div> 
+        </div>
+
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">success: mandatory</div>
+          <label for="date" class="required">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input-date input--success" placeholder="DD/MM/YYYY" />
+            <span class="input-date-icon">
+              <svg class="icon medium" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+              </svg>
+            </span> 
+          </div> 
         </div>
       </div>
+    </div>
+
     </div>
 
 </div>
