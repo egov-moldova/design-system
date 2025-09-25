@@ -168,8 +168,9 @@
         </div>
 
         <div class="input-group mb-24">
-          <label for="default-loading">default: loading</label>
-          <input id="default-loading" type="text" placeholder="Loading..." class="input" disabled />
+          <p>default: disabled</p>
+          <label for="default-disabled">Label</label>
+          <input id="default-disabled" type="text" placeholder="Placeholder" class="input" disabled />
         </div>
 
         <div class="input-group mb-24">
@@ -177,6 +178,18 @@
           <input id="default" type="text" placeholder="Placeholder" class="input" />
         </div>
 
+        <div class="input-group mb-24">
+          <p>default: read-only</p>
+          <label for="default">Label</label>
+          <div class="input-wrapper">
+            <input id="readonly-default" type="text" placeholder="Placeholder" class="input" readonly/>
+            <span class="input-icon right checkmark">
+              <svg class="icon large" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-checkmark-small"></use> 
+              </svg>
+            </span>
+          </div> 
+        </div>
       </div>
 
       <!-- warning states -->
@@ -215,15 +228,23 @@
         </div>
 
         <div class="input-group mb-24">
-          <label for="warning-loading">warning: loading</label>
-          <input id="warning-loading" type="text" placeholder="Loading..." class="input--warning" disabled />
+          <p>warning: disabled</p>
+          <label for="warning-disabled">Label</label>
+          <input id="warning-disabled" type="text" placeholder="Placeholder" class="input--warning" disabled />
         </div>
 
         <div class="input-group mb-24">
           <label for="warning" class="required">warning: field</label>
-          <input id="warning-loading" type="text" placeholder="Placeholder" class="input--warning" />
+          <input id="warning" type="text" placeholder="Placeholder" class="input--warning" />
         </div>
 
+        <div class="input-group mb-24">
+          <p>warning: read-only</p>
+          <label for="default">Label</label>
+          <div class="input-wrapper">
+            <input id="readonly-default" type="text" placeholder="Placeholder" class="input--warning" readonly/>
+          </div> 
+        </div>
       </div>
 
        <!-- destructive states -->
@@ -262,13 +283,22 @@
         </div>
 
         <div class="input-group mb-24">
-          <label for="destructive-loading">destructive: loading</label>
-          <input id="destructive-loading" type="text" placeholder="Loading..." class="input--destructive" disabled />
+          <p>destructive: disabled</p>
+          <label for="destructive-disabled">Label</label>
+          <input id="destructive-disabled" type="text" placeholder="Placeholder" class="input--destructive" disabled />
         </div>
 
         <div class="input-group mb-24">
           <label for="destructive" class="required">destructive: field</label>
           <input id="destructive-loading" type="text" placeholder="Placeholder" class="input--destructive" />
+        </div>
+
+         <div class="input-group mb-24">
+          <p>destructive: read-only</p>
+          <label for="default">Label</label>
+          <div class="input-wrapper">
+            <input id="readonly-destructive" type="text" placeholder="Placeholder" class="input--destructive" readonly/>
+          </div> 
         </div>
       </div>
 
@@ -308,18 +338,100 @@
           </div>
 
           <div class="input-group mb-24">
-            <label for="success-loading">success: loading</label>
-            <input id="success-loading" type="text" placeholder="Loading..." class="input--success" disabled />
+            <p>success: disabled</p>
+            <label for="success-disabled">Label</label>
+            <input id="success-disabled" type="text" placeholder="Placeholder" class="input--success" disabled />
           </div>
 
           <div class="input-group mb-24">
             <label for="success" class="required">success: field</label>
             <input id="success-loading" type="text" placeholder="Placeholder" class="input--success" />
           </div>
+
+           <div class="input-group mb-24">
+            <p>success: read-only</p>
+            <label for="default">Label</label>
+            <div class="input-wrapper">
+              <input id="readonly-default" type="text" placeholder="Placeholder" class="input--success" readonly/>
+            </div> 
+          </div>
+        </div>
+    </div> 
+
+    <!-- Assistive Text -->
+    <div class="row">
+      <div class="col-12">
+         <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+              <h2>Assistive Text</h2>
+          </div>
+      </div>
+      <div class="col-7 my-32">
+        <div>
+          Assistive text conveys additional guidance about the input field, such as how it will be used. It should only take up one or two lines, being persistently visible or visible only on focus.
         </div>
       </div>
     </div>
 
+    <div class="row">
+      <div class="col-3">
+        <div class="input-group mb-24">
+          <p>default</p>
+          <label for="default-default">Label</label>
+          <input id="default-default" type="text" placeholder="Placeholder" class="input">
+          <div class="input-message default">
+            Helper message displayed here
+          </div>
+        </div>
+      </div>
+
+      <div class="col-3">
+        <div class="input-group mb-24">
+          <p>warning</p>
+          <label for="default-default">Label</label>
+          <input id="default-default" type="text" placeholder="Placeholder" class="input--warning">
+           <div class="input-message warning">
+            <span class="">
+              <svg class="icon medium" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-warning-filled"></use> 
+              </svg>
+            </span>
+                Helper message displayed here
+          </div>
+        </div>
+      </div>
+
+      <div class="col-3">
+        <div class="input-group mb-24">
+          <p>destructive</p>
+          <label for="default-default">Label</label>
+          <input id="default-default" type="text" placeholder="Placeholder" class="input--destructive">
+           <div class="input-message destructive">
+            <span class="">
+              <svg class="icon medium" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-circle-error-filled"></use> 
+              </svg>
+            </span>
+            Helper message displayed here
+          </div>
+        </div>
+      </div>
+
+      <div class="col-3">
+        <div class="input-group mb-24">
+          <p>success</p>
+          <label for="default-default">Label</label>
+          <input id="default-default" type="text" placeholder="Placeholder" class="input--success">
+           <div class="input-message success mt-6">
+            <span class="">
+              <svg class="icon medium" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-circle-checkmark-filled"></use> 
+              </svg>
+            </span>
+            Helper message displayed here
+          </div>
+        </div>
+      </div>
+    </div>
 </div>
 
 </body>

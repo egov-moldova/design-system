@@ -219,8 +219,11 @@ $input-colors: (
     text: var(--gray-900),
     background: var(--white),
     disabled-bg: var(--gray-100),
-    disabled-border: var(--gray-200),
-    disabled-text: var(--gray-500)
+    disabled-border: var(--gray-250),
+    disabled-text: var(--gray-500),
+    readonly-bg: var(--gray-100),
+    readonly-border: var(--gray-200),
+    readonly-text: var(--gray-700)
   ),
   warning: (
     border: var(--apricot-500),
@@ -230,8 +233,11 @@ $input-colors: (
     text: var(--gray-900),
     background: var(--white),
     disabled-bg: var(--gray-100),
-    disabled-border: var(--gray-200),
-    disabled-text: var(--gray-500)
+    disabled-border: var(--gray-250),
+    disabled-text: var(--gray-500),
+    readonly-bg: var(--apricot-100),
+    readonly-border: var(--apricot-300),
+    readonly-text: var(--apricot-700)
   ),
   destructive: (
     border: var(--red-500),
@@ -241,8 +247,11 @@ $input-colors: (
     text: var(--gray-900),
     background: var(--white),
     disabled-bg: var(--gray-100),
-    disabled-border: var(--gray-200),
-    disabled-text: var(--gray-500)
+    disabled-border: var(--gray-250),
+    disabled-text: var(--gray-500),
+    readonly-bg: var(--red-100),
+    readonly-border: var(--red-300),
+    readonly-text: var(--red-700)
   ),
   success: (
     border: var(--green-600),
@@ -252,7 +261,10 @@ $input-colors: (
     text: var(--gray-900),
     background: var(--white),
     disabled-bg: var(--gray-100),
-    disabled-border: var(--gray-200),
-    disabled-text: var(--gray-500)
+    disabled-border: var(--gray-250),
+    disabled-text: var(--gray-500),
+    readonly-bg: var(--green-100),
+    readonly-border: var(--green-300),
+    readonly-text: var(--green-800)
   )
 );
