@@ -22,6 +22,7 @@
 
   &:hover:not(:disabled) {
     border-color: map-get($colors, border-hover);
+    box-shadow: 0 0 0 0.5px map-get($colors, border-hover);
   }
 
   // 👇 fiecare variantă își ia focus-ul din tokens
@@ -122,6 +123,11 @@ label {
   position: relative;
   display: flex;
   align-items: center;
+
+  &.is-textarea {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
   .input {
     text-overflow: ellipsis;

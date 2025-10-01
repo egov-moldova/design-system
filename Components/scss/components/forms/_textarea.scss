@@ -1,8 +1,64 @@
 @use './input' as *;
+
 .textarea {
- @include input-style;
-  height: auto;
-  min-height: var(--spacing-80, 80px);
-  padding: var(--spacing-12, 12px);
+  @include input-style(default);
+  min-height: var(--spacing-150, 150px); // sau altă valoare potrivită (ex: 96px ~ 6rem)
   resize: vertical;
+  line-height: 1.5;
+  padding: var(--spacing-12, 12px) var(--spacing-16, 16px) !important;
+  font-family: inherit;
+
+  &::placeholder {
+    color: var(--gray-400); // fallback dacă nu e în tokens
+  }
+
+  &:focus:not(:placeholder-shown) {
+    border-color: var(--blue-sky-500);
+  }
+
+  &:focus:placeholder-shown {
+    border-color: var(--blue-sky-300);
+  }
+}
+
+.textarea--warning {
+  @include input-style(warning);
+}
+
+.textarea--destructive {
+  @include input-style(destructive);
+}
+
+.textarea--success {
+  @include input-style(success);
+}
+
+.textarea--filled {
+  background-color: var(--white);
+  border-color: var(--gray-300);
+  color: var(--gray-900);
+
+  &::placeholder {
+    color: transparent;
+  }
+}
+.textarea:disabled {
+  background-color: var(--gray-100);
+  border-color: var(--gray-250);
+  color: var(--gray-500);
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.7;
+}
+.textarea[readonly]:not(:disabled) {
+  background-color: var(--gray-100);
+  border-color: var(--gray-200);
+  color: var(--gray-700);
+  cursor: default;
+  pointer-events: none;
+  opacity: 1;
+
+  &::placeholder {
+    color: var(--gray-700);
+  }
 }

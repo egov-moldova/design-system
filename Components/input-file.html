@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Search Input File Preview</title>
+  <script src="js/search.js"></script>
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-7">
+            <h1>Search Input</h1>
+            <p class="text-gray-400">
+                The Search Input component allows users to enter text queries to quickly find relevant content within an interface. It typically includes a text field and a search icon, and may offer additional features such as auto-suggestions, clear input functionality, or filters.
+                Designed to be lightweight and accessible, this component helps streamline navigation and improve content discoverability.
+            </p>
+        </div>
+    </div>
+    <!-- Styles -->
+    <div class="row">
+      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Styles</h2>
+      </div>
+      <div class="col-3">
+         <div class="file-input file-input--image-preview">
+  <label for="upload" id="uploadLabel">Încarcă fișiere</label>
+
+  <button
+    class="file-input__button"
+    type="button"
+    role="button"
+    aria-label="Selectează fișiere pentru a le încărca"
+    aria-describedby="uploadLabel"
+    onclick="document.getElementById('upload').click();"
+  >
+    Selectează fișiere
+  </button>
+
+  <input
+    type="file"
+    id="upload"
+    multiple
+    aria-labelledby="uploadLabel"
+    onchange="handleFiles(this.files)"
+  />
+
+  <div class="file-input__info" id="fileInputInfo">
+    Poți încărca mai multe fișiere. Formate acceptate: JPG, PNG, PDF.
+  </div>
+
+  <div class="file-input__list" id="fileList" role="list" aria-live="polite">
+    <!-- Fișierele selectate vor apărea aici -->
+    <div class="file-input__item" role="listitem">
+      <div class="file-name">
+        <img
+          src="https://via.placeholder.com/32"
+          class="preview"
+          alt="Preview imagine imagine.jpg"
+        />
+        <span>imagine.jpg</span>
+        <span class="file-size">(120 KB)</span>
+      </div>
+      <button
+        class="file-remove"
+        type="button"
+        aria-label="Șterge imaginea imagine.jpg"
+        onclick="removeFile(this)"
+      >
+        &times;
+      </button>
+    </div>
+
+    <div class="file-input__item" role="listitem">
+      <div class="file-name">
+        <span class="file-icon" aria-hidden="true">📄</span>
+        <span>document.pdf</span>
+        <span class="file-size">(300 KB)</span>
+      </div>
+      <button
+        class="file-remove"
+        type="button"
+        aria-label="Șterge fișierul document.pdf"
+        onclick="removeFile(this)"
+      >
+        &times;
+      </button>
+    </div>
+  </div>
+</div>
+
+      </div>
+      <div class="col-3">
+          <div class="mb-16">warning</div>
+          <div class="input-group">
+          <label for="input-warning">Label</label>
+          <input id="input-warning" type="text" placeholder="Placeholder" class="input--warning" />
+        </div> 
+      </div>
+      <div class="col-3">
+          <div class="mb-16">destructive</div>
+          <div class="input-group">
+          <label for="input-destructive">Label</label>
+          <input id="input-destructive" type="text" placeholder="Placeholder" class=" input--destructive" />
+        </div>
+      </div>
+      <div class="col-3">
+          <div class="mb-16">success</div>
+          <div class="input-group">
+          <label for="input-destructive">Label</label>
+          <input id="input--success" type="text" placeholder="Placeholder" class=" input--success" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Variations -->
+    <div class="row">
+      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Variations</h2>
+      </div>
+      <div class="col-3">
+        <div class="mb-16">icon-none</div>
+        <div class="input-group">
+          <label for="icon-none">Label</label>
+          <input id="icon-none" type="text" placeholder="Placeholder" class="input" />
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="mb-16">icon-leading</div>
+        <div class="input-group icon-leading">
+            <label for="icon-leading">Label</label>
+            <div class="search-input rectangular ">
+              <span class="p-2 radius-8 d-inline-flex icon-search icon-search">
+                  <svg class="icon medium" aria-hidden="true"> 
+                      <use href="assets/icons/sprite.svg#icon-search"></use> 
+                  </svg>
+              </span>
+              <input id="icon-leading" type="text" placeholder="Placeholder" class="input" />
+              <span class="icon-loading">⟳</span>
+              <button type="button " class="btn-icon clear">
+                  <svg class="icon small" aria-hidden="true"> 
+                      <use href="assets/icons/sprite.svg#icon-cross-small"></use> 
+                  </svg>
+              </button>
+          </div> 
+        </div> 
+          
+      </div>
+      <div class="col-3">
+        <div class="mb-16">icon-trailing</div>
+        <div class="input-group icon-trailing">
+          <label for="icon-trailing">Label</label>
+          <div class="input-wrapper">
+            <input id="icon-trailing" type="text" placeholder="Placeholder" class="input" />
+            <span class="input-icon right chevron-bottom">
+                <svg class="icon large" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
+                </svg>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="mb-16">icon-both</div>
+        <div class="input-group icon-both">
+          <label for="icon-both">Label</label>
+          <div class="input-wrapper">
+            <span class="input-icon left icon-search">
+                <svg class="icon small" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-search"></use>
+                </svg>
+            </span>
+            <input id="icon-both" type="text" placeholder="Placeholder" class="input" />
+            <span class="input-icon right chevron-bottom">
+                <svg class="icon large" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
+                </svg>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- States -->
+    <div class="row">
+      <div class="col-12">
+         <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+              <h2>States</h2>
+          </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <!-- default states -->
+      <div class="col-3">
+        <div class="input-group mb-24">
+          <label for="default-default">default: default</label>
+          <input id="default-default" type="text" placeholder="Placeholder" class="input" />
+        </div>
+
+        <div class="input-group mb-24">
+          <label for="default-hover">default: hover</label>
+          <input id="default-hover" type="text" placeholder="Placeholder" class="input" />
+        </div>
+
+        <div class="input-group mb-24">
+          <label for="default-focus-empty">default: focus-empty</label>
+          <input id="default-focus-empty" type="text" placeholder="Placeholder" class="input" />
+        </div>
+
+        <div class="input-group mb-24">
+          <label for="default-focus-populated">default: focus-populated</label>
+          <input id="default-focus-populated" type="text" placeholder="Placeholder" value="Populated" class="input" />
+        </div>
+
+        <div class="input-group mb-24">
+          <label for="default-loading">destructive: loading</label>
+          <div class="input-wrapper is-loading">
+            <input id="default-loading" type="text" placeholder="Loading..." class="input">
+            <span class="input-icon--loading">⟳</span>
+          </div>
+        </div>
+
+        <div class="input-group mb-24">
+          <label for="default-focus-populated">default: field</label>
+          <input id="default-focus-populated" type="text" placeholder="Placeholder" class="input" />
+        </div>
+
+        <div class="input-group mb-24">
+          <p>default: disabled</p>
+          <label for="default-disabled">Label</label>
+          <input id="default-disabled" type="text" placeholder="Placeholder" class="input" disabled />
+        </div>
+
+        <div class="input-group mb-24">
+          <label for="default" class="required">default: field</label>
+          <input id="default" type="text" placeholder="Placeholder" class="input" />
+        </div>
+
+        <div class="input-group mb-24">
+          <p>default: read-only</p>
+          <label for="default">Label</label>
+          <div class="input-wrapper">
+            <input id="readonly-default" type="text" placeholder="Placeholder" class="input" readonly/>
+            <span class="input-icon right checkmark">
+              <svg class="icon large" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-checkmark-small"></use> 
+              </svg>
+            </span>
+          </div> 
+        </div>
+      </div>
+
+      <!-- warning states -->
+      <div class="col-3">
+        <div class="input-group mb-24">
+          <label for="warning-default">warning: default</label>
+          <input id="input-warning" type="text" placeholder="Placeholder" class=" input--warning" />
+        </div>
+
+        <div class="input-group mb-24">
+          <label for="warning-hover">warning: hover</label>
+          <input id="warning-hover" type="text" placeholder="Placeholder" class=" input--warning" />
+        </div>
+
+        <div class="input-group mb-24">
+          <label for="warning-focus-empty">warning: focus-empty</label>
+          <input id="warning-focus-empty" type="text" placeholder="Placeholder" class=" input--warning" />
+        </div>
+
+        <div class="input-group mb-24">
+          <label for="warning-focus-populated">warning: focus-populated</label>
+          <input id="warning-focus-populated" type="text" placeholder="Placeholder" value="Populated" class=" input--warning" />
+        </div>
+
+        <div class="input-group mb-24">
+          <label for="warning-loading">destructive: loading</label>
+          <div class="input-wrapper is-loading">
+            <input id="warning-loading" type="text" placeholder="Loading..." class="input--warning">
+            <span class="input-icon--loading">⟳</span>
+          </div>
+        </div>
+
+        <div class="input-group mb-24">
+          <label for="warning-focus-populated">warning: field</label>
+          <input id="warning-focus-populated" type="text" placeholder="Placeholder" class="input--warning" />
+        </div>
+
+        <div class="input-group mb-24">
+          <p>warning: disabled</p>
+          <label for="warning-disabled">Label</label>
+          <input id="warning-disabled" type="text" placeholder="Placeholder" class="input--warning" disabled />
+        </div>
+
+        <div class="input-group mb-24">
+          <label for="warning" class="required">warning: field</label>
+          <input id="warning" type="text" placeholder="Placeholder" class="input--warning" />
+        </div>
+
+        <div class="input-group mb-24">
+          <p>warning: read-only</p>
+          <label for="default">Label</label>
+          <div class="input-wrapper">
+            <input id="readonly-default" type="text" placeholder="Placeholder" class="input--warning" readonly/>
+          </div> 
+        </div>
+      </div>
+
+       <!-- destructive states -->
+      <div class="col-3"> 
+        <div class="input-group mb-24">
+          <label for="destructive-default">destructive: default</label>
+          <input id="destructive-default" type="text" placeholder="Placeholder" class=" input--destructive" />
+        </div>
+
+        <div class="input-group mb-24">
+          <label for="destructive-hover">destructive: hover</label>
+          <input id="destructive-hover" type="text" placeholder="Placeholder" class="input--destructive" />
+        </div>
+
+        <div class="input-group mb-24">
+          <label for="destructive-focus-empty">destructive: focus-empty</label>
+          <input id="destructive-focus-empty" type="text" placeholder="Placeholder" class="input--destructive" />
+        </div>
+
+        <div class="input-group mb-24">
+          <label for="destructive-focus-populated">destructive: focus-populated</label>
+          <input id="destructive-focus-populated" type="text" placeholder="Placeholder" value="Populated" class="input--destructive" />
+        </div>
+
+        <div class="input-group mb-24">
+          <label for="destructive-loading">destructive: loading</label>
+          <div class="input-wrapper is-loading">
+            <input id="destructive" type="text" placeholder="Loading..." class="input--destructive">
+            <span class="input-icon--loading">⟳</span>
+          </div>
+        </div>
+
+        <div class="input-group mb-24">
+          <label for="destructive-focus-populated">destructive: field</label>
+          <input id="destructive-focus-populated" type="text" placeholder="Placeholder" class="input--destructive" />
+        </div>
+
+        <div class="input-group mb-24">
+          <p>destructive: disabled</p>
+          <label for="destructive-disabled">Label</label>
+          <input id="destructive-disabled" type="text" placeholder="Placeholder" class="input--destructive" disabled />
+        </div>
+
+        <div class="input-group mb-24">
+          <label for="destructive" class="required">destructive: field</label>
+          <input id="destructive-loading" type="text" placeholder="Placeholder" class="input--destructive" />
+        </div>
+
+         <div class="input-group mb-24">
+          <p>destructive: read-only</p>
+          <label for="default">Label</label>
+          <div class="input-wrapper">
+            <input id="readonly-destructive" type="text" placeholder="Placeholder" class="input--destructive" readonly/>
+          </div> 
+        </div>
+      </div>
+
+      <!-- success states -->
+      <div class="col-3">
+          <div class="input-group mb-24">
+            <label for="success-default">success: default</label>
+            <input id="success-default" type="text" placeholder="Placeholder" class="input--success" />
+          </div>
+
+          <div class="input-group mb-24">
+            <label for="success-hover">success: hover</label>
+            <input id="success-hover" type="text" placeholder="Placeholder" class="input--success" />
+          </div>
+
+          <div class="input-group mb-24">
+            <label for="success-focus-empty">success: focus-empty</label>
+            <input id="success-focus-empty" type="text" placeholder="Placeholder" class="input--success" />
+          </div>
+
+          <div class="input-group mb-24">
+            <label for="success-focus-populated">success: focus-populated</label>
+            <input id="success-focus-populated" type="text" placeholder="Placeholder" value="Populated" class="input--success" />
+          </div>
+
+          <div class="input-group mb-24">
+            <label for="success-loading">destructive: loading</label>
+            <div class="input-wrapper is-loading">
+              <input id="success" type="text" placeholder="Loading..." class="input--success">
+              <span class="input-icon--loading">⟳</span>
+            </div>
+          </div>
+ 
+          <div class="input-group mb-24">
+            <label for="success-focus-populated">success: field</label>
+            <input id="success-focus-populated" type="text" placeholder="Placeholder" class="input--success" />
+          </div>
+
+          <div class="input-group mb-24">
+            <p>success: disabled</p>
+            <label for="success-disabled">Label</label>
+            <input id="success-disabled" type="text" placeholder="Placeholder" class="input--success" disabled />
+          </div>
+
+          <div class="input-group mb-24">
+            <label for="success" class="required">success: field</label>
+            <input id="success-loading" type="text" placeholder="Placeholder" class="input--success" />
+          </div>
+
+           <div class="input-group mb-24">
+            <p>success: read-only</p>
+            <label for="default">Label</label>
+            <div class="input-wrapper">
+              <input id="readonly-default" type="text" placeholder="Placeholder" class="input--success" readonly/>
+            </div> 
+          </div>
+        </div>
+    </div> 
+
+    <!-- Assistive Text -->
+    <div class="row">
+      <div class="col-12">
+         <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+              <h2>Assistive Text</h2>
+          </div>
+      </div>
+      <div class="col-7 my-32">
+        <div>
+          Assistive text conveys additional guidance about the input field, such as how it will be used. It should only take up one or two lines, being persistently visible or visible only on focus.
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-3">
+        <div class="input-group mb-24">
+          <p>default</p>
+          <label for="default-default">Label</label>
+          <input id="default-default" type="text" placeholder="Placeholder" class="input">
+          <div class="input-message default">
+            Helper message displayed here
+          </div>
+        </div>
+      </div>
+
+      <div class="col-3">
+        <div class="input-group mb-24">
+          <p>warning</p>
+          <label for="default-default">Label</label>
+          <input id="default-default" type="text" placeholder="Placeholder" class="input--warning">
+           <div class="input-message warning">
+            <span class="">
+              <svg class="icon medium" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-warning-filled"></use> 
+              </svg>
+            </span>
+                Helper message displayed here
+          </div>
+        </div>
+      </div>
+
+      <div class="col-3">
+        <div class="input-group mb-24">
+          <p>destructive</p>
+          <label for="default-default">Label</label>
+          <input id="default-default" type="text" placeholder="Placeholder" class="input--destructive">
+           <div class="input-message destructive">
+            <span class="">
+              <svg class="icon medium" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-circle-error-filled"></use> 
+              </svg>
+            </span>
+            Helper message displayed here
+          </div>
+        </div>
+      </div>
+
+      <div class="col-3">
+        <div class="input-group mb-24">
+          <p>success</p>
+          <label for="default-default">Label</label>
+          <input id="default-default" type="text" placeholder="Placeholder" class="input--success">
+           <div class="input-message success mt-6">
+            <span class="">
+              <svg class="icon medium" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-circle-checkmark-filled"></use> 
+              </svg>
+            </span>
+            Helper message displayed here
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+</body>
+</html>
