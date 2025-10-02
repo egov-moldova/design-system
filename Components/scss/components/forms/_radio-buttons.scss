@@ -1,0 +1,149 @@
+@use '../../abstracts/tokens' as tokens;
+
+// =====================
+// 🔹 Grupare radio
+// =====================
+.radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8, 8px);
+}
+
+// =====================
+// 🔹 Radio de bază
+// =====================
+.radio {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8, 8px);
+  cursor: pointer;
+  width: fit-content;
+
+  &:has(.radio-description) {
+    align-items: flex-start;
+  }
+
+  .radio-input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .radio-custom {
+    display: inline-block;
+    position: relative;
+    border-radius: 50%;
+    border: 2px solid var(--gray-400, #ccc);
+    transition: border-color 0.2s, background-color 0.2s;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      border-radius: 50%;
+      background-color: var(--blue-sky-600, #0058D2);
+      transform: translate(-50%, -50%) scale(0);
+      transition: transform 0.2s ease-in-out;
+    }
+  }
+  .radio-texts {
+    display: flex;
+    flex-direction: column; 
+    gap: 3px;
+  }
+
+  .radio-label {
+    font-size: var(--text-body-sm-font-size, 14px);
+    color: var(--gray-900, #111);
+  }
+
+  .radio-description {
+    font-size: var(--text-body-xs-font-size, 12px);
+    color: var(--gray-400, #757575);
+    line-height: 1.2;
+  }
+
+  // ✅ checked
+  .radio-input:checked + .radio-custom {
+    border-color: var(--blue-sky-600, #0058D2);
+
+    &::after {
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  // ✅ focus
+  .radio-input:focus + .radio-custom {
+    outline: 2px solid var(--blue-sky-500, #4C9AFF);
+    outline-offset: 1px;
+  }
+
+  // ✅ disabled
+  .radio-input:disabled + .radio-custom {
+    border-color: var(--gray-250, #d9d9d9);
+    background-color: var(--gray-200, #f1f1f1);
+    cursor: not-allowed;
+
+    &::after {
+      background-color: var(--gray-250, #d9d9d9);
+    }
+  }
+
+  .radio-input:disabled ~ .radio-label {
+    color: var(--gray-500, #aaa);
+    cursor: not-allowed;
+  }
+}
+
+// =====================
+// 🔹 Dimensiuni
+// =====================
+.radio--medium {
+  .radio-custom {
+    width: 20px;
+    height: 20px;
+
+    &::after {
+      width: 12px;
+      height: 12px;
+    }
+  }
+
+  .radio-label {
+    font-size: var(--text-body-md-font-size, 15px);
+  }
+}
+
+.radio--small {
+  .radio-custom {
+    width: 16px;
+    height: 16px;
+
+    &::after {
+      width: 10px;
+      height: 10px;
+    }
+  }
+
+  .radio-label {
+    font-size: var(--text-body-sm-font-size, 14px);
+  }
+}
+
+// =====================
+// 🔹 Error state
+// =====================
+.radio--error {
+  .radio-custom {
+    border-color: var(--red-600, #D32F2F) !important;
+
+    &::after {
+      background-color: var(--red-600, #D32F2F);
+    }
+  }
+
+  .radio-label {
+    color: var(--red-600, #D32F2F);
+  }
+}
