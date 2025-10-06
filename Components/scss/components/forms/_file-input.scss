@@ -1,124 +1,116 @@
+// components/_file-input.scss
+
 @use '../../abstracts/tokens' as tokens;
-@use './input' as *;
+
+// Mixin general pentru varianta semantică (default, success, etc.)
+@mixin file-input-variant($variant) {
+  --border-color: map-get(map-get(tokens.$input-colors, $variant), border);
+  --border-hover: map-get(map-get(tokens.$input-colors, $variant), border-hover);
+  --focus-color: map-get(map-get(tokens.$input-colors, $variant), focus);
+  --background: map-get(map-get(tokens.$input-colors, $variant), background);
+  --text-color: map-get(map-get(tokens.$input-colors, $variant), text);
+}
+
+// Aplicație mixinuri pe variante
+.file-input.default   { @include file-input-variant(default); }
+.file-input.success   { @include file-input-variant(success); }
+.file-input.error     { @include file-input-variant(destructive); }
+.file-input.warning   { @include file-input-variant(warning); }
+.file-input.danger    { @include file-input-variant(destructive); }
+
+/* ================================
+   FILE INPUT STYLING
+   ================================ */
 
 .file-input {
+  --border-color: map-get(map-get(tokens.$input-colors, default), border);
+  --border-hover: map-get(map-get(tokens.$input-colors, default), border-hover);
+  --focus-color: map-get(map-get(tokens.$input-colors, default), focus);
+  --background: map-get(map-get(tokens.$input-colors, default), background);
+  --text-color: map-get(map-get(tokens.$input-colors, default), text);
+
+  border: 1px dashed var(--border-color);
+  background-color: var(--background);
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  transition: all 0.2s ease-in-out;
+  color: var(--text-color);
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--border-hover);
+  }
+
+  &.focus {
+    border-color: var(--focus-color);
+    outline: none;
+  }
+
+  &.active {
+    background-color: var(--focus-color);
+    border-color: var(--border-hover);
+  }
+}
+
+/* ================================
+   FILE ITEM (uploaded file display)
+   ================================ */
+
+.file-item {
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-8, 8px);
-  font-size: var(--font-size-14, 14px);
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  padding: 8px 12px;
+  border: 1px solid map-get(map-get(tokens.$input-colors, default), border);
+  border-radius: 6px;
+  background-color: map-get(map-get(tokens.$input-colors, default), background);
+  color: map-get(map-get(tokens.$input-colors, default), text);
 
-  label {
-    font-weight: 500;
-    color: var(--gray-900);
-    margin-bottom: var(--spacing-4, 4px);
+  .filename {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 200px;
+    font-size: 14px;
   }
 
-  .file-input__button {
-    @include input-style(default);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    height: var(--spacing-48, 48px);
-    padding: 0 var(--spacing-16, 16px);
-    background-color: var(--blue-sky-600);
-    color: var(--white);
-    border: none;
-
-    &:hover {
-      background-color: var(--blue-sky-700);
-    }
-
-    &:disabled {
-      background-color: var(--gray-300);
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
-  }
-
-  input[type="file"] {
-    display: none;
-  }
-
-  .file-input__info {
-    font-size: var(--font-size-12, 12px);
+  .filesize {
+    font-size: 12px;
     color: var(--gray-500);
   }
 
-  .file-input__list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-8, 8px);
-    margin-top: var(--spacing-8, 8px);
-  }
+  .remove-btn {
+    background: none;
+    border: none;
+    color: var(--gray-500);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 4px;
 
-  .file-input__item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: var(--gray-50);
-    border: 1px solid var(--gray-200);
-    padding: var(--spacing-8, 8px) var(--spacing-12, 12px);
-    border-radius: var(--border-radius-6, 6px);
-
-    .file-name {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-8, 8px);
-      font-weight: 500;
-      color: var(--gray-900);
-
-      .file-icon {
-        font-size: 16px;
-        color: var(--gray-400);
-      }
-
-      .file-size {
-        font-size: var(--font-size-12);
-        color: var(--gray-500);
-      }
-    }
-
-    .file-remove {
-      background: none;
-      border: none;
-      color: var(--gray-500);
-      cursor: pointer;
-      font-size: 16px;
-      padding: var(--spacing-4, 4px);
-      line-height: 1;
-
-      &:hover {
-        color: var(--red-600);
-      }
+    &:hover {
+      color: var(--gray-700);
     }
   }
 
-  // 🔍 Image preview version
-  &--image-preview {
-    .file-input__item {
-      .file-name {
-        .preview {
-          width: 32px;
-          height: 32px;
-          border-radius: 4px;
-          object-fit: cover;
-        }
-      }
-    }
+  &.error {
+    border-color: map-get(map-get(tokens.$input-colors, destructive), border);
+    color: map-get(map-get(tokens.$input-colors, destructive), text);
   }
 
-  // ✅ Variants (success, warning, destructive)
-  &--success .file-input__item {
-    border-color: var(--green-500);
+  &.success {
+    border-color: map-get(map-get(tokens.$input-colors, success), border);
   }
-
-  &--warning .file-input__item {
-    border-color: var(--apricot-500);
-  }
-
-  &--destructive .file-input__item {
-    border-color: var(--red-500);
-  }
-
 }
+
+/* ================================
+   ERROR MESSAGE
+   ================================ */
+
+.file-error-message {
+  font-size: 12px;
+  color: map-get(map-get(tokens.$input-colors, destructive), border);
+  margin-top: 4px;
+}
+  

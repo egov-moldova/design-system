@@ -6,9 +6,10 @@ html {
 body {
     background-color: var(--color-background-base-default);
     color: var(--color-text-base-default);
-    font-size: 1rem; //18px
+    font-size: 1rem; //16px
     font-family: "Onest", sans-serif;
-    font-weight: $font-weight-regular; // implicit Regular
+    line-height: 1.5;
+    font-weight: $font-weight-regular;
   }
   
   .button { 
@@ -39,8 +40,7 @@ body {
       border-radius: 6px;
       display: flex;
       justify-content: center;
-      align-items: center; 
-      //border: 1px solid var(--color-border-base-strong);
+      align-items: center;  
       font-size: 0.75rem;
       text-align: center;
       box-sizing: border-box;

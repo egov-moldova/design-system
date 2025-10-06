@@ -202,6 +202,19 @@ label {
     pointer-events: none;
   }
 
+  &.is-textarea {
+    align-items: stretch;
+    flex-direction: column;
+
+    .input {
+      height: auto;
+      min-height: var(--spacing-80, 80px);
+      padding-top: var(--spacing-8, 8px);
+      padding-bottom: var(--spacing-8, 8px);
+      resize: vertical;
+    }
+  }
+
 }
 .input-message {
   font-size: var(--text-body-sm-font-size, 14px);

@@ -1,16 +1,135 @@
 @use './input' as *;
+@use '../../abstracts/tokens' as tokens;
+
 .input-number {
-  @include input-style;
+  @include input-style(); // variantă default
   text-align: right;
 
-  /* ascunde săgețile default (Chrome/Edge/Safari) */
+  // Elimină săgețile implicite ale browserului
   &::-webkit-inner-spin-button,
   &::-webkit-outer-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
-  /* pentru Firefox */
+
   &[type="number"] {
     -moz-appearance: textfield;
+  }
+}
+
+// 🔹 Variante vizuale
+.input-number--warning {
+  @include input-style(warning);
+}
+
+.input-number--destructive {
+  @include input-style(destructive);
+}
+
+.input-number--success {
+  @include input-style(success);
+}
+
+// 🔹 State: filled
+.input-number--filled {
+  background-color: var(--white);
+  border-color: var(--gray-300);
+  color: var(--gray-900);
+
+  &::placeholder {
+    color: transparent;
+  }
+}
+
+// 🔹 Focus states
+.input-number:focus:not(:placeholder-shown) {
+  border-color: var(--blue-sky-500);
+}
+
+.input-number:focus:placeholder-shown {
+  border-color: var(--blue-sky-300);
+}
+
+// 🔹 Disabled
+.input-number:disabled {
+  background-color: var(--gray-100);
+  border-color: var(--gray-250);
+  color: var(--gray-500);
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+// 🔹 Read-only
+.input-number[readonly]:not(:disabled) {
+  background-color: var(--gray-100);
+  border-color: var(--gray-200);
+  color: var(--gray-700);
+  cursor: default;
+  pointer-events: none;
+  opacity: 1;
+
+  &::placeholder {
+    color: var(--gray-700);
+  }
+}
+
+// 🔹 Loading wrapper
+.input-wrapper-number.is-loading {
+  position: relative;
+
+  .input-number {
+    padding-right: var(--spacing-40);
+  }
+
+  .input-icon--loading {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: var(--spacing-8);
+    transform: translateY(-50%);
+    color: transparent !important;
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--blue-sky-600);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      right: 0;
+    }
+
+    &.visible {
+      display: inline-flex;
+    }
+  }
+}
+
+// 🔹 Icon support
+.input-wrapper-number {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .input-number {
+    width: 100%;
+    text-overflow: ellipsis;
+  }
+
+  &.has-leading .input-number {
+    padding-left: var(--spacing-40, 40px);
+  }
+
+  &.has-trailing .input-number {
+    padding-right: var(--spacing-40, 40px);
+  }
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
   }
 }

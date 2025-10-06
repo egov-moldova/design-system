@@ -107,3 +107,150 @@
 .input-date::-moz-focus-inner {
   border: 0;
 }
+
+
+/* ================================
+   DATE PICKER PANEL
+   ================================ */
+.date-picker {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: var(--spacing-8);
+  padding: var(--spacing-12);
+  min-width: 280px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  background-color: var(--white);
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-8);
+
+    .date-picker__nav {
+      display: flex;
+      gap: var(--spacing-4);
+
+      button {
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-sm);
+        background: transparent;
+        cursor: pointer;
+        transition: background 0.2s;
+
+        &:hover {
+          background: var(--gray-100);
+        }
+
+        svg {
+          width: 16px;
+          height: 16px;
+        }
+      }
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: var(--spacing-4);
+  }
+
+  &__day {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: var(--font-size-14);
+
+    // States
+    &--default {
+      color: var(--gray-800);
+
+      &:hover {
+        background: var(--gray-100);
+      }
+    }
+
+    &--focus {
+      outline: 2px solid var(--blue-sky-300);
+    }
+
+    &--current {
+      border: 1px solid var(--blue-sky-400);
+      border-radius: var(--radius-sm);
+    }
+
+    &--active {
+      background: var(--blue-sky-600);
+      color: var(--white);
+
+      &:hover {
+        background: var(--blue-sky-700);
+      }
+    }
+
+    &--range-start {
+      background: var(--blue-sky-600);
+      color: var(--white);
+      border-radius: var(--radius-l) 0 0 var(--radius-l);
+    }
+
+    &--range-middle {
+      background: var(--blue-sky-100);
+      color: var(--blue-sky-700);
+    }
+
+    &--range-end {
+      background: var(--blue-sky-600);
+      color: var(--white);
+      border-radius: 0 var(--radius-l) var(--radius-l) 0;
+    }
+
+    &--inactive {
+      color: var(--gray-400);
+      cursor: not-allowed;
+    }
+  }
+}
+
+/* ================================
+   RESPONSIVE VARIANTS
+   ================================ */
+@media (max-width: 768px) {
+  .date-picker {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-height: 70%;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    box-shadow: var(--shadow-xl);
+    animation: slideUp 0.3s ease;
+  }
+}
+
+/* ================================
+   ANIMATIONS
+   ================================ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to   { transform: translateY(0); }
+}

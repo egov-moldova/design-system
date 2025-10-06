@@ -1,10 +1,13 @@
+// ------------------------------
+// SEARCH INPUT FUNCTIONALITY
+// ------------------------------
 document.querySelectorAll('.search-input').forEach((searchInput) => {
   const input = searchInput.querySelector('input');
   const clearBtn = searchInput.querySelector('.btn-icon.clear');
   const loadingIcon = searchInput.querySelector('.btn-icon.loading');
   const searchBtn = searchInput.querySelector('.btn-icon.search');
 
-  if (!input) return; // dacă nu e input, nu continuăm
+  if (!input) return;
 
   // Când tastezi ceva
   input.addEventListener('input', () => {
@@ -13,14 +16,14 @@ document.querySelectorAll('.search-input').forEach((searchInput) => {
     }
   });
 
-  // Când apeși ENTER
+  // ENTER declanșează căutarea
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       searchBtn?.click();
     }
   });
 
-  // Clear button
+  // Butonul de clear
   if (clearBtn) {
     clearBtn.addEventListener('click', () => {
       input.value = '';
@@ -29,7 +32,7 @@ document.querySelectorAll('.search-input').forEach((searchInput) => {
     });
   }
 
-  // Search button
+  // Butonul de căutare
   if (searchBtn && loadingIcon) {
     searchBtn.addEventListener('click', () => {
       if (input.value.trim() === '') return;
