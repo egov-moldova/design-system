@@ -1,256 +1,63 @@
-@use '../../abstracts/tokens' as tokens;
-@use './input' as *;
+@use "sass:map";
+@use "../../abstracts/tokens" as tokens;
+@use './input' as *; 
+// ===========================
+// 🔹 Input Date Styles
+// ===========================
 
-/* ================================
-   DATE INPUT
-   ================================ */
 .input-date {
-  @include input-style;
-  appearance: none;
-  position: relative;
-  padding-right: var(--spacing-40, 40px);
-  
-  // focus (preia tokenul din variantă)
-  &:focus:not(:disabled) {
-    border-color: map-get(map-get(tokens.$input-colors, default), focus);
-    box-shadow: 0 0 0 2px map-get(map-get(tokens.$input-colors, default), focus);
-  }
-
-  &.input--warning:focus:not(:disabled) {
-    border-color: map-get(map-get(tokens.$input-colors, warning), focus);
-    box-shadow: 0 0 0 2px map-get(map-get(tokens.$input-colors, warning), focus);
-  }
-
-  &.input--destructive:focus:not(:disabled) {
-    border-color: map-get(map-get(tokens.$input-colors, destructive), focus);
-    box-shadow: 0 0 0 2px map-get(map-get(tokens.$input-colors, destructive), focus);
-  }
-
-  &.input--success:focus:not(:disabled) {
-    border-color: map-get(map-get(tokens.$input-colors, success), focus);
-    box-shadow: 0 0 0 2px map-get(map-get(tokens.$input-colors, success), focus);
-  }
-
-  &:disabled {
-    background-color: map-get(map-get(tokens.$input-colors, default), disabled-bg);
-    border-color: map-get(map-get(tokens.$input-colors, default), disabled-border);
-    color: map-get(map-get(tokens.$input-colors, default), disabled-text);
-    cursor: not-allowed;
-  }
-
-  &[readonly] {
-    background-color: var(--gray-50, #fafafa);
-    border-color: var(--gray-200);
-    color: var(--gray-700);
-    cursor: default;
-    pointer-events: none;
-  }
-}
-
-/* ================================
-   WRAPPER + ICON
-   ================================ */
-.input-date-wrapper {
-  position: relative;
-  //display: flex;
- // align-items: center;
-  width: 100%;
-
-  .input-date, input { 
-    width: 100%;
-  }
-
-  input::-webkit-calendar-picker-indicator {
-    opacity: 0;
-    position: absolute;
-    right: var(--spacing-12, 12px);
-    width: var(--spacing-20, 20px);
-    height: var(--spacing-20, 20px);
-    cursor: pointer;
-  }
-
-  input::-moz-focus-inner {
-    border: 0;
-  }
-}
-
-.input-date-icon {
-  position: absolute;
-  right: var(--spacing-12, 12px);
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: var(--spacing-20, 20px);
-  height: var(--spacing-20, 20px);
-  color: var(--gray-500);
-  pointer-events: none;
+  position: relative;
+  width: 100%;
+  font-family: "Onest", sans-serif;
 
-  svg {
-    width: 18px;
-    height: 18px;
-    fill: currentColor;
-  }
-}
+  input[type="date"] {
+    width: 100%;
+    padding: var(--spacing-12) var(--spacing-16);
+    border: 1.5px solid var(--color-border-base-default);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-16);
+    color: var(--color-text-base-default);
+    background-color: var(--color-background-base-default);
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
-/* ================================
-   NATIVE PICKER CUSTOMIZATION
-   ================================ */
-.input-date::-webkit-calendar-picker-indicator {
-  opacity: 0;
-  position: absolute;
-  right: var(--spacing-12, 12px);
-  width: var(--spacing-20, 20px);
-  height: var(--spacing-20, 20px);
-  cursor: pointer;
-}
-
-.input-date::-moz-focus-inner {
-  border: 0;
-}
-
-
-/* ================================
-   DATE PICKER PANEL
-   ================================ */
-.date-picker {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: var(--spacing-8);
-  padding: var(--spacing-12);
-  min-width: 280px;
-  border: 1px solid var(--gray-200);
-  border-radius: var(--radius-md);
-  background-color: var(--white);
-  box-shadow: var(--shadow-lg);
-  z-index: 1000;
-  animation: fadeIn 0.2s ease;
-
-  &__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: var(--spacing-8);
-
-    .date-picker__nav {
-      display: flex;
-      gap: var(--spacing-4);
-
-      button {
-        width: 28px;
-        height: 28px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: var(--radius-sm);
-        background: transparent;
-        cursor: pointer;
-        transition: background 0.2s;
-
-        &:hover {
-          background: var(--gray-100);
-        }
-
-        svg {
-          width: 16px;
-          height: 16px;
-        }
-      }
-    }
-  }
-
-  &__grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: var(--spacing-4);
-  }
-
-  &__day {
-    width: 32px;
-    height: 32px;
-    border-radius: var(--radius-sm);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: var(--font-size-14);
-
-    // States
-    &--default {
-      color: var(--gray-800);
-
-      &:hover {
-        background: var(--gray-100);
-      }
+    // 🔸 Focus (default)
+    &:focus {
+      border-color: map.get(map.get(tokens.$input-colors, default), focus);
+      box-shadow: 0 0 0 2px map.get(map.get(tokens.$input-colors, default), focus);
     }
 
-    &--focus {
-      outline: 2px solid var(--blue-sky-300);
+    // 🔸 Warning state
+    &.is-warning {
+      border-color: map.get(map.get(tokens.$input-colors, warning), focus);
+      box-shadow: 0 0 0 2px map.get(map.get(tokens.$input-colors, warning), focus);
     }
 
-    &--current {
-      border: 1px solid var(--blue-sky-400);
-      border-radius: var(--radius-sm);
+    // 🔸 Destructive (error)
+    &.is-destructive {
+      border-color: map.get(map.get(tokens.$input-colors, destructive), focus);
+      box-shadow: 0 0 0 2px map.get(map.get(tokens.$input-colors, destructive), focus);
     }
 
-    &--active {
-      background: var(--blue-sky-600);
-      color: var(--white);
-
-      &:hover {
-        background: var(--blue-sky-700);
-      }
-    }
-
-    &--range-start {
-      background: var(--blue-sky-600);
-      color: var(--white);
-      border-radius: var(--radius-l) 0 0 var(--radius-l);
-    }
-
-    &--range-middle {
-      background: var(--blue-sky-100);
-      color: var(--blue-sky-700);
-    }
-
-    &--range-end {
-      background: var(--blue-sky-600);
-      color: var(--white);
-      border-radius: 0 var(--radius-l) var(--radius-l) 0;
-    }
-
-    &--inactive {
-      color: var(--gray-400);
+    // 🔸 Disabled
+    &:disabled {
+      background-color: var(--color-background-base-disabled);
+      border-color: var(--color-border-base-disabled);
+      color: var(--color-text-base-disabled);
       cursor: not-allowed;
     }
   }
-}
 
-/* ================================
-   RESPONSIVE VARIANTS
-   ================================ */
-@media (max-width: 768px) {
-  .date-picker {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    max-height: 70%;
-    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-    box-shadow: var(--shadow-xl);
-    animation: slideUp 0.3s ease;
+  // Icon (calendar)
+  .input-date-icon {
+    position: absolute;
+    right: var(--spacing-12);
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
   }
-}
-
-/* ================================
-   ANIMATIONS
-   ================================ */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-4px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to   { transform: translateY(0); }
 }

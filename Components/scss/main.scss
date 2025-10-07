@@ -1,6 +1,7 @@
 // ===============================
 // 🔢 Sass Core Modules & Variables
 // ===============================
+
 @use 'sass:math';
 @use 'sass:map' as map;
 @use 'abstracts/variables' as vars;
@@ -24,8 +25,6 @@
 @use 'abstracts/mixins/make-container' as make-container;
 //@use 'abstracts/mixins/buttons' as buttons;
 
- 
-
 // ===============================
 // ✨ Base Styles (Resets, Typography)
 // ===============================
@@ -43,20 +42,15 @@
 @use 'base/spacing-preview';
 @use 'base/base';
 @use 'base/drop-shadows';
-
-// ✅ Import corect pentru buttons, care folosește mixin-uri din buttons
 @use 'base/buttons';
-
- 
 @use 'utilities' as *;
-
-//@use 'components/search-input';
-
 @use 'components/forms' as *;
+
 // ===============================
 // 🟦 Grid Setup
 // ===============================
 @use 'base/grid' as grid;
+
 // Container principal
 @include make-container.make-container(vars.$container-max-widths, vars.$breakpoints);
 

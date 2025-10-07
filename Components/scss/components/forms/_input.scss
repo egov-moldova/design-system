@@ -1,14 +1,15 @@
 @use '../../abstracts/tokens' as tokens;
+@use 'sass:map';
 
 /* =======================================
    🔹 Mixin principal pentru input-uri
 ======================================= */
 @mixin input-style($variant: default) {
-  $colors: map-get(tokens.$input-colors, $variant);
+  $colors: map.get(tokens.$input-colors, $variant);
 
-  border: 1.5px solid map-get($colors, border);
-  background-color: map-get($colors, background);
-  color: map-get($colors, text);
+  border: 1.5px solid map.get($colors, border);
+  background-color: map.get($colors, background);
+  color: map.get($colors, text);
   width: 100%;
   height: var(--spacing-48, 48px);
   padding: 0 var(--spacing-12, 12px);
@@ -17,45 +18,41 @@
   box-sizing: border-box;
 
   &::placeholder {
-    color: map-get($colors, placeholder);
+    color: map.get($colors, placeholder);
   }
 
   &:hover:not(:disabled) {
-    border-color: map-get($colors, border-hover);
-    box-shadow: 0 0 0 0.5px map-get($colors, border-hover);
+    border-color: map.get($colors, border-hover);
+    box-shadow: 0 0 0 0.5px map.get($colors, border-hover);
   }
 
-  // 👇 fiecare variantă își ia focus-ul din tokens
   &:focus:not(:disabled) {
-    //border-color: map-get($colors, focus);
     outline: none;
-    box-shadow: 0 0 0 4px map-get($colors, focus);
+    box-shadow: 0 0 0 4px map.get($colors, focus);
   }
 
   &:disabled {
-    background-color: map-get($colors, disabled-bg);
-    border-color: map-get($colors, disabled-border);
-    color: map-get($colors, disabled-text);
+    background-color: map.get($colors, disabled-bg);
+    border-color: map.get($colors, disabled-border);
+    color: map.get($colors, disabled-text);
     cursor: not-allowed;
     pointer-events: none;
     opacity: 0.7;
   }
 
   &[readonly]:not(:disabled) {
-    background-color: map-get($colors, readonly-bg);
-    border-color: map-get($colors, readonly-border);
-    color: map-get($colors, readonly-text);
+    background-color: map.get($colors, readonly-bg);
+    border-color: map.get($colors, readonly-border);
+    color: map.get($colors, readonly-text);
     cursor: default;
     pointer-events: none;
     opacity: 1;
 
     &::placeholder {
-      color: map-get($colors, readonly-text);
+      color: map.get($colors, readonly-text);
     }
   }
-
 }
-
 
 /* =======================================
    🔹 Label pentru input
@@ -79,7 +76,6 @@ label {
   @include input-style(default);
 }
 
-/* Variante vizuale suplimentare */
 .input--warning {
   @include input-style(warning);
 }
@@ -95,19 +91,16 @@ label {
 /* =======================================
    🔹 State-uri adiționale
 ======================================= */
-
-/* Filled (ex: când inputul are valoare) */
 .input--filled {
   background-color: var(--white);
   border-color: var(--gray-300);
   color: var(--gray-900);
 
   &::placeholder {
-    color: transparent; // ascunde placeholderul
+    color: transparent;
   }
 }
 
-/* Focus + populated vs focus + empty */
 .input:focus:not(:placeholder-shown) {
   border-color: var(--blue-sky-500);
 }
@@ -117,7 +110,7 @@ label {
 }
 
 /* =======================================
-   🔹 Iconițe
+   🔹 Iconițe și wrapper
 ======================================= */
 .input-wrapper {
   position: relative;
@@ -143,64 +136,16 @@ label {
     top: 50%;
     transform: translateY(-50%);
 
-    &.left {
-      left: var(--spacing-8);
-    }
-
-    &.right { 
-      right: var(--spacing-8);
-    }
-
-    &:has(.left) { 
-      .input {
-        padding-left: var(--spacing-12);
-      }
-    }
+    &.left { left: var(--spacing-8); }
+    &.right { right: var(--spacing-8); }
 
     &.checkmark {
       color: var(--green-600);
     }
   }
 
-  .input-icon--leading {
-    left: var(--spacing-8, 8px);
-  }
-
-  .input-icon--trailing {
-    right: var(--spacing-8, 8px);
-  }
-
-  /* Spațiu pentru icon */
-  &.has-leading .input {
-    padding-left: var(--spacing-40, 40px);
-  }
-
-  &.has-trailing .input {
-    padding-right: var(--spacing-40, 40px);
-  }
-
-  &:has(.left) {
-    .input {
-      padding-left: var(--spacing-32);
-    }
-  }
-
-  &:has(.right) {
-    .input {
-      padding-right: var(--spacing-32);
-    }
-  }
-
-  &.readonly--icon::after {
-    content: '✔';
-    position: absolute;
-    right: var(--spacing-12);
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 14px;
-    color: var(--green-600);
-    pointer-events: none;
-  }
+  &.has-leading .input { padding-left: var(--spacing-40, 40px); }
+  &.has-trailing .input { padding-right: var(--spacing-40, 40px); }
 
   &.is-textarea {
     align-items: stretch;
@@ -214,8 +159,8 @@ label {
       resize: vertical;
     }
   }
-
 }
+
 .input-message {
   font-size: var(--text-body-sm-font-size, 14px);
   margin-top: var(--spacing-4, 4px);
@@ -223,65 +168,23 @@ label {
   align-items: center;
   gap: var(--spacing-4, 4px);
 
-  &.default {
-    color: var(--color-text-base-secondary);
-  }
-
-  &.warning {
-    color: var(--color-text-warning-default);
-  }
-
-  &.destructive {
-    color: var(--color-text-danger-default);
-  }
-
-  &.success {
-    color: var(--color-text-positive-default);
-  }
+  &.default { color: var(--color-text-base-secondary); }
+  &.warning { color: var(--color-text-warning-default); }
+  &.destructive { color: var(--color-text-danger-default); }
+  &.success { color: var(--color-text-positive-default); }
 
   .icon {
     font-size: 16px;
     line-height: 1;
   }
 }
-
-
 /* =======================================
-   🔹 Loading state
-======================================= */
-.input-wrapper.is-loading {
-  //display: block;
-  .input {
-    padding-right: var(--spacing-40);
-  }
+   🔹 Input cu iconiță de tip "clear"
+======================================== */
+.input--clear {
+  padding-right: var(--spacing-40, 40px);
 
-  .input-icon--loading {
-    display: block;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    right: var(--spacing-8);
-    color: transparent !important;
-
-    &::after {
-        content: '';
-        position: absolute;
-        width: 16px;
-        height: 16px;
-        border: 2px solid var(--blue-sky-600, #0058D2);
-        border-top-color: transparent;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        right: 0;
-    }
-    &.visible {
-      display: inline-flex;
-    }
-  }
-}
-
-@keyframes spin {
-  100% {
-    transform: rotate(360deg);
+  .input-icon--trailing {
+    right: var(--spacing-8, 8px);
   }
 }

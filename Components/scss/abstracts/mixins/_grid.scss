@@ -1,9 +1,17 @@
+// ===============================
+// 🔢 Grid System
+// ===============================
+
 @use 'sass:math';
 @use 'sass:map';
 @use '../mixins/media' as *;
 @use '../mixins/make-col' as *;
 @use '../mixins/make-col-offset' as *;
 
+// Mixin pentru generarea coloanelor responsive
+// $columns: număr de coloane (ex. 12)
+// $gutter: spațiu între coloane
+// $breakpoints: map cu breakpoint-uri (ex. (sm: 576px, md: 768px, lg: 992px))
 @mixin make-grid-columns($columns, $gutter, $breakpoints) {
   %grid-column {
     position: relative;
@@ -13,18 +21,22 @@
     padding-left: math.div($gutter, 2);
   }
 
+  // Loop prin fiecare breakpoint
   @each $breakpoint in map.keys($breakpoints) {
+    // Generare clase col-{breakpoint}-{1..columns}
     @for $i from 1 through $columns {
       .col-#{$breakpoint}-#{$i} {
         @extend %grid-column;
       }
     }
 
+    // Clase generice col-{breakpoint} și col-{breakpoint}-auto
     .col-#{$breakpoint},
     .col-#{$breakpoint}-auto {
       @extend %grid-column;
     }
 
+    // Stiluri responsive pentru fiecare breakpoint
     @include media-breakpoint-up($breakpoint, $breakpoints) {
       .col-#{$breakpoint} {
         flex-basis: 0;
@@ -38,19 +50,16 @@
         max-width: none;
       }
 
+      // Generare col-{breakpoint}-{1..columns} cu mixin make-col
       @for $i from 1 through $columns {
         .col-#{$breakpoint}-#{$i} {
           @include make-col($i, $columns);
         }
       }
 
-      .order-#{$breakpoint}-first {
-        order: -1;
-      }
-
-      .order-#{$breakpoint}-last {
-        order: $columns + 1;
-      }
+      // Order classes
+      .order-#{$breakpoint}-first { order: -1; }
+      .order-#{$breakpoint}-last { order: $columns + 1; }
 
       @for $i from 0 through $columns {
         .order-#{$breakpoint}-#{$i} {
@@ -58,6 +67,7 @@
         }
       }
 
+      // Offset classes
       @for $i from 0 through ($columns - 1) {
         .offset-#{$breakpoint}-#{$i} {
           @include make-col-offset($i, $columns);

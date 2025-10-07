@@ -1,4 +1,6 @@
-// abstracts/_typography.scss
+@use './variables' as vars;
+
+// Lista tuturor stilurilor de text
 $typography-styles: (
   'display-lg',
   'display-md',
@@ -18,6 +20,7 @@ $typography-styles: (
   'caption-sm'
 );
 
+// Mixin pentru generarea claselor de text
 @mixin generate-text-class($style) {
   .text-#{$style} {
     font-family: var(--text-#{$style}-font-family, 'Onest', sans-serif);
@@ -28,6 +31,7 @@ $typography-styles: (
   }
 }
 
+// Generăm fiecare clasă
 @each $style in $typography-styles {
   @include generate-text-class($style);
 }
