@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tabs Preview</title>
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-7">
+         <h1>Tabs</h1>
+        <p class="text-gray-400">
+          The role of a tab component is to provide users with a clear and intuitive way to switch between different views or sections of content within the same context.
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Sizes</h2> 
+        </div>
+      </div>
+    </div>
+    <div class="row"> 
+      <div class="col-md-5">
+          <P>desktop</P>
+          <div class="tabs">
+            <div class="tab-buttons">
+              <button class="tab-button active" aria-selected="true" aria-controls="panel-1" id="tab-1">Tab 1</button>
+              <button class="tab-button" aria-selected="false" aria-controls="panel-2" id="tab-2">Tab 2</button>
+              <button class="tab-button" aria-selected="false" aria-controls="panel-3" id="tab-3">Tab 3</button>
+              <button class="tab-button" aria-hidden="false" aria-controls="panel-4" id="tab-4">Tab 4</button>
+              <button class="tab-button" aria-selected="false" aria-controls="panel-5" id="tab-5">Tab 5</button>
+            </div>
+            
+            <div class="tab-panels">
+              <div class="tab-panel" id="panel-1" role="tabpanel" aria-labelledby="tab-1">Conținut Tab 1</div>
+              <div class="tab-panel" id="panel-2" role="tabpanel" aria-labelledby="tab-2" hidden>Conținut Tab 2</div>
+              <div class="tab-panel" id="panel-3" role="tabpanel" aria-labelledby="tab-3" hidden>Conținut Tab 3</div>
+              <div class="tab-panel" id="panel-4" role="tabpanel" aria-labelledby="tab-4" hidden>Conținut Tab 4</div>
+              <div class="tab-panel" id="panel-5" role="tabpanel" aria-labelledby="tab-5" hidden>Conținut Tab 5</div>
+            </div>
+          </div> 
+      </div>  
+      <div class="col-md-5">
+            <P>mobile</P>
+            <div class="tabs tabs--sm">
+              <div class="tab-buttons">
+                <button class="tab-button active" aria-selected="true" aria-controls="panel-1" id="tab-1">Tab 1</button>
+                <button class="tab-button" aria-selected="false" aria-controls="panel-2" id="tab-2">Tab 2</button>
+                <button class="tab-button" aria-selected="false" aria-controls="panel-3" id="tab-3">Tab 3</button>
+                <button class="tab-button" aria-hidden="false" aria-controls="panel-4" id="tab-4">Tab 4</button>
+                <button class="tab-button" aria-selected="false" aria-controls="panel-5" id="tab-5">Tab 5</button>    
+              </div>
+            </div>
+      </div>
+    </div> 
+
+    <div class="row">
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Variations</h2> 
+        </div>
+      </div>
+    </div>
+    <div class="row">  
+      <div class="col-12 mb-16">
+        <h3>Desktop</h3>
+      </div>
+      <div class="col-md-3">
+          <p>regular: selected</p>
+          <div class="tabs">
+            <div class="tab-buttons">
+              <button class="tab-button active" aria-selected="true" aria-controls="panel-1" id="tab-1">Tab 1</button>
+              <button class="tab-button" aria-selected="false" aria-controls="panel-2" id="tab-2">Tab 2</button> 
+            </div>
+
+            <div class="tab-panels">
+              <div class="tab-panel" id="panel-1" role="tabpanel" aria-labelledby="tab-1">Conținut Tab 1</div>
+              <div class="tab-panel" id="panel-2" role="tabpanel" aria-labelledby="tab-2" hidden>Conținut Tab 2</div> 
+            </div>
+          </div>
+      </div>
+
+      <div class="col-md-3"> 
+          <p>icon: selected</p>
+          <div class="tabs">
+            <div class="tab-buttons">
+              <button class="tab-button active" aria-selected="true" aria-controls="panel-1" id="tab-1">
+                <span class="d-inline-flex">
+                  <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-page-text"></use> 
+                  </svg>
+                </span>
+                Tab 1</button>
+              <button class="tab-button" aria-selected="false" aria-controls="panel-2" id="tab-2">Tab 2</button> 
+            </div>
+
+            <div class="tab-panels">
+              <div class="tab-panel" id="panel-1" role="tabpanel" aria-labelledby="tab-1">Conținut Tab 1</div>
+              <div class="tab-panel" id="panel-2" role="tabpanel" aria-labelledby="tab-2" hidden>Conținut Tab 2</div> 
+            </div>
+          </div>
+      </div>
+
+      <div class="col-md-3">
+        <p>badge: selected</p>
+        <div class="tabs">
+          <div class="tab-buttons">
+            <button class="tab-button active" aria-selected="true" aria-controls="panel-1" id="tab-1">
+              Tab 1  
+              <span class="badge badge--info">3</span>
+            </button>
+            <button class="tab-button" aria-selected="false" aria-controls="panel-2" id="tab-2">Tab 2</button> 
+          </div>
+
+          <div class="tab-panels">
+            <div class="tab-panel" id="panel-1" role="tabpanel" aria-labelledby="tab-1">Conținut Tab 1</div>
+            <div class="tab-panel" id="panel-2" role="tabpanel" aria-labelledby="tab-2" hidden>Conținut Tab 2</div> 
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <p>icon, badge: selected</p>
+        <div class="tabs">
+          <div class="tab-buttons">
+            <button class="tab-button active" aria-selected="true" aria-controls="panel-1" id="tab-1">
+              <span class="d-inline-flex">
+                  <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-page-text"></use> 
+                  </svg>
+                </span>
+              Tab 1  
+              <span class="badge badge--info">3</span>
+            </button>
+            <button class="tab-button" aria-selected="false" aria-controls="panel-2" id="tab-2">Tab 2</button> 
+          </div>
+
+          <div class="tab-panels">
+            <div class="tab-panel" id="panel-1" role="tabpanel" aria-labelledby="tab-1">Conținut Tab 1</div>
+            <div class="tab-panel" id="panel-2" role="tabpanel" aria-labelledby="tab-2" hidden>Conținut Tab 2</div> 
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">  
+      <div class="col-12 mb-16">
+        <h3>Mobile</h3>
+      </div>
+      <div class="col-md-3">
+          <p>regular: selected</p>
+          <div class="tabs tabs--sm">
+            <div class="tab-buttons">
+              <button class="tab-button active" aria-selected="true" aria-controls="panel-1" id="tab-1">Tab 1</button>
+              <button class="tab-button" aria-selected="false" aria-controls="panel-2" id="tab-2">Tab 2</button> 
+            </div>
+
+            <div class="tab-panels">
+              <div class="tab-panel" id="panel-1" role="tabpanel" aria-labelledby="tab-1">Conținut Tab 1</div>
+              <div class="tab-panel" id="panel-2" role="tabpanel" aria-labelledby="tab-2" hidden>Conținut Tab 2</div> 
+            </div>
+          </div>
+      </div>
+
+      <div class="col-md-3"> 
+          <p>icon: selected</p>
+          <div class="tabs tabs--sm">
+            <div class="tab-buttons">
+              <button class="tab-button active" aria-selected="true" aria-controls="panel-1" id="tab-1">
+                <span class="d-inline-flex">
+                  <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-page-text"></use> 
+                  </svg>
+                </span>
+                Tab 1</button>
+              <button class="tab-button" aria-selected="false" aria-controls="panel-2" id="tab-2">Tab 2</button> 
+            </div>
+
+            <div class="tab-panels">
+              <div class="tab-panel" id="panel-1" role="tabpanel" aria-labelledby="tab-1">Conținut Tab 1</div>
+              <div class="tab-panel" id="panel-2" role="tabpanel" aria-labelledby="tab-2" hidden>Conținut Tab 2</div> 
+            </div>
+          </div>
+      </div>
+
+      <div class="col-md-3">
+        <p>badge: selected</p>
+        <div class="tabs tabs--sm">
+          <div class="tab-buttons">
+            <button class="tab-button active" aria-selected="true" aria-controls="panel-1" id="tab-1">
+              Tab 1  
+              <span class="badge badge--info badge--sm">3</span>
+            </button>
+            <button class="tab-button" aria-selected="false" aria-controls="panel-2" id="tab-2">Tab 2</button> 
+          </div>
+
+          <div class="tab-panels">
+            <div class="tab-panel" id="panel-1" role="tabpanel" aria-labelledby="tab-1">Conținut Tab 1</div>
+            <div class="tab-panel" id="panel-2" role="tabpanel" aria-labelledby="tab-2" hidden>Conținut Tab 2</div> 
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <p>icon, badge: selected</p>
+        <div class="tabs tabs--sm">
+          <div class="tab-buttons">
+            <button class="tab-button active" aria-selected="true" aria-controls="panel-1" id="tab-1">
+              <span class="d-inline-flex">
+                  <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-page-text"></use> 
+                  </svg>
+                </span>
+              Tab 1  
+              <span class="badge badge--info badge--sm">3</span>
+            </button>
+            <button class="tab-button" aria-selected="false" aria-controls="panel-2" id="tab-2">Tab 2</button> 
+          </div>
+
+          <div class="tab-panels">
+            <div class="tab-panel" id="panel-1" role="tabpanel" aria-labelledby="tab-1">Conținut Tab 1</div>
+            <div class="tab-panel" id="panel-2" role="tabpanel" aria-labelledby="tab-2" hidden>Conținut Tab 2</div> 
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

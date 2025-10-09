@@ -1,0 +1,87 @@
+@use '../../abstracts/tokens' as tokens;
+@use '../../abstracts/variables' as vars;
+
+.tabs {
+  .tab-buttons {
+    display: flex;
+    gap: var(--spacing-8, 8px);
+    border-bottom: 1px solid var(--color-gray-300, #d1d5db);
+    width: fit-content;
+  }
+  
+  .tab-button {
+    background: transparent;
+    border: none;
+    padding: var(--spacing-12, 12px) var(--spacing-16, 16px);
+    font-size: 1rem;
+    font-weight: vars.$font-weight-regular;
+    line-height: 1.375;
+    cursor: pointer;
+    color: var(--color-gray-700, #374151);
+    border-bottom: var(--border-width-2, 1.5px) var(--border-style-solid, solid) transparent;
+    display: var(--flex, flex);
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: var(--spacing-8, 8px);
+    white-space: nowrap;
+    transition: all 0.2s ease;   
+
+    .badge {
+      background-color: var(--color-gray-100, #f1f1f1);
+      border-radius: var(--radius-full, 9999px);
+      color: var(--color-black, #121212);
+      display: var(--flex, flex);
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-body-sm-font-size, 14px); 
+      height: 24px;
+      width: 24px; 
+
+      &--sm {
+        height: 20px;
+        width: 20px; 
+        font-size: var(--text-caption-sm-font-size, 12px); 
+        line-height: 16px;
+      }
+    }
+
+    &:hover {
+      color: var(--color-gray-900, #111827);
+    }
+
+    &.active {
+      color: var(--color-blue-sky-600, #0058D2);
+      border-color: var(--color-blue-sky-600, #0058D2);
+      font-weight: vars.$font-weight-semibold;
+    }
+
+    &:focus {
+      outline: 3px solid var(--color-blue-sky-600, #0058D2);
+      outline-offset: 2px;
+    }
+
+     @media (max-width: map-get(vars.$breakpoints, sm)) {
+      font-size: 14px;
+    }
+  }
+
+  .tab-panels {
+    margin-top: var(--spacing-16, 16px);
+
+    .tab-panel {
+      display: none;
+
+      &.active {
+        display: block;
+      }
+    }
+  }
+
+  &--sm {
+    .tab-button {
+      padding: var(--spacing-8, 8px) var(--spacing-12, 12px);
+      font-size: 0.875rem;
+      line-height: 1.25;
+    }
+  }
+}

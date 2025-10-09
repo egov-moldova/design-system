@@ -1,0 +1,139 @@
+@use '../../abstracts/tokens' as tokens;
+
+// ======================================
+// 🏷️ Status Tag Component
+// ======================================
+.tag-item { 
+    display: var(--flex, flex);
+    gap: var(--spacing-16, 16px);
+    align-items: center; 
+}
+.status-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-4, 4px);
+  font-size: var(--text-body-sm-500-font-size, 14px); 
+  line-height: 1;
+  border-radius: var(--border-radius-4, 4px);
+  padding: var(--spacing-4, 4px) var(--spacing-8, 8px);
+  text-transform: capitalize;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  user-select: none;
+
+  &:has(svg) {
+    padding: var(--spacing-4, 4px) var(--spacing-8, 8px) var(--spacing-4, 4px) var(--spacing-6, 6px);
+  }
+  svg {
+    width: var(--spacing-12, 12px);
+    height: var(--spacing-12, 12px);
+  }
+
+  &--small {
+    font-size: var(--font-size-10, 10px);
+    padding: var(--spacing-2, 2px) var(--spacing-6, 6px);
+
+    svg {
+      width: var(--spacing-10, 10px);
+      height: var(--spacing-10, 10px);
+    }
+  }
+
+  &--large {
+    font-size: var(--font-size-14, 14px);
+    padding: var(--spacing-6, 6px) var(--spacing-10, 10px);
+
+    svg {
+      width: var(--spacing-14, 14px);
+      height: var(--spacing-14, 14px);
+    }
+  }
+}
+
+// ======================================
+// 🎨 Variants (Color Categories)
+// ======================================
+
+// Utility mixin to simplify repetitive patterns
+@mixin status-variant($name, $bg-subtle, $text-subtle, $bg-strong, $text-strong, $border-color) {
+  .status-tag--#{$name} {
+    // Subtle
+    &.is-subtle {
+      background-color: #{$bg-subtle};
+      color: #{$text-subtle};
+      border: 1px solid transparent;
+    }
+
+    // Strong
+    &.is-strong {
+      background-color: #{$bg-strong};
+      color: #{$text-strong};
+      border: 1px solid transparent;
+    }
+
+    // Outlined
+    &.is-outlined {
+      background-color: transparent;
+      color: #{$border-color};
+      border: 1px solid #{$border-color};
+    }
+  }
+}
+
+// ======================
+// 🧩 Apply Variants
+// ======================
+
+@include status-variant(
+  'muted',
+  var(--white),
+  var(--gray-400),
+  var(--gray-600),
+  var(--white),
+  var(--gray-250)
+);
+
+@include status-variant(
+  'neutral',
+  var(--gray-200),
+  var(--black),
+  var(--black),
+  var(--white),
+  var(--gray-250)
+);
+
+@include status-variant(
+  'accent',
+  var(--apricot-100),
+  var(--apricot-700),
+  var(--apricot-300),
+  var(--black),
+  var(--apricot-600)
+);
+
+@include status-variant(
+  'success',
+  var(--green-100),
+  var(--green-700),
+  var(--green-600),
+  var(--white),
+  var(--green-700)
+);
+
+@include status-variant(
+  'brand',
+  var(--blue-sky-100),
+  var(--blue-sky-600),
+  var(--blue-sky-600),
+  var(--white),
+  var(--blue-sky-600)
+);
+
+@include status-variant(
+  'danger',
+  var(--red-100),
+  var(--red-700),
+  var(--red-600),
+  var(--white),
+  var(--red-600)
+);

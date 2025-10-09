@@ -1,0 +1,94 @@
+@use '../../abstracts/tokens' as tokens;
+
+// ======================================
+// 🔘 Segmented Control Component
+// ======================================
+
+.segmented-control {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--gray-100, #f4f4f4);
+  border-radius: var(--radius-full, 9999px);
+  padding: var(--spacing-6, 6px);
+  gap: var(--spacing-6, 6px);
+}
+
+.segment-item {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 10px var(--spacing-16, 16px);
+  border-radius: var(--border-radius-full, 9999px);
+  font-size: var(--text-body-sm-font-size, 14px);  
+  line-height: 20px;
+  transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease; 
+  color: var(--gray-700, #383838);
+  position: relative;
+  background-color: transparent;
+
+  // Separator vizual între elemente
+  &:not(:last-child)::after {
+    content: '';
+    display: block;
+    width: 1px;
+    height: var(--spacing-16, 16px);
+    background-color: var(--gray-300, #ccc);
+    margin-left: var(--spacing-8, 8px);
+    position: absolute;
+    right: -3px;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: all 0.2s ease;
+    opacity: 1;
+  }
+
+  // Hover
+  &:hover {
+    background-color: var(--gray-250, #d9d9d9);
+  }
+
+  // Focus
+  &:focus-visible {
+    outline: 3px solid var(--blue-sky-500, #337ab7);
+    outline-offset: 2px;
+  }
+
+  // Selected
+  &.is-selected {
+    background-color: var(--gray-900, #1e1e1e);
+    color: var(--white, #fff);
+    //font-weight: var(--font-weight-bold, 700);
+
+    &::after {
+      opacity: 0;
+      height: 0;
+    }
+  }
+  &:has(+ .segment-item.is-selected)::after {
+    opacity: 0;
+    height: 0;
+  }
+  // Disabled
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+}
+
+// Variante cu dimensiuni diferite (opțional)
+.segmented-control--small .segment-item {
+  font-size: var(--font-size-12, 12px);
+  padding: var(--spacing-6, 6px) var(--spacing-12, 12px);
+}
+
+.segmented-control--large .segment-item {
+  font-size: var(--font-size-16, 16px);
+  padding: var(--spacing-10, 10px) var(--spacing-20, 20px);
+}
