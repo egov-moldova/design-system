@@ -10526,6 +10526,142 @@ label.required::after {
   border: 1px solid var(--red-600);
 }
 
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-4, 4px);
+  padding: var(--spacing-8, 8px) var(--spacing-16, 16px);
+  background-color: var(--gray-100);
+  color: var(--gray-900);
+  border: 1px solid transparent;
+  border-radius: var(--border-radius-full, 9999px);
+  font-size: var(--text-body-sm-font-size, 14px);
+  line-height: 1.286;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  user-select: none;
+}
+.chip:has(.chip__icon) {
+  padding: var(--spacing-8, 8px) var(--spacing-16, 16px) var(--spacing-8, 8px) var(--spacing-12, 12px);
+}
+.chip:hover:not(.is-disabled):not(.is-selected) {
+  background-color: var(--gray-250);
+}
+.chip:focus-within {
+  outline: 2px solid var(--blue-sky-500);
+  outline-offset: 2px;
+}
+.chip.is-disabled {
+  opacity: 0.6;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+.chip.is-selected {
+  background-color: var(--black);
+  border-color: var(--black);
+  color: var(--white);
+}
+.chip.is-selected:hover {
+  background-color: var(--black);
+}
+.chip.is-selected:focus-within {
+  outline: 2px solid var(--blue-sky-500);
+  outline-offset: 2px;
+}
+.chip.is-selected .chip__close:hover {
+  background-color: var(--blue-sky-200);
+}
+.chip:has(.chip__avatar) {
+  background-color: var(--color-white, #fff);
+  border-color: var(--gray-300);
+  padding: var(--spacing-8, 8px) var(--spacing-16, 16px) var(--spacing-8, 8px) var(--spacing-8, 8px);
+}
+.chip:has(.chip__avatar).is-selected {
+  background-color: var(--color-gray-100, #f1f1f1);
+  color: var(--color-gray-900, #111827);
+}
+.chip__avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--spacing-20, 20px);
+  height: var(--spacing-20, 20px);
+  border-radius: var(--radius-full, 9999px);
+  overflow: hidden;
+  background-color: var(--gray-300);
+  flex-shrink: 0;
+}
+.chip__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.chip__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  /*
+  svg {
+    width: 14px;
+    height: 14px;
+    stroke-width: 2;
+  }*/
+}
+.chip__label {
+  border: none;
+  background-color: transparent;
+  white-space: nowrap;
+}
+.chip__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  height: var(--spacing-16, 16px);
+  min-width: var(--spacing-16, 16px);
+  border-radius: var(--border-radius-full, 9999px);
+  background-color: var(--color-white, #fff);
+  color: var(--gray-900);
+  margin-left: 4px;
+  line-height: 1;
+}
+.chip.is-selected .chip__badge {
+  background-color: var(--color-white, #fff);
+  color: var(--black);
+}
+.chip:has(.chip__close) {
+  padding-right: var(--spacing-8, 8px);
+}
+.chip__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--spacing-20, 20px);
+  height: var(--spacing-20, 20px);
+  border-radius: var(--radius-full, 9999px);
+  background-color: transparent;
+  border: none;
+  color: var(--gray-600);
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  flex-shrink: 0;
+  /*
+      svg {
+        width: 12px;
+        height: 12px;
+        stroke-width: 2;
+      }*/
+}
+.chip__close:hover {
+  background-color: var(--gray-300);
+}
+.chip__close:focus-visible {
+  outline: 2px solid var(--blue-sky-500);
+  outline-offset: 2px;
+}
+
 .container {
   width: 100%;
   margin-left: auto;

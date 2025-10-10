@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chip Preview</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <script src="js/main.js" defer></script>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Header & Description -->
+    <div class="row">
+      <div class="col-sm-7">
+        <h1>Chip</h1>
+        <p class="text-gray-400">
+          Chips allow users to filter content or make a choice from a set of options within a compact area.
+        </p>
+      </div>
+    </div>
+
+    <!-- Section: Filter Chips -->
+    <div class="row">
+      <div class="col-7"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Filter Chips</h2> 
+          <p class="text-gray-400">
+            Filter chips use tags or descriptive words to filter content. They can be a good alternative to segmented buttons or checkboxes when viewing a list or search results.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chips Showcase -->
+    <div class="row mb-32">
+      <div class="col-4">
+        <!-- Selected chip (simple) -->
+        <button type="button" class="chip is-selected" aria-pressed="true">
+          <span class="chip__label">Label</span>
+        </button>
+      </div>
+      <div class="col-4">
+        <!-- Selected chip with icon -->
+        <button type="button" class="chip is-selected" aria-pressed="true">
+          <span class="chip__icon">
+            <svg class="icon small" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-checkmark-small"></use> 
+            </svg>
+          </span>
+          <span class="chip__label">Label</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="row mb-16">
+      <div class="col-12">
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>States</h2>  
+        </div>
+      </div>
+    </div>
+    <!-- Mono-select chips -->
+    <div class="row mb-32">
+      <div class="col-12">
+        <h3>Mono-Select</h3>
+      </div>
+      <div class="col-3">
+        <!-- Unselected chip (simple) -->
+        <button type="button" class="chip" aria-pressed="false">
+          <span class="chip__label">Label</span>
+        </button>
+      </div>
+      <div class="col-3">
+        <!-- Hover chip (simple) -->
+        <button type="button" class="chip" aria-pressed="false" style="background-color: var(--gray-250);">
+          <span class="chip__label">Label</span>
+        </button>
+      </div>
+      <div class="col-3">
+        <!-- Focused chip (simple) -->
+        <button type="button" class="chip" aria-pressed="false" style="outline: 2px solid var(--blue-sky-500); outline-offset: 2px;">
+          <span class="chip__label">Label</span>
+        </button>
+      </div>
+      <div class="col-3">
+        <!-- Selected chip (simple) -->
+        <button type="button" class="chip is-selected" aria-pressed="false">
+          <span class="chip__label">Label</span>
+        </button>
+      </div>
+      <div class="col-3">
+        <!-- Selected chip (simple) -->
+        <button type="button" class="chip is-disabled" aria-pressed="false">
+          <span class="chip__label">Label</span>
+        </button>
+      </div> 
+    </div>
+    <div class="row mt-32">
+      <div class="col-12">
+        <h4>Example</h4> 
+        <div class="d-flex gap-8 flex-wrap"> 
+          <button type="button" class="chip is-selected" aria-pressed="false">
+            <span class="chip__label">Label</span>
+          </button>
+          <button type="button" class="chip" aria-pressed="false">
+            <span class="chip__label">Label</span>
+          </button>
+          <button type="button" class="chip" aria-pressed="false">
+            <span class="chip__label">Label</span>
+          </button>
+          <button type="button" class="chip" aria-pressed="false">
+            <span class="chip__label">Label</span>
+          </button>
+          <button type="button" class="chip" aria-pressed="false">
+            <span class="chip__label">Label</span>
+          </button>
+          <button type="button" class="chip" aria-pressed="false">
+            <span class="chip__label">Label</span>
+          </button>
+          <button type="button" class="chip" aria-pressed="false">
+            <span class="chip__label">Label</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Multi-select chips -->
+    <div class="row my-32">
+      <div class="col-12">
+        <h3>Multi-Select</h3>
+      </div>
+      <div class="col-3">
+        <!-- Unselected chip (simple) -->
+        <button type="button" class="chip" aria-pressed="false">
+          <span class="chip__label">Label</span>
+        </button>
+      </div>
+      <div class="col-3">
+        <!-- Hover chip (simple) -->
+        <button type="button" class="chip" aria-pressed="false" style="background-color: var(--gray-250);">
+          <span class="chip__label">Label</span>
+        </button>
+      </div>
+      <div class="col-3">
+        <!-- Focused chip (simple) -->
+        <button type="button" class="chip" aria-pressed="false" style="outline: 2px solid var(--blue-sky-500); outline-offset: 2px;">
+          <span class="chip__label">Label</span>
+        </button>
+      </div>
+      <div class="col-3">
+        <!-- Selected chip (simple) -->
+        <button type="button" class="chip is-selected" aria-pressed="false">
+          <span class="chip__icon">
+            <svg class="icon small" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-checkmark-small"></use> 
+            </svg>
+          </span>
+          <span class="chip__label">Label</span>
+        </button>
+      </div>
+      <div class="col-3">
+        <!-- Selected chip (simple) -->
+        <button type="button" class="chip is-disabled" aria-pressed="false">
+          <span class="chip__label">Label</span>
+        </button>
+      </div> 
+    </div>
+    <div class="row mt-32">
+      <div class="col-12">
+        <h4>Example</h4> 
+        <div class="d-flex gap-8 flex-wrap"> 
+          <button type="button" class="chip is-selected" aria-pressed="false">
+            <span class="chip__icon">
+            <svg class="icon small" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-checkmark-small"></use> 
+            </svg>
+          </span>
+            <span class="chip__label">Label</span>
+          </button>
+          <button type="button" class="chip" aria-pressed="false">
+            <span class="chip__label">Label</span>
+          </button>
+          <button type="button" class="chip" aria-pressed="false">
+            <span class="chip__label">Label</span>
+          </button>
+          <button type="button" class="chip is-selected" aria-pressed="false">
+            <span class="chip__icon">
+            <svg class="icon small" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-checkmark-small"></use> 
+            </svg>
+          </span>
+            <span class="chip__label">Label</span>
+          </button>
+          <button type="button" class="chip" aria-pressed="false">
+            <span class="chip__label">Label</span>
+          </button>
+          <button type="button" class="chip" aria-pressed="false">
+            <span class="chip__label">Label</span>
+          </button>
+          <button type="button" class="chip" aria-pressed="false">
+            <span class="chip__label">Label</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Variants -->
+    <div class ="row">
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Variants</h2> 
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-3"> 
+        <button type="button" class="chip" aria-pressed="true">
+          <span class="chip__label">Label</span>
+          <span class="chip__badge" aria-hidden="true">1</span>
+        </button>
+      </div>
+      <div class="col-3"> 
+        <button type="button" class="chip is-selected" aria-pressed="true">
+          <span class="chip__label">Label</span>
+          <span class="chip__badge" aria-hidden="true">1</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Chip with avatar -->
+     <div class="row my-32">
+      <div class="col-12">
+        <h3>With Avatar</h3>
+      </div>
+      <div class="col-3"> 
+        <button type="button" class="chip" aria-pressed="true">
+          <span class="chip__avatar">
+            <img src="https://i.pravatar.cc/20" alt="User avatar" />
+          </span>
+          <span class="chip__label">Label</span>
+          <span class="chip__close" tabindex="0" aria-label="Remove chip">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-cross-small"></use> 
+            </svg>
+          </span>
+        </button>
+      </div>
+      <div class="col-3"> 
+        <button type="button" class="chip is-selected" aria-pressed="true">
+          <span class="chip__avatar">
+            <img src="https://i.pravatar.cc/20" alt="User avatar" />
+          </span>
+          <span class="chip__close" tabindex="0" aria-label="Remove chip">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-cross-small"></use> 
+            </svg>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Full chip group -->
+    <div class="row">
+      <div class="col-12"> 
+        <div class="chip-group" role="group" aria-label="Example chips" style="display:flex; flex-wrap:wrap; gap:8px;">
+
+          <!-- ✅ 1. SIMPLE CHIP -->
+          <button type="button" class="chip" aria-pressed="false">
+            <span class="chip__label">Simple</span>
+          </button>
+
+          <button type="button" class="chip is-disabled" aria-disabled="true" disabled>
+            <span class="chip__label">Simple disabled</span>
+          </button>
+
+          <!-- ✅ 2. WITH ICON -->
+          <button type="button" class="chip" aria-pressed="false">
+            <span class="chip__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </span>
+            <span class="chip__label">With icon</span>
+          </button>
+
+          <button type="button" class="chip is-disabled" aria-disabled="true" disabled>
+            <span class="chip__icon">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </span>
+            <span class="chip__label">Icon disabled</span>
+          </button>
+
+          <!-- ✅ 3. WITH AVATAR -->
+          <button type="button" class="chip" aria-pressed="false">
+            <span class="chip__avatar">
+              <img src="https://i.pravatar.cc/20" alt="User avatar" />
+            </span>
+            <span class="chip__label">With avatar</span>
+          </button>
+
+          <button type="button" class="chip is-disabled" aria-disabled="true" disabled>
+            <span class="chip__avatar">
+              <img src="https://i.pravatar.cc/20" alt="User avatar" />
+            </span>
+            <span class="chip__label">Avatar disabled</span>
+          </button>
+
+          <!-- ✅ 4. WITH CLOSE BUTTON (as a group) -->
+          <div class="chip" role="group" aria-label="Chip with close">
+            <button type="button" class="chip__label" aria-pressed="false">
+              With close
+            </button>
+            <button type="button" class="chip__close" aria-label="Remove chip">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="chip is-disabled" role="group" aria-label="Disabled chip with close">
+            <button type="button" class="chip__label" aria-pressed="false" disabled>
+              Close disabled
+            </button>
+            <button class="chip__close" aria-label="Remove chip" disabled>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
