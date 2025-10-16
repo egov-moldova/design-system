@@ -1,0 +1,58 @@
+@use '../../abstracts/tokens' as tokens;
+
+.badge-notification {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--danger-600, #D92D20);
+  color: var(--white);
+  border-radius: var(--radius-full, 9999px);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+
+  &--dot {
+    width: var(--spacing-8, 8px);
+    height: var(--spacing-8, 8px);
+    font-size: 0;
+  }
+
+  &--numbered {
+    min-width: var(--spacing-16, 16px);
+    height: var(--spacing-16, 16px);
+    padding: 0 var(--spacing-4, 4px);
+    font-size: var(--font-size-10, 10px);
+  }
+
+  // Sizes
+  &--small {
+    width: var(--spacing-12, 12px);
+    height: var(--spacing-12, 12px);
+    font-size: var(--font-size-10, 10px);
+  }
+
+  &--medium {
+    width: var(--spacing-16, 16px);
+    height: var(--spacing-16, 16px);
+    font-size: var(--font-size-12, 12px);
+  }
+
+  &--large {
+    width: var(--spacing-20, 20px);
+    height: var(--spacing-20, 20px);
+    font-size: var(--font-size-14, 14px);
+  }
+
+  &--extra-large {
+    width: var(--spacing-24, 24px);
+    height: var(--spacing-24, 24px);
+    font-size: var(--font-size-16, 16px);
+  }
+
+  // Placement (example for avatar or parent)
+  &--top-right {
+    top: 0;
+    right: 0;
+    transform: translate(50%, -50%);
+  }
+}

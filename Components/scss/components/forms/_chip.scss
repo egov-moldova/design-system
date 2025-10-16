@@ -123,6 +123,10 @@
   }
 
   // Badge
+  &:has(.chip__badge) {
+    padding-right: var(--spacing-8, 8px);
+  }
+  
   &__badge {
     display: inline-flex;
     align-items: center;
@@ -151,7 +155,7 @@
   &:has(.chip__close) {
     padding-right: var(--spacing-8, 8px);
   }
-  
+
   &__close {
     display: inline-flex;
     align-items: center;
