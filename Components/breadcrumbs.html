@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Breadcrumbs Preview</title>
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-7">
+         <h1>Breadcrumbs</h1>
+        <p class="text-gray-400">
+          Badges are used to convey additional information or status indicators within a user interface. They are commonly employed to highlight key attributes, provide notifications, or indicate the status of an item or process.
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-7"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Styles</h2>  
+        </div>
+      </div>
+    </div>    
+    
+    <div class="row">
+      <div class="col-6">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ol class="breadcrumbs__list">
+            <li class="breadcrumbs__item">
+              <a href="#" class="breadcrumbs__link">Home</a>
+            </li>
+            <li class="breadcrumbs__item">
+              <a href="#" class="breadcrumbs__link">Library</a>
+            </li>
+            <li class="breadcrumbs__item is-selected">
+              <span class="breadcrumbs__current">Data</span>
+            </li>
+          </ol>
+        </nav> 
+      </div>
+      <div class="col-6">
+        <nav class="breadcrumbs breadcrumbs--with-icon" aria-label="Breadcrumb">
+          <ol class="breadcrumbs__list">
+            <li class="breadcrumbs__item">
+              <a href="#" class="breadcrumbs__link">
+                <span class="d-inline-flex">
+                  <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-home-round-door"></use> 
+                  </svg>
+                </span> Home
+              </a>
+            </li>
+            <li class="breadcrumbs__item">
+              <a href="#" class="breadcrumbs__link">Projects</a>
+            </li>
+            <li class="breadcrumbs__item is-selected">
+              <span class="breadcrumbs__current">Design System</span>
+            </li>
+          </ol>
+        </nav> 
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Breakpoints</h2>  
+        </div>
+      </div>
+    </div> 
+    <div class="row">
+      <div class="col-6">
+        <div class="breadcrumbs-demo">
+          <h4>desktop</h4>
+          <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <ol class="breadcrumbs__list">
+              <li class="breadcrumbs__item"><a href="#" class="breadcrumbs__link">Level 1</a></li>
+              <li class="breadcrumbs__item"><a href="#" class="breadcrumbs__link">Level 2</a></li>
+              <li class="breadcrumbs__item"><a href="#" class="breadcrumbs__link">Level 3</a></li>
+              <li class="breadcrumbs__item"><a href="#" class="breadcrumbs__link">Level 4</a></li>
+              <li class="breadcrumbs__item"><a href="#" class="breadcrumbs__link">Level 5</a></li>
+              <li class="breadcrumbs__item is-selected"><span class="breadcrumbs__current">Active Level</span></li>
+            </ol>
+          </nav>
+        </div> 
+      </div>
+      <div class="col-6">
+        <h4>mobile</h4>
+        <nav class="breadcrumbs breadcrumbs--mobile" aria-label="Breadcrumb">
+          <ol class="breadcrumbs__list">
+            <li class="breadcrumbs__item breadcrumbs__item--back">
+              <a href="#" class="breadcrumbs__link d-flex gap-6">  
+                Previous Level
+              </a>
+            </li> 
+          </ol>
+        </nav>
+      </div>
+    </div>
+
+
+
+  <div class="row">
+    <div class="col-3"> 
+      <h4>enabled</h4>
+      <nav class="breadcrumbs">
+          <ol class="breadcrumbs__list">
+          <li class="breadcrumbs__item"><a href="#" class="breadcrumbs__link">Level 1</a></li>
+          <li class="breadcrumbs__item"><a href="#" class="breadcrumbs__link">Level 2</a></li>
+          <li class="breadcrumbs__item is-selected"><span class="breadcrumbs__current">Active Level</span></li>
+        </ol>
+      </nav>
+    </div>
+    <div class="col-3">
+      <h4>hover</h4>
+      <nav class="breadcrumbs">
+          <ol class="breadcrumbs__list">
+          <li class="breadcrumbs__item"><a href="#" class="breadcrumbs__link is-hover">Level 1</a></li>
+          <li class="breadcrumbs__item"><a href="#" class="breadcrumbs__link">Level 2</a></li>
+          <li class="breadcrumbs__item is-selected"><span class="breadcrumbs__current">Active Level</span></li>
+        </ol>
+      </nav>
+    </div>
+
+    <div class="col-3">
+      <h4>focus</h4>
+      <nav class="breadcrumbs">
+          <ol class="breadcrumbs__list">
+          <li class="breadcrumbs__item"><a href="#" class="breadcrumbs__link is-focus">Level 1</a></li>
+          <li class="breadcrumbs__item"><a href="#" class="breadcrumbs__link">Level 2</a></li>
+          <li class="breadcrumbs__item is-selected"><span class="breadcrumbs__current">Active Level</span></li>
+        </ol>
+      </nav>
+    </div>
+
+    <div class="col-3">
+      <h4>active</h4>
+      <nav class="breadcrumbs">
+          <ol class="breadcrumbs__list">
+          <li class="breadcrumbs__item"><a href="#" class="breadcrumbs__link">Level 1</a></li>
+          <li class="breadcrumbs__item"><a href="#" class="breadcrumbs__link">Level 2</a></li>
+          <li class="breadcrumbs__item is-selected"><span class="breadcrumbs__current">Active Level</span></li>
+        </ol>
+      </nav>
+    </div>
+
+    <div class="col-3">
+      <h4>visited</h4>
+      <nav class="breadcrumbs">
+          <ol class="breadcrumbs__list">
+          <li class="breadcrumbs__item"><a href="#" class="breadcrumbs__link is-visited">Level 1</a></li>
+          <li class="breadcrumbs__item"><a href="#" class="breadcrumbs__link">Level 2</a></li>
+          <li class="breadcrumbs__item is-selected"><span class="breadcrumbs__current">Active Level</span></li>
+        </ol>
+      </nav>
+    </div>
+
+    <div class="col-3">
+      <h4>disabled</h4>
+      <nav class="breadcrumbs">
+        <ol class="breadcrumbs__list">
+          <li class="breadcrumbs__item"><a href="#" class="breadcrumbs__link is-disabled">Level 1</a></li>
+          <li class="breadcrumbs__item"><a href="#" class="breadcrumbs__link">Level 2</a></li>
+          <li class="breadcrumbs__item is-selected"><span class="breadcrumbs__current">Active Level</span></li>
+        </ol>
+      </nav>
+    </div>
+  </div> 
+  
+    </div>
+ 
+  </div>  
+ 
+
+
+
+</body>
+</html>

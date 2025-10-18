@@ -17,6 +17,8 @@
   padding: var(--spacing-4, 4px) var(--spacing-8, 8px);
   border: 1px solid transparent;
 
+
+  &--xs { font-size: var(--text-caption-sm-font-size);padding: var(--spacing-2, 2px); height: 8px; min-width: 8px;  }
   &--sm { font-size: var(--text-caption-md-500-font-size);padding: var(--spacing-2, 2px); height: 10px; min-width: 10px;  }
   &--md { font-size: var(--text-caption-md-500-font-size); padding: var(--spacing-2, 2px); height: 14px; min-width: 14px; }
   &--lg { font-size: var(--text-body-sm-500-font-size); padding: var(--spacing-2, 2px); height: 18px; min-width: 18px; }
@@ -40,7 +42,8 @@ $badge-screens: (
   dark: (bg: #000, bg-subtle: #333, color: #fff),
   light: (bg: #fff, bg-subtle: #f5f5f5, color: #000),
   neutral: (bg: #e5e5e5, bg-subtle: #f2f2f2, color: #000),
-  accent: (bg: #fcd34d, bg-subtle: #fff9db, color: #000)
+  accent: (bg: #fcd34d, bg-subtle: #fff9db, color: #000),
+  notification:(bg: #D92D20, bg-subtle: green, color: white)
 );
 
 @each $name, $values in $badge-screens {
