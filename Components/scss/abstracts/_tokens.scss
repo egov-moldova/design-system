@@ -183,6 +183,7 @@ $token-spacing-40: var(--spacing-40);
 $token-spacing-48: var(--spacing-48);
 $token-spacing-56: var(--spacing-56);
 $token-spacing-64: var(--spacing-64);
+$token-spacing-72: var(--spacing-72);
 /* +++++++++++++++++++++++++++ END SPACING ++++++++++++++++++++++++++++++++*/
 
 
@@ -199,6 +200,15 @@ $drop-shadows: (
 ) !default;
 /* +++++++++++++++++++++++++++ END SHADOWS ++++++++++++++++++++++++++++++++*/
 
+//
+$font-weights: (
+  regular: 400,
+  medium: 500,
+  bold: 600
+);
+@function font-weight($weight-name) {
+  @return map-get($font-weights, $weight-name);
+}
 // ============================
 // 🎨 Tokens pentru icons
 // ============================

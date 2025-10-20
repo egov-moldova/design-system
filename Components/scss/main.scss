@@ -44,7 +44,9 @@
 @use 'base/drop-shadows';
 @use 'base/buttons';
 @use 'utilities' as *;
+@use 'components/index';
 @use 'components/forms' as *;
+@use 'components/avatar' as *;
 
 // ===============================
 // 🟦 Grid Setup

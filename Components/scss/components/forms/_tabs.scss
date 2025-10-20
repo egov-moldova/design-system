@@ -13,11 +13,12 @@
     background: transparent;
     border: none;
     padding: var(--spacing-12, 12px) var(--spacing-16, 16px);
-    font-size: 1rem;
-    font-weight: vars.$font-weight-regular;
+    font-size: var(--text-body-sm-font-size);
+    font-family: "Onest", sans-serif;
+    //font-weight: vars.$font-weight-regular;
     line-height: 1.375;
     cursor: pointer;
-    color: var(--color-gray-700, #374151);
+    color: var(--gray-700, #374151);
     border-bottom: var(--border-width-2, 1.5px) var(--border-style-solid, solid) transparent;
     display: var(--flex, flex);
     align-items: center;

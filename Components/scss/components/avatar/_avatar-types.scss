@@ -1,0 +1,19 @@
+@use '../../abstracts/tokens' as tokens;
+
+.avatar {
+  &--image {
+    background-color: transparent;
+    border-radius: var(--border-radius-full);
+    overflow: hidden;
+  }
+
+  &--initials {
+    background-color: var(--gray-200);
+    color: var(--gray-700);
+  }
+
+  &--icon {
+    background-color: var(--gray-200);
+    color: var(--gray-600);
+  }
+}

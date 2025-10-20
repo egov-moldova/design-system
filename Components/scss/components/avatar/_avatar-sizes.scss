@@ -1,0 +1,55 @@
+.avatar {
+  &--xs { 
+    width: var(--spacing-24); 
+    height: var(--spacing-24); 
+    font-size: var(--text-caption-md-500-font-size); 
+    
+    svg {
+      height: var(--spacing-16);
+      width: var(--spacing-16);
+    }
+
+    
+  }
+  &--sm { 
+    width: var(--spacing-32); 
+    height: var(--spacing-32); 
+    font-size: var(--text-body-sm-500-font-size); 
+    
+    svg {
+      height: var(--spacing-20);
+      width: var(--spacing-20);
+    }
+  }
+  &--md { 
+    width: var(--spacing-40); 
+    height: var(--spacing-40); 
+    font-size: var(--text-body-sm-500-font-size); 
+    
+    svg {
+      height: var(--spacing-20);
+      width: var(--spacing-20);
+    }
+  }
+  &--lg { 
+    width: var(--spacing-56); 
+    height: var(--spacing-56); 
+    font-size: var(--text-body-lg-500-font-size); 
+    
+    svg {
+      height: var(--spacing-24);
+      width: var(--spacing-25);
+    }
+  }
+  &--xl { 
+    width: var(--spacing-72); 
+    height: var(--spacing-72); 
+    font-size: var(--text-heading-h5-2xs-font-size); 
+    
+    svg {
+      height: var(--spacing-24);
+      width: var(--spacing-24);
+    }
+  }
+}
+ 
