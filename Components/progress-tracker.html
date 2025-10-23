@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Interactive Progress Tracker</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <script defer src="progress-tracker.js"></script>
+  <style> 
+    section {
+      margin-top: 2rem;
+    }
+    .example {
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h1>Progress Tracker</h1>
+      </div>
+      <div class="col-7">
+        <p class="text-gray-400">
+          Progress Trackers serve as visual guides that help users understand where they are within a multi-step process or experience. 
+          They provide a clear sense of progression, showing completed steps, the current step, and upcoming steps in a linear flow.
+        </p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Interactive Progress Tracker</h2>  
+          <div class="w-75">
+            <p class="text-gray-400">
+              An interactive progress tracker guides users through a multi-step process by visually indicating their current position, allowing them to navigate between steps. 
+              It improves usability by providing orientation and direct access to completed or upcoming steps, often used in forms.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Breackpoints</h2>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 mb-32">
+        <h3>Desktop</h3>
+        <div class="progress-tracker" id="tracker-desktop">
+          <div class="progress-step progress-step--completed">
+            <div class="progress-cell">
+              <div class="progress-step__circle">✔</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+          <div class="progress-step progress-step--current">
+            <div class="progress-cell">
+              <div class="progress-step__circle">2</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-cell">
+              <div class="progress-step__circle">3</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-cell">
+              <div class="progress-step__circle">4</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-cell">
+              <div class="progress-step__circle">5</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-cell">
+              <div class="progress-step__circle">6</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-cell">
+              <div class="progress-step__circle">7</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-cell">
+              <div class="progress-step__circle">8</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-6">
+        <h3>Mobile</h3>
+        <div class="progress-tracker" id="tracker-mobile">
+          <div class="progress-step progress-step--completed">
+            <div class="progress-step__circle">✔</div>
+          </div>
+          <div class="progress-step progress-step--current">
+            <div class="progress-step__circle"></div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-step__circle"></div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-step__circle"></div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-step__circle"></div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-step__circle"></div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-step__circle"></div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-step__circle"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Step States</h2>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <div class="d-flex gap-16">
+          <div class="w-25"> 
+            <p>current</p>
+            <div class="progress-tracker" id="tracker-desktop">
+              <div class="progress-step progress-step--current">
+                <div class="progress-cell">
+                  <div class="progress-step__circle">1</div>
+                  <div class="progress-step__label">Step</div>
+                </div>
+              </div> 
+            </div>
+          </div>
+          <div class="w-25"> 
+            <p>completed</p>
+            <div class="progress-tracker" id="tracker-desktop">
+              <div class="progress-step progress-step--completed">
+                <div class="progress-cell">
+                  <div class="progress-step__circle">1</div>
+                  <div class="progress-step__label">Step</div>
+                </div>
+              </div> 
+            </div>
+          </div>
+          <div class="w-25"> 
+            <p>incomplete</p>
+            <div class="progress-tracker" id="tracker-desktop">
+              <div class="progress-step progress-step--incomplete">
+                <div class="progress-cell">
+                  <div class="progress-step__circle">1</div>
+                  <div class="progress-step__label">Step</div>
+                </div>
+              </div> 
+            </div>
+          </div>
+          <div class="w-25"> 
+            <p>blocked</p>
+            <div class="progress-tracker" id="tracker-desktop">
+              <div class="progress-step progress-step--blocked">
+                <div class="progress-cell">
+                  <div class="progress-step__circle">!</div>
+                  <div class="progress-step__label">Step</div>
+                </div>
+              </div> 
+            </div>
+          </div>
+          <div class="w-25"> 
+            <p>current</p>
+            <div class="progress-tracker" id="tracker-desktop">
+              <div class="progress-step progress-step--incomplete">
+                <div class="progress-cell">
+                  <div class="progress-step__circle">1</div>
+                  <div class="progress-step__label">Step</div>
+                </div>
+              </div> 
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+     <div class="row">
+      <div class="col-12">
+        <div class="d-flex gap-16">
+          <div class="w-25"> 
+            <p>current</p>
+            <div class="progress-tracker" id="tracker-mobile">
+              <div class="progress-step progress-step--current">
+                <div class="progress-cell">
+                  <div class="progress-step__circle"></div> 
+                </div>
+              </div> 
+            </div>
+          </div>
+          <div class="w-25"> 
+            <p>completed</p>
+            <div class="progress-tracker" id="tracker-mobile">
+              <div class="progress-step progress-step--completed">
+                <div class="progress-cell">
+                  <div class="progress-step__circle"></div> 
+                </div>
+              </div> 
+            </div>
+          </div>
+          <div class="w-25"> 
+            <p>incomplete</p>
+            <div class="progress-tracker" id="tracker-mobile">
+              <div class="progress-step progress-step--incomplete">
+                <div class="progress-cell">
+                  <div class="progress-step__circle"></div> 
+                </div>
+              </div> 
+            </div>
+          </div>
+          <div class="w-25"> 
+            <p>blocked</p>
+            <div class="progress-tracker" id="tracker-mobile">
+              <div class="progress-step progress-step--blocked">
+                <div class="progress-cell">
+                  <div class="progress-step__circle"></div> 
+                </div>
+              </div> 
+            </div>
+          </div>
+          <div class="w-25"> 
+            <p>current</p>
+            <div class="progress-tracker" id="tracker-mobile">
+              <div class="progress-step progress-step--incomplete">
+                <div class="progress-cell">
+                  <div class="progress-step__circle"></div> 
+                </div>
+              </div> 
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Orientation</h2>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 mb-24">
+        <h3>Desktop</h3>
+      </div>
+      <div class="col-12 mb-24">
+        <p>Horizontal</p>
+        <div class="progress-tracker" id="tracker-desktop">
+          <div class="progress-step progress-step--completed">
+            <div class="progress-cell">
+              <div class="progress-step__circle">✔</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+          <div class="progress-step progress-step--current">
+            <div class="progress-cell">
+              <div class="progress-step__circle">2</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-cell">
+              <div class="progress-step__circle">3</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-cell">
+              <div class="progress-step__circle">4</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-cell">
+              <div class="progress-step__circle">5</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-cell">
+              <div class="progress-step__circle">6</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-cell">
+              <div class="progress-step__circle">7</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-cell">
+              <div class="progress-step__circle">8</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <p>Vertical</p>
+        <div class="progress-tracker progress-tracker--vertical" id="tracker-vertical">
+          <div class="progress-step progress-step--current">
+            <div class="progress-step__circle">1</div>
+            <div class="progress-step__label">Step</div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-step__circle">2</div>
+            <div class="progress-step__label">Step</div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-step__circle">3</div>
+            <div class="progress-step__label">Step</div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-step__circle">4</div>
+            <div class="progress-step__label">Step</div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-step__circle">5</div>
+            <div class="progress-step__label">Step</div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-step__circle">6</div>
+            <div class="progress-step__label">Step</div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-step__circle">7</div>
+            <div class="progress-step__label">Step</div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-step__circle">8</div>
+            <div class="progress-step__label">Step</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12 mb-24">
+        <h3>Mobile</h3>
+      </div>
+      <div class="col-12 mb-24">
+        <p>Horizontal</p>
+        <div class="progress-tracker" id="tracker-mobile">
+          <div class="progress-step progress-step--completed">
+            <div class="progress-cell">
+              <div class="progress-step__circle">✔</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+          <div class="progress-step progress-step--current">
+            <div class="progress-cell">
+              <div class="progress-step__circle">2</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-cell">
+              <div class="progress-step__circle">3</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-cell">
+              <div class="progress-step__circle">4</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-cell">
+              <div class="progress-step__circle">5</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-cell">
+              <div class="progress-step__circle">6</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-cell">
+              <div class="progress-step__circle">7</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-cell">
+              <div class="progress-step__circle">8</div>
+              <div class="progress-step__label">Step</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <p>Vertical</p>
+        <div class="progress-tracker progress-tracker--vertical" id="tracker-vertical">
+          <div class="progress-step progress-step--current">
+            <div class="progress-step__circle">1</div>
+            <div class="progress-step__label">Step</div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-step__circle">2</div>
+            <div class="progress-step__label">Step</div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-step__circle">3</div>
+            <div class="progress-step__label">Step</div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-step__circle">4</div>
+            <div class="progress-step__label">Step</div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-step__circle">5</div>
+            <div class="progress-step__label">Step</div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-step__circle">6</div>
+            <div class="progress-step__label">Step</div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-step__circle">7</div>
+            <div class="progress-step__label">Step</div>
+          </div>
+          <div class="progress-step progress-step--incomplete">
+            <div class="progress-step__circle">8</div>
+            <div class="progress-step__label">Step</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

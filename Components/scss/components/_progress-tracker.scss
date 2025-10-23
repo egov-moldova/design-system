@@ -1,0 +1,221 @@
+// =============================
+// Progress tracker — improved layout
+// =============================
+.progress-tracker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-12, 12px);
+  width: 100%;
+  max-width: 996px;
+  position: relative;
+  padding: 1rem 0;
+  --connector-length: 80px;
+
+  // each step is a column: circle above, label under
+  .progress-step {
+    position: relative;
+    display: flex;
+    flex-direction: column; // <-- label below circle
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--spacing-8, 8px);
+    flex: 0 0 auto;
+    //padding: 0 var(--spacing-12, 12px);
+    cursor: pointer;
+    //min-width: 48px; // keeps spacing when overflow on mobile 
+    flex-grow: 1;
+    align-items: end;
+
+    // circle
+    &__circle {
+      width: 22px;
+      height: 22px;
+      border-radius: var(--border-radius-full, 9999px);
+      border: 1.5px var(--solid, solid) var(--gray-300, #e0e0e0);
+      background-color: #fff;
+      color: var(--gray-300, #b2b2b2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.875rem;
+      font-weight: 500;
+      z-index: 2; // above connector line
+      transition: all 0.2s ease;
+    }
+
+    // label — now always under circle on desktop too
+    &__label {
+      margin-top: 0;
+      font-size: 0.875rem;
+      color: var(--gray-700, #525252);
+      text-align: center;
+      user-select: none;
+      z-index: 2;
+    }
+
+    // connector line -> draw to the right of each step (except last)
+    &::after {
+        content: "";
+        position: absolute;
+        top: 12px;
+        left: 0;
+        width: var(--connector-length, 80px);
+        height: 1.5px;
+        width: var(--connector-length, 80px); // 🧩 acum e complet controlată din JS
+        background-color: var(--gray-200, #e5e5e5);
+        z-index: 1;
+    }
+
+    // hide connector for last step
+    &:first-child:not(.progress-step--current, .progress-step--incomplete, .progress-step--blocked) {
+        flex-grow: initial ;
+
+        &::after {
+            display: none;
+        }
+    } 
+
+    .progress-cell {
+        display: var(--flex, flex);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: var(--spacing-6, 6px);
+    }
+  }
+
+  // STATES (keep z-index so circles override line)
+  .progress-step--completed {
+    .progress-step__circle {
+        background-color: var(--blue-sky-600, #0058D2);
+        background-image: url("data:image/svg+xml,%3Csvg width='12' height='10' viewBox='0 0 12 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M11.3268 0.19795C11.6593 0.488895 11.693 0.994305 11.4021 1.32681L4.40206 9.32681C4.25626 9.49345 4.04792 9.5922 3.82662 9.59957C3.60533 9.60694 3.39088 9.52226 3.23431 9.3657L0.234315 6.3657C-0.0781049 6.05328 -0.0781049 5.54675 0.234315 5.23433C0.546734 4.92191 1.05327 4.92191 1.36569 5.23433L3.76103 7.62967L10.1979 0.273207C10.4889 -0.059302 10.9943 -0.092996 11.3268 0.19795Z' fill='white'/%3E%3C/svg%3E%0A");
+        background-position: center;
+        background-repeat: no-repeat;
+        border-color: var(--blue-sky-600, #0058D2);
+        color: var(--white, #fff);
+        text-indent: -99999px;
+    }
+
+    &::after {
+        background-color: var(--blue-sky-600, #0058D2);
+        height: 1.5px;
+    }
+
+    .progress-step__label {
+        color: var(--blue-sky-600, #0058D2);
+        text-decoration: underline;
+    }
+  } 
+
+  .progress-step--current {
+    .progress-step__circle {
+        border-color: var(--blue-sky-600, #0058D2);
+        color: var(--blue-sky-600, #0058D2);
+        background-color: var(--white, #fff);
+    }
+
+    &::after {
+        background-color: var(--blue-sky-600, #0058D2);
+        height: 1.5px;
+    }
+  } 
+
+  .progress-step--blocked {
+    .progress-step__circle {
+        background-image: url("data:image/svg+xml,%3Csvg width='3' height='12' viewBox='0 0 3 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.35197 7.68001L0.15997 1.14441e-05H2.01597L1.82397 7.68001H0.35197ZM1.08797 11.44C0.89597 11.44 0.714637 11.3973 0.54397 11.312C0.38397 11.2267 0.250637 11.0987 0.14397 10.928C0.0479703 10.7573 -2.96831e-05 10.5653 -2.96831e-05 10.352C-2.96831e-05 10.1173 0.0479703 9.92001 0.14397 9.76001C0.23997 9.58934 0.373304 9.46134 0.54397 9.37601C0.714637 9.29068 0.901304 9.24801 1.10397 9.24801C1.39197 9.24801 1.64264 9.34934 1.85597 9.55201C2.07997 9.74401 2.19197 10.0107 2.19197 10.352C2.19197 10.5653 2.13864 10.7573 2.03197 10.928C1.93597 11.0987 1.80264 11.2267 1.63197 11.312C1.47197 11.3973 1.29064 11.44 1.08797 11.44Z' fill='%23D92D20'/%3E%3C/svg%3E%0A");
+        background-position: center;
+        background-repeat: no-repeat;
+        border-color: var(--danger-500, #da1e28);
+        color: var(--danger-500, #da1e28);
+        text-indent: -99999px;
+        cursor: not-allowed;
+    }
+     &::after {
+        background-color: var(--blue-sky-600, #0058D2);
+        height: 1.5px;
+    }
+  } 
+
+  // RESPONSIVE: mobile - compact, hide labels if you want
+  @media (max-width: 768px) {
+    overflow-x: auto;
+    gap: var(--spacing-12, 12px);
+    padding-bottom: var(--spacing-12, 12px);
+
+    .progress-step {
+      padding: 0 var(--spacing-8, 8px);
+
+      // On mobile we typically hide labels (like your screenshot)
+      &__label {
+        display: none;
+      }
+
+      // shorter connectors on small screens
+      &::after {
+        width: var(--connector-length-mobile, 40px);
+      }
+    }
+  }
+
+  // VERTICAL VERSION: connector becomes vertical line downward
+  &.progress-tracker--vertical {
+    flex-direction: column;
+    align-items: flex-start; 
+    --step-height: 125px;
+
+    .progress-step {
+      flex-direction: row; // circle + label side-by-side for vertical layout
+      align-items: flex-start;
+      padding: var(--spacing-8, 8px) 0; 
+      height: var(--step-height);
+
+      &__label {
+        margin-left: var(--spacing-12, 12px);
+        display: block;
+      }
+
+      &::after {
+        top: auto; 
+        bottom: 0;  // start below this step
+        left: 11px;        // align with circle center (circle width/2 + border)
+        width: 2px;
+        height: calc(var(--step-height) - 24px);
+        transform: none;
+      }
+      &:last-child::after { display: none; }
+    }
+  }
+}
+
+//MOBILE
+#tracker-mobile { 
+    &.progress-tracker {
+        gap: var(--spacing-6, 6px);
+
+        .progress-step {
+            &__circle {
+                background-size: 10px;
+                height: 18px;
+                width: 18px;
+                font-size: .625rem;
+                text-indent: -999999cm;
+            }
+
+            &__label {
+                display: none;
+            }
+
+            &::after {
+                top: 10px;
+                width: calc(100% - 26px)
+            }
+        }
+
+        .progress-step--blocked {
+            .progress-step__circle {
+                background-image: none;
+            }
+        }
+    }
+}

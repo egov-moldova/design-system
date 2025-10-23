@@ -297,3 +297,19 @@ $input-sizes: (
     icon-size: 24px
   )
 );
+
+//MODALS
+:root {
+    /* Modal widths */
+  --modal-width-sm: 350px;
+  --modal-width-md: 590px;  // aici trebuie definit
+  --modal-width-lg: 720px;
+  --modal-width-full: 100vw;
+  --z-modal: 1000px;
+
+  --motion-duration-md: 0.3s;
+  --motion-duration-lg: 0.5s;
+  --motion-easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-easing-decelerate: cubic-bezier(0.0, 0, 0.2, 1);
+  --motion-scale-sm: 0.9;
+}

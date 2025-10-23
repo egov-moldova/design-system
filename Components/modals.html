@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modal Preview</title>
+  <link rel="stylesheet" href="css/main.css"> 
+  <script defer src="../Components/js/modal.js"></script>
+ 
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-7">
+        <h1>Modal</h1>
+        <p class="text-gray-400">
+          A modal is an overlay that interrupts the user’s task to show an important message, disabling the rest of the screen.
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Breakpoints</h2>  
+        </div>
+      </div>
+    </div> 
+    <div class="row">
+      <div class="col-6">
+        <div>
+          <p>desktop</p>
+          <button class="btn btn-primary" data-open="#modalMd">Open Small Modal</button>
+        </div>
+        <div class="modal-overlay" id="modalMd">
+        <div class="modal modal--md modal--simple">
+          <button type="button" class="modal-close" data-close>
+            <span class="d-inline-flex">
+              <svg class="icon small" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+              </svg>
+            </span>
+          </button>
+          <div class="modal--header"> 
+            <h2 class="modal--header-title">Confirm Action</h2>
+          </div>
+          <div class="modal-content">
+            <p class="modal-text">
+              You are about to proceed with this action, which may affect your access to certain government services. 
+            </p>
+            <p class="modal-text">
+              Please review the details carefully before confirming. If you continue, any changes made will be final and may require additional steps to reverse.
+            </p> 
+          </div>
+          <div class="modal--footer">
+            <div class="modal-buttons">
+              <button class="btn btn-outline-primary btn-rounded btn-md" data-close>Cancel</button>
+              <button class="btn btn-primary btn-rounded btn-md">Confirm & Proceed</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div class="col-6">
+        <div>
+          <p>mobile</p>
+          <button class="btn btn-primary" data-open="#modalSm">Open Small Modal</button>
+        </div>
+        <div class="modal-overlay" id="modalSm">
+        <div class="modal modal--sm modal--simple">
+          <button type="button" class="modal-close" data-close>
+            <span class="d-inline-flex">
+              <svg class="icon small" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+              </svg>
+            </span>
+          </button>
+          <div class="modal--header"> 
+            <h2 class="modal--header-title">Confirm Action</h2>
+          </div>
+          <div class="modal-content"> 
+            <p class="modal-text">
+              You are about to proceed with this action, which may affect your access to certain government services. 
+            </p> 
+          </div>
+           <div class="modal--footer">
+            <div class="modal-buttons">
+              <button class="btn btn-outline-primary btn-rounded btn-md" data-close>Cancel</button>
+              <button class="btn btn-primary btn-rounded btn-md">Confirm & Proceed</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Types</h2>  
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-6">
+        <div class="mb-24"> 
+          <div>
+            <p>default: desktop</p>
+            <button class="btn btn-primary" data-open="#modalMd">Open Small Modal</button>
+          </div>
+          <div class="modal-overlay" id="modalMd">
+            <div class="modal modal--md modal--simple">
+              <button type="button" class="modal-close" data-close>
+                <span class="d-inline-flex">
+                  <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+                  </svg>
+                </span>
+              </button>
+              <div class="modal--header"> 
+                <h2 class="modal--header-title">Confirm Action</h2>
+              </div>
+              <div class="modal-content">
+                <p class="modal-text">
+                  You are about to proceed with this action, which may affect your access to certain government services. 
+                </p>
+                <p class="modal-text">
+                  Please review the details carefully before confirming. If you continue, any changes made will be final and may require additional steps to reverse.
+                </p> 
+              </div>
+              <div class="modal--footer">
+                <div class="modal-buttons">
+                  <button class="btn btn-outline-primary btn-rounded btn-md" data-close>Cancel</button>
+                  <button class="btn btn-primary btn-rounded btn-md">Confirm & Proceed</button>
+                </div>
+              </div>
+            </div>
+          </div> 
+        </div>
+
+        <div class="mb-24"> 
+          <div>
+            <p>image-based: desktop</p>
+            <button class="btn btn-primary" data-open="#modalMdImg">Open Small Modal</button>
+          </div>
+          <div class="modal-overlay" id="modalMdImg">
+            <div class="modal modal--md modal--with-image">
+              <button type="button" class="modal-close" data-close>
+                <span class="d-inline-flex">
+                  <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+                  </svg>
+                </span>
+              </button>
+              <div class="modal-image-wrapper">
+                <img src="https://i.pravatar.cc" alt="Preview"> 
+              </div>
+              <div class="modal--header"> 
+                <h2 class="modal--header-title">Confirm Action</h2>
+              </div>
+              <div class="modal-content">
+                <p class="modal-text">
+                  You are about to proceed with this action, which may affect your access to certain government services. 
+                </p>
+                <p class="modal-text">
+                  Please review the details carefully before confirming. If you continue, any changes made will be final and may require additional steps to reverse.
+                </p> 
+              </div>
+              <div class="modal--footer">
+                <div class="modal-buttons">
+                  <button class="btn btn-outline-primary btn-rounded btn-md" data-close>Cancel</button>
+                  <button class="btn btn-primary btn-rounded btn-md">Confirm & Proceed</button>
+                </div>
+              </div>
+            </div>
+          </div> 
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="mb-24">
+          <div>
+            <p>default: mobile</p>
+            <button class="btn btn-primary" data-open="#modalSm">Open Small Modal</button>
+          </div>
+          <div class="modal-overlay" id="modalSm">
+            <div class="modal modal--sm modal--simple">
+              <button type="button" class="modal-close" data-close>
+                <span class="d-inline-flex">
+                  <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+                  </svg>
+                </span>
+              </button>
+              <div class="modal--header"> 
+                <h2 class="modal--header-title">Confirm Action</h2>
+              </div>
+              <div class="modal-content"> 
+                <p class="modal-text">
+                  You are about to proceed with this action, which may affect your access to certain government services. 
+                </p> 
+              </div>
+              <div class="modal--footer">
+                <div class="modal-buttons">
+                  <button class="btn btn-outline-primary btn-rounded btn-md" data-close>Cancel</button>
+                  <button class="btn btn-primary btn-rounded btn-md">Confirm & Proceed</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-24"> 
+          <div>
+            <p>image-based: desktop</p>
+            <button class="btn btn-primary" data-open="#modalSdImg">Open Small Modal</button>
+          </div>
+          <div class="modal-overlay" id="modalSdImg">
+            <div class="modal modal--sm modal--with-image">
+              <button type="button" class="modal-close" data-close>
+                <span class="d-inline-flex">
+                  <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+                  </svg>
+                </span>
+              </button>
+              <div class="modal-image-wrapper">
+                <img src="https://i.pravatar.cc" alt="Preview"> 
+              </div>
+              <div class="modal--header"> 
+                <h2 class="modal--header-title">Confirm Action</h2>
+              </div>
+              <div class="modal-content">
+                <p class="modal-text">
+                  You are about to proceed with this action, which may affect your access to certain government services. 
+                </p> 
+              </div>
+              <div class="modal--footer">
+                <div class="modal-buttons">
+                  <button class="btn btn-outline-primary btn-rounded btn-md" data-close>Cancel</button>
+                  <button class="btn btn-primary btn-rounded btn-md">Confirm & Proceed</button>
+                </div>
+              </div>
+            </div>
+          </div> 
+        </div>
+      </div>
+    </div> 
+
+     <div class="row">
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Variations</h2>  
+        </div>
+      </div>
+    </div>
+    <div class="row">
+       <div class="col-6">
+        <div>
+          <p>info</p>
+          <button class="btn btn-primary" data-open="#modalMdInfo">Open Small Modal</button>
+        </div>
+        <div class="modal-overlay" id="modalMdInfo">
+        <div class="modal modal--md modal--simple">
+          <button type="button" class="modal-close" data-close>
+            <span class="d-inline-flex">
+              <svg class="icon small" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+              </svg>
+            </span>
+          </button>
+          <div class="modal--header"> 
+            <h2 class="modal--header-title">Confirm Action</h2>
+          </div>
+          <div class="modal-content">
+            <p class="modal-text">
+              You are about to proceed with this action, which may affect your access to certain government services. 
+            </p>
+            <p class="modal-text">
+              Please review the details carefully before confirming. If you continue, any changes made will be final and may require additional steps to reverse.
+            </p> 
+          </div>
+          <div class="modal--footer">
+            <div class="modal-buttons">
+              <button class="btn btn-primary btn-rounded btn-md" data-close>Cancel</button> 
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+       <div class="col-6">
+        <div>
+          <p>confirmation</p>
+          <button class="btn btn-primary" data-open="#modalMdConfirmation">Open Small Modal</button>
+        </div>
+        <div class="modal-overlay" id="modalMdConfirmation">
+        <div class="modal modal--md modal--simple">
+          <button type="button" class="modal-close" data-close>
+            <span class="d-inline-flex">
+              <svg class="icon small" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+              </svg>
+            </span>
+          </button>
+          <div class="modal--header"> 
+            <h2 class="modal--header-title">Confirm Action</h2>
+          </div>
+          <div class="modal-content">
+            <p class="modal-text">
+              You are about to proceed with this action, which may affect your access to certain government services. 
+            </p>
+            <p class="modal-text">
+              Please review the details carefully before confirming. If you continue, any changes made will be final and may require additional steps to reverse.
+            </p> 
+          </div>
+          <div class="modal--footer">
+            <div class="modal-buttons">
+              <button class="btn btn-outline-primary btn-rounded btn-md" data-close>Cancel</button>
+              <button class="btn btn-primary btn-rounded btn-md">Confirm & Proceed</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Styles</h2>  
+        </div>
+      </div>
+    </div>
+    <div class="row">
+       <div class="col-6">
+        <div>
+          <p>default</p>
+          <button class="btn btn-primary" data-open="#modalMdDefault">Open Small Modal</button>
+        </div>
+        <div class="modal-overlay" id="modalMdDefault">
+        <div class="modal modal--md modal--simple">
+          <button type="button" class="modal-close" data-close>
+            <span class="d-inline-flex">
+              <svg class="icon small" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+              </svg>
+            </span>
+          </button>
+          <div class="modal--header"> 
+            <h2 class="modal--header-title">Confirm Action</h2>
+          </div>
+          <div class="modal-content">
+            <p class="modal-text">
+              You are about to proceed with this action, which may affect your access to certain government services. 
+            </p>
+            <p class="modal-text">
+              Please review the details carefully before confirming. If you continue, any changes made will be final and may require additional steps to reverse.
+            </p> 
+          </div>
+          <div class="modal--footer">
+            <div class="modal-buttons">
+              <button class="btn btn-outline-primary btn-rounded btn-md" data-close>Cancel</button>
+              <button class="btn btn-primary btn-rounded btn-md">Confirm & Proceed</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+       <div class="col-6">
+        <div>
+          <p>destructive</p>
+          <button class="btn btn-primary" data-open="#modalMdDestructive">Open Small Modal</button>
+        </div>
+        <div class="modal-overlay" id="modalMdDestructive">
+        <div class="modal modal--md modal--simple">
+          <button type="button" class="modal-close" data-close>
+            <span class="d-inline-flex">
+              <svg class="icon small" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+              </svg>
+            </span>
+          </button>
+          <div class="modal--header"> 
+            <h2 class="modal--header-title">Confirm Action</h2>
+          </div>
+          <div class="modal-content">
+            <p class="modal-text">
+              You are about to proceed with this action, which may affect your access to certain government services. 
+            </p>
+            <p class="modal-text">
+              Please review the details carefully before confirming. If you continue, any changes made will be final and may require additional steps to reverse.
+            </p> 
+          </div>
+          <div class="modal--footer">
+            <div class="modal-buttons">
+              <button class="btn btn-outline-destructive btn-rounded btn-md" data-close>Cancel</button>
+              <button class="btn btn-destructive btn-rounded btn-md">Confirm & Delete</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Scrollable Content</h2>  
+        </div>
+      </div>
+    </div>
+    <div class="row">
+       <div class="col-6">
+        <div>
+          <p>desktop</p>
+          <button class="btn btn-primary" data-open="#modalMdScrollable">Open Small Modal</button>
+        </div>
+        <div class="modal-overlay" id="modalMdScrollable">
+        <div class="modal modal--md modal--simple">
+          <button type="button" class="modal-close" data-close>
+            <span class="d-inline-flex">
+              <svg class="icon small" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+              </svg>
+            </span>
+          </button>
+          <div class="modal--header"> 
+            <h2 class="modal--header-title">Confirm Action</h2>
+          </div>
+          <div class="modal-content">
+            <p class="modal-text">
+              In order to proceed with this action, please review the following details carefully. This process is irreversible and may result in permanent data loss if not handled properly. 
+            </p>
+            <p class="modal-text">
+              By continuing, you acknowledge that all associated records, user access permissions, linked metadata, and historical logs related to this entry will be deleted. 
+              If this item is currently shared across multiple teams or integrated with external systems, those connections may also be disrupted. It is strongly recommended that you double-check all dependencies and ensure that appropriate backups have been made. 
+            </p>
+            <p class="modal-text">
+              Should you have any doubts, please consult with your system administrator or project coordinator before confirming this action. Scroll down to review all relevant terms, conditions, and potential consequences before proceeding with deletion.
+            </p> 
+            <p class="modal-text">
+              In order to proceed with this action, please review the following details carefully. This process is irreversible and may result in permanent data loss if not handled properly. 
+            </p>
+            <p class="modal-text">
+              By continuing, you acknowledge that all associated records, user access permissions, linked metadata, and historical logs related to this entry will be deleted. 
+              If this item is currently shared across multiple teams or integrated with external systems, those connections may also be disrupted. It is strongly recommended that you double-check all dependencies and ensure that appropriate backups have been made. 
+            </p>
+            <p class="modal-text">
+              Should you have any doubts, please consult with your system administrator or project coordinator before confirming this action. Scroll down to review all relevant terms, conditions, and potential consequences before proceeding with deletion.
+            </p> 
+          </div>
+          <div class="modal--footer">
+            <div class="modal-buttons">
+              <button class="btn btn-outline-primary btn-rounded btn-md" data-close>Cancel</button>
+              <button class="btn btn-primary btn-rounded btn-md">Confirm & Proceed</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div> 
+    </div>
+
+    <div class="row">
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Specifications</h2>  
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-6">
+        <div>
+          <p>max-height</p>
+          <button class="btn btn-primary" data-open="#modalMdScrollable">Open Small Modal</button>
+        </div>
+        <div class="modal-overlay" id="modalMdScrollable">
+        <div class="modal modal--md modal--simple">
+          <button type="button" class="modal-close" data-close>
+            <span class="d-inline-flex">
+              <svg class="icon small" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+              </svg>
+            </span>
+          </button>
+          <div class="modal--header"> 
+            <h2 class="modal--header-title">Confirm Action</h2>
+          </div>
+          <div class="modal-content">
+            <p class="modal-text">
+              In order to proceed with this action, please review the following details carefully. This process is irreversible and may result in permanent data loss if not handled properly. 
+            </p>
+            <p class="modal-text">
+              By continuing, you acknowledge that all associated records, user access permissions, linked metadata, and historical logs related to this entry will be deleted. 
+              If this item is currently shared across multiple teams or integrated with external systems, those connections may also be disrupted. It is strongly recommended that you double-check all dependencies and ensure that appropriate backups have been made. 
+            </p>
+            <p class="modal-text">
+              Should you have any doubts, please consult with your system administrator or project coordinator before confirming this action. Scroll down to review all relevant terms, conditions, and potential consequences before proceeding with deletion.
+            </p> 
+            <p class="modal-text">
+              In order to proceed with this action, please review the following details carefully. This process is irreversible and may result in permanent data loss if not handled properly. 
+            </p>
+            <p class="modal-text">
+              By continuing, you acknowledge that all associated records, user access permissions, linked metadata, and historical logs related to this entry will be deleted. 
+              If this item is currently shared across multiple teams or integrated with external systems, those connections may also be disrupted. It is strongly recommended that you double-check all dependencies and ensure that appropriate backups have been made. 
+            </p>
+            <p class="modal-text">
+              Should you have any doubts, please consult with your system administrator or project coordinator before confirming this action. Scroll down to review all relevant terms, conditions, and potential consequences before proceeding with deletion.
+            </p> 
+          </div>
+          <div class="modal--footer">
+            <div class="modal-buttons">
+              <button class="btn btn-outline-primary btn-rounded btn-md" data-close>Cancel</button>
+              <button class="btn btn-primary btn-rounded btn-md">Confirm & Proceed</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div> 
+      <div class="col-6">
+        <div>
+          <p>truncation</p>
+          <button class="btn btn-primary" data-open="#modalMdTruncation">Open Small Modal</button>
+        </div>
+        <div class="modal-overlay" id="modalMdTruncation">
+        <div class="modal modal--md modal--simple">
+          <button type="button" class="modal-close" data-close>
+            <span class="d-inline-flex">
+              <svg class="icon small" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+              </svg>
+            </span>
+          </button>
+          <div class="modal--header"> 
+            <h2 class="modal--header-title">
+              Are you absolutely sure you want to permanently remove this file from your shared workspace and revoke all collaborator access?
+            </h2>
+          </div>
+          <div class="modal-content">
+            <p class="modal-text">
+              In order to proceed with this action, please review the following details carefully. This process is irreversible and may result in permanent data loss if not handled properly. 
+            </p>
+            <p class="modal-text">
+              By continuing, you acknowledge that all associated records, user access permissions, linked metadata, and historical logs related to this entry will be deleted. 
+              If this item is currently shared across multiple teams or integrated with external systems, those connections may also be disrupted. It is strongly recommended that you double-check all dependencies and ensure that appropriate backups have been made. 
+            </p>
+            <p class="modal-text">
+              Should you have any doubts, please consult with your system administrator or project coordinator before confirming this action. Scroll down to review all relevant terms, conditions, and potential consequences before proceeding with deletion.
+            </p>  
+          </div>
+          <div class="modal--footer">
+            <div class="modal-buttons">
+              <button class="btn btn-outline-primary btn-rounded btn-md" data-close>Cancel</button>
+              <button class="btn btn-primary btn-rounded btn-md">Confirm & Proceed</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div> 
+    </div>
+
+
+    <div class="row my-48">
+      <div class="col-3">
+        <button class="btn btn-primary" data-open="#modalSm">Open Small Modal</button>
+      </div>
+      <div class="col-3">
+        <button class="btn btn-primary" data-open="#modalDefault">Open Default Modal (with image)</button>
+      </div>
+      <div class="col-3">
+        <button class="btn btn-primary" data-open="#modalLg">Open Large Modal</button>
+      </div>
+      <div class="col-3">
+        <button class="btn btn-primary" data-open="#modalFull">Open Fullscreen Modal</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12"> 
+
+        <!-- ==============================
+        🧱 SMALL MODAL
+        ============================== -->
+        <div class="modal-overlay" id="modalSm">
+          <div class="modal modal--sm modal--simple">
+            <button class="modal-close" data-close>&times;</button>
+            <div class="modal-content">
+              <h2 class="modal-title">Confirm Action</h2>
+              <p class="modal-text">Are you sure you want to delete this item?</p>
+              <div class="modal-buttons">
+                <button class="btn btn-outline-primary btn-rounded btn-md" data-close>Cancel</button>
+                <button class="btn btn-primary btn-rounded btn-md">Confirm & Proceed</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==============================
+        🖼️ DEFAULT MODAL (with image)
+        ============================== -->
+        <div class="modal-overlay" id="modalDefault">
+          <div class="modal modal--md modal--with-image">
+            <button class="modal-close" data-close>&times;</button>
+            <div class="modal-image-wrapper">
+              <img src="https://i.pravatar.cc/100" alt="Preview" /> 
+            </div>
+            <div class="modal-content">
+              <h2 class="modal-title">Product Details</h2>
+              <p class="modal-text">This is a standard modal with image and content for balanced layouts.</p>
+            <div class="modal-buttons">
+                <button class="btn btn-outline-primary btn-rounded btn-md" data-close>Cancel</button>
+                <button class="btn btn-primary btn-rounded btn-md">Confirm & Proceed</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==============================
+        📄 LARGE MODAL
+        ============================== -->
+        <div class="modal-overlay" id="modalLg">
+          <div class="modal modal--lg modal--simple">
+            <button class="modal-close" data-close>&times;</button>
+            <div class="modal-content">
+              <h2 class="modal-title">Detailed Form</h2>
+              <p class="modal-text">Large modals are perfect for longer forms or rich content areas.</p>
+
+              <form class="demo-form" style="display: flex; flex-direction: column; gap: var(--spacing-12, 12px);">
+                <input type="text" placeholder="Name" style="padding: 8px; border: 1px solid var(--gray-300, #ddd); border-radius: 6px;">
+                <input type="email" placeholder="Email" style="padding: 8px; border: 1px solid var(--gray-300, #ddd); border-radius: 6px;">
+                <textarea placeholder="Message" rows="3" style="padding: 8px; border: 1px solid var(--gray-300, #ddd); border-radius: 6px;"></textarea>
+              </form>
+
+              <div class="modal-buttons">
+                <button class="btn btn-outline-primary btn-rounded btn-md" data-close>Cancel</button>
+                <button class="btn btn-primary btn-rounded btn-md">Confirm & Proceed</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==============================
+        🖥️ FULLSCREEN MODAL
+        ============================== -->
+        <div class="modal-overlay" id="modalFull">
+          <div class="modal modal--fullscreen modal--with-image">
+            <button class="modal-close" data-close>&times;</button>
+
+            <div class="modal-image-wrapper">
+              <img src="https://via.placeholder.com/1600x400" alt="Header" />
+            </div>
+
+            <div class="modal-content">
+              <h2 class="modal-title">Fullscreen Modal</h2>
+              <p class="modal-text">Use fullscreen modals for dashboards, media previews, or immersive layouts.</p>
+              <p class="modal-text">Scroll the content to see sticky buttons at the bottom.</p>
+              <p class="modal-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla vel magna orci. Pellentesque habitant morbi tristique senectus et netus.</p>
+              <p class="modal-text">Suspendisse eu turpis vel leo tempus dapibus a non nulla. Sed bibendum viverra nunc, ut tempus est mattis ut.</p>
+              <p class="modal-text">Mauris porttitor facilisis ligula, vel volutpat ligula ultricies nec. Sed feugiat faucibus odio, nec luctus nunc gravida vel.</p>
+              <p class="modal-text">Phasellus id felis non leo placerat volutpat ac non odio. Nulla at lectus sed ligula suscipit dignissim.</p>
+              <p class="modal-text">Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae.</p>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn btn-outline-primary btn-rounded btn-md" data-close>Cancel</button>
+                <button class="btn btn-primary btn-rounded btn-md">Confirm & Proceed</button>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>  
+    </div> 
+  </div>  
+</body>
+</html>
