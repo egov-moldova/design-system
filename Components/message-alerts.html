@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Messaging Components Preview</title>
+  <link rel="stylesheet" href="css/main.css"> 
+  <script defer src="../Components/js/messages.js"></script>
+</head>
+<body>
+  <div class="alerts">
+    <div class="banner banner--info modal--fade"> 
+      <span class="banner__icon"> 
+        <svg class="icon large" aria-hidden="true"> 
+          <use href="assets/icons/sprite.svg#icon-circle-info-filled"></use> 
+        </svg> 
+      </span>
+      <div class="banner__content"> 
+        <p>
+          Scheduled maintenance today. Some services may be temporarily unavailable. 
+        </p>
+      </div>
+      <button class="banner__close" aria-label="Close">
+        <span class="d-inline-flex">
+          <svg class="icon small" aria-hidden="true"> 
+            <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+          </svg>
+        </span>
+      </button>
+    </div>
+    <div class="banner banner--warning modal--fade"> 
+      <span class="banner__icon"> 
+          <svg class="icon large" aria-hidden="true"> 
+            <use href="assets/icons/sprite.svg#icon-warning-filled"></use> 
+          </svg>
+        </span>
+      <div class="banner__content"> 
+        <p>
+          Scheduled maintenance today. Some services may be temporarily unavailable. 
+        </p>
+      </div>
+      <button class="banner__close" aria-label="Close">
+        <span class="d-inline-flex">
+          <svg class="icon small" aria-hidden="true"> 
+            <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+          </svg>
+        </span>
+      </button>
+    </div>
+    <div class="banner banner--error modal--fade">
+      <span class="banner__icon"> 
+        <svg class="icon large" aria-hidden="true"> 
+          <use href="assets/icons/sprite.svg#icon-circle-info-filled"></use>  
+        </svg>
+      </span>
+      <div class="banner__content"> 
+        <p>
+          Scheduled maintenance today. Some services may be temporarily unavailable. 
+        </p>
+      </div>
+      <button class="banner__close" aria-label="Close">
+        <span class="d-inline-flex">
+          <svg class="icon small" aria-hidden="true"> 
+            <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+          </svg>
+        </span>
+      </button>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="col-12 col-sm-7">
+        <h1>Banner Alerts</h1>
+        <p class="text-gray-400">
+          Banners are persistent, non-contextual notifications that appear at the top of the screen to inform users of important system-wide events, updates, or statuses. They are meant to draw attention without blocking interaction, and remain visible until dismissed or resolved.
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Styles</h2>  
+        </div>
+      </div>
+      <div class="col-12 col-sm-7">
+        <p class="text-gray-400">
+          Each type of toast conveys a specific message through its style and context. The available options are info, warning, success, and error. Select the appropriate semantic type based on the nature of the message you want to communicate.
+        </p>
+      </div>
+    </div>  
+    <div class="row">
+      <div class="col-12">
+        <div class="mb-40">
+          <p>info</p>
+          <div class="banner banner--info modal--fade"> 
+              <span class="banner__icon"> 
+                <svg class="icon large" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-circle-info-filled"></use> 
+                </svg> 
+              </span>
+            <div class="banner__content"> 
+              <h3 class="banner__title">Information Banner</h3>
+              <p>
+                Scheduled maintenance today. Some services may be temporarily unavailable. 
+              </p>
+            </div>
+            <button class="banner__close" aria-label="Close">
+              <span class="d-inline-flex">
+                <svg class="icon small" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+                </svg>
+              </span>
+            </button>
+          </div>
+        </div> 
+        <div class="mb-40">
+          <p>warning</p>
+          <div class="banner banner--warning modal--fade"> 
+            <span class="banner__icon"> 
+                <svg class="icon large" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-warning-filled"></use> 
+                </svg>
+              </span>
+            <div class="banner__content"> 
+              <p>
+                Scheduled maintenance today. Some services may be temporarily unavailable. 
+              </p>
+            </div>
+            <button class="banner__close" aria-label="Close">
+              <span class="d-inline-flex">
+                <svg class="icon small" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+                </svg>
+              </span>
+            </button>
+          </div>
+        </div> 
+        <div class="mb-40">
+          <p>error</p>
+          <div class="banner banner--error modal--fade">
+            <span class="banner__icon"> 
+              <svg class="icon large" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-circle-info-filled"></use>  
+              </svg>
+            </span>
+            <div class="banner__content"> 
+              <p>
+                Scheduled maintenance today. Some services may be temporarily unavailable. 
+              </p>
+            </div>
+            <button class="banner__close" aria-label="Close">
+              <span class="d-inline-flex">
+                <svg class="icon small" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+                </svg>
+              </span>
+            </button>
+          </div>
+        </div> 
+      </div>
+    </div> 
+
+    <!-- TYPES -->
+    <div class="row">
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Types</h2>  
+        </div>
+      </div> 
+    </div>  
+    <div class="row">
+      <div class="col-12 mb-40">
+        <h4>Strong</h4>
+        <div class="mb-40"> 
+          <div class="banner banner--info modal--fade">
+            <span class="banner__icon"> 
+              <svg class="icon large" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-circle-info-filled"></use> 
+              </svg> 
+            </span>
+            <div class="banner__content"> 
+              <p>
+                Scheduled maintenance today. Some services may be temporarily unavailable. 
+              </p>
+            </div>
+            <button class="banner__close" aria-label="Close">
+              <span class="d-inline-flex">
+                <svg class="icon small" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+                </svg>
+              </span>
+            </button>
+          </div>
+        </div> 
+        <div class="mb-40"> 
+          <div class="banner banner--warning modal--fade">
+            <span class="banner__icon"> 
+              <svg class="icon large" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-warning-filled"></use> 
+              </svg>
+            </span>
+            <div class="banner__content"> 
+              <p>
+                Scheduled maintenance today. Some services may be temporarily unavailable. 
+              </p>
+            </div>
+            <button class="banner__close" aria-label="Close">
+              <span class="d-inline-flex">
+                <svg class="icon small" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+                </svg>
+              </span>
+            </button>
+          </div>
+        </div> 
+        <div class="mb-40"> 
+          <div class="banner banner--error modal--fade"> 
+            <span class="banner__icon"> 
+              <svg class="icon large" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-circle-info-filled"></use>  
+              </svg>
+            </span>
+            <div class="banner__content"> 
+              <p>
+                Scheduled maintenance today. Some services may be temporarily unavailable. 
+              </p>
+            </div>
+            <button class="banner__close" aria-label="Close">
+              <span class="d-inline-flex">
+                <svg class="icon small" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+                </svg>
+              </span>
+            </button>
+          </div>
+        </div> 
+      </div>
+
+      <div class="col-12">
+        <h4>Subtle</h4>
+        <div class="mb-40"> 
+          <div class="banner banner--info banner--subtle modal--fade"> 
+            <span class="banner__icon"> 
+              <svg class="icon large" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-circle-info-filled"></use> 
+              </svg> 
+            </span>
+            <div class="banner__content"> 
+              <p>
+                Scheduled maintenance today. Some services may be temporarily unavailable. 
+              </p>
+            </div>
+            <button class="banner__close" aria-label="Close">
+              <span class="d-inline-flex">
+                <svg class="icon small" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+                </svg>
+              </span>
+            </button>
+          </div>
+        </div> 
+        <div class="mb-40"> 
+          <div class="banner banner--warning  banner--subtle modal--fade"> 
+            <span class="banner__icon"> 
+              <svg class="icon large" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-warning-filled"></use> 
+              </svg>
+            </span>
+            <div class="banner__content"> 
+              <p>
+                Scheduled maintenance today. Some services may be temporarily unavailable. 
+              </p>
+            </div>
+            <button class="banner__close" aria-label="Close">
+              <span class="d-inline-flex">
+                <svg class="icon small" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+                </svg>
+              </span>
+            </button>
+          </div>
+        </div> 
+        <div class="mb-40"> 
+          <div class="banner banner--error banner--subtle modal--fade"> 
+            <span class="banner__icon"> 
+              <svg class="icon large" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-circle-info-filled"></use>  
+              </svg>
+            </span>
+            <div class="banner__content"> 
+              <p>
+                Scheduled maintenance today. Some services may be temporarily unavailable. 
+              </p>
+            </div>
+            <button class="banner__close" aria-label="Close">
+              <span class="d-inline-flex">
+                <svg class="icon small" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+                </svg>
+              </span>
+            </button>
+          </div>
+        </div> 
+      </div>
+    </div> 
+
+    <!-- TARGET SIZE -->
+    <div class="row">
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Target Sizes</h2>  
+        </div>
+      </div> 
+    </div>
+    <div class="row mb-40">
+      <dv class="col-12">
+        <div class="banner banner--warning  banner--subtle modal--fade">
+          <span class="banner__icon"> 
+            <svg class="icon large" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-warning-filled"></use> 
+            </svg>
+          </span>
+          <div class="banner__content"> 
+            <p>
+              Scheduled maintenance today. Some services may be temporarily unavailable. 
+            </p>
+          </div>
+          <button class="banner__close bg-gray-300" aria-label="Close">
+            <span class="d-inline-flex">
+              <svg class="icon small" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-cross-large"></use> 
+              </svg>
+            </span>
+          </button>
+        </div>
+      </dv>
+    </div> 
+  </div>
+
+
+  <div class="alerts d-none">
+    <div class="banner banner--info modal--fade">
+      <span class="banner__icon">ℹ️</span>
+      <div class="banner__content">
+        <h3 class="banner__title">Information Banner</h3>
+        <p>This is an informational banner message.</p>
+      </div>
+      <button class="banner__close" aria-label="Close">×</button>
+    </div>  
+      <div class="banner banner--success modal--slide">
+        <span class="banner__icon">✅</span>
+        <div class="banner__content"> 
+          <p>Your changes were saved successfully.</p>
+        </div>
+        <button class="banner__close" aria-label="Close">×</button>
+      </div> 
+      <div class="banner banner--warning modal--zoom">
+        <span class="banner__icon">⚠️</span>
+        <div class="banner__content">
+          <h3 class="banner__title">Warning Banner</h3>
+          <p>Be careful! Some settings might affect performance.</p>
+        </div>
+        <button class="banner__close" aria-label="Close">×</button>
+      </div> 
+    <div class="banner banner--error modal--fade">
+      <span class="banner__icon">❌</span>
+      <div class="banner__content">
+        <h3 class="banner__title">Error Banner</h3>
+        <p>Something went wrong. Please try again later.</p>
+      </div>
+      <button class="banner__close" aria-label="Close">×</button>
+    </div>   
+  </div>   
+
+  <script src="messages.js"></script>
+</body>
+</html>

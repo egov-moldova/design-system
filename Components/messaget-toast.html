@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Messaging Toast Components Preview</title>
+  <link rel="stylesheet" href="css/main.css"> 
+  <script defer src="../Components/js/messages.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-12 col-sm-7">
+        <h1>Toast Message</h1>
+        <p class="text-gray-400">
+          Toast messages are used to inform users of system status, completed actions, errors, or other relevant events. They appear in the corner of the screen (typically bottom-right or top-right) and are designed to be non-intrusive, allowing users to continue their current task without interruption.
+        </p>
+      </div>
+    </div> 
+    <div class="row">
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Styles</h2>  
+        </div>
+      </div>
+      <div class="col-7">
+        <p class="text-gray-400">
+          Each type of toast conveys a specific message through its style and context. The available options are info, warning, success, and error. Select the appropriate semantic type based on the nature of the message you want to communicate.
+        </p>
+      </div>
+    </div>  
+    <div class="row toast-demo">
+      <div class="col-3">
+        <button class="btn btn-primary" onclick="showToast('Info', 'This is an info toast', 'info')">Info</button>
+      </div>
+      <div class="col-3">
+        <button class="btn btn-primary bg-green-600" onclick="showToast('Success', 'Everything went well', 'success')">Success</button>
+      </div>
+      <div class="col-3">
+        <button class="btn btn-primary bg-apricot-300 text-black" onclick="showToast('Warning', 'Something needs attention', 'warning')">Warning</button>
+      </div>
+      <div class="col-3">
+        <button class="btn btn-destructive" onclick="showToast('Error', 'An error occurred', 'error')">Error</button>
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Variations</h2>  
+        </div>
+      </div>
+      <div class="col-12 col-sm-7">
+        <p class="text-gray-400">
+          Toast messages can appear in a variety of formats depending on the context and user needs. They may include an optional heading to provide a clear title or summary, or appear without a heading for a more compact message. Toasts can also feature interactive elements, such as embedded links that allow users to take immediate action. Additionally, they may include or omit a close (dismiss) button based on their level of urgency, duration, or whether they include an auto-dismiss behavior.
+        </p>
+      </div>
+    </div> 
+    -<div class="row row-gap-12">
+
+      <!-- ================= INFO ================= -->
+      <div class="col-3  mb-32">
+        <button class="btn btn-primary"
+          onclick="showToast({ type:'info', style:'solid', title:'Info', messages:['Mesaj cu titlu și close'], showClose:true })">
+          Info (titlu + close)
+        </button>
+      </div>
+
+      <div class="col-3 mb-32">
+        <button class="btn btn-primary"
+          onclick="showToast({ type:'info', style:'solid', messages:['Mesaj fără titlu, cu close'], showClose:true })">
+          Info (fără titlu + close)
+        </button>
+      </div>
+
+      <div class="col-3 mb-32">
+        <button class="btn btn-primary"
+          onclick="showToast({ type:'info', style:'solid', messages:['Mesaj fără titlu, fără close'], showClose:false })">
+          Info (fără titlu, fără close)
+        </button>
+      </div>
+
+      <div class="col-3 mb-32">
+        <button class="btn btn-primary"
+          onclick="showToast({ type:'info', style:'solid', title:'Info', messages:['Mesaj cu link'], link:'#', linkText:'Vezi detalii', showClose:true })">
+          Info (titlu + link + close)
+        </button>
+      </div>
+
+      <!-- ================= SUCCESS ================= -->
+      <div class="col-3 mb-32">
+        <button class="btn btn-primary bg-green-600"
+          onclick="showToast({ type:'success', style:'solid', title:'Succes', messages:['Operațiunea a reușit'], showClose:true })">
+          Success (titlu + close)
+        </button>
+      </div>
+
+      <div class="col-3 mb-32">
+        <button class="btn btn-primary bg-green-600"
+          onclick="showToast({ type:'success', style:'solid', messages:['Fără titlu, doar mesaj'], showClose:true })">
+          Success (fără titlu + close)
+        </button>
+      </div>
+
+      <div class="col-3 mb-32">
+        <button class="btn btn-primary bg-green-600"
+          onclick="showToast({ type:'success', style:'solid', messages:['Fără titlu, fără close'], showClose:false })">
+          Success (fără titlu, fără close)
+        </button>
+      </div>
+
+      <div class="col-3 mb-32">
+        <button class="btn btn-primary bg-green-600"
+          onclick="showToast({ type:'success', style:'solid', title:'Succes', messages:['Mesaj cu link'], link:'#', linkText:'Vezi detalii', showClose:true })">
+          Success (titlu + link + close)
+        </button>
+      </div>
+
+      <!-- ================= WARNING ================= -->
+      <div class="col-3 mb-32">
+        <button class="btn btn-primary bg-apricot-300 text-black"
+          onclick="showToast({ type:'warning', style:'solid', title:'Atenție', messages:['Mesaj cu titlu'], showClose:true })">
+          Warning (titlu + close)
+        </button>
+      </div>
+
+      <div class="col-3 mb-32">
+        <button class="btn btn-primary bg-apricot-300 text-black"
+          onclick="showToast({ type:'warning', style:'solid', messages:['Mesaj fără titlu'], showClose:true })">
+          Warning (fără titlu + close)
+        </button>
+      </div>
+
+      <div class="col-3 mb-32">
+        <button class="btn btn-primary bg-apricot-300 text-black"
+          onclick="showToast({ type:'warning', style:'solid', messages:['Mesaj fără titlu, fără close'], showClose:false })">
+          Warning (fără titlu, fără close)
+        </button>
+      </div>
+
+      <div class="col-3 mb-32">
+        <button class="btn btn-primary bg-apricot-300 text-black"
+          onclick="showToast({ type:'warning', style:'solid', title:'Atenție', messages:['Mesaj cu link'], link:'#', linkText:'Vezi detalii', showClose:true })">
+          Warning (titlu + link + close)
+        </button>
+      </div>
+
+      <!-- ================= ERROR ================= -->
+      <div class="col-3 mb-32">
+        <button class="btn btn-destructive"
+          onclick="showToast({ type:'error', style:'solid', title:'Eroare', messages:['Mesaj cu titlu'], showClose:true })">
+          Error (titlu + close)
+        </button>
+      </div>
+
+      <div class="col-3 mb-32">
+        <button class="btn btn-destructive"
+          onclick="showToast({ type:'error', style:'solid', messages:['Mesaj fără titlu'], showClose:true })">
+          Error (fără titlu + close)
+        </button>
+      </div>
+
+      <div class="col-3 mb-32">
+        <button class="btn btn-destructive"
+          onclick="showToast({ type:'error', style:'solid', messages:['Mesaj fără titlu, fără close'], showClose:false })">
+          Error (fără titlu, fără close)
+        </button>
+      </div>
+
+      <div class="col-3 mb-32">
+        <button class="btn btn-destructive"
+          onclick="showToast({ type:'error', style:'solid', title:'Eroare', messages:['Mesaj cu link'], link:'#', linkText:'Vezi detalii', showClose:true })">
+          Error (titlu + link + close)
+        </button>
+      </div>
+ 
+
+    </div>
+
+  </div>
+
+
+ 
+</body>
+</html>

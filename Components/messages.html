@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Messaging Components Preview</title>
+  <link rel="stylesheet" href="css/main.css"> 
+  <script defer src="../Components/js/messages.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-7">
+        <h1>Spinner</h1>
+        <p class="text-gray-400">
+          A spinner component is a visual element used to indicate that a process is ongoing, such as loading content or performing an action in the background. It typically takes the form of a circular or rotating graphic, often accompanied by a subtle animation to suggest motion and progress.
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Sizes</h2>  
+        </div>
+      </div>
+    </div>   
+  </div>
+  <div class="alerts d-none">
+    <div class="banner banner--info modal--fade">
+      <span class="banner__icon">ℹ️</span>
+      <div class="banner__content">
+        <h3 class="banner__title">Information Banner</h3>
+        <p>This is an informational banner message.</p>
+      </div>
+      <button class="banner__close" aria-label="Close">×</button>
+    </div>  
+      <div class="banner banner--success modal--slide">
+        <span class="banner__icon">✅</span>
+        <div class="banner__content"> 
+          <p>Your changes were saved successfully.</p>
+        </div>
+        <button class="banner__close" aria-label="Close">×</button>
+      </div> 
+      <div class="banner banner--warning modal--zoom">
+        <span class="banner__icon">⚠️</span>
+        <div class="banner__content">
+          <h3 class="banner__title">Warning Banner</h3>
+          <p>Be careful! Some settings might affect performance.</p>
+        </div>
+        <button class="banner__close" aria-label="Close">×</button>
+      </div> 
+    <div class="banner banner--error modal--fade">
+      <span class="banner__icon">❌</span>
+      <div class="banner__content">
+        <h3 class="banner__title">Error Banner</h3>
+        <p>Something went wrong. Please try again later.</p>
+      </div>
+      <button class="banner__close" aria-label="Close">×</button>
+    </div>   
+  </div> 
+  <div class="container">
+
+  <!-- Toast Controls -->
+  <div class="toast-demo-controls">
+    <button class="btn btn--primary" data-toast="info">Show Info Toast</button>
+    <button class="btn btn--success" data-toast="success">Show Success Toast</button>
+    <button class="btn btn--warning" data-toast="warning">Show Warning Toast</button>
+    <button class="btn btn--danger" data-toast="danger">Show Error Toast</button>
+  </div>
+
+  <!-- Toast container -->
+  <div class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Banner Messages -->
+  <div class="message message--banner message--info">
+    <span class="message__icon">ℹ️</span>
+    <div class="message__content">
+      <p class="message__title">Info Banner</p>
+      <p class="message__text">This is an informational banner.</p>
+    </div>
+    <button class="message__close">×</button>
+  </div>
+
+  <div class="message message--banner message--success">
+    <span class="message__icon">✅</span>
+    <div class="message__content">
+      <p class="message__title">Success Banner</p>
+      <p class="message__text">Action completed successfully!</p>
+    </div>
+    <button class="message__close">×</button>
+  </div>
+
+  <!-- Info Boxes -->
+  <div class="message message--informational-box message--info">
+    <span class="message__icon">💬</span>
+    <div class="message__content">
+      <p class="message__title">Information Box</p>
+      <p class="message__text">General informational box.</p>
+    </div>
+  </div>
+
+  <div class="message message--informational-box message--success">
+    <span class="message__icon">🎉</span>
+    <div class="message__content">
+      <p class="message__title">Success Box</p>
+      <p class="message__text">Operation completed successfully.</p>
+    </div>
+  </div>
+
+  <!-- Inline Messages -->
+  <div class="message message--inline message--info">
+    <span class="message__icon">ℹ️</span>
+    <span class="message__text">This is an inline informational message.</span>
+  </div>
+
+  <div class="message message--inline message--success">
+    <span class="message__icon">✅</span>
+    <span class="message__text">Action completed successfully!</span>
+  </div>
+
+</div>
+
+  <div class="container mt-48">
+    <!-- ======================================================
+         🟦 TOAST MESSAGES
+    ======================================================= -->
+    <section class="row">
+      <div class="col">
+        <h2 class="section-title">Toast Messages</h2>
+        <div class="toast-demo-controls">
+          <button class="btn btn--primary" data-toast="info">Show Info Toast</button>
+          <button class="btn btn--success" data-toast="success">Show Success Toast</button>
+          <button class="btn btn--warning" data-toast="warning">Show Warning Toast</button>
+          <button class="btn btn--danger" data-toast="error">Show Error Toast</button>
+        </div>
+
+        <!-- Toast container -->
+        <div class="toast-container" aria-live="polite" aria-atomic="true"></div>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         🟩 BANNERS
+    ======================================================= -->
+    <section class="row">
+      <div class="col">
+        <h2 class="section-title">Banners</h2>
+        <div class="banner banner--info modal--fade">
+          <span class="banner__icon">ℹ️</span>
+          <div class="banner__content">
+            <h3 class="banner__title">Information Banner</h3>
+            <p>This is an informational banner message.</p>
+          </div>
+          <button class="banner__close" aria-label="Close">&times;</button>
+        </div>
+
+        <div class="banner banner--success modal--slide">
+          <span class="banner__icon">✅</span>
+          <div class="banner__content">
+            <h3 class="banner__title">Success Banner</h3>
+            <p>Your changes were saved successfully.</p>
+          </div>
+          <button class="banner__close" aria-label="Close">&times;</button>
+        </div>
+
+        <div class="banner banner--warning modal--zoom">
+          <span class="banner__icon">⚠️</span>
+          <div class="banner__content">
+            <h3 class="banner__title">Warning Banner</h3>
+            <p>Be careful! Some settings might affect performance.</p>
+          </div>
+          <button class="banner__close" aria-label="Close">&times;</button>
+        </div>
+
+        <div class="banner banner--error modal--fade">
+          <span class="banner__icon">❌</span>
+          <div class="banner__content">
+            <h3 class="banner__title">Error Banner</h3>
+            <p>Something went wrong. Please try again later.</p>
+          </div>
+          <button class="banner__close" aria-label="Close">&times;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         🟨 INFO BOXES
+    ======================================================= -->
+    <section class="row">
+      <div class="col">
+        <h2 class="section-title">Info Boxes</h2>
+
+        <div class="info-box info-box--info">
+          <span class="info-box__icon">💬</span>
+          <div class="info-box__content">
+            <h4>Information</h4>
+            <p>This is a general informational box.</p>
+          </div>
+        </div>
+
+        <div class="info-box info-box--success">
+          <span class="info-box__icon">🎉</span>
+          <div class="info-box__content">
+            <h4>Success</h4>
+            <p>Operation completed successfully!</p>
+          </div>
+        </div>
+
+        <div class="info-box info-box--warning">
+          <span class="info-box__icon">⚠️</span>
+          <div class="info-box__content">
+            <h4>Warning</h4>
+            <p>Please double-check your configuration.</p>
+          </div>
+        </div>
+
+        <div class="info-box info-box--error">
+          <span class="info-box__icon">🚫</span>
+          <div class="info-box__content">
+            <h4>Error</h4>
+            <p>An unexpected error occurred.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================
+         🟥 INLINE MESSAGES
+    ======================================================= -->
+    <section class="row">
+      <div class="col">
+        <h2 class="section-title">Inline Messages</h2>
+
+        <div class="inline-message inline-message--info">
+          <span class="inline-message__icon">ℹ️</span>
+          <span class="inline-message__text">This is an informational inline message.</span>
+        </div>
+
+        <div class="inline-message inline-message--success">
+          <span class="inline-message__icon">✅</span>
+          <span class="inline-message__text">Action completed successfully!</span>
+        </div>
+
+        <div class="inline-message inline-message--warning">
+          <span class="inline-message__icon">⚠️</span>
+          <span class="inline-message__text">Warning: Changes not yet saved.</span>
+        </div>
+
+        <div class="inline-message inline-message--error">
+          <span class="inline-message__icon">❌</span>
+          <span class="inline-message__text">Error: Unable to connect to the server.</span>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <script src="messages.js"></script>
+</body>
+</html>
