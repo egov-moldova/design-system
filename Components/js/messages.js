@@ -19,7 +19,7 @@ function showToast({
   link = '',
   linkText = '',
   showClose = true,
-  duration = 994000
+  duration = 4000
 } = {}) {
   const iconRefs = {
     info: 'icon-circle-info-filled',
