@@ -64,6 +64,10 @@
 
   &__link {
     color: var(--gray-700);
+    display: flex;
+    align-items: center;
+    position: relative;
+    gap: var(--spacing-4, 4px);
     text-decoration: none;
     transition: color 0.2s ease;
 

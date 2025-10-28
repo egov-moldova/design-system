@@ -11,8 +11,8 @@
   &.circular input{ border-radius: 9999px; }
 
   // Dimensiuni
-  &.medium .input{ --height: var(--spacing-38, 38px); }
-  &.small .input{ --height: var(--spacing-32, 32px); }
+  &.medium .input{ height: var(--spacing-48, 48px); }
+  &.small .input{ height: var(--spacing-40, 40px); }
 
   .input {
     @include input-style; // mixin-ul tău cu stilul de bază
@@ -54,7 +54,10 @@
       display: inline-flex;
     }
   }
-
+  .spinner {
+    position: absolute;
+    right: var(--spacing-16, 16px);
+  }
   .btn-icon.clear {
     position: absolute;
     right: var(--spacing-8, 8px);

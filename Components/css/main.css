@@ -10770,10 +10770,10 @@ label.required::after {
   border-radius: 9999px;
 }
 .search-input.medium .input {
-  --height: var(--spacing-38, 38px);
+  height: var(--spacing-48, 48px);
 }
 .search-input.small .input {
-  --height: var(--spacing-32, 32px);
+  height: var(--spacing-40, 40px);
 }
 .search-input .input {
   border: 1.5px solid var(--gray-250);
@@ -10847,6 +10847,10 @@ label.required::after {
 }
 .search-input .icon-loading.visible {
   display: inline-flex;
+}
+.search-input .spinner {
+  position: absolute;
+  right: var(--spacing-16, 16px);
 }
 .search-input .btn-icon.clear {
   position: absolute;
@@ -12378,6 +12382,10 @@ label.required::after {
 }
 .breadcrumbs__link {
   color: var(--gray-700);
+  display: flex;
+  align-items: center;
+  position: relative;
+  gap: var(--spacing-4, 4px);
   text-decoration: none;
   transition: color 0.2s ease;
 }
