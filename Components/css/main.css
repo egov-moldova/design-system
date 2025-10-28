@@ -10850,7 +10850,7 @@ label.required::after {
 }
 .search-input .spinner {
   position: absolute;
-  right: var(--spacing-16, 16px);
+  right: var(--spacing-8, 8px);
 }
 .search-input .btn-icon.clear {
   position: absolute;
@@ -10867,10 +10867,10 @@ label.required::after {
 .search-input .btn-icon.clear.visible {
   display: inline-flex;
 }
-.search-input.loading .icon-loading {
-  display: flex;
+.search-input:has(.visible) .spinner {
+  right: calc(var(--spacing-40) - 5px);
 }
-.search-input.filled .btn-icon.clear, .search-input.focus-populated .btn-icon.clear {
+.search-input.loading .icon-loading {
   display: flex;
 }
 
