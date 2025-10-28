@@ -39,6 +39,7 @@
       align-items: center;
       justify-content: center;
       font-size: 0.875rem;
+      line-height: 1;
       font-weight: 500;
       z-index: 2; // above connector line
       transition: all 0.2s ease;
@@ -70,6 +71,7 @@
     // hide connector for last step
     &:first-child:not(.progress-step--current, .progress-step--incomplete, .progress-step--blocked) {
         flex-grow: initial ;
+        min-width: auto;
 
         &::after {
             display: none;
@@ -140,12 +142,30 @@
   // RESPONSIVE: mobile - compact, hide labels if you want
   @media (max-width: 768px) {
     overflow-x: auto;
-    gap: var(--spacing-12, 12px);
+    gap: var(--spacing-6, 6px);
     padding-bottom: var(--spacing-12, 12px);
 
     .progress-step {
-      padding: 0 var(--spacing-8, 8px);
+      //padding: 0 var(--spacing-8, 8px);
+      min-width: 50px;
 
+
+     &__circle {
+          background-size: 10px;
+          height: 18px;
+          width: 18px;
+          font-size: .625rem;
+          text-indent: -999999cm;
+      }
+
+      &__label {
+          display: none;
+      }
+
+      &::after {
+          top: 10px;
+          width: calc(100% - 26px)
+      }
       // On mobile we typically hide labels (like your screenshot)
       &__label {
         display: none;
@@ -153,9 +173,14 @@
 
       // shorter connectors on small screens
       &::after {
-        width: var(--connector-length-mobile, 40px);
-      }
+         top: 10px;
+         width: calc(100% - 26px)
+      } 
     }
+
+    .progress-step--blocked .progress-step__circle {
+        background: none;
+      }
   }
 
   // VERTICAL VERSION: connector becomes vertical line downward

@@ -9241,6 +9241,7 @@ p {
   align-items: center;
   justify-content: center;
   font-size: 0.875rem;
+  line-height: 1;
   font-weight: 500;
   z-index: 2;
   transition: all 0.2s ease;
@@ -9266,6 +9267,7 @@ p {
 }
 .progress-tracker .progress-step:first-child:not(.progress-step--current, .progress-step--incomplete, .progress-step--blocked) {
   flex-grow: initial;
+  min-width: auto;
 }
 .progress-tracker .progress-step:first-child:not(.progress-step--current, .progress-step--incomplete, .progress-step--blocked)::after {
   display: none;
@@ -9319,17 +9321,35 @@ p {
 @media (max-width: 768px) {
   .progress-tracker {
     overflow-x: auto;
-    gap: var(--spacing-12, 12px);
+    gap: var(--spacing-6, 6px);
     padding-bottom: var(--spacing-12, 12px);
   }
   .progress-tracker .progress-step {
-    padding: 0 var(--spacing-8, 8px);
+    min-width: 50px;
+  }
+  .progress-tracker .progress-step__circle {
+    background-size: 10px;
+    height: 18px;
+    width: 18px;
+    font-size: 0.625rem;
+    text-indent: -999999cm;
   }
   .progress-tracker .progress-step__label {
     display: none;
   }
   .progress-tracker .progress-step::after {
-    width: var(--connector-length-mobile, 40px);
+    top: 10px;
+    width: calc(100% - 26px);
+  }
+  .progress-tracker .progress-step__label {
+    display: none;
+  }
+  .progress-tracker .progress-step::after {
+    top: 10px;
+    width: calc(100% - 26px);
+  }
+  .progress-tracker .progress-step--blocked .progress-step__circle {
+    background: none;
   }
 }
 .progress-tracker.progress-tracker--vertical {
@@ -9709,7 +9729,6 @@ body:has(.modal-overlay.modal-overlay.is-active) {
   border-radius: 0;
   justify-content: center;
   padding-block: var(--spacing-12, 12px);
-  border: 2px solid red;
 }
 .message--banner .banner__content,
 .banner--banner .banner__content,
@@ -12541,7 +12560,7 @@ label.required::after {
 }
 .avatar-stack .avatar {
   margin-left: calc(var(--spacing-8) * -1);
-  border: 2px solid var(--color-white);
+  border: 2px solid var(--white);
   box-shadow: 0 0 0 1px var(--color-gray-100);
   transition: transform 0.2s ease;
 }
