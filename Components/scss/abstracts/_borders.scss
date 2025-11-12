@@ -65,3 +65,23 @@
     border-left-style: #{$value} !important;
   }
 }
+@each $key, $value in vars.$border-widths {
+  // Full border
+  .border-#{$key} {
+    border-width: #{$value} !important;
+  }
+
+  // Individual sides
+  .border-top-#{$key} {
+    border-top-width: #{$value} !important;
+  }
+  .border-right-#{$key} {
+    border-right-width: #{$value} !important;
+  }
+  .border-bottom-#{$key} {
+    border-bottom-width: #{$value} !important;
+  }
+  .border-left-#{$key} {
+    border-left-width: #{$value} !important;
+  }
+}

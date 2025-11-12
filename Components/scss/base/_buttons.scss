@@ -181,7 +181,7 @@ $button-sizes: (
 // 🔹 Forme butoane
 // ===============================
 .btn-pill { border-radius: 9999px; }
-.btn-rounded { border-radius: var(--radius-full, 9999px); }
+.btn-rounded { border-radius: var(--border-radius-full, 9999px); }
 
 // ===============================
 // 🔹 Loading

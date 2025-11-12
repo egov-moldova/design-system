@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Header Preview</title>
+  <link rel="stylesheet" href="css/main.css"> 
+  <script src="../Components/js/toggler.js" defer></script>
+  <script defer="" src="../Components/js/modal.js"></script>
+  <script src="../Components/js/mega-nav.js" defer></script>
+  <script src="js/search.js"></script>
+  <script src="js/dropdown.js"></script>
+</head>
+<body>
+  <!-- Pre-header -->
+  <div class="pre-header"> 
+    <div class="pre-header__content">
+      <div class="pre-header__logo">
+        <a href="#" target="_blank">
+          <img src="assets/logos/government-logo.png" alt="Logo Gov" />
+          <span class="">Guvernul Republicii Moldova</span>
+        </a>
+      </div>
+      <div class="language-switcher">
+        <ul>
+          <li>
+            <a class="active" href="#" title="Ro">Ro</a>
+          </li>
+          <li>
+            <a class="" href="#" title="Ru">Ru</a>
+          </li>
+          <li>
+            <a class="" href="#" title="En">En</a>
+          </li>
+        </ul> 
+      </div>
+    </div> 
+  </div> 
+
+  <!-- Header Desktop -->
+    <header class="header d-none d-md-flex"> 
+      <div class="header__wrapper">
+        <a href="#" class="header__brand">
+          <div class="header__brand--logo">
+            <img src="assets/logos/mpay.png" alt="MPay logo"> 
+          </div>
+          <div class="header__brand--details d-none d-sm-flex">
+              <span class="brand-text">mpay</span>
+              <span class="brand-description">
+                serviciul guvernamental de plăți electronice
+              </span>
+          </div> 
+        </a>
+        <nav class="mainNav" role="navigation" aria-label="Meniu principal">
+          <button 
+            class="mainNav__toggle"
+            aria-expanded="false"
+            aria-controls="mainNav__panel"
+          >
+            <span class="mainNav__toggleText">Meniu</span> 
+            <span class="mainNav__toggleIcon nav__icon d-inline-flex" aria-hidden="true">
+                <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-plus-large"></use> 
+                  </svg>
+              </span>
+          </button> 
+        </nav>
+
+
+
+        <nav class="nav" role="navigation" aria-label="Meniu principal">
+          <!-- Dropdown complex -->
+          <div class="nav__item nav__item--has-dropdown">
+            <button class="nav__link btn" aria-expanded="false" aria-haspopup="true">
+              Option
+              <span class="nav__icon p-2 d-inline-flex" aria-hidden="true">
+                <svg class="icon small">
+                  <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use>
+                </svg>
+              </span>
+            </button>
+
+            <div class="nav__menu full" hidden>
+              <div class="container">
+                <div class="row">
+                  <div class="col-12 col-md-6 col-lg-4">
+                    <div class="nav__menu--heading" role="heading">Heading</div>
+                    <hr class="separator separator--horizontal separator--thin separator--subtle">
+                    <ul class="nav__submenu" role="none">
+                      <li role="none"><a href="#" class="nav__submenu-item">Suboption 1</a></li>
+                      <li role="none"><a href="#" class="nav__submenu-item">Suboption 2</a></li>
+                      <li role="none"><a href="#" class="nav__submenu-item">Suboption 3</a></li>
+                    </ul>
+                  </div>
+
+                  <div class="col-12 col-md-6 col-lg-4">
+                    <div class="nav__menu--heading" role="heading">Heading</div>
+                    <hr class="separator separator--horizontal separator--thin separator--subtle">
+                    <ul class="nav__submenu" role="none">
+                      <li role="none"><a href="#" class="nav__submenu-item">Suboption 1</a></li>
+                      <li role="none"><a href="#" class="nav__submenu-item">Suboption 2</a></li>
+                      <li role="none"><a href="#" class="nav__submenu-item">Suboption 3</a></li>
+                      <li role="none"><a href="#" class="nav__submenu-item">Suboption 4</a></li>
+                    </ul>
+                  </div>
+
+                  <div class="col-12 col-md-6 col-lg-4">
+                    <div class="nav__menu--heading" role="heading">Heading</div>
+                    <hr class="separator separator--horizontal separator--thin separator--subtle">
+                    <ul class="nav__submenu" role="none">
+                      <li role="none"><a href="#" class="nav__submenu-item">Suboption 1</a></li>
+                      <li role="none"><a href="#" class="nav__submenu-item">Suboption 5</a></li>
+                      <li role="none"><a href="#" class="nav__submenu-item">Suboption 6</a></li>
+                      <li role="none"><a href="#" class="nav__submenu-item">Suboption 7</a></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dropdown simplu -->
+          <div class="nav__item nav__item--has-dropdown">
+            <button class="nav__link btn" aria-expanded="false" aria-haspopup="true">
+              Option
+              <span class="nav__icon p-2 d-inline-flex" aria-hidden="true">
+                <svg class="icon small">
+                  <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use>
+                </svg>
+              </span>
+            </button>
+
+            <div class="nav__menu" hidden>
+              <ul class="nav__submenu" role="none">
+                <li role="none"><a href="#" class="nav__submenu-item">Suboption 1</a></li>
+                <li role="none"><a href="#" class="nav__submenu-item">Suboption 2</a></li>
+                <li role="none"><a href="#" class="nav__submenu-item">Suboption 3</a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="nav__item"><a href="#" class="nav__link">Option</a></div>
+          <div class="nav__item"><a href="#" class="nav__link">Option</a></div>
+        </nav>
+         
+        <div class="header__actions"> 
+          <div class="header__search">
+            <button class="header__toggle" aria-label="Meniu" data-open="#search-modal">
+              <span class="d-inline-flex">
+                <svg class="icon large" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-search"></use> 
+                </svg>
+              </span>
+            </button>
+            <div class="modal-overlay " id="search-modal" aria-hidden="false">
+              <div class="modal modal--md modal--simple py-72 px-40" tabindex="-1">           
+                <div class="search-input medium">
+                  <span class="p-2 radius-8 d-inline-flex icon-search">
+                          <svg class="icon medium" aria-hidden="true"> 
+                              <use href="assets/icons/sprite.svg#icon-search"></use> 
+                          </svg>
+                      </span>
+                      <input type="text" class="input" placeholder="Search medium...">
+                      <button type="button" class="btn-icon clear visible">
+                          <svg class="icon small" aria-hidden="true"> 
+                              <use href="assets/icons/sprite.svg#icon-cross-small"></use> 
+                          </svg>
+                      </button>
+                      <span class="spinner spinner--extra-small spinner--brand"></span>
+                </div> 
+              </div>
+            </div>
+          </div>
+          
+          <div class="d-none d-md-block">
+            <button id="help-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="help-panel"aria-label="Deschide meniul de ajutor"
+              class="header__toggle" data-toggle="#help-panel" data-position="dynamic" data-animation="fade" data-close="outside"                  >
+              <svg class="icon large" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-bubble-question"></use> 
+              </svg>
+            </button>
+          </div>
+          <div class="d-none d-lg-block">
+            <button id="toggle-platforms" data-toggle="#platform-panel" data-position="dynamic" data-animation="fade" data-close="outside" aria-controls="platform-panel" aria-label="Deschide platforme utile" aria-expanded="false" class="header__toggle">
+              <svg class="icon medium">
+                <use href="assets/icons/sprite.svg#icon-dot-grid"></use>
+              </svg>
+            </button> 
+          </div>
+          <div class="d-no ne d-lg-flex gap-12">
+            <a href="#" title="Autentifică-te" target="_blank" class="btn btn-primary btn-rounded btn-md" type="button">
+              <span class="">Autentifică-te</span>
+              
+            </a> 
+            <a href="#" title="Obține semnătura" target="_blank" type="button" class="btn btn-secondary  btn-rounded btn-md">Obține semnătura</a>
+          </div>
+          <div class="d-none">
+              <a href="#" class="d-block">
+              <span class="sr-only">Utilizator</span>
+              
+            </a>
+            <span class="p-12 bg-gray-200 radius-8 d-inline-flex">
+            <svg class="icon large" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-signature"></use> 
+            </svg>
+          </span>
+          </div>
+        </div>
+      </div> 
+      
+      <!-- Main Navigation Panel -->
+      <div class="mainNav__panel" id="mainNav__panel" hidden>
+        <div class="mainNav__header"> 
+          <div class="search-input small circular mainNav__search"">
+            <span class="p-2 radius-8 d-inline-flex icon-search">
+                <svg class="icon small" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-search"></use>
+                </svg>
+            </span>
+            <input type="text" class="input" placeholder="Search small circular...">
+            <button type="button" class="btn-icon clear">
+                <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-cross-small"></use> 
+                </svg>
+            </button>
+            <span class="spinner spinner--extra-small spinner--brand d-none"></span>
+          </div>
+        </div> 
+        <div class="mainNav__content">
+          <section class="mainNav__section"> 
+            <ul class="mainNav__list">
+              <li class="mainNav__list--item">
+                <button
+                  class="mainNav__list--button"
+                  data-toggle
+                  data-animation="slide"
+                  aria-expanded="false"
+                > 
+                  <span>Option</span>
+                  <span class="d-inline-flex">
+                    <svg class="icon medium" aria-hidden="true"> 
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
+                    </svg>
+                  </span>
+                </button>
+                <ul class="mainNav__submenu" hidden>
+                  <li class="mainNav__list--item">
+                    <a class="mainNav__list--link" href="#">Suboption 1</a>
+                  </li>
+                  <li class="mainNav__list--item">
+                    <a class="mainNav__list--link" href="#">Suboption 2</a>
+                  </li>
+                  <li class="mainNav__list--item">
+                    <a class="mainNav__list--link" href="#">Suboption 3</a>
+                  </li>
+                </ul>
+              </li>
+
+              <li class="mainNav__list--item">
+                <button
+                  class="mainNav__list--button"
+                  data-toggle
+                  data-animation="slide"
+                  aria-expanded="false"
+                > 
+                  <span>Option</span>
+                  <span class="d-inline-flex">
+                    <svg class="icon medium" aria-hidden="true"> 
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
+                    </svg>
+                  </span>
+                </button>
+                <ul class="mainNav__submenu" hidden>
+                  <li class="mainNav__list--item">
+                    <a class="mainNav__list--link" href="#">FAQ</a>
+                  </li>
+                  <li class="mainNav__list--item">
+                    <a class="mainNav__list--link" href="#">Contact</a>
+                  </li>
+                  <li class="mainNav__list--item">
+                    <a class="mainNav__list--link" href="#">Asistență</a>
+                  </li>
+                </ul>
+              </li>
+              <li class="mainNav__list--item">
+                <a href="#" title="Servicii" class="mainNav__list--link">Option</a>
+              </li>
+
+               <li class="mainNav__list--item">
+                <a href="#" title="Servicii" class="mainNav__list--link">Option</a>
+              </li>
+               <li class="mainNav__list--item">
+                <a href="#" title="Servicii" class="mainNav__list--link">Option</a>
+              </li>
+               <li class="mainNav__list--item">
+                <a href="#" title="Servicii" class="mainNav__list--link">Option</a>
+              </li>
+            </ul>
+
+          </section>
+
+          
+        </div>
+
+        <div class="mainNav__actions px-16 pb-24  border-top-1 border-top-solid border-gray-200">  
+          <ul class="mainNav__list" data-nav-level="1">
+            <li class="mainNav__list--item">
+              <button class="mainNav__list--button" data-submenu="#submenu-util" aria-expanded="false">
+                <svg class="icon medium">
+                  <use href="assets/icons/sprite.svg#icon-dot-grid"></use>
+                </svg>
+                Servicii utile 
+              </button>
+            </li>
+            <li class="mainNav__list--item">
+              <button class="mainNav__list--button" data-submenu="#submenu-asistenta" aria-expanded="false">
+                <svg class="icon large">
+                  <use href="assets/icons/sprite.svg#icon-bubble-question"></use>
+                </svg>
+                Asistență
+              </button>
+            </li>
+          </ul>
+
+            <!-- Submeniuri -->
+          <div class="mainNav__submenu" id="submenu-util" hidden>
+            <button class="mainNav__back btn btn-neutral btn-rounded btn-md" data-back>
+              <svg class="icon small">
+                <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
+              </svg>
+              Înapoi
+            </button>
+            <div class="platform-grid__content--wrapper py-24">
+              <div id="platforms-heading" class="platform-panel__title">Platforme utile</div>
+              <div class="platform-grid" role="group" aria-label="Platforme utile">
+    
+                <div class="platform-grid__item featured">
+                  <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Pay" aria-label="Accesează platforma M-Pay – plăți electronice guvernamentale">
+                    <div class="platform-grid__image">
+                      <img src="assets/logos/m-platforms/m-pay.png" alt="Sigla M-Pay" loading="lazy">
+                    </div>
+                    <div class="platform-grid__content">
+                      <div class="platform-grid__title">mpay</div>
+                      <p class="platform-grid__description">plătește</p>
+                    </div>
+                  </a>
+                </div>
+
+                <div class="platform-grid__item featured">
+                  <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Sign" aria-label="Accesează platforma M-Sign – semnează documente digital">
+                    <div class="platform-grid__image">
+                      <img src="assets/logos/m-platforms/m-sign.png" alt="Sigla M-Sign" loading="lazy">
+                    </div>
+                    <div class="platform-grid__content">
+                      <div class="platform-grid__title">msign</div>
+                      <p class="platform-grid__description">semnează</p>
+                    </div>
+                  </a>
+                </div>
+
+                <div class="platform-grid__item featured">
+                  <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Learn" aria-label="Accesează platforma M-Learn – învață online">
+                    <div class="platform-grid__image">
+                      <img src="assets/logos/m-platforms/m-learn.png" alt="Sigla M-Learn" loading="lazy">
+                    </div>
+                    <div class="platform-grid__content">
+                      <div class="platform-grid__title">mlearn</div>
+                      <p class="platform-grid__description">învață</p>
+                    </div>
+                  </a>
+                </div>
+
+                <div class="platform-grid__item featured">
+                  <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Power" aria-label="Accesează platforma M-Power – împuternicește">
+                    <div class="platform-grid__image">
+                      <img src="assets/logos/m-platforms/m-power.png" alt="Sigla M-Power" loading="lazy">
+                    </div>
+                    <div class="platform-grid__content">
+                      <div class="platform-grid__title">mpower</div>
+                      <p class="platform-grid__description">împuternicește</p>
+                    </div>
+                  </a>
+                </div>
+
+                <div class="platform-grid__item featured">
+                  <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Notify" aria-label="Accesează platforma M-Notify – notificări guvernamentale">
+                    <div class="platform-grid__image">
+                      <img src="assets/logos/m-platforms/m-notify.png" alt="Sigla M-Notify" loading="lazy">
+                    </div>
+                    <div class="platform-grid__content">
+                      <div class="platform-grid__title">mnotify</div>
+                      <p class="platform-grid__description">notifică</p>
+                    </div>
+                  </a>
+                </div>
+
+                <div class="platform-grid__item featured">
+                  <a href="#" class="platform-grid__link stretched-link" title="Accesează Acte Permisive" aria-label="Accesează platforma Acte Permisive – eliberare documente">
+                    <div class="platform-grid__image">
+                      <img src="assets/logos/m-platforms/acte-permisive.png" alt="Sigla Acte Permisive" loading="lazy">
+                    </div>
+                    <div class="platform-grid__content">
+                      <div class="platform-grid__title">acte</div>
+                      <p class="platform-grid__description">permisive</p>
+                    </div>
+                  </a>
+                </div>
+
+              </div>
+              <a href="#" class="btn btn-secondary btn-rounded">
+                Descoperă-le pe toate
+                <span class="d-inline-flex">
+                  <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
+                  </svg>
+                </span>
+              </a> 
+            </div> 
+          </div>
+
+          <div class="mainNav__submenu" id="submenu-asistenta" hidden>
+            <button class="mainNav__back btn btn-neutral btn-rounded btn-md" data-back>
+              <svg class="icon small">
+                <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
+              </svg>
+              Înapoi
+            </button>
+            <ul> 
+              <li><a class="mainNav__list--link" href="#">Întrebări frecvente</a></li>
+              <li><a class="mainNav__list--link" href="#">Raportează Problemă</a></li> 
+            </ul>
+          </div> 
+
+          <button class="btn btn-primary">Autentifică-te</button>
+          <button class="btn btn-secondary">Obține semnătura</button>
+        </div>
+      </div>
+    </header>
+    
+    <!-- Header Mobile -->
+    <header class="header header__mobile d-flex d-md-none"> 
+      <div class="header__wrapper">
+        <a href="#" class="header__brand">
+          <div class="header__brand--logo">
+            <img src="assets/logos/mpay.png" alt="MPay logo"> 
+          </div>
+        </a>
+
+        <div class="header__actions"> 
+            <button class="btn btn-primary btn-sm" type="button">Autentificare</button>
+        
+          <div class="header__search">
+            <button class="header__toggle" aria-label="Meniu" data-open="#search-modal-mobile">
+              <span class="d-inline-flex">
+                <svg class="icon large" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-search"></use> 
+                </svg>
+              </span>
+            </button>
+            <div class="modal-overlay" id="search-modal-mobile" aria-hidden="true">
+              <div class="modal modal--md modal--simple py-72 px-40" tabindex="-1">           
+                <div class="search-input medium">
+                  <span class="p-2 radius-8 d-inline-flex icon-search">
+                      <svg class="icon medium" aria-hidden="true"> 
+                          <use href="assets/icons/sprite.svg#icon-search"></use> 
+                      </svg>
+                  </span>
+                  <input type="text" class="input" placeholder="Search medium...">
+                  <button type="button" class="btn-icon clear visible">
+                      <svg class="icon small" aria-hidden="true"> 
+                          <use href="assets/icons/sprite.svg#icon-cross-small"></use> 
+                      </svg>
+                  </button>
+                  <span class="spinner spinner--extra-small spinner--brand"></span>
+                </div> 
+              </div>
+            </div>
+          </div>  
+          <button class="mainNav__toggle mobile btn btn-menu btn-sm" aria-expanded="false" aria-controls="mainNav__panel">
+            <span class="sr-only">Meniu</span>
+            <span class="d-inline-flex">
+                <svg class="icon large" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-menu"></use> 
+                </svg>
+              </span>
+          </button> 
+        </div>
+      </div>  
+       <!-- Main Navigation Panel -->
+      <div class="mainNav__panel" id="mainNav__panel" hidden>
+        <div class="mainNav__header"> 
+          <div class="search-input small circular mainNav__search"">
+                <span class="p-2 radius-8 d-inline-flex icon-search">
+                    <svg class="icon small" aria-hidden="true">
+                        <use href="assets/icons/sprite.svg#icon-search"></use>
+                    </svg>
+                </span>
+                <input type="text" class="input" placeholder="Search small circular...">
+                <button type="button" class="btn-icon clear">
+                    <svg class="icon small" aria-hidden="true"> 
+                        <use href="assets/icons/sprite.svg#icon-cross-small"></use> 
+                    </svg>
+                </button>
+                <span class="spinner spinner--extra-small spinner--brand d-none"></span>
+            </div>
+        </div> 
+        <div class="mainNav__content">
+          <section class="mainNav__section"> 
+            <ul class="mainNav__list">
+              <li class="mainNav__list--item">
+                <button
+                  class="mainNav__list--button"
+                  data-toggle
+                  data-animation="slide"
+                  aria-expanded="false"
+                > 
+                  <span>Option</span>
+                  <span class="d-inline-flex">
+                    <svg class="icon medium" aria-hidden="true"> 
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
+                    </svg>
+                  </span>
+                </button>
+                <ul class="mainNav__submenu" hidden>
+                  <li class="mainNav__list--item">
+                    <a class="mainNav__list--link" href="#">Suboption 1</a>
+                  </li>
+                  <li class="mainNav__list--item">
+                    <a class="mainNav__list--link" href="#">Suboption 2</a>
+                  </li>
+                  <li class="mainNav__list--item">
+                    <a class="mainNav__list--link" href="#">Suboption 3</a>
+                  </li>
+                </ul>
+              </li>
+
+              <li class="mainNav__list--item">
+                <button
+                  class="mainNav__list--button"
+                  data-toggle
+                  data-animation="slide"
+                  aria-expanded="false"
+                > 
+                  <span>Option</span>
+                  <span class="d-inline-flex">
+                    <svg class="icon medium" aria-hidden="true"> 
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
+                    </svg>
+                  </span>
+                </button>
+                <ul class="mainNav__submenu" hidden>
+                  <li class="mainNav__list--item">
+                    <a class="mainNav__list--link" href="#">FAQ</a>
+                  </li>
+                  <li class="mainNav__list--item">
+                    <a class="mainNav__list--link" href="#">Contact</a>
+                  </li>
+                  <li class="mainNav__list--item">
+                    <a class="mainNav__list--link" href="#">Asistență</a>
+                  </li>
+                </ul>
+              </li>
+              <li class="mainNav__list--item">
+                <a href="#" title="Servicii" class="mainNav__list--link">Option</a>
+              </li>
+
+               <li class="mainNav__list--item">
+                <a href="#" title="Servicii" class="mainNav__list--link">Option</a>
+              </li>
+               <li class="mainNav__list--item">
+                <a href="#" title="Servicii" class="mainNav__list--link">Option</a>
+              </li>
+               <li class="mainNav__list--item">
+                <a href="#" title="Servicii" class="mainNav__list--link">Option</a>
+              </li>
+            </ul>
+
+          </section>
+
+          
+        </div>
+
+        <div class="mainNav__actions px-16 pb-24  border-top-1 border-top-solid border-gray-200">  
+          <ul class="mainNav__list" data-nav-level="1">
+            <li class="mainNav__list--item">
+              <button class="mainNav__list--button" data-submenu="submenu-util" aria-expanded="false">
+                <svg class="icon medium">
+                  <use href="assets/icons/sprite.svg#icon-dot-grid"></use>
+                </svg>
+                Servicii utile 
+              </button>
+            </li>
+            <li class="mainNav__list--item">
+              <button class="mainNav__list--button" data-submenu="submenu-asistenta" aria-expanded="false">
+                <svg class="icon large">
+                  <use href="assets/icons/sprite.svg#icon-bubble-question"></use>
+                </svg>
+                Asistență
+              </button>
+            </li>
+          </ul>
+
+            <!-- Submeniuri -->
+          <div class="mainNav__submenu" id="submenu-util" hidden="">
+            <button class="mainNav__back btn btn-neutral btn-rounded btn-md" data-back="">
+              <svg class="icon small">
+                <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
+              </svg>
+              Înapoi
+            </button>
+            <div class="platform-grid__content--wrapper py-24">
+              <div id="platforms-heading" class="platform-panel__title">Platforme utile</div>
+              <div class="platform-grid mobile" role="group" aria-label="Platforme utile">
+    
+                <div class="platform-grid__item featured">
+                  <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Pay" aria-label="Accesează platforma M-Pay – plăți electronice guvernamentale">
+                    <div class="platform-grid__image">
+                      <img src="assets/logos/m-platforms/m-pay.png" alt="Sigla M-Pay" loading="lazy">
+                    </div>
+                    <div class="platform-grid__content">
+                      <div class="platform-grid__title">mpay</div>
+                      <p class="platform-grid__description">plătește</p>
+                    </div>
+                  </a>
+                </div>
+
+                <div class="platform-grid__item featured">
+                  <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Sign" aria-label="Accesează platforma M-Sign – semnează documente digital">
+                    <div class="platform-grid__image">
+                      <img src="assets/logos/m-platforms/m-sign.png" alt="Sigla M-Sign" loading="lazy">
+                    </div>
+                    <div class="platform-grid__content">
+                      <div class="platform-grid__title">msign</div>
+                      <p class="platform-grid__description">semnează</p>
+                    </div>
+                  </a>
+                </div>
+
+                <div class="platform-grid__item featured">
+                  <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Learn" aria-label="Accesează platforma M-Learn – învață online">
+                    <div class="platform-grid__image">
+                      <img src="assets/logos/m-platforms/m-learn.png" alt="Sigla M-Learn" loading="lazy">
+                    </div>
+                    <div class="platform-grid__content">
+                      <div class="platform-grid__title">mlearn</div>
+                      <p class="platform-grid__description">învață</p>
+                    </div>
+                  </a>
+                </div>
+
+                <div class="platform-grid__item featured">
+                  <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Power" aria-label="Accesează platforma M-Power – împuternicește">
+                    <div class="platform-grid__image">
+                      <img src="assets/logos/m-platforms/m-power.png" alt="Sigla M-Power" loading="lazy">
+                    </div>
+                    <div class="platform-grid__content">
+                      <div class="platform-grid__title">mpower</div>
+                      <p class="platform-grid__description">împuternicește</p>
+                    </div>
+                  </a>
+                </div>
+
+                <div class="platform-grid__item featured">
+                  <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Notify" aria-label="Accesează platforma M-Notify – notificări guvernamentale">
+                    <div class="platform-grid__image">
+                      <img src="assets/logos/m-platforms/m-notify.png" alt="Sigla M-Notify" loading="lazy">
+                    </div>
+                    <div class="platform-grid__content">
+                      <div class="platform-grid__title">mnotify</div>
+                      <p class="platform-grid__description">notifică</p>
+                    </div>
+                  </a>
+                </div>
+
+                <div class="platform-grid__item featured">
+                  <a href="#" class="platform-grid__link stretched-link" title="Accesează Acte Permisive" aria-label="Accesează platforma Acte Permisive – eliberare documente">
+                    <div class="platform-grid__image">
+                      <img src="assets/logos/m-platforms/acte-permisive.png" alt="Sigla Acte Permisive" loading="lazy">
+                    </div>
+                    <div class="platform-grid__content">
+                      <div class="platform-grid__title">acte</div>
+                      <p class="platform-grid__description">permisive</p>
+                    </div>
+                  </a>
+                </div>
+
+              </div>
+              <a href="#" class="btn btn-secondary btn-rounded">
+                Descoperă-le pe toate
+                <span class="d-inline-flex">
+                  <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
+                  </svg>
+                </span>
+              </a> 
+            </div> 
+          </div>
+
+          <div class="mainNav__submenu" id="submenu-asistenta" hidden="">
+            <button class="mainNav__back btn btn-neutral btn-rounded btn-md" data-back="">
+              <svg class="icon small">
+                <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
+              </svg>
+              Înapoi
+            </button>
+            <ul> 
+              <li><a class="mainNav__list--link" href="#">Întrebări frecvente</a></li>
+              <li><a class="mainNav__list--link" href="#">Raportează Problemă</a></li> 
+            </ul>
+          </div>
+
+          <button class="btn btn-primary">Autentifică-te</button>
+          <button class="btn btn-secondary">Obține semnătura</button>
+        </div>
+      </div>
+    </header>
+
+
+     <header class="header d-none">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <div class="header__wrapper">
+              <a href="#" class="header__brand">
+                <div class="header__brand--logo">
+                  <img src="assets/logos/mpay.png" alt="MPay logo"> 
+                </div>
+                <div class="header__brand--details d-none d-sm-flex">
+                    <span class="brand-text">mpay</span>
+                    <span class="brand-description">
+                      serviciul guvernamental de plăți electronice
+                    </span>
+                </div> 
+              </a>
+
+              <nav class="nav" role="navigation" aria-label="Meniu principal">
+                <!-- Dropdown complex -->
+                <div class="nav__item nav__item--has-dropdown">
+                  <button class="nav__link btn" aria-expanded="false" aria-haspopup="true">
+                    Option
+                    <span class="nav__icon p-2 d-inline-flex" aria-hidden="true">
+                      <svg class="icon small">
+                        <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use>
+                      </svg>
+                    </span>
+                  </button>
+
+                  <div class="nav__menu full" hidden>
+                    <div class="container">
+                      <div class="row">
+                        <div class="col-12 col-md-6 col-lg-4">
+                          <div class="nav__menu--heading" role="heading">Heading</div>
+                          <hr class="separator separator--horizontal separator--thin separator--subtle">
+                          <ul class="nav__submenu" role="none">
+                            <li role="none"><a href="#" class="nav__submenu-item">Suboption 1</a></li>
+                            <li role="none"><a href="#" class="nav__submenu-item">Suboption 2</a></li>
+                            <li role="none"><a href="#" class="nav__submenu-item">Suboption 3</a></li>
+                          </ul>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-4">
+                          <div class="nav__menu--heading" role="heading">Heading</div>
+                          <hr class="separator separator--horizontal separator--thin separator--subtle">
+                          <ul class="nav__submenu" role="none">
+                            <li role="none"><a href="#" class="nav__submenu-item">Suboption 1</a></li>
+                            <li role="none"><a href="#" class="nav__submenu-item">Suboption 2</a></li>
+                            <li role="none"><a href="#" class="nav__submenu-item">Suboption 3</a></li>
+                            <li role="none"><a href="#" class="nav__submenu-item">Suboption 4</a></li>
+                          </ul>
+                        </div>
+
+                        <div class="col-12 col-md-6 col-lg-4">
+                          <div class="nav__menu--heading" role="heading">Heading</div>
+                          <hr class="separator separator--horizontal separator--thin separator--subtle">
+                          <ul class="nav__submenu" role="none">
+                            <li role="none"><a href="#" class="nav__submenu-item">Suboption 1</a></li>
+                            <li role="none"><a href="#" class="nav__submenu-item">Suboption 5</a></li>
+                            <li role="none"><a href="#" class="nav__submenu-item">Suboption 6</a></li>
+                            <li role="none"><a href="#" class="nav__submenu-item">Suboption 7</a></li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Dropdown simplu -->
+                <div class="nav__item nav__item--has-dropdown">
+                  <button class="nav__link btn" aria-expanded="false" aria-haspopup="true">
+                    Option
+                    <span class="nav__icon p-2 d-inline-flex" aria-hidden="true">
+                      <svg class="icon small">
+                        <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use>
+                      </svg>
+                    </span>
+                  </button>
+
+                  <div class="nav__menu" hidden>
+                    <ul class="nav__submenu" role="none">
+                      <li role="none"><a href="#" class="nav__submenu-item">Suboption 1</a></li>
+                      <li role="none"><a href="#" class="nav__submenu-item">Suboption 2</a></li>
+                      <li role="none"><a href="#" class="nav__submenu-item">Suboption 3</a></li>
+                    </ul>
+                  </div>
+                </div>
+ 
+                <div class="nav__item"><a href="#" class="nav__link">Option</a></div>
+                <div class="nav__item"><a href="#" class="nav__link">Option</a></div>
+              </nav>
+               
+              <nav class="nav d-none" role="navigation" aria-label="Meniu principal">
+                <ul class="nav__list">
+                  <li class="nav__item nav__item--has-dropdown">
+                    <button class="nav__link" aria-expanded="true">
+                      Option
+                      <span class="nav__icon" aria-hidden="true">
+                        <svg class="icon icon--small">
+                          <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use>
+                        </svg>
+                      </span>
+                    </button>
+
+                    <div class="nav__dropdown" role="menu">
+                      <ul class="nav__dropdown-list">
+                        <li class="nav__dropdown-item"><a href="#" class="nav__dropdown-link">Suboption 1</a></li>
+                        <li class="nav__dropdown-item"><a href="#" class="nav__dropdown-link">Suboption 2</a></li>
+                        <li class="nav__dropdown-item"><a href="#" class="nav__dropdown-link">Suboption 3</a></li>
+                        <li class="nav__dropdown-item"><a href="#" class="nav__dropdown-link">Suboption 4</a></li>
+                        <li class="nav__dropdown-item"><a href="#" class="nav__dropdown-link">Suboption 5</a></li>
+                        <li class="nav__dropdown-item"><a href="#" class="nav__dropdown-link">Suboption 6</a></li>
+                        <li class="nav__dropdown-item"><a href="#" class="nav__dropdown-link">Suboption 7</a></li>
+                      </ul>
+                    </div>
+                  </li>
+
+                  <li class="nav__item nav__item--has-dropdown">
+                    <button class="nav__link" aria-expanded="false">
+                      Option
+                      <span class="nav__icon" aria-hidden="true">
+                        <svg class="icon icon--small">
+                          <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use>
+                        </svg>
+                      </span>
+                    </button>
+
+                    <div class="nav__dropdown" role="menu">
+                      <ul class="nav__dropdown-list">
+                        <li class="nav__dropdown-item"><a href="#" class="nav__dropdown-link">Suboption 1</a></li>
+                        <li class="nav__dropdown-item"><a href="#" class="nav__dropdown-link">Suboption 2</a></li>
+                        <li class="nav__dropdown-item"><a href="#" class="nav__dropdown-link">Suboption 3</a></li>
+                      </ul>
+                    </div>
+                  </li>
+
+                  <li class="nav__item"><a href="#" class="nav__link">Option</a></li>
+                  <li class="nav__item"><a href="#" class="nav__link">Option</a></li>
+                </ul>
+              </nav>
+ 
+              <div class="header__actions">
+                <div class="d-lg-none">
+                  <button class="btn btn-primary btn-sm" type="button">Button</button>
+                </div>
+                <div class="header__search">
+                  <button class="header__toggle" aria-label="Meniu">
+                    <span class="d-inline-flex">
+                      <svg class="icon large" aria-hidden="true"> 
+                        <use href="assets/icons/sprite.svg#icon-search"></use> 
+                      </svg>
+                    </span>
+                  </button>
+                </div>
+                <div class="d-lg-none">
+                  <button class="btn btn-menu btn-sm" type="button">
+                    <span class="sr-only">Meniu</span>
+                    <span class="d-inline-flex">
+                        <svg class="icon large" aria-hidden="true"> 
+                          <use href="assets/icons/sprite.svg#icon-menu"></use> 
+                        </svg>
+                      </span>
+                  </button>
+                </div>
+               <div class="d-none d-lg-block">
+                  <button id="help-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="help-panel"aria-label="Deschide meniul de ajutor"
+                    class="header__toggle" data-toggle="#help-panel" data-position="dynamic" data-animation="fade" data-close="outside"                  >
+                    <svg class="icon large" aria-hidden="true"> 
+                      <use href="assets/icons/sprite.svg#icon-bubble-question"></use> 
+                    </svg>
+                  </button>
+                </div>
+                <div class="d-none d-lg-block">
+                  <button id="toggle-platforms" data-toggle="#platform-panel" data-position="dynamic" data-animation="fade" data-close="outside" aria-controls="platform-panel" aria-label="Deschide platforme utile" aria-expanded="false" class="header__toggle">
+                    <svg class="icon medium">
+                      <use href="assets/icons/sprite.svg#icon-dot-grid"></use>
+                    </svg>
+                  </button> 
+                </div>
+                <div class="d-none d-lg-flex gap-12">
+                  <div class="avatar avatar--image avatar--md">
+                    <img src="https://i.pravatar.cc/100" alt="Alt text">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- Platforms -->
+    <div id="platform-panel" class="platform-panel hidden" role="region" aria-labelledby="toggle-platforms" tabindex="-1">
+      <div id="platforms-heading" class="platform-panel__title">Platforme utile</div>
+      <div class="platform-grid" role="group" aria-label="Platforme utile">
+  
+        <div class="platform-grid__item featured">
+          <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Pay" aria-label="Accesează platforma M-Pay – plăți electronice guvernamentale">
+            <div class="platform-grid__image">
+              <img src="assets/logos/m-platforms/m-pay.png" alt="Sigla M-Pay" loading="lazy">
+            </div>
+            <div class="platform-grid__content">
+              <div class="platform-grid__title">mpay</div>
+              <p class="platform-grid__description">plătește</p>
+            </div>
+          </a>
+        </div>
+
+        <div class="platform-grid__item featured">
+          <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Sign" aria-label="Accesează platforma M-Sign – semnează documente digital">
+            <div class="platform-grid__image">
+              <img src="assets/logos/m-platforms/m-sign.png" alt="Sigla M-Sign" loading="lazy">
+            </div>
+            <div class="platform-grid__content">
+              <div class="platform-grid__title">msign</div>
+              <p class="platform-grid__description">semnează</p>
+            </div>
+          </a>
+        </div>
+
+        <div class="platform-grid__item featured">
+          <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Learn" aria-label="Accesează platforma M-Learn – învață online">
+            <div class="platform-grid__image">
+              <img src="assets/logos/m-platforms/m-learn.png" alt="Sigla M-Learn" loading="lazy">
+            </div>
+            <div class="platform-grid__content">
+              <div class="platform-grid__title">mlearn</div>
+              <p class="platform-grid__description">învață</p>
+            </div>
+          </a>
+        </div>
+
+        <div class="platform-grid__item featured">
+          <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Power" aria-label="Accesează platforma M-Power – împuternicește">
+            <div class="platform-grid__image">
+              <img src="assets/logos/m-platforms/m-power.png" alt="Sigla M-Power" loading="lazy">
+            </div>
+            <div class="platform-grid__content">
+              <div class="platform-grid__title">mpower</div>
+              <p class="platform-grid__description">împuternicește</p>
+            </div>
+          </a>
+        </div>
+
+        <div class="platform-grid__item featured">
+          <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Notify" aria-label="Accesează platforma M-Notify – notificări guvernamentale">
+            <div class="platform-grid__image">
+              <img src="assets/logos/m-platforms/m-notify.png" alt="Sigla M-Notify" loading="lazy">
+            </div>
+            <div class="platform-grid__content">
+              <div class="platform-grid__title">mnotify</div>
+              <p class="platform-grid__description">notifică</p>
+            </div>
+          </a>
+        </div>
+
+        <div class="platform-grid__item featured">
+          <a href="#" class="platform-grid__link stretched-link" title="Accesează Acte Permisive" aria-label="Accesează platforma Acte Permisive – eliberare documente">
+            <div class="platform-grid__image">
+              <img src="assets/logos/m-platforms/acte-permisive.png" alt="Sigla Acte Permisive" loading="lazy">
+            </div>
+            <div class="platform-grid__content">
+              <div class="platform-grid__title">acte</div>
+              <p class="platform-grid__description">permisive</p>
+            </div>
+          </a>
+        </div>
+
+      </div>
+
+      <a href="#" class="btn btn-secondary btn-rounded">
+        Descoperă-le pe toate
+        <span class="d-inline-flex">
+          <svg class="icon small" aria-hidden="true"> 
+            <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
+          </svg>
+        </span>
+      </a>
+    </div> 
+    <!-- Help Panel -->
+    <div 
+      id="help-panel" 
+      class="help-panel hidden" 
+      role="region" 
+      aria-labelledby="help-toggle" 
+      tabindex="-1"
+    >
+      <ul class="help-menu" role="menu" aria-label="Meniu de ajutor">
+        <li role="none">
+          <a href="#" role="menuitem" class="help-menu__link">Întrebări frecvente</a>
+        </li>
+        <li role="none">
+          <a href="#" role="menuitem" class="help-menu__link">Raportează Problemă</a>
+        </li>
+      </ul>
+    </div>
+
+  <div class="mb-32 d-none">
+    <header class="header">
+      <div class="header__brand">
+        <div class="header__brand--logo">
+          <img src="assets/logos/mpay.png" alt="MPay logo"> 
+        </div>
+        <div class="header__brand--details">
+            <span class="brand-text">mpay</span>
+            <span class="brand-description">
+              serviciul guvernamental de plăți electronice
+            </span>
+        </div> 
+      </div>
+
+      <nav class="header__nav">
+        <div class="nav-item">
+          Option
+          <div class="nav-item__menu">
+            <div class="menu-item">Suboption 1</div>
+            <div class="menu-item">Suboption 2</div>
+            <div class="menu-item">Suboption 3</div>
+          </div>
+        </div>
+
+        <div class="nav-item">
+          Option
+          <div class="nav-item__menu">
+            <div class="menu-item">Heading</div>
+            <div class="menu-item">Heading 2</div>
+          </div>
+        </div>
+
+        <div class="nav-item">Option</div>
+        <div class="nav-item">Option</div>
+      </nav>
+
+      <div class="header__actions">
+        <button class="header__toggle" aria-label="Meniu">
+          <span class="d-inline-flex">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-dot-grid"></use> 
+            </svg>
+          </span>
+        </button>
+        <button class="btn btn-primary btn-rounded btn-md" type="button">Autentifică-te</button>
+        <button type="button" class="btn btn-secondary  btn-rounded btn-md">Obține semnătura</button>
+      </div>
+    </header>
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,58 @@
+@use '../abstracts/tokens' as *;
+
+.pre-header {
+    background-color: var(--gray-200);
+    border-bottom: var(--border-width-1) var(--border-style-solid) var(--gray-250);
+    padding: var(--spacing-4) var(--spacing-24);
+    position: relative;
+    z-index: 1099;
+
+    &__content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between; 
+        max-width: 1320px;
+        margin: 0 auto; 
+    }
+
+    &__logo {
+        display: flex;
+
+        a{
+            color: var(--black);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-6);
+            text-decoration: none;
+            font-size: var(--text-caption-md-500-font-size);
+            font-weight: 500;
+        }
+    }
+
+    .language-switcher {
+        ul{
+            list-style: none;
+            margin: var(--spacing-0);
+            padding: var(--spacing-0);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-12)
+        }
+
+        a{
+            color: var(--black);
+            font-size: var(--text-body-sm-500-font-size);
+            font-weight: 500;
+            text-decoration: none;
+            transition: all .35s ease;
+
+            &:hover {
+                text-decoration: underline;
+            }
+
+            &.active {
+                text-decoration: underline;
+            }
+        }
+    }
+}

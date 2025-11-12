@@ -1,0 +1,58 @@
+@use '../abstracts/tokens' as *;
+
+// ==============================================
+// 🧱 Separator Component
+// ==============================================
+// A visual divider for separating content sections
+// Supports direction (horizontal/vertical),
+// size (thin/medium/thick) and style (subtle/mild/strong)
+// ==============================================
+
+.separator {
+  --separator-color: var(--gray-300);
+  --separator-thickness: var(--border-width-1);
+  --separator-length: 100%;
+
+  display: block;
+  border: none;
+  background-color: var(--separator-color);
+  opacity: 1;
+
+  // 🧭 Orientation
+  &--horizontal {
+    width: var(--separator-length);
+    height: var(--separator-thickness);
+  }
+
+  &--vertical {
+    width: var(--separator-thickness);
+    height: var(--separator-length);
+    display: inline-block;
+  }
+
+  // 📏 Sizes
+  &--thin {
+    --separator-thickness: var(--border-width-1);
+  }
+
+  &--medium {
+    --separator-thickness: var(--border-width-1-5, 1.5px);
+  }
+
+  &--thick {
+    --separator-thickness: var(--border-width-2);
+  }
+
+  // 🎨 Styles
+  &--subtle {
+    --separator-color: var(--gray-250);
+  }
+
+  &--mild {
+    --separator-color: var(--gray-300);
+  }
+
+  &--strong {
+    --separator-color: var(--gray-600);
+  }
+}

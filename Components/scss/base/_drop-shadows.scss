@@ -1,5 +1,11 @@
 @use '../abstracts/tokens' as tokens;
 
+:root {
+  @each $key, $shadows in tokens.$drop-shadows {
+    --drop-shadow-#{$key}: #{$shadows};
+  }
+}
+
 @each $key, $value in tokens.$drop-shadows {
   .drop-shadow-#{$key} {
     box-shadow: #{$value} !important;

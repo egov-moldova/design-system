@@ -152,3 +152,27 @@ p{
 .icon-20px { transform: scale(0.8333); }  /* 20px */
 .icon-24px { transform: scale(1); }       /* 24px (original) */
 .icon-32px { transform: scale(1.3333); }  /* 32px */
+
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap; /* Prevent text from wrapping */
+  border: 0;
+}
+
+.sr-only-focusable:active,
+.sr-only-focusable:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}

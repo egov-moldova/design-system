@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tags Preview</title>
   <link rel="stylesheet" href="css/main.css" />
   <script src="js/main.js" defer></script>
@@ -19,19 +19,109 @@
     </div>
     <div class="row">
       <div class="col-7"> 
-        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-          <h2>Status Tags</h2> 
-          <p  class="text-gray-400">The status tag component is a label used to display the current status of an item, such as "Active," "Pending," or "Completed." It visually distinguishes states with varying colors and styles, helping users quickly identify key information at a glance.</p>
+        <div class="mt-56 mb-20 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Status Tags</h2>  
         </div>
+        <p class="text-gray-400">The status tag component is a label used to display the current status of an item, such as "Active," "Pending," or "Completed." It visually distinguishes states with varying colors and styles, helping users quickly identify key information at a glance.</p>
       </div>
     </div>
     <div class="row">  
       <div class="col-12"> 
-        <h3>Variants</h3>
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Sizes</h2>  
+        </div>
       </div>
     </div>
     <div class="row">
-      <div class="col-2">
+      <div class="col-12 col-sm-3">
+        <div class="tag-item mb-32">
+          <div class="status-tag status-tag--success is-strong">Label</div>
+          <div class="text-body-sm-500 text-gray-700">medium</div>
+        </div>
+      </div>
+      <div class="col-12 col-sm-3">
+        <div class="tag-item mb-32">
+          <div class="status-tag status-tag--success status-tag--small is-strong">Label</div>
+          <div class="text-body-sm-500 text-gray-700">small</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">  
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Variations</h2>  
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-sm-3">
+        <div class="tag-item mb-32">
+          <div class="status-tag status-tag--neutral is-subtle">Label</div>
+          <div class="text-body-sm-500 text-gray-700">icon-none</div>
+        </div>
+      </div>
+      <div class="col-12 col-sm-3">
+        <div class="tag-item mb-32">
+          <div class="status-tag status-tag--danger is-subtle">
+            <span class="d-inline-flex">
+              <svg class="icon small" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-circle-error"></use> 
+              </svg>
+            </span>
+            Label
+          </div>
+          <div class="text-body-sm-500 text-gray-700">icon-leading</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">  
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Types</h2>  
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-sm-3">
+        <div class="tag-item mb-32">
+          <div class="status-tag status-tag--neutral is-subtle">Label</div>
+          <div class="text-body-sm-500 text-gray-700">isubtle</div>
+        </div>
+      </div>
+      <div class="col-12 col-sm-3">
+        <div class="tag-item mb-32">
+          <div class="status-tag status-tag--neutral is-strong"> 
+            Label
+          </div>
+          <div class="text-body-sm-500 text-gray-700">strong</div>
+        </div>
+      </div>
+      <div class="col-12 col-sm-3">
+        <div class="tag-item mb-32">
+          <div class="status-tag status-tag--neutral is-outlined">Label</div>
+          <div class="text-body-sm-500 text-gray-700">neutral outlined</div>
+        </div>
+      </div>
+    </div>
+
+
+
+
+
+    <div class="row">  
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Styles</h2>  
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <h3>Icon-none</h3>
+      </div>
+      <div class="col-12 col-sm-6 col-md-3 col-lg-2">
         <div class="tag-item mb-32">
           <div class="status-tag status-tag--muted is-subtle">Label</div>
           <div class="text-body-sm-500 text-gray-700">muted subtle</div>
@@ -45,7 +135,7 @@
           <div class="text-body-sm-500 text-gray-700">muted outlined</div>
         </div>
       </div>
-      <div class="col-2">
+      <div class="col-12 col-sm-6 col-md-3 col-lg-2">
         <div class="tag-item mb-32">
           <div class="status-tag status-tag--neutral is-subtle">Label</div>
           <div class="text-body-sm-500 text-gray-700">neutral subtle</div>
@@ -59,7 +149,7 @@
           <div class="text-body-sm-500 text-gray-700">neutral outlined</div>
         </div>
       </div>
-      <div class="col-2">
+      <div class="col-12 col-sm-6 col-md-3 col-lg-2">
         <div class="tag-item mb-32">
           <div class="status-tag status-tag--accent is-subtle">Label</div>
           <div class="text-body-sm-500 text-gray-700">accent subtle</div>
@@ -73,7 +163,7 @@
           <div class="text-body-sm-500 text-gray-700">accent outlined</div>
         </div>
       </div>
-      <div class="col-2">
+      <div class="col-12 col-sm-6 col-md-3 col-lg-2">
         <div class="tag-item mb-32">
           <div class="status-tag status-tag--success is-subtle">Label</div>
           <div class="text-body-sm-500 text-gray-700">success subtle</div>
@@ -87,7 +177,7 @@
           <div class="text-body-sm-500 text-gray-700">success outlined</div>
         </div>
       </div>
-      <div class="col-2">
+      <div class="col-12 col-sm-6 col-md-3 col-lg-2">
         <div class="tag-item mb-32">
           <div class="status-tag status-tag--brand is-subtle">Label</div>
           <div class="text-body-sm-500 text-gray-700">brand subtle</div>
@@ -101,7 +191,7 @@
           <div class="text-body-sm-500 text-gray-700">brand outlined</div>
         </div>
       </div>
-      <div class="col-2">
+      <div class="col-12 col-sm-6 col-md-3 col-lg-2">
         <div class="tag-item mb-32">
           <div class="status-tag status-tag--danger is-subtle">Label</div>
           <div class="text-body-sm-500 text-gray-700">danger subtle</div>
@@ -119,13 +209,13 @@
 
     <div class="row">
       <div class="col-12"> 
-        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-          <h2>Icon-leading</h2> 
+        <div class="mt-56 mb-32 ">
+          <h3>Icon-leading</h3> 
         </div>
       </div>
     </div>
     <div class="row">
-      <div class="col-2">
+      <div class="col-12 col-sm-6 col-md-3 col-lg-2">
         <div class="tag-item mb-32">
           <div class="status-tag status-tag--muted is-subtle">
             <span class="d-inline-flex">
@@ -160,7 +250,7 @@
           <div class="text-body-sm-500 text-gray-700">muted outlined</div>
         </div>
       </div>
-      <div class="col-2">
+      <div class="col-12 col-sm-6 col-md-3 col-lg-2">
         <div class="tag-item mb-32">
           <div class="status-tag status-tag--neutral is-subtle">
             <span class="d-inline-flex">
@@ -195,7 +285,7 @@
           <div class="text-body-sm-500 text-gray-700">neutral outlined</div>
         </div>
       </div>
-      <div class="col-2">
+      <div class="col-12 col-sm-6 col-md-3 col-lg-2">
         <div class="tag-item mb-32">
           <div class="status-tag status-tag--accent is-subtle">
             <span class="d-inline-flex">
@@ -230,7 +320,7 @@
           <div class="text-body-sm-500 text-gray-700">accent outlined</div>
         </div>
       </div>
-      <div class="col-2">
+      <div class="col-12 col-sm-6 col-md-3 col-lg-2">
         <div class="tag-item mb-32">
           <div class="status-tag status-tag--success is-subtle">
             <span class="d-inline-flex">
@@ -265,7 +355,7 @@
           <div class="text-body-sm-500 text-gray-700">success outlined</div>
         </div>
       </div>
-      <div class="col-2">
+      <div class="col-12 col-sm-6 col-md-3 col-lg-2">
         <div class="tag-item mb-32">
           <div class="status-tag status-tag--brand is-subtle">
             <span class="d-inline-flex">
@@ -300,12 +390,12 @@
           <div class="text-body-sm-500 text-gray-700">brand outlined</div>
         </div>
       </div>
-      <div class="col-2">
+      <div class="col-12 col-sm-6 col-md-3 col-lg-2">
         <div class="tag-item mb-32">
           <div class="status-tag status-tag--danger is-subtle">
             <span class="d-inline-flex">
               <svg class="icon small" aria-hidden="true"> 
-                <use href="assets/icons/sprite.svg#icon-checkmark-small"></use> 
+                <use href="assets/icons/sprite.svg#icon-circle-error"></use> 
               </svg>
             </span>
             Label
@@ -316,7 +406,7 @@
           <div class="status-tag status-tag--danger is-strong">
             <span class="d-inline-flex">
               <svg class="icon small" aria-hidden="true"> 
-                <use href="assets/icons/sprite.svg#icon-checkmark-small"></use> 
+                <use href="assets/icons/sprite.svg#icon-circle-error"></use> 
               </svg>
             </span>
             Label
@@ -327,12 +417,125 @@
           <div class="status-tag status-tag--danger is-outlined">
             <span class="d-inline-flex">
               <svg class="icon small" aria-hidden="true"> 
-                <use href="assets/icons/sprite.svg#icon-checkmark-small"></use> 
+                <use href="assets/icons/sprite.svg#icon-circle-error"></use> 
               </svg>
             </span>
             Label
           </div>
           <div class="text-body-sm-500 text-gray-700">danger outlined</div>
+        </div>
+      </div> 
+    </div>
+
+    <div class="row">  
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Tag Group</h2>  
+        </div>
+        <p class="text-gray-400">The spacing between horizontally stacked tags should be set to 8px to ensure that they remain separate and do not overlap.</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <div class="mb-32 d-flex gap-32">
+          <div class="tag-group d-flex gap-8">
+            <div class="tag-item">
+              <div class="status-tag status-tag--accent is-strong"> 
+                Label
+              </div> 
+            </div>
+            <div class="tag-item">
+              <div class="status-tag status-tag--neutral is-subtle"> 
+                Label
+              </div> 
+            </div>
+            <div class="tag-item">
+              <div class="status-tag status-tag--neutral is-subtle"> 
+                Label
+              </div> 
+            </div>
+            <div class="tag-item">
+              <div class="status-tag status-tag--neutral is-subtle"> 
+                Label
+              </div> 
+            </div>
+          </div>
+          <p class="mb-0">horizontal-stack</p>
+        </div> 
+      </div>
+    </div>
+
+    <div class="row">  
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Info Tag</h2>  
+        </div> 
+      </div>
+      <div class="col12 col-md-7">
+          <p class="text-gray-400">The Info Tag is a lightweight label used to display supplementary, contextual information such as timestamps (e.g., "2 hours ago"), article categories, statuses, or metadata on cards and content blocks. Its purpose is to provide quick insights without overwhelming the primary content.</p>
+        </div>
+    </div>
+    <div class="row">  
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Variations</h2>  
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-sm-3">
+        <div class="tag-item mb-32">
+          <div class="status-tag status-tag--info is-subtle">Label</div>
+          <div class="text-body-sm-500 text-gray-700">icon-none</div>
+        </div>
+      </div>
+      <div class="col-12 col-sm-3">
+        <div class="tag-item mb-32">
+          <div class="status-tag status-tag--info is-subtle">
+            <span class="d-inline-flex">
+              <svg class="icon small" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-circle-error"></use> 
+              </svg>
+            </span>
+            Label
+          </div>
+          <div class="text-body-sm-500 text-gray-700">icon-leading</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">  
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Types</h2>  
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-sm-3"> 
+        <div class="tag-item mb-32">
+          <div class="status-tag status-tag--info is-subtle">
+            <span class="d-inline-flex">
+              <svg class="icon small" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-circle-error"></use> 
+              </svg>
+            </span>
+            Label
+          </div>
+          <div class="text-body-sm-500 text-gray-700">strong</div>
+        </div> 
+      </div>
+      <div class="col-12 col-sm-3">
+        <div class="tag-item mb-32">
+          <div class="status-tag status-tag--muted is-subtle"> 
+            <span class="d-inline-flex">
+              <svg class="icon small" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-circle-error"></use> 
+              </svg>
+            </span>
+            Label
+          </div>
+          <div class="text-body-sm-500 text-gray-700">strong</div>
         </div>
       </div> 
     </div>

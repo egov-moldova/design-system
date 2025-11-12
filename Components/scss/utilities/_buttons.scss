@@ -7,6 +7,8 @@
   align-items: var(--align-items-center, center);
   justify-content: center; 
   font-size: var(--text-body-md-500-font-size);
+  font-family: inherit;
+  font-weight: 500;
   line-height: 1.375;
   border-radius: var(--radius-md, 8px);
   padding: var(--spacing-12, 0.75rem) var(--spacing-20, 1.25rem);
@@ -80,4 +82,4 @@
 // 🔹 Forme speciale
 // ==============================================
 .btn-pill { border-radius: 9999px; }
-.btn-rounded { border-radius: var(--radius-full, 9999px); }
+.btn-rounded { border-radius: var(--border-radius-full, 9999px); }
