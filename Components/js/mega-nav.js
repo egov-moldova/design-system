@@ -239,8 +239,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Escape') closeMenu();
   });
 
-  // Submeniu: deschidere cu slide din dreapta spre stânga
-  const submenuButtons = panel.querySelectorAll('[data-submenu]');
+  // --- SUBMENIURI DOAR DIN .mainNav__actions ---
+  const submenuButtons = panel.querySelectorAll('.mainNav__actions [data-submenu]');
   submenuButtons.forEach(btn => {
     btn.addEventListener('click', e => {
       e.preventDefault();
@@ -250,19 +250,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const isOpen = !submenu.hidden;
 
-      // Închide toate submeniurile (cu animație resetată)
-      panel.querySelectorAll('.mainNav__submenu').forEach(sm => {
+      // Închide toate submeniurile din mainNav__actions
+      panel.querySelectorAll('.mainNav__actions .mainNav__submenu').forEach(sm => {
         sm.classList.remove('is-active');
         sm.style.transform = 'translateX(100%)';
+        sm.style.opacity = '0';
         sm.hidden = true;
       });
 
       if (!isOpen) {
         submenu.hidden = false;
-        // Forțează repaint pentru a activa tranziția
-        submenu.offsetHeight; 
+        submenu.offsetHeight; // forțează repaint
         submenu.classList.add('is-active');
         submenu.style.transform = 'translateX(0)';
+        submenu.style.opacity = '1';
         btn.setAttribute('aria-expanded', 'true');
       } else {
         btn.setAttribute('aria-expanded', 'false');
@@ -270,8 +271,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Butoane “Înapoi” — animare slide înapoi (dreapta) și ascundere
-  const backButtons = panel.querySelectorAll('[data-back]');
+  // --- Butoane Înapoi ---
+  const backButtons = panel.querySelectorAll('.mainNav__actions [data-back]');
   backButtons.forEach(back => {
     back.addEventListener('click', e => {
       e.preventDefault();
@@ -280,14 +281,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
       submenu.classList.remove('is-active');
       submenu.style.transform = 'translateX(100%)';
+      submenu.style.opacity = '0';
 
       setTimeout(() => {
         submenu.hidden = true;
         submenu.style.transform = '';
-      }, 350); // egal cu durata CSS tranziției
+        submenu.style.opacity = '';
+      }, 350);
 
-      // Resetează aria-expanded pentru butonul care a deschis submeniul
-      const btn = panel.querySelector(`[data-submenu="${submenu.id}"]`);
+      const btn = panel.querySelector(`.mainNav__actions [data-submenu="${submenu.id}"]`);
       if (btn) btn.setAttribute('aria-expanded', 'false');
     });
   });

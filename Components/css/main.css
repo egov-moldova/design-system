@@ -10223,6 +10223,7 @@ body:has(.modal-overlay.modal-overlay.is-active) {
   gap: var(--spacing-8);
   max-width: 1320px;
   margin: 0 auto;
+  position: relative;
   width: 100%;
 }
 @media screen and (min-width: 1280px) {
@@ -10318,6 +10319,9 @@ body:has(.modal-overlay.modal-overlay.is-active) {
   opacity: 1;
   transform: translateY(7px);
   z-index: 999;
+  left: auto;
+  right: 0;
+  top: 100%;
 }
 .platform-panel__title {
   font-size: var(--text-body-lg-500-font-size);
@@ -10439,14 +10443,12 @@ body:has(.modal-overlay.modal-overlay.is-active) {
   transition: opacity 0.2s ease, transform 0.2s ease;
   display: flex;
   flex-direction: column;
-  top: calc(100% + 8px);
   opacity: 1;
   transform: translateY(13px);
   z-index: 999;
   width: 270px;
   padding: var(--spacing-8);
   gap: var(--spacing-8);
-  transform: translateY(-200%);
 }
 .help-panel__title {
   font-size: var(--text-body-lg-500-font-size);
@@ -10937,8 +10939,10 @@ body:has(.modal-overlay.modal-overlay.is-active) {
   width: calc(100% - 32px);
   height: 100%;
   margin: 0;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
+  transform: translateX(100%);
+  opacity: 0;
+  transition: transform 0.35s ease, opacity 0.35s ease;
+  will-change: transform, opacity;
   padding: var(--spacing-32) var(--spacing-16);
 }
 

@@ -172,13 +172,31 @@
             </div>
           </div>
           
+           
           <div class="d-none d-md-block">
-            <button id="help-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="help-panel"aria-label="Deschide meniul de ajutor"
-              class="header__toggle" data-toggle="#help-panel" data-position="dynamic" data-animation="fade" data-close="outside"                  >
-              <svg class="icon large" aria-hidden="true"> 
+            <button id="help-toggle" aria-haspopup="true" aria-expanded="false" aria-controls="help-panel"
+              aria-label="Deschide meniul de ajutor"
+              class="header__toggle"
+              data-toggle="#help-panel"
+              data-position="dynamic"
+              data-animation="fade"
+              data-close="outside">
+             <svg class="icon large" aria-hidden="true"> 
                 <use href="assets/icons/sprite.svg#icon-bubble-question"></use> 
               </svg>
-            </button>
+            </button> 
+            <div 
+              id="help-panel" 
+              class="help-panel hidden" 
+              role="region" 
+              aria-labelledby="help-toggle" 
+              tabindex="-1"
+            >
+              <ul class="help-menu" role="menu" aria-label="Meniu de ajutor">
+                <li role="none"><a href="#" role="menuitem" class="help-menu__link">Întrebări frecvente</a></li>
+                <li role="none"><a href="#" role="menuitem" class="help-menu__link">Raportează problemă</a></li>
+              </ul>
+            </div>
           </div>
           <div class="d-none d-lg-block">
             <button id="toggle-platforms" data-toggle="#platform-panel" data-position="dynamic" data-animation="fade" data-close="outside" aria-controls="platform-panel" aria-label="Deschide platforme utile" aria-expanded="false" class="header__toggle">
@@ -206,6 +224,94 @@
           </span>
           </div>
         </div>
+            <!-- Platforms -->
+    <div id="platform-panel" class="platform-panel hidden" role="region" aria-labelledby="toggle-platforms" tabindex="-1">
+      <div id="platforms-heading" class="platform-panel__title">Platforme utile</div>
+      <div class="platform-grid" role="group" aria-label="Platforme utile">
+  
+        <div class="platform-grid__item featured">
+          <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Pay" aria-label="Accesează platforma M-Pay – plăți electronice guvernamentale">
+            <div class="platform-grid__image">
+              <img src="assets/logos/m-platforms/m-pay.png" alt="Sigla M-Pay" loading="lazy">
+            </div>
+            <div class="platform-grid__content">
+              <div class="platform-grid__title">mpay</div>
+              <p class="platform-grid__description">plătește</p>
+            </div>
+          </a>
+        </div>
+
+        <div class="platform-grid__item featured">
+          <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Sign" aria-label="Accesează platforma M-Sign – semnează documente digital">
+            <div class="platform-grid__image">
+              <img src="assets/logos/m-platforms/m-sign.png" alt="Sigla M-Sign" loading="lazy">
+            </div>
+            <div class="platform-grid__content">
+              <div class="platform-grid__title">msign</div>
+              <p class="platform-grid__description">semnează</p>
+            </div>
+          </a>
+        </div>
+
+        <div class="platform-grid__item featured">
+          <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Learn" aria-label="Accesează platforma M-Learn – învață online">
+            <div class="platform-grid__image">
+              <img src="assets/logos/m-platforms/m-learn.png" alt="Sigla M-Learn" loading="lazy">
+            </div>
+            <div class="platform-grid__content">
+              <div class="platform-grid__title">mlearn</div>
+              <p class="platform-grid__description">învață</p>
+            </div>
+          </a>
+        </div>
+
+        <div class="platform-grid__item featured">
+          <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Power" aria-label="Accesează platforma M-Power – împuternicește">
+            <div class="platform-grid__image">
+              <img src="assets/logos/m-platforms/m-power.png" alt="Sigla M-Power" loading="lazy">
+            </div>
+            <div class="platform-grid__content">
+              <div class="platform-grid__title">mpower</div>
+              <p class="platform-grid__description">împuternicește</p>
+            </div>
+          </a>
+        </div>
+
+        <div class="platform-grid__item featured">
+          <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Notify" aria-label="Accesează platforma M-Notify – notificări guvernamentale">
+            <div class="platform-grid__image">
+              <img src="assets/logos/m-platforms/m-notify.png" alt="Sigla M-Notify" loading="lazy">
+            </div>
+            <div class="platform-grid__content">
+              <div class="platform-grid__title">mnotify</div>
+              <p class="platform-grid__description">notifică</p>
+            </div>
+          </a>
+        </div>
+
+        <div class="platform-grid__item featured">
+          <a href="#" class="platform-grid__link stretched-link" title="Accesează Acte Permisive" aria-label="Accesează platforma Acte Permisive – eliberare documente">
+            <div class="platform-grid__image">
+              <img src="assets/logos/m-platforms/acte-permisive.png" alt="Sigla Acte Permisive" loading="lazy">
+            </div>
+            <div class="platform-grid__content">
+              <div class="platform-grid__title">acte</div>
+              <p class="platform-grid__description">permisive</p>
+            </div>
+          </a>
+        </div>
+
+      </div>
+
+      <a href="#" class="btn btn-secondary btn-rounded">
+        Descoperă-le pe toate
+        <span class="d-inline-flex">
+          <svg class="icon small" aria-hidden="true"> 
+            <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
+          </svg>
+        </span>
+      </a>
+    </div> 
       </div> 
       
       <!-- Main Navigation Panel -->
@@ -906,94 +1012,7 @@
         </div>
       </div>
     </header>
-    <!-- Platforms -->
-    <div id="platform-panel" class="platform-panel hidden" role="region" aria-labelledby="toggle-platforms" tabindex="-1">
-      <div id="platforms-heading" class="platform-panel__title">Platforme utile</div>
-      <div class="platform-grid" role="group" aria-label="Platforme utile">
-  
-        <div class="platform-grid__item featured">
-          <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Pay" aria-label="Accesează platforma M-Pay – plăți electronice guvernamentale">
-            <div class="platform-grid__image">
-              <img src="assets/logos/m-platforms/m-pay.png" alt="Sigla M-Pay" loading="lazy">
-            </div>
-            <div class="platform-grid__content">
-              <div class="platform-grid__title">mpay</div>
-              <p class="platform-grid__description">plătește</p>
-            </div>
-          </a>
-        </div>
 
-        <div class="platform-grid__item featured">
-          <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Sign" aria-label="Accesează platforma M-Sign – semnează documente digital">
-            <div class="platform-grid__image">
-              <img src="assets/logos/m-platforms/m-sign.png" alt="Sigla M-Sign" loading="lazy">
-            </div>
-            <div class="platform-grid__content">
-              <div class="platform-grid__title">msign</div>
-              <p class="platform-grid__description">semnează</p>
-            </div>
-          </a>
-        </div>
-
-        <div class="platform-grid__item featured">
-          <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Learn" aria-label="Accesează platforma M-Learn – învață online">
-            <div class="platform-grid__image">
-              <img src="assets/logos/m-platforms/m-learn.png" alt="Sigla M-Learn" loading="lazy">
-            </div>
-            <div class="platform-grid__content">
-              <div class="platform-grid__title">mlearn</div>
-              <p class="platform-grid__description">învață</p>
-            </div>
-          </a>
-        </div>
-
-        <div class="platform-grid__item featured">
-          <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Power" aria-label="Accesează platforma M-Power – împuternicește">
-            <div class="platform-grid__image">
-              <img src="assets/logos/m-platforms/m-power.png" alt="Sigla M-Power" loading="lazy">
-            </div>
-            <div class="platform-grid__content">
-              <div class="platform-grid__title">mpower</div>
-              <p class="platform-grid__description">împuternicește</p>
-            </div>
-          </a>
-        </div>
-
-        <div class="platform-grid__item featured">
-          <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Notify" aria-label="Accesează platforma M-Notify – notificări guvernamentale">
-            <div class="platform-grid__image">
-              <img src="assets/logos/m-platforms/m-notify.png" alt="Sigla M-Notify" loading="lazy">
-            </div>
-            <div class="platform-grid__content">
-              <div class="platform-grid__title">mnotify</div>
-              <p class="platform-grid__description">notifică</p>
-            </div>
-          </a>
-        </div>
-
-        <div class="platform-grid__item featured">
-          <a href="#" class="platform-grid__link stretched-link" title="Accesează Acte Permisive" aria-label="Accesează platforma Acte Permisive – eliberare documente">
-            <div class="platform-grid__image">
-              <img src="assets/logos/m-platforms/acte-permisive.png" alt="Sigla Acte Permisive" loading="lazy">
-            </div>
-            <div class="platform-grid__content">
-              <div class="platform-grid__title">acte</div>
-              <p class="platform-grid__description">permisive</p>
-            </div>
-          </a>
-        </div>
-
-      </div>
-
-      <a href="#" class="btn btn-secondary btn-rounded">
-        Descoperă-le pe toate
-        <span class="d-inline-flex">
-          <svg class="icon small" aria-hidden="true"> 
-            <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
-          </svg>
-        </span>
-      </a>
-    </div> 
     <!-- Help Panel -->
     <div 
       id="help-panel" 
@@ -1002,7 +1021,7 @@
       aria-labelledby="help-toggle" 
       tabindex="-1"
     >
-      <ul class="help-menu" role="menu" aria-label="Meniu de ajutor">
+      <ul class="help-menu d-none" role="menu" aria-label="Meniu de ajutor">
         <li role="none">
           <a href="#" role="menuitem" class="help-menu__link">Întrebări frecvente</a>
         </li>

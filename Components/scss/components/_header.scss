@@ -27,6 +27,7 @@
     gap: var(--spacing-8); 
     max-width: 1320px;
     margin: 0 auto; 
+    position: relative;
     width: 100%;
 
     @media screen and (min-width: 1280px) {
@@ -150,6 +151,9 @@
   opacity: 1;
   transform: translateY(7px);
   z-index: 999; 
+  left: auto;
+  right: 0;
+  top: 100%;
 
   &__title {
     font-size: var(--text-body-lg-500-font-size);
@@ -291,14 +295,14 @@
   transition: opacity 0.2s ease, transform 0.2s ease; 
   display: flex;
   flex-direction: column;
-  top: calc(100% + 8px);
+  //top: calc(100% + 8px);
   opacity: 1;
   transform: translateY(13px);
   z-index: 999; 
   width: 270px;
   padding: var(--spacing-8); 
   gap: var(--spacing-8);
-  transform: translateY(-200%);
+  //transform: translateY(-200%);
 
   &__title {
     font-size: var(--text-body-lg-500-font-size);
