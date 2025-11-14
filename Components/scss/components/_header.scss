@@ -295,7 +295,7 @@
   transition: opacity 0.2s ease, transform 0.2s ease; 
   display: flex;
   flex-direction: column;
-  //top: calc(100% + 8px);
+  right: 0;
   opacity: 1;
   transform: translateY(13px);
   z-index: 999; 
@@ -363,4 +363,130 @@
     outline-color: #66aaff;
     box-shadow: 0 0 0 4px rgba(102, 170, 255, 0.3);
   }
+}
+
+
+// ===============================
+.profile-dropdown {
+  position: absolute;
+  top: 70px;
+  right: 0;
+  background: var(--white, #fff);
+  border-radius: var(--border-radius-16);
+  box-shadow: var(--drop-shadow-300);
+  width: 350px; 
+  z-index: 100;
+  transition: all 0.3s ease;
+  transform: translateY(0);
+
+  @media screen and (max-width: 1075px) {
+    top: 60px
+  }
+
+  @media (max-width: 768px) {
+    width: 100%;
+    right: 0;
+    left: 0;
+    margin: 0 auto;
+    top: 56px;
+  }
+
+  &.hidden {
+    opacity: 0;
+    transform: translateY(-100%);
+    pointer-events: none;
+  }
+}
+
+.profile-header {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: var(--spacing-24); 
+  padding: var(--spacing-40) var(--spacing-24) var(--spacing-32) var(--spacing-24);
+  text-align: center;
+}
+
+
+.profile-name {
+  margin: 0;
+  font-size: var(--text-heading-h4-xs-font-size);
+}
+
+.profile-role {
+  margin: 0;
+  color: #777;
+  font-size: 14px;
+}
+
+.profile-roles { 
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-16);
+  padding: var(--spacing-32) var(--spacing-24) var(--spacing-24) var(--spacing-24);
+}
+
+.profile-section-title {
+  font-size: var(--text-body-lg-500-font-size);
+  font-weight: 500;
+}
+
+.role-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-12);
+}
+
+.role-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-16) var(--spacing-24) var(--spacing-16) var(--spacing-16);
+  border: var(--border-width-1-5) var(--border-style-solid) var(--gray-200);
+  border-radius: 8px;
+  margin-bottom: 0;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.role-item:hover {
+  background: #f8f8f8;
+}
+
+.role-item.active {
+  border-color: var(--blue-sky-600);
+  border-width: var(--border-width-2);
+  background: var(--blue-sky-100);
+}
+
+.role-info {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-16);
+}
+
+.avatar-small {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.role-name {
+  font-size: var(--text-body-lg-font-size);
+  font-weight: 500;
+}
+
+.role-id {
+  font-size: var(--text-body-sm-font-size);
+  color: var(--gray-400);
+}
+
+ 
+
+.btn-logout {
+  width: 100%; 
+  cursor: pointer;
 }

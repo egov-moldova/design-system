@@ -437,7 +437,7 @@
       }
 
       .mainNav__submenu {
-        background-color: #ffffff;
+        background-color: var(--white);
         position: absolute;
         top: 0;
         left: 0%;
@@ -457,6 +457,7 @@
 
 .mainNav__submenu.is-active {
   transform: translateX(0);
+  opacity: 1;
 }
 
 .mainNav__submenu[hidden] {

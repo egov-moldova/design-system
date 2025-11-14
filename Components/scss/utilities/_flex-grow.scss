@@ -1,0 +1,26 @@
+@use 'sass:map';
+@use '../abstracts/variables' as vars;
+@use '../abstracts/mixins/media' as media;
+
+// =========================
+// 🔹 Flex Grow utilities
+// =========================
+$flex-grow-values: (0, 1);
+
+// 🔹 De bază
+@each $value in $flex-grow-values {
+  .flex-grow-#{$value} {
+    flex-grow: $value !important;
+  }
+}
+
+// 🔹 Responsive
+@each $breakpoint in map.keys(vars.$breakpoints) {
+  @include media.media-breakpoint-up($breakpoint, vars.$breakpoints) {
+    @each $value in $flex-grow-values {
+      .flex-grow-#{$breakpoint}-#{$value} {
+        flex-grow: $value !important;
+      }
+    }
+  }
+}

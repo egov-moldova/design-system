@@ -206,114 +206,191 @@
                 <use href="assets/icons/sprite.svg#icon-dot-grid"></use>
               </svg>
             </button> 
-          </div>
-          <div class="d-no ne d-lg-flex gap-12">
-            <a href="#" title="Autentifică-te" target="_blank" class="btn btn-primary btn-rounded btn-md" type="button">
-              <span class="">Autentifică-te</span>
-              
-            </a> 
-            <a href="#" title="Obține semnătura" target="_blank" type="button" class="btn btn-secondary  btn-rounded btn-md">Obține semnătura</a>
-          </div>
-          <div class="d-none">
-              <a href="#" class="d-block">
-              <span class="sr-only">Utilizator</span>
-              
-            </a>
-            <span class="p-12 bg-gray-200 radius-8 d-inline-flex">
-            <svg class="icon large" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-signature"></use> 
-            </svg>
-          </span>
-          </div>
+          </div> 
+
+          <!--new-->
+          <div class="header__profile">
+            <button
+              id="profile-toggle"
+              class="profile-toggle btn avatar avatar--image avatar--md p-0 border-0"
+              aria-haspopup="true" aria-expanded="true" aria-controls="profile-dropdown"  data-toggle="#profile-dropdown" data-position="dynamic" data-animation="fade" data-close="outside"
+            >
+              <img src="https://i.pravatar.cc/100" alt="User avatar">
+            </button>
+
+            <div class="profile-dropdown" id="profile-dropdown" hidden>
+              <div class="profile-header">
+                <div class="avatar avatar--image avatar--xl">
+                  <img src="https://i.pravatar.cc/100" alt="">
+                </div> 
+                <div class="profile-info">
+                  <h3 class="profile-name">Anastasia Cojocaru</h3>
+                  <p class="profile-role">Persoană fizică</p>
+                </div>
+                <div class="d-flex gap-12">
+                  <button type="button" class="btn btn-primary btn-rounded btn-md">Cabinetul Personal</button>
+                  <button type="button" class="btn btn-outline-primary btn-rounded btn-md p-8">
+                    <span class="px-2 d-inline-flex">
+                      <svg class="icon medium" aria-hidden="true"> 
+                        <use href="assets/icons/sprite.svg#icon-settings"></use> 
+                      </svg>
+                    </span>
+                  </button>
+                </div>
+              </div>
+              <hr class="separator separator--horizontal separator--thin separator--subtle" />
+              <div class="profile-roles">
+                <div class="profile-section-title">Alege alt rol</div>
+                <ul class="role-list">
+                  <li class="role-item active">
+                    <div class="role-info">
+                      <div class="avatar avatar--image avatar--md">
+                        <img src="https://i.pravatar.cc/100" alt="">
+                      </div>
+                      <div class="d-flex flex-column gap-4">
+                        <div class="role-name">Anastasia Cojocaru</div>
+                        <div class="role-id">IDNP 12012092309223019</div>
+                      </div>
+                    </div>
+                    <span class="text-blue-sky-600 d-inline-flex">
+                      <svg class="icon small" aria-hidden="true"> 
+                        <use href="assets/icons/sprite.svg#icon-checkmark-large"></use> 
+                      </svg>
+                    </span>
+                  </li>
+
+                  <li class="role-item">
+                    <div class="role-info">
+                      <div class="role-icon">
+                        <span class="p-8 bg-gray-200 radius-full d-inline-flex text-gray-500">
+                          <svg class="icon medium" aria-hidden="true"> 
+                            <use href="assets/icons/sprite.svg#icon-business"></use> 
+                          </svg>
+                        </span>
+                      </div>
+                      <div class="d-flex flex-column gap-4">
+                        <div class="role-name">SRL Trampoline Co.</div>
+                        <div class="role-id">IDNO 12012092309223019</div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li class="role-item">
+                    <div class="role-info">
+                      <div class="role-avatar">
+                        <span class="p-8 bg-gray-200 radius-full d-inline-flex text-gray-500">
+                          <svg class="icon medium" aria-hidden="true"> 
+                              <use href="assets/icons/sprite.svg#icon-business"></use> 
+                          </svg>
+                        </span>
+                      </div>
+                      <div class="d-flex flex-column gap-4">
+                        <div class="role-name">SRL Global Trader</div>
+                        <div class="role-id">IDNO 12012092309223019</div>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+                <button class="btn btn-neutral ">
+                  Ieșire
+                  <span class="d-inline-flex">
+                    <svg class="icon medium" aria-hidden="true"> 
+                      <use href="assets/icons/sprite.svg#icon-logout"></use> 
+                    </svg>
+                  </span>
+                </button>
+              </div> 
+            </div>
+          </div> 
         </div>
             <!-- Platforms -->
-    <div id="platform-panel" class="platform-panel hidden" role="region" aria-labelledby="toggle-platforms" tabindex="-1">
-      <div id="platforms-heading" class="platform-panel__title">Platforme utile</div>
-      <div class="platform-grid" role="group" aria-label="Platforme utile">
-  
-        <div class="platform-grid__item featured">
-          <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Pay" aria-label="Accesează platforma M-Pay – plăți electronice guvernamentale">
-            <div class="platform-grid__image">
-              <img src="assets/logos/m-platforms/m-pay.png" alt="Sigla M-Pay" loading="lazy">
+        <div id="platform-panel" class="platform-panel hidden" role="region" aria-labelledby="toggle-platforms" tabindex="-1">
+          <div id="platforms-heading" class="platform-panel__title">Platforme utile</div>
+          <div class="platform-grid" role="group" aria-label="Platforme utile">
+      
+            <div class="platform-grid__item featured">
+              <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Pay" aria-label="Accesează platforma M-Pay – plăți electronice guvernamentale">
+                <div class="platform-grid__image">
+                  <img src="assets/logos/m-platforms/m-pay.png" alt="Sigla M-Pay" loading="lazy">
+                </div>
+                <div class="platform-grid__content">
+                  <div class="platform-grid__title">mpay</div>
+                  <p class="platform-grid__description">plătește</p>
+                </div>
+              </a>
             </div>
-            <div class="platform-grid__content">
-              <div class="platform-grid__title">mpay</div>
-              <p class="platform-grid__description">plătește</p>
+
+            <div class="platform-grid__item featured">
+              <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Sign" aria-label="Accesează platforma M-Sign – semnează documente digital">
+                <div class="platform-grid__image">
+                  <img src="assets/logos/m-platforms/m-sign.png" alt="Sigla M-Sign" loading="lazy">
+                </div>
+                <div class="platform-grid__content">
+                  <div class="platform-grid__title">msign</div>
+                  <p class="platform-grid__description">semnează</p>
+                </div>
+              </a>
             </div>
+
+            <div class="platform-grid__item featured">
+              <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Learn" aria-label="Accesează platforma M-Learn – învață online">
+                <div class="platform-grid__image">
+                  <img src="assets/logos/m-platforms/m-learn.png" alt="Sigla M-Learn" loading="lazy">
+                </div>
+                <div class="platform-grid__content">
+                  <div class="platform-grid__title">mlearn</div>
+                  <p class="platform-grid__description">învață</p>
+                </div>
+              </a>
+            </div>
+
+            <div class="platform-grid__item featured">
+              <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Power" aria-label="Accesează platforma M-Power – împuternicește">
+                <div class="platform-grid__image">
+                  <img src="assets/logos/m-platforms/m-power.png" alt="Sigla M-Power" loading="lazy">
+                </div>
+                <div class="platform-grid__content">
+                  <div class="platform-grid__title">mpower</div>
+                  <p class="platform-grid__description">împuternicește</p>
+                </div>
+              </a>
+            </div>
+
+            <div class="platform-grid__item featured">
+              <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Notify" aria-label="Accesează platforma M-Notify – notificări guvernamentale">
+                <div class="platform-grid__image">
+                  <img src="assets/logos/m-platforms/m-notify.png" alt="Sigla M-Notify" loading="lazy">
+                </div>
+                <div class="platform-grid__content">
+                  <div class="platform-grid__title">mnotify</div>
+                  <p class="platform-grid__description">notifică</p>
+                </div>
+              </a>
+            </div>
+
+            <div class="platform-grid__item featured">
+              <a href="#" class="platform-grid__link stretched-link" title="Accesează Acte Permisive" aria-label="Accesează platforma Acte Permisive – eliberare documente">
+                <div class="platform-grid__image">
+                  <img src="assets/logos/m-platforms/acte-permisive.png" alt="Sigla Acte Permisive" loading="lazy">
+                </div>
+                <div class="platform-grid__content">
+                  <div class="platform-grid__title">acte</div>
+                  <p class="platform-grid__description">permisive</p>
+                </div>
+              </a>
+            </div>
+
+          </div>
+
+          <a href="#" class="btn btn-secondary btn-rounded">
+            Descoperă-le pe toate
+            <span class="d-inline-flex">
+              <svg class="icon small" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
+              </svg>
+            </span>
           </a>
-        </div>
-
-        <div class="platform-grid__item featured">
-          <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Sign" aria-label="Accesează platforma M-Sign – semnează documente digital">
-            <div class="platform-grid__image">
-              <img src="assets/logos/m-platforms/m-sign.png" alt="Sigla M-Sign" loading="lazy">
-            </div>
-            <div class="platform-grid__content">
-              <div class="platform-grid__title">msign</div>
-              <p class="platform-grid__description">semnează</p>
-            </div>
-          </a>
-        </div>
-
-        <div class="platform-grid__item featured">
-          <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Learn" aria-label="Accesează platforma M-Learn – învață online">
-            <div class="platform-grid__image">
-              <img src="assets/logos/m-platforms/m-learn.png" alt="Sigla M-Learn" loading="lazy">
-            </div>
-            <div class="platform-grid__content">
-              <div class="platform-grid__title">mlearn</div>
-              <p class="platform-grid__description">învață</p>
-            </div>
-          </a>
-        </div>
-
-        <div class="platform-grid__item featured">
-          <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Power" aria-label="Accesează platforma M-Power – împuternicește">
-            <div class="platform-grid__image">
-              <img src="assets/logos/m-platforms/m-power.png" alt="Sigla M-Power" loading="lazy">
-            </div>
-            <div class="platform-grid__content">
-              <div class="platform-grid__title">mpower</div>
-              <p class="platform-grid__description">împuternicește</p>
-            </div>
-          </a>
-        </div>
-
-        <div class="platform-grid__item featured">
-          <a href="#" class="platform-grid__link stretched-link" title="Accesează M-Notify" aria-label="Accesează platforma M-Notify – notificări guvernamentale">
-            <div class="platform-grid__image">
-              <img src="assets/logos/m-platforms/m-notify.png" alt="Sigla M-Notify" loading="lazy">
-            </div>
-            <div class="platform-grid__content">
-              <div class="platform-grid__title">mnotify</div>
-              <p class="platform-grid__description">notifică</p>
-            </div>
-          </a>
-        </div>
-
-        <div class="platform-grid__item featured">
-          <a href="#" class="platform-grid__link stretched-link" title="Accesează Acte Permisive" aria-label="Accesează platforma Acte Permisive – eliberare documente">
-            <div class="platform-grid__image">
-              <img src="assets/logos/m-platforms/acte-permisive.png" alt="Sigla Acte Permisive" loading="lazy">
-            </div>
-            <div class="platform-grid__content">
-              <div class="platform-grid__title">acte</div>
-              <p class="platform-grid__description">permisive</p>
-            </div>
-          </a>
-        </div>
-
-      </div>
-
-      <a href="#" class="btn btn-secondary btn-rounded">
-        Descoperă-le pe toate
-        <span class="d-inline-flex">
-          <svg class="icon small" aria-hidden="true"> 
-            <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
-          </svg>
-        </span>
-      </a>
-    </div> 
+        </div> 
       </div> 
       
       <!-- Main Navigation Panel -->
@@ -554,9 +631,7 @@
           </div>
         </a>
 
-        <div class="header__actions"> 
-            <button class="btn btn-primary btn-sm" type="button">Autentificare</button>
-        
+        <div class="header__actions">  
           <div class="header__search">
             <button class="header__toggle" aria-label="Meniu" data-open="#search-modal-mobile">
               <span class="d-inline-flex">
@@ -584,6 +659,100 @@
               </div>
             </div>
           </div>  
+          <!--new-->
+          <div class="header__profile">
+            <button
+              id="profile-toggle"
+              class="profile-toggle btn avatar avatar--image avatar--md p-0 border-0"
+              aria-haspopup="true" aria-expanded="true" aria-controls="profile-dropdown"  data-toggle="#profile-dropdown" data-position="dynamic" data-animation="fade" data-close="outside"
+            >
+              <img src="https://i.pravatar.cc/100" alt="User avatar">
+            </button>
+
+            <div class="profile-dropdown" id="profile-dropdown" hidden>
+              <div class="profile-header">
+                <div class="avatar avatar--image avatar--xl">
+                  <img src="https://i.pravatar.cc/100" alt="">
+                </div> 
+                <div class="profile-info">
+                  <h3 class="profile-name">Anastasia Cojocaru</h3>
+                  <p class="profile-role">Persoană fizică</p>
+                </div>
+                <div class="d-flex gap-12">
+                  <button type="button" class="btn btn-primary btn-rounded btn-md">Cabinetul Personal</button>
+                  <button type="button" class="btn btn-outline-primary btn-rounded btn-md p-8">
+                    <span class="px-2 d-inline-flex">
+                      <svg class="icon medium" aria-hidden="true"> 
+                        <use href="assets/icons/sprite.svg#icon-settings"></use> 
+                      </svg>
+                    </span>
+                  </button>
+                </div>
+              </div>
+              <hr class="separator separator--horizontal separator--thin separator--subtle" />
+              <div class="profile-roles">
+                <div class="profile-section-title">Alege alt rol</div>
+                <ul class="role-list">
+                  <li class="role-item active">
+                    <div class="role-info">
+                      <div class="avatar avatar--image avatar--md">
+                        <img src="https://i.pravatar.cc/100" alt="">
+                      </div>
+                      <div class="d-flex flex-column gap-4">
+                        <div class="role-name">Anastasia Cojocaru</div>
+                        <div class="role-id">IDNP 12012092309223019</div>
+                      </div>
+                    </div>
+                    <span class="text-blue-sky-600 d-inline-flex">
+                      <svg class="icon small" aria-hidden="true"> 
+                        <use href="assets/icons/sprite.svg#icon-checkmark-large"></use> 
+                      </svg>
+                    </span>
+                  </li>
+
+                  <li class="role-item">
+                    <div class="role-info">
+                      <div class="role-icon">
+                        <span class="p-8 bg-gray-200 radius-full d-inline-flex text-gray-500">
+                          <svg class="icon medium" aria-hidden="true"> 
+                            <use href="assets/icons/sprite.svg#icon-business"></use> 
+                          </svg>
+                        </span>
+                      </div>
+                      <div class="d-flex flex-column gap-4">
+                        <div class="role-name">SRL Trampoline Co.</div>
+                        <div class="role-id">IDNO 12012092309223019</div>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li class="role-item">
+                    <div class="role-info">
+                      <div class="role-avatar">
+                        <span class="p-8 bg-gray-200 radius-full d-inline-flex text-gray-500">
+                          <svg class="icon medium" aria-hidden="true"> 
+                              <use href="assets/icons/sprite.svg#icon-business"></use> 
+                          </svg>
+                        </span>
+                      </div>
+                      <div class="d-flex flex-column gap-4">
+                        <div class="role-name">SRL Global Trader</div>
+                        <div class="role-id">IDNO 12012092309223019</div>
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+                <button class="btn btn-neutral ">
+                  Ieșire
+                  <span class="d-inline-flex">
+                    <svg class="icon medium" aria-hidden="true"> 
+                      <use href="assets/icons/sprite.svg#icon-logout"></use> 
+                    </svg>
+                  </span>
+                </button>
+              </div> 
+            </div>
+          </div> 
           <button class="mainNav__toggle mobile btn btn-menu btn-sm" aria-expanded="false" aria-controls="mainNav__panel">
             <span class="sr-only">Meniu</span>
             <span class="d-inline-flex">

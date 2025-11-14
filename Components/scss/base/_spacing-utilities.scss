@@ -1,6 +1,7 @@
 @use "../abstracts/tokens" as tokens;
 @use "../abstracts/variables" as vars;
 @use "sass:map";
+
 :root {
   --spacing-0: 0px;
   --spacing-2: 2px;
@@ -18,6 +19,7 @@
   --spacing-64: 64px;
   --spacing-72: 72px;
 }
+
 // ===============================
 // Spacing token map
 // ===============================
@@ -40,54 +42,93 @@ $spacing-map: (
 );
 
 // ===============================
-// Base utilities (no breakpoint)
+// Base utilities (positive + negative)
 // ===============================
 @each $name, $value in $spacing-map {
-  .p-#{$name} { padding: $value; }
-  .pt-#{$name} { padding-top: $value; }
-  .pr-#{$name} { padding-right: $value; }
-  .pb-#{$name} { padding-bottom: $value; }
-  .pl-#{$name} { padding-left: $value; }
-  .px-#{$name} { padding-left: $value; padding-right: $value; }
-  .py-#{$name} { padding-top: $value; padding-bottom: $value; }
+  // Positive values
+  .p-#{$name} { padding: $value !important; }
+  .pt-#{$name} { padding-top: $value !important; }
+  .pr-#{$name} { padding-right: $value !important; }
+  .pb-#{$name} { padding-bottom: $value !important; }
+  .pl-#{$name} { padding-left: $value !important; }
+  .px-#{$name} { padding-left: $value !important; padding-right: $value !important; }
+  .py-#{$name} { padding-top: $value !important; padding-bottom: $value !important; }
 
-  .m-#{$name} { margin: $value; }
-  .mt-#{$name} { margin-top: $value; }
-  .mr-#{$name} { margin-right: $value; }
-  .mb-#{$name} { margin-bottom: $value; }
-  .ml-#{$name} { margin-left: $value; }
-  .mx-#{$name} { margin-left: $value; margin-right: $value; }
-  .my-#{$name} { margin-top: $value; margin-bottom: $value; }
+  .m-#{$name} { margin: $value !important; }
+  .mt-#{$name} { margin-top: $value !important; }
+  .mr-#{$name} { margin-right: $value !important; }
+  .mb-#{$name} { margin-bottom: $value !important; }
+  .ml-#{$name} { margin-left: $value !important; }
+  .mx-#{$name} { margin-left: $value !important; margin-right: $value !important; }
+  .my-#{$name} { margin-top: $value !important; margin-bottom: $value !important; }
 
-  .gap-#{$name} { gap: $value; }
+  .gap-#{$name} { gap: $value !important; }
+
+  // Negative values (skip 0)
+  @if $name != 0 {
+    .m-n#{$name} { margin: -$value !important; }
+    .mt-n#{$name} { margin-top: -$value !important; }
+    .mr-n#{$name} { margin-right: -$value !important; }
+    .mb-n#{$name} { margin-bottom: -$value !important; }
+    .ml-n#{$name} { margin-left: -$value !important; }
+    .mx-n#{$name} { margin-left: -$value !important; margin-right: -$value !important; }
+    .my-n#{$name} { margin-top: -$value !important; margin-bottom: -$value !important; }
+  }
 }
 
 // ===============================
-// Responsive utilities
+// Auto margins
+// ===============================
+.m-auto  { margin: auto !important; }
+.mt-auto { margin-top: auto !important; }
+.mr-auto { margin-right: auto !important; }
+.mb-auto { margin-bottom: auto !important; }
+.ml-auto { margin-left: auto !important; }
+.mx-auto { margin-left: auto !important; margin-right: auto !important; }
+.my-auto { margin-top: auto !important; margin-bottom: auto !important; }
+
+// ===============================
+// Responsive utilities (positive + negative + auto)
 // ===============================
 @each $bp-name, $bp-value in vars.$breakpoints {
   @media (min-width: $bp-value) {
     @each $name, $value in $spacing-map {
-      // Padding
-      .p-#{$bp-name}-#{$name} { padding: $value; }
-      .pt-#{$bp-name}-#{$name} { padding-top: $value; }
-      .pr-#{$bp-name}-#{$name} { padding-right: $value; }
-      .pb-#{$bp-name}-#{$name} { padding-bottom: $value; }
-      .pl-#{$bp-name}-#{$name} { padding-left: $value; }
-      .px-#{$bp-name}-#{$name} { padding-left: $value; padding-right: $value; }
-      .py-#{$bp-name}-#{$name} { padding-top: $value; padding-bottom: $value; }
+      // Positive
+      .p-#{$bp-name}-#{$name} { padding: $value !important; }
+      .pt-#{$bp-name}-#{$name} { padding-top: $value !important; }
+      .pr-#{$bp-name}-#{$name} { padding-right: $value !important; }
+      .pb-#{$bp-name}-#{$name} { padding-bottom: $value !important; }
+      .pl-#{$bp-name}-#{$name} { padding-left: $value !important; }
+      .px-#{$bp-name}-#{$name} { padding-left: $value !important; padding-right: $value !important; }
+      .py-#{$bp-name}-#{$name} { padding-top: $value !important; padding-bottom: $value !important; }
 
-      // Margin
-      .m-#{$bp-name}-#{$name} { margin: $value; }
-      .mt-#{$bp-name}-#{$name} { margin-top: $value; }
-      .mr-#{$bp-name}-#{$name} { margin-right: $value; }
-      .mb-#{$bp-name}-#{$name} { margin-bottom: $value; }
-      .ml-#{$bp-name}-#{$name} { margin-left: $value; }
-      .mx-#{$bp-name}-#{$name} { margin-left: $value; margin-right: $value; }
-      .my-#{$bp-name}-#{$name} { margin-top: $value; margin-bottom: $value; }
+      .m-#{$bp-name}-#{$name} { margin: $value !important; }
+      .mt-#{$bp-name}-#{$name} { margin-top: $value !important; }
+      .mr-#{$bp-name}-#{$name} { margin-right: $value !important; }
+      .mb-#{$bp-name}-#{$name} { margin-bottom: $value !important; }
+      .ml-#{$bp-name}-#{$name} { margin-left: $value !important; }
+      .mx-#{$bp-name}-#{$name} { margin-left: $value !important; margin-right: $value !important; }
+      .my-#{$bp-name}-#{$name} { margin-top: $value !important; margin-bottom: $value !important; }
 
-      // Gap
-      .gap-#{$bp-name}-#{$name} { gap: $value; }
+      // Negative (skip 0)
+      @if $name != 0 {
+        .m-#{$bp-name}-n#{$name} { margin: -$value !important; }
+        .mt-#{$bp-name}-n#{$name} { margin-top: -$value !important; }
+        .mr-#{$bp-name}-n#{$name} { margin-right: -$value !important; }
+        .mb-#{$bp-name}-n#{$name} { margin-bottom: -$value !important; }
+        .ml-#{$bp-name}-n#{$name} { margin-left: -$value !important; }
+        .mx-#{$bp-name}-n#{$name} { margin-left: -$value !important; margin-right: -$value !important; }
+        .my-#{$bp-name}-n#{$name} { margin-top: -$value !important; margin-bottom: -$value !important; }
+      }
     }
+
+    // Auto margins responsive
+    .m-#{$bp-name}-auto  { margin: auto !important; }
+    .mt-#{$bp-name}-auto { margin-top: auto !important; }
+    .mr-#{$bp-name}-auto { margin-right: auto !important; }
+    .mb-#{$bp-name}-auto { margin-bottom: auto !important; }
+    .ml-#{$bp-name}-auto { margin-left: auto !important; }
+    .mx-#{$bp-name}-auto { margin-left: auto !important; margin-right: auto !important; }
+    .my-#{$bp-name}-auto { margin-top: auto !important; margin-bottom: auto !important; }
   }
 }
