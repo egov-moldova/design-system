@@ -450,6 +450,16 @@
   margin-bottom: 0;
   cursor: pointer;
   transition: background 0.2s;
+
+  .check-icon {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s;
+  }
+
+  @media (max-width: 768px) {
+    padding: var(--spacing-12) var(--spacing-20) var(--spacing-12) var(--spacing-12);
+  } 
 }
 
 .role-item:hover {
@@ -460,6 +470,16 @@
   border-color: var(--blue-sky-600);
   border-width: var(--border-width-2);
   background: var(--blue-sky-100);
+
+  .check-icon {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .role-icon span {
+    color: var(--blue-sky-600) !important;
+    background-color: var(--blue-sky-200) !important;
+  }
 }
 
 .role-info {
@@ -477,11 +497,19 @@
 .role-name {
   font-size: var(--text-body-lg-font-size);
   font-weight: 500;
+
+  @media (max-width: 768px) {
+    font-size: var(--text-body-md-font-size);
+  } 
 }
 
 .role-id {
   font-size: var(--text-body-sm-font-size);
   color: var(--gray-400);
+
+  @media (max-width: 768px) {
+    font-size: var(--text-caption-md-font-size);
+  }
 }
 
  
