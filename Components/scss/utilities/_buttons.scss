@@ -83,3 +83,23 @@
 // ==============================================
 .btn-pill { border-radius: 9999px; }
 .btn-rounded { border-radius: var(--border-radius-full, 9999px); }
+
+
+// ==============================================
+// 🔹 Buttons Group
+.btn-group {
+  display: inline-flex;
+  gap: var(--spacing-12, 0.75rem);
+
+  &--inline {
+    flex-direction: row;
+  }
+
+  &--vertical {
+    flex-direction: column;
+  } 
+
+  .btn {
+    margin: 0;
+  }
+}
