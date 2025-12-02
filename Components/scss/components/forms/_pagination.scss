@@ -1,0 +1,104 @@
+@use '../../abstracts/tokens' as tokens;
+
+// ======================================
+// 📄 Pagination Component
+// ======================================
+.pagination {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-24, 24px);
+
+  // Reset list
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  &__item {
+    display: inline-flex;
+  }
+
+  // Button style
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-6, 6px);
+
+    min-width: var(--spacing-40);
+    height: var(--spacing-40, 40px);
+
+    padding: 0 var(--spacing-12, 12px);
+
+    font-size: var(--text-body-sm-500-font-size);
+    font-weight: var(--font-weight-500, 500);
+    line-height: 1;
+
+    border: none;
+    border-radius: var(--border-radius-4);
+    color: var(--gray-700);
+
+    background-color: var(--color-white, #fff);
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      border-color 0.15s ease,
+      color 0.15s ease;
+
+    &:hover {
+      background-color: var(--gray-100);
+      border-color: var(--gray-400);
+    }
+
+    &:focus {
+      outline: 2px solid var(--blue-sky-600);
+      outline-offset: 2px;
+    }
+
+    &--active {
+      background-color: var(--blue-sky-600);
+      border-color: var(--blue-sky-600);
+      color: #fff;
+      cursor: default;
+
+      &:hover {
+        background-color: var(--blue-sky-600);
+      }
+    }
+
+    &--disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    gap: var(--spacing-8, 8px);
+
+    .pagination__link {
+      min-width: var(--spacing-32, 32px);
+      height: var(--spacing-32, 32px);
+      padding: 0 var(--spacing-8, 8px);
+      font-size: var(--font-size-12, 12px);
+
+      &--text {
+        display: none;
+      }
+    }
+  }
+
+  // Compact mode
+  &--compact {
+    gap: var(--spacing-8, 8px);
+
+    .pagination__link {
+      min-width: var(--spacing-32, 32px);
+      height: var(--spacing-32, 32px);
+      padding: 0 var(--spacing-8, 8px);
+      font-size: var(--font-size-12, 12px);
+
+      &--text {
+        display: none;
+      }
+    }
+  }
+}

@@ -16296,6 +16296,83 @@ label.required::after {
   color: var(--gray-600);
 }
 
+.pagination {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-24, 24px);
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.pagination__item {
+  display: inline-flex;
+}
+.pagination__link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-6, 6px);
+  min-width: var(--spacing-40);
+  height: var(--spacing-40, 40px);
+  padding: 0 var(--spacing-12, 12px);
+  font-size: var(--text-body-sm-500-font-size);
+  font-weight: var(--font-weight-500, 500);
+  line-height: 1;
+  border: none;
+  border-radius: var(--border-radius-4);
+  color: var(--gray-700);
+  background-color: var(--color-white, #fff);
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+.pagination__link:hover {
+  background-color: var(--gray-100);
+  border-color: var(--gray-400);
+}
+.pagination__link:focus {
+  outline: 2px solid var(--blue-sky-600);
+  outline-offset: 2px;
+}
+.pagination__link--active {
+  background-color: var(--blue-sky-600);
+  border-color: var(--blue-sky-600);
+  color: #fff;
+  cursor: default;
+}
+.pagination__link--active:hover {
+  background-color: var(--blue-sky-600);
+}
+.pagination__link--disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+@media screen and (max-width: 768px) {
+  .pagination {
+    gap: var(--spacing-8, 8px);
+  }
+  .pagination .pagination__link {
+    min-width: var(--spacing-32, 32px);
+    height: var(--spacing-32, 32px);
+    padding: 0 var(--spacing-8, 8px);
+    font-size: var(--font-size-12, 12px);
+  }
+  .pagination .pagination__link--text {
+    display: none;
+  }
+}
+.pagination--compact {
+  gap: var(--spacing-8, 8px);
+}
+.pagination--compact .pagination__link {
+  min-width: var(--spacing-32, 32px);
+  height: var(--spacing-32, 32px);
+  padding: 0 var(--spacing-8, 8px);
+  font-size: var(--font-size-12, 12px);
+}
+.pagination--compact .pagination__link--text {
+  display: none;
+}
+
 .avatar {
   position: relative;
   display: inline-flex;

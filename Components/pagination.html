@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pagination Preview</title>
+  <link rel="stylesheet" href="css/main.css"> 
+  <script defer src="../Components/js/messages.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-7">
+        <h1>Pagination</h1>
+        <p class="text-gray-400">
+          Pagination organizes content into logical, manageable groups, dividing it across pages based on the relevance of results. This method offers a clear, structured way for users to navigate through information. 
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Breakpoints</h2>  
+        </div>
+      </div>
+    </div>  
+    <div class="row mt-32">
+      <div class="col-12 col-md-6">
+        <p class="text-gray-700">desktop</p>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination">
+            <li class="pagination__item">
+              <button class="pagination__link pagination__link--disabled">
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use> 
+                  </svg>
+                </span>
+                <span class="pagination__link--text">Prev</span> 
+              </button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">1</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link pagination__link--active">2</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">3</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">4</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">5</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">6</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">7</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">
+                <span class="pagination__link--text">Next</span>
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
+                  </svg>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </nav> 
+      </div>
+
+      <div class="col-12 col-md-6">
+        <p class="text-gray-700">mobile</p>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination pagination--compact">
+            <li class="pagination__item">
+               <button class="pagination__link pagination__link--disabled">
+                <span class="pagination__link--text">Prev</span>
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use> 
+                  </svg>
+                </span>
+              </button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">1</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link pagination__link--active">2</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">3</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">4</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">5</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">6</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">7</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">
+                <span class="pagination__link--text">Next</span>
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
+                  </svg>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </nav> 
+      </div>
+    </div> 
+
+    <div class="row mt-32">
+      <div class="col-12"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>States</h2>  
+        </div>
+      </div>
+    </div>  
+    <div class="row mt-32">
+      <div class="col-12 col-md-6">
+        <p class="text-gray-700">selected</p>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination"> 
+            <li class="pagination__item">
+              <button class="pagination__link  pagination__link--active">1</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">2</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">3</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">4</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">5</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">6</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">7</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">
+                <span class="pagination__link--text">Next</span>
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
+                  </svg>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </nav> 
+      </div>
+
+      <div class="col-12 col-md-6">
+        <p class="text-gray-700">selected:focus</p>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination"> 
+
+            <li class="pagination__item">
+              <button class="pagination__link  pagination__link--active" style="outline: 2px solid var(--blue-sky-600); outline-offset: 1px;">1</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">2</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">3</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">4</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">5</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">6</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">7</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">
+                <span class="pagination__link--text">Next</span>
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
+                  </svg>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </nav> 
+      </div>
+    </div> 
+
+    <div class="row mt-56">
+      <div class="col-12 col-md-6">
+        <p class="text-gray-700">unselected</p>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination"> 
+            <li class="pagination__item">
+              <button class="pagination__link">1</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">2</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">3</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">4</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link  pagination__link--active">5</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">6</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">7</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">
+                <span class="pagination__link--text">Next</span>
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
+                  </svg>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </nav> 
+      </div>
+
+      <div class="col-12 col-md-6">
+        <p class="text-gray-700">unselected:hover</p>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination"> 
+
+            <li class="pagination__item">
+              <button class="pagination__link" style="background-color: #f5f5f5;">1</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">2</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">3</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">4</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link  pagination__link--active"">5</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">6</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">7</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">
+                <span class="pagination__link--text">Next</span>
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
+                  </svg>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </nav> 
+      </div>
+    </div> 
+
+     <div class="row mt-56">
+      <div class="col-12 col-md-6">
+        <p class="text-gray-700">unselected:focus</p>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination"> 
+            <li class="pagination__item">
+              <button class="pagination__link" style="outline: 2px solid var(--blue-sky-600); outline-offset: 1px;">1</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">2</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">3</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">4</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link  pagination__link--active">5</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">6</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">7</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">
+                <span class="pagination__link--text">Next</span>
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
+                  </svg>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </nav> 
+      </div> 
+    </div> 
+
+    <div class="row mt-56 mb-96">
+      <div class="col-12">
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Pagination Logic</h2>  
+        </div>
+      </div>
+      <div class="col-sm-7"> 
+        <p class="text-gray-400">
+          There is an absolute maximum of 7 visible slots available, including the overflow element if pages are truncated. On smaller screens, more pages will be truncated as the screen width decreases. When pages are truncated, the minimum is 5 slots visible. Avoid showing pagination if only 1 page exists.
+        </p>
+      </div>
+    </div>
+    <div class="row mt-32">
+      <div class="col-12 col-md-6">
+        <p class="text-gray-700">first-page</p>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination"> 
+            <li class="pagination__item d-none">
+              <button class="pagination__link">
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use> 
+                  </svg>
+                </span>
+                <span class="pagination__link--text">Prev</span>
+              </button>
+            </li>
+            <li class="pagination__item">
+              <button class="pagination__link pagination__link--active">1</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">2</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">3</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">4</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">5</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">6</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">7</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">
+                <span class="pagination__link--text">Next</span>
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
+                  </svg>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </nav> 
+      </div>
+
+      <div class="col-12 col-md-6">
+        <p class="text-gray-700">last-page</p>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination"> 
+            <li class="pagination__item">
+              <button class="pagination__link">
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use> 
+                  </svg>
+                </span>
+                <span class="pagination__link--text">Prev</span>
+              </button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">1</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">2</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">3</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">4</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">5</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">6</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link pagination__link--active">7</button>
+            </li>
+
+            <li class="pagination__item d-none">
+              <button class="pagination__link">
+                <span class="pagination__link--text">Next</span>
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
+                  </svg>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </nav> 
+      </div>
+    </div> 
+
+    <div class="row mt-56">
+      <div class="col-12 col-md-6">
+        <p class="text-gray-700">first-page: leading-overflow</p>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination"> 
+            <li class="pagination__item d-none">
+              <button class="pagination__link">
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use> 
+                  </svg>
+                </span>
+                <span class="pagination__link--text">Prev</span>
+              </button>
+            </li>
+            <li class="pagination__item">
+              <button class="pagination__link pagination__link--active">1</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">2</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">3</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">4</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">5</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">...</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">27</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">
+                <span class="pagination__link--text">Next</span>
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
+                  </svg>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </nav> 
+      </div>
+
+      <div class="col-12 col-md-6">
+        <p class="text-gray-700">last-page: trailing-overflow</p>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination"> 
+            <li class="pagination__item">
+              <button class="pagination__link">
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use> 
+                  </svg>
+                </span>
+                <span class="pagination__link--text">Prev</span>
+              </button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">1</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">...</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">23</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">24</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">25</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">26</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link pagination__link--active">27</button>
+            </li>
+
+            <li class="pagination__item d-none">
+              <button class="pagination__link">
+                <span class="pagination__link--text">Next</span>
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
+                  </svg>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </nav> 
+      </div>
+    </div> 
+
+    <div class="row mt-56">
+      <div class="col-12 col-md-6">
+        <p class="text-gray-700">leading-overflow</p>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination"> 
+            <li class="pagination__item">
+              <button class="pagination__link">
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use> 
+                  </svg>
+                </span>
+                <span class="pagination__link--text">Prev</span>
+              </button>
+            </li>
+            <li class="pagination__item">
+              <button class="pagination__link">1</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">2</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link  pagination__link--active">3</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">4</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">5</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">...</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">27</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">
+                <span class="pagination__link--text">Next</span>
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
+                  </svg>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </nav> 
+        <p class="text-gray-400 mt-16">The leading overflow appears when there are at least 2 pages between the last page and the page before the overflow.</p>
+      </div> 
+    </div> 
+
+    <div class="row mt-56">
+      <div class="col-12 col-md-6">
+        <p class="text-gray-700">leading-and-trailing-overflow</p>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination"> 
+            <li class="pagination__item">
+              <button class="pagination__link">
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use> 
+                  </svg>
+                </span>
+                <span class="pagination__link--text">Prev</span>
+              </button>
+            </li>
+            <li class="pagination__item">
+              <button class="pagination__link">1</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">...</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">11</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link pagination__link--active">12</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">13</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">...</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">27</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">
+                <span class="pagination__link--text">Next</span>
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
+                  </svg>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </nav> 
+        <p class="text-gray-400 mt-16">
+          Both the leading and trailing overflow appear when there are at least 3 pages ahead and behind the active page, excluding the first and last page.
+        </p>
+      </div> 
+    </div>
+    
+    <div class="row mt-56">
+      <div class="col-12 col-md-6">
+        <p class="text-gray-700">trailing-overflow</p>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination"> 
+            <li class="pagination__item">
+              <button class="pagination__link">
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use> 
+                  </svg>
+                </span>
+                <span class="pagination__link--text">Prev</span>
+              </button>
+            </li>
+            <li class="pagination__item">
+              <button class="pagination__link">1</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">...</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">23</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">24</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link  pagination__link--active">25</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">26</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">27</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">
+                <span class="pagination__link--text">Next</span>
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
+                  </svg>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </nav> 
+        <p class="text-gray-400 mt-16">
+          The trailing overflow appears when navigating within the last 4 pages and will contain a minimum of 2 pages.
+        </p>
+      </div> 
+    </div>
+
+     <div class="row mt-56 mb-96">
+      <div class="col-12">
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Overflow Interaction</h2>  
+        </div>
+      </div>
+      <div class="col-sm-7"> 
+        <p class="text-gray-400">
+          Interacting with the overflow element reveals an action menu.
+        </p>
+      </div>
+    </div>
+    <div class="row mt-32 mb-56">
+      <div class="col-12 col-md-6">
+        <p class="text-gray-700">overflow-active</p>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination"> 
+            <li class="pagination__item">
+              <button class="pagination__link">
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use> 
+                  </svg>
+                </span>
+                <span class="pagination__link--text">Prev</span>
+              </button>
+            </li>
+            <li class="pagination__item">
+              <button class="pagination__link">1</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">...</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">8</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link pagination__link--active">9</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">10</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">...</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">20</button>
+            </li>
+
+            <li class="pagination__item">
+              <button class="pagination__link">
+                <span class="pagination__link--text">Next</span>
+                <span class="pagination__icon" aria-hidden="true">
+                   <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use> 
+                  </svg>
+                </span>
+              </button>
+            </li>
+          </ul>
+        </nav>  
+      </div> 
+    </div>
+  </div> 
+</body>
+</html>
