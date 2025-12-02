@@ -518,3 +518,82 @@
   width: 100%; 
   cursor: pointer;
 }
+
+// ===============================
+.language-switcher { 
+
+  &__menu {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: var(--white, #fff);
+    border-radius: var(--border-radius-16);
+    box-shadow: var(--drop-shadow-300);
+    padding: var(--spacing-8);
+    width: 150px; 
+    z-index: 100;
+    transition: all 0.3s ease;
+    transform: translateY(0);
+
+    @media (max-width: 768px) { 
+      right: 0;
+      left: 0;
+      margin: 0 auto;
+      top: 56px;
+    }
+
+    &.hidden {
+      opacity: 0;
+      transform: translateY(-100%);
+      pointer-events: none;
+    }
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      a{
+        color: var(--gray-700);
+        display: block;
+        text-decoration: none;
+      }
+      li {
+        display: flex;
+        align-items: center;
+        border-radius: var(--border-radius-8);
+        justify-content: space-between;
+        margin-bottom: 0;
+        padding: var(--spacing-12) var(--spacing-16);
+
+        &:hover {
+          background-color: var(--gray-100);
+          
+          a{
+            color: var(--blue-sky-600);
+          }
+        }
+      }
+
+      .active { 
+        background-color: var(--blue-sky-100);
+
+        a{
+          color: var(--blue-sky-600);
+        }
+
+        svg {
+          color: var(--blue-sky-600);
+          opacity: 1;
+          visibility: visible;
+        }
+      } 
+
+      svg { 
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.2s ease;
+      }
+    }
+  }
+}
