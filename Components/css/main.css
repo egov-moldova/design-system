@@ -13997,6 +13997,105 @@ body.has-overlay footer {
     min-width: 100%;
   }
 }
+.table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--font-size-14);
+  color: var(--gray-900);
+}
+.table__head-cell {
+  padding: var(--spacing-8) var(--spacing-24);
+  text-align: left;
+  border-bottom: 1px solid var(--gray-200);
+  color: var(--black);
+  font-size: var(--text-caption-md-500-font-size);
+  font-weight: 500;
+  position: relative;
+  background: var(--white);
+}
+.table__body-cell {
+  padding: var(--spacing-8) var(--spacing-24);
+  color: var(--gray-700);
+  font-size: var(--text-body-sm-font-size);
+  border-bottom: 0.5px solid var(--gray-250);
+  background: var(--white);
+}
+.table__icon {
+  font-size: 6px;
+  color: var(--gray-400);
+  line-height: 1;
+}
+.table__icon--leading {
+  margin-right: var(--spacing-8);
+}
+.table__icon--trailing {
+  margin-left: var(--spacing-8);
+}
+.table__row:nth-child(even) .table__body-cell {
+  background-color: var(--gray-100);
+}
+.table__row:hover .table__body-cell {
+  background-color: var(--gray-150);
+}
+.table__row:last-child .table__body-cell {
+  border-bottom: none;
+}
+.table--subtle .table__head-cell {
+  background: var(--gray-100);
+  color: var(--gray-700);
+}
+.table--strong .table__head-cell {
+  background: var(--gray-900);
+  color: var(--white);
+}
+.table--white .table__head-cell {
+  background: var(--white);
+  color: var(--black);
+  border-bottom: 1px solid var(--gray-200);
+}
+.table--default .table__head-cell {
+  background: var(--black);
+  color: var(--white);
+  border-bottom: 1px solid var(--gray-200);
+}
+.table--default .table__row:nth-child(even) .table__body-cell {
+  background-color: var(--white);
+}
+.table--icon-none .table__head-cell {
+  padding-left: var(--spacing-16);
+}
+.table--leading-icon .table__icon--leading {
+  display: inline-block;
+}
+.table--trailing-icon .table__icon--trailing {
+  display: inline-block;
+}
+.table--icon-only .table__head-cell {
+  padding-left: var(--spacing-32);
+}
+.table--icon-only .table__head-cell .table__icon--leading {
+  display: inline-block;
+  position: absolute;
+  left: var(--spacing-16);
+}
+.table__sort-button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+}
+.table--mobile .table__body-cell {
+  padding: var(--spacing-8) var(--spacing-16);
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
 /* =======================================
    🔹 Mixin principal pentru input-uri
 ======================================= */
