@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Search Input Preview Numbers</title>
+  <title>Phone Numbers</title>
   <script src="js/search.js"></script>
+  <script src="js/phone-input.js"></script>
   <link rel="stylesheet" href="css/main.css" />
 </head>
 <body>
@@ -12,53 +13,150 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-7">
-            <h1>Search Input</h1>
+            <h1>Phone Number Input</h1>
             <p class="text-gray-400">
-                The Search Input component allows users to enter text queries to quickly find relevant content within an interface. It typically includes a text field and a search icon, and may offer additional features such as auto-suggestions, clear input functionality, or filters.
-                Designed to be lightweight and accessible, this component helps streamline navigation and improve content discoverability.
+                Phone Number Input is designed to capture a user’s phone number in a clear and structured way.
+                Within the design system, it follows consistent formatting rules, validation, and interaction patterns to ensure accuracy and reliability.
             </p>
         </div>
     </div>
     <!-- Styles -->
+    <!-- =============================== -->
+    <!-- Input telefon cu flag -->
+    <!-- =============================== -->
+     <div class="row">
+      <div class="col-3">
+        <div class="phone-input">
+          <div class="phone-field">
+            <select id="country-select" class="phone-field__select">
+              <option value="+1" data-flag="🇺🇸">🇺🇸 +1 United States</option>
+              <option value="+44" data-flag="🇬🇧">🇬🇧 +44 United Kingdom</option>
+              <option value="+33" data-flag="🇫🇷">🇫🇷 +33 France</option>
+              <option value="+49" data-flag="🇩🇪">🇩🇪 +49 Germany</option>
+              <option value="+40" data-flag="🇷🇴">🇷🇴 +40 Romania</option>
+              <option value="+373" data-flag="🇲🇩">🇲🇩 +373 Moldova</option>
+            </select>
+
+            <div class="phone-field__input-wrapper">
+              <span id="selected-flag" class="phone-field__flag">🇺🇸</span>
+              <input id="phone-input" type="text" class="phone-field__input">
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+     </div>
     <div class="row">
-      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-          <h2>Styles</h2>
-      </div>
       <div class="col-3">
-         <div class="mb-16">default</div>
-         <div class="field">
-        <label>default: loading</label>
-        <div class="input-wrapper-number is-loading">
-          <input type="number" class="input-number" placeholder="1234" />
-          <div class="input-icon--loading visible"></div>
+        <div class="mb-16">default</div>
+        <label for="date">Label</label>
+        <div class="input-wrapper-number has-leading">
+          <span class="input-icon input-icon--flag">🇺🇸</span>
+          <input type="tel" class="input-number" placeholder="(+1) 555-1234" />
         </div>
       </div>
-      </div>
+
       <div class="col-3">
-          <div class="mb-16">warning</div>
-          <div class="input-group">
-          <label for="input-warning">Label</label>
-          <input id="input-warning" type="text" placeholder="Placeholder" class="input--warning" />
-        </div> 
-      </div>
-      <div class="col-3">
-          <div class="mb-16">destructive</div>
-          <div class="input-group">
-          <label for="input-destructive">Label</label>
-          <input id="input-destructive" type="text" placeholder="Placeholder" class=" input--destructive" />
+        <div class="mb-16">warning</div>
+        <label for="date">Label</label>
+        <div class="input-wrapper-number has-leading">
+          <span class="input-icon input-icon--flag">🇬🇧</span>
+          <input type="tel" class="input-number input-number--warning" placeholder="(+44) 7777-123456" />
         </div>
       </div>
+
       <div class="col-3">
-          <div class="mb-16">success</div>
-          <div class="input-group">
-          <label for="input-destructive">Label</label>
-          <input id="input--success" type="text" placeholder="Placeholder" class=" input--success" />
+        <div class="mb-16">destructive</div>
+        <label for="date">Label</label>
+        <div class="input-wrapper-number has-leading">
+          <span class="input-icon input-icon--flag">🇫🇷</span>
+          <input type="tel" class="input-number input-number--destructive" placeholder="(+33) 6 12 34 56 78" />
+        </div>
+      </div>
+
+      <div class="col-3">
+        <div class="mb-16">success</div>
+        <label for="date">Label</label>
+        <div class="input-wrapper-number has-leading">
+          <span class="input-icon input-icon--flag">🇩🇪</span>
+          <input type="tel" class="input-number input-number--success" placeholder="(+49) 151 12345678" />
         </div>
       </div>
     </div>
 
-    <!-- Variations -->
+    <div class="row mt-32">
+      <div class="col-3">
+        <div class="mb-16">default</div>
+        <label for="date">Label</label>
+        <div class="input-wrapper-number has-leading">
+          <span class="input-icon input-icon--flag">🇺🇸</span>
+          <input type="tel" class="input-number" placeholder="(+1) 555-1234" />
+        </div>
+      </div>
+
+      <div class="col-3">
+        <div class="mb-16">warning</div>
+        <label for="date">Label</label>
+        <div class="input-wrapper-number has-leading">
+          <span class="input-icon input-icon--flag">🇬🇧</span>
+          <input type="tel" class="input-number input-number--warning" placeholder="(+44) 7777-123456" />
+        </div>
+      </div>
+
+      <div class="col-3">
+        <div class="mb-16">destructive</div>
+        <label for="date">Label</label>
+        <div class="input-wrapper-number has-leading">
+          <span class="input-icon input-icon--flag">🇫🇷</span>
+          <input type="tel" class="input-number input-number--destructive" placeholder="(+33) 6 12 34 56 78" />
+        </div>
+      </div>
+
+      <div class="col-3">
+        <div class="mb-16">success</div>
+        <label for="date">Label</label>
+        <div class="input-wrapper-number has-leading">
+          <span class="input-icon input-icon--flag">🇩🇪</span>
+          <input type="tel" class="input-number input-number--success" placeholder="(+49) 151 12345678" />
+        </div>
+      </div>
+    </div>
+
+<!-- =============================== -->
+<!-- Input telefon loading -->
+<!-- =============================== -->
     <div class="row">
+      <div class="col-3">
+        asds
+        <div class="mb-16">loading</div>
+        <div class="input-wrapper-number has-leading is-loading">
+          <span class="input-icon input-icon--flag">🇮🇹</span>
+          <input type="tel" class="input-number" placeholder="(+39) 333 1234567" />
+          <span class="input-icon--loading visible"></span>
+        </div>
+      </div>
+
+      <div class="col-3">
+        <div class="mb-16">disabled</div>
+        <div class="input-wrapper-number has-leading">
+          <span class="input-icon input-icon--flag">🇪🇸</span>
+          <input type="tel" class="input-number" placeholder="(+34) 612 345 678" disabled />
+        </div>
+      </div>
+
+      <div class="col-3">
+        <div class="mb-16">read-only</div>
+        <div class="input-wrapper-number has-leading">
+          <span class="input-icon input-icon--flag">🇨🇦</span>
+          <input type="tel" class="input-number" value="(+1) 416 123 4567" readonly />
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Variations -->
+    <div class="row d-none">
       <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
           <h2>Variations</h2>
       </div>
@@ -126,7 +224,7 @@
     </div>
 
     <!-- States -->
-    <div class="row">
+    <div class="row d-none">
       <div class="col-12">
          <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
               <h2>States</h2>
@@ -134,7 +232,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row d-none">
       <!-- default states -->
       <div class="col-3">
         <div class="input-group mb-24">
@@ -362,7 +460,7 @@
     </div> 
 
     <!-- Assistive Text -->
-    <div class="row">
+    <div class="row d-none">
       <div class="col-12">
          <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
               <h2>Assistive Text</h2>
@@ -375,7 +473,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row d-none">
       <div class="col-3">
         <div class="input-group mb-24">
           <p>default</p>

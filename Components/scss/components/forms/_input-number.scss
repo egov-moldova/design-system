@@ -1,36 +1,68 @@
 @use './input' as *;
 @use '../../abstracts/tokens' as tokens;
 
+// ======================================
+// 🟢 Mixin variante vizuale
+// ======================================
+@mixin input-variant($variant) {
+  @include input-style($variant);
+}
+
+// ======================================
+// 🟢 Input telefon de bază
+// ======================================
 .input-number {
   @include input-style(); // variantă default
-  text-align: right;
+  text-align: left; // pentru telefon, nu right
 
-  // Elimină săgețile implicite ale browserului
-  &::-webkit-inner-spin-button,
-  &::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  &[type="number"] {
+  &[type="tel"] {
     -moz-appearance: textfield;
   }
+
+  // Focus states
+  &:focus:not(:placeholder-shown) {
+    border-color: var(--blue-sky-500);
+  }
+
+  &:focus:placeholder-shown {
+    border-color: var(--blue-sky-300);
+  }
+
+  // Disabled
+  &:disabled {
+    background-color: var(--gray-100);
+    border-color: var(--gray-250);
+    color: var(--gray-500);
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.7;
+  }
+
+  // Read-only
+  &[readonly]:not(:disabled) {
+    background-color: var(--gray-100);
+    border-color: var(--gray-200);
+    color: var(--gray-700);
+    cursor: default;
+    pointer-events: none;
+    opacity: 1;
+
+    &::placeholder {
+      color: var(--gray-700);
+    }
+  }
 }
 
+// ======================================
 // 🔹 Variante vizuale
-.input-number--warning {
-  @include input-style(warning);
-}
+// ======================================
+.input-number--warning     { @include input-variant(warning); }
+.input-number--destructive { @include input-variant(destructive); }
+.input-number--success     { @include input-variant(success); }
 
-.input-number--destructive {
-  @include input-style(destructive);
-}
-
-.input-number--success {
-  @include input-style(success);
-}
-
+// ======================================
 // 🔹 State: filled
+// ======================================
 .input-number--filled {
   background-color: var(--white);
   border-color: var(--gray-300);
@@ -41,74 +73,9 @@
   }
 }
 
-// 🔹 Focus states
-.input-number:focus:not(:placeholder-shown) {
-  border-color: var(--blue-sky-500);
-}
-
-.input-number:focus:placeholder-shown {
-  border-color: var(--blue-sky-300);
-}
-
-// 🔹 Disabled
-.input-number:disabled {
-  background-color: var(--gray-100);
-  border-color: var(--gray-250);
-  color: var(--gray-500);
-  cursor: not-allowed;
-  pointer-events: none;
-  opacity: 0.7;
-}
-
-// 🔹 Read-only
-.input-number[readonly]:not(:disabled) {
-  background-color: var(--gray-100);
-  border-color: var(--gray-200);
-  color: var(--gray-700);
-  cursor: default;
-  pointer-events: none;
-  opacity: 1;
-
-  &::placeholder {
-    color: var(--gray-700);
-  }
-}
-
-// 🔹 Loading wrapper
-.input-wrapper-number.is-loading {
-  position: relative;
-
-  .input-number {
-    padding-right: var(--spacing-40);
-  }
-
-  .input-icon--loading {
-    display: block;
-    position: absolute;
-    top: 50%;
-    right: var(--spacing-8);
-    transform: translateY(-50%);
-    color: transparent !important;
-
-    &::after {
-      content: '';
-      position: absolute;
-      width: 16px;
-      height: 16px;
-      border: 2px solid var(--blue-sky-600);
-      border-top-color: transparent;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      right: 0;
-    }
-
-    &.visible {
-      display: inline-flex;
-    }
-  }
-}
-
-// 🔹 Icon support
+// ======================================
+// 🔹 Wrapper pentru icon / flag / loader
+// ======================================
 .input-wrapper-number {
   position: relative;
   display: flex;
@@ -120,16 +87,109 @@
   }
 
   &.has-leading .input-number {
-    padding-left: var(--spacing-40, 40px);
+    padding-left: var(--spacing-40); // spațiu pentru flag
   }
 
   &.has-trailing .input-number {
-    padding-right: var(--spacing-40, 40px);
+    padding-right: var(--spacing-40); // spațiu pentru loader sau icon
+  }
+
+  // Flag / Icon leading
+  .input-icon--flag {
+    position: absolute;
+    left: var(--spacing-8);
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px; // pentru emoji
+
+    img {
+      width: 20px;
+      height: 14px;
+      object-fit: cover;
+    }
+  }
+
+  // Loading spinner
+  &.is-loading {
+    .input-number {
+      padding-right: var(--spacing-40);
+    }
+
+    .input-icon--loading {
+      display: block;
+      position: absolute;
+      top: 50%;
+      right: var(--spacing-8);
+      transform: translateY(-50%);
+      color: transparent !important;
+
+      &::after {
+        content: '';
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border: 2px solid var(--blue-sky-600);
+        border-top-color: transparent;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        right: 0;
+      }
+
+      &.visible {
+        display: inline-flex;
+      }
+    }
   }
 }
 
+// ======================================
+// 🔹 Animatie spinner
+// ======================================
 @keyframes spin {
   100% {
     transform: rotate(360deg);
   }
+}
+.phone-field {
+  display: flex;
+  gap: var(--spacing-8);
+
+  &__select {
+    padding: var(--spacing-8) var(--spacing-12);
+    font-size: 14px;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-6);
+    background: #fff;
+  }
+
+  &__input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-8);
+    border: 1px solid var(--gray-300);
+    padding: var(--spacing-8) var(--spacing-12);
+    border-radius: var(--radius-6);
+    background: #fff;
+  }
+
+  &__flag {
+    font-size: 18px;
+    display: inline-block;
+    width: 22px;
+    text-align: center;
+  }
+
+  &__input {
+    border: none;
+    outline: none;
+    font-size: 14px;
+    width: 140px;
+  }
+}
+.phone-field--disabled {
+  opacity: 0.6;
+  pointer-events: none;
 }

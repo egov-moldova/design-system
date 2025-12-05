@@ -102,11 +102,10 @@
       border-bottom: 1px solid var(--gray-200);
     }
 
-    .table__row:nth-child(even)
-    .table__body-cell {
+    .table__row:nth-child(even) .table__body-cell {
       background-color: var(--white);
     }
-  }
+  } 
 
   // ---------- Icon placement ----------
   &--icon-none {

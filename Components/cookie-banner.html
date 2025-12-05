@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cookie Banner</title>
+  <script src="js/cookie-bar.js"></script> 
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-7">
+            <h1>Cookie Banner</h1>
+            <p class="text-gray-400">
+                Cookie Banner is designed to inform users about the use of cookies on the website and to obtain their consent.
+                Within the design system, it follows consistent formatting rules, validation, and interaction patterns to ensure clarity and compliance.
+            </p>
+        </div>
+    </div>   
+    <div id="cookie-overlay" class="cookie-overlay d-none"></div>
+    <div id="cookie-banner" class="cookie-banner">
+      <div id="cookie-info" class="cookie-header mb-4">
+        <div class="cookie-title mb-2">Informații despre cookie-uri</div>
+        <p class="cookie-description mb-0">Acest site folosește cookie-uri esențiale pentru funcționarea și performanța de bază. În plus, utilizăm cookie-uri de targetare pentru a îmbunătăți experiența utilizatorului, a realiza analize și a afișa conținut personalizat.</p>
+      </div>  
+      <button id="btnToggleBanner" type="button" class="btn-caret d-none" aria-label="Toggle details">
+        <span class="d-inline-flex">
+            <svg class="icon small" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
+            </svg>
+          </span>
+      </button>
+<button id="btnCollapse" type="button" class="btn-close p-8 bg-gray-200 radius-full border-0 d-none" aria-label="Close details">
+          <span class="d-inline-flex">
+            <svg class="icon small" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
+            </svg>
+          </span>
+        </button>
+      <div id="cookie-main-buttons" class="cookie-buttons">
+        <button type="button" id="btnManage" class="btn btn-outline-strict cookie-manage-btn">Gestionează cookie-urile</button> 
+        <div class="cookie-allow-group d-flex">
+          <button type="button" id="btnNecessary" class="btn btn-outline-primary cookie-allow-btn">Doar cele necesare</button>
+          <button type="button" id="btnAll" class="btn btn-primary cookie-allow-btn">Permite tot</button>
+        </div> 
+        
+      </div>
+
+      <div id="cookie-detail" class="collapse w-100 cookie-detail-container">
+      <h6 class="cookie-title mb-2">Alege ce cookie-uri accepți</h6>
+        <p class="cookie-description">Pe acest site folosim instrumente de măsurare a audienței pentru a înțelege comportamentul utilizatorilor și a optimiza ergonomia și prezentarea conținutului relevant.</p><!--!-->
+
+        <div class="cookie-permissions">
+          <div class="necessary-row d-flex align-items-center">
+            <div class="necessary-text-col d-flex flex-column justify-content-center">
+              <span class="cookie-label">Cookie-uri necesare 
+                <span class="status-tag status-tag--brand is-outlined ml-8">Obligatoriu</span> 
+              </span>
+              <span class="necessary-cookie-content mb-0">Aceste cookie-uri sunt esențiale pentru funcționarea de bază a site-ului, cum ar fi navigarea. Site-ul nu poate funcționa corect fără aceste cookie-uri și ele nu pot fi dezactivate.</span></div><!--!-->
+              <div class="necessary-icon-col d-flex align-items-center justify-content-center">
+                <span class="p-12 text-blue-sky-600 radius-8 d-inline-flex">
+                  <svg class="icon large" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-checkmark-large"></use> 
+                  </svg>
+                </span>
+              </div>
+            </div> 
+           <hr class="separator separator--horizontal separator--thin separator--subtle">
+            <div class="necessary-row d-flex align-items-center">
+              <div class="necessary-text-col d-flex flex-column justify-content-center">
+                <span class="cookie-label">Cookie-uri statistice</span>
+                <p class="necessary-cookie-content mb-0">Cookie-urile statistice colectează informații despre modul în care vizitatorii folosesc site-ul. Datele ne ajută să îmbunătățim performanța site-ului și să creăm conținut mai bun.</p></div><!--!-->
+                <div class="necessary-icon-col form-check form-switch m-0">
+                  <div class="switch ">
+                    <label class="switch-wrapper mb-0">
+                      <input type="checkbox" class="switch-input" checked="">
+                      <div class="switch-track">
+                        <div class="switch-thumb"></div>
+                      </div> 
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div> 
+        <div class="cookie-footer">
+          <button id="btnConfirm" class="btn btn-primary cookie-confirm-btn">Confirmă selecția</button>
+        </div>
+      </div>
+    </div>
+
+
+</body>
+</html>
