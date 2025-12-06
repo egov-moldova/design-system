@@ -11,7 +11,7 @@ $flex-wrap-values: (nowrap, wrap, wrap-reverse);
 @each $value in $flex-wrap-values {
   $cls: if($value == "wrap-reverse", "reverse", $value);
 
-  .flex-wrap-#{$cls} {
+  .flex-#{$cls} {
     flex-wrap: $value !important;
   }
 }
@@ -23,7 +23,7 @@ $flex-wrap-values: (nowrap, wrap, wrap-reverse);
 
       $cls: if($value == "wrap-reverse", "reverse", $value);
 
-      .flex-wrap-#{$breakpoint}-#{$cls} {
+      .flex-#{$breakpoint}-#{$cls} {
         flex-wrap: $value !important;
       }
     }

@@ -11581,81 +11581,81 @@ p {
     justify-content: space-evenly !important;
   }
 }
-.flex-wrap-nowrap {
+.flex-nowrap {
   flex-wrap: nowrap !important;
 }
 
-.flex-wrap-wrap {
+.flex-wrap {
   flex-wrap: wrap !important;
 }
 
-.flex-wrap-reverse {
+.flex-reverse {
   flex-wrap: wrap-reverse !important;
 }
 
 @media (min-width: 0) {
-  .flex-wrap-xs-nowrap {
+  .flex-xs-nowrap {
     flex-wrap: nowrap !important;
   }
-  .flex-wrap-xs-wrap {
+  .flex-xs-wrap {
     flex-wrap: wrap !important;
   }
-  .flex-wrap-xs-reverse {
+  .flex-xs-reverse {
     flex-wrap: wrap-reverse !important;
   }
 }
 @media (min-width: 576px) {
-  .flex-wrap-sm-nowrap {
+  .flex-sm-nowrap {
     flex-wrap: nowrap !important;
   }
-  .flex-wrap-sm-wrap {
+  .flex-sm-wrap {
     flex-wrap: wrap !important;
   }
-  .flex-wrap-sm-reverse {
+  .flex-sm-reverse {
     flex-wrap: wrap-reverse !important;
   }
 }
 @media (min-width: 768px) {
-  .flex-wrap-md-nowrap {
+  .flex-md-nowrap {
     flex-wrap: nowrap !important;
   }
-  .flex-wrap-md-wrap {
+  .flex-md-wrap {
     flex-wrap: wrap !important;
   }
-  .flex-wrap-md-reverse {
+  .flex-md-reverse {
     flex-wrap: wrap-reverse !important;
   }
 }
 @media (min-width: 992px) {
-  .flex-wrap-lg-nowrap {
+  .flex-lg-nowrap {
     flex-wrap: nowrap !important;
   }
-  .flex-wrap-lg-wrap {
+  .flex-lg-wrap {
     flex-wrap: wrap !important;
   }
-  .flex-wrap-lg-reverse {
+  .flex-lg-reverse {
     flex-wrap: wrap-reverse !important;
   }
 }
 @media (min-width: 1280px) {
-  .flex-wrap-xl-nowrap {
+  .flex-xl-nowrap {
     flex-wrap: nowrap !important;
   }
-  .flex-wrap-xl-wrap {
+  .flex-xl-wrap {
     flex-wrap: wrap !important;
   }
-  .flex-wrap-xl-reverse {
+  .flex-xl-reverse {
     flex-wrap: wrap-reverse !important;
   }
 }
 @media (min-width: 1440px) {
-  .flex-wrap-xxl-nowrap {
+  .flex-xxl-nowrap {
     flex-wrap: nowrap !important;
   }
-  .flex-wrap-xxl-wrap {
+  .flex-xxl-wrap {
     flex-wrap: wrap !important;
   }
-  .flex-wrap-xxl-reverse {
+  .flex-xxl-reverse {
     flex-wrap: wrap-reverse !important;
   }
 }
@@ -14111,7 +14111,7 @@ body.has-overlay footer {
 }
 
 .cookie-banner {
-  width: 792px;
+  max-width: 792px;
   min-width: 280px;
   padding: var(--spacing-24) var(--spacing-40);
   position: fixed;
@@ -14122,6 +14122,7 @@ body.has-overlay footer {
   border: 1.5px var(--border-style-solid) solid var(--gray-300);
   border-radius: var(--border-radius-16);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 86%;
   z-index: 1060;
   transition: opacity 0.3s ease-out;
 }
@@ -14130,18 +14131,30 @@ body.has-overlay footer {
   pointer-events: none;
 }
 
+.cookie-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-16);
+  margin-bottom: var(--spacing-24);
+}
+
 .cookie-title {
   font-family: var(--primary-font);
   font-weight: 600;
   font-size: var(--text-heading-h4-xs-font-size);
   line-height: var(--text-heading-h4-xs-line-height);
-  margin-top: 0;
 }
 
 .cookie-description {
-  font-size: 16px;
-  line-height: 24px;
-  width: 712px;
+  font-size: var(--text-body-sm-font-size);
+  line-height: var(--text-body-sm-line-height);
+}
+
+.cookie-label {
+  color: var(--black);
+  font-size: var(--text-body-md-font-size);
+  line-height: var(--text-body-md-line-height);
+  font-weight: 600;
 }
 
 .cookie-buttons {
@@ -14184,7 +14197,6 @@ body.has-overlay footer {
 }
 
 .cookie-detail-container {
-  width: 792px;
   display: flex;
   flex-direction: column;
   max-height: 0;
@@ -14239,7 +14251,6 @@ body.has-overlay footer {
 }
 
 .cookie-footer {
-  min-height: 90px;
   padding-right: 8px;
   display: flex;
   justify-content: flex-end;
@@ -14266,9 +14277,9 @@ body.has-overlay footer {
   transform: rotate(180deg);
 }
 
-@media (max-width: 799px) {
+@media (max-width: 768px) {
   .cookie-banner {
-    width: 90%;
+    width: 85%;
     padding: 1.5rem;
     border-radius: 8px;
   }
@@ -14281,27 +14292,30 @@ body.has-overlay footer {
     width: 100%;
   }
   .cookie-permissions {
-    width: 100%;
     padding: 1rem;
   }
   .necessary-row {
     width: 100%;
   }
   .cookie-buttons {
-    flex-direction: column;
+    flex-direction: column-reverse;
     gap: 12px;
+  }
+  .cookie-allow-btn, .cookie-manage-btn {
+    width: 100%;
   }
   .cookie-allow-group {
     width: 100%;
+    height: auto;
+    flex-wrap: wrap;
     justify-content: space-between;
+    flex-direction: column-reverse;
   }
   .btn-caret {
-    display: flex !important;
     top: 16px;
     right: 16px;
   }
   #cookie-detail {
-    max-height: 60vh;
     overflow-y: auto;
   }
 }

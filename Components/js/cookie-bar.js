@@ -14,7 +14,7 @@
 
         if (!banner || !overlay) return;
 
-        // Show banner if user hasn't accepted yet
+        // Show banner only if user did not accept
         if (!localStorage.getItem('cookieConsent')) {
             banner.classList.remove('d-none');
             overlay.classList.remove('d-none');
@@ -22,44 +22,70 @@
 
         let isExpanded = false;
 
+        // ======================================================
+        // OPEN DETAILS
+        // ======================================================
         function showDetails() {
-            info.classList.add('d-none');
-            mainButtons.classList.add('d-none');
-            btnToggle.classList.remove('d-none');
-            detail.classList.add('show');
-            isExpanded = true;
+            info.classList.add("d-none");
+            mainButtons.classList.add("d-none");
+
+            btnToggle.classList.remove("d-none");
             btnToggle.classList.add("rotate-180");
+
+            detail.classList.add("show");
+
+            isExpanded = true;
         }
 
+        // ======================================================
+        // CLOSE DETAILS (WAIT FOR ANIMATION)
+        // ======================================================
         function hideDetails() {
-            info.classList.remove('d-none');
-            mainButtons.classList.remove('d-none');
-            detail.classList.remove('show');
-            isExpanded = false;
+            // Start collapse animation
+            detail.classList.remove("show");
             btnToggle.classList.remove("rotate-180");
-            btnToggle.classList.add("d-none");
+
+            isExpanded = false;
+
+            // Wait for CSS transition to finish
+            detail.addEventListener(
+                "transitionend",
+                function handler(e) {
+                    if (e.propertyName !== "max-height") return;
+
+                    // restore visible parts ONLY AFTER animation
+                    info.classList.remove("d-none");
+                    mainButtons.classList.remove("d-none");
+
+                    btnToggle.classList.add("d-none");
+
+                    detail.removeEventListener("transitionend", handler);
+                }
+            );
         }
 
-        // Toggle button – singurul existent
+        // ======================================================
+        // EVENTS
+        // ======================================================
+
         btnToggle.onclick = () => {
             isExpanded ? hideDetails() : showDetails();
         };
 
-        // Când apasă "Gestionează cookie-urile"
         btnManage.onclick = () => showDetails();
 
-        // Accept necesare
-        btnNecessary.onclick = () => 
-            saveConsent({ necessary: true, statistics: false });
+        btnNecessary.onclick = () => saveConsent({ necessary: true, statistics: false });
 
-        // Accept toate
-        btnAll.onclick = () => 
-            saveConsent({ necessary: true, statistics: true });
+        btnAll.onclick = () => saveConsent({ necessary: true, statistics: true });
 
-        // Confirmă selecția detaliată
-        btnConfirm.onclick = () => 
-            saveConsent({ necessary: true, statistics: statsToggle.checked });
+        btnConfirm.onclick = () => saveConsent({
+            necessary: true,
+            statistics: statsToggle ? statsToggle.checked : false
+        });
 
+        // ======================================================
+        // SAVE CONSENT
+        // ======================================================
         function saveConsent(obj) {
             localStorage.setItem('cookieConsent', JSON.stringify(obj));
 
@@ -74,6 +100,6 @@
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initCookieBanner);
     } else {
-        setTimeout(initCookieBanner, 100);
+        initCookieBanner();
     }
 })();
