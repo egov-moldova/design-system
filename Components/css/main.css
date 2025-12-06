@@ -979,6 +979,10 @@
   background-color: var(--white-500-alpha) !important;
 }
 
+.bg-transparent {
+  background-color: transparent !important;
+}
+
 :root {
   /* Border widths */
   --border-width-0: 0;
