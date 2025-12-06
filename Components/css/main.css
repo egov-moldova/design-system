@@ -14119,7 +14119,7 @@ body.has-overlay footer {
   left: 50%;
   transform: translateX(-50%);
   background: var(--white);
-  border: 1.5px var(--border-style-solid) solid var(--gray-300);
+  border: 1.5px var(--border-style-solid) var(--gray-300);
   border-radius: var(--border-radius-16);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   width: 86%;
@@ -14155,6 +14155,49 @@ body.has-overlay footer {
   font-size: var(--text-body-md-font-size);
   line-height: var(--text-body-md-line-height);
   font-weight: 600;
+}
+
+.cookie-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-24);
+  margin-bottom: var(--spacing-24);
+  position: relative;
+}
+@media screen and (max-width: 768px) {
+  .cookie-body {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    max-height: 50vh;
+  }
+  .cookie-body::before, .cookie-body::after {
+    content: "";
+    position: sticky;
+    left: 0;
+    right: 0;
+    height: 24px;
+    pointer-events: none;
+    z-index: 20;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    padding: var(--spacing-4);
+  }
+  .cookie-body::before {
+    top: 0;
+    margin-top: -1px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.18), transparent);
+  }
+  .cookie-body::after {
+    bottom: 0;
+    margin-bottom: -1px;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.18), transparent);
+  }
+  .cookie-body.cookie-scroll--top::before {
+    opacity: 1;
+  }
+  .cookie-body.cookie-scroll--bottom::after {
+    opacity: 1;
+  }
 }
 
 .cookie-buttons {
@@ -14235,17 +14278,6 @@ body.has-overlay footer {
   line-height: 24px;
 }
 
-.badge-required {
-  font-size: 12px;
-  padding: 0 8px;
-  border: 1.5px solid #0d6efd;
-  border-radius: 4px;
-  background: #fff;
-  color: #0d6efd;
-  display: inline-flex;
-  align-items: center;
-}
-
 .form-check-input {
   transform: scale(1.6);
 }
@@ -14270,7 +14302,7 @@ body.has-overlay footer {
   cursor: pointer;
 }
 .btn-caret:hover {
-  background: #f1f1f1;
+  background: var(--gray-200);
 }
 
 .rotate-180 {
@@ -14284,39 +14316,30 @@ body.has-overlay footer {
     border-radius: 8px;
   }
   .cookie-title {
-    font-size: 20px;
+    font-size: var(--text-heading-h4-md-font-size);
+    line-height: var(--text-heading-h4-md-line-height);
   }
   .cookie-description {
-    font-size: 15px;
-    line-height: 22px;
-    width: 100%;
-  }
-  .cookie-permissions {
-    padding: 1rem;
-  }
-  .necessary-row {
-    width: 100%;
+    font-size: var(--text-body-md-font-size);
+    line-height: var(--text-body-md-line-height);
   }
   .cookie-buttons {
     flex-direction: column-reverse;
     gap: 12px;
   }
-  .cookie-allow-btn, .cookie-manage-btn {
-    width: 100%;
-  }
   .cookie-allow-group {
     width: 100%;
     height: auto;
-    flex-wrap: wrap;
-    justify-content: space-between;
     flex-direction: column-reverse;
+    gap: 12px;
+  }
+  .cookie-allow-btn,
+  .cookie-manage-btn {
+    width: 100%;
   }
   .btn-caret {
     top: 16px;
     right: 16px;
-  }
-  #cookie-detail {
-    overflow-y: auto;
   }
 }
 /* =======================================
