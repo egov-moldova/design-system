@@ -1,0 +1,157 @@
+// ========================================
+// Tooltip Base
+// ========================================
+.tooltip {
+  position: absolute;
+  z-index: 1080;
+  display: block;
+  opacity: 0;
+  transform: scale(0.95);
+  padding: var(--spacing-8);
+  transition: opacity .12s ease, transform .12s ease;
+
+  &.show {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+// ======================================
+// Sizes
+// ======================================
+
+.tooltip--small .tooltip-inner {
+  padding: var(--spacing-8) var(--spacing-12); 
+}
+
+.tooltip--large .tooltip-inner {
+  padding: var(--spacing-16) var(--spacing-24); 
+}
+
+.tooltip-inner {
+  background: var(--gray-900);
+  color: var(--white);
+  padding: var(--spacing-12) var(--spacing-16);
+  border-radius: var(--border-radius-6);
+  max-width: 240px;
+  font-size: var(--text-body-sm-font-size);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.tooltip-arrow {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  background: var(--gray-900);
+  transform: rotate(45deg);
+}
+
+// ========================================
+// POSITION: TOP
+// ========================================
+
+// TOP-LEFT
+.tooltip--top-left {
+  .tooltip-arrow {
+    bottom: 1px;
+    left: 20px; // <<<<<<<<<<<<<<<<<<<<<<<<<<
+  }
+}
+
+// TOP-CENTER
+.tooltip--top-center {
+  .tooltip-arrow {
+    bottom: 1px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+  }
+}
+
+// TOP-RIGHT
+.tooltip--top-right {
+  .tooltip-arrow {
+    bottom: 1px;
+    right: 20px; // <<<<<<<<<<<<<<<<<<<<<<<<<<
+  }
+}
+
+// ========================================
+// POSITION: BOTTOM
+// ========================================
+
+// BOTTOM-LEFT
+.tooltip--bottom-left {
+  .tooltip-arrow {
+    top: 1px;
+    left: 20px;
+  }
+}
+
+// BOTTOM-CENTER
+.tooltip--bottom-center {
+  .tooltip-arrow {
+    top: 1px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+  }
+}
+
+// BOTTOM-RIGHT
+.tooltip--bottom-right {
+  .tooltip-arrow {
+    top: 1px;
+    right: 20px;
+  }
+}
+
+// ========================================
+// POSITION: LEFT
+// ========================================
+
+.tooltip--left-center {
+  .tooltip-arrow {
+    right: 1px;  
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+  }
+}
+
+.tooltip--left-top {
+  .tooltip-arrow {
+    right: 1px;
+    top: 20px;
+  }
+}
+
+.tooltip--left-bottom {
+  .tooltip-arrow {
+    right: 1px;
+    bottom: 20px;
+  }
+}
+
+// ========================================
+// POSITION: RIGHT
+// ========================================
+
+.tooltip--right-center {
+  .tooltip-arrow {
+    left: 1px;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+  }
+}
+
+.tooltip--right-top {
+  .tooltip-arrow {
+    left: 1px;
+    top: 20px;
+  }
+}
+
+.tooltip--right-bottom {
+  .tooltip-arrow {
+    left: 1px;
+    bottom: 20px;  
+  }
+}

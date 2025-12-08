@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Tooltip Component Demo</title>
+
+  <link rel="stylesheet" href="css/main.css" />
+  <script src="js/tooltip.js" defer></script>
+  <!-- Popper.js -->
+<script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
+
+</head>
+
+<body>
+
+<div class="container mt-56">
+  
+      <div class="row">
+        <div class="col-sm-7">
+            <h1>Tooltip</h1>
+            <p class="text-gray-400">
+              The tooltip component provides brief, contextual information. 
+              Its purpose is to offer additional clarification, instructions, or descriptions without cluttering the interface.
+            </p>
+        </div>
+    </div>
+
+    <!--Section Sizes -->
+    <div class="row">
+      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Sizes</h2>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-md-6">
+        <div class="mb-32">
+          <p>large</p>
+            <button
+              class="btn btn-primary"
+              data-tooltip="Tooltip displayed above the element."
+              data-placement="top"
+              data-size="large"
+              >
+              Hover me (Top)
+            </button>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <div class="mb-32">
+          <p>small</p>
+            <button
+              class="btn btn-primary"
+              data-tooltip="Tooltip small."
+              data-placement="top"
+              data-size="small"
+              >
+              Hover me (Top)
+            </button>
+        </div>
+      </div>
+    </div>
+
+  <!-- Section Variants -->
+   <div class="row">
+      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Variants</h2>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="mb-32">
+          <p>tooltip: top</p>
+            <button
+              class="btn btn-primary"
+              data-tooltip="Tooltip displayed above the element."
+              data-placement="top">
+              Hover me (Top)
+            </button>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="mb-32">
+          <p>tooltip: bottom</p>
+            <button
+              class="btn btn-primary"
+              data-tooltip="Tooltip displayed above the element."
+              data-placement="bottom">
+              Hover me (Bottom)
+            </button>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="mb-32">
+          <p>tooltip: left</p>
+            <button
+              class="btn btn-primary"
+              data-tooltip="Tooltip displayed above the element."
+              data-placement="left">
+              Hover me (Left)
+            </button>
+        </div>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="mb-32">
+          <p>tooltip: right</p>
+            <button
+              class="btn btn-primary"
+              data-tooltip="Tooltip displayed above the element."
+              data-placement="right">
+              Hover me (Right)
+            </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section Examples -->
+    <div class="row">
+      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Positions</h2>
+          <p>
+            The arrow may shift from bottom to top and to the left, middle or right side depending on the location of the related elements.
+          </p>
+      </div>
+    </div>
+    <!--TOP-->
+    <div class="row mb-8">
+      <div class="col-12">
+        <h4>Top positions</h4>
+      </div>
+    </div>
+    <div class="row mb-48">
+      <div class="col-12 col-md-3">
+        <div>top: left</div>
+        <button class="btn"
+              data-tooltip="Moldova’s digital evolution is at the heart of seamless public service delivery."
+              data-placement="top-left">
+            Top Left
+          </button>
+      </div>
+      <div class="col-12 col-md-3">
+        <div>top: center</div>
+        <button class="btn"
+              data-tooltip="Moldova’s digital evolution is at the heart of seamless public service delivery."
+              data-placement="top-center">
+            Top Center
+          </button>
+          </div>
+      <div class="col-12 col-md-3">
+        <div>top: right</div>
+        <button class="btn"
+              data-tooltip="Moldova’s digital evolution is at the heart of seamless public service delivery."
+              data-placement="top-right">
+            Top Right
+          </button>
+          </div>
+
+    </div>
+
+    <!--BOTTOM-->
+    <div class="row mb-8">
+      <div class="col-12">
+        <h4>Bottom positions</h4>
+      </div>
+    </div>
+    <div class="row mb-48">
+      <div class="col-12 col-md-3">
+        <div>bottom: left</div>
+        <button class="btn"
+              data-tooltip="Moldova’s digital evolution is at the heart of seamless public service delivery."
+              data-placement="bottom-left">
+            Bottom Left
+          </button>
+      </div>
+      <div class="col-12 col-md-3">
+        <div>bottom: center</div>
+        <button class="btn"
+              data-tooltip="Moldova’s digital evolution is at the heart of seamless public service delivery."
+              data-placement="bottom-center">
+            Bottom Center
+          </button>
+          </div>
+      <div class="col-12 col-md-3">
+        <div>bottom: right</div>
+        <button class="btn"
+              data-tooltip="Moldova’s digital evolution is at the heart of seamless public service delivery."
+              data-placement="bottom-right">
+            Bottom Right
+          </button>
+          </div>
+
+    </div>
+
+    <!--LEFT-->
+    <div class="row mb-8">
+      <div class="col-12">
+        <h4>Left positions</h4>
+      </div>
+    </div>
+    <div class="row mb-48">
+      <div class="col-12 col-md-3">
+        <div>left: top</div>
+        <button class="btn"
+              data-tooltip="Moldova’s digital evolution is at the heart of seamless public service delivery."
+              data-placement="left-top">
+            Left Top
+          </button>
+      </div>
+      <div class="col-12 col-md-3">
+        <div>left: center</div>
+        <button class="btn"
+              data-tooltip="Moldova’s digital evolution is at the heart of seamless public service delivery."
+              data-placement="left-center">
+            Left Center
+          </button>
+        </div>
+      <div class="col-12 col-md-3">
+        <div>left: right</div>
+        <button class="btn"
+              data-tooltip="Moldova’s digital evolution is at the heart of seamless public service delivery."
+              data-placement="left-bottom">
+            Left Bottom
+          </button>
+        </div> 
+    </div>
+
+    <!--RIGHT-->
+    <div class="row mb-8">
+      <div class="col-12">
+        <h4>Right positions</h4>
+      </div>
+    </div>
+    <div class="row mb-48">
+      <div class="col-12 col-md-3">
+        <div>right: top</div>
+        <button class="btn"
+            data-tooltip="Moldova’s digital evolution is at the heart of seamless public service delivery."
+            data-placement="right-top">
+          Right Top
+        </button>
+      </div>
+      <div class="col-12 col-md-3">
+        <div>right: center</div>
+        <button class="btn"
+            data-tooltip="Moldova’s digital evolution is at the heart of seamless public service delivery."
+            data-placement="right-center">
+          Right Center
+        </button>
+      </div>
+      <div class="col-12 col-md-3">
+        <div>right: right</div>
+        <button class="btn"
+              data-tooltip="Moldova’s digital evolution is at the heart of seamless public service delivery."
+              data-placement="right-bottom">
+            Right Bottom
+        </button>
+      </div> 
+    </div>
+
+        <!-- Text / Icon example -->
+  <div class="row">
+    <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+        <h4>Appearance and Dismissal</h4>
+    </div>
+  </div>
+  <div class="row mt-48">
+    <div class="col-12">
+      <p class="text-gray-500 mb-8">Tooltip on text / icon</p>
+
+      <button
+        class="btn btn-primary btn-sm p-4"
+        data-tooltip="This is an informational tooltip attached to inline content."
+        data-placement="top"
+        class="text-link">
+        <span class="d-inline-flex">
+                  <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-circle-error"></use> 
+                  </svg>
+                </span>
+      </button>
+
+      &nbsp;&nbsp;
+
+      <span
+        class="icon-info"
+        data-tooltip="This is an icon tooltip."
+        data-placement="top">
+        ℹ️
+      </span>
+    </div>
+  </div>
+  </div> 
+
+</body>
+</html>
