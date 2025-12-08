@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Date Input Preview</title>
-    <script src="js/search.js"></script>
-    <script src="js/input-date.js"></script>
+    <title>Date Input Preview</title> 
+    <script src="js/input-date.js"></script>  
   <link rel="stylesheet" href="css/main.css" />
 </head>
 <body>
@@ -241,6 +240,110 @@
               type="text" 
               placeholder="DD/MM/YYYY" 
               class="input" 
+              aria-describedby="date-default-message"
+              disabled
+            />
+            <button type="button" class="input-icon right icon-calendar border-0 bg-transparent" aria-label="Open calendar">
+              <svg class="icon medium" aria-hidden="true">
+                <use href="assets/icons/sprite.svg#icon-calendar"></use>
+              </svg>
+            </button>
+          </div> 
+        </div> 
+      </div>
+    </div>
+
+     <div class="col-3"> 
+      <div class="mb-16">default:default</div>
+      <div class="input-group">
+        <label for="date-default">Label</label>
+        <div class="input-wrapper">
+          <input 
+            id="date-default" 
+            type="text" 
+            placeholder="DD/MM/YYYY" 
+            class="input" 
+            aria-describedby="date-default-message"
+          />
+          <button type="button" class="input-icon right icon-calendar border-0 bg-transparent" aria-label="Open calendar">
+            <svg class="icon medium" aria-hidden="true">
+              <use href="assets/icons/sprite.svg#icon-calendar"></use>
+            </svg>
+          </button>
+        </div> 
+      </div> 
+      <div class="mt-32">
+        <div class="mb-16">default:hover</div>
+        <div class="input-group">
+          <label for="date-default">Label</label>
+          <div class="input-wrapper">
+            <input 
+              id="date-default" 
+              type="text" 
+              placeholder="DD/MM/YYYY" 
+              class="input" 
+              aria-describedby="date-default-message"
+              style="border-color: var(--gray-400); box-shadow: 0 0 0 0.5px var(--gray-400);"
+            />
+            <button type="button" class="input-icon right icon-calendar border-0 bg-transparent" aria-label="Open calendar">
+              <svg class="icon medium" aria-hidden="true">
+                <use href="assets/icons/sprite.svg#icon-calendar"></use>
+              </svg>
+            </button>
+          </div> 
+        </div> 
+      </div>
+      <div class="mt-32">
+        <div class="mb-16">default: focus-populated</div>
+        <div class="input-group">
+          <label for="date-default">Label</label>
+          <div class="input-wrapper">
+            <input 
+              id="date-default" 
+              type="text" 
+              placeholder="DD/MM/YYYY" 
+              class="input" 
+              aria-describedby="date-default-message"
+              style="border-color: var(--blue-sky-300); outline: none; box-shadow: 0 0 0 4px var(--blue-sky-200);"
+            />
+            <button type="button" class="input-icon right icon-calendar border-0 bg-transparent" aria-label="Open calendar">
+              <svg class="icon medium" aria-hidden="true">
+                <use href="assets/icons/sprite.svg#icon-calendar"></use>
+              </svg>
+            </button>
+          </div> 
+        </div> 
+      </div>
+      <div class="mt-32">
+        <div class="mb-16">default: filed</div>
+        <div class="input-group">
+          <label for="date-default">Label</label>
+          <div class="input-wrapper">
+            <input 
+              id="date-default" 
+              type="text" 
+              placeholder="DD/MM/YYYY" 
+              class="input" 
+              aria-describedby="date-default-message"
+            />
+            <button type="button" class="input-icon right icon-calendar border-0 bg-transparent" aria-label="Open calendar">
+              <svg class="icon medium" aria-hidden="true">
+                <use href="assets/icons/sprite.svg#icon-calendar"></use>
+              </svg>
+            </button>
+          </div> 
+        </div> 
+      </div>
+      <div class="mt-32">
+        <div class="mb-16">default: disabled</div>
+        <div class="input-group">
+          <label for="date-default">Label</label>
+          <div class="input-wrapper">
+            <input 
+              id="date-warning" 
+              type="text" 
+              placeholder="DD/MM/YYYY" 
+              class="input--warning" 
               aria-describedby="date-default-message"
               disabled
             />
