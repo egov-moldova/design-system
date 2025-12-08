@@ -253,17 +253,89 @@
       </div>
     </div>
 
-     <div class="col-3"> 
-      <div class="mb-16">default:default</div>
+    <div class="col-3">
+      <div class="mb-16">destructive:default</div>
       <div class="input-group">
-        <label for="date-default">Label</label>
+        <label for="date-destructive">Label</label>
+        <div class="input-wrapper">
+          <input id="date-destructive" type="text" placeholder="DD/MM/YYYY" class="input--destructive" aria-invalid="true" aria-describedby="date-destructive-message">
+          <button type="button" class="input-icon right icon-calendar border-0 bg-transparent" aria-label="Open calendar">
+            <svg class="icon medium" aria-hidden="true">
+              <use href="assets/icons/sprite.svg#icon-calendar"></use>
+            </svg>
+          </button>
+        </div> 
+      </div>
+
+      <div class="mt-32">
+        <div class="mb-16">destructive:hover</div>
+        <div class="input-group">
+          <label for="date-destructive">Label</label>
+          <div class="input-wrapper">
+            <input id="date-destructive" type="text" placeholder="DD/MM/YYYY" class="input--destructive" aria-invalid="true" aria-describedby="date-destructive-message" style="border-color: var(--red-600); box-shadow: 0 0 0 0.5px var(--red-600);">
+            <button type="button" class="input-icon right icon-calendar border-0 bg-transparent" aria-label="Open calendar">
+              <svg class="icon medium" aria-hidden="true">
+                <use href="assets/icons/sprite.svg#icon-calendar"></use>
+              </svg>
+            </button>
+          </div> 
+        </div>
+      </div>
+
+      <div class="mt-32">
+        <div class="mb-16">destructive: focus-populated</div>
+        <div class="input-group">
+          <label for="date-destructive">Label</label>
+          <div class="input-wrapper">
+            <input id="date-destructive" type="text" placeholder="DD/MM/YYYY" class="input--destructive" aria-invalid="true" aria-describedby="date-destructive-message" style="outline: none; box-shadow: 0 0 0 4px var(--red-200); border-color: var(--red-600);">
+            <button type="button" class="input-icon right icon-calendar border-0 bg-transparent" aria-label="Open calendar">
+              <svg class="icon medium" aria-hidden="true">
+                <use href="assets/icons/sprite.svg#icon-calendar"></use>
+              </svg>
+            </button>
+          </div> 
+        </div>
+      </div>
+      <div class="mt-32">
+        <div class="mb-16">destructive: filed</div>
+        <div class="input-group">
+          <label for="date-destructive">Label</label>
+          <div class="input-wrapper">
+            <input id="date-destructive" type="text" placeholder="DD/MM/YYYY" class="input--destructive" aria-invalid="true" aria-describedby="date-destructive-message">
+            <button type="button" class="input-icon right icon-calendar border-0 bg-transparent" aria-label="Open calendar">
+              <svg class="icon medium" aria-hidden="true">
+                <use href="assets/icons/sprite.svg#icon-calendar"></use>
+              </svg>
+            </button>
+          </div> 
+        </div>
+    </div>
+    <div class="mt-32">
+      <div class="mb-16">destructive: disabled</div>
+      <div class="input-group">
+        <label for="date-destructive">Label</label>
+        <div class="input-wrapper">
+          <input id="date-destructive" type="text" placeholder="DD/MM/YYYY" class="input--destructive" aria-invalid="true" aria-describedby="date-destructive-message" disabled>
+          <button type="button" class="input-icon right icon-calendar border-0 bg-transparent" aria-label="Open calendar">
+            <svg class="icon medium" aria-hidden="true">
+              <use href="assets/icons/sprite.svg#icon-calendar"></use>
+            </svg>
+          </button>
+        </div> 
+      </div>
+    </div>
+
+    <div class="mt-32">
+      <div class="mb-16">With helper text</div>
+      <div class="input-group">
+        <label for="date-helper-text">Label</label>
         <div class="input-wrapper">
           <input 
-            id="date-default" 
+            id="date-helper-text" 
             type="text" 
             placeholder="DD/MM/YYYY" 
-            class="input" 
-            aria-describedby="date-default-message"
+            class="input--destructive" 
+            aria-describedby="date-helper-text-message"
           />
           <button type="button" class="input-icon right icon-calendar border-0 bg-transparent" aria-label="Open calendar">
             <svg class="icon medium" aria-hidden="true">
@@ -271,90 +343,15 @@
             </svg>
           </button>
         </div> 
-      </div> 
-      <div class="mt-32">
-        <div class="mb-16">default:hover</div>
-        <div class="input-group">
-          <label for="date-default">Label</label>
-          <div class="input-wrapper">
-            <input 
-              id="date-default" 
-              type="text" 
-              placeholder="DD/MM/YYYY" 
-              class="input" 
-              aria-describedby="date-default-message"
-              style="border-color: var(--gray-400); box-shadow: 0 0 0 0.5px var(--gray-400);"
-            />
-            <button type="button" class="input-icon right icon-calendar border-0 bg-transparent" aria-label="Open calendar">
-              <svg class="icon medium" aria-hidden="true">
-                <use href="assets/icons/sprite.svg#icon-calendar"></use>
-              </svg>
-            </button>
-          </div> 
-        </div> 
       </div>
-      <div class="mt-32">
-        <div class="mb-16">default: focus-populated</div>
-        <div class="input-group">
-          <label for="date-default">Label</label>
-          <div class="input-wrapper">
-            <input 
-              id="date-default" 
-              type="text" 
-              placeholder="DD/MM/YYYY" 
-              class="input" 
-              aria-describedby="date-default-message"
-              style="border-color: var(--blue-sky-300); outline: none; box-shadow: 0 0 0 4px var(--blue-sky-200);"
-            />
-            <button type="button" class="input-icon right icon-calendar border-0 bg-transparent" aria-label="Open calendar">
-              <svg class="icon medium" aria-hidden="true">
-                <use href="assets/icons/sprite.svg#icon-calendar"></use>
-              </svg>
-            </button>
-          </div> 
-        </div> 
-      </div>
-      <div class="mt-32">
-        <div class="mb-16">default: filed</div>
-        <div class="input-group">
-          <label for="date-default">Label</label>
-          <div class="input-wrapper">
-            <input 
-              id="date-default" 
-              type="text" 
-              placeholder="DD/MM/YYYY" 
-              class="input" 
-              aria-describedby="date-default-message"
-            />
-            <button type="button" class="input-icon right icon-calendar border-0 bg-transparent" aria-label="Open calendar">
-              <svg class="icon medium" aria-hidden="true">
-                <use href="assets/icons/sprite.svg#icon-calendar"></use>
-              </svg>
-            </button>
-          </div> 
-        </div> 
-      </div>
-      <div class="mt-32">
-        <div class="mb-16">default: disabled</div>
-        <div class="input-group">
-          <label for="date-default">Label</label>
-          <div class="input-wrapper">
-            <input 
-              id="date-warning" 
-              type="text" 
-              placeholder="DD/MM/YYYY" 
-              class="input--warning" 
-              aria-describedby="date-default-message"
-              disabled
-            />
-            <button type="button" class="input-icon right icon-calendar border-0 bg-transparent" aria-label="Open calendar">
-              <svg class="icon medium" aria-hidden="true">
-                <use href="assets/icons/sprite.svg#icon-calendar"></use>
-              </svg>
-            </button>
-          </div> 
-        </div> 
-      </div>
+      <div id="date-destructive-message" class="input-message destructive">
+          <span>
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-circle-error-filled"></use> 
+            </svg>
+          </span>
+          Invalid date format
+        </div>
     </div>
   </div>
 
