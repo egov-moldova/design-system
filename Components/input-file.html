@@ -20,20 +20,105 @@
             </p>
         </div>
     </div>
+    <div class="row">
+        <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+            <h2>Upload Button</h2>
+        </div>
+        <div class="col-sm-7">
+          <p>
+            A clickable element that opens the native file picker, allowing users to browse and select files from their device.
+          </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-3">
+            <div class="file-input" data-max-size="100">
+              <h4>Upload files</h4>
+              <div>
+                Supported formats: jpg, png, pdf. Maximum size: 100 MB
+              </div>
+              <label class="file-upload-button">
+                <input type="file" class="file-input-field" multiple>
+                <span class="file-upload-button__text">Upload Files</span>
+              </label>
+
+              <!-- File list -->
+              <div class="file-list"></div>
+            </div>
+        </div>
+    </div>
     <!-- Styles -->
     <div class="row">
       <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
           <h2>Styles</h2>
       </div>
       <div class="col-3">
-          <div class="file-input default" id="dropzone">
-            <p>Trage fișierele aici sau <span class="underline">selectează</span></p>
-            <input type="file" id="fileInput" multiple hidden />
-            <div id="fileList" class="file-list"></div>
-            <div id="error" class="file-error-message" style="display: none;"></div>
-          </div>
+        <div class="file-input" data-max-size="100">
+          
+          <label class="file-dropzone">
+            <input type="file" class="file-input-field" multiple>
+
+            <div class="file-dropzone__content">
+              <div class="file-dropzone__icon"></div>
+              <p class="file-dropzone__text">
+                Drag and drop or <span>choose files</span>
+              </p>
+
+              <div class="file-dropzone__meta">
+                Supported formats: jpg, png, pdf
+                <span class="file-dropzone__max">Maximum size: 100 MB</span>
+              </div>
+            </div>
+          </label>
+
+          <!-- File list -->
+          <div class="file-list"></div> 
+        </div> 
+      </div>
+
+      <div class="col-3">
+        <!-- Loading -->
+        <div class="file-item file-item--loading">
+        <div class="file-item__icon file-item__icon--loading"></div>
+        <div class="file-item__info">
+        <span class="file-item__name">Filename.pdf</span>
+        <span class="file-item__size">1.8 MB</span>
+        </div>
+        <div class="file-item__spinner"></div>
+        </div>
+      </div>
+      
+      <div class="col-sm-3">
+        <!-- Success -->
+        <div class="file-item file-item--success">
+        <div class="file-item__icon file-item__icon--success"></div>
+        <div class="file-item__info">
+        <span class="file-item__name">Filename.pdf</span>
+        <span class="file-item__size">1.8 MB</span>
+        </div>
+        <div class="file-item__status file-item__status--success"></div>
+        </div>
+      </div>
+
+      <div class="col-sm-3">
+        <!-- Error -->
+        <div class="file-item file-item--error">
+        <div class="file-item__icon file-item__icon--error"></div>
 
 
+        <div class="file-item__content">
+        <div class="file-item__row">
+        <span class="file-item__name">Filename.pdf</span>
+        <span class="file-item__size">102.8 MB</span>
+        <button class="file-item__action file-item__action--remove"></button>
+        </div>
+
+
+        <div class="file-item__error-message">
+        File exceeds size limit
+        </div>
+        </div>
+        </div>
       </div>
      
     </div>

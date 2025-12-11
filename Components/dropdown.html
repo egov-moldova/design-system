@@ -5,30 +5,153 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dropdown Multiplu</title>
   <link rel="stylesheet" href="css/main.css"> 
-    <script src="js/dropdown.js"></script>
+    <script src="js/dropdown-select.js"></script>
 </head>
 <body>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h1>Dropdown Multiplu</h1>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Styles</h2>
+      </div>
+    </div>
+    <div class="row mt-32">
+      <div class="col-12 col-md-4">
+       <div class="select-wrap">
+          <label id="country-label" class="select-label">Alege țara</label>
 
-  <h2>Exemplu dropdown-uri multiple</h2>
+          <div class="custom-select" data-select data-searchable="true" data-size="large" aria-labelledby="country-label" tabindex="0">
+            <button type="button" class="select-control" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="country-label">
+              <span class="select-value">Selectați...</span>
+              <span class="select-arrow" aria-hidden="true">
+                <span class=d-inline-flex">
+                  <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
+                  </svg>
+                </span>
+              </span>
+            </button>
 
-  <div class="dropdown">
-    <button class="dropdown-toggle btn btn-primary">Meniu 1 ▼</button>
-    <div class="dropdown-menu">
-      <a href="#">Profil</a>
-      <a href="#">Setări</a>
-      <a href="#">Deconectare</a>
+            <div class="select-dropdown" role="presentation" hidden>
+              <div class="select-search-wrapper">
+                <input type="text" class="select-search" aria-label="Căutare" placeholder="Caută..." />
+                <button type="button" class="select-clear" aria-label="Șterge căutarea" hidden>✕</button>
+              </div>
+
+              <ul class="select-list" role="listbox" aria-labelledby="country-label" tabindex="-1">
+                <li role="option" data-value="md" class="select-option">Moldova</li>
+                <li role="option" data-value="ro" class="select-option">România</li>
+                <li role="option" data-value="ua" class="select-option">Ucraina</li>
+                <li role="option" data-value="de" class="select-option">Germania</li>
+                <li role="option" data-value="fr" class="select-option">Franța</li>
+                <li role="option" data-value="es" class="select-option">Spania</li>
+              </ul>
+            </div>
+          </div>
+        </div> 
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="select-wrap">
+          <label id="country-label" class="select-label">Alege țara</label> 
+          <div class="custom-select" data-select data-searchable="true" data-size="large" aria-labelledby="country-label" tabindex="0">
+            <button type="button" class="select-control" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="country-label">
+              <span class="select-value">Selectați...</span>
+              <span class="select-arrow" aria-hidden="true">
+                <span class=d-inline-flex">
+                  <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
+                  </svg>
+                </span>
+              </span>
+            </button>
+
+            <div class="select-dropdown" role="presentation" hidden> 
+              <ul class="select-list" role="listbox" aria-labelledby="country-label" tabindex="-1">
+                <li role="option" data-value="md" class="select-option">Moldova</li>
+                <li role="option" data-value="ro" class="select-option">România</li>
+                <li role="option" data-value="ua" class="select-option">Ucraina</li>
+                <li role="option" data-value="de" class="select-option">Germania</li>
+                <li role="option" data-value="fr" class="select-option">Franța</li>
+                <li role="option" data-value="es" class="select-option">Spania</li>
+              </ul>
+            </div>
+          </div>
+        </div>  
+      </div> 
+    </div>
+    <div class="row">
+      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Sizes</h2>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-md-4">
+        <p>small</p>
+        <div class="select-wrap">
+          <label id="country-label" class="select-label">Alege țara</label>
+
+          <div class="custom-select" data-select data-searchable="true" data-size="small" aria-labelledby="country-label" tabindex="0">
+            <button type="button" class="select-control" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="country-label">
+              <span class="select-value">Selectați...</span>
+              <span class="select-arrow" aria-hidden="true">
+                <span class=d-inline-flex">
+                  <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
+                  </svg>
+                </span>
+              </span>
+            </button>
+
+            <div class="select-dropdown" role="presentation" hidden> 
+              <ul class="select-list" role="listbox" aria-labelledby="country-label" tabindex="-1">
+                <li role="option" data-value="md" class="select-option">Moldova</li>
+                <li role="option" data-value="ro" class="select-option">România</li>
+                <li role="option" data-value="ua" class="select-option">Ucraina</li>
+                <li role="option" data-value="de" class="select-option">Germania</li>
+                <li role="option" data-value="fr" class="select-option">Franța</li>
+                <li role="option" data-value="es" class="select-option">Spania</li>
+              </ul>
+            </div>
+          </div>
+        </div>  
+      </div>
+
+      <div class="col-12 col-md-4">
+        <p>large</p>
+        <div class="select-wrap">
+          <label id="country-label" class="select-label">Alege țara</label> 
+          <div class="custom-select" data-select data-searchable="true" data-size="large" aria-labelledby="country-label" tabindex="0">
+            <button type="button" class="select-control" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="country-label">
+              <span class="select-value">Selectați...</span>
+              <span class="select-arrow" aria-hidden="true">
+                <span class=d-inline-flex">
+                  <svg class="icon small" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
+                  </svg>
+                </span>
+              </span>
+            </button>
+
+            <div class="select-dropdown" role="presentation" hidden> 
+              <ul class="select-list" role="listbox" aria-labelledby="country-label" tabindex="-1">
+                <li role="option" data-value="md" class="select-option">Moldova</li>
+                <li role="option" data-value="ro" class="select-option">România</li>
+                <li role="option" data-value="ua" class="select-option">Ucraina</li>
+                <li role="option" data-value="de" class="select-option">Germania</li>
+                <li role="option" data-value="fr" class="select-option">Franța</li>
+                <li role="option" data-value="es" class="select-option">Spania</li>
+              </ul>
+            </div>
+          </div>
+        </div>  
+      </div>
+
     </div>
   </div>
-
-  <div class="dropdown">
-    <button class="dropdown-toggle btn btn-secondary">Meniu 2 ▼</button>
-    <div class="dropdown-menu">
-      <a href="#">Dashboard</a>
-      <a href="#">Statistici</a>
-      <a href="#">Log out</a>
-    </div>
-  </div>
-
-  <script src="dropdown.js"></script>
 </body>
 </html>

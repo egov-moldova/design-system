@@ -1,81 +1,70 @@
+const fileInputs = document.querySelectorAll(".file-input");
 
-// ------------------------------
-// FILE INPUT FUNCTIONALITY
-// ------------------------------
-const dropzone = document.getElementById('dropzone');
-const fileInput = document.getElementById('fileInput');
-const fileList = document.getElementById('fileList');
-const errorMessage = document.getElementById('error');
+fileInputs.forEach((component) => {
+  const dropzone = component.querySelector(".file-dropzone");
+  const input = component.querySelector(".file-input-field");
+  const list = component.querySelector(".file-list");
+  const maxSize = Number(component.dataset.maxSize) * 1024 * 1024; // MB → bytes
 
-let files = [];
+  // Click → open file dialog
+  dropzone.addEventListener("click", () => input.click());
 
-function handleFiles(selectedFiles) {
-  [...selectedFiles].forEach(file => {
-    files.push(file);
-    displayFile(file);
-  });
-}
+  // Change event
+  input.addEventListener("change", () => handleFiles(input.files));
 
-function displayFile(file) {
-  const item = document.createElement('div');
-  item.className = 'file-item';
-
-  const fileName = document.createElement('div');
-  fileName.className = 'filename';
-
-  if (file.type.startsWith('image/')) {
-    const img = document.createElement('img');
-    img.src = URL.createObjectURL(file);
-    img.width = 32;
-    img.height = 32;
-    img.style.marginRight = '8px';
-    img.style.objectFit = 'cover';
-    fileName.appendChild(img);
-  }
-
-  fileName.append(file.name);
-
-  const fileSize = document.createElement('div');
-  fileSize.className = 'filesize';
-  fileSize.textContent = `${(file.size / 1024).toFixed(1)} KB`;
-
-  const removeBtn = document.createElement('button');
-  removeBtn.className = 'remove-btn';
-  removeBtn.textContent = '✕';
-  removeBtn.onclick = (e) => {
-    e.stopPropagation();
-    files = files.filter(f => f !== file);
-    fileList.removeChild(item);
-  };
-
-  item.appendChild(fileName);
-  item.appendChild(fileSize);
-  item.appendChild(removeBtn);
-
-  fileList.appendChild(item);
-}
-
-if (dropzone && fileInput && fileList) {
-  dropzone.addEventListener('click', () => {
-    fileInput.click();
+  // Drag events
+  ["dragenter", "dragover"].forEach((event) => {
+    dropzone.addEventListener(event, (e) => {
+      e.preventDefault();
+      dropzone.classList.add("is-dragover");
+    });
   });
 
-  fileInput.addEventListener('change', () => {
-    handleFiles(fileInput.files);
+  ["dragleave", "drop"].forEach((event) => {
+    dropzone.addEventListener(event, () => {
+      dropzone.classList.remove("is-dragover");
+    });
   });
 
-  dropzone.addEventListener('dragover', (e) => {
+  // Drop files
+  dropzone.addEventListener("drop", (e) => {
     e.preventDefault();
-    dropzone.classList.add('active');
-  });
-
-  dropzone.addEventListener('dragleave', () => {
-    dropzone.classList.remove('active');
-  });
-
-  dropzone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    dropzone.classList.remove('active');
     handleFiles(e.dataTransfer.files);
   });
-}
+
+  // Handle files
+  function handleFiles(files) {
+    [...files].forEach((file) => {
+      const item = document.createElement("div");
+      const isTooLarge = file.size > maxSize;
+
+      item.className =
+        "file-item " + (isTooLarge ? "file-item--error" : "file-item--success");
+
+      item.innerHTML = `
+        <div class="file-item__info">
+          <span class="file-item__name">${file.name}</span>
+          <span class="file-item__size">${(file.size / 1024 / 1024).toFixed(
+            1
+          )} MB</span>
+
+          ${
+            isTooLarge
+              ? `<span class="file-item__error-msg">File exceeds size limit</span>`
+              : ""
+          }
+        </div>
+
+        <div class="file-item__indicator"></div>
+        <button class="file-item__remove">×</button>
+      `;
+
+      // Remove event
+      item.querySelector(".file-item__remove").addEventListener("click", () => {
+        item.remove();
+      });
+
+      list.appendChild(item);
+    });
+  }
+});
