@@ -186,22 +186,35 @@ $button-sizes: (
 // ===============================
 // 🔹 Loading
 // ===============================
+// ===============================
+// 🔹 Loading (FIXED & NORMALIZED)
+// ===============================
 .btn-loading {
   position: relative;
   pointer-events: none;
-  color: transparent !important;
-
-  &::after {
-    content: '';
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    border: 2px solid var(--white, #ffffff);
-    border-top-color: transparent;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-  }
+  height: var(--spacing-48);
+  width: 92px;
 }
+
+.btn-loading .btn-label {
+  visibility: hidden; // păstrează dimensiunea
+}
+
+.btn-loading::after {
+  content: '';
+  position: absolute; 
+
+  width: 16px;
+  height: 16px;
+
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+
+  transform: translate(-50%, -50%);
+  animation: spin 0.75s linear infinite;
+}
+
 
 @keyframes spin {
   0% { transform: rotate(0deg); }

@@ -1,70 +1,85 @@
-const fileInputs = document.querySelectorAll(".file-input");
+document.addEventListener("DOMContentLoaded", () => {
 
-fileInputs.forEach((component) => {
-  const dropzone = component.querySelector(".file-dropzone");
-  const input = component.querySelector(".file-input-field");
-  const list = component.querySelector(".file-list");
-  const maxSize = Number(component.dataset.maxSize) * 1024 * 1024; // MB → bytes
+  function formatSize(bytes) {
+    return (bytes / 1024 / 1024).toFixed(1) + " MB";
+  }
 
-  // Click → open file dialog
-  dropzone.addEventListener("click", () => input.click());
+  function createFileItem(file, showPreview = false) {
+    const item = document.createElement("div");
+    item.className = "upload-item";
 
-  // Change event
-  input.addEventListener("change", () => handleFiles(input.files));
+    // Thumbnail
+    if (showPreview && file.type.startsWith("image/")) {
+      const img = document.createElement("img");
+      img.className = "upload-thumb";
+      img.src = URL.createObjectURL(file);
+      item.appendChild(img);
+    } else {
+      const icon = document.createElement("div");
+      icon.className = "upload-thumb";
+      item.appendChild(icon);
+    }
 
-  // Drag events
-  ["dragenter", "dragover"].forEach((event) => {
-    dropzone.addEventListener(event, (e) => {
-      e.preventDefault();
-      dropzone.classList.add("is-dragover");
-    });
-  });
+    // Filename + size
+    const info = document.createElement("div");
+    info.className = "upload-file-info";
+    info.innerHTML = `<strong>${file.name}</strong> • ${formatSize(file.size)}`;
+    item.appendChild(info);
 
-  ["dragleave", "drop"].forEach((event) => {
-    dropzone.addEventListener(event, () => {
-      dropzone.classList.remove("is-dragover");
-    });
-  });
+    // Remove button
+    const remove = document.createElement("div");
+    remove.className = "upload-remove";
+    remove.innerHTML = "&times;";
+    remove.onclick = () => item.remove();
+    item.appendChild(remove);
 
-  // Drop files
-  dropzone.addEventListener("drop", (e) => {
-    e.preventDefault();
-    handleFiles(e.dataTransfer.files);
-  });
+    return item;
+  }
 
-  // Handle files
-  function handleFiles(files) {
-    [...files].forEach((file) => {
-      const item = document.createElement("div");
-      const isTooLarge = file.size > maxSize;
+  // =========================
+  // SINGLE UPLOAD
+  // =========================
+  const singleInput = document.getElementById("single-upload");
+  const singleList  = document.getElementById("single-list");
 
-      item.className =
-        "file-item " + (isTooLarge ? "file-item--error" : "file-item--success");
-
-      item.innerHTML = `
-        <div class="file-item__info">
-          <span class="file-item__name">${file.name}</span>
-          <span class="file-item__size">${(file.size / 1024 / 1024).toFixed(
-            1
-          )} MB</span>
-
-          ${
-            isTooLarge
-              ? `<span class="file-item__error-msg">File exceeds size limit</span>`
-              : ""
-          }
-        </div>
-
-        <div class="file-item__indicator"></div>
-        <button class="file-item__remove">×</button>
-      `;
-
-      // Remove event
-      item.querySelector(".file-item__remove").addEventListener("click", () => {
-        item.remove();
-      });
-
-      list.appendChild(item);
+  if (singleInput) {
+    singleInput.addEventListener("change", () => {
+      singleList.innerHTML = ""; // resetare listă
+      const file = singleInput.files[0];
+      if (file) {
+        singleList.appendChild(createFileItem(file, true));
+      }
     });
   }
+
+  // =========================
+  // MULTIPLE UPLOAD
+  // =========================
+  const multiInput = document.getElementById("multi-upload");
+  const multiList  = document.getElementById("multi-list");
+
+  if (multiInput) {
+    multiInput.addEventListener("change", () => {
+      multiList.innerHTML = "";
+      Array.from(multiInput.files).forEach(file => {
+        multiList.appendChild(createFileItem(file, true));
+      });
+    });
+  }
+
+  // =========================
+  // IMAGE PREVIEW UPLOAD
+  // =========================
+  const imgInput = document.getElementById("image-upload");
+  const imgList  = document.getElementById("image-list");
+
+  if (imgInput) {
+    imgInput.addEventListener("change", () => {
+      imgList.innerHTML = "";
+      Array.from(imgInput.files).forEach(file => {
+        imgList.appendChild(createFileItem(file, true));
+      });
+    });
+  }
+
 });
