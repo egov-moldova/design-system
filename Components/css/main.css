@@ -15599,6 +15599,7 @@ label.required::after {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-8);
+  margin-top: var(--spacing-12);
 }
 .upload-block__description {
   color: var(--gray-400);
@@ -15707,6 +15708,53 @@ label.required::after {
     transform: rotate(360deg);
   }
 }
+.dropzone {
+  border: 2px dashed var(--gray-300);
+  border-radius: var(--border-radius-8);
+  padding: var(--spacing-24);
+  text-align: center;
+  cursor: pointer;
+  background-color: var(--white);
+  transition: border-color 0.2s, background-color 0.2s;
+}
+.dropzone:hover {
+  border-color: var(--blue-sky-600);
+}
+.dropzone:active {
+  background-color: var(--blue-sky-100);
+}
+.dropzone:focus {
+  outline: 2px solid var(--white, #ffffff);
+  box-shadow: 0 0 0 4px var(--focus-ring, var(--blue-sky-500, #3379DB));
+}
+.dropzone__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8);
+  align-items: center;
+  justify-content: center;
+  color: var(--gray-600);
+}
+.dropzone__link {
+  color: var(--blue-sky-600);
+  cursor: pointer;
+  font-weight: 500;
+  text-decoration: underline;
+}
+.dropzone:hover {
+  background-color: var(--gray-50);
+}
+.dropzone--active {
+  border-color: var(--blue-sky-600);
+  background-color: var(--blue-sky-50);
+}
+.dropzone__details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--spacing-12);
+}
+
 .radio-group {
   display: flex;
   flex-direction: column;
