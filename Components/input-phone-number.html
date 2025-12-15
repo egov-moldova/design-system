@@ -7,6 +7,8 @@
   <script src="js/search.js"></script>
   <script src="js/phone-input.js"></script>
   <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css">
+  <link rel="stylesheet" href="css/input-number.css" />
 </head>
 <body>
 
@@ -25,28 +27,17 @@
     <!-- Input telefon cu flag -->
     <!-- =============================== -->
      <div class="row">
-      <div class="col-3">
-        <div class="phone-input">
-          <div class="phone-field">
-            <select id="country-select" class="phone-field__select">
-              <option value="+1" data-flag="🇺🇸">🇺🇸 +1 United States</option>
-              <option value="+44" data-flag="🇬🇧">🇬🇧 +44 United Kingdom</option>
-              <option value="+33" data-flag="🇫🇷">🇫🇷 +33 France</option>
-              <option value="+49" data-flag="🇩🇪">🇩🇪 +49 Germany</option>
-              <option value="+40" data-flag="🇷🇴">🇷🇴 +40 Romania</option>
-              <option value="+373" data-flag="🇲🇩">🇲🇩 +373 Moldova</option>
-            </select>
-
-            <div class="phone-field__input-wrapper">
-              <span id="selected-flag" class="phone-field__flag">🇺🇸</span>
-              <input id="phone-input" type="text" class="phone-field__input">
-            </div>
-          </div>
-
-        </div>
-
+         <div class="col-3">
+             <label>Label</label>
+             <div class="phone-input" data-phone-input  data-country="MD"></div></div>
+         <div class="col-3">
+            <label>Label</label>
+            <div class="phone-input" data-phone-input data-disabled="true" data-country="MD"></div></div>
+         <div class="col-3">
+             <label>Label</label>
+             <div class="phone-input" data-phone-input data-readonly="true" data-country="MD"></div></div>
       </div>
-     </div>
+    
     <div class="row">
       <div class="col-3">
         <div class="mb-16">default</div>

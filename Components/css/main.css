@@ -13054,12 +13054,14 @@ body:has(.modal-overlay.modal-overlay.is-active) {
   transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
   overflow: hidden;
   isolation: isolate;
-  /* 🔵 Focus vizual doar pe card */
 }
 .platform-grid__item:hover {
   transform: translateY(-3px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   background-color: var(--gray-050, #f9fafb);
+}
+.platform-grid__item {
+  /* 🔵 Focus vizual doar pe card */
 }
 .platform-grid__item:focus-within {
   outline: 3px solid var(--color-primary, #005fcc);
@@ -13076,10 +13078,12 @@ body:has(.modal-overlay.modal-overlay.is-active) {
   z-index: 2;
   border-radius: var(--border-radius-12);
   outline: none;
-  /* ❌ Eliminăm focusul vizual pe link, doar părintele îl arată */
 }
 .platform-grid__link:hover .platform-grid__title {
   color: var(--color-primary, #005fcc);
+}
+.platform-grid__link {
+  /* ❌ Eliminăm focusul vizual pe link, doar părintele îl arată */
 }
 .platform-grid__link:focus-visible {
   outline: none;
@@ -14833,7 +14837,6 @@ label.required::after {
   border-radius: var(--border-radius-8, 8px);
   font-size: var(--font-size-14, 14px);
   box-sizing: border-box;
-  text-align: left;
 }
 .input-number::placeholder {
   color: var(--gray-500);
@@ -14864,6 +14867,9 @@ label.required::after {
 }
 .input-number[readonly]:not(:disabled)::placeholder {
   color: var(--gray-700);
+}
+.input-number {
+  text-align: left;
 }
 .input-number[type=tel] {
   -moz-appearance: textfield;
@@ -15119,6 +15125,340 @@ label.required::after {
   pointer-events: none;
 }
 
+/* ======================================
+   Phone Field - flag-icons library
+   CDN: https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css
+   ====================================== */
+.phone-field-container {
+  position: relative;
+  width: 100%;
+}
+
+.phone-field {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 100%;
+  height: 44px;
+  border: 1px solid var(--gray-300, #d1d5db) !important;
+  border-radius: 6px;
+  background-color: var(--white, #ffffff) !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.phone-field:focus-within {
+  border-color: var(--blue-sky-600, #0058d2) !important;
+  box-shadow: 0 0 0 3px rgba(0, 88, 210, 0.1) !important;
+}
+
+/* ======================================
+   Country selector (flag + code)
+   ====================================== */
+.phone-field__country {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  height: 100%;
+  position: relative;
+  cursor: pointer;
+  border-radius: 6px 0 0 6px;
+  transition: background-color 0.15s ease;
+}
+
+.phone-field__country:hover {
+  background-color: var(--gray-50, #f9fafb);
+}
+
+/* Flag icon - din flag-icons library */
+.phone-field__flag {
+  width: 20px;
+  height: 15px;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+/* Dial code */
+.phone-field__code {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-700, #374151);
+  white-space: nowrap;
+}
+
+/* Chevron indicator */
+.phone-field__country::after {
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--gray-500, #6b7280);
+  margin-left: 4px;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.phone-field__country.is-active::after {
+  transform: rotate(180deg);
+}
+
+/* ======================================
+   Custom Dropdown
+   ====================================== */
+.phone-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  min-width: 100px;
+  max-height: 320px;
+  background: var(--white, #ffffff);
+  border: 1px solid var(--gray-300, #d1d5db);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  z-index: 1000;
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.phone-dropdown.is-open {
+  display: flex;
+}
+
+/* Dropdown Search */
+.phone-dropdown__search {
+  padding: 12px;
+  border-bottom: 1px solid var(--gray-200, #e5e7eb);
+}
+
+.phone-dropdown__search-input {
+  width: 100%;
+  height: 36px;
+  border: 1px solid var(--gray-300, #d1d5db);
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.phone-dropdown__search-input:focus {
+  border-color: var(--blue-sky-600, #0058d2);
+  box-shadow: 0 0 0 3px rgba(0, 88, 210, 0.1);
+}
+
+/* Dropdown Options */
+.phone-dropdown__options {
+  overflow-y: auto;
+  max-height: 260px;
+}
+
+.phone-dropdown__option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  border-bottom: 1px solid var(--gray-100, #f3f4f6);
+}
+
+.phone-dropdown__option:last-child {
+  border-bottom: none;
+}
+
+.phone-dropdown__option:hover {
+  background-color: var(--gray-50, #f9fafb);
+}
+
+.phone-dropdown__option.is-selected {
+  background-color: var(--blue-sky-50, #eff6ff);
+}
+
+.phone-dropdown__option.is-selected:hover {
+  background-color: var(--blue-sky-100, #dbeafe);
+}
+
+/* Flag in dropdown */
+.phone-dropdown__option .fi {
+  width: 20px;
+  height: 15px;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+  flex-shrink: 0;
+}
+
+/* Dial code in dropdown */
+.phone-dropdown__dial {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-600, #4b5563);
+  min-width: 50px;
+}
+
+/* Country name in dropdown */
+.phone-dropdown__name {
+  font-size: 14px;
+  color: var(--gray-900, #111827);
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Scrollbar styling */
+.phone-dropdown__options::-webkit-scrollbar {
+  width: 6px;
+}
+
+.phone-dropdown__options::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.phone-dropdown__options::-webkit-scrollbar-thumb {
+  background: var(--gray-300, #d1d5db);
+  border-radius: 3px;
+}
+
+.phone-dropdown__options::-webkit-scrollbar-thumb:hover {
+  background: var(--gray-400, #9ca3af);
+}
+
+.phone-field__input {
+  flex: 1;
+  height: 100%;
+  min-width: 0;
+  padding: 0 12px;
+  font-size: 14px;
+  line-height: 42px;
+  border: none !important;
+  border-radius: 0 6px 6px 0;
+  background-color: transparent !important;
+  color: var(--gray-900, #111827);
+  font-family: inherit;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.phone-field__input::placeholder {
+  color: var(--gray-400, #9ca3af);
+}
+
+.phone-field__input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.phone-field__input:disabled {
+  color: var(--gray-500, #6b7280);
+  cursor: not-allowed;
+}
+
+.phone-field__input[readonly] {
+  color: var(--gray-700, #374151);
+  cursor: default;
+}
+
+/* ======================================
+   WARNING
+   ====================================== */
+.phone-field--warning {
+  border-color: var(--orange-600, #ea580c) !important;
+  background-color: rgba(255, 153, 0, 0.03) !important;
+}
+
+.phone-field--warning:focus-within {
+  border-color: var(--orange-600, #ea580c) !important;
+  box-shadow: 0 0 0 3px rgba(255, 153, 0, 0.1) !important;
+}
+
+/* ======================================
+   DESTRUCTIVE
+   ====================================== */
+.phone-field--destructive {
+  border-color: var(--red-600, #dc2626) !important;
+  background-color: rgba(255, 71, 71, 0.03) !important;
+}
+
+.phone-field--destructive:focus-within {
+  border-color: var(--red-600, #dc2626) !important;
+  box-shadow: 0 0 0 3px rgba(255, 71, 71, 0.1) !important;
+}
+
+/* ======================================
+   SUCCESS
+   ====================================== */
+.phone-field--success {
+  border-color: var(--green-600, #16a34a) !important;
+  background-color: rgba(0, 168, 107, 0.03) !important;
+}
+
+.phone-field--success:focus-within {
+  border-color: var(--green-600, #16a34a) !important;
+  box-shadow: 0 0 0 3px rgba(0, 168, 107, 0.1) !important;
+}
+
+/* ======================================
+   DISABLED
+   ====================================== */
+.phone-field--disabled {
+  opacity: 0.6;
+  pointer-events: none;
+  background-color: var(--gray-100, #f3f4f6) !important;
+  border-color: var(--gray-250, #e5e7eb) !important;
+}
+
+.phone-field--disabled .phone-field__country {
+  pointer-events: none;
+}
+
+/* ======================================
+   READ-ONLY
+   ====================================== */
+.phone-field--readonly {
+  background-color: var(--gray-100, #f3f4f6) !important;
+  border-color: var(--gray-200, #e5e7eb) !important;
+}
+
+.phone-field--readonly .phone-field__country {
+  pointer-events: none;
+}
+
+.phone-field--readonly .phone-field__country::after {
+  display: none;
+}
+
+/* ======================================
+   LOADING
+   ====================================== */
+.phone-field.is-loading .phone-field__input {
+  padding-right: 40px;
+}
+
+.phone-field.is-loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  width: 16px;
+  height: 16px;
+  margin-top: -8px;
+  border: 2px solid var(--blue-sky-600, #0058d2);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: phone-field-spin 0.8s linear infinite;
+}
+
+@keyframes phone-field-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 .input-date {
   display: flex;
   align-items: center;
@@ -15194,9 +15534,6 @@ label.required::after {
   border-radius: var(--border-radius-8, 8px);
   font-size: var(--font-size-14, 14px);
   box-sizing: border-box;
-  padding-left: var(--spacing-32);
-  padding-right: var(--spacing-32);
-  flex: 1;
 }
 .search-input .input::placeholder {
   color: var(--gray-500);
@@ -15227,6 +15564,11 @@ label.required::after {
 }
 .search-input .input[readonly]:not(:disabled)::placeholder {
   color: var(--gray-700);
+}
+.search-input .input {
+  padding-left: var(--spacing-32);
+  padding-right: var(--spacing-32);
+  flex: 1;
 }
 .search-input .icon-search {
   position: absolute;
@@ -15301,12 +15643,6 @@ label.required::after {
   border-radius: var(--border-radius-8, 8px);
   font-size: var(--font-size-14, 14px);
   box-sizing: border-box;
-  appearance: none;
-  background-image: url("data:image/svg+xml,...");
-  background-repeat: no-repeat;
-  background-position: right var(--spacing-12, 12px) center;
-  background-size: 1rem;
-  padding-right: var(--spacing-32, 32px);
 }
 .select::placeholder {
   color: var(--gray-500);
@@ -15338,6 +15674,14 @@ label.required::after {
 .select[readonly]:not(:disabled)::placeholder {
   color: var(--gray-700);
 }
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,...");
+  background-repeat: no-repeat;
+  background-position: right var(--spacing-12, 12px) center;
+  background-size: 1rem;
+  padding-right: var(--spacing-32, 32px);
+}
 
 .textarea {
   border: 1.5px solid var(--gray-250);
@@ -15349,11 +15693,6 @@ label.required::after {
   border-radius: var(--border-radius-8, 8px);
   font-size: var(--font-size-14, 14px);
   box-sizing: border-box;
-  min-height: var(--spacing-150, 150px);
-  resize: vertical;
-  line-height: 1.5;
-  padding: var(--spacing-12, 12px) var(--spacing-16, 16px) !important;
-  font-family: inherit;
 }
 .textarea::placeholder {
   color: var(--gray-500);
@@ -15384,6 +15723,13 @@ label.required::after {
 }
 .textarea[readonly]:not(:disabled)::placeholder {
   color: var(--gray-700);
+}
+.textarea {
+  min-height: var(--spacing-150, 150px);
+  resize: vertical;
+  line-height: 1.5;
+  padding: var(--spacing-12, 12px) var(--spacing-16, 16px) !important;
+  font-family: inherit;
 }
 .textarea::placeholder {
   color: var(--gray-400);
@@ -15912,7 +16258,6 @@ label.required::after {
   gap: var(--spacing-12, 12px);
   cursor: pointer;
   width: fit-content;
-  /* ========== STATES ========== */
 }
 .checkbox .checkbox-input {
   position: absolute;
@@ -15938,6 +16283,9 @@ label.required::after {
   margin-top: -2px;
   opacity: 0;
   transition: opacity 0.2s ease;
+}
+.checkbox {
+  /* ========== STATES ========== */
 }
 .checkbox .checkbox-input:checked + .checkbox-custom {
   background: var(--blue-sky-600, #0058D2);
@@ -16353,14 +16701,16 @@ label.required::after {
   text-transform: capitalize;
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
   user-select: none;
+}
+.status-tag:has(svg) {
+  padding: 3px var(--spacing-8, 8px) 3px var(--spacing-6, 6px);
+}
+.status-tag {
   /*
   svg {
     width: var(--spacing-12, 12px);
     height: var(--spacing-12, 12px);
   }*/
-}
-.status-tag:has(svg) {
-  padding: 3px var(--spacing-8, 8px) 3px var(--spacing-6, 6px);
 }
 .status-tag--small {
   font-size: var(--text-caption-md-font-size);
@@ -18073,5 +18423,3 @@ label.required::after {
     max-width: 100%;
   }
 }
-
-/*# sourceMappingURL=main.css.map */
