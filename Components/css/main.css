@@ -15613,7 +15613,11 @@ label.required::after {
   gap: var(--spacing-12);
   padding: var(--spacing-6) var(--spacing-12);
   background: var(--gray-100);
+  border: var(--border-width-1-5) var(--border-style-solid) transparent;
   border-radius: var(--border-radius-8);
+}
+.upload__item--error {
+  border-color: var(--red-600);
 }
 .upload__thumb {
   width: 32px;
@@ -15636,13 +15640,26 @@ label.required::after {
 }
 .upload__info {
   flex: 1;
+  min-width: 0;
   font-size: var(--text-body-sm-font-size);
   color: var(--gray-500);
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--spacing-6);
 }
 .upload__file-name {
+  display: block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: var(--black);
   font-weight: 500;
   line-height: 1.2;
+}
+.upload__file-size {
+  white-space: nowrap;
 }
 .upload__remove {
   background: none;
@@ -15658,7 +15675,38 @@ label.required::after {
   outline: 2px solid var(--focus-color);
   outline-offset: 2px;
 }
+.upload__upload {
+  position: relative;
+  background-color: transparent;
+  border: none;
+  height: var(--spacing-20);
+  width: var(--spacing-20);
+}
+.upload__upload::after {
+  content: "";
+  position: absolute;
+  width: var(--spacing-12);
+  height: var(--spacing-12);
+  border-radius: 50%;
+  border: 2px solid var(--blue-sky-600);
+  border-right-color: transparent;
+  top: 0;
+  right: 0;
+  transform: translate(-50%, -50%);
+  animation: spin 0.75s linear infinite;
+}
+.upload__upload svg {
+  display: none;
+}
 
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 .radio-group {
   display: flex;
   flex-direction: column;

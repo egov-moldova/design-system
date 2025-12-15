@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const info = document.createElement("div");
     info.className = "upload__info";
-    info.innerHTML = `<span class="upload__file-name">${file.name}</span><span class="mx-4"> • </span>${formatSize(file.size)}`;
+    info.innerHTML = `<span class="upload__file-name">${file.name}</span><span class="mx-4"> • </span><span class="upload__file-size">${formatSize(file.size)}</span>`;
 
     const remove = document.createElement("button");
     remove.type = "button";
