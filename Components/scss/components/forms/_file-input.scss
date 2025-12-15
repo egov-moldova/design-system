@@ -1,414 +1,129 @@
 @use "sass:map";
 @use "../../abstracts/tokens" as tokens;
 
-// ============================================
-// 🔹 Mixin general pentru variante semantice
-// ============================================
+// ============================
+// Semantic variants
+// ============================
 @mixin file-input-variant($variant) {
   --border-color: map.get(map.get(tokens.$input-colors, $variant), border);
-  --border-hover: map.get(map.get(tokens.$input-colors, $variant), border-hover);
   --focus-color: map.get(map.get(tokens.$input-colors, $variant), focus);
-  --background: map.get(map.get(tokens.$input-colors, $variant), background);
-  --text-color: map.get(map.get(tokens.$input-colors, $variant), text);
 }
 
-// ============================================
-// 🔹 Aplicație mixinuri pe variante
-// ============================================
 .file-input.default   { @include file-input-variant(default); }
 .file-input.success   { @include file-input-variant(success); }
 .file-input.error     { @include file-input-variant(destructive); }
-.file-input.warning   { @include file-input-variant(warning); }
-.file-input.danger    { @include file-input-variant(destructive); }
 
-// ============================================
-// 🔹 FILE INPUT STYLING
-// ============================================
-.file-input {
-  --border-color: map.get(map.get(tokens.$input-colors, default), border);
-  --border-hover: map.get(map.get(tokens.$input-colors, default), border-hover);
-  --focus-color: map.get(map.get(tokens.$input-colors, default), focus);
-  --background: map.get(map.get(tokens.$input-colors, default), background);
-  --text-color: map.get(map.get(tokens.$input-colors, default), text);
-
-  border: 1px dashed var(--border-color);
-  background-color: var(--background);
-  border-radius: 8px;
-  padding: 16px;
-  text-align: center;
-  transition: all 0.2s ease-in-out;
-  color: var(--text-color);
-  cursor: pointer;
-
-  &:hover {
-    border-color: var(--border-hover);
-  }
-
-  &.focus {
-    border-color: var(--focus-color);
-    outline: none;
-  }
-
-  &.active {
-    background-color: var(--focus-color);
-    border-color: var(--border-hover);
-  }
-}
-
-
- 
-
-.file-input-field {
-    border: 1px solid #ccc;
-    display: inline-block;
-    padding: 6px 12px;
-    cursor: pointer;
-}
-
- 
-// ============================================
-// 🔹 FILE ITEM (uploaded file display)
-// ============================================
-.file-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 8px;
-  padding: 8px 12px;
-  border: 1px solid map.get(map.get(tokens.$input-colors, default), border);
-  border-radius: 6px;
-  background-color: map.get(map.get(tokens.$input-colors, default), background);
-  color: map.get(map.get(tokens.$input-colors, default), text);
-
-  .filename {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    max-width: 200px;
-    font-size: 14px;
-  }
-
-  .filesize {
-    font-size: 12px;
-    color: var(--gray-500);
-  }
-
-  .remove-btn {
-    background: none;
-    border: none;
-    color: var(--gray-500);
-    cursor: pointer;
-    font-size: 16px;
-    padding: 4px;
-
-    &:hover {
-      color: var(--gray-700);
-    }
-  }
-
-  &.error {
-    border-color: map.get(map.get(tokens.$input-colors, destructive), border);
-    color: map.get(map.get(tokens.$input-colors, destructive), text);
-  }
-
-  &.success {
-    border-color: map.get(map.get(tokens.$input-colors, success), border);
-  }
-}
-
-// ============================================
-// 🔹 ERROR MESSAGE
-// ============================================
-.file-error-message {
-  font-size: 12px;
-  color: map.get(map.get(tokens.$input-colors, destructive), border);
-  margin-top: 4px;
-}
-
-
-.file-input {
-  --border-color-default: var(--gray-300);
-  --border-color-hover: var(--blue-sky-300);
-  --border-color-active: var(--blue-sky-500);
-  --radius: var(--border-radius-8);
-  --padding: var(--spacing-24);
-  --bg: var(--gray-50);
-
-  width: 100%;
-}
-
-.file-dropzone {
-  display: block;
-  border: 2px dashed var(--border-color-default);
-  border-radius: var(--radius);
-  padding: var(--padding);
-  background: var(--bg);
-  cursor: pointer;
-  transition: 0.25s border-color ease;
-
-  &:hover {
-    border-color: var(--border-color-hover);
-  }
-
-  &.is-dragover {
-    border-color: var(--border-color-active);
-    background: var(--gray-100);
-  }
-}
-
-.file-dropzone__content {
-  text-align: center;
-
-  .file-dropzone__icon {
-    width: 48px;
-    height: 48px;
-    margin: 0 auto var(--spacing-16);
-    background: url('/icons/upload.svg') center/contain no-repeat;
-    opacity: 0.6;
-  }
-
-  p {
-    font-size: var(--text-body-md-font-size);
-    color: var(--gray-800);
-
-    span {
-      color: var(--blue-sky-600);
-      text-decoration: underline;
-    }
-  }
-
-  .file-dropzone__meta {
-    margin-top: var(--spacing-12);
-    font-size: var(--text-body-sm-font-size);
-    color: var(--gray-600);
-
-    .file-dropzone__max {
-      float: right;
-      color: var(--gray-500);
-    }
-  }
-}
-
-
-.file-list {
-  margin-top: var(--spacing-20);
-  display: grid;
-  gap: var(--spacing-12);
-}
-
-.file-item {
-  background: var(--gray-50);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--border-radius-6);
-  padding: var(--spacing-12) var(--spacing-16);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: 0.2s;
-}
-
-.file-item__info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.file-item__name {
-  font-weight: 500;
-  color: var(--gray-900);
-}
-
-.file-item__size {
-  font-size: var(--text-body-sm-font-size);
-  color: var(--gray-600);
-}
-
-/* STATE: SUCCESS */
-.file-item--success {
-  border-color: var(--success-500);
-
-  .file-item__indicator {
-    background: var(--success-500);
-  }
-}
-
-/* STATE: ERROR */
-.file-item--error {
-  border-color: var(--error-500);
-  background: var(--error-50);
-
-  .file-item__indicator {
-    background: var(--error-500);
-  }
-
-  .file-item__error-msg {
-    margin-top: 4px;
-    color: var(--error-600);
-    font-size: var(--text-body-sm-font-size);
-  }
-}
-
-.file-item__indicator {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.file-item__remove {
-  background: none;
-  border: none;
-  color: var(--gray-600);
-  cursor: pointer;
-  font-size: 18px;
-
-  &:hover {
-    color: var(--gray-900);
-  }
-}
-.file-error-message {
-  margin-top: var(--spacing-8);
-  color: var(--error-600);
-  font-size: var(--text-body-sm-font-size);
-}
-
-.upload-variations {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-40);
-  margin-top: var(--spacing-32);
-}
-
+// ============================
+// Upload block
+// ============================
 .upload-block {
-  .upload-variant-title {
+  &__title {
     margin-bottom: var(--spacing-16);
     font-weight: 600;
   }
-}
 
-.upload-label {
-  font-weight: 600;
-  font-size: var(--font-size-16);
-}
-
-.upload-info {
-  color: var(--gray-600);
-  font-size: var(--font-size-14);
-  margin-bottom: var(--spacing-12);
-}
-
-.upload-control {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-12);
-}
-
-.upload-input {
-  display: none;
-}
-
-.upload-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-8);
-}
-
-.upload-item {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-12);
-  padding: var(--spacing-12);
-  background: var(--gray-100);
-  border: 1px solid var(--gray-300);
-  border-radius: var(--radius-8);
-}
-
-.upload-thumb {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-6);
-  object-fit: cover;
-  background: var(--gray-200);
-}
-
-.upload-file-info {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  font-size: var(--font-size-14);
-}
-
-.upload-remove {
-  cursor: pointer;
-  font-size: 20px;
-  color: var(--gray-700);
-  line-height: 1;
-  padding: var(--spacing-4);
-}
-
-// ==============================================
-// Upload Button Component
-// ==============================================
-
-.component-upload {
-  margin-bottom: var(--spacing-40);
-
-  .component-title {
-    margin-bottom: var(--spacing-8);
-    border-bottom: 1px solid var(--gray-200);
-    padding-bottom: var(--spacing-8);
+  &__label {
+    font-weight: 600;
   }
 
-  .component-description {
-    max-width: 600px;
-    color: var(--gray-700);
-    font-size: var(--font-size-16);
-    margin-bottom: var(--spacing-32);
+  &__info {
+    font-size: var(--text-body-sm-font-size);
+    color: var(--gray-400);
+    margin-bottom: var(--spacing-12);
+  }
+
+  &__control {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-12);
+  }
+
+  &__input {
+    display: none;
+  }
+
+  &__button {
+    width: fit-content;
+    cursor: pointer;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-8);
+  }
+
+  &__description {
+    color: var(--gray-400);
+    font-size: var(--text-body-md-font-size);
+    line-height: 1.5;
+    margin-top: var(--spacing-16);
   }
 }
 
-.upload-wrapper {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-8);
-}
+// ============================
+// Upload list items
+// ============================
+.upload {
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-12);
+    padding: var(--spacing-6) var(--spacing-12);
 
-.upload-label {
-  font-weight: 600;
-  font-size: var(--font-size-16);
-}
+    background: var(--gray-100); 
+    border-radius: var(--border-radius-8);
+  }
 
-.upload-info {
-  color: var(--gray-600);
-  font-size: var(--font-size-14);
-  margin-bottom: var(--spacing-12);
-}
+  &__thumb {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-6);
+    background: var(--gray-200);
+    overflow: hidden;
 
-.upload-control {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-12);
-}
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-.upload-input {
-  display: none; // ascundem input-ul
-}
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-600);
+    text-transform: uppercase;
 
-.upload-button {
-  cursor: pointer;
-  display: inline-block;
-}
+    &--image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
 
-.upload-file-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-4);
-  font-size: var(--font-size-14);
-  color: var(--gray-700);
-}
+  &__info {
+    flex: 1;
+    font-size: var(--text-body-sm-font-size);
+    color: var(--gray-500); 
+  }
 
-.upload-file-list__item {
-  padding: var(--spacing-4) var(--spacing-8);
-  background: var(--gray-100);
-  border-radius: var(--radius-6);
-  border: 1px solid var(--gray-300);
+  &__file-name {
+    color: var(--black);
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  &__remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: var(--spacing-4);
+    color: var(--gray-600);
+
+    &:hover {
+      color: var(--gray-900);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--focus-color);
+      outline-offset: 2px;
+    }
+  }
 }

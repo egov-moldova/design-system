@@ -30,190 +30,177 @@
           </p>
         </div>
     </div>
-        <div class="row">
-      <div class="col-12">
-        <section class="upload-variations">
+    <div class="row mt-32">
+      <div class="col-sm-6">
+        <div class="upload-block"> 
+          <label for="single-upload-01" class="upload-block__label">Upload files</label>
+          <p id="single-upload-info" class="upload-block__info">
+            Supported formats: jpg, png, pdf. Maximum size: 100 MB
+          </p>
 
-            <!-- ========================= -->
-            <!-- SINGLE UPLOAD -->
-            <!-- ========================= -->
-            <div class="upload-block">
-              <h4 class="upload-variant-title">single-upload</h4>
+          <div class="upload-block__control">
+            <input 
+              type="file" 
+              id="single-upload-01" 
+              class="upload-block__input" 
+              aria-describedby="single-upload-info"
+            >
+            <label for="single-upload-01" class="btn btn-primary btn-md upload-block__button">
+              Choose file
+            </label>
 
-              <label class="upload-label">Upload files</label>
-              <p class="upload-info">Supported formats: jpg, png, pdf. Maximum size: 100 MB</p>
+            <div class="upload-block__list" id="single-list" role="list"></div>
+          </div>
+        </div>
 
-              <div class="upload-control">
-                <input type="file" id="single-upload" class="upload-input" />
-                <label for="single-upload" class="btn btn-primary upload-button">Choose file</label>
-                <div class="upload-list" id="single-list"></div>
-              </div>
-            </div>
-
-            <!-- ========================= -->
-            <!-- MULTIPLE UPLOAD -->
-            <!-- ========================= -->
-            <div class="upload-block">
-              <h4 class="upload-variant-title">multiple-upload</h4>
-
-              <label class="upload-label">Upload files</label>
-              <p class="upload-info">Supported formats: jpg, png, pdf. Maximum size: 100 MB</p>
-
-              <div class="upload-control">
-                <input type="file" id="multi-upload" class="upload-input" multiple />
-                <label for="multi-upload" class="btn btn-primary upload-button">Choose file</label>
-                <div class="upload-list" id="multi-list"></div>
-              </div>
-            </div>
-
-            <!-- ========================= -->
-            <!-- IMAGE PREVIEW UPLOAD -->
-            <!-- ========================= -->
-            <div class="upload-block">
-              <h4 class="upload-variant-title">image-preview</h4>
-
-              <label class="upload-label">Upload files</label>
-              <p class="upload-info">Supported formats: jpg, png, pdf. Maximum size: 100 MB</p>
-
-              <div class="upload-control">
-                <input type="file" id="image-upload" class="upload-input" multiple />
-                <label for="image-upload" class="btn btn-primary upload-button">Choose file</label>
-                <div class="upload-list" id="image-list"></div>
-              </div>
-
-              <p class="upload-description">
-                Uploaded images (JPG, PNG, GIF, SVG) should show a live preview/thumbnail for quick recognition.  
-                Include filename, size, and status where applicable.
-              </p>
-            </div>
-
-          </section>
 
       </div>
     </div>
-    <div class="row">
-        <div class="col-3">
-            <div class="file-input" data-max-size="100">
-              <h4>Upload files</h4>
-              <div>
-                Supported formats: jpg, png, pdf. Maximum size: 100 MB
-              </div>
-              <label class="file-upload-button">
-                <input type="file" class="file-input-field" multiple>
-                <span class="file-upload-button__text">Upload Files</span>
-              </label>
 
-              <!-- File list -->
-              <div class="file-list"></div>
-            </div>
-        </div>
-        <div class="col-3">
-          <section class="component-upload">
-            <h1 class="component-title">Upload Button</h1>
-
-            <p class="component-description">
-              A clickable element that opens the native file picker, allowing users to browse and select files from their device.
-            </p>
-
-            <div class="upload-wrapper">
-              <label class="upload-label">Upload files</label>
-
-              <p class="upload-info">
-                Supported formats: jpg, png, pdf. Maximum size: 100 MB
-              </p>
-
-              <div class="upload-control">
-                <input
-                  type="file"
-                  id="file-input"
-                  class="upload-input"
-                  multiple
-                />
-                <label for="file-input" class="upload-button btn btn-primary">
-                  Choose file
-                </label>
-                <div class="upload-file-list" id="file-list"></div>
-              </div>
-            </div>
-          </section>
-
+    <div class="row mt-56">
+       <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+            <h2>Variations</h2>
         </div>
     </div>
-    <!-- Styles -->
+
     <div class="row">
-      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-          <h2>Styles</h2>
-      </div>
-      <div class="col-3">
-        <div class="file-input" data-max-size="100">
-          
-          <label class="file-dropzone">
-            <input type="file" class="file-input-field" multiple>
 
-            <div class="file-dropzone__content">
-              <div class="file-dropzone__icon"></div>
-              <p class="file-dropzone__text">
-                Drag and drop or <span>choose files</span>
-              </p>
+    <!-- ========================= -->
+    <!-- SINGLE UPLOAD -->
+    <!-- ========================= -->
+    <div class="col-12 col-md-4">
+      <div class="upload-block upload-block--single">
 
-              <div class="file-dropzone__meta">
-                Supported formats: jpg, png, pdf
-                <span class="file-dropzone__max">Maximum size: 100 MB</span>
-              </div>
-            </div>
+        <h4 class="upload-block__title">Single Upload</h4>
+
+        <label class="upload-block__label" for="single-upload">
+          Upload files
+        </label>
+
+        <p id="single-info" class="upload-block__info">
+          Supported formats: jpg, png, pdf. Maximum size: 100 MB
+        </p>
+
+        <div class="upload-block__control">
+          <input
+            type="file"
+            id="single-upload"
+            class="upload-block__input"
+            aria-describedby="single-info single-list"
+          />
+
+          <label
+            for="single-upload"
+            class="upload-block__button btn btn-md btn-primary"
+          >
+            Choose file
           </label>
 
-          <!-- File list -->
-          <div class="file-list"></div> 
-        </div> 
+          <div
+            id="single-list"
+            class="upload-block__list upload"
+            role="status"
+            aria-live="polite"
+          ></div>
+        </div>
+
       </div>
-
-      <div class="col-3">
-        <!-- Loading -->
-        <div class="file-item file-item--loading">
-        <div class="file-item__icon file-item__icon--loading"></div>
-        <div class="file-item__info">
-        <span class="file-item__name">Filename.pdf</span>
-        <span class="file-item__size">1.8 MB</span>
-        </div>
-        <div class="file-item__spinner"></div>
-        </div>
-      </div>
-      
-      <div class="col-sm-3">
-        <!-- Success -->
-        <div class="file-item file-item--success">
-        <div class="file-item__icon file-item__icon--success"></div>
-        <div class="file-item__info">
-        <span class="file-item__name">Filename.pdf</span>
-        <span class="file-item__size">1.8 MB</span>
-        </div>
-        <div class="file-item__status file-item__status--success"></div>
-        </div>
-      </div>
-
-      <div class="col-sm-3">
-        <!-- Error -->
-        <div class="file-item file-item--error">
-        <div class="file-item__icon file-item__icon--error"></div>
-
-
-        <div class="file-item__content">
-        <div class="file-item__row">
-        <span class="file-item__name">Filename.pdf</span>
-        <span class="file-item__size">102.8 MB</span>
-        <button class="file-item__action file-item__action--remove"></button>
-        </div>
-
-
-        <div class="file-item__error-message">
-        File exceeds size limit
-        </div>
-        </div>
-        </div>
-      </div>
-     
     </div>
+
+    <!-- ========================= -->
+    <!-- MULTIPLE UPLOAD -->
+    <!-- ========================= -->
+    <div class="col-12 col-md-4">
+      <div class="upload-block upload-block--multiple">
+
+        <h4 class="upload-block__title">Multiple Upload</h4>
+
+        <label class="upload-block__label" for="multi-upload">
+          Upload files
+        </label>
+
+        <p id="multi-info" class="upload-block__info">
+          Supported formats: jpg, png, pdf. Maximum size: 100 MB
+        </p>
+
+        <div class="upload-block__control">
+          <input
+            type="file"
+            id="multi-upload"
+            class="upload-block__input"
+            multiple
+            aria-describedby="multi-info multi-list"
+          />
+
+          <label
+            for="multi-upload"
+            class="upload-block__button btn btn-md btn-primary"
+          >
+            Choose files
+          </label>
+
+          <div
+            id="multi-list"
+            class="upload-block__list upload"
+            role="status"
+            aria-live="polite"
+          ></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========================= -->
+    <!-- IMAGE PREVIEW UPLOAD -->
+    <!-- ========================= -->
+    <div class="col-12 col-md-4">
+      <div class="upload-block upload-block--image-preview">
+
+        <h4 class="upload-block__title">Image Preview Upload</h4>
+
+        <label class="upload-block__label" for="image-upload">
+          Upload files
+        </label>
+
+        <p id="image-info" class="upload-block__info">
+          Supported formats: jpg, png, pdf. Maximum size: 100 MB
+        </p>
+
+        <div class="upload-block__control">
+          <input
+            type="file"
+            id="image-upload"
+            class="upload-block__input"
+            multiple
+            aria-describedby="image-info image-list"
+          />
+
+          <label
+            for="image-upload"
+            class="upload-block__button btn btn-md btn-primary"
+          >
+            Choose files
+          </label>
+
+          <div
+            id="image-list"
+            class="upload-block__list upload"
+            role="status"
+            aria-live="polite"
+          ></div>
+        </div>
+
+        <p class="upload-block__description">
+          Uploaded images (JPG, PNG, GIF, SVG) show a live preview/thumbnail for quick recognition.
+          Each image should include filename, size, and status.
+        </p>
+
+      </div>
+    </div>
+
+  </div>
+
+
 </div>
 
 </body>

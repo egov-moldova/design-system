@@ -1,85 +1,62 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  function formatSize(bytes) {
-    return (bytes / 1024 / 1024).toFixed(1) + " MB";
-  }
+  const formatSize = bytes =>
+    (bytes / 1024 / 1024).toFixed(1) + " MB";
 
-  function createFileItem(file, showPreview = false) {
+  function createUploadItem(file, previewImages = false) {
     const item = document.createElement("div");
-    item.className = "upload-item";
+    item.className = "upload__item";
 
-    // Thumbnail
-    if (showPreview && file.type.startsWith("image/")) {
+    const thumb = document.createElement("div");
+    thumb.className = "upload__thumb";
+
+    if (previewImages && file.type.startsWith("image/")) {
+      thumb.classList.add("upload__thumb--image");
+
       const img = document.createElement("img");
-      img.className = "upload-thumb";
       img.src = URL.createObjectURL(file);
-      item.appendChild(img);
+      img.alt = file.name;
+      thumb.appendChild(img);
     } else {
-      const icon = document.createElement("div");
-      icon.className = "upload-thumb";
-      item.appendChild(icon);
+      thumb.textContent = file.name.split(".").pop();
     }
 
-    // Filename + size
     const info = document.createElement("div");
-    info.className = "upload-file-info";
-    info.innerHTML = `<strong>${file.name}</strong> • ${formatSize(file.size)}`;
-    item.appendChild(info);
+    info.className = "upload__info";
+    info.innerHTML = `<span class="upload__file-name">${file.name}</span><span class="mx-4"> • </span>${formatSize(file.size)}`;
 
-    // Remove button
-    const remove = document.createElement("div");
-    remove.className = "upload-remove";
-    remove.innerHTML = "&times;";
-    remove.onclick = () => item.remove();
-    item.appendChild(remove);
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.className = "upload__remove";
+    remove.setAttribute("aria-label", `Remove ${file.name}`);
+    remove.innerHTML = `
+      <svg class="icon medium" aria-hidden="true">
+        <use href="assets/icons/sprite.svg#icon-cross-small"></use>
+      </svg>
+    `;
 
+    remove.addEventListener("click", () => item.remove());
+
+    item.append(thumb, info, remove);
     return item;
   }
 
-  // =========================
-  // SINGLE UPLOAD
-  // =========================
-  const singleInput = document.getElementById("single-upload");
-  const singleList  = document.getElementById("single-list");
+  function initUpload(inputId, listId, previewImages = false) {
+    const input = document.getElementById(inputId);
+    const list  = document.getElementById(listId);
 
-  if (singleInput) {
-    singleInput.addEventListener("change", () => {
-      singleList.innerHTML = ""; // resetare listă
-      const file = singleInput.files[0];
-      if (file) {
-        singleList.appendChild(createFileItem(file, true));
-      }
-    });
-  }
+    if (!input || !list) return;
 
-  // =========================
-  // MULTIPLE UPLOAD
-  // =========================
-  const multiInput = document.getElementById("multi-upload");
-  const multiList  = document.getElementById("multi-list");
-
-  if (multiInput) {
-    multiInput.addEventListener("change", () => {
-      multiList.innerHTML = "";
-      Array.from(multiInput.files).forEach(file => {
-        multiList.appendChild(createFileItem(file, true));
+    input.addEventListener("change", () => {
+      list.innerHTML = "";
+      Array.from(input.files).forEach(file => {
+        list.appendChild(createUploadItem(file, previewImages));
       });
     });
   }
 
-  // =========================
-  // IMAGE PREVIEW UPLOAD
-  // =========================
-  const imgInput = document.getElementById("image-upload");
-  const imgList  = document.getElementById("image-list");
-
-  if (imgInput) {
-    imgInput.addEventListener("change", () => {
-      imgList.innerHTML = "";
-      Array.from(imgInput.files).forEach(file => {
-        imgList.appendChild(createFileItem(file, true));
-      });
-    });
-  }
+  initUpload("single-upload", "single-list", true);
+  initUpload("multi-upload", "multi-list");
+  initUpload("image-upload", "image-list", true);
 
 });
