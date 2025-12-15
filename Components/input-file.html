@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Search Input File Preview</title>
-  <script src="js/search.js"></script>
+  <script src="js/tooltip.js" defer=""></script>
   <script src="js/file-input.js"></script>
   <link rel="stylesheet" href="css/main.css" />
 </head>
@@ -199,9 +199,9 @@
   </div>
 
   <div class="row">
-      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-          <h2>States</h2>
-      </div>
+    <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+        <h2>States</h2>
+    </div>
   </div>
   <div class="row">
     <div class="col-md-4">
@@ -210,11 +210,11 @@
         <div class="upload__item">
           <div class="upload__thumb">pdf</div>
           <div class="upload__info">
-            <span class="upload__file-name">Cerere concediu-August-Antohi Viorel.pdf</span>
+            <span class="upload__file-name">Government_services_report_final_version_updated.pdf</span>
             <span class="mx-4"> • </span>
             <span class="upload__file-size">0.1 MB</span>
           </div>
-          <button type="button" class="upload__upload" aria-label="Remove Cerere concediu-August-Antohi Viorel.pdf">
+          <button type="button" class="upload__upload" aria-label="Remove Government_services_report_final_version_updated.pdf">
             <svg class="icon medium" aria-hidden="true">
               <use href="assets/icons/sprite.svg#icon-cross-small"></use>
             </svg>
@@ -228,7 +228,7 @@
         <div class="upload__item">
           <div class="upload__thumb">pdf</div>
           <div class="upload__info">
-            <span class="upload__file-name">Cerere concediu-August-Antohi Viorel.pdf</span>
+            <span class="upload__file-name">Government_services_report_final_version_updated.pdf</span>
             <span class="mx-4"> • </span>
             <span class="upload__file-size">0.1 MB</span>
           </div>
@@ -246,11 +246,11 @@
         <div class="upload__item">
           <div class="upload__thumb">pdf</div>
           <div class="upload__info">
-            <span class="upload__file-name">Cerere concediu-August-Antohi Viorel.pdf</span>
+            <span class="upload__file-name">Government_services_report_final_version_updated.pdf</span>
             <span class="mx-4"> • </span>
             <span class="upload__file-size">0.1 MB</span>
           </div>
-          <button type="button" class="upload__remove" aria-label="Remove Cerere concediu-August-Antohi Viorel.pdf">
+          <button type="button" class="upload__remove" aria-label="Government_services_report_final_version_updated.pdf">
             <svg class="icon medium" aria-hidden="true">
               <use href="assets/icons/sprite.svg#icon-cross-small"></use>
             </svg>
@@ -266,7 +266,7 @@
         <div class="upload__item upload__item--error">
           <div class="upload__thumb">pdf</div>
           <div class="upload__info">
-            <span class="upload__file-name">Cerere concediu-August-Antohi Viorel.pdf</span>
+            <span class="upload__file-name">Government_services_report_final_version_updated.pdf</span>
             <span class="mx-4"> • </span>
             <span class="upload__file-size">102.1 MB</span>
           </div>
@@ -275,7 +275,7 @@
               <use href="assets/icons/sprite.svg#icon-circle-info-filled"></use>
             </svg>
           </span>
-          <button type="button" class="upload__remove" aria-label="Remove Cerere concediu-August-Antohi Viorel.pdf">
+          <button type="button" class="upload__remove" aria-label="Remove Government_services_report_final_version_updated.pdf">
             <svg class="icon medium" aria-hidden="true">
               <use href="assets/icons/sprite.svg#icon-cross-small"></use>
             </svg>
@@ -289,7 +289,7 @@
         <div class="upload__item upload__item--error">
           <div class="upload__thumb">pdf</div>
           <div class="upload__info">
-            <span class="upload__file-name">Cerere concediu-August-Antohi Viorel.pdf</span>
+            <span class="upload__file-name">Government_services_report_final_version_updated.pdf</span>
             <span class="mx-4"> • </span>
             <span class="upload__file-size">102.1 MB</span>
           </div>
@@ -298,13 +298,55 @@
               <use href="assets/icons/sprite.svg#icon-circle-info-filled"></use>
             </svg>
           </span>
-          <button type="button" class="upload__remove" aria-label="Remove Cerere concediu-August-Antohi Viorel.pdf">
+          <button type="button" class="upload__remove" aria-label="Remove Government_services_report_final_version_updated.pdf">
+            <svg class="icon medium" aria-hidden="true">
+              <use href="assets/icons/sprite.svg#icon-cross-small"></use>
+            </svg>
+          </button>
+        </div>
+      </div> 
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+        <h2>Edge Cases</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-4">
+      <p class="text-gray-400">file-name: truncation</p>
+      <div class="upload-block__list" id="test" role="list">
+        <div class="upload__item">
+          <div class="upload__thumb">pdf</div>
+          <div class="upload__info">
+            <span class="upload__file-name">Government_services_report_final_version_updated.pdf</span>
+            <span class="mx-4"> • </span>
+            <span class="upload__file-size">0.1 MB</span>
+          </div>
+          <button type="button" class="upload__remove" aria-label="Remove Government_services_report_final_version_updated.pdf">
             <svg class="icon medium" aria-hidden="true">
               <use href="assets/icons/sprite.svg#icon-cross-small"></use>
             </svg>
           </button>
         </div>
       </div>
+    </div>
+    <div class="col-sm-4">
+      <p class="text-gray-400">file-name: hover</p>
+      <div class="upload-block__list" id="test" role="list" data-tooltip="Government services report final version updated.pdf" data-placement="bottom">
+        <div class="upload__item">
+          <div class="upload__thumb">pdf</div>
+          <div class="upload__info">
+            <span class="upload__file-name">Government_services_report_final_version_updated.pdf</span>
+            <span class="mx-4"> • </span>
+            <span class="upload__file-size">0.1 MB</span>
+          </div>
+          <button type="button" class="upload__remove" aria-label="Remove Government_services_report_final_version_updated.pdf">
+            <svg class="icon medium" aria-hidden="true">
+              <use href="assets/icons/sprite.svg#icon-cross-small"></use>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   </div>
