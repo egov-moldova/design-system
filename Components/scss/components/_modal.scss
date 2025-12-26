@@ -1,8 +1,5 @@
 @use '../abstracts/tokens' as tokens;
 
-// ==============================================
-// 🎯 Modal Component (cu animații token-based)
-// ==============================================
 
 body:has(.modal-overlay.modal-overlay.is-active) {
     overflow-y: hidden;
@@ -17,12 +14,12 @@ body:has(.modal-overlay.modal-overlay.is-active) {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: var(--z-modal, 1000);
+  z-index: 1000;
   opacity: 0;
   pointer-events: none;
   transition:
-    opacity var(--motion-duration-md, 0.3s)
-    var(--motion-easing-standard, ease);
+  opacity var(--motion-duration-md, 0.3s)
+  var(--motion-easing-standard, ease);
 
   &.is-active {
     opacity: 1;
@@ -41,19 +38,16 @@ body:has(.modal-overlay.modal-overlay.is-active) {
   opacity: 0;
   transform: scale(0.95);
   transition:
-    opacity var(--motion-duration-md, 0.3s)
-    var(--motion-easing-standard, ease),
-    transform var(--motion-duration-md, 0.3s)
-    var(--motion-easing-standard, ease);
+  opacity var(--motion-duration-md, 0.3s)
+  var(--motion-easing-standard, ease),
+  transform var(--motion-duration-md, 0.3s)
+  var(--motion-easing-standard, ease);
 
-  // 🟢 State active
+
   .modal-overlay.is-active & {
     opacity: 1;
     transform: scale(1);
   }
-   // ========================
-  // 📏 Dimensiuni
-  // ========================
 
   &--sm {
     max-width: var(--modal-width-sm, 320px);
@@ -150,8 +144,8 @@ body:has(.modal-overlay.modal-overlay.is-active) {
         font-size: var(--text-heading-h3-sm-font-size, 24px); 
         line-height: var(--spacing-32, 32px);
         margin: 0;
-        display: -webkit-box;        // necesar pentru line-clamp
-        -webkit-line-clamp: 3;       // numărul maxim de rânduri
+        display: -webkit-box;        
+        -webkit-line-clamp: 3;      
         -webkit-box-orient: vertical;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -185,9 +179,6 @@ body:has(.modal-overlay.modal-overlay.is-active) {
     gap: var(--spacing-8, 8px);
   }
 
-  // ============================
-  // ⚙️ Animation variants
-  // ============================
 
   // Fade-in / Fade-out
   &--fade {

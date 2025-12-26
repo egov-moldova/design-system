@@ -20,14 +20,74 @@
   }
 
   &__heading {
-    font-size: var(--font-size-14);
-    font-weight: 600;
+    font-size: var(--text-body-lg-500-font-size);
+    font-weight: 500;
+    line-height: var(--spacing-28);
     margin-bottom: var(--spacing-16);
   }
 
-  &__brand img {
-    max-width: 140px;
-    margin-bottom: var(--spacing-24);
+  &__description {
+    font-size: var(--text-body-sm-font-size);
+    font-weight: 500;
+    line-height: var(--spacing-20);
+  }
+
+    &__logo {
+        display: flex;
+        gap: var(--spacing-12); 
+    }
+
+  &__brand {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    
+
+    &--logo { 
+        padding-top: var(--spacing-8);
+
+        img {
+            width: auto;
+        }
+    }
+
+    &--details {
+        flex-direction: column; 
+        max-width: 115px;
+        gap: var(--spacing-2);
+    }
+
+    .brand-text {
+        font-weight: 600;
+        font-size: var(--text-body-lg-500-font-size);
+        color: var(--black);
+    }
+
+    .brand-description {
+        color: var(--gray-700);
+        font-size: var(--text-caption-sm-font-size);
+        line-height: var(--spacing-16);
+    }
+  }
+
+
+
+  a {
+    color: var(--black);
+    text-decoration: none;
+    transition: all .35s ease;
+
+    &:hover:not(.footer__logo) {
+        color: var(--blue-sky-600);
+        text-decoration: underline;
+    }
+  }
+
+  ul {
+    list-style: none;
+    margin: var(--spacing-0);
+    padding: var(--spacing-0);
   }
 
   &__contact {
@@ -40,26 +100,35 @@
 
     a {
       color: inherit;
-      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-6);
+      font-size: var(--text-body-sm-font-size); 
     }
   }
 
   &__nav {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--spacing-32);
+    gap: var(--spacing-24);
 
    /* @include media-breakpoint-down(md) {
       grid-template-columns: 1fr;
-    }*/
+    }*/ 
 
-    ul {
-      list-style: none;
-      padding: 0;
+    &--list {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-16);
     }
 
-    li + li {
-      margin-top: var(--spacing-8);
+    &--item {
+
+    }
+
+    &--link {
+        font-size: var(--text-body-md-font-size);
+        line-height: var(--spacing-24);
     }
   }
 
