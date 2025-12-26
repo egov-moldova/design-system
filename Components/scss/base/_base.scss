@@ -123,29 +123,7 @@ body {
 p{
   margin-top: 0;
 }
-/*
-:root {
-  --icon-size: 1;
-}
-
-.icon {
-  width: 24px;
-  height: 24px;
-  vertical-align: middle;
-  display: inline-block;
-    transform: scale(var(--icon-size));
-    transform-origin: center;
-}
-.icon.medium {
-    --icon-size: .8333;
-}
-
-.icon.small {
-    --icon-size: .6667;
-}
-.icon.extra-small {
-    --icon-size: .5; 
-}  */  
+  
 
 .icon-16px { transform: scale(0.6667); }  /* 16px */
 .icon-18px { transform: scale(0.75); }    /* 18px */ 

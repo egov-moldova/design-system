@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Search Input File Preview</title>
-  <script src="js/search.js"></script>
+  <script src="js/tooltip.js" defer=""></script>
   <script src="js/file-input.js"></script>
   <link rel="stylesheet" href="css/main.css" />
 </head>
@@ -30,98 +30,538 @@
           </p>
         </div>
     </div>
-    <div class="row">
-        <div class="col-3">
-            <div class="file-input" data-max-size="100">
-              <h4>Upload files</h4>
-              <div>
-                Supported formats: jpg, png, pdf. Maximum size: 100 MB
-              </div>
-              <label class="file-upload-button">
-                <input type="file" class="file-input-field" multiple>
-                <span class="file-upload-button__text">Upload Files</span>
-              </label>
+    <div class="row mt-32">
+      <div class="col-sm-6">
+        <div class="upload-block"> 
+          <label for="single-upload-01" class="upload-block__label">Upload files</label>
+          <p id="single-upload-info" class="upload-block__info">
+            Supported formats: jpg, png, pdf. Maximum size: 100 MB
+          </p>
 
-              <!-- File list -->
-              <div class="file-list"></div>
-            </div>
+          <div class="upload-block__control">
+            <input 
+              type="file" 
+              id="single-upload-01" 
+              class="upload-block__input" 
+              aria-describedby="single-upload-info"
+            >
+            <label for="single-upload-01" class="btn btn-primary btn-md upload-block__button">
+              Choose file
+            </label>
+
+            <div class="upload-block__list" id="single-list" role="list"></div>
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+
+    <div class="row mt-56">
+       <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+            <h2>Variations</h2>
         </div>
     </div>
-    <!-- Styles -->
+
     <div class="row">
-      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-          <h2>Styles</h2>
-      </div>
-      <div class="col-3">
-        <div class="file-input" data-max-size="100">
-          
-          <label class="file-dropzone">
-            <input type="file" class="file-input-field" multiple>
 
-            <div class="file-dropzone__content">
-              <div class="file-dropzone__icon"></div>
-              <p class="file-dropzone__text">
-                Drag and drop or <span>choose files</span>
-              </p>
+    <!-- ========================= -->
+    <!-- SINGLE UPLOAD -->
+    <!-- ========================= -->
+    <div class="col-12 col-md-4">
+      <div class="upload-block upload-block--single">
 
-              <div class="file-dropzone__meta">
-                Supported formats: jpg, png, pdf
-                <span class="file-dropzone__max">Maximum size: 100 MB</span>
-              </div>
-            </div>
+        <h4 class="upload-block__title">Single Upload</h4>
+
+        <label class="upload-block__label" for="single-upload">
+          Upload files
+        </label>
+
+        <p id="single-info" class="upload-block__info">
+          Supported formats: jpg, png, pdf. Maximum size: 100 MB
+        </p>
+
+        <div class="upload-block__control">
+          <input
+            type="file"
+            id="single-upload"
+            class="upload-block__input"
+            aria-describedby="single-info single-list"
+          />
+
+          <label
+            for="single-upload"
+            class="upload-block__button btn btn-md btn-primary"
+          >
+            Choose file
           </label>
 
-          <!-- File list -->
-          <div class="file-list"></div> 
-        </div> 
+          <div
+            id="single-list"
+            class="upload-block__list upload"
+            role="status"
+            aria-live="polite"
+          ></div>
+        </div>
+
       </div>
-
-      <div class="col-3">
-        <!-- Loading -->
-        <div class="file-item file-item--loading">
-        <div class="file-item__icon file-item__icon--loading"></div>
-        <div class="file-item__info">
-        <span class="file-item__name">Filename.pdf</span>
-        <span class="file-item__size">1.8 MB</span>
-        </div>
-        <div class="file-item__spinner"></div>
-        </div>
-      </div>
-      
-      <div class="col-sm-3">
-        <!-- Success -->
-        <div class="file-item file-item--success">
-        <div class="file-item__icon file-item__icon--success"></div>
-        <div class="file-item__info">
-        <span class="file-item__name">Filename.pdf</span>
-        <span class="file-item__size">1.8 MB</span>
-        </div>
-        <div class="file-item__status file-item__status--success"></div>
-        </div>
-      </div>
-
-      <div class="col-sm-3">
-        <!-- Error -->
-        <div class="file-item file-item--error">
-        <div class="file-item__icon file-item__icon--error"></div>
-
-
-        <div class="file-item__content">
-        <div class="file-item__row">
-        <span class="file-item__name">Filename.pdf</span>
-        <span class="file-item__size">102.8 MB</span>
-        <button class="file-item__action file-item__action--remove"></button>
-        </div>
-
-
-        <div class="file-item__error-message">
-        File exceeds size limit
-        </div>
-        </div>
-        </div>
-      </div>
-     
     </div>
+
+    <!-- ========================= -->
+    <!-- MULTIPLE UPLOAD -->
+    <!-- ========================= -->
+    <div class="col-12 col-md-4">
+      <div class="upload-block upload-block--multiple">
+
+        <h4 class="upload-block__title">Multiple Upload</h4>
+
+        <label class="upload-block__label" for="multi-upload">
+          Upload files
+        </label>
+
+        <p id="multi-info" class="upload-block__info">
+          Supported formats: jpg, png, pdf. Maximum size: 100 MB
+        </p>
+
+        <div class="upload-block__control">
+          <input
+            type="file"
+            id="multi-upload"
+            class="upload-block__input"
+            multiple
+            aria-describedby="multi-info multi-list"
+          />
+
+          <label
+            for="multi-upload"
+            class="upload-block__button btn btn-md btn-primary"
+          >
+            Choose files
+          </label>
+
+          <div
+            id="multi-list"
+            class="upload-block__list upload"
+            role="status"
+            aria-live="polite"
+          ></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ========================= -->
+    <!-- IMAGE PREVIEW UPLOAD -->
+    <!-- ========================= -->
+    <div class="col-12 col-md-4">
+      <div class="upload-block upload-block--image-preview">
+
+        <h4 class="upload-block__title">Image Preview Upload</h4>
+
+        <label class="upload-block__label" for="image-upload">
+          Upload files
+        </label>
+
+        <p id="image-info" class="upload-block__info">
+          Supported formats: jpg, png, pdf. Maximum size: 100 MB
+        </p>
+
+        <div class="upload-block__control">
+          <input
+            type="file"
+            id="image-upload"
+            class="upload-block__input"
+            multiple
+            aria-describedby="image-info image-list"
+          />
+
+          <label
+            for="image-upload"
+            class="upload-block__button btn btn-md btn-primary"
+          >
+            Choose files
+          </label>
+
+          <div
+            id="image-list"
+            class="upload-block__list upload"
+            role="status"
+            aria-live="polite"
+          ></div>
+        </div>
+
+        <p class="upload-block__description">
+          Uploaded images (JPG, PNG, GIF, SVG) show a live preview/thumbnail for quick recognition.
+          Each image should include filename, size, and status.
+        </p> 
+      </div>
+    </div> 
+  </div>
+
+  <div class="row">
+    <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+        <h2>States</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-4">
+      <p class="text-gray-400">uploading</p>
+      <div class="upload-block__list" id="test" role="list">
+        <div class="upload__item">
+          <div class="upload__thumb">pdf</div>
+          <div class="upload__info">
+            <span class="upload__file-name">Government_services_report_final_version_updated.pdf</span>
+            <span class="mx-4"> • </span>
+            <span class="upload__file-size">0.1 MB</span>
+          </div>
+          <button type="button" class="upload__upload" aria-label="Remove Government_services_report_final_version_updated.pdf">
+            <svg class="icon medium" aria-hidden="true">
+              <use href="assets/icons/sprite.svg#icon-cross-small"></use>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <p class="text-gray-400">success</p>
+      <div class="upload-block__list" id="test" role="list">
+        <div class="upload__item">
+          <div class="upload__thumb">pdf</div>
+          <div class="upload__info">
+            <span class="upload__file-name">Government_services_report_final_version_updated.pdf</span>
+            <span class="mx-4"> • </span>
+            <span class="upload__file-size">0.1 MB</span>
+          </div>
+          <span class="text-green-700 d-inline-flex">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-circle-checkmark-filled"></use>
+            </svg>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <p class="text-gray-400">uploaded</p>
+     <div class="upload-block__list" id="test" role="list">
+        <div class="upload__item">
+          <div class="upload__thumb">pdf</div>
+          <div class="upload__info">
+            <span class="upload__file-name">Government_services_report_final_version_updated.pdf</span>
+            <span class="mx-4"> • </span>
+            <span class="upload__file-size">0.1 MB</span>
+          </div>
+          <button type="button" class="upload__remove" aria-label="Government_services_report_final_version_updated.pdf">
+            <svg class="icon medium" aria-hidden="true">
+              <use href="assets/icons/sprite.svg#icon-cross-small"></use>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mt-32">
+    <div class="col-md-4">
+      <p class="text-gray-400">error</p>
+      <div class="upload-block__list" id="test" role="list">
+        <div class="upload__item upload__item--error">
+          <div class="upload__thumb">pdf</div>
+          <div class="upload__info">
+            <span class="upload__file-name">Government_services_report_final_version_updated.pdf</span>
+            <span class="mx-4"> • </span>
+            <span class="upload__file-size">102.1 MB</span>
+          </div>
+          <span class="text-red-600 d-inline-flex">
+            <svg class="icon small" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-circle-info-filled"></use>
+            </svg>
+          </span>
+          <button type="button" class="upload__remove" aria-label="Remove Government_services_report_final_version_updated.pdf">
+            <svg class="icon medium" aria-hidden="true">
+              <use href="assets/icons/sprite.svg#icon-cross-small"></use>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <p class="text-gray-400">error-messages</p>
+      <div class="upload-block__list" id="test" role="list">
+        <div class="upload__item upload__item--error">
+          <div class="upload__thumb">pdf</div>
+          <div class="upload__info">
+            <span class="upload__file-name">Government_services_report_final_version_updated.pdf</span>
+            <span class="mx-4"> • </span>
+            <span class="upload__file-size">102.1 MB</span>
+          </div>
+          <span class="text-red-600 d-inline-flex">
+            <svg class="icon small" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-circle-info-filled"></use>
+            </svg>
+          </span>
+          <button type="button" class="upload__remove" aria-label="Remove Government_services_report_final_version_updated.pdf">
+            <svg class="icon medium" aria-hidden="true">
+              <use href="assets/icons/sprite.svg#icon-cross-small"></use>
+            </svg>
+          </button>
+        </div>
+      </div> 
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+        <h2>Edge Cases</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-4">
+      <p class="text-gray-400">file-name: truncation</p>
+      <div class="upload-block__list" id="test" role="list">
+        <div class="upload__item">
+          <div class="upload__thumb">pdf</div>
+          <div class="upload__info">
+            <span class="upload__file-name">Government_services_report_final_version_updated.pdf</span>
+            <span class="mx-4"> • </span>
+            <span class="upload__file-size">0.1 MB</span>
+          </div>
+          <button type="button" class="upload__remove" aria-label="Remove Government_services_report_final_version_updated.pdf">
+            <svg class="icon medium" aria-hidden="true">
+              <use href="assets/icons/sprite.svg#icon-cross-small"></use>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <p class="text-gray-400">file-name: hover</p>
+      <div class="upload-block__list" id="test" role="list" data-tooltip="Government services report final version updated.pdf" data-placement="bottom">
+        <div class="upload__item">
+          <div class="upload__thumb">pdf</div>
+          <div class="upload__info">
+            <span class="upload__file-name">Government_services_report_final_version_updated.pdf</span>
+            <span class="mx-4"> • </span>
+            <span class="upload__file-size">0.1 MB</span>
+          </div>
+          <button type="button" class="upload__remove" aria-label="Remove Government_services_report_final_version_updated.pdf">
+            <svg class="icon medium" aria-hidden="true">
+              <use href="assets/icons/sprite.svg#icon-cross-small"></use>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+   <div class="row">
+    <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+        <h2>Drag and Drop Zone</h2>
+    </div>
+  </div>
+  <div class="row mb-56">
+    <div class="col-6">
+      <div class="upload-block">
+        <label class="upload-block__label">
+          Upload files
+        </label>        
+        <div id="dropzone" class="dropzone" tabindex="0">
+          <div class="dropzone__content">
+            <span class="p-12 bg-gray-200 radius-full d-inline-flex">
+                <svg class="icon large" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-cloud-upload"></use> 
+                </svg>
+              </span>
+
+              <p>
+                Drag and drop or
+                <span class="dropzone__link">choose files</span>
+              </p>
+            </div>
+          <input type="file" id="dropzone-input" multiple hidden>
+        </div>
+        <div class="dropzone__details upload-block__info">
+          <p>
+            Supported formats: jpg, png, pdf. 
+          </p>
+          <p>Maximum size: 100 MB</p>
+
+        </div>
+        
+        <div id="dropzone-list" class="upload-block__list upload"></div>
+      </div>
+    </div>
+
+
+    <div class="col-6 d-none">
+      <div class="upload-block">
+        <label class="upload-block__label">
+          Upload files
+        </label>        
+        <div id="dropzone" class="dropzone" tabindex="0">
+          <div class="dropzone__content">
+            <span class="p-12 bg-gray-200 radius-full d-inline-flex">
+                <svg class="icon large" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-cloud-upload"></use> 
+                </svg>
+              </span>
+
+              <p>
+                Drag and drop or
+                <span class="dropzone__link">choose files</span>
+              </p>
+            </div>
+          <input type="file" id="dropzone-input" multiple hidden>
+        </div>
+        <div class="dropzone__details upload-block__info">
+          <p>
+            Supported formats: jpg, png, pdf. 
+          </p>
+          <p>Maximum size: 100 MB</p>
+
+        </div>
+        
+        <div id="dropzone-list" class="upload-block__list upload"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+        <h2>States</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-6">
+      <p>default</p>
+      <div class="upload-block">
+        <label class="upload-block__label">
+          Upload files
+        </label>        
+        <div id="dropzone" class="dropzone" tabindex="0">
+          <div class="dropzone__content">
+            <span class="p-12 bg-gray-200 radius-full d-inline-flex">
+                <svg class="icon large" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-cloud-upload"></use> 
+                </svg>
+              </span>
+
+              <p>
+                Drag and drop or
+                <span class="dropzone__link">choose files</span>
+              </p>
+            </div>
+          <input type="file" id="dropzone-input" multiple hidden>
+        </div>
+        <div class="dropzone__details upload-block__info">
+          <p>
+            Supported formats: jpg, png, pdf. 
+          </p>
+          <p>Maximum size: 100 MB</p>
+
+        </div>
+        
+        <div id="dropzone-list" class="upload-block__list upload"></div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <p>hover</p>
+      <div class="upload-block">
+        <label class="upload-block__label">
+          Upload files
+        </label>        
+        <div id="dropzone" class="dropzone" tabindex="0" style="border-color:var(--blue-sky-600);">
+          <div class="dropzone__content">
+            <span class="p-12 bg-gray-200 radius-full d-inline-flex">
+                <svg class="icon large" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-cloud-upload"></use> 
+                </svg>
+              </span>
+
+              <p>
+                Drag and drop or
+                <span class="dropzone__link">choose files</span>
+              </p>
+            </div>
+          <input type="file" id="dropzone-input" multiple hidden>
+        </div>
+        <div class="dropzone__details upload-block__info">
+          <p>
+            Supported formats: jpg, png, pdf. 
+          </p>
+          <p>Maximum size: 100 MB</p>
+
+        </div>
+        
+        <div id="dropzone-list" class="upload-block__list upload"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-32">
+    <div class="col-sm-6">
+      <p>active</p>
+      <div class="upload-block">
+        <label class="upload-block__label">
+          Upload files
+        </label>        
+        <div id="dropzone" class="dropzone" tabindex="0" style="background-color: var(--blue-sky-100);">
+          <div class="dropzone__content">
+            <span class="p-12 bg-gray-200 radius-full d-inline-flex">
+                <svg class="icon large" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-cloud-upload"></use> 
+                </svg>
+              </span>
+
+              <p>
+                Drag and drop or
+                <span class="dropzone__link">choose files</span>
+              </p>
+            </div>
+          <input type="file" id="dropzone-input" multiple hidden>
+        </div>
+        <div class="dropzone__details upload-block__info">
+          <p>
+            Supported formats: jpg, png, pdf. 
+          </p>
+          <p>Maximum size: 100 MB</p>
+
+        </div>
+        
+        <div id="dropzone-list" class="upload-block__list upload"></div>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <p>focus</p>
+      <div class="upload-block">
+        <label class="upload-block__label">
+          Upload files
+        </label>        
+        <div id="dropzone" class="dropzone" tabindex="0" style="outline: 2px solid var(--white, #ffffff);box-shadow: 0 0 0 4px var(--focus-ring, var(--blue-sky-500, #3379DB));">
+          <div class="dropzone__content">
+            <span class="p-12 bg-gray-200 radius-full d-inline-flex">
+                <svg class="icon large" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-cloud-upload"></use> 
+                </svg>
+              </span>
+
+              <p>
+                Drag and drop or
+                <span class="dropzone__link">choose files</span>
+              </p>
+            </div>
+          <input type="file" id="dropzone-input" multiple hidden>
+        </div>
+        <div class="dropzone__details upload-block__info">
+          <p>
+            Supported formats: jpg, png, pdf. 
+          </p>
+          <p>Maximum size: 100 MB</p>
+
+        </div>
+        
+        <div id="dropzone-list" class="upload-block__list upload"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 </body>

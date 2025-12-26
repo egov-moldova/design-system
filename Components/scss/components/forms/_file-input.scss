@@ -1,272 +1,244 @@
 @use "sass:map";
 @use "../../abstracts/tokens" as tokens;
 
-// ============================================
-// 🔹 Mixin general pentru variante semantice
-// ============================================
+// ============================
+// Semantic variants
+// ============================
 @mixin file-input-variant($variant) {
   --border-color: map.get(map.get(tokens.$input-colors, $variant), border);
-  --border-hover: map.get(map.get(tokens.$input-colors, $variant), border-hover);
   --focus-color: map.get(map.get(tokens.$input-colors, $variant), focus);
-  --background: map.get(map.get(tokens.$input-colors, $variant), background);
-  --text-color: map.get(map.get(tokens.$input-colors, $variant), text);
 }
 
-// ============================================
-// 🔹 Aplicație mixinuri pe variante
-// ============================================
 .file-input.default   { @include file-input-variant(default); }
 .file-input.success   { @include file-input-variant(success); }
 .file-input.error     { @include file-input-variant(destructive); }
-.file-input.warning   { @include file-input-variant(warning); }
-.file-input.danger    { @include file-input-variant(destructive); }
 
-// ============================================
-// 🔹 FILE INPUT STYLING
-// ============================================
-.file-input {
-  --border-color: map.get(map.get(tokens.$input-colors, default), border);
-  --border-hover: map.get(map.get(tokens.$input-colors, default), border-hover);
-  --focus-color: map.get(map.get(tokens.$input-colors, default), focus);
-  --background: map.get(map.get(tokens.$input-colors, default), background);
-  --text-color: map.get(map.get(tokens.$input-colors, default), text);
-
-  border: 1px dashed var(--border-color);
-  background-color: var(--background);
-  border-radius: 8px;
-  padding: 16px;
-  text-align: center;
-  transition: all 0.2s ease-in-out;
-  color: var(--text-color);
-  cursor: pointer;
-
-  &:hover {
-    border-color: var(--border-hover);
+// ============================
+// Upload block
+// ============================
+.upload-block {
+  &__title {
+    margin-bottom: var(--spacing-16);
+    font-weight: 600;
   }
 
-  &.focus {
-    border-color: var(--focus-color);
-    outline: none;
+  &__label {
+    font-weight: 600;
   }
 
-  &.active {
-    background-color: var(--focus-color);
-    border-color: var(--border-hover);
+  &__info {
+    font-size: var(--text-body-sm-font-size);
+    color: var(--gray-400);
+    margin-bottom: var(--spacing-12);
   }
-}
 
+  &__control {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-12);
+  }
 
- 
+  &__input {
+    display: none;
+  }
 
-.file-input-field {
-    border: 1px solid #ccc;
-    display: inline-block;
-    padding: 6px 12px;
+  &__button {
+    width: fit-content;
     cursor: pointer;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-8);
+    margin-top: var(--spacing-12)
+  }
+
+  &__description {
+    color: var(--gray-400);
+    font-size: var(--text-body-md-font-size);
+    line-height: 1.5;
+    margin-top: var(--spacing-16);
+  }
+
+
 }
 
- 
-// ============================================
-// 🔹 FILE ITEM (uploaded file display)
-// ============================================
-.file-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 8px;
-  padding: 8px 12px;
-  border: 1px solid map.get(map.get(tokens.$input-colors, default), border);
-  border-radius: 6px;
-  background-color: map.get(map.get(tokens.$input-colors, default), background);
-  color: map.get(map.get(tokens.$input-colors, default), text);
+// ============================
+// Upload list items
+// ============================
+.upload {
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-12);
+    padding: var(--spacing-6) var(--spacing-12);
 
-  .filename {
+    background: var(--gray-100); 
+    border: var(--border-width-1-5) var(--border-style-solid) transparent;
+    border-radius: var(--border-radius-8);
+
+    &--error {
+      border-color: var(--red-600);
+    }
+  }
+
+  &__thumb {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-6);
+    background: var(--gray-200);
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-600);
+    text-transform: uppercase;
+
+    &--image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0; 
+    font-size: var(--text-body-sm-font-size);
+    color: var(--gray-500); 
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: var(--spacing-6);
+  }
+
+  &__file-name {
+    display: block;
+    max-width: 100%;
+
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    color: var(--black);
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  &__file-size {
     white-space: nowrap;
-    max-width: 200px;
-    font-size: 14px;
   }
 
-  .filesize {
-    font-size: 12px;
-    color: var(--gray-500);
-  }
-
-  .remove-btn {
+  &__remove {
     background: none;
     border: none;
-    color: var(--gray-500);
     cursor: pointer;
-    font-size: 16px;
-    padding: 4px;
-
-    &:hover {
-      color: var(--gray-700);
-    }
-  }
-
-  &.error {
-    border-color: map.get(map.get(tokens.$input-colors, destructive), border);
-    color: map.get(map.get(tokens.$input-colors, destructive), text);
-  }
-
-  &.success {
-    border-color: map.get(map.get(tokens.$input-colors, success), border);
-  }
-}
-
-// ============================================
-// 🔹 ERROR MESSAGE
-// ============================================
-.file-error-message {
-  font-size: 12px;
-  color: map.get(map.get(tokens.$input-colors, destructive), border);
-  margin-top: 4px;
-}
-
-
-.file-input {
-  --border-color-default: var(--gray-300);
-  --border-color-hover: var(--blue-sky-300);
-  --border-color-active: var(--blue-sky-500);
-  --radius: var(--border-radius-8);
-  --padding: var(--spacing-24);
-  --bg: var(--gray-50);
-
-  width: 100%;
-}
-
-.file-dropzone {
-  display: block;
-  border: 2px dashed var(--border-color-default);
-  border-radius: var(--radius);
-  padding: var(--padding);
-  background: var(--bg);
-  cursor: pointer;
-  transition: 0.25s border-color ease;
-
-  &:hover {
-    border-color: var(--border-color-hover);
-  }
-
-  &.is-dragover {
-    border-color: var(--border-color-active);
-    background: var(--gray-100);
-  }
-}
-
-.file-dropzone__content {
-  text-align: center;
-
-  .file-dropzone__icon {
-    width: 48px;
-    height: 48px;
-    margin: 0 auto var(--spacing-16);
-    background: url('/icons/upload.svg') center/contain no-repeat;
-    opacity: 0.6;
-  }
-
-  p {
-    font-size: var(--text-body-md-font-size);
-    color: var(--gray-800);
-
-    span {
-      color: var(--blue-sky-600);
-      text-decoration: underline;
-    }
-  }
-
-  .file-dropzone__meta {
-    margin-top: var(--spacing-12);
-    font-size: var(--text-body-sm-font-size);
+    padding: var(--spacing-4);
     color: var(--gray-600);
 
-    .file-dropzone__max {
-      float: right;
-      color: var(--gray-500);
+    &:hover {
+      color: var(--gray-900);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--focus-color);
+      outline-offset: 2px;
+    }
+  }
+
+  &__upload {
+    position: relative;
+    background-color: transparent;
+    border: none;
+    height: var(--spacing-20);
+    width: var(--spacing-20);
+
+    &::after {
+      content: '';
+      position: absolute; 
+
+      width: var(--spacing-12);
+      height: var(--spacing-12);
+
+      border-radius: 50%;
+      border: 2px solid var(--blue-sky-600);
+      border-right-color: transparent;
+
+      top:0;
+      right: 0;
+
+      transform: translate(-50%, -50%);
+      animation: spin 0.75s linear infinite;
+    }
+
+    svg {
+      display: none;
     }
   }
 }
 
-
-.file-list {
-  margin-top: var(--spacing-20);
-  display: grid;
-  gap: var(--spacing-12);
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-.file-item {
-  background: var(--gray-50);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--border-radius-6);
-  padding: var(--spacing-12) var(--spacing-16);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: 0.2s;
-}
-
-.file-item__info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.file-item__name {
-  font-weight: 500;
-  color: var(--gray-900);
-}
-
-.file-item__size {
-  font-size: var(--text-body-sm-font-size);
-  color: var(--gray-600);
-}
-
-/* STATE: SUCCESS */
-.file-item--success {
-  border-color: var(--success-500);
-
-  .file-item__indicator {
-    background: var(--success-500);
-  }
-}
-
-/* STATE: ERROR */
-.file-item--error {
-  border-color: var(--error-500);
-  background: var(--error-50);
-
-  .file-item__indicator {
-    background: var(--error-500);
-  }
-
-  .file-item__error-msg {
-    margin-top: 4px;
-    color: var(--error-600);
-    font-size: var(--text-body-sm-font-size);
-  }
-}
-
-.file-item__indicator {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.file-item__remove {
-  background: none;
-  border: none;
-  color: var(--gray-600);
+.dropzone {
+  border: 2px dashed var(--gray-300);
+  border-radius: var(--border-radius-8);
+  padding: var(--spacing-24);
+  text-align: center;
   cursor: pointer;
-  font-size: 18px;
+  background-color: var(--white);
+
+  transition: border-color 0.2s, background-color 0.2s;
 
   &:hover {
-    color: var(--gray-900);
+    border-color: var(--blue-sky-600);
   }
-}
-.file-error-message {
-  margin-top: var(--spacing-8);
-  color: var(--error-600);
-  font-size: var(--text-body-sm-font-size);
+
+  &:active {
+    background-color: var(--blue-sky-100)
+  }
+
+  &:focus {
+        outline: 2px solid var(--white, #ffffff);
+    box-shadow: 0 0 0 4px var(--focus-ring, var(--blue-sky-500, #3379DB));
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-8);
+    align-items: center;
+    justify-content: center;
+    color: var(--gray-600);
+  }
+
+  &__link {
+    color: var(--blue-sky-600);
+    cursor: pointer;
+    font-weight: 500;
+    text-decoration: underline;
+  }
+
+  &:hover {
+    background-color: var(--gray-50);
+  }
+
+  &--active {
+    border-color: var(--blue-sky-600);
+    background-color: var(--blue-sky-50);
+  }
+
+  &__details {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: var(--spacing-12);
+  }
 }
