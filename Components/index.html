@@ -3,171 +3,416 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SCSS Design Tokens</title>
+    <title>Design System - Component Library</title>
     <link rel="stylesheet" href="css/main.css" />
+    <style>
+        .index-header {
+            background: linear-gradient(135deg, #4A90E2 0%, #7B68EE 100%);
+            color: white;
+            padding: 48px 0;
+            margin-bottom: 48px;
+        }
+        .index-header h1 {
+            margin: 0 0 16px 0;
+            font-size: 48px;
+        }
+        .index-header p {
+            margin: 0;
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+        .component-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .component-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border-color: #4A90E2;
+        }
+        .component-card h3 {
+            margin: 0 0 8px 0;
+            color: #333;
+            font-size: 20px;
+        }
+        .component-card p {
+            margin: 0;
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .category-section {
+            margin-bottom: 56px;
+        }
+        .category-title {
+            font-size: 28px;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e0e0e0;
+            color: #333;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 600;
+            border-radius: 4px;
+            margin-top: 8px;
+            text-transform: uppercase;
+        }
+        .badge-foundation {
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+        .badge-component {
+            background: #F3E5F5;
+            color: #7B1FA2;
+        }
+        .badge-pattern {
+            background: #E8F5E9;
+            color: #388E3C;
+        }
+        .badge-form {
+            background: #FFF3E0;
+            color: #F57C00;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12">
-                <h1>Primitive Colors!</h1>
-                <button class="button">Buton</button> 
-                <script>
-                    document.body.onclick = () => {
-                        document.body.dataset.theme =
-                            document.body.dataset.theme === 'dark' ? 'light' : 'dark';
-                    };
-                </script>
-            <div class="bg-blue-sky-600 text-white-1000 border-3 border-solid border-gray-300 p-3 mt-4">
-                Blue Sky 600 Background + White Text + Gray Border
-            </div> 
-            <section class="color-palette">
-                <div class="mt-56 mb-32  border-bottom-1 border-bottom-solid border-gray-200">
-                  <h2 class="mb-6">Brand Colors</h2>
+    <div class="index-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <h1>Design System</h1>
+                    <p>Comprehensive component library and design tokens</p>
                 </div>
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-blue-sky-900 text-white">Blue 900</div>
-                  <div class="color bg-blue-sky-800 text-white">800</div>
-                  <div class="color bg-blue-sky-700 text-white">700</div>
-                  <div class="color bg-blue-sky-600 text-white">Blue Sky 600</div>
-                  <div class="color bg-blue-sky-500 text-white">500</div>
-                  <div class="color bg-blue-sky-400 text-white">400</div>
-                  <div class="color bg-blue-sky-300 text-blue-sky-500">300</div>
-                  <div class="color bg-blue-sky-200 text-blue-sky-500">200</div>
-                  <div class="color bg-blue-sky-150 text-blue-sky-500">150</div>
-                  <div class="color bg-blue-sky-100 text-blue-sky-500">100</div>
-                </div>
-
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-lavender-900 text-white">900</div>
-                  <div class="color bg-lavender-800 text-white">800</div>
-                  <div class="color bg-lavender-700 text-white">700</div>
-                  <div class="color bg-lavender-600 text-white">Lavender 600</div>
-                  <div class="color bg-lavender-500 text-white">500</div>
-                  <div class="color bg-lavender-400 text-white">400</div>
-                  <div class="color bg-lavender-300 text-lavender-500">300</div>
-                  <div class="color bg-lavender-200 text-lavender-500">200</div>
-                  <div class="color bg-lavender-100 text-lavender-500">100</div>
-                </div>
-
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-purple-900 text-white">900</div>
-                  <div class="color bg-purple-800 text-white">800</div>
-                  <div class="color bg-purple-700 text-white">700</div>
-                  <div class="color bg-purple-600 text-white">Purple 600</div>
-                  <div class="color bg-purple-500 text-white">500</div>
-                  <div class="color bg-purple-400 text-white">400</div>
-                  <div class="color bg-purple-300 text-purple-500">300</div>
-                  <div class="color bg-purple-200 text-purple-500">200</div>
-                  <div class="color bg-purple-100 text-purple-500">100</div>
-                </div>
-
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-magenta-900 text-white">900</div>
-                  <div class="color bg-magenta-800 text-white">800</div>
-                  <div class="color bg-magenta-700 text-white">700</div>
-                  <div class="color bg-magenta-600 text-white">Magenta 600</div>
-                  <div class="color bg-magenta-500 text-white">500</div>
-                  <div class="color bg-magenta-400 text-white">400</div>
-                  <div class="color bg-magenta-300 text-magenta-500">300</div>
-                  <div class="color bg-magenta-200 text-magenta-500">200</div>
-                  <div class="color bg-magenta-100 text-magenta-500">100</div>
-                </div>
-
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-forest-green-900 text-white">900</div>
-                  <div class="color bg-forest-green-800 text-white">800</div>
-                  <div class="color bg-forest-green-700 text-white">700</div>
-                  <div class="color bg-forest-green-600 text-white">Forest Green 600</div>
-                  <div class="color bg-forest-green-500 text-white">500</div>
-                  <div class="color bg-forest-green-400 text-white">400</div>
-                  <div class="color bg-forest-green-300 text-forest-green-500">300</div>
-                  <div class="color bg-forest-green-200 text-forest-green-500">200</div>
-                  <div class="color bg-forest-green-150 text-forest-green-500">150</div>
-                  <div class="color bg-forest-green-100 text-forest-green-500">100</div>
-                </div>
-
-                <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-                  <h2 class="mb-6">Base Colors</h2>
-                </div>
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-gray-900 text-white">900</div>
-                  <div class="color bg-gray-800 text-white">800</div>
-                  <div class="color bg-gray-700 text-white">700</div>
-                  <div class="color bg-gray-600 text-white">Gray 600</div>
-                  <div class="color bg-gray-500 text-white">500</div>
-                  <div class="color bg-gray-400 text-white">400</div>
-                  <div class="color bg-gray-300 text-gray-500">300</div>
-                  <div class="color bg-gray-250 text-gray-500">250</div>
-                  <div class="color bg-gray-200 text-gray-500">200</div>
-                  <div class="color bg-gray-100 text-gray-500">100</div>
-                </div>
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-black text-white">Black</div>
-                  <div class="color bg-white border text-black">White</div>
-                </div>
-
-                <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-                  <h2 class="mb-6">Alpha Colors</h2>
-                </div>
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-black-500-alpha text-white">black-500-alpha</div>
-                  <div class="color bg-black-400-alpha text-white">black-400-alpha</div>
-                  <div class="color bg-black-300-alpha text-gray-700">black-300-alpha</div>
-                  <div class="color bg-black-200-alpha text-gray-700">black-200-alpha</div>
-                  <div class="color bg-black-100-alpha text-gray-700">black-100-alpha</div>
-                </div>
-                <div class="color-row gap-16 mb-32 bg-gray-900 p-8 radius-8"> 
-                  <div class="color bg-white-500-alpha text-gray-700">white-500-alpha</div>
-                  <div class="color bg-white-400-alpha text-white">white-400-alpha</div>
-                  <div class="color bg-white-300-alpha text-white">white-300-alpha</div>
-                  <div class="color bg-white-200-alpha text-white">white-200-alpha</div>
-                  <div class="color bg-white-100-alpha text-white">white-100-alpha</div>
-                </div>
-                <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-                  <h2 class="mb-6">Status Colors</h2>
-                </div>
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-green-900 text-white">900</div>
-                  <div class="color bg-green-800 text-white">800</div>
-                  <div class="color bg-green-700 text-white">700</div>
-                  <div class="color bg-green-600 text-white">Green 600</div>
-                  <div class="color bg-green-500 text-white">500</div>
-                  <div class="color bg-green-400 text-white">400</div>
-                  <div class="color bg-green-300 text-forest-green-500">300</div>
-                  <div class="color bg-green-200 text-forest-green-500">200</div>
-                  <div class="color bg-green-100 text-forest-green-500">100</div>
-                  <div class="color bg-green-50 text-forest-green-500">50</div>
-                </div>
-
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-apricot-900 text-white">900</div>
-                  <div class="color bg-apricot-800 text-white">800</div>
-                  <div class="color bg-apricot-700 text-white">700</div>
-                  <div class="color bg-apricot-600 text-white">Apricot 600</div>
-                  <div class="color bg-apricot-500 text-white">500</div>
-                  <div class="color bg-apricot-400 text-white">400</div>
-                  <div class="color bg-apricot-300 text-apricot-600">300</div>
-                  <div class="color bg-apricot-200 text-apricot-600">200</div>
-                  <div class="color bg-apricot-100 text-apricot-600">100</div>
-                  <div class="color bg-apricot-50 text-apricot-600">50</div>
-                </div>
-
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-red-900 text-white">900</div>
-                  <div class="color bg-red-800 text-white">800</div>
-                  <div class="color bg-red-700 text-white">700</div>
-                  <div class="color bg-red-600 text-white">Red 600</div>
-                  <div class="color bg-red-500 text-white">500</div>
-                  <div class="color bg-red-400 text-white">400</div>
-                  <div class="color bg-red-300 text-red-600">300</div>
-                  <div class="color bg-red-200 text-red-600">200</div>
-                  <div class="color bg-red-100 text-red-600">100</div>
-                  <div class="color bg-red-50 text-red-600">50</div>
-                </div>
-              </section> 
+            </div>
         </div>
     </div>
 
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+
+                <!-- Foundation Section -->
+                <section class="category-section">
+                    <h2 class="category-title">🎨 Foundation</h2>
+                    <div class="component-grid">
+                        <a href="SCSSDesignTokens.html" class="component-card">
+                            <h3>SCSS Design Tokens</h3>
+                            <p>Color palette, brand colors, status colors, and alpha colors</p>
+                            <span class="badge badge-foundation">Foundation</span>
+                        </a>
+                        <a href="typography.html" class="component-card">
+                            <h3>Typography</h3>
+                            <p>Font families, sizes, weights, and text styles</p>
+                            <span class="badge badge-foundation">Foundation</span>
+                        </a>
+                        <a href="spacings.html" class="component-card">
+                            <h3>Spacings</h3>
+                            <p>Spacing system and layout utilities</p>
+                            <span class="badge badge-foundation">Foundation</span>
+                        </a>
+                        <a href="spacings-margins.html" class="component-card">
+                            <h3>Margins</h3>
+                            <p>Margin spacing utilities</p>
+                            <span class="badge badge-foundation">Foundation</span>
+                        </a>
+                        <a href="spacings-paddings.html" class="component-card">
+                            <h3>Paddings</h3>
+                            <p>Padding spacing utilities</p>
+                            <span class="badge badge-foundation">Foundation</span>
+                        </a>
+                        <a href="radius-preview.html" class="component-card">
+                            <h3>Border Radius</h3>
+                            <p>Border radius tokens and examples</p>
+                            <span class="badge badge-foundation">Foundation</span>
+                        </a>
+                        <a href="border-width-preview.html" class="component-card">
+                            <h3>Border Width</h3>
+                            <p>Border width tokens and examples</p>
+                            <span class="badge badge-foundation">Foundation</span>
+                        </a>
+                        <a href="width.html" class="component-card">
+                            <h3>Width Utilities</h3>
+                            <p>Width sizing utilities</p>
+                            <span class="badge badge-foundation">Foundation</span>
+                        </a>
+                        <a href="displays.html" class="component-card">
+                            <h3>Display Utilities</h3>
+                            <p>Display and visibility utilities</p>
+                            <span class="badge badge-foundation">Foundation</span>
+                        </a>
+                        <a href="efects.html" class="component-card">
+                            <h3>Effects</h3>
+                            <p>Shadows, transitions, and visual effects</p>
+                            <span class="badge badge-foundation">Foundation</span>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- Layout Section -->
+                <section class="category-section">
+                    <h2 class="category-title">📐 Layout</h2>
+                    <div class="component-grid">
+                        <a href="grid-system.html" class="component-card">
+                            <h3>Grid System</h3>
+                            <p>Responsive grid layout system</p>
+                            <span class="badge badge-foundation">Layout</span>
+                        </a>
+                        <a href="grid-preview.html" class="component-card">
+                            <h3>Grid Preview</h3>
+                            <p>Grid system examples and preview</p>
+                            <span class="badge badge-foundation">Layout</span>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- Form Elements Section -->
+                <section class="category-section">
+                    <h2 class="category-title">📝 Form Elements</h2>
+                    <div class="component-grid">
+                        <a href="buttons.html" class="component-card">
+                            <h3>Buttons</h3>
+                            <p>Primary, secondary, and tertiary button styles</p>
+                            <span class="badge badge-form">Form</span>
+                        </a>
+                        <a href="input-preview.html" class="component-card">
+                            <h3>Input Fields</h3>
+                            <p>Text input fields and variations</p>
+                            <span class="badge badge-form">Form</span>
+                        </a>
+                        <a href="search-input-preview.html" class="component-card">
+                            <h3>Search Input</h3>
+                            <p>Search field component</p>
+                            <span class="badge badge-form">Form</span>
+                        </a>
+                        <a href="input-date.html" class="component-card">
+                            <h3>Date Input</h3>
+                            <p>Date input field</p>
+                            <span class="badge badge-form">Form</span>
+                        </a>
+                        <a href="input-date-picker.html" class="component-card">
+                            <h3>Date Picker</h3>
+                            <p>Interactive date picker component</p>
+                            <span class="badge badge-form">Form</span>
+                        </a>
+                        <a href="input-phone-number.html" class="component-card">
+                            <h3>Phone Number Input</h3>
+                            <p>Phone number input with formatting</p>
+                            <span class="badge badge-form">Form</span>
+                        </a>
+                        <a href="input-file.html" class="component-card">
+                            <h3>File Input</h3>
+                            <p>File upload component</p>
+                            <span class="badge badge-form">Form</span>
+                        </a>
+                        <a href="textarea.html" class="component-card">
+                            <h3>Textarea</h3>
+                            <p>Multi-line text input</p>
+                            <span class="badge badge-form">Form</span>
+                        </a>
+                        <a href="checkbox.html" class="component-card">
+                            <h3>Checkbox</h3>
+                            <p>Checkbox input component</p>
+                            <span class="badge badge-form">Form</span>
+                        </a>
+                        <a href="radio-buttons.html" class="component-card">
+                            <h3>Radio Buttons</h3>
+                            <p>Radio button group component</p>
+                            <span class="badge badge-form">Form</span>
+                        </a>
+                        <a href="switch.html" class="component-card">
+                            <h3>Switch</h3>
+                            <p>Toggle switch component</p>
+                            <span class="badge badge-form">Form</span>
+                        </a>
+                        <a href="dropdown.html" class="component-card">
+                            <h3>Dropdown</h3>
+                            <p>Dropdown menu component</p>
+                            <span class="badge badge-form">Form</span>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- UI Components Section -->
+                <section class="category-section">
+                    <h2 class="category-title">🧩 UI Components</h2>
+                    <div class="component-grid">
+                        <a href="avatar.html" class="component-card">
+                            <h3>Avatar</h3>
+                            <p>User avatar component</p>
+                            <span class="badge badge-component">Component</span>
+                        </a>
+                        <a href="badge.html" class="component-card">
+                            <h3>Badge</h3>
+                            <p>Status and label badges</p>
+                            <span class="badge badge-component">Component</span>
+                        </a>
+                        <a href="chip.html" class="component-card">
+                            <h3>Chip</h3>
+                            <p>Chip component for tags and filters</p>
+                            <span class="badge badge-component">Component</span>
+                        </a>
+                        <a href="tags.html" class="component-card">
+                            <h3>Tags</h3>
+                            <p>Tag components</p>
+                            <span class="badge badge-component">Component</span>
+                        </a>
+                        <a href="icons.html" class="component-card">
+                            <h3>Icons</h3>
+                            <p>Icon library and usage</p>
+                            <span class="badge badge-component">Component</span>
+                        </a>
+                        <a href="spinner.html" class="component-card">
+                            <h3>Spinner</h3>
+                            <p>Loading spinner component</p>
+                            <span class="badge badge-component">Component</span>
+                        </a>
+                        <a href="tooltip.html" class="component-card">
+                            <h3>Tooltip</h3>
+                            <p>Contextual tooltip component</p>
+                            <span class="badge badge-component">Component</span>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- Navigation Components Section -->
+                <section class="category-section">
+                    <h2 class="category-title">🧭 Navigation</h2>
+                    <div class="component-grid">
+                        <a href="breadcrumbs.html" class="component-card">
+                            <h3>Breadcrumbs</h3>
+                            <p>Navigation breadcrumb trail</p>
+                            <span class="badge badge-pattern">Navigation</span>
+                        </a>
+                        <a href="tabs.html" class="component-card">
+                            <h3>Tabs</h3>
+                            <p>Tabbed navigation component</p>
+                            <span class="badge badge-pattern">Navigation</span>
+                        </a>
+                        <a href="pagination.html" class="component-card">
+                            <h3>Pagination</h3>
+                            <p>Page navigation component</p>
+                            <span class="badge badge-pattern">Navigation</span>
+                        </a>
+                        <a href="segmented-controls.html" class="component-card">
+                            <h3>Segmented Controls</h3>
+                            <p>Segmented control switcher</p>
+                            <span class="badge badge-pattern">Navigation</span>
+                        </a>
+                        <a href="progress-tracker.html" class="component-card">
+                            <h3>Progress Tracker</h3>
+                            <p>Step-by-step progress indicator</p>
+                            <span class="badge badge-pattern">Navigation</span>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- Header Components Section -->
+                <section class="category-section">
+                    <h2 class="category-title">🎯 Headers</h2>
+                    <div class="component-grid">
+                        <a href="header.html" class="component-card">
+                            <h3>Header</h3>
+                            <p>Main header component</p>
+                            <span class="badge badge-pattern">Pattern</span>
+                        </a>
+                        <a href="header-with-avatar.html" class="component-card">
+                            <h3>Header with Avatar</h3>
+                            <p>Header with user avatar</p>
+                            <span class="badge badge-pattern">Pattern</span>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- Messages & Alerts Section -->
+                <section class="category-section">
+                    <h2 class="category-title">💬 Messages & Alerts</h2>
+                    <div class="component-grid">
+                        <a href="messages.html" class="component-card">
+                            <h3>Messages</h3>
+                            <p>Message components</p>
+                            <span class="badge badge-component">Component</span>
+                        </a>
+                        <a href="message-alerts.html" class="component-card">
+                            <h3>Message Alerts</h3>
+                            <p>Alert message variations</p>
+                            <span class="badge badge-component">Component</span>
+                        </a>
+                        <a href="messages-information.html" class="component-card">
+                            <h3>Information Messages</h3>
+                            <p>Informational message styles</p>
+                            <span class="badge badge-component">Component</span>
+                        </a>
+                        <a href="messages-inline.html" class="component-card">
+                            <h3>Inline Messages</h3>
+                            <p>Inline notification messages</p>
+                            <span class="badge badge-component">Component</span>
+                        </a>
+                        <a href="messaget-toast.html" class="component-card">
+                            <h3>Toast Messages</h3>
+                            <p>Toast notification component</p>
+                            <span class="badge badge-component">Component</span>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- Overlays Section -->
+                <section class="category-section">
+                    <h2 class="category-title">🪟 Overlays</h2>
+                    <div class="component-grid">
+                        <a href="modals.html" class="component-card">
+                            <h3>Modals</h3>
+                            <p>Modal dialog component</p>
+                            <span class="badge badge-pattern">Pattern</span>
+                        </a>
+                        <a href="cookie-banner.html" class="component-card">
+                            <h3>Cookie Banner</h3>
+                            <p>Cookie consent banner</p>
+                            <span class="badge badge-pattern">Pattern</span>
+                        </a>
+                    </div>
+                </section>
+
+                <!-- Data Display Section -->
+                <section class="category-section">
+                    <h2 class="category-title">📊 Data Display</h2>
+                    <div class="component-grid">
+                        <a href="table.html" class="component-card">
+                            <h3>Table</h3>
+                            <p>Data table component</p>
+                            <span class="badge badge-component">Component</span>
+                        </a>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+
+    <footer style="background: #f5f5f5; padding: 32px 0; margin-top: 64px; text-align: center; color: #666;">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-12">
+                    <p>Design System Component Library</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
 </body>
 </html>
+
