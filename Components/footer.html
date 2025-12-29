@@ -123,9 +123,9 @@
                     <li><img src="assets/logos/payment-method-visa.png" alt="Visa"></li>
                   </ul>
 
-                  <p class="footer__description">
+                  <div class="footer__description">
                     EVO simplifică relația ta cu statul și serviciile publice.
-                  </p>
+                  </div>
 
                   <div class="footer__apps">
                     <a href="#" aria-label="Descarcă din App Store">
@@ -154,8 +154,8 @@
                 </div>
 
                 <ul class="footer__social">
-                  <li>
-                    <a href="#" aria-label="Facebook">
+                  <li class="footer__social--item">
+                    <a href="#" class="footer__social--link" aria-label="Facebook">
                       <span class="d-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-facebook-filled"></use> 
@@ -163,8 +163,8 @@
                       </span>
                     </a>
                   </li>
-                  <li>
-                    <a href="#" aria-label="Instagram">
+                  <li class="footer__social--item">
+                    <a href="#" class="footer__social--link" aria-label="Instagram">
                       <span class="d-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-instagram-filled"></use>
@@ -172,8 +172,8 @@
                       </span>
                     </a>
                   </li>
-                  <li>
-                    <a href="#" aria-label="YouTube">
+                  <li class="footer__social--item">
+                    <a href="#" class="footer__social--link" aria-label="YouTube">
                       <span class="d-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-youtube-filled"></use>
@@ -181,8 +181,8 @@
                       </span>
                     </a>
                   </li>
-                  <li>
-                    <a href="#" aria-label="LinkedIn">
+                  <li class="footer__social--item">
+                    <a href="#" class="footer__social--link" aria-label="LinkedIn">
                       <span class="d-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-linkedin-filled"></use>
@@ -194,26 +194,33 @@
               </div>
 
             </div>
-           
-              <!-- =====================
-              BOTTOM
-              ====================== -->
-            <div class="footer__bottom">
-              <div class="footer__container footer__bottom-inner">
-                <p>© 2025 Agenția de Guvernare Electronică. Toate drepturile rezervate.</p>
-
-                <ul class="footer__legal">
-                  <li><a href="#">Termeni și condiții</a></li>
-                  <li><a href="#">Politica de confidențialitate</a></li>
-                </ul>
-              </div>
-            </div>
+          
           </div>
         </div>
       </div>
       
 
-
+              <!-- =====================
+        BOTTOM
+        ====================== -->
+        
+      <div class="footer__bottom">
+        <div class="footer__container footer__bottom-inner py-0">
+          <div class="container">
+            <div class="row">
+              <div class="col-12 col-sm-6">
+                <div>© 2025 Agenția de Guvernare Electronică. Toate drepturile rezervate.</div>
+              </div>
+              <div class="col-12 col-sm-6">
+                <ul class="footer__legal">
+                    <li><a href="#">Termeni și condiții</a></li>
+                    <li><a href="#">Politica de confidențialitate</a></li>
+                  </ul>
+              </div>
+            </div>
+          </div> 
+        </div>
+      </div>
     </footer>
 
   </body>
