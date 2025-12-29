@@ -5,19 +5,26 @@
   background: var(--gray-100);
   color: var(--color-neutral-900);
 
+  @media screen and (max-width: 1279px) {
+    .container {
+        max-width: 100%;
+    }
+  }
+
   &__container { 
-    padding: var(--spacing-40) var(--spacing-24) var(--spacing-32) var(--spacing-24);
+    /*padding: var(--spacing-40) var(--spacing-24) var(--spacing-32) var(--spacing-24);*/
+    padding-block:  var(--spacing-40);
   }
 
   &__top {
     display: grid;
-    grid-template-columns: 1.2fr 2fr 1fr;
+    grid-template-columns: 1fr 2fr 1fr;
     gap: var(--spacing-40);
     padding-bottom: var(--spacing-24);
 
-    /*@include media-breakpoint-down(md) {
+    @media screen and (max-width: 991px) {
       grid-template-columns: 1fr;
-    }*/
+    }
   }
 
   &__heading {
@@ -42,6 +49,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    gap: var(--spacing-32);
 
     
 
@@ -113,9 +121,9 @@
     grid-template-columns: repeat(3, 1fr);
     gap: var(--spacing-24);
 
-   /* @include media-breakpoint-down(md) {
+    @media screen and (max-width: 576px) {
       grid-template-columns: 1fr;
-    }*/ 
+    }
 
     &--list {
         display: flex;
@@ -133,6 +141,16 @@
     }
   }
 
+  &__extras {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-16);
+
+    .footer__heading {
+        margin: var(--spacing-0);
+    }
+  }
+
   &__payments {
     display: flex;
     gap: var(--spacing-12);
@@ -142,6 +160,17 @@
   &__apps {
     display: flex;
     gap: var(--spacing-12);
+
+    a{
+        display: flex;
+        align-items: end;
+    }
+
+    img {
+        display: block;
+        height: auto;
+        width: 100%;
+    }
   }
 
   &__middle {
@@ -151,7 +180,7 @@
     border-top: 1px solid var(--color-neutral-200);
     padding-top: var(--spacing-24); 
 
-    @media screen and (max-width: 768px) {
+    @media screen and (max-width: 576px) {
       flex-direction: column;
       gap: var(--spacing-24);
     }
@@ -196,6 +225,11 @@
     list-style: none;
     padding: 0;
     justify-content: end;
+    flex-wrap: wrap;
+
+    @media screen and (max-width: 768px) {
+        justify-content: start;
+    }
 
     a {
       color: inherit;

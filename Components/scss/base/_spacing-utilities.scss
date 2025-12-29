@@ -2,6 +2,9 @@
 @use "../abstracts/variables" as vars;
 @use "sass:map";
 
+/* ===============================
+   CSS Variables (runtime)
+================================ */
 :root {
   --spacing-0: 0px;
   --spacing-2: 2px;
@@ -20,9 +23,9 @@
   --spacing-72: 72px;
 }
 
-// ===============================
-// Spacing token map
-// ===============================
+/* ===============================
+   Spacing token map
+================================ */
 $spacing-map: (
   0: tokens.$token-spacing-0,
   2: tokens.$token-spacing-2,
@@ -41,12 +44,13 @@ $spacing-map: (
   72: tokens.$token-spacing-72
 );
 
-// ===============================
-// Base utilities (positive + negative)
-// ===============================
+/* ===============================
+   Base utilities
+   (positive + negative)
+================================ */
 @each $name, $value in $spacing-map {
-  // Positive values
-  .p-#{$name} { padding: $value !important; }
+  /* Padding */
+  .p-#{$name}  { padding: $value !important; }
   .pt-#{$name} { padding-top: $value !important; }
   .pr-#{$name} { padding-right: $value !important; }
   .pb-#{$name} { padding-bottom: $value !important; }
@@ -54,7 +58,8 @@ $spacing-map: (
   .px-#{$name} { padding-left: $value !important; padding-right: $value !important; }
   .py-#{$name} { padding-top: $value !important; padding-bottom: $value !important; }
 
-  .m-#{$name} { margin: $value !important; }
+  /* Margin */
+  .m-#{$name}  { margin: $value !important; }
   .mt-#{$name} { margin-top: $value !important; }
   .mr-#{$name} { margin-right: $value !important; }
   .mb-#{$name} { margin-bottom: $value !important; }
@@ -62,11 +67,14 @@ $spacing-map: (
   .mx-#{$name} { margin-left: $value !important; margin-right: $value !important; }
   .my-#{$name} { margin-top: $value !important; margin-bottom: $value !important; }
 
-  .gap-#{$name} { gap: $value !important; }
+  /* Gap utilities */
+  .gap-#{$name}        { gap: $value !important; }
+  .row-gap-#{$name}    { row-gap: $value !important; }
+  .column-gap-#{$name} { column-gap: $value !important; }
 
-  // Negative values (skip 0)
+  /* Negative margins (skip 0) */
   @if $name != 0 {
-    .m-n#{$name} { margin: -$value !important; }
+    .m-n#{$name}  { margin: -$value !important; }
     .mt-n#{$name} { margin-top: -$value !important; }
     .mr-n#{$name} { margin-right: -$value !important; }
     .mb-n#{$name} { margin-bottom: -$value !important; }
@@ -76,9 +84,9 @@ $spacing-map: (
   }
 }
 
-// ===============================
-// Auto margins
-// ===============================
+/* ===============================
+   Auto margins
+================================ */
 .m-auto  { margin: auto !important; }
 .mt-auto { margin-top: auto !important; }
 .mr-auto { margin-right: auto !important; }
@@ -87,14 +95,15 @@ $spacing-map: (
 .mx-auto { margin-left: auto !important; margin-right: auto !important; }
 .my-auto { margin-top: auto !important; margin-bottom: auto !important; }
 
-// ===============================
-// Responsive utilities (positive + negative + auto)
-// ===============================
+/* ===============================
+   Responsive utilities
+   (positive + negative + auto + gap)
+================================ */
 @each $bp-name, $bp-value in vars.$breakpoints {
   @media (min-width: $bp-value) {
     @each $name, $value in $spacing-map {
-      // Positive
-      .p-#{$bp-name}-#{$name} { padding: $value !important; }
+      /* Padding */
+      .p-#{$bp-name}-#{$name}  { padding: $value !important; }
       .pt-#{$bp-name}-#{$name} { padding-top: $value !important; }
       .pr-#{$bp-name}-#{$name} { padding-right: $value !important; }
       .pb-#{$bp-name}-#{$name} { padding-bottom: $value !important; }
@@ -102,7 +111,8 @@ $spacing-map: (
       .px-#{$bp-name}-#{$name} { padding-left: $value !important; padding-right: $value !important; }
       .py-#{$bp-name}-#{$name} { padding-top: $value !important; padding-bottom: $value !important; }
 
-      .m-#{$bp-name}-#{$name} { margin: $value !important; }
+      /* Margin */
+      .m-#{$bp-name}-#{$name}  { margin: $value !important; }
       .mt-#{$bp-name}-#{$name} { margin-top: $value !important; }
       .mr-#{$bp-name}-#{$name} { margin-right: $value !important; }
       .mb-#{$bp-name}-#{$name} { margin-bottom: $value !important; }
@@ -110,9 +120,14 @@ $spacing-map: (
       .mx-#{$bp-name}-#{$name} { margin-left: $value !important; margin-right: $value !important; }
       .my-#{$bp-name}-#{$name} { margin-top: $value !important; margin-bottom: $value !important; }
 
-      // Negative (skip 0)
+      /* Gap */
+      .gap-#{$bp-name}-#{$name}        { gap: $value !important; }
+      .row-gap-#{$bp-name}-#{$name}    { row-gap: $value !important; }
+      .column-gap-#{$bp-name}-#{$name} { column-gap: $value !important; }
+
+      /* Negative margins (skip 0) */
       @if $name != 0 {
-        .m-#{$bp-name}-n#{$name} { margin: -$value !important; }
+        .m-#{$bp-name}-n#{$name}  { margin: -$value !important; }
         .mt-#{$bp-name}-n#{$name} { margin-top: -$value !important; }
         .mr-#{$bp-name}-n#{$name} { margin-right: -$value !important; }
         .mb-#{$bp-name}-n#{$name} { margin-bottom: -$value !important; }
@@ -122,7 +137,7 @@ $spacing-map: (
       }
     }
 
-    // Auto margins responsive
+    /* Auto margins responsive */
     .m-#{$bp-name}-auto  { margin: auto !important; }
     .mt-#{$bp-name}-auto { margin-top: auto !important; }
     .mr-#{$bp-name}-auto { margin-right: auto !important; }
