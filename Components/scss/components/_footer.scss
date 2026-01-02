@@ -25,6 +25,47 @@
     @media screen and (max-width: 991px) {
       grid-template-columns: 1fr;
     }
+
+    &--compact {
+        grid-template-columns: .85fr 2.5fr .5fr;
+        align-items: center; 
+
+       
+
+        .footer__nav {
+            grid-template-columns:1fr;
+        }
+
+        .footer__nav--list {
+            flex-direction: row;
+            gap: var(--spacing-64);
+        }
+
+        .footer__payments {
+            justify-content: end;
+        }
+
+         @media screen and (max-width: 991px) {
+          grid-template-columns: 1fr;
+
+           .footer__payments {
+                justify-content: start;
+            }
+
+             .footer__nav--list { 
+                gap: var(--spacing-32);
+            }
+        }
+
+        @media screen and (max-width: 576px) {
+            grid-template-columns: 1fr;
+
+            .footer__nav--list {
+                flex-direction: column;
+                gap: var(--spacing-16);
+            }
+        }   
+    }
   }
 
   &__heading {
