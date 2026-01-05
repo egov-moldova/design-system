@@ -16281,6 +16281,163 @@ body.has-overlay footer {
   display: none;
 }
 
+/* ===============================
+   Bottom Sheet – core
+   =============================== */
+.bottom-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  pointer-events: none;
+}
+
+.bottom-sheet[aria-hidden=false] {
+  pointer-events: auto;
+}
+
+/* Overlay */
+.bottom-sheet {
+  /* Content */
+}
+.bottom-sheet__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(18, 18, 18, 0.4);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.bottom-sheet__panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 90vh;
+  min-height: 45vh;
+  background: var(--white);
+  border-radius: var(--border-radius-16) var(--border-radius-16) 0 0;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  outline: none;
+}
+@media screen and (max-width: 768px) {
+  .bottom-sheet__panel {
+    border-radius: 0;
+  }
+}
+.bottom-sheet__handle {
+  width: 44px;
+  height: 4px;
+  background: var(--gray-250);
+  border-radius: 999px;
+  margin: var(--spacing-16) auto;
+}
+.bottom-sheet__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-12) var(--spacing-16);
+}
+.bottom-sheet__header--title {
+  font-size: var(--text-body-lg-500-font-size);
+  font-weight: 600;
+  color: var(--black);
+  margin: var(--spacing-0);
+}
+.bottom-sheet__header:has(.center) {
+  justify-content: center;
+}
+.bottom-sheet__close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+.bottom-sheet__content {
+  padding: var(--spacing-16) var(--spacing-0);
+  overflow-y: auto;
+}
+.bottom-sheet__content--list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.bottom-sheet__content--list-link {
+  display: block;
+  padding: var(--spacing-12) var(--spacing-16);
+  color: var(--gray-700);
+  font-size: var(--text-body-md-500-font-size);
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.35s ease;
+  position: relative;
+}
+.bottom-sheet__content--list-link:after {
+  content: "";
+  display: block;
+  border: solid var(--blue-sky-600);
+  border-width: 0 2px 2px 0;
+  margin-top: -2px;
+  opacity: 0;
+  height: var(--spacing-16);
+  width: var(--spacing-8);
+  transition: opacity 0.2s ease;
+  position: absolute;
+  right: var(--spacing-32);
+  top: 50%;
+  transform: translateY(-50%) rotate(45deg);
+}
+.bottom-sheet__content--list-link:last-child {
+  border-bottom: none;
+}
+.bottom-sheet__content--list-link:hover {
+  background: var(--gray-100);
+  color: var(--blue-sky-600);
+}
+.bottom-sheet__content--list-link.active {
+  background: var(--gray-100);
+  color: var(--blue-sky-600);
+}
+.bottom-sheet__content--list-link.active:after {
+  opacity: 1;
+}
+.bottom-sheet__content--scrollable {
+  border-top: 1px solid #eee;
+}
+.bottom-sheet__content--text {
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='12' ry='12' stroke='%230058D2FF' stroke-width='1' stroke-dasharray='6%2c 6' stroke-dashoffset='6' stroke-linecap='square'/%3e%3c/svg%3e");
+  border-radius: var(--border-radius-12);
+  background-color: var(--blue-sky-100);
+  font-size: var(--text-body-md-500-font-size);
+  color: var(--gray-700);
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: var(--spacing-12);
+  text-align: center;
+  margin: var(--spacing-0) var(--spacing-16);
+  padding: var(--spacing-48) var(--spacing-24);
+}
+.bottom-sheet__content--description {
+  font-size: var(--text-body-sm-font-size);
+  color: var(--gray-400);
+}
+.bottom-sheet__footer {
+  margin-top: auto;
+  padding: var(--spacing-16);
+}
+
+.bottom-sheet[aria-hidden=false] .bottom-sheet__overlay {
+  opacity: 1;
+}
+
+.bottom-sheet[aria-hidden=false] .bottom-sheet__panel {
+  transform: translateY(0);
+}
+
 /* =======================================
    🔹 Mixin principal pentru input-uri
 ======================================= */

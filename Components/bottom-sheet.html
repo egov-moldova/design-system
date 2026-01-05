@@ -102,19 +102,133 @@
               </div>
             </div>
           </div>
-
+        </div>
       </div>
 
       <div class="row">
-        <div class="col-12">
-          <!-- Trigger -->
-         
+         <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+            <h2>Variations</h2>
+        </div> 
+      </div>
+      <div class="row">
+        <!-- indicator only -->
+        <div class="col-12 col-sm-4">
+          <p>indicator only</p>
 
-          
+          <button class="btn btn-primary" data-bottom-sheet-open="sheet-example-2">
+            Open full height bottom sheet
+          </button>
+          <!-- Bottom Sheet -->
+          <div class="bottom-sheet bottom-sheet--full-height" id="sheet-example-2" aria-hidden="true">
+            <div class="bottom-sheet__overlay" data-bottom-sheet-close></div>
 
+            <div
+              class="bottom-sheet__panel"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="sheet-title"
+              tabindex="-1"
+            >
+              <div class="bottom-sheet__handle"></div>
+
+              <div class="bottom-sheet__content d-none">
+                <div class="bottom-sheet__content--text">
+                  <div class="bottom-sheet__icon">
+                    <span class="p-6 bg-blue-sky-600 text-white radius-6 d-inline-flex">
+                      <svg class="icon medium" aria-hidden="true"> 
+                        <use href="assets/icons/sprite.svg#icon-rotate-arrow"></use> 
+                      </svg>
+                    </span>
+                  </div>
+                  <h4 id="sheet-title" class="bottom-sheet__content--title m-0">Content slot</h4>
+                  <div class="bottom-sheet__content--description">
+                    Use the content slot as a placeholder. Copy it locally, detach and create a new component with needed elements inside.
+                  </div> 
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        
+        <!--heading-left-->
+        <div class="col-12 col-sm-4">
+          <p>heading left</p>
+
+          <button class="btn btn-primary" data-bottom-sheet-open="sheet-example-3">
+            Open bottom sheet with left aligned heading
+          </button>
+          <!-- Bottom Sheet -->
+          <div class="bottom-sheet" id="sheet-example-3" aria-hidden="true">
+            <div class="bottom-sheet__overlay" data-bottom-sheet-close></div>
+
+            <div
+              class="bottom-sheet__panel"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="sheet-title"
+              tabindex="-1"
+            >
+              <div class="bottom-sheet__handle"></div>
+              <header class="bottom-sheet__header">
+                <h4 class="bottom-sheet__header--title" id="sheet-title">Heading left</h4> 
+              </header>
+               
+            </div>
+          </div>
+        </div>
+
+        <!--heading center-->
+        <div class="col-12 col-sm-4">
+          <p>heading center</p>
+
+          <button class="btn btn-primary" data-bottom-sheet-open="sheet-example-4">
+            Open bottom sheet with centered heading
+          </button>
+          <!-- Bottom Sheet -->
+          <div class="bottom-sheet" id="sheet-example-4" aria-hidden="true">
+            <div class="bottom-sheet__overlay" data-bottom-sheet-close></div>
+
+            <div
+              class="bottom-sheet__panel"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="sheet-title"
+              tabindex="-1"
+            >
+              <div class="bottom-sheet__handle"></div>
+              <header class="bottom-sheet__header">
+                <h4 class="bottom-sheet__header--title center" id="sheet-title">Heading center</h4> 
+              </header>
+               
+            </div>
+          </div>
+        </div>
+
+        <!-- action-button -->
+         <div class="col-12 col-sm-4">
+          <p>with action button</p>
+
+          <button class="btn btn-primary" data-bottom-sheet-open="sheet-example-5">
+            Open bottom sheet with action button
+          </button>
+          <!-- Bottom Sheet -->
+          <div class="bottom-sheet" id="sheet-example-5" aria-hidden="true">
+            <div class="bottom-sheet__overlay" data-bottom-sheet-close></div>
+
+            <div
+              class="bottom-sheet__panel"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="sheet-title"
+              tabindex="-1"
+            >
+              <div class="bottom-sheet__handle"></div> 
+              <div class="bottom-sheet__footer">
+                <button class="btn btn-primary w-100">Action Button</button> 
+              </div>
+               
+            </div>
+         </div>
       </div>
     </div>    
  
