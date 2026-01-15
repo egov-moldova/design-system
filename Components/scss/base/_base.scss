@@ -5,11 +5,6 @@ html {
 }
 body {
     background-color: var(--color-background-base-default);
-    color: var(--color-text-base-default);
-    font-size: 1rem; //16px
-    font-family: "Onest", sans-serif;
-    line-height: 1.5;
-    font-weight: $font-weight-regular; 
     margin: 0;
   }
   
@@ -153,4 +148,9 @@ p{
   overflow: visible;
   clip: auto;
   white-space: normal;
+}
+
+.typography-table {
+  max-width: 95%;
+  margin: 20px auto;
 }

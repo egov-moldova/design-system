@@ -129,96 +129,156 @@ $drop-shadows: (
   500: (0 3px 12px rgba(0, 0, 0, 0.05), 0 0 0.5px rgba(0, 0, 0, 0.08), 0 12px 32px rgba(0, 0, 0, 0.12), 0 2px 5px rgba(0, 0, 0, 0.1)),
   600: (0 3px 12px rgba(0, 0, 0, 0.05), 0 0 0.5px rgba(0, 0, 0, 0.08), 0 16px 48px rgba(0, 0, 0, 0.14), 0 6px 12px rgba(0, 0, 0, 0.1))
 );
-
-// ==============================================
-// 🔠 Typography Tokens
-// ==============================================
+/* =====================================================
+   BASE TOKENS
+===================================================== */
 :root {
-  /* DISPLAY */
+  /* Font family */
+  --font-family-base: 'Onest', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Font weights (aliniate cu @font-face) */
+  --font-weight-regular: 400;
+  --font-weight-semibold: 500;
+  --font-weight-bold: 600;
+}
+
+/* =====================================================
+   TYPOGRAPHY – FONT FAMILY
+===================================================== */
+:root {
+  /* Display */
+  --text-display-lg-font-family: var(--font-family-base);
+  --text-display-md-font-family: var(--font-family-base);
+
+  /* Headings */
+  --text-heading-h1-lg-font-family: var(--font-family-base);
+  --text-heading-h2-md-font-family: var(--font-family-base);
+  --text-heading-h3-sm-font-family: var(--font-family-base);
+  --text-heading-h4-xs-font-family: var(--font-family-base);
+  --text-heading-h5-2xs-font-family: var(--font-family-base);
+
+  /* Body */
+  --text-body-lg-font-family: var(--font-family-base);
+  --text-body-lg-500-font-family: var(--font-family-base);
+  --text-body-md-font-family: var(--font-family-base);
+  --text-body-md-500-font-family: var(--font-family-base);
+  --text-body-sm-font-family: var(--font-family-base);
+  --text-body-sm-500-font-family: var(--font-family-base);
+
+  /* Caption */
+  --text-caption-md-font-family: var(--font-family-base);
+  --text-caption-md-500-font-family: var(--font-family-base);
+  --text-caption-sm-font-family: var(--font-family-base);
+}
+
+/* =====================================================
+   TYPOGRAPHY – FONT WEIGHT (SEMANTIC)
+===================================================== */
+:root {
+  /* Display */
+  --text-display-lg-font-weight: var(--font-weight-bold);
+  --text-display-md-font-weight: var(--font-weight-bold);
+
+  /* Headings */
+  --text-heading-h1-lg-font-weight: var(--font-weight-bold);
+  --text-heading-h2-md-font-weight: var(--font-weight-bold);
+  --text-heading-h3-sm-font-weight: var(--font-weight-bold);
+  --text-heading-h4-xs-font-weight: var(--font-weight-semibold);
+  --text-heading-h5-2xs-font-weight: var(--font-weight-semibold);
+
+  /* Body */
+  --text-body-lg-font-weight: var(--font-weight-regular);
+  --text-body-lg-500-font-weight: var(--font-weight-semibold);
+  --text-body-md-font-weight: var(--font-weight-regular);
+  --text-body-md-500-font-weight: var(--font-weight-semibold);
+  --text-body-sm-font-weight: var(--font-weight-regular);
+  --text-body-sm-500-font-weight: var(--font-weight-semibold);
+
+  /* Caption */
+  --text-caption-md-font-weight: var(--font-weight-regular);
+  --text-caption-md-500-font-weight: var(--font-weight-semibold);
+  --text-caption-sm-font-weight: var(--font-weight-regular);
+}
+
+/* =====================================================
+   TYPOGRAPHY – DESKTOP VALUES
+===================================================== */
+:root {
+  /* ================= DISPLAY ================= */
   --text-display-lg-font-size: 56px;
   --text-display-lg-line-height: 140%;
   --text-display-lg-letter-spacing: -0.02em;
-  --text-display-lg-font-weight: 600;
 
   --text-display-md-font-size: 48px;
   --text-display-md-line-height: 140%;
   --text-display-md-letter-spacing: -0.02em;
-  --text-display-md-font-weight: 600;
 
-  /* HEADINGS */
+  /* ================= HEADINGS ================= */
   --text-heading-h1-lg-font-size: 40px;
-  --text-heading-h1-lg-line-height: 150%;
-  --text-heading-h1-lg-letter-spacing: -0.02em;
-  --text-heading-h1-lg-font-weight: 600;
-
   --text-heading-h2-md-font-size: 32px;
-  --text-heading-h2-md-line-height: 150%;
-  --text-heading-h2-md-letter-spacing: -0.02em;
-  --text-heading-h2-md-font-weight: 600;
-
   --text-heading-h3-sm-font-size: 24px;
-  --text-heading-h3-sm-line-height: 150%;
-  --text-heading-h3-sm-letter-spacing: -0.01em;
-  --text-heading-h3-sm-font-weight: 600;
-
   --text-heading-h4-xs-font-size: 20px;
-  --text-heading-h4-xs-line-height: 150%;
-  --text-heading-h4-xs-letter-spacing: -0.01em;
-  --text-heading-h4-xs-font-weight: 500;
-
   --text-heading-h5-2xs-font-size: 18px;
+
+  --text-heading-h1-lg-line-height: 150%;
+  --text-heading-h2-md-line-height: 150%;
+  --text-heading-h3-sm-line-height: 150%;
+  --text-heading-h4-xs-line-height: 150%;
   --text-heading-h5-2xs-line-height: 150%;
-  --text-heading-h5-2xs-letter-spacing: -0.01em;
-  --text-heading-h5-2xs-font-weight: 500;
 
-  /* BODY */
+  /* ================= BODY ================= */
   --text-body-lg-font-size: 18px;
-  --text-body-lg-line-height: 150%;
-  --text-body-lg-letter-spacing: 0;
-  --text-body-lg-font-weight: 400;
-
   --text-body-lg-500-font-size: 18px;
-  --text-body-lg-500-line-height: 150%;
-  --text-body-lg-500-letter-spacing: 0;
-  --text-body-lg-500-font-weight: 500;
-
   --text-body-md-font-size: 16px;
-  --text-body-md-line-height: 140%;
-  --text-body-md-letter-spacing: 0;
-  --text-body-md-font-weight: 400;
-
   --text-body-md-500-font-size: 16px;
-  --text-body-md-500-line-height: 140%;
-  --text-body-md-500-letter-spacing: 0;
-  --text-body-md-500-font-weight: 500;
-
   --text-body-sm-font-size: 14px;
-  --text-body-sm-line-height: 140%;
-  --text-body-sm-letter-spacing: 0;
-  --text-body-sm-font-weight: 400;
-
   --text-body-sm-500-font-size: 14px;
-  --text-body-sm-500-line-height: 140%;
-  --text-body-sm-500-letter-spacing: 0;
-  --text-body-sm-500-font-weight: 500;
 
-  /* CAPTION */
+  --text-body-lg-line-height: 150%;
+  --text-body-md-line-height: 140%;
+  --text-body-sm-line-height: 140%;
+
+  /* ================= CAPTION ================= */
   --text-caption-md-font-size: 12px;
-  --text-caption-md-line-height: 140%;
-  --text-caption-md-letter-spacing: 0;
-  --text-caption-md-font-weight: 400;
-
   --text-caption-md-500-font-size: 12px;
-  --text-caption-md-500-line-height: 140%;
-  --text-caption-md-500-letter-spacing: 0;
-  --text-caption-md-500-font-weight: 500;
-
   --text-caption-sm-font-size: 10px;
+
+  --text-caption-md-line-height: 140%;
   --text-caption-sm-line-height: 140%;
-  --text-caption-sm-letter-spacing: 0;
-  --text-caption-sm-font-weight: 400;
 }
+
+/* =====================================================
+   MOBILE OVERRIDES (FONT SIZE ONLY)
+===================================================== */
+@media (max-width: 768px) {
+  :root {
+    --text-display-lg-font-size: 48px;
+    --text-display-md-font-size: 40px;
+
+    --text-heading-h1-lg-font-size: 32px;
+    --text-heading-h2-md-font-size: 28px;
+    --text-heading-h3-sm-font-size: 22px;
+    --text-heading-h4-xs-font-size: 18px;
+    --text-heading-h5-2xs-font-size: 16px;
+
+    --text-body-lg-font-size: 16px;
+    --text-body-lg-500-font-size: 16px;
+    --text-body-md-font-size: 14px;
+    --text-body-md-500-font-size: 14px;
+    --text-body-sm-font-size: 12px;
+    --text-body-sm-500-font-size: 12px;
+
+    --text-caption-md-font-size: 10px;
+    --text-caption-md-500-font-size: 10px;
+    --text-caption-sm-font-size: 8px;
+  }
+}
+
+
+
+// Optional: scala de fonturi
 $font-sizes: (
+  8: 8px,
   10: 10px,
   12: 12px,
   14: 14px,
@@ -228,7 +288,15 @@ $font-sizes: (
   24: 24px,
   30: 30px,
   36: 36px,
+  40: 40px,
   48: 48px,
+  56: 56px,
   60: 60px,
   72: 72px
+);
+
+$line-heights: (
+  tight: 120%,
+  normal: 140%,
+  relaxed: 150%
 );

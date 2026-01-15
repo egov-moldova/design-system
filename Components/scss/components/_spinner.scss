@@ -15,26 +15,26 @@
   // 🔹 Sizes
   // ===============================
   &--extra-small {
+    width: var(--spacing-12, 12px);
+    height: var(--spacing-12, 12px);
+    border-width: 2px;
+  }
+
+  &--small {
     width: var(--spacing-16, 16px);
     height: var(--spacing-16, 16px);
     border-width: 2px;
   }
 
-  &--small {
-    width: var(--spacing-20, 20px);
-    height: var(--spacing-20, 20px);
-    border-width: 2px;
-  }
-
   &--medium {
-    width: var(--spacing-24, 24px);
-    height: var(--spacing-24, 24px);
+    width: calc(var(--spacing-24) + 2px);
+    height: calc(var(--spacing-24) + 2px);
     border-width: 3px;
   }
 
   &--large {
-    width: var(--spacing-32, 32px);
-    height: var(--spacing-32, 32px);
+    width: calc(var(--spacing-32) + 2px);
+    height: calc(var(--spacing-32) + 2px);
     border-width: 3px;
   }
 
@@ -42,7 +42,7 @@
   // 🎨 Styles
   // ===============================
   &--brand {
-    border-color: var(--brand-500, #0f62fe);
+    border-color: var(--blue-sky-600);
   }
 
   &--dark {

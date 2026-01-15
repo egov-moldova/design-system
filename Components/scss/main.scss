@@ -30,7 +30,7 @@
 // ===============================
 @use 'abstracts/typography';
 @use 'fonts/Onest';
-
+@use 'base/typography' as *;
 // ===============================
 // 🧩 Components / Utilities
 // ===============================

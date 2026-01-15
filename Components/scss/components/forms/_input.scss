@@ -144,6 +144,15 @@ label {
     }
   }
 
+  &:has(.left, .right) {
+    .input {
+      padding-inline: var(--spacing-32);
+    }
+  }
+  .spinner {
+    position: absolute;
+    right: var(--spacing-12); 
+  }
   &.has-leading .input { padding-left: var(--spacing-40, 40px); }
   &.has-trailing .input { padding-right: var(--spacing-40, 40px); }
 

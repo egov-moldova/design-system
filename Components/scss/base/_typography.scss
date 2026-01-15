@@ -1,0 +1,36 @@
+@use '../abstracts/mixins/typography' as typ;
+
+html { font-size: 100%; }
+
+body {
+  @include typ.apply-text-style('body-md');
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+h1 { @include typ.apply-text-style('heading-h1-lg'); }
+h2 { @include typ.apply-text-style('heading-h2-md'); }
+h3 { @include typ.apply-text-style('heading-h3-sm'); }
+h4 { @include typ.apply-text-style('heading-h4-xs'); }
+h5 { @include typ.apply-text-style('heading-h5-2xs'); }
+h6 { @include typ.apply-text-style('caption-md-500'); }
+
+p { 
+  @include typ.apply-text-style('body-md'); 
+  margin: 0;
+}
+small { @include typ.apply-text-style('caption-sm'); }
+strong { font-weight: 600; }
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  &:hover,
+  &:focus { text-decoration: underline; }
+}
+
+ul, ol {
+  padding-left: 1.5rem;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}

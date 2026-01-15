@@ -104,77 +104,133 @@
   --white-500-alpha: rgba(255, 255, 255, 0.6);
 }
 
+/* =====================================================
+   BASE TOKENS
+===================================================== */
 :root {
-  /* DISPLAY */
+  /* Font family */
+  --font-family-base: "Onest", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Font weights (aliniate cu @font-face) */
+  --font-weight-regular: 400;
+  --font-weight-semibold: 500;
+  --font-weight-bold: 600;
+}
+
+/* =====================================================
+   TYPOGRAPHY – FONT FAMILY
+===================================================== */
+:root {
+  /* Display */
+  --text-display-lg-font-family: var(--font-family-base);
+  --text-display-md-font-family: var(--font-family-base);
+  /* Headings */
+  --text-heading-h1-lg-font-family: var(--font-family-base);
+  --text-heading-h2-md-font-family: var(--font-family-base);
+  --text-heading-h3-sm-font-family: var(--font-family-base);
+  --text-heading-h4-xs-font-family: var(--font-family-base);
+  --text-heading-h5-2xs-font-family: var(--font-family-base);
+  /* Body */
+  --text-body-lg-font-family: var(--font-family-base);
+  --text-body-lg-500-font-family: var(--font-family-base);
+  --text-body-md-font-family: var(--font-family-base);
+  --text-body-md-500-font-family: var(--font-family-base);
+  --text-body-sm-font-family: var(--font-family-base);
+  --text-body-sm-500-font-family: var(--font-family-base);
+  /* Caption */
+  --text-caption-md-font-family: var(--font-family-base);
+  --text-caption-md-500-font-family: var(--font-family-base);
+  --text-caption-sm-font-family: var(--font-family-base);
+}
+
+/* =====================================================
+   TYPOGRAPHY – FONT WEIGHT (SEMANTIC)
+===================================================== */
+:root {
+  /* Display */
+  --text-display-lg-font-weight: var(--font-weight-bold);
+  --text-display-md-font-weight: var(--font-weight-bold);
+  /* Headings */
+  --text-heading-h1-lg-font-weight: var(--font-weight-bold);
+  --text-heading-h2-md-font-weight: var(--font-weight-bold);
+  --text-heading-h3-sm-font-weight: var(--font-weight-bold);
+  --text-heading-h4-xs-font-weight: var(--font-weight-semibold);
+  --text-heading-h5-2xs-font-weight: var(--font-weight-semibold);
+  /* Body */
+  --text-body-lg-font-weight: var(--font-weight-regular);
+  --text-body-lg-500-font-weight: var(--font-weight-semibold);
+  --text-body-md-font-weight: var(--font-weight-regular);
+  --text-body-md-500-font-weight: var(--font-weight-semibold);
+  --text-body-sm-font-weight: var(--font-weight-regular);
+  --text-body-sm-500-font-weight: var(--font-weight-semibold);
+  /* Caption */
+  --text-caption-md-font-weight: var(--font-weight-regular);
+  --text-caption-md-500-font-weight: var(--font-weight-semibold);
+  --text-caption-sm-font-weight: var(--font-weight-regular);
+}
+
+/* =====================================================
+   TYPOGRAPHY – DESKTOP VALUES
+===================================================== */
+:root {
+  /* ================= DISPLAY ================= */
   --text-display-lg-font-size: 56px;
   --text-display-lg-line-height: 140%;
   --text-display-lg-letter-spacing: -0.02em;
-  --text-display-lg-font-weight: 600;
   --text-display-md-font-size: 48px;
   --text-display-md-line-height: 140%;
   --text-display-md-letter-spacing: -0.02em;
-  --text-display-md-font-weight: 600;
-  /* HEADINGS */
+  /* ================= HEADINGS ================= */
   --text-heading-h1-lg-font-size: 40px;
-  --text-heading-h1-lg-line-height: 150%;
-  --text-heading-h1-lg-letter-spacing: -0.02em;
-  --text-heading-h1-lg-font-weight: 600;
   --text-heading-h2-md-font-size: 32px;
-  --text-heading-h2-md-line-height: 150%;
-  --text-heading-h2-md-letter-spacing: -0.02em;
-  --text-heading-h2-md-font-weight: 600;
   --text-heading-h3-sm-font-size: 24px;
-  --text-heading-h3-sm-line-height: 150%;
-  --text-heading-h3-sm-letter-spacing: -0.01em;
-  --text-heading-h3-sm-font-weight: 600;
   --text-heading-h4-xs-font-size: 20px;
-  --text-heading-h4-xs-line-height: 150%;
-  --text-heading-h4-xs-letter-spacing: -0.01em;
-  --text-heading-h4-xs-font-weight: 500;
   --text-heading-h5-2xs-font-size: 18px;
+  --text-heading-h1-lg-line-height: 150%;
+  --text-heading-h2-md-line-height: 150%;
+  --text-heading-h3-sm-line-height: 150%;
+  --text-heading-h4-xs-line-height: 150%;
   --text-heading-h5-2xs-line-height: 150%;
-  --text-heading-h5-2xs-letter-spacing: -0.01em;
-  --text-heading-h5-2xs-font-weight: 500;
-  /* BODY */
+  /* ================= BODY ================= */
   --text-body-lg-font-size: 18px;
-  --text-body-lg-line-height: 150%;
-  --text-body-lg-letter-spacing: 0;
-  --text-body-lg-font-weight: 400;
   --text-body-lg-500-font-size: 18px;
-  --text-body-lg-500-line-height: 150%;
-  --text-body-lg-500-letter-spacing: 0;
-  --text-body-lg-500-font-weight: 500;
   --text-body-md-font-size: 16px;
-  --text-body-md-line-height: 140%;
-  --text-body-md-letter-spacing: 0;
-  --text-body-md-font-weight: 400;
   --text-body-md-500-font-size: 16px;
-  --text-body-md-500-line-height: 140%;
-  --text-body-md-500-letter-spacing: 0;
-  --text-body-md-500-font-weight: 500;
   --text-body-sm-font-size: 14px;
-  --text-body-sm-line-height: 140%;
-  --text-body-sm-letter-spacing: 0;
-  --text-body-sm-font-weight: 400;
   --text-body-sm-500-font-size: 14px;
-  --text-body-sm-500-line-height: 140%;
-  --text-body-sm-500-letter-spacing: 0;
-  --text-body-sm-500-font-weight: 500;
-  /* CAPTION */
+  --text-body-lg-line-height: 150%;
+  --text-body-md-line-height: 140%;
+  --text-body-sm-line-height: 140%;
+  /* ================= CAPTION ================= */
   --text-caption-md-font-size: 12px;
-  --text-caption-md-line-height: 140%;
-  --text-caption-md-letter-spacing: 0;
-  --text-caption-md-font-weight: 400;
   --text-caption-md-500-font-size: 12px;
-  --text-caption-md-500-line-height: 140%;
-  --text-caption-md-500-letter-spacing: 0;
-  --text-caption-md-500-font-weight: 500;
   --text-caption-sm-font-size: 10px;
+  --text-caption-md-line-height: 140%;
   --text-caption-sm-line-height: 140%;
-  --text-caption-sm-letter-spacing: 0;
-  --text-caption-sm-font-weight: 400;
 }
 
+/* =====================================================
+   MOBILE OVERRIDES (FONT SIZE ONLY)
+===================================================== */
+@media (max-width: 768px) {
+  :root {
+    --text-display-lg-font-size: 48px;
+    --text-display-md-font-size: 40px;
+    --text-heading-h1-lg-font-size: 32px;
+    --text-heading-h2-md-font-size: 28px;
+    --text-heading-h3-sm-font-size: 22px;
+    --text-heading-h4-xs-font-size: 18px;
+    --text-heading-h5-2xs-font-size: 16px;
+    --text-body-lg-font-size: 16px;
+    --text-body-lg-500-font-size: 16px;
+    --text-body-md-font-size: 14px;
+    --text-body-md-500-font-size: 14px;
+    --text-body-sm-font-size: 12px;
+    --text-body-sm-500-font-size: 12px;
+    --text-caption-md-font-size: 10px;
+    --text-caption-md-500-font-size: 10px;
+    --text-caption-sm-font-size: 8px;
+  }
+}
 /* +++++++++++++++++++++++ BACKGROUNDS ++++++++++++++++++++++++++*/
 :root {
   /* Base */
@@ -583,6 +639,103 @@
   font-style: normal;
   font-display: swap;
 }
+html {
+  font-size: 100%;
+}
+
+body {
+  font-family: var(--text-body-md-font-family, "Onest", sans-serif);
+  font-size: var(--text-body-md-font-size);
+  font-weight: var(--text-body-md-font-weight);
+  line-height: var(--text-body-md-line-height);
+  letter-spacing: var(--text-body-md-letter-spacing);
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+h1 {
+  font-family: var(--text-heading-h1-lg-font-family, "Onest", sans-serif);
+  font-size: var(--text-heading-h1-lg-font-size);
+  font-weight: var(--text-heading-h1-lg-font-weight);
+  line-height: var(--text-heading-h1-lg-line-height);
+  letter-spacing: var(--text-heading-h1-lg-letter-spacing);
+}
+
+h2 {
+  font-family: var(--text-heading-h2-md-font-family, "Onest", sans-serif);
+  font-size: var(--text-heading-h2-md-font-size);
+  font-weight: var(--text-heading-h2-md-font-weight);
+  line-height: var(--text-heading-h2-md-line-height);
+  letter-spacing: var(--text-heading-h2-md-letter-spacing);
+}
+
+h3 {
+  font-family: var(--text-heading-h3-sm-font-family, "Onest", sans-serif);
+  font-size: var(--text-heading-h3-sm-font-size);
+  font-weight: var(--text-heading-h3-sm-font-weight);
+  line-height: var(--text-heading-h3-sm-line-height);
+  letter-spacing: var(--text-heading-h3-sm-letter-spacing);
+}
+
+h4 {
+  font-family: var(--text-heading-h4-xs-font-family, "Onest", sans-serif);
+  font-size: var(--text-heading-h4-xs-font-size);
+  font-weight: var(--text-heading-h4-xs-font-weight);
+  line-height: var(--text-heading-h4-xs-line-height);
+  letter-spacing: var(--text-heading-h4-xs-letter-spacing);
+}
+
+h5 {
+  font-family: var(--text-heading-h5-2xs-font-family, "Onest", sans-serif);
+  font-size: var(--text-heading-h5-2xs-font-size);
+  font-weight: var(--text-heading-h5-2xs-font-weight);
+  line-height: var(--text-heading-h5-2xs-line-height);
+  letter-spacing: var(--text-heading-h5-2xs-letter-spacing);
+}
+
+h6 {
+  font-family: var(--text-caption-md-500-font-family, "Onest", sans-serif);
+  font-size: var(--text-caption-md-500-font-size);
+  font-weight: var(--text-caption-md-500-font-weight);
+  line-height: var(--text-caption-md-500-line-height);
+  letter-spacing: var(--text-caption-md-500-letter-spacing);
+}
+
+p {
+  font-family: var(--text-body-md-font-family, "Onest", sans-serif);
+  font-size: var(--text-body-md-font-size);
+  font-weight: var(--text-body-md-font-weight);
+  line-height: var(--text-body-md-line-height);
+  letter-spacing: var(--text-body-md-letter-spacing);
+  margin: 0;
+}
+
+small {
+  font-family: var(--text-caption-sm-font-family, "Onest", sans-serif);
+  font-size: var(--text-caption-sm-font-size);
+  font-weight: var(--text-caption-sm-font-weight);
+  line-height: var(--text-caption-sm-line-height);
+  letter-spacing: var(--text-caption-sm-letter-spacing);
+}
+
+strong {
+  font-weight: 600;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+a:hover, a:focus {
+  text-decoration: underline;
+}
+
+ul, ol {
+  padding-left: 1.5rem;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
 .bg-gray-100 {
   background-color: var(--gray-100) !important;
 }
@@ -11388,11 +11541,6 @@ html {
 
 body {
   background-color: var(--color-background-base-default);
-  color: var(--color-text-base-default);
-  font-size: 1rem;
-  font-family: "Onest", sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
   margin: 0;
 }
 
@@ -11536,6 +11684,11 @@ p {
   overflow: visible;
   clip: auto;
   white-space: normal;
+}
+
+.typography-table {
+  max-width: 95%;
+  margin: 20px auto;
 }
 
 :root {
@@ -13286,27 +13439,27 @@ p {
   animation: spinner-rotate 0.8s linear infinite;
 }
 .spinner--extra-small {
+  width: var(--spacing-12, 12px);
+  height: var(--spacing-12, 12px);
+  border-width: 2px;
+}
+.spinner--small {
   width: var(--spacing-16, 16px);
   height: var(--spacing-16, 16px);
   border-width: 2px;
 }
-.spinner--small {
-  width: var(--spacing-20, 20px);
-  height: var(--spacing-20, 20px);
-  border-width: 2px;
-}
 .spinner--medium {
-  width: var(--spacing-24, 24px);
-  height: var(--spacing-24, 24px);
+  width: calc(var(--spacing-24) + 2px);
+  height: calc(var(--spacing-24) + 2px);
   border-width: 3px;
 }
 .spinner--large {
-  width: var(--spacing-32, 32px);
-  height: var(--spacing-32, 32px);
+  width: calc(var(--spacing-32) + 2px);
+  height: calc(var(--spacing-32) + 2px);
   border-width: 3px;
 }
 .spinner--brand {
-  border-color: var(--brand-500, #0f62fe);
+  border-color: var(--blue-sky-600);
 }
 .spinner--dark {
   border-color: var(--black, #121212);
@@ -16670,6 +16823,13 @@ label.required::after {
 }
 .input-wrapper .input-icon.checkmark {
   color: var(--green-600);
+}
+.input-wrapper:has(.left, .right) .input {
+  padding-inline: var(--spacing-32);
+}
+.input-wrapper .spinner {
+  position: absolute;
+  right: var(--spacing-12);
 }
 .input-wrapper.has-leading .input {
   padding-left: var(--spacing-40, 40px);
