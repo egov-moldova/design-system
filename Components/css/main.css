@@ -16593,6 +16593,71 @@ body.has-overlay footer {
   transform: translateY(0);
 }
 
+.accordion {
+  border-top: 1px solid var(--color-border-subtle);
+}
+.accordion__item {
+  border-bottom: var(--border-width-1) var(--border-style-solid) var(--gray-200);
+}
+.accordion__header {
+  margin: 0;
+}
+.accordion__trigger {
+  width: 100%;
+  padding: var(--spacing-32) 0;
+  background: none;
+  border: 0;
+  display: flex;
+  flex-direction: column;
+  column-gap: var(--spacing-16);
+  text-align: left;
+  cursor: pointer;
+  align-items: flex-start;
+  position: relative;
+}
+.accordion__trigger:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+.accordion__heading {
+  display: block;
+  font-size: var(--text-md-font-size);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+}
+.accordion__supporting {
+  color: var(--gray-400);
+  display: block;
+  margin-top: var(--spacing-4);
+  font-size: var(--text-body-md-font-size);
+  line-height: var(--spacing-24);
+}
+.accordion__icon {
+  font-size: 20px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+  position: absolute;
+  right: var(--spacing-16);
+  top: 50%;
+  transform: translateY(-50%);
+}
+.accordion__panel {
+  padding-bottom: var(--spacing-16);
+  color: var(--color-text-secondary);
+}
+.accordion__trigger[aria-expanded=true] .accordion__icon {
+  transform: translateY(-50%) rotate(45deg);
+}
+
+/* =========================
+   Breakpoints
+   ========================= */
+@media screen and (min-width: 991px) {
+  .accordion__trigger {
+    font-size: inherit;
+    padding: var(--spacing-24) 0;
+  }
+}
 /* =======================================
    🔹 Mixin principal pentru input-uri
 ======================================= */

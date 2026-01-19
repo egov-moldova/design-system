@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accordion Preview</title>
+  <link rel="stylesheet" href="css/main.css">
+  <script src="js/accordion.js" defer></script>
+</head>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-7">
+         <h1>Accordion</h1>
+        <p class="text-gray-400">
+          Badges are used to convey additional information or status indicators within a user interface. They are commonly employed to highlight key attributes, provide notifications, or indicate the status of an item or process.
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-7"> 
+        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+          <h2>Styles</h2>  
+        </div>
+      </div>
+    </div>  
+
+    <div class="row">
+      <div class="col-12">
+        <section class="accordion" data-accordion>
+          <h2 class="accordion__title">Accordion</h2>
+
+          <div class="accordion__item">
+            <h3 class="accordion__header">
+              <button
+                class="accordion__trigger"
+                aria-expanded="false"
+                aria-controls="accordion-panel-1"
+                id="accordion-trigger-1"
+              >
+                <span class="accordion__heading">Accordion Heading</span>
+                <span class="accordion__supporting">Supporting Text</span>
+
+                <span class="accordion__icon" aria-hidden="true">+</span>
+              </button>
+            </h3>
+
+            <div
+              class="accordion__panel"
+              id="accordion-panel-1"
+              role="region"
+              aria-labelledby="accordion-trigger-1"
+              hidden
+            >
+              <p>
+                Conținutul accordionului. Poate fi text, liste, componente etc.
+              </p>
+            </div>
+          </div>
+
+          <div class="accordion__item">
+            <h3 class="accordion__header">
+              <button
+                class="accordion__trigger"
+                aria-expanded="false"
+                aria-controls="accordion-panel-2"
+                id="accordion-trigger-2"
+              >
+                <span class="accordion__heading">Accordion Heading</span>
+                <span class="accordion__supporting">Supporting Text</span>
+                <span class="accordion__icon" aria-hidden="true">+</span>
+              </button>
+            </h3>
+
+            <div
+              class="accordion__panel"
+              id="accordion-panel-2"
+              role="region"
+              aria-labelledby="accordion-trigger-2"
+              hidden
+            >
+              <p>Alt conținut…</p>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+ 
+ 
+
+ 
+ 
+  </div>  
+ 
+
+
+
+</body>
+</html>
