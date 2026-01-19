@@ -2,7 +2,7 @@
   border-top: 1px solid var(--color-border-subtle);
 
   &__item {
-    border-bottom: var(--border-width-1) var(--border-style-solid) var(--gray-200);
+    border-top: var(--border-width-1) var(--border-style-solid) var(--gray-250);
   }
 
   &__header {
@@ -10,35 +10,41 @@
   }
 
   &__trigger {
+    font-size: var(--text-heading-h3-sm-font-size);
     width: 100%;
-    padding: var(--spacing-32) 0;
+    padding: var(--spacing-24) var(--spacing-40) var(--spacing-24) var(--spacing-0);
     background: none;
     border: 0;
     display: flex;
     flex-direction: column; 
-    column-gap: var(--spacing-16);
+    gap: var(--spacing-8);
     text-align: left;
     cursor: pointer;
     align-items: flex-start;
     position: relative;
+    transition: background-color 0.2s ease, padding-inline 0.2s ease;
 
     &:focus-visible {
       outline: 2px solid var(--color-focus);
       outline-offset: 2px;
     }
+
+    &:hover  {
+      background-color: var(--gray-100);
+      padding-left: var(--spacing-20);
+    } 
   }
 
   &__heading {
     display: block;
-    font-size: var(--text-md-font-size);
+    font-size: var(--text-heading-h4-xs-font-size);
     font-weight: var(--font-weight-semibold);
-    color: var(--color-text-primary);
+    color: var(--black);
   }
 
   &__supporting {
     color: var(--gray-400);
-    display: block;
-    margin-top: var(--spacing-4);
+    display: block; 
     font-size: var(--text-body-md-font-size);
     line-height: var(--spacing-24);
   }
@@ -48,18 +54,21 @@
     line-height: 1;
     transition: transform 0.2s ease;
     position: absolute;
-    right: var(--spacing-16);
+    right: var(--spacing-12);
     top: 50%;
     transform: translateY(-50%);
   }
 
   &__panel {
-    padding-bottom: var(--spacing-16);
+    padding: var(--spacing-20);
     color: var(--color-text-secondary);
   }
 
   // state: open
   &__trigger[aria-expanded="true"] {
+    .accordion__heading {
+      color: var(--blue-sky-600);
+    }
     .accordion__icon {
       transform: translateY(-50%) rotate(45deg); // + -> ×
     }
@@ -72,8 +81,9 @@
 @media screen and (min-width: 991px) {
   .accordion {
     &__trigger {
-      font-size: inherit;
-      padding: var(--spacing-24) 0;
+      font-size: var(--text-heading-h4-xs-font-size);
+      gap: var(--spacing-12);
+      padding: var(--spacing-32) var(--spacing-40) var(--spacing-32) var(--spacing-0);
     }
   }
 }

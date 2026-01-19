@@ -15,6 +15,8 @@ h4 { @include typ.apply-text-style('heading-h4-xs'); }
 h5 { @include typ.apply-text-style('heading-h5-2xs'); }
 h6 { @include typ.apply-text-style('caption-md-500'); }
 
+h1, h2, h3, h4, h5, h6 { margin-top: var(--spacing-0); }
+
 p { 
   @include typ.apply-text-style('body-md'); 
   margin: 0;

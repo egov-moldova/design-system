@@ -13,25 +13,25 @@
       <div class="col-sm-7">
          <h1>Accordion</h1>
         <p class="text-gray-400">
-          Badges are used to convey additional information or status indicators within a user interface. They are commonly employed to highlight key attributes, provide notifications, or indicate the status of an item or process.
+          The Accordion component is used to organize and display large amounts of content in a condensed, expandable format. 
+          It helps users navigate information more efficiently by revealing or hiding content sections on demand, reducing cognitive overload and keeping interfaces clean and focused.
         </p>
       </div>
     </div>
     <div class="row">
-      <div class="col-7"> 
+      <div class="col-12"> 
         <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-          <h2>Styles</h2>  
+          <h2>Breakpoints</h2>  
         </div>
       </div>
     </div>  
 
     <div class="row">
       <div class="col-12">
-        <section class="accordion" data-accordion>
-          <h2 class="accordion__title">Accordion</h2>
-
+        <div class="text-body-lg-500 mb-20">desktop</div>
+        <section class="accordion" data-accordion> 
           <div class="accordion__item">
-            <h3 class="accordion__header">
+            <h4 class="accordion__header">
               <button
                 class="accordion__trigger"
                 aria-expanded="false"
@@ -41,9 +41,13 @@
                 <span class="accordion__heading">Accordion Heading</span>
                 <span class="accordion__supporting">Supporting Text</span>
 
-                <span class="accordion__icon" aria-hidden="true">+</span>
+                <span class="accordion__icon" aria-hidden="true">
+                  <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-plus-large"></use> 
+                  </svg>
+                </span>
               </button>
-            </h3>
+            </h4>
 
             <div
               class="accordion__panel"
@@ -59,7 +63,7 @@
           </div>
 
           <div class="accordion__item">
-            <h3 class="accordion__header">
+            <h4 class="accordion__header">
               <button
                 class="accordion__trigger"
                 aria-expanded="false"
@@ -68,9 +72,13 @@
               >
                 <span class="accordion__heading">Accordion Heading</span>
                 <span class="accordion__supporting">Supporting Text</span>
-                <span class="accordion__icon" aria-hidden="true">+</span>
+                <span class="accordion__icon" aria-hidden="true">
+                  <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-plus-large"></use> 
+                  </svg>
+                </span>
               </button>
-            </h3>
+            </h4>
 
             <div
               class="accordion__panel"
@@ -80,6 +88,37 @@
               hidden
             >
               <p>Alt conținut…</p>
+            </div>
+          </div>
+          <div class="accordion__item">
+            <h4 class="accordion__header">
+              <button
+                class="accordion__trigger"
+                aria-expanded="false"
+                aria-controls="accordion-panel-3"
+                id="accordion-trigger-3"
+              >
+                <span class="accordion__heading">Accordion Heading</span>
+                <span class="accordion__supporting">Supporting Text</span>
+
+                <span class="accordion__icon" aria-hidden="true">
+                  <svg class="icon medium" aria-hidden="true"> 
+                    <use href="assets/icons/sprite.svg#icon-plus-large"></use> 
+                  </svg>
+                </span>
+              </button>
+            </h4>
+
+            <div
+              class="accordion__panel"
+              id="accordion-panel-3"
+              role="region"
+              aria-labelledby="accordion-trigger-3"
+              hidden
+            >
+              <p>
+                Conținutul accordionului. Poate fi text, liste, componente etc.
+              </p>
             </div>
           </div>
         </section>
