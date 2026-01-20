@@ -188,11 +188,12 @@
           <h2>States</h2>
       </div>
     </div>
-    <div class="row">
-      <div class="col-4">
+    <div class="row mb-56">
+      <div class="col-12 col-md-6">
+        <div class="text-body-md-500 mb-12">default: default</div>
         <div class="select-wrap">
           <label id="country-label" class="select-label">Alege țara</label> 
-          <div class="custom-select" data-select data-searchable="true" data-size="large" aria-labelledby="country-label" aria-disabled="true">
+          <div class="custom-select" data-select data-searchable="true" data-size="large" aria-labelledby="country-label">
             <button type="button" class="select-control" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="country-label">
               <span class="select-value">Selectați...</span>
               <span class="select-arrow" aria-hidden="true">
@@ -216,52 +217,368 @@
             </div>
           </div>
         </div>  
+        <div class="mt-56">
+          <div class="text-body-md-500 mb-12">default: hover</div>
+          <div class="select-wrap">
+            <label id="country-label" class="select-label">Alege țara</label> 
+            <div class="custom-select" data-select data-searchable="true" data-size="large" aria-labelledby="country-label">
+              <button type="button" class="select-control" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="country-label" style="border-color: var(--select-shadow);
+    outline: 1px solid var(--select-hover-shadow);">
+                <span class="select-value">Selectați...</span>
+                <span class="select-arrow" aria-hidden="true">
+                  <span class="d-inline-flex">
+                    <svg class="icon small" aria-hidden="true"> 
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use>
+                    </svg>
+                  </span>
+                </span>
+              </button>
+
+              <div class="select-dropdown" role="presentation" hidden> 
+                <ul class="select-list" role="listbox" aria-labelledby="country-label" tabindex="-1">
+                  <li role="option" data-value="md" class="select-option">Moldova</li>
+                  <li role="option" data-value="ro" class="select-option">România</li>
+                  <li role="option" data-value="ua" class="select-option">Ucraina</li>
+                  <li role="option" data-value="de" class="select-option">Germania</li>
+                  <li role="option" data-value="fr" class="select-option">Franța</li>
+                  <li role="option" data-value="es" class="select-option">Spania</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-56">
+          <div class="text-body-md-500 mb-12">default: focus</div>
+          <div class="select-wrap">
+            <label id="country-label" class="select-label">Alege țara</label> 
+            <div class="custom-select" data-select data-searchable="true" data-size="large" aria-labelledby="country-label">
+              <button type="button" class="select-control" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="country-label" style="outline: none; box-shadow: 0 0 0 4px rgba(3, 102, 214, 0.12); border-color: var(--select-accent);">
+                <span class="select-value">Selectați...</span>
+                <span class="select-arrow" aria-hidden="true">
+                  <span class="d-inline-flex">
+                    <svg class="icon small" aria-hidden="true"> 
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use>
+                    </svg>
+                  </span>
+                </span>
+              </button>
+
+              <div class="select-dropdown" role="presentation" hidden> 
+                <ul class="select-list" role="listbox" aria-labelledby="country-label" tabindex="-1">
+                  <li role="option" data-value="md" class="select-option">Moldova</li>
+                  <li role="option" data-value="ro" class="select-option">România</li>
+                  <li role="option" data-value="ua" class="select-option">Ucraina</li>
+                  <li role="option" data-value="de" class="select-option">Germania</li>
+                  <li role="option" data-value="fr" class="select-option">Franța</li>
+                  <li role="option" data-value="es" class="select-option">Spania</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-56">
+          <div class="text-body-md-500 mb-12">default: filled</div>
+          <div class="select-wrap">
+            <label id="country-label" class="select-label">Alege țara</label> 
+            <div class="custom-select" data-select data-searchable="true" data-size="large" aria-labelledby="country-label">
+              <button type="button" class="select-control" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="country-label">
+                <span class="select-value">Selectați...</span>
+                <span class="select-arrow" aria-hidden="true">
+                  <span class="d-inline-flex">
+                    <svg class="icon small" aria-hidden="true"> 
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use>
+                    </svg>
+                  </span>
+                </span>
+              </button>
+
+              <div class="select-dropdown" role="presentation" hidden> 
+                <ul class="select-list" role="listbox" aria-labelledby="country-label" tabindex="-1">
+                  <li role="option" data-value="md" class="select-option">Moldova</li>
+                  <li role="option" data-value="ro" class="select-option">România</li>
+                  <li role="option" data-value="ua" class="select-option">Ucraina</li>
+                  <li role="option" data-value="de" class="select-option">Germania</li>
+                  <li role="option" data-value="fr" class="select-option">Franța</li>
+                  <li role="option" data-value="es" class="select-option">Spania</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-56">
+          <div class="text-body-md-500 mb-12">default: disabled</div>
+          <div class="select-wrap">
+            <label id="country-label" class="select-label">Alege țara</label> 
+            <div class="custom-select" data-select data-searchable="true" data-size="large" aria-labelledby="country-label"  aria-disabled="true">
+              <button type="button" class="select-control" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="country-label">
+                <span class="select-value">Selectați...</span>
+                <span class="select-arrow" aria-hidden="true">
+                  <span class="d-inline-flex">
+                    <svg class="icon small" aria-hidden="true"> 
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use>
+                    </svg>
+                  </span>
+                </span>
+              </button>
+
+              <div class="select-dropdown" role="presentation" hidden> 
+                <ul class="select-list" role="listbox" aria-labelledby="country-label" tabindex="-1">
+                  <li role="option" data-value="md" class="select-option">Moldova</li>
+                  <li role="option" data-value="ro" class="select-option">România</li>
+                  <li role="option" data-value="ua" class="select-option">Ucraina</li>
+                  <li role="option" data-value="de" class="select-option">Germania</li>
+                  <li role="option" data-value="fr" class="select-option">Franța</li>
+                  <li role="option" data-value="es" class="select-option">Spania</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="col-4">
+      <div class="col-12 col-md-6">
+        <div class="text-body-md-500 mb-12">destructive: default</div>
         <div class="select-wrap">
-  <label id="country-label" class="select-label">Alege țara</label>
+          <label id="country-label" class="select-label">Alege țara</label>
 
-  <div
-    class="custom-select"
-    data-select
-    data-searchable="true"
-    data-size="large"
-    data-variant="destructive"
-    aria-labelledby="country-label"
-  >
-    <button
-      type="button"
-      class="select-control"
-      aria-haspopup="listbox"
-      aria-expanded="false"
-      aria-labelledby="country-label"
-    >
-      <span class="select-value">Selectați...</span>
+          <div
+            class="custom-select"
+            data-select
+            data-searchable="true"
+            data-size="large"
+            data-variant="destructive"
+            aria-labelledby="country-label"
+          >
+            <button
+              type="button"
+              class="select-control"
+              aria-haspopup="listbox"
+              aria-expanded="false"
+              aria-labelledby="country-label"
+            >
+              <span class="select-value">Selectați...</span>
 
-      <span class="select-arrow" aria-hidden="true">
-        <svg class="icon small" aria-hidden="true">
-          <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use>
-        </svg>
-      </span>
-    </button>
+              <span class="select-arrow" aria-hidden="true">
+                <svg class="icon small" aria-hidden="true">
+                  <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use>
+                </svg>
+              </span>
+            </button>
 
-    <div class="select-dropdown" role="presentation" hidden>
-      <ul
-        class="select-list"
-        role="listbox"
-        aria-labelledby="country-label"
-        tabindex="-1"
-      >
-        <li role="option" class="select-option" data-value="md">Moldova</li>
-        <li role="option" class="select-option" data-value="ro">România</li>
-        <li role="option" class="select-option" data-value="ua">Ucraina</li>
-        <li role="option" class="select-option" data-value="de">Germania</li>
-        <li role="option" class="select-option" data-value="fr">Franța</li>
-        <li role="option" class="select-option" data-value="es">Spania</li>
-      </ul>
-    </div>
-  </div>
-</div>
+            <div class="select-dropdown" role="presentation" hidden>
+              <ul
+                class="select-list"
+                role="listbox"
+                aria-labelledby="country-label"
+                tabindex="-1"
+              >
+                <li role="option" class="select-option" data-value="md">Moldova</li>
+                <li role="option" class="select-option" data-value="ro">România</li>
+                <li role="option" class="select-option" data-value="ua">Ucraina</li>
+                <li role="option" class="select-option" data-value="de">Germania</li>
+                <li role="option" class="select-option" data-value="fr">Franța</li>
+                <li role="option" class="select-option" data-value="es">Spania</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-56">
+          <div class="text-body-md-500 mb-12">destructive: hover</div>
+          <div class="select-wrap">
+            <label id="country-label" class="select-label">Alege țara</label>
+
+            <div
+              class="custom-select"
+              data-select
+              data-searchable="true"
+              data-size="large"
+              data-variant="destructive"
+              aria-labelledby="country-label"
+            >
+              <button
+                type="button"
+                class="select-control"
+                aria-haspopup="listbox"
+                aria-expanded="false"
+                aria-labelledby="country-label"
+                style="border-color: var(--select-border); outline: 1px solid var(--select-accent);"
+              >
+                <span class="select-value">Selectați...</span>
+
+                <span class="select-arrow" aria-hidden="true">
+                  <svg class="icon small" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use>
+                  </svg>
+                </span>
+              </button>
+
+              <div class="select-dropdown" role="presentation" hidden>
+                <ul
+                  class="select-list"
+                  role="listbox"
+                  aria-labelledby="country-label"
+                  tabindex="-1"
+                >
+                  <li role="option" class="select-option" data-value="md">Moldova</li>
+                  <li role="option" class="select-option" data-value="ro">România</li>
+                  <li role="option" class="select-option" data-value="ua">Ucraina</li>
+                  <li role="option" class="select-option" data-value="de">Germania</li>
+                  <li role="option" class="select-option" data-value="fr">Franța</li>
+                  <li role="option" class="select-option" data-value="es">Spania</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-56">
+          <div class="text-body-md-500 mb-12">destructive: focus</div>
+          <div class="select-wrap">
+            <label id="country-label" class="select-label">Alege țara</label>
+
+            <div
+              class="custom-select"
+              data-select
+              data-searchable="true"
+              data-size="large"
+              data-variant="destructive"
+              aria-labelledby="country-label"
+            >
+              <button
+                type="button"
+                class="select-control"
+                aria-haspopup="listbox"
+                aria-expanded="false"
+                aria-labelledby="country-label"
+                style="box-shadow: 0 0 0 4px var(--select-focus-ring); border-color: var(--select-accent);"
+              >
+                <span class="select-value">Selectați...</span>
+
+                <span class="select-arrow" aria-hidden="true">
+                  <svg class="icon small" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use>
+                  </svg>
+                </span>
+              </button>
+
+              <div class="select-dropdown" role="presentation" hidden>
+                <ul
+                  class="select-list"
+                  role="listbox"
+                  aria-labelledby="country-label"
+                  tabindex="-1"
+                >
+                  <li role="option" class="select-option" data-value="md">Moldova</li>
+                  <li role="option" class="select-option" data-value="ro">România</li>
+                  <li role="option" class="select-option" data-value="ua">Ucraina</li>
+                  <li role="option" class="select-option" data-value="de">Germania</li>
+                  <li role="option" class="select-option" data-value="fr">Franța</li>
+                  <li role="option" class="select-option" data-value="es">Spania</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-56">
+          <div class="text-body-md-500 mb-12">destructive: filled</div>
+          <div class="select-wrap">
+            <label id="country-label" class="select-label">Alege țara</label>
+
+            <div
+              class="custom-select"
+              data-select
+              data-searchable="true"
+              data-size="large"
+              data-variant="destructive"
+              aria-labelledby="country-label"
+            >
+              <button
+                type="button"
+                class="select-control"
+                aria-haspopup="listbox"
+                aria-expanded="false"
+                aria-labelledby="country-label"
+              >
+                <span class="select-value">Selectați...</span>
+
+                <span class="select-arrow" aria-hidden="true">
+                  <svg class="icon small" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use>
+                  </svg>
+                </span>
+              </button>
+
+              <div class="select-dropdown" role="presentation" hidden>
+                <ul
+                  class="select-list"
+                  role="listbox"
+                  aria-labelledby="country-label"
+                  tabindex="-1"
+                >
+                  <li role="option" class="select-option" data-value="md">Moldova</li>
+                  <li role="option" class="select-option" data-value="ro">România</li>
+                  <li role="option" class="select-option" data-value="ua">Ucraina</li>
+                  <li role="option" class="select-option" data-value="de">Germania</li>
+                  <li role="option" class="select-option" data-value="fr">Franța</li>
+                  <li role="option" class="select-option" data-value="es">Spania</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-56">
+          <div class="text-body-md-500 mb-12">destructive: disabled</div>
+          <div class="select-wrap">
+            <label id="country-label" class="select-label">Alege țara</label>
+
+            <div
+              class="custom-select"
+              data-select
+              data-searchable="true"
+              data-size="large"
+              data-variant="destructive"
+              aria-labelledby="country-label"
+              aria-disabled="true"
+            >
+              <button
+                type="button"
+                class="select-control"
+                aria-haspopup="listbox"
+                aria-expanded="false"
+                aria-labelledby="country-label"
+              >
+                <span class="select-value">Selectați...</span>
+
+                <span class="select-arrow" aria-hidden="true">
+                  <svg class="icon small" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use>
+                  </svg>
+                </span>
+              </button>
+
+              <div class="select-dropdown" role="presentation" hidden>
+                <ul
+                  class="select-list"
+                  role="listbox"
+                  aria-labelledby="country-label"
+                  tabindex="-1"
+                >
+                  <li role="option" class="select-option" data-value="md">Moldova</li>
+                  <li role="option" class="select-option" data-value="ro">România</li>
+                  <li role="option" class="select-option" data-value="ua">Ucraina</li>
+                  <li role="option" class="select-option" data-value="de">Germania</li>
+                  <li role="option" class="select-option" data-value="fr">Franța</li>
+                  <li role="option" class="select-option" data-value="es">Spania</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
 
       </div>
     </div> 
