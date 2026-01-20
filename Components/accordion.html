@@ -87,7 +87,19 @@
               aria-labelledby="accordion-trigger-2"
               hidden
             >
-              <p>Alt conținut…</p>
+              <div class="accordion__panel-content d-flex flex-column gap-16 align-items-center p-32 bg-blue-sky-100 radius-8 border border-2 border-dashed border-blue-sky-600">
+                  <div class="accordion__panel-content--icon d-inline-flex">
+                    <span class="p-6 bg-blue-sky-600 text-white radius-6 d-inline-flex">
+                      <svg class="icon medium" aria-hidden="true"> 
+                        <use href="assets/icons/sprite.svg#icon-rotate-arrow"></use> 
+                      </svg>
+                    </span>
+                  </div>
+                  <h4 id="sheet-title" class="accordion__panel-content--title m-0">Content slot</h4>
+                  <div class="accordion__panel-content--description">
+                    Use the content slot as a placeholder. Copy it locally, detach and create a new component with needed elements inside.
+                  </div> 
+                </div>
             </div>
           </div>
           <div class="accordion__item">
