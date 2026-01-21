@@ -18751,12 +18751,7 @@ label.required::after {
   cursor: pointer;
   transition: all 0.15s ease-in-out;
   flex-shrink: 0;
-  /*
-      svg {
-        width: 12px;
-        height: 12px;
-        stroke-width: 2;
-      }*/
+  padding: var(--spacing-2);
 }
 .chip__close:hover {
   background-color: var(--gray-300);

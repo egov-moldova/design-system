@@ -21,68 +21,136 @@
       padding: .5rem 1rem;
       border-radius: .375rem;
       text-align: center;
+      width: auto;
+      min-height: auto;
     }
   </style>
 </head>
 <body>
-  <h1>Display Utilities Preview</h1>
-  <p>Redimensionează fereastra browserului ca să vezi cum se schimbă clasele responsive (<code>d-sm-*</code>, <code>d-md-*</code>, etc.).</p>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Class</th>
-        <th>Description</th>
-        <th>Preview</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><code>.d-none</code></td>
-        <td>Elementul este ascuns</td>
-        <td><div class="preview-box d-none">hidden</div></td>
-      </tr>
-      <tr>
-        <td><code>.d-block</code></td>
-        <td>Elementul devine <code>display: block</code></td>
-        <td><div class="preview-box d-block">block</div></td>
-      </tr>
-      <tr>
-        <td><code>.d-inline</code></td>
-        <td>Elementul devine <code>display: inline</code></td>
-        <td><div class="preview-box d-inline">inline</div></td>
-      </tr>
-      <tr>
-        <td><code>.d-flex</code></td>
-        <td>Activează flexbox</td>
-        <td><div class="preview-box d-flex">flex</div></td>
-      </tr>
-      <tr>
-        <td><code>.d-grid</code></td>
-        <td>Activează grid</td>
-        <td><div class="preview-box d-grid">grid</div></td>
-      </tr>
-      <tr>
-        <td><code>.d-md-none</code></td>
-        <td>Ascuns pe <code>md+</code> (≥768px)</td>
-        <td><div class="preview-box d-md-none">hidden on md+</div></td>
-      </tr>
-      <tr>
-        <td><code>.d-lg-block</code></td>
-        <td><code>display: block</code> doar pe <code>lg+</code> (≥992px)</td>
-        <td><div class="preview-box d-none d-lg-block">block on lg+</div></td>
-      </tr>
-      <tr>
-        <td><code>.d-xl-flex</code></td>
-        <td><code>display: flex</code> doar pe <code>xl+</code> (≥1200px)</td>
-        <td><div class="preview-box d-none d-xl-flex">flex on xl+</div></td>
-      </tr>
-      <tr>
-        <td><code>.d-sm-inline d-md-flex d-lg-grid</code></td>
-        <td>Se schimbă la fiecare breakpoint</td>
-        <td><div class="preview-box d-sm-inline d-md-flex d-lg-grid">changes by breakpoint</div></td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="container">
+
+    <!-- Header -->
+    <div class="row mb-56">
+      <div class="col-12">
+        <h1>Display Utilities Preview</h1>
+        <p>
+          Redimensionează fereastra browserului ca să vezi cum se schimbă clasele responsive
+          (<code>d-sm-*</code>, <code>d-md-*</code>, etc.).
+        </p>
+      </div>
+    </div>
+
+    <!-- Table Header -->
+    <div class="row table-head mb-20 bg-gray-100 py-12">
+      <div class="col-3"><strong>Class</strong></div>
+      <div class="col-5"><strong>Description</strong></div>
+      <div class="col-4"><strong>Preview</strong></div>
+    </div>
+
+    <!-- Row -->
+    <div class="row mb-32">
+      <div class="col-3">
+        <code class="bg-gray-100 radius-8 py-4 px-12">.d-none</code>
+      </div>
+      <div class="col-5">Elementul este ascuns</div>
+      <div class="col-4">
+        <div class="preview-box d-none">hidden</div>
+      </div>
+    </div>
+
+    <div class="row mb-32">
+      <div class="col-3">
+        <code class="bg-gray-100 radius-8 py-4 px-12">.d-block</code>
+      </div>
+      <div class="col-5">Elementul devine <code>display: block</code></div>
+      <div class="col-4">
+        <div class="preview-box d-block">block</div>
+      </div>
+    </div>
+
+    <div class="row mb-32">
+      <div class="col-3">
+        <code class="bg-gray-100 radius-8 py-4 px-12">.d-inline</code>
+      </div>
+      <div class="col-5">Elementul devine <code>display: inline</code></div>
+      <div class="col-4">
+        <div class="preview-box d-inline">inline</div>
+      </div>
+    </div>
+
+    <div class="row mb-32">
+      <div class="col-3">
+        <code class="bg-gray-100 radius-8 py-4 px-12">.d-flex</code>
+      </div>
+      <div class="col-5">Activează flexbox</div>
+      <div class="col-4">
+        <div class="preview-box d-flex">flex</div>
+      </div>
+    </div>
+
+    <div class="row mb-32">
+      <div class="col-3">
+        <code class="bg-gray-100 radius-8 py-4 px-12">.d-grid</code>
+      </div>
+      <div class="col-5">Activează grid</div>
+      <div class="col-4">
+        <div class="preview-box d-grid">grid</div>
+      </div>
+    </div>
+
+    <div class="row mb-32">
+      <div class="col-3">
+        <code class="bg-gray-100 radius-8 py-4 px-12">.d-md-none</code>
+      </div>
+      <div class="col-5">Ascuns pe <code>md+</code> (≥768px)</div>
+      <div class="col-4">
+        <div class="preview-box d-md-none">hidden on md+</div>
+      </div>
+    </div>
+
+    <div class="row mb-32">
+      <div class="col-3">
+        <code class="bg-gray-100 radius-8 py-4 px-12">.d-lg-block</code>
+      </div>
+      <div class="col-5">
+        <code>display: block</code> doar pe <code>lg+</code> (≥992px)
+      </div>
+      <div class="col-4">
+        <div class="preview-box d-none d-lg-block">block on lg+</div>
+      </div>
+    </div>
+
+    <div class="row mb-32">
+      <div class="col-3">
+        <code class="bg-gray-100 radius-8 py-4 px-12">.d-xl-flex</code>
+      </div>
+      <div class="col-5">
+        <code>display: flex</code> doar pe <code>xl+</code> (≥1200px)
+      </div>
+      <div class="col-4">
+        <div class="preview-box d-none d-xl-flex">flex on xl+</div>
+      </div>
+    </div>
+
+    <div class="row mb-32">
+      <div class="col-3">
+        <div class="d-flex flex-column row-gap-8">
+          <code class="bg-gray-100 radius-8 py-4 px-12">.d-sm-inline</code>
+          <code class="bg-gray-100 radius-8 py-4 px-12">.d-md-flex</code>
+          <code class="bg-gray-100 radius-8 py-4 px-12">.d-lg-grid</code>
+        </div> 
+      </div>
+      <div class="col-5">Se schimbă la fiecare breakpoint</div>
+      <div class="col-4">
+        <div class="preview-box d-sm-inline d-md-flex d-lg-grid">
+          changes by breakpoint
+        </div>
+      </div>
+    </div>
+
+  </div>
+
 </body>
+
 </html>

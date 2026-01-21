@@ -8,7 +8,7 @@
   <script src="js/main.js" defer></script>
 </head>
 <body>
-  <div class="container">
+  <div class="container py-56">
 
     <!-- Header & Description -->
     <div class="row">
@@ -61,7 +61,7 @@
       </div>
     </div>
     <!-- Mono-select chips -->
-    <div class="row mb-32">
+    <div class="row mb-32 row-gap-20">
       <div class="col-12">
         <h3>Mono-Select</h3>
       </div>
@@ -96,7 +96,7 @@
         </button>
       </div> 
     </div>
-    <div class="row mt-32">
+    <div class="row mt-32 row-gap-20">
       <div class="col-12">
         <h4>Example</h4> 
         <div class="d-flex gap-8 flex-wrap"> 
@@ -126,7 +126,7 @@
     </div>
 
     <!-- Multi-select chips -->
-    <div class="row my-32">
+    <div class="row my-32 row-gap-20">
       <div class="col-12">
         <h3>Multi-Select</h3>
       </div>
@@ -166,7 +166,7 @@
         </button>
       </div> 
     </div>
-    <div class="row mt-32">
+    <div class="row mt-32 row-gap-20">
       <div class="col-12">
         <h4>Example</h4> 
         <div class="d-flex gap-8 flex-wrap"> 
@@ -206,7 +206,7 @@
     </div>
 
     <!-- Variants -->
-    <div class ="row">
+    <div class ="row row-gap-20">
       <div class="col-12"> 
         <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
           <h2>Variants</h2> 
@@ -277,8 +277,8 @@
           <!-- ✅ 2. WITH ICON -->
           <button type="button" class="chip" aria-pressed="false">
             <span class="chip__icon">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              <svg class="icon small" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-group"></use> 
               </svg>
             </span>
             <span class="chip__label">With icon</span>
@@ -286,8 +286,8 @@
 
           <button type="button" class="chip is-disabled" aria-disabled="true" disabled>
             <span class="chip__icon">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              <svg class="icon small" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-group"></use> 
               </svg>
             </span>
             <span class="chip__label">Icon disabled</span>
