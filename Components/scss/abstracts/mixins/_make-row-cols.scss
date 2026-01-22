@@ -1,0 +1,31 @@
+@use "sass:math";
+@use "sass:map";
+@use "../variables" as vars;
+@use "./media" as *;
+
+@mixin make-row-cols($columns: 12) {
+  @for $i from 1 through $columns {
+    .row-cols-#{$i} > * {
+      flex: 0 0 auto;
+      width: math.percentage(math.div(1, $i));
+    }
+  }
+}
+
+@mixin make-responsive-row-cols($columns: 12, $breakpoints: vars.$breakpoints) {
+
+  // default
+  @include make-row-cols($columns);
+
+  // responsive
+  @each $bp, $width in $breakpoints {
+    @include media-breakpoint-up($bp, $breakpoints) {
+      @for $i from 1 through $columns {
+        .row-cols-#{$bp}-#{$i} > * {
+          flex: 0 0 auto;
+          width: math.percentage(math.div(1, $i));
+        }
+      }
+    }
+  }
+}

@@ -21,5 +21,14 @@
         }
       }
     }
+
+    .container-fluid {
+      width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      box-sizing: border-box;
+      padding-left: var(--spacing-12, 12px);
+      padding-right: var(--spacing-12, 12px);
+    }
   }
 }

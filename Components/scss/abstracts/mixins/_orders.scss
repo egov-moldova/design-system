@@ -1,0 +1,25 @@
+@use 'sass:meta';
+
+/// aplică order
+/// $value poate fi: number | auto
+@mixin make-order($value) {
+  @if $value == auto {
+    order: auto;
+  } @else {
+    order: $value;
+  }
+}
+/// aplică order pentru un anumit breakpoint
+/// $breakpoint: numele breakpoint-ului (ex: sm, md, lg etc.)
+/// $value: number | auto   
+/// $breakpoints: mapă cu breakpoint-urile definite în variabile
+@mixin make-order-responsive($breakpoint, $value, $breakpoints) {
+  $bp-value: map.get($breakpoints, $breakpoint);
+  @if meta.type-of($bp-value) == 'number' {
+    @media (min-width: $bp-value) {
+      @include make-order($value);
+    }
+  } @else {
+    @warn "Breakpoint `#{$breakpoint}` nu este definit în mapă.";
+  }
+}

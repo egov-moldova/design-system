@@ -1,0 +1,36 @@
+@use 'sass:map';
+@use '../abstracts/variables' as vars;
+@use '../abstracts/mixins/orders' as *;
+@use '../abstracts/mixins/media' as *;
+
+// ==========================
+// 🔹 Order utilities
+// ==========================
+
+$max-order: 12;
+
+// order global
+@for $i from 0 through $max-order {
+  .order-#{$i} {
+    @include make-order($i);
+  }
+}
+
+.order-auto {
+  @include make-order(auto);
+}
+
+// order responsive
+@each $bp, $width in vars.$breakpoints {
+  @include media-breakpoint-up($bp, vars.$breakpoints) {
+    @for $i from 0 through $max-order {
+      .order-#{$bp}-#{$i} {
+        @include make-order($i);
+      }
+    }
+
+    .order-#{$bp}-auto {
+      @include make-order(auto);
+    }
+  }
+}
