@@ -13499,7 +13499,7 @@ p {
   max-width: 996px;
   position: relative;
   padding: 1rem 0;
-  --connector-length: 80px;
+  --connector-length: calc(100% - 45px);
 }
 .progress-tracker .progress-step {
   position: relative;
@@ -13518,7 +13518,7 @@ p {
   height: 22px;
   border-radius: var(--border-radius-full, 9999px);
   border: 1.5px var(--solid, solid) var(--gray-300, #e0e0e0);
-  background-color: #fff;
+  background-color: var(--white, #fff);
   color: var(--gray-300, #b2b2b2);
   display: flex;
   align-items: center;
@@ -13542,9 +13542,8 @@ p {
   position: absolute;
   top: 12px;
   left: 0;
-  width: var(--connector-length, 80px);
+  width: var(--connector-length);
   height: 1.5px;
-  width: var(--connector-length, 80px);
   background-color: var(--gray-200, #e5e5e5);
   z-index: 1;
 }
@@ -13813,6 +13812,7 @@ body:has(.modal-overlay.modal-overlay.is-active) {
   padding: var(--spacing-24, 24px) var(--spacing-20, 20px) var(--spacing-40, 40px) var(--spacing-32, 32px);
   max-height: calc(64vh - 4px);
   overflow-y: auto;
+  scrollbar-width: thin;
 }
 .modal--footer {
   padding: var(--spacing-12, 12px) var(--spacing-20, 20px) var(--spacing-24, 24px) var(--spacing-20, 20px);
@@ -13942,8 +13942,8 @@ body:has(.modal-overlay.modal-overlay.is-active) {
 .banner--info,
 .inline-message--info,
 .info-box--info {
-  background-color: #0058d2;
-  color: #fff;
+  background-color: var(--blue-sky-600);
+  color: var(--white, #fff);
 }
 .message--info__icon,
 .message--info .banner__close,
@@ -13953,14 +13953,14 @@ body:has(.modal-overlay.modal-overlay.is-active) {
 .inline-message--info .banner__close,
 .info-box--info__icon,
 .info-box--info .banner__close {
-  color: #fff;
+  color: var(--white, #fff);
 }
 .message--success,
 .banner--success,
 .inline-message--success,
 .info-box--success {
   background-color: #039855;
-  color: #fff;
+  color: var(--white, #fff);
 }
 .message--success__icon,
 .message--success .banner__close,
@@ -13970,7 +13970,7 @@ body:has(.modal-overlay.modal-overlay.is-active) {
 .inline-message--success .banner__close,
 .info-box--success__icon,
 .info-box--success .banner__close {
-  color: #fff;
+  color: var(--white, #fff);
 }
 .message--warning,
 .banner--warning,
@@ -13993,7 +13993,7 @@ body:has(.modal-overlay.modal-overlay.is-active) {
 .inline-message--error,
 .info-box--error {
   background-color: #d92d20;
-  color: #fff;
+  color: var(--white);
 }
 .message--error__icon,
 .message--error .banner__close,
@@ -14003,7 +14003,7 @@ body:has(.modal-overlay.modal-overlay.is-active) {
 .inline-message--error .banner__close,
 .info-box--error__icon,
 .info-box--error .banner__close {
-  color: var(--white, #fff);
+  color: var(--white);
 }
 .message--banner,
 .banner--banner,
@@ -14208,16 +14208,17 @@ body:has(.modal-overlay.modal-overlay.is-active) {
   gap: var(--spacing-16, 16px);
   padding: var(--spacing-12, 12px) var(--spacing-16, 16px) var(--spacing-12, 12px) var(--spacing-12, 12px);
   border-radius: var(--radius-12, 12px);
-  color: #fff;
+  color: var(--white);
   background-color: var(--gray-800);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   animation: toast-slide-in 0.35s ease both;
   pointer-events: auto;
 }
 .toast__icon {
+  display: inline-flex;
   flex-shrink: 0;
-  width: 20px;
-  height: 20px;
+  width: var(--spacing-20);
+  height: var(--spacing-20);
 }
 .toast__icon svg {
   width: 100%;

@@ -160,6 +160,7 @@ body:has(.modal-overlay.modal-overlay.is-active) {
     padding: var(--spacing-24, 24px) var(--spacing-20, 20px) var(--spacing-40, 40px) var(--spacing-32, 32px);
     max-height: calc(64vh - 4px);
     overflow-y: auto;
+    scrollbar-width: thin;
   }
 
   &--footer {

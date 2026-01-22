@@ -58,22 +58,22 @@
   // Types with fixed colors
   // =========================
   &--info {
-    background-color: #0058d2;
-    color: #fff;
+    background-color: var(--blue-sky-600);
+    color: var(--white, #fff);
 
     &__icon,
     .banner__close {
-      color: #fff;
+      color: var(--white, #fff);
     }
   }
 
   &--success {
     background-color: #039855;
-    color: #fff;
+    color: var(--white, #fff);
 
     &__icon,
     .banner__close {
-      color: #fff;
+      color: var(--white, #fff);
     }
   }
 
@@ -89,11 +89,11 @@
 
   &--error {
     background-color: #d92d20;
-    color: #fff;
+    color: var(--white);
 
     &__icon,
     .banner__close {
-      color: var(--white, #fff);
+      color: var(--white);
     }
   }
 
@@ -105,8 +105,7 @@
     justify-content: center;
     padding-block: var(--spacing-12, 12px);  
 
-    .banner__content {
-        //flex: 1;
+    .banner__content { 
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -256,16 +255,17 @@
   gap: var(--spacing-16, 16px);
   padding: var(--spacing-12, 12px) var(--spacing-16, 16px) var(--spacing-12, 12px) var(--spacing-12, 12px);
   border-radius: var(--radius-12, 12px);
-  color: #fff;
+  color: var(--white);
   background-color: var(--gray-800);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   animation: toast-slide-in 0.35s ease both;
   pointer-events: auto;
 
   &__icon {
+    display: inline-flex;
     flex-shrink: 0;
-    width: 20px;
-    height: 20px; 
+    width: var(--spacing-20);
+    height: var(--spacing-20);
 
     svg { 
       width: 100%;

@@ -1,6 +1,4 @@
-// =============================
-// Progress tracker — improved layout
-// =============================
+
 .progress-tracker {
   display: flex;
   align-items: center;
@@ -10,30 +8,28 @@
   max-width: 996px;
   position: relative;
   padding: 1rem 0;
-  --connector-length: 80px;
+  --connector-length: calc(100% - 45px);
 
-  // each step is a column: circle above, label under
+  
   .progress-step {
     position: relative;
     display: flex;
-    flex-direction: column; // <-- label below circle
+    flex-direction: column;  
     align-items: center;
     justify-content: flex-start;
     gap: var(--spacing-8, 8px);
-    flex: 0 0 auto;
-    //padding: 0 var(--spacing-12, 12px);
-    cursor: pointer;
-    //min-width: 48px; // keeps spacing when overflow on mobile 
+    flex: 0 0 auto; 
+    cursor: pointer; 
     flex-grow: 1;
     align-items: end;
 
-    // circle
+     
     &__circle {
       width: 22px;
       height: 22px;
       border-radius: var(--border-radius-full, 9999px);
       border: 1.5px var(--solid, solid) var(--gray-300, #e0e0e0);
-      background-color: #fff;
+      background-color: var(--white, #fff);
       color: var(--gray-300, #b2b2b2);
       display: flex;
       align-items: center;
@@ -41,11 +37,11 @@
       font-size: 0.875rem;
       line-height: 1;
       font-weight: 500;
-      z-index: 2; // above connector line
+      z-index: 2;  
       transition: all 0.2s ease;
     }
 
-    // label — now always under circle on desktop too
+    
     &__label {
       margin-top: 0;
       font-size: 0.875rem;
@@ -55,20 +51,20 @@
       z-index: 2;
     }
 
-    // connector line -> draw to the right of each step (except last)
+     
     &::after {
         content: "";
         position: absolute;
         top: 12px;
         left: 0;
-        width: var(--connector-length, 80px);
+        width: var(--connector-length);
         height: 1.5px;
-        width: var(--connector-length, 80px); // 🧩 acum e complet controlată din JS
+        //width: calc(100% - var(--spacing-44)); 
         background-color: var(--gray-200, #e5e5e5);
         z-index: 1;
     }
 
-    // hide connector for last step
+     
     &:first-child:not(.progress-step--current, .progress-step--incomplete, .progress-step--blocked) {
         flex-grow: initial ;
         min-width: auto;
@@ -87,7 +83,7 @@
     }
   }
 
-  // STATES (keep z-index so circles override line)
+   
   .progress-step--completed {
     .progress-step__circle {
         background-color: var(--blue-sky-600, #0058D2);
@@ -139,14 +135,13 @@
     }
   } 
 
-  // RESPONSIVE: mobile - compact, hide labels if you want
+  
   @media (max-width: 768px) {
     overflow-x: auto;
     gap: var(--spacing-6, 6px);
     padding-bottom: var(--spacing-12, 12px);
 
-    .progress-step {
-      //padding: 0 var(--spacing-8, 8px);
+    .progress-step { 
       min-width: 50px;
 
 
@@ -166,12 +161,12 @@
           top: 10px;
           width: calc(100% - 26px)
       }
-      // On mobile we typically hide labels (like your screenshot)
+       
       &__label {
         display: none;
       }
 
-      // shorter connectors on small screens
+       
       &::after {
          top: 10px;
          width: calc(100% - 26px)
@@ -183,14 +178,14 @@
       }
   }
 
-  // VERTICAL VERSION: connector becomes vertical line downward
+   
   &.progress-tracker--vertical {
     flex-direction: column;
     align-items: flex-start; 
     --step-height: 125px;
 
     .progress-step {
-      flex-direction: row; // circle + label side-by-side for vertical layout
+      flex-direction: row;  
       align-items: flex-start;
       padding: var(--spacing-8, 8px) 0; 
       height: var(--step-height);
@@ -202,8 +197,8 @@
 
       &::after {
         top: auto; 
-        bottom: 0;  // start below this step
-        left: 11px;        // align with circle center (circle width/2 + border)
+        bottom: 0;   
+        left: 11px;        
         width: 2px;
         height: calc(var(--step-height) - 24px);
         transform: none;

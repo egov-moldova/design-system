@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // 🔹 Dimensiunea totală disponibilă
     const totalLength = isVertical ? tracker.offsetHeight : tracker.offsetWidth;
 
-    // 🔹 Dimensiunea unui cerc
+    
     const circleSize = isVertical
       ? steps[0].querySelector(".progress-step__circle").offsetHeight
       : steps[0].querySelector(".progress-step__circle").offsetWidth;
