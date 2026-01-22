@@ -367,7 +367,12 @@
     padding-right: var(--spacing-40, 40px);
 
     &:has(.banner__title) {
-        align-items: flex-start;
+      align-items: flex-start;
+
+      .banner__icon {
+        position: relative;
+        top: var(--spacing-8);
+      }
     }
 
     &__content {

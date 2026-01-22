@@ -1,4 +1,6 @@
 @use './input' as *;
+
+
 .search-input {
   position: relative;
   display: flex;
@@ -6,19 +8,24 @@
   height: 100%;
   width: var(--w-100, 100%);
 
-  // Forme
+  
   &.rectangular { border-radius: var(--radius-md, 8px); }
   &.circular input{ border-radius: 9999px; }
 
-  // Dimensiuni
+ 
   &.medium .input{ height: var(--spacing-48, 48px); }
   &.small .input{ height: var(--spacing-40, 40px); }
 
+  &:has(.icon-search)  {
+    .input {
+      padding-left: var(--spacing-32);  
+    }
+  }
+  
   .input {
-    @include input-style; // mixin-ul tău cu stilul de bază
-    //height: var(--height);
-    padding-left: var(--spacing-32); // loc pentru search icon
-    padding-right: var(--spacing-32); // loc pentru clear/loading icon
+    @include input-style;  
+    //padding-left: var(--spacing-32);  
+    padding-right: var(--spacing-32); 
     flex: 1;
   }
 

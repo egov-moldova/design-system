@@ -14317,6 +14317,10 @@ body:has(.modal-overlay.modal-overlay.is-active) {
 .banner:has(.banner__title) {
   align-items: flex-start;
 }
+.banner:has(.banner__title) .banner__icon {
+  position: relative;
+  top: var(--spacing-8);
+}
 .banner__content {
   flex: unset;
 }
@@ -16948,8 +16952,11 @@ label.required::after {
 .input-wrapper .input-icon.checkmark {
   color: var(--green-600);
 }
-.input-wrapper:has(.left, .right) .input {
-  padding-inline: var(--spacing-32);
+.input-wrapper:has(.left) .input {
+  padding-left: var(--spacing-32);
+}
+.input-wrapper:has(.right) .input {
+  padding-right: var(--spacing-32);
 }
 .input-wrapper .spinner {
   position: absolute;
@@ -17368,6 +17375,9 @@ label.required::after {
 .search-input.small .input {
   height: var(--spacing-40, 40px);
 }
+.search-input:has(.icon-search) .input {
+  padding-left: var(--spacing-32);
+}
 .search-input .input {
   border: 1.5px solid var(--gray-250);
   background-color: var(--white);
@@ -17378,7 +17388,6 @@ label.required::after {
   border-radius: var(--border-radius-8, 8px);
   font-size: var(--font-size-14, 14px);
   box-sizing: border-box;
-  padding-left: var(--spacing-32);
   padding-right: var(--spacing-32);
   flex: 1;
 }

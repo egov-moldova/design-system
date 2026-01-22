@@ -144,11 +144,18 @@ label {
     }
   }
 
-  &:has(.left, .right) {
+  &:has(.left) {
     .input {
-      padding-inline: var(--spacing-32);
+      padding-left: var(--spacing-32);
     }
   }
+
+  &:has(.right) {
+    .input {
+      padding-right: var(--spacing-32);
+    }
+  }
+
   .spinner {
     position: absolute;
     right: var(--spacing-12); 
