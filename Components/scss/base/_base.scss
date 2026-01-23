@@ -171,14 +171,8 @@ body {
 
 
   &.is-copied {
-    background-color: var(--green-100) !important;
-    color: var(--green-700) !important;
-    font-weight: 500;
-
-      &:focus, &:active, &:focus-visible {
-        outline: 2px solid var(--green-500);
-        outline-offset: 2px; 
-      }
+    
+    font-weight: 500; 
   }
 
   &:focus, &:active, &:focus-visible {

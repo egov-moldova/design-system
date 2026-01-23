@@ -11695,13 +11695,7 @@ body {
   color: var(--green-700) !important;
 }
 .token-name.is-copied {
-  background-color: var(--green-100) !important;
-  color: var(--green-700) !important;
   font-weight: 500;
-}
-.token-name.is-copied:focus, .token-name.is-copied:active, .token-name.is-copied:focus-visible {
-  outline: 2px solid var(--green-500);
-  outline-offset: 2px;
 }
 .token-name:focus, .token-name:active, .token-name:focus-visible {
   outline: 2px solid var(--blue-sky-500);
