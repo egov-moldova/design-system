@@ -77,6 +77,7 @@ body {
   margin: 15px;
   text-align: center;
   background-color: white;
+  cursor: pointer;
   padding: 20px;  
   border-radius: 5px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -90,9 +91,119 @@ body {
 
 .token-name {
   background-color: #f6f6f6;
+  border-radius: var(--border-radius-8);
   padding: 2px 6px; 
   margin-bottom: 10px;
+  cursor: pointer;  
+  transition: all 0.3s ease;
+  position: relative;
+
+  &:hover {
+    background-color: var(--gray-250) !important;
+
+    &::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-30px);
+      z-index: 1;
+    }
+
+    &:before {
+      border-top-color: var(--blue-sky-200);
+      transform: translateY(-100%);
+      top: -3px;
+      opacity: 1;
+      z-index: 1;
+    }
+  }
+
+  &:before {
+    content: "";
+    position: absolute; 
+    top: 5px;
+    left: 50%;
+    width: 0px;
+    height: 0px;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--blue-sky-200);
+    opacity: 0;
+    transform: translateX(-50%);
+    transition: all 0.45s ease;
+    z-index: -1;
+  }
+
+  &::after {
+    content: "Click to copy";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: max-content;
+    text-align: center;
+    transform: translateX(-50%);
+    background-color: var(--blue-sky-200);
+    color: var(--blue-sky-800);
+    border-radius: var(--border-radius-8);
+    padding-inline: var(--spacing-8);
+    padding-block: var(--spacing-4);
+    font-size: 12px;
+    line-height: 1.2;
+    opacity: 0;
+    pointer-events: none;
+    transition: all .35s ease;
+    z-index: -1;
+  }
+
+  &.is-copied {
+    &:before {
+      border-top-color: var(--green-100);
+      transform: translateY(-100%);
+      top: -3px;
+      opacity: 1;
+      z-index: 1;
+    }
+
+    &::after {
+      content: "Copied";
+      background-color: var(--green-100) !important;
+      color: var(--green-700) !important;
+    }
+  }
+
+
+  &.is-copied {
+    background-color: var(--green-100) !important;
+    color: var(--green-700) !important;
+    font-weight: 500;
+
+      &:focus, &:active, &:focus-visible {
+        outline: 2px solid var(--green-500);
+        outline-offset: 2px; 
+      }
+  }
+
+  &:focus, &:active, &:focus-visible {
+    outline: 2px solid var(--blue-sky-500);
+    outline-offset: 2px; 
+
+    &::after {
+      opacity: 1;
+      transform: translateX(-50%) translateY(-30px);
+      z-index: 1;
+    }
+
+    &:before {
+      border-top-color: var(--blue-sky-100);
+      transform: translateY(-100%);
+      top: -3px;
+      opacity: 1;
+      z-index: 1;
+    }
+  }
 }
+
+
+
+
 
 .value {
   font-size: 0.9em;
