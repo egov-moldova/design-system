@@ -380,6 +380,18 @@
   --motion-scale-sm: 0.9;
 }
 
+/* =====================================================
+   🔗 LINK TOKENS
+===================================================== */
+:root {
+  --color-link-primary-default: var(--color-text-brand-default);
+  --color-link-primary-hover: var(--color-text-brand-default-hover);
+  --color-link-primary-visited: var(--color-text-brand-visited);
+  --color-link-strict-default: var(--color-text-base-default);
+  --color-link-strict-hover: var(--color-text-base-secondary);
+  --color-link-white-default: var(--color-text-base-inverse-default);
+}
+
 /* ++++++++++++++++++++ TEXT ++++++++++++++++++++ */
 [data-theme=dark] {
   --color-text-base-default: var(--white);
@@ -16806,6 +16818,103 @@ body.has-overlay footer {
     padding: var(--spacing-32) var(--spacing-40) var(--spacing-32) var(--spacing-0);
   }
 }
+/* =====================================================
+   🔗 LINK COMPONENT
+===================================================== */
+.link {
+  --_link-color: var(--color-link-primary-hover);
+  --_link-hover: var(--color-link-primary-hover);
+  --_link-visited: var(--color-link-primary-visited);
+  --_link-underline: underline;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  font-family: var(--text-body-md-font-family);
+  font-weight: var(--text-body-md-font-weight);
+  font-size: var(--text-body-md-font-size);
+  line-height: var(--text-body-md-line-height);
+  color: var(--_link-color);
+  cursor: pointer;
+  text-decoration: var(--_link-underline);
+  text-underline-offset: 0.15em;
+}
+.link:hover {
+  color: var(--_link-hover);
+}
+.link:visited {
+  color: var(--_link-visited);
+}
+.link:focus-visible {
+  outline: 2px solid var(--color-border-brand-default);
+  outline-offset: 2px;
+  border-radius: var(--border-radius-4);
+}
+.link[aria-disabled=true], .link:disabled {
+  color: var(--color-text-disabled-default);
+  pointer-events: none;
+  text-decoration: none;
+}
+
+/* ================= SIZES ================= */
+.link-lg {
+  font-size: var(--text-body-lg-font-size);
+  line-height: var(--text-body-lg-line-height);
+}
+
+.link-md {
+  font-size: var(--text-body-md-font-size);
+  line-height: var(--text-body-md-line-height);
+}
+
+.link-sm {
+  font-size: var(--text-body-sm-font-size);
+  line-height: var(--text-body-sm-line-height);
+}
+
+.link-xs {
+  font-size: var(--text-caption-md-font-size);
+  line-height: var(--text-caption-md-line-height);
+}
+
+/* ================= UNDERLINE ================= */
+.link-underline {
+  --_link-underline: underline;
+}
+
+.link-no-underline {
+  --_link-underline: none;
+}
+
+/* ================= STYLES ================= */
+.link-primary {
+  --_link-color: var(--color-link-primary-default);
+  --_link-hover: var(--color-link-primary-hover);
+  --_link-visited: var(--color-link-primary-visited);
+}
+
+.link-strict {
+  --_link-color: var(--color-link-strict-default);
+  --_link-hover: var(--color-link-strict-hover);
+  --_link-visited: var(--color-link-strict-default);
+}
+
+.link-white {
+  --_link-color: var(--color-link-white-default);
+  --_link-hover: var(--color-link-white-default);
+  --_link-visited: var(--color-link-white-default);
+}
+
+/* ================= TARGET SIZES (A11Y) ================= */
+.link-target-pointer {
+  min-height: 32px;
+  padding-inline: var(--spacing-8);
+}
+
+.link-target-touch {
+  min-height: 40px;
+  padding-inline: var(--spacing-12);
+}
+
 /* =======================================
    🔹 Mixin principal pentru input-uri
 ======================================= */

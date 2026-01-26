@@ -342,3 +342,17 @@ $input-sizes: (
   --motion-easing-decelerate: cubic-bezier(0.0, 0, 0.2, 1);
   --motion-scale-sm: 0.9;
 }
+
+/* =====================================================
+   🔗 LINK TOKENS
+===================================================== */
+:root {
+  --color-link-primary-default: var(--color-text-brand-default);
+  --color-link-primary-hover: var(--color-text-brand-default-hover);
+  --color-link-primary-visited: var(--color-text-brand-visited);
+
+  --color-link-strict-default: var(--color-text-base-default);
+  --color-link-strict-hover: var(--color-text-base-secondary);
+
+  --color-link-white-default: var(--color-text-base-inverse-default);
+}
