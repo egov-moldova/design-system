@@ -11527,7 +11527,7 @@ ul, ol {
 }
 
 .preview-box {
-  display: inline-block;
+  display: inline-flex;
   background: #f5f5f5;
   border-radius: var(--border-radius-8);
   width: 200px;
