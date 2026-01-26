@@ -5,9 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Spacing Preview Widths</title>
   <link rel="stylesheet" href="css/main.css" />
+  <script src="js/main.js" defer></script>
 </head>
 <body>
-  <div class="container">
+  <div class="container py-56">
     <div class="row">
       <div class="col-sm-7">
          <h1>Width Preview</h1>
@@ -17,75 +18,118 @@
         </p>
       </div>
     </div>
+
     <div class="row">
       <div class="col-12"> 
         <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
           <h2>Widths Utilities</h2> 
+        </div>   
+      </div>
+    </div>  
+
+    <div class="row fw-semibold bg-gray-100 mb-20 py-12">
+      <div class="col-3">Token Name</div>
+      <div class="col-2">Value, %</div>
+      <div class="col-2">Class Example</div>
+      <div class="col-5">Width Preview</div>
+    </div>
+    
+    <div class="row align-items-center py-12">
+      <div class="col-3">
+        <code class="bg-gray-200 token-name radius-8 py-4 px-6">--width-25</code>
+      </div>
+      <div class="col-2">25%</div>
+      <div class="col-2">
+        <code class="token-name bg-white">.w-25</code>
+      </div>
+      <div class="col-5">
+        <div class="bg-green-100">
+          <div class="preview w-25 py-6 bg-green-600 my-16"></div>
         </div>
-        <table class="spacing-table">
-          <thead>
-            <tr>
-              <th>Token Name</th>
-              <th>Value, %</th>
-              <th>Class Example</th>
-              <th>Width Preview</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <code class="bg-gray-200 radius-8 py-4 px-6">--width-25</code>
-              </td>
-              <td>25%</td>
-              <td><code>.w-25</code></td>
-              <td><div class="preview w-25 py-6 bg-green-600 my-16 radius-8"></div></td>
-            </tr>
-            <tr>
-              <td>
-                <code class="bg-gray-200 radius-8 py-2 px-6">--width-33</code>
-              </td>
-              <td>33.3333%</td>
-              <td><code>.w-33</code></td>
-              <td><div class="preview w-33 py-6 bg-green-600 my-16 radius-8"></div></td>
-            </tr>
-            <tr>
-              <td>
-                <code class="bg-gray-200 radius-8 py-2 px-6">--width-50</code>
-              </td>
-              <td>50%</td>
-              <td><code>.w-50</code></td>
-              <td><div class="preview w-50 py-6 bg-green-600 my-16 radius-8"></div></td>
-            </tr>
-            <tr>
-              <td>
-                <code class="bg-gray-200 radius-8 py-2 px-6">--width-66</code>
-              </td>
-              <td>66.6667%</td>
-              <td><code>.w-66</code></td>
-              <td><div class="preview w-66 py-6 bg-green-600 my-16 radius-8"></div></td>
-            </tr>
-            <tr>
-              <td>
-                <code class="bg-gray-200 radius-8 py-2 px-6">--width-75</code>
-              </td>
-              <td>75%</td>
-              <td><code>.w-75</code></td>
-              <td><div class="preview w-75 py-6 bg-green-600 my-16 radius-8"></div></td>
-            </tr>
-            <tr>
-              <td>
-                <code class="bg-gray-200 radius-8 py-2 px-6">--width-100</code>
-              </td>
-              <td>100%</td>
-              <td><code>.w-100</code></td>
-              <td><div class="preview w-100 py-6 bg-green-600 my-16 radius-8"></div></td>
-            </tr>
-          </tbody>
-        </table>
-  
       </div>
     </div>
+
+    
+    <div class="row align-items-center py-12">
+      <div class="col-3">
+        <code class="bg-gray-200 token-name radius-8 py-2 px-6">--width-33</code>
+      </div>
+      <div class="col-2">33.3333%</div>
+      <div class="col-2">
+        <code class="token-name bg-white">.w-33</code>
+      </div>
+      <div class="col-5">
+        <div class="bg-green-100">
+          <div class="preview w-33 py-6 bg-green-600 my-16"></div>
+        </div> 
+      </div>
+    </div>
+
+     
+    <div class="row align-items-center py-12">
+      <div class="col-3">
+        <code class="bg-gray-200 token-name radius-8 py-2 px-6">--width-50</code>
+      </div>
+      <div class="col-2">50%</div>
+      <div class="col-2">
+        <code class="token-name bg-white">.w-50</code>
+      </div>
+      <div class="col-5">
+        <div class="bg-green-100">
+          <div class="preview w-50 py-6 bg-green-600 my-16"></div>
+        </div> 
+      </div>
+    </div>
+
+ 
+    <div class="row align-items-center py-12">
+      <div class="col-3">
+        <code class="bg-gray-200 token-name radius-8 py-2 px-6">--width-66</code>
+      </div>
+      <div class="col-2">66.6667%</div>
+      <div class="col-2">
+        <code class="token-name bg-white">.w-66</code>
+      </div>
+      <div class="col-5">
+        <div class="bg-green-100">
+          <div class="preview w-66 py-6 bg-green-600 my-16"></div>
+        </div> 
+      </div>
+    </div>
+
+ 
+    <div class="row align-items-center py-12">
+      <div class="col-3">
+        <code class="bg-gray-200 token-name radius-8 py-2 px-6">--width-75</code>
+      </div>
+      <div class="col-2">75%</div>
+      <div class="col-2">
+        <code class="token-name bg-white">.w-75</code>
+      </div>
+      <div class="col-5">
+        <div class="bg-green-100">
+          <div class="preview w-75 py-6 bg-green-600 my-16"></div>
+        </div> 
+      </div>
+    </div>
+
+  
+    <div class="row align-items-center py-12">
+      <div class="col-3">
+        <code class="bg-gray-200 token-name radius-8 py-2 px-6">--width-100</code>
+      </div>
+      <div class="col-2">100%</div>
+      <div class="col-2">
+        <code class="token-name bg-white">.w-100</code>
+      </div>
+      <div class="col-5">
+        <div class="bg-green-100">
+          <div class="preview w-100 py-6 bg-green-600 my-16"></div>
+        </div> 
+      </div>
+    </div> 
   </div>
+
 
 </body>
 </html>
