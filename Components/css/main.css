@@ -16899,9 +16899,9 @@ body.has-overlay footer {
 }
 
 .link-white {
-  --_link-color: var(--color-link-white-default);
-  --_link-hover: var(--color-link-white-default);
-  --_link-visited: var(--color-link-white-default);
+  --_link-color: var(--white);
+  --_link-hover: var(--white);
+  --_link-visited: var(--white);
 }
 
 /* ================= TARGET SIZES (A11Y) ================= */
