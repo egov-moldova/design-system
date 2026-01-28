@@ -2,19 +2,14 @@
 @use '../abstracts/variables' as vars;
 @use '../abstracts/mixins/media' as media;
 
-// ===========================
-// 🔹 Flex Shrink utilities
-// ===========================
 $flex-shrink-values: (0, 1);
 
-// 🔹 De bază
 @each $value in $flex-shrink-values {
   .flex-shrink-#{$value} {
     flex-shrink: $value !important;
   }
 }
 
-// 🔹 Responsive
 @each $breakpoint in map.keys(vars.$breakpoints) {
   @include media.media-breakpoint-up($breakpoint, vars.$breakpoints) {
     @each $value in $flex-shrink-values {

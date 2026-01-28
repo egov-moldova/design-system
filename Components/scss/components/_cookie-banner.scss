@@ -1,9 +1,5 @@
 @use '../abstracts/tokens' as *;
 
-// ==========================================
-// Cookie Banner SCSS
-// ==========================================
-
 .cookie-overlay {
   position: fixed;
   inset: 0;
@@ -41,9 +37,7 @@
   }
 }
 
-// -----------------------------------------
-// Header
-// -----------------------------------------
+ 
 
 .cookie-header {
   display: flex;
@@ -71,9 +65,7 @@
   font-weight: 600;
 }
 
-// -----------------------------------------
-// Content (Scroll Shadows)
-// -----------------------------------------
+// ---------------  Content (Scroll Shadows) 
 
 .cookie-body {
     display: flex;
@@ -95,9 +87,9 @@
             position: sticky;
             left: 0;
             right: 0;
-            height: 24px;              // 🔥 mai mare pentru vizibilitate
+            height: 24px;               
             pointer-events: none;
-            z-index: 20;               // 🔥 crește peste content
+            z-index: 20;                
             opacity: 0;
             transition: opacity .2s ease;
             padding: var(--spacing-4);
@@ -105,20 +97,20 @@
 
         &::before {
             top: 0;
-            margin-top: -1px;          // 🔥 acoperă padding-top
+            margin-top: -1px;           
             background: linear-gradient(
                 to bottom,
-                rgba(0, 0, 0, 0.18),   // 🔥 mai vizibil
+                rgba(0, 0, 0, 0.18),    
                 transparent
             );
         }
 
         &::after {
             bottom: 0;
-            margin-bottom: -1px;       // 🔥 acoperă padding-bottom
+            margin-bottom: -1px;        
             background: linear-gradient(
                 to top,
-                rgba(0, 0, 0, 0.18),   // 🔥 mai vizibil
+                rgba(0, 0, 0, 0.18),    
                 transparent
             );
         }
@@ -133,9 +125,7 @@
     }
 }
 
-// -----------------------------------------
-// Buttons
-// -----------------------------------------
+// -------------- Buttons 
 
 .cookie-buttons { 
   display: flex;
@@ -171,9 +161,8 @@
   border-color: #121212;
 }
 
-// -----------------------------------------
-// Detail Section
-// -----------------------------------------
+
+// --------------  Detail Section 
 
 .cookie-detail-container { 
   display: flex;
@@ -226,9 +215,8 @@
   align-items: center;
 }
 
-// -----------------------------------------
-// Caret button
-// -----------------------------------------
+
+// --------------- Caret button 
 
 .btn-caret {
   position: absolute;
@@ -251,9 +239,7 @@
   transform: rotate(180deg);
 }
 
-// -----------------------------------------
-// Responsive
-// -----------------------------------------
+// ---------------- Responsive 
 
 @media (max-width: 768px) {
   .cookie-banner {

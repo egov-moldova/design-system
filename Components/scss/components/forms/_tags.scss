@@ -1,8 +1,6 @@
 @use '../../abstracts/tokens' as tokens;
 
 // ======================================
-// 🏷️ Status Tag Component
-// ======================================
 .tag-item { 
     display: var(--flex, flex);
     gap: var(--spacing-16, 16px);
@@ -25,42 +23,26 @@
   &:has(svg) {
     padding: 3px var(--spacing-8, 8px) 3px var(--spacing-6, 6px);
   }
-  /*
-  svg {
-    width: var(--spacing-12, 12px);
-    height: var(--spacing-12, 12px);
-  }*/
+ 
 
   &--small {
     font-size: var(--text-caption-md-font-size);
     line-height: 1.167;
     padding: var(--spacing-2, 2px) var(--spacing-6, 6px);
-    /*
-    svg {
-      width: var(--spacing-10, 10px);
-      height: var(--spacing-10, 10px);
-    }*/
   }
 
   &--large {
     font-size: var(--font-size-14, 14px);
     padding: var(--spacing-6, 6px) var(--spacing-10, 10px);
-
-    /*
-    svg {
-      width: var(--spacing-14, 14px);
-      height: var(--spacing-14, 14px);
-    }*/
   }
 }
 
-// ======================================
-// 🎨 Variants (Color Categories)
-// ======================================
+// ==============  Variants (Color Categories) 
 
 // Utility mixin to simplify repetitive patterns
 @mixin status-variant($name, $bg-subtle, $text-subtle, $bg-strong, $text-strong, $border-color) {
   .status-tag--#{$name} {
+
     // Subtle
     &.is-subtle {
       background-color: #{$bg-subtle};
@@ -86,9 +68,10 @@
 .status-tag--neutral.is-outlined {
   color: var(--black) !important;
 }
-// ======================
-// 🧩 Apply Variants
-// ======================
+
+
+
+// ========= Apply Variants 
 
 @include status-variant(
   'muted',

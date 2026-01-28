@@ -2,9 +2,7 @@
 @use '../abstracts/variables' as vars;
 @use '../abstracts/mixins/media' as media;
 
-// ==============================
-// 🔹 Flex Direction utilities
-// ==============================
+
 $flex-direction-values: (
   row,
   row-reverse,
@@ -12,10 +10,9 @@ $flex-direction-values: (
   column-reverse
 );
 
-// 🔹 Clasa de bază
+
 @each $value in $flex-direction-values {
 
-  // Nume clase
   $cls: if($value == "row-reverse", "row-reverse",
          if($value == "column-reverse", "column-reverse",
          if($value == "column", "column", "row")));
@@ -25,7 +22,6 @@ $flex-direction-values: (
   }
 }
 
-// 🔹 Clase responsive
 @each $breakpoint in map.keys(vars.$breakpoints) {
   @include media.media-breakpoint-up($breakpoint, vars.$breakpoints) {
 

@@ -2,9 +2,6 @@
 @use '../abstracts/variables' as vars;
 @use '../abstracts/mixins/media' as media;
 
-// ==========================
-// 🔹 Align Items utilities
-// ==========================
 $align-items-values: (
   flex-start,
   center,
@@ -13,7 +10,7 @@ $align-items-values: (
   stretch
 );
 
-// 🔹 Clasa de bază
+
 @each $value in $align-items-values {
   $cls: if($value == "flex-start", "start",
           if($value == "flex-end", "end", $value));
@@ -23,7 +20,7 @@ $align-items-values: (
   }
 }
 
-// 🔹 Clase responsive
+
 @each $breakpoint in map.keys(vars.$breakpoints) {
   @include media.media-breakpoint-up($breakpoint, vars.$breakpoints) {
     @each $value in $align-items-values {

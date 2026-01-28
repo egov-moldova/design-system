@@ -42,6 +42,7 @@
     --select-border: var(--select-border-disabled);
   }
 }
+
 /* wrapper */
 .custom-select {
   display: inline-block;
@@ -114,6 +115,7 @@
   align-items: center;
   padding: 6px;
 }
+
 .select-search {
   flex: 1;
   padding: 8px;
@@ -122,6 +124,7 @@
   font-size: var(--select-font-size);
   outline: none;
 }
+
 .select-clear {
   background: transparent;
   border: none;
@@ -136,11 +139,13 @@
   max-height: 220px;
   overflow: auto;
 }
+
 .select-option {
   padding: 8px 10px;
   border-radius: 6px;
   cursor: pointer;
 }
+
 .select-option[aria-selected="true"],
 .select-option:hover,
 .select-option.is-active {

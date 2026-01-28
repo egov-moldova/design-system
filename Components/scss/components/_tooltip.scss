@@ -1,6 +1,4 @@
-// ========================================
-// Tooltip Base
-// ========================================
+
 .tooltip {
   position: absolute;
   z-index: 1080;
@@ -21,9 +19,6 @@
   }
 }
 
-// ======================================
-// Sizes
-// ======================================
 
 .tooltip--small .tooltip-inner {
   padding: var(--spacing-8) var(--spacing-12); 
@@ -68,15 +63,13 @@
   transform: rotate(45deg);
 }
 
-// ========================================
-// POSITION: TOP
-// ========================================
+// ================  POSITION: TOP 
 
 // TOP-LEFT
 .tooltip--top-left {
   .tooltip-arrow {
     bottom: 1px;
-    left: 20px; // <<<<<<<<<<<<<<<<<<<<<<<<<<
+    left: 20px;  
   }
 }
 
@@ -93,13 +86,13 @@
 .tooltip--top-right {
   .tooltip-arrow {
     bottom: 1px;
-    right: 20px; // <<<<<<<<<<<<<<<<<<<<<<<<<<
+    right: 20px;  
   }
 }
 
-// ========================================
-// POSITION: BOTTOM
-// ========================================
+
+
+// =================== POSITION: BOTTOM 
 
 // BOTTOM-LEFT
 .tooltip--bottom-left {
@@ -126,9 +119,7 @@
   }
 }
 
-// ========================================
-// POSITION: LEFT
-// ========================================
+// ==================  POSITION: LEFT 
 
 .tooltip--left-center {
   .tooltip-arrow {
@@ -152,9 +143,7 @@
   }
 }
 
-// ========================================
-// POSITION: RIGHT
-// ========================================
+// ================== POSITION: RIGHT 
 
 .tooltip--right-center {
   .tooltip-arrow {

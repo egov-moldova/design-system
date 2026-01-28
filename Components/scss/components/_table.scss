@@ -1,8 +1,6 @@
 @use "../abstracts/tokens" as tokens;
 
-// ========================================
-// 🟦 TABLE (BEM BLOCK)
-// ========================================
+
 .table {
   width: 100%;
   border-collapse: separate;
@@ -10,9 +8,7 @@
   font-size: var(--font-size-14);
   color: var(--gray-900);
 
-  // ----------------------------------------
-  // Elements
-  // ----------------------------------------
+
   &__row {}
 
   &__head-cell {
@@ -34,9 +30,7 @@
     background: var(--white);
   }
 
-  // ----------------------------------------
-  // Icons (BEM element)
-  // ----------------------------------------
+
   &__icon {
     font-size: 6px;
     color: var(--gray-400);
@@ -51,9 +45,7 @@
     }
   }
 
-  // ========================================
-  // ROW STATES
-  // ========================================
+
   &__row {
     &:nth-child(even) .table__body-cell {
       background-color: var(--gray-100);
@@ -68,11 +60,6 @@
     }
   }
 
-  // ========================================
-  // BLOCK MODIFIERS
-  // ========================================
-
-  // ---------- Header Themes ----------
   &--subtle {
     .table__head-cell {
       background: var(--gray-100);
@@ -107,7 +94,7 @@
     }
   } 
 
-  // ---------- Icon placement ----------
+
   &--icon-none {
     .table__head-cell {
       padding-left: var(--spacing-16);
@@ -147,7 +134,7 @@
     gap: var(--spacing-8);
   }
 
-  // ---------- Mobile ----------
+
   &--mobile {
     .table__body-cell {
       padding: var(--spacing-8) var(--spacing-16);
@@ -155,9 +142,6 @@
   }
 }
 
-// ========================================
-// 🟦 Responsive Wrapper
-// ========================================
 .table-responsive {
   width: 100%;
   overflow-x: auto;

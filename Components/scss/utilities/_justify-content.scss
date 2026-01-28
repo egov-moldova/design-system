@@ -2,9 +2,6 @@
 @use '../abstracts/variables' as vars;
 @use '../abstracts/mixins/media' as media;
 
-// ================================
-// 🔹 Justify Content utilities
-// ================================
 $justify-content-values: (
   flex-start,
   center,
@@ -14,7 +11,6 @@ $justify-content-values: (
   space-evenly
 );
 
-// 🔹 Claselor de bază
 @each $value in $justify-content-values {
   $cls: if($value == "flex-start", "start",
         if($value == "flex-end", "end",
@@ -27,7 +23,6 @@ $justify-content-values: (
   }
 }
 
-// 🔹 Clase responsive
 @each $breakpoint in map.keys(vars.$breakpoints) {
   @include media.media-breakpoint-up($breakpoint, vars.$breakpoints) {
     @each $value in $justify-content-values {

@@ -1,22 +1,16 @@
 @use '../abstracts/tokens' as *;
 
-// ==============================================
-// 🧭 Anonymous Header (Rich Interactive)
-// ==============================================
- 
+
 .header {
   display: flex;
-  align-items: center;
-  //justify-content: space-between;
-  //width: 100%; /* asigură lățimea completă */
+  align-items: center; 
   background-color: var(--white, #fff);
   border-bottom: 1px solid var(--gray-250);
   padding: var(--spacing-0) var(--spacing-24);
   min-height: var(--spacing-64, 64px);
-  gap: var(--spacing-40);
-
-  position: sticky; /* sticky */
-  top: 0;           /* lipit de top */
+  gap: var(--spacing-40); 
+  position: sticky;  
+  top: 0;            
   z-index: 1100; 
   
 
@@ -38,7 +32,7 @@
       }
     }
   }
-  // 🔹 Brand 
+   
   &__brand {
     display: flex;
     align-items: center; 
@@ -100,7 +94,7 @@
     }
   }
 
-  // 🔹 Actions
+  // Actions
   &__actions {
     display: flex;
     align-items: center;
@@ -108,9 +102,8 @@
     margin-left: auto;
   }
 
-  // 🔹 Toggle (mobile)
-  &__toggle {
-    //display: none;
+  // Toggle (mobile)
+  &__toggle { 
     background: none;
     border-radius: var(--border-radius-full);
     border: none;
@@ -129,13 +122,10 @@
     &.is-active {
         background-color: var(--gray-250);
     }
-  }
-
-  // 🔹 Responsive
-  
+  }  
 }
 
-//
+//=========
 .platform-panel {
   position: absolute;
   background: var(--white, #fff);
@@ -193,10 +183,8 @@
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
       background-color: var(--gray-050, #f9fafb);
     }
-
-    /* 🔵 Focus vizual doar pe card */
-    &:focus-within {
-      //box-shadow: 0 0 0 4px rgba(0, 95, 204, 0.25);
+ 
+    &:focus-within { 
       outline: 3px solid var(--color-primary, #005fcc);
       outline-offset: 3px;
     }
@@ -212,13 +200,13 @@
     position: relative;
     z-index: 2;
     border-radius: var(--border-radius-12);
-    outline: none; // elimină conturul implicit al browserului
+    outline: none;  
 
     &:hover .platform-grid__title {
       color: var(--color-primary, #005fcc);
     }
 
-    /* ❌ Eliminăm focusul vizual pe link, doar părintele îl arată */
+     
     &:focus-visible {
       outline: none;
       box-shadow: none;
@@ -301,8 +289,7 @@
   z-index: 999; 
   width: 270px;
   padding: var(--spacing-8); 
-  gap: var(--spacing-8);
-  //transform: translateY(-200%);
+  gap: var(--spacing-8); 
 
   &__title {
     font-size: var(--text-body-lg-500-font-size);
@@ -347,7 +334,7 @@
   }
 }
 
-/* 🔗 Stretched link helper */
+/* Stretched link helper */
 .stretched-link:after {
   position: absolute;
   inset: 0;
@@ -357,7 +344,7 @@
   pointer-events: auto;
 }
 
-/* 🌙 Dark mode */
+/*  Dark mode */
 @media (prefers-color-scheme: dark) {
   .platform-grid__item:focus-within {
     outline-color: #66aaff;

@@ -2,14 +2,14 @@
 
 .textarea {
   @include input-style(default);
-  min-height: var(--spacing-150, 150px); // sau altă valoare potrivită (ex: 96px ~ 6rem)
+  min-height: var(--spacing-150, 150px);  
   resize: vertical;
   line-height: 1.5;
   padding: var(--spacing-12, 12px) var(--spacing-16, 16px) !important;
   font-family: inherit;
 
   &::placeholder {
-    color: var(--gray-400); // fallback dacă nu e în tokens
+    color: var(--gray-400);  
   }
 
   &:focus:not(:placeholder-shown) {

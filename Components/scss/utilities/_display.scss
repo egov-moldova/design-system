@@ -2,9 +2,7 @@
 @use '../abstracts/variables' as vars;
 @use '../abstracts/mixins/media' as media;
 
-// ==========================
-// 🔹 Display utilities
-// ==========================
+
 $displays: (
   none,
   block,
@@ -18,14 +16,14 @@ $displays: (
   table-cell
 );
 
-// 🔹 Clase de bază
+
 @each $display in $displays {
   .d-#{$display} {
     display: $display !important;
   }
 }
 
-// 🔹 Clase responsive
+
 @each $breakpoint in map.keys(vars.$breakpoints) {
   @include media.media-breakpoint-up($breakpoint, vars.$breakpoints) {
     @each $display in $displays {

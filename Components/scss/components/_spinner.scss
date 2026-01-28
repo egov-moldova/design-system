@@ -1,9 +1,5 @@
 @use '../abstracts/tokens' as tokens;
 
-// =============================================
-// 🌀 Spinner Component
-// =============================================
-
 .spinner {
   display: inline-block;
   border-radius: 50%;
@@ -11,9 +7,7 @@
   border-top-color: transparent !important;
   animation: spinner-rotate 0.8s linear infinite;
 
-  // ===============================
-  // 🔹 Sizes
-  // ===============================
+  // =========== Sizes 
   &--extra-small {
     width: var(--spacing-12, 12px);
     height: var(--spacing-12, 12px);
@@ -38,9 +32,7 @@
     border-width: 3px;
   }
 
-  // ===============================
-  // 🎨 Styles
-  // ===============================
+  // ============  Styles 
   &--brand {
     border-color: var(--blue-sky-600);
   }
@@ -59,18 +51,14 @@
     background-color: var(--brand-500, #0f62fe);
   }
 
-  // ===============================
-  // 🧩 Variants for backgrounds
-  // ===============================
+  // ===============  Variants for backgrounds 
   &--light,
   &--light-on-color {
     border-top-color: transparent;
   }
 }
 
-// ===============================
-// 🔁 Animation
-// ===============================
+// ===============  Animation 
 @keyframes spinner-rotate {
   0% {
     transform: rotate(0deg);

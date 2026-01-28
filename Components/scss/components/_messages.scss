@@ -54,9 +54,7 @@
     }
   }
 
-  // =========================
-  // Types with fixed colors
-  // =========================
+  // ===========  Types with fixed colors 
   &--info {
     background-color: var(--blue-sky-600);
     color: var(--white, #fff);
@@ -68,7 +66,7 @@
   }
 
   &--success {
-    background-color: #039855;
+    background-color: var(--green-600);
     color: var(--white, #fff);
 
     &__icon,
@@ -78,8 +76,8 @@
   }
 
   &--warning {
-    background-color: #fec84b;
-    color: #121212;
+    background-color: var(--apricot-300);
+    color: var(--black);
 
     .banner__icon,
     &__close {
@@ -88,7 +86,7 @@
   }
 
   &--error {
-    background-color: #d92d20;
+    background-color: var(--red-600);
     color: var(--white);
 
     &__icon,
@@ -97,9 +95,7 @@
     }
   }
 
-  // =========================
-  // Variants
-  // =========================
+  // ============ Variants 
   &--banner {
     border-radius: 0;
     justify-content: center;
@@ -116,7 +112,7 @@
     
   }
 
-  // 🔹 Subtle variants
+  // Subtle variants
   &--subtle {
     background-color: transparent;
 
@@ -217,9 +213,7 @@
     padding-left: 16px;
   }
 
-  // =========================
-  // States
-  // =========================
+  // =============  States 
   &.is-hidden {
     animation: message-fade-out 0.3s ease forwards;
   }
@@ -231,7 +225,7 @@
 }
 
 
-//TOASTS MESSAGES
+// ========== TOASTS MESSAGES
 .toast-container {
   position: fixed;
   right: var(--spacing-24, 24px);
@@ -356,7 +350,7 @@
 }
 
 
-//ALERTS
+// ======= ALERTS
 .banner { 
     border-radius: 0;
     display: var(--flex, flex);
@@ -484,9 +478,7 @@
     
 }
 
-// =========================
-// Toast container (dynamic stacking)
-// =========================
+// ============ Toast container (dynamic stacking) 
 .toast-container {
   position: fixed;
   display: flex;
@@ -510,9 +502,7 @@
   }
 }
 
-// =========================
-// Animations
-// =========================
+// ============== Animations 
 @keyframes message-slide-in {
   0% {
     opacity: 0;

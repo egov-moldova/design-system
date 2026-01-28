@@ -1,39 +1,29 @@
-// ===============================
-// 🔢 Sass Core Modules & Variables
-// ===============================
-
 @use 'sass:math';
 @use 'sass:map' as map;
 @use 'abstracts/variables' as vars;
 @use 'abstracts/functions';
 @use 'abstracts/tokens';
 
-// ===============================
-// 🎨 Colors & Themes
-// ===============================
+// ============ Colors & Themes 
 @use 'abstracts/colors';
 @use 'themes/light';
 @use 'themes/dark';
 
-// ===============================
-// 🧱 Mixins (Grid, Media, Layout etc.)
-// ===============================
+// ============= Mixins (Grid, Media, Layout etc.) 
 @use 'abstracts/mixins/media' as media;
 @use 'abstracts/mixins/make-col' as make-col;
 @use 'abstracts/mixins/make-col-offset' as make-col-offset;
 @use 'abstracts/mixins/make-row' as make-row;
 @use 'abstracts/mixins/make-container' as make-container;
-//@use 'abstracts/mixins/buttons' as buttons;
 
-// ===============================
-// ✨ Base Styles (Resets, Typography)
-// ===============================
+
+// ============  Base Styles (Resets, Typography) 
 @use 'abstracts/typography';
 @use 'fonts/Onest';
 @use 'base/typography' as *;
-// ===============================
-// 🧩 Components / Utilities
-// ===============================
+
+
+// ============ Components / Utilities 
 @use 'base/backgrounds';
 @use 'base/border-utilities';
 @use 'base/border-colors';
@@ -48,19 +38,18 @@
 @use 'components/forms' as *;
 @use 'components/avatar' as *;
 
-// ===============================
-// 🟦 Grid Setup
-// ===============================
+// =============  Grid Setup 
 @use 'base/grid' as grid;
 @use 'base/offsets';
 @use 'base/orders';
-// Container principal
+
+// ========== Container 
 @include make-container.make-container(vars.$container-max-widths, vars.$breakpoints);
 
-// Row implicit
+// Row 
 .row {
   @include make-row.make-row(map.get(vars.$gutters, md));
 }
 
-// Coloane responsive
+// Responsive Cols
 @include grid.make-grid-columns(12, map.get(vars.$gutters, md), vars.$breakpoints);

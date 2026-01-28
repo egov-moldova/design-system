@@ -2,7 +2,7 @@
 @use '../abstracts/mixins/media' as media;
 
 $breakpoints: vars.$breakpoints;
-$width-scale: vars.$width-scale; // folosim aceeași scară și pentru height
+$width-scale: vars.$width-scale; 
 
 @each $key, $value in $width-scale {
   .h-#{$key} {

@@ -1,20 +1,17 @@
-// utilities/_icons.scss
 @use '../abstracts/tokens' as *;
 
-// Generăm variabile CSS pentru fiecare dimensiune
+
 :root {
   @each $name, $size in $icon-sizes {
     --icon-size-#{$name}: #{$size};
   }
 }
 
-// Clasa de bază
+
 .icon {
   display: inline-block;
   vertical-align: middle;
   fill: currentColor;
-
-  // default size
   width: var(--icon-size-default);
   height: var(--icon-size-default);
 }
