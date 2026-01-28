@@ -1,6 +1,6 @@
 @use './input' as *;
 .select {
-  @include input-style; // nu mai folosim extend
+  @include input-style;  
   appearance: none;
   background-image: url("data:image/svg+xml,...");
   background-repeat: no-repeat;

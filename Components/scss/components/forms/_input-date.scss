@@ -1,10 +1,9 @@
 @use "sass:map";
 @use "../../abstracts/tokens" as tokens;
 @use './input' as *; 
-// ===========================
-// 🔹 Input Date Styles
-// ===========================
 
+
+// ==============  Input Date Styles 
 .input-date {
   display: flex;
   align-items: center;
@@ -23,25 +22,25 @@
     outline: none;
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
-    // 🔸 Focus (default)
+    // Focus (default)
     &:focus {
       border-color: map.get(map.get(tokens.$input-colors, default), focus);
       box-shadow: 0 0 0 2px map.get(map.get(tokens.$input-colors, default), focus);
     }
 
-    // 🔸 Warning state
+    // Warning state
     &.is-warning {
       border-color: map.get(map.get(tokens.$input-colors, warning), focus);
       box-shadow: 0 0 0 2px map.get(map.get(tokens.$input-colors, warning), focus);
     }
 
-    // 🔸 Destructive (error)
+    // Destructive (error)
     &.is-destructive {
       border-color: map.get(map.get(tokens.$input-colors, destructive), focus);
       box-shadow: 0 0 0 2px map.get(map.get(tokens.$input-colors, destructive), focus);
     }
 
-    // 🔸 Disabled
+    // Disabled
     &:disabled {
       background-color: var(--color-background-base-disabled);
       border-color: var(--color-border-base-disabled);

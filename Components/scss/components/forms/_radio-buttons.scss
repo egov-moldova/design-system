@@ -1,17 +1,13 @@
 @use '../../abstracts/tokens' as tokens;
 
-// =====================
-// 🔹 Grupare radio
-// =====================
+ 
 .radio-group {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-8, 8px);
 }
 
-// =====================
-// 🔹 Radio de bază
-// =====================
+ 
 .radio {
   display: flex;
   align-items: center;
@@ -64,7 +60,7 @@
     line-height: 1.2;
   }
 
-  // ✅ checked
+  // checked
   .radio-input:checked + .radio-custom {
     border-color: var(--blue-sky-600, #0058D2);
 
@@ -73,13 +69,13 @@
     }
   }
 
-  // ✅ focus
+  // focus
   .radio-input:focus + .radio-custom {
     outline: 2px solid var(--blue-sky-500, #4C9AFF);
     outline-offset: 1px;
   }
 
-  // ✅ disabled
+  // disabled
   .radio-input:disabled + .radio-custom {
     border-color: var(--gray-250, #d9d9d9);
     background-color: var(--gray-200, #f1f1f1);
@@ -96,9 +92,7 @@
   }
 }
 
-// =====================
-// 🔹 Dimensiuni
-// =====================
+// ========= Dimensions
 .radio--medium {
   .radio-custom {
     width: 20px;
@@ -131,9 +125,7 @@
   }
 }
 
-// =====================
-// 🔹 Error state
-// =====================
+// ==========  Error state 
 .radio--error {
   .radio-custom {
     border-color: var(--red-600, #D32F2F) !important;

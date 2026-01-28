@@ -6,7 +6,7 @@
   .tab-buttons {
     display: flex;
     gap: var(--spacing-8, 8px);
-    border-bottom: 1px solid var(--color-gray-300, #d1d5db);
+    border-bottom: 1px solid var(--gray-300, #d1d5db);
     width: fit-content;
   }
 
@@ -14,7 +14,7 @@
     background: transparent;
     border: none;
     padding: var(--spacing-12, 12px) var(--spacing-16, 16px);
-    font-size: var(--text-body-sm-font-size);
+    font-size: var(--text-body-md-font-size);
     font-family: "Onest", sans-serif;
     line-height: 1.375;
     cursor: pointer;
@@ -28,9 +28,9 @@
     transition: all 0.2s ease;
 
     .badge {
-      background-color: var(--color-gray-100, #f1f1f1);
+      background-color: var(--gray-100, #f1f1f1);
       border-radius: var(--radius-full, 9999px);
-      color: var(--color-black, #121212);
+      color: var(--black, #121212);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -47,23 +47,23 @@
     }
 
     &:hover {
-      color: var(--color-gray-900, #111827);
+      color: var(--gray-900, #111827);
     }
 
     &.active {
-      color: var(--color-blue-sky-600, #0058D2);
-      border-color: var(--color-blue-sky-600, #0058D2);
+      color: var(--blue-sky-600, #0058D2);
+      border-color: var(--blue-sky-600, #0058D2);
       font-weight: vars.$font-weight-semibold;
     }
 
     &:focus {
-      outline: 3px solid var(--color-blue-sky-600, #0058D2);
+      outline: 3px solid var(--blue-sky-600, #0058D2);
       outline-offset: 2px;
     }
 
-    // ✅ Actualizare corectă pentru Sass modern
+     
     @media (max-width: map.get(vars.$breakpoints, sm)) {
-      font-size: 14px;
+      font-size: var(--text-body-sm-font-size);
     }
   }
 
@@ -82,7 +82,7 @@
   &--sm {
     .tab-button {
       padding: var(--spacing-8, 8px) var(--spacing-12, 12px);
-      font-size: 0.875rem;
+      font-size: var(--text-body-sm-font-size);
       line-height: 1.25;
     }
   }

@@ -1,9 +1,7 @@
 @use '../abstracts/mixins/buttons' as buttons;
 @use 'sass:map' as map;
 
-// ===============================
-// 🔹 Variante butoane - Filled
-// ===============================
+// ============= Variante butoane - Filled 
 @include buttons.button-variant(
   "primary",
   var(--blue-sky-600, #0058D2),
@@ -55,9 +53,7 @@
   var(--white, #ffffff)
 );
 
-// ===============================
-// 🔹 Variante butoane - Outlined
-// ===============================
+// =============  Variante butoane - Outlined 
 @include buttons.button-variant(
   "outline-primary",
   transparent,
@@ -108,9 +104,7 @@
   var(--red-800, #9C0000)
 );
 
-// ===============================
-// 🔹 Variante butoane - Text
-// ===============================
+// ============ Variante butoane - Text 
 @include buttons.button-variant(
   "text-primary",
   transparent,
@@ -161,9 +155,7 @@
   var(--red-300, #FDA19B)
 );
 
-// ===============================
-// 🔹 Dimensiuni butoane
-// ===============================
+// ==============  Dimensiuni butoane 
 $button-sizes: (
   sm: (padding: var(--spacing-4, 0.25rem) var(--spacing-12, 0.5rem), font-size: 14px),
   md: (padding: var(--spacing-8, 0.5rem) var(--spacing-16, 1rem), font-size: 16px),
@@ -177,18 +169,11 @@ $button-sizes: (
   }
 }
 
-// ===============================
-// 🔹 Forme butoane
-// ===============================
+// ============ Forme butoane 
 .btn-pill { border-radius: 9999px; }
 .btn-rounded { border-radius: var(--border-radius-full, 9999px); }
 
-// ===============================
-// 🔹 Loading
-// ===============================
-// ===============================
-// 🔹 Loading (FIXED & NORMALIZED)
-// ===============================
+// ============  Loading - (FIXED & NORMALIZED) 
 .btn-loading {
   position: relative;
   pointer-events: none;
@@ -197,7 +182,7 @@ $button-sizes: (
 }
 
 .btn-loading .btn-label {
-  visibility: hidden; // păstrează dimensiunea
+  visibility: hidden;
 }
 
 .btn-loading::after {
@@ -221,9 +206,7 @@ $button-sizes: (
   100% { transform: rotate(360deg); }
 }
 
-// ===============================
-// 🔹 Focus implicit
-// ===============================
+// ============= Focus implicit 
 .btn:focus:not(:disabled) {
   outline: 2px solid var(--white, #ffffff);
   box-shadow: 0 0 0 4px var(--focus-ring, var(--blue-sky-500, #3379DB));

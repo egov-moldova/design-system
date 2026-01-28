@@ -1,8 +1,6 @@
 @use './colors';
 
-// ==============================================
-// 🎨 Color Palette Tokens
-// ==============================================
+// ==============  Color Palette Tokens 
 $color-palettes: (
   "gray": (100, 200, 250, 300, 400, 500, 600, 700, 800, 900),
   "blue-sky": (100, 150, 200, 300, 400, 500, 600, 700, 800, 900),
@@ -22,16 +20,12 @@ $alpha-palettes: (
   "white": (100-alpha, 200-alpha, 300-alpha, 400-alpha, 500-alpha)
 );
 
-// ==============================================
-// 🔠 Font Weights
-// ==============================================
+// ============ Font Weights 
 $font-weight-bold: 600;
 $font-weight-semibold: 500;
 $font-weight-regular: 400;
 
-// ==============================================
-// ⬜ Border Widths & Radius
-// ==============================================
+// =============== Border Widths & Radius 
 $border-widths: (
   0: 0,
   1: 1px,
@@ -62,9 +56,7 @@ $border-styles: (
   none: none
 );
 
-// ==============================================
-// 📱 Breakpoints
-// ==============================================
+// ============= Breakpoints 
 $breakpoints: (
   xs: 0,
   sm: 576px,
@@ -74,9 +66,7 @@ $breakpoints: (
   xxl: 1440px
 );
 
-// ==============================================
-// 📦 Container Max Widths
-// ==============================================
+// =============  Container Max Widths 
 $container-max-widths: (
   sm: 540px,
   md: 720px,
@@ -85,9 +75,7 @@ $container-max-widths: (
   xxl: 1320px
 );
 
-// ==============================================
-// ↔️ Gutters
-// ==============================================
+// =============  Gutters 
 $grid-columns: 12 !default; 
 $gutters: (
   xs: 8px,
@@ -97,9 +85,7 @@ $gutters: (
   xl: 40px
 );
 
-// ==============================================
-// 📏 Spacings
-// ==============================================
+// ============  Spacings 
 $spacings: (
   0: 0px,
   2: 2px,
@@ -117,9 +103,7 @@ $spacings: (
   64: 64px
 );
 
-// ==============================================
-// 🖤 Shadows
-// ==============================================
+// ==============  Shadows 
 $drop-shadows: (
   100: (
     0 0 0.5px rgba(0, 0, 0, 0.3),
@@ -158,22 +142,16 @@ $drop-shadows: (
   )
 );
 
-/* =====================================================
-   BASE TOKENS
-===================================================== */
-:root {
-  /* Font family */
+// ================ BASE TOKENS 
+:root { 
   --font-family-base: 'Onest', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-
-  /* Font weights (aliniate cu @font-face) */
+ 
   --font-weight-regular: 400;
   --font-weight-semibold: 500;
   --font-weight-bold: 600;
 }
 
-/* =====================================================
-   TYPOGRAPHY – FONT FAMILY
-===================================================== */
+// ================= TYPOGRAPHY – FONT FAMILY 
 :root {
   /* Display */
   --text-display-lg-font-family: var(--font-family-base);
@@ -200,9 +178,7 @@ $drop-shadows: (
   --text-caption-sm-font-family: var(--font-family-base);
 }
 
-/* =====================================================
-   TYPOGRAPHY – FONT WEIGHT (SEMANTIC)
-===================================================== */
+// ================ TYPOGRAPHY – FONT WEIGHT (SEMANTIC) 
 :root {
   /* Display */
   --text-display-lg-font-weight: var(--font-weight-bold);
@@ -229,9 +205,7 @@ $drop-shadows: (
   --text-caption-sm-font-weight: var(--font-weight-regular);
 }
 
-/* =====================================================
-   TYPOGRAPHY – DESKTOP VALUES
-===================================================== */
+// ================== TYPOGRAPHY – DESKTOP VALUES 
 :root {
   /* ================= DISPLAY ================= */
   --text-display-lg-font-size: 56px;
@@ -276,9 +250,7 @@ $drop-shadows: (
   --text-caption-sm-line-height: 140%;
 }
 
-/* =====================================================
-   MOBILE OVERRIDES (FONT SIZE ONLY)
-===================================================== */
+//================ MOBILE OVERRIDES (FONT SIZE ONLY) 
 @media (max-width: 768px) {
   :root {
     --text-display-lg-font-size: 48px;
@@ -305,7 +277,7 @@ $drop-shadows: (
 
 
 
-// Optional: scala de fonturi
+// font-size - optional
 $font-sizes: (
   8: 8px,
   10: 10px,

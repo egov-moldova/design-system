@@ -1,8 +1,5 @@
 @use '../../abstracts/tokens' as tokens;
 
-// =====================
-// 🔹 Switch Component
-// =====================
 .switch {
   --track-width: var(--spacing-48, 48px);
   --track-height: var(--spacing-28, 28px);
@@ -25,7 +22,7 @@
   flex-direction: column;
   gap: var(--spacing-4, 4px);
 
-  // ===== Wrapper general =====
+  // ===== Wrapper general 
   &-wrapper {
     display: flex;
     align-items: center;
@@ -35,7 +32,7 @@
     width: fit-content;
   }
 
-  // ===== Input invizibil =====
+  // ===== Input hidden 
   &-input {
     position: absolute;
     opacity: 0;
@@ -45,7 +42,7 @@
     width: 0;
   }
 
-  // ===== Track + thumb =====
+  // ===== Track + thumb 
   &-track {
     position: relative;
     width: var(--track-width);
@@ -68,12 +65,12 @@
     transition: transform var(--transition), background-color var(--transition);
   }
 
-  // ===== Hover =====
+  // ===== Hover state
   &-wrapper:hover .switch-track {
     background-color: var(--track-bg-hover);
   }
 
-  // ===== Checked =====
+  // ===== Checked  
   &-input:checked + .switch-track {
     background-color: var(--track-bg-checked);
   }
@@ -82,7 +79,7 @@
     transform: translate(calc(var(--track-width) - var(--thumb-size) - 4px), -50%);
   }
 
-  // ===== Focus =====
+  // ===== Focus effect
     .switch-input:focus + .switch-track {
         outline: 2px solid var(--blue-sky-500, #3379DD);
         outline-offset: 1px;
@@ -94,7 +91,8 @@
   &-input:focus-visible + .switch-track {
     box-shadow: var(--focus-ring);
   }
-  // ===== Disabled =====
+
+  // ===== Disabled state
   &--disabled {
     opacity: 0.6;
     cursor: not-allowed;
@@ -120,7 +118,7 @@
     }
   }
 
-  // ===== Error =====
+  // ===== Error
   &--error .switch-track {
     background-color: var(--error-track);
   }
@@ -129,7 +127,7 @@
     color: var(--error-text);
   }
 
-  // ===== Label + description =====
+  // ===== Label + description
   &-text {
     display: flex;
     flex-direction: column;
@@ -149,7 +147,7 @@
     line-height: 1.2;
   }
 
-  // ===== Size variants =====
+  // ===== Size variants
   &--small {
     --track-width: var(--spacing-32, 32px);
     --track-height: var(--spacing-16, 16px);

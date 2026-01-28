@@ -1,14 +1,11 @@
 @use '../../abstracts/tokens' as tokens;
 
-// ======================================
-// 🔹 CHIP BASE
-// ======================================
+// ============== CHIP BASE 
 .chip {
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-4, 4px);
-  padding: var(--spacing-8, 8px) var(--spacing-16, 16px);
-  //height: var(--spacing-32, 32px);
+  padding: var(--spacing-8, 8px) var(--spacing-16, 16px); 
   background-color: var(--gray-100);
   color: var(--gray-900);
   border: 1px solid transparent;
@@ -38,9 +35,7 @@
     cursor: not-allowed;
   }
 
-  // =============================
-  // ✅ SELECTED STATE
-  // =============================
+  // ============ SELECTED STATE 
   &.is-selected {
     background-color: var(--black);
     border-color: var(--black);
@@ -55,18 +50,14 @@
       outline-offset: 2px;
     }
 
-    .chip__close {
-      //color: var(--blue-sky-600);
-
+    .chip__close { 
       &:hover {
         background-color: var(--blue-sky-200);
       }
     }
   }
 
-  // =============================
-  // Avatar
-  // =============================
+  // ============ Avatar 
   &:has(.chip__avatar) {
     background-color: var(--color-white, #fff);
     border-color: var(--gray-300);
@@ -97,25 +88,15 @@
     }
   }
 
-  // =============================
-  // Icon
-  // =============================
+  // ==============  Icon 
   &__icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-    /*
-    svg {
-      width: 14px;
-      height: 14px;
-      stroke-width: 2;
-    }*/
+    flex-shrink: 0; 
   }
 
-  // =============================
-  // Label
-  // =============================
+  // ==========  Label 
   &__label {
     border: none;
     background-color: transparent;
@@ -148,9 +129,7 @@
     }
   }
 
-  // =============================
-  // Close button
-  // =============================
+  // =============  Close button 
 
   &:has(.chip__close) {
     padding-right: var(--spacing-8, 8px);

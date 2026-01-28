@@ -14,10 +14,10 @@
 
 @mixin make-responsive-row-cols($columns: 12, $breakpoints: vars.$breakpoints) {
 
-  // default
+   
   @include make-row-cols($columns);
 
-  // responsive
+   
   @each $bp, $width in $breakpoints {
     @include media-breakpoint-up($bp, $breakpoints) {
       @for $i from 1 through $columns {

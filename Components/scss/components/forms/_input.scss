@@ -54,9 +54,7 @@
   }
 }
 
-/* =======================================
-   🔹 Label pentru input
-======================================= */
+//======= Input label
 label {
   display: block;
   font-size: var(--text-body-sm-font-size, 14px);
@@ -69,9 +67,7 @@ label {
   }
 }
 
-/* =======================================
-   🔹 Clasa de bază
-======================================= */
+// ============ Input class-name
 .input {
   @include input-style(default);
 }
@@ -88,9 +84,7 @@ label {
   @include input-style(success);
 }
 
-/* =======================================
-   🔹 State-uri adiționale
-======================================= */
+// =================  Additional states
 .input--filled {
   background-color: var(--white);
   border-color: var(--gray-300);
@@ -109,9 +103,7 @@ label {
   border-color: var(--blue-sky-300);
 }
 
-/* =======================================
-   🔹 Iconițe și wrapper
-======================================= */
+// ============ Icons & wrapper 
 .input-wrapper {
   position: relative;
   display: flex;
@@ -194,9 +186,7 @@ label {
     line-height: 1;
   }
 }
-/* =======================================
-   🔹 Input cu iconiță de tip "clear"
-======================================== */
+//===============  Clear input icon
 .input--clear {
   padding-right: var(--spacing-40, 40px);
 

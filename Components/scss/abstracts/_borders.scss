@@ -1,11 +1,6 @@
-// ==============================================
-// Border Utilities SCSS (functional)
-// ==============================================
 @use '../abstracts/variables' as vars;
 
-// ------------------------------
-// Border Radius Utilities
-// ------------------------------
+ 
 @each $key, $value in vars.$radius {
   .radius-#{$key} {
     border-radius: #{$value} !important;
@@ -24,9 +19,7 @@
   }
 }
 
-// ------------------------------
-// Border Style Utilities
-// ------------------------------
+ 
 @each $key, $value in vars.$border-styles {
   .border-style-#{$key} {
     border-style: #{$value} !important;
@@ -45,9 +38,7 @@
   }
 }
 
-// ------------------------------
-// Shortcut Border Style Utilities
-// ------------------------------
+ 
 @each $key, $value in vars.$border-styles {
   .border-#{$key} {
     border-style: #{$value} !important;
@@ -66,12 +57,12 @@
   }
 }
 @each $key, $value in vars.$border-widths {
-  // Full border
+  
   .border-#{$key} {
     border-width: #{$value} !important;
   }
 
-  // Individual sides
+   
   .border-top-#{$key} {
     border-top-width: #{$value} !important;
   }

@@ -1,14 +1,10 @@
 @use '../../abstracts/tokens' as tokens;
 
-// ======================================
-// 📄 Pagination Component
-// ======================================
+ 
 .pagination {
   display: inline-flex;
   align-items: center;
   gap: var(--spacing-24, 24px);
-
-  // Reset list
   list-style: none;
   padding: 0;
   margin: 0;
@@ -37,7 +33,7 @@
     border-radius: var(--border-radius-4);
     color: var(--gray-700);
 
-    background-color: var(--color-white, #fff);
+    background-color: var(--white);
     cursor: pointer;
     transition:
       background-color 0.15s ease,
@@ -57,7 +53,7 @@
     &--active {
       background-color: var(--blue-sky-600);
       border-color: var(--blue-sky-600);
-      color: #fff;
+      color: var(--white);
       cursor: default;
 
       &:hover {

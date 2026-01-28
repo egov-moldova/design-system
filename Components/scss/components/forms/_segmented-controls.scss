@@ -1,10 +1,6 @@
 @use '../../abstracts/tokens' as tokens;
 
-// ======================================
-// 🔘 Segmented Control Component
-// ======================================
-
-.segmented-control {
+ .segmented-control {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -29,7 +25,7 @@
   position: relative;
   background-color: transparent;
 
-  // Separator vizual între elemente
+  // Segment  Separator 
   &:not(:last-child)::after {
     content: '';
     display: block;
@@ -59,18 +55,19 @@
   // Selected
   &.is-selected {
     background-color: var(--gray-900, #1e1e1e);
-    color: var(--white, #fff);
-    //font-weight: var(--font-weight-bold, 700);
+    color: var(--white, #fff); 
 
     &::after {
       opacity: 0;
       height: 0;
     }
   }
+
   &:has(+ .segment-item.is-selected)::after {
     opacity: 0;
     height: 0;
   }
+
   // Disabled
   &:disabled {
     opacity: 0.5;
@@ -82,7 +79,7 @@
   }
 }
 
-// Variante cu dimensiuni diferite (opțional)
+// Dimmensions
 .segmented-control--small .segment-item {
   font-size: var(--font-size-12, 12px);
   padding: var(--spacing-6, 6px) var(--spacing-12, 12px);

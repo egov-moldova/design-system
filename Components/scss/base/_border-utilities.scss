@@ -1,8 +1,6 @@
 @use '../abstracts/variables' as vars;
 
-// ======================================
-// 🌐 CSS Variables for Borders
-// ======================================
+// ============== CSS Variables for Borders 
 :root {
   /* Border widths */
   @each $key, $value in vars.$border-widths {
@@ -26,17 +24,13 @@
   --border-color: currentColor;
 }
 
-// ======================================
-// 🌟 General border class
-// ======================================
+// ============= General border class 
 .border {
   border: var(--border-width) var(--border-style) var(--border-color);
   border-radius: var(--border-radius);
 }
 
-// ======================================
-// 🌟 Border width utilities
-// ======================================
+// ==============  Border width utilities 
 @each $key, $value in vars.$border-widths {
   .border-#{$key} { border-width: #{$value} !important; }
   .border-top-#{$key} { border-top-width: #{$value} !important; }
@@ -45,9 +39,7 @@
   .border-left-#{$key} { border-left-width: #{$value} !important; }
 }
 
-// ======================================
-// 🌟 Border radius utilities
-// ======================================
+// ============== Border radius utilities 
 @each $key, $value in vars.$radius {
   .radius-#{$key} { border-radius: #{$value} !important; }
   .radius-top-left-#{$key} { border-top-left-radius: #{$value} !important; }
@@ -56,9 +48,7 @@
   .radius-bottom-right-#{$key} { border-bottom-right-radius: #{$value} !important; }
 }
 
-// ======================================
-// 🌟 Border style utilities
-// ======================================
+// ==============  Border style utilities 
 @each $key, $value in vars.$border-styles {
   .border-style-#{$key} { border-style: #{$value} !important; }
   .border-top-style-#{$key} { border-top-style: #{$value} !important; }
@@ -67,9 +57,7 @@
   .border-left-style-#{$key} { border-left-style: #{$value} !important; }
 }
 
-// ======================================
-// 🌟 Border style shortcuts
-// ======================================
+// ================  Border style shortcuts 
 @each $key, $value in vars.$border-styles {
   .border-#{$key} { border-style: #{$value} !important; }
   .border-top-#{$key} { border-top-style: #{$value} !important; }

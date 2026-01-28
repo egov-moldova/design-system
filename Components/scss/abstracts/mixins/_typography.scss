@@ -1,6 +1,5 @@
 @use '../variables' as vars;
 
-/// Aplică text-style desktop + mobile automat
 @mixin apply-text-style($style) {
   font-family: var(--text-#{$style}-font-family, 'Onest', sans-serif);
   font-size: var(--text-#{$style}-font-size);

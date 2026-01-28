@@ -23,8 +23,7 @@
   }
   
   .input {
-    @include input-style;  
-    //padding-left: var(--spacing-32);  
+    @include input-style;     
     padding-right: var(--spacing-32); 
     flex: 1;
   }
@@ -40,8 +39,7 @@
   .icon-loading {
     position: absolute;
     right: var(--spacing-16, 16px);
-    display: none;  
-    //animation: spin 1s linear infinite;               
+    display: none;                 
     position: absolute;
     pointer-events: none;
     color: transparent !important;
@@ -61,10 +59,12 @@
       display: inline-flex;
     }
   }
+
   .spinner {
     position: absolute;
     right: var(--spacing-8, 8px);
   }
+
   .btn-icon.clear {
     position: absolute;
     right: var(--spacing-8, 8px);
@@ -89,7 +89,7 @@
     }
   }
 
-  // Stări dinamice
+  
   &.loading .icon-loading { display: flex; }
   //&.filled .btn-icon.clear,
   //&.focus-populated .btn-icon.clear { display: flex; }

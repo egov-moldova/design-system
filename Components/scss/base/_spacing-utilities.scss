@@ -2,9 +2,7 @@
 @use "../abstracts/variables" as vars;
 @use "sass:map";
 
-/* ===============================
-   CSS Variables (runtime)
-================================ */
+// ============= CSS Variables (runtime) 
 :root {
   --spacing-0: 0px;
   --spacing-2: 2px;
@@ -23,9 +21,7 @@
   --spacing-72: 72px;
 }
 
-/* ===============================
-   Spacing token map
-================================ */
+// =========== Spacing token map 
 $spacing-map: (
   0: tokens.$token-spacing-0,
   2: tokens.$token-spacing-2,
@@ -44,10 +40,7 @@ $spacing-map: (
   72: tokens.$token-spacing-72
 );
 
-/* ===============================
-   Base utilities
-   (positive + negative)
-================================ */
+// ============= Base utilities (positive + negative) 
 @each $name, $value in $spacing-map {
   /* Padding */
   .p-#{$name}  { padding: $value !important; }
@@ -84,9 +77,8 @@ $spacing-map: (
   }
 }
 
-/* ===============================
-   Auto margins
-================================ */
+// ==============  Auto margins
+   
 .m-auto  { margin: auto !important; }
 .mt-auto { margin-top: auto !important; }
 .mr-auto { margin-right: auto !important; }
@@ -95,10 +87,7 @@ $spacing-map: (
 .mx-auto { margin-left: auto !important; margin-right: auto !important; }
 .my-auto { margin-top: auto !important; margin-bottom: auto !important; }
 
-/* ===============================
-   Responsive utilities
-   (positive + negative + auto + gap)
-================================ */
+// ================== Responsive utilities (positive + negative + auto + gap) 
 @each $bp-name, $bp-value in vars.$breakpoints {
   @media (min-width: $bp-value) {
     @each $name, $value in $spacing-map {

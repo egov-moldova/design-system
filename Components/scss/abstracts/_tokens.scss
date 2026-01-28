@@ -188,7 +188,6 @@ $token-spacing-72: var(--spacing-72);
 
 
 /* +++++++++++++++++++++++++++ SHADOWS ++++++++++++++++++++++++++++++++*/
-// Drop Shadows
 $drop-shadows: (
   100: (
     0 0 0.5px rgba(0, 0, 0, 0.3),
@@ -229,7 +228,7 @@ $drop-shadows: (
 
 /* +++++++++++++++++++++++++++ END SHADOWS ++++++++++++++++++++++++++++++++*/
 
-//
+//=====FONT WEIGHT
 $font-weights: (
   regular: 400,
   medium: 500,
@@ -238,9 +237,9 @@ $font-weights: (
 @function font-weight($weight-name) {
   @return map-get($font-weights, $weight-name);
 }
-// ============================
-// 🎨 Tokens pentru icons
-// ============================
+
+
+// ========== Icon tokens
 $icon-sizes: (
   default: 24px,
   medium: 20px,
@@ -248,9 +247,7 @@ $icon-sizes: (
   extra-small: 12px
 );
 
-//Tokens pentru input-uri
-// abstracts/_tokens.scss
-
+//========== Input tokens
 $input-colors: (
   default: (
     border: var(--gray-250),
@@ -306,6 +303,7 @@ $input-colors: (
     readonly-text: var(--green-800)
   )
 );
+
 $input-sizes: (
   small: (
     font-size: var(--font-size-14, 14px),
@@ -329,9 +327,8 @@ $input-sizes: (
 
 //MODALS
 :root {
-    /* Modal widths */
   --modal-width-sm: 350px;
-  --modal-width-md: 590px;  // aici trebuie definit
+  --modal-width-md: 590px;   
   --modal-width-lg: 720px;
   --modal-width-full: 100vw;
   --z-modal: 1000px;
@@ -343,9 +340,7 @@ $input-sizes: (
   --motion-scale-sm: 0.9;
 }
 
-/* =====================================================
-   🔗 LINK TOKENS
-===================================================== */
+/* ==========  LINK TOKENS ============ */
 :root {
   --color-link-primary-default: var(--color-text-brand-default);
   --color-link-primary-hover: var(--color-text-brand-default-hover);

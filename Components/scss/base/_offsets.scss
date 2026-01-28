@@ -9,17 +9,17 @@
     }
   }
 
-  // auto separat, NU în loop
+ 
   .offset-auto {
     @include make-col-offset(auto, $columns);
   }
 }
 
 @mixin make-responsive-offsets($columns: 12, $breakpoints: vars.$breakpoints) {
-  // offset global
+ 
   @include make-offset-classes($columns);
 
-  // offset pe breakpoints
+   
   @each $bp, $width in $breakpoints {
     @include media-breakpoint-up($bp, $breakpoints) {
       @for $i from 0 through $columns {
@@ -35,5 +35,5 @@
   }
 }
 
-// apel direct
+ 
 @include make-responsive-offsets(12, vars.$breakpoints);
