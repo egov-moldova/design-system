@@ -24,63 +24,105 @@
       <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
           <h2>Styles</h2>
       </div>
-      <div class="col-3">
+      <div class="col-12 col-sm-6 col-lg-3">
         <div class="mb-16">default</div>
         <div class="input-group input-date-wrapper">
           <label for="date">Label</label>
           <div class="input-wrapper">
-            <input type="date" id="date" class="input-date input--default" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
+            <input type="date" id="date" class="input input--default" placeholder="DD/MM/YYYY" />
+            <span class="input-date-icon d-none">
+              <svg class="icon medium" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+              </svg>
+            </span> 
+          </div> 
+        </div> 
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="input-group input-date-wrapper">
+          <div class="mb-16">warning</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input input--warning" placeholder="DD/MM/YYYY" />
+            <span class="input-date-icon d-none">
+              <svg class="icon medium" aria-hidden="true"> 
+                <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+              </svg>
+            </span> 
+          </div> 
+        </div> 
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="input-group input-date-wrapper">
+          <div class="mb-16">destructive</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input--destructive" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon d-none">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
+        </div> 
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3">
+        <div class="input-group input-date-wrapper">
+          <div class="mb-16">success</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper">
+            <input type="date" id="date" class="input--success" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon d-none">
+            <svg class="icon medium" aria-hidden="true"> 
+              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
+            </svg>
+          </span> 
+          </div> 
+        </div> 
+      </div>
+    </div>
+
+    <!-- Variations -->
+    <div class="row">
+      <div class="col-12">
+         <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+              <h2>Variations</h2>
+          </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-sm-6 col-lg-3">
+        <h5>Medium</h5>
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">default: default</div>
+          <label for="date">Label</label>
+          <div class="input-wrapper input-wrapper--medium">
+            <input type="date" id="date" class="input input--default" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
           </span> 
           </div> 
         </div>
-
       </div>
-      <div class="col-3">
-        <div class="input-group input-date-wrapper">
-          <div class="mb-16">warning</div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <h5>Large</h5>
+        <div class="input-group input-date-wrapper mb-24">
+          <div class="mb-8">default: default</div>
           <label for="date">Label</label>
           <div class="input-wrapper">
-            <input type="date" id="date" class="input--warning" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
+            <input type="date" id="date" class="input input--default" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
           </span> 
           </div> 
-        </div> 
-      </div>
-
-      <div class="col-3">
-        <div class="input-group input-date-wrapper">
-          <div class="mb-16">destructive</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--destructive" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div> 
-      </div>
-      <div class="col-3">
-        <div class="input-group input-date-wrapper">
-          <div class="mb-16">success</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--success" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div> 
+        </div>
       </div>
     </div>
 
@@ -92,15 +134,16 @@
           </div>
       </div>
     </div>
+
     <div class="row">
       <!-- Default -->
-      <div class="col-3">
+      <div class="col-12 col-sm-6 col-lg-3">
         <div class="input-group input-date-wrapper mb-24">
           <div class="mb-8">default: default</div>
           <label for="date">Label</label>
           <div class="input-wrapper">
-            <input type="date" id="date" class="input-date input--default" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
+            <input type="date" id="date" class="input input--default" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -112,8 +155,8 @@
           <div class="mb-8">default: hover</div>
           <label for="date">Label</label>
           <div class="input-wrapper">
-            <input type="date" id="date" class="input-date input--default" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
+            <input type="date" id="date" class="input input--default" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -125,8 +168,8 @@
           <div class="mb-8">default: focus-populated</div>
           <label for="date">Label</label>
           <div class="input-wrapper">
-            <input type="date" id="date" class="input-date input--default" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
+            <input type="date" id="date" class="input input--default" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -138,8 +181,8 @@
           <div class="mb-8">default: filled</div>
           <label for="date">Label</label>
           <div class="input-wrapper">
-            <input type="date" id="date" class="input-date input--default" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
+            <input type="date" id="date" class="input input--default" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -151,8 +194,8 @@
           <div class="mb-8">default: disabled</div>
           <label for="date">Label</label>
           <div class="input-wrapper">
-            <input type="date" id="date" class="input-date input--default" placeholder="DD/MM/YYYY" disabled/>
-          <span class="input-date-icon">
+            <input type="date" id="date" class="input input--default" placeholder="DD/MM/YYYY" disabled/>
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -164,8 +207,8 @@
           <div class="mb-8">default: mandatory</div>
           <label for="date" class="required">Label</label>
           <div class="input-wrapper">
-            <input type="date" id="date" class="input-date input--default" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
+            <input type="date" id="date" class="input input--default" placeholder="DD/MM/YYYY" />
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -175,13 +218,13 @@
       </div>
 
       <!-- Warning -->
-      <div class="col-3">
+      <div class="col-12 col-sm-6 col-lg-3">
         <div class="input-group input-date-wrapper mb-24">
           <div class="mb-8">warning: default</div>
           <label for="date">Label</label>
           <div class="input-wrapper">
             <input type="date" id="date" class="input--warning" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -194,7 +237,7 @@
           <label for="date">Label</label>
           <div class="input-wrapper">
             <input type="date" id="date" class="input--warning" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -207,7 +250,7 @@
           <label for="date">Label</label>
           <div class="input-wrapper">
             <input type="date" id="date" class="input--warning" placeholder="DD/MM/YYYY" style="box-shadow: 0 0 0 4px var(--apricot-200);" />
-          <span class="input-date-icon">
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -220,7 +263,7 @@
           <label for="date">Label</label>
           <div class="input-wrapper">
             <input type="date" id="date" class="input--warning" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -233,7 +276,7 @@
           <label for="date">Label</label>
           <div class="input-wrapper">
             <input type="date" id="date" class="input--warning" placeholder="DD/MM/YYYY" disabled/>
-          <span class="input-date-icon">
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -246,7 +289,7 @@
           <label for="date" class="required">Label</label>
           <div class="input-wrapper">
             <input type="date" id="date" class="input--warning" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -256,13 +299,13 @@
       </div>
 
      <!-- Destructive -->
-      <div class="col-3">
+      <div class="col-12 col-sm-6 col-lg-3">
         <div class="input-group input-date-wrapper mb-24">
           <div class="mb-8">destructive: default</div>
           <label for="date">Label</label>
           <div class="input-wrapper">
             <input type="date" id="date" class="input--destructive" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -275,7 +318,7 @@
           <label for="date">Label</label>
           <div class="input-wrapper">
             <input type="date" id="date" class="input--destructive" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -288,7 +331,7 @@
           <label for="date">Label</label>
           <div class="input-wrapper">
             <input type="date" id="date" class="input--destructive" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -301,7 +344,7 @@
           <label for="date">Label</label>
           <div class="input-wrapper">
             <input type="date" id="date" class="input--destructive" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -314,7 +357,7 @@
           <label for="date">Label</label>
           <div class="input-wrapper">
             <input type="date" id="date" class="input--destructive" placeholder="DD/MM/YYYY" disabled/>
-          <span class="input-date-icon">
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -327,7 +370,7 @@
           <label for="date" class="required">Label</label>
           <div class="input-wrapper">
             <input type="date" id="date" class="input--destructive" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -337,13 +380,13 @@
       </div>
 
       <!-- Success -->
-      <div class="col-3">
+      <div class="col-12 col-sm-6 col-lg-3">
         <div class="input-group input-date-wrapper mb-24">
           <div class="mb-8">success: default</div>
           <label for="date">Label</label>
           <div class="input-wrapper">
             <input type="date" id="date" class="input--success" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -356,7 +399,7 @@
           <label for="date">Label</label>
           <div class="input-wrapper">
             <input type="date" id="date" class="input--success" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -369,7 +412,7 @@
           <label for="date">Label</label>
           <div class="input-wrapper">
             <input type="date" id="date" class="input--success" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -382,7 +425,7 @@
           <label for="date">Label</label>
           <div class="input-wrapper">
             <input type="date" id="date" class="input--success" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon">
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -395,7 +438,7 @@
           <label for="date">Label</label>
           <div class="input-wrapper">
             <input type="date" id="date" class="input--success" placeholder="DD/MM/YYYY" disabled/>
-            <span class="input-date-icon">
+            <span class="input-date-icon d-none">
               <svg class="icon medium" aria-hidden="true"> 
                 <use href="assets/icons/sprite.svg#icon-calendar"></use> 
               </svg>
@@ -408,7 +451,7 @@
           <label for="date" class="required">Label</label>
           <div class="input-wrapper">
             <input type="date" id="date" class="input--success" placeholder="DD/MM/YYYY" />
-            <span class="input-date-icon">
+            <span class="input-date-icon d-none">
               <svg class="icon medium" aria-hidden="true"> 
                 <use href="assets/icons/sprite.svg#icon-calendar"></use> 
               </svg>
@@ -433,13 +476,13 @@
     </div>
 
     <div class="row">
-      <div class="col-3">
+      <div class="col-12 col-sm-6 col-lg-3">
         <div class="input-group input-date-wrapper mb-24">
           <p>default</p>
           <label for="default-default">Label</label>
           <div class="input-wrapper">
-            <input type="date" id="date" class="input-date input--default" placeholder="DD/MM/YYYY">
-          <span class="input-date-icon">
+            <input type="date" id="date" class="input input--default" placeholder="DD/MM/YYYY">
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -451,13 +494,13 @@
         </div>
       </div>
 
-      <div class="col-3">
+      <div class="col-12 col-sm-6 col-lg-3">
         <div class="input-group input-date-wrapper mb-24">
           <p>warning</p>
           <label for="default-default">Label</label>
           <div class="input-wrapper">
             <input type="date" id="date" class="input--warning" placeholder="DD/MM/YYYY">
-          <span class="input-date-icon">
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -474,13 +517,13 @@
         </div>
       </div>
 
-      <div class="col-3">
+      <div class="col-12 col-sm-6 col-lg-3">
         <div class="input-group input-date-wrapper mb-24">
           <p>destructive</p>
           <label for="default-default">Label</label>
           <div class="input-wrapper">
             <input type="date" id="date" class="input--destructive" placeholder="DD/MM/YYYY">
-          <span class="input-date-icon">
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
@@ -497,13 +540,13 @@
         </div>
       </div>
 
-      <div class="col-3">
+      <div class="col-12 col-sm-6 col-lg-3">
         <div class="input-group input-date-wrapper mb-24">
           <p>success</p>
           <label for="default-default">Label</label>
           <div class="input-wrapper">
             <input type="date" id="date" class="input--success" placeholder="DD/MM/YYYY">
-          <span class="input-date-icon">
+          <span class="input-date-icon d-none">
             <svg class="icon medium" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-calendar"></use> 
             </svg>
