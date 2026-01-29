@@ -7,15 +7,16 @@
 @mixin input-style($variant: default) {
   $colors: map.get(tokens.$input-colors, $variant);
 
-  border: 1.5px solid map.get($colors, border);
+  border: var(--border-width-1) var(--border-style-solid) map.get($colors, border);
   background-color: map.get($colors, background);
   color: map.get($colors, text);
   width: 100%;
   height: var(--spacing-48, 48px);
   padding: 0 var(--spacing-12, 12px);
   border-radius: var(--border-radius-8, 8px);
-  font-size: var(--font-size-14, 14px);
+  font-size: var(--text-body-md-font-size);
   box-sizing: border-box;
+  text-overflow: ellipsis;
 
   &::placeholder {
     color: map.get($colors, placeholder);
@@ -27,7 +28,7 @@
   }
 
   &:focus:not(:disabled) {
-    outline: none;
+    outline: 1px solid map.get($colors, border-hover);
     box-shadow: 0 0 0 4px map.get($colors, focus);
   }
 
@@ -56,6 +57,7 @@
 
 //======= Input label
 label {
+  color: var(--gray-700);
   display: block;
   font-size: var(--text-body-sm-font-size, 14px);
   margin-bottom: var(--spacing-6, 6px);
@@ -84,6 +86,11 @@ label {
   @include input-style(success);
 }
 
+.input--medium {
+  font-size: var(--text-body-sm-font-size);
+  height: var(--spacing-40);
+}
+
 // =================  Additional states
 .input--filled {
   background-color: var(--white);
@@ -96,7 +103,7 @@ label {
 }
 
 .input:focus:not(:placeholder-shown) {
-  border-color: var(--blue-sky-500);
+  //border-color: var(--blue-sky-500);
 }
 
 .input:focus:placeholder-shown {
@@ -167,6 +174,18 @@ label {
       resize: vertical;
     }
   }
+
+  &--medium {
+    .input {
+      height: var(--spacing-40);
+      font-size: var(--text-body-sm-font-size);
+    }
+
+    .icon {
+      height: var(--spacing-20);
+      width: var(--spacing-20);
+    }
+  }
 }
 
 .input-message {
@@ -193,4 +212,7 @@ label {
   .input-icon--trailing {
     right: var(--spacing-8, 8px);
   }
+}
+.input-group {
+  max-width: 285px;
 }

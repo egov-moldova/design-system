@@ -12,9 +12,19 @@
   &.rectangular { border-radius: var(--radius-md, 8px); }
   &.circular input{ border-radius: 9999px; }
 
- 
-  &.medium .input{ height: var(--spacing-48, 48px); }
-  &.small .input{ height: var(--spacing-40, 40px); }
+  &.large .input {height: var(--spacing-48);}
+  &.medium {
+    .input{ 
+      height: var(--spacing-40); 
+      font-size: var(--text-body-sm-font-size);
+    }
+
+    .icon-search .icon{
+      height: var(--spacing-20);
+      width: var(--spacing-20);
+    }
+  } 
+  &.small .input{ height: var(--spacing-32); }
 
   &:has(.icon-search)  {
     .input {

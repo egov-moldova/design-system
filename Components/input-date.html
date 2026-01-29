@@ -27,8 +27,8 @@
     </div>
   </div> 
 
-  <div class="row">  
-    <div class="col-3">
+  <div class="row row-gap-32">  
+    <div class="col-12 col-sm-6 col-lg-3">
       <div class="mb-16">default</div>
       <div class="input-group">
         <label for="date-default">Label</label>
@@ -52,7 +52,7 @@
       </div>
     </div> 
  
-    <div class="col-3">
+    <div class="col-12 col-sm-6 col-lg-3">
       <div class="mb-16">warning</div>
       <div class="input-group">
         <label for="date-warning">Label</label>
@@ -81,7 +81,7 @@
         </div>
       </div>
     </div> 
-    <div class="col-3">
+    <div class="col-12 col-sm-6 col-lg-3">
       <div class="mb-16">destructive</div>
       <div class="input-group">
         <label for="date-destructive">Label</label>
@@ -111,7 +111,7 @@
       </div>
     </div>
  
-    <div class="col-3">
+    <div class="col-12 col-sm-6 col-lg-3">
       <div class="mb-16">success</div>
       <div class="input-group">
         <label for="date-success">Label</label>
@@ -142,14 +142,71 @@
     </div>
   </div>
 
-    <div class="row">
-      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-          <h2>States</h2>
+  <div class="row">
+    <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+        <h2>Variations</h2>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <h5>Medium</h5>
+    </div>
+    <div class="col-12 col-sm-6">
+      <div class="mb-16">default</div>
+      <div class="input-group">
+        <label for="date-default">Label</label>
+        <div class="input-wrapper input-wrapper--medium">
+          <input 
+            id="date-default" 
+            type="text" 
+            placeholder="DD/MM/YYYY" 
+            class="input" 
+            aria-describedby="date-default-message"
+          />
+          <button type="button" class="input-icon right icon-calendar border-0 bg-transparent" aria-label="Open calendar">
+            <svg class="icon medium" aria-hidden="true">
+              <use href="assets/icons/sprite.svg#icon-calendar"></use>
+            </svg>
+          </button>
+        </div>
+        <div id="date-default-message" class="input-message default">
+          Enter date in DD/MM/YYYY format
+        </div>
       </div>
+    </div> 
+    <div class="col-12 col-sm-6">
+      <div class="mb-16">default</div>
+      <div class="input-group">
+        <label for="date-default">Label</label>
+        <div class="input-wrapper">
+          <input 
+            id="date-default" 
+            type="text" 
+            placeholder="DD/MM/YYYY" 
+            class="input" 
+            aria-describedby="date-default-message"
+          />
+          <button type="button" class="input-icon right icon-calendar border-0 bg-transparent" aria-label="Open calendar">
+            <svg class="icon large" aria-hidden="true">
+              <use href="assets/icons/sprite.svg#icon-calendar"></use>
+            </svg>
+          </button>
+        </div>
+        <div id="date-default-message" class="input-message default">
+          Enter date in DD/MM/YYYY format
+        </div>
+      </div>
+    </div> 
+  </div>
+
+  <div class="row">
+    <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+        <h2>States</h2>
+    </div>
   </div> 
 
   <div class="row">
-    <div class="col-3"> 
+    <div class="col-12 col-sm-6"> 
       <div class="mb-16">default:default</div>
       <div class="input-group">
         <label for="date-default">Label</label>
@@ -253,7 +310,7 @@
       </div>
     </div>
 
-    <div class="col-3">
+    <div class="col-12 col-sm-6">
       <div class="mb-16">destructive:default</div>
       <div class="input-group">
         <label for="date-destructive">Label</label>

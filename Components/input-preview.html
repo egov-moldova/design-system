@@ -59,6 +59,74 @@
       <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
           <h2>Variations</h2>
       </div>
+      <div class="col-12">
+        <h5>Medium</h5>
+      </div>
+      <div class="col-3">
+        <div class="mb-16">icon-none</div>
+        <div class="input-group">
+          <label for="icon-none">Label</label>
+          <input id="icon-none" type="text" placeholder="Placeholder" class="input input--medium" />
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="mb-16">icon-leading</div>
+        <div class="input-group icon-leading">
+            <label for="icon-leading">Label</label>
+            <div class="search-input medium rectangular ">
+              <span class="p-2 radius-8 d-inline-flex icon-search">
+                  <svg class="icon medium" aria-hidden="true"> 
+                      <use href="assets/icons/sprite.svg#icon-search"></use> 
+                  </svg>
+              </span>
+              <input id="icon-leading" type="text" placeholder="Placeholder" class="input input--medium" />
+              <span class="icon-loading">⟳</span>
+              <button type="button " class="btn-icon clear">
+                  <svg class="icon small" aria-hidden="true"> 
+                      <use href="assets/icons/sprite.svg#icon-cross-small"></use> 
+                  </svg>
+              </button>
+          </div> 
+        </div> 
+          
+      </div>
+      <div class="col-3">
+        <div class="mb-16">icon-trailing</div>
+        <div class="input-group icon-trailing">
+          <label for="icon-trailing">Label</label>
+          <div class="input-wrapper input-wrapper--medium">
+            <input id="icon-trailing" type="text" placeholder="Placeholder" class="input input--medium" />
+            <span class="input-icon right chevron-bottom">
+                <svg class="icon large" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
+                </svg>
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="mb-16">icon-both</div>
+        <div class="input-group icon-both">
+          <label for="icon-both">Label</label>
+          <div class="input-wrapper">
+            <span class="input-icon left icon-search">
+                <svg class="icon small" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-search"></use>
+                </svg>
+            </span>
+            <input id="icon-both" type="text" placeholder="Placeholder" class="input input--medium" />
+            <span class="input-icon right chevron-bottom">
+                <svg class="icon large" aria-hidden="true"> 
+                  <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
+                </svg>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 mt-56">
+        <h5>Large</h5>
+      </div>
       <div class="col-3">
         <div class="mb-16">icon-none</div>
         <div class="input-group">
@@ -237,14 +305,7 @@
           <label for="warning" class="required">warning: field</label>
           <input id="warning" type="text" placeholder="Placeholder" class="input--warning" />
         </div>
-
-        <div class="input-group mb-24">
-          <p>warning: read-only</p>
-          <label for="default">Label</label>
-          <div class="input-wrapper">
-            <input id="readonly-default" type="text" placeholder="Placeholder" class="input--warning" readonly/>
-          </div> 
-        </div>
+ 
       </div>
 
        <!-- destructive states -->
@@ -291,15 +352,7 @@
         <div class="input-group mb-24">
           <label for="destructive" class="required">destructive: field</label>
           <input id="destructive-loading" type="text" placeholder="Placeholder" class="input--destructive" />
-        </div>
-
-         <div class="input-group mb-24">
-          <p>destructive: read-only</p>
-          <label for="default">Label</label>
-          <div class="input-wrapper">
-            <input id="readonly-destructive" type="text" placeholder="Placeholder" class="input--destructive" readonly/>
-          </div> 
-        </div>
+        </div> 
       </div>
 
       <!-- success states -->
@@ -347,14 +400,7 @@
             <label for="success" class="required">success: field</label>
             <input id="success-loading" type="text" placeholder="Placeholder" class="input--success" />
           </div>
-
-           <div class="input-group mb-24">
-            <p>success: read-only</p>
-            <label for="default">Label</label>
-            <div class="input-wrapper">
-              <input id="readonly-default" type="text" placeholder="Placeholder" class="input--success" readonly/>
-            </div> 
-          </div>
+ 
         </div>
     </div> 
 
