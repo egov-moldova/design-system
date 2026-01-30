@@ -1,7 +1,7 @@
 
 .btn {
-  display: var(--inline-flex, inline-flex);
-  align-items: var(--align-items-center, center);
+  display: inline-flex;
+  align-items:  center;
   justify-content: center; 
   font-size: var(--text-body-md-500-font-size);
   font-family: inherit;

@@ -1,6 +1,5 @@
 @use './input' as *;
 
-
 .search-input {
   position: relative;
   display: flex;
@@ -8,35 +7,77 @@
   height: 100%;
   width: var(--w-100, 100%);
 
-  
-  &.rectangular { border-radius: var(--radius-md, 8px); }
-  &.circular input{ border-radius: 9999px; }
 
-  &.large .input {height: var(--spacing-48);}
+
+  &.rectangular {
+    border-radius: var(--radius-md, 8px);
+  }
+
+  &.circular {
+    input {
+      border-radius: var(--border-radius-full);
+    }
+
+    .btn-search {
+      border-radius: var(--border-radius-full);
+    }
+  }
+
+
+
+  &.large .input {
+    height: var(--spacing-48);
+  }
+
   &.medium {
-    .input{ 
-      height: var(--spacing-40); 
+    .input {
+      height: var(--spacing-40);
       font-size: var(--text-body-sm-font-size);
     }
 
-    .icon-search .icon{
+    .icon-search .icon {
       height: var(--spacing-20);
       width: var(--spacing-20);
     }
-  } 
-  &.small .input{ height: var(--spacing-32); }
 
-  &:has(.icon-search)  {
-    .input {
-      padding-left: var(--spacing-32);  
+    .btn-search {
+      padding: calc(var(--spacing-8) - 1px);
+
+      .icon {
+        width: var(--icon-size-small);
+        height: var(--icon-size-small);
+      }
     }
   }
-  
+
+  &.small .input {
+    height: var(--spacing-32);
+  }
+
+
+
+  &:has(.icon-search) {
+    .input {
+      padding-left: var(--spacing-32);
+    }
+  }
+
   .input {
-    @include input-style;     
-    padding-right: var(--spacing-32); 
+    @include input-style;
+    padding-right: var(--spacing-56);  
     flex: 1;
   }
+
+
+
+  &.disabled {
+    .btn-search {
+      cursor: not-allowed;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+  }
+
 
   .icon-search {
     position: absolute;
@@ -46,65 +87,80 @@
     pointer-events: none;
   }
 
-  .icon-loading {
-    position: absolute;
-    right: var(--spacing-16, 16px);
-    display: none;                 
-    position: absolute;
-    pointer-events: none;
-    color: transparent !important;
 
-    &::after {
-        content: '';
-        position: absolute;
-        width: 16px;
-        height: 16px;
-        border: 2px solid var(--blue-sky-600, #0058D2);
-        border-top-color: transparent;
-        border-radius: 50%;
-        animation: spin 1s linear infinite;
-        right: 0;
+  .btn-group {
+    position: absolute;
+    right: var(--spacing-4);
+    display: none;
+    align-items: center;
+    gap: var(--spacing-6);
+  }
+
+  &.has-value {
+    .btn-group {
+      display: flex;
     }
-    &.visible {
+  }
+
+
+  .spinner,
+  .btn-icon.clear {
+    display: none;
+  }
+
+  &.is-typing {
+    .spinner {
       display: inline-flex;
     }
   }
 
-  .spinner {
-    position: absolute;
-    right: var(--spacing-8, 8px);
+  &.is-ready {
+    .btn-icon.clear {
+      display: inline-flex;
+    }
   }
 
+
+  &.loading {
+    .spinner {
+      display: inline-flex;
+    }
+
+    .btn-icon.clear {
+      display: none;
+    }
+  }
+
+
+
   .btn-icon.clear {
-    position: absolute;
-    right: var(--spacing-8, 8px);
-    display: none;
     border: none;
     background-color: var(--gray-200, #f1f1f1);
     border-radius: var(--border-radius-full);
     height: var(--icon-height, 20px);
+    width: var(--icon-width, 20px);
     padding: 0;
-    width: var(--icon-width);
     cursor: pointer;
-
-     &.visible {
-      display: inline-flex;
-    }
   }
 
-  &:has(.visible) { 
+  .btn-search {
+    border-radius: var(--border-radius-6);
+    padding: calc(var(--spacing-12) - 3px);
 
-    .spinner {
-      right: calc(var(--spacing-40) - 5px); 
+    svg {
+      transform: rotate(180deg);
     }
   }
-
-  
-  &.loading .icon-loading { display: flex; }
-  //&.filled .btn-icon.clear,
-  //&.focus-populated .btn-icon.clear { display: flex; }
 }
+
+
+
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
