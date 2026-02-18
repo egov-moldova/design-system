@@ -1,570 +1,1157 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Search Input Preview</title>
-  <script src="js/search.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Date Picker Preview</title>
+  <script src="js/input-date.js" defer></script>
+  <script src="js/input-date-picker.js" defer></script>
   <link rel="stylesheet" href="css/main.css" />
 </head>
+
 <body>
 
-<div class="container py-56">
+  <div class="container py-56">
     <div class="row">
-        <div class="col-sm-7">
-            <h1>Search Input</h1>
-            <p class="text-gray-400">
-                The Search Input component allows users to enter text queries to quickly find relevant content within an interface. It typically includes a text field and a search icon, and may offer additional features such as auto-suggestions, clear input functionality, or filters.
-                Designed to be lightweight and accessible, this component helps streamline navigation and improve content discoverability.
-            </p>
-        </div>
+      <div class="col-sm-7">
+        <h1>Date Picker</h1>
+        <p class="text-gray-400">
+          Date Picker is an interactive component that allows users to select a date (and optionally time) from a visual
+          calendar interface. It simplifies the process of choosing dates, improves accuracy, and ensures consistency in
+          formatting.
+        </p>
+      </div>
     </div>
-    <!-- Styles -->
+
+    <!-- Date Input -->
     <div class="row">
       <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-          <h2>Styles</h2>
+        <h2>Date Input</h2>
       </div>
       <div class="col-12 col-sm-6 col-lg-3">
-        <div class="mb-16">default</div>
-        <div class="input-group input-date-wrapper">
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input input--default" placeholder="DD/MM/YYYY" />
-            <span class="input-date-icon d-none">
-              <svg class="icon medium" aria-hidden="true"> 
-                <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-              </svg>
-            </span> 
-          </div> 
-        </div> 
-      </div>
-
-      <div class="col-12 col-sm-6 col-lg-3">
-        <div class="input-group input-date-wrapper">
-          <div class="mb-16">warning</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input input--warning" placeholder="DD/MM/YYYY" />
-            <span class="input-date-icon d-none">
-              <svg class="icon medium" aria-hidden="true"> 
-                <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-              </svg>
-            </span> 
-          </div> 
-        </div> 
-      </div>
-
-      <div class="col-12 col-sm-6 col-lg-3">
-        <div class="input-group input-date-wrapper">
-          <div class="mb-16">destructive</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--destructive" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div> 
-      </div>
-
-      <div class="col-12 col-sm-6 col-lg-3">
-        <div class="input-group input-date-wrapper">
-          <div class="mb-16">success</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--success" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div> 
-      </div>
-    </div>
-
-    <!-- Variations -->
-    <div class="row">
-      <div class="col-12">
-         <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-              <h2>Variations</h2>
+        <div class="date-picker__field" data-date-picker data-type="default" data-open="false" data-year="2025" data-month="0" data-selected="2025-01-11" data-today="2025-01-07">
+          <div class="input-group input-date-wrapper">
+            <label for="date-input-default">Label</label>
+            <div class="input-wrapper">
+              <input type="text" id="date-input-default" class="input js-date-picker-input" placeholder="DD/MM/YYYY" autocomplete="off" />
+              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle" aria-label="Open calendar" aria-controls="panel-date-input-default" aria-expanded="false">
+                <svg class="icon medium" aria-hidden="true">
+                  <use href="assets/icons/sprite.svg#icon-calendar"></use>
+                </svg>
+              </button>
+            </div>
           </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-12 col-sm-6 col-lg-3">
-        <h5>Medium</h5>
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">default: default</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper input-wrapper--medium">
-            <input type="date" id="date" class="input input--default" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
+          <div id="panel-date-input-default" class="date-picker-panel" aria-hidden="true" hidden>
+            <div class="date-picker" role="dialog" aria-label="Choose date">
+              <div class="date-picker__header">
+                <button class="date-picker__nav js-date-picker-prev" type="button" aria-label="Previous month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
+                  </svg>
+                </button>
+                <div class="date-picker__month js-date-picker-label">January 2025</div>
+                <button class="date-picker__nav js-date-picker-next" type="button" aria-label="Next month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use>
+                  </svg>
+                </button>
+              </div>
+              <div class="date-picker__grid date-picker__grid--days" data-view="day">
+                <div class="date-picker__weekdays">
+                  <div class="date-picker__weekday">M</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">W</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">F</div>
+                  <div class="date-picker__weekday">S</div>
+                  <div class="date-picker__weekday">S</div>
+                </div>
+                <div class="date-picker__days js-date-picker-days"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="col-12 col-sm-6 col-lg-3">
-        <h5>Large</h5>
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">default: default</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input input--default" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
+    </div>
+    <div class="row">
+      <div class="col-12 col-md-8 text-gray-400">
+        Additional information about the Date Input component can be accessed through the provided
+        <a href="https://www.figma.com/design/doJ7tDY0PlQ0PqMgbpFVIC/Components?node-id=470-32032"
+          class="text-blue-sky-600">Figma link</a>.
+      </div>
+    </div>
+
+    <!-- Breakpoints -->
+    <div class="row">
+      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+        <h2>Breakpoints</h2>
+      </div>
+    </div>
+    <div class="row row-gap-32">
+      <div class="col-12 col-lg-4">
+        <div class="text-body-sm-500 mb-12">Desktop</div>
+        <div class="date-picker__field" data-date-picker data-type="default" data-open="false" data-year="2025"
+          data-month="0" data-selected="2025-01-11" data-today="2025-01-07">
+          <div class="input-group input-date-wrapper">
+            <label for="date-breakpoint-desktop">Label</label>
+            <div class="input-wrapper">
+              <input type="text" id="date-breakpoint-desktop" class="input js-date-picker-input"
+                placeholder="DD/MM/YYYY" autocomplete="off" />
+              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+                aria-label="Open calendar" aria-controls="panel-breakpoint-desktop" aria-expanded="true">
+                <svg class="icon medium" aria-hidden="true">
+                  <use href="assets/icons/sprite.svg#icon-calendar"></use>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div id="panel-breakpoint-desktop" class="date-picker-panel" aria-hidden="true" hidden>
+            <div class="date-picker" role="dialog" aria-label="Choose date">
+              <div class="date-picker__header">
+                <button class="date-picker__nav js-date-picker-prev" type="button" aria-label="Previous month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
+                  </svg>
+                </button>
+                <div class="date-picker__month js-date-picker-label">January 2025</div>
+                <button class="date-picker__nav js-date-picker-next" type="button" aria-label="Next month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use>
+                  </svg>
+                </button>
+              </div>
+              <div class="date-picker__grid date-picker__grid--days" data-view="day">
+                <div class="date-picker__weekdays">
+                  <div class="date-picker__weekday">M</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">W</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">F</div>
+                  <div class="date-picker__weekday">S</div>
+                  <div class="date-picker__weekday">S</div>
+                </div>
+                <div class="date-picker__days js-date-picker-days"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-4">
+        <div class="text-body-sm-500 mb-12">Tablet</div>
+        <div class="date-picker__field" data-date-picker data-type="default" data-open="false" data-year="2025"
+          data-month="0" data-selected="2025-01-11" data-today="2025-01-07">
+          <div class="input-group input-date-wrapper">
+            <label for="date-breakpoint-tablet">Label</label>
+            <div class="input-wrapper">
+              <input type="text" id="date-breakpoint-tablet" class="input js-date-picker-input" placeholder="DD/MM/YYYY"
+                autocomplete="off" />
+              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+                aria-label="Open calendar" aria-controls="panel-breakpoint-tablet" aria-expanded="true">
+                <svg class="icon medium" aria-hidden="true">
+                  <use href="assets/icons/sprite.svg#icon-calendar"></use>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div id="panel-breakpoint-tablet" class="date-picker-panel" aria-hidden="true" hidden>
+            <div class="date-picker" role="dialog" aria-label="Choose date">
+              <div class="date-picker__header">
+                <button class="date-picker__nav js-date-picker-prev" type="button" aria-label="Previous month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
+                  </svg>
+                </button>
+                <div class="date-picker__month js-date-picker-label">January 2025</div>
+                <button class="date-picker__nav js-date-picker-next" type="button" aria-label="Next month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use>
+                  </svg>
+                </button>
+              </div>
+              <div class="date-picker__grid date-picker__grid--days" data-view="day">
+                <div class="date-picker__weekdays">
+                  <div class="date-picker__weekday">M</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">W</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">F</div>
+                  <div class="date-picker__weekday">S</div>
+                  <div class="date-picker__weekday">S</div>
+                </div>
+                <div class="date-picker__days js-date-picker-days"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-4">
+        <div class="text-body-sm-500 mb-12">Mobile bottom sheet</div>
+        <div class="bottom-sheet bottom-sheet--static" aria-hidden="false" data-date-picker data-type="advanced" data-open="false" data-year="2025" data-month="0" data-selected="2025-01-11" data-today="2025-01-07">
+          <div class="bottom-sheet__overlay"></div>
+          <div class="bottom-sheet__panel">
+            <div class="bottom-sheet__handle"></div>
+            <div class="date-picker date-picker--advanced" role="dialog" aria-label="Choose date">
+              <div class="date-picker__header date-picker__header--advanced">
+                <button class="date-picker__nav js-date-picker-prev" type="button" aria-label="Previous month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
+                  </svg>
+                </button>
+                <div class="date-picker__selects">
+                  <button class="date-picker__select-btn js-date-picker-month-toggle" type="button"
+                    aria-label="Choose month">
+                    <span class="js-date-picker-month-label">January</span>
+                    <svg class="icon small" aria-hidden="true">
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom-small"></use>
+                    </svg>
+                  </button>
+                  <button class="date-picker__select-btn js-date-picker-year-toggle" type="button"
+                    aria-label="Choose year">
+                    <span class="js-date-picker-year-label">2025</span>
+                    <svg class="icon small" aria-hidden="true">
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom-small"></use>
+                    </svg>
+                  </button>
+                </div>
+                <button class="date-picker__nav js-date-picker-next" type="button" aria-label="Next month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use>
+                  </svg>
+                </button>
+              </div>
+              <div class="date-picker__grid date-picker__grid--days" data-view="day">
+                <div class="date-picker__weekdays">
+                  <div class="date-picker__weekday">M</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">W</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">F</div>
+                  <div class="date-picker__weekday">S</div>
+                  <div class="date-picker__weekday">S</div>
+                </div>
+                <div class="date-picker__days js-date-picker-days"></div>
+              </div>
+              <div class="date-picker__grid date-picker__grid--months" data-view="month" hidden>
+                <div class="date-picker__months js-date-picker-months"></div>
+              </div>
+              <div class="date-picker__grid date-picker__grid--years" data-view="year" hidden>
+                <div class="date-picker__years js-date-picker-years"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12 col-md-8 text-gray-400 mt-24">
+        The Date Picker can adapt to different mobile contexts by appearing either as a dropdown anchored to the input
+        field or as a full-width bottom sheet modal. The dropdown variant is useful for quick selections, while the
+        bottom sheet provides a more focused and accessible experience for date input.
+      </div>
+    </div>
+
+    <!-- Types -->
+    <div class="row">
+      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+        <h2>Types</h2>
+      </div>
+    </div>
+    <div class="row row-gap-32">
+      <div class="col-12 col-lg-4">
+        <div class="text-body-sm-500 mb-12">Default</div>
+        <div class="date-picker__field" data-date-picker data-type="default" data-open="false" data-year="2025"
+          data-month="0" data-selected="2025-01-11" data-today="2025-01-07">
+          <div class="input-group input-date-wrapper">
+            <label for="date-type-default">Label</label>
+            <div class="input-wrapper">
+              <input type="text" id="date-type-default" class="input js-date-picker-input" placeholder="DD/MM/YYYY"
+                autocomplete="off" />
+              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+                aria-label="Open calendar" aria-controls="panel-type-default" aria-expanded="true">
+                <svg class="icon medium" aria-hidden="true">
+                  <use href="assets/icons/sprite.svg#icon-calendar"></use>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div id="panel-type-default" class="date-picker-panel" aria-hidden="true" hidden>
+            <div class="date-picker" role="dialog" aria-label="Choose date">
+              <div class="date-picker__header">
+                <button class="date-picker__nav js-date-picker-prev" type="button" aria-label="Previous month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
+                  </svg>
+                </button>
+                <div class="date-picker__month js-date-picker-label">January 2025</div>
+                <button class="date-picker__nav js-date-picker-next" type="button" aria-label="Next month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use>
+                  </svg>
+                </button>
+              </div>
+              <div class="date-picker__grid date-picker__grid--days" data-view="day">
+                <div class="date-picker__weekdays">
+                  <div class="date-picker__weekday">M</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">W</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">F</div>
+                  <div class="date-picker__weekday">S</div>
+                  <div class="date-picker__weekday">S</div>
+                </div>
+                <div class="date-picker__days js-date-picker-days"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-4">
+        <div class="text-body-sm-500 mb-12">Advanced</div>
+        <div class="date-picker__field" data-date-picker data-type="advanced" data-open="false" data-year="2025"
+          data-month="0" data-selected="2025-01-11" data-today="2025-01-07">
+          <div class="input-group input-date-wrapper">
+            <label for="date-type-advanced">Label</label>
+            <div class="input-wrapper">
+              <input type="text" id="date-type-advanced" class="input js-date-picker-input" placeholder="DD/MM/YYYY"
+                autocomplete="off" />
+              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+                aria-label="Open calendar" aria-controls="panel-type-advanced" aria-expanded="true">
+                <svg class="icon medium" aria-hidden="true">
+                  <use href="assets/icons/sprite.svg#icon-calendar"></use>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div id="panel-type-advanced" class="date-picker-panel" aria-hidden="true" hidden>
+            <div class="date-picker date-picker--advanced" role="dialog" aria-label="Choose date">
+              <div class="date-picker__header date-picker__header--advanced">
+                <button class="date-picker__nav js-date-picker-prev" type="button" aria-label="Previous month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
+                  </svg>
+                </button>
+                <div class="date-picker__selects">
+                  <button class="date-picker__select-btn js-date-picker-month-toggle" type="button"
+                    aria-label="Choose month">
+                    <span class="js-date-picker-month-label">January</span>
+                    <svg class="icon small" aria-hidden="true">
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom-small"></use>
+                    </svg>
+                  </button>
+                  <button class="date-picker__select-btn js-date-picker-year-toggle" type="button"
+                    aria-label="Choose year">
+                    <span class="js-date-picker-year-label">2025</span>
+                    <svg class="icon small" aria-hidden="true">
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom-small"></use>
+                    </svg>
+                  </button>
+                </div>
+                <button class="date-picker__nav js-date-picker-next" type="button" aria-label="Next month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use>
+                  </svg>
+                </button>
+              </div>
+              <div class="date-picker__grid date-picker__grid--days" data-view="day">
+                <div class="date-picker__weekdays">
+                  <div class="date-picker__weekday">M</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">W</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">F</div>
+                  <div class="date-picker__weekday">S</div>
+                  <div class="date-picker__weekday">S</div>
+                </div>
+                <div class="date-picker__days js-date-picker-days"></div>
+              </div>
+              <div class="date-picker__grid date-picker__grid--months" data-view="month" hidden>
+                <div class="date-picker__months js-date-picker-months"></div>
+              </div>
+              <div class="date-picker__grid date-picker__grid--years" data-view="year" hidden>
+                <div class="date-picker__years js-date-picker-years"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-4">
+        <div class="text-body-sm-500 mb-12">Date Range</div>
+        <div class="date-picker__field" data-date-picker data-type="range" data-open="false" data-year="2025"
+          data-month="0" data-range-start="2025-01-18" data-range-end="2025-01-22" data-today="2025-01-07">
+          <div class="input-group input-date-wrapper">
+            <label for="date-type-range">Label</label>
+            <div class="input-wrapper">
+              <input type="text" id="date-type-range" class="input js-date-picker-input"
+                placeholder="DD/MM/YYYY - DD/MM/YYYY" autocomplete="off" />
+              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+                aria-label="Open calendar" aria-controls="panel-type-range" aria-expanded="true">
+                <svg class="icon medium" aria-hidden="true">
+                  <use href="assets/icons/sprite.svg#icon-calendar"></use>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div id="panel-type-range" class="date-picker-panel" aria-hidden="true" hidden>
+            <div class="date-picker" role="dialog" aria-label="Choose date range">
+              <div class="date-picker__header">
+                <button class="date-picker__nav js-date-picker-prev" type="button" aria-label="Previous month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
+                  </svg>
+                </button>
+                <div class="date-picker__month js-date-picker-label">January 2025</div>
+                <button class="date-picker__nav js-date-picker-next" type="button" aria-label="Next month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use>
+                  </svg>
+                </button>
+              </div>
+              <div class="date-picker__grid date-picker__grid--days" data-view="day">
+                <div class="date-picker__weekdays">
+                  <div class="date-picker__weekday">M</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">W</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">F</div>
+                  <div class="date-picker__weekday">S</div>
+                  <div class="date-picker__weekday">S</div>
+                </div>
+                <div class="date-picker__days js-date-picker-days"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- States -->
     <div class="row">
-      <div class="col-12">
-         <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-              <h2>States</h2>
-          </div>
+      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+        <h2>States</h2>
+      </div>
+    </div>
+    <div class="row row-gap-32">
+      <div class="col-12 col-lg-4">
+        <div class="text-body-sm-500 mb-12">Default</div>
+        <div class="date-picker__days date-picker__days--states">
+          <div class="date-picker__day">1</div>
+          <div class="date-picker__day">2</div>
+          <div class="date-picker__day">3</div>
+          <div class="date-picker__day">4</div>
+          <div class="date-picker__day">5</div>
+          <div class="date-picker__day">6</div>
+          <div class="date-picker__day">7</div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-4">
+        <div class="text-body-sm-500 mb-12">Hover</div>
+        <div class="date-picker__days date-picker__days--states">
+          <div class="date-picker__day">1</div>
+          <div class="date-picker__day">2</div>
+          <div class="date-picker__day">3</div>
+          <div class="date-picker__day is-hover">4</div>
+          <div class="date-picker__day">5</div>
+          <div class="date-picker__day">6</div>
+          <div class="date-picker__day">7</div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-4">
+        <div class="text-body-sm-500 mb-12">Active</div>
+        <div class="date-picker__days date-picker__days--states">
+          <div class="date-picker__day">1</div>
+          <div class="date-picker__day">2</div>
+          <div class="date-picker__day is-selected">3</div>
+          <div class="date-picker__day">4</div>
+          <div class="date-picker__day">5</div>
+          <div class="date-picker__day">6</div>
+          <div class="date-picker__day">7</div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-4">
+        <div class="text-body-sm-500 mb-12">Current</div>
+        <div class="date-picker__days date-picker__days--states">
+          <div class="date-picker__day">1</div>
+          <div class="date-picker__day">2</div>
+          <div class="date-picker__day is-today">3</div>
+          <div class="date-picker__day">4</div>
+          <div class="date-picker__day">5</div>
+          <div class="date-picker__day">6</div>
+          <div class="date-picker__day">7</div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-4">
+        <div class="text-body-sm-500 mb-12">Inactive</div>
+        <div class="date-picker__days date-picker__days--states">
+          <div class="date-picker__day is-outside">1</div>
+          <div class="date-picker__day is-outside">2</div>
+          <div class="date-picker__day is-outside">3</div>
+          <div class="date-picker__day">4</div>
+          <div class="date-picker__day">5</div>
+          <div class="date-picker__day">6</div>
+          <div class="date-picker__day">7</div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-4">
+        <div class="text-body-sm-500 mb-12">Range</div>
+        <div class="date-picker__days date-picker__days--states">
+          <div class="date-picker__day">1</div>
+          <div class="date-picker__day">2</div>
+          <div class="date-picker__day is-range-start">3</div>
+          <div class="date-picker__day is-in-range">4</div>
+          <div class="date-picker__day is-in-range">5</div>
+          <div class="date-picker__day is-range-end">6</div>
+          <div class="date-picker__day">7</div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-4">
+        <div class="text-body-sm-500 mb-12">Range Middle</div>
+        <div class="date-picker__days date-picker__days--states">
+          <div class="date-picker__day">1</div>
+          <div class="date-picker__day is-in-range">2</div>
+          <div class="date-picker__day is-in-range">3</div>
+          <div class="date-picker__day is-in-range">4</div>
+          <div class="date-picker__day is-in-range">5</div>
+          <div class="date-picker__day is-in-range">6</div>
+          <div class="date-picker__day">7</div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-4">
+        <div class="text-body-sm-500 mb-12">Range End</div>
+        <div class="date-picker__days date-picker__days--states">
+          <div class="date-picker__day">1</div>
+          <div class="date-picker__day">2</div>
+          <div class="date-picker__day is-range-start">3</div>
+          <div class="date-picker__day is-in-range">4</div>
+          <div class="date-picker__day is-in-range">5</div>
+          <div class="date-picker__day is-range-end">6</div>
+          <div class="date-picker__day">7</div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-4">
+        <div class="text-body-sm-500 mb-12">Focus</div>
+        <div class="date-picker__days date-picker__days--states">
+          <div class="date-picker__day">1</div>
+          <div class="date-picker__day is-focus">2</div>
+          <div class="date-picker__day">3</div>
+          <div class="date-picker__day">4</div>
+          <div class="date-picker__day">5</div>
+          <div class="date-picker__day">6</div>
+          <div class="date-picker__day">7</div>
+        </div>
       </div>
     </div>
 
+    <!-- Behavior -->
     <div class="row">
-      <!-- Default -->
-      <div class="col-12 col-sm-6 col-lg-3">
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">default: default</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input input--default" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div>
-
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">default: hover</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input input--default" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div>
-
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">default: focus-populated</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input input--default" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div>
-
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">default: filled</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input input--default" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div>
-
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">default: disabled</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input input--default" placeholder="DD/MM/YYYY" disabled/>
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div>
-
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">default: mandatory</div>
-          <label for="date" class="required">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input input--default" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
+      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+        <h2>Behavior</h2>
+      </div>
+    </div>
+    <div class="row row-gap-32">
+      <div class="col-12 col-lg-4">
+        <div class="date-picker__field" data-date-picker data-type="advanced" data-open="false" data-view="month"
+          data-year="2025" data-month="0">
+          <div class="input-group input-date-wrapper">
+            <label for="date-behavior-month">Label</label>
+            <div class="input-wrapper">
+              <input type="text" id="date-behavior-month" class="input js-date-picker-input" placeholder="DD/MM/YYYY"
+                autocomplete="off" />
+              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+                aria-label="Open calendar" aria-controls="panel-behavior-month" aria-expanded="true">
+                <svg class="icon medium" aria-hidden="true">
+                  <use href="assets/icons/sprite.svg#icon-calendar"></use>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div id="panel-behavior-month" class="date-picker-panel" aria-hidden="true" hidden>
+            <div class="date-picker date-picker--advanced" role="dialog" aria-label="Choose date">
+              <div class="date-picker__header date-picker__header--advanced">
+                <button class="date-picker__nav js-date-picker-prev" type="button" aria-label="Previous month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
+                  </svg>
+                </button>
+                <div class="date-picker__selects">
+                  <button class="date-picker__select-btn js-date-picker-month-toggle" type="button"
+                    aria-label="Choose month">
+                    <span class="js-date-picker-month-label">January</span>
+                    <svg class="icon small" aria-hidden="true">
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom-small"></use>
+                    </svg>
+                  </button>
+                  <button class="date-picker__select-btn js-date-picker-year-toggle" type="button"
+                    aria-label="Choose year">
+                    <span class="js-date-picker-year-label">2025</span>
+                    <svg class="icon small" aria-hidden="true">
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom-small"></use>
+                    </svg>
+                  </button>
+                </div>
+                <button class="date-picker__nav js-date-picker-next" type="button" aria-label="Next month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use>
+                  </svg>
+                </button>
+              </div>
+              <div class="date-picker__grid date-picker__grid--days" data-view="day" hidden>
+                <div class="date-picker__weekdays">
+                  <div class="date-picker__weekday">M</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">W</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">F</div>
+                  <div class="date-picker__weekday">S</div>
+                  <div class="date-picker__weekday">S</div>
+                </div>
+                <div class="date-picker__days js-date-picker-days"></div>
+              </div>
+              <div class="date-picker__grid date-picker__grid--months" data-view="month">
+                <div class="date-picker__months js-date-picker-months"></div>
+              </div>
+              <div class="date-picker__grid date-picker__grid--years" data-view="year" hidden>
+                <div class="date-picker__years js-date-picker-years"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Warning -->
-      <div class="col-12 col-sm-6 col-lg-3">
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">warning: default</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--warning" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div>
-
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">warning: hover</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--warning" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div>
-
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">warning: focus-populated</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--warning" placeholder="DD/MM/YYYY" style="box-shadow: 0 0 0 4px var(--apricot-200);" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div>
-
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">warning: filled</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--warning" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div>
-
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">warning: disabled</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--warning" placeholder="DD/MM/YYYY" disabled/>
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div>
-
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">warning: mandatory</div>
-          <label for="date" class="required">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--warning" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
+      <div class="col-12 col-lg-4">
+        <div class="date-picker__field" data-date-picker data-type="advanced" data-open="false" data-view="year"
+          data-year="2025" data-month="0">
+          <div class="input-group input-date-wrapper">
+            <label for="date-behavior-year">Label</label>
+            <div class="input-wrapper">
+              <input type="text" id="date-behavior-year" class="input js-date-picker-input" placeholder="DD/MM/YYYY"
+                autocomplete="off" />
+              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+                aria-label="Open calendar" aria-controls="panel-behavior-year" aria-expanded="true">
+                <svg class="icon medium" aria-hidden="true">
+                  <use href="assets/icons/sprite.svg#icon-calendar"></use>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div id="panel-behavior-year" class="date-picker-panel" aria-hidden="true" hidden>
+            <div class="date-picker date-picker--advanced" role="dialog" aria-label="Choose date">
+              <div class="date-picker__header date-picker__header--advanced">
+                <button class="date-picker__nav js-date-picker-prev" type="button" aria-label="Previous range">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
+                  </svg>
+                </button>
+                <div class="date-picker__selects">
+                  <button class="date-picker__select-btn js-date-picker-month-toggle" type="button"
+                    aria-label="Choose month">
+                    <span class="js-date-picker-month-label">January</span>
+                    <svg class="icon small" aria-hidden="true">
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom-small"></use>
+                    </svg>
+                  </button>
+                  <button class="date-picker__select-btn js-date-picker-year-toggle" type="button"
+                    aria-label="Choose year">
+                    <span class="js-date-picker-year-label">2025</span>
+                    <svg class="icon small" aria-hidden="true">
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom-small"></use>
+                    </svg>
+                  </button>
+                </div>
+                <button class="date-picker__nav js-date-picker-next" type="button" aria-label="Next range">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use>
+                  </svg>
+                </button>
+              </div>
+              <div class="date-picker__grid date-picker__grid--days" data-view="day" hidden>
+                <div class="date-picker__weekdays">
+                  <div class="date-picker__weekday">M</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">W</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">F</div>
+                  <div class="date-picker__weekday">S</div>
+                  <div class="date-picker__weekday">S</div>
+                </div>
+                <div class="date-picker__days js-date-picker-days"></div>
+              </div>
+              <div class="date-picker__grid date-picker__grid--months" data-view="month" hidden>
+                <div class="date-picker__months js-date-picker-months"></div>
+              </div>
+              <div class="date-picker__grid date-picker__grid--years" data-view="year">
+                <div class="date-picker__years js-date-picker-years"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-     <!-- Destructive -->
-      <div class="col-12 col-sm-6 col-lg-3">
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">destructive: default</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--destructive" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div>
-
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">destructive: hover</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--destructive" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div>
-
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">destructive: focus-populated</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--destructive" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div>
-
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">destructive: filled</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--destructive" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div>
-
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">destructive: disabled</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--destructive" placeholder="DD/MM/YYYY" disabled/>
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div>
-
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">destructive: mandatory</div>
-          <label for="date" class="required">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--destructive" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div>
-      </div>
-
-      <!-- Success -->
-      <div class="col-12 col-sm-6 col-lg-3">
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">success: default</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--success" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div>
-
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">success: hover</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--success" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div>
-
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">success: focus-populated</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--success" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div>
-
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">success: filled</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--success" placeholder="DD/MM/YYYY" />
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div> 
-        </div>
-
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">success: disabled</div>
-          <label for="date">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--success" placeholder="DD/MM/YYYY" disabled/>
-            <span class="input-date-icon d-none">
-              <svg class="icon medium" aria-hidden="true"> 
-                <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-              </svg>
-            </span> 
-          </div> 
-        </div>
-
-        <div class="input-group input-date-wrapper mb-24">
-          <div class="mb-8">success: mandatory</div>
-          <label for="date" class="required">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--success" placeholder="DD/MM/YYYY" />
-            <span class="input-date-icon d-none">
-              <svg class="icon medium" aria-hidden="true"> 
-                <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-              </svg>
-            </span> 
-          </div> 
+      <div class="col-12 col-lg-4">
+        <div class="date-picker__field" data-date-picker data-type="advanced" data-open="false" data-year="2025"
+          data-month="0" data-selected="2025-01-11">
+          <div class="input-group input-date-wrapper">
+            <label for="date-behavior-day">Label</label>
+            <div class="input-wrapper">
+              <input type="text" id="date-behavior-day" class="input js-date-picker-input" placeholder="DD/MM/YYYY"
+                autocomplete="off" />
+              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+                aria-label="Open calendar" aria-controls="panel-behavior-day" aria-expanded="true">
+                <svg class="icon medium" aria-hidden="true">
+                  <use href="assets/icons/sprite.svg#icon-calendar"></use>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div id="panel-behavior-day" class="date-picker-panel" aria-hidden="true" hidden>
+            <div class="date-picker date-picker--advanced" role="dialog" aria-label="Choose date">
+              <div class="date-picker__header date-picker__header--advanced">
+                <button class="date-picker__nav js-date-picker-prev" type="button" aria-label="Previous month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
+                  </svg>
+                </button>
+                <div class="date-picker__selects">
+                  <button class="date-picker__select-btn js-date-picker-month-toggle" type="button"
+                    aria-label="Choose month">
+                    <span class="js-date-picker-month-label">January</span>
+                    <svg class="icon small" aria-hidden="true">
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom-small"></use>
+                    </svg>
+                  </button>
+                  <button class="date-picker__select-btn js-date-picker-year-toggle" type="button"
+                    aria-label="Choose year">
+                    <span class="js-date-picker-year-label">2025</span>
+                    <svg class="icon small" aria-hidden="true">
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom-small"></use>
+                    </svg>
+                  </button>
+                </div>
+                <button class="date-picker__nav js-date-picker-next" type="button" aria-label="Next month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use>
+                  </svg>
+                </button>
+              </div>
+              <div class="date-picker__grid date-picker__grid--days" data-view="day">
+                <div class="date-picker__weekdays">
+                  <div class="date-picker__weekday">M</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">W</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">F</div>
+                  <div class="date-picker__weekday">S</div>
+                  <div class="date-picker__weekday">S</div>
+                </div>
+                <div class="date-picker__days js-date-picker-days"></div>
+              </div>
+              <div class="date-picker__grid date-picker__grid--months" data-view="month" hidden>
+                <div class="date-picker__months js-date-picker-months"></div>
+              </div>
+              <div class="date-picker__grid date-picker__grid--years" data-view="year" hidden>
+                <div class="date-picker__years js-date-picker-years"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-
-        <!-- Assistive Text -->
     <div class="row">
-      <div class="col-12">
-         <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-              <h2>Assistive Text</h2>
-          </div>
+      <div class="col-12 col-md-8 text-gray-400 mt-24">
+        Selecting the month name in the header opens a month selection view, displaying all 12 months in a grid format.
+        <br />
+        <br />
+        After selecting a month from a month selection view, the user is taken back to the day view to complete the date
+        selection.
       </div>
-      <div class="col-7 my-32">
-        <div>
-          Assistive text conveys additional guidance about the input field, such as how it will be used. It should only take up one or two lines, being persistently visible or visible only on focus.
+    </div>
+    <div class="row row-gap-32 mt-32">
+      <div class="col-12 col-lg-4">
+        <div class="date-picker__field" data-date-picker data-type="advanced" data-open="false" data-view="year"
+          data-year="2025" data-month="0">
+          <div class="input-group input-date-wrapper">
+            <label for="date-behavior-year-range">Label</label>
+            <div class="input-wrapper">
+              <input type="text" id="date-behavior-year-range" class="input js-date-picker-input"
+                placeholder="DD/MM/YYYY" autocomplete="off" />
+              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+                aria-label="Open calendar" aria-controls="panel-behavior-year-range" aria-expanded="true">
+                <svg class="icon medium" aria-hidden="true">
+                  <use href="assets/icons/sprite.svg#icon-calendar"></use>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div id="panel-behavior-year-range" class="date-picker-panel" aria-hidden="true" hidden>
+            <div class="date-picker date-picker--advanced" role="dialog" aria-label="Choose date">
+              <div class="date-picker__header date-picker__header--advanced">
+                <button class="date-picker__nav js-date-picker-prev" type="button" aria-label="Previous range">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
+                  </svg>
+                </button>
+                <div class="date-picker__selects">
+                  <button class="date-picker__select-btn js-date-picker-month-toggle" type="button"
+                    aria-label="Choose month">
+                    <span class="js-date-picker-month-label">January</span>
+                    <svg class="icon small" aria-hidden="true">
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom-small"></use>
+                    </svg>
+                  </button>
+                  <button class="date-picker__select-btn js-date-picker-year-toggle" type="button"
+                    aria-label="Choose year">
+                    <span class="js-date-picker-year-label">2025</span>
+                    <svg class="icon small" aria-hidden="true">
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom-small"></use>
+                    </svg>
+                  </button>
+                </div>
+                <button class="date-picker__nav js-date-picker-next" type="button" aria-label="Next range">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use>
+                  </svg>
+                </button>
+              </div>
+              <div class="date-picker__grid date-picker__grid--days" data-view="day" hidden>
+                <div class="date-picker__weekdays">
+                  <div class="date-picker__weekday">M</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">W</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">F</div>
+                  <div class="date-picker__weekday">S</div>
+                  <div class="date-picker__weekday">S</div>
+                </div>
+                <div class="date-picker__days js-date-picker-days"></div>
+              </div>
+              <div class="date-picker__grid date-picker__grid--months" data-view="month" hidden>
+                <div class="date-picker__months js-date-picker-months"></div>
+              </div>
+              <div class="date-picker__grid date-picker__grid--years" data-view="year">
+                <div class="date-picker__years js-date-picker-years"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-4">
+        <div class="date-picker__field" data-date-picker data-type="advanced" data-open="false" data-view="year"
+          data-year="2025" data-month="0">
+          <div class="input-group input-date-wrapper">
+            <label for="date-behavior-year-range-2">Label</label>
+            <div class="input-wrapper">
+              <input type="text" id="date-behavior-year-range-2" class="input js-date-picker-input"
+                placeholder="DD/MM/YYYY" autocomplete="off" />
+              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+                aria-label="Open calendar" aria-controls="panel-behavior-year-range-2" aria-expanded="true">
+                <svg class="icon medium" aria-hidden="true">
+                  <use href="assets/icons/sprite.svg#icon-calendar"></use>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div id="panel-behavior-year-range-2" class="date-picker-panel" aria-hidden="true" hidden>
+            <div class="date-picker date-picker--advanced" role="dialog" aria-label="Choose date">
+              <div class="date-picker__header date-picker__header--advanced">
+                <button class="date-picker__nav js-date-picker-prev" type="button" aria-label="Previous range">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
+                  </svg>
+                </button>
+                <div class="date-picker__selects">
+                  <button class="date-picker__select-btn js-date-picker-month-toggle" type="button"
+                    aria-label="Choose month">
+                    <span class="js-date-picker-month-label">January</span>
+                    <svg class="icon small" aria-hidden="true">
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom-small"></use>
+                    </svg>
+                  </button>
+                  <button class="date-picker__select-btn js-date-picker-year-toggle" type="button"
+                    aria-label="Choose year">
+                    <span class="js-date-picker-year-label">2025</span>
+                    <svg class="icon small" aria-hidden="true">
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom-small"></use>
+                    </svg>
+                  </button>
+                </div>
+                <button class="date-picker__nav js-date-picker-next" type="button" aria-label="Next range">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use>
+                  </svg>
+                </button>
+              </div>
+              <div class="date-picker__grid date-picker__grid--days" data-view="day" hidden>
+                <div class="date-picker__weekdays">
+                  <div class="date-picker__weekday">M</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">W</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">F</div>
+                  <div class="date-picker__weekday">S</div>
+                  <div class="date-picker__weekday">S</div>
+                </div>
+                <div class="date-picker__days js-date-picker-days"></div>
+              </div>
+              <div class="date-picker__grid date-picker__grid--months" data-view="month" hidden>
+                <div class="date-picker__months js-date-picker-months"></div>
+              </div>
+              <div class="date-picker__grid date-picker__grid--years" data-view="year">
+                <div class="date-picker__years js-date-picker-years"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-4">
+        <div class="date-picker__field" data-date-picker data-type="advanced" data-open="false" data-view="year"
+          data-year="2025" data-month="0">
+          <div class="input-group input-date-wrapper">
+            <label for="date-behavior-year-range-3">Label</label>
+            <div class="input-wrapper">
+              <input type="text" id="date-behavior-year-range-3" class="input js-date-picker-input"
+                placeholder="DD/MM/YYYY" autocomplete="off" />
+              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+                aria-label="Open calendar" aria-controls="panel-behavior-year-range-3" aria-expanded="true">
+                <svg class="icon medium" aria-hidden="true">
+                  <use href="assets/icons/sprite.svg#icon-calendar"></use>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div id="panel-behavior-year-range-3" class="date-picker-panel" aria-hidden="true" hidden>
+            <div class="date-picker date-picker--advanced" role="dialog" aria-label="Choose date">
+              <div class="date-picker__header date-picker__header--advanced">
+                <button class="date-picker__nav js-date-picker-prev" type="button" aria-label="Previous range">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
+                  </svg>
+                </button>
+                <div class="date-picker__selects">
+                  <button class="date-picker__select-btn js-date-picker-month-toggle" type="button"
+                    aria-label="Choose month">
+                    <span class="js-date-picker-month-label">January</span>
+                    <svg class="icon small" aria-hidden="true">
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom-small"></use>
+                    </svg>
+                  </button>
+                  <button class="date-picker__select-btn js-date-picker-year-toggle" type="button"
+                    aria-label="Choose year">
+                    <span class="js-date-picker-year-label">2025</span>
+                    <svg class="icon small" aria-hidden="true">
+                      <use href="assets/icons/sprite.svg#icon-chevron-bottom-small"></use>
+                    </svg>
+                  </button>
+                </div>
+                <button class="date-picker__nav js-date-picker-next" type="button" aria-label="Next range">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use>
+                  </svg>
+                </button>
+              </div>
+              <div class="date-picker__grid date-picker__grid--days" data-view="day" hidden>
+                <div class="date-picker__weekdays">
+                  <div class="date-picker__weekday">M</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">W</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">F</div>
+                  <div class="date-picker__weekday">S</div>
+                  <div class="date-picker__weekday">S</div>
+                </div>
+                <div class="date-picker__days js-date-picker-days"></div>
+              </div>
+              <div class="date-picker__grid date-picker__grid--months" data-view="month" hidden>
+                <div class="date-picker__months js-date-picker-months"></div>
+              </div>
+              <div class="date-picker__grid date-picker__grid--years" data-view="year">
+                <div class="date-picker__years js-date-picker-years"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-
     <div class="row">
-      <div class="col-12 col-sm-6 col-lg-3">
-        <div class="input-group input-date-wrapper mb-24">
-          <p>default</p>
-          <label for="default-default">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input input--default" placeholder="DD/MM/YYYY">
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div>
-          <div class="input-message default">
-            Helper message displayed here
-          </div>
-        </div>
-      </div>
-
-      <div class="col-12 col-sm-6 col-lg-3">
-        <div class="input-group input-date-wrapper mb-24">
-          <p>warning</p>
-          <label for="default-default">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--warning" placeholder="DD/MM/YYYY">
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div>
-           <div class="input-message warning">
-            <span class="">
-              <svg class="icon medium" aria-hidden="true"> 
-                <use href="assets/icons/sprite.svg#icon-warning-filled"></use> 
-              </svg>
-            </span>
-                Helper message displayed here
-          </div>
-        </div>
-      </div>
-
-      <div class="col-12 col-sm-6 col-lg-3">
-        <div class="input-group input-date-wrapper mb-24">
-          <p>destructive</p>
-          <label for="default-default">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--destructive" placeholder="DD/MM/YYYY">
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div>
-           <div class="input-message destructive">
-            <span class="">
-              <svg class="icon medium" aria-hidden="true"> 
-                <use href="assets/icons/sprite.svg#icon-circle-error-filled"></use> 
-              </svg>
-            </span>
-            Helper message displayed here
-          </div>
-        </div>
-      </div>
-
-      <div class="col-12 col-sm-6 col-lg-3">
-        <div class="input-group input-date-wrapper mb-24">
-          <p>success</p>
-          <label for="default-default">Label</label>
-          <div class="input-wrapper">
-            <input type="date" id="date" class="input--success" placeholder="DD/MM/YYYY">
-          <span class="input-date-icon d-none">
-            <svg class="icon medium" aria-hidden="true"> 
-              <use href="assets/icons/sprite.svg#icon-calendar"></use> 
-            </svg>
-          </span> 
-          </div>
-           <div class="input-message success mt-6">
-            <span class="">
-              <svg class="icon medium" aria-hidden="true"> 
-                <use href="assets/icons/sprite.svg#icon-circle-checkmark-filled"></use> 
-              </svg>
-            </span>
-            Helper message displayed here
-          </div>
-        </div>
+      <div class="col-12 col-md-8 text-gray-400 mt-24">
+        Tapping the year label (e.g., 2025) within the month view transitions to a year selection view, which shows a
+        range of years.
+        <br />
+        <br />
+        In the year view, navigation arrows allow users to switch between previous and next year ranges, enabling quick
+        access to older or future years without scrolling extensively.
       </div>
     </div>
 
-</div>
+    <!-- Dismissal -->
+    <div class="row">
+      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+        <h2>Dismissal</h2>
+      </div>
+    </div>
+    <div class="row row-gap-32">
+      <div class="col-12 col-lg-4">
+        <div class="date-picker__field" data-date-picker data-type="default" data-open="false" data-year="2025"
+          data-month="0" data-selected="2025-01-11">
+          <div class="input-group input-date-wrapper">
+            <label for="date-dismissal-complete">Label</label>
+            <div class="input-wrapper">
+              <input type="text" id="date-dismissal-complete" class="input js-date-picker-input"
+                placeholder="DD/MM/YYYY" autocomplete="off" />
+              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+                aria-label="Open calendar" aria-controls="panel-dismissal-complete" aria-expanded="true">
+                <svg class="icon medium" aria-hidden="true">
+                  <use href="assets/icons/sprite.svg#icon-calendar"></use>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div id="panel-dismissal-complete" class="date-picker-panel" aria-hidden="true" hidden>
+            <div class="date-picker" role="dialog" aria-label="Choose date">
+              <div class="date-picker__header">
+                <button class="date-picker__nav js-date-picker-prev" type="button" aria-label="Previous month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
+                  </svg>
+                </button>
+                <div class="date-picker__month js-date-picker-label">January 2025</div>
+                <button class="date-picker__nav js-date-picker-next" type="button" aria-label="Next month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use>
+                  </svg>
+                </button>
+              </div>
+              <div class="date-picker__grid date-picker__grid--days" data-view="day">
+                <div class="date-picker__weekdays">
+                  <div class="date-picker__weekday">M</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">W</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">F</div>
+                  <div class="date-picker__weekday">S</div>
+                  <div class="date-picker__weekday">S</div>
+                </div>
+                <div class="date-picker__days js-date-picker-days"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="text-gray-400 mt-16">
+          When a user selects a complete date (e.g., day, month, and year), the date picker automatically closes to
+          confirm the selection.
+        </p>
+      </div>
 
+      <div class="col-12 col-lg-4">
+        <div class="date-picker__field" data-date-picker data-type="default" data-open="false" data-year="2025"
+          data-month="0" data-selected="2025-01-11">
+          <div class="input-group input-date-wrapper">
+            <label for="date-dismissal-outside">Label</label>
+            <div class="input-wrapper">
+              <input type="text" id="date-dismissal-outside" class="input js-date-picker-input" placeholder="DD/MM/YYYY"
+                autocomplete="off" />
+              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+                aria-label="Open calendar" aria-controls="panel-dismissal-outside" aria-expanded="true">
+                <svg class="icon medium" aria-hidden="true">
+                  <use href="assets/icons/sprite.svg#icon-calendar"></use>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div id="panel-dismissal-outside" class="date-picker-panel" aria-hidden="true" hidden>
+            <div class="date-picker" role="dialog" aria-label="Choose date">
+              <div class="date-picker__header">
+                <button class="date-picker__nav js-date-picker-prev" type="button" aria-label="Previous month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
+                  </svg>
+                </button>
+                <div class="date-picker__month js-date-picker-label">January 2025</div>
+                <button class="date-picker__nav js-date-picker-next" type="button" aria-label="Next month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use>
+                  </svg>
+                </button>
+              </div>
+              <div class="date-picker__grid date-picker__grid--days" data-view="day">
+                <div class="date-picker__weekdays">
+                  <div class="date-picker__weekday">M</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">W</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">F</div>
+                  <div class="date-picker__weekday">S</div>
+                  <div class="date-picker__weekday">S</div>
+                </div>
+                <div class="date-picker__days js-date-picker-days"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="text-gray-400 mt-16">
+          Clicking or tapping outside the date picker closes it without applying a new value. This preserves the
+          previously selected or entered date.
+        </p>
+      </div>
+
+      <div class="col-12 col-lg-4">
+        <div class="date-picker__field" data-date-picker data-type="default" data-open="false" data-year="2025"
+          data-month="0" data-selected="2025-01-11">
+          <div class="input-group input-date-wrapper">
+            <label for="date-dismissal-escape">Label</label>
+            <div class="input-wrapper">
+              <input type="text" id="date-dismissal-escape" class="input js-date-picker-input" placeholder="DD/MM/YYYY"
+                autocomplete="off" />
+              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+                aria-label="Open calendar" aria-controls="panel-dismissal-escape" aria-expanded="true">
+                <svg class="icon medium" aria-hidden="true">
+                  <use href="assets/icons/sprite.svg#icon-calendar"></use>
+                </svg>
+              </button>
+            </div>
+          </div>
+          <div id="panel-dismissal-escape" class="date-picker-panel" aria-hidden="true" hidden>
+            <div class="date-picker" role="dialog" aria-label="Choose date">
+              <div class="date-picker__header">
+                <button class="date-picker__nav js-date-picker-prev" type="button" aria-label="Previous month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
+                  </svg>
+                </button>
+                <div class="date-picker__month js-date-picker-label">January 2025</div>
+                <button class="date-picker__nav js-date-picker-next" type="button" aria-label="Next month">
+                  <svg class="icon medium" aria-hidden="true">
+                    <use href="assets/icons/sprite.svg#icon-chevron-right"></use>
+                  </svg>
+                </button>
+              </div>
+              <div class="date-picker__grid date-picker__grid--days" data-view="day">
+                <div class="date-picker__weekdays">
+                  <div class="date-picker__weekday">M</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">W</div>
+                  <div class="date-picker__weekday">T</div>
+                  <div class="date-picker__weekday">F</div>
+                  <div class="date-picker__weekday">S</div>
+                  <div class="date-picker__weekday">S</div>
+                </div>
+                <div class="date-picker__days js-date-picker-days"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="text-gray-400 mt-16">
+          Pressing the Escape key dismisses the date picker immediately, canceling any in-progress selection.
+        </p>
+      </div>
+    </div>
+  </div>
 </body>
+
 </html>
+
+
+
