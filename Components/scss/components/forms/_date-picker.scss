@@ -127,7 +127,7 @@
 }
 
 .date-picker__days--states {
-  gap: var(--spacing-4);
+  // gap: var(--spacing-4);
 }
 
 .date-picker__day {
@@ -193,6 +193,7 @@
 }
 
 .date-picker__day.is-in-range {
+  border-radius: var(--border-radius-0);
   background: var(--color-background-brand-secondary);
   color: var(--color-text-base-default);
 }
@@ -231,8 +232,8 @@
 }
 
 .date-picker__option.is-selected {
-  background: var(--color-background-brand-secondary);
-  color: var(--color-text-brand-default);
+  background: var(--color-background-brand-default);
+  color: #fff;
 }
 
 .bottom-sheet--static {

@@ -17515,10 +17515,6 @@ label.required::after {
   row-gap: var(--spacing-4);
 }
 
-.date-picker__days--states {
-  gap: var(--spacing-4);
-}
-
 .date-picker__day {
   align-items: center;
   background: transparent;
@@ -17581,6 +17577,7 @@ label.required::after {
 }
 
 .date-picker__day.is-in-range {
+  border-radius: var(--border-radius-0);
   background: var(--color-background-brand-secondary);
   color: var(--color-text-base-default);
 }
@@ -17619,8 +17616,8 @@ label.required::after {
 }
 
 .date-picker__option.is-selected {
-  background: var(--color-background-brand-secondary);
-  color: var(--color-text-brand-default);
+  background: var(--color-background-brand-default);
+  color: #fff;
 }
 
 .bottom-sheet--static {
