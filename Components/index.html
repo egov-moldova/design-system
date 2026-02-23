@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ro">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -12,21 +13,25 @@
             padding: 48px 0;
             margin-bottom: 48px;
         }
+
         .index-header h1 {
             margin: 0 0 16px 0;
             font-size: 48px;
         }
+
         .index-header p {
             margin: 0;
             font-size: 18px;
             opacity: 0.9;
         }
+
         .component-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 24px;
             margin-bottom: 48px;
         }
+
         .component-card {
             background: white;
             border: 1px solid #e0e0e0;
@@ -37,25 +42,30 @@
             color: inherit;
             display: block;
         }
+
         .component-card:hover {
             transform: translateY(-4px);
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
             border-color: #4A90E2;
         }
+
         .component-card h3 {
             margin: 0 0 8px 0;
             color: #333;
             font-size: 20px;
         }
+
         .component-card p {
             margin: 0;
             color: #666;
             font-size: 14px;
             line-height: 1.5;
         }
+
         .category-section {
             margin-bottom: 56px;
         }
+
         .category-title {
             font-size: 28px;
             margin-bottom: 24px;
@@ -63,6 +73,7 @@
             border-bottom: 2px solid #e0e0e0;
             color: #333;
         }
+
         .badge {
             display: inline-block;
             padding: 4px 8px;
@@ -72,42 +83,38 @@
             margin-top: 8px;
             text-transform: uppercase;
         }
+
         .badge-foundation {
             background: #E3F2FD;
             color: #1976D2;
         }
+
         .badge-component {
             background: #F3E5F5;
             color: #7B1FA2;
         }
+
         .badge-pattern {
             background: #E8F5E9;
             color: #388E3C;
         }
+
         .badge-form {
             background: #FFF3E0;
             color: #F57C00;
         }
     </style>
-  <script src="js/include-header.js" defer></script>
-  <script src="js/toggler.js" defer></script>
-  <script src="js/modal.js" defer></script>
-  <script src="js/mega-nav.js" defer></script>
-  <script src="js/search.js" defer></script>
-  <script src="js/dropdown.js" defer></script>
+    <script src="js/include-header.js" defer></script>
+    <script src="js/include-footer.js" defer></script>
+    <script src="js/toggler.js" defer></script>
+    <script src="js/modal.js" defer></script>
+    <script src="js/mega-nav.js" defer></script>
+    <script src="js/search.js" defer></script>
+    <script src="js/dropdown.js" defer></script>
 </head>
+
 <body>
-  <div id="site-header"></div>
-    <!-- <div class="index-header">
-        <div class="container">
-            <div class="row">
-                <div class="col-xs-12">
-                    <h1>Design System</h1>
-                    <p>Comprehensive component library and design tokens</p>
-                </div>
-            </div>
-        </div>
-    </div> -->
+    <div id="site-header"></div>
 
     <div class="container">
         <div class="row">
@@ -426,22 +433,7 @@
             </div>
         </div>
     </div>
-
-    <footer style="background: #f5f5f5; padding: 32px 0; margin-top: 64px; text-align: center; color: #666;">
-        <div class="container">
-            <div class="row">
-                <div class="col-xs-12">
-                    <p>Design System Component Library</p>
-                </div>
-            </div>
-        </div>
-    </footer>
-
+    <div id="site-footer"></div>
 </body>
+
 </html>
-
-
-
-
-
-
