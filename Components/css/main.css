@@ -17271,6 +17271,13 @@ label.required::after {
   justify-content: center;
   font-size: 16px;
 }
+.input-wrapper-number .input-icon--flag.fi {
+  width: 20px;
+  height: 14px;
+  min-width: 20px;
+  border-radius: 2px;
+  background-size: cover;
+}
 .input-wrapper-number .input-icon--flag img {
   width: 20px;
   height: 14px;
@@ -17328,10 +17335,18 @@ label.required::after {
   background: var(--white);
 }
 .phone-field__flag {
-  font-size: 18px;
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: 22px;
-  text-align: center;
+  min-width: 22px;
+  height: 16px;
+  font-size: 18px;
+  line-height: 1;
+}
+.phone-field__flag.fi {
+  border-radius: 2px;
+  background-size: cover;
 }
 .phone-field__input {
   border: none;

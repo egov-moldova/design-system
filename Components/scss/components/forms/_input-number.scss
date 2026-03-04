@@ -93,7 +93,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 16px;  
+    font-size: 16px;
+
+    &.fi {
+      width: 20px;
+      height: 14px;
+      min-width: 20px;
+      border-radius: 2px;
+      background-size: cover;
+    }
 
     img {
       width: 20px;
@@ -163,10 +171,19 @@
   }
 
   &__flag {
-    font-size: 18px;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     width: 22px;
-    text-align: center;
+    min-width: 22px;
+    height: 16px;
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  &__flag.fi {
+    border-radius: 2px;
+    background-size: cover;
   }
 
   &__input {

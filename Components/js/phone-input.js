@@ -5,20 +5,49 @@ document.addEventListener("DOMContentLoaded", () => {
   const flagSpan = document.getElementById("selected-flag");
   const phoneInput = document.getElementById("phone-input");
 
+  const applyStaticFlags = () => {
+    const wrappers = document.querySelectorAll(".input-wrapper-number");
+
+    wrappers.forEach((wrapper) => {
+      const input = wrapper.querySelector('input[type="tel"]');
+      const flag = wrapper.querySelector(".input-icon--flag");
+
+      if (!input || !flag) return;
+
+      const countryCode = (input.dataset.country || "").toLowerCase();
+      if (!countryCode) return;
+
+      flag.className = `input-icon input-icon--flag fi fi-${countryCode}`;
+      flag.textContent = "";
+      flag.setAttribute("aria-hidden", "true");
+    });
+  };
+
+  const setCountryUI = (option) => {
+    if (!option || !flagSpan || !phoneInput) return;
+
+    const prefix = option.value || "";
+    const countryCode = (option.dataset.country || "").toLowerCase();
+
+    if (countryCode) {
+      flagSpan.className = `phone-field__flag fi fi-${countryCode}`;
+      flagSpan.textContent = "";
+      flagSpan.setAttribute("aria-label", `Country flag ${countryCode.toUpperCase()}`);
+    }
+
+    phoneInput.dataset.phoneInput = "true";
+    phoneInput.dataset.country = countryCode;
+    phoneInput.dataset.dialCode = prefix;
+    phoneInput.value = `${prefix} `;
+  };
+
+  applyStaticFlags();
+
   if (!countrySelect || !flagSpan || !phoneInput) return;
 
-  // setează valoarea inițială
-  phoneInput.value = countrySelect.value + " ";
+  setCountryUI(countrySelect.selectedOptions[0]);
 
   countrySelect.addEventListener("change", () => {
-    const selected = countrySelect.selectedOptions[0];
-    const flag = selected.dataset.flag;
-    const prefix = selected.value;
-
-    // actualizează flag-ul
-    flagSpan.textContent = flag;
-
-    // setează prefixul în input
-    phoneInput.value = prefix + " ";
+    setCountryUI(countrySelect.selectedOptions[0]);
   });
 });
