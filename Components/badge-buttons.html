@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Button w/ Badge</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <script src="js/include-header.js" defer></script>
+  <script src="js/include-footer.js" defer></script>
+  <script src="js/toggler.js" defer></script>
+  <script src="js/modal.js" defer></script>
+  <script src="js/mega-nav.js" defer></script>
+  <script src="js/search.js" defer></script>
+  <script src="js/dropdown.js" defer></script>
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <main class="container py-56 badge-button-docs">
+    <div class="row">
+      <div class="col-12 col-lg-8 badge-button-docs__intro">
+        <h1 class="text-heading-h1-lg mb-24">Badge Button</h1>
+        <p class="text-body-lg text-gray-500">
+          Badge Button represents an entry point to a platform-powered flow (e.g., identity, payments). It should
+          be used when the user is taken into, or interacts with, a trusted government platform to complete the task.
+          The badge identifies the platform to ensure consistency, transparency, and recognition.
+        </p>
+      </div>
+    </div>
+
+    <section class="badge-button-docs__section">
+      <div class="badge-button-docs__section-title">
+        <h2 class="text-heading-h3">Implementation guidance</h2>
+      </div>
+      <div class="row">
+        <div class="col-12 col-lg-8">
+          <p class="badge-button-docs__guide text-body-md">
+            See Layouts &amp; patterns to see where and how to use the Badge Button.
+          </p>
+          <a class="text-body-md-500" href="https://www.figma.com/design/61kDJHJsGwfmzqmqsfkgkE/Layouts---Patterns?node-id=1429-7124&fuid=1553285199339121334" target="_blank" rel="noopener noreferrer">
+            Figma link - Layout and patterns
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="badge-button-docs__section">
+      <div class="badge-button-docs__section-title">
+        <h2 class="text-heading-h3">Types</h2>
+      </div>
+      <div class="badge-button-docs__types-grid">
+        <div class="badge-button-docs__preview-item">
+          <button class="btn btn-badge btn-badge--primary btn-badge--mpay" type="button">
+            <span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-pay.svg" alt="" /></span>
+            <span class="btn-badge__label">Plătește cu mpay</span>
+          </button>
+          <div class="badge-button-docs__preview-meta">
+            <span class="badge-button-docs__preview-code">mpay</span>
+          </div>
+        </div>
+        <div class="badge-button-docs__preview-item">
+          <button class="btn btn-badge btn-badge--primary btn-badge--mpass" type="button">
+            <span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-pass.svg" alt="" /></span>
+            <span class="btn-badge__label">Autentifică-te prin mpass</span>
+          </button>
+          <div class="badge-button-docs__preview-meta">
+            <span class="badge-button-docs__preview-code">mpass</span>
+          </div>
+        </div>
+        <div class="badge-button-docs__preview-item">
+          <button class="btn btn-badge btn-badge--primary btn-badge--msign" type="button">
+            <span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-sign.svg" alt="" /></span>
+            <span class="btn-badge__label">Semnează prin msign</span>
+          </button>
+          <div class="badge-button-docs__preview-meta">
+            <span class="badge-button-docs__preview-code">msign</span>
+          </div>
+        </div>
+        <div class="badge-button-docs__preview-item">
+          <button class="btn btn-badge btn-badge--primary btn-badge--mpower" type="button">
+            <span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-power.svg" alt="" /></span>
+            <span class="btn-badge__label">Împuternicește cu mpower</span>
+          </button>
+          <div class="badge-button-docs__preview-meta">
+            <span class="badge-button-docs__preview-code">mpower</span>
+          </div>
+        </div>
+        <div class="badge-button-docs__preview-item">
+          <button class="btn btn-badge btn-badge--primary btn-badge--mdelivery" type="button">
+            <span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-delivery.svg" alt="" /></span>
+            <span class="btn-badge__label">Livrează prin mdelivery</span>
+          </button>
+          <div class="badge-button-docs__preview-meta">
+            <span class="badge-button-docs__preview-code">mdelivery</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="badge-button-docs__section">
+      <div class="badge-button-docs__section-title">
+        <h2 class="text-heading-h3">Style</h2>
+      </div>
+
+      <div class="badge-button-docs__styles-row">
+        <p class="badge-button-docs__styles-group-label text-body-md-500">primary</p>
+        <div class="badge-button-docs__styles-grid">
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--primary btn-badge--mpay" type="button">
+              <span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-pay.svg" alt="" /></span>
+              <span class="btn-badge__label">Plătește cu mpay</span>
+            </button>
+            <div class="badge-button-docs__preview-meta">
+              <span class="badge-button-docs__preview-title">primary</span>
+              <span class="badge-button-docs__preview-code">mpay</span>
+            </div>
+          </div>
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--primary btn-badge--mpass" type="button">
+              <span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-pass.svg" alt="" /></span>
+              <span class="btn-badge__label">Autentifică-te prin mpass</span>
+            </button>
+            <div class="badge-button-docs__preview-meta">
+              <span class="badge-button-docs__preview-title">primary</span>
+              <span class="badge-button-docs__preview-code">mpass</span>
+            </div>
+          </div>
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--primary btn-badge--msign" type="button">
+              <span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-sign.svg" alt="" /></span>
+              <span class="btn-badge__label">Semnează prin msign</span>
+            </button>
+            <div class="badge-button-docs__preview-meta">
+              <span class="badge-button-docs__preview-title">primary</span>
+              <span class="badge-button-docs__preview-code">msign</span>
+            </div>
+          </div>
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--primary btn-badge--mpower" type="button">
+              <span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-power.svg" alt="" /></span>
+              <span class="btn-badge__label">Împuternicește cu mpower</span>
+            </button>
+            <div class="badge-button-docs__preview-meta">
+              <span class="badge-button-docs__preview-title">primary</span>
+              <span class="badge-button-docs__preview-code">mpower</span>
+            </div>
+          </div>
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--primary btn-badge--mdelivery" type="button">
+              <span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-delivery.svg" alt="" /></span>
+              <span class="btn-badge__label">Livrează prin mdelivery</span>
+            </button>
+            <div class="badge-button-docs__preview-meta">
+              <span class="badge-button-docs__preview-title">primary</span>
+              <span class="badge-button-docs__preview-code">mdelivery</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="badge-button-docs__styles-row">
+        <p class="badge-button-docs__styles-group-label text-body-md-500">neutral</p>
+        <div class="badge-button-docs__styles-grid">
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--neutral btn-badge--mpay" type="button">
+              <span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-pay.svg" alt="" /></span>
+              <span class="btn-badge__label">Plătește cu mpay</span>
+            </button>
+            <div class="badge-button-docs__preview-meta">
+              <span class="badge-button-docs__preview-title">neutral</span>
+              <span class="badge-button-docs__preview-code">mpay</span>
+            </div>
+          </div>
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--neutral btn-badge--mpass" type="button">
+              <span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-pass.svg" alt="" /></span>
+              <span class="btn-badge__label">Autentifică-te prin mpass</span>
+            </button>
+            <div class="badge-button-docs__preview-meta">
+              <span class="badge-button-docs__preview-title">neutral</span>
+              <span class="badge-button-docs__preview-code">mpass</span>
+            </div>
+          </div>
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--neutral btn-badge--msign" type="button">
+              <span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-sign.svg" alt="" /></span>
+              <span class="btn-badge__label">Semnează prin msign</span>
+            </button>
+            <div class="badge-button-docs__preview-meta">
+              <span class="badge-button-docs__preview-title">neutral</span>
+              <span class="badge-button-docs__preview-code">msign</span>
+            </div>
+          </div>
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--neutral btn-badge--mpower" type="button">
+              <span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-power.svg" alt="" /></span>
+              <span class="btn-badge__label">Împuternicește cu mpower</span>
+            </button>
+            <div class="badge-button-docs__preview-meta">
+              <span class="badge-button-docs__preview-title">neutral</span>
+              <span class="badge-button-docs__preview-code">mpower</span>
+            </div>
+          </div>
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--neutral btn-badge--mdelivery" type="button">
+              <span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-delivery.svg" alt="" /></span>
+              <span class="btn-badge__label">Livrează prin mdelivery</span>
+            </button>
+            <div class="badge-button-docs__preview-meta">
+              <span class="badge-button-docs__preview-title">neutral</span>
+              <span class="badge-button-docs__preview-code">mdelivery</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="badge-button-docs__section">
+      <div class="badge-button-docs__section-title">
+        <h2 class="text-heading-h3">States</h2>
+      </div>
+
+      <div class="badge-button-docs__state-group">
+        <p class="badge-button-docs__state-group-label text-body-md-500">primary</p>
+        <div class="badge-button-docs__states-grid">
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--primary btn-badge--mpay" type="button"><span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-pay.svg" alt="" /></span><span class="btn-badge__label">Plătește cu mpay</span></button>
+            <div class="badge-button-docs__preview-meta"><span class="badge-button-docs__preview-title">default</span><span class="badge-button-docs__preview-code">mpay</span></div>
+          </div>
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--primary btn-badge--mpass is-hover" type="button"><span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-pass.svg" alt="" /></span><span class="btn-badge__label">Autentifică-te prin mpass</span></button>
+            <div class="badge-button-docs__preview-meta"><span class="badge-button-docs__preview-title">hover</span><span class="badge-button-docs__preview-code">mpass</span></div>
+          </div>
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--primary btn-badge--msign is-active" type="button"><span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-sign.svg" alt="" /></span><span class="btn-badge__label">Semnează prin msign</span></button>
+            <div class="badge-button-docs__preview-meta"><span class="badge-button-docs__preview-title">active</span><span class="badge-button-docs__preview-code">msign</span></div>
+          </div>
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--primary btn-badge--mpower is-focus" type="button"><span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-power.svg" alt="" /></span><span class="btn-badge__label">Împuternicește cu mpower</span></button>
+            <div class="badge-button-docs__preview-meta"><span class="badge-button-docs__preview-title">focus</span><span class="badge-button-docs__preview-code">mpower</span></div>
+          </div>
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--primary btn-badge--mdelivery btn-loading" type="button"><span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-delivery.svg" alt="" /></span><span class="btn-badge__label">Livrează prin mdelivery</span><span class="sr-only">Loading</span></button>
+            <div class="badge-button-docs__preview-meta"><span class="badge-button-docs__preview-title">loading</span><span class="badge-button-docs__preview-code">mdelivery</span></div>
+          </div>
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--primary btn-badge--mpay" type="button" disabled><span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-pay.svg" alt="" /></span><span class="btn-badge__label">Plătește cu mpay</span></button>
+            <div class="badge-button-docs__preview-meta"><span class="badge-button-docs__preview-title">disabled</span><span class="badge-button-docs__preview-code">mpay</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="badge-button-docs__state-group">
+        <p class="badge-button-docs__state-group-label text-body-md-500">neutral</p>
+        <div class="badge-button-docs__states-grid">
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--neutral btn-badge--mpay" type="button"><span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-pay.svg" alt="" /></span><span class="btn-badge__label">Plătește cu mpay</span></button>
+            <div class="badge-button-docs__preview-meta"><span class="badge-button-docs__preview-title">default</span><span class="badge-button-docs__preview-code">mpay</span></div>
+          </div>
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--neutral btn-badge--mpass is-hover" type="button"><span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-pass.svg" alt="" /></span><span class="btn-badge__label">Autentifică-te prin mpass</span></button>
+            <div class="badge-button-docs__preview-meta"><span class="badge-button-docs__preview-title">hover</span><span class="badge-button-docs__preview-code">mpass</span></div>
+          </div>
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--neutral btn-badge--msign is-active" type="button"><span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-sign.svg" alt="" /></span><span class="btn-badge__label">Semnează prin msign</span></button>
+            <div class="badge-button-docs__preview-meta"><span class="badge-button-docs__preview-title">active</span><span class="badge-button-docs__preview-code">msign</span></div>
+          </div>
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--neutral btn-badge--mpower is-focus" type="button"><span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-power.svg" alt="" /></span><span class="btn-badge__label">Împuternicește cu mpower</span></button>
+            <div class="badge-button-docs__preview-meta"><span class="badge-button-docs__preview-title">focus</span><span class="badge-button-docs__preview-code">mpower</span></div>
+          </div>
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--neutral btn-badge--mdelivery btn-loading" type="button"><span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-delivery.svg" alt="" /></span><span class="btn-badge__label">Livrează prin mdelivery</span><span class="sr-only">Loading</span></button>
+            <div class="badge-button-docs__preview-meta"><span class="badge-button-docs__preview-title">loading</span><span class="badge-button-docs__preview-code">mdelivery</span></div>
+          </div>
+          <div class="badge-button-docs__preview-item">
+            <button class="btn btn-badge btn-badge--neutral btn-badge--mpay" type="button" disabled><span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-pay.svg" alt="" /></span><span class="btn-badge__label">Plătește cu mpay</span></button>
+            <div class="badge-button-docs__preview-meta"><span class="badge-button-docs__preview-title">disabled</span><span class="badge-button-docs__preview-code">mpay</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- <section class="badge-button-docs__section">
+      <div class="badge-button-docs__section-title">
+        <h2 class="text-heading-h3">Interaction guidance</h2>
+      </div>
+      <div class="badge-button-docs__usage-grid">
+        <article class="badge-button-docs__usage-card">
+          <h3 class="text-heading-h4">Pointer Devices</h3>
+          <div class="badge-button-docs__usage-example">
+            <button class="btn btn-badge btn-badge--primary btn-badge--mpay is-hover" type="button">
+              <span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-pay.svg" alt="" /></span>
+              <span class="btn-badge__label">Plătește cu mpay</span>
+            </button>
+          </div>
+          <p class="badge-button-docs__usage-copy text-body-md">
+            On desktop and laptop experiences, keep the component interactive on hover so the user receives a clear
+            signal before launching the external platform flow. Preserve the badge and label together to maintain
+            platform recognition.
+          </p>
+        </article>
+        <article class="badge-button-docs__usage-card">
+          <h3 class="text-heading-h4">Touch Devices</h3>
+          <div class="badge-button-docs__usage-example">
+            <button class="btn btn-badge btn-badge--primary btn-badge--mpay" type="button">
+              <span class="btn-badge__logo" aria-hidden="true"><img src="assets/logos/m-platforms/m-pay.svg" alt="" /></span>
+              <span class="btn-badge__label">Plătește cu mpay</span>
+            </button>
+          </div>
+          <p class="badge-button-docs__usage-copy text-body-md">
+            On touch interfaces, prioritize a stable default state, generous tap area, and legible branding. The badge
+            should remain visible at all times so users understand which government platform will handle the next step.
+          </p>
+        </article>
+      </div>
+    </section> -->
+
+    <!-- <section class="badge-button-docs__section">
+      <div class="badge-button-docs__section-title">
+        <h2 class="text-heading-h3">Accessibility</h2>
+      </div>
+      <div class="row">
+        <div class="col-12 col-xl-7">
+          <article class="badge-button-docs__accessibility-card">
+            <div class="badge-button-docs__wcag-row">
+              <span class="badge-button-docs__wcag-badge" aria-hidden="true">WCAG</span>
+              <div class="badge-button-docs__wcag-icons" aria-hidden="true">
+                <span class="badge-button-docs__wcag-icon badge-button-docs__wcag-icon--contrast"></span>
+                <span class="badge-button-docs__wcag-icon badge-button-docs__wcag-icon--text">Aa</span>
+                <span class="badge-button-docs__wcag-icon">
+                  <svg class="icon" aria-hidden="true"><use href="assets/icons/sprite.svg#icon-person"></use></svg>
+                </span>
+                <span class="badge-button-docs__wcag-icon">
+                  <svg class="icon" aria-hidden="true"><use href="assets/icons/sprite.svg#icon-eye-open"></use></svg>
+                </span>
+                <span class="badge-button-docs__wcag-icon">
+                  <svg class="icon" aria-hidden="true"><use href="assets/icons/sprite.svg#icon-signal"></use></svg>
+                </span>
+              </div>
+            </div>
+            <p class="badge-button-docs__accessibility-copy text-body-md">
+              Keep the platform label available to assistive technologies, preserve strong contrast between the control
+              and its surroundings, and ensure the focus treatment remains visible on all backgrounds. The button text
+              should clearly describe the destination platform so keyboard and screen-reader users can understand the
+              action before activation.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section> -->
+  </main>
+
+  <div id="site-footer"></div>
+</body>
+</html>
