@@ -43,10 +43,6 @@
       &:hover {
         background-color: var(--gray-200);
         color: var(--blue-sky-600); 
-
-        .icon{
-          transform: rotate(180deg);
-        }
       }
 
       .icon {
@@ -67,10 +63,6 @@
           &::after {
             width: 100%;
           }
-        }
-
-         .icon{
-          transform: rotate(180deg);
         }
 
         > .nav__menu  {
@@ -100,6 +92,10 @@
       line-height: 1.2;
       padding: var(--spacing-24) var(--spacing-16);
       position: relative;
+
+      &[aria-expanded="true"] .icon {
+        transform: rotate(180deg);
+      }
 
       &::after {
         content: '';

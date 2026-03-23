@@ -15352,9 +15352,6 @@ body:has(.modal-overlay.modal-overlay.is-active) {
   background-color: var(--gray-200);
   color: var(--blue-sky-600);
 }
-.nav__item:hover .icon {
-  transform: rotate(180deg);
-}
 .nav__item .icon {
   transition: transform 0.3s ease;
 }
@@ -15366,9 +15363,6 @@ body:has(.modal-overlay.modal-overlay.is-active) {
 }
 .nav__item--active .nav__link::after {
   width: 100%;
-}
-.nav__item--active .icon {
-  transform: rotate(180deg);
 }
 .nav__item--active > .nav__menu {
   display: block;
@@ -15390,6 +15384,9 @@ body:has(.modal-overlay.modal-overlay.is-active) {
   line-height: 1.2;
   padding: var(--spacing-24) var(--spacing-16);
   position: relative;
+}
+.nav__link[aria-expanded=true] .icon {
+  transform: rotate(180deg);
 }
 .nav__link::after {
   content: "";
