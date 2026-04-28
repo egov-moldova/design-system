@@ -4,11 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "sass": "sass --watch scss/main.scss css/main.css"
+    "sass": "sass --watch scss/main.scss css/main.css",
+    "serve": "serve .",
+    "dev": "concurrently \"npm run sass\" \"npm run serve\""
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "sass": "^1.97.3"
+    "concurrently": "^9.2.1",
+    "sass": "^1.97.3",
+    "serve": "^14.2.6"
   }
 }
