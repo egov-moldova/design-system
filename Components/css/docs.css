@@ -1,0 +1,191 @@
+/* Shared documentation page layout (used across component docs pages) */
+
+.doc-page-header {
+  padding: 64px 160px 80px;
+}
+
+.doc-page-header-content {
+  max-width: calc(7 / 12 * 100%);
+}
+
+.doc-page-title {
+  font-size: 72px;
+  font-weight: 600;
+  letter-spacing: -4px;
+  color: var(--black, #121212);
+  line-height: 1;
+  margin: 0 0 16px;
+}
+
+.doc-page-desc {
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--color-text-base-tertiary, #757575);
+  letter-spacing: -0.4px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.doc-section-header {
+  padding: 32px 160px 24px;
+}
+
+.doc-section-header h2 {
+  color: var(--black, #121212);
+  margin: 0;
+  border-bottom: 1px solid var(--color-border-base-default, #d9d9d9);
+}
+
+.doc-section-header p {
+  font-size: 16px;
+  color: var(--color-text-base-secondary, #575757);
+  margin: 8px 0 0;
+  line-height: 1.5;
+  max-width: calc(7 / 12 * 100%);
+}
+
+.doc-section-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 80px;
+  padding: 0 160px 80px;
+}
+
+.doc-section-items--2col {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.doc-section-items--3col {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.doc-item {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.doc-item-label {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--gray-700, #383838);
+  line-height: 1.4;
+}
+
+.doc-select-wrap {
+  width: 280px;
+}
+
+/* Generic docs grids used in multiple sections */
+.doc-spec {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 282px;
+}
+
+.doc-spec-label {
+  font-family:
+    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  letter-spacing: -0.16px;
+  color: var(--color-text-base-secondary, #383838);
+  margin: 0;
+}
+
+.doc-select {
+  width: 282px;
+}
+
+.doc-block-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 56px 160px 80px;
+}
+
+.doc-block-lead {
+  font-size: 18px;
+  line-height: 28px;
+  color: var(--color-text-base-tertiary, #757575);
+  max-width: 720px;
+  margin: 0;
+}
+
+.doc-block-grid {
+  display: flex;
+  gap: 150px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+}
+
+.doc-note {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-text-base-tertiary, #757575);
+  width: 282px;
+  margin: 0;
+}
+
+.doc-accessibility-info {
+  padding: 0 160px 80px;
+  max-width: 900px;
+}
+
+.doc-accessibility-info p {
+  font-size: 16px;
+  color: var(--color-text-base-secondary, #575757);
+  line-height: 1.6;
+  margin: 0;
+}
+
+@media (max-width: 1280px) {
+  .doc-section-items--2col,
+  .doc-section-items--3col {
+    grid-template-columns: repeat(auto-fit, minmax(311px, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .doc-page-header {
+    padding: 40px 24px 48px;
+  }
+
+  .doc-page-header-content {
+    max-width: 100%;
+  }
+
+  .doc-page-title {
+    font-size: 48px;
+    letter-spacing: -2px;
+  }
+
+  .doc-section-header {
+    padding: 24px 24px 20px;
+  }
+
+  .doc-section-header p {
+    max-width: 100%;
+  }
+
+  .doc-section-items {
+    padding: 32px 24px 48px;
+    gap: 48px;
+  }
+
+  .doc-block-wrap {
+    padding: 32px 24px 48px;
+  }
+
+  .doc-block-grid {
+    gap: 48px;
+  }
+}
+
