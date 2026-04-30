@@ -158,40 +158,46 @@
 }
 
 :root {
-  /* ================= DISPLAY ================= */
-  --text-display-lg-font-size: 56px;
-  --text-display-lg-line-height: 140%;
-  --text-display-lg-letter-spacing: -0.02em;
-  --text-display-md-font-size: 48px;
-  --text-display-md-line-height: 140%;
-  --text-display-md-letter-spacing: -0.02em;
-  /* ================= HEADINGS ================= */
-  --text-heading-h1-lg-font-size: 40px;
-  --text-heading-h2-md-font-size: 32px;
-  --text-heading-h3-sm-font-size: 28px;
-  --text-heading-h4-xs-font-size: 24px;
-  --text-heading-h5-2xs-font-size: 20px;
-  --text-heading-h1-lg-line-height: 150%;
-  --text-heading-h2-md-line-height: 150%;
-  --text-heading-h3-sm-line-height: 150%;
-  --text-heading-h4-xs-line-height: 150%;
-  --text-heading-h5-2xs-line-height: 150%;
-  /* ================= BODY ================= */
-  --text-body-lg-font-size: 18px;
-  --text-body-lg-500-font-size: 18px;
-  --text-body-md-font-size: 16px;
-  --text-body-md-500-font-size: 16px;
-  --text-body-sm-font-size: 14px;
-  --text-body-sm-500-font-size: 14px;
-  --text-body-lg-line-height: 150%;
-  --text-body-md-line-height: 140%;
-  --text-body-sm-line-height: 140%;
-  /* ================= CAPTION ================= */
-  --text-caption-md-font-size: 12px;
-  --text-caption-md-500-font-size: 12px;
-  --text-caption-sm-font-size: 10px;
-  --text-caption-md-line-height: 140%;
-  --text-caption-sm-line-height: 140%;
+    /* ================= DISPLAY ================= */
+    --text-display-lg-font-size: 56px;
+    --text-display-lg-line-height: 140%;
+    --text-display-lg-letter-spacing: -0.02em;
+    --text-display-md-font-size: 48px;
+    --text-display-md-line-height: 140%;
+    --text-display-md-letter-spacing: -0.02em;
+    /* ================= HEADINGS ================= */
+    --text-heading-h1-lg-font-size: 40px;
+    --text-heading-h2-md-font-size: 32px;
+    --text-heading-h3-sm-font-size: 28px;
+    --text-heading-h4-xs-font-size: 24px;
+    --text-heading-h5-2xs-font-size: 20px;
+    --text-heading-h1-lg-line-height: 150%;
+    --text-heading-h2-md-line-height: 150%;
+    --text-heading-h3-sm-line-height: 150%;
+    --text-heading-h4-xs-line-height: 150%;
+    --text-heading-h5-2xs-line-height: 150%;
+    /* ================= BODY ================= */
+    --text-body-lg-font-size: 18px;
+    --text-body-lg-500-font-size: 18px;
+    --text-body-md-font-size: 16px;
+    --text-body-md-500-font-size: 16px;
+    --text-body-sm-font-size: 14px;
+    --text-body-sm-500-font-size: 14px;
+    --text-body-lg-line-height: 150%;
+    --text-body-md-line-height: 140%;
+    --text-body-sm-line-height: 140%;
+    /* ================= CAPTION ================= */
+    --text-caption-md-font-size: 12px;
+    --text-caption-md-500-font-size: 12px;
+    --text-caption-sm-font-size: 10px;
+    --text-caption-md-line-height: 140%;
+    --text-caption-sm-line-height: 140%;
+    /* ================= TEXT FONT SIZE ================= */
+    --text-font-size-14: 14px;
+    --text-font-size-16: 16px;
+    /* ================= TEXT LINE HEIGHT ================= */
+    --text-line-height-20: 20px;
+    --text-line-height-24: 24px;
 }
 
 @media (max-width: 768px) {
@@ -16759,15 +16765,21 @@ body.has-overlay footer {
    🔹 Mixin principal pentru input-uri
 ======================================= */
 label {
-  color: var(--gray-700);
-  display: block;
-  font-size: var(--text-body-sm-font-size, 14px);
-  margin-bottom: var(--spacing-6, 6px);
+    color: var(--gray-700);
+    display: block;
+    font-size: var(--text-font-size-14, 14px);
+    margin-bottom: var(--spacing-8, 8px);
+    line-height: var(--text-line-height-20, 20px);
 }
 label.required::after {
   content: "*";
   margin-left: var(--spacing-4, 4px);
   color: var(--red-500);
+}
+
+.description-text {
+    font-size: var(--text-font-size-16);
+    line-height: var(--text-line-height-24);
 }
 
 .input {
@@ -17942,6 +17954,12 @@ label.required::after {
   padding-right: var(--spacing-32, 32px);
 }
 
+
+textarea {
+    scrollbar-width: thin;
+    scrollbar-color: #9ca3af transparent;
+}
+
 .textarea {
   border: var(--border-width-1) var(--border-style-solid) var(--gray-250);
   background-color: var(--white);
@@ -17954,15 +17972,31 @@ label.required::after {
   box-sizing: border-box;
   text-overflow: ellipsis;
 }
+
+.textarea {
+    min-height: var(--spacing-150, 150px);
+    resize: vertical;
+    line-height: 1.5;
+    padding: var(--spacing-12, 12px) var(--spacing-16, 16px) !important;
+    font-family: inherit;
+}
+
 .textarea::placeholder {
   color: var(--gray-500);
 }
+
+.textarea::placeholder {
+    color: var(--gray-400);
+}
+
+
 .textarea:hover:not(:disabled) {
   border-color: var(--gray-400);
   box-shadow: 0 0 0 0.5px var(--gray-400);
 }
 .textarea:focus:not(:disabled) {
-  outline: 1px solid var(--gray-400);
+  outline: 2px solid var(--blue-sky-600);
+  outline-offset: -1px;
   box-shadow: 0 0 0 4px var(--blue-sky-200);
 }
 .textarea:disabled {
@@ -17984,22 +18018,6 @@ label.required::after {
 .textarea[readonly]:not(:disabled)::placeholder {
   color: var(--gray-700);
 }
-.textarea {
-  min-height: var(--spacing-150, 150px);
-  resize: vertical;
-  line-height: 1.5;
-  padding: var(--spacing-12, 12px) var(--spacing-16, 16px) !important;
-  font-family: inherit;
-}
-.textarea::placeholder {
-  color: var(--gray-400);
-}
-.textarea:focus:not(:placeholder-shown) {
-  border-color: var(--blue-sky-500);
-}
-.textarea:focus:placeholder-shown {
-  border-color: var(--blue-sky-300);
-}
 
 .textarea--warning {
   border: var(--border-width-1) var(--border-style-solid) var(--apricot-500);
@@ -18018,7 +18036,8 @@ label.required::after {
   box-shadow: 0 0 0 0.5px var(--apricot-600);
 }
 .textarea--warning:focus:not(:disabled) {
-  outline: 1px solid var(--apricot-600);
+  outline: 2px solid var(--apricot-600);
+  outline-offset: -1px;
   box-shadow: 0 0 0 4px var(--apricot-200);
 }
 .textarea--warning:disabled {
@@ -18058,7 +18077,8 @@ label.required::after {
   box-shadow: 0 0 0 0.5px var(--red-600);
 }
 .textarea--destructive:focus:not(:disabled) {
-  outline: 1px solid var(--red-600);
+  outline: 2px solid var(--red-600);
+  outline-offset: -1px;
   box-shadow: 0 0 0 4px var(--red-200);
 }
 .textarea--destructive:disabled {
@@ -18098,7 +18118,8 @@ label.required::after {
   box-shadow: 0 0 0 0.5px var(--green-700);
 }
 .textarea--success:focus:not(:disabled) {
-  outline: 1px solid var(--green-700);
+  outline: 2px solid var(--forest-green-600);
+  outline-offset: -1px;
   box-shadow: 0 0 0 4px var(--green-200);
 }
 .textarea--success:disabled {
@@ -18152,8 +18173,8 @@ label.required::after {
 }
 
 .file-input.default {
-  --border-color: map.get(map.get(tokens.$input-colors, $variant), border);
-  --focus-color: map.get(map.get(tokens.$input-colors, $variant), focus);
+    --border-color: map.get(map.get(tokens.$input-colors, $variant), border);
+    --focus-color: map.get(map.get(tokens.$input-colors, $variant), focus);
 }
 
 .file-input.success {
