@@ -2492,6 +2492,7 @@ ul, ol {
   --spacing-24: 24px;
   --spacing-32: 32px;
   --spacing-40: 40px;
+  --spacing-44: 44px;
   --spacing-48: 48px;
   --spacing-56: 56px;
   --spacing-64: 64px;
@@ -16778,6 +16779,7 @@ label.required::after {
   padding: 0 var(--spacing-12, 12px);
   border-radius: var(--border-radius-8, 8px);
   font-size: var(--text-body-md-font-size);
+  line-height: 24px;
   box-sizing: border-box;
   text-overflow: ellipsis;
 }
@@ -16789,7 +16791,8 @@ label.required::after {
   box-shadow: 0 0 0 0.5px var(--gray-400);
 }
 .input:focus:not(:disabled) {
-  outline: 1px solid var(--gray-400);
+  outline: 2px solid var(--blue-sky-600);
+  outline-offset: -2px;
   box-shadow: 0 0 0 4px var(--blue-sky-200);
 }
 .input:disabled {
@@ -16829,7 +16832,8 @@ label.required::after {
   box-shadow: 0 0 0 0.5px var(--apricot-600);
 }
 .input--warning:focus:not(:disabled) {
-  outline: 1px solid var(--apricot-600);
+  outline: 2px solid var(--apricot-600);
+  outline-offset: -2px;
   box-shadow: 0 0 0 4px var(--apricot-200);
 }
 .input--warning:disabled {
@@ -16869,7 +16873,8 @@ label.required::after {
   box-shadow: 0 0 0 0.5px var(--red-600);
 }
 .input--destructive:focus:not(:disabled) {
-  outline: 1px solid var(--red-600);
+  outline: 2px solid var(--red-600);
+  outline-offset: -2px;
   box-shadow: 0 0 0 4px var(--red-200);
 }
 .input--destructive:disabled {
@@ -16909,7 +16914,8 @@ label.required::after {
   box-shadow: 0 0 0 0.5px var(--green-700);
 }
 .input--success:focus:not(:disabled) {
-  outline: 1px solid var(--green-700);
+  outline: 2px solid var(--green-700);
+  outline-offset: -2px;
   box-shadow: 0 0 0 4px var(--green-200);
 }
 .input--success:disabled {
@@ -16934,6 +16940,7 @@ label.required::after {
 
 .input--medium {
   font-size: var(--text-body-sm-font-size);
+  line-height: 20px;
   height: var(--spacing-40);
 }
 
@@ -16973,8 +16980,12 @@ label.required::after {
   transform: translateY(-50%);
 }
 .input-wrapper .input-icon.left {
-  left: var(--spacing-8);
+  left: var(--spacing-16);
 }
+.input-wrapper.input-wrapper--medium .input-icon.left {
+    left: var(--spacing-12);
+}
+
 .input-wrapper .input-icon.right {
   right: var(--spacing-8);
 }
@@ -16982,7 +16993,10 @@ label.required::after {
   color: var(--green-600);
 }
 .input-wrapper:has(.left) .input {
-  padding-left: var(--spacing-32);
+  padding-left: var(--spacing-48);
+}
+.input-wrapper.input-wrapper--medium:has(.left) .input {
+  padding-left: var(--spacing-40);
 }
 .input-wrapper:has(.right) .input {
   padding-right: var(--spacing-32);
@@ -17756,8 +17770,13 @@ label.required::after {
   height: var(--spacing-32);
 }
 .search-input:has(.icon-search) .input {
-  padding-left: var(--spacing-32);
+  padding-left: var(--spacing-48);
 }
+.search-input.medium:has(.icon-search) .input {
+  padding-left: var(--spacing-40);
+}
+
+
 .search-input .input {
   border: var(--border-width-1) var(--border-style-solid) var(--gray-250);
   background-color: var(--white);
@@ -17773,14 +17792,7 @@ label.required::after {
 .search-input .input::placeholder {
   color: var(--gray-500);
 }
-.search-input .input:hover:not(:disabled) {
-  border-color: var(--gray-400);
-  box-shadow: 0 0 0 0.5px var(--gray-400);
-}
-.search-input .input:focus:not(:disabled) {
-  outline: 1px solid var(--gray-400);
-  box-shadow: 0 0 0 4px var(--blue-sky-200);
-}
+
 .search-input .input:disabled {
   background-color: var(--gray-100);
   border-color: var(--gray-250);
@@ -17801,7 +17813,7 @@ label.required::after {
   color: var(--gray-700);
 }
 .search-input .input {
-  padding-right: var(--spacing-56);
+  padding-right: var(--spacing-44);
   flex: 1;
 }
 .search-input.disabled .btn-search {
@@ -17811,11 +17823,16 @@ label.required::after {
 }
 .search-input .icon-search {
   position: absolute;
-  left: var(--spacing-8, 8px);
+  left: var(--spacing-16, 16px);
   display: flex;
   align-items: center;
   pointer-events: none;
 }
+
+.search-input.medium .icon-search {
+  left: var(--spacing-12, 12px);
+}
+
 .search-input .btn-group {
   position: absolute;
   right: var(--spacing-4);
@@ -17836,6 +17853,13 @@ label.required::after {
 .search-input.is-ready .btn-icon.clear {
   display: inline-flex;
 }
+
+.search-input .btn-alignment {
+  position: absolute;
+  right: var(--spacing-16, 16px);
+  display: flex;
+}
+
 .search-input.loading .spinner {
   display: inline-flex;
 }
