@@ -1,0 +1,22 @@
+{
+  "hints": {
+    "compat-api/css": [
+      "error",
+      {
+        "ignore": [
+          "-moz-appearance: none",
+          "-webkit-appearance: none",
+          "appearance: none",
+          "cursor",
+          "zoom: 1",
+          "user-select",
+          "-webkit-user-select",
+          "-moz-appearance: textfield",
+          "appearance: textfield",
+          "scrollbar-width",
+          "scrollbar-color"
+        ]
+      }
+    ]
+  }
+}

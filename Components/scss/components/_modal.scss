@@ -1,8 +1,7 @@
 @use '../abstracts/tokens' as tokens;
 
-
 body:has(.modal-overlay.modal-overlay.is-active) {
-    overflow-y: hidden;
+  overflow-y: hidden;
 }
 
 .modal-overlay {
@@ -17,9 +16,8 @@ body:has(.modal-overlay.modal-overlay.is-active) {
   z-index: 1000;
   opacity: 0;
   pointer-events: none;
-  transition:
-  opacity var(--motion-duration-md, 0.3s)
-  var(--motion-easing-standard, ease);
+  transition: opacity var(--motion-duration-md, 0.3s)
+    var(--motion-easing-standard, ease);
 
   &.is-active {
     opacity: 1;
@@ -38,11 +36,9 @@ body:has(.modal-overlay.modal-overlay.is-active) {
   opacity: 0;
   transform: scale(0.95);
   transition:
-  opacity var(--motion-duration-md, 0.3s)
-  var(--motion-easing-standard, ease),
-  transform var(--motion-duration-md, 0.3s)
-  var(--motion-easing-standard, ease);
-
+    opacity var(--motion-duration-md, 0.3s) var(--motion-easing-standard, ease),
+    transform var(--motion-duration-md, 0.3s)
+      var(--motion-easing-standard, ease);
 
   .modal-overlay.is-active & {
     opacity: 1;
@@ -53,8 +49,8 @@ body:has(.modal-overlay.modal-overlay.is-active) {
     max-width: var(--modal-width-sm, 320px);
 
     .modal-buttons {
-        flex-direction: column;
-        gap: var(--spacing-12, 12px)
+      flex-direction: column;
+      gap: var(--spacing-12, 12px);
     }
   }
 
@@ -90,7 +86,6 @@ body:has(.modal-overlay.modal-overlay.is-active) {
     }
   }
 
-
   &-close {
     background-color: var(--gray-200, #f1f1f1);
     border-radius: var(--border-radius-full, 9999px);
@@ -102,7 +97,7 @@ body:has(.modal-overlay.modal-overlay.is-active) {
     border: none;
     cursor: pointer;
     line-height: 1;
-    display: varf(--flex, flex);
+    display: var(--flex, flex);
     align-items: center;
     justify-content: center;
     height: var(--spacing-32, 32px);
@@ -110,11 +105,10 @@ body:has(.modal-overlay.modal-overlay.is-active) {
     transition: var(--motion-duration-md, 0.3s);
 
     &:hover {
-        background-color: var(--gray-250, #d9d9d9);
+      background-color: var(--gray-250, #d9d9d9);
     }
-  } 
+  }
 
-  
   &--with-image {
     .modal-image-wrapper {
       width: 100%;
@@ -137,19 +131,21 @@ body:has(.modal-overlay.modal-overlay.is-active) {
   }
 
   &--header {
-    padding: var(--spacing-24, 24px) var(--spacing-48, 48px) var(--spacing-0, 0px) var(--spacing-32, 32px);
+    padding: var(--spacing-24, 24px) var(--spacing-48, 48px)
+      var(--spacing-0, 0px) var(--spacing-32, 32px);
 
-    &-title { 
-        color: var(--black, #121212);
-        font-size: var(--text-heading-h3-sm-font-size, 24px); 
-        line-height: var(--spacing-32, 32px);
-        margin: 0;
-        display: -webkit-box;        
-        -webkit-line-clamp: 3;      
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        word-break: break-word;
+    &-title {
+      color: var(--black, #121212);
+      font-size: var(--text-heading-h3-sm-font-size, 24px);
+      line-height: var(--spacing-32, 32px);
+      margin: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      word-break: break-word;
     }
   }
 
@@ -157,14 +153,26 @@ body:has(.modal-overlay.modal-overlay.is-active) {
     display: var(--flex, flex);
     flex-direction: column;
     gap: var(--spacing-16, 16px);
-    padding: var(--spacing-24, 24px) var(--spacing-20, 20px) var(--spacing-40, 40px) var(--spacing-32, 32px);
+    padding: var(--spacing-24, 24px) var(--spacing-20, 20px)
+      var(--spacing-40, 40px) var(--spacing-32, 32px);
     max-height: calc(64vh - 4px);
     overflow-y: auto;
     scrollbar-width: thin;
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--gray-300, #b2b2b2);
+      border-radius: 999px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
   }
 
   &--footer {
-    padding: var(--spacing-12, 12px) var(--spacing-20, 20px) var(--spacing-24, 24px) var(--spacing-20, 20px);
+    padding: var(--spacing-12, 12px) var(--spacing-20, 20px)
+      var(--spacing-24, 24px) var(--spacing-20, 20px);
   }
 
   &-text {
@@ -179,7 +187,6 @@ body:has(.modal-overlay.modal-overlay.is-active) {
     justify-content: flex-end;
     gap: var(--spacing-8, 8px);
   }
-
 
   // Fade-in / Fade-out
   &--fade {

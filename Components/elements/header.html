@@ -13,9 +13,10 @@
 <!-- Header Desktop -->
 <header class="header d-none d-md-flex">
   <div class="header__wrapper">
-    <a href="index.html" class="header__brand" aria-label="Mergi la pagina principală">
+    <a href="index.html" class="header__brand">
+      <span class="sr-only">Mergi la pagina principală</span>
       <div class="header__brand--logo">
-        <img src="assets/logos/age.svg" alt="eGov logo">
+        <img src="assets/logos/age.svg" alt="">
       </div>
     </a>
 
@@ -45,7 +46,7 @@
           <div class="container">
             <div class="row">
               <div class="col-12 col-md-6 col-lg-4">
-                <div class="nav__menu--heading" role="heading">Basic elements</div>
+                <h3 class="nav__menu--heading">Basic elements</h3>
                 <hr class="separator separator--horizontal separator--thin separator--subtle">
                 <ul class="nav__submenu" role="none">
                   <li role="none"><a href="radius-preview.html" class="nav__submenu-item">Border Radius</a></li>
@@ -58,7 +59,7 @@
                 </ul>
               </div>
               <div class="col-12 col-md-6 col-lg-4">
-                <div class="nav__menu--heading" role="heading">Layout</div>
+                <h3 class="nav__menu--heading">Layout</h3>
                 <hr class="separator separator--horizontal separator--thin separator--subtle">
                 <ul class="nav__submenu" role="none">
                   <li role="none"><a href="grid-preview.html" class="nav__submenu-item">Grid Preview</a></li>
@@ -88,7 +89,7 @@
           <div class="container">
             <div class="row">
                             <div class="col-12 col-md-6 col-lg-4">
-                <div class="nav__menu--heading" role="heading">Navigation &amp; Structure</div>
+                <h3 class="nav__menu--heading">Navigation &amp; Structure</h3>
                 <hr class="separator separator--horizontal separator--thin separator--subtle">
                 <ul class="nav__submenu" role="none">
                   <li role="none"><a href="header.html" class="nav__submenu-item">Header</a></li>
@@ -106,7 +107,7 @@
                 </ul>
               </div>
               <div class="col-12 col-md-6 col-lg-4">
-                <div class="nav__menu--heading" role="heading">Form elements</div>
+                <h3 class="nav__menu--heading">Form elements</h3>
                 <hr class="separator separator--horizontal separator--thin separator--subtle">
                 <ul class="nav__submenu" role="none">
                   <li role="none"><a href="link.html" class="nav__submenu-item">Link</a></li>
@@ -127,11 +128,11 @@
                 </ul>
               </div>
               <div class="col-12 col-md-6 col-lg-4">
-                <div class="nav__menu--heading" role="heading">Feedback &amp; utilities</div>
+                <h3 class="nav__menu--heading">Feedback &amp; utilities</h3>
                 <hr class="separator separator--horizontal separator--thin separator--subtle">
                 <ul class="nav__submenu" role="none">
                   <li role="none"><a href="messages.html" class="nav__submenu-item">Messages</a></li>
-                  <li role="none"><a href="message-alerts.html" class="nav__submenu-item">Message alerts</a></li>
+                  <li role="none"><a href="banner.html" class="nav__submenu-item">Banner</a></li>
                   <li role="none"><a href="messages-information.html" class="nav__submenu-item">Messages information</a>
                   </li>
                   <li role="none"><a href="messages-inline.html" class="nav__submenu-item">Messages inline</a></li>
@@ -281,8 +282,7 @@
         <li class="mainNav__list--item"><a class="mainNav__list--link" href="table.html">Table</a></li>
         <li class="mainNav__list--item"><a class="mainNav__list--link" href="accordion.html">Accordion</a></li>
         <li class="mainNav__list--item"><a class="mainNav__list--link" href="messages.html">Messages</a></li>
-        <li class="mainNav__list--item"><a class="mainNav__list--link" href="message-alerts.html">Message Alerts</a>
-        </li>
+        <li class="mainNav__list--item"><a class="mainNav__list--link" href="banner.html">Banner</a></li>
         <li class="mainNav__list--item"><a class="mainNav__list--link" href="messages-information.html">Messages
             Information</a></li>
         <li class="mainNav__list--item"><a class="mainNav__list--link" href="messages-inline.html">Messages Inline</a>
@@ -305,9 +305,10 @@
 <!-- Header Mobile -->
 <header class="header header__mobile d-flex d-md-none">
   <div class="header__wrapper">
-    <a href="index.html" class="header__brand" aria-label="Mergi la pagina principală">
+    <a href="index.html" class="header__brand">
+      <span class="sr-only">Mergi la pagina principală</span>
       <div class="header__brand--logo">
-        <img src="assets/logos/age.svg" alt="eGov logo">
+        <img src="assets/logos/age.svg" alt="">
       </div>
     </a>
 
@@ -321,7 +322,7 @@
           </span>
         </button>
       </div>
-      <button class="mainNav__toggle mobile btn btn-menu btn-sm" aria-expanded="false" aria-controls="mainNav__panel">
+      <button class="mainNav__toggle mobile btn btn-menu btn-sm" aria-expanded="false" aria-controls="mainNav__panel-mobile">
         <span class="sr-only">Meniu</span>
         <span class="d-inline-flex">
           <svg class="icon large" aria-hidden="true">
@@ -333,12 +334,12 @@
   </div>
 
   <!-- Main Navigation Panel -->
-  <div class="mainNav__panel" id="mainNav__panel" hidden>
+  <div class="mainNav__panel" id="mainNav__panel-mobile" hidden>
     <div class="mainNav__content">
       <section class="mainNav__section">
         <ul class="mainNav__list">
           <li class="mainNav__list--item">
-            <button class="mainNav__list--button" data-submenu="submenu-fundamentals" aria-expanded="false">
+            <button class="mainNav__list--button" data-submenu="submenu-fundamentals-mobile" aria-expanded="false">
               <span>Fundamentals</span>
               <span class="d-inline-flex">
                 <svg class="icon medium" aria-hidden="true">
@@ -348,7 +349,7 @@
             </button>
           </li>
           <li class="mainNav__list--item">
-            <button class="mainNav__list--button" data-submenu="submenu-components" aria-expanded="false">
+            <button class="mainNav__list--button" data-submenu="submenu-components-mobile" aria-expanded="false">
               <span>Components</span>
               <span class="d-inline-flex">
                 <svg class="icon medium" aria-hidden="true">
@@ -361,7 +362,7 @@
       </section>
     </div>
 
-    <div class="mainNav__submenu" id="submenu-fundamentals" hidden>
+    <div class="mainNav__submenu" id="submenu-fundamentals-mobile" hidden>
       <button class="mainNav__back btn btn-neutral btn-rounded btn-md" data-back>
         <svg class="icon small">
           <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
@@ -387,7 +388,7 @@
       </ul>
     </div>
 
-    <div class="mainNav__submenu" id="submenu-components" hidden>
+    <div class="mainNav__submenu" id="submenu-components-mobile" hidden>
       <button class="mainNav__back btn btn-neutral btn-rounded btn-md" data-back>
         <svg class="icon small">
           <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
@@ -426,8 +427,7 @@
         <li class="mainNav__list--item"><a class="mainNav__list--link" href="table.html">Table</a></li>
         <li class="mainNav__list--item"><a class="mainNav__list--link" href="accordion.html">Accordion</a></li>
         <li class="mainNav__list--item"><a class="mainNav__list--link" href="messages.html">Messages</a></li>
-        <li class="mainNav__list--item"><a class="mainNav__list--link" href="message-alerts.html">Message Alerts</a>
-        </li>
+        <li class="mainNav__list--item"><a class="mainNav__list--link" href="banner.html">Banner</a></li>
         <li class="mainNav__list--item"><a class="mainNav__list--link" href="messages-information.html">Messages
             Information</a></li>
         <li class="mainNav__list--item"><a class="mainNav__list--link" href="messages-inline.html">Messages Inline</a>

@@ -26,8 +26,8 @@
     flex-direction: column;
     gap: var(--spacing-4, 4px);
 
-    p{
-        margin: 0;
+    p {
+      margin: 0;
     }
   }
 
@@ -42,8 +42,10 @@
     cursor: pointer;
     display: flex;
     padding: var(--spacing-8, 8px);
-    margin-left: auto; 
-    transition: background-color 0.2s ease, transform 0.15s ease;
+    margin-left: auto;
+    transition:
+      background-color 0.2s ease,
+      transform 0.15s ease;
 
     &:hover {
       background-color: rgba(0, 0, 0, 0.08);
@@ -54,7 +56,7 @@
     }
   }
 
-  // ===========  Types with fixed colors 
+  // ===========  Types with fixed colors
   &--info {
     background-color: var(--blue-sky-600);
     color: var(--white, #fff);
@@ -81,7 +83,7 @@
 
     .banner__icon,
     &__close {
-      color: var(--apricot-700, #B54708);
+      color: var(--apricot-700, #b54708);
     }
   }
 
@@ -95,59 +97,56 @@
     }
   }
 
-  // ============ Variants 
+  // ============ Variants
   &--banner {
     border-radius: 0;
     justify-content: center;
-    padding-block: var(--spacing-12, 12px);  
+    padding-block: var(--spacing-12, 12px);
 
-    .banner__content { 
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        gap: var(--spacing-8, 8px);  
+    .banner__content {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: var(--spacing-8, 8px);
     }
-
-    
   }
 
   // Subtle variants
   &--subtle {
     background-color: transparent;
 
-    &.banner--info    { 
-        background-color: var(--blue-sky-100, #E8F0FB); 
+    &.banner--info {
+      background-color: var(--blue-sky-100, #e8f0fb);
+      color: var(--black, #121212);
+
+      .banner__icon {
+        color: var(--blue-sky-600, #0058d2);
+      }
+
+      .banner__close {
         color: var(--black, #121212);
+      }
+    }
+    &.banner--warning {
+      background-color: var(--apricot-100, #feefc6);
+      color: var(--black, #121212);
 
-        .banner__icon{
-            color: var(--blue-sky-600, #0058D2); 
-        }
-
-        .banner__close {
-            color: var(--black, #121212);
-        }
-        
-    } 
-    &.banner--warning { 
-        background-color: var(--apricot-100, #FEEFC6) ; 
+      .banner__close {
         color: var(--black, #121212);
+      }
+    }
+    &.banner--error {
+      background-color: var(--red-100, #fee4e2);
+      color: var(--black, #121212);
 
-        .banner__close {
-            color: var(--black, #121212);
-        }
-     }
-    &.banner--error { 
-        background-color: var(--red-100, #FEE4E2); 
+      .banner__icon {
+        color: var(--red-600, #d92d20);
+      }
+      .banner__close {
         color: var(--black, #121212);
-
-        .banner__icon {
-            color: var(--red-600, #D92D20);
-        }
-        .banner__close {
-            color: var(--black, #121212);
-        }
-     }
+      }
+    }
   }
 
   &--toast {
@@ -155,7 +154,7 @@
     max-width: calc(100% - 32px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
     z-index: 1000;
-    animation: toast-fade-in .45s ease-out both;
+    animation: toast-fade-in 0.45s ease-out both;
   }
 
   &--inline {
@@ -164,7 +163,7 @@
     padding: 0;
     animation: none;
     align-items: center;
-    gap: var(--spacing-6); 
+    gap: var(--spacing-6);
 
     &.message--info {
       color: var(--black);
@@ -198,7 +197,7 @@
       }
     }
 
-    &.message--small{
+    &.message--small {
       font-size: var(--text-caption-md-font-size);
       .icon {
         height: 16px;
@@ -213,7 +212,7 @@
     padding-left: 16px;
   }
 
-  // =============  States 
+  // =============  States
   &.is-hidden {
     animation: message-fade-out 0.3s ease forwards;
   }
@@ -223,7 +222,6 @@
     pointer-events: none;
   }
 }
-
 
 // ========== TOASTS MESSAGES
 .toast-container {
@@ -247,7 +245,8 @@
   display: flex;
   align-items: flex-start;
   gap: var(--spacing-16, 16px);
-  padding: var(--spacing-12, 12px) var(--spacing-16, 16px) var(--spacing-12, 12px) var(--spacing-12, 12px);
+  padding: var(--spacing-12, 12px) var(--spacing-16, 16px)
+    var(--spacing-12, 12px) var(--spacing-12, 12px);
   border-radius: var(--radius-12, 12px);
   color: var(--white);
   background-color: var(--gray-800);
@@ -261,7 +260,7 @@
     width: var(--spacing-20);
     height: var(--spacing-20);
 
-    svg { 
+    svg {
       width: 100%;
       height: 100%;
     }
@@ -296,31 +295,36 @@
     background: none;
     border: none;
     color: inherit;
-    cursor: pointer; 
+    cursor: pointer;
     display: flex;
-    padding: 0; 
-    transition: opacity 0.2s, transform 0.15s;
+    padding: 0;
+    transition:
+      opacity 0.2s,
+      transform 0.15s;
     opacity: 0.8;
 
-    &:hover { opacity: 1; }
-    &:active { transform: scale(0.9); }
+    &:hover {
+      opacity: 1;
+    }
+    &:active {
+      transform: scale(0.9);
+    }
   }
 
-  &--info    { 
-    background-color: var(--blue-sky-600); 
-    color: var(--white); 
-  }
-  &--success { 
-    background-color: var(--green-600); 
+  &--info {
+    background-color: var(--blue-sky-600);
     color: var(--white);
-   
+  }
+  &--success {
+    background-color: var(--green-600);
+    color: var(--white);
   }
 
-  &--warning { 
+  &--warning {
     background-color: var(--apricot-300);
-    color: var(--black, #121212); 
+    color: var(--black, #121212);
 
-    svg{
+    svg {
       color: var(--apricot-700);
     }
 
@@ -329,9 +333,9 @@
     }
   }
 
-  &--error   { 
-    background-color: var(--red-600); 
-    color: var(--white); 
+  &--error {
+    background-color: var(--red-600);
+    color: var(--white);
   }
 
   &.is-hiding {
@@ -340,145 +344,157 @@
 }
 
 @keyframes toast-slide-in {
-  0% { opacity: 0; transform: translateY(10px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes toast-fade-out {
-  0% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(10px); }
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
 }
 
+// ======= BANNER
+.banner {
+  border-radius: 0;
+  display: var(--flex, flex);
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding-block: var(--spacing-12, 12px);
+  padding-right: var(--spacing-40, 40px);
 
-// ======= ALERTS
-.banner { 
-    border-radius: 0;
-    display: var(--flex, flex);
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    padding-block: var(--spacing-12, 12px);
-    padding-right: var(--spacing-40, 40px);
+  &:has(.banner__title) {
+    align-items: flex-start;
 
-    &:has(.banner__title) {
-      align-items: flex-start;
+    .banner__icon {
+      position: relative;
+      top: var(--spacing-8);
+    }
+  }
 
-      .banner__icon {
-        position: relative;
-        top: var(--spacing-8);
-      }
+  &__content {
+    flex: unset;
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    padding: var(--spacing-8, 8px);
+    transition:
+      background-color 0.2s ease,
+      transform 0.15s ease;
+    margin: 0;
+    position: absolute;
+    right: 5px;
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.08);
     }
 
-    &__content {
-        flex: unset;
+    &:active {
+      transform: scale(0.92);
     }
+  }
 
-    &__close {
-      background: none;
-      border: none;
-      cursor: pointer;
-      display: flex;
-      padding: var(--spacing-8, 8px); 
-      transition: background-color 0.2s ease, transform 0.15s ease; 
-      margin: 0;
-      position: absolute;
-      right: 5px;
-
-      &:hover {
-          background-color: rgba(0, 0, 0, 0.08);
-      }
-
-      &:active {
-          transform: scale(0.92);
-      }
-    }
-
-    @media (max-width: 768px) {
-        padding-left: var((--spacing-12, 12px)); 
-        align-items: flex-start; 
-    }
+  @media (max-width: 768px) {
+    padding-left: var((--spacing-12, 12px));
+    align-items: flex-start;
+  }
 }
 
 //INFORMATION BOX
 .info-box {
-    background-color: var(--gray-100, #f5f5f5);
-    border-radius: var(--border-radius-8, 8px);
-    color: var(--gray-700, #383838);
-    padding-block: var(--spacing-24, 24px);
+  background-color: var(--gray-100, #f5f5f5);
+  border-radius: var(--border-radius-8, 8px);
+  color: var(--gray-700, #383838);
+  padding-block: var(--spacing-24, 24px);
 
-     &--neutral {
-        .info-box__icon {
-            color: var(--gray-400, #757575)
-        }        
+  &--neutral {
+    .info-box__icon {
+      color: var(--gray-400, #757575);
+    }
+  }
+
+  &--info {
+    .info-box__icon {
+      color: var(--blue-sky-600, #0058d2);
+    }
+  }
+  &--warning {
+    .info-box__icon {
+      color: var(--apricoty-600, #dc6803);
+    }
+  }
+  &--error {
+    .info-box__icon {
+      color: var(--red-600, #d92d20);
+    }
+  }
+
+  &__content {
+    gap: var(--spacing-12, 12px);
+    font-size: var(--text-body-md-font-size);
+    line-height: 24px;
+
+    p {
+      margin-bottom: var(--spacing-6);
+    }
+  }
+
+  &__title {
+    font-size: var(--text-heading-h5-2xs-font-size);
+    line-height: 26px;
+  }
+
+  &__action {
+    a {
+      color: var(--blue-sky-600);
+
+      &:hover {
+        text-decoration: none;
+      }
     }
 
-    &--info {
-        .info-box__icon {
-            color: var(--blue-sky-600, #0058D2)
-        }        
+    .btn {
+      font-size: var(--text-body-sm-font-size);
+      line-height: 22px;
+      padding: var(--spacing-4, 4px) var(--spacing-12, 12px);
     }
-    &--warning {
-        .info-box__icon {
-            color: var(--apricoty-600, #DC6803)
-        }        
-    }
-    &--error {
-        .info-box__icon {
-            color: var(--red-600, #D92D20)
-        }        
-    } 
+  }
 
+  .banner__close {
+    color: var(--gray-400, #444444);
+    position: absolute;
+    right: 10px;
+    top: 10px;
+
+    &:hover {
+      background-color: rgba(#2f56ff, 0.25);
+    }
+  }
+
+  @media (max-width: 768px) {
     &__content {
-        gap:var(--spacing-12, 12px);
-        font-size: var(--text-body-md-font-size);
-        line-height: 24px;
-
-        p { 
-            margin-bottom: var(--spacing-6);
-        }
+      font-size: var(--text-body-sm-font-size);
     }
-
-    &__title {
-        font-size: var(--text-heading-h5-2xs-font-size);
-        line-height: 26px;
-    }
-
-    &__action {
-        a{
-            color:  var(--blue-sky-600);
-
-            &:hover {
-                text-decoration: none;
-            }
-        }
-
-        .btn {
-            font-size: var(--text-body-sm-font-size);
-            line-height: 22px;
-            padding: var(--spacing-4, 4px) var(--spacing-12, 12px); 
-        }
-    }
-
-    .banner__close { 
-        color: var(--gray-400, #444444);
-        position: absolute;
-        right: 10px;
-        top: 10px;
-
-        &:hover {
-            background-color: rgba(#2F56FF, .25);
-        }
-    }
-
-    @media (max-width: 768px) {
-        &__content {
-            font-size: var(--text-body-sm-font-size);
-        }
-    }
-    
+  }
 }
 
-// ============ Toast container (dynamic stacking) 
+// ============ Toast container (dynamic stacking)
 .toast-container {
   position: fixed;
   display: flex;
@@ -502,7 +518,7 @@
   }
 }
 
-// ============== Animations 
+// ============== Animations
 @keyframes message-slide-in {
   0% {
     opacity: 0;
