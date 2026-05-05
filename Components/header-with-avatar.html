@@ -96,7 +96,7 @@
               <div class="container">
                 <div class="row">
                   <div class="col-12 col-md-6 col-lg-4">
-                    <div class="nav__menu--heading" role="heading">Heading</div>
+                    <h3 class="nav__menu--heading">Heading</h3>
                     <hr class="separator separator--horizontal separator--thin separator--subtle">
                     <ul class="nav__submenu" role="none">
                       <li role="none"><a href="#" class="nav__submenu-item">Suboption 1</a></li>
@@ -106,7 +106,7 @@
                   </div>
 
                   <div class="col-12 col-md-6 col-lg-4">
-                    <div class="nav__menu--heading" role="heading">Heading</div>
+                    <h3 class="nav__menu--heading">Heading</h3>
                     <hr class="separator separator--horizontal separator--thin separator--subtle">
                     <ul class="nav__submenu" role="none">
                       <li role="none"><a href="#" class="nav__submenu-item">Suboption 1</a></li>
@@ -117,7 +117,7 @@
                   </div>
 
                   <div class="col-12 col-md-6 col-lg-4">
-                    <div class="nav__menu--heading" role="heading">Heading</div>
+                    <h3 class="nav__menu--heading">Heading</h3>
                     <hr class="separator separator--horizontal separator--thin separator--subtle">
                     <ul class="nav__submenu" role="none">
                       <li role="none"><a href="#" class="nav__submenu-item">Suboption 1</a></li>
@@ -172,8 +172,8 @@
                               <use href="assets/icons/sprite.svg#icon-search"></use> 
                           </svg>
                       </span>
-                      <input type="text" class="input" placeholder="Search medium...">
-                      <button type="button" class="btn-icon clear visible">
+                      <input type="text" class="input" placeholder="Search medium..." aria-label="Căutare">
+                      <button type="button" class="btn-icon clear visible" aria-label="Clear search">
                           <svg class="icon small" aria-hidden="true"> 
                               <use href="assets/icons/sprite.svg#icon-cross-small"></use> 
                           </svg>
@@ -241,7 +241,7 @@
                 </div>
                 <div class="d-flex gap-12">
                   <button type="button" class="btn btn-primary btn-rounded btn-md">Cabinetul Personal</button>
-                  <button type="button" class="btn btn-outline-primary btn-rounded btn-md p-8">
+                  <button type="button" class="btn btn-outline-primary btn-rounded btn-md p-8" aria-label="Setări">
                     <span class="px-2 d-inline-flex">
                       <svg class="icon medium" aria-hidden="true"> 
                         <use href="assets/icons/sprite.svg#icon-settings"></use> 
@@ -424,8 +424,8 @@
                     <use href="assets/icons/sprite.svg#icon-search"></use>
                 </svg>
             </span>
-            <input type="text" class="input" placeholder="Search small circular...">
-            <button type="button" class="btn-icon clear">
+            <input type="text" class="input" placeholder="Search small circular..." aria-label="Căutare">
+            <button type="button" class="btn-icon clear" aria-label="Clear search">
                 <svg class="icon small" aria-hidden="true"> 
                     <use href="assets/icons/sprite.svg#icon-cross-small"></use> 
                 </svg>
@@ -648,8 +648,9 @@
     <header class="header header__mobile d-flex d-md-none"> 
       <div class="header__wrapper">
         <a href="#" class="header__brand">
+          <span class="sr-only">Mergi la pagina principală</span>
           <div class="header__brand--logo">
-            <img src="assets/logos/mpay.png" alt="MPay logo"> 
+            <img src="assets/logos/mpay.png" alt=""> 
           </div>
         </a>
 
@@ -707,8 +708,8 @@
                           <use href="assets/icons/sprite.svg#icon-search"></use> 
                       </svg>
                   </span>
-                  <input type="text" class="input" placeholder="Search medium...">
-                  <button type="button" class="btn-icon clear visible">
+                  <input type="text" class="input" placeholder="Search medium..." aria-label="Căutare">
+                  <button type="button" class="btn-icon clear visible" aria-label="Clear search">
                       <svg class="icon small" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-cross-small"></use> 
                       </svg>
@@ -739,7 +740,7 @@
                 </div>
                 <div class="d-flex gap-12">
                   <button type="button" class="btn btn-primary btn-rounded btn-md">Cabinetul Personal</button>
-                  <button type="button" class="btn btn-outline-primary btn-rounded btn-md p-8">
+                  <button type="button" class="btn btn-outline-primary btn-rounded btn-md p-8" aria-label="Setări">
                     <span class="px-2 d-inline-flex">
                       <svg class="icon medium" aria-hidden="true"> 
                         <use href="assets/icons/sprite.svg#icon-settings"></use> 
@@ -831,8 +832,8 @@
                         <use href="assets/icons/sprite.svg#icon-search"></use>
                     </svg>
                 </span>
-                <input type="text" class="input" placeholder="Search small circular...">
-                <button type="button" class="btn-icon clear">
+                <input type="text" class="input" placeholder="Search small circular..." aria-label="Căutare">
+                <button type="button" class="btn-icon clear" aria-label="Clear search">
                     <svg class="icon small" aria-hidden="true"> 
                         <use href="assets/icons/sprite.svg#icon-cross-small"></use> 
                     </svg>

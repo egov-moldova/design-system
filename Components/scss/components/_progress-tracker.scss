@@ -1,4 +1,3 @@
-
 .progress-tracker {
   display: flex;
   align-items: center;
@@ -10,20 +9,18 @@
   padding: 1rem 0;
   --connector-length: calc(100% - 45px);
 
-  
   .progress-step {
     position: relative;
     display: flex;
-    flex-direction: column;  
+    flex-direction: column;
     align-items: center;
     justify-content: flex-start;
     gap: var(--spacing-8, 8px);
-    flex: 0 0 auto; 
-    cursor: pointer; 
+    flex: 0 0 auto;
+    cursor: pointer;
     flex-grow: 1;
     align-items: end;
 
-     
     &__circle {
       width: 22px;
       height: 22px;
@@ -37,11 +34,10 @@
       font-size: 0.875rem;
       line-height: 1;
       font-weight: 500;
-      z-index: 2;  
+      z-index: 2;
       transition: all 0.2s ease;
     }
 
-    
     &__label {
       margin-top: 0;
       font-size: 0.875rem;
@@ -52,142 +48,139 @@
       z-index: 2;
     }
 
-     
     &::after {
-        content: "";
-        position: absolute;
-        top: 12px;
-        left: 0;
-        width: var(--connector-length);
-        height: 1.5px; 
-        background-color: var(--gray-200, #e5e5e5);
-        z-index: 1;
+      content: '';
+      position: absolute;
+      top: 12px;
+      left: 0;
+      width: var(--connector-length);
+      height: 1.5px;
+      background-color: var(--gray-200, #e5e5e5);
+      z-index: 1;
     }
 
-     
-    &:first-child:not(.progress-step--current, .progress-step--incomplete, .progress-step--blocked) {
-        flex-grow: initial ;
-        min-width: auto;
+    &:first-child:not(
+        .progress-step--current,
+        .progress-step--incomplete,
+        .progress-step--blocked
+      ) {
+      flex-grow: initial;
+      min-width: auto;
 
-        &::after {
-            display: none;
-        }
-    } 
+      &::after {
+        display: none;
+      }
+    }
 
     .progress-cell {
-        display: var(--flex, flex);
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: var(--spacing-6, 6px);
+      display: var(--flex, flex);
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: var(--spacing-6, 6px);
     }
   }
 
-   
   .progress-step--completed {
     .progress-step__circle {
-        background-color: var(--blue-sky-600, #0058D2);
-        background-image: url("data:image/svg+xml,%3Csvg width='12' height='10' viewBox='0 0 12 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M11.3268 0.19795C11.6593 0.488895 11.693 0.994305 11.4021 1.32681L4.40206 9.32681C4.25626 9.49345 4.04792 9.5922 3.82662 9.59957C3.60533 9.60694 3.39088 9.52226 3.23431 9.3657L0.234315 6.3657C-0.0781049 6.05328 -0.0781049 5.54675 0.234315 5.23433C0.546734 4.92191 1.05327 4.92191 1.36569 5.23433L3.76103 7.62967L10.1979 0.273207C10.4889 -0.059302 10.9943 -0.092996 11.3268 0.19795Z' fill='white'/%3E%3C/svg%3E%0A");
-        background-position: center;
-        background-repeat: no-repeat;
-        border-color: var(--blue-sky-600, #0058D2);
-        color: var(--white, #fff);
-        text-indent: -99999px;
+      background-color: var(--blue-sky-600, #0058d2);
+      background-image: url("data:image/svg+xml,%3Csvg width='12' height='10' viewBox='0 0 12 10' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M11.3268 0.19795C11.6593 0.488895 11.693 0.994305 11.4021 1.32681L4.40206 9.32681C4.25626 9.49345 4.04792 9.5922 3.82662 9.59957C3.60533 9.60694 3.39088 9.52226 3.23431 9.3657L0.234315 6.3657C-0.0781049 6.05328 -0.0781049 5.54675 0.234315 5.23433C0.546734 4.92191 1.05327 4.92191 1.36569 5.23433L3.76103 7.62967L10.1979 0.273207C10.4889 -0.059302 10.9943 -0.092996 11.3268 0.19795Z' fill='white'/%3E%3C/svg%3E%0A");
+      background-position: center;
+      background-repeat: no-repeat;
+      border-color: var(--blue-sky-600, #0058d2);
+      color: var(--white, #fff);
+      text-indent: -99999px;
     }
 
     &::after {
-        background-color: var(--blue-sky-600, #0058D2);
-        height: 1.5px;
+      background-color: var(--blue-sky-600, #0058d2);
+      height: 1.5px;
     }
 
     .progress-step__label {
-        color: var(--blue-sky-600, #0058D2);
-        text-decoration: underline;
+      color: var(--blue-sky-600, #0058d2);
+      text-decoration: underline;
     }
-  } 
+  }
 
   .progress-step--current {
     .progress-step__circle {
-        border-color: var(--blue-sky-600, #0058D2);
-        color: var(--blue-sky-600, #0058D2);
-        background-color: var(--white, #fff);
+      border-color: var(--blue-sky-600, #0058d2);
+      color: var(--blue-sky-600, #0058d2);
+      background-color: var(--white, #fff);
     }
 
     &::after {
-        background-color: var(--blue-sky-600, #0058D2);
-        height: 1.5px;
+      background-color: var(--blue-sky-600, #0058d2);
+      height: 1.5px;
     }
-  } 
+  }
 
   .progress-step--blocked {
     .progress-step__circle {
-        background-image: url("data:image/svg+xml,%3Csvg width='3' height='12' viewBox='0 0 3 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.35197 7.68001L0.15997 1.14441e-05H2.01597L1.82397 7.68001H0.35197ZM1.08797 11.44C0.89597 11.44 0.714637 11.3973 0.54397 11.312C0.38397 11.2267 0.250637 11.0987 0.14397 10.928C0.0479703 10.7573 -2.96831e-05 10.5653 -2.96831e-05 10.352C-2.96831e-05 10.1173 0.0479703 9.92001 0.14397 9.76001C0.23997 9.58934 0.373304 9.46134 0.54397 9.37601C0.714637 9.29068 0.901304 9.24801 1.10397 9.24801C1.39197 9.24801 1.64264 9.34934 1.85597 9.55201C2.07997 9.74401 2.19197 10.0107 2.19197 10.352C2.19197 10.5653 2.13864 10.7573 2.03197 10.928C1.93597 11.0987 1.80264 11.2267 1.63197 11.312C1.47197 11.3973 1.29064 11.44 1.08797 11.44Z' fill='%23D92D20'/%3E%3C/svg%3E%0A");
-        background-position: center;
-        background-repeat: no-repeat;
-        border-color: var(--danger-500, #da1e28);
-        color: var(--danger-500, #da1e28);
-        text-indent: -99999px;
-        cursor: not-allowed;
+      background-image: url("data:image/svg+xml,%3Csvg width='3' height='12' viewBox='0 0 3 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0.35197 7.68001L0.15997 1.14441e-05H2.01597L1.82397 7.68001H0.35197ZM1.08797 11.44C0.89597 11.44 0.714637 11.3973 0.54397 11.312C0.38397 11.2267 0.250637 11.0987 0.14397 10.928C0.0479703 10.7573 -2.96831e-05 10.5653 -2.96831e-05 10.352C-2.96831e-05 10.1173 0.0479703 9.92001 0.14397 9.76001C0.23997 9.58934 0.373304 9.46134 0.54397 9.37601C0.714637 9.29068 0.901304 9.24801 1.10397 9.24801C1.39197 9.24801 1.64264 9.34934 1.85597 9.55201C2.07997 9.74401 2.19197 10.0107 2.19197 10.352C2.19197 10.5653 2.13864 10.7573 2.03197 10.928C1.93597 11.0987 1.80264 11.2267 1.63197 11.312C1.47197 11.3973 1.29064 11.44 1.08797 11.44Z' fill='%23D92D20'/%3E%3C/svg%3E%0A");
+      background-position: center;
+      background-repeat: no-repeat;
+      border-color: var(--danger-500, #da1e28);
+      color: var(--danger-500, #da1e28);
+      text-indent: -99999px;
+      cursor: not-allowed;
     }
-     &::after {
-        background-color: var(--blue-sky-600, #0058D2);
-        height: 1.5px;
+    &::after {
+      background-color: var(--blue-sky-600, #0058d2);
+      height: 1.5px;
     }
-  } 
+  }
 
-  
   @media (max-width: 768px) {
     overflow-x: auto;
     gap: var(--spacing-6, 6px);
     padding-bottom: var(--spacing-12, 12px);
 
-    .progress-step { 
+    .progress-step {
       min-width: 50px;
 
-
-     &__circle {
-          background-size: 10px;
-          height: 18px;
-          width: 18px;
-          font-size: .625rem;
-          text-indent: -999999cm;
+      &__circle {
+        background-size: 10px;
+        height: 18px;
+        width: 18px;
+        font-size: 0.625rem;
+        text-indent: -999999cm;
       }
 
-      &__label {
-          display: none;
-      }
-
-      &::after {
-          top: 10px;
-          width: calc(100% - 26px)
-      }
-       
       &__label {
         display: none;
       }
 
-       
       &::after {
-         top: 10px;
-         width: calc(100% - 26px)
-      } 
+        top: 10px;
+        width: calc(100% - 26px);
+      }
+
+      &__label {
+        display: none;
+      }
+
+      &::after {
+        top: 10px;
+        width: calc(100% - 26px);
+      }
     }
 
     .progress-step--blocked .progress-step__circle {
-        background: none;
-      }
+      background: none;
+    }
   }
 
-   
   &.progress-tracker--vertical {
     flex-direction: column;
-    align-items: flex-start; 
+    align-items: flex-start;
     --step-height: 125px;
 
     .progress-step {
-      flex-direction: row;  
+      flex-direction: row;
       align-items: flex-start;
-      padding: var(--spacing-8, 8px) 0; 
+      padding: var(--spacing-8, 8px) 0;
       height: var(--step-height);
 
       &__label {
@@ -196,46 +189,48 @@
       }
 
       &::after {
-        top: auto; 
-        bottom: 0;   
-        left: 11px;        
+        top: auto;
+        bottom: 0;
+        left: 11px;
         width: 2px;
         height: calc(var(--step-height) - 24px);
         transform: none;
       }
-      &:last-child::after { display: none; }
+      &:last-child::after {
+        display: none;
+      }
     }
   }
 }
 
 //MOBILE
-#tracker-mobile { 
-    &.progress-tracker {
-        gap: var(--spacing-6, 6px);
+#tracker-mobile {
+  &.progress-tracker {
+    gap: var(--spacing-6, 6px);
 
-        .progress-step {
-            &__circle {
-                background-size: 10px;
-                height: 18px;
-                width: 18px;
-                font-size: .625rem;
-                text-indent: -999999cm;
-            }
+    .progress-step {
+      &__circle {
+        background-size: 10px;
+        height: 18px;
+        width: 18px;
+        font-size: 0.625rem;
+        text-indent: -999999cm;
+      }
 
-            &__label {
-                display: none;
-            }
+      &__label {
+        display: none;
+      }
 
-            &::after {
-                top: 10px;
-                width: calc(100% - 26px)
-            }
-        }
-
-        .progress-step--blocked {
-            .progress-step__circle {
-                background-image: none;
-            }
-        }
+      &::after {
+        top: 10px;
+        width: calc(100% - 26px);
+      }
     }
+
+    .progress-step--blocked {
+      .progress-step__circle {
+        background-image: none;
+      }
+    }
+  }
 }

@@ -15432,6 +15432,7 @@ body:has(.modal-overlay.modal-overlay.is-active) {
   margin-top: var(--spacing-20);
 }
 .nav__menu--heading {
+  margin-top: 0;
   color: var(--black);
   font-size: var(--text-body-lg-500-font-size);
   font-weight: 600;

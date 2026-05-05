@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Messaging Components Preview</title>
+  <title>Banner — Components</title>
   <link rel="stylesheet" href="css/main.css"> 
   <script defer src="../Components/js/messages.js"></script>
   <script src="js/include-header.js" defer></script>
@@ -16,7 +16,7 @@
 </head>
 <body>
   <div id="site-header"></div>
-  <div class="alerts">
+  <div class="banners">
     <div class="banner banner--info modal--fade"> 
       <span class="banner__icon"> 
         <svg class="icon large" aria-hidden="true"> 
@@ -78,9 +78,12 @@
   <div class="container py-56">
     <div class="row">
       <div class="col-12 col-sm-7">
-        <h1>Banner Alerts</h1>
+        <h1>Banner</h1>
         <p class="text-gray-400">
           Banners are persistent, non-contextual notifications that appear at the top of the screen to inform users of important system-wide events, updates, or statuses. They are meant to draw attention without blocking interaction, and remain visible until dismissed or resolved.
+        </p>
+        <p class="text-gray-400 mt-16">
+          <a href="https://www.figma.com/design/doJ7tDY0PlQ0PqMgbpFVIC/Components?node-id=566-27665&m=dev" target="_blank" rel="noopener noreferrer">Banner component in Figma (Components library)</a>
         </p>
       </div>
     </div>
@@ -92,7 +95,7 @@
       </div>
       <div class="col-12 col-sm-7">
         <p class="text-gray-400">
-          Each type of toast conveys a specific message through its style and context. The available options are info, warning, success, and error. Select the appropriate semantic type based on the nature of the message you want to communicate.
+          Each banner type conveys a specific message through its style and context. The available options are info, warning, success, and error. Select the appropriate semantic type based on the nature of the message you want to communicate.
         </p>
       </div>
     </div>  
@@ -321,7 +324,7 @@
       </div> 
     </div>
     <div class="row mb-40">
-      <dv class="col-12">
+      <div class="col-12">
         <div class="banner banner--warning  banner--subtle modal--fade">
           <span class="banner__icon"> 
             <svg class="icon large" aria-hidden="true"> 
@@ -341,12 +344,12 @@
             </span>
           </button>
         </div>
-      </dv>
+      </div>
     </div> 
   </div>
 
 
-  <div class="alerts d-none">
+  <div class="banners d-none">
     <div class="banner banner--info modal--fade">
       <span class="banner__icon">ℹ️</span>
       <div class="banner__content">
@@ -378,9 +381,8 @@
       </div>
       <button class="banner__close" aria-label="Close">×</button>
     </div>   
-  </div>   
+  </div>
 
-  <script src="messages.js"></script>
   <div id="site-footer"></div>
 </body>
 </html>
