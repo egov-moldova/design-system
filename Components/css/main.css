@@ -17868,8 +17868,8 @@ label.required::after {
   text-align: left;
 }
 .input-number[type=tel] {
-  appearance: textfield;
   -moz-appearance: textfield;
+  appearance: textfield;
 }
 .input-number:focus:not(:placeholder-shown) {
   border-color: var(--blue-sky-500);
