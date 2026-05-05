@@ -244,6 +244,16 @@
       overflow-y: auto;
       scrollbar-width: thin;
       scrollbar-color: var(--gray-300) transparent;
+      &::-webkit-scrollbar {
+        width: 6px;
+      }
+      &::-webkit-scrollbar-thumb {
+        background-color: var(--gray-300);
+        border-radius: 999px;
+      }
+      &::-webkit-scrollbar-track {
+        background: transparent;
+      }
       padding: var(--spacing-0) var(--spacing-16);
     }
 

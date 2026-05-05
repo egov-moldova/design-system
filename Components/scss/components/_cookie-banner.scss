@@ -77,6 +77,16 @@
     @media screen and (max-width: 768px) { 
         overflow-y: auto;
         scrollbar-width: thin;
+        &::-webkit-scrollbar {
+            width: 6px;
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: var(--gray-300);
+            border-radius: 999px;
+        }
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
         max-height: 50vh;
     
 

@@ -102,7 +102,7 @@ body:has(.modal-overlay.modal-overlay.is-active) {
     border: none;
     cursor: pointer;
     line-height: 1;
-    display: varf(--flex, flex);
+    display: var(--flex, flex);
     align-items: center;
     justify-content: center;
     height: var(--spacing-32, 32px);
@@ -161,6 +161,16 @@ body:has(.modal-overlay.modal-overlay.is-active) {
     max-height: calc(64vh - 4px);
     overflow-y: auto;
     scrollbar-width: thin;
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--gray-300, #b2b2b2);
+      border-radius: 999px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
   }
 
   &--footer {

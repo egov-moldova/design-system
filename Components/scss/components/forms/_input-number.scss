@@ -12,8 +12,8 @@
   text-align: left;  
 
   &[type="tel"] {
-    -moz-appearance: textfield;
     appearance: textfield;
+    -moz-appearance: textfield;
   }
 
   // Focus states

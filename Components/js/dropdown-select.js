@@ -79,6 +79,16 @@
         opt.dataset.index = i;
       });
 
+      const preset = this.root.dataset.selectDefaultValue;
+      if (preset) {
+        const idx = this.options.findIndex(
+          (o) => o.getAttribute('data-value') === preset
+        );
+        if (idx !== -1) {
+          this.selectIndex(idx);
+        }
+      }
+
       // Stări explicite hover / focus (clase, ca în Figma)
       this.control.addEventListener('mouseenter', () => {
         this.control.classList.add('select-control--state-hover');

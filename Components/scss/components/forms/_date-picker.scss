@@ -248,7 +248,7 @@
 
 .bottom-sheet--static .bottom-sheet__panel {
   max-height: none;
-  min-height: auto;
+  min-height: initial;
   position: static;
   transform: none;
 }
