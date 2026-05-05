@@ -4,6 +4,16 @@ document.addEventListener("DOMContentLoaded", () => {
    * ===================================================== */
   const formatSize = (bytes) => (bytes / 1024 / 1024).toFixed(1) + " MB";
 
+  function createSvgIcon(href) {
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("class", "icon medium");
+    svg.setAttribute("aria-hidden", "true");
+    const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+    use.setAttribute("href", href);
+    svg.appendChild(use);
+    return svg;
+  }
+
   const CONFIG = {
     maxSize: 100 * 1024 * 1024, // 100 MB
     allowedTypes: ["image/jpeg", "image/png", "application/pdf"],
@@ -57,11 +67,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const info = document.createElement("div");
     info.className = "upload__info";
-    info.innerHTML = `
-      <span class="upload__file-name">${file.name}</span>
-      <span class="mx-4"> • </span>
-      <span class="upload__file-size">${formatSize(file.size)}</span>
-    `;
+    const nameSpan = document.createElement("span");
+    nameSpan.className = "upload__file-name";
+    nameSpan.textContent = file.name;
+    const separator = document.createElement("span");
+    separator.className = "mx-4";
+    separator.textContent = " • ";
+    const sizeSpan = document.createElement("span");
+    sizeSpan.className = "upload__file-size";
+    sizeSpan.textContent = formatSize(file.size);
+    info.append(nameSpan, separator, sizeSpan);
 
     let status;
 
@@ -74,32 +89,20 @@ document.addEventListener("DOMContentLoaded", () => {
     if (state === "success") {
       status = document.createElement("span");
       status.className = "text-green-700 d-inline-flex";
-      status.innerHTML = `
-        <svg class="icon medium" aria-hidden="true">
-          <use href="assets/icons/sprite.svg#icon-circle-checkmark-filled"></use>
-        </svg>
-      `;
+      status.appendChild(createSvgIcon("assets/icons/sprite.svg#icon-circle-checkmark-filled"));
     }
 
     if (state === "error") {
       status = document.createElement("span");
       status.className = "text-red-700 d-inline-flex";
-      status.innerHTML = `
-        <svg class="icon medium" aria-hidden="true">
-          <use href="assets/icons/sprite.svg#icon-circle-info-filled"></use>
-        </svg>
-      `;
+      status.appendChild(createSvgIcon("assets/icons/sprite.svg#icon-circle-info-filled"));
     }
 
     const remove = document.createElement("button");
     remove.type = "button";
     remove.className = "upload__remove";
     remove.setAttribute("aria-label", `Remove ${file.name}`);
-    remove.innerHTML = `
-      <svg class="icon medium" aria-hidden="true">
-        <use href="assets/icons/sprite.svg#icon-cross-small"></use>
-      </svg>
-    `;
+    remove.appendChild(createSvgIcon("assets/icons/sprite.svg#icon-cross-small"));
     remove.addEventListener("click", () => item.remove());
 
     if (!errorMessage) main.append(thumb);
