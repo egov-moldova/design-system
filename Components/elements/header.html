@@ -321,7 +321,7 @@
           </span>
         </button>
       </div>
-      <button class="mainNav__toggle mobile btn btn-menu btn-sm" aria-expanded="false" aria-controls="mainNav__panel">
+      <button class="mainNav__toggle mobile btn btn-menu btn-sm" aria-expanded="false" aria-controls="mainNav__panel-mobile">
         <span class="sr-only">Meniu</span>
         <span class="d-inline-flex">
           <svg class="icon large" aria-hidden="true">
@@ -333,12 +333,12 @@
   </div>
 
   <!-- Main Navigation Panel -->
-  <div class="mainNav__panel" id="mainNav__panel" hidden>
+  <div class="mainNav__panel" id="mainNav__panel-mobile" hidden>
     <div class="mainNav__content">
       <section class="mainNav__section">
         <ul class="mainNav__list">
           <li class="mainNav__list--item">
-            <button class="mainNav__list--button" data-submenu="submenu-fundamentals" aria-expanded="false">
+            <button class="mainNav__list--button" data-submenu="submenu-fundamentals-mobile" aria-expanded="false">
               <span>Fundamentals</span>
               <span class="d-inline-flex">
                 <svg class="icon medium" aria-hidden="true">
@@ -348,7 +348,7 @@
             </button>
           </li>
           <li class="mainNav__list--item">
-            <button class="mainNav__list--button" data-submenu="submenu-components" aria-expanded="false">
+            <button class="mainNav__list--button" data-submenu="submenu-components-mobile" aria-expanded="false">
               <span>Components</span>
               <span class="d-inline-flex">
                 <svg class="icon medium" aria-hidden="true">
@@ -361,7 +361,7 @@
       </section>
     </div>
 
-    <div class="mainNav__submenu" id="submenu-fundamentals" hidden>
+    <div class="mainNav__submenu" id="submenu-fundamentals-mobile" hidden>
       <button class="mainNav__back btn btn-neutral btn-rounded btn-md" data-back>
         <svg class="icon small">
           <use href="assets/icons/sprite.svg#icon-chevron-left"></use>
@@ -387,7 +387,7 @@
       </ul>
     </div>
 
-    <div class="mainNav__submenu" id="submenu-components" hidden>
+    <div class="mainNav__submenu" id="submenu-components-mobile" hidden>
       <button class="mainNav__back btn btn-neutral btn-rounded btn-md" data-back>
         <svg class="icon small">
           <use href="assets/icons/sprite.svg#icon-chevron-left"></use>

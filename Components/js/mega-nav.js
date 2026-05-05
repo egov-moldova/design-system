@@ -303,7 +303,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   submenuButtons.forEach((btn) => {
     const submenuSelector = btn.getAttribute("data-submenu");
-    const submenu = document.querySelector(submenuSelector);
+    if (!submenuSelector) return;
+    const submenu = document.querySelector("#" + CSS.escape(submenuSelector));
 
     if (!submenu) return;
 

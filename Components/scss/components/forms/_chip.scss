@@ -14,6 +14,7 @@
   line-height: 1.286;
   cursor: pointer;
   transition: all 0.15s ease-in-out;
+  -webkit-user-select: none;
   user-select: none;
 
     &:has(.chip__icon) {

@@ -23,23 +23,78 @@
       this.open = false;
       this.activeIndex = -1;
       this.filterText = '';
+      this.docStaticHover = root.dataset.docStaticHover === 'true';
+      this.docStaticFocus = root.dataset.docStaticFocus === 'true';
+      this.docOpenDefault = root.dataset.docOpenDefault === 'true';
 
       // Detect options
       this.isMultiple = root.dataset.multiple === "true";
       this.isSearchable = root.dataset.searchable === "true";
+      this.isRequired =
+        root.dataset.required === "true" ||
+        (this.list && this.list.getAttribute("aria-required") === "true");
 
       this.init();
     }
 
     init() {
+      if (this.root.getAttribute('aria-disabled') === 'true') {
+        this.control.setAttribute('aria-disabled', 'true');
+        this.control.setAttribute('tabindex', '-1');
+        return;
+      }
+
+      if (!this.root.id) {
+        window.__customSelectSeq = (window.__customSelectSeq || 0) + 1;
+        this.root.id = 'custom-select-' + window.__customSelectSeq;
+      }
+
+      if (this.root.dataset.required === "true") {
+        this.list.setAttribute("aria-required", "true");
+      }
+      if (this.isRequired) {
+        this.control.setAttribute("aria-required", "true");
+      }
+
+      if (!this.list.id) {
+        this.list.id = `${this.root.id}-listbox`;
+      }
+      this.control.setAttribute("aria-controls", this.list.id);
+
+      this.options.forEach((opt) => this.wrapOptionStructure(opt));
+
+      this.options.forEach((opt, i) => {
+        if (!opt.id) opt.id = this.root.id + '-opt-' + i;
+      });
+
+      this.wireSearchField();
+
       // ARIA wiring
       this.control.setAttribute('aria-haspopup', 'listbox');
       this.control.setAttribute('aria-expanded', 'false');
-      this.list.setAttribute('role', 'listbox');
       this.options.forEach((opt, i) => {
         opt.setAttribute('role', 'option');
-        opt.setAttribute('aria-selected', 'false');
+        const sel = opt.classList.contains('is-selected');
+        opt.setAttribute('aria-selected', sel ? 'true' : 'false');
         opt.dataset.index = i;
+      });
+
+      // Stări explicite hover / focus (clase, ca în Figma)
+      this.control.addEventListener('mouseenter', () => {
+        this.control.classList.add('select-control--state-hover');
+      });
+      this.control.addEventListener('mouseleave', () => {
+        if (!this.docStaticHover) {
+          this.control.classList.remove('select-control--state-hover');
+        }
+      });
+      this.control.addEventListener('focus', () => {
+        this.control.classList.add('select-control--state-focus');
+      });
+      this.control.addEventListener('blur', () => {
+        if (!this.docStaticFocus) {
+          this.control.classList.remove('select-control--state-focus');
+        }
       });
 
       // Toggle dropdown
@@ -69,7 +124,10 @@
           case KEY.DOWN: this.focusNext(); break;
           case KEY.UP: this.focusPrev(); break;
           case KEY.ENTER: this.chooseActive(); break;
-          case KEY.ESC: this.closeDropdown(true); break;
+          case KEY.ESC:
+            this.closeDropdown(true);
+            this.control.focus({ preventScroll: true });
+            break;
           case KEY.HOME: this.focusOption(0); break;
           case KEY.END: this.focusOption(this.options.length - 1); break;
         }
@@ -80,8 +138,10 @@
         const li = e.target.closest('.select-option');
         if (!li) return;
         this.selectIndex(Number(li.dataset.index));
-        if (!this.isMultiple) this.closeDropdown();
-        this.control.focus();
+        if (!this.isMultiple) {
+          this.closeDropdown(true);
+          this.control.focus({ preventScroll: true });
+        }
       });
 
       // Search input
@@ -101,30 +161,74 @@
       // Click outside
       document.addEventListener('click', (e) => {
         if (!this.open) return;
-        if (!this.root.contains(e.target)) this.closeDropdown();
+        if (!this.root.contains(e.target)) this.closeDropdown(true);
       });
 
       // Resize/scroll
       window.addEventListener('resize', () => { if (this.open) this.reposition(); });
       window.addEventListener('scroll', () => { if (this.open) this.reposition(); }, true);
 
-      // Initial pre-selected value
-      const pre = this.options.findIndex(o => o.classList.contains('is-selected') || o.getAttribute('aria-selected') === 'true');
-      if (pre >= 0) this.updateValue();
+      this.updateValue();
+      if (this.docOpenDefault) {
+        this.openDropdown({ skipFocus: true });
+      }
+    }
+
+    wireSearchField() {
+      if (!this.isSearchable || !this.searchInput) return;
+      const input = this.searchInput;
+      if (!input.id) {
+        const sid = `${this.root.id}-search`;
+        input.id = sid;
+        input.setAttribute('name', sid);
+      }
+      const wrapper = input.closest('.select-search-wrapper');
+      const hasLabel = Array.from(wrapper.querySelectorAll('label')).some((l) => l.htmlFor === input.id);
+      if (!wrapper || hasLabel) return;
+      const lab = document.createElement('label');
+      lab.htmlFor = input.id;
+      lab.className = 'sr-only';
+      lab.textContent = input.getAttribute('aria-label') || 'Căutare în listă';
+      input.removeAttribute('aria-label');
+      wrapper.insertBefore(lab, input);
+      if (!input.getAttribute('autocomplete')) input.setAttribute('autocomplete', 'off');
+    }
+
+    wrapOptionStructure(opt) {
+      if (opt.querySelector('.select-option__label')) return;
+      const t = opt.textContent.trim();
+      opt.textContent = '';
+      const label = document.createElement('span');
+      label.className = 'select-option__label';
+      label.textContent = t;
+      const check = document.createElement('span');
+      check.className = 'select-option__check';
+      check.setAttribute('aria-hidden', 'true');
+      check.innerHTML = '<svg class="icon" width="24" height="24" aria-hidden="true"><use href="assets/icons/sprite.svg#icon-checkmark-small"></use></svg>';
+      opt.appendChild(label);
+      opt.appendChild(check);
+    }
+
+    optionLabelText(opt) {
+      const label = opt.querySelector('.select-option__label');
+      return (label ? label.textContent : opt.textContent).trim();
     }
 
     toggle() { this.open ? this.closeDropdown() : this.openDropdown(); }
 
-    openDropdown() {
+    openDropdown(options = {}) {
+      const skipFocus = options.skipFocus === true;
       if (this.open) return;
       this.dropdown.hidden = false;
       this.control.setAttribute('aria-expanded', 'true');
       this.open = true;
-      if (this.isSearchable && this.searchInput) {
-        this.searchInput.focus();
-        this.searchInput.select();
-      } else {
-        this.list.focus();
+      if (!skipFocus) {
+        if (this.isSearchable && this.searchInput) {
+          this.searchInput.focus();
+          this.searchInput.select();
+        } else {
+          this.list.focus();
+        }
       }
       this.reposition();
     }
@@ -136,7 +240,8 @@
       this.open = false;
       this.activeIndex = -1;
       this.clearActive();
-      if (!keepFocus) this.control.focus();
+      this.list.removeAttribute('aria-activedescendant');
+      if (!keepFocus) this.control.focus({ preventScroll: true });
     }
 
     selectIndex(idx) {
@@ -156,13 +261,28 @@
     }
 
     updateValue() {
+      const phAttr = this.root.getAttribute('data-placeholder');
+      const placeholder = phAttr === null ? 'Selectați...' : phAttr;
       if (this.isMultiple) {
-        const values = this.options.filter(o => o.classList.contains('is-selected')).map(o => o.textContent);
-        this.valueNode.textContent = values.join(', ') || 'Selectați...';
+        const values = this.options.filter(o => o.classList.contains('is-selected')).map(o => this.optionLabelText(o));
+        const text = values.join(', ') || placeholder;
+        this.valueNode.textContent = text;
+        this.valueNode.classList.toggle('is-placeholder', values.length === 0);
       } else {
         const selected = this.options.find(o => o.classList.contains('is-selected'));
-        this.valueNode.textContent = selected ? selected.textContent : 'Selectați...';
+        const text = selected ? this.optionLabelText(selected) : placeholder;
+        this.valueNode.textContent = text;
+        this.valueNode.classList.toggle('is-placeholder', !selected);
       }
+      this.syncRequiredState();
+    }
+
+    syncRequiredState() {
+      if (!this.isRequired) return;
+      const selected = this.options.some((o) =>
+        o.classList.contains("is-selected")
+      );
+      this.control.setAttribute("aria-invalid", selected ? "false" : "true");
     }
 
     focusOption(idx) {
@@ -173,12 +293,18 @@
       const el = this.options[idx];
       el.classList.add('is-active');
       el.focus?.();
-      this.list.setAttribute('aria-activedescendant', `option-${idx}`);
+      this.list.setAttribute('aria-activedescendant', el.id);
     }
 
     focusNext() { let next = this.activeIndex + 1; if (next >= this.options.length) next = 0; this.focusOption(next); }
     focusPrev() { let prev = this.activeIndex - 1; if (prev < 0) prev = this.options.length - 1; this.focusOption(prev); }
-    chooseActive() { if (this.activeIndex >= 0) this.selectIndex(this.activeIndex); if (!this.isMultiple) this.closeDropdown(); }
+    chooseActive() {
+      if (this.activeIndex >= 0) this.selectIndex(this.activeIndex);
+      if (!this.isMultiple) {
+        this.closeDropdown(true);
+        this.control.focus({ preventScroll: true });
+      }
+    }
 
     clearActive() { this.options.forEach(o => o.classList.remove('is-active')); }
 
@@ -196,7 +322,7 @@
       const q = this.filterText;
       let firstShown = -1;
       this.options.forEach((opt, i) => {
-        const txt = opt.textContent.trim().toLowerCase();
+        const txt = this.optionLabelText(opt).toLowerCase();
         const match = q === '' || txt.indexOf(q) !== -1;
         opt.style.display = match ? '' : 'none';
         if (match && firstShown === -1) firstShown = i;
@@ -219,8 +345,170 @@
     }
   }
 
+  function initSelectDocNativeDemos() {
+    document.querySelectorAll('[data-select-doc-native]').forEach((shell) => {
+      const btn = shell.querySelector('.select-control');
+      const menu = shell.querySelector('.select-doc-native-menu');
+      if (!btn || !menu) return;
+
+      shell.removeAttribute('aria-hidden');
+
+      let isOpen = true;
+
+      function apply() {
+        menu.hidden = !isOpen;
+        btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        shell.classList.toggle('select-doc-native-shell--collapsed', !isOpen);
+      }
+
+      apply();
+      btn.setAttribute('tabindex', '0');
+      if (!btn.hasAttribute('aria-haspopup')) {
+        btn.setAttribute('aria-haspopup', 'listbox');
+      }
+      menu.setAttribute('role', 'listbox');
+
+      function syncNativeSelectionAria() {
+        menu.querySelectorAll('.select-doc-native-option').forEach((o) => {
+          if (!o.hasAttribute('role')) o.setAttribute('role', 'option');
+          o.setAttribute(
+            'aria-selected',
+            o.classList.contains('is-selected') ? 'true' : 'false'
+          );
+        });
+      }
+
+      syncNativeSelectionAria();
+
+      const opts = [...menu.querySelectorAll('.select-doc-native-option')];
+      opts.forEach((o) => o.setAttribute('tabindex', '-1'));
+
+      function focusOptionAt(index) {
+        if (index < 0 || index >= opts.length) return;
+        opts.forEach((o, j) => {
+          o.setAttribute('tabindex', j === index ? '0' : '-1');
+        });
+        opts[index].focus({ preventScroll: true });
+      }
+
+      function currentOptionIndex() {
+        const ai = opts.indexOf(document.activeElement);
+        if (ai >= 0) return ai;
+        const sel = opts.findIndex((o) => o.classList.contains('is-selected'));
+        return sel >= 0 ? sel : 0;
+      }
+
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const wasClosed = !isOpen;
+        isOpen = !isOpen;
+        apply();
+        if (!isOpen) {
+          opts.forEach((o) => o.setAttribute('tabindex', '-1'));
+          return;
+        }
+        if (wasClosed) {
+          requestAnimationFrame(() => {
+            const sel = opts.findIndex((o) => o.classList.contains('is-selected'));
+            focusOptionAt(sel >= 0 ? sel : 0);
+          });
+        }
+      });
+
+      btn.addEventListener('keydown', (e) => {
+        if (isOpen) return;
+        if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+        e.preventDefault();
+        isOpen = true;
+        apply();
+        requestAnimationFrame(() => {
+          const sel = opts.findIndex((o) => o.classList.contains('is-selected'));
+          if (e.key === 'ArrowUp') {
+            focusOptionAt(sel >= 0 ? sel : opts.length - 1);
+          } else {
+            focusOptionAt(sel >= 0 ? sel : 0);
+          }
+        });
+      });
+
+      menu.addEventListener('keydown', (e) => {
+        if (!isOpen) return;
+        let i = currentOptionIndex();
+        switch (e.key) {
+          case 'ArrowDown':
+            e.preventDefault();
+            focusOptionAt(Math.min(opts.length - 1, i + 1));
+            break;
+          case 'ArrowUp':
+            e.preventDefault();
+            focusOptionAt(Math.max(0, i - 1));
+            break;
+          case 'Enter':
+          case ' ':
+            e.preventDefault();
+            opts[i]?.click();
+            break;
+          case 'Home':
+            e.preventDefault();
+            focusOptionAt(0);
+            break;
+          case 'End':
+            e.preventDefault();
+            focusOptionAt(opts.length - 1);
+            break;
+          default:
+            break;
+        }
+      });
+
+      menu.querySelectorAll('.select-doc-native-option').forEach((opt) => {
+        opt.addEventListener('click', (e) => {
+          e.stopPropagation();
+          menu.querySelectorAll('.select-doc-native-option').forEach((o) => {
+            o.classList.remove('is-selected');
+          });
+          opt.classList.add('is-selected');
+          menu.querySelectorAll('.select-doc-native-option').forEach((o) => {
+            const mark = o.querySelector('.select-doc-native-option__mark');
+            if (mark) {
+              mark.textContent = o.classList.contains('is-selected') ? '\u2713' : '';
+            }
+          });
+          const valEl = opt.querySelector('.select-doc-native-option__text');
+          const label = valEl ? valEl.textContent.trim() : opt.textContent.trim();
+          const valueNode = btn.querySelector('.select-value');
+          if (valueNode) valueNode.textContent = label;
+          isOpen = false;
+          apply();
+          syncNativeSelectionAria();
+          opts.forEach((o) => o.setAttribute('tabindex', '-1'));
+          btn.focus({ preventScroll: true });
+        });
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!isOpen) return;
+        if (!shell.contains(e.target)) {
+          isOpen = false;
+          apply();
+          opts.forEach((o) => o.setAttribute('tabindex', '-1'));
+        }
+      });
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape' || !isOpen) return;
+        if (!shell.contains(document.activeElement)) return;
+        isOpen = false;
+        apply();
+        opts.forEach((o) => o.setAttribute('tabindex', '-1'));
+        btn.focus({ preventScroll: true });
+      });
+    });
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('[data-select]').forEach(el => new CustomSelect(el));
+    initSelectDocNativeDemos();
   });
 
 })();

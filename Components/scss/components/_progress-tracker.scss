@@ -47,6 +47,7 @@
       font-size: 0.875rem;
       color: var(--gray-700, #525252);
       text-align: center;
+      -webkit-user-select: none;
       user-select: none;
       z-index: 2;
     }
