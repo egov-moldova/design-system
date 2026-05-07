@@ -146,17 +146,28 @@ $select-doc-native-font-ios:
 .select-doc-section-header {
   display: flex;
   align-items: center;
+  box-sizing: border-box;
+  width: 100%;
   height: 64px;
+  margin-inline: 0;
   padding: 0;
   border-bottom: var(--border-width-1, 1px) solid var(--gray-200, #d9d9d9);
 }
 
-.select-doc-section-header h2 {
+/* Figma Desktop/Heading/H2 look — band titles (semantic: only Menu page uses h2 for “Selection menu”; other bands use h3) */
+.select-doc-section-header h2,
+.select-doc-section-header h3 {
   margin: 0;
-  font-size: 24px;
-  line-height: 32px;
-  font-weight: 600;
-  letter-spacing: -0.24px;
+  color: var(--color-text-base-default, var(--gray-900, #121212));
+  font-family: var(
+    --font-family-primary-font,
+    var(--font-family-base, 'Onest', system-ui, sans-serif)
+  );
+  font-size: var(--font-size-fs-32, 32px);
+  font-style: normal;
+  font-weight: var(--font-weight-fw-semibold, 600);
+  line-height: var(--line-height-lh-40, 40px);
+  letter-spacing: -0.64px;
 }
 
 .select-doc-section-content {
