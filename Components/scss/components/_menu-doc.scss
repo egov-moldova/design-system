@@ -1,0 +1,759 @@
+/*
+ * Menu doc — composition model
+ * --------------------------------------------------------------------------
+ * One menu surface everywhere (same panel as open Select / nav dropdown):
+ * add rows (options), optional leading slot (icon), selection (check + aria),
+ * section labels / dividers as needed. Do not fork panel chrome per demo.
+ *
+ * Vertical rhythm between composed bands (options vs icons vs selectable rows,
+ * or doc subsections): --menu-doc-composition-gap (80px).
+ *
+ * Static Select previews: .menu-doc-select-static > .select-dropdown + .select-option*
+ * States row: four identical list panels (.menu-doc-state-row + .menu-doc-state-demo).
+ * Listbox mirror: .selection-menu (+ __list / __item / __item--selected)
+ */
+
+.menu-doc-page {
+  --menu-doc-composition-gap: var(--spacing-80, 80px);
+}
+
+.menu-doc-page.select-doc-page {
+  @media (max-width: 991.98px) {
+    padding-left: var(--spacing-24, 24px);
+    padding-right: var(--spacing-24, 24px);
+  }
+}
+
+/* Figma doc bands: rule row + content (48 top / 80 bottom) — same chrome as .select-doc-section-* */
+.menu-doc-page .section-header {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  width: 100%;
+  height: 64px;
+  margin-inline: 0;
+  padding: 0;
+  border-bottom: var(--border-width-1, 1px) solid var(--gray-200, #d9d9d9);
+}
+
+.menu-doc-page .section-header h2,
+.menu-doc-page .section-header h3 {
+  margin: 0;
+  color: var(--color-text-base-default, var(--gray-900, #121212));
+  font-family: var(
+    --font-family-primary-font,
+    var(--font-family-base, 'Onest', system-ui, sans-serif)
+  );
+  font-size: var(--font-size-fs-32, 32px);
+  font-style: normal;
+  font-weight: var(--font-weight-fw-semibold, 600);
+  line-height: var(--line-height-lh-40, 40px);
+  letter-spacing: -0.64px;
+}
+
+.menu-doc-page .section-content {
+  box-sizing: border-box;
+  width: 100%;
+  padding-top: var(--spacing-48, 48px);
+  padding-bottom: var(--spacing-80, 80px);
+}
+
+.menu-doc-hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-56, 56px);
+  margin-bottom: var(--spacing-8, 8px);
+}
+
+.menu-doc-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-24, 24px);
+  width: 100%;
+  padding: var(--spacing-20, 20px) var(--spacing-24, 24px) var(--spacing-20, 20px)
+    var(--spacing-32, 32px);
+  background: var(--color-background-base-secondary, var(--gray-100, #f5f5f5));
+  border-radius: var(--border-radius-12, 12px);
+  box-sizing: border-box;
+}
+
+.menu-doc-meta__lead {
+  flex: 1 1 240px;
+  margin: 0;
+  max-width: 720px;
+  font-family: var(--font-family-base, 'Onest', system-ui, sans-serif);
+  font-size: var(--font-size-fs-18, 18px);
+  font-weight: var(--font-weight-fw-regular, 400);
+  line-height: var(--line-height-lh-28, 28px);
+  color: var(--gray-800, #383838);
+}
+
+.menu-doc-meta__logos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-24, 24px);
+}
+
+.menu-doc-meta__logo {
+  display: block;
+  height: 40px;
+  width: auto;
+  max-width: 180px;
+  object-fit: contain;
+}
+
+.menu-doc-meta__logo--compact {
+  height: 34px;
+  max-width: 120px;
+}
+
+.menu-doc-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--menu-doc-composition-gap);
+  align-items: flex-start;
+}
+
+.menu-doc-variations {
+  display: flex;
+  flex-direction: column;
+  gap: var(--menu-doc-composition-gap);
+}
+
+.menu-doc-variations-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--menu-doc-composition-gap);
+  align-items: flex-start;
+}
+
+/* Vertical stack of composed menu-doc bands (inherits gap from .menu-doc-page) */
+.menu-doc-composition {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--menu-doc-composition-gap);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.menu-doc-variations-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-8, 8px);
+  align-items: flex-start;
+}
+
+/* Contextual doc: Figma 691:5740 — 16px between mono spec label and preview */
+.menu-doc-contextual-edge-row.menu-doc-row > .menu-doc-variations-col {
+  gap: var(--spacing-16, 16px);
+}
+
+/* Mid-list heading: 2-line clamp, tertiary (Figma heading-truncation) */
+.menu-doc-contextual-edge__mid-heading {
+  padding: var(--spacing-4, 4px) var(--spacing-16, 16px);
+}
+
+.menu-doc-contextual-edge__mid-heading .select-menu__section-label-text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
+  font-size: var(--font-size-fs-14, 14px);
+  font-weight: var(--font-weight-fw-medium, 500);
+  line-height: var(--line-height-lh-20, 20px);
+  color: var(--color-text-base-tertiary, var(--gray-500, #757575));
+}
+
+/* Dismissal band (Figma 691:5724) */
+.menu-doc-dismissal-intro {
+  margin: 0 0 var(--spacing-40, 40px);
+  max-width: 800px;
+  font-family: var(--font-family-base, 'Onest', system-ui, sans-serif);
+  font-size: var(--font-size-fs-18, 18px);
+  font-weight: var(--font-weight-fw-regular, 400);
+  line-height: var(--line-height-lh-28, 28px);
+  color: var(--color-text-base-tertiary, var(--gray-500, #757575));
+}
+
+.menu-doc-dismissal-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--menu-doc-composition-gap);
+  align-items: flex-start;
+}
+
+.menu-doc-dismissal-scenario {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  align-items: flex-start;
+}
+
+.menu-doc-dismissal-scenario--outside {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--spacing-48, 48px);
+}
+
+.menu-doc-dismissal-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4, 4px);
+  align-items: flex-start;
+}
+
+.menu-doc-dismissal-trigger-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.menu-doc-dismissal-trigger.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-6, 6px);
+  min-height: 40px;
+  min-width: 56px;
+  padding: 0 var(--spacing-16, 16px) 0 var(--spacing-20, 20px);
+  font-size: var(--font-size-fs-14, 14px);
+  font-weight: var(--font-weight-fw-medium, 500);
+  line-height: var(--line-height-lh-20, 20px);
+}
+
+.menu-doc-dismissal-trigger .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.menu-doc-dismissal-menu-hit {
+  position: relative;
+  display: block;
+}
+
+.menu-doc-dismissal-gesture {
+  position: absolute;
+  width: 72px;
+  height: 72px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.menu-doc-dismissal-gesture svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Tap ripple over trigger chevron (Figma gesture on button) */
+.menu-doc-dismissal-trigger-wrap .menu-doc-dismissal-gesture {
+  top: 50%;
+  right: 10px;
+  transform: translate(40%, -50%);
+}
+
+/* Tap centered on second menu row */
+.menu-doc-dismissal-menu-hit .menu-doc-dismissal-gesture {
+  left: 50%;
+  top: calc(
+    var(--spacing-8, 8px) + 48px + var(--spacing-4, 4px) + 24px
+  ); /* panel pad + row1 + list gap + half row2 */
+  transform: translate(-50%, -50%);
+}
+
+.menu-doc-dismissal-outside-hit {
+  position: relative;
+  display: flex;
+  flex: 0 0 120px;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+}
+
+.menu-doc-dismissal-outside-hit .menu-doc-dismissal-gesture {
+  position: relative;
+  transform: none;
+}
+
+.menu-doc-intro.menu-doc-intro--tight {
+  margin-top: 0;
+  margin-bottom: var(--spacing-32, 32px);
+}
+
+.menu-doc-intro {
+  margin: 0 0 var(--menu-doc-composition-gap);
+  max-width: 800px;
+  font-family: var(--font-family-base, 'Onest', system-ui, sans-serif);
+  font-size: var(--font-size-fs-18, 18px);
+  font-weight: var(--font-weight-fw-regular, 400);
+  line-height: var(--line-height-lh-28, 28px);
+  color: var(--color-text-base-secondary, var(--gray-700, #383838));
+}
+
+/* Breakpoints: intro is sibling of .menu-doc-breakpoints (row previews only) */
+.menu-doc-breakpoints {
+  display: block;
+}
+
+.menu-doc-breakpoints-intro {
+  max-width: 800px;
+  margin: 0 0 var(--menu-doc-composition-gap);
+  font-family: var(--font-family-base, 'Onest', system-ui, sans-serif);
+  font-size: var(--font-size-fs-18, 18px);
+  font-weight: var(--font-weight-fw-regular, 400);
+  line-height: var(--line-height-lh-28, 28px);
+  color: var(--color-text-base-tertiary, var(--gray-500, #757575));
+}
+
+/* States: fixed 270px columns, same panel height for all four previews */
+.menu-doc-page .menu-doc-state-row > .menu-doc-variations-col {
+  flex: 0 0 270px;
+  width: 270px;
+  max-width: 100%;
+  box-sizing: border-box;
+  gap: var(--spacing-16, 16px);
+}
+
+/* States: same panel as other static selects — height grows with 6 rows, no scroll */
+.menu-doc-page .menu-doc-state-demo .select-dropdown {
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  overflow: visible;
+}
+
+.menu-doc-page .menu-doc-state-demo .select-list {
+  max-height: none;
+  overflow: visible;
+}
+
+/*
+ * Listbox-shaped menu (same panel contract as .select-dropdown in docs).
+ * Rows: .selection-menu__item (+ --selected). Same 80px composition applies outside the panel.
+ */
+.selection-menu {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-background-base-default, var(--white, #fff));
+  border: var(--border-width-1, 1px) solid var(--gray-250, #e8e8e8);
+  border-radius: var(--border-radius-16, 16px);
+  box-shadow: var(--drop-shadow-300);
+  padding: var(--spacing-8, 8px);
+}
+
+.selection-menu__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4, 4px);
+}
+
+.selection-menu__item {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  align-self: stretch;
+  gap: var(--spacing-12, 12px);
+  min-height: 48px;
+  padding: var(--spacing-12, 12px) var(--spacing-16, 16px);
+  border-radius: var(--border-radius-8, 8px);
+  cursor: pointer;
+  font-size: var(--font-size-fs-16, 16px);
+  line-height: var(--line-height-lh-24, 24px);
+  font-weight: var(--font-weight-fw-medium, 500);
+  color: var(--color-text-base-secondary, var(--gray-700, #383838));
+  background: var(--color-background-base-default, var(--white, #fff));
+}
+
+.selection-menu__label {
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selection-menu__check {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  visibility: hidden;
+  color: var(--color-text-brand-default, var(--blue-sky-600, #0058d2));
+}
+
+.selection-menu__check .icon,
+.selection-menu__check svg {
+  width: 24px;
+  height: 24px;
+}
+
+.selection-menu__item--selected {
+  background: var(--color-background-base-secondary, var(--gray-100, #f5f5f5));
+  color: var(--color-text-brand-default, var(--blue-sky-600, #0058d2));
+}
+
+.selection-menu__item--selected .selection-menu__check {
+  visibility: visible;
+}
+
+.selection-menu__item:hover:not(.selection-menu__item--selected) {
+  background: var(--color-background-base-secondary, var(--gray-100, #f5f5f5));
+}
+
+.selection-menu__item:active:not(.selection-menu__item--selected) {
+  background: var(--color-background-base-tertiary, var(--gray-200, #e5e5e5));
+}
+
+.selection-menu__item:focus-visible {
+  outline: none;
+  position: relative;
+  z-index: 1;
+  box-shadow:
+    0 0 0 2px var(--blue-sky-600, #0058d2),
+    0 0 0 4px rgba(0, 88, 210, 0.2);
+}
+
+.selection-menu--scroll {
+  width: 254px;
+  min-width: 254px;
+  max-width: 254px;
+  height: 284px;
+  min-height: 284px;
+  max-height: 284px;
+  overflow: hidden;
+}
+
+.selection-menu--scroll .selection-menu__list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-background-base-tertiary-active, var(--gray-300, #b2b2b2))
+    transparent;
+
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--color-background-base-tertiary-active, var(--gray-300, #b2b2b2));
+    border-radius: var(--border-radius-12, 12px);
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+.menu-doc-device__sheet--breakpoints-mobile {
+  border-radius: 24px 24px 0 0;
+
+  .selection-menu.selection-menu--sheet {
+    margin-inline: auto;
+    max-width: calc(100% - var(--spacing-16, 16px));
+  }
+
+  .selection-menu--sheet .selection-menu__list {
+    padding: 0 var(--spacing-16, 16px) var(--spacing-16, 16px);
+  }
+}
+
+.menu-doc-device--breakpoints {
+  width: 415px;
+  max-width: 100%;
+}
+
+.menu-doc-device__screen--breakpoints {
+  min-height: 340px;
+}
+
+/* Figma Items — Target sizes: 40px between body copy and preview */
+.menu-doc-items-target-copy {
+  margin: 0 0 var(--spacing-40, 40px);
+  max-width: 800px;
+  font-family: var(--font-family-base, 'Onest', system-ui, sans-serif);
+  font-size: var(--font-size-fs-18, 18px);
+  font-weight: var(--font-weight-fw-regular, 400);
+  line-height: var(--line-height-lh-28, 28px);
+  color: var(--color-text-base-secondary, var(--gray-700, #383838));
+}
+
+/* Static menu preview: same tokens as open .select-dropdown, not absolutely positioned */
+.menu-doc-page .menu-doc-select-static {
+  --select-bg: var(--color-background-base-default, var(--white, #fff));
+  --select-menu-shadow: var(--drop-shadow-300);
+  --select-option-text: var(--gray-700, #383838);
+  --select-option-selected-bg: var(
+    --color-background-brand-secondary,
+    var(--blue-sky-100, #dbeafe)
+  );
+  --select-option-selected-text: var(--blue-sky-600, #0058d2);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 270px;
+  max-width: 100%;
+
+  .select-dropdown {
+    position: relative;
+    top: auto;
+    left: auto;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    width: 270px;
+    min-width: 270px;
+    max-width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    margin-top: 0;
+  }
+
+  .select-list {
+    flex: none;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .select-option {
+    flex: none;
+    min-height: 0;
+  }
+}
+
+.menu-doc-page .menu-doc-select-static.menu-doc-select-static--stretch {
+  width: 375px;
+  max-width: 100%;
+
+  .select-dropdown {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* Target sizes preview: 270×300 panel, tint, no check column, 44px row height */
+.menu-doc-page .menu-doc-select-static--target-44 {
+  .select-dropdown {
+    width: 270px;
+    min-width: 270px;
+    max-width: 100%;
+    height: 300px;
+    min-height: 300px;
+    max-height: 300px;
+    box-sizing: border-box;
+    background-color: #2f56ff3d;
+    overflow: hidden;
+  }
+
+  .select-list {
+    max-height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .select-option__check {
+    display: none;
+  }
+
+  .select-option {
+    min-height: 44px;
+  }
+
+  .select-option.select-option--multiline {
+    min-height: 0;
+  }
+}
+
+/* Contextual: no check column (same row padding as select-option) */
+.menu-doc-page .menu-doc-select-static--contextual .select-option__check {
+  display: none;
+}
+
+/* Doc previews: role=menu single-select (JS toggles .select-option--doc-selected) */
+.menu-doc-page ul[role='menu'] .select-option.select-option--doc-selected {
+  background: var(
+    --select-option-selected-bg,
+    var(--color-background-brand-secondary, var(--blue-sky-100, #dbeafe))
+  );
+  color: var(--select-option-selected-text, var(--blue-sky-600, #0058d2));
+  font-weight: var(--font-weight-fw-semibold, 600);
+}
+
+.menu-doc-page
+  .menu-doc-select-static--contextual
+  ul[role='menu']
+  .select-option.select-option--doc-selected
+  .select-option__check {
+  display: flex;
+  visibility: visible;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-doc-page
+  .menu-doc-select-static--contextual
+  ul[role='menu']
+  .select-option.select-option--doc-selected
+  .select-option__check
+  .icon {
+  width: 24px;
+  height: 24px;
+}
+
+/*
+ * Variations band: same 270px-wide panel as other menu-doc static previews.
+ * (Former scroll-list / 254×284 removed — all demos use exactly 6 rows, no inner scroll.)
+ */
+.menu-doc-page .menu-doc-variations .menu-doc-select-static--contextual {
+  width: 270px;
+  min-width: 270px;
+  max-width: 270px;
+}
+
+.menu-doc-page button.select-option {
+  width: 100%;
+  border: none;
+  font-family: inherit;
+  text-align: left;
+}
+
+.menu-doc-page label.select-option {
+  width: 100%;
+  border: none;
+  font-family: inherit;
+  text-align: left;
+}
+
+.menu-doc-page label.select-option.select-option--control {
+  position: relative;
+}
+
+.menu-doc-page label.select-option.select-option--control.checkbox,
+.menu-doc-page label.select-option.select-option--control.radio {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-12, 12px);
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  cursor: pointer;
+}
+
+.menu-doc-page label.select-option.select-option--control .select-option__label {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Static phone + sheet preview (Figma mobile) */
+.menu-doc-device {
+  width: 375px;
+  max-width: 100%;
+  border-radius: var(--border-radius-16, 16px);
+  overflow: hidden;
+  border: var(--border-width-1, 1px) solid var(--gray-250, #e8e8e8);
+  box-shadow: var(--drop-shadow-300);
+  background: var(--gray-200, #ebebeb);
+}
+
+.menu-doc-device__screen {
+  min-height: 420px;
+  padding: var(--spacing-24, 24px) var(--spacing-16, 16px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: linear-gradient(
+    180deg,
+    var(--gray-300, #d4d4d4) 0%,
+    var(--gray-200, #ebebeb) 45%
+  );
+}
+
+.menu-doc-device__dim {
+  position: relative;
+  margin-top: auto;
+  padding: var(--spacing-48, 48px) var(--spacing-0, 0) var(--spacing-0, 0);
+  background: rgb(from var(--black, #121212) r g b / 0.35);
+  border-radius: var(--border-radius-12, 12px) var(--border-radius-12, 12px) 0 0;
+}
+
+.menu-doc-device__sheet {
+  background: var(--white, #fff);
+  border-radius: var(--border-radius-16, 16px) var(--border-radius-16, 16px) 0 0;
+  padding: var(--spacing-8, 8px) var(--spacing-8, 8px) var(--spacing-24, 24px);
+}
+
+.menu-doc-device__handle {
+  width: 44px;
+  height: 4px;
+  margin: var(--spacing-12, 12px) auto var(--spacing-8, 8px);
+  background: var(--gray-250, #e8e8e8);
+  border-radius: 999px;
+}
+
+/* Bottom sheet list on this page: reuse select list row look */
+.menu-doc-page .bottom-sheet .bottom-sheet__content {
+  --select-bg: var(--color-background-base-default, var(--white, #fff));
+  --select-menu-shadow: var(--drop-shadow-300);
+  --select-option-text: var(--gray-700, #383838);
+  --select-option-selected-bg: var(
+    --color-background-brand-secondary,
+    var(--blue-sky-100, #dbeafe)
+  );
+  --select-option-selected-text: var(--blue-sky-600, #0058d2);
+}
+
+.menu-doc-page .bottom-sheet__content .select-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 var(--spacing-16, 16px) var(--spacing-16, 16px);
+}
+
+.menu-doc-page .bottom-sheet__content .select-option {
+  text-decoration: none;
+  color: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.menu-doc-page .bottom-sheet__content a.select-option:hover {
+  text-decoration: none;
+}
+
+.menu-doc-sheet-selection .select-option .select-option__check {
+  visibility: hidden;
+}
+
+.menu-doc-sheet-selection .select-option.menu-doc-sheet-option--current {
+  background: var(
+    --color-background-brand-secondary,
+    var(--blue-sky-100, #dbeafe)
+  );
+  color: var(--blue-sky-600, #0058d2);
+  font-weight: 600;
+}
+
+.menu-doc-sheet-selection
+  .select-option.menu-doc-sheet-option--current
+  .select-option__check {
+  visibility: visible;
+  color: var(--blue-sky-600, #0058d2);
+}

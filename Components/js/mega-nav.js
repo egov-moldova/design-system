@@ -1,9 +1,16 @@
+/**
+ * Desktop nav dropdowns + tablet/mobile slide panels.
+ * Menu panels match Figma selection-menu / contextual-menu (same tokens as Select).
+ */
 document.addEventListener('DOMContentLoaded', () => {
+  // Match _menu-desktop.scss: .mainNav visible up to 1075px, .nav from 1076px
+  const MAIN_NAV_MAX = 1075;
+
+  // —— Desktop: .nav__item--has-dropdown ——
   const dropdownItems = document.querySelectorAll('.nav__item--has-dropdown');
 
-  // Funcție pentru închiderea tuturor meniurilor
   const closeAllDropdowns = () => {
-    dropdownItems.forEach(item => {
+    dropdownItems.forEach((item) => {
       const button = item.querySelector('.nav__link');
       const menu = item.querySelector('.nav__menu');
       if (button && menu) {
@@ -14,23 +21,18 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 
-  // Eveniment click pe fiecare dropdown button
-  dropdownItems.forEach(item => {
+  dropdownItems.forEach((item) => {
     const button = item.querySelector('.nav__link');
     const menu = item.querySelector('.nav__menu');
-
     if (!button || !menu) return;
 
-    button.addEventListener('click', e => {
+    button.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
 
       const isExpanded = button.getAttribute('aria-expanded') === 'true';
-
-      // Închidem toate dropdown-urile
       closeAllDropdowns();
 
-      // Dacă cel curent era închis → îl deschidem
       if (!isExpanded) {
         item.classList.add('nav__item--active');
         button.setAttribute('aria-expanded', 'true');
@@ -39,315 +41,154 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Click în afară → închide toate dropdown-urile
-  document.addEventListener('click', e => {
+  document.addEventListener('click', (e) => {
     if (!e.target.closest('.nav__item--has-dropdown')) {
       closeAllDropdowns();
     }
   });
 
-  // Închidere la tasta Escape
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      closeAllDropdowns();
-    }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAllDropdowns();
   });
 
-  // Închidere la resize (ex. trecere desktop ↔ mobil)
   window.addEventListener('resize', closeAllDropdowns);
-});
 
+  // —— Slide panel (tablet header + mobile header) ——
+  function initSlidePanel(toggle, panel) {
+    if (!toggle || !panel) return;
 
-document.addEventListener('DOMContentLoaded', () => {
-  // MENIUL PRINCIPAL MOBILE
-  const toggleBtn = document.querySelector('.mainNav__toggle');
-  const panel = document.querySelector('.mainNav__panel');
-
-  const openMenu = () => {
-    panel.hidden = false;
-    panel.classList.add('is-active');
-    toggleBtn.setAttribute('aria-expanded', 'true');
-    document.body.classList.add('no-scroll');
-  };
-
-  const closeMenu = () => {
-    panel.classList.remove('is-active');
-    toggleBtn.setAttribute('aria-expanded', 'false');
-    document.body.classList.remove('no-scroll');
-    setTimeout(() => panel.hidden = true, 300);
-    
-    // Reset slide submeniuri
-    const submenus = panel.querySelectorAll('.mainNav__submenu');
-    submenus.forEach(sm => {
-      sm.style.transform = '';
-      sm.hidden = true;
-    });
-    const lists = panel.querySelectorAll('.mainNav__list');
-    lists.forEach(l => l.style.transform = '');
-  };
-
-  toggleBtn.addEventListener('click', e => {
-    e.stopPropagation();
-    toggleBtn.getAttribute('aria-expanded') === 'true' ? closeMenu() : openMenu();
-  });
-
-  document.addEventListener('click', e => {
-    if (!e.target.closest('.mainNav__panel') && !e.target.closest('.mainNav__toggle')) {
-      closeMenu();
-    }
-  });
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeMenu();
-  });
-
-  // SUBMENIU SLIDE LATERAL MOBILE
-  const panelLists = panel.querySelectorAll('.mainNav__list');
-
-  panelLists.forEach(list => {
-    list.addEventListener('click', e => {
-      const btn = e.target.closest('[data-submenu]');
-      if (!btn) return;
-
-      e.preventDefault();
-      const submenuId = btn.getAttribute('data-submenu');
-      const submenu = panel.querySelector(`#${submenuId}`);
-
-
-    });
-
-    const backBtns = list.querySelectorAll('.submenu-back');
-    backBtns.forEach(back => {
-      back.addEventListener('click', e => {
-        e.preventDefault();
-        const submenu = back.closest('.mainNav__submenu');
-        submenu.style.transform = 'translateX(100%)';
-        setTimeout(() => submenu.hidden = true, 300);
-
-        const parentList = submenu.parentElement.closest('.mainNav__list');
-        if (parentList) parentList.style.transform = 'translateX(0%)';
+    const resetSubmenus = () => {
+      panel.querySelectorAll('.mainNav__submenu').forEach((sm) => {
+        sm.classList.remove('is-active');
+        sm.style.transform = '';
+        sm.hidden = true;
       });
+      panel.querySelectorAll('.mainNav__list').forEach((l) => {
+        l.style.transform = '';
+      });
+      panel.querySelectorAll('[data-submenu]').forEach((btn) => {
+        btn.setAttribute('aria-expanded', 'false');
+      });
+    };
+
+    const openMenu = () => {
+      resetSubmenus();
+      panel.hidden = false;
+      panel.classList.add('is-active');
+      toggle.setAttribute('aria-expanded', 'true');
+      document.body.classList.add('no-scroll');
+    };
+
+    const closeMenu = () => {
+      panel.classList.remove('is-active');
+      toggle.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('no-scroll');
+      resetSubmenus();
+      window.setTimeout(() => {
+        panel.hidden = true;
+      }, 300);
+    };
+
+    toggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (toggle.getAttribute('aria-expanded') === 'true') {
+        closeMenu();
+      } else {
+        openMenu();
+      }
     });
-  });
-});
 
-document.addEventListener("DOMContentLoaded", () => {
-  const MOBILE_BREAKPOINT = 992;
+    document.addEventListener('click', (e) => {
+      if (!panel.classList.contains('is-active')) return;
+      if (!e.target.closest(panel) && !e.target.closest(toggle)) {
+        closeMenu();
+      }
+    });
 
-  function initMobileNav() {
-    const menuButtons = document.querySelectorAll("[data-submenu]");
-    const backButtons = document.querySelectorAll("[data-back]");
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && panel.classList.contains('is-active')) {
+        closeMenu();
+      }
+    });
 
-    if (!menuButtons.length) return; // Nicio acțiune dacă nu există submeniuri
-
-    menuButtons.forEach(button => {
-      const submenuSelector = button.dataset.submenu;
-      const submenu = document.querySelector(`#${submenuSelector}`);
+    // Submenus: only buttons inside this panel
+    panel.querySelectorAll('[data-submenu]').forEach((button) => {
+      const submenuId = button.getAttribute('data-submenu');
+      if (!submenuId) return;
+      const submenu = panel.querySelector(`#${CSS.escape(submenuId)}`);
       if (!submenu) return;
 
-      button.addEventListener("click", (e) => {
+      button.addEventListener('click', (e) => {
         e.preventDefault();
+        if (window.innerWidth > MAIN_NAV_MAX) return;
 
-        // Închide alte submeniuri deschise
-        document.querySelectorAll(".mainNav__submenu.is-active").forEach(openSubmenu => {
-          if (openSubmenu !== submenu) {
-            openSubmenu.classList.remove("is-active");
-            openSubmenu.style.transform = "translateX(100%)";
-            setTimeout(() => openSubmenu.hidden = true, 300);
+        const isOpen = submenu.classList.contains('is-active');
+
+        panel.querySelectorAll('.mainNav__submenu.is-active').forEach((openSm) => {
+          if (openSm !== submenu) {
+            openSm.classList.remove('is-active');
+            openSm.style.transform = 'translateX(100%)';
+            window.setTimeout(() => {
+              openSm.hidden = true;
+            }, 300);
+            const sid = openSm.id;
+            const prevBtn = panel.querySelector(`[data-submenu="${CSS.escape(sid)}"]`);
+            if (prevBtn) prevBtn.setAttribute('aria-expanded', 'false');
           }
         });
 
-        const isOpen = submenu.classList.contains("is-active");
-
         if (!isOpen) {
           submenu.hidden = false;
-          submenu.classList.add("is-active");
-          submenu.style.transform = "translateX(0)";
-          // Mutăm lista principală spre stânga
-          const parentList = button.closest(".mainNav__list");
-          if (parentList) parentList.style.transform = "translateX(-100%)";
+          submenu.classList.add('is-active');
+          submenu.style.transform = 'translateX(0)';
+          const parentList = button.closest('.mainNav__list');
+          if (parentList) parentList.style.transform = 'translateX(-100%)';
+          button.setAttribute('aria-expanded', 'true');
         } else {
-          submenu.style.transform = "translateX(100%)";
-          submenu.classList.remove("is-active");
-          setTimeout(() => submenu.hidden = true, 300);
+          submenu.style.transform = 'translateX(100%)';
+          submenu.classList.remove('is-active');
+          window.setTimeout(() => {
+            submenu.hidden = true;
+          }, 300);
+          const parentList = button.closest('.mainNav__list');
+          if (parentList) parentList.style.transform = 'translateX(0)';
+          button.setAttribute('aria-expanded', 'false');
         }
       });
     });
 
-    backButtons.forEach(backBtn => {
-      backBtn.addEventListener("click", (e) => {
+    panel.querySelectorAll('[data-back]').forEach((backBtn) => {
+      backBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        const submenu = backBtn.closest(".mainNav__submenu");
-        const parentList = submenu.closest(".mainNav__panel").querySelector(".mainNav__list");
+        const submenu = backBtn.closest('.mainNav__submenu');
+        if (!submenu) return;
 
-        submenu.style.transform = "translateX(100%)";
-        submenu.classList.remove("is-active");
-        setTimeout(() => submenu.hidden = true, 300);
+        submenu.style.transform = 'translateX(100%)';
+        submenu.classList.remove('is-active');
+        window.setTimeout(() => {
+          submenu.hidden = true;
+        }, 300);
 
-        // readucem lista principală înapoi
-        if (parentList) parentList.style.transform = "translateX(0)";
+        const rootList = panel.querySelector('.mainNav__content .mainNav__list');
+        if (rootList) rootList.style.transform = 'translateX(0)';
+
+        const id = submenu.id;
+        const opener = panel.querySelector(`[data-submenu="${CSS.escape(id)}"]`);
+        if (opener) opener.setAttribute('aria-expanded', 'false');
       });
     });
   }
 
-  // Inițializare doar pe mobile
-  if (window.innerWidth < MOBILE_BREAKPOINT) {
-    initMobileNav();
-  }
+  const desktopToggle = document.querySelector(
+    'header.header:not(.header__mobile) .mainNav__toggle:not(.mobile)'
+  );
+  const desktopPanel = document.getElementById('mainNav__panel');
+  initSlidePanel(desktopToggle, desktopPanel);
 
-  // Reinițializare când se schimbă dimensiunea ecranului
-  window.addEventListener("resize", () => {
-    if (window.innerWidth < MOBILE_BREAKPOINT) {
-      initMobileNav();
-    }
-  });
-});
-
-document.addEventListener('DOMContentLoaded', () => {
   const mobileHeader = document.querySelector('.header__mobile');
-  if (!mobileHeader) return;
-
-  const toggleBtn = mobileHeader.querySelector('.mainNav__toggle');
-  const panel = mobileHeader.querySelector('.mainNav__panel');
-
-  const openMenu = () => {
-    panel.hidden = false;
-    panel.classList.add('is-active');
-    toggleBtn.setAttribute('aria-expanded', 'true');
-    document.body.classList.add('no-scroll');
-  };
-
-  const closeMenu = () => {
-    panel.classList.remove('is-active');
-    toggleBtn.setAttribute('aria-expanded', 'false');
-    document.body.classList.remove('no-scroll');
-    setTimeout(() => (panel.hidden = true), 300);
-  };
-
-  toggleBtn.addEventListener('click', e => {
-    e.stopPropagation();
-    toggleBtn.getAttribute('aria-expanded') === 'true' ? closeMenu() : openMenu();
-  });
-
-  document.addEventListener('click', e => {
-    if (!e.target.closest('.mainNav__panel') && !e.target.closest('.mainNav__toggle')) {
-      closeMenu();
-    }
-  });
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') closeMenu();
-  });
-
-  // --- SUBMENIURI DOAR DIN .mainNav__actions ---
-  const submenuButtons = panel.querySelectorAll('.mainNav__actions [data-submenu]');
-  submenuButtons.forEach(btn => {
-    btn.addEventListener('click', e => {
-      e.preventDefault();
-      const submenuId = btn.getAttribute('data-submenu');
-      const submenu = panel.querySelector(`#${submenuId}`);
-      if (!submenu) return;
-
-      const isOpen = !submenu.hidden;
-
-      // Închide toate submeniurile din mainNav__actions
-      panel.querySelectorAll('.mainNav__actions .mainNav__submenu').forEach(sm => {
-        sm.classList.remove('is-active');
-        sm.style.transform = 'translateX(100%)';
-        sm.style.opacity = '0';
-        sm.hidden = true;
-      });
-
-      if (!isOpen) {
-        submenu.hidden = false;
-        submenu.offsetHeight; // forțează repaint
-        submenu.classList.add('is-active');
-        submenu.style.transform = 'translateX(0)';
-        submenu.style.opacity = '1';
-        btn.setAttribute('aria-expanded', 'true');
-      } else {
-        btn.setAttribute('aria-expanded', 'false');
-      }
-    });
-  });
-
-  // --- Butoane Înapoi ---
-  const backButtons = panel.querySelectorAll('.mainNav__actions [data-back]');
-  backButtons.forEach(back => {
-    back.addEventListener('click', e => {
-      e.preventDefault();
-      const submenu = back.closest('.mainNav__submenu');
-      if (!submenu) return;
-
-      submenu.classList.remove('is-active');
-      submenu.style.transform = 'translateX(100%)';
-      submenu.style.opacity = '0';
-
-      setTimeout(() => {
-        submenu.hidden = true;
-        submenu.style.transform = '';
-        submenu.style.opacity = '';
-      }, 350);
-
-      const btn = panel.querySelector(`.mainNav__actions [data-submenu="${submenu.id}"]`);
-      if (btn) btn.setAttribute('aria-expanded', 'false');
-    });
-  });
+  if (mobileHeader) {
+    const mobileToggle = mobileHeader.querySelector('.mainNav__toggle.mobile');
+    const mobilePanel = mobileHeader.querySelector('#mainNav__panel-mobile');
+    initSlidePanel(mobileToggle, mobilePanel);
+  }
 });
-
-
-
-document.addEventListener("DOMContentLoaded", () => {
-  const submenuButtons = document.querySelectorAll("[data-submenu]");
-  const backButtons = document.querySelectorAll("[data-back]");
-
-  submenuButtons.forEach((btn) => {
-    const submenuSelector = btn.getAttribute("data-submenu");
-    if (!submenuSelector) return;
-    const submenu = document.querySelector("#" + CSS.escape(submenuSelector));
-
-    if (!submenu) return;
-
-    btn.addEventListener("click", (e) => {
-      e.preventDefault();
-
-      // Închide orice submeniu activ
-      document.querySelectorAll(".mainNav__submenu.is-active").forEach((openSub) => {
-        openSub.classList.remove("is-active");
-        openSub.classList.add("is-leaving");
-        setTimeout(() => {
-          openSub.hidden = true;
-          openSub.classList.remove("is-leaving");
-        }, 350);
-      });
-
-      // Deschide submenu curent
-      submenu.hidden = false;
-      requestAnimationFrame(() => submenu.classList.add("is-active"));
-      btn.setAttribute("aria-expanded", "true");
-    });
-  });
-
-  backButtons.forEach((backBtn) => {
-    backBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-
-      const submenu = backBtn.closest(".mainNav__submenu");
-      if (!submenu) return;
-
-      submenu.classList.remove("is-active");
-      submenu.classList.add("is-leaving");
-
-      setTimeout(() => {
-        submenu.hidden = true;
-        submenu.classList.remove("is-leaving");
-      }, 350);
-
-      document
-        .querySelectorAll("[data-submenu]")
-        .forEach((btn) => btn.setAttribute("aria-expanded", "false"));
-    });
-  });
-});
-
-

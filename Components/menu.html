@@ -1,0 +1,3006 @@
+<!doctype html>
+<html lang="ro">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Menu</title>
+    <link rel="stylesheet" href="css/main.css" />
+    <script src="js/include-header.js" defer></script>
+    <script src="js/include-footer.js" defer></script>
+    <script src="js/toggler.js" defer></script>
+    <script src="js/modal.js" defer></script>
+    <script src="js/mega-nav.js" defer></script>
+    <script src="js/search.js" defer></script>
+    <script src="js/dropdown.js" defer></script>
+    <script src="js/menu-doc-breakpoints.js" defer></script>
+    <script src="js/bottom-sheet.js" defer></script>
+  </head>
+  <body>
+    <div id="site-header"></div>
+
+    <div class="container select-doc-page menu-doc-page">
+      <div class="menu-doc-hero">
+        <header class="select-doc-documentation-header">
+          <h1 class="select-doc-title">Menu</h1>
+          <p class="select-doc-body select-doc-body--intro">
+            The dropdown menu component provides a compact way to present a list
+            of options or actions without overwhelming the interface. It allows
+            users to select a value, trigger an action, or navigate to another
+            section while conserving space on the screen.
+          </p>
+        </header>
+      </div>
+
+      <div class="section-header">
+        <h2>Selection Menu</h2>
+      </div>
+      <div class="section-content">
+        <p class="menu-doc-intro">
+          The single-selection dropdown allows users to choose one option from a
+          predefined list. It’s typically used in forms, filters, or settings
+          where a compact input method is needed to reduce clutter. Once a user
+          selects an option, the dropdown closes and the chosen value is
+          displayed.
+        </p>
+      </div>
+
+      <div class="section-header">
+        <h3>Breakpoints</h3>
+      </div>
+      <div class="section-content">
+        <p class="menu-doc-breakpoints-intro">
+          Additional information about the Menu component treatment on Mobile
+          can be accessed through the provided
+          <a
+            href="https://www.figma.com/design/doJ7tDY0PlQ0PqMgbpFVIC?node-id=430-25857"
+            class="link link-lg link-primary link-underline"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Figma link</a
+          >.
+        </p>
+        <div class="menu-doc-breakpoints">
+          <div class="menu-doc-row menu-doc-row--breakpoints">
+            <div class="menu-doc-variations-col">
+              <p class="select-doc-spec-label" id="menu-doc-lbl-bp-desktop">
+                desktop
+              </p>
+              <div
+                class="selection-menu selection-menu--scroll"
+                data-selection-menu-sync="bp"
+              >
+                <ul
+                  class="selection-menu__list"
+                  role="listbox"
+                  aria-labelledby="menu-doc-lbl-bp-desktop"
+                  tabindex="0"
+                >
+                  <li
+                    class="selection-menu__item"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="selection-menu__label">Option 1</span>
+                    <span class="selection-menu__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="selection-menu__item selection-menu__item--selected"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="true"
+                  >
+                    <span class="selection-menu__label">Option 2</span>
+                    <span class="selection-menu__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="selection-menu__item"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="selection-menu__label">Option 3</span>
+                    <span class="selection-menu__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="selection-menu__item"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="selection-menu__label">Option 4</span>
+                    <span class="selection-menu__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="selection-menu__item"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="selection-menu__label">Option 5</span>
+                    <span class="selection-menu__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="selection-menu__item"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="selection-menu__label">Option 6</span>
+                    <span class="selection-menu__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="menu-doc-variations-col">
+              <p class="select-doc-spec-label" id="menu-doc-lbl-bp-mobile">
+                mobile
+              </p>
+              <div class="menu-doc-device menu-doc-device--breakpoints">
+                <div
+                  class="menu-doc-device__screen menu-doc-device__screen--breakpoints"
+                >
+                  <div class="menu-doc-device__dim">
+                    <div
+                      class="menu-doc-device__sheet menu-doc-device__sheet--breakpoints-mobile"
+                    >
+                      <div class="menu-doc-device__handle"></div>
+                      <div
+                        class="selection-menu selection-menu--scroll selection-menu--sheet"
+                        data-selection-menu-sync="bp"
+                      >
+                        <ul
+                          class="selection-menu__list"
+                          role="listbox"
+                          aria-labelledby="menu-doc-lbl-bp-mobile"
+                          tabindex="0"
+                        >
+                          <li
+                            class="selection-menu__item"
+                            role="option"
+                            tabindex="-1"
+                            aria-selected="false"
+                          >
+                            <span class="selection-menu__label">Option 1</span>
+                            <span
+                              class="selection-menu__check"
+                              aria-hidden="true"
+                            >
+                              <svg
+                                class="icon"
+                                width="24"
+                                height="24"
+                                aria-hidden="true"
+                              >
+                                <use
+                                  href="assets/icons/sprite.svg#icon-checkmark-small"
+                                ></use>
+                              </svg>
+                            </span>
+                          </li>
+                          <li
+                            class="selection-menu__item selection-menu__item--selected"
+                            role="option"
+                            tabindex="-1"
+                            aria-selected="true"
+                          >
+                            <span class="selection-menu__label">Option 2</span>
+                            <span
+                              class="selection-menu__check"
+                              aria-hidden="true"
+                            >
+                              <svg
+                                class="icon"
+                                width="24"
+                                height="24"
+                                aria-hidden="true"
+                              >
+                                <use
+                                  href="assets/icons/sprite.svg#icon-checkmark-small"
+                                ></use>
+                              </svg>
+                            </span>
+                          </li>
+                          <li
+                            class="selection-menu__item"
+                            role="option"
+                            tabindex="-1"
+                            aria-selected="false"
+                          >
+                            <span class="selection-menu__label">Option 3</span>
+                            <span
+                              class="selection-menu__check"
+                              aria-hidden="true"
+                            >
+                              <svg
+                                class="icon"
+                                width="24"
+                                height="24"
+                                aria-hidden="true"
+                              >
+                                <use
+                                  href="assets/icons/sprite.svg#icon-checkmark-small"
+                                ></use>
+                              </svg>
+                            </span>
+                          </li>
+                          <li
+                            class="selection-menu__item"
+                            role="option"
+                            tabindex="-1"
+                            aria-selected="false"
+                          >
+                            <span class="selection-menu__label">Option 4</span>
+                            <span
+                              class="selection-menu__check"
+                              aria-hidden="true"
+                            >
+                              <svg
+                                class="icon"
+                                width="24"
+                                height="24"
+                                aria-hidden="true"
+                              >
+                                <use
+                                  href="assets/icons/sprite.svg#icon-checkmark-small"
+                                ></use>
+                              </svg>
+                            </span>
+                          </li>
+                          <li
+                            class="selection-menu__item"
+                            role="option"
+                            tabindex="-1"
+                            aria-selected="false"
+                          >
+                            <span class="selection-menu__label">Option 5</span>
+                            <span
+                              class="selection-menu__check"
+                              aria-hidden="true"
+                            >
+                              <svg
+                                class="icon"
+                                width="24"
+                                height="24"
+                                aria-hidden="true"
+                              >
+                                <use
+                                  href="assets/icons/sprite.svg#icon-checkmark-small"
+                                ></use>
+                              </svg>
+                            </span>
+                          </li>
+                          <li
+                            class="selection-menu__item"
+                            role="option"
+                            tabindex="-1"
+                            aria-selected="false"
+                          >
+                            <span class="selection-menu__label">Option 6</span>
+                            <span
+                              class="selection-menu__check"
+                              aria-hidden="true"
+                            >
+                              <svg
+                                class="icon"
+                                width="24"
+                                height="24"
+                                aria-hidden="true"
+                              >
+                                <use
+                                  href="assets/icons/sprite.svg#icon-checkmark-small"
+                                ></use>
+                              </svg>
+                            </span>
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h3>States</h3>
+      </div>
+      <div class="section-content">
+        <div class="menu-doc-row menu-doc-state-row">
+          <div class="menu-doc-variations-col">
+            <p class="select-doc-spec-label" id="menu-doc-lbl-state-unselected">
+              unselected
+            </p>
+            <div class="select-wrap menu-doc-select-static menu-doc-state-demo">
+              <div class="select-dropdown" role="presentation">
+                <ul
+                  class="select-list"
+                  role="listbox"
+                  aria-labelledby="menu-doc-lbl-state-unselected"
+                  tabindex="-1"
+                >
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 1</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 2</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 3</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 4</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 5</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 6</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-doc-variations-col">
+            <p class="select-doc-spec-label" id="menu-doc-lbl-state-hover">
+              unselected: hover
+            </p>
+            <div
+              class="select-wrap menu-doc-select-static menu-doc-state-demo menu-doc-state-demo--hover"
+            >
+              <div class="select-dropdown" role="presentation">
+                <ul
+                  class="select-list"
+                  role="listbox"
+                  aria-labelledby="menu-doc-lbl-state-hover"
+                  tabindex="-1"
+                >
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 1</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option is-active"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 2</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 3</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 4</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 5</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 6</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-doc-variations-col">
+            <p class="select-doc-spec-label" id="menu-doc-lbl-state-selected">
+              selected
+            </p>
+            <div class="select-wrap menu-doc-select-static menu-doc-state-demo">
+              <div class="select-dropdown" role="presentation">
+                <ul
+                  class="select-list"
+                  role="listbox"
+                  aria-labelledby="menu-doc-lbl-state-selected"
+                  tabindex="-1"
+                >
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 1</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 2</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 3</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 4</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 5</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 6</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-doc-variations-col">
+            <p class="select-doc-spec-label" id="menu-doc-lbl-state-disabled">
+              disabled
+            </p>
+            <div
+              class="select-wrap menu-doc-select-static menu-doc-state-demo menu-doc-state-demo--disabled"
+            >
+              <div class="select-dropdown" role="presentation">
+                <ul
+                  class="select-list"
+                  role="listbox"
+                  aria-labelledby="menu-doc-lbl-state-disabled"
+                  tabindex="-1"
+                >
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 1</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                    aria-disabled="true"
+                  >
+                    <span class="select-option__label">Option 2</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 3</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 4</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 5</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 6</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h3>Edge cases</h3>
+      </div>
+      <div class="section-content">
+        <p class="menu-doc-intro menu-doc-intro--tight">
+          Long option labels wrap to two lines, then truncate with an ellipsis.
+        </p>
+        <div class="menu-doc-row">
+          <div class="select-wrap menu-doc-select-static">
+            <p class="select-label" id="menu-doc-lbl-trunc-unselected">
+              <span class="select-label__text">truncation: unselected</span>
+            </p>
+            <div class="select-dropdown" role="presentation">
+              <ul
+                class="select-list"
+                role="listbox"
+                aria-labelledby="menu-doc-lbl-trunc-unselected"
+                tabindex="-1"
+              >
+                <li
+                  class="select-option"
+                  role="option"
+                  tabindex="-1"
+                  aria-selected="false"
+                >
+                  <span class="select-option__label">Option 2</span>
+                  <span class="select-option__check" aria-hidden="true">
+                    <svg class="icon" width="24" height="24" aria-hidden="true">
+                      <use
+                        href="assets/icons/sprite.svg#icon-checkmark-small"
+                      ></use>
+                    </svg>
+                  </span>
+                </li>
+                <li
+                  class="select-option select-option--multiline"
+                  role="option"
+                  tabindex="-1"
+                  aria-selected="false"
+                >
+                  <span
+                    class="select-option__label select-option__label--multiline"
+                    >Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                    sed do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua ut enim ad minim veniam quis nostrud</span
+                  >
+                  <span class="select-option__check" aria-hidden="true">
+                    <svg class="icon" width="24" height="24" aria-hidden="true">
+                      <use
+                        href="assets/icons/sprite.svg#icon-checkmark-small"
+                      ></use>
+                    </svg>
+                  </span>
+                </li>
+                <li
+                  class="select-option"
+                  role="option"
+                  tabindex="-1"
+                  aria-selected="false"
+                >
+                  <span class="select-option__label">Option 3</span>
+                  <span class="select-option__check" aria-hidden="true">
+                    <svg class="icon" width="24" height="24" aria-hidden="true">
+                      <use
+                        href="assets/icons/sprite.svg#icon-checkmark-small"
+                      ></use>
+                    </svg>
+                  </span>
+                </li>
+                <li
+                  class="select-option"
+                  role="option"
+                  tabindex="-1"
+                  aria-selected="false"
+                >
+                  <span class="select-option__label">Option 4</span>
+                  <span class="select-option__check" aria-hidden="true">
+                    <svg class="icon" width="24" height="24" aria-hidden="true">
+                      <use
+                        href="assets/icons/sprite.svg#icon-checkmark-small"
+                      ></use>
+                    </svg>
+                  </span>
+                </li>
+                <li
+                  class="select-option"
+                  role="option"
+                  tabindex="-1"
+                  aria-selected="false"
+                >
+                  <span class="select-option__label">Option 5</span>
+                  <span class="select-option__check" aria-hidden="true">
+                    <svg class="icon" width="24" height="24" aria-hidden="true">
+                      <use
+                        href="assets/icons/sprite.svg#icon-checkmark-small"
+                      ></use>
+                    </svg>
+                  </span>
+                </li>
+                <li
+                  class="select-option"
+                  role="option"
+                  tabindex="-1"
+                  aria-selected="false"
+                >
+                  <span class="select-option__label">Option 6</span>
+                  <span class="select-option__check" aria-hidden="true">
+                    <svg class="icon" width="24" height="24" aria-hidden="true">
+                      <use
+                        href="assets/icons/sprite.svg#icon-checkmark-small"
+                      ></use>
+                    </svg>
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="select-wrap menu-doc-select-static">
+            <p class="select-label" id="menu-doc-lbl-trunc-selected">
+              <span class="select-label__text">truncation: selected</span>
+            </p>
+            <div class="select-dropdown" role="presentation">
+              <ul
+                class="select-list"
+                role="listbox"
+                aria-labelledby="menu-doc-lbl-trunc-selected"
+                tabindex="-1"
+              >
+                <li
+                  class="select-option"
+                  role="option"
+                  tabindex="-1"
+                  aria-selected="false"
+                >
+                  <span class="select-option__label">Option 1</span>
+                  <span class="select-option__check" aria-hidden="true">
+                    <svg class="icon" width="24" height="24" aria-hidden="true">
+                      <use
+                        href="assets/icons/sprite.svg#icon-checkmark-small"
+                      ></use>
+                    </svg>
+                  </span>
+                </li>
+                <li
+                  class="select-option"
+                  role="option"
+                  tabindex="-1"
+                  aria-selected="false"
+                >
+                  <span class="select-option__label">Option 2</span>
+                  <span class="select-option__check" aria-hidden="true">
+                    <svg class="icon" width="24" height="24" aria-hidden="true">
+                      <use
+                        href="assets/icons/sprite.svg#icon-checkmark-small"
+                      ></use>
+                    </svg>
+                  </span>
+                </li>
+                <li
+                  class="select-option"
+                  role="option"
+                  tabindex="-1"
+                  aria-selected="false"
+                >
+                  <span class="select-option__label">Option 3</span>
+                  <span class="select-option__check" aria-hidden="true">
+                    <svg class="icon" width="24" height="24" aria-hidden="true">
+                      <use
+                        href="assets/icons/sprite.svg#icon-checkmark-small"
+                      ></use>
+                    </svg>
+                  </span>
+                </li>
+                <li
+                  class="select-option select-option--multiline"
+                  role="option"
+                  tabindex="-1"
+                  aria-selected="true"
+                >
+                  <span
+                    class="select-option__label select-option__label--multiline"
+                    >Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                    sed do eiusmod tempor incididunt ut labore et dolore magna
+                    aliqua ut enim ad minim veniam quis nostrud</span
+                  >
+                  <span class="select-option__check" aria-hidden="true">
+                    <svg class="icon" width="24" height="24" aria-hidden="true">
+                      <use
+                        href="assets/icons/sprite.svg#icon-checkmark-small"
+                      ></use>
+                    </svg>
+                  </span>
+                </li>
+                <li
+                  class="select-option"
+                  role="option"
+                  tabindex="-1"
+                  aria-selected="false"
+                >
+                  <span class="select-option__label">Option 5</span>
+                  <span class="select-option__check" aria-hidden="true">
+                    <svg class="icon" width="24" height="24" aria-hidden="true">
+                      <use
+                        href="assets/icons/sprite.svg#icon-checkmark-small"
+                      ></use>
+                    </svg>
+                  </span>
+                </li>
+                <li
+                  class="select-option"
+                  role="option"
+                  tabindex="-1"
+                  aria-selected="false"
+                >
+                  <span class="select-option__label">Option 6</span>
+                  <span class="select-option__check" aria-hidden="true">
+                    <svg class="icon" width="24" height="24" aria-hidden="true">
+                      <use
+                        href="assets/icons/sprite.svg#icon-checkmark-small"
+                      ></use>
+                    </svg>
+                  </span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h3>Contextual menu</h3>
+      </div>
+      <div class="section-content">
+        <p class="menu-doc-intro">
+          Contextual Menu is widely accepted, flexible, and communicates that
+          the menu adapts to the user’s current context, offering both actions
+          and settings.
+        </p>
+      </div>
+
+      <div class="section-header">
+        <h3>States</h3>
+      </div>
+      <div class="section-content">
+        <div class="menu-doc-row">
+          <div
+            class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+          >
+            <p class="select-label" id="menu-doc-lbl-ctx-def">
+              <span class="select-label__text">default</span>
+            </p>
+            <div class="select-dropdown" role="presentation">
+              <ul
+                class="select-list"
+                role="menu"
+                aria-labelledby="menu-doc-lbl-ctx-def"
+              >
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 1</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 2</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 3</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 4</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 5</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 6</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div
+            class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+          >
+            <p class="select-label" id="menu-doc-lbl-ctx-hov">
+              <span class="select-label__text">hover</span>
+            </p>
+            <div class="select-dropdown" role="presentation">
+              <ul
+                class="select-list"
+                role="menu"
+                aria-labelledby="menu-doc-lbl-ctx-hov"
+              >
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 1</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button
+                    type="button"
+                    class="select-option is-active"
+                    role="menuitem"
+                  >
+                    <span class="select-option__label">Option 2</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 3</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 4</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 5</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 6</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div
+            class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+          >
+            <p class="select-label" id="menu-doc-lbl-ctx-act">
+              <span class="select-label__text">active</span>
+            </p>
+            <div class="select-dropdown" role="presentation">
+              <ul
+                class="select-list"
+                role="menu"
+                aria-labelledby="menu-doc-lbl-ctx-act"
+              >
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 1</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button
+                    type="button"
+                    class="select-option select-option--pressed-demo"
+                    role="menuitem"
+                  >
+                    <span class="select-option__label">Option 2</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 3</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 4</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 5</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 6</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div
+            class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+          >
+            <p class="select-label" id="menu-doc-lbl-ctx-foc">
+              <span class="select-label__text">focus</span>
+            </p>
+            <div class="select-dropdown" role="presentation">
+              <ul
+                class="select-list"
+                role="menu"
+                aria-labelledby="menu-doc-lbl-ctx-foc"
+              >
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 1</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button
+                    type="button"
+                    class="select-option select-option--focus-visible-demo"
+                    role="menuitem"
+                  >
+                    <span class="select-option__label">Option 2</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 3</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 4</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 5</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 6</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div
+            class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+          >
+            <p class="select-label" id="menu-doc-lbl-ctx-dis">
+              <span class="select-label__text">disabled</span>
+            </p>
+            <div class="select-dropdown" role="presentation">
+              <ul
+                class="select-list"
+                role="menu"
+                aria-labelledby="menu-doc-lbl-ctx-dis"
+              >
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 1</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button
+                    type="button"
+                    class="select-option"
+                    role="menuitem"
+                    disabled
+                    aria-disabled="true"
+                  >
+                    <span class="select-option__label">Option 2</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 3</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 4</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 5</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+                <li role="none">
+                  <button type="button" class="select-option" role="menuitem">
+                    <span class="select-option__label">Option 6</span>
+                    <span
+                      class="select-option__check"
+                      aria-hidden="true"
+                    ></span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h3>Variations</h3>
+      </div>
+      <div class="section-content">
+        <p class="menu-doc-intro menu-doc-intro--tight">
+          Layout variants from the design spec: plain rows, leading icons or
+          native checkbox / radio rows (full row is clickable), and segmented
+          lists with an optional section label. Each preview uses six rows in
+          the same panel size as elsewhere on this page.
+        </p>
+      </div>
+
+      <div class="section-header">
+        <h3>Layout previews</h3>
+      </div>
+      <div class="section-content menu-doc-section--variations">
+        <p class="menu-doc-intro menu-doc-intro--tight">
+          The same six-row layout is shown at a consistent panel width; the list
+          height follows the content so every preview lines up without an inner
+          scrollbar.
+        </p>
+        <div class="menu-doc-variations">
+          <div class="menu-doc-variations-row">
+            <div class="menu-doc-variations-col">
+              <p class="select-doc-spec-label">none</p>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+              >
+                <p class="select-label" id="menu-doc-lbl-var-none">
+                  <span class="select-label__text">none</span>
+                </p>
+                <div class="select-dropdown" role="presentation">
+                  <ul
+                    class="select-list"
+                    role="menu"
+                    aria-labelledby="menu-doc-lbl-var-none"
+                  >
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 1</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 2</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 3</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 4</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 5</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 6</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="menu-doc-variations-col">
+              <p class="select-doc-spec-label">icon</p>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+              >
+                <p class="select-label" id="menu-doc-lbl-var-icon">
+                  <span class="select-label__text">icon</span>
+                </p>
+                <div class="select-dropdown" role="presentation">
+                  <ul
+                    class="select-list"
+                    role="menu"
+                    aria-labelledby="menu-doc-lbl-var-icon"
+                  >
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__leading" aria-hidden="true">
+                          <svg
+                            class="icon"
+                            width="20"
+                            height="20"
+                            aria-hidden="true"
+                          >
+                            <use
+                              href="assets/icons/sprite.svg#icon-shield"
+                            ></use>
+                          </svg>
+                        </span>
+                        <span class="select-option__label">Option 1</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__leading" aria-hidden="true">
+                          <svg
+                            class="icon"
+                            width="20"
+                            height="20"
+                            aria-hidden="true"
+                          >
+                            <use
+                              href="assets/icons/sprite.svg#icon-business"
+                            ></use>
+                          </svg>
+                        </span>
+                        <span class="select-option__label">Option 2</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__leading" aria-hidden="true">
+                          <svg
+                            class="icon"
+                            width="20"
+                            height="20"
+                            aria-hidden="true"
+                          >
+                            <use
+                              href="assets/icons/sprite.svg#icon-settings"
+                            ></use>
+                          </svg>
+                        </span>
+                        <span class="select-option__label">Option 3</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__leading" aria-hidden="true">
+                          <svg
+                            class="icon"
+                            width="20"
+                            height="20"
+                            aria-hidden="true"
+                          >
+                            <use href="assets/icons/sprite.svg#icon-edit"></use>
+                          </svg>
+                        </span>
+                        <span class="select-option__label">Option 4</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__leading" aria-hidden="true">
+                          <svg
+                            class="icon"
+                            width="20"
+                            height="20"
+                            aria-hidden="true"
+                          >
+                            <use
+                              href="assets/icons/sprite.svg#icon-rotate-arrow"
+                            ></use>
+                          </svg>
+                        </span>
+                        <span class="select-option__label">Option 5</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__leading" aria-hidden="true">
+                          <svg
+                            class="icon"
+                            width="20"
+                            height="20"
+                            aria-hidden="true"
+                          >
+                            <use
+                              href="assets/icons/sprite.svg#icon-qr-code"
+                            ></use>
+                          </svg>
+                        </span>
+                        <span class="select-option__label">Option 6</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="menu-doc-variations-col">
+              <p class="select-doc-spec-label">checkbox</p>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+              >
+                <p class="select-label" id="menu-doc-lbl-var-cb">
+                  <span class="select-label__text">checkbox</span>
+                </p>
+                <div class="select-dropdown" role="presentation">
+                  <ul
+                    class="select-list"
+                    role="group"
+                    aria-labelledby="menu-doc-lbl-var-cb"
+                  >
+                    <li>
+                      <label
+                        class="select-option select-option--control checkbox checkbox--medium"
+                        for="menu-doc-var-cb-1"
+                      >
+                        <input
+                          type="checkbox"
+                          class="checkbox-input"
+                          id="menu-doc-var-cb-1"
+                          name="menu-doc-var-cb"
+                          value="opt1"
+                        />
+                        <span class="checkbox-custom" aria-hidden="true"></span>
+                        <span class="select-option__label">Option 1</span>
+                      </label>
+                    </li>
+                    <li>
+                      <label
+                        class="select-option select-option--control checkbox checkbox--medium"
+                        for="menu-doc-var-cb-2"
+                      >
+                        <input
+                          type="checkbox"
+                          class="checkbox-input"
+                          id="menu-doc-var-cb-2"
+                          name="menu-doc-var-cb"
+                          value="opt2"
+                        />
+                        <span class="checkbox-custom" aria-hidden="true"></span>
+                        <span class="select-option__label">Option 2</span>
+                      </label>
+                    </li>
+                    <li>
+                      <label
+                        class="select-option select-option--control checkbox checkbox--medium"
+                        for="menu-doc-var-cb-3"
+                      >
+                        <input
+                          type="checkbox"
+                          class="checkbox-input"
+                          id="menu-doc-var-cb-3"
+                          name="menu-doc-var-cb"
+                          value="opt3"
+                        />
+                        <span class="checkbox-custom" aria-hidden="true"></span>
+                        <span class="select-option__label">Option 3</span>
+                      </label>
+                    </li>
+                    <li>
+                      <label
+                        class="select-option select-option--control checkbox checkbox--medium"
+                        for="menu-doc-var-cb-4"
+                      >
+                        <input
+                          type="checkbox"
+                          class="checkbox-input"
+                          id="menu-doc-var-cb-4"
+                          name="menu-doc-var-cb"
+                          value="opt4"
+                        />
+                        <span class="checkbox-custom" aria-hidden="true"></span>
+                        <span class="select-option__label">Option 4</span>
+                      </label>
+                    </li>
+                    <li>
+                      <label
+                        class="select-option select-option--control checkbox checkbox--medium"
+                        for="menu-doc-var-cb-5"
+                      >
+                        <input
+                          type="checkbox"
+                          class="checkbox-input"
+                          id="menu-doc-var-cb-5"
+                          name="menu-doc-var-cb"
+                          value="opt5"
+                        />
+                        <span class="checkbox-custom" aria-hidden="true"></span>
+                        <span class="select-option__label">Option 5</span>
+                      </label>
+                    </li>
+                    <li>
+                      <label
+                        class="select-option select-option--control checkbox checkbox--medium"
+                        for="menu-doc-var-cb-6"
+                      >
+                        <input
+                          type="checkbox"
+                          class="checkbox-input"
+                          id="menu-doc-var-cb-6"
+                          name="menu-doc-var-cb"
+                          value="opt6"
+                        />
+                        <span class="checkbox-custom" aria-hidden="true"></span>
+                        <span class="select-option__label">Option 6</span>
+                      </label>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="menu-doc-variations-col">
+              <p class="select-doc-spec-label">radio-button</p>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+              >
+                <p class="select-label" id="menu-doc-lbl-var-radio">
+                  <span class="select-label__text">radio-button</span>
+                </p>
+                <div class="select-dropdown" role="presentation">
+                  <ul
+                    class="select-list"
+                    role="radiogroup"
+                    aria-labelledby="menu-doc-lbl-var-radio"
+                  >
+                    <li>
+                      <label
+                        class="select-option select-option--control radio radio--medium"
+                        for="menu-doc-var-radio-1"
+                      >
+                        <input
+                          type="radio"
+                          class="radio-input"
+                          id="menu-doc-var-radio-1"
+                          name="menu-doc-var-radio-group"
+                          value="opt1"
+                        />
+                        <span class="radio-custom" aria-hidden="true"></span>
+                        <span class="select-option__label">Option 1</span>
+                      </label>
+                    </li>
+                    <li>
+                      <label
+                        class="select-option select-option--control radio radio--medium"
+                        for="menu-doc-var-radio-2"
+                      >
+                        <input
+                          type="radio"
+                          class="radio-input"
+                          id="menu-doc-var-radio-2"
+                          name="menu-doc-var-radio-group"
+                          value="opt2"
+                          checked
+                        />
+                        <span class="radio-custom" aria-hidden="true"></span>
+                        <span class="select-option__label">Option 2</span>
+                      </label>
+                    </li>
+                    <li>
+                      <label
+                        class="select-option select-option--control radio radio--medium"
+                        for="menu-doc-var-radio-3"
+                      >
+                        <input
+                          type="radio"
+                          class="radio-input"
+                          id="menu-doc-var-radio-3"
+                          name="menu-doc-var-radio-group"
+                          value="opt3"
+                        />
+                        <span class="radio-custom" aria-hidden="true"></span>
+                        <span class="select-option__label">Option 3</span>
+                      </label>
+                    </li>
+                    <li>
+                      <label
+                        class="select-option select-option--control radio radio--medium"
+                        for="menu-doc-var-radio-4"
+                      >
+                        <input
+                          type="radio"
+                          class="radio-input"
+                          id="menu-doc-var-radio-4"
+                          name="menu-doc-var-radio-group"
+                          value="opt4"
+                        />
+                        <span class="radio-custom" aria-hidden="true"></span>
+                        <span class="select-option__label">Option 4</span>
+                      </label>
+                    </li>
+                    <li>
+                      <label
+                        class="select-option select-option--control radio radio--medium"
+                        for="menu-doc-var-radio-5"
+                      >
+                        <input
+                          type="radio"
+                          class="radio-input"
+                          id="menu-doc-var-radio-5"
+                          name="menu-doc-var-radio-group"
+                          value="opt5"
+                        />
+                        <span class="radio-custom" aria-hidden="true"></span>
+                        <span class="select-option__label">Option 5</span>
+                      </label>
+                    </li>
+                    <li>
+                      <label
+                        class="select-option select-option--control radio radio--medium"
+                        for="menu-doc-var-radio-6"
+                      >
+                        <input
+                          type="radio"
+                          class="radio-input"
+                          id="menu-doc-var-radio-6"
+                          name="menu-doc-var-radio-group"
+                          value="opt6"
+                        />
+                        <span class="radio-custom" aria-hidden="true"></span>
+                        <span class="select-option__label">Option 6</span>
+                      </label>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="menu-doc-variations-row">
+            <div class="menu-doc-variations-col">
+              <p class="select-doc-spec-label">segmented</p>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+              >
+                <p class="select-label" id="menu-doc-lbl-var-seg">
+                  <span class="select-label__text">segmented</span>
+                </p>
+                <div class="select-dropdown" role="presentation">
+                  <ul
+                    class="select-list"
+                    role="menu"
+                    aria-labelledby="menu-doc-lbl-var-seg"
+                  >
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 1</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 2</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 3</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li class="select-list__divider" role="separator">
+                      <hr
+                        class="separator separator--horizontal separator--thin separator--subtle"
+                      />
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 4</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 5</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 6</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="menu-doc-variations-col">
+              <p class="select-doc-spec-label">segmented: section-heading</p>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+              >
+                <p class="select-label" id="menu-doc-lbl-var-seg-h">
+                  <span class="select-label__text"
+                    >segmented: section-heading</span
+                  >
+                </p>
+                <div class="select-dropdown" role="presentation">
+                  <ul
+                    class="select-list"
+                    role="menu"
+                    aria-labelledby="menu-doc-lbl-var-seg-h"
+                  >
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 1</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 2</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 3</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li class="select-list__divider" role="separator">
+                      <hr
+                        class="separator separator--horizontal separator--thin separator--subtle"
+                      />
+                    </li>
+                    <li class="select-menu__section-label" role="presentation">
+                      Section Heading
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 4</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 5</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 6</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h3>Dismissal</h3>
+      </div>
+      <div class="section-content">
+        <p class="menu-doc-dismissal-intro">
+          Popovers can be dismissed by: interacting with the button that
+          presented it again, making a decision within the popover, interacting
+          with other page content, the <kbd>ESC</kbd> key.
+        </p>
+        <div class="menu-doc-dismissal-row">
+          <div class="menu-doc-dismissal-scenario">
+            <div class="menu-doc-dismissal-stack">
+              <div class="menu-doc-dismissal-trigger-wrap">
+                <button
+                  type="button"
+                  class="btn btn-primary btn-rounded menu-doc-dismissal-trigger"
+                >
+                  <span>Button</span>
+                  <svg class="icon" width="20" height="20" aria-hidden="true">
+                    <use
+                      href="assets/icons/sprite.svg#icon-chevron-bottom"
+                    ></use>
+                  </svg>
+                </button>
+                <span class="menu-doc-dismissal-gesture" aria-hidden="true">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="72"
+                    height="72"
+                    viewBox="0 0 72 72"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      opacity="0.24"
+                      d="M0 36C0 16.1177 16.1178 0 36 0C55.8823 0 72 16.1177 72 36C72 55.8822 55.8823 72 36 72C16.1178 72 0 55.8822 0 36Z"
+                      fill="#2F56FF"
+                    />
+                    <circle
+                      opacity="0.5"
+                      cx="36"
+                      cy="36"
+                      r="24"
+                      fill="#2F56FF"
+                    />
+                  </svg>
+                </span>
+              </div>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+              >
+                <div class="select-dropdown" role="presentation">
+                  <ul class="select-list" role="menu" aria-label="Example menu">
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 1</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 2</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 3</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 4</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 5</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 6</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-doc-dismissal-scenario">
+            <div class="menu-doc-dismissal-stack">
+              <div class="menu-doc-dismissal-trigger-wrap">
+                <button
+                  type="button"
+                  class="btn btn-primary btn-rounded menu-doc-dismissal-trigger"
+                >
+                  <span>Button</span>
+                  <svg class="icon" width="20" height="20" aria-hidden="true">
+                    <use
+                      href="assets/icons/sprite.svg#icon-chevron-bottom"
+                    ></use>
+                  </svg>
+                </button>
+              </div>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+              >
+                <div class="menu-doc-dismissal-menu-hit">
+                  <div class="select-dropdown" role="presentation">
+                    <ul
+                      class="select-list"
+                      role="menu"
+                      aria-label="Example menu"
+                    >
+                      <li role="none">
+                        <button
+                          type="button"
+                          class="select-option"
+                          role="menuitem"
+                        >
+                          <span class="select-option__label">Option 1</span>
+                          <span
+                            class="select-option__check"
+                            aria-hidden="true"
+                          ></span>
+                        </button>
+                      </li>
+                      <li role="none">
+                        <button
+                          type="button"
+                          class="select-option"
+                          role="menuitem"
+                        >
+                          <span class="select-option__label">Option 2</span>
+                          <span
+                            class="select-option__check"
+                            aria-hidden="true"
+                          ></span>
+                        </button>
+                      </li>
+                      <li role="none">
+                        <button
+                          type="button"
+                          class="select-option"
+                          role="menuitem"
+                        >
+                          <span class="select-option__label">Option 3</span>
+                          <span
+                            class="select-option__check"
+                            aria-hidden="true"
+                          ></span>
+                        </button>
+                      </li>
+                      <li role="none">
+                        <button
+                          type="button"
+                          class="select-option"
+                          role="menuitem"
+                        >
+                          <span class="select-option__label">Option 4</span>
+                          <span
+                            class="select-option__check"
+                            aria-hidden="true"
+                          ></span>
+                        </button>
+                      </li>
+                      <li role="none">
+                        <button
+                          type="button"
+                          class="select-option"
+                          role="menuitem"
+                        >
+                          <span class="select-option__label">Option 5</span>
+                          <span
+                            class="select-option__check"
+                            aria-hidden="true"
+                          ></span>
+                        </button>
+                      </li>
+                      <li role="none">
+                        <button
+                          type="button"
+                          class="select-option"
+                          role="menuitem"
+                        >
+                          <span class="select-option__label">Option 6</span>
+                          <span
+                            class="select-option__check"
+                            aria-hidden="true"
+                          ></span>
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                  <span class="menu-doc-dismissal-gesture" aria-hidden="true">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="72"
+                      height="72"
+                      viewBox="0 0 72 72"
+                      fill="none"
+                      aria-hidden="true"
+                    >
+                      <path
+                        opacity="0.24"
+                        d="M0 36C0 16.1177 16.1178 0 36 0C55.8823 0 72 16.1177 72 36C72 55.8822 55.8823 72 36 72C16.1178 72 0 55.8822 0 36Z"
+                        fill="#2F56FF"
+                      />
+                      <circle
+                        opacity="0.5"
+                        cx="36"
+                        cy="36"
+                        r="24"
+                        fill="#2F56FF"
+                      />
+                    </svg>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="menu-doc-dismissal-scenario menu-doc-dismissal-scenario--outside"
+          >
+            <div class="menu-doc-dismissal-stack">
+              <div class="menu-doc-dismissal-trigger-wrap">
+                <button
+                  type="button"
+                  class="btn btn-primary btn-rounded menu-doc-dismissal-trigger"
+                >
+                  <span>Button</span>
+                  <svg class="icon" width="20" height="20" aria-hidden="true">
+                    <use
+                      href="assets/icons/sprite.svg#icon-chevron-bottom"
+                    ></use>
+                  </svg>
+                </button>
+              </div>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+              >
+                <div class="select-dropdown" role="presentation">
+                  <ul class="select-list" role="menu" aria-label="Example menu">
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 1</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 2</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 3</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 4</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 5</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                    <li role="none">
+                      <button
+                        type="button"
+                        class="select-option"
+                        role="menuitem"
+                      >
+                        <span class="select-option__label">Option 6</span>
+                        <span
+                          class="select-option__check"
+                          aria-hidden="true"
+                        ></span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="menu-doc-dismissal-outside-hit" aria-hidden="true">
+              <span class="menu-doc-dismissal-gesture">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="72"
+                  height="72"
+                  viewBox="0 0 72 72"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    opacity="0.24"
+                    d="M0 36C0 16.1177 16.1178 0 36 0C55.8823 0 72 16.1177 72 36C72 55.8822 55.8823 72 36 72C16.1178 72 0 55.8822 0 36Z"
+                    fill="#2F56FF"
+                  />
+                  <circle opacity="0.5" cx="36" cy="36" r="24" fill="#2F56FF" />
+                </svg>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h3>Edge cases</h3>
+      </div>
+      <div class="section-content">
+        <p class="menu-doc-intro menu-doc-intro--tight">
+          Option labels and section headings wrap up to two lines, then truncate
+          with an ellipsis when they exceed the menu width.
+        </p>
+        <div class="menu-doc-row menu-doc-contextual-edge-row">
+          <div class="menu-doc-variations-col">
+            <p class="select-doc-spec-label" id="menu-doc-ctx-edge-opt-label">
+              option-label-truncation
+            </p>
+            <div
+              class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+            >
+              <div class="select-dropdown" role="presentation">
+                <ul
+                  class="select-list"
+                  role="menu"
+                  aria-labelledby="menu-doc-ctx-edge-opt-label"
+                >
+                  <li role="none">
+                    <button type="button" class="select-option" role="menuitem">
+                      <span class="select-option__label">Option 1</span>
+                      <span
+                        class="select-option__check"
+                        aria-hidden="true"
+                      ></span>
+                    </button>
+                  </li>
+                  <li role="none">
+                    <button
+                      type="button"
+                      class="select-option select-option--multiline"
+                      role="menuitem"
+                    >
+                      <span
+                        class="select-option__label select-option__label--multiline"
+                        >This is a very long menu option that will likely not
+                        fit within a single line and should truncate with an
+                        ellipsis</span
+                      >
+                      <span
+                        class="select-option__check"
+                        aria-hidden="true"
+                      ></span>
+                    </button>
+                  </li>
+                  <li role="none">
+                    <button type="button" class="select-option" role="menuitem">
+                      <span class="select-option__label">Option 3</span>
+                      <span
+                        class="select-option__check"
+                        aria-hidden="true"
+                      ></span>
+                    </button>
+                  </li>
+                  <li role="none">
+                    <button type="button" class="select-option" role="menuitem">
+                      <span class="select-option__label">Option 4</span>
+                      <span
+                        class="select-option__check"
+                        aria-hidden="true"
+                      ></span>
+                    </button>
+                  </li>
+                  <li role="none">
+                    <button type="button" class="select-option" role="menuitem">
+                      <span class="select-option__label">Option 5</span>
+                      <span
+                        class="select-option__check"
+                        aria-hidden="true"
+                      ></span>
+                    </button>
+                  </li>
+                  <li role="none">
+                    <button type="button" class="select-option" role="menuitem">
+                      <span class="select-option__label">Option 6</span>
+                      <span
+                        class="select-option__check"
+                        aria-hidden="true"
+                      ></span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="menu-doc-variations-col">
+            <p class="select-doc-spec-label" id="menu-doc-ctx-edge-hdg-label">
+              heading-truncation
+            </p>
+            <div
+              class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+            >
+              <div class="select-dropdown" role="presentation">
+                <ul
+                  class="select-list"
+                  role="menu"
+                  aria-labelledby="menu-doc-ctx-edge-hdg-label"
+                >
+                  <li role="none">
+                    <button type="button" class="select-option" role="menuitem">
+                      <span class="select-option__label">Option 1</span>
+                      <span
+                        class="select-option__check"
+                        aria-hidden="true"
+                      ></span>
+                    </button>
+                  </li>
+                  <li role="none">
+                    <button type="button" class="select-option" role="menuitem">
+                      <span class="select-option__label">Option 2</span>
+                      <span
+                        class="select-option__check"
+                        aria-hidden="true"
+                      ></span>
+                    </button>
+                  </li>
+                  <li role="none">
+                    <button type="button" class="select-option" role="menuitem">
+                      <span class="select-option__label">Option 3</span>
+                      <span
+                        class="select-option__check"
+                        aria-hidden="true"
+                      ></span>
+                    </button>
+                  </li>
+                  <li class="select-list__divider" role="separator">
+                    <hr
+                      class="separator separator--horizontal separator--thin separator--subtle"
+                    />
+                  </li>
+                  <li
+                    class="select-menu__section-label menu-doc-contextual-edge__mid-heading"
+                    role="presentation"
+                  >
+                    <span class="select-menu__section-label-text"
+                      >This is a very long heading that will likely not fit
+                      within a single line container</span
+                    >
+                  </li>
+                  <li role="none">
+                    <button type="button" class="select-option" role="menuitem">
+                      <span class="select-option__label">Option 4</span>
+                      <span
+                        class="select-option__check"
+                        aria-hidden="true"
+                      ></span>
+                    </button>
+                  </li>
+                  <li role="none">
+                    <button type="button" class="select-option" role="menuitem">
+                      <span class="select-option__label">Option 5</span>
+                      <span
+                        class="select-option__check"
+                        aria-hidden="true"
+                      ></span>
+                    </button>
+                  </li>
+                  <li role="none">
+                    <button type="button" class="select-option" role="menuitem">
+                      <span class="select-option__label">Option 6</span>
+                      <span
+                        class="select-option__check"
+                        aria-hidden="true"
+                      ></span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h3>Target sizes</h3>
+      </div>
+      <div class="section-content">
+        <p class="menu-doc-items-target-copy">
+          Each menu item (cell) serves as the primary interactive target for
+          selection. To ensure accessibility and ease of use across devices, the
+          menu cell height is set to 44px. This provides a reliable touch and
+          click area, reducing the chance of accidental selections.
+        </p>
+        <div class="menu-doc-row">
+          <div class="menu-doc-variations-col">
+            <p class="select-doc-spec-label">pointer-devices</p>
+            <div
+              class="select-wrap menu-doc-select-static menu-doc-select-static--target-44"
+            >
+              <p class="select-label" id="menu-doc-lbl-items-pointer">
+                <span class="select-label__text">pointer-devices</span>
+              </p>
+              <div class="select-dropdown" role="presentation">
+                <ul
+                  class="select-list"
+                  role="listbox"
+                  aria-labelledby="menu-doc-lbl-items-pointer"
+                  tabindex="-1"
+                >
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 1</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="true"
+                  >
+                    <span class="select-option__label">Option 2</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 3</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 4</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 5</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                  <li
+                    class="select-option"
+                    role="option"
+                    tabindex="-1"
+                    aria-selected="false"
+                  >
+                    <span class="select-option__label">Option 6</span>
+                    <span class="select-option__check" aria-hidden="true">
+                      <svg
+                        class="icon"
+                        width="24"
+                        height="24"
+                        aria-hidden="true"
+                      >
+                        <use
+                          href="assets/icons/sprite.svg#icon-checkmark-small"
+                        ></use>
+                      </svg>
+                    </span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
