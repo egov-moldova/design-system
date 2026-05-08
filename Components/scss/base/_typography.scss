@@ -36,3 +36,22 @@ ul, ol {
   margin-top: 0;
   margin-bottom: 1rem;
 }
+
+code,
+kbd,
+samp {
+  font-family: var(--font-family-mono);
+  font-size: 0.925em;
+}
+
+pre {
+  font-family: var(--font-family-mono);
+  overflow-x: auto;
+}
+
+kbd {
+  padding: 0.1em 0.35em;
+  border-radius: var(--border-radius-4, 4px);
+  background: var(--color-background-base-secondary, var(--gray-100, #f5f5f5));
+  border: 1px solid var(--gray-250, #e8e8e8);
+}

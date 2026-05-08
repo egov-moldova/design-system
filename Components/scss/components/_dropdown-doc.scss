@@ -1,7 +1,5 @@
 @use '../abstracts/tokens' as tokens;
-
-$select-doc-font-mono:
-  'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+@use '../abstracts/mixins/index' as mixins;
 
 $select-doc-native-font-macos:
   system-ui,
@@ -17,7 +15,7 @@ $select-doc-native-font-ios:
   sans-serif;
 
 @mixin select-doc-spec-label-mono {
-  font-family: $select-doc-font-mono;
+  font-family: var(--font-family-mono);
   font-style: normal;
   font-weight: var(--font-weight-fw-medium, var(--font-weight-medium, 500));
   font-size: var(--font-size-fs-16, var(--font-size-16, 16px));
@@ -127,12 +125,19 @@ $select-doc-native-font-ios:
   }
 }
 
+.select-doc-body.select-doc-body--intro a {
+  font-family: inherit;
+  font-size: inherit;
+  font-style: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+}
+
 .select-doc-body--intro {
+  @include mixins.doc-page-intro-copy;
   max-width: 800px;
   min-height: 96px;
-  font-size: 20px;
-  line-height: 32px;
-  letter-spacing: -0.4px;
 }
 
 .select-doc-page.container {
@@ -154,7 +159,6 @@ $select-doc-native-font-ios:
   border-bottom: var(--border-width-1, 1px) solid var(--gray-200, #d9d9d9);
 }
 
-/* Figma Desktop/Heading/H2 look — band titles (semantic: only Menu page uses h2 for “Selection menu”; other bands use h3) */
 .select-doc-section-header h2,
 .select-doc-section-header h3 {
   margin: 0;
@@ -175,19 +179,10 @@ $select-doc-native-font-ios:
   padding-bottom: 80px;
 }
 
-.select-doc-section-content--after-intro {
-  padding-top: 40px;
-}
-
-.select-doc-section-intro {
-  padding-top: var(--spacing-56, 56px);
-}
-
 .select-doc-page .select-wrap {
   max-width: 282px;
 }
 
-// Doc page: 282×256 panel for every real custom select (macOS/iOS behavior mocks have no .select-dropdown).
 .select-doc-page .custom-select {
   .select-dropdown {
     box-sizing: border-box;
@@ -205,6 +200,7 @@ $select-doc-native-font-ios:
     overflow-y: auto;
     width: 100%;
     align-self: stretch;
+    @include mixins.scrollbar-thin-no-arrows();
   }
 
   .select-option {

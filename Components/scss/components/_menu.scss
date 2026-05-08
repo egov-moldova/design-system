@@ -1,0 +1,41 @@
+.menu {
+  position: relative;
+  box-sizing: border-box;
+  --menu-row-min-height: 48px;
+  --menu-panel-radius: var(--border-radius-16, 16px);
+  --menu-panel-shadow: var(--drop-shadow-300);
+  --select-bg: var(--color-background-base-default, var(--white, #fff));
+  --select-menu-shadow: var(--menu-panel-shadow);
+  --select-option-text: var(--gray-700, #383838);
+  --select-option-selected-bg: var(
+    --color-background-base-default-active,
+    var(--gray-250, #e8e8e8)
+  );
+  --select-option-selected-text: var(
+    --color-text-brand-default,
+    var(--blue-sky-600, #0058d2)
+  );
+  --select-panel-border: var(--gray-250);
+  --select-menu-radius: var(--menu-panel-radius);
+  --select-z: 2000;
+  --select-focus-ring: rgba(0, 88, 210, 0.2);
+}
+
+.menu__trigger {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-8, 8px);
+  width: 100%;
+  margin: 0;
+  padding: var(--spacing-12, 12px) var(--spacing-16, 16px);
+  min-height: var(--menu-row-min-height);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  color: var(--gray-900, #121212);
+  background: var(--select-bg, var(--white));
+  border: var(--border-width-1, 1px) solid var(--select-panel-border);
+  border-radius: var(--border-radius-8, 8px);
+}

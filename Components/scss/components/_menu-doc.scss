@@ -1,17 +1,4 @@
-/*
- * Menu doc — composition model
- * --------------------------------------------------------------------------
- * One menu surface everywhere (same panel as open Select / nav dropdown):
- * add rows (options), optional leading slot (icon), selection (check + aria),
- * section labels / dividers as needed. Do not fork panel chrome per demo.
- *
- * Vertical rhythm between composed bands (options vs icons vs selectable rows,
- * or doc subsections): --menu-doc-composition-gap (80px).
- *
- * Static Select previews: .menu-doc-select-static > .select-dropdown + .select-option*
- * States row: four identical list panels (.menu-doc-state-row + .menu-doc-state-demo).
- * Listbox mirror: .selection-menu (+ __list / __item / __item--selected)
- */
+@use '../abstracts/mixins/index' as mixins;
 
 .menu-doc-page {
   --menu-doc-composition-gap: var(--spacing-80, 80px);
@@ -24,7 +11,6 @@
   }
 }
 
-/* Figma doc bands: rule row + content (48 top / 80 bottom) — same chrome as .select-doc-section-* */
 .menu-doc-page .section-header {
   display: flex;
   align-items: center;
@@ -72,8 +58,8 @@
   justify-content: space-between;
   gap: var(--spacing-24, 24px);
   width: 100%;
-  padding: var(--spacing-20, 20px) var(--spacing-24, 24px) var(--spacing-20, 20px)
-    var(--spacing-32, 32px);
+  padding: var(--spacing-20, 20px) var(--spacing-24, 24px)
+    var(--spacing-20, 20px) var(--spacing-32, 32px);
   background: var(--color-background-base-secondary, var(--gray-100, #f5f5f5));
   border-radius: var(--border-radius-12, 12px);
   box-sizing: border-box;
@@ -120,18 +106,37 @@
 
 .menu-doc-variations {
   display: flex;
-  flex-direction: column;
-  gap: var(--menu-doc-composition-gap);
-}
-
-.menu-doc-variations-row {
-  display: flex;
   flex-wrap: wrap;
   gap: var(--menu-doc-composition-gap);
   align-items: flex-start;
 }
 
-/* Vertical stack of composed menu-doc bands (inherits gap from .menu-doc-page) */
+.menu-doc-page
+  .menu-doc-variations
+  > .select-wrap.menu-doc-select-static
+  > .select-label.select-label--doc-spec,
+.menu-doc-page
+  .menu-doc-row
+  > .select-wrap.menu-doc-select-static
+  > .select-label.select-label--doc-spec {
+  margin-bottom: 0;
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-fs-16, 16px);
+  font-style: normal;
+  font-weight: 500;
+  line-height: var(--line-height-lh-24, 24px);
+  letter-spacing: -0.16px;
+  color: var(--color-text-base-secondary, var(--gray-700, #383838));
+}
+
+.menu-doc-page .select-label.select-label--doc-spec .select-label__text {
+  flex: none;
+  min-width: 0;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
 .menu-doc-composition {
   display: flex;
   flex-direction: column;
@@ -141,24 +146,23 @@
   box-sizing: border-box;
 }
 
-.menu-doc-variations-col {
+.select-wrap.menu-doc-select-static {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-8, 8px);
   align-items: flex-start;
 }
 
-/* Contextual doc: Figma 691:5740 — 16px between mono spec label and preview */
-.menu-doc-contextual-edge-row.menu-doc-row > .menu-doc-variations-col {
+.menu-doc-edge-row.menu-doc-row
+  > .select-wrap.menu-doc-select-static {
   gap: var(--spacing-16, 16px);
 }
 
-/* Mid-list heading: 2-line clamp, tertiary (Figma heading-truncation) */
-.menu-doc-contextual-edge__mid-heading {
+.menu-doc-edge-heading {
   padding: var(--spacing-4, 4px) var(--spacing-16, 16px);
 }
 
-.menu-doc-contextual-edge__mid-heading .select-menu__section-label-text {
+.menu-doc-edge-heading .menu__section-label-text {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -172,7 +176,6 @@
   color: var(--color-text-base-tertiary, var(--gray-500, #757575));
 }
 
-/* Dismissal band (Figma 691:5724) */
 .menu-doc-dismissal-intro {
   margin: 0 0 var(--spacing-40, 40px);
   max-width: 800px;
@@ -204,6 +207,34 @@
   gap: var(--spacing-48, 48px);
 }
 
+@media (pointer: fine) {
+  .menu-doc-page
+    .menu-doc-dismissal-scenario--outside
+    .menu-doc-select-static--contextual
+    .menu__panel {
+    width: 254px;
+    min-width: 254px;
+    max-width: 254px;
+    height: 284px;
+    min-height: 284px;
+    max-height: 284px;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .menu-doc-page
+    .menu-doc-dismissal-scenario--outside
+    .menu-doc-select-static--contextual
+    .menu__list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    @include mixins.scrollbar-thin-no-arrows();
+  }
+}
+
 .menu-doc-dismissal-stack {
   display: flex;
   flex-direction: column;
@@ -232,6 +263,11 @@
 .menu-doc-dismissal-trigger .icon {
   width: 20px;
   height: 20px;
+  transition: transform 0.2s ease;
+}
+
+.menu-doc-dismissal-trigger[aria-expanded='true'] .icon {
+  transform: rotate(180deg);
 }
 
 .menu-doc-dismissal-menu-hit {
@@ -253,19 +289,17 @@
   height: 100%;
 }
 
-/* Tap ripple over trigger chevron (Figma gesture on button) */
 .menu-doc-dismissal-trigger-wrap .menu-doc-dismissal-gesture {
   top: 50%;
   right: 10px;
   transform: translate(40%, -50%);
 }
 
-/* Tap centered on second menu row */
 .menu-doc-dismissal-menu-hit .menu-doc-dismissal-gesture {
   left: 50%;
   top: calc(
     var(--spacing-8, 8px) + 48px + var(--spacing-4, 4px) + 24px
-  ); /* panel pad + row1 + list gap + half row2 */
+  );
   transform: translate(-50%, -50%);
 }
 
@@ -288,33 +322,150 @@
   margin-bottom: var(--spacing-32, 32px);
 }
 
-.menu-doc-intro {
-  margin: 0 0 var(--menu-doc-composition-gap);
+.menu-doc-intro--selection {
+  box-sizing: border-box;
   max-width: 800px;
-  font-family: var(--font-family-base, 'Onest', system-ui, sans-serif);
-  font-size: var(--font-size-fs-18, 18px);
-  font-weight: var(--font-weight-fw-regular, 400);
-  line-height: var(--line-height-lh-28, 28px);
-  color: var(--color-text-base-secondary, var(--gray-700, #383838));
+  min-height: 124px;
 }
 
-/* Breakpoints: intro is sibling of .menu-doc-breakpoints (row previews only) */
+.menu-doc-intro {
+  @include mixins.doc-page-intro-copy;
+  margin: 0;
+  max-width: 800px;
+}
+
 .menu-doc-breakpoints {
   display: block;
 }
 
 .menu-doc-breakpoints-intro {
+  @include mixins.doc-page-intro-copy;
   max-width: 800px;
   margin: 0 0 var(--menu-doc-composition-gap);
-  font-family: var(--font-family-base, 'Onest', system-ui, sans-serif);
-  font-size: var(--font-size-fs-18, 18px);
-  font-weight: var(--font-weight-fw-regular, 400);
-  line-height: var(--line-height-lh-28, 28px);
-  color: var(--color-text-base-tertiary, var(--gray-500, #757575));
+
+  .link,
+  a.link {
+    font-family: inherit;
+    font-size: inherit;
+    font-style: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    letter-spacing: inherit;
+  }
 }
 
-/* States: fixed 270px columns, same panel height for all four previews */
-.menu-doc-page .menu-doc-state-row > .menu-doc-variations-col {
+.menu-doc-breakpoints-mobile-frame {
+  box-sizing: border-box;
+  width: 415px;
+  max-width: 100%;
+  min-height: 288px;
+  background: #d5d5d5;
+  border-radius: 0 0 var(--border-radius-32, 32px) var(--border-radius-32, 32px);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0 var(--spacing-20, 20px) var(--spacing-20, 20px);
+  overflow: hidden;
+}
+
+.menu-doc-breakpoints-mobile-frame > .menu-doc-state-demo {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  width: 375px;
+  max-width: 100%;
+  min-height: 288px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-background-base-default, var(--white, #fff));
+  border-radius: 0 0 var(--border-radius-24, 24px) var(--border-radius-24, 24px);
+  box-shadow: var(--drop-shadow-300);
+}
+
+.menu-doc-breakpoints-mobile-frame .menu {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+  position: relative;
+}
+
+.menu-doc-page .select-wrap.menu-doc-select-static.menu-doc-breakpoints-mobile {
+  --select-bg: var(--white, #fff);
+  box-sizing: border-box;
+  width: 415px;
+  max-width: 100%;
+
+  > .select-label {
+    flex: 0 0 auto;
+  }
+
+  > .menu-doc-breakpoints-mobile-frame > .menu-doc-state-demo {
+    flex: 0 0 auto;
+    width: 375px;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 288px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .menu__panel {
+    position: static;
+    top: auto;
+    left: auto;
+    z-index: auto;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    height: auto;
+    max-height: none;
+    box-sizing: border-box;
+    overflow: hidden;
+    border: none;
+    border-radius: 0 0 var(--border-radius-24, 24px) var(--border-radius-24, 24px);
+    box-shadow: none;
+    padding: 0;
+    background: var(--white, #fff);
+  }
+
+  .menu__list {
+    box-sizing: border-box;
+    gap: 0;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding-top: var(--spacing-16, 16px);
+    padding-bottom: var(--spacing-24, 24px);
+    max-height: calc(
+      288px + var(--spacing-16, 16px) + var(--spacing-24, 24px)
+    );
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    @include mixins.scrollbar-thin-no-arrows();
+  }
+
+  .menu__item {
+    display: flex;
+    align-items: center;
+    align-self: stretch;
+    gap: var(--spacing-12, 12px);
+    padding: var(--spacing-12, 12px) var(--spacing-16, 16px);
+    min-height: 48px;
+    background: var(--color-background-base-default, var(--white, #fff));
+  }
+
+  .menu__item[aria-selected='true'] {
+    background: var(
+      --color-background-base-secondary,
+      var(--gray-100, #f5f5f5)
+    );
+  }
+}
+
+.menu-doc-page .menu-doc-state-row > .select-wrap.menu-doc-select-static {
   flex: 0 0 270px;
   width: 270px;
   max-width: 100%;
@@ -322,23 +473,18 @@
   gap: var(--spacing-16, 16px);
 }
 
-/* States: same panel as other static selects — height grows with 6 rows, no scroll */
-.menu-doc-page .menu-doc-state-demo .select-dropdown {
+.menu-doc-page .menu-doc-state-demo .menu__panel {
   height: auto;
   min-height: 0;
   max-height: none;
   overflow: visible;
 }
 
-.menu-doc-page .menu-doc-state-demo .select-list {
+.menu-doc-page .menu-doc-state-demo .menu__list {
   max-height: none;
   overflow: visible;
 }
 
-/*
- * Listbox-shaped menu (same panel contract as .select-dropdown in docs).
- * Rows: .selection-menu__item (+ --selected). Same 80px composition applies outside the panel.
- */
 .selection-menu {
   box-sizing: border-box;
   display: flex;
@@ -402,7 +548,10 @@
 }
 
 .selection-menu__item--selected {
-  background: var(--color-background-base-secondary, var(--gray-100, #f5f5f5));
+  background: var(
+    --color-background-base-secondary,
+    var(--gray-100, #f5f5f5)
+  );
   color: var(--color-text-brand-default, var(--blue-sky-600, #0058d2));
 }
 
@@ -414,8 +563,11 @@
   background: var(--color-background-base-secondary, var(--gray-100, #f5f5f5));
 }
 
-.selection-menu__item:active:not(.selection-menu__item--selected) {
-  background: var(--color-background-base-tertiary, var(--gray-200, #e5e5e5));
+.selection-menu__item:active {
+  background: var(
+    --color-background-base-default-active,
+    var(--gray-250, #e8e8e8)
+  );
 }
 
 .selection-menu__item:focus-visible {
@@ -443,22 +595,7 @@
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-background-base-tertiary-active, var(--gray-300, #b2b2b2))
-    transparent;
-
-  &::-webkit-scrollbar {
-    width: 5px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: var(--color-background-base-tertiary-active, var(--gray-300, #b2b2b2));
-    border-radius: var(--border-radius-12, 12px);
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
+  @include mixins.scrollbar-thin-no-arrows();
 }
 
 .menu-doc-device__sheet--breakpoints-mobile {
@@ -483,7 +620,6 @@
   min-height: 340px;
 }
 
-/* Figma Items — Target sizes: 40px between body copy and preview */
 .menu-doc-items-target-copy {
   margin: 0 0 var(--spacing-40, 40px);
   max-width: 800px;
@@ -491,27 +627,35 @@
   font-size: var(--font-size-fs-18, 18px);
   font-weight: var(--font-weight-fw-regular, 400);
   line-height: var(--line-height-lh-28, 28px);
-  color: var(--color-text-base-secondary, var(--gray-700, #383838));
+  color: var(--color-text-base-tertiary, var(--gray-500, #757575));
 }
 
-/* Static menu preview: same tokens as open .select-dropdown, not absolutely positioned */
 .menu-doc-page .menu-doc-select-static {
   --select-bg: var(--color-background-base-default, var(--white, #fff));
   --select-menu-shadow: var(--drop-shadow-300);
   --select-option-text: var(--gray-700, #383838);
   --select-option-selected-bg: var(
-    --color-background-brand-secondary,
-    var(--blue-sky-100, #dbeafe)
+    --color-background-base-default-active,
+    var(--gray-250, #e8e8e8)
   );
-  --select-option-selected-text: var(--blue-sky-600, #0058d2);
+  --select-option-selected-text: var(
+    --color-text-brand-default,
+    var(--blue-sky-600, #0058d2)
+  );
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: stretch;
+  justify-content: center;
+  align-items: flex-start;
+  gap: var(--spacing-16, 16px);
   width: 270px;
   max-width: 100%;
 
-  .select-dropdown {
+  .select-label {
+    margin-bottom: 0;
+  }
+
+  .menu__panel {
     position: relative;
     top: auto;
     left: auto;
@@ -526,15 +670,20 @@
     min-height: 0;
     max-height: none;
     margin-top: 0;
+
+    /* Override display:flex above — must beat specificity so [hidden] actually hides */
+    &[hidden] {
+      display: none !important;
+    }
   }
 
-  .select-list {
+  .menu__list {
     flex: none;
     max-height: none;
     overflow: visible;
   }
 
-  .select-option {
+  .menu__item {
     flex: none;
     min-height: 0;
   }
@@ -544,111 +693,174 @@
   width: 375px;
   max-width: 100%;
 
-  .select-dropdown {
+  .menu__panel {
     width: 100%;
     min-width: 0;
   }
 }
 
-/* Target sizes preview: 270×300 panel, tint, no check column, 44px row height */
 .menu-doc-page .menu-doc-select-static--target-44 {
-  .select-dropdown {
-    width: 270px;
-    min-width: 270px;
-    max-width: 100%;
-    height: 300px;
-    min-height: 300px;
-    max-height: 300px;
+  --menu-doc-target-44-row: 44px;
+  --menu-doc-target-44-panel-w: 254px;
+  --menu-doc-target-44-panel-h: 284px;
+  --menu-doc-target-44-selected-fill: rgb(47 86 255 / 24%);
+
+  .menu__panel {
+    width: var(--menu-doc-target-44-panel-w);
+    min-width: var(--menu-doc-target-44-panel-w);
+    max-width: var(--menu-doc-target-44-panel-w);
+    height: var(--menu-doc-target-44-panel-h);
+    min-height: var(--menu-doc-target-44-panel-h);
+    max-height: var(--menu-doc-target-44-panel-h);
     box-sizing: border-box;
-    background-color: #2f56ff3d;
     overflow: hidden;
+    padding: var(--spacing-8, 8px);
+    border: none;
+    border-radius: var(--border-radius-16, 16px);
+    box-shadow: var(--drop-shadow-300);
+    gap: 0;
+    background: var(--select-bg);
   }
 
-  .select-list {
-    max-height: 100%;
+  .menu__list {
+    flex: 1 1 auto;
+    min-height: 0;
+    gap: var(--spacing-4, 4px);
     overflow-y: auto;
+    overflow-x: hidden;
+    max-height: none;
     -webkit-overflow-scrolling: touch;
+    @include mixins.scrollbar-thin-no-arrows(6px);
   }
 
-  .select-option__check {
+  .menu__check {
     display: none;
   }
 
-  .select-option {
-    min-height: 44px;
+  .menu__item {
+    min-height: var(--menu-doc-target-44-row);
+    flex-shrink: 0;
+    padding: var(--spacing-12, 12px) var(--spacing-24, 24px)
+      var(--spacing-12, 12px) var(--spacing-16, 16px);
+    border-radius: var(--border-radius-8, 8px);
   }
 
-  .select-option.select-option--multiline {
+  .menu__label {
+    display: block;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--font-size-fs-14, 14px);
+    line-height: var(--line-height-lh-20, 20px);
+    font-weight: var(--font-weight-fw-medium, 500);
+    color: var(--color-text-base-secondary, var(--gray-700, #383838));
+  }
+
+  .menu__item[aria-selected='true'],
+  .menu__item.menu__item--selected {
+    background: var(--menu-doc-target-44-selected-fill);
+    color: var(--color-text-base-secondary, var(--gray-700, #383838));
+    font-weight: var(--font-weight-fw-medium, 500);
+  }
+
+  .menu__item[aria-selected='true'] .menu__label,
+  .menu__item.menu__item--selected .menu__label {
+    color: inherit;
+  }
+
+  .menu__item.menu__item--multiline {
     min-height: 0;
   }
 }
 
-/* Contextual: no check column (same row padding as select-option) */
-.menu-doc-page .menu-doc-select-static--contextual .select-option__check {
+.menu-doc-page .menu-doc-select-static--scroll-panel {
+  --menu-doc-scroll-list-max: calc(
+    288px + (5 * var(--spacing-4, 4px))
+  );
+  --menu-doc-scroll-dropdown-max: calc(
+    var(--menu-doc-scroll-list-max) + (2 * var(--spacing-8, 8px))
+  );
+
+  .menu__panel {
+    max-height: var(--menu-doc-scroll-dropdown-max);
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .menu__list {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: var(--menu-doc-scroll-list-max);
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    @include mixins.scrollbar-thin-no-arrows(6px);
+  }
+
+  .menu__item {
+    flex-shrink: 0;
+    min-height: 48px;
+  }
+}
+
+.menu-doc-page .menu-doc-select-static--contextual .menu__check {
   display: none;
 }
 
-/* Doc previews: role=menu single-select (JS toggles .select-option--doc-selected) */
-.menu-doc-page ul[role='menu'] .select-option.select-option--doc-selected {
+.menu-doc-page ul[role='menu'] .menu__item.menu__item--current {
   background: var(
-    --select-option-selected-bg,
-    var(--color-background-brand-secondary, var(--blue-sky-100, #dbeafe))
+    --color-background-base-secondary,
+    var(--gray-100, #f5f5f5)
   );
-  color: var(--select-option-selected-text, var(--blue-sky-600, #0058d2));
-  font-weight: var(--font-weight-fw-semibold, 600);
+  color: var(
+    --select-option-selected-text,
+    var(--color-text-brand-default, var(--blue-sky-600, #0058d2))
+  );
+  font-weight: var(--font-weight-fw-medium, 500);
+}
+
+.menu-doc-page ul[role='menu'] .menu__item.menu__item--current .menu__check {
+  visibility: visible;
 }
 
 .menu-doc-page
   .menu-doc-select-static--contextual
   ul[role='menu']
-  .select-option.select-option--doc-selected
-  .select-option__check {
+  .menu__item.menu__item--current
+  .menu__check {
   display: flex;
-  visibility: visible;
   align-items: center;
   justify-content: center;
 }
 
-.menu-doc-page
-  .menu-doc-select-static--contextual
-  ul[role='menu']
-  .select-option.select-option--doc-selected
-  .select-option__check
-  .icon {
-  width: 24px;
-  height: 24px;
-}
-
-/*
- * Variations band: same 270px-wide panel as other menu-doc static previews.
- * (Former scroll-list / 254×284 removed — all demos use exactly 6 rows, no inner scroll.)
- */
 .menu-doc-page .menu-doc-variations .menu-doc-select-static--contextual {
   width: 270px;
   min-width: 270px;
   max-width: 270px;
 }
 
-.menu-doc-page button.select-option {
+.menu-doc-page button.menu__item {
   width: 100%;
   border: none;
   font-family: inherit;
   text-align: left;
 }
 
-.menu-doc-page label.select-option {
+.menu-doc-page label.menu__item {
   width: 100%;
   border: none;
   font-family: inherit;
   text-align: left;
 }
 
-.menu-doc-page label.select-option.select-option--control {
+.menu-doc-page label.menu__item.menu__item--control {
   position: relative;
 }
 
-.menu-doc-page label.select-option.select-option--control.checkbox,
-.menu-doc-page label.select-option.select-option--control.radio {
+.menu-doc-page label.menu__item.menu__item--control.checkbox,
+.menu-doc-page label.menu__item.menu__item--control.radio {
   display: flex;
   align-items: center;
   gap: var(--spacing-12, 12px);
@@ -658,12 +870,13 @@
   cursor: pointer;
 }
 
-.menu-doc-page label.select-option.select-option--control .select-option__label {
+.menu-doc-page
+  label.menu__item.menu__item--control
+  .menu__label {
   flex: 1 1 0;
   min-width: 0;
 }
 
-/* Static phone + sheet preview (Figma mobile) */
 .menu-doc-device {
   width: 375px;
   max-width: 100%;
@@ -709,51 +922,53 @@
   border-radius: 999px;
 }
 
-/* Bottom sheet list on this page: reuse select list row look */
 .menu-doc-page .bottom-sheet .bottom-sheet__content {
   --select-bg: var(--color-background-base-default, var(--white, #fff));
   --select-menu-shadow: var(--drop-shadow-300);
   --select-option-text: var(--gray-700, #383838);
   --select-option-selected-bg: var(
-    --color-background-brand-secondary,
-    var(--blue-sky-100, #dbeafe)
+    --color-background-base-default-active,
+    var(--gray-250, #e8e8e8)
   );
-  --select-option-selected-text: var(--blue-sky-600, #0058d2);
+  --select-option-selected-text: var(
+    --color-text-brand-default,
+    var(--blue-sky-600, #0058d2)
+  );
 }
 
-.menu-doc-page .bottom-sheet__content .select-list {
+.menu-doc-page .bottom-sheet__content .menu__list {
   list-style: none;
   margin: 0;
   padding: 0 var(--spacing-16, 16px) var(--spacing-16, 16px);
 }
 
-.menu-doc-page .bottom-sheet__content .select-option {
+.menu-doc-page .bottom-sheet__content .menu__item {
   text-decoration: none;
   color: inherit;
   width: 100%;
   box-sizing: border-box;
 }
 
-.menu-doc-page .bottom-sheet__content a.select-option:hover {
+.menu-doc-page .bottom-sheet__content a.menu__item:hover {
   text-decoration: none;
 }
 
-.menu-doc-sheet-selection .select-option .select-option__check {
+.menu-doc-sheet-selection .menu__item .menu__check {
   visibility: hidden;
 }
 
-.menu-doc-sheet-selection .select-option.menu-doc-sheet-option--current {
+.menu-doc-sheet-selection .menu__item.menu-doc-sheet-option--current {
   background: var(
-    --color-background-brand-secondary,
-    var(--blue-sky-100, #dbeafe)
+    --color-background-base-secondary,
+    var(--gray-100, #f5f5f5)
   );
-  color: var(--blue-sky-600, #0058d2);
-  font-weight: 600;
+  color: var(--color-text-brand-default, var(--blue-sky-600, #0058d2));
+  font-weight: var(--font-weight-fw-medium, 500);
 }
 
 .menu-doc-sheet-selection
-  .select-option.menu-doc-sheet-option--current
-  .select-option__check {
+  .menu__item.menu-doc-sheet-option--current
+  .menu__check {
   visibility: visible;
-  color: var(--blue-sky-600, #0058d2);
+  color: var(--color-text-brand-default, var(--blue-sky-600, #0058d2));
 }

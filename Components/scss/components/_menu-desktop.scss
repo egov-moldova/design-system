@@ -1,11 +1,10 @@
 @use '../abstracts/tokens' as tokens;
+@use '../abstracts/mixins/index' as mixins;
 
-/* Same panel shadow as Select dropdown (Figma selection-menu / contextual-menu) */
 $-nav-menu-shadow:
   0 0 0 0.5px rgba(0, 0, 0, 0.15), 0 5px 12px rgba(0, 0, 0, 0.08),
   0 1px 3px rgba(0, 0, 0, 0.08);
 
-/* Responsive simplu */
 @media (max-width: 768px) {
   .nav {
     flex-direction: column;
@@ -107,7 +106,6 @@ $-nav-menu-shadow:
     }
   }
 
-  // Dropdown menu — panel tokens match .select-dropdown + .select-option (Figma Menu)
   &__menu {
     display: none;
     flex-direction: column;
@@ -275,18 +273,11 @@ $-nav-menu-shadow:
   &__content {
     flex: 1;
     overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--gray-300) transparent;
-    &::-webkit-scrollbar {
-      width: 6px;
-    }
-    &::-webkit-scrollbar-thumb {
-      background-color: var(--gray-300);
-      border-radius: 999px;
-    }
-    &::-webkit-scrollbar-track {
-      background: transparent;
-    }
+    @include mixins.scrollbar-thin-no-arrows(
+      6px,
+      var(--gray-300),
+      999px
+    );
     padding: var(--spacing-0) var(--spacing-16);
   }
 
