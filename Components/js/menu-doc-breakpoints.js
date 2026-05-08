@@ -54,7 +54,7 @@
     if (el.getAttribute('aria-disabled') === 'true') {
       return true;
     }
-    if (el.classList.contains('select-option--disabled')) {
+    if (el.classList.contains('menu__item--disabled')) {
       return true;
     }
     if (el.classList.contains('selection-menu__item--disabled')) {
@@ -142,7 +142,7 @@
     if (el.getAttribute('aria-disabled') === 'true') {
       return true;
     }
-    if (el.classList.contains('select-option--disabled')) {
+    if (el.classList.contains('menu__item--disabled')) {
       return true;
     }
     if (el.querySelector('[disabled], [aria-disabled="true"]')) {
@@ -153,8 +153,8 @@
 
   function menuItems(menu) {
     return menu.querySelectorAll(
-      ':scope > li[role="none"] > button.select-option[role="menuitem"], ' +
-        ':scope > li[role="none"] > a.select-option[role="menuitem"]'
+      ':scope > li[role="none"] > button.menu__item[role="menuitem"], ' +
+        ':scope > li[role="none"] > a.menu__item[role="menuitem"]'
     );
   }
 
@@ -170,7 +170,7 @@
 
   page.addEventListener('click', function (e) {
     var menuBtn = e.target.closest(
-      'ul[role="menu"] button.select-option[role="menuitem"], ul[role="menu"] a.select-option[role="menuitem"]'
+      'ul[role="menu"] button.menu__item[role="menuitem"], ul[role="menu"] a.menu__item[role="menuitem"]'
     );
     if (menuBtn && page.contains(menuBtn)) {
       var menu = menuBtn.closest('ul[role="menu"]');
@@ -186,21 +186,12 @@
       var triggers = menuItems(menu);
       triggers.forEach(function (node) {
         var on = node === menuBtn;
-        node.classList.toggle('select-option--doc-selected', on);
-        var check = node.querySelector('.select-option__check');
-        if (check) {
-          if (on && !check.querySelector('svg')) {
-            check.innerHTML =
-              '<svg class="icon" width="24" height="24" aria-hidden="true">' +
-              '<use href="assets/icons/sprite.svg#icon-checkmark-small"></use>' +
-              '</svg>';
-          }
-        }
+        node.classList.toggle('menu__item--current', on);
       });
       return;
     }
 
-    var opt = e.target.closest('li.select-option[role="option"]');
+    var opt = e.target.closest('li.menu__item[role="option"]');
     if (!opt || !page.contains(opt)) {
       return;
     }
@@ -214,7 +205,7 @@
     if (isDisabledOption(opt)) {
       return;
     }
-    var options = list.querySelectorAll(':scope > li.select-option[role="option"]');
+    var options = list.querySelectorAll(':scope > li.menu__item[role="option"]');
     if (!options.length) {
       return;
     }

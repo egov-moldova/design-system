@@ -1,0 +1,12 @@
+@mixin doc-page-intro-copy {
+  font-family: var(
+    --font-family-primary-font,
+    var(--font-family-base, 'Onest', system-ui, sans-serif)
+  );
+  font-size: var(--font-size-fs-20, 20px);
+  font-style: normal;
+  font-weight: var(--font-weight-fw-regular, 400);
+  line-height: var(--line-height-lh-32, 32px);
+  letter-spacing: -0.4px;
+  color: var(--color-text-base-tertiary, var(--gray-500, #757575));
+}

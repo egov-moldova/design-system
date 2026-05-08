@@ -214,7 +214,7 @@
       const check = document.createElement('span');
       check.className = 'select-option__check';
       check.setAttribute('aria-hidden', 'true');
-      check.innerHTML = '<svg class="icon" width="24" height="24" aria-hidden="true"><use href="assets/icons/sprite.svg#icon-checkmark-small"></use></svg>';
+      check.setAttribute('aria-hidden', 'true');
       opt.appendChild(label);
       opt.appendChild(check);
     }

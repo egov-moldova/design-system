@@ -202,7 +202,7 @@
 
   &__preview-code {
     color: var(--gray-500, #757575);
-    font-family: Consolas, "Courier New", monospace;
+    font-family: var(--font-family-mono);
     font-size: 14px;
     line-height: 20px;
   }
