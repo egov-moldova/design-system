@@ -1,17 +1,23 @@
 @use "sass:map";
 @use "../../abstracts/tokens" as tokens;
 
-// ============= Semantic variants 
+// ============= Semantic variants
 @mixin file-input-variant($variant) {
   --border-color: map.get(map.get(tokens.$input-colors, $variant), border);
   --focus-color: map.get(map.get(tokens.$input-colors, $variant), focus);
 }
 
-.file-input.default   { @include file-input-variant(default); }
-.file-input.success   { @include file-input-variant(success); }
-.file-input.error     { @include file-input-variant(destructive); }
+.file-input.default {
+  @include file-input-variant(default);
+}
+.file-input.success {
+  @include file-input-variant(success);
+}
+.file-input.error {
+  @include file-input-variant(destructive);
+}
 
-// =============  Upload block 
+// =============  Upload block
 .upload-block {
   &__title {
     margin-bottom: var(--spacing-16);
@@ -47,7 +53,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-8);
-    margin-top: var(--spacing-12)
+    margin-top: var(--spacing-12);
   }
 
   &__description {
@@ -56,24 +62,60 @@
     line-height: 1.5;
     margin-top: var(--spacing-16);
   }
-
-
 }
 
-// ============ Upload list items 
+// ============ Upload list items
 .upload {
   &__item {
-    display: flex;
-    align-items: center;
+    // display: flex;
+    // align-items: center;
     gap: var(--spacing-12);
     padding: var(--spacing-6) var(--spacing-12);
 
-    background: var(--gray-100); 
+    background: var(--gray-100);
     border: var(--border-width-1-5) var(--border-style-solid) transparent;
     border-radius: var(--border-radius-8);
 
     &--error {
-      border-color: var(--red-600);
+      border-color: var(--red-700);
+    }
+
+    &__main {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-12);
+      padding: var(--spacing-6) var(--spacing-12);
+
+      background: var(--gray-100);
+      border: var(--border-width-1-5) var(--border-style-solid) transparent;
+      border-radius: var(--border-radius-8);
+
+      &--error {
+        border-color: var(--red-700);
+      }
+    }
+
+    &__error-section {
+      position: relative;
+      padding: var(--spacing-8, 8px) var(--spacing-12, 12px);
+      padding-inline-start: var(--spacing-12, 12px);
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: var(--spacing-12, 12px);
+        right: var(--spacing-12, 12px);
+        block-size: 1px;
+        background-color: var(--gray-250, #d1d5db);
+      }
+    }
+
+    &__error-message {
+      display: block;
+      color: var(--red-600, #dc2626);
+      font-size: var(--text-caption-md-font-size, 12px);
+      line-height: 1.4;
     }
   }
 
@@ -81,7 +123,6 @@
     width: 32px;
     height: 32px;
     border-radius: var(--radius-6);
-    background: var(--gray-200);
     overflow: hidden;
 
     display: flex;
@@ -102,9 +143,9 @@
 
   &__info {
     flex: 1;
-    min-width: 0; 
+    min-width: 0;
     font-size: var(--text-body-sm-font-size);
-    color: var(--gray-500); 
+    color: var(--gray-500);
     display: flex;
     flex-wrap: nowrap;
     align-items: center;
@@ -153,8 +194,8 @@
     width: var(--spacing-20);
 
     &::after {
-      content: '';
-      position: absolute; 
+      content: "";
+      position: absolute;
 
       width: var(--spacing-12);
       height: var(--spacing-12);
@@ -163,7 +204,7 @@
       border: 2px solid var(--blue-sky-600);
       border-right-color: transparent;
 
-      top:0;
+      top: 0;
       right: 0;
 
       transform: translate(-50%, -50%);
@@ -177,8 +218,12 @@
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .dropzone {
@@ -188,20 +233,26 @@
   text-align: center;
   cursor: pointer;
   background-color: var(--white);
+  aspect-ratio: 49 / 13;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  transition: border-color 0.2s, background-color 0.2s;
+  transition:
+    border-color 0.2s,
+    background-color 0.2s;
 
   &:hover {
     border-color: var(--blue-sky-600);
   }
 
   &:active {
-    background-color: var(--blue-sky-100)
+    background-color: var(--blue-sky-100);
   }
 
   &:focus {
-        outline: 2px solid var(--white, #ffffff);
-    box-shadow: 0 0 0 4px var(--focus-ring, var(--blue-sky-500, #3379DB));
+    outline: 2px solid var(--white, #ffffff);
+    box-shadow: 0 0 0 4px var(--focus-ring, var(--blue-sky-500, #3379db));
   }
 
   &__content {
@@ -211,6 +262,10 @@
     align-items: center;
     justify-content: center;
     color: var(--gray-600);
+  }
+
+  &__content--active {
+    display: none;
   }
 
   &__link {
@@ -224,9 +279,60 @@
     background-color: var(--gray-50);
   }
 
+  &--uploaded {
+    display: none;
+
+    & + .dropzone__details {
+      display: none;
+    }
+  }
+
   &--active {
     border-color: var(--blue-sky-600);
-    background-color: var(--blue-sky-50);
+    background-color: var(--blue-sky-100);
+    border-style: solid;
+
+    .dropzone__content {
+      display: none;
+    }
+
+    .dropzone__content--active {
+      display: block;
+    }
+  }
+
+  &[aria-disabled="true"] {
+    pointer-events: none;
+    cursor: default;
+    border-color: var(--gray-300);
+    background-color: var(--white);
+    color: var(--gray-250);
+
+    &:hover {
+      border-color: var(--gray-300);
+      background-color: var(--white);
+    }
+
+    &:focus {
+      outline: none;
+      box-shadow: none;
+    }
+
+    .dropzone__content p {
+      color: var(--gray-250);
+    }
+
+    .icon {
+      color: var(--gray-250);
+    }
+
+    .dropzone__link {
+      color: var(--gray-250);
+    }
+
+    & + .dropzone__details {
+      color: var(--gray-250);
+    }
   }
 
   &__details {

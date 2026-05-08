@@ -20,3 +20,8 @@ The project contains two primary components:
 
 - **CSS Bundle**: Generated from SCSS files.
 - **JS Bundle**: Generated from JavaScript files.
+
+
+## Run locally
+To run and serve the files locally run:
+- npm run dev
