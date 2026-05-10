@@ -5,68 +5,71 @@
    🔹 Mixin principal pentru input-uri
 ======================================= */
 @mixin input-style($variant: default) {
-  $colors: map.get(tokens.$input-colors, $variant);
+    $colors: map.get(tokens.$input-colors, $variant);
 
-  border: var(--border-width-1) var(--border-style-solid) map.get($colors, border);
-  background-color: map.get($colors, background);
-  color: map.get($colors, text);
-  width: 100%;
-  height: var(--spacing-48, 48px);
-  padding: 0 var(--spacing-12, 12px);
-  border-radius: var(--border-radius-8, 8px);
-  font-size: var(--text-body-md-font-size);
-  box-sizing: border-box;
-  text-overflow: ellipsis;
-
-  &::placeholder {
-    color: map.get($colors, placeholder);
-  }
-
-  &:hover:not(:disabled) {
-    border-color: map.get($colors, border-hover);
-    box-shadow: 0 0 0 0.5px map.get($colors, border-hover);
-  }
-
-  &:focus:not(:disabled) {
-    outline: 1px solid map.get($colors, border-hover);
-    box-shadow: 0 0 0 4px map.get($colors, focus);
-  }
-
-  &:disabled {
-    background-color: map.get($colors, disabled-bg);
-    border-color: map.get($colors, disabled-border);
-    color: map.get($colors, disabled-text);
-    cursor: not-allowed;
-    pointer-events: none;
-    opacity: 0.7;
-  }
-
-  &[readonly]:not(:disabled) {
-    background-color: map.get($colors, readonly-bg);
-    border-color: map.get($colors, readonly-border);
-    color: map.get($colors, readonly-text);
-    cursor: default;
-    pointer-events: none;
-    opacity: 1;
+    border: var(--border-width-1) var(--border-style-solid) map.get($colors, border);
+    background-color: map.get($colors, background);
+    color: map.get($colors, text);
+    width: 100%;
+    height: var(--spacing-48, 48px);
+    padding: 0 var(--spacing-12, 12px);
+    border-radius: var(--border-radius-8, 8px);
+    font-size: var(--text-body-md-font-size);
+    line-height: 24px;
+    box-sizing: border-box;
+    text-overflow: ellipsis;
 
     &::placeholder {
-      color: map.get($colors, readonly-text);
+        color: map.get($colors, placeholder);
     }
-  }
+
+    &:hover:not(:disabled), &.is-hover {
+        outline: 2px solid map.get($colors, border-hover);
+        outline-offset: -2px;
+    }
+
+    &:focus:not(:disabled), &.is-focus {
+        outline: 2px solid map.get($colors, focus-border);
+        outline-offset: -2px;
+        box-shadow: 0 0 0 4px map.get($colors, focus);
+    }
+
+    &:disabled {
+        background-color: map.get($colors, disabled-bg);
+        border-color: map.get($colors, disabled-border);
+        color: map.get($colors, disabled-text);
+        cursor: not-allowed;
+        pointer-events: none;
+        opacity: 0.7;
+    }
+
+    &[readonly]:not(:disabled) {
+        background-color: map.get($colors, readonly-bg);
+        border-color: map.get($colors, readonly-border);
+        color: map.get($colors, readonly-text);
+        cursor: default;
+        pointer-events: none;
+        opacity: 1;
+
+        &::placeholder {
+            color: map.get($colors, readonly-text);
+        }
+    }
 }
 
 //======= Input label
 label {
-  color: var(--gray-700);
-  display: block;
-  font-size: var(--text-body-sm-font-size, 14px);
-  margin-bottom: var(--spacing-6, 6px);
+    color: var(--gray-700);
+    display: block;
+    font-size: var(--text-font-size-14, 14px);
+    margin-bottom: var(--spacing-8, 8px);
+    line-height: var(--text-line-height-20, 20px);
 
-  &.required::after {
-    content: '*';
-    margin-left: var(--spacing-4, 4px);
-    color: var(--red-500);
-  }
+    &.required::after {
+        content: '*';
+        margin-left: var(--spacing-4, 4px);
+        color: var(--red-500);
+    }
 }
 
 // ============ Input class-name
@@ -107,85 +110,119 @@ label {
 }
 
 .input:focus:placeholder-shown {
-  border-color: var(--blue-sky-300);
+  /*border-color: var(--blue-sky-300);*/
 }
 
-// ============ Icons & wrapper 
+// ============ Icons & wrapper
 .input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-
-  .input {
-    text-overflow: ellipsis;
-    width: 100%;
-  }
-
-  .input-icon--leading,
-  .input-icon--trailing {
-    position: absolute;
+    position: relative;
     display: flex;
     align-items: center;
-    pointer-events: none;
-    color: var(--gray-500);
-  }
-
-  .input-icon {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-
-    &.left { left: var(--spacing-8); }
-    &.right { right: var(--spacing-8); }
-
-    &.checkmark {
-      color: var(--green-600);
-    }
-  }
-
-  &:has(.left) {
-    .input {
-      padding-left: var(--spacing-32);
-    }
-  }
-
-  &:has(.right) {
-    .input {
-      padding-right: var(--spacing-32);
-    }
-  }
-
-  .spinner {
-    position: absolute;
-    right: var(--spacing-12); 
-  }
-  &.has-leading .input { padding-left: var(--spacing-40, 40px); }
-  &.has-trailing .input { padding-right: var(--spacing-40, 40px); }
-
-  &.is-textarea {
-    align-items: stretch;
-    flex-direction: column;
 
     .input {
-      height: auto;
-      min-height: var(--spacing-80, 80px);
-      padding-top: var(--spacing-8, 8px);
-      padding-bottom: var(--spacing-8, 8px);
-      resize: vertical;
-    }
-  }
-
-  &--medium {
-    .input {
-      height: var(--spacing-40);
-      font-size: var(--text-body-sm-font-size);
+        text-overflow: ellipsis;
+        width: 100%;
     }
 
-    .icon {
-      height: var(--spacing-20);
-      width: var(--spacing-20);
+    .input-icon--leading,
+    .input-icon--trailing {
+        position: absolute;
+        display: flex;
+        align-items: center;
+        pointer-events: none;
+        color: var(--gray-500);
     }
-  }
+
+    .input-icon {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+
+        &.left {
+            left: var(--spacing-16);
+        }
+
+        &.right {
+            right: var(--spacing-8);
+        }
+
+        &.checkmark {
+            color: var(--green-600);
+        }
+    }
+
+    &:has(.left) {
+        .input {
+            padding-left: var(--spacing-48);
+        }
+    }
+
+    &:has(.right) {
+        .input {
+            padding-right: var(--spacing-32);
+        }
+    }
+
+    &.input-wrapper--medium {
+        &:has(.left) {
+            .input {
+                padding-left: var(--spacing-40);
+            }
+        }
+    }
+
+    .spinner {
+        position: absolute;
+        right: var(--spacing-14, 14px);
+    }
+
+    &.has-leading .input {
+        padding-left: var(--spacing-40, 40px);
+    }
+
+    &.has-trailing .input {
+        padding-right: var(--spacing-40, 40px);
+    }
+
+    &.is-textarea {
+        align-items: stretch;
+        flex-direction: column;
+
+        .input {
+            height: auto;
+            min-height: var(--spacing-80, 80px);
+            padding-top: var(--spacing-8, 8px);
+            padding-bottom: var(--spacing-8, 8px);
+            resize: vertical;
+        }
+    }
+
+    &--medium {
+        .input {
+            height: var(--spacing-40);
+            font-size: var(--text-body-sm-font-size);
+        }
+
+        .input-icon.left {
+            left: var(--spacing-12);
+        }
+
+        .icon {
+            height: var(--spacing-20);
+            width: var(--spacing-20);
+        }
+    }
+
+    & .btn-alignment {
+        position: absolute;
+        right: var(--spacing-16, 16px);
+        display: flex;
+        align-items: center;
+
+        & .spinner {
+            right: 0;
+        }
+    }
 }
 
 .input-message {
@@ -215,4 +252,31 @@ label {
 }
 .input-group {
   max-width: 285px;
+}
+
+.icon-leading {
+
+    & .icon-search {
+        position: absolute;
+        left: var(--spacing-8, 8px);
+        display: flex;
+        align-items: center;
+        pointer-events: none;
+
+        &:has(.medium) {
+            left: var(--spacing-12, 12px);
+        }
+
+        &:not(.medium) {
+            left: var(--spacing-16, 16px);
+        }
+    }
+
+    &:has(.icon-search) .input {
+        padding-left: var(--spacing-48);
+    }
+
+    &.medium:has(.icon-search) .input {
+        padding-left: var(--spacing-40);
+    }
 }
