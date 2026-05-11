@@ -106,11 +106,27 @@
         btn.setAttribute('aria-disabled', 'true');
       }
       if (isLong) {
-        btn.innerHTML = `<span class="menu__label menu__label--multiline">${longText}</span>
-        <span class="menu__check" aria-hidden="true"></span>`;
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'menu__label menu__label--multiline';
+        labelSpan.textContent = longText;
+
+        const checkSpan = document.createElement('span');
+        checkSpan.className = 'menu__check';
+        checkSpan.setAttribute('aria-hidden', 'true');
+
+        btn.appendChild(labelSpan);
+        btn.appendChild(checkSpan);
       } else {
-        btn.innerHTML = `<span class="menu__label">Option ${i}</span>
-        <span class="menu__check" aria-hidden="true"></span>`;
+        const labelSpan = document.createElement('span');
+        labelSpan.className = 'menu__label';
+        labelSpan.textContent = `Option ${i}`;
+
+        const checkSpan = document.createElement('span');
+        checkSpan.className = 'menu__check';
+        checkSpan.setAttribute('aria-hidden', 'true');
+
+        btn.appendChild(labelSpan);
+        btn.appendChild(checkSpan);
       }
       li.appendChild(btn);
       ul.appendChild(li);
