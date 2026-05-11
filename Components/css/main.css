@@ -1,6 +1,4 @@
 @charset "UTF-8";
-/* JetBrains Mono — cod / etichete tech / doc specs (fallback: stack în --font-family-mono) */
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap");
 :root {
   /*+++++++++++++ BASE ++++++++++++*/
   --black: #121212;
@@ -750,6 +748,13 @@ ul, ol {
   padding-left: 1.5rem;
   margin-top: 0;
   margin-bottom: 1rem;
+}
+
+div.descriptor {
+  font-family: var(--font-family-descriptor);
+  font-size: var(--text-font-size-16);
+  line-height: var(--text-line-height-24);
+  letter-spacing: -1%;
 }
 
 .bg-gray-100 {
