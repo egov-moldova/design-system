@@ -18039,9 +18039,6 @@ ul[role=menu] .menu__item.menu__item--current:active:not([aria-disabled=true]):n
   overflow-y: hidden;
   max-height: none;
 }
-.menu-doc-page .menu-doc-select-static--target-44 .menu__check {
-  display: none;
-}
 .menu-doc-page .menu-doc-select-static--target-44 .menu__item {
   min-height: var(--menu-doc-target-44-row);
   flex-shrink: 0;

@@ -230,9 +230,7 @@
       btn.setAttribute('role', 'option');
       btn.setAttribute('tabindex', '-1');
       btn.setAttribute('aria-selected', selected ? 'true' : 'false');
-      btn.innerHTML = `
-          <span class="menu__label">Option ${i}</span>
-          <span class="menu__check" aria-hidden="true"></span>`;
+      btn.innerHTML = `<span class="menu__label">Option ${i}</span>`;
       li.appendChild(btn);
       ul.appendChild(li);
     }
