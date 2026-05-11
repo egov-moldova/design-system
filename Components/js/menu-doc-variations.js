@@ -52,13 +52,16 @@
       }
       btn.setAttribute('aria-selected', isSel ? 'true' : 'false');
 
-      if (isLong) {
-        btn.innerHTML = `<span class="menu__label menu__label--multiline">${longText}</span>
-          <span class="menu__check" aria-hidden="true"></span>`;
-      } else {
-        btn.innerHTML = `<span class="menu__label">Option ${i}</span>
-          <span class="menu__check" aria-hidden="true"></span>`;
-      }
+      const label = document.createElement('span');
+      label.className = isLong ? 'menu__label menu__label--multiline' : 'menu__label';
+      label.textContent = isLong ? longText : `Option ${i}`;
+
+      const check = document.createElement('span');
+      check.className = 'menu__check';
+      check.setAttribute('aria-hidden', 'true');
+
+      btn.appendChild(label);
+      btn.appendChild(check);
       li.appendChild(btn);
       ul.appendChild(li);
     }
