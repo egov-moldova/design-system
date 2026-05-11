@@ -1,5 +1,9 @@
 @use './input' as *;
 
+textarea {
+    scrollbar-width: thin;
+}
+
 .textarea {
   @include input-style(default);
   min-height: var(--spacing-150, 150px);  

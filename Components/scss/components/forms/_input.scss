@@ -15,7 +15,7 @@
     padding: 0 var(--spacing-12, 12px);
     border-radius: var(--border-radius-8, 8px);
     font-size: var(--text-body-md-font-size);
-    line-height: 24px;
+    line-height: var(--text-line-height-24, 24px);
     box-sizing: border-box;
     text-overflow: ellipsis;
 
@@ -24,13 +24,13 @@
     }
 
     &:hover:not(:disabled), &.is-hover {
-        outline: 2px solid map.get($colors, border-hover);
-        outline-offset: -2px;
+        outline: var(--spacing-2, 2px) solid map.get($colors, border-hover);
+        outline-offset: var(--spacing-minus-2, -2px);
     }
 
     &:focus:not(:disabled), &.is-focus {
-        outline: 2px solid map.get($colors, focus-border);
-        outline-offset: -2px;
+        outline: var(--spacing-2, 2px) solid map.get($colors, focus-border);
+        outline-offset: var(--spacing-minus-2, -2px);
         box-shadow: 0 0 0 4px map.get($colors, focus);
     }
 

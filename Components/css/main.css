@@ -2505,6 +2505,7 @@ div.descriptor {
 }
 
 :root {
+  --spacing-minus-2: -2px;
   --spacing-0: 0px;
   --spacing-2: 2px;
   --spacing-4: 4px;
@@ -17592,7 +17593,7 @@ label.required::after {
   padding: 0 var(--spacing-12, 12px);
   border-radius: var(--border-radius-8, 8px);
   font-size: var(--text-body-md-font-size);
-  line-height: 24px;
+  line-height: var(--text-line-height-24, 24px);
   box-sizing: border-box;
   text-overflow: ellipsis;
 }
@@ -17600,12 +17601,12 @@ label.required::after {
   color: var(--gray-500);
 }
 .input:hover:not(:disabled), .input.is-hover {
-  outline: 2px solid var(--gray-600);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--gray-600);
+  outline-offset: var(--spacing-minus-2, -2px);
 }
 .input:focus:not(:disabled), .input.is-focus {
-  outline: 2px solid var(--blue-sky-600);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--blue-sky-600);
+  outline-offset: var(--spacing-minus-2, -2px);
   box-shadow: 0 0 0 4px var(--blue-sky-200);
 }
 .input:disabled {
@@ -17637,17 +17638,17 @@ label.required::after {
   padding: 0 var(--spacing-12, 12px);
   border-radius: var(--border-radius-8, 8px);
   font-size: var(--text-body-md-font-size);
-  line-height: 24px;
+  line-height: var(--text-line-height-24, 24px);
   box-sizing: border-box;
   text-overflow: ellipsis;
 }
 .input--warning:hover:not(:disabled), .input--warning.is-hover {
-  outline: 2px solid var(--apricot-600);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--apricot-600);
+  outline-offset: var(--spacing-minus-2, -2px);
 }
 .input--warning:focus:not(:disabled), .input--warning.is-focus {
-  outline: 2px solid var(--apricot-500);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--apricot-500);
+  outline-offset: var(--spacing-minus-2, -2px);
   box-shadow: 0 0 0 4px var(--apricot-200);
 }
 .input--warning:disabled {
@@ -17679,17 +17680,17 @@ label.required::after {
   padding: 0 var(--spacing-12, 12px);
   border-radius: var(--border-radius-8, 8px);
   font-size: var(--text-body-md-font-size);
-  line-height: 24px;
+  line-height: var(--text-line-height-24, 24px);
   box-sizing: border-box;
   text-overflow: ellipsis;
 }
 .input--destructive:hover:not(:disabled), .input--destructive.is-hover {
-  outline: 2px solid var(--red-600);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--red-600);
+  outline-offset: var(--spacing-minus-2, -2px);
 }
 .input--destructive:focus:not(:disabled), .input--destructive.is-focus {
-  outline: 2px solid var(--red-500);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--red-500);
+  outline-offset: var(--spacing-minus-2, -2px);
   box-shadow: 0 0 0 4px var(--red-200);
 }
 .input--destructive:disabled {
@@ -17721,17 +17722,17 @@ label.required::after {
   padding: 0 var(--spacing-12, 12px);
   border-radius: var(--border-radius-8, 8px);
   font-size: var(--text-body-md-font-size);
-  line-height: 24px;
+  line-height: var(--text-line-height-24, 24px);
   box-sizing: border-box;
   text-overflow: ellipsis;
 }
 .input--success:hover:not(:disabled), .input--success.is-hover {
-  outline: 2px solid var(--green-700);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--green-700);
+  outline-offset: var(--spacing-minus-2, -2px);
 }
 .input--success:focus:not(:disabled), .input--success.is-focus {
-  outline: 2px solid var(--green-600);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--green-600);
+  outline-offset: var(--spacing-minus-2, -2px);
   box-shadow: 0 0 0 4px var(--green-200);
 }
 .input--success:disabled {
@@ -17918,7 +17919,7 @@ label.required::after {
   padding: 0 var(--spacing-12, 12px);
   border-radius: var(--border-radius-8, 8px);
   font-size: var(--text-body-md-font-size);
-  line-height: 24px;
+  line-height: var(--text-line-height-24, 24px);
   box-sizing: border-box;
   text-overflow: ellipsis;
 }
@@ -17926,12 +17927,12 @@ label.required::after {
   color: var(--gray-500);
 }
 .input-number:hover:not(:disabled), .input-number.is-hover {
-  outline: 2px solid var(--gray-600);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--gray-600);
+  outline-offset: var(--spacing-minus-2, -2px);
 }
 .input-number:focus:not(:disabled), .input-number.is-focus {
-  outline: 2px solid var(--blue-sky-600);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--blue-sky-600);
+  outline-offset: var(--spacing-minus-2, -2px);
   box-shadow: 0 0 0 4px var(--blue-sky-200);
 }
 .input-number:disabled {
@@ -17995,17 +17996,17 @@ label.required::after {
   padding: 0 var(--spacing-12, 12px);
   border-radius: var(--border-radius-8, 8px);
   font-size: var(--text-body-md-font-size);
-  line-height: 24px;
+  line-height: var(--text-line-height-24, 24px);
   box-sizing: border-box;
   text-overflow: ellipsis;
 }
 .input-number--warning:hover:not(:disabled), .input-number--warning.is-hover {
-  outline: 2px solid var(--apricot-600);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--apricot-600);
+  outline-offset: var(--spacing-minus-2, -2px);
 }
 .input-number--warning:focus:not(:disabled), .input-number--warning.is-focus {
-  outline: 2px solid var(--apricot-500);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--apricot-500);
+  outline-offset: var(--spacing-minus-2, -2px);
   box-shadow: 0 0 0 4px var(--apricot-200);
 }
 .input-number--warning:disabled {
@@ -18037,17 +18038,17 @@ label.required::after {
   padding: 0 var(--spacing-12, 12px);
   border-radius: var(--border-radius-8, 8px);
   font-size: var(--text-body-md-font-size);
-  line-height: 24px;
+  line-height: var(--text-line-height-24, 24px);
   box-sizing: border-box;
   text-overflow: ellipsis;
 }
 .input-number--destructive:hover:not(:disabled), .input-number--destructive.is-hover {
-  outline: 2px solid var(--red-600);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--red-600);
+  outline-offset: var(--spacing-minus-2, -2px);
 }
 .input-number--destructive:focus:not(:disabled), .input-number--destructive.is-focus {
-  outline: 2px solid var(--red-500);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--red-500);
+  outline-offset: var(--spacing-minus-2, -2px);
   box-shadow: 0 0 0 4px var(--red-200);
 }
 .input-number--destructive:disabled {
@@ -18079,17 +18080,17 @@ label.required::after {
   padding: 0 var(--spacing-12, 12px);
   border-radius: var(--border-radius-8, 8px);
   font-size: var(--text-body-md-font-size);
-  line-height: 24px;
+  line-height: var(--text-line-height-24, 24px);
   box-sizing: border-box;
   text-overflow: ellipsis;
 }
 .input-number--success:hover:not(:disabled), .input-number--success.is-hover {
-  outline: 2px solid var(--green-700);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--green-700);
+  outline-offset: var(--spacing-minus-2, -2px);
 }
 .input-number--success:focus:not(:disabled), .input-number--success.is-focus {
-  outline: 2px solid var(--green-600);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--green-600);
+  outline-offset: var(--spacing-minus-2, -2px);
   box-shadow: 0 0 0 4px var(--green-200);
 }
 .input-number--success:disabled {
@@ -18633,7 +18634,7 @@ label.required::after {
   padding: 0 var(--spacing-12, 12px);
   border-radius: var(--border-radius-8, 8px);
   font-size: var(--text-body-md-font-size);
-  line-height: 24px;
+  line-height: var(--text-line-height-24, 24px);
   box-sizing: border-box;
   text-overflow: ellipsis;
 }
@@ -18641,12 +18642,12 @@ label.required::after {
   color: var(--gray-500);
 }
 .search-input .input:hover:not(:disabled), .search-input .input.is-hover {
-  outline: 2px solid var(--gray-600);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--gray-600);
+  outline-offset: var(--spacing-minus-2, -2px);
 }
 .search-input .input:focus:not(:disabled), .search-input .input.is-focus {
-  outline: 2px solid var(--blue-sky-600);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--blue-sky-600);
+  outline-offset: var(--spacing-minus-2, -2px);
   box-shadow: 0 0 0 4px var(--blue-sky-200);
 }
 .search-input .input:disabled {
@@ -18744,7 +18745,7 @@ label.required::after {
   padding: 0 var(--spacing-12, 12px);
   border-radius: var(--border-radius-8, 8px);
   font-size: var(--text-body-md-font-size);
-  line-height: 24px;
+  line-height: var(--text-line-height-24, 24px);
   box-sizing: border-box;
   text-overflow: ellipsis;
 }
@@ -18752,12 +18753,12 @@ label.required::after {
   color: var(--gray-500);
 }
 .select:hover:not(:disabled), .select.is-hover {
-  outline: 2px solid var(--gray-600);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--gray-600);
+  outline-offset: var(--spacing-minus-2, -2px);
 }
 .select:focus:not(:disabled), .select.is-focus {
-  outline: 2px solid var(--blue-sky-600);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--blue-sky-600);
+  outline-offset: var(--spacing-minus-2, -2px);
   box-shadow: 0 0 0 4px var(--blue-sky-200);
 }
 .select:disabled {
@@ -18788,6 +18789,10 @@ label.required::after {
   padding-right: var(--spacing-32, 32px);
 }
 
+textarea {
+  scrollbar-width: thin;
+}
+
 .textarea {
   border: var(--border-width-1) var(--border-style-solid) var(--gray-250);
   background-color: var(--white);
@@ -18797,7 +18802,7 @@ label.required::after {
   padding: 0 var(--spacing-12, 12px);
   border-radius: var(--border-radius-8, 8px);
   font-size: var(--text-body-md-font-size);
-  line-height: 24px;
+  line-height: var(--text-line-height-24, 24px);
   box-sizing: border-box;
   text-overflow: ellipsis;
 }
@@ -18805,12 +18810,12 @@ label.required::after {
   color: var(--gray-500);
 }
 .textarea:hover:not(:disabled), .textarea.is-hover {
-  outline: 2px solid var(--gray-600);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--gray-600);
+  outline-offset: var(--spacing-minus-2, -2px);
 }
 .textarea:focus:not(:disabled), .textarea.is-focus {
-  outline: 2px solid var(--blue-sky-600);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--blue-sky-600);
+  outline-offset: var(--spacing-minus-2, -2px);
   box-shadow: 0 0 0 4px var(--blue-sky-200);
 }
 .textarea:disabled {
@@ -18858,17 +18863,17 @@ label.required::after {
   padding: 0 var(--spacing-12, 12px);
   border-radius: var(--border-radius-8, 8px);
   font-size: var(--text-body-md-font-size);
-  line-height: 24px;
+  line-height: var(--text-line-height-24, 24px);
   box-sizing: border-box;
   text-overflow: ellipsis;
 }
 .textarea--warning:hover:not(:disabled), .textarea--warning.is-hover {
-  outline: 2px solid var(--apricot-600);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--apricot-600);
+  outline-offset: var(--spacing-minus-2, -2px);
 }
 .textarea--warning:focus:not(:disabled), .textarea--warning.is-focus {
-  outline: 2px solid var(--apricot-500);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--apricot-500);
+  outline-offset: var(--spacing-minus-2, -2px);
   box-shadow: 0 0 0 4px var(--apricot-200);
 }
 .textarea--warning:disabled {
@@ -18900,17 +18905,17 @@ label.required::after {
   padding: 0 var(--spacing-12, 12px);
   border-radius: var(--border-radius-8, 8px);
   font-size: var(--text-body-md-font-size);
-  line-height: 24px;
+  line-height: var(--text-line-height-24, 24px);
   box-sizing: border-box;
   text-overflow: ellipsis;
 }
 .textarea--destructive:hover:not(:disabled), .textarea--destructive.is-hover {
-  outline: 2px solid var(--red-600);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--red-600);
+  outline-offset: var(--spacing-minus-2, -2px);
 }
 .textarea--destructive:focus:not(:disabled), .textarea--destructive.is-focus {
-  outline: 2px solid var(--red-500);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--red-500);
+  outline-offset: var(--spacing-minus-2, -2px);
   box-shadow: 0 0 0 4px var(--red-200);
 }
 .textarea--destructive:disabled {
@@ -18942,17 +18947,17 @@ label.required::after {
   padding: 0 var(--spacing-12, 12px);
   border-radius: var(--border-radius-8, 8px);
   font-size: var(--text-body-md-font-size);
-  line-height: 24px;
+  line-height: var(--text-line-height-24, 24px);
   box-sizing: border-box;
   text-overflow: ellipsis;
 }
 .textarea--success:hover:not(:disabled), .textarea--success.is-hover {
-  outline: 2px solid var(--green-700);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--green-700);
+  outline-offset: var(--spacing-minus-2, -2px);
 }
 .textarea--success:focus:not(:disabled), .textarea--success.is-focus {
-  outline: 2px solid var(--green-600);
-  outline-offset: -2px;
+  outline: var(--spacing-2, 2px) solid var(--green-600);
+  outline-offset: var(--spacing-minus-2, -2px);
   box-shadow: 0 0 0 4px var(--green-200);
 }
 .textarea--success:disabled {
