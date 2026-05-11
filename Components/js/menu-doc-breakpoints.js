@@ -191,7 +191,9 @@
       return;
     }
 
-    var opt = e.target.closest('li.menu__item[role="option"]');
+    var opt = e.target.closest(
+      'button.menu__item[role="option"], li.menu__item[role="option"]'
+    );
     if (!opt || !page.contains(opt)) {
       return;
     }
@@ -205,13 +207,16 @@
     if (isDisabledOption(opt)) {
       return;
     }
-    var options = list.querySelectorAll(':scope > li.menu__item[role="option"]');
+    var options = list.querySelectorAll(
+      ':scope > li[role="none"] > button.menu__item[role="option"], ' +
+        ':scope > li.menu__item[role="option"]'
+    );
     if (!options.length) {
       return;
     }
-    options.forEach(function (li) {
-      var on = li === opt;
-      li.setAttribute('aria-selected', on ? 'true' : 'false');
+    options.forEach(function (node) {
+      var on = node === opt;
+      node.setAttribute('aria-selected', on ? 'true' : 'false');
     });
   });
 })();

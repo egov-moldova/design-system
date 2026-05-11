@@ -209,13 +209,13 @@ $select-doc-native-font-ios:
   }
 }
 
-.select-doc-spec-label {
+.descriptor {
   margin-bottom: var(--spacing-12, 12px);
   @include select-doc-spec-label-mono;
   color: var(--gray-700, #383838);
 }
 
-.select-doc-spec-label--wide {
+.descriptor--wide {
   margin-bottom: var(--spacing-16, 16px);
 }
 
@@ -242,9 +242,9 @@ $select-doc-native-font-ios:
   column-gap: var(--spacing-56, 56px);
 }
 
-.select-doc-beh--macos > .select-doc-spec-label,
-.select-doc-beh--ios > .select-doc-spec-label,
-.select-doc-beh--custom > .select-doc-spec-label {
+.select-doc-beh--macos > .descriptor,
+.select-doc-beh--ios > .descriptor,
+.select-doc-beh--custom > .descriptor {
   @include select-doc-spec-label-mono;
   color: var(--color-text-base-secondary);
 }
@@ -278,7 +278,7 @@ $select-doc-native-font-ios:
   align-items: flex-start;
 }
 
-.select-doc-edge-item > .select-doc-spec-label {
+.select-doc-edge-item > .descriptor {
   margin-bottom: var(--spacing-16, 16px);
 }
 
