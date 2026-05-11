@@ -158,24 +158,18 @@
 .menu-doc-page
   .menu-doc-variations
   > .select-wrap.menu-doc-select-static
-  > .descriptor,
+  > div.descriptor,
 .menu-doc-page
   .menu-doc-row
   > .select-wrap.menu-doc-select-static
-  > .descriptor {
+  > div.descriptor {
   flex: none;
   margin-bottom: 0;
   min-width: 0;
-  font-family: var(--font-family-mono);
-  font-size: var(--font-size-fs-16, 16px);
-  font-style: normal;
-  font-weight: 500;
-  line-height: var(--line-height-lh-24, 24px);
-  letter-spacing: -0.16px;
-  color: var(--color-text-base-secondary, var(--gray-700, #383838));
   white-space: normal;
   overflow: visible;
   text-overflow: clip;
+  color: var(--color-text-base-secondary, var(--gray-700, #383838));
 }
 
 .menu-doc-composition {

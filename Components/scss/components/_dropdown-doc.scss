@@ -14,15 +14,6 @@ $select-doc-native-font-ios:
   'SF Pro Text',
   sans-serif;
 
-@mixin select-doc-spec-label-mono {
-  font-family: var(--font-family-mono);
-  font-style: normal;
-  font-weight: var(--font-weight-fw-medium, var(--font-weight-medium, 500));
-  font-size: var(--font-size-fs-16, var(--font-size-16, 16px));
-  line-height: var(--line-height-lh-24, var(--line-height-24, 24px));
-  letter-spacing: -0.16px;
-}
-
 .select-wrap .select-label {
   display: flex;
   align-items: center;
@@ -209,13 +200,12 @@ $select-doc-native-font-ios:
   }
 }
 
-.descriptor {
+.select-doc-page div.descriptor {
   margin-bottom: var(--spacing-12, 12px);
-  @include select-doc-spec-label-mono;
   color: var(--gray-700, #383838);
 }
 
-.descriptor--wide {
+.select-doc-page div.descriptor.descriptor--wide {
   margin-bottom: var(--spacing-16, 16px);
 }
 
@@ -242,10 +232,9 @@ $select-doc-native-font-ios:
   column-gap: var(--spacing-56, 56px);
 }
 
-.select-doc-beh--macos > .descriptor,
-.select-doc-beh--ios > .descriptor,
-.select-doc-beh--custom > .descriptor {
-  @include select-doc-spec-label-mono;
+.select-doc-beh--macos > div.descriptor,
+.select-doc-beh--ios > div.descriptor,
+.select-doc-beh--custom > div.descriptor {
   color: var(--color-text-base-secondary);
 }
 
@@ -278,7 +267,7 @@ $select-doc-native-font-ios:
   align-items: flex-start;
 }
 
-.select-doc-edge-item > .descriptor {
+.select-doc-edge-item > div.descriptor {
   margin-bottom: var(--spacing-16, 16px);
 }
 
