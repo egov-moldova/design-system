@@ -145,7 +145,8 @@ $drop-shadows: (
 // ================ BASE TOKENS 
 :root { 
   --font-family-base: 'Onest', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
- 
+  --font-family-descriptor: 'JetBrainsMono';
+
   --font-weight-regular: 400;
   --font-weight-semibold: 500;
   --font-weight-bold: 600;
@@ -248,6 +249,15 @@ $drop-shadows: (
 
   --text-caption-md-line-height: 140%;
   --text-caption-sm-line-height: 140%;
+}
+
+:root {
+    /* ================= TEXT FONT SIZE ================= */
+    --text-font-size-14: 14px;
+    --text-font-size-16: 16px;
+    /* ================= TEXT LINE HEIGHT ================= */
+    --text-line-height-20: 20px;
+    --text-line-height-24: 24px;
 }
 
 //================ MOBILE OVERRIDES (FONT SIZE ONLY) 

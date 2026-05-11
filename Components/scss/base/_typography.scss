@@ -36,3 +36,10 @@ ul, ol {
   margin-top: 0;
   margin-bottom: 1rem;
 }
+
+div.descriptor {
+    font-family: var(--font-family-descriptor);
+    font-size: var(--text-font-size-16);
+    line-height: var(--text-line-height-24);
+    letter-spacing: -1%;
+}

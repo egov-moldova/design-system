@@ -2,23 +2,25 @@
 @use "../abstracts/variables" as vars;
 @use "sass:map";
 
-// ============= CSS Variables (runtime) 
+// ============= CSS Variables (runtime)
 :root {
-  --spacing-0: 0px;
-  --spacing-2: 2px;
-  --spacing-4: 4px;
-  --spacing-6: 6px;
-  --spacing-8: 8px;
-  --spacing-12: 12px;
-  --spacing-16: 16px;
-  --spacing-20: 20px;
-  --spacing-24: 24px;
-  --spacing-32: 32px;
-  --spacing-40: 40px;
-  --spacing-48: 48px;
-  --spacing-56: 56px;
-  --spacing-64: 64px;
-  --spacing-72: 72px;
+    --spacing-minus-2: -2px;
+    --spacing-0: 0px;
+    --spacing-2: 2px;
+    --spacing-4: 4px;
+    --spacing-6: 6px;
+    --spacing-8: 8px;
+    --spacing-12: 12px;
+    --spacing-14: 14px;
+    --spacing-16: 16px;
+    --spacing-20: 20px;
+    --spacing-24: 24px;
+    --spacing-32: 32px;
+    --spacing-40: 40px;
+    --spacing-48: 48px;
+    --spacing-56: 56px;
+    --spacing-64: 64px;
+    --spacing-72: 72px;
 }
 
 // =========== Spacing token map 

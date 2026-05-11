@@ -1,0 +1,21 @@
+﻿@use 'sass:map';
+
+$JetBrainsMono-fonts: (
+  /*Thin: (file: JetBrainsMono-Thin, weight: 100),*/
+  /*ExtraLight: (file: JetBrainsMono-ExtraLight, weight: 200),*/
+  /*Light: (file: JetBrainsMono-Light, weight: 300),*/
+  /*Regular: (file: JetBrainsMono-Regular, weight: 400),*/
+  Medium: (file: JetBrainsMono-Medium, weight: 500),
+  /*Bold: (file: JetBrainsMono-Bold, weight: 700),*/
+);
+
+@each $name, $props in $JetBrainsMono-fonts {
+  @font-face {
+    font-family: 'JetBrainsMono';
+    src: url("../assets/fonts/JetBrainsMono-2.304/fonts/webfonts/#{map.get($props, file)}.woff2") format("woff2"),
+         url("../assets/fonts/JetBrainsMono-2.304/fonts/ttf/#{map.get($props, file)}.ttf") format("truetype");
+    font-weight: map.get($props, weight);
+    font-style: normal;
+    font-display: swap;
+  }
+}

@@ -20,10 +20,9 @@
 <div class="container py-56">
     <div class="row">
         <div class="col-sm-7">
-            <h1>Search Input</h1>
+            <h1>Text Area</h1>
             <p class="text-gray-400">
-                The Search Input component allows users to enter text queries to quickly find relevant content within an interface. It typically includes a text field and a search icon, and may offer additional features such as auto-suggestions, clear input functionality, or filters.
-                Designed to be lightweight and accessible, this component helps streamline navigation and improve content discoverability.
+                The text area component allows users to input and edit multi-line text, such as comments, descriptions, or messages. It is typically used when longer or more detailed input is required beyond a single line field.
             </p>
         </div>
     </div>
@@ -35,7 +34,7 @@
       <div class="col-3">
         <!-- 🔹 Default -->
         <div class="input-wrapper is-textarea mb-24">
-          <div class="mb-16 description-text">default: default</div>
+          <div class="mb-16 descriptor">default: default</div>
           <label for="textarea-default">Label</label>
           <textarea id="textarea-default" class="textarea" placeholder="Scrie ceva..."></textarea> 
             <!--<div class="textarea-wrapper">
@@ -43,37 +42,37 @@
         </div>
 
         <div class="input-wrapper is-textarea mb-24">
-          <div class="mb-16 description-text">default: hover</div>
+          <div class="mb-16 descriptor">default: hover</div>
+          <label for="textarea-default">Label</label>
+          <textarea id="textarea-default" class="textarea is-hover" placeholder="Scrie ceva..."></textarea> 
+        </div>
+
+        <div class="input-wrapper is-textarea mb-24">
+          <div class="mb-16 descriptor">default: focus-empty</div>
+          <label for="textarea-default">Label</label> 
+          <textarea id="textarea-default" class="textarea is-focus" placeholder="Scrie ceva..."></textarea> 
+        </div>
+
+        <div class="input-wrapper is-textarea mb-24">
+          <div class="mb-16 descriptor">default: focus-populated</div>
+          <label for="textarea-default">Label</label> 
+          <textarea id="textarea-default" class="textarea is-focus" placeholder="Scrie ceva..."></textarea> 
+        </div>
+
+        <div class="input-wrapper is-textarea mb-24">
+          <div class="mb-16 descriptor">default: field</div> 
           <label for="textarea-default">Label</label>
           <textarea id="textarea-default" class="textarea" placeholder="Scrie ceva..."></textarea> 
         </div>
 
         <div class="input-wrapper is-textarea mb-24">
-          <div class="mb-16 description-text">default: focus-empty</div>
-          <label for="textarea-default">Label</label> 
-          <textarea id="textarea-default" class="textarea" placeholder="Scrie ceva..."></textarea> 
-        </div>
-
-        <div class="input-wrapper is-textarea mb-24">
-          <div class="mb-16 description-text">default: focus-populated</div>
-          <label for="textarea-default">Label</label> 
-          <textarea id="textarea-default" class="textarea" placeholder="Scrie ceva..."></textarea> 
-        </div>
-
-        <div class="input-wrapper is-textarea mb-24">
-          <div class="mb-16 description-text">default: field</div> 
-          <label for="textarea-default">Label</label>
-          <textarea id="textarea-default" class="textarea" placeholder="Scrie ceva..."></textarea> 
-        </div>
-
-        <div class="input-wrapper is-textarea mb-24">
-          <div class="mb-16 description-text">default: disabled</div>
+          <div class="mb-16 descriptor">default: disabled</div>
           <label for="textarea-default">Label</label> 
           <textarea id="textarea-default" class="textarea" placeholder="Scrie ceva..." disabled></textarea> 
         </div>
 
         <!--<div class="input-wrapper is-textarea mb-24">
-          <div class="mb-16 description-text">default: read-only</div>
+          <div class="mb-16 descriptor">default: read-only</div>
           <label for="textarea-default">Label</label> 
           <textarea id="textarea-default" class="textarea" placeholder="Scrie ceva..."></textarea> 
         </div>--> 
@@ -81,37 +80,37 @@
       <div class="col-3"> 
         <!-- 🟡 Warning -->
         <div class="input-wrapper is-textarea has-trailing mb-24">
-          <div class="mb-16 description-text">warning: default</div>
+          <div class="mb-16 descriptor">warning: default</div>
           <label for="textarea-default">Label</label> 
           <textarea id="textarea-warning" class="textarea textarea--warning" placeholder="Scrie ceva..."></textarea> 
         </div> 
 
         <div class="input-wrapper is-textarea has-trailing mb-24">
-          <div class="mb-16 description-text">warning: hover</div>
+          <div class="mb-16 descriptor">warning: hover</div>
           <label for="textarea-default">Label</label>
-          <textarea id="textarea-warning" class="textarea textarea--warning" placeholder="Scrie ceva..."></textarea> 
+          <textarea id="textarea-warning" class="textarea textarea--warning is-hover" placeholder="Scrie ceva..."></textarea> 
         </div> 
 
         <div class="input-wrapper is-textarea has-trailing mb-24">
-          <div class="mb-16 description-text">warning: focus-empty</div>
+          <div class="mb-16 descriptor">warning: focus-empty</div>
+          <label for="textarea-default">Label</label> 
+          <textarea id="textarea-warning" class="textarea textarea--warning is-focus" placeholder="Scrie ceva..."></textarea> 
+        </div> 
+
+        <div class="input-wrapper is-textarea has-trailing mb-24">
+          <div class="mb-16 descriptor">warning: focus-populated</div>
+          <label for="textarea-default">Label</label> 
+          <textarea id="textarea-warning" class="textarea textarea--warning is-focus" placeholder="Scrie ceva..."></textarea> 
+        </div> 
+
+        <div class="input-wrapper is-textarea has-trailing mb-24">
+          <div class="mb-16 descriptor">warning: filled</div>
           <label for="textarea-default">Label</label> 
           <textarea id="textarea-warning" class="textarea textarea--warning" placeholder="Scrie ceva..."></textarea> 
         </div> 
 
         <div class="input-wrapper is-textarea has-trailing mb-24">
-          <div class="mb-16 description-text">warning: focus-populated</div>
-          <label for="textarea-default">Label</label> 
-          <textarea id="textarea-warning" class="textarea textarea--warning" placeholder="Scrie ceva..."></textarea> 
-        </div> 
-
-        <div class="input-wrapper is-textarea has-trailing mb-24">
-          <div class="mb-16 description-text">warning: filled</div>
-          <label for="textarea-default">Label</label> 
-          <textarea id="textarea-warning" class="textarea textarea--warning" placeholder="Scrie ceva..."></textarea> 
-        </div> 
-
-        <div class="input-wrapper is-textarea has-trailing mb-24">
-          <div class="mb-16 description-text">warning: disabled</div>
+          <div class="mb-16 descriptor">warning: disabled</div>
           <label for="textarea-default">Label</label> 
           <textarea id="textarea-warning" class="textarea textarea--warning" placeholder="Scrie ceva..." disabled></textarea> 
         </div> 
@@ -119,37 +118,37 @@
       <div class="col-3"> 
         <!-- 🔴 Destructive -->
         <div class="input-wrapper is-textarea has-trailing mb-24">
-          <div class="mb-16 description-text">destructive: default</div>
+          <div class="mb-16 descriptor">destructive: default</div>
           <label for="textarea-destructive">Label</label> 
           <textarea id="textarea-destructive" class="textarea textarea--destructive" placeholder="Scrie ceva..."></textarea> 
         </div>
 
         <div class="input-wrapper is-textarea has-trailing mb-24">
-          <div class="mb-16 description-text">destructive: hover</div>
+          <div class="mb-16 descriptor">destructive: hover</div>
+          <label for="textarea-destructive">Label</label> 
+          <textarea id="textarea-destructive" class="textarea textarea--destructive is-hover" placeholder="Scrie ceva..."></textarea> 
+        </div>
+
+        <div class="input-wrapper is-textarea has-trailing mb-24">
+          <div class="mb-16 descriptor">destructive: focus-empty</div>
+          <label for="textarea-destructive">Label</label> 
+          <textarea id="textarea-destructive" class="textarea textarea--destructive is-focus" placeholder="Scrie ceva..."></textarea> 
+        </div>
+
+        <div class="input-wrapper is-textarea has-trailing mb-24">
+          <div class="mb-16 descriptor">destructive: focus-populated</div>
+          <label for="textarea-destructive">Label</label> 
+          <textarea id="textarea-destructive" class="textarea textarea--destructive is-focus" placeholder="Scrie ceva..."></textarea> 
+        </div>
+
+        <div class="input-wrapper is-textarea has-trailing mb-24">
+          <div class="mb-16 descriptor">destructive: filled</div>
           <label for="textarea-destructive">Label</label> 
           <textarea id="textarea-destructive" class="textarea textarea--destructive" placeholder="Scrie ceva..."></textarea> 
         </div>
 
         <div class="input-wrapper is-textarea has-trailing mb-24">
-          <div class="mb-16 description-text">destructive: focus-empty</div>
-          <label for="textarea-destructive">Label</label> 
-          <textarea id="textarea-destructive" class="textarea textarea--destructive" placeholder="Scrie ceva..."></textarea> 
-        </div>
-
-        <div class="input-wrapper is-textarea has-trailing mb-24">
-          <div class="mb-16 description-text">destructive: focus-populated</div>
-          <label for="textarea-destructive">Label</label> 
-          <textarea id="textarea-destructive" class="textarea textarea--destructive" placeholder="Scrie ceva..."></textarea> 
-        </div>
-
-        <div class="input-wrapper is-textarea has-trailing mb-24">
-          <div class="mb-16 description-text">destructive: filled</div>
-          <label for="textarea-destructive">Label</label> 
-          <textarea id="textarea-destructive" class="textarea textarea--destructive" placeholder="Scrie ceva..."></textarea> 
-        </div>
-
-        <div class="input-wrapper is-textarea has-trailing mb-24">
-          <div class="mb-16 description-text">destructive: disabled</div>
+          <div class="mb-16 descriptor">destructive: disabled</div>
           <label for="textarea-destructive">Label</label> 
           <textarea id="textarea-destructive" class="textarea textarea--destructive" placeholder="Scrie ceva..." disabled></textarea> 
         </div>
@@ -157,37 +156,37 @@
       <div class="col-3">
         <!-- ✅ Success -->
         <div class="input-wrapper is-textarea has-trailing mb-24">
-          <div class="mb-16 description-text">success: default</div>
+          <div class="mb-16 descriptor">success: default</div>
           <label for="textarea-success">Label</label> 
           <textarea id="textarea-success" class="textarea textarea--success" placeholder="Scrie ceva...">Text valid</textarea> 
         </div> 
 
         <div class="input-wrapper is-textarea has-trailing mb-24">
-          <div class="mb-16 description-text">success: hover</div>
+          <div class="mb-16 descriptor">success: hover</div>
+          <label for="textarea-success">Label</label> 
+          <textarea id="textarea-success" class="textarea textarea--success is-hover" placeholder="Scrie ceva...">Text valid</textarea> 
+        </div> 
+
+        <div class="input-wrapper is-textarea has-trailing mb-24">
+          <div class="mb-16 descriptor">success: focus-empty</div>
+          <label for="textarea-success">Label</label> 
+          <textarea id="textarea-success" class="textarea textarea--success is-focus" placeholder="Scrie ceva...">Text valid</textarea> 
+        </div> 
+
+        <div class="input-wrapper is-textarea has-trailing mb-24">
+          <div class="mb-16 descriptor">success: focus-populated</div>
+          <label for="textarea-success">Label</label> 
+          <textarea id="textarea-success" class="textarea textarea--success is-focus" placeholder="Scrie ceva...">Text valid</textarea> 
+        </div> 
+
+        <div class="input-wrapper is-textarea has-trailing mb-24">
+          <div class="mb-16 descriptor">success: filled</div>
           <label for="textarea-success">Label</label> 
           <textarea id="textarea-success" class="textarea textarea--success" placeholder="Scrie ceva...">Text valid</textarea> 
         </div> 
 
         <div class="input-wrapper is-textarea has-trailing mb-24">
-          <div class="mb-16 description-text">success: focus-empty</div>
-          <label for="textarea-success">Label</label> 
-          <textarea id="textarea-success" class="textarea textarea--success" placeholder="Scrie ceva...">Text valid</textarea> 
-        </div> 
-
-        <div class="input-wrapper is-textarea has-trailing mb-24">
-          <div class="mb-16 description-text">success: focus-populated</div>
-          <label for="textarea-success">Label</label> 
-          <textarea id="textarea-success" class="textarea textarea--success" placeholder="Scrie ceva...">Text valid</textarea> 
-        </div> 
-
-        <div class="input-wrapper is-textarea has-trailing mb-24">
-          <div class="mb-16 description-text">success: filled</div>
-          <label for="textarea-success">Label</label> 
-          <textarea id="textarea-success" class="textarea textarea--success" placeholder="Scrie ceva...">Text valid</textarea> 
-        </div> 
-
-        <div class="input-wrapper is-textarea has-trailing mb-24">
-          <div class="mb-16 description-text">success: disabled</div>
+          <div class="mb-16 descriptor">success: disabled</div>
           <label for="textarea-success">Label</label> 
           <textarea id="textarea-success" class="textarea textarea--success" placeholder="Scrie ceva..." disabled>Text valid</textarea> 
         </div> 
@@ -212,7 +211,7 @@
     <div class="row">
       <div class="col-3"> 
         <div class="input-wrapper is-textarea  mb-24">
-          <div class="mb-16 description-text">default</div>
+          <div class="mb-16 descriptor">default</div>
           <label for="textarea-default">Label</label> 
           <textarea id="textarea-default" class="textarea" placeholder="Scrie ceva..."></textarea> 
           <div class="message message--inline message--info mt-6"> 
@@ -223,7 +222,7 @@
 
       <div class="col-3">
         <div class="input-group mb-24">
-         <div class="mb-16 description-text">default</div>
+         <div class="mb-16 descriptor">default</div>
           <label for="textarea-warning">Label</label> 
           <textarea id="textarea-warning" class="textarea textarea--warning" placeholder="Scrie ceva..."></textarea> 
           <div class="message message--inline message--warning"> 
@@ -239,7 +238,7 @@
 
       <div class="col-3">
         <div class="input-group mb-24">
-           <div class="mb-16 description-text">default</div>
+           <div class="mb-16 descriptor">default</div>
           <label for="textarea-destructive">Label</label> 
           <textarea id="textarea-destructive" class="textarea textarea--destructive" placeholder="Scrie ceva..."></textarea>
            <div class="message message--inline message--error">
@@ -255,7 +254,7 @@
 
       <div class="col-3">
         <div class="input-group mb-24">
-           <div class="mb-16 description-text">default</div>
+           <div class="mb-16 descriptor">default</div>
           <label for="textarea-success">Label</label> 
           <textarea id="textarea-success" class="textarea textarea--success" placeholder="Scrie ceva..."></textarea>
           <div class="message message--inline message--success"> 
