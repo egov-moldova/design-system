@@ -24,3 +24,11 @@
   letter-spacing: 0;
   color: var(--color-text-base-tertiary, var(--gray-500, #757575));
 }
+
+@mixin descriptor-doc-caption {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-fs-16, 16px);
+  line-height: var(--line-height-lh-24, 24px);
+  letter-spacing: -0.01em;
+  font-weight: var(--font-weight-fw-medium, 500);
+}

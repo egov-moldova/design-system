@@ -1,4 +1,5 @@
 @use '../abstracts/mixins/typography' as typ;
+@use '../abstracts/mixins/doc-intro-typography' as doc;
 
 html { font-size: 100%; }
 
@@ -49,13 +50,8 @@ pre {
   overflow-x: auto;
 }
 
-/* Doc / preview spec captions — same pattern as main (JetBrains stack via --font-family-mono) */
 div.descriptor {
-  font-family: var(--font-family-mono);
-  font-size: var(--font-size-fs-16, 16px);
-  line-height: var(--line-height-lh-24, 24px);
-  letter-spacing: -0.01em;
-  font-weight: var(--font-weight-fw-medium, 500);
+  @include doc.descriptor-doc-caption;
 }
 
 kbd {

@@ -748,7 +748,6 @@ pre {
   overflow-x: auto;
 }
 
-/* Doc / preview spec captions — same pattern as main (JetBrains stack via --font-family-mono) */
 div.descriptor {
   font-family: var(--font-family-mono);
   font-size: var(--font-size-fs-16, 16px);
@@ -17634,7 +17633,7 @@ ul[role=menu] .menu__item.menu__item--current:active:not([aria-disabled=true]):n
   width: 415px;
   max-width: 100%;
 }
-.menu-doc-page .select-wrap.menu-doc-select-static.menu-doc-breakpoints-mobile > .select-label {
+.menu-doc-page .select-wrap.menu-doc-select-static.menu-doc-breakpoints-mobile > div.descriptor {
   flex: 0 0 auto;
 }
 .menu-doc-page .select-wrap.menu-doc-select-static.menu-doc-breakpoints-mobile > .menu-doc-breakpoints-mobile-frame > .menu-doc-state-demo {
@@ -17973,7 +17972,7 @@ ul[role=menu] .menu__item.menu__item--current:active:not([aria-disabled=true]):n
   width: 290px;
   max-width: 100%;
 }
-.menu-doc-page .menu-doc-select-static .select-label {
+.menu-doc-page .menu-doc-select-static div.descriptor {
   margin-bottom: 0;
 }
 .menu-doc-page .menu-doc-select-static .menu__panel {
