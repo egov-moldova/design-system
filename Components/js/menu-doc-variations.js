@@ -17,19 +17,19 @@
     return Number.isFinite(n) && n >= 1 ? n : null;
   }
 
-  /** Selection listbox rows — props ↔ data-option-count, data-selected-option, … */
   function fillSelectionList(ul) {
     const count = parseInt(ul.getAttribute('data-option-count') || '6', 10);
     const sel = optIndex(ul.getAttribute('data-selected-option'));
     const hov = optIndex(ul.getAttribute('data-hover-option'));
     const dis = optIndex(ul.getAttribute('data-disabled-option'));
     const longIx = optIndex(ul.getAttribute('data-long-label-option'));
-    const longText =
-      ul.getAttribute('data-long-label-text') || LONG_MENU_LABEL;
+    const longText = ul.getAttribute('data-long-label-text') || LONG_MENU_LABEL;
 
     ul.replaceChildren();
     for (let i = 1; i <= count; i += 1) {
       const li = document.createElement('li');
+      li.setAttribute('role', 'none');
+
       const isSel = sel === i;
       const isHov = hov === i;
       const isDis = dis === i;
@@ -40,21 +40,26 @@
       if (isHov) cls += ' menu__item--hover';
       if (isDis) cls += ' menu__item--disabled';
       if (isLong) cls += ' menu__item--multiline';
-      li.className = cls.trim();
-      li.setAttribute('role', 'option');
-      li.setAttribute('tabindex', '-1');
+
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = cls.trim();
+      btn.setAttribute('role', 'option');
+      btn.setAttribute('tabindex', '-1');
       if (isDis) {
-        li.setAttribute('aria-disabled', 'true');
+        btn.disabled = true;
+        btn.setAttribute('aria-disabled', 'true');
       }
-      li.setAttribute('aria-selected', isSel ? 'true' : 'false');
+      btn.setAttribute('aria-selected', isSel ? 'true' : 'false');
 
       if (isLong) {
-        li.innerHTML = `<span class="menu__label menu__label--multiline">${longText}</span>
+        btn.innerHTML = `<span class="menu__label menu__label--multiline">${longText}</span>
           <span class="menu__check" aria-hidden="true"></span>`;
       } else {
-        li.innerHTML = `<span class="menu__label">Option ${i}</span>
+        btn.innerHTML = `<span class="menu__label">Option ${i}</span>
           <span class="menu__check" aria-hidden="true"></span>`;
       }
+      li.appendChild(btn);
       ul.appendChild(li);
     }
   }
@@ -67,8 +72,7 @@
     const focus = optIndex(ul.getAttribute('data-focus-option'));
     const dis = optIndex(ul.getAttribute('data-disabled-option'));
     const longIx = optIndex(ul.getAttribute('data-long-label-option'));
-    const longText =
-      ul.getAttribute('data-long-label-text') || LONG_MENU_LABEL;
+    const longText = ul.getAttribute('data-long-label-text') || LONG_MENU_LABEL;
 
     ul.replaceChildren();
     for (let i = 1; i <= count; i += 1) {
@@ -217,13 +221,19 @@
     for (let i = 1; i <= 6; i += 1) {
       const selected = i === 2;
       const li = document.createElement('li');
-      li.className = selected ? 'menu__item menu__item--selected' : 'menu__item';
-      li.setAttribute('role', 'option');
-      li.setAttribute('tabindex', '-1');
-      li.setAttribute('aria-selected', selected ? 'true' : 'false');
-      li.innerHTML = `
+      li.setAttribute('role', 'none');
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = selected
+        ? 'menu__item menu__item--selected'
+        : 'menu__item';
+      btn.setAttribute('role', 'option');
+      btn.setAttribute('tabindex', '-1');
+      btn.setAttribute('aria-selected', selected ? 'true' : 'false');
+      btn.innerHTML = `
           <span class="menu__label">Option ${i}</span>
           <span class="menu__check" aria-hidden="true"></span>`;
+      li.appendChild(btn);
       ul.appendChild(li);
     }
   }

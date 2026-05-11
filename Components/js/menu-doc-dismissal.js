@@ -4,6 +4,39 @@
     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
   }
 
+  function clickIsInsideStack(event, stack, panel) {
+    const path =
+      typeof event.composedPath === 'function'
+        ? event.composedPath()
+        : [];
+    const nodes = path.length > 0 ? path : [event.target];
+    return nodes.some((node) => {
+      if (!(node instanceof Node)) {
+        return false;
+      }
+      return (
+        node === stack ||
+        node === panel ||
+        stack.contains(node) ||
+        panel.contains(node)
+      );
+    });
+  }
+
+  function clickIsOtherMenuDocDemo(el) {
+    if (!el || !(el instanceof Node)) {
+      return false;
+    }
+    if (el.closest('.menu-doc-variations')) {
+      return true;
+    }
+    const row = el.closest('.menu-doc-row');
+    if (row && !row.closest('.menu-doc-dismissal-row')) {
+      return true;
+    }
+    return false;
+  }
+
   function setupDismissalStacks() {
     document.querySelectorAll('.menu-doc-dismissal-stack').forEach((stack) => {
       const btn = stack.querySelector('.menu-doc-dismissal-trigger');
@@ -23,17 +56,31 @@
 
       if (outsideScenario) {
         let dismissArmed = false;
+        const dismissalRow = scenario.closest('.menu-doc-dismissal-row');
         const onDocClick = (e) => {
           if (!dismissArmed) return;
           if (panel.hidden) return;
-          if (stack.contains(e.target)) return;
+          if (clickIsInsideStack(e, stack, panel)) return;
+
+          const el = e.target instanceof Node ? e.target : null;
+          if (clickIsOtherMenuDocDemo(el)) return;
+
+          if (dismissalRow && el) {
+            const siblingScenarios = dismissalRow.querySelectorAll(
+              ':scope > .menu-doc-dismissal-scenario:not(.menu-doc-dismissal-scenario--outside)'
+            );
+            for (const s of siblingScenarios) {
+              if (s.contains(el)) return;
+            }
+          }
           setMenuOpen(btn, panel, false);
         };
         document.addEventListener('click', onDocClick);
-        window.setTimeout(() => {
-          dismissArmed = true;
-          setMenuOpen(btn, panel, true);
-        }, 200);
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(() => {
+            dismissArmed = true;
+          });
+        });
       }
     });
   }
