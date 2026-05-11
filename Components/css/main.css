@@ -748,6 +748,15 @@ pre {
   overflow-x: auto;
 }
 
+/* Doc / preview spec captions — same pattern as main (JetBrains stack via --font-family-mono) */
+div.descriptor {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-fs-16, 16px);
+  line-height: var(--line-height-lh-24, 24px);
+  letter-spacing: -0.01em;
+  font-weight: var(--font-weight-fw-medium, 500);
+}
+
 kbd {
   padding: 0.1em 0.35em;
   border-radius: var(--border-radius-4, 4px);
@@ -16853,18 +16862,12 @@ ul[role=menu] .menu__item.menu__item--current:active:not([aria-disabled=true]):n
   min-height: 0;
 }
 
-.descriptor {
+.select-doc-page div.descriptor {
   margin-bottom: var(--spacing-12, 12px);
-  font-family: var(--font-family-mono);
-  font-style: normal;
-  font-weight: var(--font-weight-fw-medium, var(--font-weight-medium, 500));
-  font-size: var(--font-size-fs-16, var(--font-size-16, 16px));
-  line-height: var(--line-height-lh-24, var(--line-height-24, 24px));
-  letter-spacing: -0.16px;
   color: var(--gray-700, #383838);
 }
 
-.descriptor--wide {
+.select-doc-page div.descriptor.descriptor--wide {
   margin-bottom: var(--spacing-16, 16px);
 }
 
@@ -16892,15 +16895,9 @@ ul[role=menu] .menu__item.menu__item--current:active:not([aria-disabled=true]):n
   column-gap: var(--spacing-56, 56px);
 }
 
-.select-doc-beh--macos > .descriptor,
-.select-doc-beh--ios > .descriptor,
-.select-doc-beh--custom > .descriptor {
-  font-family: var(--font-family-mono);
-  font-style: normal;
-  font-weight: var(--font-weight-fw-medium, var(--font-weight-medium, 500));
-  font-size: var(--font-size-fs-16, var(--font-size-16, 16px));
-  line-height: var(--line-height-lh-24, var(--line-height-24, 24px));
-  letter-spacing: -0.16px;
+.select-doc-beh--macos > div.descriptor,
+.select-doc-beh--ios > div.descriptor,
+.select-doc-beh--custom > div.descriptor {
   color: var(--color-text-base-secondary);
 }
 
@@ -16933,7 +16930,7 @@ ul[role=menu] .menu__item.menu__item--current:active:not([aria-disabled=true]):n
   align-items: flex-start;
 }
 
-.select-doc-edge-item > .descriptor {
+.select-doc-edge-item > div.descriptor {
   margin-bottom: var(--spacing-16, 16px);
 }
 
@@ -17387,21 +17384,15 @@ ul[role=menu] .menu__item.menu__item--current:active:not([aria-disabled=true]):n
   align-items: flex-start;
 }
 
-.menu-doc-page .menu-doc-variations > .select-wrap.menu-doc-select-static > .descriptor,
-.menu-doc-page .menu-doc-row > .select-wrap.menu-doc-select-static > .descriptor {
+.menu-doc-page .menu-doc-variations > .select-wrap.menu-doc-select-static > div.descriptor,
+.menu-doc-page .menu-doc-row > .select-wrap.menu-doc-select-static > div.descriptor {
   flex: none;
   margin-bottom: 0;
   min-width: 0;
-  font-family: var(--font-family-mono);
-  font-size: var(--font-size-fs-16, 16px);
-  font-style: normal;
-  font-weight: 500;
-  line-height: var(--line-height-lh-24, 24px);
-  letter-spacing: -0.16px;
-  color: var(--color-text-base-secondary, var(--gray-700, #383838));
   white-space: normal;
   overflow: visible;
   text-overflow: clip;
+  color: var(--color-text-base-secondary, var(--gray-700, #383838));
 }
 
 .menu-doc-composition {
