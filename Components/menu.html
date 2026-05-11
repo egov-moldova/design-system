@@ -1,0 +1,1029 @@
+<!doctype html>
+<html lang="ro">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Menu — Design System</title>
+    <link rel="stylesheet" href="css/main.css" />
+    <script src="js/include-header.js" defer></script>
+    <script src="js/include-footer.js" defer></script>
+    <script src="js/toggler.js" defer></script>
+    <script src="js/modal.js" defer></script>
+    <script src="js/mega-nav.js" defer></script>
+    <script src="js/search.js" defer></script>
+    <script src="js/dropdown.js" defer></script>
+    <script src="js/menu-doc-breakpoints.js" defer></script>
+    <script src="js/menu-doc-variations.js" defer></script>
+    <script src="js/menu-doc-dismissal.js" defer></script>
+    <script src="js/bottom-sheet.js" defer></script>
+  </head>
+  <body>
+    <a
+      href="#menu-doc-main"
+      class="menu-doc-skip-link sr-only sr-only-focusable"
+      >Sari la conținutul principal</a
+    >
+    <div id="site-header"></div>
+
+    <main id="menu-doc-main" tabindex="-1">
+      <div class="container select-doc-page menu-doc-page">
+        <div class="menu-doc-hero">
+          <header class="select-doc-documentation-header">
+            <h1 class="select-doc-title">Menu</h1>
+            <p class="select-doc-body select-doc-body--intro">
+              The dropdown menu component provides a compact way to present a
+              list of options or actions without overwhelming the interface. It
+              allows users to select a value, trigger an action, or navigate to
+              another section while conserving space on the screen.
+            </p>
+          </header>
+        </div>
+
+        <div class="section-header">
+          <h2>Selection Menu</h2>
+        </div>
+        <div class="section-content">
+          <p class="menu-doc-intro menu-doc-intro--selection">
+            The single-selection dropdown allows users to choose one option from
+            a predefined list. It's typically used in forms, filters, or
+            settings where a compact input method is needed to reduce clutter.
+            Once a user selects an option, the dropdown closes and the chosen
+            value is displayed.
+          </p>
+        </div>
+
+        <div class="section-header">
+          <h3>Breakpoints</h3>
+        </div>
+        <div class="section-content">
+          <p class="menu-doc-breakpoints-intro">
+            Additional information about the Menu component treatment on Mobile
+            can be accessed through the provided
+            <a
+              href="https://www.figma.com/design/doJ7tDY0PlQ0PqMgbpFVIC?node-id=430-25857"
+              class="link link-lg link-primary link-underline"
+              target="_blank"
+              rel="noopener noreferrer"
+              >Figma link</a
+            >.
+          </p>
+          <div class="menu-doc-breakpoints">
+            <div class="menu-doc-row menu-doc-row--breakpoints">
+              <div class="select-wrap menu-doc-select-static">
+                <div class="descriptor" id="menu-doc-lbl-bp-desktop">desktop</div>
+                <div
+                  class="select-wrap menu-doc-select-static menu-doc-state-demo"
+                >
+                  <div
+                    class="menu menu--desktop"
+                    data-variant="selection"
+                    data-size="desktop"
+                    data-multiple="false"
+                    data-searchable="false"
+                    data-truncate="false"
+                  >
+                    <div class="menu__panel" role="presentation">
+                      <ul
+                        class="menu__list"
+                        role="listbox"
+                        aria-labelledby="menu-doc-lbl-bp-desktop"
+                        tabindex="-1"
+                        data-menu-doc-fill="selection-list"
+                        data-option-count="6"
+                        data-selected-option="2"
+                      ></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-breakpoints-mobile"
+              >
+                <div class="descriptor" id="menu-doc-lbl-bp-mobile">mobile</div>
+                <div class="menu-doc-breakpoints-mobile-frame">
+                  <div
+                    class="select-wrap menu-doc-select-static menu-doc-state-demo"
+                  >
+                    <div
+                      class="menu menu--desktop menu--mobile"
+                      data-variant="selection"
+                      data-size="mobile"
+                      data-multiple="false"
+                      data-searchable="false"
+                      data-truncate="false"
+                    >
+                      <div class="menu__panel" role="presentation">
+                        <ul
+                          class="menu__list"
+                          role="listbox"
+                          aria-labelledby="menu-doc-lbl-bp-mobile"
+                          tabindex="-1"
+                          data-menu-doc-fill="selection-list"
+                          data-option-count="6"
+                          data-selected-option="2"
+                        ></ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <h3>States</h3>
+        </div>
+        <div class="section-content">
+          <div class="menu-doc-row menu-doc-state-row">
+            <div class="select-wrap menu-doc-select-static">
+              <div class="descriptor" id="menu-doc-lbl-state-unselected">unselected</div>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-state-demo"
+              >
+                <div
+                  class="menu menu--desktop"
+                  data-variant="selection"
+                  data-size="desktop"
+                  data-state="unselected"
+                  data-multiple="false"
+                  data-searchable="false"
+                  data-truncate="false"
+                >
+                  <div class="menu__panel" role="presentation">
+                    <ul
+                      class="menu__list"
+                      role="listbox"
+                      aria-labelledby="menu-doc-lbl-state-unselected"
+                      tabindex="-1"
+                      data-menu-doc-fill="selection-list"
+                      data-option-count="6"
+                    ></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="select-wrap menu-doc-select-static">
+              <div class="descriptor" id="menu-doc-lbl-state-hover">unselected: hover</div>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-state-demo menu-doc-state-demo--hover"
+              >
+                <div
+                  class="menu menu--desktop"
+                  data-variant="selection"
+                  data-size="desktop"
+                  data-state="hover"
+                  data-multiple="false"
+                  data-searchable="false"
+                  data-truncate="false"
+                >
+                  <div class="menu__panel" role="presentation">
+                    <ul
+                      class="menu__list"
+                      role="listbox"
+                      aria-labelledby="menu-doc-lbl-state-hover"
+                      tabindex="-1"
+                      data-menu-doc-fill="selection-list"
+                      data-option-count="6"
+                      data-hover-option="2"
+                    ></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="select-wrap menu-doc-select-static">
+              <div class="descriptor" id="menu-doc-lbl-state-selected">selected</div>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-state-demo"
+              >
+                <div
+                  class="menu menu--desktop"
+                  data-variant="selection"
+                  data-size="desktop"
+                  data-state="selected"
+                  data-multiple="false"
+                  data-searchable="false"
+                  data-truncate="false"
+                >
+                  <div class="menu__panel" role="presentation">
+                    <ul
+                      class="menu__list"
+                      role="listbox"
+                      aria-labelledby="menu-doc-lbl-state-selected"
+                      tabindex="-1"
+                      data-menu-doc-fill="selection-list"
+                      data-option-count="6"
+                      data-selected-option="2"
+                    ></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="select-wrap menu-doc-select-static">
+              <div class="descriptor" id="menu-doc-lbl-state-disabled">disabled</div>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-state-demo menu-doc-state-demo--disabled"
+              >
+                <div
+                  class="menu menu--desktop"
+                  data-variant="selection"
+                  data-size="desktop"
+                  data-state="disabled"
+                  data-multiple="false"
+                  data-searchable="false"
+                  data-truncate="false"
+                >
+                  <div class="menu__panel" role="presentation">
+                    <ul
+                      class="menu__list"
+                      role="listbox"
+                      aria-labelledby="menu-doc-lbl-state-disabled"
+                      tabindex="-1"
+                      data-menu-doc-fill="selection-list"
+                      data-option-count="6"
+                      data-disabled-option="2"
+                    ></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <h3>Edge Cases</h3>
+        </div>
+        <div class="section-content">
+          <div class="menu-doc-row">
+            <div class="select-wrap menu-doc-select-static">
+              <div class="descriptor" id="menu-doc-lbl-trunc-unselected">truncation: unselected</div>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-state-demo"
+              >
+                <div
+                  class="menu menu--desktop menu--truncate"
+                  data-variant="selection"
+                  data-size="desktop"
+                  data-truncate="true"
+                  data-multiple="false"
+                  data-searchable="false"
+                >
+                  <div class="menu__panel" role="presentation">
+                    <ul
+                      class="menu__list"
+                      role="listbox"
+                      aria-labelledby="menu-doc-lbl-trunc-unselected"
+                      tabindex="-1"
+                      data-menu-doc-fill="selection-list"
+                      data-option-count="6"
+                      data-long-label-option="2"
+                      data-long-label-text="OptionThis is a very long menu option that will likely not fit within a single line container 2"
+                    ></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="select-wrap menu-doc-select-static">
+              <div class="descriptor" id="menu-doc-lbl-trunc-selected">truncation: selected</div>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-state-demo"
+              >
+                <div
+                  class="menu menu--desktop menu--truncate"
+                  data-variant="selection"
+                  data-size="desktop"
+                  data-truncate="true"
+                  data-multiple="false"
+                  data-searchable="false"
+                >
+                  <div class="menu__panel" role="presentation">
+                    <ul
+                      class="menu__list"
+                      role="listbox"
+                      aria-labelledby="menu-doc-lbl-trunc-selected"
+                      tabindex="-1"
+                      data-menu-doc-fill="selection-list"
+                      data-option-count="6"
+                      data-selected-option="2"
+                      data-long-label-option="2"
+                    ></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <h2>Contextual Menu</h2>
+        </div>
+        <div class="section-content">
+          <p class="menu-doc-intro">
+            Contextual Menu – widely accepted, flexible, and communicates that
+            the menu adapts to the user's current context, offering both actions
+            and settings.
+          </p>
+        </div>
+
+        <div class="section-header">
+          <h3>States</h3>
+        </div>
+        <div class="section-content">
+          <div class="menu-doc-row">
+            <div
+              class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+            >
+              <div class="descriptor" id="menu-doc-lbl-ctx-def">default</div>
+              <div class="select-wrap menu-doc-select-static">
+                <div
+                  class="menu menu--desktop"
+                  data-variant="contextual"
+                  data-size="desktop"
+                  data-multiple="false"
+                  data-searchable="false"
+                  data-truncate="false"
+                >
+                  <div class="menu__panel" role="presentation">
+                    <ul
+                      class="menu__list"
+                      role="menu"
+                      aria-labelledby="menu-doc-lbl-ctx-def"
+                      data-menu-doc-fill="contextual-list"
+                      data-option-count="6"
+                    ></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+            >
+              <div class="descriptor" id="menu-doc-lbl-ctx-hov">hover</div>
+              <div class="select-wrap menu-doc-select-static">
+                <div
+                  class="menu menu--desktop"
+                  data-variant="contextual"
+                  data-size="desktop"
+                  data-state="hover"
+                  data-multiple="false"
+                  data-searchable="false"
+                  data-truncate="false"
+                >
+                  <div class="menu__panel" role="presentation">
+                    <ul
+                      class="menu__list"
+                      role="menu"
+                      aria-labelledby="menu-doc-lbl-ctx-hov"
+                      data-menu-doc-fill="contextual-list"
+                      data-option-count="6"
+                      data-hover-option="2"
+                    ></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+            >
+              <div class="descriptor" id="menu-doc-lbl-ctx-act">active</div>
+              <div class="select-wrap menu-doc-select-static">
+                <div
+                  class="menu menu--desktop"
+                  data-variant="contextual"
+                  data-size="desktop"
+                  data-multiple="false"
+                  data-searchable="false"
+                  data-truncate="false"
+                >
+                  <div class="menu__panel" role="presentation">
+                    <ul
+                      class="menu__list"
+                      role="menu"
+                      aria-labelledby="menu-doc-lbl-ctx-act"
+                      data-menu-doc-fill="contextual-list"
+                      data-option-count="6"
+                      data-pressed-option="2"
+                    ></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+            >
+              <div class="descriptor" id="menu-doc-lbl-ctx-foc">focus</div>
+              <div class="select-wrap menu-doc-select-static">
+                <div
+                  class="menu menu--desktop"
+                  data-variant="contextual"
+                  data-size="desktop"
+                  data-state="focus"
+                  data-multiple="false"
+                  data-searchable="false"
+                  data-truncate="false"
+                >
+                  <div class="menu__panel" role="presentation">
+                    <ul
+                      class="menu__list"
+                      role="menu"
+                      aria-labelledby="menu-doc-lbl-ctx-foc"
+                      data-menu-doc-fill="contextual-list"
+                      data-option-count="6"
+                      data-focus-option="2"
+                    ></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+            >
+              <div class="descriptor" id="menu-doc-lbl-ctx-dis">disabled</div>
+              <div class="select-wrap menu-doc-select-static">
+                <div
+                  class="menu menu--desktop"
+                  data-variant="contextual"
+                  data-size="desktop"
+                  data-state="disabled"
+                  data-multiple="false"
+                  data-searchable="false"
+                  data-truncate="false"
+                >
+                  <div class="menu__panel" role="presentation">
+                    <ul
+                      class="menu__list"
+                      role="menu"
+                      aria-labelledby="menu-doc-lbl-ctx-dis"
+                      data-menu-doc-fill="contextual-list"
+                      data-option-count="6"
+                      data-disabled-option="2"
+                    ></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <h3>Variations</h3>
+        </div>
+        <div class="section-content menu-doc-section--variations">
+          <div class="menu-doc-variations">
+            <div class="select-wrap menu-doc-select-static">
+              <div class="descriptor" id="menu-doc-lbl-var-none">none</div>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+              >
+                <div class="select-wrap menu-doc-select-static">
+                  <div
+                    class="menu menu--desktop"
+                    data-variant="contextual"
+                    data-size="desktop"
+                    data-multiple="false"
+                    data-searchable="false"
+                    data-truncate="false"
+                  >
+                    <div class="menu__panel" role="presentation">
+                      <ul
+                        class="menu__list"
+                        role="menu"
+                        aria-labelledby="menu-doc-lbl-var-none"
+                        data-menu-doc-fill="menu-plain-6"
+                      ></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="select-wrap menu-doc-select-static">
+              <div class="descriptor" id="menu-doc-lbl-var-icon">icon</div>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+              >
+                <div class="select-wrap menu-doc-select-static">
+                  <div
+                    class="menu menu--desktop"
+                    data-variant="contextual"
+                    data-size="desktop"
+                    data-multiple="false"
+                    data-searchable="false"
+                    data-truncate="false"
+                  >
+                    <div class="menu__panel" role="presentation">
+                      <ul
+                        class="menu__list"
+                        role="menu"
+                        aria-labelledby="menu-doc-lbl-var-icon"
+                        data-menu-doc-fill="menu-icon-6"
+                      ></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="select-wrap menu-doc-select-static">
+              <div class="descriptor" id="menu-doc-lbl-var-cb">checkbox</div>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+              >
+                <div class="select-wrap menu-doc-select-static">
+                  <div
+                    class="menu menu--desktop"
+                    data-variant="contextual"
+                    data-size="desktop"
+                    data-multiple="true"
+                    data-searchable="false"
+                    data-truncate="false"
+                  >
+                    <div class="menu__panel" role="presentation">
+                      <ul
+                        class="menu__list"
+                        role="group"
+                        aria-labelledby="menu-doc-lbl-var-cb"
+                        data-menu-doc-fill="checkbox-6"
+                      ></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="select-wrap menu-doc-select-static">
+              <div class="descriptor" id="menu-doc-lbl-var-radio">
+                radio-button
+              </div>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+              >
+                <div class="select-wrap menu-doc-select-static">
+                  <div
+                    class="menu menu--desktop"
+                    data-variant="contextual"
+                    data-size="desktop"
+                    data-multiple="false"
+                    data-searchable="false"
+                    data-truncate="false"
+                  >
+                    <div class="menu__panel" role="presentation">
+                      <ul
+                        class="menu__list"
+                        role="radiogroup"
+                        aria-labelledby="menu-doc-lbl-var-radio"
+                        data-menu-doc-fill="radio-6"
+                      ></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="select-wrap menu-doc-select-static">
+              <div class="descriptor" id="menu-doc-lbl-var-seg">segmented</div>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+              >
+                <div class="select-wrap menu-doc-select-static">
+                  <div
+                    class="menu menu--desktop"
+                    data-variant="contextual"
+                    data-size="desktop"
+                    data-multiple="false"
+                    data-searchable="false"
+                    data-truncate="false"
+                  >
+                    <div class="menu__panel" role="presentation">
+                      <ul
+                        class="menu__list"
+                        role="menu"
+                        aria-labelledby="menu-doc-lbl-var-seg"
+                        data-menu-doc-fill="menu-segmented-6"
+                      ></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="select-wrap menu-doc-select-static">
+              <div class="descriptor" id="menu-doc-lbl-var-seg-h">
+                segmented: section-heading
+              </div>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+              >
+                <div class="select-wrap menu-doc-select-static">
+                  <div
+                    class="menu menu--desktop"
+                    data-variant="contextual"
+                    data-size="desktop"
+                    data-multiple="false"
+                    data-searchable="false"
+                    data-truncate="false"
+                  >
+                    <div class="menu__panel" role="presentation">
+                      <ul
+                        class="menu__list"
+                        role="menu"
+                        aria-labelledby="menu-doc-lbl-var-seg-h"
+                        data-menu-doc-fill="menu-seg-heading"
+                      ></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <h3>Scrollable Content</h3>
+        </div>
+        <div class="section-content">
+          <p class="menu-doc-intro menu-doc-intro--tight">
+            Scrolling is enabled whenever content extends beyond the popover
+            container.
+          </p>
+          <div class="menu-doc-row">
+            <div class="select-wrap menu-doc-select-static">
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-select-static--scroll-panel"
+              >
+                <div class="select-wrap menu-doc-select-static">
+                  <div
+                    class="menu menu--desktop"
+                    data-variant="selection"
+                    data-size="desktop"
+                    data-multiple="false"
+                    data-searchable="false"
+                    data-truncate="false"
+                  >
+                    <div class="menu__panel" role="presentation">
+                      <ul
+                        class="menu__list"
+                        role="listbox"
+                        aria-labelledby="menu-doc-lbl-scroll"
+                        tabindex="-1"
+                        data-menu-doc-fill="selection-list"
+                        data-option-count="12"
+                        data-selected-option="2"
+                      ></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <h3>Dismissal</h3>
+        </div>
+        <div class="section-content">
+          <p class="menu-doc-dismissal-intro">
+            Popovers can be dismissed by: interacting with the button that
+            presented it again, making a decision within the popover,
+            interacting with other page content, the ESC key.
+          </p>
+          <div class="menu-doc-dismissal-row">
+            <div class="menu-doc-dismissal-scenario">
+              <div class="menu-doc-dismissal-stack">
+                <div class="menu-doc-dismissal-trigger-wrap">
+                  <button
+                    type="button"
+                    id="menu-doc-dismissal-btn-1"
+                    class="btn btn-primary btn-rounded menu-doc-dismissal-trigger"
+                    aria-expanded="true"
+                    aria-haspopup="menu"
+                    aria-controls="menu-doc-dismissal-panel-1"
+                  >
+                    <span>Button</span>
+                    <svg class="icon" width="20" height="20" aria-hidden="true">
+                      <use
+                        href="assets/icons/sprite.svg#icon-chevron-bottom"
+                      ></use>
+                    </svg>
+                  </button>
+                  <span class="menu-doc-dismissal-gesture" aria-hidden="true">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="72"
+                      height="72"
+                      viewBox="0 0 72 72"
+                      fill="none"
+                      aria-hidden="true"
+                    >
+                      <path
+                        opacity="0.24"
+                        d="M0 36C0 16.1177 16.1178 0 36 0C55.8823 0 72 16.1177 72 36C72 55.8822 55.8823 72 36 72C16.1178 72 0 55.8822 0 36Z"
+                        fill="#2F56FF"
+                      />
+                      <circle
+                        opacity="0.5"
+                        cx="36"
+                        cy="36"
+                        r="24"
+                        fill="#2F56FF"
+                      />
+                    </svg>
+                  </span>
+                </div>
+                <div
+                  class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+                >
+                  <div
+                    class="menu menu--desktop"
+                    data-variant="contextual"
+                    data-size="desktop"
+                    data-multiple="false"
+                    data-searchable="false"
+                    data-truncate="false"
+                  >
+                    <div
+                      class="menu__panel"
+                      id="menu-doc-dismissal-panel-1"
+                      role="presentation"
+                    >
+                      <ul
+                        class="menu__list"
+                        role="menu"
+                        aria-label="Example menu"
+                        data-menu-doc-fill="contextual-list"
+                        data-option-count="6"
+                      ></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="menu-doc-dismissal-scenario">
+              <div class="menu-doc-dismissal-stack">
+                <div class="menu-doc-dismissal-trigger-wrap">
+                  <button
+                    type="button"
+                    id="menu-doc-dismissal-btn-2"
+                    class="btn btn-primary btn-rounded menu-doc-dismissal-trigger"
+                    aria-expanded="true"
+                    aria-haspopup="menu"
+                    aria-controls="menu-doc-dismissal-panel-2"
+                  >
+                    <span>Button</span>
+                    <svg class="icon" width="20" height="20" aria-hidden="true">
+                      <use
+                        href="assets/icons/sprite.svg#icon-chevron-bottom"
+                      ></use>
+                    </svg>
+                  </button>
+                </div>
+                <div
+                  class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+                >
+                  <div class="menu-doc-dismissal-menu-hit">
+                    <div
+                      class="menu menu--desktop"
+                      data-variant="contextual"
+                      data-size="desktop"
+                      data-multiple="false"
+                      data-searchable="false"
+                      data-truncate="false"
+                    >
+                      <div
+                        class="menu__panel"
+                        id="menu-doc-dismissal-panel-2"
+                        role="presentation"
+                      >
+                        <ul
+                          class="menu__list"
+                          role="menu"
+                          aria-label="Example menu"
+                          data-menu-doc-fill="contextual-list"
+                          data-option-count="6"
+                        ></ul>
+                      </div>
+                    </div>
+                    <span class="menu-doc-dismissal-gesture" aria-hidden="true">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="72"
+                        height="72"
+                        viewBox="0 0 72 72"
+                        fill="none"
+                        aria-hidden="true"
+                      >
+                        <path
+                          opacity="0.24"
+                          d="M0 36C0 16.1177 16.1178 0 36 0C55.8823 0 72 16.1177 72 36C72 55.8822 55.8823 72 36 72C16.1178 72 0 55.8822 0 36Z"
+                          fill="#2F56FF"
+                        />
+                        <circle
+                          opacity="0.5"
+                          cx="36"
+                          cy="36"
+                          r="24"
+                          fill="#2F56FF"
+                        />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="menu-doc-dismissal-scenario menu-doc-dismissal-scenario--outside"
+            >
+              <div class="menu-doc-dismissal-stack">
+                <div class="menu-doc-dismissal-trigger-wrap">
+                  <button
+                    type="button"
+                    id="menu-doc-dismissal-btn-3"
+                    class="btn btn-primary btn-rounded menu-doc-dismissal-trigger"
+                    aria-expanded="true"
+                    aria-haspopup="menu"
+                    aria-controls="menu-doc-dismissal-panel-3"
+                  >
+                    <span>Button</span>
+                    <svg class="icon" width="20" height="20" aria-hidden="true">
+                      <use
+                        href="assets/icons/sprite.svg#icon-chevron-bottom"
+                      ></use>
+                    </svg>
+                  </button>
+                </div>
+                <div
+                  class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+                >
+                  <div
+                    class="menu menu--desktop"
+                    data-variant="contextual"
+                    data-size="desktop"
+                    data-multiple="false"
+                    data-searchable="false"
+                    data-truncate="false"
+                  >
+                    <div
+                      class="menu__panel"
+                      id="menu-doc-dismissal-panel-3"
+                      role="presentation"
+                    >
+                      <ul
+                        class="menu__list"
+                        role="menu"
+                        aria-label="Example menu"
+                        data-menu-doc-fill="contextual-list"
+                        data-option-count="6"
+                      ></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="menu-doc-dismissal-outside-hit" aria-hidden="true">
+                <span class="menu-doc-dismissal-gesture">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="72"
+                    height="72"
+                    viewBox="0 0 72 72"
+                    fill="none"
+                    aria-hidden="true"
+                  >
+                    <path
+                      opacity="0.24"
+                      d="M0 36C0 16.1177 16.1178 0 36 0C55.8823 0 72 16.1177 72 36C72 55.8822 55.8823 72 36 72C16.1178 72 0 55.8822 0 36Z"
+                      fill="#2F56FF"
+                    />
+                    <circle
+                      opacity="0.5"
+                      cx="36"
+                      cy="36"
+                      r="24"
+                      fill="#2F56FF"
+                    />
+                  </svg>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <h3>Edge Cases</h3>
+        </div>
+        <div class="section-content">
+          <div class="menu-doc-row menu-doc-edge-row">
+            <div class="select-wrap menu-doc-select-static">
+              <div class="descriptor" id="menu-doc-ctx-edge-opt-label">option-label-truncation</div>
+              <div class="select-wrap menu-doc-select-static">
+                <div
+                  class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+                >
+                  <div
+                    class="menu menu--desktop menu--truncate"
+                    data-variant="contextual"
+                    data-size="desktop"
+                    data-truncate="true"
+                    data-multiple="false"
+                    data-searchable="false"
+                  >
+                    <div class="menu__panel" role="presentation">
+                      <ul
+                        class="menu__list"
+                        role="menu"
+                        aria-labelledby="menu-doc-ctx-edge-opt-label"
+                        data-menu-doc-fill="contextual-list"
+                        data-option-count="6"
+                        data-long-label-option="2"
+                        data-long-label-text="OptionThis is a very long menu option that will likely not fit within a single line container 2"
+                      ></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="select-wrap menu-doc-select-static">
+              <div class="descriptor" id="menu-doc-ctx-edge-hdg-label">heading-truncation</div>
+              <div class="select-wrap menu-doc-select-static">
+                <div
+                  class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
+                >
+                  <div
+                    class="menu menu--desktop menu--truncate"
+                    data-variant="contextual"
+                    data-size="desktop"
+                    data-truncate="true"
+                    data-multiple="false"
+                    data-searchable="false"
+                  >
+                    <div class="menu__panel" role="presentation">
+                      <ul
+                        class="menu__list"
+                        role="menu"
+                        aria-labelledby="menu-doc-ctx-edge-hdg-label"
+                        data-menu-doc-fill="contextual-edge-heading"
+                      ></ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-header">
+          <h2>Target Sizes</h2>
+        </div>
+        <div class="section-content">
+          <p class="menu-doc-items-target-copy">
+            Each menu item (cell) serves as the primary interactive target for
+            selection. To ensure accessibility and ease of use across devices,
+            the menu cell height is set to 44px. This provides a reliable touch
+            and click area, reducing the chance of accidental selections.
+          </p>
+          <div class="menu-doc-row">
+            <div class="select-wrap menu-doc-select-static">
+              <div class="descriptor" id="menu-doc-lbl-items-pointer">
+                pointer-devices
+              </div>
+              <div
+                class="select-wrap menu-doc-select-static menu-doc-select-static--target-44"
+              >
+                <div
+                  class="menu menu--desktop"
+                  data-variant="selection"
+                  data-size="desktop"
+                  data-multiple="false"
+                  data-searchable="false"
+                  data-truncate="false"
+                >
+                  <div class="menu__panel" role="presentation">
+                    <ul
+                      class="menu__list"
+                      role="listbox"
+                      aria-labelledby="menu-doc-lbl-items-pointer"
+                      tabindex="-1"
+                      data-menu-doc-fill="listbox-6-pointer"
+                    ></ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <div id="site-footer"></div>
+  </body>
+</html>

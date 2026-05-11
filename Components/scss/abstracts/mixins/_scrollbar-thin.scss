@@ -1,0 +1,92 @@
+@mixin scrollbar-thin-no-arrows(
+  $width: 5px,
+  $thumb: var(--color-background-base-tertiary-active, var(--gray-300, #b2b2b2)),
+  $radius: var(--border-radius-12, 12px)
+) {
+  // Do NOT set scrollbar-width / scrollbar-color globally: on Chrome/Edge (Win11)
+  // that engages the platform “thin” scrollbar (Fluent / classic) which can still
+  // show steppers when mixed with ::-webkit-* rules. Firefox gets thin via @supports below.
+
+  &::-webkit-scrollbar {
+    width: $width;
+    height: $width;
+    background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  // Windows Chromium/Edge often paint arrows unless every button variant is collapsed.
+  // !important only on buttons — fights OS “classic” scrollbar chrome.
+  &::-webkit-scrollbar-button,
+  &::-webkit-scrollbar-button:vertical:start:decrement,
+  &::-webkit-scrollbar-button:vertical:end:increment,
+  &::-webkit-scrollbar-button:horizontal:start:decrement,
+  &::-webkit-scrollbar-button:horizontal:end:increment,
+  &::-webkit-scrollbar-button:vertical:decrement,
+  &::-webkit-scrollbar-button:vertical:increment,
+  &::-webkit-scrollbar-button:horizontal:decrement,
+  &::-webkit-scrollbar-button:horizontal:increment,
+  &::-webkit-scrollbar-button:vertical:start,
+  &::-webkit-scrollbar-button:vertical:end,
+  &::-webkit-scrollbar-button:horizontal:start,
+  &::-webkit-scrollbar-button:horizontal:end,
+  &::-webkit-scrollbar-button:single-button:vertical:decrement,
+  &::-webkit-scrollbar-button:single-button:vertical:increment,
+  &::-webkit-scrollbar-button:single-button:horizontal:decrement,
+  &::-webkit-scrollbar-button:single-button:horizontal:increment,
+  &::-webkit-scrollbar-button:double-button {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    max-width: 0 !important;
+    max-height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    pointer-events: none !important;
+  }
+
+  // Chromium: bare :increment / :decrement (some Windows builds)
+  &::-webkit-scrollbar-button:increment,
+  &::-webkit-scrollbar-button:decrement {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    min-height: 0 !important;
+    min-width: 0 !important;
+    background: transparent !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+
+  &::-webkit-scrollbar-button:vertical,
+  &::-webkit-scrollbar-button:horizontal {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $thumb;
+    border-radius: $radius;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  // Firefox only — avoids fighting Blink’s WebKit scrollbar painting on Windows 11 Chrome.
+  @supports (-moz-appearance: none) {
+    scrollbar-width: thin;
+    scrollbar-color: $thumb transparent;
+  }
+}

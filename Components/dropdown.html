@@ -32,7 +32,7 @@
       <div class="select-doc-section-content">
         <div class="select-doc-compare">
           <div>
-            <p class="select-doc-spec-label">default</p>
+            <div class="descriptor">default</div>
             <div class="select-wrap">
               <label
                 id="select-doc-lbl-01"
@@ -79,7 +79,7 @@
             </div>
           </div>
           <div>
-            <p class="select-doc-spec-label">destructive</p>
+            <div class="descriptor">destructive</div>
             <div class="select-wrap">
               <label
                 id="select-doc-lbl-02"
@@ -134,9 +134,9 @@
       <div class="select-doc-section-content">
         <div class="select-doc-compare">
           <div>
-            <p class="select-doc-spec-label select-doc-spec-label--wide">
+            <div class="descriptor descriptor--wide">
               medium
-            </p>
+            </div>
             <div class="select-wrap">
               <label
                 id="select-doc-lbl-03"
@@ -185,9 +185,9 @@
           </div>
 
           <div>
-            <p class="select-doc-spec-label select-doc-spec-label--wide">
+            <div class="descriptor descriptor--wide">
               large
-            </p>
+            </div>
             <div class="select-wrap">
               <label
                 id="select-doc-lbl-04"
@@ -243,7 +243,7 @@
       <div class="select-doc-section-content">
         <div class="select-doc-compare">
           <div>
-            <div class="select-doc-spec-label">default: default</div>
+            <div class="descriptor">default: default</div>
             <div class="select-wrap">
               <label
                 id="select-doc-lbl-05"
@@ -290,7 +290,7 @@
               </div>
             </div>
             <div class="mt-56">
-              <div class="select-doc-spec-label">default: hover</div>
+              <div class="descriptor">default: hover</div>
               <div class="select-wrap">
                 <label
                   id="select-doc-lbl-06"
@@ -340,7 +340,7 @@
             </div>
 
             <div class="mt-56">
-              <div class="select-doc-spec-label">default: focus</div>
+              <div class="descriptor">default: focus</div>
               <div class="select-wrap">
                 <label
                   id="select-doc-lbl-07"
@@ -390,7 +390,7 @@
             </div>
 
             <div class="mt-56">
-              <div class="select-doc-spec-label">default: filled</div>
+              <div class="descriptor">default: filled</div>
               <div class="select-wrap">
                 <label
                   id="select-doc-lbl-08"
@@ -440,7 +440,7 @@
             </div>
 
             <div class="mt-56">
-              <div class="select-doc-spec-label">default: disabled</div>
+              <div class="descriptor">default: disabled</div>
               <div class="select-wrap">
                 <label
                   id="select-doc-lbl-09"
@@ -490,7 +490,7 @@
             </div>
 
             <div class="mt-56">
-              <div class="select-doc-spec-label">default: mandatory</div>
+              <div class="descriptor">default: mandatory</div>
               <div class="select-wrap">
                 <label
                   id="select-doc-lbl-05m"
@@ -561,7 +561,7 @@
             </div>
           </div>
           <div>
-            <div class="select-doc-spec-label">destructive: default</div>
+            <div class="descriptor">destructive: default</div>
             <div class="select-wrap">
               <label
                 id="select-doc-lbl-10"
@@ -613,7 +613,7 @@
             </div>
 
             <div class="mt-56">
-              <div class="select-doc-spec-label">destructive: hover</div>
+              <div class="descriptor">destructive: hover</div>
               <div class="select-wrap">
                 <label
                   id="select-doc-lbl-11"
@@ -667,7 +667,7 @@
             </div>
 
             <div class="mt-56">
-              <div class="select-doc-spec-label">destructive: focus</div>
+              <div class="descriptor">destructive: focus</div>
               <div class="select-wrap">
                 <label
                   id="select-doc-lbl-12"
@@ -721,7 +721,7 @@
             </div>
 
             <div class="mt-56">
-              <div class="select-doc-spec-label">destructive: filled</div>
+              <div class="descriptor">destructive: filled</div>
               <div class="select-wrap">
                 <label
                   id="select-doc-lbl-13"
@@ -775,7 +775,7 @@
             </div>
 
             <div class="mt-56">
-              <div class="select-doc-spec-label">destructive: disabled</div>
+              <div class="descriptor">destructive: disabled</div>
               <div class="select-wrap">
                 <label
                   id="select-doc-lbl-14"
@@ -847,7 +847,7 @@
           <div
             class="select-doc-beh select-doc-beh--macos select-doc--static-open"
           >
-            <p class="select-doc-spec-label">browser-styling: macOS</p>
+            <div class="descriptor">browser-styling: macOS</div>
             <label class="select-label" for="select-doc-behavior-macos"
               >Label</label
             >
@@ -888,7 +888,7 @@
           <div
             class="select-doc-beh select-doc-beh--ios select-doc--static-open"
           >
-            <p class="select-doc-spec-label">browser-styling: iOS</p>
+            <div class="descriptor">browser-styling: iOS</div>
             <label class="select-label" for="select-doc-behavior-ios"
               >Label</label
             >
@@ -960,7 +960,7 @@
           <div
             class="select-doc-beh select-doc-beh--custom select-doc--static-open"
           >
-            <p class="select-doc-spec-label">custom</p>
+            <div class="descriptor">custom</div>
             <div class="select-wrap">
               <label
                 id="select-doc-lbl-beh"
@@ -1009,138 +1009,7 @@
                     >
                       <span class="select-option__label">Option 1</span
                       ><span class="select-option__check" aria-hidden="true"
-                        ><svg
-                          class="icon"
-                          width="24"
-                          height="24"
-                          aria-hidden="true"
-                        >
-                          <use
-                            href="assets/icons/sprite.svg#icon-checkmark-small"
-                          ></use></svg
-                      ></span>
-                    </li>
-                    <li role="option" class="select-option" data-value="2">
-                      <span class="select-option__label">Option 2</span
-                      ><span class="select-option__check" aria-hidden="true"
-                        ><svg
-                          class="icon"
-                          width="24"
-                          height="24"
-                          aria-hidden="true"
-                        >
-                          <use
-                            href="assets/icons/sprite.svg#icon-checkmark-small"
-                          ></use></svg
-                      ></span>
-                    </li>
-                    <li role="option" class="select-option" data-value="3">
-                      <span class="select-option__label">Option 3</span
-                      ><span class="select-option__check" aria-hidden="true"
-                        ><svg
-                          class="icon"
-                          width="24"
-                          height="24"
-                          aria-hidden="true"
-                        >
-                          <use
-                            href="assets/icons/sprite.svg#icon-checkmark-small"
-                          ></use></svg
-                      ></span>
-                    </li>
-                    <li role="option" class="select-option" data-value="4">
-                      <span class="select-option__label">Option 4</span
-                      ><span class="select-option__check" aria-hidden="true"
-                        ><svg
-                          class="icon"
-                          width="24"
-                          height="24"
-                          aria-hidden="true"
-                        >
-                          <use
-                            href="assets/icons/sprite.svg#icon-checkmark-small"
-                          ></use></svg
-                      ></span>
-                    </li>
-                    <li role="option" class="select-option" data-value="5">
-                      <span class="select-option__label">Option 5</span
-                      ><span class="select-option__check" aria-hidden="true"
-                        ><svg
-                          class="icon"
-                          width="24"
-                          height="24"
-                          aria-hidden="true"
-                        >
-                          <use
-                            href="assets/icons/sprite.svg#icon-checkmark-small"
-                          ></use></svg
-                      ></span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="select-doc-behavior-note">
-        <p class="select-doc-body">
-          Additional information about the custom Menu component can be accessed
-          through the provided
-          <a
-            href="https://www.figma.com/design/VD1cUxt2i9vxLxFyagzzAn/Design-System--FOD2-QA?node-id=688-4329&m=dev"
-            >Figma link</a
-          >.
-        </p>
-      </div>
-
-      <div class="select-doc-section-header">
-        <h2>Assistive Text</h2>
-      </div>
-      <div class="select-doc-section-intro">
-        <p class="select-doc-body">
-          Assistive text conveys additional guidance about the input field, such
-          as how it will be used. It should only take up one or two lines, being
-          persistently visible or visible only on focus.
-        </p>
-      </div>
-      <div
-        class="select-doc-section-content select-doc-section-content--after-intro"
-      >
-        <div class="select-doc-compare">
-          <div>
-            <p class="select-doc-spec-label">Default</p>
-            <div class="select-wrap">
-              <label
-                id="select-doc-lbl-asst-a"
-                for="select-doc-ctrl-asst-a"
-                class="select-label"
-                >Label</label
-              >
-              <div
-                class="custom-select"
-                data-select
-                data-size="large"
-                data-placeholder="Placeholder"
-                aria-labelledby="select-doc-lbl-asst-a"
-              >
-                <button
-                  id="select-doc-ctrl-asst-a"
-                  type="button"
-                  class="select-control"
-                  aria-haspopup="listbox"
-                  aria-expanded="false"
-                  aria-labelledby="select-doc-lbl-asst-a"
-                >
-                  <span class="select-value is-placeholder">Placeholder</span>
-                  <span class="select-arrow" aria-hidden="true">
-                    <span class="d-inline-flex">
-                      <svg class="icon small" aria-hidden="true">
-                        <use
-                          href="assets/icons/sprite.svg#icon-chevron-bottom"
-                        ></use>
-                      </svg>
-                    </span>
+                        ></span>
                   </span>
                 </button>
                 <div class="select-dropdown" role="presentation" hidden>
@@ -1163,7 +1032,7 @@
             </div>
           </div>
           <div>
-            <p class="select-doc-spec-label">Destructive</p>
+            <div class="descriptor">Destructive</div>
             <div class="select-wrap">
               <label
                 id="select-doc-lbl-asst-b"
@@ -1237,7 +1106,7 @@
         </p>
         <div class="select-doc-edge-grid">
           <div class="select-doc-edge-item">
-            <p class="select-doc-spec-label">label</p>
+            <div class="descriptor">label</div>
             <div class="select-wrap">
               <label
                 id="select-doc-lbl-edge-a"
@@ -1291,7 +1160,7 @@
             </p>
           </div>
           <div class="select-doc-edge-item">
-            <p class="select-doc-spec-label">input-text</p>
+            <div class="descriptor">input-text</div>
             <div class="select-wrap">
               <label
                 id="select-doc-lbl-edge-b"
@@ -1342,18 +1211,7 @@
                         public service delivery, providing citizens with easy
                         access to essential information.</span
                       >
-                      <span class="select-option__check" aria-hidden="true">
-                        <svg
-                          class="icon"
-                          width="24"
-                          height="24"
-                          aria-hidden="true"
-                        >
-                          <use
-                            href="assets/icons/sprite.svg#icon-checkmark-small"
-                          ></use>
-                        </svg>
-                      </span>
+                      <span class="select-option__check" aria-hidden="true"></span>
                     </li>
                     <li
                       role="option"
@@ -1361,18 +1219,7 @@
                       aria-selected="false"
                     >
                       <span class="select-option__label">România</span>
-                      <span class="select-option__check" aria-hidden="true">
-                        <svg
-                          class="icon"
-                          width="24"
-                          height="24"
-                          aria-hidden="true"
-                        >
-                          <use
-                            href="assets/icons/sprite.svg#icon-checkmark-small"
-                          ></use>
-                        </svg>
-                      </span>
+                      <span class="select-option__check" aria-hidden="true"></span>
                     </li>
                     <li
                       role="option"
@@ -1380,18 +1227,7 @@
                       aria-selected="false"
                     >
                       <span class="select-option__label">Ucraina</span>
-                      <span class="select-option__check" aria-hidden="true">
-                        <svg
-                          class="icon"
-                          width="24"
-                          height="24"
-                          aria-hidden="true"
-                        >
-                          <use
-                            href="assets/icons/sprite.svg#icon-checkmark-small"
-                          ></use>
-                        </svg>
-                      </span>
+                      <span class="select-option__check" aria-hidden="true"></span>
                     </li>
                     <li
                       role="option"
@@ -1399,18 +1235,7 @@
                       aria-selected="false"
                     >
                       <span class="select-option__label">Germania</span>
-                      <span class="select-option__check" aria-hidden="true">
-                        <svg
-                          class="icon"
-                          width="24"
-                          height="24"
-                          aria-hidden="true"
-                        >
-                          <use
-                            href="assets/icons/sprite.svg#icon-checkmark-small"
-                          ></use>
-                        </svg>
-                      </span>
+                      <span class="select-option__check" aria-hidden="true"></span>
                     </li>
                     <li
                       role="option"
@@ -1418,18 +1243,7 @@
                       aria-selected="false"
                     >
                       <span class="select-option__label">Franța</span>
-                      <span class="select-option__check" aria-hidden="true">
-                        <svg
-                          class="icon"
-                          width="24"
-                          height="24"
-                          aria-hidden="true"
-                        >
-                          <use
-                            href="assets/icons/sprite.svg#icon-checkmark-small"
-                          ></use>
-                        </svg>
-                      </span>
+                      <span class="select-option__check" aria-hidden="true"></span>
                     </li>
                     <li
                       role="option"
@@ -1437,18 +1251,7 @@
                       aria-selected="false"
                     >
                       <span class="select-option__label">Spania</span>
-                      <span class="select-option__check" aria-hidden="true">
-                        <svg
-                          class="icon"
-                          width="24"
-                          height="24"
-                          aria-hidden="true"
-                        >
-                          <use
-                            href="assets/icons/sprite.svg#icon-checkmark-small"
-                          ></use>
-                        </svg>
-                      </span>
+                      <span class="select-option__check" aria-hidden="true"></span>
                     </li>
                   </ul>
                 </div>
@@ -1460,7 +1263,7 @@
             </p>
           </div>
           <div class="select-doc-edge-item">
-            <p class="select-doc-spec-label">assistive-text</p>
+            <div class="descriptor">assistive-text</div>
             <div class="select-wrap">
               <label
                 id="select-doc-lbl-edge-c"

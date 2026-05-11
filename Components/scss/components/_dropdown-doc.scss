@@ -1,7 +1,5 @@
 @use '../abstracts/tokens' as tokens;
-
-$select-doc-font-mono:
-  'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+@use '../abstracts/mixins/index' as mixins;
 
 $select-doc-native-font-macos:
   system-ui,
@@ -15,15 +13,6 @@ $select-doc-native-font-ios:
   -apple-system,
   'SF Pro Text',
   sans-serif;
-
-@mixin select-doc-spec-label-mono {
-  font-family: $select-doc-font-mono;
-  font-style: normal;
-  font-weight: var(--font-weight-fw-medium, var(--font-weight-medium, 500));
-  font-size: var(--font-size-fs-16, var(--font-size-16, 16px));
-  line-height: var(--line-height-lh-24, var(--line-height-24, 24px));
-  letter-spacing: -0.16px;
-}
 
 .select-wrap .select-label {
   display: flex;
@@ -127,12 +116,19 @@ $select-doc-native-font-ios:
   }
 }
 
+.select-doc-body.select-doc-body--intro a {
+  font-family: inherit;
+  font-size: inherit;
+  font-style: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+}
+
 .select-doc-body--intro {
+  @include mixins.doc-page-intro-copy;
   max-width: 800px;
   min-height: 96px;
-  font-size: 20px;
-  line-height: 32px;
-  letter-spacing: -0.4px;
 }
 
 .select-doc-page.container {
@@ -146,17 +142,27 @@ $select-doc-native-font-ios:
 .select-doc-section-header {
   display: flex;
   align-items: center;
+  box-sizing: border-box;
+  width: 100%;
   height: 64px;
+  margin-inline: 0;
   padding: 0;
   border-bottom: var(--border-width-1, 1px) solid var(--gray-200, #d9d9d9);
 }
 
-.select-doc-section-header h2 {
+.select-doc-section-header h2,
+.select-doc-section-header h3 {
   margin: 0;
-  font-size: 24px;
-  line-height: 32px;
-  font-weight: 600;
-  letter-spacing: -0.24px;
+  color: var(--color-text-base-default, var(--gray-900, #121212));
+  font-family: var(
+    --font-family-primary-font,
+    var(--font-family-base, 'Onest', system-ui, sans-serif)
+  );
+  font-size: var(--font-size-fs-32, 32px);
+  font-style: normal;
+  font-weight: var(--font-weight-fw-semibold, 600);
+  line-height: var(--line-height-lh-40, 40px);
+  letter-spacing: -0.64px;
 }
 
 .select-doc-section-content {
@@ -164,19 +170,10 @@ $select-doc-native-font-ios:
   padding-bottom: 80px;
 }
 
-.select-doc-section-content--after-intro {
-  padding-top: 40px;
-}
-
-.select-doc-section-intro {
-  padding-top: var(--spacing-56, 56px);
-}
-
 .select-doc-page .select-wrap {
   max-width: 282px;
 }
 
-// Doc page: 282×256 panel for every real custom select (macOS/iOS behavior mocks have no .select-dropdown).
 .select-doc-page .custom-select {
   .select-dropdown {
     box-sizing: border-box;
@@ -194,6 +191,7 @@ $select-doc-native-font-ios:
     overflow-y: auto;
     width: 100%;
     align-self: stretch;
+    @include mixins.scrollbar-thin-no-arrows();
   }
 
   .select-option {
@@ -202,13 +200,12 @@ $select-doc-native-font-ios:
   }
 }
 
-.select-doc-spec-label {
+.select-doc-page div.descriptor {
   margin-bottom: var(--spacing-12, 12px);
-  @include select-doc-spec-label-mono;
   color: var(--gray-700, #383838);
 }
 
-.select-doc-spec-label--wide {
+.select-doc-page div.descriptor.descriptor--wide {
   margin-bottom: var(--spacing-16, 16px);
 }
 
@@ -235,10 +232,9 @@ $select-doc-native-font-ios:
   column-gap: var(--spacing-56, 56px);
 }
 
-.select-doc-beh--macos > .select-doc-spec-label,
-.select-doc-beh--ios > .select-doc-spec-label,
-.select-doc-beh--custom > .select-doc-spec-label {
-  @include select-doc-spec-label-mono;
+.select-doc-beh--macos > div.descriptor,
+.select-doc-beh--ios > div.descriptor,
+.select-doc-beh--custom > div.descriptor {
   color: var(--color-text-base-secondary);
 }
 
@@ -271,7 +267,7 @@ $select-doc-native-font-ios:
   align-items: flex-start;
 }
 
-.select-doc-edge-item > .select-doc-spec-label {
+.select-doc-edge-item > div.descriptor {
   margin-bottom: var(--spacing-16, 16px);
 }
 

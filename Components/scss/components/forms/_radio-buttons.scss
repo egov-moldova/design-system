@@ -27,7 +27,10 @@
 
   .radio-custom {
     display: inline-block;
+    box-sizing: border-box;
     position: relative;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     border: 2px solid var(--gray-400, #ccc);
     transition: border-color 0.2s, background-color 0.2s;
@@ -37,6 +40,8 @@
       position: absolute;
       top: 50%;
       left: 50%;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
       background-color: var(--blue-sky-600, #0058D2);
       transform: translate(-50%, -50%) scale(0);

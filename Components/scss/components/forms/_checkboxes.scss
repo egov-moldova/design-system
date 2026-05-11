@@ -18,6 +18,9 @@
     display: inline-flex;
     justify-content: center;
     align-items: center;
+    box-sizing: border-box;
+    width: var(--spacing-20, 20px);
+    height: var(--spacing-20, 20px);
     border: 2px solid var(--gray-300, #b2b2b2);
     border-radius: var(--border-radius-6, 6px);
     background: var(--white, #fff);
@@ -27,6 +30,8 @@
     &::after {
       content: '';
       display: block;
+      width: 5px;
+      height: 11px;
       border: solid var(--white, #fff);
       border-width: 0 2px 2px 0;
       transform: rotate(45deg);
@@ -148,12 +153,12 @@
 
   &--large {
     .checkbox-custom {
-      width: var(--spacing-24, 24px);
-      height: var(--spacing-24, 24px); 
+      width: var(--spacing-20, 20px);
+      height: var(--spacing-20, 20px);
 
       &::after {
-        width: 6px;
-        height: 12px;
+        width: 5px;
+        height: 11px;
       }
     }
 
