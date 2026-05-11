@@ -217,6 +217,7 @@
     options.forEach(function (node) {
       var on = node === opt;
       node.setAttribute('aria-selected', on ? 'true' : 'false');
+      node.classList.toggle('menu__item--selected', on);
     });
   });
 })();
