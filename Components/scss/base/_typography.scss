@@ -1,4 +1,5 @@
 @use '../abstracts/mixins/typography' as typ;
+@use '../abstracts/mixins/doc-intro-typography' as doc;
 
 html { font-size: 100%; }
 
