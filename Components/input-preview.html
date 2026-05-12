@@ -508,25 +508,17 @@
             </div>
             <div class="col-7 my-32">
                 <div>
-                    Text Input values can overflow horizontally. While the field is focused, the content automatically scrolls to keep the cursor visible as the user types. Once the input loses focus, the view resets to the beginning of the text. Refocusing the input brings the user back to the end of the content.
+                    Text Input values can overflow horizontally. While the field is focused, the content automatically scrolls to keep the cursor visible as the user types. Once the input loses focus, the view resets to the beginning of the text. When the user clicks inside a filled input field, the cursor positions exactly at the click location.
                 </div>
             </div>
         </div>
 
         <div class="row">
-            <!--<div class="col-3">
-                <div class="mb-16 descriptor">overflow-left</div>
-                <div class="input-group mb-24">
-                    <label for="default-default">Label</label>
-                    <input id="default-default" type="text" placeholder="Placeholder" value="Text Input values can overflow horizontally." class="input is-focus" style="text-align: left;" />
-                </div>
-            </div>-->
-
             <div class="col-3">
                 <div class="mb-16 descriptor">overflow</div>
                 <div class="input-group">
                     <label for="default-default">Label</label>
-                    <input id="default-default" type="text" placeholder="Placeholder" value="Text Input values can overflow horizontally." class="input" onfocus="focusInput(this)"/>
+                    <input id="default-default" type="text" placeholder="Placeholder" value="Text Input values can overflow horizontally." class="input" onfocus="focusInput(this)" />
                 </div>
             </div>
         </div>
@@ -586,26 +578,6 @@
     </div>
 
     <div id="site-footer"></div>
-
-    <script>
-        function focusInput(input) {
-            const len = input.value.length;
-
-            input.scrollLeft = input.scrollWidth
-            input.setSelectionRange(len, len);
-        }
-
-        //document.addEventListener('focusin', e => {
-        //    if (e.target.matches('input[type=text], input:not([type]), textarea')) {
-
-        //        const len = e.target.value.length;
-
-        //        e.target.focus();
-        //        e.target.scrollLeft = e.target.scrollWidth
-        //        e.target.setSelectionRange(len, len);
-        //    }
-        //});
-    </script>
 
 </body>
 </html>

@@ -107,8 +107,8 @@
 :root {
   --font-family-base: 'Onest', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   /* Cod, kbd, etichete spec doc — încărcare: fonts/JetBrainsMono.scss */
-  --font-family-mono:
-    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-family-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-family-descriptor: 'JetBrainsMono';
   --font-weight-regular: 400;
   --font-weight-semibold: 500;
   --font-weight-bold: 600;
@@ -19319,6 +19319,9 @@ label {
   font-size: var(--text-font-size-14, 14px);
   margin-bottom: var(--spacing-8, 8px);
   line-height: var(--text-line-height-20, 20px);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 label.required::after {
   content: "*";
@@ -20750,6 +20753,18 @@ textarea {
 }
 .textarea[readonly]:not(:disabled)::placeholder {
   color: var(--gray-700);
+}
+
+.justify-content-counter {
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.message-wrap {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .file-input.default {
