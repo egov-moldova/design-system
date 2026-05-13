@@ -1,13 +1,11 @@
 @use '../abstracts/mud-prefix' as mud;
 
-// Documentation shell: use `class="mud-container"` + `data-doc="…"` (same element). Max width comes only from `.mud-container` (grid tokens / 1440 at xxl).
 .#{mud.mud-class('container')}[data-doc] {
   .mud-doc {
     padding-top: var(--spacing-64, 64px);
     padding-bottom: var(--spacing-64, 64px);
   }
 
-  // First intro row under `.mud-doc`: title + lede (max readable width). Spacing: `mud-mb-40` on the row.
   .mud-doc > .#{mud.mud-class('row')}:first-child > [class*='#{mud.$mud-prefix}col-'] {
     > h1:first-child {
       margin: 0;
@@ -20,8 +18,6 @@
     }
   }
 
-  // Intro row: `mud-col-8` is non-responsive (8/12 at all widths); hero title uses desktop display tokens.
-  // Below `lg`, use full-width column + smaller display (aligned with `.mud-mobile-display-lg` / `-md`).
   @media (max-width: 991px) {
     .mud-doc > .#{mud.mud-class('row')}:first-child > [class*='#{mud.$mud-prefix}col-'] {
       flex: 0 0 100%;
@@ -44,7 +40,8 @@
     }
   }
 
-  .mud-doc-main > .typography-typeface-card:first-child {
+  .mud-doc-main > .typography-typeface-card:first-child,
+  .mud-doc-main > .#{mud.mud-class('row')} > .#{mud.mud-class('col-12')} > .typography-typeface-card:first-child {
     margin-top: 0;
   }
 
@@ -80,7 +77,6 @@
   gap: var(--spacing-40, 40px);
 }
 
-// Readable copy width (cf. Tailwind max-w-prose / max-w-3xl)
 .mud-doc-prose {
   max-width: 800px;
 
@@ -91,7 +87,8 @@
 
 .mud-doc-main > .#{mud.mud-class('row')}:first-child .mud-doc-section-head:first-child,
 .mud-doc-main > section:first-child > .mud-doc-section-head:first-child,
-.mud-doc-main > .mud-doc-section-head:first-child {
+.mud-doc-main > .mud-doc-section-head:first-child,
+.mud-doc-main > .#{mud.mud-class('row')} > .#{mud.mud-class('col-12')} > section:first-child > .mud-doc-section-head:first-child {
   margin-top: 0;
 }
 

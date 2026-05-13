@@ -47,8 +47,7 @@ $cw-xxl: map.get(vars.$container-max-widths, xxl);
   color: var(--gray-900, #1e1e1e);
 }
 
-// Scope grid diagrams to `.lg-doc` on `.mud-doc-main` in layout-grids.html; no page-level class on `.mud-container`.
-.lg-doc {
+[data-doc='layout-grids'] .mud-doc-main {
   .lg-breakpoint-chip {
     display: inline-flex;
     flex-direction: column;
@@ -63,7 +62,6 @@ $cw-xxl: map.get(vars.$container-max-widths, xxl);
 
   
   
-  // min-width:0 — allows diagram to shrink inside padded `.mud-container` without forcing page scroll
   .lg-grid-diagram {
     min-width: 0;
     overflow-x: visible;
@@ -82,7 +80,6 @@ $cw-xxl: map.get(vars.$container-max-widths, xxl);
     margin-inline: 0;
   }
 
-  // 1440 frame: middle = max content width; sides = margin:auto (equal flexible tracks, min 0)
   .lg-grid-diagram[data-size='2XL'] .lg-grid-diagram__container {
     grid-template-columns: minmax(0, 1fr) min(100%, var(--lg-space-width)) minmax(0, 1fr);
   }
@@ -95,8 +92,6 @@ $cw-xxl: map.get(vars.$container-max-widths, xxl);
     grid-column: 1;
   }
 
-  // 2XL: outer margin is only the auto bands (lead/trail). No inner horizontal padding —
-  // otherwise a white strip appears between those bands and the pink columns.
   .lg-grid-diagram[data-size='2XL'] .lg-grid-diagram__space {
     grid-column: 2;
     padding-inline: 0;
@@ -133,12 +128,10 @@ $cw-xxl: map.get(vars.$container-max-widths, xxl);
     min-height: 0;
   }
 
-  // Diagram strips: equal tracks; reset global `.mud-col` flex/padding here.
   .lg-grid-diagram__columns > .#{mud.mud-class('col')} {
     @include lg-diagram-strip-cell;
   }
 
-  // Optional: numbered `mud-col-*` as direct children (same visual reset)
   @for $i from 1 through 12 {
     .lg-grid-diagram__columns > .#{mud.mud-class('col')}-#{$i} {
       @include lg-diagram-strip-cell;
@@ -165,7 +158,6 @@ $cw-xxl: map.get(vars.$container-max-widths, xxl);
     align-items: end;
   }
 
-  // 2XL ruler: same minmax(0,1fr) as container so “auto” tracks stay fluid
   .lg-ticks-row--balanced {
     grid-template-columns: minmax(0, 1fr) min(100%, var(--lg-space-width)) minmax(0, 1fr);
     max-width: var(--lg-container-width);
@@ -195,7 +187,6 @@ $cw-xxl: map.get(vars.$container-max-widths, xxl);
     grid-column: 3;
   }
 
-  // Stretch: show fixed side margins (token --lg-margin) flanking gutter ruler
   .lg-ticks-row.lg-ticks-row--edge-margins {
     grid-template-columns: var(--lg-margin) minmax(0, 1fr) var(--lg-margin);
     max-width: var(--lg-space-width);
@@ -406,7 +397,6 @@ $cw-xxl: map.get(vars.$container-max-widths, xxl);
     background: transparent;
   }
 
-  // Layout Columns demo: span full content width of the section (not capped at XL token)
   .lg-12col-grid {
     display: flex;
     flex-direction: column;
@@ -424,7 +414,6 @@ $cw-xxl: map.get(vars.$container-max-widths, xxl);
     column-gap: 24px;
   }
 
-  // Layout Columns demo: same class names as the page grid (`mud-col`, `mud-col-2` … `mud-col-12`).
   .lg-12col-row > .#{mud.mud-class('col')} {
     @include lg-12col-demo-tile;
     grid-column: span 1;
