@@ -1,5 +1,5 @@
 @use '../abstracts/tokens' as *;
-
+@use '../abstracts/variables' as vars;
 
 .header {
   display: flex;
@@ -7,28 +7,38 @@
   background-color: var(--white, #fff);
   border-bottom: 1px solid var(--gray-250);
   padding: var(--spacing-0) var(--spacing-24);
-  min-height: var(--spacing-64, 64px);
+  min-height: 72px;
   gap: var(--spacing-40); 
   position: sticky;  
   top: 0;            
   z-index: 1100; 
   
 
-  //wrapper
+  
   &__wrapper {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: var(--spacing-8); 
-    max-width: 1320px;
+    max-width: vars.$layout-container-max-width;
     margin: 0 auto; 
     position: relative;
     width: 100%;
 
     @media screen and (min-width: 1280px) {
       gap: var(--spacing-48); 
+    }
 
-      &__brand {
-        min-width: 165px;
+    &-meta {
+      display: none;
+      flex-wrap: wrap;
+      gap: var(--spacing-12, 12px);
+      flex: 1 0 100%;
+      align-self: flex-start;
+      margin-top: var(--spacing-8, 8px);
+
+      @media screen and (min-width: 1280px) {
+        display: flex;
       }
     }
   }
@@ -38,6 +48,10 @@
     align-items: center; 
     gap: var(--spacing-8);
     text-decoration: none;
+
+    @media screen and (min-width: 1280px) {
+      min-width: 165px;
+    }
 
     &--logo {
         display: flex;
@@ -54,12 +68,10 @@
         max-width: 115px;
     }
 
-
-
     .brand-text {
       font-weight: 600;
       font-size: var(--text-body-lg-500-font-size);
-      color: var(--black);
+      color: var(--blue-sky-600, #0058d2);
     }
 
     .brand-description {
@@ -79,8 +91,8 @@
 
   
 
-  //menu mobile
-  .btn-menu {
+  
+  .mud-btn-menu {
     background-color: transparent;
     padding: var(--spacing-8) var(--spacing-12);
     border-radius: var(--radius-md);
@@ -94,15 +106,35 @@
     }
   }
 
-  // Actions
+  
   &__actions {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: var(--spacing-12);
     margin-left: auto;
   }
 
-  // Toggle (mobile)
+  &__utilities {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-12);
+  }
+
+  &__cta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-12);
+  }
+
+  &__platforms {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  
   &__toggle { 
     background: none;
     border-radius: var(--border-radius-full);
@@ -122,10 +154,37 @@
     &.is-active {
         background-color: var(--gray-250);
     }
-  }  
+  }
+
+  
+  &.header__mobile {
+    min-height: 56px;
+    padding-inline: var(--spacing-16);
+    gap: var(--spacing-12);
+
+    .header__wrapper {
+      gap: var(--spacing-12);
+    }
+
+    .header__brand--logo img {
+      max-height: 40px;
+      width: auto;
+      display: block;
+    }
+
+    .header__actions {
+      gap: var(--spacing-8);
+      flex-wrap: nowrap;
+    }
+
+    .mud-btn.mud-btn-primary.mud-btn-sm {
+      border-radius: var(--border-radius-full, 9999px);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+  }
 }
 
-//=========
 .platform-panel {
   position: absolute;
   background: var(--white, #fff);
@@ -334,7 +393,6 @@
   }
 }
 
-/* Stretched link helper */
 .stretched-link:after {
   position: absolute;
   inset: 0;
@@ -344,7 +402,6 @@
   pointer-events: auto;
 }
 
-/*  Dark mode */
 @media (prefers-color-scheme: dark) {
   .platform-grid__item:focus-within {
     outline-color: #66aaff;
@@ -352,8 +409,6 @@
   }
 }
 
-
-// ===============================
 .profile-dropdown {
   position: absolute;
   top: 70px;
@@ -393,7 +448,6 @@
   padding: var(--spacing-40) var(--spacing-24) var(--spacing-32) var(--spacing-24);
   text-align: center;
 }
-
 
 .profile-name {
   margin: 0;
@@ -501,12 +555,11 @@
 
  
 
-.btn-logout {
+.mud-btn-logout {
   width: 100%; 
   cursor: pointer;
 }
 
-// ===============================
 .language-switcher { 
 
   &__menu {

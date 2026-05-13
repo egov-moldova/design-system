@@ -29,7 +29,6 @@
   &--selected { outline:2px solid var(--blue-sky-500,#2b6fff); outline-offset:2px; }
 }
 
-// ===============  Colors - dark / light / neutral / accent 
 $badge-screens: (
   dark: (bg: #000, bg-subtle: #333, color: #fff),
   light: (bg: #fff, bg-subtle: #f5f5f5, color: #000),

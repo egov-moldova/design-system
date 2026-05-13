@@ -1,6 +1,5 @@
 @use '../abstracts/tokens' as *;
 
-
 .separator {
   --separator-color: var(--gray-300);
   --separator-thickness: var(--border-width-1);
@@ -11,7 +10,7 @@
   background-color: var(--separator-color);
   opacity: 1;
 
-  // Orientation
+  
   &--horizontal {
     width: var(--separator-length);
     height: var(--separator-thickness);
@@ -23,7 +22,7 @@
     display: inline-block;
   }
 
-  // Sizes
+  
   &--thin {
     --separator-thickness: var(--border-width-1);
   }
@@ -36,7 +35,7 @@
     --separator-thickness: var(--border-width-2);
   }
 
-  // Styles
+  
   &--subtle {
     --separator-color: var(--gray-250);
   }

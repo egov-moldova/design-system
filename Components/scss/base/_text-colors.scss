@@ -1,25 +1,25 @@
 @use '../abstracts/variables' as vars;
+@use '../abstracts/mud-prefix' as mud;
 @use 'sass:list';
 
-// Text color —  normale
 @each $color, $shades in vars.$color-palettes {
   @if list.length($shades) > 0 {
     @each $shade in $shades {
-      .text-#{$color}-#{$shade} {
+      .#{mud.mud-class('text-#{$color}-#{$shade}')} {
         color: var(--#{$color}-#{$shade}) !important;
       }
     }
   } @else {
-    .text-#{$color} {
+    // Primitive single token (e.g. Figma `text-white` / `text-black` on ramps).
+    .#{mud.mud-class('text-#{$color}')} {
       color: var(--#{$color}) !important;
     }
   }
 }
 
-// Text color — alpha
 @each $color, $shades in vars.$alpha-palettes {
   @each $shade in $shades {
-    .text-#{$color}-#{$shade} {
+    .#{mud.mud-class('text-#{$color}-#{$shade}')} {
       color: var(--#{$color}-#{$shade}) !important;
     }
   }

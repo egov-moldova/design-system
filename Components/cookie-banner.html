@@ -17,47 +17,47 @@
 <body>
   <div id="site-header"></div>
 
-<div class="container py-56">
-    <div class="row">
-        <div class="col-sm-7">
+<div class="mud-container mud-py-56">
+    <div class="mud-row">
+        <div class="mud-col-sm-7">
             <h1>Cookie Banner</h1>
-            <p class="text-gray-400">
+            <p class="mud-text-gray-400">
                 Cookie Banner is designed to inform users about the use of cookies on the website and to obtain their consent.
                 Within the design system, it follows consistent formatting rules, validation, and interaction patterns to ensure clarity and compliance.
             </p>
         </div>
     </div>   
-    <div id="cookie-overlay" class="cookie-overlay d-none"></div>
+    <div id="cookie-overlay" class="cookie-overlay mud-hidden"></div>
     <div id="cookie-banner" class="cookie-banner">
       <div id="cookie-info" class="cookie-header">
         <div class="cookie-title">Informații despre cookie-uri</div>
-        <p class="cookie-description mb-0">Acest site folosește cookie-uri esențiale pentru funcționarea și performanța de bază. În plus, utilizăm cookie-uri de targetare pentru a îmbunătăți experiența utilizatorului, a realiza analize și a afișa conținut personalizat.</p>
+        <p class="cookie-description mud-mb-0">Acest site folosește cookie-uri esențiale pentru funcționarea și performanța de bază. În plus, utilizăm cookie-uri de targetare pentru a îmbunătăți experiența utilizatorului, a realiza analize și a afișa conținut personalizat.</p>
       </div>  
-      <button id="btnToggleBanner" type="button" class="btn-caret d-none" aria-label="Toggle details">
-        <span class="d-inline-flex">
+      <button id="btnToggleBanner" type="button" class="mud-btn-caret mud-hidden" aria-label="Toggle details">
+        <span class="mud-inline-flex">
             <svg class="icon small" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
             </svg>
           </span>
       </button>
-      <button id="btnCollapse" type="button" class="btn-close p-8 bg-gray-200 radius-full border-0 d-none" aria-label="Close details">
-          <span class="d-inline-flex">
+      <button id="btnCollapse" type="button" class="mud-cookie-collapse-btn mud-p-8 mud-bg-gray-200 mud-radius-full mud-border-0 mud-hidden" aria-label="Close details">
+          <span class="mud-inline-flex">
             <svg class="icon small" aria-hidden="true"> 
               <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
             </svg>
           </span>
         </button>
       <div id="cookie-main-buttons" class="cookie-buttons">
-        <button type="button" id="btnManage" class="btn btn-outline-strict cookie-manage-btn">Gestionează cookie-urile</button> 
-        <div class="cookie-allow-group d-flex gap-12 flex-wrap">
-          <button type="button" id="btnNecessary" class="btn btn-outline-primary cookie-allow-btn">Doar cele necesare</button>
-          <button type="button" id="btnAll" class="btn btn-primary cookie-allow-btn">Permite tot</button>
+        <button type="button" id="btnManage" class="mud-btn mud-btn-outline-strict cookie-manage-btn">Gestionează cookie-urile</button> 
+        <div class="cookie-allow-group mud-flex mud-gap-12 mud-flex-wrap">
+          <button type="button" id="btnNecessary" class="mud-btn mud-btn-outline-primary cookie-allow-btn">Doar cele necesare</button>
+          <button type="button" id="btnAll" class="mud-btn mud-btn-primary cookie-allow-btn">Permite tot</button>
         </div> 
         
       </div>
 
-      <div id="cookie-detail" class="collapse w-100 cookie-detail-container">
-        <div class="cookie-header mb-6">
+      <div id="cookie-detail" class="collapse mud-w-100 cookie-detail-container">
+        <div class="cookie-header mud-mb-6">
           <div class="cookie-title">Alege ce cookie-uri accepți</div> 
         </div>
         <div class="cookie-body"> 
@@ -68,16 +68,16 @@
             </p>
           </div>
             <div class="cookie-permissions">
-              <div class="necessary-row d-flex align-items-center">
-                <div class="necessary-text-col d-flex flex-column justify-content-center">
-                  <div class="d-flex align-items-center w-100">
-                    <span class="cookie-label d-flex align-items-center flex-wrap gap-8 justify-between justify-md-start w-100">Cookie-uri necesare 
+              <div class="necessary-row mud-flex mud-items-center">
+                <div class="necessary-text-col mud-flex mud-flex-col mud-justify-center">
+                  <div class="mud-flex mud-items-center mud-w-100">
+                    <span class="cookie-label mud-flex mud-items-center mud-flex-wrap mud-gap-8 mud-justify-between mud-justify-md-start mud-w-100">Cookie-uri necesare 
                       <span class="status-tag status-tag--brand is-outlined">Obligatoriu</span> 
                     </span> 
                   </div>
-                  <span class="necessary-cookie-content mb-0">Aceste cookie-uri sunt esențiale pentru funcționarea de bază a site-ului, cum ar fi navigarea. Site-ul nu poate funcționa corect fără aceste cookie-uri și ele nu pot fi dezactivate.</span></div><!--!-->
-                  <div class="necessary-icon-col d-md-flex align-items-center justify-content-center d-none">
-                    <span class="p-12 text-blue-sky-600 radius-8 d-inline-flex">
+                  <span class="necessary-cookie-content mud-mb-0">Aceste cookie-uri sunt esențiale pentru funcționarea de bază a site-ului, cum ar fi navigarea. Site-ul nu poate funcționa corect fără aceste cookie-uri și ele nu pot fi dezactivate.</span></div>
+                  <div class="necessary-icon-col mud-md-flex mud-items-center mud-justify-center mud-hidden">
+                    <span class="mud-p-12 mud-text-blue-sky-600 mud-radius-8 mud-inline-flex">
                       <svg class="icon large" aria-hidden="true"> 
                         <use href="assets/icons/sprite.svg#icon-checkmark-large"></use> 
                       </svg>
@@ -85,13 +85,13 @@
                   </div>
                 </div> 
               <hr class="separator separator--horizontal separator--thin separator--subtle">
-                <div class="necessary-row d-flex align-items-center">
-                  <div class="necessary-text-col d-flex flex-column justify-content-center">
-                    <div class="d-flex align-items-center justify-between">
+                <div class="necessary-row mud-flex mud-items-center">
+                  <div class="necessary-text-col mud-flex mud-flex-col mud-justify-center">
+                    <div class="mud-flex mud-items-center mud-justify-between">
                       <span class="cookie-label">Cookie-uri statistice</span>
-                      <div class="necessary-icon-col form-check form-switch m-0 d-flex d-md-none">
-                      <div class="switch ">
-                        <label class="switch-wrapper mb-0">
+                      <div class="necessary-icon-col form-check form-switch mud-m-0 mud-flex mud-md-hidden">
+                      <div class="switch">
+                        <label class="switch-wrapper mud-mb-0">
                           <input type="checkbox" class="switch-input" checked="" aria-label="Cookie-uri statistice">
                           <div class="switch-track">
                             <div class="switch-thumb"></div>
@@ -100,10 +100,10 @@
                       </div>
                     </div>
                     </div>        
-                    <p class="necessary-cookie-content mb-0">Cookie-urile statistice colectează informații despre modul în care vizitatorii folosesc site-ul. Datele ne ajută să îmbunătățim performanța site-ului și să creăm conținut mai bun.</p></div><!--!-->
-                    <div class="necessary-icon-col form-check form-switch m-0 d-none d-md-flex">
-                      <div class="switch ">
-                        <label class="switch-wrapper mb-0">
+                    <p class="necessary-cookie-content mud-mb-0">Cookie-urile statistice colectează informații despre modul în care vizitatorii folosesc site-ul. Datele ne ajută să îmbunătățim performanța site-ului și să creăm conținut mai bun.</p></div>
+                    <div class="necessary-icon-col form-check form-switch mud-m-0 mud-hidden mud-md-flex">
+                      <div class="switch">
+                        <label class="switch-wrapper mud-mb-0">
                           <input type="checkbox" class="switch-input" checked="" aria-label="Cookie-uri statistice">
                           <div class="switch-track">
                             <div class="switch-thumb"></div>
@@ -115,17 +115,12 @@
                 </div> 
         </div>
         <div class="cookie-footer">
-          <button id="btnConfirm" class="btn btn-primary cookie-confirm-btn">Confirmă selecția</button>
+          <button id="btnConfirm" class="mud-btn mud-btn-primary cookie-confirm-btn">Confirmă selecția</button>
         </div>
       </div>
     </div>
 
-
   <div id="site-footer"></div>
 </body>
 </html>
-
-
-
-
 

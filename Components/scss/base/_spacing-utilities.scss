@@ -1,8 +1,8 @@
 @use "../abstracts/tokens" as tokens;
 @use "../abstracts/variables" as vars;
+@use "../abstracts/mud-prefix" as mud;
 @use "sass:map";
 
-// ============= CSS Variables (runtime)
 :root {
     --spacing-minus-2: -2px;
     --spacing-0: 0px;
@@ -21,9 +21,9 @@
     --spacing-56: 56px;
     --spacing-64: 64px;
     --spacing-72: 72px;
+    --spacing-120: 120px;
 }
 
-// =========== Spacing token map 
 $spacing-map: (
   0: tokens.$token-spacing-0,
   2: tokens.$token-spacing-2,
@@ -39,102 +39,90 @@ $spacing-map: (
   48: tokens.$token-spacing-48,
   56: tokens.$token-spacing-56,
   64: tokens.$token-spacing-64,
-  72: tokens.$token-spacing-72
+  72: tokens.$token-spacing-72,
+  120: tokens.$token-spacing-120
 );
 
-// ============= Base utilities (positive + negative) 
 @each $name, $value in $spacing-map {
-  /* Padding */
-  .p-#{$name}  { padding: $value !important; }
-  .pt-#{$name} { padding-top: $value !important; }
-  .pr-#{$name} { padding-right: $value !important; }
-  .pb-#{$name} { padding-bottom: $value !important; }
-  .pl-#{$name} { padding-left: $value !important; }
-  .px-#{$name} { padding-left: $value !important; padding-right: $value !important; }
-  .py-#{$name} { padding-top: $value !important; padding-bottom: $value !important; }
+  .#{mud.mud-class('p-#{$name}')}  { padding: $value !important; }
+  .#{mud.mud-class('pt-#{$name}')} { padding-top: $value !important; }
+  .#{mud.mud-class('pr-#{$name}')} { padding-right: $value !important; }
+  .#{mud.mud-class('pb-#{$name}')} { padding-bottom: $value !important; }
+  .#{mud.mud-class('pl-#{$name}')} { padding-left: $value !important; }
+  .#{mud.mud-class('px-#{$name}')} { padding-left: $value !important; padding-right: $value !important; }
+  .#{mud.mud-class('py-#{$name}')} { padding-top: $value !important; padding-bottom: $value !important; }
 
-  /* Margin */
-  .m-#{$name}  { margin: $value !important; }
-  .mt-#{$name} { margin-top: $value !important; }
-  .mr-#{$name} { margin-right: $value !important; }
-  .mb-#{$name} { margin-bottom: $value !important; }
-  .ml-#{$name} { margin-left: $value !important; }
-  .mx-#{$name} { margin-left: $value !important; margin-right: $value !important; }
-  .my-#{$name} { margin-top: $value !important; margin-bottom: $value !important; }
+  .#{mud.mud-class('m-#{$name}')}  { margin: $value !important; }
+  .#{mud.mud-class('mt-#{$name}')} { margin-top: $value !important; }
+  .#{mud.mud-class('mr-#{$name}')} { margin-right: $value !important; }
+  .#{mud.mud-class('mb-#{$name}')} { margin-bottom: $value !important; }
+  .#{mud.mud-class('ml-#{$name}')} { margin-left: $value !important; }
+  .#{mud.mud-class('mx-#{$name}')} { margin-left: $value !important; margin-right: $value !important; }
+  .#{mud.mud-class('my-#{$name}')} { margin-top: $value !important; margin-bottom: $value !important; }
 
-  /* Gap utilities */
-  .gap-#{$name}        { gap: $value !important; }
-  .row-gap-#{$name}    { row-gap: $value !important; }
-  .column-gap-#{$name} { column-gap: $value !important; }
+  .#{mud.mud-class('gap-#{$name}')}        { gap: $value !important; }
+  .#{mud.mud-class('row-gap-#{$name}')}    { row-gap: $value !important; }
+  .#{mud.mud-class('column-gap-#{$name}')} { column-gap: $value !important; }
 
-  /* Negative margins (skip 0) */
   @if $name != 0 {
-    .m-n#{$name}  { margin: -$value !important; }
-    .mt-n#{$name} { margin-top: -$value !important; }
-    .mr-n#{$name} { margin-right: -$value !important; }
-    .mb-n#{$name} { margin-bottom: -$value !important; }
-    .ml-n#{$name} { margin-left: -$value !important; }
-    .mx-n#{$name} { margin-left: -$value !important; margin-right: -$value !important; }
-    .my-n#{$name} { margin-top: -$value !important; margin-bottom: -$value !important; }
+    .#{mud.mud-class('m-n#{$name}')}  { margin: -$value !important; }
+    .#{mud.mud-class('mt-n#{$name}')} { margin-top: -$value !important; }
+    .#{mud.mud-class('mr-n#{$name}')} { margin-right: -$value !important; }
+    .#{mud.mud-class('mb-n#{$name}')} { margin-bottom: -$value !important; }
+    .#{mud.mud-class('ml-n#{$name}')} { margin-left: -$value !important; }
+    .#{mud.mud-class('mx-n#{$name}')} { margin-left: -$value !important; margin-right: -$value !important; }
+    .#{mud.mud-class('my-n#{$name}')} { margin-top: -$value !important; margin-bottom: -$value !important; }
   }
 }
 
-// ==============  Auto margins
-   
-.m-auto  { margin: auto !important; }
-.mt-auto { margin-top: auto !important; }
-.mr-auto { margin-right: auto !important; }
-.mb-auto { margin-bottom: auto !important; }
-.ml-auto { margin-left: auto !important; }
-.mx-auto { margin-left: auto !important; margin-right: auto !important; }
-.my-auto { margin-top: auto !important; margin-bottom: auto !important; }
+.#{mud.mud-class('m-auto')}  { margin: auto !important; }
+.#{mud.mud-class('mt-auto')} { margin-top: auto !important; }
+.#{mud.mud-class('mr-auto')} { margin-right: auto !important; }
+.#{mud.mud-class('mb-auto')} { margin-bottom: auto !important; }
+.#{mud.mud-class('ml-auto')} { margin-left: auto !important; }
+.#{mud.mud-class('mx-auto')} { margin-left: auto !important; margin-right: auto !important; }
+.#{mud.mud-class('my-auto')} { margin-top: auto !important; margin-bottom: auto !important; }
 
-// ================== Responsive utilities (positive + negative + auto + gap) 
 @each $bp-name, $bp-value in vars.$breakpoints {
   @media (min-width: $bp-value) {
     @each $name, $value in $spacing-map {
-      /* Padding */
-      .p-#{$bp-name}-#{$name}  { padding: $value !important; }
-      .pt-#{$bp-name}-#{$name} { padding-top: $value !important; }
-      .pr-#{$bp-name}-#{$name} { padding-right: $value !important; }
-      .pb-#{$bp-name}-#{$name} { padding-bottom: $value !important; }
-      .pl-#{$bp-name}-#{$name} { padding-left: $value !important; }
-      .px-#{$bp-name}-#{$name} { padding-left: $value !important; padding-right: $value !important; }
-      .py-#{$bp-name}-#{$name} { padding-top: $value !important; padding-bottom: $value !important; }
+      .#{mud.mud-class('p-#{$bp-name}-#{$name}')}  { padding: $value !important; }
+      .#{mud.mud-class('pt-#{$bp-name}-#{$name}')} { padding-top: $value !important; }
+      .#{mud.mud-class('pr-#{$bp-name}-#{$name}')} { padding-right: $value !important; }
+      .#{mud.mud-class('pb-#{$bp-name}-#{$name}')} { padding-bottom: $value !important; }
+      .#{mud.mud-class('pl-#{$bp-name}-#{$name}')} { padding-left: $value !important; }
+      .#{mud.mud-class('px-#{$bp-name}-#{$name}')} { padding-left: $value !important; padding-right: $value !important; }
+      .#{mud.mud-class('py-#{$bp-name}-#{$name}')} { padding-top: $value !important; padding-bottom: $value !important; }
 
-      /* Margin */
-      .m-#{$bp-name}-#{$name}  { margin: $value !important; }
-      .mt-#{$bp-name}-#{$name} { margin-top: $value !important; }
-      .mr-#{$bp-name}-#{$name} { margin-right: $value !important; }
-      .mb-#{$bp-name}-#{$name} { margin-bottom: $value !important; }
-      .ml-#{$bp-name}-#{$name} { margin-left: $value !important; }
-      .mx-#{$bp-name}-#{$name} { margin-left: $value !important; margin-right: $value !important; }
-      .my-#{$bp-name}-#{$name} { margin-top: $value !important; margin-bottom: $value !important; }
+      .#{mud.mud-class('m-#{$bp-name}-#{$name}')}  { margin: $value !important; }
+      .#{mud.mud-class('mt-#{$bp-name}-#{$name}')} { margin-top: $value !important; }
+      .#{mud.mud-class('mr-#{$bp-name}-#{$name}')} { margin-right: $value !important; }
+      .#{mud.mud-class('mb-#{$bp-name}-#{$name}')} { margin-bottom: $value !important; }
+      .#{mud.mud-class('ml-#{$bp-name}-#{$name}')} { margin-left: $value !important; }
+      .#{mud.mud-class('mx-#{$bp-name}-#{$name}')} { margin-left: $value !important; margin-right: $value !important; }
+      .#{mud.mud-class('my-#{$bp-name}-#{$name}')} { margin-top: $value !important; margin-bottom: $value !important; }
 
-      /* Gap */
-      .gap-#{$bp-name}-#{$name}        { gap: $value !important; }
-      .row-gap-#{$bp-name}-#{$name}    { row-gap: $value !important; }
-      .column-gap-#{$bp-name}-#{$name} { column-gap: $value !important; }
+      .#{mud.mud-class('gap-#{$bp-name}-#{$name}')}        { gap: $value !important; }
+      .#{mud.mud-class('row-gap-#{$bp-name}-#{$name}')}    { row-gap: $value !important; }
+      .#{mud.mud-class('column-gap-#{$bp-name}-#{$name}')} { column-gap: $value !important; }
 
-      /* Negative margins (skip 0) */
       @if $name != 0 {
-        .m-#{$bp-name}-n#{$name}  { margin: -$value !important; }
-        .mt-#{$bp-name}-n#{$name} { margin-top: -$value !important; }
-        .mr-#{$bp-name}-n#{$name} { margin-right: -$value !important; }
-        .mb-#{$bp-name}-n#{$name} { margin-bottom: -$value !important; }
-        .ml-#{$bp-name}-n#{$name} { margin-left: -$value !important; }
-        .mx-#{$bp-name}-n#{$name} { margin-left: -$value !important; margin-right: -$value !important; }
-        .my-#{$bp-name}-n#{$name} { margin-top: -$value !important; margin-bottom: -$value !important; }
+        .#{mud.mud-class('m-#{$bp-name}-n#{$name}')}  { margin: -$value !important; }
+        .#{mud.mud-class('mt-#{$bp-name}-n#{$name}')} { margin-top: -$value !important; }
+        .#{mud.mud-class('mr-#{$bp-name}-n#{$name}')} { margin-right: -$value !important; }
+        .#{mud.mud-class('mb-#{$bp-name}-n#{$name}')} { margin-bottom: -$value !important; }
+        .#{mud.mud-class('ml-#{$bp-name}-n#{$name}')} { margin-left: -$value !important; }
+        .#{mud.mud-class('mx-#{$bp-name}-n#{$name}')} { margin-left: -$value !important; margin-right: -$value !important; }
+        .#{mud.mud-class('my-#{$bp-name}-n#{$name}')} { margin-top: -$value !important; margin-bottom: -$value !important; }
       }
     }
 
-    /* Auto margins responsive */
-    .m-#{$bp-name}-auto  { margin: auto !important; }
-    .mt-#{$bp-name}-auto { margin-top: auto !important; }
-    .mr-#{$bp-name}-auto { margin-right: auto !important; }
-    .mb-#{$bp-name}-auto { margin-bottom: auto !important; }
-    .ml-#{$bp-name}-auto { margin-left: auto !important; }
-    .mx-#{$bp-name}-auto { margin-left: auto !important; margin-right: auto !important; }
-    .my-#{$bp-name}-auto { margin-top: auto !important; margin-bottom: auto !important; }
+    .#{mud.mud-class('m-#{$bp-name}-auto')}  { margin: auto !important; }
+    .#{mud.mud-class('mt-#{$bp-name}-auto')} { margin-top: auto !important; }
+    .#{mud.mud-class('mr-#{$bp-name}-auto')} { margin-right: auto !important; }
+    .#{mud.mud-class('mb-#{$bp-name}-auto')} { margin-bottom: auto !important; }
+    .#{mud.mud-class('ml-#{$bp-name}-auto')} { margin-left: auto !important; }
+    .#{mud.mud-class('mx-#{$bp-name}-auto')} { margin-left: auto !important; margin-right: auto !important; }
+    .#{mud.mud-class('my-#{$bp-name}-auto')} { margin-top: auto !important; margin-bottom: auto !important; }
   }
 }

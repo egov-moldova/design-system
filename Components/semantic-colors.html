@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Semantic colors — Design System</title>
+    <link rel="stylesheet" href="css/main.css" />
+    <script src="js/include-header.js" defer></script>
+    <script src="js/include-footer.js" defer></script>
+    <script src="js/toggler.js" defer></script>
+    <script src="js/modal.js" defer></script>
+    <script src="js/mega-nav.js" defer></script>
+    <script src="js/search.js" defer></script>
+    <script src="js/dropdown.js" defer></script>
+    <script src="js/copy-token.js" defer></script>
+  </head>
+  <body>
+    <div id="site-header"></div>
+
+    <div class="mud-container" data-doc="semantic-colors">
+      <div class="mud-doc">
+        <div class="mud-row mud-mb-40">
+            <div class="mud-col-8">
+              <h1 class="mud-desktop-display-xl mud-mb-24">Semantic colors</h1>
+              <p class="mud-text-gray-400 mud-desktop-body-xl mud-mb-32">
+                Semantic tokens describe color by its role in the interface (background, text, mud-border, state). They map to primitive colors and stay consistent across light and dark themes — use them in product UI instead of referencing primitive values directly.
+              </p>
+              <p class="mud-text-gray-400 mud-desktop-body-xl">
+                Click any token pill to copy its name. The middle column shows the value used in the light theme; the right column shows the value used in the dark theme.
+              </p>
+            </div>
+          </div>
+        <div class="mud-doc-main">
+      
+      <section aria-labelledby="bg-heading">
+        <div class="mud-doc-section-head">
+          <h2 class="mud-desktop-heading-sm" id="bg-heading">Background</h2>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Base</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-base-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-base-default-hover</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-base-default-active</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-base-secondary</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-base-secondary-hover</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-base-secondary-active</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-base-tertiary</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-base-tertiary-hover</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-base-tertiary-active</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">white-1000</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-default-hover"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-100</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-default-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-250</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-secondary"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-100</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-secondary-hover"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-200</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-secondary-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-250</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-tertiary"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-200</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-tertiary-hover"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-250</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-tertiary-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-300</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-900</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-default-hover"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-800</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-default-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-700</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-secondary"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-800</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-secondary-hover"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-700</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-secondary-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-tertiary"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-700</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-tertiary-hover"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-tertiary-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-500</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Base Inverse</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-base-inverse-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-base-inverse-default-hover</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-base-inverse-default-active</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-inverse-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-900</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-inverse-default-hover"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-700</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-inverse-default-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-600</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-inverse-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-100</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-inverse-default-hover"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-200</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-base-inverse-default-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-250</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Brand</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-brand-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-brand-default-hover</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-brand-default-active</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-brand-secondary</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-brand-secondary-hover</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-brand-secondary-active</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-brand-tertiary</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-brand-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-brand-default-hover"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-700</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-brand-default-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-800</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-brand-secondary"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-100</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-brand-secondary-hover"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-200</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-brand-secondary-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-300</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-brand-tertiary"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-900</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-brand-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-brand-default-hover"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-700</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-brand-default-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-800</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-brand-secondary"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-200</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-brand-secondary-hover"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-300</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-brand-secondary-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-400</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-brand-tertiary"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-900</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Disabled</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-disabled-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-disabled-secondary</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-disabled-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-200</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-disabled-secondary"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-250</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-disabled-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-700</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-disabled-secondary"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-400</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Alpha</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-alpha-overlay-dark</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-alpha-overlay-light</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-alpha-large-surface</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-alpha-overlay-dark"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">black-400-alpha</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-alpha-overlay-light"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">white-400-alpha</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-alpha-large-surface"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-100-alpha</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-alpha-overlay-dark"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">black-200-alpha</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-alpha-overlay-light"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">white-200-alpha</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-alpha-large-surface"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-200-alpha</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Positive</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-positive-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-positive-default-hover</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-positive-default-active</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-positive-secondary</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-positive-secondary-active</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-positive-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">green-900</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-positive-default-hover"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">green-700</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-positive-default-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">green-800</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-positive-secondary"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">green-100</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-positive-secondary-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">green-200</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-positive-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">green-700</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-positive-default-hover"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">green-800</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-positive-default-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">green-900</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-positive-secondary"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">green-200</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-positive-secondary-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">green-300</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Warning</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-warning-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-warning-default-hover</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-warning-default-active</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-warning-secondary</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-warning-secondary-active</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-warning-accent</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-warning-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-400</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-warning-default-hover"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-500</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-warning-default-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-warning-secondary"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-100</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-warning-secondary-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-200</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-warning-accent"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-300</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-warning-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-500</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-warning-default-hover"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-warning-default-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-700</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-warning-secondary"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-200</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-warning-secondary-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-300</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-warning-accent"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-400</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Danger</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-danger-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-danger-default-hover</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-danger-default-active</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-danger-secondary</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-danger-secondary-hover</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-background-danger-secondary-active</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-danger-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-danger-default-hover"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-700</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-danger-default-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-800</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-danger-secondary"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-100</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-danger-secondary-hover"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-200</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-danger-secondary-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-300</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-danger-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-700</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-danger-default-hover"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-800</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-danger-default-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-900</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-danger-secondary"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-200</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-danger-secondary-hover"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-300</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-color-background-danger-secondary-active"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-400</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      
+      <section aria-labelledby="border-heading">
+        <div class="mud-doc-section-head">
+          <h2 class="mud-desktop-heading-sm" id="border-heading">Border</h2>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Base</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-border-base-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-border-base-secondary</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-border-base-tertiary</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-border-base-strong</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-border-base-subtle</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--border mud-color-border-base-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-250</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--border mud-color-border-base-secondary"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-300</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--border mud-color-border-base-tertiary"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--border mud-color-border-base-strong"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">black-1000</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--border mud-color-border-base-subtle"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">white-1000</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--border mud-color-border-base-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--border mud-color-border-base-secondary"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-400</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--border mud-color-border-base-tertiary"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-250</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--border mud-color-border-base-strong"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-100</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--border mud-color-border-base-subtle"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">black-1000</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Brand</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-border-brand-default</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--border mud-color-border-brand-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-600</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--border mud-color-border-brand-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-500</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Disabled</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-border-disabled-default</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--border mud-color-border-disabled-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-250</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--border mud-color-border-disabled-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-600</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Positive</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-border-positive-default</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--border mud-color-border-positive-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">green-700</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--border mud-color-border-positive-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">green-500</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Warning</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-border-warning-default</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--border mud-color-border-warning-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-600</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--border mud-color-border-warning-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-500</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Danger</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-border-danger-default</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--border mud-color-border-danger-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-600</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--border mud-color-border-danger-default"></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-500</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      
+      <section aria-labelledby="text-heading">
+        <div class="mud-doc-section-head">
+          <h2 class="mud-desktop-heading-sm" id="text-heading">Text</h2>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Base</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-text-base-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-text-base-secondary</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-text-base-tertiary</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-text-base-default-on-color</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-text-base-secondary-on-color</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-base-default">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">black-1000</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-base-secondary">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-700</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-base-tertiary">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-400</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-base-default-on-color mud-color-background-warning-default">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">black-1000</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-base-secondary-on-color mud-color-background-brand-secondary">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-600</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-base-default">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">white-1000</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-base-secondary">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-200</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-base-tertiary">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-300</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-base-default-on-color mud-color-background-warning-default">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">black-1000</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-base-secondary-on-color mud-color-background-brand-secondary">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-600</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Base Inverse</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-text-base-inverse-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-text-base-inverse-on-color</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-base-inverse-default mud-color-background-base-inverse-default">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">white-1000</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-base-inverse-on-color mud-color-background-brand-default">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">white-1000</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-base-inverse-default mud-color-background-base-inverse-default">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">black-1000</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-base-inverse-on-color mud-color-background-brand-default">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">white-1000</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Brand</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-text-brand-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-text-brand-default-hover</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-text-brand-on-secondary</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-text-brand-visited</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-brand-default">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-brand-default-hover">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-brand-on-secondary mud-color-background-brand-secondary">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-brand-visited">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">magenta-600</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-brand-default">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-400</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-brand-default-hover">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-700</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-brand-on-secondary mud-color-background-brand-secondary">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-700</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-brand-visited">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">magenta-400</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Disabled</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-text-disabled-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-text-disabled-on-disabled</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-disabled-default">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-300</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-disabled-on-disabled mud-color-background-disabled-default">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-300</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-disabled-default">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-disabled-on-disabled mud-color-background-disabled-default">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-400</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Positive</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-text-positive-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-text-positive-on-secondary</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-positive-default">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">green-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-positive-on-secondary mud-color-background-positive-secondary">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">green-700</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-positive-default">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">green-500</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-positive-on-secondary mud-color-background-positive-secondary">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">green-800</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Warning</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-text-warning-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-text-warning-on-secondary</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-warning-default">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-700</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-warning-on-secondary mud-color-background-warning-secondary">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-700</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-warning-default">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-500</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-warning-on-secondary mud-color-background-warning-secondary">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-800</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Danger</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-text-danger-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-text-danger-on-secondary</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-danger-default">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-danger-on-secondary mud-color-background-danger-secondary">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-700</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-danger-default">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-500</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--text mud-color-text-danger-on-secondary mud-color-background-danger-secondary">Ag</span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-800</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      
+      <section aria-labelledby="icon-heading">
+        <div class="mud-doc-section-head">
+          <h2 class="mud-desktop-heading-sm" id="icon-heading">Icon</h2>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Base</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-icon-base-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-icon-base-secondary</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-icon-base-tertiary</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-icon-base-default-on-color</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-icon-base-secondary-on-color</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-base-default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">black-1000</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-base-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-base-tertiary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-400</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-base-default-on-color mud-color-background-warning-default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">black-1000</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-base-secondary-on-color mud-color-background-brand-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-600</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-base-default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">white-1000</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-base-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-200</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-base-tertiary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-300</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-base-default-on-color mud-color-background-warning-default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">black-1000</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-base-secondary-on-color mud-color-background-brand-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-600</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Base Inverse</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-icon-base-inverse-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-icon-base-inverse-on-color</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-base-inverse-default mud-color-background-base-inverse-default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">white-1000</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-base-inverse-on-color mud-color-background-brand-default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">white-1000</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-base-inverse-default mud-color-background-base-inverse-default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">black-1000</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-base-inverse-on-color mud-color-background-brand-default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">white-1000</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Brand</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-icon-brand-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-icon-brand-on-secondary</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-icon-brand-visited</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-brand-default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-brand-on-secondary mud-color-background-brand-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-brand-visited"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">magenta-600</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-brand-default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-400</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-brand-on-secondary mud-color-background-brand-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">blue-sky-700</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-brand-visited"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">magenta-400</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Disabled</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-icon-disabled-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-icon-disabled-on-disabled</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-disabled-default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-300</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-disabled-on-disabled mud-color-background-disabled-default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-300</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-disabled-default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-disabled-on-disabled mud-color-background-disabled-default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">gray-400</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Positive</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-icon-positive-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-icon-positive-on-secondary</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-positive-default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">green-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-positive-on-secondary mud-color-background-positive-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">green-700</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-positive-default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">green-500</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-positive-on-secondary mud-color-background-positive-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">green-800</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Warning</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-icon-warning-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-icon-warning-on-secondary</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-warning-default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-warning-on-secondary mud-color-background-warning-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-700</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-warning-default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-500</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-warning-on-secondary mud-color-background-warning-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">apricot-800</span></div>
+            </div>
+          </div>
+        </div>
+
+        
+        <div class="mud-flex mud-flex-col mud-gap-24 mud-mb-24">
+          <h3 class="mud-m-0 mud-desktop-heading-sm">Danger</h3>
+          <div class="mud-row mud-gap-32 mud-column-gap-xl-120">
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--tokens">
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-icon-danger-default</button></div>
+              <div class="mud-flex mud-items-center"><button class="token-name">--mud-color-icon-danger-on-secondary</button></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--light">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-danger-default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-600</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-danger-on-secondary mud-color-background-danger-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-700</span></div>
+            </div>
+            <div class="mud-col-12 mud-col-xl-4 mud-doc-sem--dark" data-theme="dark">
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-danger-default"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-500</span></div>
+              <div class="mud-flex mud-items-center mud-gap-16"><span class="mud-doc-sem__swatch mud-doc-mud-doc-sem__swatch--icon mud-color-icon-danger-on-secondary mud-color-background-danger-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.25"/><ellipse cx="12" cy="12" rx="4.25" ry="9.25"/><path d="M2.75 12h18.5"/></svg></span><span class="mud-doc-sem__name font-mono mud-desktop-body-md-500">red-800</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+        </div>
+      </div>
+    </div>
+
+    <div id="site-footer"></div>
+  </body>
+</html>

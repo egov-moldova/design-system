@@ -12,8 +12,8 @@
         const placeholder = document.getElementById(placeholderId);
         if (placeholder) placeholder.remove();
 
-        // Append footer at the end of <body> to avoid being clipped by any
-        // unclosed containers in page markup.
+        
+        
         document.body.insertAdjacentHTML("beforeend", xhr.responseText);
       } else {
         console.error("Footer include failed:", xhr.status);

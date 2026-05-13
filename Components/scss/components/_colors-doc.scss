@@ -1,0 +1,168 @@
+@use '../abstracts/mud-prefix' as mud;
+
+[data-doc="colors"] {
+  // Doc-only wrapper (prefixed). Keeps swatch grid / label rules scoped to this page.
+  .#{mud.mud-class('doc-palette')} .#{mud.mud-class('col')},
+  .#{mud.mud-class('doc-palette')} .#{mud.mud-class('tile')} {
+    box-sizing: border-box;
+    min-width: 0;
+  }
+
+  .mud-doc-main .#{mud.mud-class('doc-palette')} .mud-desktop-body-sm-500 {
+    margin-bottom: 0;
+    color: inherit !important;
+  }
+
+  // Palette: `mud-row.colors-doc-base-grid` — fluid columns (no horizontal scroll). Figma ref 235×160,
+  // scaled down: max width 120px, height from `aspect-ratio: 235/160`. `mud-span-2`: two tracks + gap (494:160).
+  .#{mud.mud-class('row')}.colors-doc-base-grid {
+    --colors-pal-gap: var(--spacing-24, 24px);
+    --colors-card-max-w: 120px;
+    display: grid;
+    grid-template-columns: repeat(10, minmax(0, 1fr));
+    gap: var(--colors-pal-gap);
+    margin-bottom: var(--spacing-24, 24px);
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    box-sizing: border-box;
+  }
+
+  @media (max-width: 1199.98px) {
+    .#{mud.mud-class('row')}.colors-doc-base-grid {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 575.98px) {
+    .#{mud.mud-class('row')}.colors-doc-base-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .#{mud.mud-class('row')}.colors-doc-base-grid > .#{mud.mud-class('col')}:not(.mud-span-2) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    max-width: min(var(--colors-card-max-w), 100%);
+    aspect-ratio: 235 / 160;
+    height: auto;
+    justify-self: center;
+    border-radius: var(--border-radius-8, 8px);
+    text-align: center;
+    flex: unset;
+    padding-left: 0;
+    padding-right: 0;
+    box-sizing: border-box;
+  }
+
+  .#{mud.mud-class('row')}.colors-doc-base-grid > .#{mud.mud-class('col')}.mud-span-2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    grid-column: span 2;
+    width: 100%;
+    max-width: none;
+    // Two 235px cards + one 24px gutter (Figma lane), same 160px reference height.
+    aspect-ratio: 494 / 160;
+    height: auto;
+    border-radius: var(--border-radius-8, 8px);
+    text-align: center;
+    flex: unset;
+    padding-left: 0;
+    padding-right: 0;
+    box-sizing: border-box;
+  }
+
+  .colors-doc-swatch--white {
+    border: 1.5px solid var(--gray-250, #d9d9d9);
+  }
+
+  // Alpha rows: five wide tiles per row (~3:1), gap 24 (Figma)
+  .colors-doc-alpha-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--spacing-24, 24px);
+    margin-bottom: var(--spacing-24, 24px);
+    width: 100%;
+  }
+
+  @media (max-width: 991.98px) {
+    .colors-doc-alpha-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 479.98px) {
+    .colors-doc-alpha-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .colors-doc-alpha-grid > .#{mud.mud-class('tile')}--alpha {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: unset;
+    min-height: 0;
+    height: auto;
+    aspect-ratio: 3 / 1;
+    width: 100%;
+    max-width: none;
+    padding-left: 0;
+    padding-right: 0;
+    border-radius: var(--border-radius-8, 8px);
+    text-align: center;
+  }
+
+  .alpha-white-strip {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: var(--spacing-24, 24px);
+    box-sizing: border-box;
+    width: 100%;
+    margin-bottom: var(--spacing-24, 24px);
+    padding: var(--spacing-16, 16px);
+    border-radius: var(--border-radius-12, 12px);
+    background: var(--color-background-base-inverse-default, #1e1e1e);
+  }
+
+  @media (max-width: 991.98px) {
+    .alpha-white-strip {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 479.98px) {
+    .alpha-white-strip {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .alpha-white-strip > .#{mud.mud-class('tile')}--alpha {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: unset;
+    min-height: 0;
+    height: auto;
+    aspect-ratio: 3 / 1;
+    width: 100%;
+    max-width: none;
+    padding-left: 0;
+    padding-right: 0;
+    border-radius: var(--border-radius-8, 8px);
+    text-align: center;
+  }
+
+  .mud-doc-main .#{mud.mud-class('tile')}--label-on-dark,
+  .mud-doc-main .#{mud.mud-class('tile')}--label-on-dark .mud-desktop-body-sm-500 {
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  }
+
+  .mud-doc-main .colors-doc-swatch--on-black .mud-desktop-body-sm-500 {
+    color: #fff;
+  }
+}

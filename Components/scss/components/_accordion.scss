@@ -64,18 +64,17 @@
     color: var(--color-text-secondary);
   }
 
-  // state: open
+  
   &__trigger[aria-expanded="true"] {
     .accordion__heading {
       color: var(--blue-sky-600);
     }
     .accordion__icon {
-      transform: translateY(-50%) rotate(45deg); // + -> ×
+      transform: translateY(-50%) rotate(45deg); 
     }
   }
 }
 
-//==============  Breakpoints 
 @media screen and (min-width: 991px) {
   .accordion {
     &__trigger {

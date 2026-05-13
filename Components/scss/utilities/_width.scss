@@ -1,4 +1,5 @@
 @use '../abstracts/mixins/media' as media;
+@use '../abstracts/mud-prefix' as mud;
 
 $width-scale: (
   25: 25%,
@@ -10,7 +11,7 @@ $width-scale: (
 );
 
 @each $key, $value in $width-scale {
-  .w-#{$key} {
+  .#{mud.mud-class('w-#{$key}')} {
     width: $value;
   }
 }
@@ -30,9 +31,42 @@ $width-scale: (
     xl: 1200px
   )) {
     @each $key, $value in $width-scale {
-      .w-#{$breakpoint}-#{$key} {
+      .#{mud.mud-class('w-#{$breakpoint}-#{$key}')} {
         width: $value;
       }
     }
+  }
+}
+
+.#{mud.mud-class('w-auto')} {
+  width: auto !important;
+}
+
+.#{mud.mud-class('w-full')} {
+  width: 100% !important;
+}
+
+.#{mud.mud-class('w-screen')} {
+  width: 100vw !important;
+}
+
+.#{mud.mud-class('min-w-0')} {
+  min-width: 0 !important;
+}
+
+.#{mud.mud-class('min-w-full')} {
+  min-width: 100% !important;
+}
+
+$max-w-scale: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1140px
+);
+
+@each $key, $value in $max-w-scale {
+  .#{mud.mud-class('max-w-#{$key}')} {
+    max-width: $value !important;
   }
 }

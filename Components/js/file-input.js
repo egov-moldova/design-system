@@ -1,7 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-  /* =====================================================
-   * Helpers
-   * ===================================================== */
+  
   const formatSize = (bytes) => (bytes / 1024 / 1024).toFixed(1) + " MB";
 
   function createSvgIcon(href) {
@@ -15,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   const CONFIG = {
-    maxSize: 100 * 1024 * 1024, // 100 MB
+    maxSize: 100 * 1024 * 1024, 
     allowedTypes: ["image/jpeg", "image/png", "application/pdf"],
   };
 
@@ -29,9 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return null;
   }
 
-  /* =====================================================
-   * Upload item creator (states)
-   * ===================================================== */
+  
   function createUploadItem(
     file,
     previewImages = false,
@@ -125,9 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return item;
   }
 
-  /* =====================================================
-   * Standard file input
-   * ===================================================== */
+  
   function initUpload(
     inputId,
     listId,
@@ -164,9 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* =====================================================
-   * Drag & Drop zone
-   * ===================================================== */
+  
   function initDropzone(
     dropzoneId,
     inputId,
@@ -246,15 +238,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* =====================================================
-   * Prevent default browser behavior globally
-   * ===================================================== */
+  
   document.addEventListener("dragover", (e) => e.preventDefault());
   document.addEventListener("drop", (e) => e.preventDefault());
 
-  /* =====================================================
-   * Init all uploads
-   * ===================================================== */
+  
   initUpload("default-upload", "default-upload-list");
   initUpload("single-upload", "single-upload-list");
   initUpload("multi-upload", "multi-upload-list", true);

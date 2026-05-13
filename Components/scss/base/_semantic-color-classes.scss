@@ -1,0 +1,183 @@
+// Semantic token utilities (prefixed) + compact role aliases (token-backed; theme-safe).
+
+@use '../abstracts/mud-prefix' as mud;
+
+$semantic-background-tokens: (
+  'color-background-base-default',
+  'color-background-base-default-hover',
+  'color-background-base-default-active',
+  'color-background-base-secondary',
+  'color-background-base-secondary-hover',
+  'color-background-base-secondary-active',
+  'color-background-base-tertiary',
+  'color-background-base-tertiary-hover',
+  'color-background-base-tertiary-active',
+  'color-background-base-inverse-default',
+  'color-background-base-inverse-default-hover',
+  'color-background-base-inverse-default-active',
+  'color-background-brand-default',
+  'color-background-brand-default-hover',
+  'color-background-brand-default-active',
+  'color-background-brand-secondary',
+  'color-background-brand-secondary-hover',
+  'color-background-brand-secondary-active',
+  'color-background-brand-tertiary',
+  'color-background-disabled-default',
+  'color-background-disabled-secondary',
+  'color-background-alpha-overlay-dark',
+  'color-background-alpha-overlay-light',
+  'color-background-alpha-large-surface',
+  'color-background-positive-default',
+  'color-background-positive-default-hover',
+  'color-background-positive-default-active',
+  'color-background-positive-secondary',
+  'color-background-positive-secondary-active',
+  'color-background-warning-default',
+  'color-background-warning-default-hover',
+  'color-background-warning-default-active',
+  'color-background-warning-secondary',
+  'color-background-warning-secondary-active',
+  'color-background-warning-accent',
+  'color-background-danger-default',
+  'color-background-danger-default-hover',
+  'color-background-danger-default-active',
+  'color-background-danger-secondary',
+  'color-background-danger-secondary-hover',
+  'color-background-danger-secondary-active',
+);
+
+$semantic-border-tokens: (
+  'color-border-base-default',
+  'color-border-base-secondary',
+  'color-border-base-tertiary',
+  'color-border-base-strong',
+  'color-border-base-subtle',
+  'color-border-brand-default',
+  'color-border-disabled-default',
+  'color-border-positive-default',
+  'color-border-warning-default',
+  'color-border-danger-default',
+);
+
+$semantic-text-tokens: (
+  'color-text-base-default',
+  'color-text-base-secondary',
+  'color-text-base-tertiary',
+  'color-text-base-default-on-color',
+  'color-text-base-secondary-on-color',
+  'color-text-base-inverse-default',
+  'color-text-base-inverse-on-color',
+  'color-text-brand-default',
+  'color-text-brand-default-hover',
+  'color-text-brand-on-secondary',
+  'color-text-brand-visited',
+  'color-text-disabled-default',
+  'color-text-disabled-on-disabled',
+  'color-text-positive-default',
+  'color-text-positive-on-secondary',
+  'color-text-warning-default',
+  'color-text-warning-on-secondary',
+  'color-text-danger-default',
+  'color-text-danger-on-secondary',
+);
+
+$semantic-icon-tokens: (
+  'color-icon-base-default',
+  'color-icon-base-secondary',
+  'color-icon-base-tertiary',
+  'color-icon-base-default-on-color',
+  'color-icon-base-secondary-on-color',
+  'color-icon-base-inverse-default',
+  'color-icon-base-inverse-on-color',
+  'color-icon-brand-default',
+  'color-icon-brand-on-secondary',
+  'color-icon-brand-visited',
+  'color-icon-disabled-default',
+  'color-icon-disabled-on-disabled',
+  'color-icon-positive-default',
+  'color-icon-positive-on-secondary',
+  'color-icon-warning-default',
+  'color-icon-warning-on-secondary',
+  'color-icon-danger-default',
+  'color-icon-danger-on-secondary',
+);
+
+@each $t in $semantic-background-tokens {
+  .#{mud.mud-class($t)} {
+    background-color: var(--#{$t});
+  }
+}
+
+@each $t in $semantic-border-tokens {
+  .#{mud.mud-class($t)} {
+    border-color: var(--#{$t});
+  }
+}
+
+@each $t in $semantic-text-tokens {
+  .#{mud.mud-class($t)} {
+    color: var(--#{$t});
+  }
+}
+
+@each $t in $semantic-icon-tokens {
+  .#{mud.mud-class($t)} {
+    color: var(--#{$t});
+  }
+}
+
+// --- Role aliases (compact names → semantic tokens) ---
+
+$role-text: (
+  'text-primary': 'color-text-base-default',
+  'text-secondary': 'color-text-base-secondary',
+  'text-muted': 'color-text-base-tertiary',
+  'text-disabled': 'color-text-disabled-default',
+  // Inverse / on-color (theme token) — not the same as primitive ramp `mud-text-white`.
+  'text-inverse': 'color-text-base-inverse-default',
+  'text-brand': 'color-text-brand-default',
+  'text-success': 'color-text-positive-default',
+  'text-warning': 'color-text-warning-default',
+  'text-danger': 'color-text-danger-default',
+  'text-info': 'color-text-brand-default',
+);
+
+@each $role, $token in $role-text {
+  .#{mud.mud-class($role)} {
+    color: var(--#{$token}) !important;
+  }
+}
+
+$role-bg: (
+  'bg-primary': 'color-background-base-default',
+  'bg-secondary': 'color-background-base-secondary',
+  'bg-muted': 'color-background-base-tertiary',
+  'bg-brand': 'color-background-brand-default',
+  'bg-success': 'color-background-positive-default',
+  'bg-warning': 'color-background-warning-default',
+  'bg-danger': 'color-background-danger-default',
+  'bg-info': 'color-background-brand-secondary',
+);
+
+@each $role, $token in $role-bg {
+  .#{mud.mud-class($role)} {
+    background-color: var(--#{$token}) !important;
+  }
+}
+
+$role-border: (
+  'border-primary': 'color-border-base-default',
+  'border-secondary': 'color-border-base-secondary',
+  'border-muted': 'color-border-base-tertiary',
+  'border-brand': 'color-border-brand-default',
+  'border-success': 'color-border-positive-default',
+  'border-warning': 'color-border-warning-default',
+  'border-danger': 'color-border-danger-default',
+  'border-info': 'color-border-brand-default',
+);
+
+@each $role, $token in $role-border {
+  .#{mud.mud-class($role)} {
+    border-color: var(--#{$token}) !important;
+  }
+}

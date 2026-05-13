@@ -2,7 +2,7 @@ document.addEventListener('click', (e) => {
   const token = e.target.closest('.token-name');
   if (!token) return;
 
-  const value = token.textContent.trim();
+  const value = (token.dataset && token.dataset.token) || token.textContent.trim();
 
   navigator.clipboard.writeText(value).then(() => {
     token.classList.add('is-copied');

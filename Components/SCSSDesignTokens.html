@@ -2,7 +2,7 @@
 <html lang="ro">
 <head>
     <meta charset="UTF-8" />
-    <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> -->
+    
     <title>SCSS Design Tokens</title>
     <link rel="stylesheet" href="css/main.css" />
   <script src="js/include-header.js" defer></script>
@@ -15,167 +15,162 @@
 </head>
 <body>
   <div id="site-header"></div>
-    <div class="container mt-56">
-        <div class="row">
-          <div class="col-sm-7">
+    <div class="mud-container mud-mt-56">
+        <div class="mud-row">
+          <div class="mud-col-sm-7">
             <h1>Primitive Colors</h1>
-            <p class="text-gray-400">
+            <p class="mud-text-gray-400">
               These colors serve as the base for creating consistent design elements and are used to build other color schemes across the Design System.
             </p>
           </div>
-            <div class="col-xs-12"> 
-                <!--<script>
-                    document.body.onclick = () => {
-                        document.body.dataset.theme =
-                            document.body.dataset.theme === 'dark' ? 'light' : 'dark';
-                    };
-                </script>-->
-            <div class="bg-blue-sky-600 text-white-1000 border-3 border-solid border-gray-300 p-3 mt-4 d-none">
+            <div class="mud-col-xs-12"> 
+                
+            <div class="mud-bg-blue-sky-600 mud-text-white border-3 mud-border-solid mud-border-gray-300 mud-p-3 mud-mt-4 mud-hidden">
                 Blue Sky 600 Background + White Text + Gray Border
             </div> 
-            <section class="color-palette">
-                <div class="mt-56 mb-32  border-bottom-1 border-bottom-solid border-gray-200">
-                  <h2 class="mb-6">Brand Colors</h2>
+            <section class="mud-doc-palette">
+                <div class="mud-mt-56 mud-mb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
+                  <h2 class="mud-mb-6">Brand Colors</h2>
                 </div>
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-blue-sky-900 text-white">Blue 900</div>
-                  <div class="color bg-blue-sky-800 text-white">800</div>
-                  <div class="color bg-blue-sky-700 text-white">700</div>
-                  <div class="color bg-blue-sky-600 text-white" style="flex: 1;">Blue Sky 600</div>
-                  <div class="color bg-blue-sky-500 text-white">500</div>
-                  <div class="color bg-blue-sky-400 text-white">400</div>
-                  <div class="color bg-blue-sky-300 text-blue-sky-500">300</div>
-                  <div class="color bg-blue-sky-200 text-blue-sky-500">200</div>
-                  <div class="color bg-blue-sky-150 text-blue-sky-500">150</div>
-                  <div class="color bg-blue-sky-100 text-blue-sky-500">100</div>
-                </div>
-
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-lavender-900 text-white">900</div>
-                  <div class="color bg-lavender-800 text-white">800</div>
-                  <div class="color bg-lavender-700 text-white">700</div>
-                  <div class="color bg-lavender-600 text-white" style="flex: 1;">Lavender 600</div>
-                  <div class="color bg-lavender-500 text-white">500</div>
-                  <div class="color bg-lavender-400 text-white">400</div>
-                  <div class="color bg-lavender-300 text-lavender-500">300</div>
-                  <div class="color bg-lavender-200 text-lavender-500">200</div>
-                  <div class="color bg-lavender-100 text-lavender-500">100</div>
+                <div class="color-row mud-gap-16 mud-mb-32">
+                  <div class="color mud-bg-blue-sky-900 mud-text-white">Blue 900</div>
+                  <div class="color mud-bg-blue-sky-800 mud-text-white">800</div>
+                  <div class="color mud-bg-blue-sky-700 mud-text-white">700</div>
+                  <div class="color mud-bg-blue-sky-600 mud-text-white" style="flex: 1;">Blue Sky 600</div>
+                  <div class="color mud-bg-blue-sky-500 mud-text-white">500</div>
+                  <div class="color mud-bg-blue-sky-400 mud-text-white">400</div>
+                  <div class="color mud-bg-blue-sky-300 mud-text-blue-sky-500">300</div>
+                  <div class="color mud-bg-blue-sky-200 mud-text-blue-sky-500">200</div>
+                  <div class="color mud-bg-blue-sky-150 mud-text-blue-sky-500">150</div>
+                  <div class="color mud-bg-blue-sky-100 mud-text-blue-sky-500">100</div>
                 </div>
 
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-purple-900 text-white">900</div>
-                  <div class="color bg-purple-800 text-white">800</div>
-                  <div class="color bg-purple-700 text-white">700</div>
-                  <div class="color bg-purple-600 text-white" style="flex: 1;">Purple 600</div>
-                  <div class="color bg-purple-500 text-white">500</div>
-                  <div class="color bg-purple-400 text-white">400</div>
-                  <div class="color bg-purple-300 text-purple-500">300</div>
-                  <div class="color bg-purple-200 text-purple-500">200</div>
-                  <div class="color bg-purple-100 text-purple-500">100</div>
+                <div class="color-row mud-gap-16 mud-mb-32">
+                  <div class="color mud-bg-lavender-900 mud-text-white">900</div>
+                  <div class="color mud-bg-lavender-800 mud-text-white">800</div>
+                  <div class="color mud-bg-lavender-700 mud-text-white">700</div>
+                  <div class="color mud-bg-lavender-600 mud-text-white" style="flex: 1;">Lavender 600</div>
+                  <div class="color mud-bg-lavender-500 mud-text-white">500</div>
+                  <div class="color mud-bg-lavender-400 mud-text-white">400</div>
+                  <div class="color mud-bg-lavender-300 mud-text-lavender-500">300</div>
+                  <div class="color mud-bg-lavender-200 mud-text-lavender-500">200</div>
+                  <div class="color mud-bg-lavender-100 mud-text-lavender-500">100</div>
                 </div>
 
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-magenta-900 text-white">900</div>
-                  <div class="color bg-magenta-800 text-white">800</div>
-                  <div class="color bg-magenta-700 text-white">700</div>
-                  <div class="color bg-magenta-600 text-white" style="flex: 1;">Magenta 600</div>
-                  <div class="color bg-magenta-500 text-white">500</div>
-                  <div class="color bg-magenta-400 text-white">400</div>
-                  <div class="color bg-magenta-300 text-magenta-500">300</div>
-                  <div class="color bg-magenta-200 text-magenta-500">200</div>
-                  <div class="color bg-magenta-100 text-magenta-500">100</div>
+                <div class="color-row mud-gap-16 mud-mb-32">
+                  <div class="color mud-bg-purple-900 mud-text-white">900</div>
+                  <div class="color mud-bg-purple-800 mud-text-white">800</div>
+                  <div class="color mud-bg-purple-700 mud-text-white">700</div>
+                  <div class="color mud-bg-purple-600 mud-text-white" style="flex: 1;">Purple 600</div>
+                  <div class="color mud-bg-purple-500 mud-text-white">500</div>
+                  <div class="color mud-bg-purple-400 mud-text-white">400</div>
+                  <div class="color mud-bg-purple-300 mud-text-purple-500">300</div>
+                  <div class="color mud-bg-purple-200 mud-text-purple-500">200</div>
+                  <div class="color mud-bg-purple-100 mud-text-purple-500">100</div>
                 </div>
 
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-forest-green-900 text-white">900</div>
-                  <div class="color bg-forest-green-800 text-white">800</div>
-                  <div class="color bg-forest-green-700 text-white">700</div>
-                  <div class="color bg-forest-green-600 text-white" style="flex: 1;">Forest Green 600</div>
-                  <div class="color bg-forest-green-500 text-white">500</div>
-                  <div class="color bg-forest-green-400 text-white">400</div>
-                  <div class="color bg-forest-green-300 text-forest-green-500">300</div>
-                  <div class="color bg-forest-green-200 text-forest-green-500">200</div>
-                  <div class="color bg-forest-green-150 text-forest-green-500">150</div>
-                  <div class="color bg-forest-green-100 text-forest-green-500">100</div>
+                <div class="color-row mud-gap-16 mud-mb-32">
+                  <div class="color mud-bg-magenta-900 mud-text-white">900</div>
+                  <div class="color mud-bg-magenta-800 mud-text-white">800</div>
+                  <div class="color mud-bg-magenta-700 mud-text-white">700</div>
+                  <div class="color mud-bg-magenta-600 mud-text-white" style="flex: 1;">Magenta 600</div>
+                  <div class="color mud-bg-magenta-500 mud-text-white">500</div>
+                  <div class="color mud-bg-magenta-400 mud-text-white">400</div>
+                  <div class="color mud-bg-magenta-300 mud-text-magenta-500">300</div>
+                  <div class="color mud-bg-magenta-200 mud-text-magenta-500">200</div>
+                  <div class="color mud-bg-magenta-100 mud-text-magenta-500">100</div>
                 </div>
 
-                <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-                  <h2 class="mb-6">Base Colors</h2>
-                </div>
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-gray-900 text-white">900</div>
-                  <div class="color bg-gray-800 text-white">800</div>
-                  <div class="color bg-gray-700 text-white">700</div>
-                  <div class="color bg-gray-600 text-white" style="flex: 1;">Gray 600</div>
-                  <div class="color bg-gray-500 text-white">500</div>
-                  <div class="color bg-gray-400 text-white">400</div>
-                  <div class="color bg-gray-300 text-gray-500">300</div>
-                  <div class="color bg-gray-250 text-gray-500">250</div>
-                  <div class="color bg-gray-200 text-gray-500">200</div>
-                  <div class="color bg-gray-100 text-gray-500">100</div>
-                </div>
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-black text-white">Black</div>
-                  <div class="color bg-white border text-black">White</div>
+                <div class="color-row mud-gap-16 mud-mb-32">
+                  <div class="color mud-bg-forest-green-900 mud-text-white">900</div>
+                  <div class="color mud-bg-forest-green-800 mud-text-white">800</div>
+                  <div class="color mud-bg-forest-green-700 mud-text-white">700</div>
+                  <div class="color mud-bg-forest-green-600 mud-text-white" style="flex: 1;">Forest Green 600</div>
+                  <div class="color mud-bg-forest-green-500 mud-text-white">500</div>
+                  <div class="color mud-bg-forest-green-400 mud-text-white">400</div>
+                  <div class="color mud-bg-forest-green-300 mud-text-forest-green-500">300</div>
+                  <div class="color mud-bg-forest-green-200 mud-text-forest-green-500">200</div>
+                  <div class="color mud-bg-forest-green-150 mud-text-forest-green-500">150</div>
+                  <div class="color mud-bg-forest-green-100 mud-text-forest-green-500">100</div>
                 </div>
 
-                <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-                  <h2 class="mb-6">Alpha Colors</h2>
+                <div class="mud-mt-56 mud-mb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
+                  <h2 class="mud-mb-6">Base Colors</h2>
                 </div>
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-black-500-alpha text-white">black-500-alpha</div>
-                  <div class="color bg-black-400-alpha text-white">black-400-alpha</div>
-                  <div class="color bg-black-300-alpha text-gray-700">black-300-alpha</div>
-                  <div class="color bg-black-200-alpha text-gray-700">black-200-alpha</div>
-                  <div class="color bg-black-100-alpha text-gray-700">black-100-alpha</div>
+                <div class="color-row mud-gap-16 mud-mb-32">
+                  <div class="color mud-bg-gray-900 mud-text-white">900</div>
+                  <div class="color mud-bg-gray-800 mud-text-white">800</div>
+                  <div class="color mud-bg-gray-700 mud-text-white">700</div>
+                  <div class="color mud-bg-gray-600 mud-text-white" style="flex: 1;">Gray 600</div>
+                  <div class="color mud-bg-gray-500 mud-text-white">500</div>
+                  <div class="color mud-bg-gray-400 mud-text-white">400</div>
+                  <div class="color mud-bg-gray-300 mud-text-gray-500">300</div>
+                  <div class="color mud-bg-gray-250 mud-text-gray-500">250</div>
+                  <div class="color mud-bg-gray-200 mud-text-gray-500">200</div>
+                  <div class="color mud-bg-gray-100 mud-text-gray-500">100</div>
                 </div>
-                <div class="color-row gap-16 mb-32 bg-gray-900 p-8 radius-8"> 
-                  <div class="color bg-white-500-alpha text-gray-700">white-500-alpha</div>
-                  <div class="color bg-white-400-alpha text-white">white-400-alpha</div>
-                  <div class="color bg-white-300-alpha text-white">white-300-alpha</div>
-                  <div class="color bg-white-200-alpha text-white">white-200-alpha</div>
-                  <div class="color bg-white-100-alpha text-white">white-100-alpha</div>
-                </div>
-                <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-                  <h2 class="mb-6">Status Colors</h2>
-                </div>
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-green-900 text-white">900</div>
-                  <div class="color bg-green-800 text-white">800</div>
-                  <div class="color bg-green-700 text-white">700</div>
-                  <div class="color bg-green-600 text-white" style="flex: 1">Green 600</div>
-                  <div class="color bg-green-500 text-white">500</div>
-                  <div class="color bg-green-400 text-white">400</div>
-                  <div class="color bg-green-300 text-forest-green-500">300</div>
-                  <div class="color bg-green-200 text-forest-green-500">200</div>
-                  <div class="color bg-green-100 text-forest-green-500">100</div>
-                  <div class="color bg-green-50 text-forest-green-500">50</div>
+                <div class="color-row mud-gap-16 mud-mb-32">
+                  <div class="color bg-black mud-text-white">Black</div>
+                  <div class="color bg-white mud-border mud-text-black">White</div>
                 </div>
 
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-apricot-900 text-white">900</div>
-                  <div class="color bg-apricot-800 text-white">800</div>
-                  <div class="color bg-apricot-700 text-white">700</div>
-                  <div class="color bg-apricot-600 text-white" style="flex: 1">Apricot 600</div>
-                  <div class="color bg-apricot-500 text-white">500</div>
-                  <div class="color bg-apricot-400 text-white">400</div>
-                  <div class="color bg-apricot-300 text-apricot-600">300</div>
-                  <div class="color bg-apricot-200 text-apricot-600">200</div>
-                  <div class="color bg-apricot-100 text-apricot-600">100</div>
-                  <div class="color bg-apricot-50 text-apricot-600">50</div>
+                <div class="mud-mt-56 mud-mb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
+                  <h2 class="mud-mb-6">Alpha Colors</h2>
+                </div>
+                <div class="color-row mud-gap-16 mud-mb-32">
+                  <div class="color mud-bg-black-500-alpha mud-text-white">black-500-alpha</div>
+                  <div class="color mud-bg-black-400-alpha mud-text-white">black-400-alpha</div>
+                  <div class="color mud-bg-black-300-alpha mud-text-gray-700">black-300-alpha</div>
+                  <div class="color mud-bg-black-200-alpha mud-text-gray-700">black-200-alpha</div>
+                  <div class="color mud-bg-black-100-alpha mud-text-gray-700">black-100-alpha</div>
+                </div>
+                <div class="color-row mud-gap-16 mud-mb-32 mud-bg-gray-900 mud-p-8 mud-radius-8"> 
+                  <div class="color mud-bg-white-500-alpha mud-text-gray-700">white-500-alpha</div>
+                  <div class="color mud-bg-white-400-alpha mud-text-white">white-400-alpha</div>
+                  <div class="color mud-bg-white-300-alpha mud-text-white">white-300-alpha</div>
+                  <div class="color mud-bg-white-200-alpha mud-text-white">white-200-alpha</div>
+                  <div class="color mud-bg-white-100-alpha mud-text-white">white-100-alpha</div>
+                </div>
+                <div class="mud-mt-56 mud-mb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
+                  <h2 class="mud-mb-6">Status Colors</h2>
+                </div>
+                <div class="color-row mud-gap-16 mud-mb-32">
+                  <div class="color mud-bg-green-900 mud-text-white">900</div>
+                  <div class="color mud-bg-green-800 mud-text-white">800</div>
+                  <div class="color mud-bg-green-700 mud-text-white">700</div>
+                  <div class="color mud-bg-green-600 mud-text-white" style="flex: 1">Green 600</div>
+                  <div class="color mud-bg-green-500 mud-text-white">500</div>
+                  <div class="color mud-bg-green-400 mud-text-white">400</div>
+                  <div class="color mud-bg-green-300 mud-text-forest-green-500">300</div>
+                  <div class="color mud-bg-green-200 mud-text-forest-green-500">200</div>
+                  <div class="color mud-bg-green-100 mud-text-forest-green-500">100</div>
+                  <div class="color mud-bg-green-50 mud-text-forest-green-500">50</div>
                 </div>
 
-                <div class="color-row gap-16 mb-32">
-                  <div class="color bg-red-900 text-white">900</div>
-                  <div class="color bg-red-800 text-white">800</div>
-                  <div class="color bg-red-700 text-white">700</div>
-                  <div class="color bg-red-600 text-white" style="flex: 1">Red 600</div>
-                  <div class="color bg-red-500 text-white">500</div>
-                  <div class="color bg-red-400 text-white">400</div>
-                  <div class="color bg-red-300 text-red-600">300</div>
-                  <div class="color bg-red-200 text-red-600">200</div>
-                  <div class="color bg-red-100 text-red-600">100</div>
-                  <div class="color bg-red-50 text-red-600">50</div>
+                <div class="color-row mud-gap-16 mud-mb-32">
+                  <div class="color mud-bg-apricot-900 mud-text-white">900</div>
+                  <div class="color mud-bg-apricot-800 mud-text-white">800</div>
+                  <div class="color mud-bg-apricot-700 mud-text-white">700</div>
+                  <div class="color mud-bg-apricot-600 mud-text-white" style="flex: 1">Apricot 600</div>
+                  <div class="color mud-bg-apricot-500 mud-text-white">500</div>
+                  <div class="color mud-bg-apricot-400 mud-text-white">400</div>
+                  <div class="color mud-bg-apricot-300 mud-text-apricot-600">300</div>
+                  <div class="color mud-bg-apricot-200 mud-text-apricot-600">200</div>
+                  <div class="color mud-bg-apricot-100 mud-text-apricot-600">100</div>
+                  <div class="color mud-bg-apricot-50 mud-text-apricot-600">50</div>
+                </div>
+
+                <div class="color-row mud-gap-16 mud-mb-32">
+                  <div class="color mud-bg-red-900 mud-text-white">900</div>
+                  <div class="color mud-bg-red-800 mud-text-white">800</div>
+                  <div class="color mud-bg-red-700 mud-text-white">700</div>
+                  <div class="color mud-bg-red-600 mud-text-white" style="flex: 1">Red 600</div>
+                  <div class="color mud-bg-red-500 mud-text-white">500</div>
+                  <div class="color mud-bg-red-400 mud-text-white">400</div>
+                  <div class="color mud-bg-red-300 mud-text-red-600">300</div>
+                  <div class="color mud-bg-red-200 mud-text-red-600">200</div>
+                  <div class="color mud-bg-red-100 mud-text-red-600">100</div>
+                  <div class="color mud-bg-red-50 mud-text-red-600">50</div>
                 </div>
               </section> 
         </div>
@@ -183,8 +178,4 @@
   <div id="site-footer"></div>
 </body>
 </html>
-
-
-
-
 

@@ -1,6 +1,5 @@
 @use './colors';
 
-// ==============  Color Palette Tokens 
 $color-palettes: (
   "gray": (100, 200, 250, 300, 400, 500, 600, 700, 800, 900),
   "blue-sky": (100, 150, 200, 300, 400, 500, 600, 700, 800, 900),
@@ -17,16 +16,16 @@ $color-palettes: (
 
 $alpha-palettes: (
   "black": (100-alpha, 200-alpha, 300-alpha, 400-alpha, 500-alpha),
-  "white": (100-alpha, 200-alpha, 300-alpha, 400-alpha, 500-alpha)
+  "white": (100-alpha, 200-alpha, 300-alpha, 400-alpha, 500-alpha),
+  "gray": (100-alpha, 200-alpha, 300-alpha, 400-alpha, 500-alpha)
 );
 
-// ============ Font Weights 
 $font-weight-bold: 600;
 $font-weight-semibold: 500;
 $font-weight-regular: 400;
 
-// =============== Border Widths & Radius 
 $border-widths: (
+  "0-5": 0.5px,
   0: 0,
   1: 1px,
   "1-5": 1.5px,
@@ -44,8 +43,9 @@ $radius: (
   8: 8px,
   12: 12px,
   16: 16px,
+  24: 24px,
   32: 32px,
-  full: 9999px
+  full: 999px
 );
 
 $border-styles: (
@@ -56,7 +56,6 @@ $border-styles: (
   none: none
 );
 
-// ============= Breakpoints 
 $breakpoints: (
   xs: 0,
   sm: 576px,
@@ -66,16 +65,16 @@ $breakpoints: (
   xxl: 1440px
 );
 
-// =============  Container Max Widths 
+$layout-container-max-width: 1440px;
+
 $container-max-widths: (
   sm: 540px,
   md: 720px,
   lg: 960px,
   xl: 1248px,
-  xxl: 1320px
+  xxl: $layout-container-max-width
 );
 
-// =============  Gutters 
 $grid-columns: 12 !default; 
 $gutters: (
   xs: 8px,
@@ -85,7 +84,6 @@ $gutters: (
   xl: 40px
 );
 
-// ============  Spacings 
 $spacings: (
   0: 0px,
   2: 2px,
@@ -103,7 +101,6 @@ $spacings: (
   64: 64px
 );
 
-// ==============  Shadows 
 $drop-shadows: (
   100: (
     0 0 0.5px rgba(0, 0, 0, 0.3),
@@ -142,10 +139,10 @@ $drop-shadows: (
   )
 );
 
-// ================ BASE TOKENS 
 :root { 
+  --layout-container-max-width: #{$layout-container-max-width};
   --font-family-base: 'Onest', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  /* Cod, kbd, etichete spec doc — încărcare: fonts/JetBrainsMono.scss */
+  
   --font-family-mono:
     'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
@@ -154,20 +151,19 @@ $drop-shadows: (
   --font-weight-bold: 600;
 }
 
-// ================= TYPOGRAPHY – FONT FAMILY 
 :root {
-  /* Display */
+  
   --text-display-lg-font-family: var(--font-family-base);
   --text-display-md-font-family: var(--font-family-base);
 
-  /* Headings */
+  
   --text-heading-h1-lg-font-family: var(--font-family-base);
   --text-heading-h2-md-font-family: var(--font-family-base);
   --text-heading-h3-sm-font-family: var(--font-family-base);
   --text-heading-h4-xs-font-family: var(--font-family-base);
   --text-heading-h5-2xs-font-family: var(--font-family-base);
 
-  /* Body */
+  
   --text-body-lg-font-family: var(--font-family-base);
   --text-body-lg-500-font-family: var(--font-family-base);
   --text-body-md-font-family: var(--font-family-base);
@@ -175,26 +171,25 @@ $drop-shadows: (
   --text-body-sm-font-family: var(--font-family-base);
   --text-body-sm-500-font-family: var(--font-family-base);
 
-  /* Caption */
+  
   --text-caption-md-font-family: var(--font-family-base);
   --text-caption-md-500-font-family: var(--font-family-base);
   --text-caption-sm-font-family: var(--font-family-base);
 }
 
-// ================ TYPOGRAPHY – FONT WEIGHT (SEMANTIC) 
 :root {
-  /* Display */
+  
   --text-display-lg-font-weight: var(--font-weight-bold);
   --text-display-md-font-weight: var(--font-weight-bold);
 
-  /* Headings */
+  
   --text-heading-h1-lg-font-weight: var(--font-weight-bold);
   --text-heading-h2-md-font-weight: var(--font-weight-bold);
   --text-heading-h3-sm-font-weight: var(--font-weight-bold);
   --text-heading-h4-xs-font-weight: var(--font-weight-semibold);
   --text-heading-h5-2xs-font-weight: var(--font-weight-semibold);
 
-  /* Body */
+  
   --text-body-lg-font-weight: var(--font-weight-regular);
   --text-body-lg-500-font-weight: var(--font-weight-semibold);
   --text-body-md-font-weight: var(--font-weight-regular);
@@ -202,15 +197,14 @@ $drop-shadows: (
   --text-body-sm-font-weight: var(--font-weight-regular);
   --text-body-sm-500-font-weight: var(--font-weight-semibold);
 
-  /* Caption */
+  
   --text-caption-md-font-weight: var(--font-weight-regular);
   --text-caption-md-500-font-weight: var(--font-weight-semibold);
   --text-caption-sm-font-weight: var(--font-weight-regular);
 }
 
-// ================== TYPOGRAPHY – DESKTOP VALUES 
 :root {
-  /* ================= DISPLAY ================= */
+  
   --text-display-lg-font-size: 56px;
   --text-display-lg-line-height: 140%;
   --text-display-lg-letter-spacing: -0.02em;
@@ -219,7 +213,7 @@ $drop-shadows: (
   --text-display-md-line-height: 140%;
   --text-display-md-letter-spacing: -0.02em;
 
-  /* ================= HEADINGS ================= */
+  
   --text-heading-h1-lg-font-size: 40px;
   --text-heading-h2-md-font-size: 32px;
   --text-heading-h3-sm-font-size: 28px;
@@ -232,7 +226,7 @@ $drop-shadows: (
   --text-heading-h4-xs-line-height: 150%;
   --text-heading-h5-2xs-line-height: 150%;
 
-  /* ================= BODY ================= */
+  
   --text-body-lg-font-size: 18px;
   --text-body-lg-500-font-size: 18px;
   --text-body-md-font-size: 16px;
@@ -244,7 +238,7 @@ $drop-shadows: (
   --text-body-md-line-height: 140%;
   --text-body-sm-line-height: 140%;
 
-  /* ================= CAPTION ================= */
+  
   --text-caption-md-font-size: 12px;
   --text-caption-md-500-font-size: 12px;
   --text-caption-sm-font-size: 10px;
@@ -254,15 +248,14 @@ $drop-shadows: (
 }
 
 :root {
-    /* ================= TEXT FONT SIZE ================= */
+    
     --text-font-size-14: 14px;
     --text-font-size-16: 16px;
-    /* ================= TEXT LINE HEIGHT ================= */
+    
     --text-line-height-20: 20px;
     --text-line-height-24: 24px;
 }
 
-//================ MOBILE OVERRIDES (FONT SIZE ONLY) 
 @media (max-width: 768px) {
   :root {
     --text-display-lg-font-size: 48px;
@@ -287,9 +280,6 @@ $drop-shadows: (
   }
 }
 
-
-
-// font-size - optional
 $font-sizes: (
   8: 8px,
   10: 10px,

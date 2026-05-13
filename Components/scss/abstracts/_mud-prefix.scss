@@ -1,0 +1,7 @@
+// Moldova Unified Design — class prefix (avoid clashes with Bootstrap / Tailwind).
+$mud-prefix: 'mud-' !default;
+
+/// Build a prefixed root class name, e.g. `mud-class("row")` → `mud-row` (use `.#{mud-class("row")}`).
+@function mud-class($token) {
+  @return #{$mud-prefix}#{$token};
+}

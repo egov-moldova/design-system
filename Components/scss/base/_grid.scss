@@ -4,34 +4,29 @@
 @use '../abstracts/mixins/make-row' as make-row;
 @use '../abstracts/mixins/make-container' as make-container;
 @use '../abstracts/mixins/media' as media;
-
+@use '../abstracts/mud-prefix' as mud;
 
 $columns: vars.$grid-columns;
 $gutter: map.get(vars.$gutters, md);
 
-
 @include make-container.make-container(vars.$container-max-widths, vars.$breakpoints);
 
-
-.row {
+.#{mud.mud-class('row')} {
   @include make-row.make-row($gutter);
 }
-
-
 @function breakpoint-list($breakpoints) { 
   @return map.keys($breakpoints);
 }
-
 
 @mixin make-grid-columns($columns, $gutter, $breakpoints) {
 
    
   @for $i from 1 through $columns {
-    .col-#{$i} {
+    .#{mud.mud-class('col')}-#{$i} {
       @include make-col.make-col($i, $columns, $gutter);
     }
   }
-  .col-auto {
+  .#{mud.mud-class('col')}-auto {
     @include make-col.make-col(auto, $columns, $gutter);
   }
 
@@ -39,11 +34,11 @@ $gutter: map.get(vars.$gutters, md);
   @each $bp in breakpoint-list($breakpoints) {
     @include media.media-breakpoint-up($bp, $breakpoints) {
       @for $i from 1 through $columns {
-        .col-#{$bp}-#{$i} {
+        .#{mud.mud-class('col')}-#{$bp}-#{$i} {
           @include make-col.make-col($i, $columns, $gutter);
         }
       }
-      .col-#{$bp}-auto {
+      .#{mud.mud-class('col')}-#{$bp}-auto {
         @include make-col.make-col(auto, $columns, $gutter);
       }
     }
@@ -53,8 +48,18 @@ $gutter: map.get(vars.$gutters, md);
 @include make-grid-columns($columns, 0, vars.$breakpoints);
 @each $bp, $width in vars.$breakpoints {
   @include media.media-breakpoint-up($bp, vars.$breakpoints) {
-    .g-#{$bp} {
+    .#{mud.mud-class('g')}-#{$bp} {
       @include make-row.make-row(map.get(vars.$gutters, $bp));
     }
   }
+}
+
+// Equal-width columns (Bootstrap-style); place after `make-grid-columns` so gutter isn’t overwritten by the gutter-0 pass.
+.#{mud.mud-class('col')} {
+  flex: 1 0 0%;
+  min-width: 0;
+  padding-left: calc(#{map.get(vars.$gutters, md)} / 2);
+  padding-right: calc(#{map.get(vars.$gutters, md)} / 2);
+  box-sizing: border-box;
+  max-width: 100%;
 }

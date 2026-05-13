@@ -1,204 +1,163 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Display Utilities Preview</title>
-  <link rel="stylesheet" href="css/main.css">
-  <script src="js/main.js" defer></script>
-  <style>
-    /* body { font-family: Arial, sans-serif; padding: 2rem; } */
-    h1 { margin-bottom: 1.5rem; }  
-    .preview-box {
-      background: #4dabf7;
-      color: white;
-      padding: .5rem 1rem;
-      border-radius: .375rem;
-      text-align: center;
-      width: auto;
-      min-height: auto;
-    }
-  </style>
-  <script src="js/include-header.js" defer></script>
-  <script src="js/include-footer.js" defer></script>
-  <script src="js/toggler.js" defer></script>
-  <script src="js/modal.js" defer></script>
-  <script src="js/mega-nav.js" defer></script>
-  <script src="js/search.js" defer></script>
-  <script src="js/dropdown.js" defer></script>
-</head>
-<body>
-  <div id="site-header"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Display utilities — Design System</title>
+    <link rel="stylesheet" href="css/main.css" />
+    <script src="js/include-header.js" defer></script>
+    <script src="js/include-footer.js" defer></script>
+    <script src="js/toggler.js" defer></script>
+    <script src="js/modal.js" defer></script>
+    <script src="js/mega-nav.js" defer></script>
+    <script src="js/search.js" defer></script>
+    <script src="js/dropdown.js" defer></script>
+    <script src="js/copy-token.js" defer></script>
+  </head>
+  <body>
+    <div id="site-header"></div>
 
-  <div class="container">
-
-    <!-- Header -->
-    <div class="row mb-56">
-      <div class="col-12">
-        <h1>Display Utilities Preview</h1>
-        <p>
-          Redimensionează fereastra browserului ca să vezi cum se schimbă clasele responsive
-          (<code class="bg-gray-100 radius-8 py-4 px-12">d-sm-*</code>,
-          <code class="bg-gray-100 radius-8 py-4 px-12">d-md-*</code>, etc.).
-        </p>
-      </div>
-    </div>
-
-    <!-- Table Head -->
-    <div class="row table-head mb-32 bg-gray-100 py-12">
-      <div class="col-2"><strong>Class</strong> (markup)</div>
-      <div class="col-2"><strong>Styles</strong></div>
-      <div class="col-4"><strong>Description</strong></div>
-      <div class="col-4"><strong>Preview</strong></div>
-    </div>
-
-    <!-- d-none -->
-    <div class="row mb-32 pb-32 align-items-center  border-bottom-1 border-bottom-solid border-gray-200">
-      <div class="col-2">
-        <code class="token-name radius-8 py-2 px-6" tabindex="0">d-none</code>
-      </div>
-      <div class="col-2">display: none;</div>
-      <div class="col-4">Elementul este ascuns</div>
-      <div class="col-4">
-        <div class="preview-box d-none">hidden</div>
-      </div>
-    </div>
-
-    <!-- d-block -->
-    <div class="row mb-32 pb-32 align-items-center  border-bottom-1 border-bottom-solid border-gray-200">
-      <div class="col-2">
-        <code class="token-name radius-8 py-2 px-6" tabindex="0">d-block</code>
-      </div>
-      <div class="col-2">display: block;</div>
-      <div class="col-4">Elementul este afișat ca bloc</div>
-      <div class="col-4">
-        <div class="preview-box d-block">block</div>
-      </div>
-    </div>
-
-    <!-- d-inline -->
-    <div class="row mb-32 pb-32 align-items-center  border-bottom-1 border-bottom-solid border-gray-200">
-      <div class="col-2">
-        <code class="token-name radius-8 py-2 px-6" tabindex="0">d-inline</code>
-      </div>
-      <div class="col-2">display: inline;</div>
-      <div class="col-4">Elementul este afișat ca inline</div>
-      <div class="col-4">
-        <div class="preview-box d-inline">inline</div>
-      </div>
-    </div>
-
-    <!-- d-inline-block -->
-    <div class="row mb-32 pb-32 align-items-center  border-bottom-1 border-bottom-solid border-gray-200">
-      <div class="col-2">
-        <code class="token-name radius-8 py-2 px-6" tabindex="0">d-inline-block</code>
-      </div>
-      <div class="col-2">display: inline-block;</div>
-      <div class="col-4">Elementul este afișat ca inline-block</div>
-      <div class="col-4">
-        <div class="preview-box d-inline-block">inline-block</div>
-      </div>
-    </div>
-
-    <!-- d-flex -->
-    <div class="row mb-32 pb-32 align-items-center  border-bottom-1 border-bottom-solid border-gray-200">
-      <div class="col-2">
-        <code class="token-name radius-8 py-2 px-6" tabindex="0">d-flex</code>
-      </div>
-      <div class="col-2">display: flex;</div>
-      <div class="col-4">Activează flexbox</div>
-      <div class="col-4">
-        <div class="preview-box d-flex gap-8">
-          <span>1</span><span>2</span><span>3</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- d-inline-flex -->
-    <div class="row mb-32 pb-32 align-items-center  border-bottom-1 border-bottom-solid border-gray-200">
-      <div class="col-2">
-        <code class="token-name radius-8 py-2 px-6" tabindex="0">d-inline-flex</code>
-      </div>
-      <div class="col-2">display: inline-flex;</div>
-      <div class="col-4">Elementul este afișat ca inline-flex</div>
-      <div class="col-4">
-        <div class="preview-box d-inline-flex gap-8">
-          <span>1</span><span>2</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- d-grid -->
-    <div class="row mb-32 pb-32 align-items-center  border-bottom-1 border-bottom-solid border-gray-200">
-      <div class="col-2">
-        <code class="token-name radius-8 py-2 px-6" tabindex="0">d-grid</code>
-      </div>
-      <div class="col-2">display: grid;</div>
-      <div class="col-4">Activează CSS Grid</div>
-      <div class="col-4">
-        <div class="preview-box d-grid" style="grid-template-columns: repeat(3, 1fr); gap: 8px;">
-          <span>1</span><span>2</span><span>3</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- d-inline-grid -->
-    <div class="row mb-32 pb-32 align-items-center  border-bottom-1 border-bottom-solid border-gray-200">
-      <div class="col-2">
-        <code class="token-name radius-8 py-2 px-6" tabindex="0">d-inline-grid</code>
-      </div>
-      <div class="col-2">display: inline-grid;</div>
-      <div class="col-4">Elementul este afișat ca inline-grid</div>
-      <div class="col-4">
-        <div class="preview-box d-inline-grid" style="grid-template-columns: repeat(2, 1fr); gap: 8px;">
-          <span>1</span><span>2</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- d-table -->
-    <div class="row mb-32 pb-32 align-items-center  border-bottom-1 border-bottom-solid border-gray-200">
-      <div class="col-2">
-        <code class="token-name radius-8 py-2 px-6" tabindex="0">d-table</code>
-      </div>
-      <div class="col-2">display: table;</div>
-      <div class="col-4">Elementul este afișat ca tabel</div>
-      <div class="col-4">
-        <div class="preview-box d-table">
-          <div class="d-table-row">
-            <div class="d-table-cell px-8">A</div>
-            <div class="d-table-cell px-8">B</div>
+    <div class="mud-container" data-doc="displays">
+      <div class="mud-doc">
+        <div class="mud-row mud-mb-40">
+            <div class="mud-col-12 mud-col-lg-8">
+              <h1 class="mud-desktop-display-xl mud-mb-24">Display utilities</h1>
+              <p class="mud-text-gray-400 mud-desktop-body-xl">
+                Display utilities control how an element renders inside a layout. They mirror the standard CSS
+                <code class="font-mono mud-bg-gray-100 mud-radius-8 mud-py-2 mud-px-6">display</code>
+                values and ship with responsive variants
+                (<code class="font-mono mud-bg-gray-100 mud-radius-8 mud-py-2 mud-px-6">d-sm-*</code>,
+                <code class="font-mono mud-bg-gray-100 mud-radius-8 mud-py-2 mud-px-6">d-md-*</code>, …),
+                so the same markup can show or hide content per breakpoint.
+              </p>
+            </div>
           </div>
+
+        <div class="mud-doc-main">
+          <section aria-labelledby="display-utilities-heading">
+            <div class="mud-doc-section-head">
+              <h2 class="mud-desktop-heading-sm" id="display-utilities-heading">Display utilities</h2>
+            </div>
+
+            <div class="mud-row mud-bg-gray-100 mud-py-12 mud-mb-32 font-mono mud-desktop-body-md-500 mud-text-gray-700">
+              <div class="mud-col-2">Class</div>
+              <div class="mud-col-2">Styles</div>
+              <div class="mud-col-4">Description</div>
+              <div class="mud-col-4">Preview</div>
+            </div>
+
+            <div class="mud-row mud-items-center mud-mb-32 mud-pb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
+              <div class="mud-col-2"><code class="token-name" tabindex="0">mud-hidden</code></div>
+              <div class="mud-col-2 font-mono mud-desktop-body-sm mud-text-gray-700">display: none;</div>
+              <div class="mud-col-4 mud-desktop-body-md mud-text-gray-700">Elementul este ascuns.</div>
+              <div class="mud-col-4">
+                <div class="mud-hidden mud-bg-blue-sky-500 mud-text-white mud-px-16 mud-py-8 mud-radius-6 mud-inline-block mud-text-center">hidden</div>
+              </div>
+            </div>
+
+            <div class="mud-row mud-items-center mud-mb-32 mud-pb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
+              <div class="mud-col-2"><code class="token-name" tabindex="0">mud-block</code></div>
+              <div class="mud-col-2 font-mono mud-desktop-body-sm mud-text-gray-700">display: block;</div>
+              <div class="mud-col-4 mud-desktop-body-md mud-text-gray-700">Elementul este afișat ca bloc.</div>
+              <div class="mud-col-4">
+                <div class="mud-block mud-bg-blue-sky-500 mud-text-white mud-px-16 mud-py-8 mud-radius-6 mud-text-center">block</div>
+              </div>
+            </div>
+
+            <div class="mud-row mud-items-center mud-mb-32 mud-pb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
+              <div class="mud-col-2"><code class="token-name" tabindex="0">mud-inline</code></div>
+              <div class="mud-col-2 font-mono mud-desktop-body-sm mud-text-gray-700">display: inline;</div>
+              <div class="mud-col-4 mud-desktop-body-md mud-text-gray-700">Elementul este afișat inline.</div>
+              <div class="mud-col-4">
+                <span class="mud-inline mud-bg-blue-sky-500 mud-text-white mud-px-16 mud-py-8 mud-radius-6 mud-text-center">inline</span>
+              </div>
+            </div>
+
+            <div class="mud-row mud-items-center mud-mb-32 mud-pb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
+              <div class="mud-col-2"><code class="token-name" tabindex="0">mud-inline-block</code></div>
+              <div class="mud-col-2 font-mono mud-desktop-body-sm mud-text-gray-700">display: inline-block;</div>
+              <div class="mud-col-4 mud-desktop-body-md mud-text-gray-700">Elementul este afișat ca inline-block.</div>
+              <div class="mud-col-4">
+                <div class="mud-inline-block mud-bg-blue-sky-500 mud-text-white mud-px-16 mud-py-8 mud-radius-6 mud-text-center">inline-block</div>
+              </div>
+            </div>
+
+            <div class="mud-row mud-items-center mud-mb-32 mud-pb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
+              <div class="mud-col-2"><code class="token-name" tabindex="0">mud-flex</code></div>
+              <div class="mud-col-2 font-mono mud-desktop-body-sm mud-text-gray-700">display: flex;</div>
+              <div class="mud-col-4 mud-desktop-body-md mud-text-gray-700">Activează flexbox.</div>
+              <div class="mud-col-4">
+                <div class="mud-flex mud-gap-8 mud-bg-blue-sky-500 mud-text-white mud-px-16 mud-py-8 mud-radius-6 mud-text-center">
+                  <span>1</span><span>2</span><span>3</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mud-row mud-items-center mud-mb-32 mud-pb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
+              <div class="mud-col-2"><code class="token-name" tabindex="0">mud-inline-flex</code></div>
+              <div class="mud-col-2 font-mono mud-desktop-body-sm mud-text-gray-700">display: inline-flex;</div>
+              <div class="mud-col-4 mud-desktop-body-md mud-text-gray-700">Elementul este afișat ca inline-flex.</div>
+              <div class="mud-col-4">
+                <div class="mud-inline-flex mud-gap-8 mud-bg-blue-sky-500 mud-text-white mud-px-16 mud-py-8 mud-radius-6 mud-text-center">
+                  <span>1</span><span>2</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mud-row mud-items-center mud-mb-32 mud-pb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
+              <div class="mud-col-2"><code class="token-name" tabindex="0">mud-grid</code></div>
+              <div class="mud-col-2 font-mono mud-desktop-body-sm mud-text-gray-700">display: grid;</div>
+              <div class="mud-col-4 mud-desktop-body-md mud-text-gray-700">Activează CSS Grid.</div>
+              <div class="mud-col-4">
+                <div class="mud-grid mud-gap-8 mud-bg-blue-sky-500 mud-text-white mud-px-16 mud-py-8 mud-radius-6 mud-text-center" style="grid-template-columns: repeat(3, 1fr);">
+                  <span>1</span><span>2</span><span>3</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mud-row mud-items-center mud-mb-32 mud-pb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
+              <div class="mud-col-2"><code class="token-name" tabindex="0">mud-inline-grid</code></div>
+              <div class="mud-col-2 font-mono mud-desktop-body-sm mud-text-gray-700">display: inline-grid;</div>
+              <div class="mud-col-4 mud-desktop-body-md mud-text-gray-700">Elementul este afișat ca inline-grid.</div>
+              <div class="mud-col-4">
+                <div class="mud-inline-grid mud-gap-8 mud-bg-blue-sky-500 mud-text-white mud-px-16 mud-py-8 mud-radius-6 mud-text-center" style="grid-template-columns: repeat(2, 1fr);">
+                  <span>1</span><span>2</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mud-row mud-items-center mud-mb-32 mud-pb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
+              <div class="mud-col-2"><code class="token-name" tabindex="0">mud-table</code></div>
+              <div class="mud-col-2 font-mono mud-desktop-body-sm mud-text-gray-700">display: table;</div>
+              <div class="mud-col-4 mud-desktop-body-md mud-text-gray-700">Elementul este afișat ca tabel.</div>
+              <div class="mud-col-4">
+                <div class="mud-table mud-bg-blue-sky-500 mud-text-white mud-px-16 mud-py-8 mud-radius-6 mud-text-center">
+                  <div class="mud-table-row">
+                    <div class="mud-table-cell mud-px-8">A</div>
+                    <div class="mud-table-cell mud-px-8">B</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mud-row mud-items-center mud-mb-32 mud-pb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
+              <div class="mud-col-2"><code class="token-name" tabindex="0">mud-table-cell</code></div>
+              <div class="mud-col-2 font-mono mud-desktop-body-sm mud-text-gray-700">display: table-cell;</div>
+              <div class="mud-col-4 mud-desktop-body-md mud-text-gray-700">Elementul este afișat ca celulă de tabel.</div>
+              <div class="mud-col-4">
+                <div class="mud-table mud-bg-blue-sky-500 mud-text-white mud-px-16 mud-py-8 mud-radius-6 mud-text-center">
+                  <div class="mud-table-row">
+                    <div class="mud-table-cell mud-px-8">Cell 1</div>
+                    <div class="mud-table-cell mud-px-8">Cell 2</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
     </div>
 
-    <!-- d-table-cell -->
-    <div class="row mb-32 pb-32 align-items-center  border-bottom-1 border-bottom-solid border-gray-200">
-      <div class="col-2">
-        <code class="token-name radius-8 py-2 px-6" tabindex="0">d-table-cell</code>
-      </div>
-      <div class="col-2">display: table-cell;</div>
-      <div class="col-4">Elementul este afișat ca celulă de tabel</div>
-      <div class="col-4">
-        <div class="preview-box d-table">
-          <div class="d-table-row">
-            <div class="d-table-cell px-8">Cell 1</div>
-            <div class="d-table-cell px-8">Cell 2</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <div id="site-footer"></div>
-</body>
-
-
+    <div id="site-footer"></div>
+  </body>
 </html>
-
-
-
-
-

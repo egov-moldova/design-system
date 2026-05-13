@@ -19,7 +19,6 @@ $typography-styles: (
   'caption-sm'
 );
 
-
 @mixin generate-text-class($style) {
   .text-#{$style} {
     font-family: var(--text-#{$style}-font-family, 'Onest', sans-serif);

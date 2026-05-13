@@ -3,9 +3,9 @@
   $thumb: var(--color-background-base-tertiary-active, var(--gray-300, #b2b2b2)),
   $radius: var(--border-radius-12, 12px)
 ) {
-  // Do NOT set scrollbar-width / scrollbar-color globally: on Chrome/Edge (Win11)
-  // that engages the platform “thin” scrollbar (Fluent / classic) which can still
-  // show steppers when mixed with ::-webkit-* rules. Firefox gets thin via @supports below.
+  
+  
+  
 
   &::-webkit-scrollbar {
     width: $width;
@@ -15,8 +15,8 @@
     appearance: none;
   }
 
-  // Windows Chromium/Edge often paint arrows unless every button variant is collapsed.
-  // !important only on buttons — fights OS “classic” scrollbar chrome.
+  
+  
   &::-webkit-scrollbar-button,
   &::-webkit-scrollbar-button:vertical:start:decrement,
   &::-webkit-scrollbar-button:vertical:end:increment,
@@ -51,7 +51,7 @@
     pointer-events: none !important;
   }
 
-  // Chromium: bare :increment / :decrement (some Windows builds)
+  
   &::-webkit-scrollbar-button:increment,
   &::-webkit-scrollbar-button:decrement {
     display: none !important;
@@ -84,7 +84,7 @@
     background: transparent;
   }
 
-  // Firefox only — avoids fighting Blink’s WebKit scrollbar painting on Windows 11 Chrome.
+  
   @supports (-moz-appearance: none) {
     scrollbar-width: thin;
     scrollbar-color: $thumb transparent;

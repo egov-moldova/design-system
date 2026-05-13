@@ -1,0 +1,6 @@
+@use '../abstracts/mud-prefix' as mud;
+
+.#{mud.mud-class('text-left')}   { text-align: left   !important; }
+.#{mud.mud-class('text-center')} { text-align: center !important; }
+.#{mud.mud-class('text-right')}  { text-align: right  !important; }
+.#{mud.mud-class('text-justify')} { text-align: justify !important; }

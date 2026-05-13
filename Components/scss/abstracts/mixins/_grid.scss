@@ -4,8 +4,6 @@
 @use '../mixins/make-col' as *;
 @use '../mixins/make-col-offset' as *;
 
-
-// $breakpoints: map cu breakpoint-uri (ex. (sm: 576px, md: 768px, lg: 992px))
 @mixin make-grid-columns($columns, $gutter, $breakpoints) {
   %grid-column {
     position: relative;

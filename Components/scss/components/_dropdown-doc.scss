@@ -1,5 +1,6 @@
 @use '../abstracts/tokens' as tokens;
 @use '../abstracts/mixins/index' as mixins;
+@use '../abstracts/mud-prefix' as mud;
 
 $select-doc-native-font-macos:
   system-ui,
@@ -131,12 +132,8 @@ $select-doc-native-font-ios:
   min-height: 96px;
 }
 
-.select-doc-page.container {
-  max-width: none;
-  padding-top: var(--spacing-56, 56px);
-  padding-right: 160px;
+.#{mud.mud-class('container')}[data-doc] {
   padding-bottom: 0;
-  padding-left: 160px;
 }
 
 .select-doc-section-header {
@@ -170,11 +167,11 @@ $select-doc-native-font-ios:
   padding-bottom: 80px;
 }
 
-.select-doc-page .select-wrap {
+.#{mud.mud-class('container')}[data-doc] .select-wrap {
   max-width: 282px;
 }
 
-.select-doc-page .custom-select {
+.#{mud.mud-class('container')}[data-doc] .custom-select {
   .select-dropdown {
     box-sizing: border-box;
     width: 282px;
@@ -200,12 +197,12 @@ $select-doc-native-font-ios:
   }
 }
 
-.select-doc-page div.descriptor {
+.#{mud.mud-class('container')}[data-doc] div.descriptor {
   margin-bottom: var(--spacing-12, 12px);
   color: var(--gray-700, #383838);
 }
 
-.select-doc-page div.descriptor.descriptor--wide {
+.#{mud.mud-class('container')}[data-doc] div.descriptor.descriptor--wide {
   margin-bottom: var(--spacing-16, 16px);
 }
 

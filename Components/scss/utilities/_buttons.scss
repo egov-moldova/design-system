@@ -1,8 +1,9 @@
+@use '../abstracts/mud-prefix' as mud;
 
-.btn {
+.#{mud.mud-class('btn')} {
   display: inline-flex;
   align-items:  center;
-  justify-content: center; 
+  justify-content: center;
   font-size: var(--text-body-md-500-font-size);
   font-family: inherit;
   font-weight: 500;
@@ -24,29 +25,26 @@
   }
 }
 
-
-
-.btn-filled {
+.#{mud.mud-class('btn-filled')} {
   background-color: var(--blue-sky-600, #0058D2);
   color: var(--white, #ffffff);
   border: 1px solid transparent;
 }
 
-.btn-outlined {
+.#{mud.mud-class('btn-outlined')} {
   background-color: transparent;
   border: 1px solid var(--blue-sky-600, #0058D2);
   border: var(--blue-sky-600, #0058D2) var(--solid, solid) var(--border-width-2, 2px);
   color: var(--blue-sky-600, #0058D2);
 }
 
-.btn-text {
+.#{mud.mud-class('btn-text')} {
   background-color: transparent;
   border: none;
   color: var(--blue-sky-600, #0058D2);
 }
 
-
-.btn-icon {
+.#{mud.mud-class('btn-icon')} {
   background-color: transparent;
   border: none;
   padding: var(--spacing-8, 0.5rem);
@@ -70,12 +68,10 @@
   }
 }
 
+.#{mud.mud-class('btn-pill')} { border-radius: 9999px; }
+.#{mud.mud-class('btn-rounded')} { border-radius: var(--border-radius-full, 9999px); }
 
-.btn-pill { border-radius: 9999px; }
-.btn-rounded { border-radius: var(--border-radius-full, 9999px); }
-
-
-.btn-group {
+.#{mud.mud-class('btn-group')} {
   display: inline-flex;
   gap: var(--spacing-12, 0.75rem);
 
@@ -85,9 +81,9 @@
 
   &--vertical {
     flex-direction: column;
-  } 
+  }
 
-  .btn {
+  .#{mud.mud-class('btn')} {
     margin: 0;
   }
 }

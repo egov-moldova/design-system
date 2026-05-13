@@ -1,12 +1,9 @@
-/**
- * Desktop nav dropdowns + tablet/mobile slide panels.
- * Menu panels match Figma selection-menu / contextual-menu (same tokens as Select).
- */
-document.addEventListener('DOMContentLoaded', () => {
-  // Match _menu-desktop.scss: .mainNav visible up to 1075px, .nav from 1076px
-  const MAIN_NAV_MAX = 1075;
 
-  // —— Desktop: .nav__item--has-dropdown ——
+document.addEventListener('DOMContentLoaded', () => {
+  
+  const MAIN_NAV_MAX = 767;
+
+  
   const dropdownItems = document.querySelectorAll('.nav__item--has-dropdown');
 
   const closeAllDropdowns = () => {
@@ -53,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.addEventListener('resize', closeAllDropdowns);
 
-  // —— Slide panel (tablet header + mobile header) ——
+  
   function initSlidePanel(toggle, panel) {
     if (!toggle || !panel) return;
 
@@ -111,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // Submenus: only buttons inside this panel
+    
     panel.querySelectorAll('[data-submenu]').forEach((button) => {
       const submenuId = button.getAttribute('data-submenu');
       if (!submenuId) return;

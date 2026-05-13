@@ -130,7 +130,7 @@
 (function () {
   'use strict';
 
-  var page = document.querySelector('.menu-doc-page');
+  var page = document.querySelector('[data-doc="menu"]');
   if (!page) {
     return;
   }

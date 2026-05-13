@@ -1,0 +1,58 @@
+
+
+[data-doc="elevation"] {
+  .elevation-table__col--token   { width: 211px; }
+  .elevation-table__col--value   { width: 280px; }
+  .elevation-table__col--preview { width: 280px; }
+
+  .elevation-row__token {
+    width: 211px;
+    flex-shrink: 0;
+    align-self: flex-start;
+  }
+
+  
+  .elevation-row__preview {
+    width: 280px;
+    height: 96px;
+    flex-shrink: 0;
+    position: relative;
+  }
+
+  .elevation-spec__icon {
+    flex: 0 0 24px;
+    width: 24px;
+    height: 24px;
+    color: rgba(0, 0, 0, 0.5);
+  }
+
+  
+  .elevation-spec__text { white-space: nowrap; }
+
+  .elevation-preview {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 136px;
+    height: 96px;
+    background: var(--color-background-base-default, #fff);
+    border-radius: var(--border-radius-12, 12px);
+  }
+
+  @media (max-width: 959.98px) {
+    
+    .elevation-table__head { display: none !important; }
+
+    .elevation-row {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      gap: 16px !important;
+    }
+
+    .elevation-row__token,
+    .elevation-row__value,
+    .elevation-row__preview {
+      width: 100%;
+    }
+  }
+}

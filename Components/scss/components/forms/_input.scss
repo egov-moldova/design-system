@@ -1,9 +1,6 @@
 @use '../../abstracts/tokens' as tokens;
 @use 'sass:map';
 
-/* =======================================
-   🔹 Mixin principal pentru input-uri
-======================================= */
 @mixin input-style($variant: default) {
     $colors: map.get(tokens.$input-colors, $variant);
 
@@ -57,7 +54,6 @@
     }
 }
 
-//======= Input label
 label {
     color: var(--gray-700);
     display: block;
@@ -72,7 +68,6 @@ label {
     }
 }
 
-// ============ Input class-name
 .input {
   @include input-style(default);
 }
@@ -94,7 +89,6 @@ label {
   height: var(--spacing-40);
 }
 
-// =================  Additional states
 .input--filled {
   background-color: var(--white);
   border-color: var(--gray-300);
@@ -106,14 +100,13 @@ label {
 }
 
 .input:focus:not(:placeholder-shown) {
-  //border-color: var(--blue-sky-500);
+  
 }
 
 .input:focus:placeholder-shown {
-  /*border-color: var(--blue-sky-300);*/
+  
 }
 
-// ============ Icons & wrapper
 .input-wrapper {
     position: relative;
     display: flex;
@@ -213,7 +206,7 @@ label {
         }
     }
 
-    & .btn-alignment {
+    & .mud-btn-alignment {
         position: absolute;
         right: var(--spacing-16, 16px);
         display: flex;
@@ -242,7 +235,7 @@ label {
     line-height: 1;
   }
 }
-//===============  Clear input icon
+
 .input--clear {
   padding-right: var(--spacing-40, 40px);
 

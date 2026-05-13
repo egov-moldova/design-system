@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   togglers.forEach(toggle => {
     const targetSelector = toggle.dataset.toggle;
-    if (!targetSelector) return; // 🔒 protecție împotriva selector gol
+    if (!targetSelector) return; 
 
     const target = document.querySelector(targetSelector);
     if (!target) return;

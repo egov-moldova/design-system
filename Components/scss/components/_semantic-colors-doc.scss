@@ -1,0 +1,88 @@
+// Semantic colors doc: three equal columns (`mud-col-xl-4`); row spacing uses
+// `mud-gap-32 mud-xl-column-gap-120` (utilities from `_spacing-utilities.scss`).
+[data-doc='semantic-colors'] {
+  .mud-doc-sem--tokens {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-24, 24px);
+    box-sizing: border-box;
+    padding-block: var(--spacing-32, 32px);
+    padding-inline: 0;
+    background: var(--color-background-base-default, #fff);
+    border-radius: var(--border-radius-12, 12px);
+  }
+
+  .mud-doc-sem--tokens > .mud-flex {
+    min-height: 48px;
+  }
+
+  .mud-doc-sem--light,
+  .mud-doc-sem--dark {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-24, 24px);
+    box-sizing: border-box;
+    padding-block: var(--spacing-32, 32px);
+    padding-inline: var(--spacing-16, 16px);
+    border-radius: var(--border-radius-12, 12px);
+  }
+
+  .mud-doc-sem--light {
+    background: var(--white, #fff);
+    color: var(--gray-700, #383838);
+  }
+
+  .mud-doc-sem--dark {
+    background: var(--black, #121212);
+    color: var(--gray-200, #f1f1f1);
+  }
+
+  .mud-doc-sem__swatch {
+    flex: 0 0 48px;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--border-radius-8, 8px);
+    border: 1px solid var(--gray-250, #d9d9d9);
+    box-sizing: border-box;
+  }
+
+  .mud-doc-sem--dark .mud-doc-sem__swatch {
+    border-color: var(--gray-600, #444);
+  }
+
+  .mud-doc-sem__swatch--border {
+    background-color: transparent !important;
+    border-width: 2px;
+    border-style: solid;
+  }
+
+  .mud-doc-sem__swatch--text,
+  .mud-doc-sem__swatch--icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border: none;
+    font-family: var(--font-family-base, 'Onest', system-ui, sans-serif);
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 32px;
+    letter-spacing: -0.24px;
+  }
+
+  .mud-doc-sem--dark .mud-doc-sem__swatch--text,
+  .mud-doc-sem--dark .mud-doc-sem__swatch--icon {
+    border: none;
+  }
+
+  .mud-doc-sem__swatch--icon svg {
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+
+  .mud-doc-sem__name {
+    color: inherit;
+    white-space: nowrap;
+  }
+}

@@ -1,8 +1,9 @@
 @forward 'spinner';
-@forward "progress-tracker";  
+@forward 'progress-tracker';
 @forward 'modal';
 @forward 'messages';
 @forward 'header';
+@forward 'header-doc';
 @forward 'footer';
 @forward 'pre-header';
 @forward 'menu-desktop';
@@ -11,10 +12,22 @@
 @forward 'menu';
 @forward 'dropdown-doc';
 @forward 'menu-doc';
+
+@forward 'doc-layout';
+@forward 'colors-doc';
+@forward 'semantic-colors-doc';
+@forward 'typography-doc';
+@forward 'elevation-doc';
+@forward 'icons-doc';
+@forward 'flags-doc';
+@forward 'cursors-doc';
+@forward 'spacings-doc';
+@forward 'layout-grids-doc';
+
 @forward 'table';
 @forward 'cookie-banner';
 @forward 'tooltip';
-@forward 'sidebar'; 
+@forward 'sidebar';
 @forward 'bottom-sheet';
 @forward 'accordion';
 @forward 'link';

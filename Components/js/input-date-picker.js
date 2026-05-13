@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const month = state.month;
 
     const firstOfMonth = new Date(year, month, 1);
-    const startOffset = (firstOfMonth.getDay() + 6) % 7; // Monday first
+    const startOffset = (firstOfMonth.getDay() + 6) % 7; 
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const daysInPrevMonth = new Date(year, month, 0).getDate();
 
@@ -453,8 +453,4 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener("resize", applyResponsive);
   }
 });
-
-
-
-
 

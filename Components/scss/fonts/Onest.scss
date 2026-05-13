@@ -1,4 +1,4 @@
-﻿@use 'sass:map';
+@use 'sass:map';
 
 $onest-fonts: (
   Thin: (file: OnestThin1602-hint, weight: 200),
@@ -13,7 +13,7 @@ $onest-fonts: (
   @font-face {
     font-family: 'Onest';
     src: url("../assets/fonts/Onest/#{map.get($props, file)}.woff") format("woff"),
-         url("../assets/fonts/Onest/#{map.get($props, file)}.ttf") format("truetype");
+      url("../assets/fonts/Onest/#{map.get($props, file)}.ttf") format("truetype");
     font-weight: map.get($props, weight);
     font-style: normal;
     font-display: swap;
