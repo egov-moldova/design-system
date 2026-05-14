@@ -1,0 +1,9 @@
+@use '../abstracts/mud-prefix' as mud;
+
+.#{mud.mud-class('grid-cols-2')} {
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+.#{mud.mud-class('grid-cols-3')} {
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+}

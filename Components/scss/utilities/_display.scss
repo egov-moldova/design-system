@@ -27,6 +27,14 @@ $display-map: (
   visibility: visible !important;
 }
 
+.#{mud.mud-class('overflow-hidden')} {
+  overflow: hidden !important;
+}
+
+.#{mud.mud-class('overflow-x-auto')} {
+  overflow-x: auto !important;
+}
+
 @each $breakpoint in map.keys(vars.$breakpoints) {
   @include media.media-breakpoint-up($breakpoint, vars.$breakpoints) {
     @each $display, $class-token in $display-map {

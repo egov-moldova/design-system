@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Spacings — Design System</title>
+    <script src="js/include-head-assets.js"></script>
     <link rel="stylesheet" href="css/main.css" />
     <script src="js/include-header.js" defer></script>
     <script src="js/include-footer.js" defer></script>
@@ -18,243 +19,583 @@
     <div id="site-header"></div>
 
     <div class="mud-container" data-doc="spacings">
-      <div class="mud-doc">
-        <div class="mud-row mud-mb-40">
-            <div class="mud-col-8">
-              <h1 class="mud-desktop-display-xl mud-mb-24">Spacings</h1>
-              <p class="mud-text-gray-400 mud-desktop-body-xl">
-                Spacings are predefined values used to maintain consistent distances between
-                elements such as margins, padding, and gaps, particularly within auto layout
-                settings. They provide a standardized system for spacing, ensuring uniformity
-                and harmony across different components within a design project.
-              </p>
-            </div>
+      <div class="mud-row mud-mb-40">
+          <div class="mud-col-8">
+            <h1 class="mud-desktop-display-xl mud-mb-24">Spacings</h1>
+            <p class="mud-text-gray-400 mud-desktop-body-xl">
+              Spacing tokens are predefined values used to maintain consistent
+              distances between elements such as margins, padding, and gaps,
+              particularly within auto layout settings. They provide a
+              standardised system for spacing, ensuring uniformity and harmony
+              across different components within a design project.
+            </p>
           </div>
+        </div>
         <div class="mud-doc-main">
           <div class="mud-row">
             <div class="mud-col-12">
-      <section aria-labelledby="spacing-tokens-heading">
-        <div class="mud-doc-section-head">
-          <h2 class="mud-desktop-heading-sm" id="spacing-tokens-heading">Spacing Tokens</h2>
+              <section aria-labelledby="spacing-tokens-heading">
+                <div class="mud-doc-section-head">
+                  <h2
+                    class="mud-desktop-heading-sm"
+                    id="spacing-tokens-heading"
+                  >
+                    Spacing Tokens
+                  </h2>
+                </div>
+
+                <div class="spacings-table">
+                  <div class="spacings-table__head mud-mb-48">
+                    <div
+                      class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center"
+                    >
+                      token-name
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--rem">
+                      value, rem
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--px">
+                      value, px
+                    </div>
+                    <div
+                      class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start"
+                    >
+                      spacing-preview
+                    </div>
+                  </div>
+
+                  <div class="spacings-table__row">
+                    <div
+                      class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center"
+                    >
+                      <span
+                        class="token-name"
+                        tabindex="0"
+                        role="button"
+                        title="Click to copy"
+                        >--spacing-0</span
+                      >
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--rem">
+                      0rem
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--px">
+                      0px
+                    </div>
+                    <div
+                      class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start"
+                    >
+                      <div
+                        class="spacings-preview mud-flex mud-items-center mud-justify-center"
+                      >
+                        <span
+                          class="spacings-preview__bar mud-w-spacing-0"
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="spacings-table__row">
+                    <div
+                      class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center"
+                    >
+                      <span
+                        class="token-name"
+                        tabindex="0"
+                        role="button"
+                        title="Click to copy"
+                        >--spacing-2</span
+                      >
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--rem">
+                      0.125rem
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--px">
+                      2px
+                    </div>
+                    <div
+                      class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start"
+                    >
+                      <div
+                        class="spacings-preview mud-flex mud-items-center mud-justify-center"
+                      >
+                        <span
+                          class="spacings-preview__bar mud-w-spacing-2"
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="spacings-table__row">
+                    <div
+                      class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center"
+                    >
+                      <span
+                        class="token-name"
+                        tabindex="0"
+                        role="button"
+                        title="Click to copy"
+                        >--spacing-4</span
+                      >
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--rem">
+                      0.25rem
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--px">
+                      4px
+                    </div>
+                    <div
+                      class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start"
+                    >
+                      <div
+                        class="spacings-preview mud-flex mud-items-center mud-justify-center"
+                      >
+                        <span
+                          class="spacings-preview__bar mud-w-spacing-4"
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="spacings-table__row">
+                    <div
+                      class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center"
+                    >
+                      <span
+                        class="token-name"
+                        tabindex="0"
+                        role="button"
+                        title="Click to copy"
+                        >--spacing-6</span
+                      >
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--rem">
+                      0.375rem
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--px">
+                      6px
+                    </div>
+                    <div
+                      class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start"
+                    >
+                      <div
+                        class="spacings-preview mud-flex mud-items-center mud-justify-center"
+                      >
+                        <span
+                          class="spacings-preview__bar mud-w-spacing-6"
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="spacings-table__row">
+                    <div
+                      class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center"
+                    >
+                      <span
+                        class="token-name"
+                        tabindex="0"
+                        role="button"
+                        title="Click to copy"
+                        >--spacing-8</span
+                      >
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--rem">
+                      0.5rem
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--px">
+                      8px
+                    </div>
+                    <div
+                      class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start"
+                    >
+                      <div
+                        class="spacings-preview mud-flex mud-items-center mud-justify-center"
+                      >
+                        <span
+                          class="spacings-preview__bar mud-w-spacing-8"
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="spacings-table__row">
+                    <div
+                      class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center"
+                    >
+                      <span
+                        class="token-name"
+                        tabindex="0"
+                        role="button"
+                        title="Click to copy"
+                        >--spacing-12</span
+                      >
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--rem">
+                      0.75rem
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--px">
+                      12px
+                    </div>
+                    <div
+                      class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start"
+                    >
+                      <div
+                        class="spacings-preview mud-flex mud-items-center mud-justify-center"
+                      >
+                        <span
+                          class="spacings-preview__bar mud-w-spacing-12"
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="spacings-table__row">
+                    <div
+                      class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center"
+                    >
+                      <span
+                        class="token-name"
+                        tabindex="0"
+                        role="button"
+                        title="Click to copy"
+                        >--spacing-16</span
+                      >
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--rem">
+                      1rem
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--px">
+                      16px
+                    </div>
+                    <div
+                      class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start"
+                    >
+                      <div
+                        class="spacings-preview mud-flex mud-items-center mud-justify-center"
+                      >
+                        <span
+                          class="spacings-preview__bar mud-w-spacing-16"
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="spacings-table__row">
+                    <div
+                      class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center"
+                    >
+                      <span
+                        class="token-name"
+                        tabindex="0"
+                        role="button"
+                        title="Click to copy"
+                        >--spacing-20</span
+                      >
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--rem">
+                      1.25rem
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--px">
+                      20px
+                    </div>
+                    <div
+                      class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start"
+                    >
+                      <div
+                        class="spacings-preview mud-flex mud-items-center mud-justify-center"
+                      >
+                        <span
+                          class="spacings-preview__bar mud-w-spacing-20"
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="spacings-table__row">
+                    <div
+                      class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center"
+                    >
+                      <span
+                        class="token-name"
+                        tabindex="0"
+                        role="button"
+                        title="Click to copy"
+                        >--spacing-24</span
+                      >
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--rem">
+                      1.5rem
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--px">
+                      24px
+                    </div>
+                    <div
+                      class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start"
+                    >
+                      <div
+                        class="spacings-preview mud-flex mud-items-center mud-justify-center"
+                      >
+                        <span
+                          class="spacings-preview__bar mud-w-spacing-24"
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="spacings-table__row">
+                    <div
+                      class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center"
+                    >
+                      <span
+                        class="token-name"
+                        tabindex="0"
+                        role="button"
+                        title="Click to copy"
+                        >--spacing-32</span
+                      >
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--rem">
+                      2rem
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--px">
+                      32px
+                    </div>
+                    <div
+                      class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start"
+                    >
+                      <div
+                        class="spacings-preview mud-flex mud-items-center mud-justify-center"
+                      >
+                        <span
+                          class="spacings-preview__bar mud-w-spacing-32"
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="spacings-table__row">
+                    <div
+                      class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center"
+                    >
+                      <span
+                        class="token-name"
+                        tabindex="0"
+                        role="button"
+                        title="Click to copy"
+                        >--spacing-40</span
+                      >
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--rem">
+                      2.5rem
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--px">
+                      40px
+                    </div>
+                    <div
+                      class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start"
+                    >
+                      <div
+                        class="spacings-preview mud-flex mud-items-center mud-justify-center"
+                      >
+                        <span
+                          class="spacings-preview__bar mud-w-spacing-40"
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="spacings-table__row">
+                    <div
+                      class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center"
+                    >
+                      <span
+                        class="token-name"
+                        tabindex="0"
+                        role="button"
+                        title="Click to copy"
+                        >--spacing-48</span
+                      >
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--rem">
+                      3rem
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--px">
+                      48px
+                    </div>
+                    <div
+                      class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start"
+                    >
+                      <div
+                        class="spacings-preview mud-flex mud-items-center mud-justify-center"
+                      >
+                        <span
+                          class="spacings-preview__bar mud-w-spacing-48"
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="spacings-table__row">
+                    <div
+                      class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center"
+                    >
+                      <span
+                        class="token-name"
+                        tabindex="0"
+                        role="button"
+                        title="Click to copy"
+                        >--spacing-56</span
+                      >
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--rem">
+                      3.5rem
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--px">
+                      56px
+                    </div>
+                    <div
+                      class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start"
+                    >
+                      <div
+                        class="spacings-preview mud-flex mud-items-center mud-justify-center"
+                      >
+                        <span
+                          class="spacings-preview__bar mud-w-spacing-56"
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="spacings-table__row">
+                    <div
+                      class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center"
+                    >
+                      <span
+                        class="token-name"
+                        tabindex="0"
+                        role="button"
+                        title="Click to copy"
+                        >--spacing-64</span
+                      >
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--rem">
+                      4rem
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--px">
+                      64px
+                    </div>
+                    <div
+                      class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start"
+                    >
+                      <div
+                        class="spacings-preview mud-flex mud-items-center mud-justify-center"
+                      >
+                        <span
+                          class="spacings-preview__bar mud-w-spacing-64"
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="spacings-table__row">
+                    <div
+                      class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center"
+                    >
+                      <span
+                        class="token-name"
+                        tabindex="0"
+                        role="button"
+                        title="Click to copy"
+                        >--spacing-80</span
+                      >
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--rem">
+                      5rem
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--px">
+                      80px
+                    </div>
+                    <div
+                      class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start"
+                    >
+                      <div
+                        class="spacings-preview mud-flex mud-items-center mud-justify-center"
+                      >
+                        <span
+                          class="spacings-preview__bar mud-w-spacing-80"
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="spacings-table__row">
+                    <div
+                      class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center"
+                    >
+                      <span
+                        class="token-name"
+                        tabindex="0"
+                        role="button"
+                        title="Click to copy"
+                        >--spacing-96</span
+                      >
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--rem">
+                      6rem
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--px">
+                      96px
+                    </div>
+                    <div
+                      class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start"
+                    >
+                      <div
+                        class="spacings-preview spacings-preview--wide mud-flex mud-items-center mud-justify-center"
+                      >
+                        <span
+                          class="spacings-preview__bar mud-w-spacing-96"
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="spacings-table__row">
+                    <div
+                      class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center"
+                    >
+                      <span
+                        class="token-name"
+                        tabindex="0"
+                        role="button"
+                        title="Click to copy"
+                        >--spacing-120</span
+                      >
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--rem">
+                      7.5rem
+                    </div>
+                    <div class="spacings-table__cell spacings-table__cell--px">
+                      120px
+                    </div>
+                    <div
+                      class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start"
+                    >
+                      <div
+                        class="spacings-preview spacings-preview--xwide mud-flex mud-items-center mud-justify-center"
+                      >
+                        <span
+                          class="spacings-preview__bar mud-w-spacing-120"
+                        ></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
         </div>
-
-        <div class="spacings-table">
-          <div class="spacings-table__head mud-mb-48">
-            <div class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center">token-name</div>
-            <div class="spacings-table__cell spacings-table__cell--rem">value, rem</div>
-            <div class="spacings-table__cell spacings-table__cell--px">value, px</div>
-            <div class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start">spacing-preview</div>
-          </div>
-
-          
-          <div class="spacings-table__row">
-            <div class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center">
-              <span class="token-name" tabindex="0" role="button" title="Click to copy">--spacing-0</span>
-            </div>
-            <div class="spacings-table__cell spacings-table__cell--rem">0rem</div>
-            <div class="spacings-table__cell spacings-table__cell--px">0px</div>
-            <div class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start">
-              <div class="spacings-preview mud-flex mud-items-center mud-justify-center"><span class="spacings-preview__bar" style="--bar-w: 0px;"></span></div>
-            </div>
-          </div>
-
-          
-          <div class="spacings-table__row">
-            <div class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center">
-              <span class="token-name" tabindex="0" role="button" title="Click to copy">--spacing-2</span>
-            </div>
-            <div class="spacings-table__cell spacings-table__cell--rem">0.125rem</div>
-            <div class="spacings-table__cell spacings-table__cell--px">2px</div>
-            <div class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start">
-              <div class="spacings-preview mud-flex mud-items-center mud-justify-center"><span class="spacings-preview__bar" style="--bar-w: 2px;"></span></div>
-            </div>
-          </div>
-
-          
-          <div class="spacings-table__row">
-            <div class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center">
-              <span class="token-name" tabindex="0" role="button" title="Click to copy">--spacing-4</span>
-            </div>
-            <div class="spacings-table__cell spacings-table__cell--rem">0.25rem</div>
-            <div class="spacings-table__cell spacings-table__cell--px">4px</div>
-            <div class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start">
-              <div class="spacings-preview mud-flex mud-items-center mud-justify-center"><span class="spacings-preview__bar" style="--bar-w: 4px;"></span></div>
-            </div>
-          </div>
-
-          
-          <div class="spacings-table__row">
-            <div class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center">
-              <span class="token-name" tabindex="0" role="button" title="Click to copy">--spacing-6</span>
-            </div>
-            <div class="spacings-table__cell spacings-table__cell--rem">0.375rem</div>
-            <div class="spacings-table__cell spacings-table__cell--px">6px</div>
-            <div class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start">
-              <div class="spacings-preview mud-flex mud-items-center mud-justify-center"><span class="spacings-preview__bar" style="--bar-w: 6px;"></span></div>
-            </div>
-          </div>
-
-          
-          <div class="spacings-table__row">
-            <div class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center">
-              <span class="token-name" tabindex="0" role="button" title="Click to copy">--spacing-8</span>
-            </div>
-            <div class="spacings-table__cell spacings-table__cell--rem">0.5rem</div>
-            <div class="spacings-table__cell spacings-table__cell--px">8px</div>
-            <div class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start">
-              <div class="spacings-preview mud-flex mud-items-center mud-justify-center"><span class="spacings-preview__bar" style="--bar-w: 8px;"></span></div>
-            </div>
-          </div>
-
-          
-          <div class="spacings-table__row">
-            <div class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center">
-              <span class="token-name" tabindex="0" role="button" title="Click to copy">--spacing-12</span>
-            </div>
-            <div class="spacings-table__cell spacings-table__cell--rem">0.75rem</div>
-            <div class="spacings-table__cell spacings-table__cell--px">12px</div>
-            <div class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start">
-              <div class="spacings-preview mud-flex mud-items-center mud-justify-center"><span class="spacings-preview__bar" style="--bar-w: 12px;"></span></div>
-            </div>
-          </div>
-
-          
-          <div class="spacings-table__row">
-            <div class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center">
-              <span class="token-name" tabindex="0" role="button" title="Click to copy">--spacing-16</span>
-            </div>
-            <div class="spacings-table__cell spacings-table__cell--rem">1rem</div>
-            <div class="spacings-table__cell spacings-table__cell--px">16px</div>
-            <div class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start">
-              <div class="spacings-preview mud-flex mud-items-center mud-justify-center"><span class="spacings-preview__bar" style="--bar-w: 16px;"></span></div>
-            </div>
-          </div>
-
-          
-          <div class="spacings-table__row">
-            <div class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center">
-              <span class="token-name" tabindex="0" role="button" title="Click to copy">--spacing-20</span>
-            </div>
-            <div class="spacings-table__cell spacings-table__cell--rem">1.25rem</div>
-            <div class="spacings-table__cell spacings-table__cell--px">20px</div>
-            <div class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start">
-              <div class="spacings-preview mud-flex mud-items-center mud-justify-center"><span class="spacings-preview__bar" style="--bar-w: 20px;"></span></div>
-            </div>
-          </div>
-
-          
-          <div class="spacings-table__row">
-            <div class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center">
-              <span class="token-name" tabindex="0" role="button" title="Click to copy">--spacing-24</span>
-            </div>
-            <div class="spacings-table__cell spacings-table__cell--rem">1.5rem</div>
-            <div class="spacings-table__cell spacings-table__cell--px">24px</div>
-            <div class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start">
-              <div class="spacings-preview mud-flex mud-items-center mud-justify-center"><span class="spacings-preview__bar" style="--bar-w: 24px;"></span></div>
-            </div>
-          </div>
-
-          
-          <div class="spacings-table__row">
-            <div class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center">
-              <span class="token-name" tabindex="0" role="button" title="Click to copy">--spacing-32</span>
-            </div>
-            <div class="spacings-table__cell spacings-table__cell--rem">2rem</div>
-            <div class="spacings-table__cell spacings-table__cell--px">32px</div>
-            <div class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start">
-              <div class="spacings-preview mud-flex mud-items-center mud-justify-center"><span class="spacings-preview__bar" style="--bar-w: 32px;"></span></div>
-            </div>
-          </div>
-
-          
-          <div class="spacings-table__row">
-            <div class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center">
-              <span class="token-name" tabindex="0" role="button" title="Click to copy">--spacing-40</span>
-            </div>
-            <div class="spacings-table__cell spacings-table__cell--rem">2.5rem</div>
-            <div class="spacings-table__cell spacings-table__cell--px">40px</div>
-            <div class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start">
-              <div class="spacings-preview mud-flex mud-items-center mud-justify-center"><span class="spacings-preview__bar" style="--bar-w: 40px;"></span></div>
-            </div>
-          </div>
-
-          
-          <div class="spacings-table__row">
-            <div class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center">
-              <span class="token-name" tabindex="0" role="button" title="Click to copy">--spacing-48</span>
-            </div>
-            <div class="spacings-table__cell spacings-table__cell--rem">3rem</div>
-            <div class="spacings-table__cell spacings-table__cell--px">48px</div>
-            <div class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start">
-              <div class="spacings-preview mud-flex mud-items-center mud-justify-center"><span class="spacings-preview__bar" style="--bar-w: 48px;"></span></div>
-            </div>
-          </div>
-
-          
-          <div class="spacings-table__row">
-            <div class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center">
-              <span class="token-name" tabindex="0" role="button" title="Click to copy">--spacing-56</span>
-            </div>
-            <div class="spacings-table__cell spacings-table__cell--rem">3.5rem</div>
-            <div class="spacings-table__cell spacings-table__cell--px">56px</div>
-            <div class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start">
-              <div class="spacings-preview mud-flex mud-items-center mud-justify-center"><span class="spacings-preview__bar" style="--bar-w: 56px;"></span></div>
-            </div>
-          </div>
-
-          
-          <div class="spacings-table__row">
-            <div class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center">
-              <span class="token-name" tabindex="0" role="button" title="Click to copy">--spacing-64</span>
-            </div>
-            <div class="spacings-table__cell spacings-table__cell--rem">4rem</div>
-            <div class="spacings-table__cell spacings-table__cell--px">64px</div>
-            <div class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start">
-              <div class="spacings-preview mud-flex mud-items-center mud-justify-center"><span class="spacings-preview__bar" style="--bar-w: 64px;"></span></div>
-            </div>
-          </div>
-
-          
-          <div class="spacings-table__row">
-            <div class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center">
-              <span class="token-name" tabindex="0" role="button" title="Click to copy">--spacing-80</span>
-            </div>
-            <div class="spacings-table__cell spacings-table__cell--rem">5rem</div>
-            <div class="spacings-table__cell spacings-table__cell--px">80px</div>
-            <div class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start">
-              <div class="spacings-preview mud-flex mud-items-center mud-justify-center"><span class="spacings-preview__bar" style="--bar-w: 80px;"></span></div>
-            </div>
-          </div>
-
-          
-          <div class="spacings-table__row">
-            <div class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center">
-              <span class="token-name" tabindex="0" role="button" title="Click to copy">--spacing-96</span>
-            </div>
-            <div class="spacings-table__cell spacings-table__cell--rem">6rem</div>
-            <div class="spacings-table__cell spacings-table__cell--px">96px</div>
-            <div class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start">
-              <div class="spacings-preview spacings-preview--wide mud-flex mud-items-center mud-justify-center"><span class="spacings-preview__bar" style="--bar-w: 96px;"></span></div>
-            </div>
-          </div>
-
-          
-          <div class="spacings-table__row">
-            <div class="spacings-table__cell spacings-table__cell--token mud-flex mud-items-center">
-              <span class="token-name" tabindex="0" role="button" title="Click to copy">--spacing-120</span>
-            </div>
-            <div class="spacings-table__cell spacings-table__cell--rem">7.5rem</div>
-            <div class="spacings-table__cell spacings-table__cell--px">120px</div>
-            <div class="spacings-table__cell spacings-table__cell--preview mud-flex mud-items-center mud-justify-start">
-              <div class="spacings-preview spacings-preview--xwide mud-flex mud-items-center mud-justify-center"><span class="spacings-preview__bar" style="--bar-w: 120px;"></span></div>
-            </div>
-          </div>
-        </div>
-      </section>
-            </div>
-          </div>
-        </div>
-      </div>
+      
     </div>
 
     <div id="site-footer"></div>

@@ -1,15 +1,8 @@
-@mixin down($breakpoint) {
-  $breakpoints: (
-    sm: 576px,
-    md: 768px,
-    lg: 992px,
-    xl: 1200px
-  );
+@use './variables' as vars;
+@use './mixins/media' as media;
 
-  $max: map-get($breakpoints, $breakpoint);
-  @if $max {
-    @media (max-width: $max) {
-      @content;
-    }
+@mixin down($breakpoint) {
+  @include media.media-breakpoint-down($breakpoint, vars.$breakpoints) {
+    @content;
   }
 }

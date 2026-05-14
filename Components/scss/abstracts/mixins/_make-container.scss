@@ -13,8 +13,9 @@
 
       @each $bp, $max in $max-widths {
         @if $bp != default {
+          // `var(--breakpoint-*)` in @media is not reliably applied; use Sass map for min-width.
           @media (min-width: map.get($breakpoints, $bp)) {
-            max-width: $max;
+            max-width: var(--container-max-width-#{$bp});
           }
         } @else {
           max-width: $max;

@@ -1,3 +1,4 @@
+@use 'sass:map' as map;
 @use '../abstracts/tokens' as *;
 @use '../abstracts/variables' as vars;
 
@@ -25,7 +26,7 @@
     position: relative;
     width: 100%;
 
-    @media screen and (min-width: 1280px) {
+    @media screen and (min-width: map.get(vars.$breakpoints, xl)) {
       gap: var(--spacing-48); 
     }
 
@@ -37,7 +38,7 @@
       align-self: flex-start;
       margin-top: var(--spacing-8, 8px);
 
-      @media screen and (min-width: 1280px) {
+      @media screen and (min-width: map.get(vars.$breakpoints, xl)) {
         display: flex;
       }
     }
@@ -49,7 +50,7 @@
     gap: var(--spacing-8);
     text-decoration: none;
 
-    @media screen and (min-width: 1280px) {
+    @media screen and (min-width: map.get(vars.$breakpoints, xl)) {
       min-width: 165px;
     }
 
@@ -154,6 +155,12 @@
     &.is-active {
         background-color: var(--gray-250);
     }
+  }
+
+  &__search-icon img {
+    display: block;
+    width: 24px;
+    height: 24px;
   }
 
   

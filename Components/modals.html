@@ -4,11 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Modal Preview</title>
-  <link rel="stylesheet" href="css/main.css"> 
-  <script defer src="../Components/js/modal.js"></script>
- 
+    <script src="js/include-head-assets.js"></script>
+    <link rel="stylesheet" href="css/main.css"> 
   <script src="js/include-header.js" defer></script>
   <script src="js/include-footer.js" defer></script>
+  <script src="js/modal.js" defer></script>
   <script src="js/toggler.js" defer></script>
   <script src="js/mega-nav.js" defer></script>
   <script src="js/search.js" defer></script>
@@ -641,7 +641,13 @@
             <button type="button" class="modal-close" data-close aria-label="Close modal">&times;</button>
 
             <div class="modal-image-wrapper">
-              <img src="https://via.placeholder.com/1600x400" alt="Header" />
+              <img
+                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1600' height='400' viewBox='0 0 1600 400'%3E%3Crect width='1600' height='400' fill='%23ececec'/%3E%3Ctext x='800' y='210' text-anchor='middle' font-family='system-ui,sans-serif' font-size='28' fill='%23666'%3EDemo 1600×400%3C/text%3E%3C/svg%3E"
+                alt=""
+                width="1600"
+                height="400"
+                decoding="async"
+              />
             </div>
 
             <div class="modal-content">

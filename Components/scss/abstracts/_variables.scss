@@ -38,13 +38,19 @@ $border-widths: (
 
 $radius: (
   0: 0,
+  2: 2px,
   4: 4px,
+  5: 5px,
   6: 6px,
   8: 8px,
+  10: 10px,
   12: 12px,
+  14: 14px,
   16: 16px,
+  20: 20px,
   24: 24px,
   32: 32px,
+  40: 40px,
   full: 999px
 );
 
@@ -57,31 +63,45 @@ $border-styles: (
 );
 
 $breakpoints: (
-  xs: 0,
+  xs: 320px,
   sm: 576px,
   md: 768px,
   lg: 992px,
-  xl: 1280px,
+  xl: 1248px,
   xxl: 1440px
 );
 
+// Largest tier container cap (xxl); also used for header shell max-width.
 $layout-container-max-width: 1440px;
 
 $container-max-widths: (
-  sm: 540px,
+  xs: 288px,
+  sm: 544px,
   md: 720px,
-  lg: 960px,
-  xl: 1248px,
+  lg: 944px,
+  xl: 1200px,
   xxl: $layout-container-max-width
 );
 
-$grid-columns: 12 !default; 
+$grid-columns: 12 !default;
+
+// Layout column counts per tier (design grid); column utilities still use $grid-columns.
+$layout-columns: (
+  xs: 4,
+  sm: 4,
+  md: 8,
+  lg: 12,
+  xl: 12,
+  xxl: 12
+);
+
 $gutters: (
-  xs: 8px,
+  xs: 16px,
   sm: 16px,
   md: 24px,
-  lg: 32px,
-  xl: 40px
+  lg: 24px,
+  xl: 24px,
+  xxl: 24px
 );
 
 $spacings: (
@@ -141,6 +161,25 @@ $drop-shadows: (
 
 :root { 
   --layout-container-max-width: #{$layout-container-max-width};
+
+  @each $key, $val in $breakpoints {
+    --breakpoint-#{$key}: #{$val};
+  }
+
+  @each $key, $max in $container-max-widths {
+    --container-max-width-#{$key}: #{$max};
+  }
+
+  --grid-columns: #{$grid-columns};
+
+  @each $key, $g in $gutters {
+    --grid-gutter-#{$key}: #{$g};
+  }
+
+  @each $key, $cols in $layout-columns {
+    --layout-columns-#{$key}: #{$cols};
+  }
+
   --font-family-base: 'Onest', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   
   --font-family-mono:

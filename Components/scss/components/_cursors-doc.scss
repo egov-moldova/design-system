@@ -1,48 +1,56 @@
 
-
 [data-doc="cursors"] {
+  // Live OS cursor on the preview strip (SVG remains static documentation art).
+  $demo-cursors: default, copy, not-allowed, progress, text, pointer, grab, grabbing;
+
+  @each $c in $demo-cursors {
+    [data-demo-cursor='#{$c}'] .cursor-card__icon {
+      cursor: #{$c};
+    }
+  }
+
   .cursors-grid {
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    column-gap: 80px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    column-gap: 24px;
     row-gap: 24px;
   }
 
-  
   .cursor-card {
     min-width: 0;
+    box-sizing: border-box;
+    border: 1px solid var(--gray-200, #e5e5e5);
   }
 
-  .cursor-card__preview {
-    flex: 0 0 64px;
-    width: 64px;
-    height: 64px;
-    display: inline-flex;
+  .cursor-card__icon {
+    width: 100%;
+    min-height: 56px;
+    display: flex;
     align-items: center;
     justify-content: center;
+    margin-bottom: 12px;
     background: var(--color-background-base-secondary, #f5f5f5);
     border-radius: 8px;
-    overflow: hidden;
+    box-sizing: border-box;
   }
 
   .cursor-card__glyph {
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     display: block;
     pointer-events: none;
   }
 
-  
-  
-  
-  
   .cursor-card__label {
     all: unset;
     box-sizing: border-box;
-    display: inline-flex;
+    display: flex;
     align-items: center;
+    justify-content: center;
+    text-align: center;
     min-width: 0;
-    padding: 2px 6px;
+    width: 100%;
+    padding: 8px 10px;
     border-radius: var(--border-radius-8, 8px);
     background: transparent;
     cursor: pointer;
@@ -54,13 +62,8 @@
     transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
   }
 
-  .cursor-card__label:hover { background: var(--gray-100, #f6f6f6); }
-
-  @media (max-width: 1199.98px) {
-    .cursors-grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      column-gap: 32px;
-    }
+  .cursor-card__label:hover {
+    background: var(--gray-100, #f6f6f6);
   }
 
   @media (max-width: 599.98px) {

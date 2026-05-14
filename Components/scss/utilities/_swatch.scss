@@ -1,0 +1,164 @@
+@use '../abstracts/mud-prefix' as mud;
+
+// Rows that contain color ramp cells: `.mud-col` > `.mud-color-swatch` (no extra row class in HTML).
+$row-color-ramp: '.#{mud.mud-class('row')}:has(> .#{mud.mud-class('col')} > .#{mud.mud-class('color-swatch')})';
+
+// Shortcuts similar in spirit to Bootstrap stacks (compose once, reuse anywhere).
+.#{mud.mud-class('flex-center')} {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+// Color preview surface (inside `.mud-col` + optional `.mud-card` + `.mud-radius-*` in markup).
+// Aspect: compose `mud-ar-47-32` (Figma 235×160), `mud-ar-247-80` for `--wide` (494×160), `mud-ar-3-1` for `--alpha`.
+// Border radius comes from utilities (`mud-radius-*`), not here. Click-to-copy only on
+// `[data-doc="colors"]` via `copy-token.js`.
+.#{mud.mud-class('color-swatch')} {
+  box-sizing: border-box;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+// Highlighted step (wider tile): markup uses `mud-color-swatch--wide` for grid span + `mud-ar-247-80` for ratio.
+
+// Alpha / wide flat tiles: compose `mud-ar-3-1`; width rules stay for grid strips.
+.#{mud.mud-class('color-swatch--alpha')} {
+  width: 100%;
+  max-width: none;
+  flex: unset;
+}
+
+// Ramp row: same `.mud-row` as everywhere; grid activates when direct children are `.mud-col` > `.mud-color-swatch`.
+#{$row-color-ramp} {
+  display: grid !important;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: var(--spacing-24, 24px);
+  width: 100%;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1199.98px) {
+  #{$row-color-ramp} {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 575.98px) {
+  #{$row-color-ramp} {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+#{$row-color-ramp} > .#{mud.mud-class('col')} {
+  padding-left: 0;
+  padding-right: 0;
+  min-width: 0;
+}
+
+#{$row-color-ramp} > .#{mud.mud-class('col')}:has(> .#{mud.mud-class('color-swatch--wide')}) {
+  grid-column: span 2;
+}
+
+#{$row-color-ramp} > .#{mud.mud-class('col')} > .#{mud.mud-class('color-swatch')}:not(.#{mud.mud-class('color-swatch--wide')}) {
+  width: 100%;
+  max-width: min(120px, 100%);
+  margin-inline: auto;
+}
+
+#{$row-color-ramp} > .#{mud.mud-class('col')}:has(> .#{mud.mud-class('color-swatch--wide')}) > .#{mud.mud-class('color-swatch--wide')} {
+  max-width: none;
+  width: 100%;
+}
+
+#{$row-color-ramp} .mud-desktop-body-sm-500 {
+  margin-bottom: 0;
+}
+
+#{$row-color-ramp} > .#{mud.mud-class('col')} > .#{mud.mud-class('color-swatch')},
+.colors-doc-alpha-grid > .#{mud.mud-class('color-swatch')},
+.alpha-white-strip > .#{mud.mud-class('color-swatch')} {
+  cursor: pointer;
+  position: relative;
+}
+
+#{$row-color-ramp} > .#{mud.mud-class('col')} > .#{mud.mud-class('color-swatch')}.is-copied::after,
+.colors-doc-alpha-grid > .#{mud.mud-class('color-swatch')}.is-copied::after,
+.alpha-white-strip > .#{mud.mud-class('color-swatch')}.is-copied::after {
+  content: 'Copied';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  padding: var(--spacing-4, 4px) var(--spacing-8, 8px);
+  border-radius: var(--border-radius-6, 6px);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--green-800, #065f46);
+  background: var(--green-100, #e6f5ee);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+}
+
+// Alpha token grids (any doc page — class names stay `colors-doc-*` for HTML compatibility).
+.colors-doc-alpha-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--spacing-24, 24px);
+  margin-bottom: var(--spacing-24, 24px);
+  width: 100%;
+}
+
+@media (max-width: 991.98px) {
+  .colors-doc-alpha-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 479.98px) {
+  .colors-doc-alpha-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.colors-doc-alpha-grid > .#{mud.mud-class('color-swatch')} {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.alpha-white-strip {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--spacing-24, 24px);
+  box-sizing: border-box;
+  width: 100%;
+  margin-bottom: var(--spacing-24, 24px);
+  padding: var(--spacing-16, 16px);
+  border-radius: var(--border-radius-12, 12px);
+  background: var(--color-background-base-inverse-default, #1e1e1e);
+}
+
+@media (max-width: 991.98px) {
+  .alpha-white-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 479.98px) {
+  .alpha-white-strip {
+    grid-template-columns: 1fr;
+  }
+}
+
+.alpha-white-strip > .#{mud.mud-class('color-swatch')} {
+  padding-left: 0;
+  padding-right: 0;
+}

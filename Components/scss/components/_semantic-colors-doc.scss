@@ -1,6 +1,21 @@
 // Semantic colors doc: three equal columns (`mud-col-xl-4`); row spacing uses
 // `mud-gap-32 mud-xl-column-gap-120` (utilities from `_spacing-utilities.scss`).
 [data-doc='semantic-colors'] {
+  // Row negative margins + nowrap token pills + flex `min-width: auto` caused horizontal overflow.
+  .mud-flex.mud-flex-col > .mud-row {
+    min-width: 0;
+  }
+
+  .mud-row > [class*='mud-col-'] {
+    min-width: 0;
+  }
+
+  .mud-doc-sem--tokens .token-name {
+    max-width: 100%;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
   .mud-doc-sem--tokens {
     display: flex;
     flex-direction: column;
@@ -81,7 +96,9 @@
     display: block;
   }
 
+  // Primitive value label (light/dark columns): mono + inherit color from panel.
   .mud-doc-sem__name {
+    font-family: var(--font-family-mono, 'JetBrains Mono', ui-monospace, monospace);
     color: inherit;
     white-space: nowrap;
   }

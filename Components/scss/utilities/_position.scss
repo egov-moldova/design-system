@@ -1,0 +1,13 @@
+@use '../abstracts/mud-prefix' as mud;
+
+// Hidden SVG defs / clip paths (zero-size sprite sheet pattern).
+.#{mud.mud-class('sprite-defs')} {
+  position: absolute;
+}
+
+// Sticky doc table header rows (token preview tables).
+.#{mud.mud-class('sticky-top-z1')} {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}

@@ -7,12 +7,14 @@
 @use '../abstracts/mud-prefix' as mud;
 
 $columns: vars.$grid-columns;
-$gutter: map.get(vars.$gutters, md);
+$gutter: map.get(vars.$gutters, xs);
 
 @include make-container.make-container(vars.$container-max-widths, vars.$breakpoints);
 
 .#{mud.mud-class('row')} {
   @include make-row.make-row($gutter);
+  // Default vertical rhythm between stacked rows; override with `mud-mb-0` / `mud-mb-*` when needed.
+  margin-bottom: var(--spacing-24, 24px);
 }
 @function breakpoint-list($breakpoints) { 
   @return map.keys($breakpoints);
@@ -58,8 +60,8 @@ $gutter: map.get(vars.$gutters, md);
 .#{mud.mud-class('col')} {
   flex: 1 0 0%;
   min-width: 0;
-  padding-left: calc(#{map.get(vars.$gutters, md)} / 2);
-  padding-right: calc(#{map.get(vars.$gutters, md)} / 2);
+  padding-left: calc(#{map.get(vars.$gutters, xs)} / 2);
+  padding-right: calc(#{map.get(vars.$gutters, xs)} / 2);
   box-sizing: border-box;
   max-width: 100%;
 }

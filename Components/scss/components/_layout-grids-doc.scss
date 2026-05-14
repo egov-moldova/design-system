@@ -2,11 +2,14 @@
 @use '../abstracts/variables' as vars;
 @use '../abstracts/mud-prefix' as mud;
 
+$cw-xs: map.get(vars.$container-max-widths, xs);
 $cw-sm: map.get(vars.$container-max-widths, sm);
 $cw-md: map.get(vars.$container-max-widths, md);
 $cw-lg: map.get(vars.$container-max-widths, lg);
 $cw-xl: map.get(vars.$container-max-widths, xl);
 $cw-xxl: map.get(vars.$container-max-widths, xxl);
+
+$bp-md: map.get(vars.$breakpoints, md);
 
 @mixin lg-diagram-strip-cell {
   flex: unset;
@@ -388,8 +391,8 @@ $cw-xxl: map.get(vars.$container-max-widths, xxl);
     --lg-cols: 4;
     --lg-gap: 16px;
     --lg-margin: 16px;
-    --lg-space-width: 320px;
-    --lg-container-width: 320px;
+    --lg-space-width: #{$cw-xs};
+    --lg-container-width: #{$cw-xs};
   }
 
   
@@ -410,7 +413,7 @@ $cw-xxl: map.get(vars.$container-max-widths, xxl);
 
   .lg-12col-row {
     display: grid;
-    grid-template-columns: repeat(12, 1fr);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
     column-gap: 24px;
   }
 
@@ -430,5 +433,30 @@ $cw-xxl: map.get(vars.$container-max-widths, xxl);
     overflow-x: auto;
     min-width: 0;
     width: 100%;
+  }
+}
+
+// Layout Columns demo: stack cells on narrow viewports (avoid 12-col shrink/overlap).
+@media (max-width: #{$bp-md - 0.02px}) {
+  [data-doc='layout-grids'] .mud-doc-main {
+    .lg-scroll-x {
+      overflow-x: visible;
+    }
+
+    .lg-12col-row {
+      grid-template-columns: 1fr;
+      column-gap: 0;
+      row-gap: var(--spacing-16, 16px);
+    }
+
+    .lg-12col-row > .#{mud.mud-class('col')} {
+      grid-column: 1 / -1 !important;
+    }
+
+    @for $i from 1 through 12 {
+      .lg-12col-row > .#{mud.mud-class('col')}-#{$i} {
+        grid-column: 1 / -1 !important;
+      }
+    }
   }
 }

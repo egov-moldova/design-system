@@ -6,6 +6,8 @@
   "scripts": {
     "sass": "sass --watch scss/main.scss css/main.css",
     "build:css": "sass scss/main.scss css/main.css",
+    "build:doc-search": "node ../scripts/build-doc-search-index.mjs",
+    "sync:head-icons": "node ../scripts/sync-html-head-icons.mjs",
     "serve": "serve .",
     "dev": "concurrently \"npm run sass\" \"npm run serve\""
   },

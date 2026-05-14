@@ -1,0 +1,265 @@
+// Reusable CSS-grid “tables” (token matrices, spec sheets). Not tied to documentation markup.
+// Variants:
+//   .mud-sheet--3col     → token | value | preview (e.g. shadows)
+//   .mud-sheet--wide     → dense multi-column sheet + horizontal scroll wrapper (min-width)
+
+.mud-sheet {
+  display: flex;
+  flex-direction: column;
+}
+
+.mud-sheet__head,
+.mud-sheet__row {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(120px, 1fr) minmax(120px, 1fr) 280px;
+  column-gap: var(--spacing-24, 24px);
+  align-items: center;
+}
+
+.mud-sheet__head {
+  height: 28px;
+  margin-bottom: var(--spacing-32, 32px);
+}
+
+.mud-sheet__head .mud-sheet__cell {
+  font-family: var(--font-family-mono, 'JetBrains Mono', ui-monospace, monospace);
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--gray-700, #383838);
+}
+
+.mud-sheet__row {
+  min-height: 96px;
+}
+
+.mud-sheet__row + .mud-sheet__row {
+  margin-top: var(--spacing-24, 24px);
+}
+
+.mud-sheet__cell {
+  font-family: var(--font-family-mono, 'JetBrains Mono', ui-monospace, monospace);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.16px;
+  color: var(--black, #121212);
+}
+
+.mud-sheet__cell--token,
+.mud-sheet__cell--preview {
+  display: flex;
+  align-items: center;
+}
+
+.mud-sheet__cell--preview {
+  justify-content: flex-start;
+}
+
+.mud-sheet.mud-sheet--3col {
+  .mud-sheet__head,
+  .mud-sheet__row {
+    grid-template-columns: minmax(180px, 1fr) minmax(200px, 2fr) 280px;
+  }
+
+  .mud-sheet__head {
+    margin-bottom: var(--spacing-48, 48px);
+  }
+
+  .mud-sheet__head .mud-sheet__cell {
+    font-size: 18px;
+    line-height: 28px;
+    letter-spacing: -0.18px;
+  }
+
+  .mud-sheet__row + .mud-sheet__row {
+    margin-top: var(--spacing-64, 64px);
+  }
+
+  .mud-sheet__cell--preview {
+    width: 280px;
+    height: 96px;
+    flex-shrink: 0;
+    position: relative;
+  }
+}
+
+.mud-spec {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4, 4px);
+}
+
+.mud-spec__row {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8, 8px);
+}
+
+.mud-spec__icon {
+  flex: 0 0 24px;
+  width: 24px;
+  height: 24px;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.mud-spec__text {
+  white-space: nowrap;
+  color: var(--gray-700, #383838);
+}
+
+.mud-preview-tile {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 136px;
+  height: 96px;
+  background: var(--color-background-base-default, #fff);
+  border-radius: var(--border-radius-12, 12px);
+}
+
+@media (max-width: 991px) {
+  .mud-sheet:not(.mud-sheet--wide):not(.mud-sheet--3col) .mud-sheet__head {
+    display: none;
+  }
+
+  .mud-sheet:not(.mud-sheet--wide):not(.mud-sheet--3col) .mud-sheet__row {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      'token preview'
+      'rem   preview'
+      'px    preview';
+    min-height: 0;
+    row-gap: var(--spacing-8, 8px);
+    padding: var(--spacing-16, 16px) 0;
+    border-bottom: 1px solid var(--gray-200, #ebebeb);
+  }
+
+  .mud-sheet:not(.mud-sheet--wide):not(.mud-sheet--3col) .mud-sheet__row + .mud-sheet__row {
+    margin-top: 0;
+  }
+
+  .mud-sheet:not(.mud-sheet--wide):not(.mud-sheet--3col) .mud-sheet__cell--token {
+    grid-area: token;
+  }
+
+  .mud-sheet:not(.mud-sheet--wide):not(.mud-sheet--3col) .mud-sheet__cell--rem {
+    grid-area: rem;
+  }
+
+  .mud-sheet:not(.mud-sheet--wide):not(.mud-sheet--3col) .mud-sheet__cell--px {
+    grid-area: px;
+  }
+
+  .mud-sheet:not(.mud-sheet--wide):not(.mud-sheet--3col) .mud-sheet__cell--preview {
+    grid-area: preview;
+    justify-content: flex-end;
+  }
+
+  .mud-sheet.mud-sheet--3col:not(.mud-sheet--wide) .mud-sheet__head {
+    display: none;
+  }
+
+  .mud-sheet.mud-sheet--3col:not(.mud-sheet--wide) .mud-sheet__row {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'token preview'
+      'value preview';
+    min-height: 0;
+    row-gap: var(--spacing-8, 8px);
+    padding: var(--spacing-16, 16px) 0;
+    border-bottom: 1px solid var(--gray-200, #ebebeb);
+    align-items: start;
+  }
+
+  .mud-sheet.mud-sheet--3col:not(.mud-sheet--wide) .mud-sheet__row + .mud-sheet__row {
+    margin-top: 0;
+  }
+
+  .mud-sheet.mud-sheet--3col:not(.mud-sheet--wide) .mud-sheet__cell--token {
+    grid-area: token;
+  }
+
+  .mud-sheet.mud-sheet--3col:not(.mud-sheet--wide) .mud-sheet__cell--value {
+    grid-area: value;
+  }
+
+  .mud-sheet.mud-sheet--3col:not(.mud-sheet--wide) .mud-sheet__cell--token,
+  .mud-sheet.mud-sheet--3col:not(.mud-sheet--wide) .mud-sheet__cell--value {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .mud-sheet.mud-sheet--3col:not(.mud-sheet--wide) .mud-sheet__cell--preview {
+    grid-area: preview;
+    width: 280px;
+    max-width: 100%;
+    justify-self: end;
+    justify-content: flex-end;
+  }
+}
+
+.mud-sheet.mud-sheet--wide {
+  width: 100%;
+  min-width: 880px;
+
+  .mud-sheet__head,
+  .mud-sheet__row {
+    display: grid;
+    grid-template-columns:
+      minmax(160px, 1.35fr) minmax(72px, 0.55fr) minmax(72px, 0.55fr) minmax(56px, 0.45fr)
+      minmax(96px, 0.65fr);
+    column-gap: var(--spacing-24, 24px);
+    align-items: center;
+    box-sizing: border-box;
+    background: var(--white, #fff);
+    padding-inline: var(--spacing-24, 24px);
+  }
+
+  .mud-sheet__head {
+    height: 64px;
+    min-height: 64px;
+    margin-bottom: 0;
+    border-bottom: 1px solid var(--gray-250, #d9d9d9);
+  }
+
+  .mud-sheet__head .mud-sheet__cell {
+    font-family: var(--font-family-base, 'Onest', system-ui, sans-serif);
+    font-weight: 500;
+    font-size: var(--font-size-fs-18, 18px);
+    line-height: 150%;
+    color: var(--gray-700, #383838);
+  }
+
+  .mud-sheet__row {
+    min-height: 64px;
+    height: 64px;
+    margin-top: 0;
+    border-bottom: 1px solid var(--gray-200, #ebebeb);
+  }
+
+  .mud-sheet__row + .mud-sheet__row {
+    margin-top: 0;
+  }
+
+  .mud-sheet__row .mud-sheet__cell {
+    font-family: var(--font-family-base, 'Onest', system-ui, sans-serif);
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: 0;
+    color: var(--gray-900, #121212);
+  }
+
+  .mud-sheet__cell--token {
+    display: flex;
+    align-items: center;
+  }
+}
+
+@media (max-width: 991px) {
+  .mud-sheet.mud-sheet--wide .mud-sheet__head,
+  .mud-sheet.mud-sheet--wide .mud-sheet__row {
+    padding-inline: var(--spacing-16, 16px);
+  }
+}
