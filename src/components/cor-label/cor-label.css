@@ -7,7 +7,7 @@ Label CSS File
   flex-direction: column;
   gap: var(--label-gap, var(--spacing-0));
   font-family: var(--label-font-family, var(--font-family-sans));
-  font-weight: var(--label-font-weight, var(--font-weight-normal));
+  font-weight: var(--label-font-weight, var(--font-weight-regular));
 }
 
 .label-text {
@@ -20,10 +20,10 @@ Label CSS File
 .helper-wrapper {
   display: none;
   align-items: center;
-  gap: var(--label-gap, var(--spacing-2xs));
-  font-size: var(--label-helper-font-size, var(--font-size-xs));
-  line-height: var(--label-helper-line-height, var(--line-height-sm));
-  color: var(--label-helper-color, var(--color-neutral-text-weaker));
+  gap: var(--label-gap, var(--spacing-12));
+  font-size: var(--label-helper-font-size, var(--font-size-12));
+  line-height: var(--label-helper-line-height, var(--line-height-16));
+  color: var(--label-helper-color, var(--color-text-base-tertiary));
 }
 
 :host(.has-helper-text) .helper-wrapper {
@@ -38,50 +38,50 @@ Label CSS File
 
 /* Size variants */
 :host([size='md']) {
-  --label-font-size: var(--label-font-size-md, var(--font-size-sm));
-  --label-line-height: var(--label-line-height-md, var(--line-height-md));
+  --label-font-size: var(--label-font-size-md, var(--font-size-14));
+  --label-line-height: var(--label-line-height-md, var(--line-height-20));
 }
 
 :host([size='sm']) {
-  --label-font-size: var(--label-font-size-sm, var(--font-size-xs));
-  --label-line-height: var(--label-line-height-sm, var(--line-height-sm));
+  --label-font-size: var(--label-font-size-sm, var(--font-size-12));
+  --label-line-height: var(--label-line-height-sm, var(--line-height-16));
 }
 
 /* State variants - default */
 :host([state='default']) {
-  --label-color: var(--label-color-default, var(--color-neutral-text-weak));
+  --label-color: var(--label-color-default, var(--color-text-base-secondary));
 }
 
 /* State variants - hover */
 :host([state='hover']),
 :host(:hover:not([state='disabled']):not([state='error'])) {
-  --label-color: var(--label-color-hover, var(--color-neutral-text-default));
+  --label-color: var(--label-color-hover, var(--color-text-base-default));
 }
 
 /* State variants - active */
 :host([state='active']) {
-  --label-color: var(--label-color-active, var(--color-neutral-text-default));
+  --label-color: var(--label-color-active, var(--color-text-base-default));
 }
 
 /* State variants - disabled */
 :host([state='disabled']) {
-  --label-color: var(--label-color-disabled, var(--color-neutral-text-weakest));
+  --label-color: var(--label-color-disabled, var(--color-text-base-tertiary));
 }
 
 /* State variants - error */
 :host([state='error']) {
-  --label-color: var(--label-color-error, var(--color-system-error-icon));
+  --label-color: var(--label-color-error, var(--color-icon-danger-default));
 }
 
 /* Helper text color and icon color based on state */
 :host([state='error']) .helper-wrapper {
-  color: var(--label-color-error, var(--color-system-error-icon));
+  color: var(--label-color-error, var(--color-icon-danger-default));
 }
 
 :host([state='error']) .helper-wrapper cor-icon {
-  --icon-color: var(--label-color-error, var(--color-system-error-icon));
+  --icon-color: var(--label-color-error, var(--color-icon-danger-default));
 }
 
 :host(:not([state='error'])) .helper-wrapper cor-icon {
-  --icon-color: var(--label-helper-color, var(--color-neutral-text-weaker));
+  --icon-color: var(--label-helper-color, var(--color-text-base-tertiary));
 }

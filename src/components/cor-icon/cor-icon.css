@@ -25,11 +25,11 @@
 
 :host([interactive]:not([interactive='false']):not([disabled])) {
   .svg-icon:hover svg {
-    fill: var(--color-primary-icon-weaker);
+    fill: var(--color-icon-brand-on-secondary);
   }
 
   .svg-icon:active svg {
-    fill: var(--color-primary-icon-weakest);
+    fill: var(--color-icon-brand-on-secondary);
   }
 
   .svg-icon:focus-visible {
@@ -37,7 +37,7 @@
     outline-offset: var(--icon-outline-offset-focus);
 
     svg {
-      fill: var(--color-neutral-icon-weak);
+      fill: var(--color-icon-base-secondary);
     }
   }
 }
@@ -46,6 +46,6 @@
   cursor: not-allowed;
 
   .svg-icon svg {
-    fill: var(--color-neutral-icon-weakest);
+    fill: var(--color-icon-base-tertiary);
   }
 }

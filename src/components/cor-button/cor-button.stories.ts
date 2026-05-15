@@ -91,7 +91,7 @@ export const AllVariantsTable = {
     const sizeHeaders = sizes
       .map(
         size =>
-          `<th style="border: 1px solid var(--color-neutral-border-weakest); padding: 12px; text-align: center; background: var(--color-neutral-background-default);">${size.toUpperCase()}</th>`,
+          `<th style="border: 1px solid var(--color-border-base-subtle); padding: 12px; text-align: center; background: var(--color-background-base-default);">${size.toUpperCase()}</th>`,
       )
       .join('');
 
@@ -103,7 +103,7 @@ export const AllVariantsTable = {
             const iconSize = [ButtonSize.LG, ButtonSize.MD].includes(size) ? 'md' : 'sm';
             const disabledAttr = args.disabled ? 'disabled' : '';
             return `
-          <td style="border: 1px solid var(--color-neutral-border-weakest); padding: 12px; text-align: center;">
+          <td style="border: 1px solid var(--color-border-base-subtle); padding: 12px; text-align: center;">
             <div style="display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 8px;">
               <cor-button variant="${variant}" size="${size}">
                 <button ${disabledAttr}>
@@ -124,7 +124,7 @@ export const AllVariantsTable = {
 
         return `
         <tr>
-          <td style="border: 1px solid var(--color-neutral-border-weakest); padding: 12px; font-weight: 600; background: var(--color-neutral-background-default);">${variantLabel}</td>
+          <td style="border: 1px solid var(--color-border-base-subtle); padding: 12px; font-weight: 600; background: var(--color-background-base-default);">${variantLabel}</td>
           ${cells}
         </tr>`;
       })
@@ -136,7 +136,7 @@ export const AllVariantsTable = {
         <table style="border-collapse: collapse; width: 100%;">
           <thead>
             <tr>
-              <th style="border: 1px solid var(--color-neutral-border-weakest); padding: 12px; text-align: left; background: var(--color-neutral-background-default);">Variant</th>
+              <th style="border: 1px solid var(--color-border-base-subtle); padding: 12px; text-align: left; background: var(--color-background-base-default);">Variant</th>
               ${sizeHeaders}
             </tr>
           </thead>

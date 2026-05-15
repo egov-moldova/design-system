@@ -10,9 +10,9 @@ Slot CSS
   gap: 8px;
 
   border-radius: 8px;
-  border: 1px dashed var(--color-system-info-border);
+  border: 1px dashed var(--color-border-brand-default);
 
-  background-color: var(--color-neutral-background-base);
+  background-color: var(--color-background-base-default);
 }
 
 /* ---------------------------
@@ -46,9 +46,9 @@ Slot CSS
   justify-content: center;
   flex-direction: row;
   gap: 8px;
-  color: var(--color-system-info-text);
+  color: var(--color-text-brand-default);
 }
 
 cor-typography[slot='description'] {
-  color: var(--color-neutral-text-weak);
+  color: var(--color-text-base-secondary);
 }

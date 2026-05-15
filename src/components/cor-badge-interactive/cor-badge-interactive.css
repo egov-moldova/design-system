@@ -17,7 +17,7 @@
   font-family: var(--font-family-sans);
   font-size: var(--badge-interactive-label-font-size-md);
   line-height: var(--badge-interactive-label-line-height-md);
-  font-weight: var(--font-weight-normal);
+  font-weight: var(--font-weight-regular);
   text-align: center;
   cursor: pointer;
   transition: background-color 150ms ease-in-out;

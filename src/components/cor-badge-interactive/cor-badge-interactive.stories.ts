@@ -319,7 +319,7 @@ export const Interactive: Story = {
         </cor-badge-interactive>
       </div>
 
-      <div id="event-log" style="margin-top: 24px; padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px;">
+      <div id="event-log" style="margin-top: 24px; padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px;">
         <div style="font-weight: 600; margin-bottom: 8px;">Event Log:</div>
         <div id="log-content">Click badges to see events...</div>
       </div>

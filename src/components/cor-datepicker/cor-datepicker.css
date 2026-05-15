@@ -29,7 +29,7 @@
 .datepicker__inputs {
   display: flex;
   align-items: flex-end;
-  gap: var(--spacing-xs, 8px);
+  gap: var(--spacing-12, 8px);
   width: 100%;
 }
 

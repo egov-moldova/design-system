@@ -5,7 +5,7 @@ Textarea CSS File
 :host {
   display: flex;
   flex-direction: column;
-  gap: var(--textarea-gap, var(--spacing-2xs));
+  gap: var(--textarea-gap, var(--spacing-12));
   position: relative;
   width: 100%;
 }
@@ -14,7 +14,7 @@ Textarea CSS File
   display: flex;
   flex-direction: column;
   position: relative;
-  gap: var(--textarea-container-gap, var(--spacing-2xs));
+  gap: var(--textarea-container-gap, var(--spacing-12));
 }
 
 .content {
@@ -23,27 +23,27 @@ Textarea CSS File
   flex: 1;
   position: relative;
   min-width: 0;
-  gap: var(--textarea-container-content-gap, var(--spacing-2xs));
+  gap: var(--textarea-container-content-gap, var(--spacing-12));
 }
 
 label {
   font-family: var(--textarea-label-font-family, var(--font-family-sans));
-  font-size: var(--textarea-label-font-size, var(--font-size-2xs));
-  line-height: var(--textarea-label-line-height, var(--line-height-2xs));
+  font-size: var(--textarea-label-font-size, var(--font-size-10));
+  line-height: var(--textarea-label-line-height, var(--line-height-12));
   font-weight: var(--textarea-label-font-weight, 400);
-  color: var(--textarea-label-color, var(--color-neutral-text-weaker));
+  color: var(--textarea-label-color, var(--color-text-base-tertiary));
 }
 
 textarea {
   font-family: var(--textarea-input-font-family, var(--font-family-sans));
-  font-size: var(--textarea-input-font-size, var(--font-size-sm));
-  line-height: var(--textarea-input-line-height, var(--line-height-md));
+  font-size: var(--textarea-input-font-size, var(--font-size-14));
+  line-height: var(--textarea-input-line-height, var(--line-height-20));
   font-weight: var(--textarea-input-font-weight, 400);
-  color: var(--textarea-input-color-default, var(--color-neutral-text-default));
-  background-color: var(--textarea-background-color-default, var(--color-neutral-background-base));
+  color: var(--textarea-input-color-default, var(--color-text-base-default));
+  background-color: var(--textarea-background-color-default, var(--color-background-base-default));
   border: var(--textarea-border-width, 1px) solid
-    var(--textarea-border-color-default, var(--color-neutral-border-weaker));
-  border-radius: var(--textarea-border-radius, var(--radius-md));
+    var(--textarea-border-color-default, var(--color-border-base-tertiary));
+  border-radius: var(--textarea-border-radius, var(--border-radius-8));
   outline: none;
   min-width: 0;
   height: var(--textarea-height, 136px);
@@ -56,12 +56,12 @@ textarea {
     background-color 150ms ease-in-out;
 
   &::placeholder {
-    color: var(--textarea-input-color-placeholder, var(--color-neutral-text-weaker));
+    color: var(--textarea-input-color-placeholder, var(--color-text-base-tertiary));
   }
 
   &:hover {
-    border-color: var(--textarea-container-border-color-hover, var(--color-neutral-border-weak));
-    background-color: var(--textarea-container-background-color-hover, var(--color-neutral-background-weak));
+    border-color: var(--textarea-container-border-color-hover, var(--color-border-base-secondary));
+    background-color: var(--textarea-container-background-color-hover, var(--color-background-base-secondary));
   }
 }
 
@@ -84,11 +84,11 @@ textarea {
 .helper-wrapper {
   display: flex;
   align-items: center;
-  gap: var(--spacing-2xs);
+  gap: var(--spacing-12);
   font-family: var(--textarea-bottom-helper-font-family, var(--font-family-sans));
-  font-size: var(--textarea-bottom-helper-font-size, var(--font-size-xs));
-  line-height: var(--textarea-bottom-helper-line-height, var(--line-height-2xs));
-  color: var(--textarea-bottom-helper-color, var(--color-neutral-text-weaker));
+  font-size: var(--textarea-bottom-helper-font-size, var(--font-size-12));
+  line-height: var(--textarea-bottom-helper-line-height, var(--line-height-12));
+  color: var(--textarea-bottom-helper-color, var(--color-text-base-tertiary));
 }
 
 :host(:not(.has-helper-text)) .helper-wrapper {
@@ -97,8 +97,8 @@ textarea {
 
 /* Label position: inside */
 :host(.label-position-inside) {
-  --textarea-padding-inline: var(--textarea-container-padding-inline-label-inside, var(--spacing-xs));
-  --textarea-padding-block: var(--textarea-container-padding-block-label-inside, var(--spacing-xs));
+  --textarea-padding-inline: var(--textarea-container-padding-inline-label-inside, var(--spacing-12));
+  --textarea-padding-block: var(--textarea-container-padding-block-label-inside, var(--spacing-12));
 
   .container {
     position: relative;
@@ -108,15 +108,15 @@ textarea {
     position: absolute;
     top: var(--textarea-padding-block);
     left: var(--textarea-padding-inline);
-    font-size: var(--textarea-label-font-size, var(--font-size-sm));
+    font-size: var(--textarea-label-font-size, var(--font-size-14));
     transition: var(--textarea-label-inside-transition, transform 150ms ease, font-size 150ms ease);
     pointer-events: none;
-    color: var(--textarea-label-color, var(--color-neutral-text-weaker));
+    color: var(--textarea-label-color, var(--color-text-base-tertiary));
     z-index: 1;
   }
 
   textarea {
-    padding-top: var(--spacing-lg);
+    padding-top: var(--spacing-24);
 
     &::placeholder {
       color: transparent;
@@ -127,28 +127,28 @@ textarea {
 /* Floating label when focused or has value */
 :host(.label-position-inside.is-focused) label,
 :host(.label-position-inside.has-value) label {
-  font-size: var(--textarea-label-inside-floated-font-size, var(--font-size-xs));
-  color: var(--textarea-label-color, var(--color-neutral-text-weaker));
+  font-size: var(--textarea-label-inside-floated-font-size, var(--font-size-12));
+  color: var(--textarea-label-color, var(--color-text-base-tertiary));
 }
 
 /* Label position: outside */
 :host(.label-position-outside) {
-  --textarea-padding-inline: var(--textarea-container-padding-inline-label-outside, var(--spacing-sm));
-  --textarea-padding-block: var(--textarea-container-padding-block-label-outside, var(--spacing-xs));
+  --textarea-padding-inline: var(--textarea-container-padding-inline-label-outside, var(--spacing-16));
+  --textarea-padding-block: var(--textarea-container-padding-block-label-outside, var(--spacing-12));
 
   .label-wrapper {
     display: flex;
     align-items: center;
-    gap: var(--spacing-2xs);
+    gap: var(--spacing-12);
     margin-bottom: 0;
   }
 
   .required-asterisk {
     font-family: var(--textarea-label-font-family, var(--font-family-sans));
-    font-size: var(--textarea-label-font-size, var(--font-size-sm));
-    line-height: var(--textarea-label-line-height, var(--line-height-md));
+    font-size: var(--textarea-label-font-size, var(--font-size-14));
+    line-height: var(--textarea-label-line-height, var(--line-height-20));
     font-weight: var(--textarea-label-font-weight, 400);
-    color: var(--textarea-label-required-color, var(--color-system-error-text));
+    color: var(--textarea-label-required-color, var(--color-text-danger-default));
     margin-left: 0;
   }
 
@@ -167,7 +167,7 @@ textarea {
 /* State: focus */
 :host(.is-focused) {
   textarea {
-    border-color: var(--textarea-container-border-color-focus, var(--color-primary-border-active));
+    border-color: var(--textarea-container-border-color-focus, var(--color-border-brand-default));
   }
 }
 
@@ -178,22 +178,22 @@ textarea {
   cursor: not-allowed;
 
   textarea {
-    border-color: var(--textarea-border-color-disabled, var(--color-neutral-border-weaker));
-    background-color: var(--textarea-background-color-disabled, var(--color-neutral-background-base));
+    border-color: var(--textarea-border-color-disabled, var(--color-border-base-tertiary));
+    background-color: var(--textarea-background-color-disabled, var(--color-background-base-default));
     pointer-events: none;
-    color: var(--textarea-input-color-disabled, var(--color-neutral-text-weaker));
+    color: var(--textarea-input-color-disabled, var(--color-text-base-tertiary));
 
     &::placeholder {
-      color: var(--textarea-input-color-disabled, var(--color-neutral-text-weaker));
+      color: var(--textarea-input-color-disabled, var(--color-text-base-tertiary));
     }
   }
 
   label {
-    color: var(--textarea-label-color-disabled, var(--color-neutral-text-weaker));
+    color: var(--textarea-label-color-disabled, var(--color-text-base-tertiary));
   }
 
   .helper-wrapper {
-    color: var(--textarea-color-disabled, var(--color-neutral-text-weaker));
+    color: var(--textarea-color-disabled, var(--color-text-base-tertiary));
   }
 
   .required-asterisk,
@@ -205,7 +205,7 @@ textarea {
 
 :host([disabled].label-position-inside.is-focused) label,
 :host([disabled].label-position-inside.has-value) label {
-  color: var(--textarea-label-color-disabled, var(--color-neutral-text-weaker));
+  color: var(--textarea-label-color-disabled, var(--color-text-base-tertiary));
 }
 
 :host([disabled].label-position-inside) textarea::placeholder {
@@ -215,31 +215,31 @@ textarea {
 /* State: invalid */
 :host([invalid]) {
   textarea {
-    border-color: var(--textarea-border-color-invalid, var(--color-system-error-icon));
+    border-color: var(--textarea-border-color-invalid, var(--color-icon-danger-default));
   }
 
   .helper-wrapper {
-    color: var(--textarea-bottom-helper-color-invalid, var(--color-system-error-text));
+    color: var(--textarea-bottom-helper-color-invalid, var(--color-text-danger-default));
   }
 }
 
 /* State: skeleton */
 :host(.is-skeleton) {
   cor-skeleton[slot='label-text'] {
-    --skeleton-height: var(--textarea-label-line-height, var(--line-height-2xs));
+    --skeleton-height: var(--textarea-label-line-height, var(--line-height-12));
     --skeleton-width: 60px;
-    --skeleton-border-radius: var(--radius-2xl);
+    --skeleton-border-radius: var(--border-radius-24);
   }
 
   cor-skeleton:not([slot]) {
     --skeleton-height: var(--textarea-height, 136px);
     --skeleton-width: 100%;
-    --skeleton-border-radius: var(--radius-xl);
+    --skeleton-border-radius: var(--border-radius-16);
   }
 
   cor-skeleton[slot='helper-text'] {
-    --skeleton-height: var(--textarea-bottom-helper-line-height, var(--line-height-2xs));
+    --skeleton-height: var(--textarea-bottom-helper-line-height, var(--line-height-12));
     --skeleton-width: 80px;
-    --skeleton-border-radius: var(--radius-2xl);
+    --skeleton-border-radius: var(--border-radius-24);
   }
 }

@@ -5,9 +5,9 @@ Input CSS File
 :host {
   --input-height: var(--input-container-height-lg);
   --input-padding-inline: var(--input-container-padding-inline-lg);
-  --input-border-radius: var(--input-container-border-radius-lg, var(--radius-lg));
-  --input-font-size: var(--input-container-font-size-lg, var(--font-size-sm));
-  --input-line-height: var(--input-container-line-height-lg, var(--line-height-md));
+  --input-border-radius: var(--input-container-border-radius-lg, var(--border-radius-12));
+  --input-font-size: var(--input-container-font-size-lg, var(--font-size-14));
+  --input-line-height: var(--input-container-line-height-lg, var(--line-height-20));
 
   display: flex;
   flex-direction: column;
@@ -19,19 +19,19 @@ Input CSS File
 .container {
   display: flex;
   align-items: center;
-  gap: var(--input-container-gap, var(--spacing-xs));
+  gap: var(--input-container-gap, var(--spacing-12));
   position: relative;
   min-height: var(--input-height);
   padding-inline: var(--input-padding-inline);
   border: var(--input-container-border-width) solid var(--input-container-border-color-default);
-  border-radius: var(--input-border-radius, var(--radius-lg));
-  background-color: var(--input-container-background-color-default, var(--color-neutral-background-base));
+  border-radius: var(--input-border-radius, var(--border-radius-12));
+  background-color: var(--input-container-background-color-default, var(--color-background-base-default));
   transition:
     border-color 150ms ease-in-out,
     background-color 150ms ease-in-out;
 
   &:hover {
-    border-color: var(--input-container-border-color-hover, var(--color-neutral-border-weak));
+    border-color: var(--input-container-border-color-hover, var(--color-border-base-secondary));
     background-color: var(--input-container-background-color-hover);
   }
 }
@@ -48,18 +48,18 @@ Input CSS File
 
 label {
   font-family: var(--input-label-font-family, var(--font-family-sans));
-  font-size: var(--input-label-font-size, var(--font-size-2xs));
-  line-height: var(--input-label-line-height, var(--line-height-2xs));
+  font-size: var(--input-label-font-size, var(--font-size-10));
+  line-height: var(--input-label-line-height, var(--line-height-12));
   font-weight: var(--input-label-font-weight, 400);
-  color: var(--input-label-color-default, var(--color-neutral-text-weaker));
+  color: var(--input-label-color-default, var(--color-text-base-tertiary));
 }
 
 input {
   font-family: var(--input-container-font-family, var(--font-family-sans));
-  font-size: var(--input-font-size, var(--font-size-sm));
-  line-height: var(--input-line-height, var(--line-height-md));
+  font-size: var(--input-font-size, var(--font-size-14));
+  line-height: var(--input-line-height, var(--line-height-20));
   font-weight: var(--input-container-font-weight, 500);
-  color: var(--input-container-color-default, var(--color-neutral-text-default));
+  color: var(--input-container-color-default, var(--color-text-base-default));
   background: transparent;
   border: none;
   outline: none;
@@ -69,7 +69,7 @@ input {
   margin: 0;
 
   &::placeholder {
-    color: var(--input-container-color-placeholder, var(--color-neutral-text-weaker));
+    color: var(--input-container-color-placeholder, var(--color-text-base-tertiary));
   }
 }
 
@@ -110,15 +110,15 @@ input {
 ::slotted([slot='icon-left']),
 ::slotted([slot='icon-right']),
 .clear-button {
-  --icon-color: var(--input-icon-color-default, var(--color-neutral-icon-weak));
-  --icon-color-hover: var(--input-icon-color-hover, var(--color-neutral-icon-weak));
-  --icon-color-focus: var(--input-icon-color-focus, var(--color-neutral-icon-weak));
+  --icon-color: var(--input-icon-color-default, var(--color-icon-base-secondary));
+  --icon-color-hover: var(--input-icon-color-hover, var(--color-icon-base-secondary));
+  --icon-color-focus: var(--input-icon-color-focus, var(--color-icon-base-secondary));
 
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: var(--input-icon-margin, var(--spacing-3xs));
-  border-radius: var(--input-icon-border-radius, var(--radius-xs));
+  margin: var(--input-icon-margin, var(--spacing-8));
+  border-radius: var(--input-icon-border-radius, var(--border-radius-4));
   flex-shrink: 0;
   flex-basis: var(--input-icon-size);
   width: var(--input-icon-size);
@@ -132,7 +132,7 @@ input {
   padding: 0;
 
   &:focus {
-    outline-color: var(--input-container-outline-color-focus, var(--color-secondary-border));
+    outline-color: var(--input-container-outline-color-focus, var(--color-border-brand-default));
   }
 
   &.clear-button--hidden {
@@ -146,9 +146,9 @@ input {
   align-items: center;
   gap: var(--input-container-gap);
   font-family: var(--input-bottom-helper-font-family, var(--font-family-sans));
-  font-size: var(--input-bottom-helper-font-size, var(--font-size-xs));
-  line-height: var(--input-bottom-helper-line-height, var(--line-height-sm));
-  color: var(--input-bottom-helper-color-default, var(--color-neutral-text-weaker));
+  font-size: var(--input-bottom-helper-font-size, var(--font-size-12));
+  line-height: var(--input-bottom-helper-line-height, var(--line-height-16));
+  color: var(--input-bottom-helper-color-default, var(--color-text-base-tertiary));
 }
 
 :host(:not(.has-helper-text)) .helper-wrapper {
@@ -158,38 +158,38 @@ input {
 .line {
   width: 1px;
   height: var(--input-line-height);
-  background-color: var(--input-container-border-color-default, var(--color-neutral-border-weaker));
+  background-color: var(--input-container-border-color-default, var(--color-border-base-tertiary));
 }
 
 /* Size variants */
 :host([size='lg']) {
   --input-height: var(--input-container-height-lg);
   --input-padding-inline: var(--input-container-padding-inline-lg);
-  --input-border-radius: var(--input-container-border-radius-lg, var(--radius-lg));
-  --input-font-size: var(--input-container-font-size-lg, var(--font-size-sm));
-  --input-line-height: var(--input-container-line-height-lg, var(--line-height-md));
-  --input-label-font-size: var(--input-label-font-size-lg, var(--font-size-sm));
-  --input-label-line-height: var(--input-label-line-height-lg, var(--line-height-md));
+  --input-border-radius: var(--input-container-border-radius-lg, var(--border-radius-12));
+  --input-font-size: var(--input-container-font-size-lg, var(--font-size-14));
+  --input-line-height: var(--input-container-line-height-lg, var(--line-height-20));
+  --input-label-font-size: var(--input-label-font-size-lg, var(--font-size-14));
+  --input-label-line-height: var(--input-label-line-height-lg, var(--line-height-20));
 }
 
 :host([size='md']) {
   --input-height: var(--input-container-height-md);
   --input-padding-inline: var(--input-container-padding-inline-md);
-  --input-border-radius: var(--input-container-border-radius-md, var(--radius-md));
-  --input-font-size: var(--input-container-font-size-md, var(--font-size-xs));
-  --input-line-height: var(--input-container-line-height-md, var(--line-height-sm));
-  --input-label-font-size: var(--input-label-font-size-md, var(--font-size-sm));
-  --input-label-line-height: var(--input-label-line-height-md, var(--line-height-md));
+  --input-border-radius: var(--input-container-border-radius-md, var(--border-radius-8));
+  --input-font-size: var(--input-container-font-size-md, var(--font-size-12));
+  --input-line-height: var(--input-container-line-height-md, var(--line-height-16));
+  --input-label-font-size: var(--input-label-font-size-md, var(--font-size-14));
+  --input-label-line-height: var(--input-label-line-height-md, var(--line-height-20));
 }
 
 :host([size='sm']) {
   --input-height: var(--input-container-height-sm);
   --input-padding-inline: var(--input-container-padding-inline-sm);
-  --input-border-radius: var(--input-container-border-radius-sm, var(--radius-sm));
-  --input-font-size: var(--input-container-font-size-sm, var(--font-size-2xs));
-  --input-line-height: var(--input-container-line-height-sm, var(--line-height-xs));
-  --input-label-font-size: var(--input-label-font-size-sm, var(--font-size-xs));
-  --input-label-line-height: var(--input-label-line-height-sm, var(--line-height-sm));
+  --input-border-radius: var(--input-container-border-radius-sm, var(--border-radius-4));
+  --input-font-size: var(--input-container-font-size-sm, var(--font-size-10));
+  --input-line-height: var(--input-container-line-height-sm, var(--line-height-12));
+  --input-label-font-size: var(--input-label-font-size-sm, var(--font-size-12));
+  --input-label-line-height: var(--input-label-line-height-sm, var(--line-height-16));
 }
 
 /* Floating label when focused or has value */
@@ -197,8 +197,8 @@ input {
 :host(.label-position-inside.has-value) label {
   transform: var(--input-label-inside-floated-transform);
   transform-origin: left top;
-  font-size: var(--input-label-inside-floated-font-size, var(--font-size-xs));
-  color: var(--input-label-color-default, var(--color-neutral-text-weaker));
+  font-size: var(--input-label-inside-floated-font-size, var(--font-size-12));
+  color: var(--input-label-color-default, var(--color-text-base-tertiary));
 }
 
 /* Label position: outside */
@@ -206,16 +206,16 @@ input {
   .label-wrapper {
     display: flex;
     align-items: center;
-    gap: var(--spacing-2xs);
+    gap: var(--spacing-12);
     margin-bottom: 0;
   }
 
   .required-asterisk {
     font-family: var(--input-label-font-family, var(--font-family-sans));
-    font-size: var(--input-label-font-size, var(--font-size-sm));
-    line-height: var(--input-label-line-height, var(--line-height-md));
+    font-size: var(--input-label-font-size, var(--font-size-14));
+    line-height: var(--input-label-line-height, var(--line-height-20));
     font-weight: var(--input-label-font-weight, 400);
-    color: var(--input-label-required-color, var(--color-system-error-text));
+    color: var(--input-label-required-color, var(--color-text-danger-default));
     margin-left: 0;
   }
 
@@ -238,11 +238,11 @@ input {
 /* State: focus */
 :host(.is-focused) {
   .container {
-    border-color: var(--input-container-border-color-focus, var(--color-neutral-border-weaker));
+    border-color: var(--input-container-border-color-focus, var(--color-border-base-tertiary));
   }
 
   input {
-    caret-color: var(--input-container-border-color-focus, var(--color-neutral-border-weaker));
+    caret-color: var(--input-container-border-color-focus, var(--color-border-base-tertiary));
   }
 }
 
@@ -253,57 +253,57 @@ input {
   cursor: not-allowed;
 
   .container {
-    border-color: var(--input-container-border-color-disabled, var(--color-neutral-border-weaker));
-    background-color: var(--input-background-color-disabled, var(--color-neutral-background-base));
+    border-color: var(--input-container-border-color-disabled, var(--color-border-base-tertiary));
+    background-color: var(--input-background-color-disabled, var(--color-background-base-default));
     pointer-events: none;
   }
 
   input {
-    color: var(--input-container-color-disabled, var(--color-neutral-text-weaker));
+    color: var(--input-container-color-disabled, var(--color-text-base-tertiary));
 
     &::placeholder {
-      color: var(--input-container-color-disabled, var(--color-neutral-text-weaker));
+      color: var(--input-container-color-disabled, var(--color-text-base-tertiary));
     }
   }
 
   label {
-    color: var(--input-label-color-disabled, var(--color-neutral-text-weaker));
+    color: var(--input-label-color-disabled, var(--color-text-base-tertiary));
   }
 
   ::slotted([slot='icon-left']),
   ::slotted([slot='icon-right']) {
-    --icon-color: var(--input-icon-color-disabled, var(--color-neutral-text-weaker));
+    --icon-color: var(--input-icon-color-disabled, var(--color-text-base-tertiary));
   }
 
   .line {
-    background-color: var(--input-container-border-color-disabled, var(--color-neutral-background-base));
+    background-color: var(--input-container-border-color-disabled, var(--color-background-base-default));
   }
 
   .helper-wrapper {
-    color: var(--input-container-color-disabled, var(--color-neutral-text-weaker));
+    color: var(--input-container-color-disabled, var(--color-text-base-tertiary));
   }
 
   .required-asterisk,
   .label-info-icon,
   .clear-button {
-    --icon-color: var(--input-icon-color-disabled, var(--color-neutral-text-weaker));
+    --icon-color: var(--input-icon-color-disabled, var(--color-text-base-tertiary));
     visibility: hidden;
     pointer-events: none;
   }
 }
 :host([disabled].label-position-inside.is-focused) label,
 :host([disabled].label-position-inside.has-value) label {
-  color: var(--input-label-color-disabled, var(--color-neutral-text-weakest));
+  color: var(--input-label-color-disabled, var(--color-text-base-tertiary));
 }
 
 /* State: invalid */
 :host([invalid]) {
   .container {
-    border-color: var(--input-container-border-color-invalid, var(--color-system-error-icon));
+    border-color: var(--input-container-border-color-invalid, var(--color-icon-danger-default));
   }
 
   .helper-wrapper {
-    color: var(--input-bottom-helper-color-invalid, var(--color-system-error-text));
+    color: var(--input-bottom-helper-color-invalid, var(--color-text-danger-default));
   }
 }
 
@@ -313,10 +313,10 @@ input {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    font-size: var(--input-label-inside-font-size, var(--font-size-sm));
+    font-size: var(--input-label-inside-font-size, var(--font-size-14));
     transition: var(--input-label-inside-transition, transform 150ms ease, font-size 150ms ease);
     pointer-events: none;
-    color: var(--input-label-color-default, var(--color-neutral-text-weaker));
+    color: var(--input-label-color-default, var(--color-text-base-tertiary));
   }
 
   input::placeholder {
@@ -327,20 +327,20 @@ input {
 /* State: skeleton */
 :host(.is-skeleton) {
   cor-skeleton[slot='label-text'] {
-    --skeleton-height: var(--input-label-line-height, var(--line-height-2xs));
+    --skeleton-height: var(--input-label-line-height, var(--line-height-12));
     --skeleton-width: 60px;
-    --skeleton-border-radius: var(--radius-2xl);
+    --skeleton-border-radius: var(--border-radius-24);
   }
 
   cor-skeleton:not([slot]) {
     --skeleton-height: var(--input-height);
     --skeleton-width: 100%;
-    --skeleton-border-radius: var(--radius-md);
+    --skeleton-border-radius: var(--border-radius-8);
   }
 
   cor-skeleton[slot='helper-text'] {
-    --skeleton-height: var(--input-bottom-helper-line-height, var(--line-height-2xs));
+    --skeleton-height: var(--input-bottom-helper-line-height, var(--line-height-12));
     --skeleton-width: 80px;
-    --skeleton-border-radius: var(--radius-2xl);
+    --skeleton-border-radius: var(--border-radius-24);
   }
 }

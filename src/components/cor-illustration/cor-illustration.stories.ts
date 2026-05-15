@@ -69,11 +69,11 @@ export const SideBySide: StoryObj = {
     <div style="display: flex; gap: 24px; align-items: center; flex-wrap: wrap;">
       <div style="display: flex; flex-direction: column; align-items: center;">
         <cor-illustration name="map" alt="Map illustration" width="120" height="120"></cor-illustration>
-        <p style="margin: 4px 0; font-size: 12px; color: var(--color-neutral-text-weak);">120x120</p>
+        <p style="margin: 4px 0; font-size: 12px; color: var(--color-text-base-secondary);">120x120</p>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center;">
         <cor-illustration name="map" alt="Map illustration" width="80" height="80"></cor-illustration>
-        <p style="margin: 4px 0; font-size: 12px; color: var(--color-neutral-text-weak);">80x80</p>
+        <p style="margin: 4px 0; font-size: 12px; color: var(--color-text-base-secondary);">80x80</p>
       </div>
     </div>
   `,
@@ -100,7 +100,7 @@ export const AllGrid: StoryObj = {
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 24px;
       padding: 24px;
-      background: var(--color-neutral-background-default);
+      background: var(--color-background-base-default);
       border-radius: 8px;
     ">
       ${ILLUSTRATION_NAMES_OPTIONS.map(
@@ -111,9 +111,9 @@ export const AllGrid: StoryObj = {
           align-items: center;
           gap: 8px;
           padding: 16px;
-          background: var(--color-neutral-background-base);
+          background: var(--color-background-base-default);
           border-radius: 4px;
-          border: 1px solid var(--color-neutral-border-weakest);
+          border: 1px solid var(--color-border-base-subtle);
         ">
           <cor-illustration
             name="${name}"
@@ -123,7 +123,7 @@ export const AllGrid: StoryObj = {
           ></cor-illustration>
           <div style="
             font-size: 12px;
-            color: var(--color-neutral-text-weak);
+            color: var(--color-text-base-secondary);
             text-align: center;
             font-family: monospace;
           ">${name}</div>

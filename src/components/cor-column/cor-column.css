@@ -22,7 +22,7 @@
 .column-content {
   display: flex;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: var(--spacing-12);
   width: 100%;
   min-height: var(--_table-cell-min-height);
   padding: var(--_table-cell-py) var(--_table-cell-px);

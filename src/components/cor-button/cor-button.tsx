@@ -11,17 +11,17 @@ import { BUTTON_TAGS } from './cor-button.constants';
  * @slot defaultSlot - the element contents to render. It can be an a or button tag.
  *
  * Base button properties:
- * @cssprop --button-gap - Gap between button content (default: var(--spacing-xs))
+ * @cssprop --button-gap - Gap between button content (default: var(--spacing-12))
  * @cssprop --button-font-family - Font family for button text (default: var(--font-family-pro-display))
- * @cssprop --button-font-weight - Font weight for button text (default: var(--font-weight-semi-bold))
- * @cssprop --button-line-height - Line height for button text (default: var(--line-height-md))
- * @cssprop --button-font-size - Font size for button text (default: var(--font-size-sm))
- * @cssprop --button-padding-block - Vertical padding (default: var(--space-xs))
- * @cssprop --button-padding-inline - Horizontal padding (default: var(--spacing-md))
- * @cssprop --button-border-radius - Border radius (default: var(--radius-md))
- * @cssprop --button-border-width - Border width (default: var(--spacing-px))
- * @cssprop --button-background-color - Background color (default: var(--color-neutral-background-default))
- * @cssprop --button-size - Minimum height and width (default: var(--space-4xl))
+ * @cssprop --button-font-weight - Font weight for button text (default: var(--font-weight-semibold))
+ * @cssprop --button-line-height - Line height for button text (default: var(--line-height-20))
+ * @cssprop --button-font-size - Font size for button text (default: var(--font-size-14))
+ * @cssprop --button-padding-block - Vertical padding (default: var(--spacing-12))
+ * @cssprop --button-padding-inline - Horizontal padding (default: var(--spacing-20))
+ * @cssprop --button-border-radius - Border radius (default: var(--border-radius-8))
+ * @cssprop --button-border-width - Border width (default: var(--spacing-2))
+ * @cssprop --button-background-color - Background color (default: var(--color-background-base-default))
+ * @cssprop --button-size - Minimum height and width (default: var(--spacing-48))
  *
  * Size-specific properties:
  * @cssprop --button-{ButtonSize}-font-size - Font size for specific button size

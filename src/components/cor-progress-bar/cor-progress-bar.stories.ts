@@ -132,7 +132,7 @@ export const AllSizes: Story = {
   render: () => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: 24px; padding: 16px; width: 372px;">
       <div>
-        <p style="margin: 0 0 8px; font-size: 12px; font-weight: 600; color: var(--color-neutral-text-weak);">lg (12px)</p>
+        <p style="margin: 0 0 8px; font-size: 12px; font-weight: 600; color: var(--color-text-base-secondary);">lg (12px)</p>
         <cor-progress-bar
           type="${ProgressBarType.DEFAULT}"
           size="${ProgressBarSize.LG}"
@@ -143,7 +143,7 @@ export const AllSizes: Story = {
         </cor-progress-bar>
       </div>
       <div>
-        <p style="margin: 0 0 8px; font-size: 12px; font-weight: 600; color: var(--color-neutral-text-weak);">md (8px)</p>
+        <p style="margin: 0 0 8px; font-size: 12px; font-weight: 600; color: var(--color-text-base-secondary);">md (8px)</p>
         <cor-progress-bar
           type="${ProgressBarType.DEFAULT}"
           size="${ProgressBarSize.MD}"
@@ -154,7 +154,7 @@ export const AllSizes: Story = {
         </cor-progress-bar>
       </div>
       <div>
-        <p style="margin: 0 0 8px; font-size: 12px; font-weight: 600; color: var(--color-neutral-text-weak);">sm (4px)</p>
+        <p style="margin: 0 0 8px; font-size: 12px; font-weight: 600; color: var(--color-text-base-secondary);">sm (4px)</p>
         <cor-progress-bar
           type="${ProgressBarType.DEFAULT}"
           size="${ProgressBarSize.SM}"
@@ -173,7 +173,7 @@ export const AllTypes: Story = {
   render: () => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: 24px; padding: 16px; width: 372px;">
       <div>
-        <p style="margin: 0 0 8px; font-size: 12px; font-weight: 600; color: var(--color-neutral-text-weak);">Default (Info)</p>
+        <p style="margin: 0 0 8px; font-size: 12px; font-weight: 600; color: var(--color-text-base-secondary);">Default (Info)</p>
         <cor-progress-bar
           type="${ProgressBarType.DEFAULT}"
           size="${ProgressBarSize.LG}"
@@ -185,7 +185,7 @@ export const AllTypes: Story = {
         </cor-progress-bar>
       </div>
       <div>
-        <p style="margin: 0 0 8px; font-size: 12px; font-weight: 600; color: var(--color-neutral-text-weak);">Error</p>
+        <p style="margin: 0 0 8px; font-size: 12px; font-weight: 600; color: var(--color-text-base-secondary);">Error</p>
         <cor-progress-bar
           type="${ProgressBarType.ERROR}"
           size="${ProgressBarSize.LG}"

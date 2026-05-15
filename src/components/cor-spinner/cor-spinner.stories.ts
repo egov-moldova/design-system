@@ -38,23 +38,23 @@ export const AllSizes = {
     <div style="display: flex; align-items: center; gap: 32px; padding: 24px; flex-wrap: wrap;">
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
         <cor-spinner size="xlg"></cor-spinner>
-        <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">xlg (56px)</span>
+        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">xlg (56px)</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
         <cor-spinner size="lg"></cor-spinner>
-        <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">lg (44px)</span>
+        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">lg (44px)</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
         <cor-spinner size="md"></cor-spinner>
-        <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">md (32px)</span>
+        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">md (32px)</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
         <cor-spinner size="sm"></cor-spinner>
-        <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">sm (24px)</span>
+        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">sm (24px)</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
         <cor-spinner size="xsm"></cor-spinner>
-        <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">xsm (16px)</span>
+        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">xsm (16px)</span>
       </div>
     </div>
   `,
@@ -104,23 +104,23 @@ export const AllSizesWithoutDots = {
     <div style="display: flex; align-items: center; gap: 32px; padding: 24px; flex-wrap: wrap;">
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
         <cor-spinner size="xlg" hide-dots></cor-spinner>
-        <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">xlg (56px)</span>
+        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">xlg (56px)</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
         <cor-spinner size="lg" hide-dots></cor-spinner>
-        <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">lg (44px)</span>
+        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">lg (44px)</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
         <cor-spinner size="md" hide-dots></cor-spinner>
-        <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">md (32px)</span>
+        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">md (32px)</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
         <cor-spinner size="sm" hide-dots></cor-spinner>
-        <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">sm (24px)</span>
+        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">sm (24px)</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
         <cor-spinner size="xsm" hide-dots></cor-spinner>
-        <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">xsm (16px)</span>
+        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">xsm (16px)</span>
       </div>
     </div>
   `,

@@ -148,31 +148,31 @@ export const AllStatesTable: StoryObj = {
 export const ComplexShowcase: StoryObj = {
   render: () => {
     return /*html*/ `
-      <div style="display: grid; gap: 32px; padding: 24px; background: var(--color-neutral-background-base);">
+      <div style="display: grid; gap: 32px; padding: 24px; background: var(--color-background-base-default);">
         <h2 style="margin: 0; font-size: 18px; font-weight: 600;">Controls / Toggle</h2>
 
         <!-- MD Size Section -->
         <div style="display: grid; gap: 24px;">
-          <h3 style="margin: 0; font-size: 14px; font-weight: 600; color: var(--color-neutral-text-weak);">Size: MD</h3>
+          <h3 style="margin: 0; font-size: 14px; font-weight: 600; color: var(--color-text-base-secondary);">Size: MD</h3>
 
           <div style="display: grid; grid-template-columns: auto repeat(2, 1fr); gap: 24px 32px; align-items: center;">
             <!-- Header Row -->
-            <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-weakest);">State</div>
-            <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-weakest);">Off</div>
-            <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-weakest);">On</div>
+            <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-tertiary);">State</div>
+            <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-tertiary);">Off</div>
+            <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-tertiary);">On</div>
 
             <!-- Default Row -->
-            <div style="font-size: 12px; color: var(--color-neutral-text-weak);">Default</div>
+            <div style="font-size: 12px; color: var(--color-text-base-secondary);">Default</div>
             <cor-toggle size="md">Label</cor-toggle>
             <cor-toggle size="md" checked>Label</cor-toggle>
 
             <!-- Disabled Row -->
-            <div style="font-size: 12px; color: var(--color-neutral-text-weak);">Disabled</div>
+            <div style="font-size: 12px; color: var(--color-text-base-secondary);">Disabled</div>
             <cor-toggle size="md" disabled>Label</cor-toggle>
             <cor-toggle size="md" disabled checked>Label</cor-toggle>
 
             <!-- Invalid Row -->
-            <div style="font-size: 12px; color: var(--color-neutral-text-weak);">Invalid</div>
+            <div style="font-size: 12px; color: var(--color-text-base-secondary);">Invalid</div>
             <cor-toggle size="md" invalid>Label</cor-toggle>
             <cor-toggle size="md" invalid checked>Label</cor-toggle>
           </div>
@@ -180,25 +180,25 @@ export const ComplexShowcase: StoryObj = {
 
         <!-- SM Size Section -->
         <div style="display: grid; gap: 24px;">
-          <h3 style="margin: 0; font-size: 14px; font-weight: 600; color: var(--color-neutral-text-weak);">Size: SM</h3>
+          <h3 style="margin: 0; font-size: 14px; font-weight: 600; color: var(--color-text-base-secondary);">Size: SM</h3>
 
           <div style="display: grid; grid-template-columns: auto repeat(2, 1fr); gap: 24px 32px; align-items: center;">
             <!-- Header Row -->
-            <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-weakest);">State</div>
-            <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-weakest);">Off</div>
-            <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-weakest);">On</div>
+            <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-tertiary);">State</div>
+            <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-tertiary);">Off</div>
+            <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-tertiary);">On</div>
 
             <!-- Default Row -->
-            <div style="font-size: 12px; color: var(--color-neutral-text-weak);">Default</div>
+            <div style="font-size: 12px; color: var(--color-text-base-secondary);">Default</div>
             <cor-toggle size="sm">Label</cor-toggle>
             <cor-toggle size="sm" checked>Label</cor-toggle>
             <!-- Disabled Row -->
-            <div style="font-size: 12px; color: var(--color-neutral-text-weak);">Disabled</div>
+            <div style="font-size: 12px; color: var(--color-text-base-secondary);">Disabled</div>
             <cor-toggle size="sm" disabled>Label</cor-toggle>
             <cor-toggle size="sm" disabled checked>Label</cor-toggle>
 
             <!-- Invalid Row -->
-            <div style="font-size: 12px; color: var(--color-neutral-text-weak);">Invalid</div>
+            <div style="font-size: 12px; color: var(--color-text-base-secondary);">Invalid</div>
             <cor-toggle size="sm" invalid>Label</cor-toggle>
             <cor-toggle size="sm" invalid checked>Label</cor-toggle>
           </div>

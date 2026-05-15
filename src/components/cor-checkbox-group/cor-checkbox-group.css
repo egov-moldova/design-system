@@ -11,12 +11,12 @@
 
 .checkbox-group-legend {
   padding: 0;
-  margin-bottom: var(--checkbox-group-gap-vertical, var(--spacing-xs));
+  margin-bottom: var(--checkbox-group-gap-vertical, var(--spacing-12));
   font-family: var(--font-family-sans);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-14);
   font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-md);
-  color: var(--color-neutral-text-default);
+  line-height: var(--line-height-20);
+  color: var(--color-text-base-default);
 }
 
 .checkbox-group {
@@ -26,13 +26,13 @@
 /* Vertical layout (single column) */
 .checkbox-group--vertical {
   flex-direction: column;
-  gap: var(--checkbox-group-gap-vertical, var(--spacing-xs));
+  gap: var(--checkbox-group-gap-vertical, var(--spacing-12));
 }
 
 /* Horizontal layout */
 .checkbox-group--horizontal {
   flex-direction: row;
-  gap: var(--checkbox-group-gap-horizontal, var(--spacing-sm));
+  gap: var(--checkbox-group-gap-horizontal, var(--spacing-16));
   flex-wrap: wrap;
 }
 
@@ -40,7 +40,7 @@
 .checkbox-group--multi-column {
   display: grid;
   grid-template-rows: repeat(auto-fill, auto);
-  gap: var(--checkbox-group-gap-vertical, var(--spacing-xs)) var(--checkbox-group-gap-column, var(--spacing-sm));
+  gap: var(--checkbox-group-gap-vertical, var(--spacing-12)) var(--checkbox-group-gap-column, var(--spacing-16));
   align-items: start;
 }
 
@@ -51,14 +51,14 @@
 
 /* Helper text */
 .checkbox-group-helper {
-  margin-top: var(--checkbox-group-gap-vertical, var(--spacing-xs));
+  margin-top: var(--checkbox-group-gap-vertical, var(--spacing-12));
   font-family: var(--font-family-sans);
-  font-size: var(--font-size-xs);
-  line-height: var(--line-height-sm);
-  color: var(--color-neutral-text-weaker);
+  font-size: var(--font-size-12);
+  line-height: var(--line-height-16);
+  color: var(--color-text-base-tertiary);
 }
 
 /* Invalid state helper text */
 :host([invalid]) .checkbox-group-helper {
-  color: var(--color-system-error-icon);
+  color: var(--color-icon-danger-default);
 }

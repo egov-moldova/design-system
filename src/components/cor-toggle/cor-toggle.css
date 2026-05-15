@@ -1,13 +1,13 @@
 :host {
   display: inline-flex;
   font-family: var(--controls-font-family, var(--font-family-sans));
-  font-weight: var(--controls-font-weight, var(--font-weight-normal));
+  font-weight: var(--controls-font-weight, var(--font-weight-regular));
 }
 
 .container {
   display: inline-flex;
   align-items: center;
-  gap: var(--controls-gap, var(--spacing-xs));
+  gap: var(--controls-gap, var(--spacing-12));
   cursor: pointer;
   user-select: none;
   position: relative;
@@ -50,7 +50,7 @@ input[type='checkbox'] {
   height: var(--toggle-thumb-size);
   background-color: var(--toggle-thumb-background);
   border-radius: 50%;
-  box-shadow: var(--toggle-thumb-shadow, var(--shadow-sm));
+  box-shadow: var(--toggle-thumb-shadow, var(--drop-shadow-100));
   transition:
     left 150ms ease-in-out,
     background-color 150ms ease-in-out;

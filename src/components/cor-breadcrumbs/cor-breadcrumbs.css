@@ -13,7 +13,7 @@ ol {
   list-style: none;
   margin: 0;
   padding: 0;
-  gap: var(--breadcrumbs-gap, var(--spacing-xs));
+  gap: var(--breadcrumbs-gap, var(--spacing-12));
   flex-wrap: wrap;
 }
 
@@ -24,27 +24,27 @@ ol {
 
 ::slotted(*:not(:last-child))::after {
   content: '/';
-  color: var(--breadcrumbs-separator-color, var(--color-neutral-text-weaker));
-  margin-inline-start: var(--breadcrumbs-gap, var(--spacing-xs));
+  color: var(--breadcrumbs-separator-color, var(--color-text-base-tertiary));
+  margin-inline-start: var(--breadcrumbs-gap, var(--spacing-12));
   pointer-events: none;
   user-select: none;
 }
 
 ::slotted(:not(cor-link):not(cor-breadcrumbs-ellipsis)) {
-  color: var(--breadcrumbs-current-page-color-default, var(--color-neutral-text-weak));
-  font-size: var(--breadcrumbs-current-page-font-size, var(--font-size-sm));
-  line-height: var(--breadcrumbs-current-page-line-height, var(--line-height-md));
-  font-weight: var(--breadcrumbs-current-page-font-weight, var(--font-weight-normal));
+  color: var(--breadcrumbs-current-page-color-default, var(--color-text-base-secondary));
+  font-size: var(--breadcrumbs-current-page-font-size, var(--font-size-14));
+  line-height: var(--breadcrumbs-current-page-line-height, var(--line-height-20));
+  font-weight: var(--breadcrumbs-current-page-font-weight, var(--font-weight-regular));
 }
 
 :host([disabled]) ::slotted(:not(cor-link):not(cor-breadcrumbs-ellipsis)) {
-  color: var(--breadcrumbs-current-page-color-disabled, var(--color-neutral-text-weakest));
+  color: var(--breadcrumbs-current-page-color-disabled, var(--color-text-base-tertiary));
 }
 
 ::slotted(cor-skeleton) {
-  --skeleton-border-radius: var(--breadcrumbs-item-border-radius, var(--radius-sm));
+  --skeleton-border-radius: var(--breadcrumbs-item-border-radius, var(--border-radius-4));
 }
 
 ::slotted(cor-link[skeleton]) {
-  --cor-link-skeleton-border-radius: var(--breadcrumbs-item-border-radius, var(--radius-sm));
+  --cor-link-skeleton-border-radius: var(--breadcrumbs-item-border-radius, var(--border-radius-4));
 }

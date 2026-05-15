@@ -23,7 +23,7 @@
 
   ::slotted([slot='description']) {
     line-height: 0;
-    color: var(--color-neutral-text-weaker);
+    color: var(--color-text-base-tertiary);
   }
 }
 

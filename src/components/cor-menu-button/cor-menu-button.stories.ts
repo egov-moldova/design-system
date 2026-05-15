@@ -122,7 +122,7 @@ export const IconOnly: StoryObj = {
   },
   render: () => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: 16px; align-items: flex-start;">
-      <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-default);">Primary — Icon Only</div>
+      <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-default);">Primary — Icon Only</div>
       <div style="display: flex; align-items: center; gap: 8px;">
         <cor-menu-button value="io-1" type="primary" icon-only>
           <cor-icon slot="icon" name="${ICON_NAMES.HOME}" color="currentColor"></cor-icon>
@@ -148,7 +148,7 @@ export const AllTypes: StoryObj = {
   render: () => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: 24px; align-items: flex-start;">
       <div>
-        <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-default); margin-bottom: 8px;">Primary</div>
+        <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-default); margin-bottom: 8px;">Primary</div>
         <div style="display: flex; align-items: center; gap: 8px;">
           <cor-menu-button value="p-1" type="primary">
             <cor-icon slot="icon-left" name="${ICON_NAMES.HOME}" color="currentColor"></cor-icon>
@@ -166,7 +166,7 @@ export const AllTypes: StoryObj = {
       </div>
 
       <div>
-        <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-default); margin-bottom: 8px;">Secondary</div>
+        <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-default); margin-bottom: 8px;">Secondary</div>
         <div style="display: flex; align-items: center; gap: 8px;">
           <cor-menu-button value="s-1" type="secondary">
             <cor-icon slot="icon-left" name="${ICON_NAMES.HOME}" color="currentColor"></cor-icon>
@@ -184,7 +184,7 @@ export const AllTypes: StoryObj = {
       </div>
 
       <div>
-        <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-default); margin-bottom: 8px;">Tertiary</div>
+        <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-default); margin-bottom: 8px;">Tertiary</div>
         <div style="display: flex; align-items: center; gap: 8px;">
           <cor-menu-button value="t-1" type="tertiary">
             <cor-icon slot="icon-left" name="${ICON_NAMES.HOME}" color="currentColor"></cor-icon>
@@ -214,7 +214,7 @@ export const States: StoryObj = {
       <div style="font-weight: 600; font-size: 12px;">Secondary</div>
       <div style="font-weight: 600; font-size: 12px;">Tertiary</div>
 
-      <div style="font-size: 12px; color: var(--color-neutral-text-weaker);">Default</div>
+      <div style="font-size: 12px; color: var(--color-text-base-tertiary);">Default</div>
       <cor-menu-button value="p-def" type="primary">
         <cor-icon slot="icon-left" name="${ICON_NAMES.HOME}" color="currentColor"></cor-icon>
         Label
@@ -236,7 +236,7 @@ export const States: StoryObj = {
         <cor-badge-interactive size="md">13</cor-badge-interactive>
       </cor-menu-button>
 
-      <div style="font-size: 12px; color: var(--color-neutral-text-weaker);">Selected</div>
+      <div style="font-size: 12px; color: var(--color-text-base-tertiary);">Selected</div>
       <cor-menu-button value="p-sel" type="primary" selected>
         <cor-icon slot="icon-left" name="${ICON_NAMES.HOME}" color="currentColor"></cor-icon>
         Label
@@ -258,7 +258,7 @@ export const States: StoryObj = {
         <cor-badge-interactive size="md">13</cor-badge-interactive>
       </cor-menu-button>
 
-      <div style="font-size: 12px; color: var(--color-neutral-text-weaker);">Disabled</div>
+      <div style="font-size: 12px; color: var(--color-text-base-tertiary);">Disabled</div>
       <cor-menu-button value="p-dis" type="primary" disabled>
         <cor-icon slot="icon-left" name="${ICON_NAMES.HOME}" color="currentColor"></cor-icon>
         Label
@@ -280,7 +280,7 @@ export const States: StoryObj = {
         <cor-badge-interactive size="md">13</cor-badge-interactive>
       </cor-menu-button>
 
-      <div style="font-size: 12px; color: var(--color-neutral-text-weaker);">Skeleton</div>
+      <div style="font-size: 12px; color: var(--color-text-base-tertiary);">Skeleton</div>
       <cor-menu-button value="p-sk" type="primary" skeleton></cor-menu-button>
       <cor-menu-button value="io-sk" type="primary" skeleton icon-only></cor-menu-button>
       <cor-menu-button value="s-sk" type="secondary" skeleton></cor-menu-button>
@@ -297,7 +297,7 @@ export const EventLogging: StoryObj = {
     <div style="display: flex; flex-direction: column; gap: 24px;">
       <div style="display: flex; gap: 16px; align-items: flex-start;">
         <div style="display: flex; flex-direction: column; gap: 12px;">
-          <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-default);">Menu Buttons</div>
+          <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-default);">Menu Buttons</div>
           <div style="display: flex; gap: 16px;">
             <cor-menu-button id="menu-btn-1" value="home" type="primary">
               <cor-icon slot="icon-left" name="${ICON_NAMES.HOME}" color="currentColor"></cor-icon>
@@ -332,13 +332,13 @@ export const EventLogging: StoryObj = {
         </div>
       </div>
 
-      <div style="font-size: 12px; color: var(--color-neutral-text-weaker); margin-top: 32px;">Click a menu button — the corMenuSelect event is emitted with the button's value.</div>
+      <div style="font-size: 12px; color: var(--color-text-base-tertiary); margin-top: 32px;">Click a menu button — the corMenuSelect event is emitted with the button's value.</div>
 
-      <div id="menu-output" style="padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
+      <div id="menu-output" style="padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
         <div style="font-weight: 600; margin-bottom: 8px;">Current Value:</div>
         <div id="menu-output-content">-</div>
       </div>
-      <div id="menu-log" style="padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
+      <div id="menu-log" style="padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
         <div style="font-weight: 600; margin-bottom: 8px;">Event Log:</div>
         <div id="menu-log-content">Click a menu button to see events...</div>
       </div>

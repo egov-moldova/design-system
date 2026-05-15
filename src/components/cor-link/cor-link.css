@@ -13,10 +13,10 @@ Link CSS File
   --link-border-radius: var(--link-label-border-radius-md);
   display: inline-flex;
   align-items: center;
-  gap: var(--link-label-gap-md, var(--spacing-xs));
+  gap: var(--link-label-gap-md, var(--spacing-12));
   text-decoration: none;
   cursor: pointer;
-  color: var(--link-label-color-default, var(--color-primary-text-weak));
+  color: var(--link-label-color-default, var(--color-text-brand-on-secondary));
   transition: color var(--duration-fast, 0.15s) ease-in-out;
   border-radius: var(--link-border-radius);
 }
@@ -62,7 +62,7 @@ Link CSS File
 /* ---- Focus visible ---- */
 .link:focus-visible {
   outline: var(--link-label-outline-width-focus, 2px) solid
-    var(--link-label-outline-color-focus, var(--color-secondary-border));
+    var(--link-label-outline-color-focus, var(--color-border-brand-default));
   outline-offset: var(--link-label-outline-offset-focus, 2px);
 }
 
@@ -99,59 +99,59 @@ Link CSS File
 
 /* ---- State: default ---- */
 :host([state='default']) .link {
-  color: var(--link-label-color-default, var(--color-primary-text-weak));
+  color: var(--link-label-color-default, var(--color-text-brand-on-secondary));
 }
 
 /* ---- State: hover ---- */
 :host([state='hover']) .link {
-  color: var(--link-label-color-hover, var(--color-primary-text-weaker));
+  color: var(--link-label-color-hover, var(--color-text-brand-on-secondary));
   cursor: pointer;
 }
 
 :host([state='default']) .link:hover,
 :host([state='focus']) .link:hover {
-  color: var(--link-label-color-hover, var(--color-primary-text-weaker));
+  color: var(--link-label-color-hover, var(--color-text-brand-on-secondary));
 }
 
 /* ---- State: pressed / active ---- */
 :host([state='pressed']) .link {
-  color: var(--link-label-color-active, var(--color-primary-text-default));
+  color: var(--link-label-color-active, var(--color-text-brand-default));
 }
 
 :host([state='default']) .link:active,
 :host([state='hover']) .link:active,
 :host([state='focus']) .link:active {
-  color: var(--link-label-color-active, var(--color-primary-text-default));
+  color: var(--link-label-color-active, var(--color-text-brand-default));
 }
 
 /* ---- State: focus ---- */
 :host([state='focus']) .link {
-  color: var(--link-label-color-default, var(--color-primary-text-weak));
+  color: var(--link-label-color-default, var(--color-text-brand-on-secondary));
   outline: var(--link-label-outline-width-focus, 2px) solid
-    var(--link-label-outline-color-focus, var(--color-secondary-border));
+    var(--link-label-outline-color-focus, var(--color-border-brand-default));
   outline-offset: var(--link-label-outline-offset-focus, 2px);
 }
 
 /* ---- State: disabled ---- */
 :host([state='disabled']) .link,
 :host([disabled]) .link {
-  color: var(--link-label-color-disabled, var(--color-neutral-text-weak));
+  color: var(--link-label-color-disabled, var(--color-text-base-secondary));
   cursor: not-allowed;
   pointer-events: none;
 }
 
 /* ---- State: error ---- */
 :host([state='error']) .link {
-  color: var(--link-label-color-error, var(--color-system-error-text));
+  color: var(--link-label-color-error, var(--color-text-danger-default));
 }
 
 :host([state='error']) .link:hover {
-  color: var(--link-label-color-error, var(--color-system-error-text));
+  color: var(--link-label-color-error, var(--color-text-danger-default));
 }
 
 /* ---- Size: md (default) ---- */
 :host([size='md']) .link {
-  gap: var(--link-label-gap-md, var(--spacing-xs));
+  gap: var(--link-label-gap-md, var(--spacing-12));
   border-radius: var(--link-label-border-radius-md);
 }
 
@@ -162,7 +162,7 @@ Link CSS File
 
 /* ---- Size: sm ---- */
 :host([size='sm']) .link {
-  gap: var(--link-label-gap-sm, var(--spacing-2xs));
+  gap: var(--link-label-gap-sm, var(--spacing-12));
   border-radius: var(--link-label-border-radius-sm);
 }
 

@@ -255,7 +255,7 @@ export const EventLog: StoryObj<PaginationArgs> = {
           ${disabled}
         ></cor-pagination>
 
-        <div id="pagination-log" style="padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
+        <div id="pagination-log" style="padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
           <div style="font-weight: 600; margin-bottom: 8px;">Event Log:</div>
           <div id="${logContentId}">Click a page to see events...</div>
         </div>

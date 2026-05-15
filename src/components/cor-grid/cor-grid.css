@@ -11,11 +11,11 @@
   margin-left: auto;
   margin-right: auto;
 
-  column-gap: var(--space-xl);
-  row-gap: var(--space-xl);
+  column-gap: var(--spacing-32);
+  row-gap: var(--spacing-32);
 
-  padding-left: var(--space-8xl);
-  padding-right: var(--space-8xl);
+  padding-left: var(--spacing-80);
+  padding-right: var(--spacing-80);
 }
 
 /* Item behavior default */
@@ -67,11 +67,11 @@
   :host(.cor-grid--container) {
     max-width: var(--screen-width-fixed-mobile);
 
-    padding-left: var(--space-sm);
-    padding-right: var(--space-sm);
+    padding-left: var(--spacing-16);
+    padding-right: var(--spacing-16);
 
-    column-gap: var(--space-sm);
-    row-gap: var(--space-sm);
+    column-gap: var(--spacing-16);
+    row-gap: var(--spacing-16);
   }
 
   :host(.cor-grid--item.cor-grid--xs-1) {
@@ -118,11 +118,11 @@
   :host(.cor-grid--container) {
     max-width: var(--screen-width-fixed-tablet);
 
-    padding-left: var(--space-xl);
-    padding-right: var(--space-xl);
+    padding-left: var(--spacing-32);
+    padding-right: var(--spacing-32);
 
-    column-gap: var(--space-lg);
-    row-gap: var(--space-lg);
+    column-gap: var(--spacing-24);
+    row-gap: var(--spacing-24);
   }
 
   :host(.cor-grid--item.cor-grid--sm-1) {
@@ -169,11 +169,11 @@
   :host(.cor-grid--container) {
     max-width: var(--screen-width-fixed-laptop);
 
-    padding-left: var(--space-6xl);
-    padding-right: var(--space-6xl);
+    padding-left: var(--spacing-56);
+    padding-right: var(--spacing-56);
 
-    column-gap: var(--space-lg);
-    row-gap: var(--space-lg);
+    column-gap: var(--spacing-24);
+    row-gap: var(--spacing-24);
   }
 
   :host(.cor-grid--item.cor-grid--md-1) {
@@ -220,11 +220,11 @@
   :host(.cor-grid--container) {
     max-width: var(--screen-width-fixed-desktop);
 
-    padding-left: var(--space-8xl);
-    padding-right: var(--space-8xl);
+    padding-left: var(--spacing-80);
+    padding-right: var(--spacing-80);
 
-    column-gap: var(--space-xl);
-    row-gap: var(--space-xl);
+    column-gap: var(--spacing-32);
+    row-gap: var(--spacing-32);
   }
 
   :host(.cor-grid--item.cor-grid--lg-1) {

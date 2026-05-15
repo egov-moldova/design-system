@@ -358,7 +358,7 @@ export const EventLogging: StoryObj = {
           <cor-select-item variant="label-only" value="48" label="48"></cor-select-item>
         </cor-select>
 
-        <div style="padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 320px;">
+        <div style="padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 320px;">
           <div style="font-weight: 600; margin-bottom: 8px;">Event Log:</div>
           <div id="${logContentId}">Select an option to see events...</div>
         </div>

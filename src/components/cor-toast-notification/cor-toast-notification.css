@@ -5,53 +5,53 @@
 
 :host {
   /* Local colour tokens — default state (info) */
-  --_bg-color: var(--toast-notification-container-background-info, var(--color-neutral-background-base));
-  --_border-color: var(--toast-notification-container-border-info, var(--color-system-info-border));
-  --_title-color: var(--toast-notification-title-color-info, var(--color-neutral-text-default));
-  --_subtitle-color: var(--toast-notification-subtitle-color, var(--color-neutral-text-weak));
-  --_meta-color: var(--toast-notification-meta-color, var(--color-neutral-text-weaker));
-  --_icon-color: var(--toast-notification-icon-color-info, var(--color-system-info-icon));
+  --_bg-color: var(--toast-notification-container-background-info, var(--color-background-base-default));
+  --_border-color: var(--toast-notification-container-border-info, var(--color-border-brand-default));
+  --_title-color: var(--toast-notification-title-color-info, var(--color-text-base-default));
+  --_subtitle-color: var(--toast-notification-subtitle-color, var(--color-text-base-secondary));
+  --_meta-color: var(--toast-notification-meta-color, var(--color-text-base-tertiary));
+  --_icon-color: var(--toast-notification-icon-color-info, var(--color-icon-brand-default));
   --_icon-container-bg: var(
     --toast-notification-icon-container-background-info,
-    var(--color-system-info-background-transparent)
+    var(--color-background-brand-secondary)
   );
   --_transform-x: 0px;
 
   display: flex;
   flex-direction: row;
   align-items: stretch;
-  border-radius: var(--toast-notification-container-border-radius, var(--radius-md));
+  border-radius: var(--toast-notification-container-border-radius, var(--border-radius-8));
   background-color: var(--_bg-color);
   border: 1px solid var(--_border-color);
   box-sizing: border-box;
   position: fixed;
   inset: auto;
-  bottom: var(--spacing-lg, 24px);
-  right: var(--spacing-lg, 24px);
+  bottom: var(--spacing-24, 24px);
+  right: var(--spacing-24, 24px);
   width: 420px;
-  max-width: calc(100vw - 2 * var(--spacing-md, 20px));
+  max-width: calc(100vw - 2 * var(--spacing-20, 20px));
   z-index: var(--z-index-toast, 500);
-  box-shadow: var(--toast-notification-elevation, var(--shadow-xl));
+  box-shadow: var(--toast-notification-elevation, var(--drop-shadow-400));
   animation: toast-slide-in 200ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* Position overrides */
 :host(.position-top-right) {
-  top: var(--spacing-lg, 24px);
-  right: var(--spacing-lg, 24px);
+  top: var(--spacing-24, 24px);
+  right: var(--spacing-24, 24px);
   bottom: auto;
   left: auto;
 }
 
 :host(.position-top-left) {
-  top: var(--spacing-lg, 24px);
-  left: var(--spacing-lg, 24px);
+  top: var(--spacing-24, 24px);
+  left: var(--spacing-24, 24px);
   bottom: auto;
   right: auto;
 }
 
 :host(.position-top-center) {
-  top: var(--spacing-lg, 24px);
+  top: var(--spacing-24, 24px);
   left: 50%;
   bottom: auto;
   right: auto;
@@ -60,14 +60,14 @@
 }
 
 :host(.position-bottom-left) {
-  bottom: var(--spacing-lg, 24px);
-  left: var(--spacing-lg, 24px);
+  bottom: var(--spacing-24, 24px);
+  left: var(--spacing-24, 24px);
   top: auto;
   right: auto;
 }
 
 :host(.position-bottom-center) {
-  bottom: var(--spacing-lg, 24px);
+  bottom: var(--spacing-24, 24px);
   left: 50%;
   top: auto;
   right: auto;
@@ -77,46 +77,46 @@
 
 /* State overrides */
 :host(.state-error) {
-  --_bg-color: var(--toast-notification-container-background-error, var(--color-neutral-background-base));
-  --_border-color: var(--toast-notification-container-border-error, var(--color-system-error-border));
-  --_title-color: var(--toast-notification-title-color-error, var(--color-neutral-text-default));
-  --_icon-color: var(--toast-notification-icon-color-error, var(--color-system-error-icon));
+  --_bg-color: var(--toast-notification-container-background-error, var(--color-background-base-default));
+  --_border-color: var(--toast-notification-container-border-error, var(--color-border-danger-default));
+  --_title-color: var(--toast-notification-title-color-error, var(--color-text-base-default));
+  --_icon-color: var(--toast-notification-icon-color-error, var(--color-icon-danger-default));
   --_icon-container-bg: var(
     --toast-notification-icon-container-background-error,
-    var(--color-system-error-background-transparent)
+    var(--color-background-danger-secondary)
   );
 }
 
 :host(.state-warning) {
-  --_bg-color: var(--toast-notification-container-background-warning, var(--color-neutral-background-base));
-  --_border-color: var(--toast-notification-container-border-warning, var(--color-system-warning-border));
-  --_title-color: var(--toast-notification-title-color-warning, var(--color-neutral-text-default));
-  --_icon-color: var(--toast-notification-icon-color-warning, var(--color-system-warning-icon));
+  --_bg-color: var(--toast-notification-container-background-warning, var(--color-background-base-default));
+  --_border-color: var(--toast-notification-container-border-warning, var(--color-border-warning-default));
+  --_title-color: var(--toast-notification-title-color-warning, var(--color-text-base-default));
+  --_icon-color: var(--toast-notification-icon-color-warning, var(--color-icon-warning-default));
   --_icon-container-bg: var(
     --toast-notification-icon-container-background-warning,
-    var(--color-system-warning-background-transparent)
+    var(--color-background-warning-secondary)
   );
 }
 
 :host(.state-success) {
-  --_bg-color: var(--toast-notification-container-background-success, var(--color-neutral-background-base));
-  --_border-color: var(--toast-notification-container-border-success, var(--color-system-success-border));
-  --_title-color: var(--toast-notification-title-color-success, var(--color-neutral-text-default));
-  --_icon-color: var(--toast-notification-icon-color-success, var(--color-system-success-icon));
+  --_bg-color: var(--toast-notification-container-background-success, var(--color-background-base-default));
+  --_border-color: var(--toast-notification-container-border-success, var(--color-border-positive-default));
+  --_title-color: var(--toast-notification-title-color-success, var(--color-text-base-default));
+  --_icon-color: var(--toast-notification-icon-color-success, var(--color-icon-positive-default));
   --_icon-container-bg: var(
     --toast-notification-icon-container-background-success,
-    var(--color-system-success-background-transparent)
+    var(--color-background-positive-secondary)
   );
 }
 
 :host(.state-neutral) {
-  --_bg-color: var(--toast-notification-container-background-neutral, var(--color-neutral-background-base));
-  --_border-color: var(--toast-notification-container-border-neutral, var(--color-neutral-border-default));
-  --_title-color: var(--toast-notification-title-color-neutral, var(--color-neutral-text-default));
-  --_icon-color: var(--toast-notification-icon-color-neutral, var(--color-neutral-icon-default));
+  --_bg-color: var(--toast-notification-container-background-neutral, var(--color-background-base-default));
+  --_border-color: var(--toast-notification-container-border-neutral, var(--color-border-base-default));
+  --_title-color: var(--toast-notification-title-color-neutral, var(--color-text-base-default));
+  --_icon-color: var(--toast-notification-icon-color-neutral, var(--color-icon-base-default));
   --_icon-container-bg: var(
     --toast-notification-icon-container-background-neutral,
-    var(--color-neutral-transparent-weak)
+    var(--color-background-alpha-overlay-light)
   );
 }
 
@@ -126,9 +126,9 @@
   flex: 1;
   flex-direction: row;
   align-items: stretch;
-  gap: var(--toast-notification-container-gap, var(--spacing-xs));
-  padding: var(--toast-notification-container-padding-block, var(--spacing-sm))
-    var(--toast-notification-container-padding-inline, var(--spacing-ms));
+  gap: var(--toast-notification-container-gap, var(--spacing-12));
+  padding: var(--toast-notification-container-padding-block, var(--spacing-16))
+    var(--toast-notification-container-padding-inline, var(--spacing-16));
   min-width: 0;
 }
 
@@ -145,8 +145,8 @@
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: var(--toast-notification-icon-container-padding, var(--spacing-3xs));
-  border-radius: var(--toast-notification-icon-container-border-radius, var(--radius-xs));
+  padding: var(--toast-notification-icon-container-padding, var(--spacing-8));
+  border-radius: var(--toast-notification-icon-container-border-radius, var(--border-radius-4));
   background-color: var(--_icon-container-bg);
 }
 
@@ -155,7 +155,7 @@
   flex: 1;
   flex-direction: column;
   align-self: flex-start;
-  gap: var(--toast-notification-body-gap, var(--spacing-2xs));
+  gap: var(--toast-notification-body-gap, var(--spacing-12));
   min-width: 0;
 }
 
@@ -167,45 +167,45 @@
 }
 
 .title-wrapper {
-  font-size: var(--toast-notification-title-font-size, var(--font-size-sm));
-  font-weight: var(--toast-notification-title-font-weight, var(--font-weight-semi-bold));
+  font-size: var(--toast-notification-title-font-size, var(--font-size-14));
+  font-weight: var(--toast-notification-title-font-weight, var(--font-weight-semibold));
   line-height: var(--toast-notification-title-line-height, 20px);
   color: var(--_title-color);
 }
 
 .subtitle-wrapper {
-  font-size: var(--toast-notification-subtitle-font-size, var(--font-size-xs));
+  font-size: var(--toast-notification-subtitle-font-size, var(--font-size-12));
   line-height: var(--toast-notification-subtitle-line-height, 16px);
   color: var(--_subtitle-color);
 }
 
 .meta-wrapper {
-  font-size: var(--toast-notification-meta-font-size, var(--font-size-xs));
+  font-size: var(--toast-notification-meta-font-size, var(--font-size-12));
   color: var(--_meta-color);
 }
 
 .actions-wrapper {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--toast-notification-actions-gap, var(--spacing-xs));
-  padding-block: var(--spacing-2xs);
+  gap: var(--toast-notification-actions-gap, var(--spacing-12));
+  padding-block: var(--spacing-12);
 }
 
 ::slotted([slot='title']) {
-  font-size: var(--toast-notification-title-font-size, var(--font-size-sm));
-  font-weight: var(--toast-notification-title-font-weight, var(--font-weight-semi-bold));
+  font-size: var(--toast-notification-title-font-size, var(--font-size-14));
+  font-weight: var(--toast-notification-title-font-weight, var(--font-weight-semibold));
   color: var(--_title-color);
   margin: 0;
 }
 
 ::slotted([slot='subtitle']) {
-  font-size: var(--toast-notification-subtitle-font-size, var(--font-size-xs));
+  font-size: var(--toast-notification-subtitle-font-size, var(--font-size-12));
   color: var(--_subtitle-color);
   margin: 0;
 }
 
 ::slotted([slot='meta']) {
-  font-size: var(--toast-notification-meta-font-size, var(--font-size-xs));
+  font-size: var(--toast-notification-meta-font-size, var(--font-size-12));
   color: var(--_meta-color);
 }
 
@@ -227,34 +227,34 @@
   justify-content: center;
   width: var(--toast-notification-close-size, 20px);
   height: var(--toast-notification-close-size, 20px);
-  padding: var(--toast-notification-close-padding, var(--spacing-2xs));
+  padding: var(--toast-notification-close-padding, var(--spacing-12));
   border: none;
   background: transparent;
-  border-radius: var(--toast-notification-close-border-radius, var(--radius-sm));
+  border-radius: var(--toast-notification-close-border-radius, var(--border-radius-4));
   cursor: pointer;
   box-sizing: border-box;
-  --icon-color-default: var(--toast-notification-close-color-default, var(--color-neutral-icon-weak));
+  --icon-color-default: var(--toast-notification-close-color-default, var(--color-icon-base-secondary));
 
   &:hover:not(:disabled) {
     background-color: transparent;
-    --icon-color-default: var(--toast-notification-close-color-hover, var(--color-primary-icon-weaker));
+    --icon-color-default: var(--toast-notification-close-color-hover, var(--color-icon-brand-on-secondary));
   }
 
   &:active:not(:disabled) {
     background-color: transparent;
-    --icon-color-default: var(--toast-notification-close-color-active, var(--color-primary-icon-weak));
+    --icon-color-default: var(--toast-notification-close-color-active, var(--color-icon-brand-on-secondary));
   }
 
   &:focus-visible {
-    outline: 2px solid var(--toast-notification-close-focus-ring-color, var(--color-secondary-border));
+    outline: 2px solid var(--toast-notification-close-focus-ring-color, var(--color-border-brand-default));
     outline-offset: 2px;
-    --icon-color-default: var(--toast-notification-close-color-focus, var(--color-neutral-icon-weak));
+    --icon-color-default: var(--toast-notification-close-color-focus, var(--color-icon-base-secondary));
   }
 
   &:disabled {
     cursor: not-allowed;
     opacity: 0.4;
-    --icon-color-default: var(--toast-notification-close-color-disabled, var(--color-neutral-icon-weakest));
+    --icon-color-default: var(--toast-notification-close-color-disabled, var(--color-icon-base-tertiary));
   }
 }
 

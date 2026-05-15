@@ -137,7 +137,7 @@ export const EventLogging: PaginationPageSizeStory = {
         ${args.disabled ? 'disabled' : ''}
       ></cor-pagination-page-size>
 
-      <div id="page-size-log" style="padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 320px;">
+      <div id="page-size-log" style="padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 320px;">
         <div style="font-weight: 600; margin-bottom: 8px;">Event Log:</div>
         <div id="${logContentId}">Change page size to see events...</div>
       </div>

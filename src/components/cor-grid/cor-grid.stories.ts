@@ -19,7 +19,7 @@ export default {
 };
 
 const itemStyle = () =>
-  `background: var(--color-primary-background-default); border: 1px solid var(--color-primary-border-default); color: var(--color-primary-text-weak); font-size: 18px; padding: 8px 16px; border-radius: 8px; min-height:44px; height: -webkit-fill-available; display:flex;align-items:center;justify-content:center;`;
+  `background: var(--color-background-brand-default); border: 1px solid var(--color-border-brand-default); color: var(--color-text-brand-on-secondary); font-size: 18px; padding: 8px 16px; border-radius: 8px; min-height:44px; height: -webkit-fill-available; display:flex;align-items:center;justify-content:center;`;
 
 export const FixedSizes = {
   render: (args: any) => `
@@ -48,13 +48,13 @@ export const ResponsiveSizes = {
 export const Nested = {
   render: (args: any) => `
     <cor-grid container spacing="${args.spacing}" row-spacing="${args.rowSpacing}">
-      <cor-grid size="6" style="border: 1px dashed var(--color-neutral-border-weaker); padding: 12px 0; border-radius: 8px;">
+      <cor-grid size="6" style="border: 1px dashed var(--color-border-base-tertiary); padding: 12px 0; border-radius: 8px;">
         <cor-grid container spacing="${args.spacing}" rowSpacing="${args.rowSpacing}">
           <cor-grid size='{"xs":12,"md":6}'><div style="${itemStyle()}">xs=12 md=6</div></cor-grid>
           <cor-grid size='{"xs":12,"md":6}'><div style="${itemStyle()}">xs=12 md=6</div></cor-grid>
         </cor-grid>
       </cor-grid>
-      <cor-grid size="6" style="border: 1px dashed var(--color-neutral-border-weaker); padding: 12px 0; border-radius: 8px"> </cor-grid>
+      <cor-grid size="6" style="border: 1px dashed var(--color-border-base-tertiary); padding: 12px 0; border-radius: 8px"> </cor-grid>
     </cor-grid>
   `,
   args: {},

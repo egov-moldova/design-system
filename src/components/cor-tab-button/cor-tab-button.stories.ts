@@ -86,7 +86,7 @@ export const IconOnly: StoryObj = {
   render: () => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: 16px; align-items: flex-start;">
       <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="width: 80px; font-size: 12px; color: var(--color-neutral-text-weaker);">LG</span>
+        <span style="width: 80px; font-size: 12px; color: var(--color-text-base-tertiary);">LG</span>
         <cor-tab-button value="icon-lg-1" size="lg" tab-style="style-1" icon-only>
           <cor-icon name="${ICON_NAMES.HOME}" color="currentColor"></cor-icon>
         </cor-tab-button>
@@ -95,7 +95,7 @@ export const IconOnly: StoryObj = {
         </cor-tab-button>
       </div>
       <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="width: 80px; font-size: 12px; color: var(--color-neutral-text-weaker);">MD</span>
+        <span style="width: 80px; font-size: 12px; color: var(--color-text-base-tertiary);">MD</span>
         <cor-tab-button value="icon-md-1" size="md" tab-style="style-1" icon-only>
           <cor-icon name="${ICON_NAMES.HOME}" color="currentColor"></cor-icon>
         </cor-tab-button>
@@ -104,7 +104,7 @@ export const IconOnly: StoryObj = {
         </cor-tab-button>
       </div>
       <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="width: 80px; font-size: 12px; color: var(--color-neutral-text-weaker);">SM</span>
+        <span style="width: 80px; font-size: 12px; color: var(--color-text-base-tertiary);">SM</span>
         <cor-tab-button value="icon-sm-1" size="sm" tab-style="style-1" icon-only>
           <cor-icon name="${ICON_NAMES.HOME}" color="currentColor"></cor-icon>
         </cor-tab-button>
@@ -113,7 +113,7 @@ export const IconOnly: StoryObj = {
         </cor-tab-button>
       </div>
       <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="width: 80px; font-size: 12px; color: var(--color-neutral-text-weaker);">All Styles</span>
+        <span style="width: 80px; font-size: 12px; color: var(--color-text-base-tertiary);">All Styles</span>
         <cor-tab-button value="icon-s1" size="md" tab-style="style-1" icon-only>
           <cor-icon name="${ICON_NAMES.HOME}" color="currentColor"></cor-icon>
         </cor-tab-button>
@@ -197,7 +197,7 @@ export const AllSizes: StoryObj = {
   render: (args: any) => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: 16px; align-items: flex-start;">
       <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="width: 32px; font-size: 12px; color: var(--color-neutral-text-weaker);">lg</span>
+        <span style="width: 32px; font-size: 12px; color: var(--color-text-base-tertiary);">lg</span>
         <cor-tab-button
           value="a"
           size="lg"
@@ -215,7 +215,7 @@ export const AllSizes: StoryObj = {
         </cor-tab-button>
       </div>
       <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="width: 32px; font-size: 12px; color: var(--color-neutral-text-weaker);">md</span>
+        <span style="width: 32px; font-size: 12px; color: var(--color-text-base-tertiary);">md</span>
         <cor-tab-button
           value="c"
           size="md"
@@ -233,7 +233,7 @@ export const AllSizes: StoryObj = {
         </cor-tab-button>
       </div>
       <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="width: 32px; font-size: 12px; color: var(--color-neutral-text-weaker);">sm</span>
+        <span style="width: 32px; font-size: 12px; color: var(--color-text-base-tertiary);">sm</span>
         <cor-tab-button
           value="e"
           size="sm"
@@ -276,17 +276,17 @@ export const AllStyles: StoryObj = {
   render: (args: any) => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: 16px; align-items: flex-start;">
       <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-neutral-text-weaker);">style-1</span>
+        <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-text-base-tertiary);">style-1</span>
         <cor-tab-button value="a" size="${args.size}" tab-style="style-1">${args.label}</cor-tab-button>
         <cor-tab-button value="b" size="${args.size}" tab-style="style-1" selected>${args.label}</cor-tab-button>
       </div>
       <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-neutral-text-weaker);">style-2</span>
+        <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-text-base-tertiary);">style-2</span>
         <cor-tab-button value="c" size="${args.size}" tab-style="style-2">${args.label}</cor-tab-button>
         <cor-tab-button value="d" size="${args.size}" tab-style="style-2" selected>${args.label}</cor-tab-button>
       </div>
       <div style="display: flex; align-items: center; gap: 8px;">
-        <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-neutral-text-weaker);">style-3</span>
+        <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-text-base-tertiary);">style-3</span>
         <cor-tab-button value="e" size="${args.size}" tab-style="style-3">${args.label}</cor-tab-button>
         <cor-tab-button value="f" size="${args.size}" tab-style="style-3" selected>${args.label}</cor-tab-button>
       </div>
@@ -313,20 +313,20 @@ export const AllSizesAndStyles: StoryObj = {
     <div style="display: flex; flex-direction: column; gap: 24px;">
       <!-- Size LG -->
       <div>
-        <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--color-neutral-text-default);">Size LG</div>
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--color-text-base-default);">Size LG</div>
         <div style="display: flex; flex-direction: column; gap: 12px;">
           <div style="display: flex; align-items: center; gap: 16px;">
-            <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-neutral-text-weaker);">style-1</span>
+            <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-text-base-tertiary);">style-1</span>
             <cor-tab-button value="lg-1-a" size="lg" tab-style="style-1">${args.label}</cor-tab-button>
             <cor-tab-button value="lg-1-b" size="lg" tab-style="style-1" selected>${args.label}</cor-tab-button>
           </div>
           <div style="display: flex; align-items: center; gap: 16px;">
-            <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-neutral-text-weaker);">style-2</span>
+            <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-text-base-tertiary);">style-2</span>
             <cor-tab-button value="lg-2-a" size="lg" tab-style="style-2">${args.label}</cor-tab-button>
             <cor-tab-button value="lg-2-b" size="lg" tab-style="style-2" selected>${args.label}</cor-tab-button>
           </div>
           <div style="display: flex; align-items: center; gap: 16px;">
-            <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-neutral-text-weaker);">style-3</span>
+            <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-text-base-tertiary);">style-3</span>
             <cor-tab-button value="lg-3-a" size="lg" tab-style="style-3">${args.label}</cor-tab-button>
             <cor-tab-button value="lg-3-b" size="lg" tab-style="style-3" selected>${args.label}</cor-tab-button>
           </div>
@@ -335,20 +335,20 @@ export const AllSizesAndStyles: StoryObj = {
 
       <!-- Size MD -->
       <div>
-        <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--color-neutral-text-default);">Size MD</div>
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--color-text-base-default);">Size MD</div>
         <div style="display: flex; flex-direction: column; gap: 12px;">
           <div style="display: flex; align-items: center; gap: 16px;">
-            <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-neutral-text-weaker);">style-1</span>
+            <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-text-base-tertiary);">style-1</span>
             <cor-tab-button value="md-1-a" size="md" tab-style="style-1">${args.label}</cor-tab-button>
             <cor-tab-button value="md-1-b" size="md" tab-style="style-1" selected>${args.label}</cor-tab-button>
           </div>
           <div style="display: flex; align-items: center; gap: 16px;">
-            <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-neutral-text-weaker);">style-2</span>
+            <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-text-base-tertiary);">style-2</span>
             <cor-tab-button value="md-2-a" size="md" tab-style="style-2">${args.label}</cor-tab-button>
             <cor-tab-button value="md-2-b" size="md" tab-style="style-2" selected>${args.label}</cor-tab-button>
           </div>
           <div style="display: flex; align-items: center; gap: 16px;">
-            <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-neutral-text-weaker);">style-3</span>
+            <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-text-base-tertiary);">style-3</span>
             <cor-tab-button value="md-3-a" size="md" tab-style="style-3">${args.label}</cor-tab-button>
             <cor-tab-button value="md-3-b" size="md" tab-style="style-3" selected>${args.label}</cor-tab-button>
           </div>
@@ -357,20 +357,20 @@ export const AllSizesAndStyles: StoryObj = {
 
       <!-- Size SM -->
       <div>
-        <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--color-neutral-text-default);">Size SM</div>
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 12px; color: var(--color-text-base-default);">Size SM</div>
         <div style="display: flex; flex-direction: column; gap: 12px;">
           <div style="display: flex; align-items: center; gap: 16px;">
-            <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-neutral-text-weaker);">style-1</span>
+            <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-text-base-tertiary);">style-1</span>
             <cor-tab-button value="sm-1-a" size="sm" tab-style="style-1">${args.label}</cor-tab-button>
             <cor-tab-button value="sm-1-b" size="sm" tab-style="style-1" selected>${args.label}</cor-tab-button>
           </div>
           <div style="display: flex; align-items: center; gap: 16px;">
-            <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-neutral-text-weaker);">style-2</span>
+            <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-text-base-tertiary);">style-2</span>
             <cor-tab-button value="sm-2-a" size="sm" tab-style="style-2">${args.label}</cor-tab-button>
             <cor-tab-button value="sm-2-b" size="sm" tab-style="style-2" selected>${args.label}</cor-tab-button>
           </div>
           <div style="display: flex; align-items: center; gap: 16px;">
-            <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-neutral-text-weaker);">style-3</span>
+            <span style="width: 56px; flex-shrink: 0; font-size: 12px; color: var(--color-text-base-tertiary);">style-3</span>
             <cor-tab-button value="sm-3-a" size="sm" tab-style="style-3">${args.label}</cor-tab-button>
             <cor-tab-button value="sm-3-b" size="sm" tab-style="style-3" selected>${args.label}</cor-tab-button>
           </div>
@@ -409,27 +409,27 @@ export const States: StoryObj = {
       <div style="font-weight: 600; font-size: 12px;">style-2</div>
       <div style="font-weight: 600; font-size: 12px;">style-3</div>
 
-      <div style="font-size: 12px; color: var(--color-neutral-text-weaker);">Default</div>
+      <div style="font-size: 12px; color: var(--color-text-base-tertiary);">Default</div>
       <cor-tab-button value="a" tab-style="style-1" size="${args.size}">Label</cor-tab-button>
       <cor-tab-button value="b" tab-style="style-2" size="${args.size}">Label</cor-tab-button>
       <cor-tab-button value="c" tab-style="style-3" size="${args.size}">Label</cor-tab-button>
 
-      <div style="font-size: 12px; color: var(--color-neutral-text-weaker);">Selected</div>
+      <div style="font-size: 12px; color: var(--color-text-base-tertiary);">Selected</div>
       <cor-tab-button value="d" tab-style="style-1" size="${args.size}" selected>Label</cor-tab-button>
       <cor-tab-button value="e" tab-style="style-2" size="${args.size}" selected>Label</cor-tab-button>
       <cor-tab-button value="f" tab-style="style-3" size="${args.size}" selected>Label</cor-tab-button>
 
-      <div style="font-size: 12px; color: var(--color-neutral-text-weaker);">Disabled</div>
+      <div style="font-size: 12px; color: var(--color-text-base-tertiary);">Disabled</div>
       <cor-tab-button value="j" tab-style="style-1" size="${args.size}" disabled>Label</cor-tab-button>
       <cor-tab-button value="k" tab-style="style-2" size="${args.size}" disabled>Label</cor-tab-button>
       <cor-tab-button value="l" tab-style="style-3" size="${args.size}" disabled>Label</cor-tab-button>
 
-      <div style="font-size: 12px; color: var(--color-neutral-text-weaker);">Skeleton</div>
+      <div style="font-size: 12px; color: var(--color-text-base-tertiary);">Skeleton</div>
       <cor-tab-button value="m" tab-style="style-1" size="${args.size}" skeleton></cor-tab-button>
       <cor-tab-button value="n" tab-style="style-2" size="${args.size}" skeleton></cor-tab-button>
       <cor-tab-button value="o" tab-style="style-3" size="${args.size}" skeleton></cor-tab-button>
 
-      <div style="font-size: 12px; color: var(--color-neutral-text-weaker);">Skeleton<br>icon-only</div>
+      <div style="font-size: 12px; color: var(--color-text-base-tertiary);">Skeleton<br>icon-only</div>
       <cor-tab-button value="p" tab-style="style-1" size="${args.size}" skeleton icon-only></cor-tab-button>
       <cor-tab-button value="q" tab-style="style-2" size="${args.size}" skeleton icon-only></cor-tab-button>
       <cor-tab-button value="r" tab-style="style-3" size="${args.size}" skeleton icon-only></cor-tab-button>

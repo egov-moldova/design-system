@@ -27,7 +27,7 @@ export const Separator = {
 export const SeparatorTop = {
   render: (args: any) => /*html*/ `
     <div style="padding: 12px;">
-      <cor-separator variant="${args.variant}" style="background: var(--color-neutral-border-default)"></cor-separator>
+      <cor-separator variant="${args.variant}" style="background: var(--color-border-base-default)"></cor-separator>
     </div>
   `,
   args: {

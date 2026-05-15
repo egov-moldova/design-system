@@ -11,7 +11,7 @@
     outline: none;
     background: transparent;
     color: var(--tab-button-color-default);
-    font-family: var(--font-family-body);
+    font-family: var(--font-family-primary);
     font-size: var(--tab-button-font-size);
     line-height: var(--tab-button-line-height);
     font-weight: var(--tab-button-font-weight-default);

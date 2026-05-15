@@ -214,7 +214,7 @@ export const WithContent: StoryObj = {
         <cor-typography slot="description" variant="body-sm">
           <span>Description appears above the content slot.</span>
         </cor-typography>
-        <div style="padding: 4px 0; font-size: 12px; color: var(--color-neutral-text-weak);">
+        <div style="padding: 4px 0; font-size: 12px; color: var(--color-text-base-secondary);">
           Additional content here: links, lists, or any component.
         </div>
       </cor-tooltip>
@@ -296,7 +296,7 @@ export const EventLog: StoryObj = {
         </cor-typography>
       </cor-tooltip>
 
-      <div id="tooltip-log" style="padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
+      <div id="tooltip-log" style="padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
         <div style="font-weight: 600; margin-bottom: 8px;">Event Log:</div>
         <div id="${logContentId}">Hover the trigger to see events...</div>
       </div>
@@ -320,7 +320,7 @@ export const AllPlacements: StoryObj = {
       .map(
         p => /*html*/ `
         <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 180px; padding: 24px 16px; box-sizing: border-box;">
-          <span style="font-size: 11px; color: var(--color-neutral-text-weak); white-space: nowrap;">${p}</span>
+          <span style="font-size: 11px; color: var(--color-text-base-secondary); white-space: nowrap;">${p}</span>
           <cor-tooltip
             placement="${p}"
             trigger="${args.open ? 'manual' : args.trigger}"

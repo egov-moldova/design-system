@@ -18,14 +18,14 @@ const meta: Meta = {
       control: 'text',
       description: 'Height of the skeleton loader',
       table: {
-        defaultValue: { summary: 'var(--space-md)' },
+        defaultValue: { summary: 'var(--spacing-20)' },
       },
     },
     borderRadius: {
       control: 'text',
       description: 'Border radius of the skeleton loader',
       table: {
-        defaultValue: { summary: 'var(--radius-md)' },
+        defaultValue: { summary: 'var(--border-radius-8)' },
       },
     },
     backgroundColor: {
@@ -120,7 +120,7 @@ export const MultipleLines: Story = {
   },
   args: {
     height: '16px',
-    backgroundColor: 'var(--color-neutral-background-default)',
+    backgroundColor: 'var(--color-background-base-default)',
     borderRadius: '4px',
   },
   render: (args: any) => /*html*/ `
@@ -150,11 +150,11 @@ export const CardSkeleton: Story = {
     },
   },
   args: {
-    backgroundColor: 'var(--color-neutral-background-default)',
+    backgroundColor: 'var(--color-background-base-default)',
     borderRadius: '8px',
   },
   render: (args: any) => /*html*/ `
-    <div style="display: flex; flex-direction: column; gap: 16px; width: 300px; padding: 16px; border: 1px solid var(--color-neutral-border-default); border-radius: 8px;">
+    <div style="display: flex; flex-direction: column; gap: 16px; width: 300px; padding: 16px; border: 1px solid var(--color-border-base-default); border-radius: 8px;">
       <cor-skeleton width="100%" height="200px" background-color="${args.backgroundColor}" border-radius="${args.borderRadius}"></cor-skeleton>
       <cor-skeleton width="80%" height="24px" background-color="${args.backgroundColor}" border-radius="${args.borderRadius}"></cor-skeleton>
       <cor-skeleton width="100%" height="16px" background-color="${args.backgroundColor}" border-radius="${args.borderRadius}"></cor-skeleton>
@@ -183,21 +183,21 @@ export const ProfileSkeleton: Story = {
       control: 'color',
       description: 'Background color of the avatar skeleton',
       table: {
-        defaultValue: { summary: 'var(--color-neutral-background-default)' },
+        defaultValue: { summary: 'var(--color-background-base-default)' },
       },
     },
     textBackgroundColor: {
       control: 'color',
       description: 'Background color of the title text skeleton',
       table: {
-        defaultValue: { summary: 'var(--color-neutral-background-default)' },
+        defaultValue: { summary: 'var(--color-background-base-default)' },
       },
     },
     subtitleBackgroundColor: {
       control: 'color',
       description: 'Background color of the subtitle text skeleton',
       table: {
-        defaultValue: { summary: 'var(--color-neutral-background-default)' },
+        defaultValue: { summary: 'var(--color-background-base-default)' },
       },
     },
     borderRadius: {
@@ -209,9 +209,9 @@ export const ProfileSkeleton: Story = {
     },
   },
   args: {
-    avatarBackgroundColor: 'var(--color-neutral-background-default)',
-    textBackgroundColor: 'var(--color-neutral-background-default)',
-    subtitleBackgroundColor: 'var(--color-neutral-background-default)',
+    avatarBackgroundColor: 'var(--color-background-base-default)',
+    textBackgroundColor: 'var(--color-background-base-default)',
+    subtitleBackgroundColor: 'var(--color-background-base-default)',
     borderRadius: '50%',
   },
   render: (args: any) => /*html*/ `
@@ -237,7 +237,7 @@ export const CustomBackgroundColor: Story = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   render: (args: any) => /*html*/ `<cor-skeleton background-color="${args.backgroundColor}"></cor-skeleton>`,
   args: {
-    backgroundColor: 'var(--color-primary-background-active)',
+    backgroundColor: 'var(--color-background-brand-default-active)',
   },
   parameters: {
     docs: {
@@ -256,7 +256,7 @@ export const CustomColorAndRadius: Story = {
     width: '120px',
     height: '40px',
     borderRadius: '8px',
-    backgroundColor: 'var(--color-secondary-background-strong)',
+    backgroundColor: 'var(--color-background-brand-default-active)',
   },
   parameters: {
     docs: {
@@ -275,7 +275,7 @@ export const ColoredCircle: Story = {
     width: '64px',
     height: '64px',
     borderRadius: '50%',
-    backgroundColor: 'var(--color-system-info-background-weakest-active)',
+    backgroundColor: 'var(--color-background-brand-secondary-active)',
   },
   parameters: {
     docs: {
@@ -294,7 +294,7 @@ export const ThemedMultipleLines: Story = {
   },
   args: {
     height: '16px',
-    backgroundColor: 'var(--color-neutral-background-default)',
+    backgroundColor: 'var(--color-background-base-default)',
     borderRadius: '4px',
   },
   render: (args: any) => /*html*/ `
@@ -323,11 +323,11 @@ export const ThemedCardSkeleton: Story = {
     },
   },
   args: {
-    backgroundColor: 'var(--color-neutral-background-default)',
+    backgroundColor: 'var(--color-background-base-default)',
     borderRadius: '8px',
   },
   render: (args: any) => /*html*/ `
-    <div style="display: flex; flex-direction: column; gap: 16px; width: 300px; padding: 16px; border: 1px solid var(--color-neutral-border-default); border-radius: 8px;">
+    <div style="display: flex; flex-direction: column; gap: 16px; width: 300px; padding: 16px; border: 1px solid var(--color-border-base-default); border-radius: 8px;">
       <cor-skeleton width="100%" height="200px" background-color="${args.backgroundColor}" border-radius="${args.borderRadius}"></cor-skeleton>
       <cor-skeleton width="80%" height="24px" background-color="${args.backgroundColor}" border-radius="${args.borderRadius}"></cor-skeleton>
       <cor-skeleton width="100%" height="16px" background-color="${args.backgroundColor}" border-radius="${args.borderRadius}"></cor-skeleton>
@@ -346,10 +346,10 @@ export const ThemedCardSkeleton: Story = {
 export const ThemedProfileSkeleton: Story = {
   render: () => /*html*/ `
     <div style="display: flex; gap: 16px; align-items: center;">
-      <cor-skeleton width="64px" height="64px" border-radius="50%" background-color="var(--color-neutral-background-default)"></cor-skeleton>
+      <cor-skeleton width="64px" height="64px" border-radius="50%" background-color="var(--color-background-base-default)"></cor-skeleton>
       <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
-        <cor-skeleton width="150px" height="20px" background-color="var(--color-neutral-background-default)"></cor-skeleton>
-        <cor-skeleton width="100px" height="16px" background-color="var(--color-neutral-background-default)"></cor-skeleton>
+        <cor-skeleton width="150px" height="20px" background-color="var(--color-background-base-default)"></cor-skeleton>
+        <cor-skeleton width="100px" height="16px" background-color="var(--color-background-base-default)"></cor-skeleton>
       </div>
     </div>
   `,
@@ -370,15 +370,15 @@ export const TokenBasedCustomization: Story = {
     <div style="display: flex; flex-direction: column; gap: 16px; width: 400px;">
       <h4>Design Token Examples</h4>
       <div style="display: flex; gap: 8px; align-items: center;">
-        <cor-skeleton width="16px" height="16px" border-radius="var(--radius-sm)" background-color="var(--color-neutral-background-default)"></cor-skeleton>
+        <cor-skeleton width="16px" height="16px" border-radius="var(--border-radius-4)" background-color="var(--color-background-base-default)"></cor-skeleton>
         <span>Small muted skeleton</span>
       </div>
       <div style="display: flex; gap: 8px; align-items: center;">
-        <cor-skeleton width="24px" height="24px" border-radius="var(--radius-md)" background-color="var(--color-neutral-background-active)"></cor-skeleton>
+        <cor-skeleton width="24px" height="24px" border-radius="var(--border-radius-8)" background-color="var(--color-background-base-default-active)"></cor-skeleton>
         <span>Medium surface skeleton</span>
       </div>
       <div style="display: flex; gap: 8px; align-items: center;">
-        <cor-skeleton width="32px" height="32px" border-radius="var(--radius-lg)" background-color="var(--color-neutral-background-strong)"></cor-skeleton>
+        <cor-skeleton width="32px" height="32px" border-radius="var(--border-radius-12)" background-color="var(--color-background-base-tertiary)"></cor-skeleton>
         <span>Large border skeleton</span>
       </div>
     </div>

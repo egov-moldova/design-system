@@ -73,55 +73,55 @@ export const AllIconTypes = {
         <cor-column-action>
           <cor-icon name="${ICON_NAMES.FILTER}" size="sm" color="currentColor"></cor-icon>
         </cor-column-action>
-        <span style="font-size: 11px; color: var(--color-neutral-text-weaker);">Filter</span>
+        <span style="font-size: 11px; color: var(--color-text-base-tertiary);">Filter</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
         <cor-column-action>
           <cor-icon name="${ICON_NAMES.FILTER__EDIT}" size="sm" color="currentColor"></cor-icon>
         </cor-column-action>
-        <span style="font-size: 11px; color: var(--color-neutral-text-weaker);">Filtered</span>
+        <span style="font-size: 11px; color: var(--color-text-base-tertiary);">Filtered</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
         <cor-column-action>
           <cor-icon name="${ICON_NAMES.ARROWS__VERTICAL}" size="sm" color="currentColor"></cor-icon>
         </cor-column-action>
-        <span style="font-size: 11px; color: var(--color-neutral-text-weaker);">Arrows Vertical</span>
+        <span style="font-size: 11px; color: var(--color-text-base-tertiary);">Arrows Vertical</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
         <cor-column-action>
           <cor-icon name="${ICON_NAMES.ARROW__DOWN}" size="sm" color="currentColor"></cor-icon>
         </cor-column-action>
-        <span style="font-size: 11px; color: var(--color-neutral-text-weaker);">Arrow Down</span>
+        <span style="font-size: 11px; color: var(--color-text-base-tertiary);">Arrow Down</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
         <cor-column-action>
           <cor-icon name="${ICON_NAMES.ARROW__UP}" size="sm" color="currentColor"></cor-icon>
         </cor-column-action>
-        <span style="font-size: 11px; color: var(--color-neutral-text-weaker);">Arrow Up</span>
+        <span style="font-size: 11px; color: var(--color-text-base-tertiary);">Arrow Up</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
         <cor-column-action>
           <cor-icon name="${ICON_NAMES.CHEVRON__DOWN}" size="sm" color="currentColor"></cor-icon>
         </cor-column-action>
-        <span style="font-size: 11px; color: var(--color-neutral-text-weaker);">Chevron Down</span>
+        <span style="font-size: 11px; color: var(--color-text-base-tertiary);">Chevron Down</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
         <cor-column-action>
           <cor-icon name="${ICON_NAMES.CHEVRON__UP}" size="sm" color="currentColor"></cor-icon>
         </cor-column-action>
-        <span style="font-size: 11px; color: var(--color-neutral-text-weaker);">Chevron Up</span>
+        <span style="font-size: 11px; color: var(--color-text-base-tertiary);">Chevron Up</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
         <cor-column-action>
           <cor-icon name="${ICON_NAMES.DRAGGABLE}" size="sm" color="currentColor"></cor-icon>
         </cor-column-action>
-        <span style="font-size: 11px; color: var(--color-neutral-text-weaker);">Draggable</span>
+        <span style="font-size: 11px; color: var(--color-text-base-tertiary);">Draggable</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
         <cor-column-action>
           <cor-icon name="${ICON_NAMES.OVERFLOW_MENU__VERTICAL}" size="sm" color="currentColor"></cor-icon>
         </cor-column-action>
-        <span style="font-size: 11px; color: var(--color-neutral-text-weaker);">Menu</span>
+        <span style="font-size: 11px; color: var(--color-text-base-tertiary);">Menu</span>
       </div>
     </div>
   `,
@@ -134,25 +134,25 @@ export const States = {
         <cor-column-action>
           <cor-icon name="${ICON_NAMES.FILTER}" size="sm" color="currentColor"></cor-icon>
         </cor-column-action>
-        <span style="font-size: 11px; color: var(--color-neutral-text-weaker);">Default</span>
+        <span style="font-size: 11px; color: var(--color-text-base-tertiary);">Default</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
         <cor-column-action active>
           <cor-icon name="${ICON_NAMES.FILTER}" size="sm" color="currentColor"></cor-icon>
         </cor-column-action>
-        <span style="font-size: 11px; color: var(--color-neutral-text-weaker);">Active</span>
+        <span style="font-size: 11px; color: var(--color-text-base-tertiary);">Active</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
         <cor-column-action class="is-focused">
           <cor-icon name="${ICON_NAMES.FILTER}" size="sm" color="currentColor"></cor-icon>
         </cor-column-action>
-        <span style="font-size: 11px; color: var(--color-neutral-text-weaker);">Focus</span>
+        <span style="font-size: 11px; color: var(--color-text-base-tertiary);">Focus</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
         <cor-column-action disabled>
           <cor-icon name="${ICON_NAMES.FILTER}" size="sm" color="currentColor"></cor-icon>
         </cor-column-action>
-        <span style="font-size: 11px; color: var(--color-neutral-text-weaker);">Disabled</span>
+        <span style="font-size: 11px; color: var(--color-text-base-tertiary);">Disabled</span>
       </div>
     </div>
   `,
@@ -195,7 +195,7 @@ export const Interactive = {
       </cor-column-action>
     </div>
 
-    <div id="event-log" style="margin-top: 24px; padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px;">
+    <div id="event-log" style="margin-top: 24px; padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px;">
       <div style="font-weight: 600; margin-bottom: 8px;">Event Log:</div>
       <div id="${logContentId}">Click actions to see events...</div>
     </div>

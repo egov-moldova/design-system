@@ -51,7 +51,7 @@ Pagination Item CSS
   color: var(--pagination-item-color-default);
   font-family: var(--font-family-sans);
   font-size: var(--item-font-size);
-  font-weight: var(--font-weight-semi-bold);
+  font-weight: var(--font-weight-semibold);
   line-height: var(--item-line-height);
   cursor: pointer;
   transition:
@@ -175,7 +175,7 @@ Pagination Item CSS
   color: var(--pagination-dropdown-option-color-default);
   font-family: var(--font-family-sans);
   font-size: var(--item-font-size);
-  font-weight: var(--font-weight-semi-bold);
+  font-weight: var(--font-weight-semibold);
   line-height: var(--item-line-height);
   cursor: pointer;
   transition:

@@ -234,15 +234,15 @@ export const KeyboardNavigationDemo: StoryObj = {
   render: () => {
     return /*html*/ `
       <div style="display: grid; gap: 24px; padding: 24px;">
-        <div style="padding: 16px; background: var(--color-neutral-background-default); border-radius: 8px;">
+        <div style="padding: 16px; background: var(--color-background-base-default); border-radius: 8px;">
           <h4 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 600;">Keyboard Navigation</h4>
-          <p style="margin: 0; font-size: 12px; color: var(--color-neutral-text-weak);">
-            Use <kbd style="padding: 2px 6px; background: var(--color-neutral-background-base); border: 1px solid var(--color-neutral-border-weakest); border-radius: 3px;">↑</kbd>
-            <kbd style="padding: 2px 6px; background: var(--color-neutral-background-base); border: 1px solid var(--color-neutral-border-weakest); border-radius: 3px;">↓</kbd>
-            <kbd style="padding: 2px 6px; background: var(--color-neutral-background-base); border: 1px solid var(--color-neutral-border-weakest); border-radius: 3px;">←</kbd>
-            <kbd style="padding: 2px 6px; background: var(--color-neutral-background-base); border: 1px solid var(--color-neutral-border-weakest); border-radius: 3px;">→</kbd>
+          <p style="margin: 0; font-size: 12px; color: var(--color-text-base-secondary);">
+            Use <kbd style="padding: 2px 6px; background: var(--color-background-base-default); border: 1px solid var(--color-border-base-subtle); border-radius: 3px;">↑</kbd>
+            <kbd style="padding: 2px 6px; background: var(--color-background-base-default); border: 1px solid var(--color-border-base-subtle); border-radius: 3px;">↓</kbd>
+            <kbd style="padding: 2px 6px; background: var(--color-background-base-default); border: 1px solid var(--color-border-base-subtle); border-radius: 3px;">←</kbd>
+            <kbd style="padding: 2px 6px; background: var(--color-background-base-default); border: 1px solid var(--color-border-base-subtle); border-radius: 3px;">→</kbd>
             arrow keys to navigate between radio buttons.
-            Press <kbd style="padding: 2px 6px; background: var(--color-neutral-background-base); border: 1px solid var(--color-neutral-border-weakest); border-radius: 3px;">Space</kbd> to select.
+            Press <kbd style="padding: 2px 6px; background: var(--color-background-base-default); border: 1px solid var(--color-border-base-subtle); border-radius: 3px;">Space</kbd> to select.
           </p>
         </div>
 

@@ -8,9 +8,9 @@ Select CSS — Custom dropdown matching pagination-item collapsed variant
   --_select-height: var(--select-container-height-lg);
   --_select-padding-left: var(--select-padding-left-lg);
   --_select-padding-right: var(--select-padding-right-lg);
-  --_select-border-radius: var(--select-container-border-radius-lg, var(--radius-lg));
-  --_select-font-size: var(--select-container-font-size-lg, var(--font-size-sm));
-  --_select-line-height: var(--select-container-line-height-lg, var(--line-height-md));
+  --_select-border-radius: var(--select-container-border-radius-lg, var(--border-radius-12));
+  --_select-font-size: var(--select-container-font-size-lg, var(--font-size-14));
+  --_select-line-height: var(--select-container-line-height-lg, var(--line-height-20));
   --_select-chevron-right: var(--select-chevron-right-lg);
 
   display: inline-block;
@@ -23,9 +23,9 @@ Select CSS — Custom dropdown matching pagination-item collapsed variant
   --_select-height: var(--select-container-height-lg);
   --_select-padding-left: var(--select-padding-left-lg);
   --_select-padding-right: var(--select-padding-right-lg);
-  --_select-border-radius: var(--select-container-border-radius-lg, var(--radius-md));
-  --_select-font-size: var(--select-container-font-size-lg, var(--font-size-sm));
-  --_select-line-height: var(--select-container-line-height-lg, var(--line-height-md));
+  --_select-border-radius: var(--select-container-border-radius-lg, var(--border-radius-8));
+  --_select-font-size: var(--select-container-font-size-lg, var(--font-size-14));
+  --_select-line-height: var(--select-container-line-height-lg, var(--line-height-20));
   --_select-chevron-right: var(--select-chevron-right-lg);
 }
 
@@ -33,9 +33,9 @@ Select CSS — Custom dropdown matching pagination-item collapsed variant
   --_select-height: var(--select-container-height-md);
   --_select-padding-left: var(--select-padding-left-md);
   --_select-padding-right: var(--select-padding-right-md);
-  --_select-border-radius: var(--select-container-border-radius-md, var(--radius-md));
-  --_select-font-size: var(--select-container-font-size-md, var(--font-size-sm));
-  --_select-line-height: var(--select-container-line-height-md, var(--line-height-md));
+  --_select-border-radius: var(--select-container-border-radius-md, var(--border-radius-8));
+  --_select-font-size: var(--select-container-font-size-md, var(--font-size-14));
+  --_select-line-height: var(--select-container-line-height-md, var(--line-height-20));
   --_select-chevron-right: var(--select-chevron-right-md);
 }
 
@@ -43,9 +43,9 @@ Select CSS — Custom dropdown matching pagination-item collapsed variant
   --_select-height: var(--select-container-height-sm);
   --_select-padding-left: var(--select-padding-left-sm);
   --_select-padding-right: var(--select-padding-right-sm);
-  --_select-border-radius: var(--select-container-border-radius-sm, var(--radius-md));
-  --_select-font-size: var(--select-container-font-size-sm, var(--font-size-xs));
-  --_select-line-height: var(--select-container-line-height-sm, var(--line-height-sm));
+  --_select-border-radius: var(--select-container-border-radius-sm, var(--border-radius-8));
+  --_select-font-size: var(--select-container-font-size-sm, var(--font-size-12));
+  --_select-line-height: var(--select-container-line-height-sm, var(--line-height-16));
   --_select-chevron-right: var(--select-chevron-right-sm);
 }
 
@@ -61,13 +61,13 @@ Select CSS — Custom dropdown matching pagination-item collapsed variant
   padding-left: var(--_select-padding-left);
   padding-right: var(--_select-chevron-right);
   border: var(--select-container-border-width) solid var(--select-container-border-color-default);
-  border-radius: var(--_select-border-radius, var(--radius-lg));
-  background-color: var(--select-container-background-color-default, var(--color-neutral-background-base));
+  border-radius: var(--_select-border-radius, var(--border-radius-12));
+  background-color: var(--select-container-background-color-default, var(--color-background-base-default));
   font-family: var(--select-container-font-family, var(--font-family-sans));
-  font-size: var(--_select-font-size, var(--font-size-sm));
-  line-height: var(--_select-line-height, var(--line-height-md));
+  font-size: var(--_select-font-size, var(--font-size-14));
+  line-height: var(--_select-line-height, var(--line-height-20));
   font-weight: var(--select-container-font-weight, 400);
-  color: var(--select-container-color-default, var(--color-neutral-text-default));
+  color: var(--select-container-color-default, var(--color-text-base-default));
   cursor: pointer;
   outline: none;
   transition:
@@ -75,24 +75,24 @@ Select CSS — Custom dropdown matching pagination-item collapsed variant
     background-color 150ms ease-in-out;
 
   &:hover:not(:disabled) {
-    border-color: var(--select-container-border-color-hover, var(--color-neutral-border-weak));
-    background-color: var(--select-container-background-color-hover, var(--color-neutral-transparent-weak));
+    border-color: var(--select-container-border-color-hover, var(--color-border-base-secondary));
+    background-color: var(--select-container-background-color-hover, var(--color-background-alpha-overlay-light));
   }
 
   &:focus-visible:not(:disabled) {
-    border-color: var(--select-container-border-color-focus, var(--color-primary-border-active));
+    border-color: var(--select-container-border-color-focus, var(--color-border-brand-default));
   }
 
   &:disabled {
     cursor: not-allowed;
-    border-color: var(--select-container-border-color-disabled, var(--color-neutral-border-weaker));
-    background-color: var(--select-container-background-color-disabled, var(--color-neutral-background-base));
-    color: var(--select-container-color-disabled, var(--color-neutral-text-weakest));
+    border-color: var(--select-container-border-color-disabled, var(--color-border-base-tertiary));
+    background-color: var(--select-container-background-color-disabled, var(--color-background-base-default));
+    color: var(--select-container-color-disabled, var(--color-text-base-tertiary));
   }
 }
 
 :host(.is-open) .trigger {
-  border-color: var(--select-container-border-color-focus, var(--color-primary-border-active));
+  border-color: var(--select-container-border-color-focus, var(--color-border-brand-default));
 }
 
 .trigger-label {
@@ -104,14 +104,14 @@ Select CSS — Custom dropdown matching pagination-item collapsed variant
 }
 
 .trigger-label--placeholder {
-  color: var(--select-container-color-placeholder, var(--color-neutral-text-weaker));
+  color: var(--select-container-color-placeholder, var(--color-text-base-tertiary));
 }
 
 .trigger-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: var(--spacing-xs);
+  margin-left: var(--spacing-12);
   transition: var(--select-chevron-transition, transform 150ms ease);
 }
 
@@ -174,7 +174,7 @@ Select CSS — Custom dropdown matching pagination-item collapsed variant
 
 /* State: invalid */
 :host([invalid]) .trigger {
-  border-color: var(--select-container-border-color-invalid, var(--color-system-error-icon));
+  border-color: var(--select-container-border-color-invalid, var(--color-icon-danger-default));
 }
 
 /* Inline mode - width fits content */

@@ -240,7 +240,7 @@ export const AllStates: Story = {
   render: (args: AccordionStoryArgs) => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: 24px; width: 400px;">
       <div>
-        <p style="font-size: 12px; color: var(--color-neutral-text-weaker); margin: 0 0 4px;">Default (collapsed)</p>
+        <p style="font-size: 12px; color: var(--color-text-base-tertiary); margin: 0 0 4px;">Default (collapsed)</p>
         <cor-accordion
           size=${args.size}
           icon-position=${args.iconPosition}
@@ -255,7 +255,7 @@ export const AllStates: Story = {
         </cor-accordion>
       </div>
       <div>
-        <p style="font-size: 12px; color: var(--color-neutral-text-weaker); margin: 0 0 4px;">Expanded</p>
+        <p style="font-size: 12px; color: var(--color-text-base-tertiary); margin: 0 0 4px;">Expanded</p>
         <cor-accordion
           size=${args.size}
           icon-position=${args.iconPosition}
@@ -271,7 +271,7 @@ export const AllStates: Story = {
         </cor-accordion>
       </div>
       <div>
-        <p style="font-size: 12px; color: var(--color-neutral-text-weaker); margin: 0 0 4px;">Disabled</p>
+        <p style="font-size: 12px; color: var(--color-text-base-tertiary); margin: 0 0 4px;">Disabled</p>
         <cor-accordion
           size=${args.size}
           icon-position=${args.iconPosition}
@@ -287,7 +287,7 @@ export const AllStates: Story = {
         </cor-accordion>
       </div>
       <div>
-        <p style="font-size: 12px; color: var(--color-neutral-text-weaker); margin: 0 0 4px;">Skeleton</p>
+        <p style="font-size: 12px; color: var(--color-text-base-tertiary); margin: 0 0 4px;">Skeleton</p>
         <cor-accordion
           size=${args.size}
           icon-position=${args.iconPosition}
@@ -295,7 +295,7 @@ export const AllStates: Story = {
         ></cor-accordion>
       </div>
       <div>
-        <p style="font-size: 12px; color: var(--color-neutral-text-weaker); margin: 0 0 4px;">Skeleton expanded</p>
+        <p style="font-size: 12px; color: var(--color-text-base-tertiary); margin: 0 0 4px;">Skeleton expanded</p>
         <cor-accordion
           size=${args.size}
           icon-position=${args.iconPosition}
@@ -319,7 +319,7 @@ export const AllSizes: Story = {
   render: (args: AccordionStoryArgs) => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: 24px; width: 400px;">
       <div>
-        <p style="font-size: 12px; color: var(--color-neutral-text-weaker); margin: 0 0 4px;">MD size</p>
+        <p style="font-size: 12px; color: var(--color-text-base-tertiary); margin: 0 0 4px;">MD size</p>
         <cor-accordion
           size="${AccordionSize.MD}"
           icon-position=${args.iconPosition}
@@ -337,7 +337,7 @@ export const AllSizes: Story = {
         </cor-accordion>
       </div>
       <div>
-        <p style="font-size: 12px; color: var(--color-neutral-text-weaker); margin: 0 0 4px;">SM size</p>
+        <p style="font-size: 12px; color: var(--color-text-base-tertiary); margin: 0 0 4px;">SM size</p>
         <cor-accordion
           size="${AccordionSize.SM}"
           icon-position=${args.iconPosition}

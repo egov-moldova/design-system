@@ -45,12 +45,12 @@
   mask: radial-gradient(
     farthest-side,
     transparent calc(100% - var(--loading-stroke-width) - 1px),
-    var(--color-neutral-background-base-inverted) calc(100% - var(--loading-stroke-width))
+    var(--color-background-base-inverse-default) calc(100% - var(--loading-stroke-width))
   );
   -webkit-mask: radial-gradient(
     farthest-side,
     transparent calc(100% - var(--loading-stroke-width) - 1px),
-    var(--color-neutral-background-base-inverted) calc(100% - var(--loading-stroke-width))
+    var(--color-background-base-inverse-default) calc(100% - var(--loading-stroke-width))
   );
 }
 

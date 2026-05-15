@@ -53,7 +53,7 @@
 }
 
 .tooltip-title {
-  font-family: var(--font-family-body, var(--font-family-sans));
+  font-family: var(--font-family-primary, var(--font-family-sans));
   font-size: var(--tooltip-title-font-size);
   font-weight: var(--tooltip-title-font-weight);
   line-height: var(--tooltip-title-line-height);
@@ -62,7 +62,7 @@
 }
 
 .tooltip-description {
-  font-family: var(--font-family-body, var(--font-family-sans));
+  font-family: var(--font-family-primary, var(--font-family-sans));
   font-size: var(--tooltip-description-font-size);
   font-weight: var(--tooltip-description-font-weight);
   line-height: var(--tooltip-description-line-height);

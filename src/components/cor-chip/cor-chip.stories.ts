@@ -165,15 +165,15 @@ export const AllSizes: Story = {
     return /*html*/ `
       <div style="display: flex; flex-direction: column; gap: 16px;">
         <div style="display: flex; align-items: center; gap: 16px;">
-          <span style="width: 48px; font-size: 12px; color: var(--color-neutral-text-weak);">lg (32px)</span>
+          <span style="width: 48px; font-size: 12px; color: var(--color-text-base-secondary);">lg (32px)</span>
           ${chip('lg')}
         </div>
         <div style="display: flex; align-items: center; gap: 16px;">
-          <span style="width: 48px; font-size: 12px; color: var(--color-neutral-text-weak);">md (24px)</span>
+          <span style="width: 48px; font-size: 12px; color: var(--color-text-base-secondary);">md (24px)</span>
           ${chip('md')}
         </div>
         <div style="display: flex; align-items: center; gap: 16px;">
-          <span style="width: 48px; font-size: 12px; color: var(--color-neutral-text-weak);">sm (20px)</span>
+          <span style="width: 48px; font-size: 12px; color: var(--color-text-base-secondary);">sm (20px)</span>
           ${chip('sm')}
         </div>
       </div>
@@ -215,7 +215,7 @@ export const AllStates: Story = {
     const headerCell = (text: string) =>
       `<div style="font-weight: 600; font-size: 12px; padding: 4px 0;">${text}</div>`;
     const stateCell = (text: string) =>
-      `<div style="font-size: 12px; color: var(--color-neutral-text-weak); white-space: nowrap;">${text}</div>`;
+      `<div style="font-size: 12px; color: var(--color-text-base-secondary); white-space: nowrap;">${text}</div>`;
 
     const rows: Array<{ label: string; attr: string }> = [
       { label: 'Default', attr: '' },
@@ -381,7 +381,7 @@ export const Interactive: Story = {
         </cor-chip>
 
       </div>
-      <div style="padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px; max-height: 160px; overflow-y: auto;">
+      <div style="padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px; max-height: 160px; overflow-y: auto;">
         <div style="font-weight: 600; margin-bottom: 8px;">Event Log (chip body · icon-left · icon-right):</div>
         <div id="chip-log-content">Interact with chips to see events...</div>
       </div>

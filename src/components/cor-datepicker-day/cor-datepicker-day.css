@@ -1,8 +1,8 @@
 :host {
   display: flex;
   flex: 1 0 0;
-  min-width: var(--datepicker-day-min-width, var(--space-xl, 32px));
-  height: var(--datepicker-day-size, var(--space-xl, 32px));
+  min-width: var(--datepicker-day-min-width, var(--spacing-32, 32px));
+  height: var(--datepicker-day-size, var(--spacing-32, 32px));
   align-items: center;
   justify-content: center;
   position: relative;
@@ -43,11 +43,11 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  height: var(--datepicker-day-size, var(--space-xl, 32px));
+  height: var(--datepicker-day-size, var(--spacing-32, 32px));
   width: 100%;
-  min-width: var(--datepicker-day-min-width, var(--space-xl, 32px));
-  padding: var(--datepicker-day-padding-block, var(--spacing-2xs, 4px))
-    var(--datepicker-day-padding-inline, var(--spacing-xs, 8px));
+  min-width: var(--datepicker-day-min-width, var(--spacing-32, 32px));
+  padding: var(--datepicker-day-padding-block, var(--spacing-12, 4px))
+    var(--datepicker-day-padding-inline, var(--spacing-12, 8px));
   border-radius: var(--datepicker-day-border-radius, var(--border-radius-xs, 4px));
   cursor: pointer;
   outline: none;
@@ -58,13 +58,13 @@
 
 .day-cell:focus-visible,
 :host(.is-focused) .day-cell {
-  outline: 2px solid var(--datepicker-day-focus-outline-color, var(--color-secondary-border));
+  outline: 2px solid var(--datepicker-day-focus-outline-color, var(--color-border-brand-default));
   outline-offset: 1px;
 }
 
 :host(.is-range-middle:not(.is-skeleton)) .day-cell {
   border-radius: 0;
-  background-color: var(--datepicker-day-background-range-middle, var(--color-neutral-background-fill, #eff0f1));
+  background-color: var(--datepicker-day-background-range-middle, var(--color-background-base-default, #eff0f1));
 }
 
 :host(.is-range-start:not(.is-skeleton)) .day-cell,
@@ -75,7 +75,7 @@
 
 :host(.is-range-start.is-today:not(.is-skeleton):not(.is-selected)) .day-cell:not(.day-cell--range-middle),
 :host(.is-range-end.is-today:not(.is-skeleton):not(.is-selected)) .day-cell:not(.day-cell--range-middle) {
-  background-color: var(--datepicker-day-background-range-endpoint, var(--color-primary-background-active, #b92f25));
+  background-color: var(--datepicker-day-background-range-endpoint, var(--color-background-brand-default-active, #b92f25));
 }
 
 :host(.is-range-start.is-today.is-hovered:not(.is-skeleton):not(.is-selected)) .day-cell:not(.day-cell--range-middle),
@@ -84,25 +84,25 @@
 :host(.is-range-end.is-today.is-focused:not(.is-skeleton):not(.is-selected)) .day-cell:not(.day-cell--range-middle) {
   background-color: var(
     --datepicker-day-background-range-endpoint-hovered,
-    var(--color-primary-background-active, #b92f25)
+    var(--color-background-brand-default-active, #b92f25)
   );
 }
 
 :host(.is-range-start:not(.is-skeleton)) .day-cell,
 :host(.is-range-end:not(.is-skeleton)) .day-cell {
-  background-color: var(--datepicker-day-background-range-endpoint, var(--color-primary-background-active, #b92f25));
+  background-color: var(--datepicker-day-background-range-endpoint, var(--color-background-brand-default-active, #b92f25));
 }
 
 :host(.is-range-start.is-hovered:not(.is-skeleton)) .day-cell,
 :host(.is-range-end.is-hovered:not(.is-skeleton)) .day-cell {
   background-color: var(
     --datepicker-day-background-range-endpoint-hovered,
-    var(--color-primary-background-active, #b92f25)
+    var(--color-background-brand-default-active, #b92f25)
   );
 }
 
 :host(.is-selected:not(.is-skeleton)) .day-cell {
-  background-color: var(--datepicker-day-background-selected, var(--color-primary-background-active, #b92f25));
+  background-color: var(--datepicker-day-background-selected, var(--color-background-brand-default-active, #b92f25));
 }
 
 :host(.is-range-start:not(.is-skeleton)) .day-cell {
@@ -117,43 +117,43 @@
 
 :host(.is-hovered:not(.is-skeleton)) .day-cell:not(.day-cell--reversed):not(.day-cell--range-middle),
 :host(.is-focused:not(.is-skeleton)) .day-cell:not(.day-cell--reversed):not(.day-cell--range-middle) {
-  background-color: var(--datepicker-day-background-hover, var(--color-primary-transparent-weak));
+  background-color: var(--datepicker-day-background-hover, var(--color-background-brand-secondary));
 }
 
 :host(.is-selected.is-hovered:not(.is-skeleton)) .day-cell:not(.day-cell--range-middle),
 :host(.is-selected.is-focused:not(.is-skeleton)) .day-cell:not(.day-cell--range-middle) {
   background-color: var(
     --datepicker-day-background-selected-hovered,
-    var(--color-neutral-background-stronger, #21262e)
+    var(--color-background-base-tertiary-active, #21262e)
   );
 }
 
 /* Today background - only when NOT selected/range/skeleton */
 :host(.is-today:not(.is-selected):not(.is-range-start):not(.is-range-end):not(.is-skeleton)) .day-cell {
-  background-color: var(--datepicker-day-background-today, var(--color-neutral-background-base-inverted));
+  background-color: var(--datepicker-day-background-today, var(--color-background-base-inverse-default));
 }
 
 :host(.is-today.is-hovered:not(.is-selected):not(.is-range-start):not(.is-range-end):not(.is-skeleton)) .day-cell,
 :host(.is-today.is-focused:not(.is-selected):not(.is-range-start):not(.is-range-end):not(.is-skeleton)) .day-cell {
-  background-color: var(--datepicker-day-background-today-hovered, var(--color-neutral-background-stronger));
+  background-color: var(--datepicker-day-background-today-hovered, var(--color-background-base-tertiary-active));
 }
 
 /* Today background - when selected (override selected background), not skeleton */
 :host(.is-today:not(.is-skeleton):not(.is-selected)) .day-cell:not(.day-cell--range-middle) {
-  background-color: var(--datepicker-day-background-today, var(--color-neutral-background-base-inverted));
+  background-color: var(--datepicker-day-background-today, var(--color-background-base-inverse-default));
 }
 
 :host(.is-today.is-hovered:not(.is-skeleton):not(.is-selected)) .day-cell:not(.day-cell--range-middle),
 :host(.is-today.is-focused:not(.is-skeleton):not(.is-selected)) .day-cell:not(.day-cell--range-middle) {
-  background-color: var(--datepicker-day-background-today-hovered, var(--color-neutral-background-stronger));
+  background-color: var(--datepicker-day-background-today-hovered, var(--color-background-base-tertiary-active));
 }
 
 .day-label {
-  font-family: var(--font-family-body, 'Inter', sans-serif);
-  font-size: var(--datepicker-day-font-size, var(--font-size-sm, 14px));
-  line-height: var(--datepicker-day-line-height, var(--line-height-md, 20px));
+  font-family: var(--font-family-primary, 'Inter', sans-serif);
+  font-size: var(--datepicker-day-font-size, var(--font-size-14, 14px));
+  line-height: var(--datepicker-day-line-height, var(--line-height-20, 20px));
   font-weight: var(--font-weight-regular, 400);
-  color: var(--datepicker-day-color-default, var(--color-neutral-text-default, #21262e));
+  color: var(--datepicker-day-color-default, var(--color-text-base-default, #21262e));
   min-width: 24px;
   text-align: center;
   display: block;
@@ -162,17 +162,17 @@
 }
 
 :host(.is-weekend) .day-label {
-  color: var(--datepicker-day-color-weekend, var(--color-system-critical-text-weak, #ac0015));
+  color: var(--datepicker-day-color-weekend, var(--color-text-danger-default, #ac0015));
 }
 
 :host(.is-selected) .day-label,
 :host(.is-range-start) .day-label,
 :host(.is-range-end) .day-label {
-  color: var(--datepicker-day-color-selected, var(--color-neutral-text-inverse, #eff0f1));
+  color: var(--datepicker-day-color-selected, var(--color-text-base-inverse-default, #eff0f1));
 }
 
 :host(.is-today:not(.is-selected):not(.is-range-start):not(.is-range-end):not(.is-skeleton)) .day-label {
-  color: var(--datepicker-day-color-today, var(--color-neutral-text-default, #21262e));
+  color: var(--datepicker-day-color-today, var(--color-text-base-default, #21262e));
 }
 
 :host(.is-empty) .day-label {
@@ -220,25 +220,25 @@
 
 /* Event color mappings */
 .event-sign--neutral {
-  background-color: var(--datepicker-event-color-neutral, var(--color-neutral-icon-weakest));
+  background-color: var(--datepicker-event-color-neutral, var(--color-icon-base-tertiary));
 }
 
 .event-sign--primary {
-  background-color: var(--datepicker-event-color-primary, var(--color-primary-icon-weakest));
+  background-color: var(--datepicker-event-color-primary, var(--color-icon-brand-on-secondary));
 }
 
 .event-sign--primary_weakest {
-  background-color: var(--datepicker-event-color-primary-weakest, var(--color-primary-icon-weakest));
+  background-color: var(--datepicker-event-color-primary-weakest, var(--color-icon-brand-on-secondary));
 }
 
 .event-sign--info {
-  background-color: var(--datepicker-event-color-info, var(--color-system-info-icon-weak));
+  background-color: var(--datepicker-event-color-info, var(--color-icon-brand-on-secondary));
 }
 
 .event-sign--secondary {
-  background-color: var(--datepicker-event-color-secondary, var(--color-secondary-icon-weak));
+  background-color: var(--datepicker-event-color-secondary, var(--color-icon-brand-on-secondary));
 }
 
 :host(.is-disabled) .event-sign {
-  background-color: var(--datepicker-event-color-neutral, var(--color-neutral-icon-weakest));
+  background-color: var(--datepicker-event-color-neutral, var(--color-icon-base-tertiary));
 }

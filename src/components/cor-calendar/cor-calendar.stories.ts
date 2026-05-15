@@ -267,14 +267,14 @@ export const Interactive: StoryObj = {
         ${args.skeleton ? 'skeleton' : ''}
       ></cor-calendar>
 
-      <div style="font-size: 12px; color: var(--color-neutral-text-weaker);">Select a date — <code>corDateChange</code> is emitted. The consumer updates <code>value</code> externally.</div>
+      <div style="font-size: 12px; color: var(--color-text-base-tertiary);">Select a date — <code>corDateChange</code> is emitted. The consumer updates <code>value</code> externally.</div>
 
-      <div id="cal-output" style="padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
+      <div id="cal-output" style="padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
         <div style="font-weight: 600; margin-bottom: 8px;">Current Value:</div>
         <div id="${outputId}">—</div>
       </div>
 
-      <div id="cal-log" style="padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
+      <div id="cal-log" style="padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
         <div style="font-weight: 600; margin-bottom: 8px;">Event Log:</div>
         <div id="${logContentId}">Select a date to see events...</div>
       </div>
@@ -355,14 +355,14 @@ export const InteractiveRange: StoryObj = {
         ${args.skeleton ? 'skeleton' : ''}
       ></cor-calendar>
 
-      <div style="font-size: 12px; color: var(--color-neutral-text-weaker);">Select a range — <code>corRangeChange</code> is emitted.</div>
+      <div style="font-size: 12px; color: var(--color-text-base-tertiary);">Select a range — <code>corRangeChange</code> is emitted.</div>
 
-      <div id="cal-range-output" style="padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
+      <div id="cal-range-output" style="padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
         <div style="font-weight: 600; margin-bottom: 8px;">Current Range:</div>
         <div id="${outputId}">—</div>
       </div>
 
-      <div id="cal-range-log" style="padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
+      <div id="cal-range-log" style="padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
         <div style="font-weight: 600; margin-bottom: 8px;">Event Log:</div>
         <div id="${logContentId}">Select a date range to see events...</div>
       </div>

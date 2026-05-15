@@ -68,14 +68,14 @@ export const UnderlineVariants = {
     return /*html*/ `
       <div style="font-family: system-ui, sans-serif; padding: 20px;">
         <h2>Link Underline Variants</h2>
-        <p style="margin-bottom: 20px; color: var(--color-neutral-text-weaker);">
+        <p style="margin-bottom: 20px; color: var(--color-text-base-tertiary);">
           Demonstrates the three underline options: always (best for accessibility), hover, and none.
         </p>
         <table style="border-collapse: collapse; width: 100%;">
           <thead>
             <tr>
-              <th style="border: 1px solid var(--color-neutral-border-weakest); padding: 12px; text-align: left; background: var(--color-neutral-background-default);">Underline</th>
-              ${sizes.map(size => `<th style="border: 1px solid var(--color-neutral-border-weakest); padding: 12px; text-align: center; background: var(--color-neutral-background-default); text-transform: uppercase;">${size}</th>`).join('')}
+              <th style="border: 1px solid var(--color-border-base-subtle); padding: 12px; text-align: left; background: var(--color-background-base-default);">Underline</th>
+              ${sizes.map(size => `<th style="border: 1px solid var(--color-border-base-subtle); padding: 12px; text-align: center; background: var(--color-background-base-default); text-transform: uppercase;">${size}</th>`).join('')}
             </tr>
           </thead>
           <tbody>
@@ -83,11 +83,11 @@ export const UnderlineVariants = {
               .map(
                 underline => `
               <tr>
-                <td style="border: 1px solid var(--color-neutral-border-weakest); padding: 12px; font-weight: 600; background: var(--color-neutral-background-default); white-space: nowrap;">${underline}</td>
+                <td style="border: 1px solid var(--color-border-base-subtle); padding: 12px; font-weight: 600; background: var(--color-background-base-default); white-space: nowrap;">${underline}</td>
                 ${sizes
                   .map(
                     size => `
-                  <td style="border: 1px solid var(--color-neutral-border-weakest); padding: 12px; text-align: center;">
+                  <td style="border: 1px solid var(--color-border-base-subtle); padding: 12px; text-align: center;">
                     <cor-link size="${size}" underline="${underline}">Link text</cor-link>
                   </td>
                 `,
@@ -99,7 +99,7 @@ export const UnderlineVariants = {
               .join('')}
           </tbody>
         </table>
-        <div style="margin-top: 24px; padding: 16px; background: var(--color-secondary-background-default); border-left: 4px solid var(--color-secondary-border);">
+        <div style="margin-top: 24px; padding: 16px; background: var(--color-background-brand-default); border-left: 4px solid var(--color-border-brand-default);">
           <strong>Accessibility Note:</strong> Use <code>underline="always"</code> for links within body text to ensure they're distinguishable for colorblind users (WCAG 2.1 compliance).
         </div>
       </div>
@@ -120,16 +120,16 @@ export const AllStatesTable = {
     const sizeHeaders = sizes
       .map(
         size =>
-          /*html*/ `<th colspan="3" style="border: 1px solid var(--color-neutral-border-weakest); padding: 12px; text-align: center; background: var(--color-neutral-background-default); text-transform: uppercase;">${size}</th>`,
+          /*html*/ `<th colspan="3" style="border: 1px solid var(--color-border-base-subtle); padding: 12px; text-align: center; background: var(--color-background-base-default); text-transform: uppercase;">${size}</th>`,
       )
       .join('');
 
     const subHeaders = sizes
       .map(
         () => /*html*/ `
-        <th style="border: 1px solid var(--color-neutral-border-weakest); padding: 8px; text-align: center; background: var(--color-neutral-background-default); font-size: 11px;">With icons</th>
-        <th style="border: 1px solid var(--color-neutral-border-weakest); padding: 8px; text-align: center; background: var(--color-neutral-background-default); font-size: 11px;">Label only</th>
-        <th style="border: 1px solid var(--color-neutral-border-weakest); padding: 8px; text-align: center; background: var(--color-neutral-background-default); font-size: 11px;">Icon only</th>
+        <th style="border: 1px solid var(--color-border-base-subtle); padding: 8px; text-align: center; background: var(--color-background-base-default); font-size: 11px;">With icons</th>
+        <th style="border: 1px solid var(--color-border-base-subtle); padding: 8px; text-align: center; background: var(--color-background-base-default); font-size: 11px;">Label only</th>
+        <th style="border: 1px solid var(--color-border-base-subtle); padding: 8px; text-align: center; background: var(--color-background-base-default); font-size: 11px;">Icon only</th>
       `,
       )
       .join('');
@@ -139,17 +139,17 @@ export const AllStatesTable = {
         const cells = sizes
           .map(size => {
             return /*html*/ `
-            <td style="border: 1px solid var(--color-neutral-border-weakest); padding: 12px; text-align: center;">
+            <td style="border: 1px solid var(--color-border-base-subtle); padding: 12px; text-align: center;">
               <cor-link size="${size}" state="${state}">
                 <cor-icon slot="icon-left" name="${ICON_NAMES.LAUNCH}" size="${size === 'sm' ? 'sm' : 'md'}" color="currentColor"></cor-icon>
                 Label
                 <cor-icon slot="icon-right" name="${ICON_NAMES.LAUNCH}" size="${size === 'sm' ? 'sm' : 'md'}" color="currentColor"></cor-icon>
               </cor-link>
             </td>
-            <td style="border: 1px solid var(--color-neutral-border-weakest); padding: 12px; text-align: center;">
+            <td style="border: 1px solid var(--color-border-base-subtle); padding: 12px; text-align: center;">
               <cor-link size="${size}" state="${state}">Label</cor-link>
             </td>
-            <td style="border: 1px solid var(--color-neutral-border-weakest); padding: 12px; text-align: center;">
+            <td style="border: 1px solid var(--color-border-base-subtle); padding: 12px; text-align: center;">
               <cor-link size="${size}" state="${state}" aria-label="Icon only link">
                 <cor-icon slot="icon" name="${ICON_NAMES.LAUNCH}" size="${size === 'sm' ? 'sm' : 'md'}" color="currentColor"></cor-icon>
               </cor-link>
@@ -160,7 +160,7 @@ export const AllStatesTable = {
 
         return /*html*/ `
         <tr>
-          <td style="border: 1px solid var(--color-neutral-border-weakest); padding: 12px; font-weight: 600; background: var(--color-neutral-background-default); white-space: nowrap;">:${state}</td>
+          <td style="border: 1px solid var(--color-border-base-subtle); padding: 12px; font-weight: 600; background: var(--color-background-base-default); white-space: nowrap;">:${state}</td>
           ${cells}
         </tr>`;
       })
@@ -170,17 +170,17 @@ export const AllStatesTable = {
     const skeletonCells = sizes
       .map(size => {
         return /*html*/ `
-        <td style="border: 1px solid var(--color-neutral-border-weakest); padding: 12px; text-align: center;">
+        <td style="border: 1px solid var(--color-border-base-subtle); padding: 12px; text-align: center;">
           <cor-link size="${size}" skeleton>
             <cor-icon slot="icon-left" name="${ICON_NAMES.LAUNCH}" size="${size === 'sm' ? 'sm' : 'md'}" color="currentColor"></cor-icon>
             Label
             <cor-icon slot="icon-right" name="${ICON_NAMES.LAUNCH}" size="${size === 'sm' ? 'sm' : 'md'}" color="currentColor"></cor-icon>
           </cor-link>
         </td>
-        <td style="border: 1px solid var(--color-neutral-border-weakest); padding: 12px; text-align: center;">
+        <td style="border: 1px solid var(--color-border-base-subtle); padding: 12px; text-align: center;">
           <cor-link size="${size}" skeleton>Label</cor-link>
         </td>
-        <td style="border: 1px solid var(--color-neutral-border-weakest); padding: 12px; text-align: center;">
+        <td style="border: 1px solid var(--color-border-base-subtle); padding: 12px; text-align: center;">
           <cor-link size="${size}" skeleton icon-only></cor-link>
         </td>
       `;
@@ -189,7 +189,7 @@ export const AllStatesTable = {
 
     const skeletonRow = /*html*/ `
       <tr>
-        <td style="border: 1px solid var(--color-neutral-border-weakest); padding: 12px; font-weight: 600; background: var(--color-neutral-background-default); white-space: nowrap;">skeleton</td>
+        <td style="border: 1px solid var(--color-border-base-subtle); padding: 12px; font-weight: 600; background: var(--color-background-base-default); white-space: nowrap;">skeleton</td>
         ${skeletonCells}
       </tr>`;
 
@@ -199,11 +199,11 @@ export const AllStatesTable = {
         <table style="border-collapse: collapse; width: 100%;">
           <thead>
             <tr>
-              <th style="border: 1px solid var(--color-neutral-border-weakest); padding: 12px; text-align: left; background: var(--color-neutral-background-default);">State</th>
+              <th style="border: 1px solid var(--color-border-base-subtle); padding: 12px; text-align: left; background: var(--color-background-base-default);">State</th>
               ${sizeHeaders}
             </tr>
             <tr>
-              <th style="border: 1px solid var(--color-neutral-border-weakest); padding: 8px; background: var(--color-neutral-background-default);"></th>
+              <th style="border: 1px solid var(--color-border-base-subtle); padding: 8px; background: var(--color-background-base-default);"></th>
               ${subHeaders}
             </tr>
           </thead>

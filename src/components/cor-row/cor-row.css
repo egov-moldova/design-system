@@ -105,25 +105,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--spacing-ms);
-  height: var(--spacing-ms);
+  width: var(--spacing-16);
+  height: var(--spacing-16);
   padding: 0;
   border: none;
   border-radius: var(--table-action-button-border-radius);
   background: transparent;
   cursor: pointer;
-  color: var(--color-neutral-icon-default);
+  color: var(--color-icon-base-default);
   transition:
     color 150ms ease-in-out,
     background 150ms ease-in-out;
 }
 
 .expand-button:hover:not(:disabled) {
-  color: var(--color-primary-icon-weaker);
+  color: var(--color-icon-brand-on-secondary);
 }
 
 .expand-button:active:not(:disabled) {
-  color: var(--color-primary-icon-weaker);
+  color: var(--color-icon-brand-on-secondary);
 }
 
 .expand-button:focus-visible {
@@ -133,7 +133,7 @@
 
 .expand-button:disabled {
   cursor: not-allowed;
-  color: var(--color-neutral-text-disabled);
+  color: var(--color-text-disabled-default);
 }
 
 .expand-button cor-icon {

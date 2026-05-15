@@ -325,7 +325,7 @@ describe('cor-typography', () => {
         html: `<cor-typography color="color-neutral-text-default"><p>Text</p></cor-typography>`,
       });
       const style = page.root?.style;
-      expect(style?.color).toBe('var(--color-neutral-text-default)');
+      expect(style?.color).toBe('var(--color-text-base-default)');
     });
 
     it('applies color style with neutral-text-weak', async () => {
@@ -334,7 +334,7 @@ describe('cor-typography', () => {
         html: `<cor-typography color="color-neutral-text-weak"><p>Text</p></cor-typography>`,
       });
       const style = page.root?.style;
-      expect(style?.color).toBe('var(--color-neutral-text-weak)');
+      expect(style?.color).toBe('var(--color-text-base-secondary)');
     });
 
     it('applies color style with primary-text-default', async () => {
@@ -343,7 +343,7 @@ describe('cor-typography', () => {
         html: `<cor-typography color="color-primary-text-default"><p>Text</p></cor-typography>`,
       });
       const style = page.root?.style;
-      expect(style?.color).toBe('var(--color-primary-text-default)');
+      expect(style?.color).toBe('var(--color-text-brand-default)');
     });
 
     it('applies color style with system-error-text', async () => {
@@ -352,7 +352,7 @@ describe('cor-typography', () => {
         html: `<cor-typography color="color-system-error-text"><p>Text</p></cor-typography>`,
       });
       const style = page.root?.style;
-      expect(style?.color).toBe('var(--color-system-error-text)');
+      expect(style?.color).toBe('var(--color-text-danger-default)');
     });
 
     it('applies color style with system-success-text', async () => {
@@ -361,7 +361,7 @@ describe('cor-typography', () => {
         html: `<cor-typography color="color-system-success-text"><p>Text</p></cor-typography>`,
       });
       const style = page.root?.style;
-      expect(style?.color).toBe('var(--color-system-success-text)');
+      expect(style?.color).toBe('var(--color-text-positive-default)');
     });
 
     it('applies color style with system-warning-text', async () => {
@@ -370,7 +370,7 @@ describe('cor-typography', () => {
         html: `<cor-typography color="color-system-warning-text"><p>Text</p></cor-typography>`,
       });
       const style = page.root?.style;
-      expect(style?.color).toBe('var(--color-system-warning-text)');
+      expect(style?.color).toBe('var(--color-text-warning-default)');
     });
 
     it('applies color style with system-info-text', async () => {
@@ -379,7 +379,7 @@ describe('cor-typography', () => {
         html: `<cor-typography color="color-system-info-text"><p>Text</p></cor-typography>`,
       });
       const style = page.root?.style;
-      expect(style?.color).toBe('var(--color-system-info-text)');
+      expect(style?.color).toBe('var(--color-text-brand-default)');
     });
 
     it('reflects color attribute', async () => {
@@ -408,7 +408,7 @@ describe('cor-typography', () => {
       });
       expect(page.root?.getAttribute('variant')).toBe('heading-xl');
       expect(page.root?.getAttribute('color')).toBe('color-primary-text-default');
-      expect(page.root?.style.color).toBe('var(--color-primary-text-default)');
+      expect(page.root?.style.color).toBe('var(--color-text-brand-default)');
     });
 
     it('renders text content correctly', async () => {

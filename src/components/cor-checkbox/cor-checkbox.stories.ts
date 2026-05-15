@@ -176,34 +176,34 @@ export const AllStatesTable: StoryObj = {
 export const ComplexShowcase: StoryObj = {
   render: () => {
     return /*html*/ `
-      <div style="display: grid; gap: 32px; padding: 24px; background: var(--color-neutral-background-base);">
+      <div style="display: grid; gap: 32px; padding: 24px; background: var(--color-background-base-default);">
         <h2 style="margin: 0; font-size: 18px; font-weight: 600;">Controls / Checkbox</h2>
 
         <!-- MD Size Section -->
         <div style="display: grid; gap: 24px;">
-          <h3 style="margin: 0; font-size: 14px; font-weight: 600; color: var(--color-neutral-text-default);">Size: MD</h3>
+          <h3 style="margin: 0; font-size: 14px; font-weight: 600; color: var(--color-text-base-default);">Size: MD</h3>
 
           <div style="display: grid; grid-template-columns: auto repeat(3, 1fr); gap: 24px 32px; align-items: center;">
             <!-- Header Row -->
-            <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-weak);">State</div>
-            <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-weak);">Off</div>
-            <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-weak);">On</div>
-            <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-weak);">Mixed</div>
+            <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-secondary);">State</div>
+            <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-secondary);">Off</div>
+            <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-secondary);">On</div>
+            <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-secondary);">Mixed</div>
 
             <!-- Default Row -->
-            <div style="font-size: 12px; color: var(--color-neutral-text-default);">Default</div>
+            <div style="font-size: 12px; color: var(--color-text-base-default);">Default</div>
             <cor-checkbox size="md">Label</cor-checkbox>
             <cor-checkbox size="md" checked>Label</cor-checkbox>
             <cor-checkbox size="md" indeterminate>Label</cor-checkbox>
 
             <!-- Disabled Row -->
-            <div style="font-size: 12px; color: var(--color-neutral-text-default);">Disabled</div>
+            <div style="font-size: 12px; color: var(--color-text-base-default);">Disabled</div>
             <cor-checkbox size="md" disabled>Label</cor-checkbox>
             <cor-checkbox size="md" disabled checked>Label</cor-checkbox>
             <cor-checkbox size="md" disabled indeterminate>Label</cor-checkbox>
 
             <!-- Invalid Row -->
-            <div style="font-size: 12px; color: var(--color-neutral-text-default);">Invalid</div>
+            <div style="font-size: 12px; color: var(--color-text-base-default);">Invalid</div>
             <cor-checkbox size="md" invalid>Label</cor-checkbox>
             <cor-checkbox size="md" invalid checked>Label</cor-checkbox>
             <cor-checkbox size="md" invalid indeterminate>Label</cor-checkbox>
@@ -212,29 +212,29 @@ export const ComplexShowcase: StoryObj = {
 
         <!-- SM Size Section -->
         <div style="display: grid; gap: 24px;">
-          <h3 style="margin: 0; font-size: 14px; font-weight: 600; color: var(--color-neutral-text-default);">Size: SM</h3>
+          <h3 style="margin: 0; font-size: 14px; font-weight: 600; color: var(--color-text-base-default);">Size: SM</h3>
 
           <div style="display: grid; grid-template-columns: auto repeat(3, 1fr); gap: 24px 32px; align-items: center;">
             <!-- Header Row -->
-            <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-weak);">State</div>
-            <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-weak);">Off</div>
-            <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-weak);">On</div>
-            <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-weak);">Mixed</div>
+            <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-secondary);">State</div>
+            <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-secondary);">Off</div>
+            <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-secondary);">On</div>
+            <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-secondary);">Mixed</div>
 
             <!-- Default Row -->
-            <div style="font-size: 12px; color: var(--color-neutral-text-default);">Default</div>
+            <div style="font-size: 12px; color: var(--color-text-base-default);">Default</div>
             <cor-checkbox size="sm">Label</cor-checkbox>
             <cor-checkbox size="sm" checked>Label</cor-checkbox>
             <cor-checkbox size="sm" indeterminate>Label</cor-checkbox>
 
             <!-- Disabled Row -->
-            <div style="font-size: 12px; color: var(--color-neutral-text-default);">Disabled</div>
+            <div style="font-size: 12px; color: var(--color-text-base-default);">Disabled</div>
             <cor-checkbox size="sm" disabled>Label</cor-checkbox>
             <cor-checkbox size="sm" disabled checked>Label</cor-checkbox>
             <cor-checkbox size="sm" disabled indeterminate>Label</cor-checkbox>
 
             <!-- Invalid Row -->
-            <div style="font-size: 12px; color: var(--color-neutral-text-default);">Invalid</div>
+            <div style="font-size: 12px; color: var(--color-text-base-default);">Invalid</div>
             <cor-checkbox size="sm" invalid>Label</cor-checkbox>
             <cor-checkbox size="sm" invalid checked>Label</cor-checkbox>
             <cor-checkbox size="sm" invalid indeterminate>Label</cor-checkbox>

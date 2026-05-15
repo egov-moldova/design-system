@@ -141,7 +141,7 @@ export const AllStatesTable = {
         <div style="display: grid; gap: 32px; max-width: 400px;">
           <!-- Default -->
           <div>
-            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-neutral-text-weaker);">Default</p>
+            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-text-base-tertiary);">Default</p>
             <cor-select-item
               id="basic-default"
               variant="basic"
@@ -152,7 +152,7 @@ export const AllStatesTable = {
 
           <!-- Hover (simulated via story controls) -->
           <div>
-            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-neutral-text-weaker);">Hover (hover over item)</p>
+            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-text-base-tertiary);">Hover (hover over item)</p>
             <cor-select-item
               id="basic-hover"
               variant="basic"
@@ -163,7 +163,7 @@ export const AllStatesTable = {
 
           <!-- Pressed (simulated via story controls) -->
           <div>
-            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-neutral-text-weaker);">Pressed (click and hold)</p>
+            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-text-base-tertiary);">Pressed (click and hold)</p>
             <cor-select-item
               id="basic-pressed"
               variant="basic"
@@ -174,7 +174,7 @@ export const AllStatesTable = {
 
           <!-- Disabled -->
           <div>
-            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-neutral-text-weaker);">Disabled</p>
+            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-text-base-tertiary);">Disabled</p>
             <cor-select-item
               id="basic-disabled"
               variant="basic"
@@ -186,7 +186,7 @@ export const AllStatesTable = {
 
           <!-- Selected -->
           <div>
-            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-neutral-text-weaker);">Selected</p>
+            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-text-base-tertiary);">Selected</p>
             <cor-select-item
               id="basic-selected"
               variant="basic"
@@ -198,7 +198,7 @@ export const AllStatesTable = {
 
           <!-- Selected + Disabled -->
           <div>
-            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-neutral-text-weaker);">Selected + Disabled</p>
+            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-text-base-tertiary);">Selected + Disabled</p>
             <cor-select-item
               id="basic-selected-disabled"
               variant="basic"
@@ -211,7 +211,7 @@ export const AllStatesTable = {
 
           <!-- Selected + Indeterminate (Mixed) -->
           <div>
-            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-neutral-text-weaker);">Indeterminate (Mixed)</p>
+            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-text-base-tertiary);">Indeterminate (Mixed)</p>
             <cor-select-item
               id="basic-indeterminate"
               variant="basic"
@@ -223,7 +223,7 @@ export const AllStatesTable = {
 
           <!-- With Avatar -->
           <div>
-            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-neutral-text-weaker);">With Avatar</p>
+            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-text-base-tertiary);">With Avatar</p>
             <cor-select-item
               id="basic-avatar"
               variant="basic"
@@ -236,7 +236,7 @@ export const AllStatesTable = {
 
           <!-- With Avatar + Selected -->
           <div>
-            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-neutral-text-weaker);">With Avatar + Selected</p>
+            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-text-base-tertiary);">With Avatar + Selected</p>
             <cor-select-item
               id="basic-avatar-selected"
               variant="basic"
@@ -250,7 +250,7 @@ export const AllStatesTable = {
 
           <!-- With Icons -->
           <div>
-            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-neutral-text-weaker);">With Icons</p>
+            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-text-base-tertiary);">With Icons</p>
             <cor-select-item
               id="basic-icons"
               variant="basic"
@@ -264,7 +264,7 @@ export const AllStatesTable = {
 
           <!-- With Badge -->
           <div>
-            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-neutral-text-weaker);">With Badge</p>
+            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-text-base-tertiary);">With Badge</p>
             <cor-select-item
               id="basic-badge"
               variant="basic"
@@ -280,7 +280,7 @@ export const AllStatesTable = {
 
           <!-- With Badge + Selected -->
           <div>
-            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-neutral-text-weaker);">With Badge + Selected</p>
+            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-text-base-tertiary);">With Badge + Selected</p>
             <cor-select-item
               id="basic-badge-selected"
               variant="basic"
@@ -300,7 +300,7 @@ export const AllStatesTable = {
         <div style="display: grid; gap: 24px; max-width: 400px;">
           <!-- Default -->
           <div>
-            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-neutral-text-weaker);">Default</p>
+            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-text-base-tertiary);">Default</p>
             <cor-select-item
               id="timestamp-default"
               variant="timestamp"
@@ -311,7 +311,7 @@ export const AllStatesTable = {
 
           <!-- Selected -->
           <div>
-            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-neutral-text-weaker);">Selected</p>
+            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-text-base-tertiary);">Selected</p>
             <cor-select-item
               id="timestamp-selected"
               variant="timestamp"
@@ -323,7 +323,7 @@ export const AllStatesTable = {
 
           <!-- Disabled -->
           <div>
-            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-neutral-text-weaker);">Disabled</p>
+            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-text-base-tertiary);">Disabled</p>
             <cor-select-item
               id="timestamp-disabled"
               variant="timestamp"
@@ -335,7 +335,7 @@ export const AllStatesTable = {
 
           <!-- Selected + Disabled -->
           <div>
-            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-neutral-text-weaker);">Selected + Disabled</p>
+            <p style="margin: 0 0 4px 0; font-size: 12px; color: var(--color-text-base-tertiary);">Selected + Disabled</p>
             <cor-select-item
               id="timestamp-selected-disabled"
               variant="timestamp"

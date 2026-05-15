@@ -17,13 +17,13 @@ export class CorSkeleton {
 
   /**
    * Height of the skeleton loader
-   * @default 'var(--space-md)'
+   * @default 'var(--spacing-20)'
    */
   @Prop({ reflect: true }) height?: string;
 
   /**
    * Border radius of the skeleton loader
-   * @default 'var(--radius-md)'
+   * @default 'var(--border-radius-8)'
    */
   @Prop({ reflect: true }) borderRadius?: string;
 

@@ -40,8 +40,8 @@ body {
 
 body.sb-main-padded,
 .docs-story {
-  background-color: var(--color-neutral-background-base);
-  color: var(--color-neutral-text-default);
+  background-color: var(--color-background-base-default);
+  color: var(--color-text-base-default);
 }
 
 * {

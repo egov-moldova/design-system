@@ -91,7 +91,7 @@
 }
 
 .filename {
-  font-family: var(--font-family-body, 'Inter', sans-serif);
+  font-family: var(--font-family-primary, 'Inter', sans-serif);
   font-size: var(--upload-file-item-filename-font-size);
   line-height: var(--upload-file-item-filename-line-height);
   color: var(--upload-file-item-filename-color);
@@ -104,7 +104,7 @@
 }
 
 .percentage {
-  font-family: var(--font-family-body, 'Inter', sans-serif);
+  font-family: var(--font-family-primary, 'Inter', sans-serif);
   font-size: var(--upload-file-item-percentage-font-size);
   line-height: var(--upload-file-item-percentage-line-height);
   color: var(--upload-file-item-percentage-color);
@@ -132,11 +132,11 @@
 
 .remove-btn:hover {
   color: var(--upload-file-item-remove-button-color-hover);
-  background: var(--color-neutral-transparent-default, rgb(108 117 132 / 12%));
+  background: var(--color-background-alpha-overlay-light, rgb(108 117 132 / 12%));
 }
 
 .remove-btn:focus-visible {
-  outline: var(--upload-file-item-remove-button-focus-outline-width) solid var(--color-secondary-border, currentColor);
+  outline: var(--upload-file-item-remove-button-focus-outline-width) solid var(--color-border-brand-default, currentColor);
   outline-offset: var(--upload-file-item-remove-button-focus-outline-offset);
 }
 

@@ -9,7 +9,7 @@ Button CSS File
 
   ::slotted(*) {
     border-style: solid;
-    border-width: var(--button-border-width, var(--spacing-px));
+    border-width: var(--button-border-width, var(--spacing-2));
     border-color: transparent;
   }
 
@@ -34,19 +34,19 @@ Button CSS File
   border: none;
   text-align: center;
   text-decoration: none;
-  color: var(--button-color, var(--color-neutral-text-default));
+  color: var(--button-color, var(--color-text-base-default));
   margin: auto;
   background-clip: padding-box;
   font-family: var(--button-font-family, var(--font-family-sans));
-  font-weight: var(--button-font-weight, var(--font-weight-semi-bold));
-  gap: var(--button-gap, var(--spacing-xs));
-  line-height: var(--button-line-height, var(--line-height-md));
-  font-size: var(--button-font-size, var(--font-size-sm));
-  padding: var(--button-padding-block, var(--space-xs)) var(--button-padding-inline, var(--spacing-md));
-  border-radius: var(--button-border-radius, var(--radius-md));
-  background-color: var(--button-background-color, var(--color-neutral-background-default));
-  height: var(--button-size, var(--space-4xl));
-  min-width: var(--button-size, var(--space-4xl));
+  font-weight: var(--button-font-weight, var(--font-weight-semibold));
+  gap: var(--button-gap, var(--spacing-12));
+  line-height: var(--button-line-height, var(--line-height-20));
+  font-size: var(--button-font-size, var(--font-size-14));
+  padding: var(--button-padding-block, var(--spacing-12)) var(--button-padding-inline, var(--spacing-20));
+  border-radius: var(--button-border-radius, var(--border-radius-8));
+  background-color: var(--button-background-color, var(--color-background-base-default));
+  height: var(--button-size, var(--spacing-48));
+  min-width: var(--button-size, var(--spacing-48));
   transition:
     background-color 0.15s ease-in-out,
     color 0.15s ease-in-out,
@@ -56,78 +56,78 @@ Button CSS File
 
 :host([size='xs']) {
   ::slotted(*) {
-    font-size: var(--button-xs-font-size, var(--font-size-xs));
-    line-height: var(--button-xs-line-height, var(--line-height-sm));
-    gap: var(--button-xs-gap, var(--spacing-2xs));
-    height: var(--button-xs-size, var(--space-lg));
-    min-width: var(--button-xs-size, var(--space-lg));
-    padding: var(--button-xs-padding-block, var(--space-6xs)) var(--button-xs-padding-inline, var(--space-xs));
-    border-radius: var(--button-xs-border-radius, var(--radius-sm));
+    font-size: var(--button-xs-font-size, var(--font-size-12));
+    line-height: var(--button-xs-line-height, var(--line-height-16));
+    gap: var(--button-xs-gap, var(--spacing-12));
+    height: var(--button-xs-size, var(--spacing-24));
+    min-width: var(--button-xs-size, var(--spacing-24));
+    padding: var(--button-xs-padding-block, var(--spacing-2)) var(--button-xs-padding-inline, var(--spacing-12));
+    border-radius: var(--button-xs-border-radius, var(--border-radius-4));
   }
 }
 
 :host([size='xs'][icononly='true']),
 :host([size='xs'][icononly]:not([icononly='false'])) {
   ::slotted(*) {
-    padding: var(--button-xs-padding-block, var(--space-6xs)) calc(var(--button-xs-padding-inline, var(--space-xs)) / 2);
+    padding: var(--button-xs-padding-block, var(--spacing-2)) calc(var(--button-xs-padding-inline, var(--spacing-12)) / 2);
   }
 }
 
 :host([size='sm']) {
   ::slotted(*) {
-    font-size: var(--button-sm-font-size, var(--font-size-xs));
-    line-height: var(--button-sm-line-height, var(--line-height-sm));
-    gap: var(--button-sm-gap, var(--spacing-xs));
-    height: var(--button-sm-size, var(--space-xl));
-    min-width: var(--button-sm-size, var(--space-xl));
-    padding: var(--button-sm-padding-block, var(--space-4xs)) var(--button-sm-padding-inline, var(--space-xs));
-    border-radius: var(--button-sm-border-radius, var(--radius-md));
+    font-size: var(--button-sm-font-size, var(--font-size-12));
+    line-height: var(--button-sm-line-height, var(--line-height-16));
+    gap: var(--button-sm-gap, var(--spacing-12));
+    height: var(--button-sm-size, var(--spacing-32));
+    min-width: var(--button-sm-size, var(--spacing-32));
+    padding: var(--button-sm-padding-block, var(--spacing-6)) var(--button-sm-padding-inline, var(--spacing-12));
+    border-radius: var(--button-sm-border-radius, var(--border-radius-8));
   }
 }
 
 :host([size='sm'][icononly='true']),
 :host([size='sm'][icononly]:not([icononly='false'])) {
   ::slotted(*) {
-    padding: var(--button-sm-padding-block, var(--space-4xs)) calc(var(--button-sm-padding-inline, var(--space-xs)) / 2);
+    padding: var(--button-sm-padding-block, var(--spacing-6)) calc(var(--button-sm-padding-inline, var(--spacing-12)) / 2);
   }
 }
 
 :host([size='md']) {
   ::slotted(*) {
-    font-size: var(--button-md-font-size, var(--font-size-sm));
-    line-height: var(--button-md-line-height, var(--line-height-md));
-    gap: var(--button-md-gap, var(--spacing-xs));
-    height: var(--button-md-size, var(--space-2xl));
-    min-width: var(--button-md-size, var(--space-2xl));
-    padding: var(--button-md-padding-block, var(--space-4xs)) var(--button-md-padding-inline, var(--space-xs));
-    border-radius: var(--button-md-border-radius, var(--radius-md));
+    font-size: var(--button-md-font-size, var(--font-size-14));
+    line-height: var(--button-md-line-height, var(--line-height-20));
+    gap: var(--button-md-gap, var(--spacing-12));
+    height: var(--button-md-size, var(--spacing-32));
+    min-width: var(--button-md-size, var(--spacing-32));
+    padding: var(--button-md-padding-block, var(--spacing-6)) var(--button-md-padding-inline, var(--spacing-12));
+    border-radius: var(--button-md-border-radius, var(--border-radius-8));
   }
 }
 
 :host([size='md'][icononly='true']),
 :host([size='md'][icononly]:not([icononly='false'])) {
   ::slotted(*) {
-    padding: var(--button-md-padding-block, var(--space-4xs)) calc(var(--button-md-padding-inline, var(--space-xs)) / 2);
+    padding: var(--button-md-padding-block, var(--spacing-6)) calc(var(--button-md-padding-inline, var(--spacing-12)) / 2);
   }
 }
 
 :host([size='lg']) {
   ::slotted(*) {
-    font-size: var(--button-lg-font-size, var(--font-size-sm));
-    line-height: var(--button-lg-line-height, var(--line-height-md));
-    gap: var(--button-lg-gap, var(--spacing-xs));
-    height: var(--button-lg-size, var(--space-4xl));
-    min-width: var(--button-lg-size, var(--space-4xl));
-    padding: var(--button-lg-padding-block, var(--spacing-md)) var(--button-lg-padding-inline, var(--space-xs));
-    border-radius: var(--button-lg-border-radius, var(--radius-md));
+    font-size: var(--button-lg-font-size, var(--font-size-14));
+    line-height: var(--button-lg-line-height, var(--line-height-20));
+    gap: var(--button-lg-gap, var(--spacing-12));
+    height: var(--button-lg-size, var(--spacing-48));
+    min-width: var(--button-lg-size, var(--spacing-48));
+    padding: var(--button-lg-padding-block, var(--spacing-20)) var(--button-lg-padding-inline, var(--spacing-12));
+    border-radius: var(--button-lg-border-radius, var(--border-radius-8));
   }
 }
 
 :host([size='lg'][icononly='true']),
 :host([size='lg'][icononly]:not([icononly='false'])) {
   ::slotted(*) {
-    padding: var(--button-lg-padding-block, var(--spacing-md))
-      calc(var(--button-lg-padding-inline, var(--space-xs)) / 2);
+    padding: var(--button-lg-padding-block, var(--spacing-20))
+      calc(var(--button-lg-padding-inline, var(--spacing-12)) / 2);
   }
 }
 

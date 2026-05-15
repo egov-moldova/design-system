@@ -7,7 +7,7 @@
 }
 
 :host(:focus-visible) .drop-zone {
-  outline: 2px solid var(--color-secondary-border, currentColor);
+  outline: 2px solid var(--color-border-brand-default, currentColor);
   outline-offset: 2px;
 }
 
@@ -112,7 +112,7 @@
 }
 
 .progress-message-text {
-  font-family: var(--font-family-body, 'Inter', sans-serif);
+  font-family: var(--font-family-primary, 'Inter', sans-serif);
   font-size: var(--upload-area-text-primary-font-size);
   line-height: var(--upload-area-text-primary-line-height);
   color: var(--upload-area-text-primary-color);
@@ -132,7 +132,7 @@
 }
 
 .progress-percent {
-  font-family: var(--font-family-body, 'Inter', sans-serif);
+  font-family: var(--font-family-primary, 'Inter', sans-serif);
   font-size: var(--upload-area-text-secondary-font-size);
   line-height: var(--upload-area-text-secondary-line-height);
   color: var(--upload-area-text-secondary-color);

@@ -148,13 +148,13 @@ export const AllSizes: StoryObj = {
     return /*html*/ `
     <div style="padding: 24px; display: flex; flex-direction: column; gap: 24px;">
       <div style="display: flex; align-items: center; gap: 32px;">
-        <span style="font-family: var(--font-family-body); font-size: 12px; color: var(--color-neutral-text-weak); width: 40px;">MD</span>
+        <span style="font-family: var(--font-family-primary); font-size: 12px; color: var(--color-text-base-secondary); width: 40px;">MD</span>
         <cor-sorting id="sort-md" label="${args.label}" value="${args.value}" size="md" ${args.disabled ? 'disabled' : ''}>
           ${renderOptions()}
         </cor-sorting>
       </div>
       <div style="display: flex; align-items: center; gap: 32px;">
-        <span style="font-family: var(--font-family-body); font-size: 12px; color: var(--color-neutral-text-weak); width: 40px;">SM</span>
+        <span style="font-family: var(--font-family-primary); font-size: 12px; color: var(--color-text-base-secondary); width: 40px;">SM</span>
         <cor-sorting id="sort-sm" label="${args.label}" value="${args.value}" size="sm" ${args.disabled ? 'disabled' : ''}>
           ${renderOptions()}
         </cor-sorting>
@@ -178,13 +178,13 @@ export const AllStates: StoryObj = {
     return /*html*/ `
     <div style="padding: 24px; display: flex; flex-direction: column; gap: 24px;">
       <div style="display: flex; align-items: center; gap: 32px;">
-        <span style="font-family: var(--font-family-body); font-size: 12px; color: var(--color-neutral-text-weak); width: 80px;">Default</span>
+        <span style="font-family: var(--font-family-primary); font-size: 12px; color: var(--color-text-base-secondary); width: 80px;">Default</span>
         <cor-sorting id="state-default" label="${args.label}" value="${args.value}" size="${args.size}">
           ${renderOptions()}
         </cor-sorting>
       </div>
       <div style="display: flex; align-items: center; gap: 32px;">
-        <span style="font-family: var(--font-family-body); font-size: 12px; color: var(--color-neutral-text-weak); width: 80px;">Disabled</span>
+        <span style="font-family: var(--font-family-primary); font-size: 12px; color: var(--color-text-base-secondary); width: 80px;">Disabled</span>
         <cor-sorting id="state-disabled" label="${args.label}" value="${args.value}" size="${args.size}" disabled>
           ${renderOptions()}
         </cor-sorting>
@@ -267,14 +267,14 @@ export const Interactive: StoryObj = {
         ${renderOptions()}
       </cor-sorting>
 
-      <div style="font-size: 12px; color: var(--color-neutral-text-weaker);">Select an option — <code>corSortingChange</code> is emitted. The consumer updates <code>value</code> externally.</div>
+      <div style="font-size: 12px; color: var(--color-text-base-tertiary);">Select an option — <code>corSortingChange</code> is emitted. The consumer updates <code>value</code> externally.</div>
 
-      <div id="sorting-output" style="padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
+      <div id="sorting-output" style="padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
         <div style="font-weight: 600; margin-bottom: 8px;">Current Value:</div>
         <div id="${outputId}">${args.value}</div>
       </div>
 
-      <div id="sorting-log" style="padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
+      <div id="sorting-log" style="padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
         <div style="font-weight: 600; margin-bottom: 8px;">Event Log:</div>
         <div id="${logContentId}">Select an option to see events...</div>
       </div>

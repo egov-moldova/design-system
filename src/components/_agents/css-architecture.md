@@ -16,15 +16,15 @@ Use when the component wraps user-provided elements via `<slot />`.
 ::slotted(*) {
   font-family: var(--button-font-family, var(--font-family-sans));
   padding: var(--button-padding-block) var(--button-padding-inline);
-  border-radius: var(--button-border-radius, var(--radius-md));
-  min-height: var(--button-size, var(--space-4xl));
+  border-radius: var(--button-border-radius, var(--border-radius-8));
+  min-height: var(--button-size, var(--spacing-48));
 }
 
 /* Size variants via :host attribute selector */
 :host([size='sm']) {
   ::slotted(*) {
-    font-size: var(--button-sm-font-size, var(--font-size-xs));
-    min-height: var(--button-sm-size, var(--space-xl));
+    font-size: var(--button-sm-font-size, var(--font-size-12));
+    min-height: var(--button-sm-size, var(--spacing-32));
   }
 }
 

@@ -1,12 +1,12 @@
 :host {
   display: inline-flex;
   align-items: center;
-  gap: var(--pagination-go-to-gap, var(--spacing-xs));
+  gap: var(--pagination-go-to-gap, var(--spacing-12));
 }
 
 /* Number input — fixed width per size */
 .page-input {
-  --input-container-color-default: var(--pagination-go-to-input-color, var(--color-neutral-text-weaker));
+  --input-container-color-default: var(--pagination-go-to-input-color, var(--color-text-base-tertiary));
   min-width: var(--pagination-go-to-input-min-width-lg);
 }
 

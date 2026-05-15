@@ -312,7 +312,7 @@ export const WithSelection: Story = {
       </cor-tbody>
     </cor-table>
 
-    <div id="sel-log" style="margin-top: 24px; padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px;">
+    <div id="sel-log" style="margin-top: 24px; padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px;">
       <div style="font-weight: 600; margin-bottom: 8px;">Event Log:</div>
       <div id="${logContentId}">Toggle checkboxes to see events...</div>
     </div>
@@ -434,7 +434,7 @@ export const SortableColumns: Story = {
       </cor-tbody>
     </cor-table>
 
-    <div id="sort-log" style="margin-top: 24px; padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px;">
+    <div id="sort-log" style="margin-top: 24px; padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px;">
       <div style="font-weight: 600; margin-bottom: 8px;">Event Log:</div>
       <div id="${logContentId}">Click column actions to see events...</div>
     </div>
@@ -509,7 +509,7 @@ export const FilterableColumns: Story = {
       </cor-tbody>
     </cor-table>
 
-    <div id="filter-log" style="margin-top: 24px; padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px;">
+    <div id="filter-log" style="margin-top: 24px; padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px;">
       <div style="font-weight: 600; margin-bottom: 8px;">Event Log:</div>
       <div id="${logContentId}">Click column actions to see events...</div>
     </div>
@@ -606,7 +606,7 @@ export const ComplexColumns: Story = {
       </cor-tbody>
     </cor-table>
 
-    <div id="complex-log" style="margin-top: 24px; padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px;">
+    <div id="complex-log" style="margin-top: 24px; padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px;">
       <div style="font-weight: 600; margin-bottom: 8px;">Event Log:</div>
       <div id="${logContentId}">Click column actions to see events...</div>
     </div>
@@ -670,7 +670,7 @@ export const WithExpandableRows: Story = {
       </cor-tbody>
     </cor-table>
 
-    <div id="expand-log" style="margin-top: 24px; padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px;">
+    <div id="expand-log" style="margin-top: 24px; padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px;">
       <div style="font-weight: 600; margin-bottom: 8px;">Event Log:</div>
       <div id="${logContentId}">Click expand chevrons to see events...</div>
     </div>
@@ -796,7 +796,7 @@ export const WithAccessibilityLabels: Story = {
   },
   render: (args: Partial<TableArgs>) => /*html*/ `
     <h3 id="users-table-title" style="margin: 0 0 8px; font-size: 16px; font-weight: 600;">User Management</h3>
-    <p id="users-table-desc" style="margin: 0 0 16px; font-size: 14px; color: var(--color-neutral-text-weak);">
+    <p id="users-table-desc" style="margin: 0 0 16px; font-size: 14px; color: var(--color-text-base-secondary);">
       Active users in the system with their roles and permissions
     </p>
 
@@ -838,7 +838,7 @@ export const WithAccessibilityLabels: Story = {
       </cor-tfoot>
     </cor-table>
 
-    <div style="margin-top: 24px; padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-size: 13px;">
+    <div style="margin-top: 24px; padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-size: 13px;">
       <strong>Accessibility:</strong> This table uses <code>aria-labelledby</code> and <code>aria-describedby</code>
       to provide screen readers with proper context. Screen readers will announce:
       "User Management, table. Active users in the system with their roles and permissions."
@@ -917,7 +917,7 @@ export const WithPaginationARIA: Story = {
       </cor-tfoot>
     </cor-table>
 
-    <div style="margin-top: 24px; padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-size: 13px;">
+    <div style="margin-top: 24px; padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-size: 13px;">
       <strong>Accessibility:</strong> This table demonstrates pagination/virtual scrolling ARIA attributes:
       <ul style="margin: 8px 0 0; padding-left: 20px;">
         <li><code>row-count="100"</code> — Screen readers announce "Table with 100 rows"</li>
@@ -979,7 +979,7 @@ export const AutoColumnWidths: Story = {
       </cor-tbody>
     </cor-table>
 
-    <div style="margin-top: 24px; padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-size: 13px;">
+    <div style="margin-top: 24px; padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-size: 13px;">
       <strong>Pattern 1: Automatic Column Width Propagation</strong>
       <p style="margin: 8px 0;">
         Set <code>width</code> once on <code>cor-column</code> and <code>col-index</code> on both header and cells.
@@ -1036,7 +1036,7 @@ export const LoadingState: Story = {
       </cor-tbody>
     </cor-table>
 
-    <div style="margin-top: 24px; padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-size: 13px;">
+    <div style="margin-top: 24px; padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-size: 13px;">
       <strong>Accessibility:</strong> The <code>loading</code> prop adds <code>aria-busy="true"</code>
       to the table, which tells screen readers: "Table is busy loading". This prevents users from
       interacting with incomplete data.

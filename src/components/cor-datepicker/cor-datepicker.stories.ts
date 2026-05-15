@@ -252,15 +252,15 @@ export const AllSizes: StoryObj = {
   render: () => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: 24px; padding: 24px; max-width: 400px;">
       <div>
-        <div style="font-weight: 600; margin-bottom: 8px; font-size: 12px; color: var(--color-neutral-text-weaker);">LG (default)</div>
+        <div style="font-weight: 600; margin-bottom: 8px; font-size: 12px; color: var(--color-text-base-tertiary);">LG (default)</div>
         <cor-datepicker label="Date" size="lg" placeholder="YYYY-MM-DD"></cor-datepicker>
       </div>
       <div>
-        <div style="font-weight: 600; margin-bottom: 8px; font-size: 12px; color: var(--color-neutral-text-weaker);">MD</div>
+        <div style="font-weight: 600; margin-bottom: 8px; font-size: 12px; color: var(--color-text-base-tertiary);">MD</div>
         <cor-datepicker label="Date" size="md" placeholder="YYYY-MM-DD"></cor-datepicker>
       </div>
       <div>
-        <div style="font-weight: 600; margin-bottom: 8px; font-size: 12px; color: var(--color-neutral-text-weaker);">SM</div>
+        <div style="font-weight: 600; margin-bottom: 8px; font-size: 12px; color: var(--color-text-base-tertiary);">SM</div>
         <cor-datepicker label="Date" size="sm" placeholder="YYYY-MM-DD"></cor-datepicker>
       </div>
     </div>
@@ -315,7 +315,7 @@ export const Interactive: StoryObj = {
           ${withClearButton}
         ></cor-datepicker>
 
-        <div id="dp-output" style="padding: 12px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px;">
+        <div id="dp-output" style="padding: 12px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px;">
           <span style="font-weight: 600;">corChange: </span>
           <span id="${outputId}">—</span>
         </div>
@@ -376,7 +376,7 @@ export const InteractiveRange: StoryObj = {
           ${withClearButton}
         ></cor-datepicker>
 
-        <div id="dp-range-output" style="padding: 12px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px;">
+        <div id="dp-range-output" style="padding: 12px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px;">
           <span style="font-weight: 600;">corRangeChange: </span>
           <span id="${outputId}">—</span>
         </div>

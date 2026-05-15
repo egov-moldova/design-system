@@ -1,8 +1,8 @@
 :host {
   display: block;
-  font-size: var(--system-message-text-font-size, var(--font-size-xs));
-  line-height: var(--system-message-text-line-height, var(--line-height-sm));
-  color: var(--system-message-text-color-default, var(--color-neutral-text-weaker));
+  font-size: var(--system-message-text-font-size, var(--font-size-12));
+  line-height: var(--system-message-text-line-height, var(--line-height-16));
+  color: var(--system-message-text-color-default, var(--color-text-base-tertiary));
 }
 
 :host([hidden]) {
@@ -11,22 +11,22 @@
 
 /* State overrides — text colour only */
 :host(.state-alert) {
-  color: var(--system-message-text-color-alert, var(--color-system-error-text));
+  color: var(--system-message-text-color-alert, var(--color-text-danger-default));
 }
 
 :host(.state-info) {
-  color: var(--system-message-text-color-info, var(--color-system-info-text));
+  color: var(--system-message-text-color-info, var(--color-text-brand-default));
 }
 
 :host(.state-text) {
-  color: var(--system-message-text-color-text, var(--color-neutral-text-weaker));
+  color: var(--system-message-text-color-text, var(--color-text-base-tertiary));
 }
 
 /* Layout */
 .system-message-wrapper {
   display: inline-flex;
   align-items: center;
-  gap: var(--system-message-container-gap, var(--spacing-2xs));
+  gap: var(--system-message-container-gap, var(--spacing-12));
 }
 
 /* Slotted text — inherit host colour and size */

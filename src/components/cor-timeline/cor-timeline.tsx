@@ -1087,7 +1087,7 @@ export class CorTimeline {
         onPointerCancel={(e: PointerEvent) => this.handleNeedlePointerUp(e, which)}
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="8" height="5" fill="none" viewBox="0 0 8 5">
-          <path fill="var(--color-neutral-background-base)" d="M2.5 5V0L0 2.5zM5.5 0v5L8 2.5z" />
+          <path fill="var(--color-background-base-default)" d="M2.5 5V0L0 2.5zM5.5 0v5L8 2.5z" />
         </svg>
       </div>
     );

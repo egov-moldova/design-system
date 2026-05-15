@@ -69,27 +69,27 @@ export const AllStates = {
     <div style="display: flex; align-items: center; gap: 32px; padding: 24px; flex-wrap: wrap;">
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
         <cor-loading value="0" state="loading"></cor-loading>
-        <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">0%</span>
+        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">0%</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
         <cor-loading value="25" state="loading"></cor-loading>
-        <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">25%</span>
+        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">25%</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
         <cor-loading value="50" state="loading"></cor-loading>
-        <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">50%</span>
+        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">50%</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
         <cor-loading value="75" state="loading"></cor-loading>
-        <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">75%</span>
+        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">75%</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
         <cor-loading value="100" state="loading"></cor-loading>
-        <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">100%</span>
+        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">100%</span>
       </div>
       <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
         <cor-loading value="100" state="final"></cor-loading>
-        <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">final</span>
+        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">final</span>
       </div>
     </div>
   `,
@@ -182,8 +182,8 @@ export const ComplexAnimation = {
 
     return /*html*/ `
     <div style="
-      background: var(--color-neutral-background-base);
-      border: 1px solid var(--color-neutral-border-weaker);
+      background: var(--color-background-base-default);
+      border: 1px solid var(--color-border-base-tertiary);
       border-radius: var(--border-radius-lg, 16px);
       padding: 12px;
       display: flex;

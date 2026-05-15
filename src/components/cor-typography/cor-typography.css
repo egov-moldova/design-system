@@ -28,79 +28,79 @@ Text CSS File
 
 :host() {
   ::slotted(*) {
-    color: var(--typography-color, var(--color-neutral-text-default));
+    color: var(--typography-color, var(--color-text-base-default));
   }
 }
 
 :host([variant='heading-4xl']) {
   ::slotted(*) {
-    font-size: var(--typography-heading-4xl-font-size, var(--font-size-5xl));
-    line-height: var(--typography-heading-4xl-line-height, var(--line-height-5xl));
-    font-weight: var(--typography-heading-4xl-font-weight, var(--font-weight-normal));
+    font-size: var(--typography-heading-4xl-font-size, var(--font-size-48));
+    line-height: var(--typography-heading-4xl-line-height, var(--line-height-48));
+    font-weight: var(--typography-heading-4xl-font-weight, var(--font-weight-regular));
   }
 }
 
 :host([variant='heading-3xl']) {
   ::slotted(*) {
-    font-size: var(--typography-heading-3xl-font-size, var(--font-size-4xl));
-    line-height: var(--typography-heading-3xl-line-height, var(--line-height-4xl));
-    font-weight: var(--typography-heading-3xl-font-weight, var(--font-weight-normal));
+    font-size: var(--typography-heading-3xl-font-size, var(--font-size-40));
+    line-height: var(--typography-heading-3xl-line-height, var(--line-height-40));
+    font-weight: var(--typography-heading-3xl-font-weight, var(--font-weight-regular));
   }
 }
 
 :host([variant='heading-2xl']) {
   ::slotted(*) {
-    font-size: var(--typography-heading-2xl-font-size, var(--font-size-3xl));
-    line-height: var(--typography-heading-2xl-line-height, var(--line-height-3xl));
-    font-weight: var(--typography-heading-2xl-font-weight, var(--font-weight-normal));
+    font-size: var(--typography-heading-2xl-font-size, var(--font-size-32));
+    line-height: var(--typography-heading-2xl-line-height, var(--line-height-36));
+    font-weight: var(--typography-heading-2xl-font-weight, var(--font-weight-regular));
   }
 }
 
 :host([variant='heading-xl']) {
   ::slotted(*) {
-    font-size: var(--typography-heading-xl-font-size, var(--font-size-2xl));
-    line-height: var(--typography-heading-xl-line-height, var(--line-height-2xl));
-    font-weight: var(--typography-heading-xl-font-weight, var(--font-weight-normal));
+    font-size: var(--typography-heading-xl-font-size, var(--font-size-24));
+    line-height: var(--typography-heading-xl-line-height, var(--line-height-32));
+    font-weight: var(--typography-heading-xl-font-weight, var(--font-weight-regular));
   }
 }
 
 :host([variant='heading-lg']) {
   ::slotted(*) {
-    font-size: var(--typography-heading-lg-font-size, var(--font-size-xl));
-    line-height: var(--typography-heading-lg-line-height, var(--line-height-xl));
-    font-weight: var(--typography-heading-lg-font-weight, var(--font-weight-normal));
+    font-size: var(--typography-heading-lg-font-size, var(--font-size-20));
+    line-height: var(--typography-heading-lg-line-height, var(--line-height-28));
+    font-weight: var(--typography-heading-lg-font-weight, var(--font-weight-regular));
   }
 }
 
 :host([variant='heading-md']) {
   ::slotted(*) {
-    font-size: var(--typography-heading-md-font-size, var(--font-size-lg));
-    line-height: var(--typography-heading-md-line-height, var(--line-height-xl));
-    font-weight: var(--typography-heading-md-font-weight, var(--font-weight-normal));
+    font-size: var(--typography-heading-md-font-size, var(--font-size-18));
+    line-height: var(--typography-heading-md-line-height, var(--line-height-28));
+    font-weight: var(--typography-heading-md-font-weight, var(--font-weight-regular));
   }
 }
 
 :host([variant='heading-sm']) {
   ::slotted(*) {
-    font-size: var(--typography-heading-sm-font-size, var(--font-size-md));
-    line-height: var(--typography-heading-sm-line-height, var(--line-height-lg));
-    font-weight: var(--typography-heading-sm-font-weight, var(--font-weight-normal));
+    font-size: var(--typography-heading-sm-font-size, var(--font-size-16));
+    line-height: var(--typography-heading-sm-line-height, var(--line-height-24));
+    font-weight: var(--typography-heading-sm-font-weight, var(--font-weight-regular));
   }
 }
 
 :host([variant='body-lg']) {
   ::slotted(*) {
-    font-size: var(--typography-body-lg-font-size, var(--font-size-md));
-    line-height: var(--typography-body-lg-line-height, var(--line-height-lg));
-    font-weight: var(--typography-body-lg-font-weight, var(--font-weight-normal));
+    font-size: var(--typography-body-lg-font-size, var(--font-size-16));
+    line-height: var(--typography-body-lg-line-height, var(--line-height-24));
+    font-weight: var(--typography-body-lg-font-weight, var(--font-weight-regular));
   }
 }
 
 :host([variant='body-lg-underline']) {
   ::slotted(*) {
-    font-size: var(--typography-body-lg-font-size, var(--font-size-md));
-    line-height: var(--typography-body-lg-line-height, var(--line-height-lg));
-    font-weight: var(--typography-body-lg-font-weight, var(--font-weight-normal));
+    font-size: var(--typography-body-lg-font-size, var(--font-size-16));
+    line-height: var(--typography-body-lg-line-height, var(--line-height-24));
+    font-weight: var(--typography-body-lg-font-weight, var(--font-weight-regular));
     text-decoration-line: underline;
     text-decoration-style: solid;
     text-decoration-skip-ink: none;
@@ -112,25 +112,25 @@ Text CSS File
 
 :host([variant='body-lg-semibold']) {
   ::slotted(*) {
-    font-size: var(--typography-body-lg-semibold-font-size, var(--font-size-md));
-    line-height: var(--typography-body-lg-semibold-line-height, var(--line-height-lg));
-    font-weight: var(--typography-body-lg-semibold-font-weight, var(--font-weight-semi-bold));
+    font-size: var(--typography-body-lg-semibold-font-size, var(--font-size-16));
+    line-height: var(--typography-body-lg-semibold-line-height, var(--line-height-24));
+    font-weight: var(--typography-body-lg-semibold-font-weight, var(--font-weight-semibold));
   }
 }
 
 :host([variant='body-md']) {
   ::slotted(*) {
-    font-size: var(--typography-body-md-font-size, var(--font-size-sm));
-    line-height: var(--typography-body-md-line-height, var(--line-height-md));
-    font-weight: var(--typography-body-md-font-weight, var(--font-weight-normal));
+    font-size: var(--typography-body-md-font-size, var(--font-size-14));
+    line-height: var(--typography-body-md-line-height, var(--line-height-20));
+    font-weight: var(--typography-body-md-font-weight, var(--font-weight-regular));
   }
 }
 
 :host([variant='body-md-underline']) {
   ::slotted(*) {
-    font-size: var(--typography-body-md-font-size, var(--font-size-sm));
-    line-height: var(--typography-body-md-line-height, var(--line-height-md));
-    font-weight: var(--typography-body-md-font-weight, var(--font-weight-normal));
+    font-size: var(--typography-body-md-font-size, var(--font-size-14));
+    line-height: var(--typography-body-md-line-height, var(--line-height-20));
+    font-weight: var(--typography-body-md-font-weight, var(--font-weight-regular));
     text-decoration-line: underline;
     text-decoration-style: solid;
     text-decoration-skip-ink: none;
@@ -142,49 +142,49 @@ Text CSS File
 
 :host([variant='body-md-semibold']) {
   ::slotted(*) {
-    font-size: var(--typography-body-md-semibold-font-size, var(--font-size-sm));
-    line-height: var(--typography-body-md-semibold-line-height, var(--line-height-md));
-    font-weight: var(--typography-body-md-semibold-font-weight, var(--font-weight-semi-bold));
+    font-size: var(--typography-body-md-semibold-font-size, var(--font-size-14));
+    line-height: var(--typography-body-md-semibold-line-height, var(--line-height-20));
+    font-weight: var(--typography-body-md-semibold-font-weight, var(--font-weight-semibold));
   }
 }
 
 :host([variant='body-sm']) {
   ::slotted(*) {
-    font-size: var(--typography-body-sm-font-size, var(--font-size-xs));
-    line-height: var(--typography-body-sm-line-height, var(--line-height-sm));
-    font-weight: var(--typography-body-sm-font-weight, var(--font-weight-normal));
+    font-size: var(--typography-body-sm-font-size, var(--font-size-12));
+    line-height: var(--typography-body-sm-line-height, var(--line-height-16));
+    font-weight: var(--typography-body-sm-font-weight, var(--font-weight-regular));
   }
 }
 
 :host([variant='body-sm-semibold']) {
   ::slotted(*) {
-    font-size: var(--typography-body-sm-semibold-font-size, var(--font-size-xs));
-    line-height: var(--typography-body-sm-semibold-line-height, var(--line-height-sm));
-    font-weight: var(--typography-body-sm-semibold-font-weight, var(--font-weight-semi-bold));
+    font-size: var(--typography-body-sm-semibold-font-size, var(--font-size-12));
+    line-height: var(--typography-body-sm-semibold-line-height, var(--line-height-16));
+    font-weight: var(--typography-body-sm-semibold-font-weight, var(--font-weight-semibold));
   }
 }
 
 :host([variant='body-xs']) {
   ::slotted(*) {
-    font-size: var(--typography-body-xs-font-size, var(--font-size-2xs));
-    line-height: var(--typography-body-xs-line-height, var(--line-height-xs));
-    font-weight: var(--typography-body-xs-font-weight, var(--font-weight-normal));
+    font-size: var(--typography-body-xs-font-size, var(--font-size-10));
+    line-height: var(--typography-body-xs-line-height, var(--line-height-12));
+    font-weight: var(--typography-body-xs-font-weight, var(--font-weight-regular));
   }
 }
 
 :host([variant='body-xs-semibold']) {
   ::slotted(*) {
-    font-size: var(--typography-body-xs-semibold-font-size, var(--font-size-2xs));
-    line-height: var(--typography-body-xs-semibold-line-height, var(--line-height-xs));
-    font-weight: var(--typography-body-xs-semibold-font-weight, var(--font-weight-semi-bold));
+    font-size: var(--typography-body-xs-semibold-font-size, var(--font-size-10));
+    line-height: var(--typography-body-xs-semibold-line-height, var(--line-height-12));
+    font-weight: var(--typography-body-xs-semibold-font-weight, var(--font-weight-semibold));
   }
 }
 
 :host([variant='body-xs-uppercase']) {
   ::slotted(*) {
-    font-size: var(--typography-body-xs-font-size, var(--font-size-2xs));
-    line-height: var(--typography-body-xs-line-height, var(--line-height-xs));
-    font-weight: var(--typography-body-xs-font-weight, var(--font-weight-normal));
+    font-size: var(--typography-body-xs-font-size, var(--font-size-10));
+    line-height: var(--typography-body-xs-line-height, var(--line-height-12));
+    font-weight: var(--typography-body-xs-font-weight, var(--font-weight-regular));
     text-transform: uppercase;
     letter-spacing: 0.2px;
   }

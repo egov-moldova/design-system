@@ -90,7 +90,7 @@ export const Style1: StoryObj = {
   render: (args: Partial<CorTabsArgs>) => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: 24px; align-items: flex-start;">
       <div>
-        <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-default); margin-bottom: 8px;">Default (Label Only)</div>
+        <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-default); margin-bottom: 8px;">Default (Label Only)</div>
         <cor-tabs tab-style="style-1" size="${args.size}" value="${args.value}" ${args.disabled ? 'disabled' : ''} ${args.error ? 'error' : ''}>
           <cor-tab-button value="tab-1">Label</cor-tab-button>
           <cor-tab-button value="tab-2">Label</cor-tab-button>
@@ -98,7 +98,7 @@ export const Style1: StoryObj = {
         </cor-tabs>
       </div>
       <div>
-        <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-default); margin-bottom: 8px;">Icon Only</div>
+        <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-default); margin-bottom: 8px;">Icon Only</div>
         <cor-tabs tab-style="style-1" size="${args.size}" value="home" ${args.disabled ? 'disabled' : ''} ${args.error ? 'error' : ''}>
           <cor-tab-button value="home" icon-only>
             <cor-icon name="${ICON_NAMES.HOME}" size="${IconSize.MD}" color="currentColor"></cor-icon>
@@ -112,7 +112,7 @@ export const Style1: StoryObj = {
         </cor-tabs>
       </div>
       <div>
-        <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-default); margin-bottom: 8px;">Complex (Icon + Label + Badge)</div>
+        <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-default); margin-bottom: 8px;">Complex (Icon + Label + Badge)</div>
         <cor-tabs tab-style="style-1" size="${args.size}" value="${args.value}" ${args.disabled ? 'disabled' : ''} ${args.error ? 'error' : ''}>
           <cor-tab-button value="tab-1">
             <cor-icon slot="icon-left" name="${ICON_NAMES.HOME}" size="${IconSize.MD}" color="currentColor"></cor-icon>
@@ -147,7 +147,7 @@ export const Style2: StoryObj = {
   render: (args: Partial<CorTabsArgs>) => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: 24px; align-items: flex-start;">
       <div>
-        <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-default); margin-bottom: 8px;">Default (Label Only)</div>
+        <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-default); margin-bottom: 8px;">Default (Label Only)</div>
         <cor-tabs tab-style="style-2" size="${args.size}" value="${args.value}" ${args.disabled ? 'disabled' : ''} ${args.error ? 'error' : ''}>
           <cor-tab-button value="tab-1">Label</cor-tab-button>
           <cor-tab-button value="tab-2">Label</cor-tab-button>
@@ -155,7 +155,7 @@ export const Style2: StoryObj = {
         </cor-tabs>
       </div>
       <div>
-        <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-default); margin-bottom: 8px;">Icon Only</div>
+        <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-default); margin-bottom: 8px;">Icon Only</div>
         <cor-tabs tab-style="style-2" size="${args.size}" value="home" ${args.disabled ? 'disabled' : ''} ${args.error ? 'error' : ''}>
           <cor-tab-button value="home" icon-only>
             <cor-icon name="${ICON_NAMES.HOME}" size="${IconSize.MD}" color="currentColor"></cor-icon>
@@ -169,7 +169,7 @@ export const Style2: StoryObj = {
         </cor-tabs>
       </div>
       <div>
-        <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-default); margin-bottom: 8px;">Complex (Icon + Label + Badge)</div>
+        <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-default); margin-bottom: 8px;">Complex (Icon + Label + Badge)</div>
         <cor-tabs tab-style="style-2" size="${args.size}" value="${args.value}" ${args.disabled ? 'disabled' : ''} ${args.error ? 'error' : ''}>
           <cor-tab-button value="tab-1">
             <cor-icon slot="icon-left" name="${ICON_NAMES.HOME}" size="${IconSize.MD}" color="currentColor"></cor-icon>
@@ -204,7 +204,7 @@ export const Style3: StoryObj = {
   render: (args: Partial<CorTabsArgs>) => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: 24px; align-items: flex-start;">
       <div>
-        <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-default); margin-bottom: 8px;">Default (Label Only)</div>
+        <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-default); margin-bottom: 8px;">Default (Label Only)</div>
         <cor-tabs tab-style="style-3" size="${args.size}" value="${args.value}" ${args.disabled ? 'disabled' : ''} ${args.error ? 'error' : ''}>
           <cor-tab-button value="tab-1">Label</cor-tab-button>
           <cor-tab-button value="tab-2">Label</cor-tab-button>
@@ -212,7 +212,7 @@ export const Style3: StoryObj = {
         </cor-tabs>
       </div>
       <div>
-        <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-default); margin-bottom: 8px;">Icon Only</div>
+        <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-default); margin-bottom: 8px;">Icon Only</div>
         <cor-tabs tab-style="style-3" size="${args.size}" value="home" ${args.disabled ? 'disabled' : ''} ${args.error ? 'error' : ''}>
           <cor-tab-button value="home" icon-only>
             <cor-icon name="${ICON_NAMES.HOME}" size="${IconSize.MD}" color="currentColor"></cor-icon>
@@ -226,7 +226,7 @@ export const Style3: StoryObj = {
         </cor-tabs>
       </div>
       <div>
-        <div style="font-size: 12px; font-weight: 600; color: var(--color-neutral-text-default); margin-bottom: 8px;">Complex (Icon + Label + Badge)</div>
+        <div style="font-size: 12px; font-weight: 600; color: var(--color-text-base-default); margin-bottom: 8px;">Complex (Icon + Label + Badge)</div>
         <cor-tabs tab-style="style-3" size="${args.size}" value="${args.value}" ${args.disabled ? 'disabled' : ''} ${args.error ? 'error' : ''}>
           <cor-tab-button value="tab-1">
             <cor-icon slot="icon-left" name="${ICON_NAMES.HOME}" size="${IconSize.MD}" color="currentColor"></cor-icon>
@@ -261,7 +261,7 @@ export const AllStyles: StoryObj = {
   render: (args: Partial<CorTabsArgs>) => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: 24px; align-items: flex-start;">
       <div>
-        <div style="font-size: 12px; color: var(--color-neutral-text-weaker); margin-bottom: 8px;">style-1 (contained pill)</div>
+        <div style="font-size: 12px; color: var(--color-text-base-tertiary); margin-bottom: 8px;">style-1 (contained pill)</div>
         <cor-tabs
           tab-style="style-1"
           size="${args.size}"
@@ -275,7 +275,7 @@ export const AllStyles: StoryObj = {
         </cor-tabs>
       </div>
       <div>
-        <div style="font-size: 12px; color: var(--color-neutral-text-weaker); margin-bottom: 8px;">style-2 (divided)</div>
+        <div style="font-size: 12px; color: var(--color-text-base-tertiary); margin-bottom: 8px;">style-2 (divided)</div>
         <cor-tabs
           tab-style="style-2"
           size="${args.size}"
@@ -289,7 +289,7 @@ export const AllStyles: StoryObj = {
         </cor-tabs>
       </div>
       <div>
-        <div style="font-size: 12px; color: var(--color-neutral-text-weaker); margin-bottom: 8px;">style-3 (underline)</div>
+        <div style="font-size: 12px; color: var(--color-text-base-tertiary); margin-bottom: 8px;">style-3 (underline)</div>
         <cor-tabs
           tab-style="style-3"
           size="${args.size}"
@@ -318,7 +318,7 @@ export const AllSizes: StoryObj = {
   render: (args: Partial<CorTabsArgs>) => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: 24px; align-items: flex-start;">
       <div>
-        <div style="font-size: 12px; color: var(--color-neutral-text-weaker); margin-bottom: 8px;">lg</div>
+        <div style="font-size: 12px; color: var(--color-text-base-tertiary); margin-bottom: 8px;">lg</div>
         <cor-tabs
           tab-style="${args.tabStyle}"
           size="lg"
@@ -332,7 +332,7 @@ export const AllSizes: StoryObj = {
         </cor-tabs>
       </div>
       <div>
-        <div style="font-size: 12px; color: var(--color-neutral-text-weaker); margin-bottom: 8px;">md</div>
+        <div style="font-size: 12px; color: var(--color-text-base-tertiary); margin-bottom: 8px;">md</div>
         <cor-tabs
           tab-style="${args.tabStyle}"
           size="md"
@@ -346,7 +346,7 @@ export const AllSizes: StoryObj = {
         </cor-tabs>
       </div>
       <div>
-        <div style="font-size: 12px; color: var(--color-neutral-text-weaker); margin-bottom: 8px;">sm</div>
+        <div style="font-size: 12px; color: var(--color-text-base-tertiary); margin-bottom: 8px;">sm</div>
         <cor-tabs
           tab-style="${args.tabStyle}"
           size="sm"
@@ -379,7 +379,7 @@ export const ErrorState: StoryObj = {
   render: (args: Partial<CorTabsArgs>) => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: 24px; align-items: flex-start;">
       <div>
-        <div style="font-size: 12px; color: var(--color-neutral-text-weaker); margin-bottom: 8px;">style-1 (contained pill)</div>
+        <div style="font-size: 12px; color: var(--color-text-base-tertiary); margin-bottom: 8px;">style-1 (contained pill)</div>
         <cor-tabs
           tab-style="style-1"
           size="${args.size}"
@@ -393,7 +393,7 @@ export const ErrorState: StoryObj = {
         </cor-tabs>
       </div>
       <div>
-        <div style="font-size: 12px; color: var(--color-neutral-text-weaker); margin-bottom: 8px;">style-2 (divided)</div>
+        <div style="font-size: 12px; color: var(--color-text-base-tertiary); margin-bottom: 8px;">style-2 (divided)</div>
         <cor-tabs
           tab-style="style-2"
           size="${args.size}"
@@ -407,7 +407,7 @@ export const ErrorState: StoryObj = {
         </cor-tabs>
       </div>
       <div>
-        <div style="font-size: 12px; color: var(--color-neutral-text-weaker); margin-bottom: 8px;">style-3 (underline)</div>
+        <div style="font-size: 12px; color: var(--color-text-base-tertiary); margin-bottom: 8px;">style-3 (underline)</div>
         <cor-tabs
           tab-style="style-3"
           size="${args.size}"
@@ -440,7 +440,7 @@ export const DisabledState: StoryObj = {
   render: (args: Partial<CorTabsArgs>) => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: 24px; align-items: flex-start;">
       <div>
-        <div style="font-size: 12px; color: var(--color-neutral-text-weaker); margin-bottom: 8px;">style-1 (contained pill)</div>
+        <div style="font-size: 12px; color: var(--color-text-base-tertiary); margin-bottom: 8px;">style-1 (contained pill)</div>
         <cor-tabs
           tab-style="style-1"
           size="${args.size}"
@@ -454,7 +454,7 @@ export const DisabledState: StoryObj = {
         </cor-tabs>
       </div>
       <div>
-        <div style="font-size: 12px; color: var(--color-neutral-text-weaker); margin-bottom: 8px;">style-2 (divided)</div>
+        <div style="font-size: 12px; color: var(--color-text-base-tertiary); margin-bottom: 8px;">style-2 (divided)</div>
         <cor-tabs
           tab-style="style-2"
           size="${args.size}"
@@ -468,7 +468,7 @@ export const DisabledState: StoryObj = {
         </cor-tabs>
       </div>
       <div>
-        <div style="font-size: 12px; color: var(--color-neutral-text-weaker); margin-bottom: 8px;">style-3 (underline)</div>
+        <div style="font-size: 12px; color: var(--color-text-base-tertiary); margin-bottom: 8px;">style-3 (underline)</div>
         <cor-tabs
           tab-style="style-3"
           size="${args.size}"
@@ -503,7 +503,7 @@ export const Icons: StoryObj = {
   render: (args: Partial<CorTabsArgs>) => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: 24px; align-items: flex-start;">
       <div>
-        <div style="font-size: 12px; color: var(--color-neutral-text-weaker); margin-bottom: 8px;">style-1 (contained pill)</div>
+        <div style="font-size: 12px; color: var(--color-text-base-tertiary); margin-bottom: 8px;">style-1 (contained pill)</div>
         <cor-tabs
           tab-style="style-1"
           size="${args.size}"
@@ -526,7 +526,7 @@ export const Icons: StoryObj = {
         </cor-tabs>
       </div>
       <div>
-        <div style="font-size: 12px; color: var(--color-neutral-text-weaker); margin-bottom: 8px;">style-2 (divided)</div>
+        <div style="font-size: 12px; color: var(--color-text-base-tertiary); margin-bottom: 8px;">style-2 (divided)</div>
         <cor-tabs
           tab-style="style-2"
           size="${args.size}"
@@ -549,7 +549,7 @@ export const Icons: StoryObj = {
         </cor-tabs>
       </div>
       <div>
-        <div style="font-size: 12px; color: var(--color-neutral-text-weaker); margin-bottom: 8px;">style-3 (underline)</div>
+        <div style="font-size: 12px; color: var(--color-text-base-tertiary); margin-bottom: 8px;">style-3 (underline)</div>
         <cor-tabs
           tab-style="style-3"
           size="${args.size}"
@@ -627,7 +627,7 @@ export const Interactive: StoryObj = {
         <cor-tab-button value="tab-3">Tab Three</cor-tab-button>
       </cor-tabs>
 
-      <div id="tab-content" style="padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; min-width: 360px;">
+      <div id="tab-content" style="padding: 16px; background: var(--color-background-base-default); border-radius: 4px; min-width: 360px;">
         <div id="panel-tab-1" style="display: block;">
           <h3>Content for Tab One</h3>
           <p>This is the content panel for the first tab. It is displayed when Tab One is selected.</p>
@@ -642,13 +642,13 @@ export const Interactive: StoryObj = {
         </div>
       </div>
 
-      <div style="font-size: 12px; color: var(--color-neutral-text-weaker); margin-top: 32px;">Click a tab — the corTabChange event is emitted. The consumer updates <code>value</code> externally and displays the corresponding content.</div>
+      <div style="font-size: 12px; color: var(--color-text-base-tertiary); margin-top: 32px;">Click a tab — the corTabChange event is emitted. The consumer updates <code>value</code> externally and displays the corresponding content.</div>
 
-      <div id="demo-output" style="padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
+      <div id="demo-output" style="padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
         <div style="font-weight: 600; margin-bottom: 8px;">Current Value:</div>
         <div id="${outputId}">tab-1</div>
       </div>
-      <div id="tabs-log" style="padding: 16px; background: var(--color-neutral-background-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
+      <div id="tabs-log" style="padding: 16px; background: var(--color-background-base-default); border-radius: 4px; font-family: monospace; font-size: 12px; min-width: 360px;">
         <div style="font-weight: 600; margin-bottom: 8px;">Event Log:</div>
         <div id="${logContentId}">Click a tab to see events...</div>
       </div>

@@ -265,7 +265,7 @@ export const AllVariants: Story = {
   render: () => /*html*/ `
     <div style="width: 100%; max-width: 800px; display: flex; flex-direction: column; gap: 32px; padding: 24px;">
       <div>
-        <p style="margin-bottom: 8px; font-size: 12px; color: var(--color-neutral-text-weaker);">on-page / years / center</p>
+        <p style="margin-bottom: 8px; font-size: 12px; color: var(--color-text-base-tertiary);">on-page / years / center</p>
         <cor-timeline
           variant="on-page"
           scale-type="years"
@@ -277,7 +277,7 @@ export const AllVariants: Story = {
         ></cor-timeline>
       </div>
        <div>
-        <p style="margin-bottom: 8px; font-size: 12px; color: var(--color-neutral-text-weaker);">on-map-small / years / center / range</p>
+        <p style="margin-bottom: 8px; font-size: 12px; color: var(--color-text-base-tertiary);">on-map-small / years / center / range</p>
         <cor-timeline
           variant="on-map-small"
           scale-type="years"
@@ -289,7 +289,7 @@ export const AllVariants: Story = {
         ></cor-timeline>
       </div>
       <div>
-        <p style="margin-bottom: 8px; font-size: 12px; color: var(--color-neutral-text-weaker);">on-map / years / center</p>
+        <p style="margin-bottom: 8px; font-size: 12px; color: var(--color-text-base-tertiary);">on-map / years / center</p>
         <cor-timeline
           variant="on-map"
           scale-type="years"
@@ -301,7 +301,7 @@ export const AllVariants: Story = {
         ></cor-timeline>
       </div>
       <div>
-        <p style="margin-bottom: 8px; font-size: 12px; color: var(--color-neutral-text-weaker);">on-card / months / bottom</p>
+        <p style="margin-bottom: 8px; font-size: 12px; color: var(--color-text-base-tertiary);">on-card / months / bottom</p>
         <cor-timeline
           variant="on-card"
           scale-type="months"

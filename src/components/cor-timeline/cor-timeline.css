@@ -28,13 +28,13 @@
   border: var(--timeline-border-width) solid var(--timeline-track-border-color);
   padding: var(--timeline-track-padding-block-on-map-small) var(--timeline-track-padding-inline-on-map-small);
   border-radius: var(--timeline-track-border-radius-on-map-small);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--drop-shadow-100);
 }
 
 :host([variant='on-map']) {
   border-radius: var(--timeline-track-border-radius-on-map);
   border: var(--timeline-border-width) solid var(--timeline-track-border-color);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--drop-shadow-100);
 }
 
 :host([variant='on-card']) {

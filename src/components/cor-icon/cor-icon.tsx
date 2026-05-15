@@ -18,7 +18,7 @@ export class CorIcon {
    * Icon color.
    *
    * You can either:
-   * - Pass a design-token suffix that maps to a CSS variable (e.g. `color="neutral-icon-weak"` -> `var(--color-neutral-icon-weak)`), or
+   * - Pass a design-token suffix that maps to a CSS variable (e.g. `color="neutral-icon-weak"` -> `var(--color-icon-base-secondary)`), or
    * - Pass `color="currentColor"` to inherit the text color from the parent element.
    */
   @Prop({ reflect: true }) color: string = 'primary-icon-default';

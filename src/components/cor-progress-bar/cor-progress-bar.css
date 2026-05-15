@@ -13,15 +13,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--progress-bar-container-gap, var(--spacing-xs));
-  margin-bottom: var(--progress-bar-container-gap, var(--spacing-xs));
+  gap: var(--progress-bar-container-gap, var(--spacing-12));
+  margin-bottom: var(--progress-bar-container-gap, var(--spacing-12));
 }
 
 .label {
   flex: 1 0 0;
-  font-size: var(--progress-bar-label-font-size, var(--font-size-sm));
-  line-height: var(--progress-bar-label-line-height, var(--line-height-md));
-  color: var(--progress-bar-label-color, var(--color-neutral-text-default));
+  font-size: var(--progress-bar-label-font-size, var(--font-size-14));
+  line-height: var(--progress-bar-label-line-height, var(--line-height-20));
+  color: var(--progress-bar-label-color, var(--color-text-base-default));
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -29,17 +29,17 @@
 
 .percentage {
   flex-shrink: 0;
-  font-size: var(--progress-bar-percentage-font-size, var(--font-size-xs));
-  line-height: var(--progress-bar-percentage-line-height, var(--line-height-sm));
-  color: var(--progress-bar-percentage-color, var(--color-neutral-text-default));
+  font-size: var(--progress-bar-percentage-font-size, var(--font-size-12));
+  line-height: var(--progress-bar-percentage-line-height, var(--line-height-16));
+  color: var(--progress-bar-percentage-color, var(--color-text-base-default));
 }
 
 /* Track */
 
 .track {
   width: 100%;
-  border-radius: var(--progress-bar-track-border-radius, var(--radius-sm));
-  background: var(--progress-bar-track-background-default, var(--color-neutral-transparent-strong));
+  border-radius: var(--progress-bar-track-border-radius, var(--border-radius-4));
+  background: var(--progress-bar-track-background-default, var(--color-background-alpha-overlay-dark));
   overflow: hidden;
 }
 
@@ -61,7 +61,7 @@
 
 .fill {
   height: 100%;
-  background: var(--progress-bar-fill-background-default, var(--color-primary-background-strongest));
+  background: var(--progress-bar-fill-background-default, var(--color-background-brand-default-active));
   border-radius: inherit;
   transition: width 0.4s cubic-bezier(0.33, 1, 0.68, 1);
 }
@@ -69,17 +69,17 @@
 /* Error type */
 
 :host([type='error']) .track {
-  background: var(--progress-bar-track-background-error, var(--color-system-error-background-transparent));
+  background: var(--progress-bar-track-background-error, var(--color-background-danger-secondary));
 }
 
 :host([type='error']) .fill {
-  background: var(--progress-bar-fill-background-error, var(--color-system-error-background));
+  background: var(--progress-bar-fill-background-error, var(--color-background-danger-default));
 }
 
 /* Message */
 
 .message-wrapper {
-  margin-top: var(--progress-bar-container-gap, var(--spacing-xs));
+  margin-top: var(--progress-bar-container-gap, var(--spacing-12));
 }
 
 .message-wrapper--hidden {

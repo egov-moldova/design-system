@@ -317,17 +317,17 @@ export namespace Components {
     /**
      * A button component to easily add styled markup.
      * @element cor-button
-     * @cssprop --button-gap - Gap between button content (default: var(--spacing-xs))
+     * @cssprop --button-gap - Gap between button content (default: var(--spacing-12))
      * @cssprop --button-font-family - Font family for button text (default: var(--font-family-pro-display))
-     * @cssprop --button-font-weight - Font weight for button text (default: var(--font-weight-semi-bold))
-     * @cssprop --button-line-height - Line height for button text (default: var(--line-height-md))
-     * @cssprop --button-font-size - Font size for button text (default: var(--font-size-sm))
-     * @cssprop --button-padding-block - Vertical padding (default: var(--space-xs))
-     * @cssprop --button-padding-inline - Horizontal padding (default: var(--spacing-md))
-     * @cssprop --button-border-radius - Border radius (default: var(--radius-md))
-     * @cssprop --button-border-width - Border width (default: var(--spacing-px))
-     * @cssprop --button-background-color - Background color (default: var(--color-neutral-background-default))
-     * @cssprop --button-size - Minimum height and width (default: var(--space-4xl))
+     * @cssprop --button-font-weight - Font weight for button text (default: var(--font-weight-semibold))
+     * @cssprop --button-line-height - Line height for button text (default: var(--line-height-20))
+     * @cssprop --button-font-size - Font size for button text (default: var(--font-size-14))
+     * @cssprop --button-padding-block - Vertical padding (default: var(--spacing-12))
+     * @cssprop --button-padding-inline - Horizontal padding (default: var(--spacing-20))
+     * @cssprop --button-border-radius - Border radius (default: var(--border-radius-8))
+     * @cssprop --button-border-width - Border width (default: var(--spacing-2))
+     * @cssprop --button-background-color - Background color (default: var(--color-background-base-default))
+     * @cssprop --button-size - Minimum height and width (default: var(--spacing-48))
      * Size-specific properties:
      * @cssprop --button-{ButtonSize}-font-size - Font size for specific button size
      * @cssprop --button-{ButtonSize}-line-height - Line height for specific button size
@@ -845,7 +845,7 @@ export namespace Components {
          */
         "ariaLabel"?: string;
         /**
-          * Icon color.  You can either: - Pass a design-token suffix that maps to a CSS variable (e.g. `color="neutral-icon-weak"` -> `var(--color-neutral-icon-weak)`), or - Pass `color="currentColor"` to inherit the text color from the parent element.
+          * Icon color.  You can either: - Pass a design-token suffix that maps to a CSS variable (e.g. `color="neutral-icon-weak"` -> `var(--color-icon-base-secondary)`), or - Pass `color="currentColor"` to inherit the text color from the parent element.
           * @default 'primary-icon-default'
          */
         "color": string;
@@ -1688,12 +1688,12 @@ export namespace Components {
         "backgroundColor"?: string;
         /**
           * Border radius of the skeleton loader
-          * @default 'var(--radius-md)'
+          * @default 'var(--border-radius-8)'
          */
         "borderRadius"?: string;
         /**
           * Height of the skeleton loader
-          * @default 'var(--space-md)'
+          * @default 'var(--spacing-20)'
          */
         "height"?: string;
         /**
@@ -2647,17 +2647,17 @@ declare global {
     /**
      * A button component to easily add styled markup.
      * @element cor-button
-     * @cssprop --button-gap - Gap between button content (default: var(--spacing-xs))
+     * @cssprop --button-gap - Gap between button content (default: var(--spacing-12))
      * @cssprop --button-font-family - Font family for button text (default: var(--font-family-pro-display))
-     * @cssprop --button-font-weight - Font weight for button text (default: var(--font-weight-semi-bold))
-     * @cssprop --button-line-height - Line height for button text (default: var(--line-height-md))
-     * @cssprop --button-font-size - Font size for button text (default: var(--font-size-sm))
-     * @cssprop --button-padding-block - Vertical padding (default: var(--space-xs))
-     * @cssprop --button-padding-inline - Horizontal padding (default: var(--spacing-md))
-     * @cssprop --button-border-radius - Border radius (default: var(--radius-md))
-     * @cssprop --button-border-width - Border width (default: var(--spacing-px))
-     * @cssprop --button-background-color - Background color (default: var(--color-neutral-background-default))
-     * @cssprop --button-size - Minimum height and width (default: var(--space-4xl))
+     * @cssprop --button-font-weight - Font weight for button text (default: var(--font-weight-semibold))
+     * @cssprop --button-line-height - Line height for button text (default: var(--line-height-20))
+     * @cssprop --button-font-size - Font size for button text (default: var(--font-size-14))
+     * @cssprop --button-padding-block - Vertical padding (default: var(--spacing-12))
+     * @cssprop --button-padding-inline - Horizontal padding (default: var(--spacing-20))
+     * @cssprop --button-border-radius - Border radius (default: var(--border-radius-8))
+     * @cssprop --button-border-width - Border width (default: var(--spacing-2))
+     * @cssprop --button-background-color - Background color (default: var(--color-background-base-default))
+     * @cssprop --button-size - Minimum height and width (default: var(--spacing-48))
      * Size-specific properties:
      * @cssprop --button-{ButtonSize}-font-size - Font size for specific button size
      * @cssprop --button-{ButtonSize}-line-height - Line height for specific button size
@@ -3931,17 +3931,17 @@ declare namespace LocalJSX {
     /**
      * A button component to easily add styled markup.
      * @element cor-button
-     * @cssprop --button-gap - Gap between button content (default: var(--spacing-xs))
+     * @cssprop --button-gap - Gap between button content (default: var(--spacing-12))
      * @cssprop --button-font-family - Font family for button text (default: var(--font-family-pro-display))
-     * @cssprop --button-font-weight - Font weight for button text (default: var(--font-weight-semi-bold))
-     * @cssprop --button-line-height - Line height for button text (default: var(--line-height-md))
-     * @cssprop --button-font-size - Font size for button text (default: var(--font-size-sm))
-     * @cssprop --button-padding-block - Vertical padding (default: var(--space-xs))
-     * @cssprop --button-padding-inline - Horizontal padding (default: var(--spacing-md))
-     * @cssprop --button-border-radius - Border radius (default: var(--radius-md))
-     * @cssprop --button-border-width - Border width (default: var(--spacing-px))
-     * @cssprop --button-background-color - Background color (default: var(--color-neutral-background-default))
-     * @cssprop --button-size - Minimum height and width (default: var(--space-4xl))
+     * @cssprop --button-font-weight - Font weight for button text (default: var(--font-weight-semibold))
+     * @cssprop --button-line-height - Line height for button text (default: var(--line-height-20))
+     * @cssprop --button-font-size - Font size for button text (default: var(--font-size-14))
+     * @cssprop --button-padding-block - Vertical padding (default: var(--spacing-12))
+     * @cssprop --button-padding-inline - Horizontal padding (default: var(--spacing-20))
+     * @cssprop --button-border-radius - Border radius (default: var(--border-radius-8))
+     * @cssprop --button-border-width - Border width (default: var(--spacing-2))
+     * @cssprop --button-background-color - Background color (default: var(--color-background-base-default))
+     * @cssprop --button-size - Minimum height and width (default: var(--spacing-48))
      * Size-specific properties:
      * @cssprop --button-{ButtonSize}-font-size - Font size for specific button size
      * @cssprop --button-{ButtonSize}-line-height - Line height for specific button size
@@ -4523,7 +4523,7 @@ declare namespace LocalJSX {
          */
         "ariaLabel"?: string;
         /**
-          * Icon color.  You can either: - Pass a design-token suffix that maps to a CSS variable (e.g. `color="neutral-icon-weak"` -> `var(--color-neutral-icon-weak)`), or - Pass `color="currentColor"` to inherit the text color from the parent element.
+          * Icon color.  You can either: - Pass a design-token suffix that maps to a CSS variable (e.g. `color="neutral-icon-weak"` -> `var(--color-icon-base-secondary)`), or - Pass `color="currentColor"` to inherit the text color from the parent element.
           * @default 'primary-icon-default'
          */
         "color"?: string;
@@ -5450,12 +5450,12 @@ declare namespace LocalJSX {
         "backgroundColor"?: string;
         /**
           * Border radius of the skeleton loader
-          * @default 'var(--radius-md)'
+          * @default 'var(--border-radius-8)'
          */
         "borderRadius"?: string;
         /**
           * Height of the skeleton loader
-          * @default 'var(--space-md)'
+          * @default 'var(--spacing-20)'
          */
         "height"?: string;
         /**
@@ -6792,17 +6792,17 @@ declare module "@stencil/core" {
             /**
              * A button component to easily add styled markup.
              * @element cor-button
-             * @cssprop --button-gap - Gap between button content (default: var(--spacing-xs))
+             * @cssprop --button-gap - Gap between button content (default: var(--spacing-12))
              * @cssprop --button-font-family - Font family for button text (default: var(--font-family-pro-display))
-             * @cssprop --button-font-weight - Font weight for button text (default: var(--font-weight-semi-bold))
-             * @cssprop --button-line-height - Line height for button text (default: var(--line-height-md))
-             * @cssprop --button-font-size - Font size for button text (default: var(--font-size-sm))
-             * @cssprop --button-padding-block - Vertical padding (default: var(--space-xs))
-             * @cssprop --button-padding-inline - Horizontal padding (default: var(--spacing-md))
-             * @cssprop --button-border-radius - Border radius (default: var(--radius-md))
-             * @cssprop --button-border-width - Border width (default: var(--spacing-px))
-             * @cssprop --button-background-color - Background color (default: var(--color-neutral-background-default))
-             * @cssprop --button-size - Minimum height and width (default: var(--space-4xl))
+             * @cssprop --button-font-weight - Font weight for button text (default: var(--font-weight-semibold))
+             * @cssprop --button-line-height - Line height for button text (default: var(--line-height-20))
+             * @cssprop --button-font-size - Font size for button text (default: var(--font-size-14))
+             * @cssprop --button-padding-block - Vertical padding (default: var(--spacing-12))
+             * @cssprop --button-padding-inline - Horizontal padding (default: var(--spacing-20))
+             * @cssprop --button-border-radius - Border radius (default: var(--border-radius-8))
+             * @cssprop --button-border-width - Border width (default: var(--spacing-2))
+             * @cssprop --button-background-color - Background color (default: var(--color-background-base-default))
+             * @cssprop --button-size - Minimum height and width (default: var(--spacing-48))
              * Size-specific properties:
              * @cssprop --button-{ButtonSize}-font-size - Font size for specific button size
              * @cssprop --button-{ButtonSize}-line-height - Line height for specific button size

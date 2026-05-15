@@ -108,7 +108,7 @@ export const ActiveState = {
       <div style="display: flex; flex-direction: column; gap: 24px;">
         <div>
           <h3 style="margin: 0 0 8px 0; font-size: 16px; font-weight: 600;">Active States</h3>
-          <p style="margin: 0 0 16px 0; font-size: 14px; color: var(--color-neutral-text-weaker);">
+          <p style="margin: 0 0 16px 0; font-size: 14px; color: var(--color-text-base-tertiary);">
             <strong>Active state (click):</strong> Click and hold any avatar to see the red border (2px).
             <br/>
             <strong>Active state (prop):</strong> Use the <code>active</code> prop for programmatic control.
@@ -119,21 +119,21 @@ export const ActiveState = {
         <div style="display: flex; gap: 24px; align-items: center;">
           <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
             <cor-avatar size="${args.size}" initials="${args.initials}"></cor-avatar>
-            <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">Default</span>
+            <span style="font-size: 12px; color: var(--color-text-base-tertiary);">Default</span>
           </div>
           <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
             <cor-avatar size="${args.size}" initials="${args.initials}" active></cor-avatar>
-            <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">Active (prop)</span>
+            <span style="font-size: 12px; color: var(--color-text-base-tertiary);">Active (prop)</span>
           </div>
           <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
             <cor-avatar size="${args.size}" initials="${args.initials}" active>
               <img slot="image" src="https://i.pravatar.cc/150?img=5" alt="Avatar" />
             </cor-avatar>
-            <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">With Photo (active)</span>
+            <span style="font-size: 12px; color: var(--color-text-base-tertiary);">With Photo (active)</span>
           </div>
           <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
             <cor-avatar size="${args.size}" initials="${args.initials}" disabled active></cor-avatar>
-            <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">Disabled</span>
+            <span style="font-size: 12px; color: var(--color-text-base-tertiary);">Disabled</span>
           </div>
         </div>
       </div>
@@ -170,7 +170,7 @@ export const AllSizesTable = {
               >
                 ${slotContent}
               </cor-avatar>
-              <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">${size}</span>
+              <span style="font-size: 12px; color: var(--color-text-base-tertiary);">${size}</span>
             </div>
           `;
             })
@@ -216,7 +216,7 @@ export const AllStatesTable = {
                 state => /*html*/ `
               <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
                 <cor-avatar size="${args.size}" initials="${args.initials}" ${state.attrs}></cor-avatar>
-                <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">${state.name} ${state.note || ''}</span>
+                <span style="font-size: 12px; color: var(--color-text-base-tertiary);">${state.name} ${state.note || ''}</span>
               </div>
             `,
               )
@@ -234,7 +234,7 @@ export const AllStatesTable = {
                 <cor-avatar size="${args.size}" initials="${args.initials}" ${state.attrs}>
                   <img slot="image" src="https://i.pravatar.cc/150?img=5" alt="Avatar" />
                 </cor-avatar>
-                <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">${state.name} ${state.note || ''}</span>
+                <span style="font-size: 12px; color: var(--color-text-base-tertiary);">${state.name} ${state.note || ''}</span>
               </div>
             `,
               )
@@ -252,7 +252,7 @@ export const AllStatesTable = {
                 <cor-avatar size="${args.size}" initials="${args.initials}" ${state.attrs}>
                   <cor-icon slot="icon" name="${ICON_NAMES.USER__AVATAR}" size="${IconSize.SM}" color="currentColor"></cor-icon>
                 </cor-avatar>
-                <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">${state.name} ${state.note || ''}</span>
+                <span style="font-size: 12px; color: var(--color-text-base-tertiary);">${state.name} ${state.note || ''}</span>
               </div>
             `,
               )
@@ -297,7 +297,7 @@ export const AllCombinations = {
                   initials="${args.initials}"
                   ${args.disabled ? 'disabled' : ''}
                 ></cor-avatar>
-                <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">${size}</span>
+                <span style="font-size: 12px; color: var(--color-text-base-tertiary);">${size}</span>
               </div>
             `,
               )
@@ -319,7 +319,7 @@ export const AllCombinations = {
                 >
                   <img slot="image" src="https://i.pravatar.cc/150?img=5" alt="Avatar" />
                 </cor-avatar>
-                <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">${size}</span>
+                <span style="font-size: 12px; color: var(--color-text-base-tertiary);">${size}</span>
               </div>
             `,
               )
@@ -340,7 +340,7 @@ export const AllCombinations = {
                   ${args.disabled ? 'disabled' : ''}
                   skeleton
                 ></cor-avatar>
-                <span style="font-size: 12px; color: var(--color-neutral-text-weaker);">${size}</span>
+                <span style="font-size: 12px; color: var(--color-text-base-tertiary);">${size}</span>
               </div>
             `,
               )

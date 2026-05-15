@@ -13,7 +13,7 @@
     outline: none;
     background: var(--menu-button-background-primary-default);
     color: var(--menu-button-color-default);
-    font-family: var(--font-family-body);
+    font-family: var(--font-family-primary);
     font-size: var(--menu-button-font-size-primary);
     line-height: var(--menu-button-line-height-primary);
     font-weight: var(--menu-button-font-weight-primary-default);
@@ -73,7 +73,7 @@
 
 :host([type='secondary']) {
   .menu-button {
-    font-family: var(--font-family-heading);
+    font-family: var(--font-family-primary);
     font-size: var(--menu-button-font-size-secondary);
     line-height: var(--menu-button-line-height-secondary);
     font-weight: var(--menu-button-font-weight-secondary-default);
@@ -84,7 +84,7 @@
 
 :host([type='tertiary']) {
   .menu-button {
-    font-family: var(--font-family-heading);
+    font-family: var(--font-family-primary);
     font-size: var(--menu-button-font-size-tertiary);
     line-height: var(--menu-button-line-height-tertiary);
     font-weight: var(--menu-button-font-weight-tertiary-secondary);
