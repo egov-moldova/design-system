@@ -145,6 +145,14 @@ export const parameters = {
   // Runs axe-core against every story in both light and dark mode.
   // Canonical reference: .claude/skills/accessibility-compliance/SKILL.md
   a11y: {
+    // Scope axe to the story canvas: skip the dev-only agentation toolbar and its
+    // satellite elements (draw canvas, capture overlays). These are author tooling,
+    // not shipped to consumers — irrelevant to WCAG conformance.
+    // Single comma-separated string is more robust than array form across Storybook
+    // HMR serialization round-trips.
+    context: {
+      exclude: '#agentation-root, [data-agentation-toolbar], [data-feedback-toolbar]',
+    },
     config: {
       rules: [
         // 1.4.3 + 1.4.11 — color contrast (text + non-text)
