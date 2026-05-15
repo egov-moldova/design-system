@@ -1,34 +1,79 @@
 {
   "progress-bar": {
     "container": {
-      "gap": { "value": "{spacing.12}", "type": "dimension" }
+      "gap": {
+        "$value": "{spacing.12}",
+        "$type": "dimension"
+      }
     },
     "label": {
-      "fontSize": { "value": "{fontSize.14}", "type": "dimension" },
-      "lineHeight": { "value": "{lineHeight.20}", "type": "dimension" },
-      "color": { "value": "{color.text.base.default}", "type": "color" }
+      "fontSize": {
+        "$value": "{fontSize.14}",
+        "$type": "dimension"
+      },
+      "lineHeight": {
+        "$value": "{lineHeight.20}",
+        "$type": "dimension"
+      },
+      "color": {
+        "$value": "{color.text.base.default}",
+        "$type": "color"
+      }
     },
     "percentage": {
-      "fontSize": { "value": "{fontSize.12}", "type": "dimension" },
-      "lineHeight": { "value": "{lineHeight.16}", "type": "dimension" },
-      "color": { "value": "{color.text.base.secondary}", "type": "color" }
+      "fontSize": {
+        "$value": "{fontSize.12}",
+        "$type": "dimension"
+      },
+      "lineHeight": {
+        "$value": "{lineHeight.16}",
+        "$type": "dimension"
+      },
+      "color": {
+        "$value": "{color.text.base.secondary}",
+        "$type": "color"
+      }
     },
     "track": {
       "height": {
-        "lg": { "value": "12px", "type": "dimension" },
-        "md": { "value": "8px", "type": "dimension" },
-        "sm": { "value": "4px", "type": "dimension" }
+        "lg": {
+          "$value": "12px",
+          "$type": "dimension"
+        },
+        "md": {
+          "$value": "8px",
+          "$type": "dimension"
+        },
+        "sm": {
+          "$value": "4px",
+          "$type": "dimension"
+        }
       },
-      "borderRadius": { "value": "{borderRadius.4}", "type": "dimension" },
+      "borderRadius": {
+        "$value": "{borderRadius.4}",
+        "$type": "dimension"
+      },
       "background": {
-        "default": { "value": "{color.background.alpha.overlay-dark}", "type": "color" },
-        "error": { "value": "{color.background.danger.secondary}", "type": "color" }
+        "default": {
+          "$value": "{color.background.alpha.overlay-dark}",
+          "$type": "color"
+        },
+        "error": {
+          "$value": "{color.background.danger.secondary}",
+          "$type": "color"
+        }
       }
     },
     "fill": {
       "background": {
-        "default": { "value": "{color.background.brand.default-active}", "type": "color" },
-        "error": { "value": "{color.background.danger.default}", "type": "color" }
+        "default": {
+          "$value": "{color.background.brand.default-active}",
+          "$type": "color"
+        },
+        "error": {
+          "$value": "{color.background.danger.default}",
+          "$type": "color"
+        }
       }
     }
   }

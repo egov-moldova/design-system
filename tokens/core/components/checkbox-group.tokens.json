@@ -2,19 +2,16 @@
   "checkbox-group": {
     "gap": {
       "vertical": {
-        "value": "{controls-group.gap.vertical}",
-        "type": "dimension",
-        "description": "Gap between checkboxes in vertical layout"
+        "$value": "{controls-group.gap.vertical}",
+        "$type": "dimension"
       },
       "horizontal": {
-        "value": "{controls-group.gap.horizontal}",
-        "type": "dimension",
-        "description": "Gap between checkboxes in horizontal layout"
+        "$value": "{controls-group.gap.horizontal}",
+        "$type": "dimension"
       },
       "column": {
-        "value": "{controls-group.gap.column}",
-        "type": "dimension",
-        "description": "Gap between columns in multi-column layout"
+        "$value": "{controls-group.gap.column}",
+        "$type": "dimension"
       }
     }
   }

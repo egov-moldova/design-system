@@ -2,216 +2,216 @@
   "chip": {
     "gap": {
       "lg": {
-        "value": "{spacing.4}",
-        "type": "dimension"
+        "$value": "{spacing.4}",
+        "$type": "dimension"
       },
       "md": {
-        "value": "{spacing.4}",
-        "type": "dimension"
+        "$value": "{spacing.4}",
+        "$type": "dimension"
       },
       "sm": {
-        "value": "0",
-        "type": "dimension"
+        "$value": "0",
+        "$type": "dimension"
       }
     },
     "borderWidth": {
-      "value": "{borderWidth.1}",
-      "type": "dimension"
+      "$value": "{borderWidth.1}",
+      "$type": "dimension"
     },
     "size": {
       "lg": {
-        "value": "{spacing.32}",
-        "type": "dimension"
+        "$value": "{spacing.32}",
+        "$type": "dimension"
       },
       "md": {
-        "value": "{spacing.24}",
-        "type": "dimension"
+        "$value": "{spacing.24}",
+        "$type": "dimension"
       },
       "sm": {
-        "value": "{spacing.20}",
-        "type": "dimension"
+        "$value": "{spacing.20}",
+        "$type": "dimension"
       }
     },
     "padding": {
       "lg": {
-        "value": "{spacing.4}",
-        "type": "dimension"
+        "$value": "{spacing.4}",
+        "$type": "dimension"
       },
       "md": {
-        "value": "{spacing.4}",
-        "type": "dimension"
+        "$value": "{spacing.4}",
+        "$type": "dimension"
       },
       "sm": {
-        "value": "{spacing.4}",
-        "type": "dimension"
+        "$value": "{spacing.4}",
+        "$type": "dimension"
       }
     },
     "borderRadius": {
       "lg": {
-        "value": "{borderRadius.12}",
-        "type": "dimension"
+        "$value": "{borderRadius.12}",
+        "$type": "dimension"
       },
       "md": {
-        "value": "{borderRadius.8}",
-        "type": "dimension"
+        "$value": "{borderRadius.8}",
+        "$type": "dimension"
       },
       "sm": {
-        "value": "{borderRadius.4}",
-        "type": "dimension"
+        "$value": "{borderRadius.4}",
+        "$type": "dimension"
       }
     },
     "fontSize": {
-      "value": "{fontSize.12}",
-      "type": "dimension"
+      "$value": "{fontSize.12}",
+      "$type": "dimension"
     },
     "lineHeight": {
-      "value": "{lineHeight.16}",
-      "type": "dimension"
+      "$value": "{lineHeight.16}",
+      "$type": "dimension"
     },
     "fontFamily": {
-      "value": "{fontFamily.primary}",
-      "type": "fontFamily"
+      "$value": "{fontFamily.primary}",
+      "$type": "fontFamily"
     },
     "fontWeight": {
-      "value": "{fontWeight.regular}",
-      "type": "fontWeight"
+      "$value": "{fontWeight.regular}",
+      "$type": "fontWeight"
     },
     "icon-wrap": {
       "borderRadius": {
-        "value": "{borderRadius.4}",
-        "type": "dimension"
+        "$value": "{borderRadius.4}",
+        "$type": "dimension"
       }
     },
     "icon": {
       "size": {
         "lg": {
-          "value": "{spacing.16}",
-          "type": "dimension"
+          "$value": "{spacing.16}",
+          "$type": "dimension"
         },
         "md": {
-          "value": "{spacing.16}",
-          "type": "dimension"
+          "$value": "{spacing.16}",
+          "$type": "dimension"
         },
         "sm": {
-          "value": "{spacing.12}",
-          "type": "dimension"
+          "$value": "{spacing.12}",
+          "$type": "dimension"
         }
       },
       "color": {
         "default": {
-          "value": "{color.icon.base.tertiary}",
-          "type": "color"
+          "$value": "{color.icon.base.tertiary}",
+          "$type": "color"
         },
         "hover": {
-          "value": "{color.icon.brand.on-secondary}",
-          "type": "color"
+          "$value": "{color.icon.brand.on-secondary}",
+          "$type": "color"
         },
         "pressed": {
-          "value": "{color.icon.brand.on-secondary}",
-          "type": "color"
+          "$value": "{color.icon.brand.on-secondary}",
+          "$type": "color"
         },
         "active": {
-          "value": "{color.icon.brand.default}",
-          "type": "color"
+          "$value": "{color.icon.brand.default}",
+          "$type": "color"
         },
         "disabled": {
-          "value": "{color.icon.base.tertiary}",
-          "type": "color"
+          "$value": "{color.icon.base.tertiary}",
+          "$type": "color"
         },
         "error": {
-          "value": "{color.icon.danger.on-secondary}",
-          "type": "color"
+          "$value": "{color.icon.danger.on-secondary}",
+          "$type": "color"
         }
       }
     },
     "background": {
       "default": {
-        "value": "{color.background.base.default}",
-        "type": "color"
+        "$value": "{color.background.base.default}",
+        "$type": "color"
       },
       "hover": {
-        "value": "{color.background.base.default-hover}",
-        "type": "color"
+        "$value": "{color.background.base.default-hover}",
+        "$type": "color"
       },
       "active": {
-        "value": "{color.background.brand.secondary-hover}",
-        "type": "color"
+        "$value": "{color.background.brand.secondary-hover}",
+        "$type": "color"
       },
       "pressed": {
-        "value": "{color.background.base.default-active}",
-        "type": "color"
+        "$value": "{color.background.base.default-active}",
+        "$type": "color"
       },
       "disabled": {
-        "value": "{color.background.alpha.overlay-light}",
-        "type": "color"
+        "$value": "{color.background.alpha.overlay-light}",
+        "$type": "color"
       },
       "error": {
-        "value": "{color.background.danger.secondary}",
-        "type": "color"
+        "$value": "{color.background.danger.secondary}",
+        "$type": "color"
       }
     },
     "borderColor": {
       "default": {
-        "value": "{color.border.base.subtle}",
-        "type": "color"
+        "$value": "{color.border.base.subtle}",
+        "$type": "color"
       },
       "hover": {
-        "value": "{color.border.base.tertiary}",
-        "type": "color"
+        "$value": "{color.border.base.tertiary}",
+        "$type": "color"
       },
       "active": {
-        "value": "{color.border.brand.default}",
-        "type": "color"
+        "$value": "{color.border.brand.default}",
+        "$type": "color"
       },
       "pressed": {
-        "value": "{color.border.base.secondary}",
-        "type": "color"
+        "$value": "{color.border.base.secondary}",
+        "$type": "color"
       },
       "disabled": {
-        "value": "transparent",
-        "type": "color"
+        "$value": "transparent",
+        "$type": "color"
       },
       "error": {
-        "value": "{color.border.danger.default}",
-        "type": "color"
+        "$value": "{color.border.danger.default}",
+        "$type": "color"
       }
     },
     "color": {
       "default": {
-        "value": "{color.text.base.default}",
-        "type": "color"
+        "$value": "{color.text.base.default}",
+        "$type": "color"
       },
       "label": {
-        "value": "{color.text.base.secondary}",
-        "type": "color"
+        "$value": "{color.text.base.secondary}",
+        "$type": "color"
       },
       "disabled": {
-        "value": "{color.text.base.tertiary}",
-        "type": "color"
+        "$value": "{color.text.base.tertiary}",
+        "$type": "color"
       },
       "error": {
-        "value": "{color.text.danger.default}",
-        "type": "color"
+        "$value": "{color.text.danger.default}",
+        "$type": "color"
       }
     },
     "focus": {
       "outlineWidth": {
-        "value": "{borderWidth.2}",
-        "type": "dimension"
+        "$value": "{borderWidth.2}",
+        "$type": "dimension"
       },
       "outlineColor": {
-        "value": "{color.border.brand.default}",
-        "type": "color"
+        "$value": "{color.border.brand.default}",
+        "$type": "color"
       }
     },
     "content": {
       "gap": {
-        "value": "{spacing.4}",
-        "type": "dimension"
+        "$value": "{spacing.4}",
+        "$type": "dimension"
       },
       "paddingInline": {
-        "value": "{spacing.4}",
-        "type": "dimension"
+        "$value": "{spacing.4}",
+        "$type": "dimension"
       }
     }
   }

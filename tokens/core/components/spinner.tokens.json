@@ -2,45 +2,60 @@
   "spinner": {
     "size": {
       "xlg": {
-        "value": "{spacing.56}",
-        "type": "dimension"
+        "$value": "{spacing.56}",
+        "$type": "dimension"
       },
       "lg": {
-        "value": "{spacing.48}",
-        "type": "dimension"
+        "$value": "{spacing.48}",
+        "$type": "dimension"
       },
       "md": {
-        "value": "{spacing.32}",
-        "type": "dimension"
+        "$value": "{spacing.32}",
+        "$type": "dimension"
       },
       "sm": {
-        "value": "{spacing.24}",
-        "type": "dimension"
+        "$value": "{spacing.24}",
+        "$type": "dimension"
       },
       "xsm": {
-        "value": "{spacing.16}",
-        "type": "dimension"
+        "$value": "{spacing.16}",
+        "$type": "dimension"
       }
     },
     "stroke": {
       "width": {
-        "xlg": { "value": "2px", "type": "dimension" },
-        "lg": { "value": "1.75px", "type": "dimension" },
-        "md": { "value": "1.5px", "type": "dimension" },
-        "sm": { "value": "1.25px", "type": "dimension" },
-        "xsm": { "value": "1px", "type": "dimension" }
+        "xlg": {
+          "$value": "2px",
+          "$type": "dimension"
+        },
+        "lg": {
+          "$value": "1.75px",
+          "$type": "dimension"
+        },
+        "md": {
+          "$value": "1.5px",
+          "$type": "dimension"
+        },
+        "sm": {
+          "$value": "1.25px",
+          "$type": "dimension"
+        },
+        "xsm": {
+          "$value": "1px",
+          "$type": "dimension"
+        }
       }
     },
     "track": {
       "color": {
-        "value": "{color.background.alpha.overlay-dark}",
-        "type": "color"
+        "$value": "{color.background.alpha.overlay-dark}",
+        "$type": "color"
       }
     },
     "arc": {
       "color": {
-        "value": "{color.background.base-inverse.default}",
-        "type": "color"
+        "$value": "{color.background.base-inverse.default}",
+        "$type": "color"
       }
     }
   }

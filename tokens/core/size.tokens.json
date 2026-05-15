@@ -1,81 +1,48 @@
 {
   "size": {
     "base": {
-      "value": "{size.md}",
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "{size.md}",
+      "$type": "dimension"
     },
     "md": {
-      "value": 16,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "16px",
+      "$type": "dimension"
     },
     "lg": {
-      "value": 24,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "24px",
+      "$type": "dimension"
     },
     "xl": {
-      "value": 32,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "32px",
+      "$type": "dimension"
     },
     "2xl": {
-      "value": 40,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "40px",
+      "$type": "dimension"
     },
     "3xl": {
-      "value": 48,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "48px",
+      "$type": "dimension"
     },
     "4xl": {
-      "value": 144,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "144px",
+      "$type": "dimension"
     },
     "5xl": {
-      "value": 216,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "216px",
+      "$type": "dimension"
     },
     "6xl": {
-      "value": 360,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "360px",
+      "$type": "dimension"
     },
     "7xl": {
-      "value": 1224,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "1224px",
+      "$type": "dimension"
     },
     "8xl": {
-      "value": 1440,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "1440px",
+      "$type": "dimension"
     }
   }
 }

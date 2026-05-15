@@ -1,291 +1,291 @@
 {
   "menu-button": {
     "size": {
-      "value": "{spacing.32}",
-      "type": "dimension"
+      "$value": "{spacing.32}",
+      "$type": "dimension"
     },
     "padding": {
-      "value": "{spacing.8}",
-      "type": "dimension"
+      "$value": "{spacing.8}",
+      "$type": "dimension"
     },
     "borderRadius": {
-      "value": "{borderRadius.12}",
-      "type": "dimension"
+      "$value": "{borderRadius.12}",
+      "$type": "dimension"
     },
     "gap": {
-      "value": "{spacing.4}",
-      "type": "dimension"
+      "$value": "{spacing.4}",
+      "$type": "dimension"
     },
     "content": {
       "gap": {
-        "value": "{spacing.4}",
-        "type": "dimension"
+        "$value": "{spacing.4}",
+        "$type": "dimension"
       }
     },
     "padding-content": {
-      "value": "{spacing.4}",
-      "type": "dimension"
+      "$value": "{spacing.4}",
+      "$type": "dimension"
     },
     "gap-tertiary": {
-      "value": "{spacing.8}",
-      "type": "dimension"
+      "$value": "{spacing.8}",
+      "$type": "dimension"
     },
     "fontSize": {
       "primary": {
-        "value": "{fontSize.14}",
-        "type": "fontSize"
+        "$value": "{fontSize.14}",
+        "$type": "fontSize"
       },
       "secondary": {
-        "value": "{fontSize.18}",
-        "type": "fontSize"
+        "$value": "{fontSize.18}",
+        "$type": "fontSize"
       },
       "tertiary": {
-        "value": "{fontSize.16}",
-        "type": "fontSize"
+        "$value": "{fontSize.16}",
+        "$type": "fontSize"
       }
     },
     "lineHeight": {
       "primary": {
-        "value": "{lineHeight.20}",
-        "type": "lineHeight"
+        "$value": "{lineHeight.20}",
+        "$type": "lineHeight"
       },
       "secondary": {
-        "value": "{lineHeight.28}",
-        "type": "lineHeight"
+        "$value": "{lineHeight.28}",
+        "$type": "lineHeight"
       },
       "tertiary": {
-        "value": "{lineHeight.24}",
-        "type": "lineHeight"
+        "$value": "{lineHeight.24}",
+        "$type": "lineHeight"
       }
     },
     "fontWeight": {
       "primary": {
         "default": {
-          "value": "{fontWeight.semibold}",
-          "type": "fontWeight"
+          "$value": "{fontWeight.semibold}",
+          "$type": "fontWeight"
         },
         "selected": {
-          "value": "{fontWeight.semibold}",
-          "type": "fontWeight"
+          "$value": "{fontWeight.semibold}",
+          "$type": "fontWeight"
         }
       },
       "secondary": {
         "default": {
-          "value": "{fontWeight.regular}",
-          "type": "fontWeight"
+          "$value": "{fontWeight.regular}",
+          "$type": "fontWeight"
         },
         "selected": {
-          "value": "{fontWeight.regular}",
-          "type": "fontWeight"
+          "$value": "{fontWeight.regular}",
+          "$type": "fontWeight"
         }
       },
       "tertiary": {
         "default": {
-          "value": "{fontWeight.regular}",
-          "type": "fontWeight"
+          "$value": "{fontWeight.regular}",
+          "$type": "fontWeight"
         },
         "selected": {
-          "value": "{fontWeight.regular}",
-          "type": "fontWeight"
+          "$value": "{fontWeight.regular}",
+          "$type": "fontWeight"
         }
       }
     },
     "color": {
       "default": {
-        "value": "{color.text.base.secondary}",
-        "type": "color"
+        "$value": "{color.text.base.secondary}",
+        "$type": "color"
       },
       "hover": {
-        "value": "{color.text.base.secondary}",
-        "type": "color"
+        "$value": "{color.text.base.secondary}",
+        "$type": "color"
       },
       "pressed": {
-        "value": "{color.text.base.secondary}",
-        "type": "color"
+        "$value": "{color.text.base.secondary}",
+        "$type": "color"
       },
       "selected": {
-        "value": "{color.text.base.default}",
-        "type": "color"
+        "$value": "{color.text.base.default}",
+        "$type": "color"
       },
       "disabled": {
-        "value": "{color.text.base.tertiary}",
-        "type": "color"
+        "$value": "{color.text.base.tertiary}",
+        "$type": "color"
       }
     },
     "background": {
       "primary": {
         "default": {
-          "value": "transparent",
-          "type": "color"
+          "$value": "transparent",
+          "$type": "color"
         },
         "hover": {
-          "value": "{color.background.base.default-hover}",
-          "type": "color"
+          "$value": "{color.background.base.default-hover}",
+          "$type": "color"
         },
         "pressed": {
-          "value": "{color.background.base.default-active}",
-          "type": "color"
+          "$value": "{color.background.base.default-active}",
+          "$type": "color"
         },
         "selected": {
-          "value": "{color.background.base.default}",
-          "type": "color"
+          "$value": "{color.background.base.default}",
+          "$type": "color"
         },
         "disabled": {
-          "value": "transparent",
-          "type": "color"
+          "$value": "transparent",
+          "$type": "color"
         },
         "skeleton": {
-          "value": "{color.background.brand.default}",
-          "type": "color"
+          "$value": "{color.background.brand.default}",
+          "$type": "color"
         }
       },
       "secondary": {
         "default": {
-          "value": "transparent",
-          "type": "color"
+          "$value": "transparent",
+          "$type": "color"
         },
         "hover": {
-          "value": "{color.background.base.default-hover}",
-          "type": "color"
+          "$value": "{color.background.base.default-hover}",
+          "$type": "color"
         },
         "pressed": {
-          "value": "{color.background.base.default-active}",
-          "type": "color"
+          "$value": "{color.background.base.default-active}",
+          "$type": "color"
         },
         "selected": {
-          "value": "{color.background.base.default}",
-          "type": "color"
+          "$value": "{color.background.base.default}",
+          "$type": "color"
         },
         "disabled": {
-          "value": "transparent",
-          "type": "color"
+          "$value": "transparent",
+          "$type": "color"
         },
         "skeleton": {
-          "value": "{color.background.brand.default}",
-          "type": "color"
+          "$value": "{color.background.brand.default}",
+          "$type": "color"
         }
       },
       "tertiary": {
         "default": {
-          "value": "transparent",
-          "type": "color"
+          "$value": "transparent",
+          "$type": "color"
         },
         "hover": {
-          "value": "transparent",
-          "type": "color"
+          "$value": "transparent",
+          "$type": "color"
         },
         "pressed": {
-          "value": "transparent",
-          "type": "color"
+          "$value": "transparent",
+          "$type": "color"
         },
         "selected": {
-          "value": "transparent",
-          "type": "color"
+          "$value": "transparent",
+          "$type": "color"
         },
         "disabled": {
-          "value": "transparent",
-          "type": "color"
+          "$value": "transparent",
+          "$type": "color"
         },
         "skeleton": {
-          "value": "transparent",
-          "type": "color"
+          "$value": "transparent",
+          "$type": "color"
         }
       }
     },
     "border": {
       "selected": {
         "width": {
-          "value": "{borderWidth.1}",
-          "type": "dimension"
+          "$value": "{borderWidth.1}",
+          "$type": "dimension"
         },
         "color": {
-          "value": "{color.border.base.subtle}",
-          "type": "color"
+          "$value": "{color.border.base.subtle}",
+          "$type": "color"
         }
       }
     },
     "focus": {
       "outlineWidth": {
-        "value": "{borderWidth.2}",
-        "type": "dimension"
+        "$value": "{borderWidth.2}",
+        "$type": "dimension"
       },
       "outlineColor": {
-        "value": "{color.border.brand.default}",
-        "type": "color"
+        "$value": "{color.border.brand.default}",
+        "$type": "color"
       },
       "outlineOffset": {
-        "value": "0px",
-        "type": "dimension"
+        "$value": "0px",
+        "$type": "dimension"
       }
     },
     "skeleton": {
       "label": {
         "width": {
-          "value": "{spacing.48}",
-          "type": "dimension"
+          "$value": "{spacing.48}",
+          "$type": "dimension"
         },
         "height": {
-          "value": "{spacing.12}",
-          "type": "dimension"
+          "$value": "{spacing.12}",
+          "$type": "dimension"
         }
       },
       "badge": {
         "width": {
-          "value": "{spacing.20}",
-          "type": "dimension"
+          "$value": "{spacing.20}",
+          "$type": "dimension"
         },
         "height": {
-          "value": "{spacing.20}",
-          "type": "dimension"
+          "$value": "{spacing.20}",
+          "$type": "dimension"
         }
       },
       "icon": {
         "size": {
-          "value": "{spacing.20}",
-          "type": "dimension"
+          "$value": "{spacing.20}",
+          "$type": "dimension"
         }
       },
       "placeholder": {
         "size": {
-          "value": "{spacing.32}",
-          "type": "dimension"
+          "$value": "{spacing.32}",
+          "$type": "dimension"
         }
       },
       "text-placeholder": {
         "primary": {
           "width": {
-            "value": "67px",
-            "type": "dimension"
+            "$value": "67px",
+            "$type": "dimension"
           },
           "height": {
-            "value": "20px",
-            "type": "dimension"
+            "$value": "20px",
+            "$type": "dimension"
           }
         },
         "secondary": {
           "width": {
-            "value": "70px",
-            "type": "dimension"
+            "$value": "70px",
+            "$type": "dimension"
           },
           "height": {
-            "value": "28px",
-            "type": "dimension"
+            "$value": "28px",
+            "$type": "dimension"
           }
         },
         "tertiary": {
           "width": {
-            "value": "70px",
-            "type": "dimension"
+            "$value": "70px",
+            "$type": "dimension"
           },
           "height": {
-            "value": "24px",
-            "type": "dimension"
+            "$value": "24px",
+            "$type": "dimension"
           }
         }
       },
       "borderRadius": {
-        "value": "0px",
-        "type": "dimension"
+        "$value": "0px",
+        "$type": "dimension"
       }
     }
   }

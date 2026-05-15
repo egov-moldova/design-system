@@ -1,33 +1,74 @@
 {
   "separator": {
     "bottom": {
-      "background": { "value": "{color.background.base.default}", "type": "color" },
-      "height": { "value": "8px", "type": "dimension" },
-      "radius-bottom-left": { "value": "6px", "type": "dimension" },
-      "radius-bottom-right": { "value": "6px", "type": "dimension" }
+      "background": {
+        "$value": "{color.background.base.default}",
+        "$type": "color"
+      },
+      "height": {
+        "$value": "8px",
+        "$type": "dimension"
+      },
+      "radius-bottom-left": {
+        "$value": "6px",
+        "$type": "dimension"
+      },
+      "radius-bottom-right": {
+        "$value": "6px",
+        "$type": "dimension"
+      }
     },
-
     "top": {
-      "background": { "value": "{color.background.base.default}", "type": "color" },
-      "height": { "value": "8px", "type": "dimension" },
-      "radius-top-left": { "value": "6px", "type": "dimension" },
-      "radius-top-right": { "value": "6px", "type": "dimension" }
+      "background": {
+        "$value": "{color.background.base.default}",
+        "$type": "color"
+      },
+      "height": {
+        "$value": "8px",
+        "$type": "dimension"
+      },
+      "radius-top-left": {
+        "$value": "6px",
+        "$type": "dimension"
+      },
+      "radius-top-right": {
+        "$value": "6px",
+        "$type": "dimension"
+      }
     },
-
     "divider": {
-      "background": { "value": "{color.border.base.subtle}", "type": "color" },
-      "height": { "value": "1px", "type": "dimension" },
-      "margin-y": { "value": "6px", "type": "dimension" }
+      "background": {
+        "$value": "{color.border.base.subtle}",
+        "$type": "color"
+      },
+      "height": {
+        "$value": "1px",
+        "$type": "dimension"
+      },
+      "margin-y": {
+        "$value": "6px",
+        "$type": "dimension"
+      }
     },
-
     "line": {
-      "background": { "value": "{color.border.base.subtle}", "type": "color" },
-      "height": { "value": "1px", "type": "dimension" }
+      "background": {
+        "$value": "{color.border.base.subtle}",
+        "$type": "color"
+      },
+      "height": {
+        "$value": "1px",
+        "$type": "dimension"
+      }
     },
-
     "line-accent": {
-      "background": { "value": "{color.border.brand.default}", "type": "color" },
-      "height": { "value": "1px", "type": "dimension" }
+      "background": {
+        "$value": "{color.border.brand.default}",
+        "$type": "color"
+      },
+      "height": {
+        "$value": "1px",
+        "$type": "dimension"
+      }
     }
   }
 }

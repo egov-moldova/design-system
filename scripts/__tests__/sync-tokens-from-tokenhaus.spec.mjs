@@ -165,9 +165,9 @@ describe('extractPalette', () => {
 
     assert.ok(result.palette.gray);
     assert.ok(result.palette['blue-sky']);
-    assert.equal(result.palette.gray['50'].value, '#f7f7f7');
-    assert.equal(result.palette.gray['50'].type, 'color');
-    assert.equal(result.palette['blue-sky']['600'].value, '#0058d2');
+    assert.equal(result.palette.gray['50'].$value, '#f7f7f7');
+    assert.equal(result.palette.gray['50'].$type, 'color');
+    assert.equal(result.palette['blue-sky']['600'].$value, '#0058d2');
   });
 
   it('handles nested alpha sub-groups', () => {
@@ -175,8 +175,8 @@ describe('extractPalette', () => {
     const ctx = createRunContext({ dryRun: true });
     const result = extractPalette(fixture, ctx);
 
-    assert.equal(result.palette.alpha.black['100-alpha'].value, '#1212120d');
-    assert.equal(result.palette.alpha.gray['alpha-100'].value, '#44444408');
+    assert.equal(result.palette.alpha.black['100-alpha'].$value, '#1212120d');
+    assert.equal(result.palette.alpha.gray['alpha-100'].$value, '#44444408');
   });
 });
 
@@ -186,8 +186,8 @@ describe('extractSemanticColors', () => {
     const ctx = createRunContext({ dryRun: true });
     const result = extractSemanticColors(fixture, MODE_LIGHT, ctx);
 
-    assert.equal(result.color.background.base.default.value, '{palette.white.1000}');
-    assert.equal(result.color.background.base['default-hover'].value, '{palette.gray.100}');
+    assert.equal(result.color.background.base.default.$value, '{palette.white.1000}');
+    assert.equal(result.color.background.base['default-hover'].$value, '{palette.gray.100}');
   });
 
   it('rewrites palette references for Dark Mode', () => {
@@ -195,8 +195,8 @@ describe('extractSemanticColors', () => {
     const ctx = createRunContext({ dryRun: true });
     const result = extractSemanticColors(fixture, MODE_DARK, ctx);
 
-    assert.equal(result.color.background.base.default.value, '{palette.gray.900}');
-    assert.equal(result.color.background.base['default-hover'].value, '{palette.gray.800}');
+    assert.equal(result.color.background.base.default.$value, '{palette.gray.900}');
+    assert.equal(result.color.background.base['default-hover'].$value, '{palette.gray.800}');
   });
 
   it('rewrites alpha references through the nested namespace', () => {
@@ -205,7 +205,7 @@ describe('extractSemanticColors', () => {
     const result = extractSemanticColors(fixture, MODE_LIGHT, ctx);
 
     assert.equal(
-      result.color.background.alpha['overlay-dark'].value,
+      result.color.background.alpha['overlay-dark'].$value,
       '{palette.alpha.black.100-alpha}',
     );
   });
@@ -237,12 +237,15 @@ describe('extractTypography', () => {
     const ctx = createRunContext({ dryRun: true });
     const result = extractTypography(fixture, ctx);
 
-    assert.equal(result.fontSize['12'].value, 12);
-    assert.equal(result.fontSize['16'].value, 16);
-    assert.equal(result.fontWeight.regular.value, 400);
-    assert.equal(result.fontWeight.semibold.value, 600);
-    assert.equal(result.lineHeight['16'].value, 16);
-    assert.equal(result.fontFamily.primary.value, 'Onest');
+    assert.equal(result.fontSize['12'].$value, '12px');
+    assert.equal(result.fontSize['12'].$type, 'dimension');
+    assert.equal(result.fontSize['16'].$value, '16px');
+    assert.equal(result.fontWeight.regular.$value, 400);
+    assert.equal(result.fontWeight.regular.$type, 'fontWeight');
+    assert.equal(result.fontWeight.semibold.$value, 600);
+    assert.equal(result.lineHeight['16'].$value, '16px');
+    assert.equal(result.fontFamily.primary.$value, 'Onest');
+    assert.equal(result.fontFamily.primary.$type, 'fontFamily');
   });
 
   it('emits an empty letterSpacing placeholder', () => {
@@ -260,8 +263,8 @@ describe('extractSizes', () => {
     const ctx = createRunContext({ dryRun: true });
     const result = extractSizes(fixture, ctx);
 
-    assert.equal(result.borderWidth['1-5'].value, 1.5);
-    assert.equal(result.borderWidth['1'].value, 1);
+    assert.equal(result.borderWidth['1-5'].$value, '1.5px');
+    assert.equal(result.borderWidth['1'].$value, '1px');
   });
 
   it('emits 0 for blank spacing-0 and records a fallback', () => {
@@ -269,7 +272,7 @@ describe('extractSizes', () => {
     const ctx = createRunContext({ dryRun: true });
     const result = extractSizes(fixture, ctx);
 
-    assert.equal(result.spacing['0'].value, 0);
+    assert.equal(result.spacing['0'].$value, '0px');
     const zeroFallback = ctx.fallbacks.find(f => f.outputKey === 'spacing.0');
     assert.ok(zeroFallback, 'expected a generated-zero fallback record');
   });
@@ -279,7 +282,7 @@ describe('extractSizes', () => {
     const ctx = createRunContext({ dryRun: true });
     const result = extractSizes(fixture, ctx);
 
-    assert.equal(result.borderRadius.full.value, '9999px');
+    assert.equal(result.borderRadius.full.$value, '9999px');
   });
 
   it('strips Figma prefixes from spacing and border-radius keys', () => {
@@ -287,9 +290,9 @@ describe('extractSizes', () => {
     const ctx = createRunContext({ dryRun: true });
     const result = extractSizes(fixture, ctx);
 
-    assert.equal(result.spacing['12'].value, 12);
-    assert.equal(result.spacing['24'].value, 24);
-    assert.equal(result.borderRadius['8'].value, 8);
+    assert.equal(result.spacing['12'].$value, '12px');
+    assert.equal(result.spacing['24'].$value, '24px');
+    assert.equal(result.borderRadius['8'].$value, '8px');
   });
 });
 
@@ -416,6 +419,7 @@ describe('main', () => {
     const report = JSON.parse(fs.readFileSync(reportFile, 'utf8'));
     assert.equal(report.dryRun, true);
     assert.equal(report.schemaVersion, 'tokenhaus-2026');
+    assert.equal(report.outputFormat, 'dtcg');
     assert.equal(report.generatedCount, 5);
     assert.ok(
       report.generated.some(entry => entry.relativePath.endsWith(path.join('core', 'palette.tokens.json'))),

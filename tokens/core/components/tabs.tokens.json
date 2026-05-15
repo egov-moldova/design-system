@@ -2,96 +2,96 @@
   "tabs": {
     "gap": {
       "style3": {
-        "value": "{spacing.12}",
-        "type": "dimension"
+        "$value": "{spacing.12}",
+        "$type": "dimension"
       }
     },
     "borderWidth": {
-      "value": "{borderWidth.1}",
-      "type": "dimension"
+      "$value": "{borderWidth.1}",
+      "$type": "dimension"
     },
     "borderRadius": {
       "style1": {
         "lg": {
-          "value": "{borderRadius.16}",
-          "type": "dimension"
+          "$value": "{borderRadius.16}",
+          "$type": "dimension"
         },
         "md": {
-          "value": "{borderRadius.12}",
-          "type": "dimension"
+          "$value": "{borderRadius.12}",
+          "$type": "dimension"
         },
         "sm": {
-          "value": "{borderRadius.8}",
-          "type": "dimension"
+          "$value": "{borderRadius.8}",
+          "$type": "dimension"
         }
       },
       "style2": {
         "lg": {
-          "value": "{borderRadius.16}",
-          "type": "dimension"
+          "$value": "{borderRadius.16}",
+          "$type": "dimension"
         },
         "md": {
-          "value": "{borderRadius.12}",
-          "type": "dimension"
+          "$value": "{borderRadius.12}",
+          "$type": "dimension"
         },
         "sm": {
-          "value": "{borderRadius.8}",
-          "type": "dimension"
+          "$value": "{borderRadius.8}",
+          "$type": "dimension"
         }
       }
     },
     "padding": {
       "style1": {
         "lg": {
-          "value": "3px",
-          "type": "dimension"
+          "$value": "3px",
+          "$type": "dimension"
         },
         "md": {
-          "value": "1px",
-          "type": "dimension"
+          "$value": "1px",
+          "$type": "dimension"
         },
         "sm": {
-          "value": "1px",
-          "type": "dimension"
+          "$value": "1px",
+          "$type": "dimension"
         }
       },
       "style2": {
-        "value": "{spacing.0}",
-        "type": "dimension"
+        "$value": "{spacing.0}",
+        "$type": "dimension"
       }
     },
     "borderColor": {
       "default": {
-        "value": "{color.border.base.tertiary}",
-        "type": "color"
+        "$value": "{color.border.base.tertiary}",
+        "$type": "color"
       },
       "error": {
-        "value": "{color.border.danger.default}",
-        "type": "color"
+        "$value": "{color.border.danger.default}",
+        "$type": "color"
       },
       "selected": {
-        "value": "{color.border.brand.default}",
-        "type": "color"
+        "$value": "{color.border.brand.default}",
+        "$type": "color"
       }
     },
     "background": {
       "style1": {
-        "value": "{color.background.alpha.large-surface}",
-        "type": "color"
+        "$value": "{color.background.alpha.large-surface}",
+        "$type": "color"
       },
       "style2": {
-        "value": "{color.background.alpha.large-surface}",
-        "type": "color"
+        "$value": "{color.background.alpha.large-surface}",
+        "$type": "color"
       }
     },
     "divider": {
       "color": {
-        "value": "{color.border.base.tertiary}",
-        "type": "color"
+        "$value": "{color.border.base.tertiary}",
+        "$type": "color"
       },
       "width": {
-        "value": "{borderWidth.1}",
-        "type": "dimension"
+        "$value": "{borderWidth.1}",
+        "$type": "dimension"
       }
     }
   }

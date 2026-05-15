@@ -2,196 +2,196 @@
   "badge-interactive": {
     "container": {
       "gap": {
-        "value": "2px",
-        "type": "dimension"
+        "$value": "2px",
+        "$type": "dimension"
       },
       "size": {
         "md": {
-          "value": "20px",
-          "type": "dimension"
+          "$value": "20px",
+          "$type": "dimension"
         },
         "sm": {
-          "value": "16px",
-          "type": "dimension"
+          "$value": "16px",
+          "$type": "dimension"
         },
         "xs": {
-          "value": "14px",
-          "type": "dimension"
+          "$value": "14px",
+          "$type": "dimension"
         }
       },
       "padding": {
         "md": {
-          "value": "4px",
-          "type": "dimension"
+          "$value": "4px",
+          "$type": "dimension"
         },
         "sm": {
-          "value": "2px",
-          "type": "dimension"
+          "$value": "2px",
+          "$type": "dimension"
         },
         "xs": {
-          "value": "2px",
-          "type": "dimension"
+          "$value": "2px",
+          "$type": "dimension"
         }
       },
       "borderRadius": {
         "md": {
-          "value": "4px",
-          "type": "dimension"
+          "$value": "4px",
+          "$type": "dimension"
         },
         "sm": {
-          "value": "4px",
-          "type": "dimension"
+          "$value": "4px",
+          "$type": "dimension"
         },
         "xs": {
-          "value": "4px",
-          "type": "dimension"
+          "$value": "4px",
+          "$type": "dimension"
         }
       },
       "width": {
         "md": {
-          "value": "36px",
-          "type": "dimension"
+          "$value": "36px",
+          "$type": "dimension"
         },
         "sm": {
-          "value": "32px",
-          "type": "dimension"
+          "$value": "32px",
+          "$type": "dimension"
         },
         "xs": {
-          "value": "16px",
-          "type": "dimension"
+          "$value": "16px",
+          "$type": "dimension"
         }
       },
       "height": {
         "md": {
-          "value": "20px",
-          "type": "dimension"
+          "$value": "20px",
+          "$type": "dimension"
         },
         "sm": {
-          "value": "16px",
-          "type": "dimension"
+          "$value": "16px",
+          "$type": "dimension"
         },
         "xs": {
-          "value": "14px",
-          "type": "dimension"
+          "$value": "14px",
+          "$type": "dimension"
         }
       },
       "background": {
         "default": {
-          "value": "{color.background.alpha.overlay-light}",
-          "type": "color"
+          "$value": "{color.background.alpha.overlay-light}",
+          "$type": "color"
         },
         "hover": {
-          "value": "{color.background.alpha.overlay-light}",
-          "type": "color"
+          "$value": "{color.background.alpha.overlay-light}",
+          "$type": "color"
         },
         "pressed": {
-          "value": "{color.background.alpha.overlay-dark}",
-          "type": "color"
+          "$value": "{color.background.alpha.overlay-dark}",
+          "$type": "color"
         },
         "selected": {
-          "value": "{color.background.brand.default-hover}",
-          "type": "color"
+          "$value": "{color.background.brand.default-hover}",
+          "$type": "color"
         },
         "disabled": {
-          "value": "{color.background.alpha.large-surface}",
-          "type": "color"
+          "$value": "{color.background.alpha.large-surface}",
+          "$type": "color"
         },
         "skeleton": {
-          "value": "{color.background.base.default}",
-          "type": "color"
+          "$value": "{color.background.base.default}",
+          "$type": "color"
         }
       }
     },
     "label": {
       "fontSize": {
         "md": {
-          "value": "{fontSize.14}",
-          "type": "fontSize"
+          "$value": "{fontSize.14}",
+          "$type": "fontSize"
         },
         "sm": {
-          "value": "{fontSize.12}",
-          "type": "fontSize"
+          "$value": "{fontSize.12}",
+          "$type": "fontSize"
         },
         "xs": {
-          "value": "{fontSize.10}",
-          "type": "fontSize"
+          "$value": "{fontSize.10}",
+          "$type": "fontSize"
         }
       },
       "lineHeight": {
         "md": {
-          "value": "{lineHeight.20}",
-          "type": "lineHeight"
+          "$value": "{lineHeight.20}",
+          "$type": "lineHeight"
         },
         "sm": {
-          "value": "{lineHeight.16}",
-          "type": "lineHeight"
+          "$value": "{lineHeight.16}",
+          "$type": "lineHeight"
         },
         "xs": {
-          "value": "{lineHeight.12}",
-          "type": "lineHeight"
+          "$value": "{lineHeight.12}",
+          "$type": "lineHeight"
         }
       },
       "letterSpacing": {
         "xs": {
-          "value": "0.2px",
-          "type": "dimension"
+          "$value": "0.2px",
+          "$type": "dimension"
         }
       },
       "color": {
         "default": {
-          "value": "{color.text.base.secondary}",
-          "type": "color"
+          "$value": "{color.text.base.secondary}",
+          "$type": "color"
         },
         "hover": {
-          "value": "{color.text.base.default}",
-          "type": "color"
+          "$value": "{color.text.base.default}",
+          "$type": "color"
         },
         "pressed": {
-          "value": "{color.text.base.default}",
-          "type": "color"
+          "$value": "{color.text.base.default}",
+          "$type": "color"
         },
         "selected": {
-          "value": "{color.text.base-inverse.default}",
-          "type": "color"
+          "$value": "{color.text.base-inverse.default}",
+          "$type": "color"
         },
         "disabled": {
-          "value": "{color.text.base.tertiary}",
-          "type": "color"
+          "$value": "{color.text.base.tertiary}",
+          "$type": "color"
         }
       }
     },
     "icon": {
       "color": {
         "default": {
-          "value": "{color.icon.base.secondary}",
-          "type": "color"
+          "$value": "{color.icon.base.secondary}",
+          "$type": "color"
         },
         "hover": {
-          "value": "{color.icon.base.default}",
-          "type": "color"
+          "$value": "{color.icon.base.default}",
+          "$type": "color"
         },
         "pressed": {
-          "value": "{color.icon.base.default}",
-          "type": "color"
+          "$value": "{color.icon.base.default}",
+          "$type": "color"
         },
         "selected": {
-          "value": "{color.icon.base-inverse.default}",
-          "type": "color"
+          "$value": "{color.icon.base-inverse.default}",
+          "$type": "color"
         },
         "disabled": {
-          "value": "{color.icon.base.tertiary}",
-          "type": "color"
+          "$value": "{color.icon.base.tertiary}",
+          "$type": "color"
         }
       }
     },
     "focus": {
       "outlineColor": {
-        "value": "{color.border.brand.default}",
-        "type": "color"
+        "$value": "{color.border.brand.default}",
+        "$type": "color"
       },
       "outlineWidth": {
-        "value": "2px",
-        "type": "dimension"
+        "$value": "2px",
+        "$type": "dimension"
       }
     }
   }

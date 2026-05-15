@@ -1,8 +1,9 @@
 {
+  "usesDtcg": true,
   "source": ["tokens/core/**/*.tokens.json", "tokens/core.dark/**/*.tokens.json"],
   "platforms": {
     "css": {
-      "transforms": ["attribute/cti", "name/kebab", "size/px", "color/hex"],
+      "transforms": ["attribute/cti", "name/kebab", "color/hex"],
       "buildPath": "dist/design-system/tokens/",
       "files": [
         {
@@ -16,7 +17,7 @@
       ]
     },
     "storybook": {
-      "transforms": ["attribute/cti", "name/pascal", "size/px", "color/hex"],
+      "transforms": ["attribute/cti", "name/pascal", "color/hex"],
       "buildPath": ".storybook/stories/assets/",
       "files": [
         {
@@ -29,7 +30,7 @@
       ]
     },
     "tailwind": {
-      "transforms": ["attribute/cti", "name/pascal", "size/px", "color/hex"],
+      "transforms": ["attribute/cti", "name/pascal", "color/hex"],
       "buildPath": "tokens/generated/",
       "files": [
         {

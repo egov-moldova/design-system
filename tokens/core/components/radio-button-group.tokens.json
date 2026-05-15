@@ -2,12 +2,12 @@
   "radio-button-group": {
     "gap": {
       "vertical": {
-        "value": "{controls-group.gap.vertical}",
-        "type": "dimension"
+        "$value": "{controls-group.gap.vertical}",
+        "$type": "dimension"
       },
       "horizontal": {
-        "value": "{controls-group.gap.horizontal}",
-        "type": "dimension"
+        "$value": "{controls-group.gap.horizontal}",
+        "$type": "dimension"
       }
     }
   }

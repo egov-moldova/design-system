@@ -1,46 +1,118 @@
 {
   "modal": {
     "container": {
-      "borderRadius": { "value": "{borderRadius.16}", "type": "dimension" },
-      "background": { "value": "{color.background.base.default}", "type": "color" },
-      "elevation": { "value": "{dropShadow.400}", "type": "shadow" }
+      "borderRadius": {
+        "$value": "{borderRadius.16}",
+        "$type": "dimension"
+      },
+      "background": {
+        "$value": "{color.background.base.default}",
+        "$type": "color"
+      },
+      "elevation": {
+        "$value": "{dropShadow.400}",
+        "$type": "shadow"
+      }
     },
     "backdrop": {
-      "background": { "value": "{color.background.alpha.overlay-dark}", "type": "color" },
-      "blur": { "value": "1.5px", "type": "dimension" }
+      "background": {
+        "$value": "{color.background.alpha.overlay-dark}",
+        "$type": "color"
+      },
+      "blur": {
+        "$value": "1.5px",
+        "$type": "dimension"
+      }
     },
     "header": {
-      "paddingInline": { "value": "{spacing.20}", "type": "dimension" },
-      "paddingBlock": { "value": "{spacing.20}", "type": "dimension" },
-      "gap": { "value": "{spacing.12}", "type": "dimension" },
-      "borderColor": { "value": "{color.border.base.tertiary}", "type": "color" },
-      "minHeight": { "value": "36px", "type": "dimension" }
+      "paddingInline": {
+        "$value": "{spacing.20}",
+        "$type": "dimension"
+      },
+      "paddingBlock": {
+        "$value": "{spacing.20}",
+        "$type": "dimension"
+      },
+      "gap": {
+        "$value": "{spacing.12}",
+        "$type": "dimension"
+      },
+      "borderColor": {
+        "$value": "{color.border.base.tertiary}",
+        "$type": "color"
+      },
+      "minHeight": {
+        "$value": "36px",
+        "$type": "dimension"
+      }
     },
     "body": {
-      "paddingInline": { "value": "{spacing.20}", "type": "dimension" },
-      "paddingBlock": { "value": "{spacing.20}", "type": "dimension" }
+      "paddingInline": {
+        "$value": "{spacing.20}",
+        "$type": "dimension"
+      },
+      "paddingBlock": {
+        "$value": "{spacing.20}",
+        "$type": "dimension"
+      }
     },
     "footer": {
-      "paddingInline": { "value": "{spacing.20}", "type": "dimension" },
-      "paddingBlock": { "value": "{spacing.16}", "type": "dimension" },
-      "gap": { "value": "{spacing.12}", "type": "dimension" },
-      "borderColor": { "value": "{color.border.base.tertiary}", "type": "color" }
+      "paddingInline": {
+        "$value": "{spacing.20}",
+        "$type": "dimension"
+      },
+      "paddingBlock": {
+        "$value": "{spacing.16}",
+        "$type": "dimension"
+      },
+      "gap": {
+        "$value": "{spacing.12}",
+        "$type": "dimension"
+      },
+      "borderColor": {
+        "$value": "{color.border.base.tertiary}",
+        "$type": "color"
+      }
     },
     "width": {
-      "sm": { "value": "33.333%", "type": "string" },
-      "md": { "value": "50%", "type": "string" },
-      "lg": { "value": "100%", "type": "string" }
+      "sm": {
+        "$value": "33.333%",
+        "$type": "string"
+      },
+      "md": {
+        "$value": "50%",
+        "$type": "string"
+      },
+      "lg": {
+        "$value": "100%",
+        "$type": "string"
+      }
     },
     "center": {
-      "maxHeight": { "value": "90dvh", "type": "string" },
+      "maxHeight": {
+        "$value": "90dvh",
+        "$type": "string"
+      },
       "maxWidth": {
-        "sm": { "value": "33.333%", "type": "string" },
-        "md": { "value": "50%", "type": "string" },
-        "lg": { "value": "100%", "type": "string" }
+        "sm": {
+          "$value": "33.333%",
+          "$type": "string"
+        },
+        "md": {
+          "$value": "50%",
+          "$type": "string"
+        },
+        "lg": {
+          "$value": "100%",
+          "$type": "string"
+        }
       }
     },
     "viewport": {
-      "padding": { "value": "{spacing.16}", "type": "dimension" }
+      "padding": {
+        "$value": "{spacing.16}",
+        "$type": "dimension"
+      }
     }
   }
 }

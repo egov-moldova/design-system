@@ -1,33 +1,45 @@
 {
   "scrollbar": {
     "track": {
-      "radius": { "value": "{borderRadius.4}", "type": "dimension" },
-      "size": { "value": "4px", "type": "dimension" },
+      "radius": {
+        "$value": "{borderRadius.4}",
+        "$type": "dimension"
+      },
+      "size": {
+        "$value": "4px",
+        "$type": "dimension"
+      },
       "background": {
         "neutral": {
-          "value": "{color.background.alpha.overlay-light}",
-          "type": "color"
+          "$value": "{color.background.alpha.overlay-light}",
+          "$type": "color"
         },
         "primary": {
-          "value": "{color.background.alpha.overlay-light}",
-          "type": "color"
+          "$value": "{color.background.alpha.overlay-light}",
+          "$type": "color"
         }
       }
     },
     "thumb": {
-      "radius": { "value": "{borderRadius.4}", "type": "dimension" },
-      "size": { "value": "4px", "type": "dimension" },
+      "radius": {
+        "$value": "{borderRadius.4}",
+        "$type": "dimension"
+      },
+      "size": {
+        "$value": "4px",
+        "$type": "dimension"
+      },
       "background": {
         "neutral": {
           "default": {
-            "value": "{color.background.base.tertiary}",
-            "type": "color"
+            "$value": "{color.background.base.tertiary}",
+            "$type": "color"
           }
         },
         "primary": {
           "default": {
-            "value": "{color.background.brand.default-hover}",
-            "type": "color"
+            "$value": "{color.background.brand.default-hover}",
+            "$type": "color"
           }
         }
       }

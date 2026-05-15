@@ -2,30 +2,78 @@
   "screen": {
     "width": {
       "fixed": {
-        "desktop": { "value": "1440px" },
-        "laptop": { "value": "1280px" },
-        "tablet": { "value": "768px" },
-        "mobile": { "value": "360px" }
+        "desktop": {
+          "$value": "1440px",
+          "$type": "dimension"
+        },
+        "laptop": {
+          "$value": "1280px",
+          "$type": "dimension"
+        },
+        "tablet": {
+          "$value": "768px",
+          "$type": "dimension"
+        },
+        "mobile": {
+          "$value": "360px",
+          "$type": "dimension"
+        }
       },
       "min-fluid": {
-        "desktop": { "value": "1440px" },
-        "laptop": { "value": "1024px" },
-        "tablet": { "value": "480px" },
-        "mobile": { "value": "320px" }
+        "desktop": {
+          "$value": "1440px",
+          "$type": "dimension"
+        },
+        "laptop": {
+          "$value": "1024px",
+          "$type": "dimension"
+        },
+        "tablet": {
+          "$value": "480px",
+          "$type": "dimension"
+        },
+        "mobile": {
+          "$value": "320px",
+          "$type": "dimension"
+        }
       },
       "max-fluid": {
-        "desktop": { "value": "1920px" },
-        "laptop": { "value": "1440px" },
-        "tablet": { "value": "1024px" },
-        "mobile": { "value": "480px" }
+        "desktop": {
+          "$value": "1920px",
+          "$type": "dimension"
+        },
+        "laptop": {
+          "$value": "1440px",
+          "$type": "dimension"
+        },
+        "tablet": {
+          "$value": "1024px",
+          "$type": "dimension"
+        },
+        "mobile": {
+          "$value": "480px",
+          "$type": "dimension"
+        }
       }
     },
     "height": {
       "fixed": {
-        "desktop": { "value": "1024px" },
-        "laptop": { "value": "832px" },
-        "tablet": { "value": "1024px" },
-        "mobile": { "value": "800px" }
+        "desktop": {
+          "$value": "1024px",
+          "$type": "dimension"
+        },
+        "laptop": {
+          "$value": "832px",
+          "$type": "dimension"
+        },
+        "tablet": {
+          "$value": "1024px",
+          "$type": "dimension"
+        },
+        "mobile": {
+          "$value": "800px",
+          "$type": "dimension"
+        }
       }
     }
   }

@@ -1,107 +1,272 @@
 {
   "upload-area": {
     "container": {
-      "borderRadius": { "value": "{borderRadius.8}", "type": "dimension" },
-      "gap": { "value": "{spacing.16}", "type": "dimension" },
-      "paddingInline": { "value": "{spacing.16}", "type": "dimension" },
-      "paddingInline-compact": { "value": "{spacing.16}", "type": "dimension" },
-      "paddingBlock": { "value": "{spacing.16}", "type": "dimension" },
-      "paddingBlock-compact": { "value": "{spacing.16}", "type": "dimension" }
+      "borderRadius": {
+        "$value": "{borderRadius.8}",
+        "$type": "dimension"
+      },
+      "gap": {
+        "$value": "{spacing.16}",
+        "$type": "dimension"
+      },
+      "paddingInline": {
+        "$value": "{spacing.16}",
+        "$type": "dimension"
+      },
+      "paddingInline-compact": {
+        "$value": "{spacing.16}",
+        "$type": "dimension"
+      },
+      "paddingBlock": {
+        "$value": "{spacing.16}",
+        "$type": "dimension"
+      },
+      "paddingBlock-compact": {
+        "$value": "{spacing.16}",
+        "$type": "dimension"
+      }
     },
     "border": {
-      "width": { "value": "1px", "type": "dimension" },
+      "width": {
+        "$value": "1px",
+        "$type": "dimension"
+      },
       "color": {
-        "default": { "value": "{color.border.brand.default}", "type": "color" },
-        "dragging": { "value": "{color.border.brand.default}", "type": "color" },
-        "uploading": { "value": "{color.border.brand.default}", "type": "color" }
+        "default": {
+          "$value": "{color.border.brand.default}",
+          "$type": "color"
+        },
+        "dragging": {
+          "$value": "{color.border.brand.default}",
+          "$type": "color"
+        },
+        "uploading": {
+          "$value": "{color.border.brand.default}",
+          "$type": "color"
+        }
       }
     },
     "background": {
-      "default": { "value": "{color.background.brand.secondary}", "type": "color" },
-      "dragging": { "value": "{color.background.brand.secondary}", "type": "color" },
-      "uploading": { "value": "{color.background.base.default}", "type": "color" }
+      "default": {
+        "$value": "{color.background.brand.secondary}",
+        "$type": "color"
+      },
+      "dragging": {
+        "$value": "{color.background.brand.secondary}",
+        "$type": "color"
+      },
+      "uploading": {
+        "$value": "{color.background.base.default}",
+        "$type": "color"
+      }
     },
     "icon-circle": {
-      "size": { "value": "56px", "type": "dimension" },
+      "size": {
+        "$value": "56px",
+        "$type": "dimension"
+      },
       "color": {
-        "default": { "value": "{color.border.brand.default}", "type": "color" },
-        "dragging": { "value": "{color.icon.brand.default}", "type": "color" }
+        "default": {
+          "$value": "{color.border.brand.default}",
+          "$type": "color"
+        },
+        "dragging": {
+          "$value": "{color.icon.brand.default}",
+          "$type": "color"
+        }
       },
       "background": {
-        "default": { "value": "transparent", "type": "color" },
-        "dragging": { "value": "{color.background.brand.secondary}", "type": "color" }
+        "default": {
+          "$value": "transparent",
+          "$type": "color"
+        },
+        "dragging": {
+          "$value": "{color.background.brand.secondary}",
+          "$type": "color"
+        }
       }
     },
     "text": {
       "primary": {
-        "color": { "value": "{color.text.base.default}", "type": "color" },
-        "fontSize": { "value": "{fontSize.14}", "type": "dimension" },
-        "lineHeight": { "value": "{lineHeight.20}", "type": "dimension" }
+        "color": {
+          "$value": "{color.text.base.default}",
+          "$type": "color"
+        },
+        "fontSize": {
+          "$value": "{fontSize.14}",
+          "$type": "dimension"
+        },
+        "lineHeight": {
+          "$value": "{lineHeight.20}",
+          "$type": "dimension"
+        }
       },
       "secondary": {
-        "color": { "value": "{color.text.base.secondary}", "type": "color" },
-        "fontSize": { "value": "{fontSize.12}", "type": "dimension" },
-        "lineHeight": { "value": "{lineHeight.16}", "type": "dimension" }
+        "color": {
+          "$value": "{color.text.base.secondary}",
+          "$type": "color"
+        },
+        "fontSize": {
+          "$value": "{fontSize.12}",
+          "$type": "dimension"
+        },
+        "lineHeight": {
+          "$value": "{lineHeight.16}",
+          "$type": "dimension"
+        }
       }
     },
     "file-list": {
-      "marginTop": { "value": "{spacing.16}", "type": "dimension" },
-      "gap": { "value": "{spacing.12}", "type": "dimension" }
+      "marginTop": {
+        "$value": "{spacing.16}",
+        "$type": "dimension"
+      },
+      "gap": {
+        "$value": "{spacing.12}",
+        "$type": "dimension"
+      }
     },
     "file-item": {
       "background": {
-        "default": { "value": "{color.background.base.default}", "type": "color" },
-        "hover": { "value": "{color.background.base.default}", "type": "color" }
+        "default": {
+          "$value": "{color.background.base.default}",
+          "$type": "color"
+        },
+        "hover": {
+          "$value": "{color.background.base.default}",
+          "$type": "color"
+        }
       },
       "border": {
-        "color": { "value": "{color.border.base.tertiary}", "type": "color" },
-        "radius": { "value": "6px", "type": "dimension" }
+        "color": {
+          "$value": "{color.border.base.tertiary}",
+          "$type": "color"
+        },
+        "radius": {
+          "$value": "6px",
+          "$type": "dimension"
+        }
       },
-      "padding": { "value": "{spacing.12}", "type": "dimension" },
-      "gap": { "value": "{spacing.12}", "type": "dimension" },
+      "padding": {
+        "$value": "{spacing.12}",
+        "$type": "dimension"
+      },
+      "gap": {
+        "$value": "{spacing.12}",
+        "$type": "dimension"
+      },
       "icon-area": {
-        "size": { "value": "20px", "type": "dimension" }
+        "size": {
+          "$value": "20px",
+          "$type": "dimension"
+        }
       },
       "card-icon": {
-        "background": { "value": "{color.background.alpha.overlay-light}", "type": "color" },
-        "size": { "value": "32px", "type": "dimension" },
-        "radius": { "value": "{borderRadius.4}", "type": "dimension" }
+        "background": {
+          "$value": "{color.background.alpha.overlay-light}",
+          "$type": "color"
+        },
+        "size": {
+          "$value": "32px",
+          "$type": "dimension"
+        },
+        "radius": {
+          "$value": "{borderRadius.4}",
+          "$type": "dimension"
+        }
       },
       "content": {
-        "gap": { "value": "{spacing.12}", "type": "dimension" }
+        "gap": {
+          "$value": "{spacing.12}",
+          "$type": "dimension"
+        }
       },
       "filename-row": {
-        "gap": { "value": "{spacing.12}", "type": "dimension" }
+        "gap": {
+          "$value": "{spacing.12}",
+          "$type": "dimension"
+        }
       },
       "filename": {
-        "fontSize": { "value": "{fontSize.14}", "type": "dimension" },
-        "lineHeight": { "value": "{lineHeight.20}", "type": "dimension" },
-        "color": { "value": "{color.text.base.default}", "type": "color" }
+        "fontSize": {
+          "$value": "{fontSize.14}",
+          "$type": "dimension"
+        },
+        "lineHeight": {
+          "$value": "{lineHeight.20}",
+          "$type": "dimension"
+        },
+        "color": {
+          "$value": "{color.text.base.default}",
+          "$type": "color"
+        }
       },
       "percentage": {
-        "fontSize": { "value": "{fontSize.12}", "type": "dimension" },
-        "lineHeight": { "value": "{lineHeight.16}", "type": "dimension" },
-        "color": { "value": "{color.text.base.secondary}", "type": "color" }
+        "fontSize": {
+          "$value": "{fontSize.12}",
+          "$type": "dimension"
+        },
+        "lineHeight": {
+          "$value": "{lineHeight.16}",
+          "$type": "dimension"
+        },
+        "color": {
+          "$value": "{color.text.base.secondary}",
+          "$type": "color"
+        }
       },
       "error-message": {
-        "fontSize": { "value": "{fontSize.12}", "type": "dimension" },
-        "lineHeight": { "value": "1.4", "type": "dimension" },
-        "color": { "value": "{color.text.danger.default}", "type": "color" },
-        "gap": { "value": "{spacing.12}", "type": "dimension" }
+        "fontSize": {
+          "$value": "{fontSize.12}",
+          "$type": "dimension"
+        },
+        "lineHeight": {
+          "$value": "1.4",
+          "$type": "dimension"
+        },
+        "color": {
+          "$value": "{color.text.danger.default}",
+          "$type": "color"
+        },
+        "gap": {
+          "$value": "{spacing.12}",
+          "$type": "dimension"
+        }
       },
       "remove-button": {
-        "padding": { "value": "{spacing.12}", "type": "dimension" },
-        "borderRadius": { "value": "{borderRadius.4}", "type": "dimension" },
+        "padding": {
+          "$value": "{spacing.12}",
+          "$type": "dimension"
+        },
+        "borderRadius": {
+          "$value": "{borderRadius.4}",
+          "$type": "dimension"
+        },
         "color": {
-          "default": { "value": "{color.icon.base.secondary}", "type": "color" },
-          "hover": { "value": "{color.icon.base.default}", "type": "color" }
+          "default": {
+            "$value": "{color.icon.base.secondary}",
+            "$type": "color"
+          },
+          "hover": {
+            "$value": "{color.icon.base.default}",
+            "$type": "color"
+          }
         },
         "focus": {
-          "outlineWidth": { "value": "2px", "type": "dimension" },
-          "outlineOffset": { "value": "1px", "type": "dimension" }
+          "outlineWidth": {
+            "$value": "2px",
+            "$type": "dimension"
+          },
+          "outlineOffset": {
+            "$value": "1px",
+            "$type": "dimension"
+          }
         },
         "card": {
-          "position": { "value": "{spacing.12}", "type": "dimension" }
+          "position": {
+            "$value": "{spacing.12}",
+            "$type": "dimension"
+          }
         }
       }
     }

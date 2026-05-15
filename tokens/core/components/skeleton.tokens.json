@@ -1,24 +1,20 @@
 {
   "skeleton": {
     "width": {
-      "value": "100%",
-      "type": "other",
-      "description": "Default width for skeleton loader"
+      "$value": "100%",
+      "$type": "other"
     },
     "height": {
-      "value": "{spacing.20}",
-      "type": "dimension",
-      "description": "Default height for skeleton loader"
+      "$value": "{spacing.20}",
+      "$type": "dimension"
     },
     "borderRadius": {
-      "value": "{borderRadius.8}",
-      "type": "dimension",
-      "description": "Default border radius for skeleton loader"
+      "$value": "{borderRadius.8}",
+      "$type": "dimension"
     },
     "backgroundColor": {
-      "value": "{color.background.disabled.default}",
-      "type": "color",
-      "description": "Background color for skeleton loader"
+      "$value": "{color.background.disabled.default}",
+      "$type": "color"
     }
   }
 }

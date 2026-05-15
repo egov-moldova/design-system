@@ -1,222 +1,132 @@
 {
   "spacing": {
     "0": {
-      "value": 0,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "0px",
+      "$type": "dimension"
     },
     "2": {
-      "value": 2,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "2px",
+      "$type": "dimension"
     },
     "4": {
-      "value": 4,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "4px",
+      "$type": "dimension"
     },
     "6": {
-      "value": 6,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "6px",
+      "$type": "dimension"
     },
     "8": {
-      "value": 8,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "8px",
+      "$type": "dimension"
     },
     "12": {
-      "value": 12,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "12px",
+      "$type": "dimension"
     },
     "16": {
-      "value": 16,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "16px",
+      "$type": "dimension"
     },
     "20": {
-      "value": 20,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "20px",
+      "$type": "dimension"
     },
     "24": {
-      "value": 24,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "24px",
+      "$type": "dimension"
     },
     "32": {
-      "value": 32,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "32px",
+      "$type": "dimension"
     },
     "40": {
-      "value": 40,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "40px",
+      "$type": "dimension"
     },
     "48": {
-      "value": 48,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "48px",
+      "$type": "dimension"
     },
     "56": {
-      "value": 56,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "56px",
+      "$type": "dimension"
     },
     "64": {
-      "value": 64,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "64px",
+      "$type": "dimension"
     },
     "80": {
-      "value": 80,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "80px",
+      "$type": "dimension"
     },
     "96": {
-      "value": 96,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "96px",
+      "$type": "dimension"
     },
     "120": {
-      "value": 120,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "120px",
+      "$type": "dimension"
     }
   },
   "borderRadius": {
     "0": {
-      "value": 0,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "0px",
+      "$type": "dimension"
     },
     "4": {
-      "value": 4,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "4px",
+      "$type": "dimension"
     },
     "6": {
-      "value": 6,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "6px",
+      "$type": "dimension"
     },
     "8": {
-      "value": 8,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "8px",
+      "$type": "dimension"
     },
     "12": {
-      "value": 12,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "12px",
+      "$type": "dimension"
     },
     "16": {
-      "value": 16,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "16px",
+      "$type": "dimension"
     },
     "24": {
-      "value": 24,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "24px",
+      "$type": "dimension"
     },
     "32": {
-      "value": 32,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "32px",
+      "$type": "dimension"
     },
     "full": {
-      "value": "9999px",
-      "type": "dimension"
+      "$value": "9999px",
+      "$type": "dimension"
     }
   },
   "borderWidth": {
     "1": {
-      "value": 1,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "1px",
+      "$type": "dimension"
     },
     "2": {
-      "value": 2,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "2px",
+      "$type": "dimension"
     },
     "3": {
-      "value": 3,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "3px",
+      "$type": "dimension"
     },
     "1-5": {
-      "value": 1.5,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "1.5px",
+      "$type": "dimension"
     },
     "0-5": {
-      "value": 0.5,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "0.5px",
+      "$type": "dimension"
     }
   }
 }

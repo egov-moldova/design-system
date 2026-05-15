@@ -37,7 +37,8 @@ const PROJECT_ROOT = path.resolve(SCRIPT_DIR, '..');
 
 const DEFAULT_OUTPUT_BASE = 'tokens/figma-export';
 const DEFAULT_INPUT_FILE = 'tokens-tokenhaus.json';
-const REPORT_VERSION = 2;
+const REPORT_VERSION = 3;
+const OUTPUT_FORMAT = 'dtcg';
 
 const EXIT_CODES = {
   success: 0,
@@ -173,10 +174,13 @@ const sanitizeKey = key =>
     .replace(/\s*-\s*/g, '-')
     .replace(/\s+/g, '-');
 
-const token = (value, type, attributes) => {
-  const out = { value, type };
-  if (attributes) out.attributes = attributes;
-  return out;
+const token = (value, type) => {
+  // DTCG-native emission: numeric dimensions become string with `px` suffix so
+  // Style Dictionary v4 (usesDtcg: true) doesn't need the `size/px` transform.
+  if (type === 'dimension' && typeof value === 'number') {
+    return { $value: `${value}px`, $type: type };
+  }
+  return { $value: value, $type: type };
 };
 
 function stripFigmaPrefix(key) {
@@ -548,8 +552,6 @@ function extractTypography(data, ctx) {
   const src = data[SECTION_TYPOGRAPHY];
   if (!src) throw new Error(`Missing "${SECTION_TYPOGRAPHY}" in export`);
 
-  const sizeAttributes = { category: 'size' };
-
   const fontFamily = {};
   for (const [key, leaf] of Object.entries(src['font-family'] ?? {})) {
     const raw = readLeafScalar(leaf, ctx, `${SECTION_TYPOGRAPHY}.font-family.${key}`);
@@ -562,7 +564,7 @@ function extractTypography(data, ctx) {
   for (const [key, leaf] of Object.entries(src['font-size'] ?? {})) {
     const raw = readLeafScalar(leaf, ctx, `${SECTION_TYPOGRAPHY}.font-size.${key}`);
     if (raw === undefined) continue;
-    fontSize[stripFigmaPrefix(key)] = token(raw, 'dimension', sizeAttributes);
+    fontSize[stripFigmaPrefix(key)] = token(raw, 'dimension');
   }
 
   const fontWeight = {};
@@ -576,7 +578,7 @@ function extractTypography(data, ctx) {
   for (const [key, leaf] of Object.entries(src['line-height'] ?? {})) {
     const raw = readLeafScalar(leaf, ctx, `${SECTION_TYPOGRAPHY}.line-height.${key}`);
     if (raw === undefined) continue;
-    lineHeight[stripFigmaPrefix(key)] = token(raw, 'dimension', sizeAttributes);
+    lineHeight[stripFigmaPrefix(key)] = token(raw, 'dimension');
   }
 
   // letterSpacing is not in the Tokenhaus export. Kept as an empty placeholder so consumers
@@ -590,8 +592,6 @@ function extractSizes(data, ctx) {
   const src = data[SECTION_SIZES];
   if (!src) throw new Error(`Missing "${SECTION_SIZES}" in export`);
 
-  const sizeAttributes = { category: 'size' };
-
   const spacing = {};
   for (const [key, leaf] of Object.entries(src.spacings ?? {})) {
     const raw = readLeafScalar(leaf, ctx, `${SECTION_SIZES}.spacings.${key}`);
@@ -599,7 +599,7 @@ function extractSizes(data, ctx) {
     if (raw === undefined) {
       // spacing-0 ships as $value:"" in Figma — emit 0 explicitly so the scale stays complete.
       if (outKey === '0' || key === 'spacing-0') {
-        spacing[outKey] = token(0, 'dimension', sizeAttributes);
+        spacing[outKey] = token(0, 'dimension');
         recordFallback(ctx, {
           kind: 'generated-zero',
           path: `${SECTION_SIZES}.spacings.${key}`,
@@ -609,7 +609,7 @@ function extractSizes(data, ctx) {
       }
       continue;
     }
-    spacing[outKey] = token(raw, 'dimension', sizeAttributes);
+    spacing[outKey] = token(raw, 'dimension');
   }
 
   const borderRadius = {};
@@ -622,7 +622,7 @@ function extractSizes(data, ctx) {
     }
     if (raw === undefined) {
       if (outKey === '0' || key === 'radius-0') {
-        borderRadius[outKey] = token(0, 'dimension', sizeAttributes);
+        borderRadius[outKey] = token(0, 'dimension');
         recordFallback(ctx, {
           kind: 'generated-zero',
           path: `${SECTION_SIZES}.border-radius.${key}`,
@@ -637,7 +637,7 @@ function extractSizes(data, ctx) {
       borderRadius[outKey] = token('9999px', 'dimension');
       continue;
     }
-    borderRadius[outKey] = token(raw, 'dimension', sizeAttributes);
+    borderRadius[outKey] = token(raw, 'dimension');
   }
 
   const borderWidth = {};
@@ -645,7 +645,7 @@ function extractSizes(data, ctx) {
     const raw = readLeafScalar(leaf, ctx, `${SECTION_SIZES}.border-width.${key}`);
     if (raw === undefined) continue;
     const outKey = sanitizeKey(stripFigmaPrefix(key));
-    borderWidth[outKey] = token(raw, 'dimension', sizeAttributes);
+    borderWidth[outKey] = token(raw, 'dimension');
   }
 
   // mobile/desktop scalars at the top of "3. Sizes" are Figma artifacts (no consumer in
@@ -721,6 +721,7 @@ function buildReport(ctx, metadata) {
     version: REPORT_VERSION,
     timestamp: new Date().toISOString(),
     schemaVersion: 'tokenhaus-2026',
+    outputFormat: OUTPUT_FORMAT,
     apply: metadata.options.apply,
     dryRun: metadata.options.dryRun,
     strict: metadata.options.strict,

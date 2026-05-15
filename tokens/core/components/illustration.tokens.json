@@ -2,9 +2,8 @@
   "illustration": {
     "size": {
       "default": {
-        "value": "160px",
-        "type": "dimension",
-        "attributes": { "category": "size" }
+        "$value": "160px",
+        "$type": "dimension"
       }
     }
   }

@@ -56,7 +56,7 @@ function resolveSourcePattern(pattern) {
 }
 
 function isTokenLeaf(obj) {
-  return obj && typeof obj === 'object' && 'value' in obj && 'type' in obj;
+  return obj && typeof obj === 'object' && '$value' in obj && '$type' in obj;
 }
 
 function getNodeByPath(rootObj, dotPath) {
@@ -84,7 +84,7 @@ function collectLeaves(obj, currentPath = [], filePath, out = []) {
       path: currentPath.join('.'),
       filePath,
       leaf: obj,
-      rawValue: obj.value,
+      rawValue: obj.$value,
     });
     return out;
   }
@@ -153,7 +153,7 @@ for (const t of allLeaves) {
       (isTokenLeaf(node) ||
         typeof node === 'string' ||
         typeof node === 'number' ||
-        (node && typeof node === 'object' && 'value' in node));
+        (node && typeof node === 'object' && '$value' in node));
 
     if (!ok) {
       missingCount++;

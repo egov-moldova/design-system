@@ -2,75 +2,75 @@
   "label": {
     "color": {
       "default": {
-        "value": "{color.text.base.secondary}",
-        "type": "color"
+        "$value": "{color.text.base.secondary}",
+        "$type": "color"
       },
       "hover": {
-        "value": "{color.text.base.default}",
-        "type": "color"
+        "$value": "{color.text.base.default}",
+        "$type": "color"
       },
       "active": {
-        "value": "{color.text.base.default}",
-        "type": "color"
+        "$value": "{color.text.base.default}",
+        "$type": "color"
       },
       "disabled": {
-        "value": "{color.text.base.tertiary}",
-        "type": "color"
+        "$value": "{color.text.base.tertiary}",
+        "$type": "color"
       },
       "error": {
-        "value": "{color.icon.danger.default}",
-        "type": "color"
+        "$value": "{color.icon.danger.default}",
+        "$type": "color"
       }
     },
     "fontSize": {
       "md": {
-        "value": "{fontSize.14}",
-        "type": "fontSize"
+        "$value": "{fontSize.14}",
+        "$type": "fontSize"
       },
       "sm": {
-        "value": "{fontSize.12}",
-        "type": "fontSize"
+        "$value": "{fontSize.12}",
+        "$type": "fontSize"
       }
     },
     "lineHeight": {
       "md": {
-        "value": "{lineHeight.20}",
-        "type": "lineHeight"
+        "$value": "{lineHeight.20}",
+        "$type": "lineHeight"
       },
       "sm": {
-        "value": "{lineHeight.16}",
-        "type": "lineHeight"
+        "$value": "{lineHeight.16}",
+        "$type": "lineHeight"
       }
     },
     "fontFamily": {
-      "value": "{fontFamily.primary}",
-      "type": "fontFamily"
+      "$value": "{fontFamily.primary}",
+      "$type": "fontFamily"
     },
     "fontWeight": {
-      "value": "{fontWeight.regular}",
-      "type": "fontWeight"
+      "$value": "{fontWeight.regular}",
+      "$type": "fontWeight"
     },
     "gap": {
-      "value": "{spacing.0}",
-      "type": "dimension"
+      "$value": "{spacing.0}",
+      "$type": "dimension"
     },
     "helper": {
       "color": {
-        "value": "{color.text.base.tertiary}",
-        "type": "color"
+        "$value": "{color.text.base.tertiary}",
+        "$type": "color"
       },
       "fontSize": {
-        "value": "{fontSize.12}",
-        "type": "fontSize"
+        "$value": "{fontSize.12}",
+        "$type": "fontSize"
       },
       "lineHeight": {
-        "value": "{lineHeight.16}",
-        "type": "lineHeight"
+        "$value": "{lineHeight.16}",
+        "$type": "lineHeight"
       },
       "icon": {
         "size": {
-          "value": "16px",
-          "type": "dimension"
+          "$value": "16px",
+          "$type": "dimension"
         }
       }
     }

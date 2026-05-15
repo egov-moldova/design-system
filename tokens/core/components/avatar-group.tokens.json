@@ -2,8 +2,8 @@
   "avatar-group": {
     "container": {
       "gap": {
-        "value": "{spacing.12}",
-        "type": "dimension"
+        "$value": "{spacing.12}",
+        "$type": "dimension"
       }
     }
   }

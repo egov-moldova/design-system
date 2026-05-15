@@ -1,363 +1,363 @@
 {
   "input": {
     "gap": {
-      "value": "{spacing.12}",
-      "type": "dimension"
+      "$value": "{spacing.12}",
+      "$type": "dimension"
     },
     "container": {
       "gap": {
-        "value": "{spacing.12}",
-        "type": "dimension"
+        "$value": "{spacing.12}",
+        "$type": "dimension"
       },
       "height": {
         "lg": {
-          "value": "{spacing.48}",
-          "type": "dimension"
+          "$value": "{spacing.48}",
+          "$type": "dimension"
         },
         "md": {
-          "value": "{spacing.32}",
-          "type": "dimension"
+          "$value": "{spacing.32}",
+          "$type": "dimension"
         },
         "sm": {
-          "value": "{spacing.32}",
-          "type": "dimension"
+          "$value": "{spacing.32}",
+          "$type": "dimension"
         }
       },
       "borderRadius": {
         "lg": {
-          "value": "{borderRadius.8}",
-          "type": "dimension"
+          "$value": "{borderRadius.8}",
+          "$type": "dimension"
         },
         "md": {
-          "value": "{borderRadius.8}",
-          "type": "dimension"
+          "$value": "{borderRadius.8}",
+          "$type": "dimension"
         },
         "sm": {
-          "value": "{borderRadius.8}",
-          "type": "dimension"
+          "$value": "{borderRadius.8}",
+          "$type": "dimension"
         }
       },
       "borderWidth": {
-        "value": "{spacing.2}",
-        "type": "dimension"
+        "$value": "{spacing.2}",
+        "$type": "dimension"
       },
       "borderColor": {
         "default": {
-          "value": "{color.border.base.tertiary}",
-          "type": "color"
+          "$value": "{color.border.base.tertiary}",
+          "$type": "color"
         },
         "disabled": {
-          "value": "{color.border.base.tertiary}",
-          "type": "color"
+          "$value": "{color.border.base.tertiary}",
+          "$type": "color"
         },
         "focus": {
-          "value": "{color.border.brand.default}",
-          "type": "color"
+          "$value": "{color.border.brand.default}",
+          "$type": "color"
         },
         "hover": {
-          "value": "{color.border.base.secondary}",
-          "type": "color"
+          "$value": "{color.border.base.secondary}",
+          "$type": "color"
         },
         "invalid": {
-          "value": "{color.icon.danger.default}",
-          "type": "color"
+          "$value": "{color.icon.danger.default}",
+          "$type": "color"
         }
       },
       "backgroundColor": {
         "default": {
-          "value": "{color.background.base.default}",
-          "type": "color"
+          "$value": "{color.background.base.default}",
+          "$type": "color"
         },
         "disabled": {
-          "value": "{color.background.base.default}",
-          "type": "color"
+          "$value": "{color.background.base.default}",
+          "$type": "color"
         },
         "hover": {
-          "value": "{color.background.alpha.overlay-light}",
-          "type": "color"
+          "$value": "{color.background.alpha.overlay-light}",
+          "$type": "color"
         },
         "invalid": {
-          "value": "{color.background.base.default}",
-          "type": "color"
+          "$value": "{color.background.base.default}",
+          "$type": "color"
         }
       },
       "paddingInline": {
         "lg": {
-          "value": "{spacing.16}",
-          "type": "dimension"
+          "$value": "{spacing.16}",
+          "$type": "dimension"
         },
         "md": {
-          "value": "{spacing.12}",
-          "type": "dimension"
+          "$value": "{spacing.12}",
+          "$type": "dimension"
         },
         "sm": {
-          "value": "{spacing.12}",
-          "type": "dimension"
+          "$value": "{spacing.12}",
+          "$type": "dimension"
         }
       },
       "paddingBlock": {
         "lg": {
-          "value": "{spacing.0}",
-          "type": "dimension"
+          "$value": "{spacing.0}",
+          "$type": "dimension"
         },
         "md": {
-          "value": "{spacing.0}",
-          "type": "dimension"
+          "$value": "{spacing.0}",
+          "$type": "dimension"
         },
         "sm": {
-          "value": "{spacing.0}",
-          "type": "dimension"
+          "$value": "{spacing.0}",
+          "$type": "dimension"
         }
       },
       "content": {
         "paddingInline": {
-          "value": "{spacing.12}",
-          "type": "dimension"
+          "$value": "{spacing.12}",
+          "$type": "dimension"
         },
         "paddingBlock": {
-          "value": "{spacing.0}",
-          "type": "dimension"
+          "$value": "{spacing.0}",
+          "$type": "dimension"
         },
         "gap": {
-          "value": "{spacing.12}",
-          "type": "dimension"
+          "$value": "{spacing.12}",
+          "$type": "dimension"
         }
       },
       "padding-icon-left": {
-        "value": "{spacing.32}",
-        "type": "dimension"
+        "$value": "{spacing.32}",
+        "$type": "dimension"
       },
       "padding-number": {
-        "value": "{spacing.12}",
-        "type": "dimension"
+        "$value": "{spacing.12}",
+        "$type": "dimension"
       },
       "fontSize": {
         "lg": {
-          "value": "{fontSize.14}",
-          "type": "fontSize"
+          "$value": "{fontSize.14}",
+          "$type": "fontSize"
         },
         "md": {
-          "value": "{fontSize.14}",
-          "type": "fontSize"
+          "$value": "{fontSize.14}",
+          "$type": "fontSize"
         },
         "sm": {
-          "value": "{fontSize.12}",
-          "type": "fontSize"
+          "$value": "{fontSize.12}",
+          "$type": "fontSize"
         }
       },
       "lineHeight": {
         "lg": {
-          "value": "{lineHeight.20}",
-          "type": "lineHeight"
+          "$value": "{lineHeight.20}",
+          "$type": "lineHeight"
         },
         "md": {
-          "value": "{lineHeight.20}",
-          "type": "lineHeight"
+          "$value": "{lineHeight.20}",
+          "$type": "lineHeight"
         },
         "sm": {
-          "value": "{lineHeight.16}",
-          "type": "lineHeight"
+          "$value": "{lineHeight.16}",
+          "$type": "lineHeight"
         }
       },
       "fontFamily": {
-        "value": "{fontFamily.primary}",
-        "type": "fontFamily"
+        "$value": "{fontFamily.primary}",
+        "$type": "fontFamily"
       },
       "fontWeight": {
-        "value": "{fontWeight.regular}",
-        "type": "fontWeight"
+        "$value": "{fontWeight.regular}",
+        "$type": "fontWeight"
       },
       "color": {
         "default": {
-          "value": "{color.text.base.default}",
-          "type": "color"
+          "$value": "{color.text.base.default}",
+          "$type": "color"
         },
         "placeholder": {
-          "value": "{color.text.base.tertiary}",
-          "type": "color"
+          "$value": "{color.text.base.tertiary}",
+          "$type": "color"
         },
         "disabled": {
-          "value": "{color.text.base.tertiary}",
-          "type": "color"
+          "$value": "{color.text.base.tertiary}",
+          "$type": "color"
         }
       },
       "outlineColor": {
         "focus": {
-          "value": "{color.border.brand.default}",
-          "type": "color"
+          "$value": "{color.border.brand.default}",
+          "$type": "color"
         }
       },
       "outlineWidth": {
         "focus": {
-          "value": "{borderWidth.2}",
-          "type": "dimension"
+          "$value": "{borderWidth.2}",
+          "$type": "dimension"
         }
       },
       "outlineOffset": {
         "focus": {
-          "value": "2px",
-          "type": "dimension"
+          "$value": "2px",
+          "$type": "dimension"
         }
       }
     },
     "label": {
       "color": {
         "default": {
-          "value": "{color.text.base.tertiary}",
-          "type": "color"
+          "$value": "{color.text.base.tertiary}",
+          "$type": "color"
         },
         "disabled": {
-          "value": "{color.text.base.tertiary}",
-          "type": "color"
+          "$value": "{color.text.base.tertiary}",
+          "$type": "color"
         }
       },
       "fontFamily": {
-        "value": "{fontFamily.primary}",
-        "type": "fontFamily"
+        "$value": "{fontFamily.primary}",
+        "$type": "fontFamily"
       },
       "fontSize": {
         "lg": {
-          "value": "{fontSize.14}",
-          "type": "fontSize"
+          "$value": "{fontSize.14}",
+          "$type": "fontSize"
         },
         "md": {
-          "value": "{fontSize.14}",
-          "type": "fontSize"
+          "$value": "{fontSize.14}",
+          "$type": "fontSize"
         },
         "sm": {
-          "value": "{fontSize.12}",
-          "type": "fontSize"
+          "$value": "{fontSize.12}",
+          "$type": "fontSize"
         }
       },
       "lineHeight": {
         "lg": {
-          "value": "{lineHeight.20}",
-          "type": "lineHeight"
+          "$value": "{lineHeight.20}",
+          "$type": "lineHeight"
         },
         "md": {
-          "value": "{lineHeight.20}",
-          "type": "lineHeight"
+          "$value": "{lineHeight.20}",
+          "$type": "lineHeight"
         },
         "sm": {
-          "value": "{lineHeight.16}",
-          "type": "lineHeight"
+          "$value": "{lineHeight.16}",
+          "$type": "lineHeight"
         }
       },
       "fontWeight": {
-        "value": "{fontWeight.regular}",
-        "type": "fontWeight"
+        "$value": "{fontWeight.regular}",
+        "$type": "fontWeight"
       },
       "inside": {
         "fontSize": {
-          "value": "{fontSize.14}",
-          "type": "fontSize"
+          "$value": "{fontSize.14}",
+          "$type": "fontSize"
         },
         "paddingTop": {
-          "value": "18px",
-          "type": "dimension"
+          "$value": "18px",
+          "$type": "dimension"
         },
         "floated": {
           "fontSize": {
-            "value": "{fontSize.12}",
-            "type": "fontSize"
+            "$value": "{fontSize.12}",
+            "$type": "fontSize"
           },
           "transform": {
-            "value": "translateY(calc({spacing.20} * -1))",
-            "type": "string"
+            "$value": "translateY(calc({spacing.20} * -1))",
+            "$type": "string"
           }
         },
         "transition": {
-          "value": "transform 150ms ease, font-size 150ms ease",
-          "type": "string"
+          "$value": "transform 150ms ease, font-size 150ms ease",
+          "$type": "string"
         }
       },
       "required": {
         "color": {
-          "value": "{color.text.danger.default}",
-          "type": "color"
+          "$value": "{color.text.danger.default}",
+          "$type": "color"
         }
       }
     },
     "bottom-helper": {
       "paddingTop": {
-        "value": "{spacing.12}",
-        "type": "dimension"
+        "$value": "{spacing.12}",
+        "$type": "dimension"
       },
       "color": {
         "default": {
-          "value": "{color.text.base.tertiary}",
-          "type": "color"
+          "$value": "{color.text.base.tertiary}",
+          "$type": "color"
         },
         "disabled": {
-          "value": "{color.text.base.tertiary}",
-          "type": "color"
+          "$value": "{color.text.base.tertiary}",
+          "$type": "color"
         },
         "invalid": {
-          "value": "{color.text.danger.default}",
-          "type": "color"
+          "$value": "{color.text.danger.default}",
+          "$type": "color"
         }
       },
       "fontFamily": {
-        "value": "{fontFamily.primary}",
-        "type": "fontFamily"
+        "$value": "{fontFamily.primary}",
+        "$type": "fontFamily"
       },
       "fontSize": {
-        "value": "{fontSize.12}",
-        "type": "fontSize"
+        "$value": "{fontSize.12}",
+        "$type": "fontSize"
       },
       "lineHeight": {
-        "value": "{lineHeight.16}",
-        "type": "lineHeight"
+        "$value": "{lineHeight.16}",
+        "$type": "lineHeight"
       }
     },
     "icon": {
       "margin": {
-        "value": "{spacing.8}",
-        "type": "dimension"
+        "$value": "{spacing.8}",
+        "$type": "dimension"
       },
       "borderRadius": {
-        "value": "{borderRadius.4}",
-        "type": "dimension"
+        "$value": "{borderRadius.4}",
+        "$type": "dimension"
       },
       "size": {
-        "value": "{size.md}",
-        "type": "dimension"
+        "$value": "{size.md}",
+        "$type": "dimension"
       },
       "color": {
         "default": {
-          "value": "{color.icon.base.secondary}",
-          "type": "color"
+          "$value": "{color.icon.base.secondary}",
+          "$type": "color"
         },
         "hover": {
-          "value": "{color.icon.brand.on-secondary}",
-          "type": "color"
+          "$value": "{color.icon.brand.on-secondary}",
+          "$type": "color"
         },
         "focus": {
-          "value": "{color.icon.brand.default}",
-          "type": "color"
+          "$value": "{color.icon.brand.default}",
+          "$type": "color"
         },
         "disabled": {
-          "value": "{color.icon.base.tertiary}",
-          "type": "color"
+          "$value": "{color.icon.base.tertiary}",
+          "$type": "color"
         }
       }
     },
     "number": {
       "fontSize": {
-        "value": "{fontSize.12}",
-        "type": "fontSize"
+        "$value": "{fontSize.12}",
+        "$type": "fontSize"
       },
       "lineHeight": {
-        "value": "{lineHeight.12}",
-        "type": "lineHeight"
+        "$value": "{lineHeight.12}",
+        "$type": "lineHeight"
       },
       "borderRadius": {
-        "value": "{borderRadius.12}",
-        "type": "dimension"
+        "$value": "{borderRadius.12}",
+        "$type": "dimension"
       },
       "fontWeight": {
-        "value": "{fontWeight.regular}",
-        "type": "fontWeight"
+        "$value": "{fontWeight.regular}",
+        "$type": "fontWeight"
       }
     }
   }

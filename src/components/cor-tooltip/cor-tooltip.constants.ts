@@ -21,7 +21,7 @@ export const OPPOSITE_PLACEMENT: Record<string, TooltipPlacement> = {
   [TooltipPlacement.RIGHT_BOTTOM]: TooltipPlacement.LEFT_BOTTOM,
 };
 
-export const ARROW_SIZE = parsePixelToken(tooltipTokens.tooltip.arrow.size.value);
-export const ARROW_WIDTH = parsePixelToken(tooltipTokens.tooltip.arrow.width.value);
-export const TOOLTIP_BORDER_WIDTH = parsePixelToken(tooltipTokens.tooltip.borderWidth.value);
-export const ARROW_EDGE_MARGIN = parsePixelToken(tooltipTokens.tooltip.arrow.edge.margin.value);
+export const ARROW_SIZE = parsePixelToken(tooltipTokens.tooltip.arrow.size.$value);
+export const ARROW_WIDTH = parsePixelToken(tooltipTokens.tooltip.arrow.width.$value);
+export const TOOLTIP_BORDER_WIDTH = parsePixelToken(tooltipTokens.tooltip.borderWidth.$value);
+export const ARROW_EDGE_MARGIN = parsePixelToken(tooltipTokens.tooltip.arrow.edge.margin.$value);

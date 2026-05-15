@@ -1,50 +1,50 @@
 {
   "loading": {
     "size": {
-      "value": "{spacing.56}",
-      "type": "dimension"
+      "$value": "{spacing.56}",
+      "$type": "dimension"
     },
     "stroke": {
       "width": {
-        "value": "{spacing.2}",
-        "type": "dimension"
+        "$value": "{spacing.2}",
+        "$type": "dimension"
       }
     },
     "track": {
       "color": {
-        "value": "{color.background.alpha.overlay-dark}",
-        "type": "color"
+        "$value": "{color.background.alpha.overlay-dark}",
+        "$type": "color"
       }
     },
     "arc": {
       "color": {
-        "value": "{color.background.base-inverse.default}",
-        "type": "color"
+        "$value": "{color.background.base-inverse.default}",
+        "$type": "color"
       }
     },
     "final": {
       "background": {
         "color": {
-          "value": "{color.background.brand.default}",
-          "type": "color"
+          "$value": "{color.background.brand.default}",
+          "$type": "color"
         }
       },
       "border": {
         "color": {
-          "value": "{color.border.brand.default}",
-          "type": "color"
+          "$value": "{color.border.brand.default}",
+          "$type": "color"
         }
       },
       "icon": {
         "color": {
-          "value": "{color.icon.brand.default}",
-          "type": "color"
+          "$value": "{color.icon.brand.default}",
+          "$type": "color"
         }
       },
       "stroke": {
         "width": {
-          "value": "1px",
-          "type": "dimension"
+          "$value": "1px",
+          "$type": "dimension"
         }
       }
     }

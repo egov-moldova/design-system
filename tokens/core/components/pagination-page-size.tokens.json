@@ -1,19 +1,19 @@
 {
   "pagination-page-size": {
     "gap": {
-      "value": "{spacing.12}",
-      "type": "dimension"
+      "$value": "{spacing.12}",
+      "$type": "dimension"
     },
     "select": {
       "color": {
-        "value": "{color.text.base.tertiary}",
-        "type": "color"
+        "$value": "{color.text.base.tertiary}",
+        "$type": "color"
       }
     },
     "suffix": {
       "gap": {
-        "value": "{spacing.12}",
-        "type": "dimension"
+        "$value": "{spacing.12}",
+        "$type": "dimension"
       }
     }
   }

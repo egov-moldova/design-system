@@ -1,8 +1,9 @@
 {
+  "usesDtcg": true,
   "source": ["tokens/core/**/*.tokens.json", "tokens/core.dark/**/*.tokens.json"],
   "platforms": {
     "css": {
-      "transforms": ["attribute/cti", "name/kebab", "size/px", "color/hex"],
+      "transforms": ["attribute/cti", "name/kebab", "color/hex"],
       "buildPath": "tokens/generated/",
       "files": [
         {

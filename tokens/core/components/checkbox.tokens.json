@@ -3,87 +3,85 @@
     "square": {
       "size": {
         "md": {
-          "value": "15px",
-          "type": "dimension",
-          "description": "Square background size for md checkbox hover/pressed states"
+          "$value": "15px",
+          "$type": "dimension"
         },
         "sm": {
-          "value": "10px",
-          "type": "dimension",
-          "description": "Square background size for sm checkbox hover/pressed states"
+          "$value": "10px",
+          "$type": "dimension"
         }
       },
       "background": {
         "hover": {
-          "value": "{controls.background.hover}",
-          "type": "color"
+          "$value": "{controls.background.hover}",
+          "$type": "color"
         },
         "pressed": {
-          "value": "{controls.background.pressed}",
-          "type": "color"
+          "$value": "{controls.background.pressed}",
+          "$type": "color"
         }
       }
     },
     "indeterminate": {
       "background": {
         "default": {
-          "value": "{controls.selected.background.default}",
-          "type": "color"
+          "$value": "{controls.selected.background.default}",
+          "$type": "color"
         },
         "hover": {
-          "value": "{controls.selected.background.hover}",
-          "type": "color"
+          "$value": "{controls.selected.background.hover}",
+          "$type": "color"
         },
         "pressed": {
-          "value": "{controls.selected.background.pressed}",
-          "type": "color"
+          "$value": "{controls.selected.background.pressed}",
+          "$type": "color"
         },
         "disabled": {
-          "value": "{controls.selected.background.disabled}",
-          "type": "color"
+          "$value": "{controls.selected.background.disabled}",
+          "$type": "color"
         }
       },
       "color": {
         "default": {
-          "value": "{controls.selected.color.default}",
-          "type": "color"
+          "$value": "{controls.selected.color.default}",
+          "$type": "color"
         },
         "hover": {
-          "value": "{controls.selected.color.hover}",
-          "type": "color"
+          "$value": "{controls.selected.color.hover}",
+          "$type": "color"
         },
         "pressed": {
-          "value": "{controls.selected.color.pressed}",
-          "type": "color"
+          "$value": "{controls.selected.color.pressed}",
+          "$type": "color"
         },
         "disabled": {
-          "value": "{controls.selected.color.disabled}",
-          "type": "color"
+          "$value": "{controls.selected.color.disabled}",
+          "$type": "color"
         }
       },
       "mark": {
         "default": {
-          "value": "{color.text.base-inverse.on-color}",
-          "type": "color"
+          "$value": "{color.text.base-inverse.on-color}",
+          "$type": "color"
         },
         "disabled": {
-          "value": "{color.text.base.tertiary}",
-          "type": "color"
+          "$value": "{color.text.base.tertiary}",
+          "$type": "color"
         }
       },
       "invalid": {
         "background": {
-          "value": "{controls.selected.invalid.background}",
-          "type": "color"
+          "$value": "{controls.selected.invalid.background}",
+          "$type": "color"
         },
         "color": {
-          "value": "{controls.selected.invalid.color}",
-          "type": "color"
+          "$value": "{controls.selected.invalid.color}",
+          "$type": "color"
         },
         "hover": {
           "color": {
-            "value": "{controls.selected.invalid.hover.color}",
-            "type": "color"
+            "$value": "{controls.selected.invalid.hover.color}",
+            "$type": "color"
           }
         }
       }

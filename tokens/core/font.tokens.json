@@ -1,219 +1,138 @@
 {
   "fontFamily": {
     "primary": {
-      "value": "Onest",
-      "type": "fontFamily"
+      "$value": "Onest",
+      "$type": "fontFamily"
     }
   },
   "fontSize": {
     "10": {
-      "value": 10,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "10px",
+      "$type": "dimension"
     },
     "12": {
-      "value": 12,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "12px",
+      "$type": "dimension"
     },
     "14": {
-      "value": 14,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "14px",
+      "$type": "dimension"
     },
     "16": {
-      "value": 16,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "16px",
+      "$type": "dimension"
     },
     "18": {
-      "value": 18,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "18px",
+      "$type": "dimension"
     },
     "20": {
-      "value": 20,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "20px",
+      "$type": "dimension"
     },
     "22": {
-      "value": 22,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "22px",
+      "$type": "dimension"
     },
     "24": {
-      "value": 24,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "24px",
+      "$type": "dimension"
     },
     "28": {
-      "value": 28,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "28px",
+      "$type": "dimension"
     },
     "32": {
-      "value": 32,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "32px",
+      "$type": "dimension"
     },
     "40": {
-      "value": 40,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "40px",
+      "$type": "dimension"
     },
     "48": {
-      "value": 48,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "48px",
+      "$type": "dimension"
     },
     "56": {
-      "value": 56,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "56px",
+      "$type": "dimension"
     },
     "64": {
-      "value": 64,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "64px",
+      "$type": "dimension"
     }
   },
   "fontWeight": {
     "regular": {
-      "value": 400,
-      "type": "fontWeight"
+      "$value": 400,
+      "$type": "fontWeight"
     },
     "medium": {
-      "value": 500,
-      "type": "fontWeight"
+      "$value": 500,
+      "$type": "fontWeight"
     },
     "semibold": {
-      "value": 600,
-      "type": "fontWeight"
+      "$value": 600,
+      "$type": "fontWeight"
     },
     "bold": {
-      "value": 700,
-      "type": "fontWeight"
+      "$value": 700,
+      "$type": "fontWeight"
     }
   },
   "lineHeight": {
     "12": {
-      "value": 12,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "12px",
+      "$type": "dimension"
     },
     "16": {
-      "value": 16,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "16px",
+      "$type": "dimension"
     },
     "20": {
-      "value": 20,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "20px",
+      "$type": "dimension"
     },
     "24": {
-      "value": 24,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "24px",
+      "$type": "dimension"
     },
     "26": {
-      "value": 26,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "26px",
+      "$type": "dimension"
     },
     "28": {
-      "value": 28,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "28px",
+      "$type": "dimension"
     },
     "30": {
-      "value": 30,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "30px",
+      "$type": "dimension"
     },
     "32": {
-      "value": 32,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "32px",
+      "$type": "dimension"
     },
     "36": {
-      "value": 36,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "36px",
+      "$type": "dimension"
     },
     "40": {
-      "value": 40,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "40px",
+      "$type": "dimension"
     },
     "48": {
-      "value": 48,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "48px",
+      "$type": "dimension"
     },
     "56": {
-      "value": 56,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "56px",
+      "$type": "dimension"
     },
     "64": {
-      "value": 64,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
+      "$value": "64px",
+      "$type": "dimension"
     }
   },
   "letterSpacing": {}

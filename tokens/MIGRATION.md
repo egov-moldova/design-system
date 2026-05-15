@@ -345,3 +345,45 @@ For questions about the migration:
 1. Check `tokens/AGENTS.md` for detailed naming rules
 2. Review examples in this document
 3. Consult the refactoring plan at `C:\Users\Dan\.windsurf\plans\token-naming-refactor-1939bd.md`
+
+---
+
+## Phase 5 — DTCG Migration (W3C Design Tokens Format)
+
+**Status**: ✅ Complete
+
+All token files migrated from Style Dictionary legacy format (`value`/`type`) to the **W3C DTCG format** (`$value`/`$type`).
+
+### Changes
+
+- **JSON shape**: every leaf in `tokens/core/**/*.tokens.json` and `tokens/core.dark/**/*.tokens.json` now uses `$value` and `$type` keys.
+- **Dimensions as strings**: bare numeric dimensions (`12`) became strings with explicit unit (`"12px"`). Eliminates the destructive `size/px` transform that previously stripped non-`px` units (e.g. `0.1em` → `0.1px`).
+- **`attributes.category` dropped**: SD v4 derives CTI from the token path. The legacy `attributes: { category: 'size' }` field is no longer required.
+- **SD config**: `"usesDtcg": true` added at the root of all Style Dictionary configs (`tokens/core/`, `tokens/core.dark/`, plus their `*.prod.config.json` counterparts).
+- **`size/px` transform removed**: no longer needed since dimensions now ship with units.
+
+### Tooling
+
+- `scripts/convert-tokens-to-dtcg.mjs` — one-shot bulk converter (supports `--dry-run`, `--report`, `--root <dir>`)
+- `scripts/sync-tokens-from-tokenhaus.mjs` — now emits DTCG natively (no internal `value`/`type` → `$value`/`$type` conversion)
+- `scripts/debug-missing-token-references.mjs` — DTCG-aware (reads `$value`/`$type`)
+
+### Notable Side-Effects
+
+Phase 5 surfaced four pre-existing bugs where the legacy `size/px` transform was destructively rewriting authored units. The DTCG build is now correct:
+
+| Token | Pre-DTCG (wrong) | Post-DTCG (correct) |
+| ----- | ---------------- | ------------------- |
+| `--breadcrumbs-ellipsis-ellipsis-letter-spacing` | `0.1px` | `0.1em` |
+| `--chip-gap-sm` | `0px` | `0` |
+| `--textarea-label-inside-padding-top` | `0px` | `0` |
+| `--upload-area-file-item-error-message-line-height` | `1.4px` | `1.4` (unitless) |
+
+### Verification
+
+```bash
+yarn tokens.build && yarn tokens.lint.all && yarn tokens.audit && yarn tokens.audit.dark
+yarn test:scripts   # 29 tests pass with DTCG assertions
+diff tmp/pre-dtcg.core.tokens.css tokens/generated/core.tokens.css
+# Expected: only the 4 bugfix lines above
+```

@@ -24,6 +24,42 @@ Design tokens are the **single source of truth** for all visual properties. Neve
 
 ---
 
+## Token File Format (DTCG)
+
+All token JSON files use the **W3C Design Tokens Community Group (DTCG)** format with `$value` and `$type` keys. Style Dictionary v4.4+ is configured with `usesDtcg: true` in all platform configs.
+
+```json
+{
+  "color": {
+    "background": {
+      "base": {
+        "default": {
+          "$value": "{palette.white.1000}",
+          "$type": "color"
+        }
+      }
+    }
+  },
+  "spacing": {
+    "12": {
+      "$value": "12px",
+      "$type": "dimension"
+    }
+  }
+}
+```
+
+**Rules**:
+- Always `$value` and `$type` (DTCG-prefixed) — never legacy `value`/`type`
+- Dimensions are strings with explicit unit (`"12px"`, `"0px"`, `"9999px"`) — never bare numbers
+- References use `{path.to.token}` syntax pointing at another `$value`
+- `attributes.category` field is obsolete — SD v4 derives CTI from the token path
+- `fontWeight` values are numeric (`400`, `600`) — never strings
+
+For legacy → DTCG bulk migration, see `scripts/convert-tokens-to-dtcg.mjs`.
+
+---
+
 ## File Hierarchy (Quick Reference)
 
 ```text

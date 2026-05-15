@@ -2,77 +2,64 @@
   "breadcrumbs-ellipsis": {
     "color": {
       "default": {
-        "value": "{color.text.brand.on-secondary}",
-        "type": "color",
-        "description": "Ellipsis button text color in default state"
+        "$value": "{color.text.brand.on-secondary}",
+        "$type": "color"
       },
       "hover": {
-        "value": "{color.text.brand.on-secondary}",
-        "type": "color",
-        "description": "Ellipsis button text color on hover"
+        "$value": "{color.text.brand.on-secondary}",
+        "$type": "color"
       },
       "pressed": {
-        "value": "{color.text.brand.default}",
-        "type": "color",
-        "description": "Ellipsis button text color when pressed"
+        "$value": "{color.text.brand.default}",
+        "$type": "color"
       },
       "disabled": {
-        "value": "{color.text.base.tertiary}",
-        "type": "color",
-        "description": "Ellipsis button text color when disabled"
+        "$value": "{color.text.base.tertiary}",
+        "$type": "color"
       }
     },
     "outlineColor": {
       "focus": {
-        "value": "{color.border.brand.default}",
-        "type": "color",
-        "description": "Ellipsis button focus outline color"
+        "$value": "{color.border.brand.default}",
+        "$type": "color"
       }
     },
     "outlineWidth": {
-      "value": "{borderWidth.2}",
-      "type": "dimension",
-      "description": "Ellipsis button focus outline width"
+      "$value": "{borderWidth.2}",
+      "$type": "dimension"
     },
     "outlineOffset": {
-      "value": "{spacing.12}",
-      "type": "dimension",
-      "description": "Ellipsis button focus outline offset"
+      "$value": "{spacing.12}",
+      "$type": "dimension"
     },
     "background": {
       "focus": {
-        "value": "{color.background.base.default}",
-        "type": "color",
-        "description": "Ellipsis button background on focus"
+        "$value": "{color.background.base.default}",
+        "$type": "color"
       }
     },
     "borderRadius": {
-      "value": "{borderRadius.4}",
-      "type": "dimension",
-      "description": "Ellipsis button border radius"
+      "$value": "{borderRadius.4}",
+      "$type": "dimension"
     },
     "dropdown": {
       "background": {
-        "value": "{color.background.base.default}",
-        "type": "color",
-        "description": "Ellipsis dropdown background"
+        "$value": "{color.background.base.default}",
+        "$type": "color"
       },
       "borderRadius": {
-        "value": "{borderRadius.8}",
-        "type": "dimension",
-        "description": "Ellipsis dropdown border radius"
+        "$value": "{borderRadius.8}",
+        "$type": "dimension"
       },
       "minWidth": {
-        "value": "160px",
-        "type": "dimension",
-        "description": "Ellipsis dropdown minimum width"
+        "$value": "160px",
+        "$type": "dimension"
       }
     },
     "ellipsis": {
       "letterSpacing": {
-        "value": "0.1em",
-        "type": "dimension",
-        "description": "Ellipsis button letter spacing"
+        "$value": "0.1em",
+        "$type": "dimension"
       }
     }
   }

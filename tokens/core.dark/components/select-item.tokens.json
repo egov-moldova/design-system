@@ -3,24 +3,24 @@
     "icon": {
       "color": {
         "selected": {
-          "value": "{color.text.base-inverse.default}",
-          "type": "color"
+          "$value": "{color.text.base-inverse.default}",
+          "$type": "color"
         }
       }
     },
     "label": {
       "color": {
         "selected": {
-          "value": "{color.text.base-inverse.default}",
-          "type": "color"
+          "$value": "{color.text.base-inverse.default}",
+          "$type": "color"
         }
       }
     },
     "description": {
       "color": {
         "selected": {
-          "value": "{color.text.base-inverse.default}",
-          "type": "color"
+          "$value": "{color.text.base-inverse.default}",
+          "$type": "color"
         }
       }
     }

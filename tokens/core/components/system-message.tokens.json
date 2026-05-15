@@ -1,16 +1,37 @@
 {
   "system-message": {
     "container": {
-      "gap": { "value": "{spacing.12}", "type": "dimension" }
+      "gap": {
+        "$value": "{spacing.12}",
+        "$type": "dimension"
+      }
     },
     "text": {
-      "fontSize": { "value": "{fontSize.12}", "type": "dimension" },
-      "lineHeight": { "value": "{lineHeight.16}", "type": "dimension" },
+      "fontSize": {
+        "$value": "{fontSize.12}",
+        "$type": "dimension"
+      },
+      "lineHeight": {
+        "$value": "{lineHeight.16}",
+        "$type": "dimension"
+      },
       "color": {
-        "default": { "value": "{color.text.base.tertiary}", "type": "color" },
-        "alert": { "value": "{color.text.danger.default}", "type": "color" },
-        "info": { "value": "{color.text.brand.default}", "type": "color" },
-        "text": { "value": "{color.text.base.tertiary}", "type": "color" }
+        "default": {
+          "$value": "{color.text.base.tertiary}",
+          "$type": "color"
+        },
+        "alert": {
+          "$value": "{color.text.danger.default}",
+          "$type": "color"
+        },
+        "info": {
+          "$value": "{color.text.brand.default}",
+          "$type": "color"
+        },
+        "text": {
+          "$value": "{color.text.base.tertiary}",
+          "$type": "color"
+        }
       }
     }
   }

@@ -3,133 +3,112 @@
     "label": {
       "color": {
         "default": {
-          "value": "{color.text.brand.on-secondary}",
-          "type": "color",
-          "description": "Link text color in default state (#b92f25)"
+          "$value": "{color.text.brand.on-secondary}",
+          "$type": "color"
         },
         "hover": {
-          "value": "{color.text.brand.on-secondary}",
-          "type": "color",
-          "description": "Link text color on hover (#d7372c)"
+          "$value": "{color.text.brand.on-secondary}",
+          "$type": "color"
         },
         "active": {
-          "value": "{color.text.brand.default}",
-          "type": "color",
-          "description": "Link text color on active/pressed (#400f0d)"
+          "$value": "{color.text.brand.default}",
+          "$type": "color"
         },
         "disabled": {
-          "value": "{color.text.base.tertiary}",
-          "type": "color",
-          "description": "Link text color when disabled"
+          "$value": "{color.text.base.tertiary}",
+          "$type": "color"
         },
         "error": {
-          "value": "{color.text.danger.default}",
-          "type": "color",
-          "description": "Link text color in error state"
+          "$value": "{color.text.danger.default}",
+          "$type": "color"
         }
       },
       "gap": {
         "md": {
-          "value": "{spacing.12}",
-          "type": "size",
-          "description": "Gap between icon and text for md link"
+          "$value": "{spacing.12}",
+          "$type": "size"
         },
         "sm": {
-          "value": "{spacing.12}",
-          "type": "size",
-          "description": "Gap between icon and text for sm link"
+          "$value": "{spacing.12}",
+          "$type": "size"
         }
       },
       "borderRadius": {
         "md": {
-          "value": "{borderRadius.24}",
-          "type": "dimension",
-          "description": "Border radius for md link"
+          "$value": "{borderRadius.24}",
+          "$type": "dimension"
         },
         "sm": {
-          "value": "{borderRadius.24}",
-          "type": "dimension",
-          "description": "Border radius for sm link"
+          "$value": "{borderRadius.24}",
+          "$type": "dimension"
         }
       },
       "outlineColor": {
         "focus": {
-          "value": "{color.border.brand.default}",
-          "type": "color",
-          "description": "Focus ring color"
+          "$value": "{color.border.brand.default}",
+          "$type": "color"
         }
       },
       "outlineWidth": {
         "focus": {
-          "value": "{borderWidth.2}",
-          "type": "dimension",
-          "description": "Focus ring width"
+          "$value": "{borderWidth.2}",
+          "$type": "dimension"
         }
       },
       "outlineOffset": {
         "focus": {
-          "value": "{borderWidth.2}",
-          "type": "dimension",
-          "description": "Focus ring offset"
+          "$value": "{borderWidth.2}",
+          "$type": "dimension"
         }
       },
       "underline": {
         "color": {
-          "value": "currentColor",
-          "type": "color",
-          "description": "Underline color (inherits from text color)"
+          "$value": "currentColor",
+          "$type": "color"
         },
         "offset": {
-          "value": "{spacing.8}",
-          "type": "dimension",
-          "description": "Distance between text and underline"
+          "$value": "{spacing.8}",
+          "$type": "dimension"
         }
       }
     },
     "icon": {
       "size": {
         "md": {
-          "value": "{spacing.20}",
-          "type": "dimension",
-          "description": "Icon size for md link"
+          "$value": "{spacing.20}",
+          "$type": "dimension"
         },
         "sm": {
-          "value": "{spacing.16}",
-          "type": "dimension",
-          "description": "Icon size for sm link"
+          "$value": "{spacing.16}",
+          "$type": "dimension"
         }
       }
     },
     "skeleton": {
       "backgroundColor": {
         "default": {
-          "value": "{color.background.disabled.default}",
-          "type": "color",
-          "description": "Skeleton loader background color"
+          "$value": "{color.background.disabled.default}",
+          "$type": "color"
         }
       },
       "width": {
         "md": {
-          "value": "91px",
-          "type": "dimension",
-          "description": "Skeleton width for md link"
+          "$value": "91px",
+          "$type": "dimension"
         },
         "sm": {
-          "value": "72px",
-          "type": "dimension",
-          "description": "Skeleton width for sm link"
+          "$value": "72px",
+          "$type": "dimension"
         }
       },
       "height": {
         "md": {
-          "value": "{spacing.20}",
-          "type": "dimension",
-          "description": "Skeleton height for md link"
+          "$value": "{spacing.20}",
+          "$type": "dimension"
         },
         "sm": {
-          "value": "{spacing.16}",
-          "type": "dimension",
-          "description": "Skeleton height for sm link"
+          "$value": "{spacing.16}",
+          "$type": "dimension"
         }
       }
     }

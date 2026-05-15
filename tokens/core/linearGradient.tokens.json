@@ -1,32 +1,32 @@
 {
   "linearGradient": {
     "primary": {
-      "value": "linear-gradient(90deg, #494C83 2.2%, #7693F4 100%)",
-      "type": "string"
+      "$value": "linear-gradient(90deg, #494C83 2.2%, #7693F4 100%)",
+      "$type": "string"
     },
     "primary-colourful": {
-      "value": "linear-gradient(89.95deg, #FFCD78 0.05%, #B48AA4 36.99%, #735BCA 64.06%, #7FA3E8 99.97%)",
-      "type": "string"
+      "$value": "linear-gradient(89.95deg, #FFCD78 0.05%, #B48AA4 36.99%, #735BCA 64.06%, #7FA3E8 99.97%)",
+      "$type": "string"
     },
     "border": {
-      "value": "linear-gradient(to right, rgba(54, 57, 118, 1), rgba(86, 130, 250, 1))",
-      "type": "string"
+      "$value": "linear-gradient(to right, rgba(54, 57, 118, 1), rgba(86, 130, 250, 1))",
+      "$type": "string"
     },
     "border-timeline": {
-      "value": "linear-gradient(270deg, rgb(211, 212, 213) 50%, rgb(73, 76, 131) 100%)",
-      "type": "string"
+      "$value": "linear-gradient(270deg, rgb(211, 212, 213) 50%, rgb(73, 76, 131) 100%)",
+      "$type": "string"
     },
     "border-second": {
-      "value": "linear-gradient(90deg, #494C83 0, rgba(211, 212, 213, 0.5) 100%)",
-      "type": "string"
+      "$value": "linear-gradient(90deg, #494C83 0, rgba(211, 212, 213, 0.5) 100%)",
+      "$type": "string"
     },
     "mask": {
-      "value": "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
-      "type": "string"
+      "$value": "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
+      "$type": "string"
     },
     "border-circle": {
-      "value": "linear-gradient(135deg, #494C83 2.2%, #7693F4 100%)",
-      "type": "string"
+      "$value": "linear-gradient(135deg, #494C83 2.2%, #7693F4 100%)",
+      "$type": "string"
     }
   }
 }

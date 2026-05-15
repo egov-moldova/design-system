@@ -1,26 +1,26 @@
 {
   "pagination-go-to": {
     "gap": {
-      "value": "{spacing.12}",
-      "type": "dimension"
+      "$value": "{spacing.12}",
+      "$type": "dimension"
     },
     "input": {
       "color": {
-        "value": "{color.text.base.tertiary}",
-        "type": "color"
+        "$value": "{color.text.base.tertiary}",
+        "$type": "color"
       },
       "minWidth": {
         "lg": {
-          "value": "{spacing.48}",
-          "type": "dimension"
+          "$value": "{spacing.48}",
+          "$type": "dimension"
         },
         "md": {
-          "value": "{spacing.48}",
-          "type": "dimension"
+          "$value": "{spacing.48}",
+          "$type": "dimension"
         },
         "sm": {
-          "value": "{spacing.48}",
-          "type": "dimension"
+          "$value": "{spacing.48}",
+          "$type": "dimension"
         }
       }
     }
