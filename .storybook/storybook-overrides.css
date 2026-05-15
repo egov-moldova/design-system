@@ -1,33 +1,17 @@
 /* PERF: Self-hosted fonts — eliminates ~500-2000ms Google Fonts network request on startup.
    Font files are in assets/font/ (already in the repo). */
 @font-face {
-  font-family: 'Bebas Neue';
-  src: url('../assets/font/Bebas_Neue/BebasNeue-Regular.ttf') format('truetype');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Inter';
-  src: url('../assets/font/Inter/Inter-VariableFont_opsz,wght.ttf') format('truetype');
+  font-family: 'Onest';
+  src: url('../assets/font/Onest/Onest-VariableFont_wght.ttf') format('truetype');
   font-weight: 100 900;
   font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Inter';
-  src: url('../assets/font/Inter/Inter-Italic-VariableFont_opsz,wght.ttf') format('truetype');
-  font-weight: 100 900;
-  font-style: italic;
   font-display: swap;
 }
 
 html,
 body {
   font-family:
-    'Inter',
+    'Onest',
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',

@@ -142,8 +142,7 @@ age-design/
 │
 ├── assets/                        # Static assets
 │   ├── font/                      # Font files
-│   │   ├── Bebas_Neue/
-│   │   └── Inter/
+│   │   └── Onest/
 │   └── icons/                     # SVG icons
 │
 ├── stencil.config.ts              # Stencil build configuration
