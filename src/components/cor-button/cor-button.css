@@ -1,0 +1,510 @@
+/*
+------------------------------------------------------------------------------------------------------------------------
+Button CSS File
+------------------------------------------------------------------------------------------------------------------------
+*/
+
+:host {
+  display: inline-block;
+
+  ::slotted(*) {
+    border-style: solid;
+    border-width: var(--button-border-width, var(--spacing-px));
+    border-color: transparent;
+  }
+
+  ::slotted(button:disabled),
+  ::slotted(a[aria-disabled='true']),
+  ::slotted(input:disabled) {
+    cursor: not-allowed;
+  }
+
+  ::slotted(*:focus-visible:not(:disabled)) {
+    outline-width: var(--button-outline-width-focus);
+    outline-color: var(--button-outline-color-focus);
+    outline-offset: var(--button-outline-offset-focus);
+  }
+}
+
+::slotted(*) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  text-align: center;
+  text-decoration: none;
+  color: var(--button-color, var(--color-neutral-text-default));
+  margin: auto;
+  background-clip: padding-box;
+  font-family: var(--button-font-family, var(--font-family-sans));
+  font-weight: var(--button-font-weight, var(--font-weight-semi-bold));
+  gap: var(--button-gap, var(--spacing-xs));
+  line-height: var(--button-line-height, var(--line-height-md));
+  font-size: var(--button-font-size, var(--font-size-sm));
+  padding: var(--button-padding-block, var(--space-xs)) var(--button-padding-inline, var(--spacing-md));
+  border-radius: var(--button-border-radius, var(--radius-md));
+  background-color: var(--button-background-color, var(--color-neutral-background-default));
+  height: var(--button-size, var(--space-4xl));
+  min-width: var(--button-size, var(--space-4xl));
+  transition:
+    background-color 0.15s ease-in-out,
+    color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out,
+    background-image 0.15s ease-in-out;
+}
+
+:host([size='xs']) {
+  ::slotted(*) {
+    font-size: var(--button-xs-font-size, var(--font-size-xs));
+    line-height: var(--button-xs-line-height, var(--line-height-sm));
+    gap: var(--button-xs-gap, var(--spacing-2xs));
+    height: var(--button-xs-size, var(--space-lg));
+    min-width: var(--button-xs-size, var(--space-lg));
+    padding: var(--button-xs-padding-block, var(--space-6xs)) var(--button-xs-padding-inline, var(--space-xs));
+    border-radius: var(--button-xs-border-radius, var(--radius-sm));
+  }
+}
+
+:host([size='xs'][icononly='true']),
+:host([size='xs'][icononly]:not([icononly='false'])) {
+  ::slotted(*) {
+    padding: var(--button-xs-padding-block, var(--space-6xs)) calc(var(--button-xs-padding-inline, var(--space-xs)) / 2);
+  }
+}
+
+:host([size='sm']) {
+  ::slotted(*) {
+    font-size: var(--button-sm-font-size, var(--font-size-xs));
+    line-height: var(--button-sm-line-height, var(--line-height-sm));
+    gap: var(--button-sm-gap, var(--spacing-xs));
+    height: var(--button-sm-size, var(--space-xl));
+    min-width: var(--button-sm-size, var(--space-xl));
+    padding: var(--button-sm-padding-block, var(--space-4xs)) var(--button-sm-padding-inline, var(--space-xs));
+    border-radius: var(--button-sm-border-radius, var(--radius-md));
+  }
+}
+
+:host([size='sm'][icononly='true']),
+:host([size='sm'][icononly]:not([icononly='false'])) {
+  ::slotted(*) {
+    padding: var(--button-sm-padding-block, var(--space-4xs)) calc(var(--button-sm-padding-inline, var(--space-xs)) / 2);
+  }
+}
+
+:host([size='md']) {
+  ::slotted(*) {
+    font-size: var(--button-md-font-size, var(--font-size-sm));
+    line-height: var(--button-md-line-height, var(--line-height-md));
+    gap: var(--button-md-gap, var(--spacing-xs));
+    height: var(--button-md-size, var(--space-2xl));
+    min-width: var(--button-md-size, var(--space-2xl));
+    padding: var(--button-md-padding-block, var(--space-4xs)) var(--button-md-padding-inline, var(--space-xs));
+    border-radius: var(--button-md-border-radius, var(--radius-md));
+  }
+}
+
+:host([size='md'][icononly='true']),
+:host([size='md'][icononly]:not([icononly='false'])) {
+  ::slotted(*) {
+    padding: var(--button-md-padding-block, var(--space-4xs)) calc(var(--button-md-padding-inline, var(--space-xs)) / 2);
+  }
+}
+
+:host([size='lg']) {
+  ::slotted(*) {
+    font-size: var(--button-lg-font-size, var(--font-size-sm));
+    line-height: var(--button-lg-line-height, var(--line-height-md));
+    gap: var(--button-lg-gap, var(--spacing-xs));
+    height: var(--button-lg-size, var(--space-4xl));
+    min-width: var(--button-lg-size, var(--space-4xl));
+    padding: var(--button-lg-padding-block, var(--spacing-md)) var(--button-lg-padding-inline, var(--space-xs));
+    border-radius: var(--button-lg-border-radius, var(--radius-md));
+  }
+}
+
+:host([size='lg'][icononly='true']),
+:host([size='lg'][icononly]:not([icononly='false'])) {
+  ::slotted(*) {
+    padding: var(--button-lg-padding-block, var(--spacing-md))
+      calc(var(--button-lg-padding-inline, var(--space-xs)) / 2);
+  }
+}
+
+:host([variant='primary']) {
+  ::slotted(*:not(:disabled)) {
+    background-color: var(--button-primary-default-background);
+    border-color: var(--button-primary-default-border);
+    color: var(--button-primary-default-color);
+  }
+
+  ::slotted(*:hover:not(:disabled)) {
+    background-color: var(--button-primary-hover-background);
+    border-color: var(--button-primary-hover-border);
+    color: var(--button-primary-hover-color);
+  }
+
+  ::slotted(*:active:not(:disabled)) {
+    background-color: var(--button-primary-active-background);
+    border-color: var(--button-primary-active-border);
+    color: var(--button-primary-active-color);
+  }
+
+  ::slotted(*:focus-visible:not(:disabled)) {
+    background-color: var(--button-primary-focus-background);
+    border-color: var(--button-primary-focus-border);
+    color: var(--button-primary-focus-color);
+  }
+
+  ::slotted(button:disabled),
+  ::slotted(a[aria-disabled='true']),
+  ::slotted(input:disabled) {
+    background-color: var(--button-primary-disabled-background);
+    border-color: var(--button-primary-disabled-border);
+    color: var(--button-primary-disabled-color);
+  }
+}
+
+:host([variant='primary-gray']) {
+  ::slotted(*:not(:disabled)) {
+    background-color: var(--button-primary-gray-default-background);
+    border-color: var(--button-primary-gray-default-border);
+    color: var(--button-primary-gray-default-color);
+  }
+
+  ::slotted(*:hover:not(:disabled)) {
+    background-color: var(--button-primary-gray-hover-background);
+    border-color: var(--button-primary-gray-hover-border);
+    color: var(--button-primary-gray-hover-color);
+  }
+
+  ::slotted(*:active:not(:disabled)) {
+    background-color: var(--button-primary-gray-active-background);
+    border-color: var(--button-primary-gray-active-border);
+    color: var(--button-primary-gray-active-color);
+  }
+
+  ::slotted(*:focus-visible:not(:disabled)) {
+    background-color: var(--button-primary-gray-focus-background);
+    border-color: var(--button-primary-gray-focus-border);
+    color: var(--button-primary-gray-focus-color);
+  }
+
+  ::slotted(button:disabled),
+  ::slotted(a[aria-disabled='true']),
+  ::slotted(input:disabled) {
+    background-color: var(--button-primary-gray-disabled-background);
+    border-color: var(--button-primary-gray-disabled-border);
+    color: var(--button-primary-gray-disabled-color);
+  }
+}
+
+:host([variant='primary-promo']) {
+  ::slotted(*) {
+    background-blend-mode: exclusion;
+  }
+
+  ::slotted(*:not(:disabled)) {
+    background-color: var(--button-primary-promo-default-background);
+    color: var(--button-primary-promo-default-color);
+    background-image: var(--button-primary-promo-default-background-image);
+  }
+
+  ::slotted(*:hover:not(:disabled)) {
+    background-color: var(--button-primary-promo-hover-background);
+    color: var(--button-primary-promo-hover-color);
+    background-image: var(--button-primary-promo-hover-background-image);
+  }
+
+  ::slotted(*:active:not(:disabled)) {
+    background-color: var(--button-primary-promo-active-background);
+    color: var(--button-primary-promo-active-color);
+    background-image: var(--button-primary-promo-active-background-image);
+  }
+
+  ::slotted(*:focus-visible:not(:disabled)) {
+    background-color: var(--button-primary-promo-focus-background);
+    color: var(--button-primary-promo-focus-color);
+    background-image: var(--button-primary-promo-focus-background-image);
+  }
+
+  ::slotted(button:disabled),
+  ::slotted(a[aria-disabled='true']),
+  ::slotted(input:disabled) {
+    background-color: var(--button-primary-promo-disabled-background);
+    border-color: var(--button-primary-promo-disabled-border);
+    color: var(--button-primary-promo-disabled-color);
+  }
+}
+
+:host([variant='secondary']) {
+  ::slotted(*:not(:disabled)) {
+    background-color: var(--button-secondary-default-background);
+    border-color: var(--button-secondary-default-border);
+    color: var(--button-secondary-default-color);
+  }
+
+  ::slotted(*:hover:not(:disabled)) {
+    background-color: var(--button-secondary-hover-background);
+    border-color: var(--button-secondary-hover-border);
+    color: var(--button-secondary-hover-color);
+  }
+
+  ::slotted(*:active:not(:disabled)) {
+    background-color: var(--button-secondary-active-background);
+    border-color: var(--button-secondary-active-border);
+    color: var(--button-secondary-active-color);
+  }
+
+  ::slotted(*:focus-visible:not(:disabled)) {
+    background-color: var(--button-secondary-focus-background);
+    border-color: var(--button-secondary-focus-border);
+    color: var(--button-secondary-focus-color);
+  }
+
+  ::slotted(button:disabled),
+  ::slotted(a[aria-disabled='true']),
+  ::slotted(input:disabled) {
+    background-color: var(--button-secondary-disabled-background);
+    border-color: var(--button-secondary-disabled-border);
+    color: var(--button-secondary-disabled-color);
+  }
+}
+
+:host([variant='secondary-gray']) {
+  ::slotted(*:not(:disabled)) {
+    background-color: var(--button-secondary-gray-default-background);
+    border-color: var(--button-secondary-gray-default-border);
+    color: var(--button-secondary-gray-default-color);
+  }
+
+  ::slotted(*:hover:not(:disabled)) {
+    background-color: var(--button-secondary-gray-hover-background);
+    border-color: var(--button-secondary-gray-hover-border);
+    color: var(--button-secondary-gray-hover-color);
+  }
+
+  ::slotted(*:active:not(:disabled)) {
+    background-color: var(--button-secondary-gray-active-background);
+    border-color: var(--button-secondary-gray-active-border);
+    color: var(--button-secondary-gray-active-color);
+  }
+
+  ::slotted(*:focus-visible:not(:disabled)) {
+    background-color: var(--button-secondary-gray-focus-background);
+    border-color: var(--button-secondary-gray-focus-border);
+    color: var(--button-secondary-gray-focus-color);
+  }
+
+  ::slotted(button:disabled),
+  ::slotted(a[aria-disabled='true']),
+  ::slotted(input:disabled) {
+    background-color: var(--button-secondary-gray-disabled-background);
+    border-color: var(--button-secondary-gray-disabled-border);
+    color: var(--button-secondary-gray-disabled-color);
+  }
+}
+
+:host([variant='tertiary']) {
+  ::slotted(*:not(:disabled)) {
+    background-color: var(--button-tertiary-default-background);
+    border-color: var(--button-tertiary-default-border);
+    color: var(--button-tertiary-default-color);
+  }
+
+  ::slotted(*:hover:not(:disabled)) {
+    background-color: var(--button-tertiary-hover-background);
+    border-color: var(--button-tertiary-hover-border);
+    color: var(--button-tertiary-hover-color);
+  }
+
+  ::slotted(*:active:not(:disabled)) {
+    background-color: var(--button-tertiary-active-background);
+    border-color: var(--button-tertiary-active-border);
+    color: var(--button-tertiary-active-color);
+  }
+
+  ::slotted(*:focus-visible:not(:disabled)) {
+    background-color: var(--button-tertiary-focus-background);
+    border-color: var(--button-tertiary-focus-border);
+    color: var(--button-tertiary-focus-color);
+  }
+
+  ::slotted(button:disabled),
+  ::slotted(a[aria-disabled='true']),
+  ::slotted(input:disabled) {
+    background-color: var(--button-tertiary-disabled-background);
+    border-color: var(--button-tertiary-disabled-border);
+    color: var(--button-tertiary-disabled-color);
+  }
+}
+
+:host([variant='ghost']) {
+  ::slotted(*:not(:disabled)) {
+    background-color: var(--button-ghost-default-background);
+    border-color: var(--button-ghost-default-border);
+    color: var(--button-ghost-default-color);
+  }
+
+  ::slotted(*:hover:not(:disabled)) {
+    background-color: var(--button-ghost-hover-background);
+    border-color: var(--button-ghost-hover-border);
+    color: var(--button-ghost-hover-color);
+  }
+
+  ::slotted(*:active:not(:disabled)) {
+    background-color: var(--button-ghost-active-background);
+    border-color: var(--button-ghost-active-border);
+    color: var(--button-ghost-active-color);
+  }
+
+  ::slotted(*:focus-visible:not(:disabled)) {
+    background-color: var(--button-ghost-focus-background);
+    border-color: var(--button-ghost-focus-border);
+    color: var(--button-ghost-focus-color);
+  }
+
+  ::slotted(button:disabled),
+  ::slotted(a[aria-disabled='true']),
+  ::slotted(input:disabled) {
+    background-color: var(--button-ghost-disabled-background);
+    border-color: var(--button-ghost-disabled-border);
+    color: var(--button-ghost-disabled-color);
+  }
+}
+
+:host([variant='positive']) {
+  ::slotted(*:not(:disabled)) {
+    background-color: var(--button-positive-default-background);
+    border-color: var(--button-positive-default-border);
+    color: var(--button-positive-default-color);
+  }
+
+  ::slotted(*:hover:not(:disabled)) {
+    background-color: var(--button-positive-hover-background);
+    border-color: var(--button-positive-hover-border);
+    color: var(--button-positive-hover-color);
+  }
+
+  ::slotted(*:active:not(:disabled)) {
+    background-color: var(--button-positive-active-background);
+    border-color: var(--button-positive-active-border);
+    color: var(--button-positive-active-color);
+  }
+
+  ::slotted(*:focus-visible:not(:disabled)) {
+    background-color: var(--button-positive-focus-background);
+    border-color: var(--button-positive-focus-border);
+    color: var(--button-positive-focus-color);
+  }
+
+  ::slotted(button:disabled),
+  ::slotted(a[aria-disabled='true']),
+  ::slotted(input:disabled) {
+    background-color: var(--button-positive-disabled-background);
+    border-color: var(--button-positive-disabled-border);
+    color: var(--button-positive-disabled-color);
+  }
+}
+
+:host([variant='positive-active']) {
+  ::slotted(*:not(:disabled)) {
+    background-color: var(--button-positive-active-default-background);
+    border-color: var(--button-positive-active-default-border);
+    color: var(--button-positive-active-default-color);
+  }
+
+  ::slotted(*:hover:not(:disabled)) {
+    background-color: var(--button-positive-active-hover-background);
+    border-color: var(--button-positive-active-hover-border);
+    color: var(--button-positive-active-hover-color);
+  }
+
+  ::slotted(*:active:not(:disabled)) {
+    background-color: var(--button-positive-active-active-background);
+    border-color: var(--button-positive-active-active-border);
+    color: var(--button-positive-active-active-color);
+  }
+
+  ::slotted(*:focus-visible:not(:disabled)) {
+    background-color: var(--button-positive-active-focus-background);
+    border-color: var(--button-positive-active-focus-border);
+    color: var(--button-positive-active-focus-color);
+  }
+
+  ::slotted(button:disabled),
+  ::slotted(a[aria-disabled='true']),
+  ::slotted(input:disabled) {
+    background-color: var(--button-positive-active-disabled-background);
+    border-color: var(--button-positive-active-disabled-border);
+    color: var(--button-positive-active-disabled-color);
+  }
+}
+
+:host([variant='negative']) {
+  ::slotted(*:not(:disabled)) {
+    background-color: var(--button-negative-default-background);
+    border-color: var(--button-negative-default-border);
+    color: var(--button-negative-default-color);
+  }
+
+  ::slotted(*:hover:not(:disabled)) {
+    background-color: var(--button-negative-hover-background);
+    border-color: var(--button-negative-hover-border);
+    color: var(--button-negative-hover-color);
+  }
+
+  ::slotted(*:active:not(:disabled)) {
+    background-color: var(--button-negative-active-background);
+    border-color: var(--button-negative-active-border);
+    color: var(--button-negative-active-color);
+  }
+
+  ::slotted(*:focus-visible:not(:disabled)) {
+    background-color: var(--button-negative-focus-background);
+    border-color: var(--button-negative-focus-border);
+    color: var(--button-negative-focus-color);
+  }
+
+  ::slotted(button:disabled),
+  ::slotted(a[aria-disabled='true']),
+  ::slotted(input:disabled) {
+    background-color: var(--button-negative-disabled-background);
+    border-color: var(--button-negative-disabled-border);
+    color: var(--button-negative-disabled-color);
+  }
+}
+
+:host([variant='negative-active']) {
+  ::slotted(*:not(:disabled)) {
+    background-color: var(--button-negative-active-default-background);
+    border-color: var(--button-negative-active-default-border);
+    color: var(--button-negative-active-default-color);
+  }
+
+  ::slotted(*:hover:not(:disabled)) {
+    background-color: var(--button-negative-active-hover-background);
+    border-color: var(--button-negative-active-hover-border);
+    color: var(--button-negative-active-hover-color);
+  }
+
+  ::slotted(*:active:not(:disabled)) {
+    background-color: var(--button-negative-active-active-background);
+    border-color: var(--button-negative-active-active-border);
+    color: var(--button-negative-active-active-color);
+  }
+
+  ::slotted(*:focus-visible:not(:disabled)) {
+    background-color: var(--button-negative-active-focus-background);
+    border-color: var(--button-negative-active-focus-border);
+    color: var(--button-negative-active-focus-color);
+  }
+
+  ::slotted(button:disabled),
+  ::slotted(a[aria-disabled='true']),
+  ::slotted(input:disabled) {
+    background-color: var(--button-negative-active-disabled-background);
+    border-color: var(--button-negative-active-disabled-border);
+    color: var(--button-negative-active-disabled-color);
+  }
+}

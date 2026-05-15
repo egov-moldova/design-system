@@ -1,0 +1,50 @@
+:host {
+  display: block;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+}
+
+ol {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: var(--breadcrumbs-gap, var(--spacing-xs));
+  flex-wrap: wrap;
+}
+
+::slotted(*) {
+  display: inline-flex;
+  align-items: center;
+}
+
+::slotted(*:not(:last-child))::after {
+  content: '/';
+  color: var(--breadcrumbs-separator-color, var(--color-neutral-text-weaker));
+  margin-inline-start: var(--breadcrumbs-gap, var(--spacing-xs));
+  pointer-events: none;
+  user-select: none;
+}
+
+::slotted(:not(cor-link):not(cor-breadcrumbs-ellipsis)) {
+  color: var(--breadcrumbs-current-page-color-default, var(--color-neutral-text-weak));
+  font-size: var(--breadcrumbs-current-page-font-size, var(--font-size-sm));
+  line-height: var(--breadcrumbs-current-page-line-height, var(--line-height-md));
+  font-weight: var(--breadcrumbs-current-page-font-weight, var(--font-weight-normal));
+}
+
+:host([disabled]) ::slotted(:not(cor-link):not(cor-breadcrumbs-ellipsis)) {
+  color: var(--breadcrumbs-current-page-color-disabled, var(--color-neutral-text-weakest));
+}
+
+::slotted(cor-skeleton) {
+  --skeleton-border-radius: var(--breadcrumbs-item-border-radius, var(--radius-sm));
+}
+
+::slotted(cor-link[skeleton]) {
+  --cor-link-skeleton-border-radius: var(--breadcrumbs-item-border-radius, var(--radius-sm));
+}

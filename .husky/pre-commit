@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+printf "\n▶︎ Husky pre-commit: running typecheck, lint, and unit tests...\n\n"
+yarn typecheck && yarn lint && yarn test

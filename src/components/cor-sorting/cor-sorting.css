@@ -1,0 +1,169 @@
+/* ── Base host ── */
+
+:host {
+  display: inline-flex;
+  position: relative;
+
+  .trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sorting-gap);
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    outline: none;
+    font-family: var(--font-family-body);
+    white-space: nowrap;
+    color: inherit;
+  }
+
+  .label {
+    font-size: var(--sorting-font-size-label-md);
+    line-height: var(--sorting-line-height-md);
+    font-weight: var(--sorting-font-weight-label-default);
+    color: var(--sorting-color-label-default);
+    white-space: nowrap;
+  }
+
+  .selected-value-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sorting-value-gap-md);
+    border-radius: var(--radius-sm);
+  }
+
+  .selected-value {
+    font-size: var(--sorting-font-size-selected-md);
+    line-height: var(--sorting-line-height-md);
+    font-weight: var(--sorting-font-weight-selected-default);
+    color: var(--sorting-color-selected-default);
+    white-space: nowrap;
+  }
+
+  .chevron {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--sorting-icon-size);
+    height: var(--sorting-icon-size);
+    flex-shrink: 0;
+    color: var(--sorting-color-icon-default);
+    transition:
+      color 150ms ease-in-out,
+      transform 150ms ease-in-out;
+
+    cor-icon {
+      display: flex;
+    }
+  }
+
+  .chevron--up {
+    transform: rotate(180deg);
+  }
+}
+
+/* ── Size: sm ── */
+
+:host([size='sm']) {
+  .label {
+    font-size: var(--sorting-font-size-label-sm);
+    line-height: var(--sorting-line-height-sm);
+  }
+
+  .selected-value-wrap {
+    gap: var(--sorting-value-gap-sm);
+  }
+
+  .selected-value {
+    font-size: var(--sorting-font-size-selected-sm);
+    line-height: var(--sorting-line-height-sm);
+  }
+}
+
+/* ── Active (open) state ── */
+
+:host(.is-open) {
+  .selected-value--active {
+    color: var(--sorting-color-selected-active);
+  }
+}
+
+/* ── Focus visible ── */
+
+:host(:focus-within:not(.is-disabled)) {
+  .trigger:focus-visible,
+  .selected-value-wrap:focus-visible {
+    outline: none;
+  }
+
+  .trigger:focus-visible .selected-value-wrap {
+    outline: var(--sorting-focus-outline-width) solid var(--sorting-focus-outline-color);
+    outline-offset: var(--sorting-focus-outline-offset);
+    border-radius: var(--sorting-focus-border-radius);
+  }
+}
+
+/* ── Disabled state ── */
+
+:host(.is-disabled),
+:host([disabled]) {
+  pointer-events: none;
+
+  .trigger {
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .label {
+    color: var(--sorting-color-label-disabled);
+  }
+
+  .selected-value {
+    color: var(--sorting-color-selected-disabled);
+  }
+
+  .chevron {
+    color: var(--sorting-color-icon-disabled);
+  }
+}
+
+/* ── Dropdown list ── */
+
+:host {
+  .dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + var(--sorting-dropdown-offset));
+    right: 0;
+    z-index: 100;
+    margin: 0;
+    padding: var(--sorting-dropdown-padding-block) 0;
+    background: var(--sorting-dropdown-background);
+    border-radius: var(--sorting-dropdown-border-radius);
+    box-shadow: var(--sorting-dropdown-shadow);
+    min-width: max-content;
+  }
+
+  .dropdown--open {
+    display: block;
+  }
+}
+
+/* ── Slotted cor-select-item sizing overrides ── */
+
+:host {
+  ::slotted(cor-select-item) {
+    min-height: var(--sorting-dropdown-option-height);
+    white-space: nowrap;
+  }
+}
+
+/* ── Focused state for keyboard navigation ── */
+
+:host {
+  ::slotted(cor-select-item[focused]) {
+    --select-item-container-background-default: var(--sorting-dropdown-option-background-hover);
+    --select-item-label-color-default: var(--sorting-dropdown-option-color-hover);
+  }
+}

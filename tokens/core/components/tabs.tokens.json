@@ -1,0 +1,98 @@
+{
+  "tabs": {
+    "gap": {
+      "style3": {
+        "value": "{space.xs}",
+        "type": "dimension"
+      }
+    },
+    "borderWidth": {
+      "value": "{border.width.1}",
+      "type": "dimension"
+    },
+    "borderRadius": {
+      "style1": {
+        "lg": {
+          "value": "{radius.xl}",
+          "type": "dimension"
+        },
+        "md": {
+          "value": "{radius.lg}",
+          "type": "dimension"
+        },
+        "sm": {
+          "value": "{radius.md}",
+          "type": "dimension"
+        }
+      },
+      "style2": {
+        "lg": {
+          "value": "{radius.xl}",
+          "type": "dimension"
+        },
+        "md": {
+          "value": "{radius.lg}",
+          "type": "dimension"
+        },
+        "sm": {
+          "value": "{radius.md}",
+          "type": "dimension"
+        }
+      }
+    },
+    "padding": {
+      "style1": {
+        "lg": {
+          "value": "3px",
+          "type": "dimension"
+        },
+        "md": {
+          "value": "1px",
+          "type": "dimension"
+        },
+        "sm": {
+          "value": "1px",
+          "type": "dimension"
+        }
+      },
+      "style2": {
+        "value": "{space.none}",
+        "type": "dimension"
+      }
+    },
+    "borderColor": {
+      "default": {
+        "value": "{color.neutral.border.weaker}",
+        "type": "color"
+      },
+      "error": {
+        "value": "{color.system.error.border}",
+        "type": "color"
+      },
+      "selected": {
+        "value": "{color.primary.border.active}",
+        "type": "color"
+      }
+    },
+    "background": {
+      "style1": {
+        "value": "{color.neutral.transparent.weaker}",
+        "type": "color"
+      },
+      "style2": {
+        "value": "{color.neutral.transparent.weaker}",
+        "type": "color"
+      }
+    },
+    "divider": {
+      "color": {
+        "value": "{color.neutral.border.weaker}",
+        "type": "color"
+      },
+      "width": {
+        "value": "{border.width.1}",
+        "type": "dimension"
+      }
+    }
+  }
+}

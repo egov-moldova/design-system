@@ -1,0 +1,64 @@
+:host {
+  display: block;
+}
+
+.checkbox-group-fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+  min-width: 0;
+}
+
+.checkbox-group-legend {
+  padding: 0;
+  margin-bottom: var(--checkbox-group-gap-vertical, var(--spacing-xs));
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-md);
+  color: var(--color-neutral-text-default);
+}
+
+.checkbox-group {
+  display: flex;
+}
+
+/* Vertical layout (single column) */
+.checkbox-group--vertical {
+  flex-direction: column;
+  gap: var(--checkbox-group-gap-vertical, var(--spacing-xs));
+}
+
+/* Horizontal layout */
+.checkbox-group--horizontal {
+  flex-direction: row;
+  gap: var(--checkbox-group-gap-horizontal, var(--spacing-sm));
+  flex-wrap: wrap;
+}
+
+/* Multi-column layout */
+.checkbox-group--multi-column {
+  display: grid;
+  grid-template-rows: repeat(auto-fill, auto);
+  gap: var(--checkbox-group-gap-vertical, var(--spacing-xs)) var(--checkbox-group-gap-column, var(--spacing-sm));
+  align-items: start;
+}
+
+/* Dynamic column count via inline style */
+.checkbox-group--multi-column ::slotted(cor-checkbox) {
+  display: block;
+}
+
+/* Helper text */
+.checkbox-group-helper {
+  margin-top: var(--checkbox-group-gap-vertical, var(--spacing-xs));
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-sm);
+  color: var(--color-neutral-text-weaker);
+}
+
+/* Invalid state helper text */
+:host([invalid]) .checkbox-group-helper {
+  color: var(--color-system-error-icon);
+}

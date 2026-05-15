@@ -1,0 +1,8 @@
+# Bitbucket Package Registry Configuration
+# Copy this file to ~/.npmrc and set the environment variables
+
+@${BITBUCKET_WORKSPACE}:registry=https://api.bitbucket.org/2.0/repositories/${BITBUCKET_WORKSPACE}/${BITBUCKET_REPO}/npm/
+//api.bitbucket.org/2.0/repositories/${BITBUCKET_WORKSPACE}/${BITBUCKET_REPO}/npm/:_password=${BITBUCKET_APP_PASSWORD}
+//api.bitbucket.org/2.0/repositories/${BITBUCKET_WORKSPACE}/${BITBUCKET_REPO}/npm/:username=${BITBUCKET_USERNAME}
+//api.bitbucket.org/2.0/repositories/${BITBUCKET_WORKSPACE}/${BITBUCKET_REPO}/npm/:email=${BITBUCKET_EMAIL}
+//api.bitbucket.org/2.0/repositories/${BITBUCKET_WORKSPACE}/${BITBUCKET_REPO}/npm/:always-auth=true

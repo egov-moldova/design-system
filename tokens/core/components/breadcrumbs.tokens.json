@@ -1,0 +1,52 @@
+{
+  "breadcrumbs": {
+    "separator": {
+      "color": {
+        "value": "{color.neutral.text.weaker}",
+        "type": "color",
+        "description": "Separator slash color"
+      }
+    },
+    "gap": {
+      "value": "{spacing.2xs}",
+      "type": "dimension",
+      "description": "Gap between breadcrumb items"
+    },
+    "item": {
+      "borderRadius": {
+        "value": "{radius.sm}",
+        "type": "dimension",
+        "description": "Border radius for breadcrumb items"
+      }
+    },
+    "current-page": {
+      "color": {
+        "default": {
+          "value": "{color.neutral.text.weak}",
+          "type": "color",
+          "description": "Current page text color"
+        },
+        "disabled": {
+          "value": "{color.neutral.text.weakest}",
+          "type": "color",
+          "description": "Current page text color when disabled"
+        }
+      },
+      "fontSize": {
+        "value": "{fontSize.sm}",
+        "type": "dimension",
+        "description": "Current page font size"
+      },
+      "lineHeight": {
+        "value": "{lineHeight.md}",
+        "type": "dimension",
+        "description": "Current page line height"
+      },
+      "fontWeight": {
+        "value": "{fontWeight.normal}",
+        "type": "fontWeight",
+        "description": "Current page font weight"
+      }
+    }
+  }
+}

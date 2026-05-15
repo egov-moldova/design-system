@@ -1,0 +1,213 @@
+/*
+Checkbox CSS File
+*/
+
+:host {
+  display: inline-flex;
+  font-family: var(--controls-font-family, var(--font-family-sans));
+  font-weight: var(--controls-font-weight, var(--font-weight-normal));
+}
+
+.container {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--controls-gap, var(--spacing-xs));
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+:host([disabled]) .container {
+  cursor: not-allowed;
+}
+
+/* Hide native checkbox */
+input[type='checkbox'] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+/* Checkbox icon container */
+.checkbox-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  pointer-events: none;
+  width: var(--control-size);
+  height: var(--control-size);
+  border-radius: var(--control-borderRadius);
+  transition: var(--controls-transition, background-color 150ms ease);
+}
+
+/* Square background for hover/pressed states */
+.checkbox-icon::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--checkbox-square-size, 0);
+  height: var(--checkbox-square-size, 0);
+  background-color: var(--checkbox-square-background, transparent);
+  border-radius: 2px;
+  transition: var(--controls-transition, background-color 150ms ease);
+  z-index: 0;
+}
+
+.checkbox-icon cor-icon {
+  position: relative;
+  z-index: 1;
+}
+
+/* Icon styling */
+.checkbox-icon cor-icon {
+  --icon-color: var(--control-icon-color);
+  pointer-events: none;
+}
+
+/* Focus-visible state (keyboard navigation only) */
+input[type='checkbox']:focus-visible ~ .checkbox-icon {
+  outline: var(--controls-outline-width-focus) solid var(--controls-outline-color-focus);
+  outline-offset: var(--controls-outline-offset-focus);
+}
+
+/* Size variants */
+:host([size='md']) {
+  --control-size: var(--controls-size-md, 20px);
+  --control-borderRadius: var(--controls-border-radius-md, var(--radius-sm));
+  --control-fontSize: var(--controls-font-size-md, var(--font-size-sm));
+  --control-lineHeight: var(--controls-line-height-md, var(--line-height-md));
+  --checkbox-square-size: var(--checkbox-square-size-md, 15px);
+}
+
+:host([size='sm']) {
+  --control-size: var(--controls-size-sm, 16px);
+  --control-borderRadius: var(--controls-border-radius-sm, var(--radius-xs));
+  --control-fontSize: var(--controls-font-size-sm, var(--font-size-xs));
+  --control-lineHeight: var(--controls-line-height-sm, var(--line-height-sm));
+  --checkbox-square-size: var(--checkbox-square-size-sm, 10px);
+}
+
+/* Default state (unchecked) */
+:host {
+  --control-icon-color: var(--controls-color-default, var(--color-neutral-text-weak));
+  --control-icon-background: var(--controls-background-default, var(--color-neutral-background-base));
+  --control-color: var(--controls-color-default, var(--color-neutral-text-weak));
+}
+
+/* Hover state (unchecked) */
+:host(:hover:not([disabled])),
+:host([hovered]:not([disabled])) {
+  --control-icon-color: var(--controls-color-hover, var(--color-neutral-text-default));
+  --control-icon-background: transparent;
+  --control-color: var(--controls-color-hover, var(--color-neutral-text-default));
+  --checkbox-square-background: var(--checkbox-square-background-hover, var(--controls-background-hover));
+}
+
+/* Pressed state (unchecked) */
+:host(:active:not([disabled])),
+:host([pressed]:not([disabled])) {
+  --control-icon-color: var(--controls-color-pressed, var(--color-neutral-text-default));
+  --control-icon-background: transparent;
+  --control-color: var(--controls-color-pressed, var(--color-neutral-text-default));
+  --checkbox-square-background: var(--checkbox-square-background-pressed, var(--controls-background-pressed));
+}
+
+/* Disabled state (unchecked) */
+:host([disabled]) {
+  --control-icon-color: var(--controls-color-disabled, var(--color-neutral-text-weakest));
+  --control-icon-background: var(--controls-background-disabled, var(--color-neutral-background-base));
+  --control-color: var(--controls-color-disabled, var(--color-neutral-text-weakest));
+}
+
+/* Invalid state (unchecked) */
+:host([invalid]:not([disabled])) {
+  --control-icon-color: var(--controls-invalid-color, var(--color-system-error-icon));
+  --control-icon-background: var(--controls-invalid-background, var(--color-neutral-background-base));
+  --control-color: var(--controls-invalid-color, var(--color-system-error-icon));
+}
+
+/* Invalid + Hover state (unchecked) */
+:host([invalid]:hover:not([disabled])),
+:host([invalid][hovered]:not([disabled])) {
+  --control-icon-color: var(--controls-invalid-hover-color, var(--color-primary-border-active));
+  --control-icon-background: transparent;
+  --control-color: var(--controls-invalid-hover-color, var(--color-primary-border-active));
+  --checkbox-square-background: var(--checkbox-square-background-hover, var(--controls-background-hover));
+}
+
+/* Checked state - Carbon icon handles filled appearance */
+input[type='checkbox']:checked ~ .checkbox-icon {
+  --control-icon-color: var(--controls-selected-color-default, var(--color-primary-background-strong));
+  --control-icon-background: transparent;
+  --checkbox-square-background: transparent;
+}
+
+/* Checked + Hover */
+:host(:hover:not([disabled])) input[type='checkbox']:checked ~ .checkbox-icon,
+:host([hovered]:not([disabled])) input[type='checkbox']:checked ~ .checkbox-icon {
+  --control-icon-color: var(--controls-selected-color-hover, var(--color-primary-border-active));
+}
+
+/* Checked + Pressed */
+:host(:active:not([disabled])) input[type='checkbox']:checked ~ .checkbox-icon,
+:host([pressed]:not([disabled])) input[type='checkbox']:checked ~ .checkbox-icon {
+  --control-icon-color: var(--controls-selected-color-pressed, var(--color-primary-border-active));
+}
+
+/* Checked + Disabled */
+:host([disabled]) input[type='checkbox']:checked ~ .checkbox-icon {
+  --control-icon-color: var(--controls-selected-color-disabled, var(--color-neutral-text-weakest));
+}
+
+/* Checked + Invalid */
+:host([invalid]:not([disabled])) input[type='checkbox']:checked ~ .checkbox-icon {
+  --control-icon-color: var(--controls-selected-invalid-color, var(--color-system-error-icon));
+}
+
+/* Checked + Invalid + Hover */
+:host([invalid]:hover:not([disabled])) input[type='checkbox']:checked ~ .checkbox-icon,
+:host([invalid][hovered]:not([disabled])) input[type='checkbox']:checked ~ .checkbox-icon {
+  --control-icon-color: var(--controls-selected-invalid-hover-color, var(--color-primary-border-active));
+}
+
+/* Indeterminate state - Carbon icon handles filled appearance */
+input[type='checkbox']:indeterminate ~ .checkbox-icon {
+  --control-icon-color: var(--checkbox-indeterminate-color-default, var(--color-primary-background-strong));
+  --control-icon-background: transparent;
+  --checkbox-square-background: transparent;
+}
+
+/* Indeterminate + Hover */
+:host(:hover:not([disabled])) input[type='checkbox']:indeterminate ~ .checkbox-icon,
+:host([hovered]:not([disabled])) input[type='checkbox']:indeterminate ~ .checkbox-icon {
+  --control-icon-color: var(--checkbox-indeterminate-color-hover, var(--color-primary-border-active));
+}
+
+/* Indeterminate + Pressed */
+:host(:active:not([disabled])) input[type='checkbox']:indeterminate ~ .checkbox-icon,
+:host([pressed]:not([disabled])) input[type='checkbox']:indeterminate ~ .checkbox-icon {
+  --control-icon-color: var(--checkbox-indeterminate-color-pressed, var(--color-primary-border-active));
+}
+
+/* Indeterminate + Disabled */
+:host([disabled]) input[type='checkbox']:indeterminate ~ .checkbox-icon {
+  --control-icon-color: var(--checkbox-indeterminate-color-disabled, var(--color-neutral-text-weakest));
+}
+
+/* Indeterminate + Invalid */
+:host([invalid]:not([disabled])) input[type='checkbox']:indeterminate ~ .checkbox-icon {
+  --control-icon-color: var(--checkbox-indeterminate-invalid-color, var(--color-system-error-icon));
+}
+
+/* Indeterminate + Invalid + Hover */
+:host([invalid]:hover:not([disabled])) input[type='checkbox']:indeterminate ~ .checkbox-icon,
+:host([invalid][hovered]:not([disabled])) input[type='checkbox']:indeterminate ~ .checkbox-icon {
+  --control-icon-color: var(--checkbox-indeterminate-invalid-hover-color, var(--color-primary-border-active));
+}

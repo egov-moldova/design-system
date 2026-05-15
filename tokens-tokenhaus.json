@@ -1,0 +1,3696 @@
+{
+  "$name": "Foundations",
+  "$description": "Design tokens exported from Figma",
+  "$extensions": {
+    "com.figma": {
+      "sourceFile": "Foundations",
+      "exportedAt": "2026-05-15T06:10:07.195Z",
+      "version": "1.0.0",
+      "originalPaths": {
+        "4. typography primitives.font-size.fs-12": "4. Typography Primitives/font-size/fs-12",
+        "4. typography primitives.font-family.primary-font": "4. Typography Primitives/font-family/primary-font",
+        "4. typography primitives.font-size.fs-14": "4. Typography Primitives/font-size/fs-14",
+        "4. typography primitives.font-size.fs-16": "4. Typography Primitives/font-size/fs-16",
+        "4. typography primitives.font-size.fs-18": "4. Typography Primitives/font-size/fs-18",
+        "4. typography primitives.font-size.fs-24": "4. Typography Primitives/font-size/fs-24",
+        "4. typography primitives.font-size.fs-32": "4. Typography Primitives/font-size/fs-32",
+        "4. typography primitives.font-size.fs-40": "4. Typography Primitives/font-size/fs-40",
+        "4. typography primitives.font-size.fs-56": "4. Typography Primitives/font-size/fs-56",
+        "4. typography primitives.font-weight.fw-regular": "4. Typography Primitives/font-weight/fw-regular",
+        "4. typography primitives.font-weight.fw-medium": "4. Typography Primitives/font-weight/fw-medium",
+        "4. typography primitives.font-weight.fw-semibold": "4. Typography Primitives/font-weight/fw-semibold",
+        "4. typography primitives.font-weight.fw-bold": "4. Typography Primitives/font-weight/fw-bold",
+        "3. sizes.spacings.spacing-2": "3. Sizes/spacings/spacing-2",
+        "3. sizes.spacings.spacing-0": "3. Sizes/spacings/spacing-0",
+        "3. sizes.spacings.spacing-4": "3. Sizes/spacings/spacing-4",
+        "3. sizes.spacings.spacing-6": "3. Sizes/spacings/spacing-6",
+        "3. sizes.spacings.spacing-8": "3. Sizes/spacings/spacing-8",
+        "3. sizes.spacings.spacing-12": "3. Sizes/spacings/spacing-12",
+        "3. sizes.spacings.spacing-16": "3. Sizes/spacings/spacing-16",
+        "3. sizes.spacings.spacing-20": "3. Sizes/spacings/spacing-20",
+        "3. sizes.spacings.spacing-24": "3. Sizes/spacings/spacing-24",
+        "3. sizes.spacings.spacing-32": "3. Sizes/spacings/spacing-32",
+        "3. sizes.spacings.spacing-40": "3. Sizes/spacings/spacing-40",
+        "3. sizes.spacings.spacing-48": "3. Sizes/spacings/spacing-48",
+        "3. sizes.spacings.spacing-64": "3. Sizes/spacings/spacing-64",
+        "3. sizes.border-radius.radius-0": "3. Sizes/border-radius/radius-0",
+        "3. sizes.border-radius.radius-6": "3. Sizes/border-radius/radius-6",
+        "3. sizes.border-radius.radius-8": "3. Sizes/border-radius/radius-8",
+        "3. sizes.border-radius.radius-12": "3. Sizes/border-radius/radius-12",
+        "3. sizes.border-radius.radius-16": "3. Sizes/border-radius/radius-16",
+        "3. sizes.border-radius.radius-32": "3. Sizes/border-radius/radius-32",
+        "3. sizes.border-radius.radius-full": "3. Sizes/border-radius/radius-full",
+        "3. sizes.border-width.border-1": "3. Sizes/border-width/border-1",
+        "3. sizes.border-width.border-1,5": "3. Sizes/border-width/border-1,5",
+        "3. sizes.border-width.border-2": "3. Sizes/border-width/border-2",
+        "4. typography primitives.font-size.fs-22": "4. Typography Primitives/font-size/fs-22",
+        "4. typography primitives.font-size.fs-28": "4. Typography Primitives/font-size/fs-28",
+        "2. primitive colors: do not use directly.blue-sky.100": "2. Primitive Colors: Do not use directly/blue-sky/100",
+        "2. primitive colors: do not use directly.blue-sky.150": "2. Primitive Colors: Do not use directly/blue-sky/150",
+        "2. primitive colors: do not use directly.blue-sky.200": "2. Primitive Colors: Do not use directly/blue-sky/200",
+        "2. primitive colors: do not use directly.blue-sky.300": "2. Primitive Colors: Do not use directly/blue-sky/300",
+        "2. primitive colors: do not use directly.blue-sky.400": "2. Primitive Colors: Do not use directly/blue-sky/400",
+        "2. primitive colors: do not use directly.blue-sky.500": "2. Primitive Colors: Do not use directly/blue-sky/500",
+        "2. primitive colors: do not use directly.blue-sky.600": "2. Primitive Colors: Do not use directly/blue-sky/600",
+        "2. primitive colors: do not use directly.blue-sky.700": "2. Primitive Colors: Do not use directly/blue-sky/700",
+        "2. primitive colors: do not use directly.blue-sky.800": "2. Primitive Colors: Do not use directly/blue-sky/800",
+        "2. primitive colors: do not use directly.lavender.100": "2. Primitive Colors: Do not use directly/lavender/100",
+        "2. primitive colors: do not use directly.lavender.200": "2. Primitive Colors: Do not use directly/lavender/200",
+        "2. primitive colors: do not use directly.lavender.300": "2. Primitive Colors: Do not use directly/lavender/300",
+        "2. primitive colors: do not use directly.lavender.400": "2. Primitive Colors: Do not use directly/lavender/400",
+        "2. primitive colors: do not use directly.lavender.500": "2. Primitive Colors: Do not use directly/lavender/500",
+        "2. primitive colors: do not use directly.lavender.600": "2. Primitive Colors: Do not use directly/lavender/600",
+        "2. primitive colors: do not use directly.lavender.700": "2. Primitive Colors: Do not use directly/lavender/700",
+        "2. primitive colors: do not use directly.lavender.800": "2. Primitive Colors: Do not use directly/lavender/800",
+        "2. primitive colors: do not use directly.purple.100": "2. Primitive Colors: Do not use directly/purple/100",
+        "2. primitive colors: do not use directly.purple.200": "2. Primitive Colors: Do not use directly/purple/200",
+        "2. primitive colors: do not use directly.purple.300": "2. Primitive Colors: Do not use directly/purple/300",
+        "2. primitive colors: do not use directly.purple.400": "2. Primitive Colors: Do not use directly/purple/400",
+        "2. primitive colors: do not use directly.purple.500": "2. Primitive Colors: Do not use directly/purple/500",
+        "2. primitive colors: do not use directly.purple.600": "2. Primitive Colors: Do not use directly/purple/600",
+        "2. primitive colors: do not use directly.purple.700": "2. Primitive Colors: Do not use directly/purple/700",
+        "2. primitive colors: do not use directly.purple.800": "2. Primitive Colors: Do not use directly/purple/800",
+        "2. primitive colors: do not use directly.magenta.100": "2. Primitive Colors: Do not use directly/magenta/100",
+        "2. primitive colors: do not use directly.magenta.200": "2. Primitive Colors: Do not use directly/magenta/200",
+        "2. primitive colors: do not use directly.magenta.300": "2. Primitive Colors: Do not use directly/magenta/300",
+        "2. primitive colors: do not use directly.magenta.400": "2. Primitive Colors: Do not use directly/magenta/400",
+        "2. primitive colors: do not use directly.magenta.500": "2. Primitive Colors: Do not use directly/magenta/500",
+        "2. primitive colors: do not use directly.magenta.600": "2. Primitive Colors: Do not use directly/magenta/600",
+        "2. primitive colors: do not use directly.magenta.700": "2. Primitive Colors: Do not use directly/magenta/700",
+        "2. primitive colors: do not use directly.magenta.800": "2. Primitive Colors: Do not use directly/magenta/800",
+        "2. primitive colors: do not use directly.forest-green.100": "2. Primitive Colors: Do not use directly/forest-green/100",
+        "2. primitive colors: do not use directly.forest-green.150": "2. Primitive Colors: Do not use directly/forest-green/150",
+        "2. primitive colors: do not use directly.forest-green.200": "2. Primitive Colors: Do not use directly/forest-green/200",
+        "2. primitive colors: do not use directly.forest-green.300": "2. Primitive Colors: Do not use directly/forest-green/300",
+        "2. primitive colors: do not use directly.forest-green.400": "2. Primitive Colors: Do not use directly/forest-green/400",
+        "2. primitive colors: do not use directly.forest-green.500": "2. Primitive Colors: Do not use directly/forest-green/500",
+        "2. primitive colors: do not use directly.forest-green.600": "2. Primitive Colors: Do not use directly/forest-green/600",
+        "2. primitive colors: do not use directly.forest-green.700": "2. Primitive Colors: Do not use directly/forest-green/700",
+        "2. primitive colors: do not use directly.forest-green.800": "2. Primitive Colors: Do not use directly/forest-green/800",
+        "2. primitive colors: do not use directly.red.50": "2. Primitive Colors: Do not use directly/red/50",
+        "2. primitive colors: do not use directly.red.100": "2. Primitive Colors: Do not use directly/red/100",
+        "2. primitive colors: do not use directly.red.200": "2. Primitive Colors: Do not use directly/red/200",
+        "2. primitive colors: do not use directly.red.300": "2. Primitive Colors: Do not use directly/red/300",
+        "2. primitive colors: do not use directly.red.400": "2. Primitive Colors: Do not use directly/red/400",
+        "2. primitive colors: do not use directly.red.500": "2. Primitive Colors: Do not use directly/red/500",
+        "2. primitive colors: do not use directly.red.600": "2. Primitive Colors: Do not use directly/red/600",
+        "2. primitive colors: do not use directly.red.700": "2. Primitive Colors: Do not use directly/red/700",
+        "2. primitive colors: do not use directly.red.800": "2. Primitive Colors: Do not use directly/red/800",
+        "2. primitive colors: do not use directly.red.900": "2. Primitive Colors: Do not use directly/red/900",
+        "2. primitive colors: do not use directly.apricot.50": "2. Primitive Colors: Do not use directly/apricot/50",
+        "2. primitive colors: do not use directly.apricot.100": "2. Primitive Colors: Do not use directly/apricot/100",
+        "2. primitive colors: do not use directly.apricot.200": "2. Primitive Colors: Do not use directly/apricot/200",
+        "2. primitive colors: do not use directly.apricot.300": "2. Primitive Colors: Do not use directly/apricot/300",
+        "2. primitive colors: do not use directly.apricot.400": "2. Primitive Colors: Do not use directly/apricot/400",
+        "2. primitive colors: do not use directly.apricot.500": "2. Primitive Colors: Do not use directly/apricot/500",
+        "2. primitive colors: do not use directly.apricot.600": "2. Primitive Colors: Do not use directly/apricot/600",
+        "2. primitive colors: do not use directly.apricot.700": "2. Primitive Colors: Do not use directly/apricot/700",
+        "2. primitive colors: do not use directly.apricot.800": "2. Primitive Colors: Do not use directly/apricot/800",
+        "2. primitive colors: do not use directly.apricot.900": "2. Primitive Colors: Do not use directly/apricot/900",
+        "2. primitive colors: do not use directly.green.50": "2. Primitive Colors: Do not use directly/green/50",
+        "2. primitive colors: do not use directly.green.100": "2. Primitive Colors: Do not use directly/green/100",
+        "2. primitive colors: do not use directly.green.200": "2. Primitive Colors: Do not use directly/green/200",
+        "2. primitive colors: do not use directly.green.300": "2. Primitive Colors: Do not use directly/green/300",
+        "2. primitive colors: do not use directly.green.400": "2. Primitive Colors: Do not use directly/green/400",
+        "2. primitive colors: do not use directly.green.500": "2. Primitive Colors: Do not use directly/green/500",
+        "2. primitive colors: do not use directly.green.600": "2. Primitive Colors: Do not use directly/green/600",
+        "2. primitive colors: do not use directly.green.700": "2. Primitive Colors: Do not use directly/green/700",
+        "2. primitive colors: do not use directly.green.800": "2. Primitive Colors: Do not use directly/green/800",
+        "2. primitive colors: do not use directly.green.900": "2. Primitive Colors: Do not use directly/green/900",
+        "4. typography primitives.font-size.fs-48": "4. Typography Primitives/font-size/fs-48",
+        "4. typography primitives.font-size.fs-64": "4. Typography Primitives/font-size/fs-64",
+        "2. primitive colors: do not use directly.gray.100": "2. Primitive Colors: Do not use directly/gray/100",
+        "2. primitive colors: do not use directly.gray.250": "2. Primitive Colors: Do not use directly/gray/250",
+        "2. primitive colors: do not use directly.gray.200": "2. Primitive Colors: Do not use directly/gray/200",
+        "2. primitive colors: do not use directly.gray.300": "2. Primitive Colors: Do not use directly/gray/300",
+        "2. primitive colors: do not use directly.gray.400": "2. Primitive Colors: Do not use directly/gray/400",
+        "2. primitive colors: do not use directly.gray.500": "2. Primitive Colors: Do not use directly/gray/500",
+        "2. primitive colors: do not use directly.gray.600": "2. Primitive Colors: Do not use directly/gray/600",
+        "2. primitive colors: do not use directly.gray.700": "2. Primitive Colors: Do not use directly/gray/700",
+        "2. primitive colors: do not use directly.gray.800": "2. Primitive Colors: Do not use directly/gray/800",
+        "2. primitive colors: do not use directly.black.1000": "2. Primitive Colors: Do not use directly/black/1000",
+        "2. primitive colors: do not use directly.white.1000": "2. Primitive Colors: Do not use directly/white/1000",
+        "1. semantic colors.background.base.default": "1. Semantic Colors/background/base/default",
+        "1. semantic colors.background.base.default-active": "1. Semantic Colors/background/base/default-active",
+        "2. primitive colors: do not use directly.gray.900": "2. Primitive Colors: Do not use directly/gray/900",
+        "2. primitive colors: do not use directly.gray.50": "2. Primitive Colors: Do not use directly/gray/50",
+        "2. primitive colors: do not use directly.gray.350": "2. Primitive Colors: Do not use directly/gray/350",
+        "1. semantic colors.background.base.secondary": "1. Semantic Colors/background/base/secondary",
+        "1. semantic colors.background.base.secondary-active": "1. Semantic Colors/background/base/secondary-active",
+        "1. semantic colors.background.base.tertiary": "1. Semantic Colors/background/base/tertiary",
+        "1. semantic colors.background.base.tertiary-active": "1. Semantic Colors/background/base/tertiary-active",
+        "1. semantic colors.background.brand.default": "1. Semantic Colors/background/brand/default",
+        "1. semantic colors.background.brand.default-active": "1. Semantic Colors/background/brand/default-active",
+        "1. semantic colors.background.brand.secondary": "1. Semantic Colors/background/brand/secondary",
+        "1. semantic colors.background.brand.secondary-active": "1. Semantic Colors/background/brand/secondary-active",
+        "1. semantic colors.background.positive.default": "1. Semantic Colors/background/positive/default",
+        "1. semantic colors.background.positive.default-active": "1. Semantic Colors/background/positive/default-active",
+        "1. semantic colors.background.positive.secondary": "1. Semantic Colors/background/positive/secondary",
+        "1. semantic colors.background.positive.secondary-active": "1. Semantic Colors/background/positive/secondary-active",
+        "1. semantic colors.background.warning.default": "1. Semantic Colors/background/warning/default",
+        "1. semantic colors.background.warning.default-active": "1. Semantic Colors/background/warning/default-active",
+        "1. semantic colors.background.warning.secondary": "1. Semantic Colors/background/warning/secondary",
+        "1. semantic colors.background.warning.secondary-active": "1. Semantic Colors/background/warning/secondary-active",
+        "1. semantic colors.background.danger.default": "1. Semantic Colors/background/danger/default",
+        "1. semantic colors.background.danger.default-active": "1. Semantic Colors/background/danger/default-active",
+        "1. semantic colors.background.danger.secondary": "1. Semantic Colors/background/danger/secondary",
+        "1. semantic colors.background.danger.secondary-active": "1. Semantic Colors/background/danger/secondary-active",
+        "1. semantic colors.border.base.default": "1. Semantic Colors/border/base/default",
+        "1. semantic colors.border.base.secondary": "1. Semantic Colors/border/base/secondary",
+        "1. semantic colors.border.base.tertiary": "1. Semantic Colors/border/base/tertiary",
+        "1. semantic colors.border.brand.default": "1. Semantic Colors/border/brand/default",
+        "1. semantic colors.border.disabled.default": "1. Semantic Colors/border/disabled/default",
+        "1. semantic colors.border.positive.default": "1. Semantic Colors/border/positive/default",
+        "1. semantic colors.border.warning.default": "1. Semantic Colors/border/warning/default",
+        "1. semantic colors.border.danger.default": "1. Semantic Colors/border/danger/default",
+        "1. semantic colors.text.base.default": "1. Semantic Colors/text/base/default",
+        "1. semantic colors.text.base.secondary": "1. Semantic Colors/text/base/secondary",
+        "1. semantic colors.text.base.tertiary": "1. Semantic Colors/text/base/tertiary",
+        "1. semantic colors.text.base-inverse.default": "1. Semantic Colors/text/base-inverse/default",
+        "1. semantic colors.text.brand.default": "1. Semantic Colors/text/brand/default",
+        "1. semantic colors.text.disabled.default": "1. Semantic Colors/text/disabled/default",
+        "1. semantic colors.text.positive.default": "1. Semantic Colors/text/positive/default",
+        "1. semantic colors.text.warning.default": "1. Semantic Colors/text/warning/default",
+        "1. semantic colors.text.danger.default": "1. Semantic Colors/text/danger/default",
+        "1. semantic colors.icon.base.default": "1. Semantic Colors/icon/base/default",
+        "1. semantic colors.icon.base.secondary": "1. Semantic Colors/icon/base/secondary",
+        "1. semantic colors.icon.base.tertiary": "1. Semantic Colors/icon/base/tertiary",
+        "1. semantic colors.icon.brand.default": "1. Semantic Colors/icon/brand/default",
+        "1. semantic colors.icon.disabled.default": "1. Semantic Colors/icon/disabled/default",
+        "1. semantic colors.icon.positive.default": "1. Semantic Colors/icon/positive/default",
+        "1. semantic colors.icon.warning.default": "1. Semantic Colors/icon/warning/default",
+        "1. semantic colors.icon.danger.default": "1. Semantic Colors/icon/danger/default",
+        "1. semantic colors.background.base-inverse.default": "1. Semantic Colors/background/base-inverse/default",
+        "1. semantic colors.background.base-inverse.default-active": "1. Semantic Colors/background/base-inverse/default-active",
+        "4. typography primitives.font-size.fs-20": "4. Typography Primitives/font-size/fs-20",
+        "1. semantic colors.background.disabled.default": "1. Semantic Colors/background/disabled/default",
+        "1. semantic colors.background.disabled.secondary": "1. Semantic Colors/background/disabled/secondary",
+        "1. semantic colors.text.disabled.on-disabled": "1. Semantic Colors/text/disabled/on-disabled",
+        "1. semantic colors.text.positive.on-secondary": "1. Semantic Colors/text/positive/on-secondary",
+        "1. semantic colors.text.warning.on-secondary": "1. Semantic Colors/text/warning/on-secondary",
+        "1. semantic colors.text.danger.on-secondary": "1. Semantic Colors/text/danger/on-secondary",
+        "1. semantic colors.text.brand.on-secondary": "1. Semantic Colors/text/brand/on-secondary",
+        "3. sizes.border-radius.radius-4": "3. Sizes/border-radius/radius-4",
+        "1. semantic colors.icon.base-inverse.default": "1. Semantic Colors/icon/base-inverse/default",
+        "1. semantic colors.icon.base-inverse.on-color": "1. Semantic Colors/icon/base-inverse/on-color",
+        "1. semantic colors.text.base-inverse.on-color": "1. Semantic Colors/text/base-inverse/on-color",
+        "1. semantic colors.icon.base.default-on-color": "1. Semantic Colors/icon/base/default-on-color",
+        "1. semantic colors.icon.base.secondary-on-color": "1. Semantic Colors/icon/base/secondary-on-color",
+        "1. semantic colors.icon.brand.on-secondary": "1. Semantic Colors/icon/brand/on-secondary",
+        "1. semantic colors.icon.disabled.on-disabled": "1. Semantic Colors/icon/disabled/on-disabled",
+        "1. semantic colors.icon.positive.on-secondary": "1. Semantic Colors/icon/positive/on-secondary",
+        "1. semantic colors.icon.warning.on-secondary": "1. Semantic Colors/icon/warning/on-secondary",
+        "1. semantic colors.icon.danger.on-secondary": "1. Semantic Colors/icon/danger/on-secondary",
+        "1. semantic colors.text.base.default-on-color": "1. Semantic Colors/text/base/default-on-color",
+        "1. semantic colors.text.base.secondary-on-color": "1. Semantic Colors/text/base/secondary-on-color",
+        "1. semantic colors.background.warning.accent": "1. Semantic Colors/background/warning/accent",
+        "1. semantic colors.background.brand.default-hover": "1. Semantic Colors/background/brand/default-hover",
+        "1. semantic colors.background.positive.default-hover": "1. Semantic Colors/background/positive/default-hover",
+        "1. semantic colors.background.warning.default-hover": "1. Semantic Colors/background/warning/default-hover",
+        "1. semantic colors.background.danger.default-hover": "1. Semantic Colors/background/danger/default-hover",
+        "1. semantic colors.background.base.tertiary-hover": "1. Semantic Colors/background/base/tertiary-hover",
+        "1. semantic colors.hack.do-not-implement": "1. Semantic Colors/hack/do-not-implement",
+        "1. semantic colors.text.brand.default-hover": "1. Semantic Colors/text/brand/default-hover",
+        "1. semantic colors.background.brand.secondary-hover": "1. Semantic Colors/background/brand/secondary-hover",
+        "1. semantic colors.border.base.strong": "1. Semantic Colors/border/base/strong",
+        "1. semantic colors.background.base-inverse.default-hover": "1. Semantic Colors/background/base-inverse/default-hover",
+        "1. semantic colors.background.danger.secondary-hover": "1. Semantic Colors/background/danger/secondary-hover",
+        "3. sizes.border-width.border-3": "3. Sizes/border-width/border-3",
+        "1. semantic colors.text.brand.visited": "1. Semantic Colors/text/brand/visited",
+        "1. semantic colors.background.base.default-hover": "1. Semantic Colors/background/base/default-hover",
+        "1. semantic colors.background.base.secondary-hover": "1. Semantic Colors/background/base/secondary-hover",
+        "4. typography primitives.line-height.lh-16": "4. Typography Primitives/line-height/lh-16",
+        "4. typography primitives.line-height.lh-20": "4. Typography Primitives/line-height/lh-20",
+        "4. typography primitives.line-height.lh-24": "4. Typography Primitives/line-height/lh-24",
+        "4. typography primitives.line-height.lh-26": "4. Typography Primitives/line-height/lh-26",
+        "4. typography primitives.line-height.lh-28": "4. Typography Primitives/line-height/lh-28",
+        "4. typography primitives.line-height.lh-32": "4. Typography Primitives/line-height/lh-32",
+        "4. typography primitives.line-height.lh-40": "4. Typography Primitives/line-height/lh-40",
+        "4. typography primitives.line-height.lh-48": "4. Typography Primitives/line-height/lh-48",
+        "4. typography primitives.line-height.lh-56": "4. Typography Primitives/line-height/lh-56",
+        "4. typography primitives.line-height.lh-64": "4. Typography Primitives/line-height/lh-64",
+        "4. typography primitives.line-height.lh-30": "4. Typography Primitives/line-height/lh-30",
+        "4. typography primitives.line-height.lh-36": "4. Typography Primitives/line-height/lh-36",
+        "1. semantic colors.icon.brand.visited": "1. Semantic Colors/icon/brand/visited",
+        "2. primitive colors: do not use directly.blue-sky.900": "2. Primitive Colors: Do not use directly/blue-sky/900",
+        "2. primitive colors: do not use directly.lavender.900": "2. Primitive Colors: Do not use directly/lavender/900",
+        "2. primitive colors: do not use directly.purple.900": "2. Primitive Colors: Do not use directly/purple/900",
+        "2. primitive colors: do not use directly.magenta.900": "2. Primitive Colors: Do not use directly/magenta/900",
+        "2. primitive colors: do not use directly.forest-green.900": "2. Primitive Colors: Do not use directly/forest-green/900",
+        "1. semantic colors.background.brand.tertiary": "1. Semantic Colors/background/brand/tertiary",
+        "4. typography primitives.font-size.fs-10": "4. Typography Primitives/font-size/fs-10",
+        "4. typography primitives.line-height.lh-12": "4. Typography Primitives/line-height/lh-12",
+        "3. sizes.spacings.spacing-56": "3. Sizes/spacings/spacing-56",
+        "3. sizes.spacings.spacing-80": "3. Sizes/spacings/spacing-80",
+        "3. sizes.border-width.border-0,5": "3. Sizes/border-width/border-0,5",
+        "2. primitive colors: do not use directly.alpha.black.100-alpha": "2. Primitive Colors: Do not use directly/alpha/black/100-alpha",
+        "2. primitive colors: do not use directly.alpha.black.200-alpha": "2. Primitive Colors: Do not use directly/alpha/black/200-alpha",
+        "2. primitive colors: do not use directly.alpha.black.300-alpha": "2. Primitive Colors: Do not use directly/alpha/black/300-alpha",
+        "2. primitive colors: do not use directly.alpha.black.400-alpha": "2. Primitive Colors: Do not use directly/alpha/black/400-alpha",
+        "1. semantic colors.background.alpha.overlay-dark": "1. Semantic Colors/background/alpha/overlay-dark",
+        "2. primitive colors: do not use directly.alpha.black.500-alpha": "2. Primitive Colors: Do not use directly/alpha/black/500-alpha",
+        "2. primitive colors: do not use directly.alpha.white.100-alpha": "2. Primitive Colors: Do not use directly/alpha/white/100-alpha",
+        "2. primitive colors: do not use directly.alpha.white.200-alpha": "2. Primitive Colors: Do not use directly/alpha/white/200-alpha",
+        "2. primitive colors: do not use directly.alpha.white.300-alpha": "2. Primitive Colors: Do not use directly/alpha/white/300-alpha",
+        "2. primitive colors: do not use directly.alpha.white.400-alpha": "2. Primitive Colors: Do not use directly/alpha/white/400-alpha",
+        "2. primitive colors: do not use directly.alpha.white.500-alpha": "2. Primitive Colors: Do not use directly/alpha/white/500-alpha",
+        "1. semantic colors.background.alpha.overlay-light": "1. Semantic Colors/background/alpha/overlay-light",
+        "1. semantic colors.border.base.subtle": "1. Semantic Colors/border/base/subtle",
+        "2. primitive colors: do not use directly.alpha.gray.alpha-100": "2. Primitive Colors: Do not use directly/alpha/gray/alpha-100",
+        "2. primitive colors: do not use directly.alpha.gray.alpha-200": "2. Primitive Colors: Do not use directly/alpha/gray/alpha-200",
+        "2. primitive colors: do not use directly.alpha.gray.alpha-300": "2. Primitive Colors: Do not use directly/alpha/gray/alpha-300",
+        "2. primitive colors: do not use directly.alpha.gray.alpha-400": "2. Primitive Colors: Do not use directly/alpha/gray/alpha-400",
+        "2. primitive colors: do not use directly.alpha.gray.alpha-500": "2. Primitive Colors: Do not use directly/alpha/gray/alpha-500",
+        "1. semantic colors.background.alpha.large-surface": "1. Semantic Colors/background/alpha/large-surface",
+        "3. sizes.border-radius.radius-24": "3. Sizes/border-radius/radius-24",
+        "3. sizes.spacings.spacing-96": "3. Sizes/spacings/spacing-96",
+        "3. sizes.spacings.spacing-120": "3. Sizes/spacings/spacing-120",
+        "#responsive typography test.headings.h1": "#Responsive typography test/Headings/H1",
+        "3. sizes.mobile": "3. Sizes/mobile",
+        "3. sizes.desktop": "3. Sizes/desktop",
+        "#responsive typography test.headings.h2": "#Responsive typography test/Headings/H2",
+        "#responsive typography test.headings.h3": "#Responsive typography test/Headings/H3"
+      },
+      "modes": {
+        "VariableCollectionId:5:46": [
+          "5:0"
+        ],
+        "VariableCollectionId:11:62": [
+          "11:0"
+        ],
+        "VariableCollectionId:74:1294": [
+          "74:0"
+        ],
+        "VariableCollectionId:103:681": [
+          "103:0",
+          "518:0"
+        ],
+        "VariableCollectionId:4432:842": [
+          "4432:0",
+          "4432:1"
+        ]
+      },
+      "modeNames": {
+        "VariableCollectionId:5:46": {
+          "5:0": "Mode 1"
+        },
+        "VariableCollectionId:11:62": {
+          "11:0": "Mode 1"
+        },
+        "VariableCollectionId:74:1294": {
+          "74:0": "Mode 1"
+        },
+        "VariableCollectionId:103:681": {
+          "103:0": "Light Mode",
+          "518:0": "Dark Mode"
+        },
+        "VariableCollectionId:4432:842": {
+          "4432:0": "Desktop",
+          "4432:1": "Mobile"
+        }
+      },
+      "history": [
+        {
+          "version": "1.0.0",
+          "exportedAt": "2026-05-15T06:10:07.195Z",
+          "changesSummary": "Export from Figma",
+          "author": "dascal mihai",
+          "variableCount": 263
+        }
+      ]
+    }
+  },
+  "4. Typography Primitives": {
+    "font-size": {
+      "fs-12": {
+        "$value": 12,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "FONT_SIZE"
+            ]
+          }
+        }
+      },
+      "fs-14": {
+        "$value": 14,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "FONT_SIZE"
+            ]
+          }
+        }
+      },
+      "fs-16": {
+        "$value": 16,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "FONT_SIZE"
+            ]
+          }
+        }
+      },
+      "fs-18": {
+        "$value": 18,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "FONT_SIZE"
+            ]
+          }
+        }
+      },
+      "fs-24": {
+        "$value": 24,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "FONT_SIZE"
+            ]
+          }
+        }
+      },
+      "fs-32": {
+        "$value": 32,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "FONT_SIZE"
+            ]
+          }
+        }
+      },
+      "fs-40": {
+        "$value": 40,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "FONT_SIZE"
+            ]
+          }
+        }
+      },
+      "fs-56": {
+        "$value": 56,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "FONT_SIZE"
+            ]
+          }
+        }
+      },
+      "fs-22": {
+        "$value": 22,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "FONT_SIZE"
+            ]
+          }
+        }
+      },
+      "fs-28": {
+        "$value": 28,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "FONT_SIZE"
+            ]
+          }
+        }
+      },
+      "fs-48": {
+        "$value": 48,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "FONT_SIZE"
+            ]
+          }
+        }
+      },
+      "fs-64": {
+        "$value": 64,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "FONT_SIZE"
+            ]
+          }
+        }
+      },
+      "fs-20": {
+        "$value": 20,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "FONT_SIZE"
+            ]
+          }
+        }
+      },
+      "fs-10": {
+        "$value": 10,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "FONT_SIZE"
+            ]
+          }
+        }
+      }
+    },
+    "font-family": {
+      "primary-font": {
+        "$value": "Onest",
+        "$type": "string",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "FONT_FAMILY"
+            ]
+          }
+        }
+      }
+    },
+    "font-weight": {
+      "fw-regular": {
+        "$value": 400,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "FONT_WEIGHT"
+            ]
+          }
+        }
+      },
+      "fw-medium": {
+        "$value": 500,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "FONT_WEIGHT"
+            ]
+          }
+        }
+      },
+      "fw-semibold": {
+        "$value": 600,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "FONT_WEIGHT"
+            ]
+          }
+        }
+      },
+      "fw-bold": {
+        "$value": 700,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "FONT_WEIGHT"
+            ]
+          }
+        }
+      }
+    },
+    "line-height": {
+      "lh-16": {
+        "$value": 16,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "LINE_HEIGHT"
+            ]
+          }
+        }
+      },
+      "lh-20": {
+        "$value": 20,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "LINE_HEIGHT"
+            ]
+          }
+        }
+      },
+      "lh-24": {
+        "$value": 24,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "LINE_HEIGHT"
+            ]
+          }
+        }
+      },
+      "lh-26": {
+        "$value": 26,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "LINE_HEIGHT"
+            ]
+          }
+        }
+      },
+      "lh-28": {
+        "$value": 28,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "LINE_HEIGHT"
+            ]
+          }
+        }
+      },
+      "lh-32": {
+        "$value": 32,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "LINE_HEIGHT"
+            ]
+          }
+        }
+      },
+      "lh-40": {
+        "$value": 40,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "LINE_HEIGHT"
+            ]
+          }
+        }
+      },
+      "lh-48": {
+        "$value": 48,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "LINE_HEIGHT"
+            ]
+          }
+        }
+      },
+      "lh-56": {
+        "$value": 56,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "LINE_HEIGHT"
+            ]
+          }
+        }
+      },
+      "lh-64": {
+        "$value": 64,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "LINE_HEIGHT"
+            ]
+          }
+        }
+      },
+      "lh-30": {
+        "$value": 30,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "LINE_HEIGHT"
+            ]
+          }
+        }
+      },
+      "lh-36": {
+        "$value": 36,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "LINE_HEIGHT"
+            ]
+          }
+        }
+      },
+      "lh-12": {
+        "$value": 12,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "LINE_HEIGHT"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "3. Sizes": {
+    "spacings": {
+      "spacing-2": {
+        "$value": 2,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "GAP"
+            ]
+          }
+        }
+      },
+      "spacing-0": {
+        "$value": "",
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "GAP"
+            ]
+          }
+        }
+      },
+      "spacing-4": {
+        "$value": 4,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "GAP"
+            ]
+          }
+        }
+      },
+      "spacing-6": {
+        "$value": 6,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "GAP"
+            ]
+          }
+        }
+      },
+      "spacing-8": {
+        "$value": 8,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "GAP"
+            ]
+          }
+        }
+      },
+      "spacing-12": {
+        "$value": 12,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "GAP"
+            ]
+          }
+        }
+      },
+      "spacing-16": {
+        "$value": 16,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "GAP"
+            ]
+          }
+        }
+      },
+      "spacing-20": {
+        "$value": 20,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "GAP"
+            ]
+          }
+        }
+      },
+      "spacing-24": {
+        "$value": 24,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "GAP"
+            ]
+          }
+        }
+      },
+      "spacing-32": {
+        "$value": 32,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "GAP"
+            ]
+          }
+        }
+      },
+      "spacing-40": {
+        "$value": 40,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "GAP"
+            ]
+          }
+        }
+      },
+      "spacing-48": {
+        "$value": 48,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "GAP"
+            ]
+          }
+        }
+      },
+      "spacing-64": {
+        "$value": 64,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "GAP"
+            ]
+          }
+        }
+      },
+      "spacing-56": {
+        "$value": 56,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "GAP"
+            ]
+          }
+        }
+      },
+      "spacing-80": {
+        "$value": 80,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "GAP"
+            ]
+          }
+        }
+      },
+      "spacing-96": {
+        "$value": 96,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "GAP"
+            ]
+          }
+        }
+      },
+      "spacing-120": {
+        "$value": 120,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "GAP"
+            ]
+          }
+        }
+      }
+    },
+    "border-radius": {
+      "radius-0": {
+        "$value": "",
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "CORNER_RADIUS"
+            ]
+          }
+        }
+      },
+      "radius-6": {
+        "$value": 6,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "CORNER_RADIUS"
+            ]
+          }
+        }
+      },
+      "radius-8": {
+        "$value": 8,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "CORNER_RADIUS"
+            ]
+          }
+        }
+      },
+      "radius-12": {
+        "$value": 12,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "CORNER_RADIUS"
+            ]
+          }
+        }
+      },
+      "radius-16": {
+        "$value": 16,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "CORNER_RADIUS"
+            ]
+          }
+        }
+      },
+      "radius-32": {
+        "$value": 32,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "CORNER_RADIUS"
+            ]
+          }
+        }
+      },
+      "radius-full": {
+        "$value": 999,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "CORNER_RADIUS"
+            ]
+          }
+        }
+      },
+      "radius-4": {
+        "$value": 4,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "CORNER_RADIUS"
+            ]
+          }
+        }
+      },
+      "radius-24": {
+        "$value": 24,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "CORNER_RADIUS"
+            ]
+          }
+        }
+      }
+    },
+    "border-width": {
+      "border-1": {
+        "$value": 1,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "STROKE_FLOAT"
+            ]
+          }
+        }
+      },
+      "border-1,5": {
+        "$value": 1.5,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "STROKE_FLOAT"
+            ]
+          }
+        }
+      },
+      "border-2": {
+        "$value": 2,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "STROKE_FLOAT"
+            ]
+          }
+        }
+      },
+      "border-3": {
+        "$value": 3,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "STROKE_FLOAT"
+            ]
+          }
+        }
+      },
+      "border-0,5": {
+        "$value": 0.5,
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "STROKE_FLOAT"
+            ]
+          }
+        }
+      }
+    },
+    "mobile": {
+      "$value": 3,
+      "$type": "number",
+      "$extensions": {
+        "com.figma": {
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    },
+    "desktop": {
+      "$value": "",
+      "$type": "number",
+      "$extensions": {
+        "com.figma": {
+          "scopes": [
+            "ALL_SCOPES"
+          ]
+        }
+      }
+    }
+  },
+  "2. Primitive Colors: Do not use directly": {
+    "blue-sky": {
+      "100": {
+        "$value": "#e8f0fb",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "150": {
+        "$value": "#d6e5f8",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "200": {
+        "$value": "#ccdef6",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "300": {
+        "$value": "#99bced",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "400": {
+        "$value": "#669be4",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "500": {
+        "$value": "#3379db",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "600": {
+        "$value": "#0058d2",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "700": {
+        "$value": "#0046a8",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "800": {
+        "$value": "#00357e",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "900": {
+        "$value": "#00295a",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      }
+    },
+    "lavender": {
+      "100": {
+        "$value": "#efeafc",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "200": {
+        "$value": "#ddd2fa",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "300": {
+        "$value": "#bba5f5",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "400": {
+        "$value": "#9a79ef",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "500": {
+        "$value": "#784cea",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "600": {
+        "$value": "#561fe5",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "700": {
+        "$value": "#4519b7",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "800": {
+        "$value": "#341389",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "900": {
+        "$value": "#240c66",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      }
+    },
+    "purple": {
+      "100": {
+        "$value": "#efeafc",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "200": {
+        "$value": "#ddd2fa",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "300": {
+        "$value": "#cbaffd",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "400": {
+        "$value": "#b287fb",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "500": {
+        "$value": "#985ffa",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "600": {
+        "$value": "#7e37f9",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "700": {
+        "$value": "#652cc7",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "800": {
+        "$value": "#4c2195",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "900": {
+        "$value": "#36166a",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      }
+    },
+    "magenta": {
+      "100": {
+        "$value": "#f7eafa",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "200": {
+        "$value": "#eed1f5",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "300": {
+        "$value": "#dda3eb",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "400": {
+        "$value": "#cc74e2",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "500": {
+        "$value": "#bb46d8",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "600": {
+        "$value": "#aa18ce",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "700": {
+        "$value": "#8813a5",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "800": {
+        "$value": "#660e7c",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "900": {
+        "$value": "#4a095a",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      }
+    },
+    "forest-green": {
+      "100": {
+        "$value": "#e8f1f1",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "150": {
+        "$value": "#d6e6e7",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "200": {
+        "$value": "#cce0e1",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "300": {
+        "$value": "#99c1c3",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "400": {
+        "$value": "#66a1a5",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "500": {
+        "$value": "#338287",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "600": {
+        "$value": "#006369",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "700": {
+        "$value": "#004f54",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "800": {
+        "$value": "#003b3f",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "900": {
+        "$value": "#00292c",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      }
+    },
+    "red": {
+      "50": {
+        "$value": "#feefee",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "100": {
+        "$value": "#fee4e2",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "200": {
+        "$value": "#fecdc9",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "300": {
+        "$value": "#fda19b",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "400": {
+        "$value": "#f97066",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "500": {
+        "$value": "#f04438",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "600": {
+        "$value": "#d92d20",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "700": {
+        "$value": "#b32318",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "800": {
+        "$value": "#912018",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "900": {
+        "$value": "#7a271a",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      }
+    },
+    "apricot": {
+      "50": {
+        "$value": "#fef5dd",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "100": {
+        "$value": "#feefc6",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "200": {
+        "$value": "#fedf89",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "300": {
+        "$value": "#fec84b",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "400": {
+        "$value": "#fdb022",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "500": {
+        "$value": "#f79009",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "600": {
+        "$value": "#dc6803",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "700": {
+        "$value": "#b54708",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "800": {
+        "$value": "#93370d",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "900": {
+        "$value": "#792e0d",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      }
+    },
+    "green": {
+      "50": {
+        "$value": "#ebf7f1",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "100": {
+        "$value": "#e6f5ee",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "200": {
+        "$value": "#cdeadd",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "300": {
+        "$value": "#9ad6bb",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "400": {
+        "$value": "#68c199",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "500": {
+        "$value": "#35ad77",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "600": {
+        "$value": "#039855",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "700": {
+        "$value": "#027948",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "800": {
+        "$value": "#05603a",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "900": {
+        "$value": "#054f31",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      }
+    },
+    "gray": {
+      "50": {
+        "$value": "#f7f7f7",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "100": {
+        "$value": "#f5f5f5",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "200": {
+        "$value": "#f1f1f1",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "250": {
+        "$value": "#d9d9d9",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "300": {
+        "$value": "#b2b2b2",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "350": {
+        "$value": "#8a8a8a",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "400": {
+        "$value": "#757575",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "500": {
+        "$value": "#616161",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "600": {
+        "$value": "#444444",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "700": {
+        "$value": "#383838",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "800": {
+        "$value": "#2c2c2c",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "900": {
+        "$value": "#1e1e1e",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      }
+    },
+    "black": {
+      "1000": {
+        "$value": "#121212",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      }
+    },
+    "white": {
+      "1000": {
+        "$value": "#ffffff",
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      }
+    },
+    "alpha": {
+      "black": {
+        "100-alpha": {
+          "$value": "#1212120d",
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          }
+        },
+        "200-alpha": {
+          "$value": "#1212121a",
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          }
+        },
+        "300-alpha": {
+          "$value": "#12121233",
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          }
+        },
+        "400-alpha": {
+          "$value": "#12121266",
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          }
+        },
+        "500-alpha": {
+          "$value": "#12121299",
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          }
+        }
+      },
+      "white": {
+        "100-alpha": {
+          "$value": "#ffffff0d",
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          }
+        },
+        "200-alpha": {
+          "$value": "#ffffff1a",
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          }
+        },
+        "300-alpha": {
+          "$value": "#ffffff33",
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          }
+        },
+        "400-alpha": {
+          "$value": "#ffffff66",
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          }
+        },
+        "500-alpha": {
+          "$value": "#ffffff99",
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          }
+        }
+      },
+      "gray": {
+        "alpha-100": {
+          "$value": "#44444408",
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          }
+        },
+        "alpha-200": {
+          "$value": "#4444441a",
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          }
+        },
+        "alpha-300": {
+          "$value": "#44444433",
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          }
+        },
+        "alpha-400": {
+          "$value": "#44444466",
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          }
+        },
+        "alpha-500": {
+          "$value": "#44444499",
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "ALL_SCOPES"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "1. Semantic Colors": {
+    "background": {
+      "base": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.white.1000}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.900}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "default-active": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.250}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.700}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "secondary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.100}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.800}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "secondary-active": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.250}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.600}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "tertiary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.200}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.700}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "tertiary-active": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.300}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.500}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "tertiary-hover": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.250}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.600}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "default-hover": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.100}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.800}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "secondary-hover": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.200}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.700}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        }
+      },
+      "brand": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.blue-sky.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.blue-sky.600}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "default-active": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.blue-sky.800}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.blue-sky.800}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "secondary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.blue-sky.100}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.blue-sky.200}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "secondary-active": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.blue-sky.300}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.blue-sky.400}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "default-hover": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.blue-sky.700}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.blue-sky.700}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "secondary-hover": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.blue-sky.200}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.blue-sky.300}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "tertiary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.blue-sky.900}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.blue-sky.900}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        }
+      },
+      "positive": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.green.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.green.700}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "default-active": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.green.800}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.green.900}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "secondary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.green.100}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.green.200}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "secondary-active": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.green.200}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.green.300}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "default-hover": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.green.700}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.green.800}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        }
+      },
+      "warning": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.apricot.400}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.apricot.500}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "default-active": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.apricot.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.apricot.700}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "secondary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.apricot.100}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.apricot.200}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "secondary-active": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.apricot.200}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.apricot.300}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "accent": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.apricot.300}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.apricot.400}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "default-hover": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.apricot.500}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.apricot.600}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        }
+      },
+      "danger": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.red.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.red.700}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "default-active": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.red.800}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.red.900}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "secondary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.red.100}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.red.200}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "secondary-active": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.red.300}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.red.400}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "default-hover": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.red.700}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.red.800}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "secondary-hover": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.red.200}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.red.300}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        }
+      },
+      "base-inverse": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.900}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.100}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "default-active": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.250}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "default-hover": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.700}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.200}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        }
+      },
+      "disabled": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.200}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.700}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "secondary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.250}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.400}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        }
+      },
+      "alpha": {
+        "overlay-dark": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.alpha.black.400-alpha}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.alpha.black.200-alpha}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "overlay-light": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.alpha.white.400-alpha}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.alpha.white.200-alpha}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        },
+        "large-surface": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.alpha.gray.alpha-100}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.alpha.gray.alpha-200}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "FRAME_FILL",
+                "SHAPE_FILL",
+                "EFFECT_COLOR"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "border": {
+      "base": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.250}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.600}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "STROKE_COLOR"
+              ]
+            }
+          }
+        },
+        "secondary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.300}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.400}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "STROKE_COLOR"
+              ]
+            }
+          }
+        },
+        "tertiary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.250}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "STROKE_COLOR"
+              ]
+            }
+          }
+        },
+        "strong": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.black.1000}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.100}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "STROKE_COLOR"
+              ]
+            }
+          }
+        },
+        "subtle": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.white.1000}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.black.1000}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "STROKE_COLOR"
+              ]
+            }
+          }
+        }
+      },
+      "brand": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.blue-sky.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.blue-sky.500}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "STROKE_COLOR"
+              ]
+            }
+          }
+        }
+      },
+      "disabled": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.250}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.600}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "STROKE_COLOR"
+              ]
+            }
+          }
+        }
+      },
+      "positive": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.green.700}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.green.500}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "STROKE_COLOR"
+              ]
+            }
+          }
+        }
+      },
+      "warning": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.apricot.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.apricot.500}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "STROKE_COLOR"
+              ]
+            }
+          }
+        }
+      },
+      "danger": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.red.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.red.500}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "STROKE_COLOR"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "text": {
+      "base": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.black.1000}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.white.1000}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "TEXT_FILL"
+              ]
+            }
+          }
+        },
+        "secondary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.700}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.200}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "TEXT_FILL"
+              ]
+            }
+          }
+        },
+        "tertiary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.400}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.300}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "TEXT_FILL"
+              ]
+            }
+          }
+        },
+        "default-on-color": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.black.1000}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.black.1000}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "TEXT_FILL"
+              ]
+            }
+          }
+        },
+        "secondary-on-color": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.600}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "TEXT_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "base-inverse": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.white.1000}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.black.1000}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "TEXT_FILL"
+              ]
+            }
+          }
+        },
+        "on-color": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.white.1000}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.white.1000}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "TEXT_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "brand": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.blue-sky.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.blue-sky.400}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "TEXT_FILL"
+              ]
+            }
+          }
+        },
+        "on-secondary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.blue-sky.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.blue-sky.700}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "TEXT_FILL"
+              ]
+            }
+          }
+        },
+        "default-hover": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.blue-sky.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.blue-sky.700}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "TEXT_FILL"
+              ]
+            }
+          }
+        },
+        "visited": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.magenta.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.magenta.400}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "TEXT_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "disabled": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.300}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.600}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "TEXT_FILL"
+              ]
+            }
+          }
+        },
+        "on-disabled": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.300}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.400}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "TEXT_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "positive": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.green.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.green.500}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "TEXT_FILL"
+              ]
+            }
+          }
+        },
+        "on-secondary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.green.700}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.green.800}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "TEXT_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "warning": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.apricot.700}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.apricot.500}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "TEXT_FILL"
+              ]
+            }
+          }
+        },
+        "on-secondary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.apricot.700}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.apricot.800}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "TEXT_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "danger": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.red.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.red.500}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "TEXT_FILL"
+              ]
+            }
+          }
+        },
+        "on-secondary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.red.700}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.red.800}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "TEXT_FILL"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "icon": {
+      "base": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.black.1000}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.white.1000}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        },
+        "secondary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.200}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        },
+        "tertiary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.400}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.300}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        },
+        "default-on-color": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.black.1000}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.black.1000}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        },
+        "secondary-on-color": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.600}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "brand": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.blue-sky.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.blue-sky.400}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        },
+        "on-secondary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.blue-sky.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.blue-sky.700}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        },
+        "visited": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.magenta.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.magenta.400}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "disabled": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.300}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.600}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        },
+        "on-disabled": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.gray.300}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.400}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "positive": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.green.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.green.500}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        },
+        "on-secondary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.green.700}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.green.800}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "warning": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.apricot.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.apricot.500}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        },
+        "on-secondary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.apricot.700}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.apricot.800}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "danger": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.red.600}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.red.500}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        },
+        "on-secondary": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.red.700}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.red.800}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        }
+      },
+      "base-inverse": {
+        "default": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.white.1000}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.black.1000}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        },
+        "on-color": {
+          "$value": {
+            "Light Mode": "{2. Primitive Colors: Do not use directly.white.1000}",
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.white.1000}"
+          },
+          "$type": "color",
+          "$extensions": {
+            "com.figma": {
+              "scopes": [
+                "SHAPE_FILL"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "hack": {
+      "do-not-implement": {
+        "$value": {
+          "Light Mode": "#00000000",
+          "Dark Mode": "#00000000"
+        },
+        "$type": "color",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "#Responsive typography test": {
+    "Headings": {
+      "H1": {
+        "$value": {
+          "Desktop": "{4. Typography Primitives.font-size.fs-48}",
+          "Mobile": "{4. Typography Primitives.font-size.fs-32}"
+        },
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "H2": {
+        "$value": {
+          "Desktop": "{4. Typography Primitives.font-size.fs-32}",
+          "Mobile": "{4. Typography Primitives.font-size.fs-28}"
+        },
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      },
+      "H3": {
+        "$value": {
+          "Desktop": "{4. Typography Primitives.font-size.fs-32}",
+          "Mobile": "{4. Typography Primitives.font-size.fs-22}"
+        },
+        "$type": "number",
+        "$extensions": {
+          "com.figma": {
+            "scopes": [
+              "ALL_SCOPES"
+            ]
+          }
+        }
+      }
+    }
+  }
+}

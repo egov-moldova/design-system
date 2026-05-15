@@ -1,0 +1,18 @@
+{
+  "table-header": {
+    "content": {
+      "paddingInline": { "value": "{space.sm}", "type": "dimension" },
+      "paddingBlock": { "value": "{space.xs}", "type": "dimension" }
+    },
+    "text": {
+      "gap": { "value": "{space.5xs}", "type": "dimension" }
+    },
+    "actions": {
+      "gap": { "value": "{space.md}", "type": "dimension" }
+    },
+    "border": {
+      "width": { "value": "{spacing.px}", "type": "dimension" },
+      "color": { "value": "{color.neutral.border.weaker}", "type": "color" }
+    }
+  }
+}

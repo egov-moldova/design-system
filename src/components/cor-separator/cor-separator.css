@@ -1,0 +1,55 @@
+/*
+------------------------------------------------------------------------------------------------------------------------
+Separator CSS
+------------------------------------------------------------------------------------------------------------------------
+*/
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+/* ---------------------------
+   Divider
+--------------------------- */
+:host([variant='divider']) {
+  height: var(--separator-divider-height);
+  background-color: var(--separator-divider-background);
+  margin: var(--separator-divider-margin-y) 0;
+}
+
+/* ---------------------------
+   Line
+--------------------------- */
+:host([variant='line']) {
+  height: var(--separator-line-height);
+  background-color: var(--separator-line-background);
+}
+
+/* ---------------------------
+   Line Accent
+--------------------------- */
+:host([variant='line-accent']) {
+  height: var(--separator-line-accent-height);
+  background-color: var(--separator-line-accent-background);
+}
+
+/* ---------------------------
+   Top
+--------------------------- */
+:host([variant='top']) {
+  height: var(--separator-top-height);
+  background-color: var(--separator-top-background);
+  border-top-left-radius: var(--separator-top-radius-top-left);
+  border-top-right-radius: var(--separator-top-radius-top-right);
+}
+
+/* ---------------------------
+   Bottom
+--------------------------- */
+:host([variant='bottom']) {
+  height: var(--separator-bottom-height);
+  background-color: var(--separator-bottom-background);
+  border-bottom-left-radius: var(--separator-bottom-radius-bottom-left);
+  border-bottom-right-radius: var(--separator-bottom-radius-bottom-right);
+}

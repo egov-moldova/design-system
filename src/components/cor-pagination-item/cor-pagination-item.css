@@ -1,0 +1,194 @@
+/*
+------------------------------------------------------------------------------------------------------------------------
+Pagination Item CSS
+------------------------------------------------------------------------------------------------------------------------
+*/
+
+:host {
+  --item-size: var(--pagination-item-size-lg);
+  --item-min-width: var(--pagination-item-min-width-lg);
+  --item-border-radius: var(--pagination-item-border-radius-lg);
+  --item-font-size: var(--pagination-item-font-size-lg);
+  --item-line-height: var(--pagination-item-line-height-lg);
+  --dropdown-option-height: var(--pagination-dropdown-option-height-lg);
+  --dropdown-option-padding-inline: var(--pagination-dropdown-option-padding-inline-lg);
+
+  display: inline-block;
+  position: relative;
+}
+
+:host([size='md']) {
+  --item-size: var(--pagination-item-size-md);
+  --item-min-width: var(--pagination-item-min-width-md);
+  --item-border-radius: var(--pagination-item-border-radius-md);
+  --item-font-size: var(--pagination-item-font-size-md);
+  --item-line-height: var(--pagination-item-line-height-md);
+  --dropdown-option-height: var(--pagination-dropdown-option-height-md);
+  --dropdown-option-padding-inline: var(--pagination-dropdown-option-padding-inline-md);
+}
+
+:host([size='sm']) {
+  --item-size: var(--pagination-item-size-sm);
+  --item-min-width: var(--pagination-item-min-width-sm);
+  --item-border-radius: var(--pagination-item-border-radius-sm);
+  --item-font-size: var(--pagination-item-font-size-sm);
+  --item-line-height: var(--pagination-item-line-height-sm);
+  --dropdown-option-height: var(--pagination-dropdown-option-height-sm);
+  --dropdown-option-padding-inline: var(--pagination-dropdown-option-padding-inline-sm);
+}
+
+.item-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--item-size);
+  height: var(--item-size);
+  min-width: var(--item-min-width);
+  padding: 0;
+  border: none;
+  border-radius: var(--item-border-radius);
+  background-color: var(--pagination-item-background-default, transparent);
+  color: var(--pagination-item-color-default);
+  font-family: var(--font-family-sans);
+  font-size: var(--item-font-size);
+  font-weight: var(--font-weight-semi-bold);
+  line-height: var(--item-line-height);
+  cursor: pointer;
+  transition:
+    background-color 150ms ease-in-out,
+    color 150ms ease-in-out;
+  outline: none;
+
+  &:hover:not(:disabled) {
+    background-color: var(--pagination-item-background-hover);
+    color: var(--pagination-item-color-hover);
+  }
+
+  &:active:not(:disabled) {
+    background-color: var(--pagination-item-background-active);
+    color: var(--pagination-item-color-active);
+  }
+
+  &:focus-visible:not(:disabled) {
+    outline: 2px solid var(--pagination-item-focus-outline-color);
+    outline-offset: 1px;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    color: var(--pagination-item-color-disabled);
+    background-color: transparent;
+  }
+}
+
+:host([itemtype='icon']) .item-btn {
+  width: var(--item-size);
+  min-width: var(--item-size);
+}
+
+:host([selected]) .item-btn,
+:host([selected]) .item-btn:hover {
+  background-color: var(--pagination-item-background-selected);
+  color: var(--pagination-item-color-selected);
+  cursor: default;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--pagination-item-label-min-width);
+}
+
+/*
+  Skeleton state
+*/
+:host([skeleton]) .item-btn {
+  cursor: default;
+  pointer-events: none;
+  background-color: transparent;
+}
+
+.item-skeleton {
+  --skeleton-width: var(--item-size);
+  --skeleton-height: var(--item-size);
+  --skeleton-border-radius: var(--item-border-radius);
+}
+
+/*
+  Collapsed dropdown list
+*/
+.dropdown {
+  position: absolute;
+  z-index: var(--z-index-dropdown, 1000);
+  list-style: none;
+  margin: 0;
+  padding: var(--pagination-dropdown-padding-block) 0;
+  background-color: var(--pagination-dropdown-background);
+  border: 1px solid var(--pagination-dropdown-border-color);
+  border-radius: var(--pagination-dropdown-border-radius);
+  box-shadow: var(--pagination-dropdown-shadow);
+  min-width: var(--item-min-width);
+  width: max-content;
+  max-height: var(--pagination-dropdown-max-height);
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  left: 50%;
+  transform: translateX(-50%);
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--pagination-dropdown-border-color);
+    border-radius: 2px;
+  }
+
+  &.dropdown--bottom {
+    top: calc(100% + var(--pagination-dropdown-offset));
+  }
+
+  &.dropdown--top {
+    bottom: calc(100% + var(--pagination-dropdown-offset));
+  }
+}
+
+.dropdown-option {
+  padding: 0;
+}
+
+.dropdown-option-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: var(--dropdown-option-height);
+  padding: 0 var(--dropdown-option-padding-inline);
+  border: none;
+  background-color: var(--pagination-dropdown-option-background-default, transparent);
+  color: var(--pagination-dropdown-option-color-default);
+  font-family: var(--font-family-sans);
+  font-size: var(--item-font-size);
+  font-weight: var(--font-weight-semi-bold);
+  line-height: var(--item-line-height);
+  cursor: pointer;
+  transition:
+    background-color 150ms ease-in-out,
+    color 150ms ease-in-out;
+
+  &:hover {
+    background-color: var(--pagination-dropdown-option-background-hover);
+    color: var(--pagination-dropdown-option-color-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--pagination-item-focus-outline-color);
+    outline-offset: -2px;
+  }
+}

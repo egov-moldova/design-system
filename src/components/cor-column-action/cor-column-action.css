@@ -1,0 +1,66 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--column-action-size);
+  height: var(--column-action-size);
+  padding: var(--column-action-padding);
+  border-radius: var(--column-action-border-radius);
+  background: var(--column-action-default-background);
+  cursor: pointer;
+  outline: none;
+  transition: background 0.2s ease;
+}
+
+:host(:hover) {
+  background: var(--column-action-hover-background);
+}
+
+:host([active]) {
+  background: var(--column-action-active-background);
+}
+
+:host(:focus-visible) {
+  background: var(--column-action-focus-background);
+  box-shadow: 0 0 0 var(--column-action-focus-border-width) var(--column-action-focus-border-color);
+}
+
+:host([hide-focus-ring]:focus-visible) {
+  background: var(--column-action-default-background);
+  box-shadow: none;
+}
+
+:host(:active) {
+  background: var(--column-action-active-background);
+}
+
+:host([disabled]) {
+  background: var(--column-action-disabled-background);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+::slotted(cor-icon) {
+  color: var(--column-action-default-icon-color);
+  transition: color 0.2s ease;
+}
+
+:host(:hover) ::slotted(cor-icon) {
+  color: var(--column-action-hover-icon-color);
+}
+
+:host([active]) ::slotted(cor-icon) {
+  color: var(--column-action-active-icon-color);
+}
+
+:host(:focus-visible) ::slotted(cor-icon) {
+  color: var(--column-action-focus-icon-color);
+}
+
+:host([hide-focus-ring]:focus-visible) ::slotted(cor-icon) {
+  color: var(--column-action-default-icon-color);
+}
+
+:host([disabled]) ::slotted(cor-icon) {
+  color: var(--column-action-disabled-icon-color);
+}

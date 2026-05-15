@@ -1,0 +1,24 @@
+{
+  "loading-dots": {
+    "size": {
+      "value": "{space.2xs}",
+      "type": "dimension"
+    },
+    "dot": {
+      "color": {
+        "default": {
+          "value": "{color.primary.background.strongest}",
+          "type": "color"
+        },
+        "active": {
+          "value": "{color.primary.transparent.strong}",
+          "type": "color"
+        }
+      },
+      "size": {
+        "value": "{space.6xs}",
+        "type": "dimension"
+      }
+    }
+  }
+}

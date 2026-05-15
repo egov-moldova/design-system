@@ -1,0 +1,21 @@
+{
+  "controls-group": {
+    "gap": {
+      "vertical": {
+        "value": "{spacing.xs}",
+        "type": "dimension",
+        "description": "Gap between controls in vertical layout"
+      },
+      "horizontal": {
+        "value": "{spacing.sm}",
+        "type": "dimension",
+        "description": "Gap between controls in horizontal layout"
+      },
+      "column": {
+        "value": "{spacing.sm}",
+        "type": "dimension",
+        "description": "Gap between columns in multi-column layout"
+      }
+    }
+  }
+}

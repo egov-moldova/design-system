@@ -1,0 +1,51 @@
+:host {
+  display: block;
+}
+
+.radio-button-group-fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+  min-width: 0;
+}
+
+.radio-button-group-legend {
+  padding: 0;
+  margin-bottom: var(--controls-group-gap-vertical, var(--spacing-xs));
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-md);
+  color: var(--color-neutral-text-default);
+}
+
+.radio-button-group {
+  display: flex;
+}
+
+/* Vertical layout */
+.radio-button-group--vertical {
+  flex-direction: column;
+  gap: var(--controls-group-gap-vertical, var(--spacing-xs));
+}
+
+/* Horizontal layout */
+.radio-button-group--horizontal {
+  flex-direction: row;
+  gap: var(--controls-group-gap-horizontal, var(--spacing-sm));
+  flex-wrap: wrap;
+}
+
+/* Helper text */
+.radio-button-group-helper {
+  margin-top: var(--controls-group-gap-vertical, var(--spacing-xs));
+  font-family: var(--font-family-sans);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-sm);
+  color: var(--color-neutral-text-weaker);
+}
+
+/* Invalid state helper text */
+:host([invalid]) .radio-button-group-helper {
+  color: var(--color-system-error-icon);
+}

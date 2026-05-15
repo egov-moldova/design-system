@@ -1,0 +1,82 @@
+.overlay--white {
+  position: relative;
+  overflow: hidden;
+}
+
+.overlay--white::before {
+  content: '';
+  position: sticky;
+  display: block;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 32px;
+  margin-bottom: -32px;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-neutral-background-base) 80%, transparent),
+    transparent
+  );
+  pointer-events: none;
+  z-index: 1002;
+}
+
+.overlay--white::after {
+  content: '';
+  position: sticky;
+  display: block;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 32px;
+  margin-top: -32px;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--color-neutral-background-base) 80%, transparent),
+    transparent
+  );
+  pointer-events: none;
+  z-index: 1002;
+}
+
+/* Black fade for light backgrounds */
+.overlay--black {
+  position: relative;
+  overflow: hidden;
+}
+
+.overlay--black::before {
+  content: '';
+  position: sticky;
+  display: block;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 32px;
+  margin-bottom: -32px;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--color-neutral-background-base-inverted) 50%, transparent),
+    transparent
+  );
+  pointer-events: none;
+  z-index: 1002;
+}
+
+.overlay--black::after {
+  content: '';
+  position: sticky;
+  display: block;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 32px;
+  margin-top: -32px;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--color-neutral-background-base-inverted) 50%, transparent),
+    transparent
+  );
+  pointer-events: none;
+  z-index: 1002;
+}

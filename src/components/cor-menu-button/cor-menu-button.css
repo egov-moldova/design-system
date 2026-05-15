@@ -1,0 +1,327 @@
+/* ── Base host ── */
+
+:host {
+  display: contents;
+
+  .menu-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--menu-button-gap);
+    cursor: pointer;
+    border: 1px solid transparent;
+    outline: none;
+    background: var(--menu-button-background-primary-default);
+    color: var(--menu-button-color-default);
+    font-family: var(--font-family-body);
+    font-size: var(--menu-button-font-size-primary);
+    line-height: var(--menu-button-line-height-primary);
+    font-weight: var(--menu-button-font-weight-primary-default);
+    white-space: nowrap;
+    height: var(--menu-button-size);
+    padding: 0 var(--menu-button-padding);
+    border-radius: var(--menu-button-border-radius);
+    box-sizing: border-box;
+    transition:
+      background-color 150ms ease-in-out,
+      color 150ms ease-in-out,
+      border-color 150ms ease-in-out,
+      box-shadow 150ms ease-in-out;
+  }
+
+  /* Content wrapper — holds label text + badge */
+  .content {
+    display: flex;
+    align-items: center;
+    gap: var(--menu-button-content-gap);
+    padding: 0 var(--menu-button-padding-content);
+  }
+
+  /* Slotted icon sizing */
+  ::slotted([slot='icon-left']),
+  ::slotted([slot='icon-right']) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+}
+
+/* ── Icon-only variant: square 36×36px button ── */
+
+:host([icon-only]) {
+  .menu-button {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Icon slot for icon-only mode */
+  ::slotted([slot='icon']) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+}
+
+/* ── Secondary type: heading font, larger size ── */
+
+:host([type='secondary']) {
+  .menu-button {
+    font-family: var(--font-family-heading);
+    font-size: var(--menu-button-font-size-secondary);
+    line-height: var(--menu-button-line-height-secondary);
+    font-weight: var(--menu-button-font-weight-secondary-default);
+  }
+}
+
+/* ── Tertiary type: no background/padding, heading font, rounded-full ── */
+
+:host([type='tertiary']) {
+  .menu-button {
+    font-family: var(--font-family-heading);
+    font-size: var(--menu-button-font-size-tertiary);
+    line-height: var(--menu-button-line-height-tertiary);
+    font-weight: var(--menu-button-font-weight-tertiary-secondary);
+    height: auto;
+    padding: 0;
+    border-radius: var(--menu-button-border-radius);
+    border-color: transparent;
+    gap: var(--menu-button-gap-tertiary);
+  }
+
+  .content {
+    padding: 0;
+  }
+}
+
+/* ── Default (unselected) state ── */
+
+:host(:not([selected]):not([disabled]):not([skeleton])) {
+  .menu-button {
+    color: var(--menu-button-color-default);
+    background-color: var(--menu-button-background-primary-default);
+  }
+}
+
+/* ── Hover state ── */
+
+:host(.is-hovered:not([selected]):not([disabled]):not([skeleton])) {
+  .menu-button {
+    color: var(--menu-button-color-hover);
+    background-color: var(--menu-button-background-primary-hover);
+  }
+}
+
+/* ── Pressed/active state ── */
+
+:host(.is-pressed:not([selected]):not([disabled]):not([skeleton])) {
+  .menu-button {
+    color: var(--menu-button-color-pressed);
+    background-color: var(--menu-button-background-primary-pressed);
+  }
+}
+
+:host(:not([disabled]):not([skeleton]):not([selected])) {
+  .menu-button:active {
+    color: var(--menu-button-color-pressed);
+    background-color: var(--menu-button-background-primary-pressed);
+  }
+}
+
+/* ── Selected state ── */
+
+:host([selected]:not([disabled]):not([skeleton])) {
+  .menu-button {
+    color: var(--menu-button-color-selected);
+    background-color: var(--menu-button-background-primary-selected);
+    font-weight: var(--menu-button-font-weight-primary-selected);
+  }
+}
+
+:host([type='secondary'][selected]:not([disabled]):not([skeleton])) {
+  .menu-button {
+    font-weight: var(--menu-button-font-weight-secondary-selected);
+  }
+}
+
+/* Selected border — primary and secondary only */
+:host([type='primary'][selected]:not([disabled]):not([skeleton])),
+:host([type='secondary'][selected]:not([disabled]):not([skeleton])) {
+  .menu-button {
+    border-color: var(--menu-button-border-selected-color);
+  }
+}
+
+/* Tertiary selected: no border, semi-bold font */
+:host([type='tertiary'][selected]:not([disabled]):not([skeleton])) {
+  .menu-button {
+    border-color: transparent;
+    font-weight: var(--menu-button-font-weight-tertiary-selected);
+  }
+}
+
+/* ── Secondary variant: use secondary background tokens ── */
+
+:host([type='secondary']:not([selected]):not([disabled]):not([skeleton])) {
+  .menu-button {
+    background-color: var(--menu-button-background-secondary-default);
+  }
+}
+
+:host([type='secondary'].is-hovered:not([selected]):not([disabled]):not([skeleton])) {
+  .menu-button {
+    background-color: var(--menu-button-background-secondary-hover);
+  }
+}
+
+:host([type='secondary'].is-pressed:not([selected]):not([disabled]):not([skeleton])) {
+  .menu-button {
+    background-color: var(--menu-button-background-secondary-pressed);
+  }
+}
+
+:host([type='secondary']:not([disabled]):not([skeleton]):not([selected])) {
+  .menu-button:active {
+    background-color: var(--menu-button-background-secondary-pressed);
+  }
+}
+
+:host([type='secondary'][selected]:not([disabled]):not([skeleton])) {
+  .menu-button {
+    background-color: var(--menu-button-background-secondary-selected);
+  }
+}
+
+:host([type='secondary'][disabled]) {
+  .menu-button {
+    background-color: var(--menu-button-background-secondary-disabled);
+  }
+}
+
+/* ── Tertiary variant: use tertiary background tokens (all transparent) ── */
+
+:host([type='tertiary']:not([selected]):not([disabled]):not([skeleton])) {
+  .menu-button {
+    background-color: var(--menu-button-background-tertiary-default);
+  }
+}
+
+:host([type='tertiary'].is-hovered:not([selected]):not([disabled]):not([skeleton])) {
+  .menu-button {
+    background-color: var(--menu-button-background-tertiary-hover);
+  }
+}
+
+:host([type='tertiary'].is-pressed:not([selected]):not([disabled]):not([skeleton])) {
+  .menu-button {
+    background-color: var(--menu-button-background-tertiary-pressed);
+  }
+}
+
+:host([type='tertiary']:not([disabled]):not([skeleton]):not([selected])) {
+  .menu-button:active {
+    background-color: var(--menu-button-background-tertiary-pressed);
+  }
+}
+
+:host([type='tertiary'][selected]:not([disabled]):not([skeleton])) {
+  .menu-button {
+    background-color: var(--menu-button-background-tertiary-selected);
+  }
+}
+
+:host([type='tertiary'][disabled]) {
+  .menu-button {
+    background-color: var(--menu-button-background-tertiary-disabled);
+  }
+}
+
+/* ── Focus visible ── */
+
+:host(:focus-visible:not([disabled]):not([skeleton])),
+:host(:focus-within:not([disabled]):not([skeleton])) {
+  .menu-button:focus-visible {
+    outline: var(--menu-button-focus-outline-width) solid var(--menu-button-focus-outline-color);
+    outline-offset: var(--menu-button-focus-outline-offset);
+  }
+}
+
+/* ── Disabled state ── */
+
+:host([disabled]) {
+  cursor: not-allowed;
+
+  .menu-button {
+    cursor: not-allowed;
+    pointer-events: none;
+    color: var(--menu-button-color-disabled);
+    background-color: var(--menu-button-background-primary-disabled);
+    border-color: transparent;
+    font-weight: var(--menu-button-font-weight-default);
+  }
+}
+
+/* ── Skeleton state with cor-skeleton components ── */
+
+:host([skeleton]),
+:host(.is-skeleton) {
+  pointer-events: none;
+
+  .menu-button {
+    cursor: default;
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  /* Override cor-skeleton styling for menu-button context */
+  cor-skeleton {
+    display: flex;
+    flex-shrink: 0;
+  }
+}
+
+/* Icon-only skeleton: square 36×36px */
+:host([icon-only][skeleton]),
+:host([icon-only].is-skeleton) {
+  .menu-button {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+  }
+
+  cor-skeleton {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Secondary skeleton: icons stay 20×20px square, text uses secondary dimensions */
+:host([type='secondary'][skeleton]),
+:host([type='secondary'].is-skeleton) {
+  cor-skeleton:nth-child(2) {
+    width: var(--menu-button-skeleton-text-placeholder-secondary-width);
+    height: var(--menu-button-skeleton-text-placeholder-secondary-height);
+  }
+}
+
+/* Tertiary skeleton: icons stay 20×20px square, text uses tertiary dimensions */
+:host([type='tertiary'][skeleton]),
+:host([type='tertiary'].is-skeleton) {
+  .menu-button {
+    gap: var(--menu-button-gap-tertiary);
+  }
+
+  cor-skeleton:nth-child(2) {
+    width: var(--menu-button-skeleton-text-placeholder-tertiary-width);
+    height: var(--menu-button-skeleton-text-placeholder-tertiary-height);
+    align-self: center;
+  }
+}

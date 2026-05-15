@@ -1,0 +1,28 @@
+{
+  "select-item": {
+    "icon": {
+      "color": {
+        "selected": {
+          "value": "{color.neutral.text.inverted}",
+          "type": "color"
+        }
+      }
+    },
+    "label": {
+      "color": {
+        "selected": {
+          "value": "{color.neutral.text.inverted}",
+          "type": "color"
+        }
+      }
+    },
+    "description": {
+      "color": {
+        "selected": {
+          "value": "{color.neutral.text.inverted}",
+          "type": "color"
+        }
+      }
+    }
+  }
+}

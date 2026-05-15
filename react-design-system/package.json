@@ -1,0 +1,42 @@
+{
+  "name": "@age/react-design-system",
+  "version": "0.0.1",
+  "description": "React wrapper for AGE Design System components",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "prebuild": "node scripts/fix-generated.js",
+    "build": "tsc",
+    "postbuild": "cp -r src/components dist/",
+    "copy:tokens": "mkdir -p src/styles && cp -r ../tokens/generated/* src/styles/",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "@age/design-system": "portal:..",
+    "@stencil/react-output-target": "^1.5.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@stencil/core": "^4.43.3",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "typescript": "^5.9.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/age/design-system.git"
+  },
+  "keywords": [
+    "react",
+    "web-components",
+    "design-system",
+    "stencil"
+  ],
+  "license": "MIT"
+}

@@ -1,0 +1,88 @@
+{
+  "toast-notification": {
+    "container": {
+      "borderRadius": { "value": "{radius.md}", "type": "dimension" },
+      "paddingBlock": { "value": "{spacing.sm}", "type": "dimension" },
+      "paddingInline": { "value": "{spacing.sm}", "type": "dimension" },
+      "gap": { "value": "{spacing.sm}", "type": "dimension" },
+      "background": {
+        "error": { "value": "{color.neutral.background.base}", "type": "color" },
+        "warning": { "value": "{color.neutral.background.base}", "type": "color" },
+        "success": { "value": "{color.neutral.background.base}", "type": "color" },
+        "info": { "value": "{color.neutral.background.base}", "type": "color" },
+        "neutral": { "value": "{color.neutral.background.base}", "type": "color" }
+      },
+      "border": {
+        "error": { "value": "{color.system.error.border}", "type": "color" },
+        "warning": { "value": "{color.system.warning.border}", "type": "color" },
+        "success": { "value": "{color.system.success.border}", "type": "color" },
+        "info": { "value": "{color.system.info.border}", "type": "color" },
+        "neutral": { "value": "{color.neutral.border.weakest}", "type": "color" }
+      }
+    },
+    "title": {
+      "fontSize": { "value": "{fontSize.sm}", "type": "dimension" },
+      "fontWeight": { "value": "{fontWeight.semiBold}", "type": "fontWeight" },
+      "lineHeight": { "value": "20px", "type": "dimension" },
+      "color": {
+        "error": { "value": "{color.neutral.text.default}", "type": "color" },
+        "warning": { "value": "{color.neutral.text.default}", "type": "color" },
+        "success": { "value": "{color.neutral.text.default}", "type": "color" },
+        "info": { "value": "{color.neutral.text.default}", "type": "color" },
+        "neutral": { "value": "{color.neutral.text.default}", "type": "color" }
+      }
+    },
+    "subtitle": {
+      "fontSize": { "value": "{fontSize.xs}", "type": "dimension" },
+      "lineHeight": { "value": "16px", "type": "dimension" },
+      "color": { "value": "{color.neutral.text.default}", "type": "color" }
+    },
+    "meta": {
+      "fontSize": { "value": "{fontSize.xs}", "type": "dimension" },
+      "color": { "value": "{color.neutral.text.weak}", "type": "color" }
+    },
+    "body": {
+      "gap": { "value": "{spacing.2xs}", "type": "dimension" }
+    },
+    "icon": {
+      "gap": { "value": "{spacing.xs}", "type": "dimension" },
+      "color": {
+        "error": { "value": "{color.system.error.icon-weak}", "type": "color" },
+        "warning": { "value": "{color.system.warning.icon-weak}", "type": "color" },
+        "success": { "value": "{color.system.success.icon-weak}", "type": "color" },
+        "info": { "value": "{color.primary.icon.weak}", "type": "color" },
+        "neutral": { "value": "{color.neutral.icon.weak}", "type": "color" }
+      },
+      "container": {
+        "background": {
+          "error": { "value": "{color.system.error.background-transparent}", "type": "color" },
+          "warning": { "value": "{color.system.warning.background-transparent}", "type": "color" },
+          "success": { "value": "{color.system.success.background-transparent}", "type": "color" },
+          "info": { "value": "{color.primary.transparent.default}", "type": "color" },
+          "neutral": { "value": "{color.neutral.background.base}", "type": "color" }
+        },
+        "padding": { "value": "{spacing.3xs}", "type": "dimension" },
+        "borderRadius": { "value": "{radius.xs}", "type": "dimension" }
+      }
+    },
+    "close": {
+      "size": { "value": "20px", "type": "dimension" },
+      "borderRadius": { "value": "{radius.sm}", "type": "dimension" },
+      "color": {
+        "default": { "value": "{color.neutral.icon.weak}", "type": "color" },
+        "hover": { "value": "{color.primary.icon.weaker}", "type": "color" },
+        "active": { "value": "{color.primary.icon.weak}", "type": "color" },
+        "focus": { "value": "{color.neutral.icon.weak}", "type": "color" },
+        "disabled": { "value": "{color.neutral.icon.weakest}", "type": "color" }
+      },
+      "background": {
+        "hover": { "value": "transparent", "type": "color" },
+        "active": { "value": "transparent", "type": "color" }
+      }
+    },
+    "elevation": { "value": "{shadow.xl}", "type": "shadow" },
+    "actions": {
+      "gap": { "value": "{spacing.md}", "type": "dimension" }
+    }
+  }
+}

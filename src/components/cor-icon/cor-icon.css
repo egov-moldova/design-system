@@ -1,0 +1,51 @@
+.svg-icon {
+  display: flex;
+  height: var(--icon-height);
+  width: var(--icon-width);
+  justify-content: center;
+  align-items: center;
+
+  svg {
+    max-width: 100%;
+    max-height: 100%;
+    fill: var(--icon-color, var(--icon-color-default));
+    transition: fill 0.1s ease-in-out;
+  }
+}
+
+:host([color='currentColor']) {
+  .svg-icon svg {
+    fill: var(--icon-color-default, currentColor);
+  }
+}
+
+:host([interactive]:not([interactive='false'])) {
+  cursor: pointer;
+}
+
+:host([interactive]:not([interactive='false']):not([disabled])) {
+  .svg-icon:hover svg {
+    fill: var(--color-primary-icon-weaker);
+  }
+
+  .svg-icon:active svg {
+    fill: var(--color-primary-icon-weakest);
+  }
+
+  .svg-icon:focus-visible {
+    outline: var(--icon-outline-width-focus) solid var(--icon-outline-color-focus);
+    outline-offset: var(--icon-outline-offset-focus);
+
+    svg {
+      fill: var(--color-neutral-icon-weak);
+    }
+  }
+}
+
+:host([disabled]:not([disabled='false'])) {
+  cursor: not-allowed;
+
+  .svg-icon svg {
+    fill: var(--color-neutral-icon-weakest);
+  }
+}

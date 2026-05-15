@@ -1,0 +1,23 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pagination-page-size-gap, var(--spacing-xs));
+}
+
+/* Select dropdown — apply weaker text color */
+cor-select {
+  --select-color-default: var(--pagination-page-size-select-color, var(--color-neutral-text-weaker));
+}
+
+/* Suffix: "/ 100" */
+.suffix {
+  display: flex;
+  align-items: center;
+  gap: var(--pagination-page-size-suffix-gap, var(--spacing-2xs));
+  white-space: nowrap;
+}
+
+/* State: disabled */
+:host([disabled]) {
+  cursor: not-allowed;
+}

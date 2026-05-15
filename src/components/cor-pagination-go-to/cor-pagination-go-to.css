@@ -1,0 +1,24 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pagination-go-to-gap, var(--spacing-xs));
+}
+
+/* Number input — fixed width per size */
+.page-input {
+  --input-container-color-default: var(--pagination-go-to-input-color, var(--color-neutral-text-weaker));
+  min-width: var(--pagination-go-to-input-min-width-lg);
+}
+
+:host([size='md']) .page-input {
+  min-width: var(--pagination-go-to-input-min-width-md);
+}
+
+:host([size='sm']) .page-input {
+  min-width: var(--pagination-go-to-input-min-width-sm);
+}
+
+/* State: disabled */
+:host([disabled]) {
+  cursor: not-allowed;
+}

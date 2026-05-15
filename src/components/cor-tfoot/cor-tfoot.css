@@ -1,0 +1,11 @@
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--_table-cell-py) var(--_table-cell-px);
+  background: var(--table-footer-background-default);
+}
+
+:host([top-line]) {
+  border-top: var(--table-border-width) solid var(--table-border-color);
+}

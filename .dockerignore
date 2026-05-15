@@ -1,0 +1,64 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+
+# Documentation
+*.md
+!README.md
+docs/
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Dependencies (will be installed in container)
+node_modules/
+
+# Build artifacts (will be generated in container)
+dist/
+loader/
+www/
+storybook-static/
+.stencil/
+
+# Test coverage
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Husky
+.husky/
+
+# Docker
+docker-compose.yml
+Dockerfile
+.dockerignore
+
+# Angular workspace (if not needed for build)
+angular-design-system/node_modules/
+angular-design-system/dist/
+
+# Misc
+.env
+.env.local
+.env.*.local

@@ -1,0 +1,15 @@
+:host {
+  display: inline-flex;
+  width: var(--illustration-width, var(--illustration-size-default));
+  height: var(--illustration-height, var(--illustration-size-default));
+}
+
+.illustration-container {
+  display: contents;
+}
+
+.illustration-container svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}

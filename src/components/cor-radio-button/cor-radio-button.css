@@ -1,0 +1,195 @@
+/*
+Radio Button CSS File
+*/
+
+:host {
+  display: inline-flex;
+  font-family: var(--controls-font-family, var(--font-family-sans));
+  font-weight: var(--controls-font-weight, var(--font-weight-normal));
+}
+
+.container {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--controls-gap, var(--spacing-xs));
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+:host([disabled]) .container {
+  cursor: not-allowed;
+}
+
+/* Hide native radio button */
+input[type='radio'] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+/* Radio button icon container */
+.radio-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  pointer-events: none;
+  width: var(--control-size);
+  height: var(--control-size);
+  background-color: var(--control-icon-background);
+  border-radius: var(--control-border-radius);
+  transition: var(--controls-transition, background-color 150ms ease);
+}
+
+/* Circular background for hover/pressed states */
+.radio-icon::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: var(--radio-circle-size, 0);
+  height: var(--radio-circle-size, 0);
+  background-color: var(--radio-circle-background, transparent);
+  border-radius: 50%;
+  transition: background-color 150ms ease;
+  z-index: 0;
+}
+
+.radio-icon cor-icon {
+  position: relative;
+  z-index: 1;
+}
+
+/* Icon styling */
+.radio-icon cor-icon {
+  --icon-color: var(--control-icon-color);
+  pointer-events: none;
+}
+
+/* Focus-visible state (keyboard navigation only) */
+input[type='radio']:focus-visible ~ .radio-icon {
+  outline: var(--controls-outline-width-focus) solid var(--controls-outline-color-focus);
+  outline-offset: var(--controls-outline-offset-focus);
+  border-radius: 50%;
+}
+
+/* Label component - styling handled by cor-label */
+
+/* Size variants */
+:host([size='md']) {
+  --control-size: var(--controls-size-md, 20px);
+  --control-border-radius: var(--controls-border-radius-md, var(--radius-sm));
+  --control-font-size: var(--controls-font-size-md, var(--font-size-sm));
+  --control-line-height: var(--controls-line-height-md, var(--line-height-md));
+  --radio-circle-size: var(--radio-button-circle-size-md, 12px);
+}
+
+:host([size='sm']) {
+  --control-size: var(--controls-size-sm, 16px);
+  --control-border-radius: var(--controls-border-radius-sm, var(--radius-xs));
+  --control-font-size: var(--controls-font-size-sm, var(--font-size-xs));
+  --control-line-height: var(--controls-line-height-sm, var(--line-height-sm));
+  --radio-circle-size: var(--radio-button-circle-size-sm, 8px);
+}
+
+/* Default state (unchecked) */
+:host {
+  --control-icon-color: var(--controls-color-default, var(--color-neutral-text-weak));
+  --control-icon-background: var(--controls-background-default, var(--color-neutral-background-base));
+  --control-color: var(--controls-color-default, var(--color-neutral-text-weak));
+}
+
+/* Hover state (unchecked) */
+:host(:hover:not([disabled])) {
+  --control-icon-color: var(--controls-color-hover, var(--color-neutral-text-default));
+  --control-icon-background: transparent;
+  --control-color: var(--controls-color-hover, var(--color-neutral-text-default));
+  --radio-circle-background: var(--radio-button-circle-background-hover, var(--controls-background-hover));
+}
+
+/* Pressed state (unchecked) */
+:host(:active:not([disabled])) {
+  --control-icon-color: var(--controls-color-pressed, var(--color-neutral-text-default));
+  --control-icon-background: transparent;
+  --control-color: var(--controls-color-pressed, var(--color-neutral-text-default));
+  --radio-circle-background: var(--radio-button-circle-background-pressed, var(--controls-background-pressed));
+}
+
+/* Disabled state (unchecked) */
+:host([disabled]) {
+  --control-icon-color: var(--controls-color-disabled, var(--color-neutral-text-weakest));
+  --control-icon-background: var(--controls-background-disabled, var(--color-neutral-background-base));
+  --control-color: var(--controls-color-disabled, var(--color-neutral-text-weakest));
+}
+
+/* Invalid state (unchecked) */
+:host([invalid]:not([disabled])) {
+  --control-icon-color: var(--controls-invalid-color, var(--color-system-error-icon));
+  --control-icon-background: var(--controls-invalid-background, var(--color-neutral-background-base));
+  --control-color: var(--controls-invalid-color, var(--color-system-error-icon));
+}
+
+/* Invalid + Hover state (unchecked) */
+:host([invalid]:hover:not([disabled])) {
+  --control-icon-color: var(--controls-invalid-hover-color, var(--color-primary-border-active));
+  --control-icon-background: transparent;
+  --control-color: var(--controls-invalid-hover-color, var(--color-primary-border-active));
+  --radio-circle-background: var(--radio-button-circle-background-hover, var(--controls-background-hover));
+}
+
+/* Checked state - Carbon icon handles filled appearance */
+input[type='radio']:checked ~ .radio-icon {
+  --control-icon-color: var(
+    --radio-button-selected-color-default,
+    var(--controls-selected-color-default, var(--color-primary-background-strong))
+  );
+  --control-icon-background: transparent;
+}
+
+/* Checked + Hover */
+:host(:hover:not([disabled])) input[type='radio']:checked ~ .radio-icon {
+  --control-icon-color: var(
+    --radio-button-selected-color-hover,
+    var(--controls-selected-color-hover, var(--color-primary-border-active))
+  );
+  --radio-circle-background: transparent;
+}
+
+/* Checked + Pressed */
+:host(:active:not([disabled])) input[type='radio']:checked ~ .radio-icon {
+  --control-icon-color: var(
+    --radio-button-selected-color-pressed,
+    var(--controls-selected-color-pressed, var(--color-primary-border-active))
+  );
+  --radio-circle-background: transparent;
+}
+
+/* Checked + Disabled */
+:host([disabled]) input[type='radio']:checked ~ .radio-icon {
+  --control-icon-color: var(
+    --radio-button-selected-color-disabled,
+    var(--controls-selected-color-disabled, var(--color-neutral-text-weakest))
+  );
+}
+
+/* Checked + Invalid */
+:host([invalid]:not([disabled])) input[type='radio']:checked ~ .radio-icon {
+  --control-icon-color: var(
+    --radio-button-selected-invalid-color,
+    var(--controls-selected-invalid-color, var(--color-system-error-icon))
+  );
+}
+
+/* Checked + Invalid + Hover */
+:host([invalid]:hover:not([disabled])) input[type='radio']:checked ~ .radio-icon {
+  --control-icon-color: var(
+    --radio-button-selected-invalid-hover-color,
+    var(--controls-selected-invalid-hover-color, var(--color-primary-border-active))
+  );
+}

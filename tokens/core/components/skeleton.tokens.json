@@ -1,0 +1,24 @@
+{
+  "skeleton": {
+    "width": {
+      "value": "100%",
+      "type": "other",
+      "description": "Default width for skeleton loader"
+    },
+    "height": {
+      "value": "{space.md}",
+      "type": "dimension",
+      "description": "Default height for skeleton loader"
+    },
+    "borderRadius": {
+      "value": "{radius.md}",
+      "type": "dimension",
+      "description": "Default border radius for skeleton loader"
+    },
+    "backgroundColor": {
+      "value": "{color.system.fill-empty-state}",
+      "type": "color",
+      "description": "Background color for skeleton loader"
+    }
+  }
+}

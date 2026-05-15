@@ -1,0 +1,73 @@
+{
+  "icon": {
+    "size": {
+      "3xs": {
+        "value": "{space.2xs}",
+        "type": "dimension",
+        "attributes": {
+          "category": "size"
+        }
+      },
+      "2xs": {
+        "value": "{space.xs}",
+        "type": "dimension",
+        "attributes": {
+          "category": "size"
+        }
+      },
+      "xs": {
+        "value": "14px",
+        "type": "dimension",
+        "attributes": {
+          "category": "size"
+        }
+      },
+      "sm": {
+        "value": "{space.sm}",
+        "type": "dimension",
+        "attributes": {
+          "category": "size"
+        }
+      },
+      "md": {
+        "value": "{space.md}",
+        "type": "dimension",
+        "attributes": {
+          "category": "size"
+        }
+      },
+      "lg": {
+        "value": "{space.lg}",
+        "type": "dimension",
+        "attributes": {
+          "category": "size"
+        }
+      },
+      "xl": {
+        "value": "{space.xl}",
+        "type": "dimension",
+        "attributes": {
+          "category": "size"
+        }
+      }
+    },
+    "outlineWidth": {
+      "focus": {
+        "value": "{border.width.2}",
+        "type": "dimension"
+      }
+    },
+    "outlineColor": {
+      "focus": {
+        "value": "{color.secondary.border}",
+        "type": "color"
+      }
+    },
+    "outlineOffset": {
+      "focus": {
+        "value": "{border.width.2}",
+        "type": "dimension"
+      }
+    }
+  }
+}

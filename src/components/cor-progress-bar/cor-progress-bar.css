@@ -1,0 +1,94 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+/* Container */
+
+.label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--progress-bar-container-gap, var(--spacing-xs));
+  margin-bottom: var(--progress-bar-container-gap, var(--spacing-xs));
+}
+
+.label {
+  flex: 1 0 0;
+  font-size: var(--progress-bar-label-font-size, var(--font-size-sm));
+  line-height: var(--progress-bar-label-line-height, var(--line-height-md));
+  color: var(--progress-bar-label-color, var(--color-neutral-text-default));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.percentage {
+  flex-shrink: 0;
+  font-size: var(--progress-bar-percentage-font-size, var(--font-size-xs));
+  line-height: var(--progress-bar-percentage-line-height, var(--line-height-sm));
+  color: var(--progress-bar-percentage-color, var(--color-neutral-text-default));
+}
+
+/* Track */
+
+.track {
+  width: 100%;
+  border-radius: var(--progress-bar-track-border-radius, var(--radius-sm));
+  background: var(--progress-bar-track-background-default, var(--color-neutral-transparent-strong));
+  overflow: hidden;
+}
+
+/* Size variants */
+
+:host([size='lg']) .track {
+  height: var(--progress-bar-track-height-lg);
+}
+
+:host([size='md']) .track {
+  height: var(--progress-bar-track-height-md);
+}
+
+:host([size='sm']) .track {
+  height: var(--progress-bar-track-height-sm);
+}
+
+/* Fill */
+
+.fill {
+  height: 100%;
+  background: var(--progress-bar-fill-background-default, var(--color-primary-background-strongest));
+  border-radius: inherit;
+  transition: width 0.4s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+/* Error type */
+
+:host([type='error']) .track {
+  background: var(--progress-bar-track-background-error, var(--color-system-error-background-transparent));
+}
+
+:host([type='error']) .fill {
+  background: var(--progress-bar-fill-background-error, var(--color-system-error-background));
+}
+
+/* Message */
+
+.message-wrapper {
+  margin-top: var(--progress-bar-container-gap, var(--spacing-xs));
+}
+
+.message-wrapper--hidden {
+  margin-top: 0;
+}
+
+/* Hidden utilities */
+
+.label-row--hidden,
+.message-wrapper--hidden {
+  display: none;
+}

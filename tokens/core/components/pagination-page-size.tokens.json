@@ -1,0 +1,20 @@
+{
+  "pagination-page-size": {
+    "gap": {
+      "value": "{spacing.xs}",
+      "type": "dimension"
+    },
+    "select": {
+      "color": {
+        "value": "{color.neutral.text.weaker}",
+        "type": "color"
+      }
+    },
+    "suffix": {
+      "gap": {
+        "value": "{spacing.2xs}",
+        "type": "dimension"
+      }
+    }
+  }
+}

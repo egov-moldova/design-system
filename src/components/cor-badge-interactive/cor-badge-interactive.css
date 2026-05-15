@@ -1,0 +1,106 @@
+:host {
+  display: inline-flex;
+  --icon-color: var(--badge-interactive-icon-color-default);
+}
+
+.badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--badge-interactive-container-gap);
+  min-width: var(--badge-interactive-container-size-md);
+  height: var(--badge-interactive-container-size-md);
+  padding: 0 var(--badge-interactive-container-padding-md);
+  background: var(--badge-interactive-container-background-default);
+  color: var(--badge-interactive-label-color-default);
+  border-radius: var(--badge-interactive-container-border-radius-md);
+  font-family: var(--font-family-sans);
+  font-size: var(--badge-interactive-label-font-size-md);
+  line-height: var(--badge-interactive-label-line-height-md);
+  font-weight: var(--font-weight-normal);
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 150ms ease-in-out;
+  flex-shrink: 0;
+}
+
+/* Size variants */
+:host([size='sm']) .badge {
+  min-width: var(--badge-interactive-container-size-sm);
+  height: var(--badge-interactive-container-size-sm);
+  padding: 0 var(--badge-interactive-container-padding-sm);
+  border-radius: var(--badge-interactive-container-border-radius-sm);
+  font-size: var(--badge-interactive-label-font-size-sm);
+  line-height: var(--badge-interactive-label-line-height-sm);
+}
+
+:host([size='xs']) .badge {
+  min-width: var(--badge-interactive-container-size-xs);
+  height: var(--badge-interactive-container-size-xs);
+  padding: 0 var(--badge-interactive-container-padding-xs);
+  border-radius: var(--badge-interactive-container-border-radius-xs);
+  font-size: var(--badge-interactive-label-font-size-xs);
+  line-height: var(--badge-interactive-label-line-height-xs);
+  letter-spacing: var(--badge-interactive-label-letter-spacing-xs);
+}
+
+/* Hover state */
+:host(:hover:not([disabled]):not([skeleton])),
+:host([hovered]:not([disabled]):not([skeleton])) {
+  --icon-color: var(--badge-interactive-icon-color-hover);
+}
+
+:host(:hover:not([disabled]):not([skeleton])) .badge,
+:host([hovered]:not([disabled]):not([skeleton])) .badge {
+  background: var(--badge-interactive-container-background-hover);
+  color: var(--badge-interactive-label-color-hover);
+}
+
+/* Pressed/Active state */
+:host(:active:not([disabled]):not([skeleton])) {
+  --icon-color: var(--badge-interactive-icon-color-pressed);
+}
+
+:host(:active:not([disabled]):not([skeleton])) .badge {
+  background: var(--badge-interactive-container-background-pressed);
+  color: var(--badge-interactive-label-color-pressed);
+}
+
+/* Selected state */
+:host([selected]:not([disabled]):not([skeleton])) {
+  --icon-color: var(--badge-interactive-icon-color-selected);
+}
+
+:host([selected]:not([disabled]):not([skeleton])) .badge {
+  background: var(--badge-interactive-container-background-selected);
+  color: var(--badge-interactive-label-color-selected);
+}
+
+/* Focus state — keyboard/tab only, not on mouse press */
+:host(:not([disabled]):not([skeleton])) .badge:focus-visible,
+:host(.is-focused:not([disabled]):not([skeleton])) .badge {
+  outline: var(--badge-interactive-focus-outline-width) solid var(--badge-interactive-focus-outline-color);
+  outline-offset: 0;
+}
+
+/* Disabled state */
+:host([disabled]) {
+  --icon-color: var(--badge-interactive-icon-color-disabled);
+}
+
+:host([disabled]) .badge {
+  background: var(--badge-interactive-container-background-disabled);
+  color: var(--badge-interactive-label-color-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Skeleton/Empty state */
+:host([skeleton]) {
+  cursor: default;
+}
+
+/* Icon */
+::slotted(cor-icon) {
+  flex-shrink: 0;
+}

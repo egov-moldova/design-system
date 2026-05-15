@@ -1,0 +1,190 @@
+:host {
+  --avatar-size: var(--avatar-container-size-md);
+  --avatar-border-width: var(--avatar-container-border-width-default);
+  --avatar-border-color: var(--avatar-container-border-color-default);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--avatar-container-border-radius-md);
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  overflow: hidden;
+  position: relative;
+  user-select: none;
+}
+
+/* Bring avatar to front on hover (useful in avatar groups) */
+:host(:hover) {
+  z-index: var(--z-index-popout);
+}
+
+.avatar-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.avatar-border-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-sizing: border-box;
+  border: var(--avatar-border-width) solid var(--avatar-border-color);
+  z-index: 3;
+}
+
+.avatar-bg {
+  position: absolute;
+  inset: 0;
+  background: var(--avatar-container-background-default);
+}
+
+.avatar-photo {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-neutral-background-base);
+}
+
+.avatar-photo-overlay {
+  position: absolute;
+  inset: 0;
+}
+
+::slotted(img),
+::slotted(svg) {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-initials {
+  user-select: none;
+  cursor: default;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-xs);
+  border-radius: inherit;
+}
+
+.avatar-initials cor-typography {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.initials-text {
+  color: var(--avatar-container-color-default);
+}
+
+.avatar-icon {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+:host([size='2xs']) {
+  --avatar-size: var(--avatar-container-size-2xs);
+  border-radius: var(--avatar-container-border-radius-2xs);
+}
+
+:host([size='xs']) {
+  --avatar-size: var(--avatar-container-size-xs);
+  border-radius: var(--avatar-container-border-radius-xs);
+}
+
+:host([size='sm']) {
+  --avatar-size: var(--avatar-container-size-sm);
+  border-radius: var(--avatar-container-border-radius-sm);
+}
+
+:host([size='lg']) {
+  --avatar-size: var(--avatar-container-size-lg);
+  border-radius: var(--avatar-container-border-radius-lg);
+}
+
+:host([size='mega-lg']) {
+  --avatar-size: var(--avatar-container-size-mega-lg);
+  border-radius: var(--avatar-container-border-radius-mega-lg);
+}
+
+:host(:hover:not([disabled]):not(:active):not([active]):not([hovered])),
+:host([hovered]:not([disabled])) {
+  --avatar-border-color: var(--avatar-container-border-color-hover);
+
+  .avatar-bg {
+    background: var(--avatar-container-background-hover);
+  }
+}
+
+:host(:active:not([disabled])),
+:host([active]:not([disabled])) {
+  .avatar-bg {
+    background: var(--avatar-container-background-active);
+  }
+}
+
+/* CSS classes for hover / active states styling */
+:host(.is-hovered:not(.is-disabled)) {
+  --avatar-border-color: var(--avatar-container-border-color-hover);
+
+  .avatar-bg {
+    background: var(--avatar-container-background-hover);
+  }
+}
+
+:host(:active:not([disabled])),
+:host([active]:not([disabled])),
+:host(.is-active:not(.is-disabled)),
+:host(.is-pressed:not(.is-disabled)) {
+  --avatar-border-width: var(--avatar-container-border-width-active);
+  --avatar-border-color: var(--avatar-container-border-color-active);
+
+  .avatar-bg {
+    background: var(--avatar-container-background-active);
+  }
+}
+
+/* Disabled styles - placed last for highest precedence */
+:host(.is-disabled) {
+  --avatar-border-color: var(--avatar-container-border-color-disabled);
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+:host(.is-disabled) .initials-text {
+  color: var(--avatar-container-color-disabled);
+}
+
+.avatar-icon ::slotted(cor-icon) {
+  --icon-color-default: var(--avatar-container-color-default);
+}
+
+:host(.is-disabled) .avatar-icon ::slotted(cor-icon) {
+  --icon-color-default: var(--avatar-container-color-disabled);
+}
+
+:host(.is-disabled) .avatar-photo-overlay {
+  background: var(--avatar-container-overlay-background-disabled);
+  mix-blend-mode: color;
+}
+
+/* Skeleton styles */
+:host([skeleton]) {
+  pointer-events: none;
+  background: var(--avatar-background-skeleton);
+}

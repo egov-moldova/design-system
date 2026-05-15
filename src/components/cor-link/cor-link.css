@@ -1,0 +1,172 @@
+/*
+------------------------------------------------------------------------------------------------------------------------
+Link CSS File
+------------------------------------------------------------------------------------------------------------------------
+*/
+
+:host {
+  display: inline-flex;
+  align-items: center;
+}
+
+.link {
+  --link-border-radius: var(--link-label-border-radius-md);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--link-label-gap-md, var(--spacing-xs));
+  text-decoration: none;
+  cursor: pointer;
+  color: var(--link-label-color-default, var(--color-primary-text-weak));
+  transition: color var(--duration-fast, 0.15s) ease-in-out;
+  border-radius: var(--link-border-radius);
+}
+
+/* ---- Underline variants ---- */
+:host([underline='always']) .link {
+  text-decoration: underline;
+  text-decoration-color: var(--link-label-underline-color, currentColor);
+  text-underline-offset: var(--link-label-underline-offset, 2px);
+}
+
+:host([underline='hover']) .link {
+  text-decoration: none;
+}
+
+:host([underline='hover']) .link:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--link-label-underline-color, currentColor);
+  text-underline-offset: var(--link-label-underline-offset, 2px);
+}
+
+:host([underline='none']) .link {
+  text-decoration: none;
+}
+
+.link__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--link-icon-size-md, 20px);
+  height: var(--link-icon-size-md, 20px);
+}
+
+.link__icon:empty {
+  display: none;
+}
+
+.link__label {
+  flex-shrink: 0;
+}
+
+/* ---- Focus visible ---- */
+.link:focus-visible {
+  outline: var(--link-label-outline-width-focus, 2px) solid
+    var(--link-label-outline-color-focus, var(--color-secondary-border));
+  outline-offset: var(--link-label-outline-offset-focus, 2px);
+}
+
+/* ---- Skeleton ---- */
+:host([skeleton]) {
+  pointer-events: none;
+}
+
+/* Text skeleton (default) */
+.skeleton-link {
+  --skeleton-height: var(--link-skeleton-height-md, 20px);
+  --skeleton-width: var(--link-skeleton-width-md, 91px);
+  --skeleton-border-radius: var(--cor-link-skeleton-border-radius, var(--link-label-border-radius-md));
+}
+
+:host([size='sm']) .skeleton-link {
+  --skeleton-height: var(--link-skeleton-height-sm, 16px);
+  --skeleton-width: var(--link-skeleton-width-sm, 72px);
+  --skeleton-border-radius: var(--cor-link-skeleton-border-radius, var(--link-label-border-radius-sm));
+}
+
+/* Icon-only skeleton (circle) */
+:host(.is-icon-only-skeleton) .skeleton-link {
+  --skeleton-width: var(--link-icon-size-md, 20px);
+  --skeleton-height: var(--link-icon-size-md, 20px);
+  --skeleton-border-radius: var(--cor-link-skeleton-border-radius, var(--link-label-border-radius-md));
+}
+
+:host(.is-icon-only-skeleton[size='sm']) .skeleton-link {
+  --skeleton-width: var(--link-icon-size-sm, 16px);
+  --skeleton-height: var(--link-icon-size-sm, 16px);
+  --skeleton-border-radius: var(--cor-link-skeleton-border-radius, var(--link-label-border-radius-sm));
+}
+
+/* ---- State: default ---- */
+:host([state='default']) .link {
+  color: var(--link-label-color-default, var(--color-primary-text-weak));
+}
+
+/* ---- State: hover ---- */
+:host([state='hover']) .link {
+  color: var(--link-label-color-hover, var(--color-primary-text-weaker));
+  cursor: pointer;
+}
+
+:host([state='default']) .link:hover,
+:host([state='focus']) .link:hover {
+  color: var(--link-label-color-hover, var(--color-primary-text-weaker));
+}
+
+/* ---- State: pressed / active ---- */
+:host([state='pressed']) .link {
+  color: var(--link-label-color-active, var(--color-primary-text-default));
+}
+
+:host([state='default']) .link:active,
+:host([state='hover']) .link:active,
+:host([state='focus']) .link:active {
+  color: var(--link-label-color-active, var(--color-primary-text-default));
+}
+
+/* ---- State: focus ---- */
+:host([state='focus']) .link {
+  color: var(--link-label-color-default, var(--color-primary-text-weak));
+  outline: var(--link-label-outline-width-focus, 2px) solid
+    var(--link-label-outline-color-focus, var(--color-secondary-border));
+  outline-offset: var(--link-label-outline-offset-focus, 2px);
+}
+
+/* ---- State: disabled ---- */
+:host([state='disabled']) .link,
+:host([disabled]) .link {
+  color: var(--link-label-color-disabled, var(--color-neutral-text-weak));
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ---- State: error ---- */
+:host([state='error']) .link {
+  color: var(--link-label-color-error, var(--color-system-error-text));
+}
+
+:host([state='error']) .link:hover {
+  color: var(--link-label-color-error, var(--color-system-error-text));
+}
+
+/* ---- Size: md (default) ---- */
+:host([size='md']) .link {
+  gap: var(--link-label-gap-md, var(--spacing-xs));
+  border-radius: var(--link-label-border-radius-md);
+}
+
+:host([size='md']) .link__icon {
+  width: var(--link-icon-size-md, 20px);
+  height: var(--link-icon-size-md, 20px);
+}
+
+/* ---- Size: sm ---- */
+:host([size='sm']) .link {
+  gap: var(--link-label-gap-sm, var(--spacing-2xs));
+  border-radius: var(--link-label-border-radius-sm);
+}
+
+:host([size='sm']) .link__icon {
+  width: var(--link-icon-size-sm, 16px);
+  height: var(--link-icon-size-sm, 16px);
+}

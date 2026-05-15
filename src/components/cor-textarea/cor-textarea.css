@@ -1,0 +1,245 @@
+/*
+Textarea CSS File
+*/
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--textarea-gap, var(--spacing-2xs));
+  position: relative;
+  width: 100%;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  gap: var(--textarea-container-gap, var(--spacing-2xs));
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  position: relative;
+  min-width: 0;
+  gap: var(--textarea-container-content-gap, var(--spacing-2xs));
+}
+
+label {
+  font-family: var(--textarea-label-font-family, var(--font-family-sans));
+  font-size: var(--textarea-label-font-size, var(--font-size-2xs));
+  line-height: var(--textarea-label-line-height, var(--line-height-2xs));
+  font-weight: var(--textarea-label-font-weight, 400);
+  color: var(--textarea-label-color, var(--color-neutral-text-weaker));
+}
+
+textarea {
+  font-family: var(--textarea-input-font-family, var(--font-family-sans));
+  font-size: var(--textarea-input-font-size, var(--font-size-sm));
+  line-height: var(--textarea-input-line-height, var(--line-height-md));
+  font-weight: var(--textarea-input-font-weight, 400);
+  color: var(--textarea-input-color-default, var(--color-neutral-text-default));
+  background-color: var(--textarea-background-color-default, var(--color-neutral-background-base));
+  border: var(--textarea-border-width, 1px) solid
+    var(--textarea-border-color-default, var(--color-neutral-border-weaker));
+  border-radius: var(--textarea-border-radius, var(--radius-md));
+  outline: none;
+  min-width: 0;
+  height: var(--textarea-height, 136px);
+  min-height: var(--textarea-min-height, 44px);
+  padding: var(--textarea-padding-block) var(--textarea-padding-inline);
+  margin: 0;
+  resize: vertical;
+  transition:
+    border-color 150ms ease-in-out,
+    background-color 150ms ease-in-out;
+
+  &::placeholder {
+    color: var(--textarea-input-color-placeholder, var(--color-neutral-text-weaker));
+  }
+
+  &:hover {
+    border-color: var(--textarea-container-border-color-hover, var(--color-neutral-border-weak));
+    background-color: var(--textarea-container-background-color-hover, var(--color-neutral-background-weak));
+  }
+}
+
+:host([resize='none']) textarea {
+  resize: none;
+}
+
+:host([resize='vertical']) textarea {
+  resize: vertical;
+}
+
+:host([resize='horizontal']) textarea {
+  resize: horizontal;
+}
+
+:host([resize='both']) textarea {
+  resize: both;
+}
+
+.helper-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2xs);
+  font-family: var(--textarea-bottom-helper-font-family, var(--font-family-sans));
+  font-size: var(--textarea-bottom-helper-font-size, var(--font-size-xs));
+  line-height: var(--textarea-bottom-helper-line-height, var(--line-height-2xs));
+  color: var(--textarea-bottom-helper-color, var(--color-neutral-text-weaker));
+}
+
+:host(:not(.has-helper-text)) .helper-wrapper {
+  display: none;
+}
+
+/* Label position: inside */
+:host(.label-position-inside) {
+  --textarea-padding-inline: var(--textarea-container-padding-inline-label-inside, var(--spacing-xs));
+  --textarea-padding-block: var(--textarea-container-padding-block-label-inside, var(--spacing-xs));
+
+  .container {
+    position: relative;
+  }
+
+  label {
+    position: absolute;
+    top: var(--textarea-padding-block);
+    left: var(--textarea-padding-inline);
+    font-size: var(--textarea-label-font-size, var(--font-size-sm));
+    transition: var(--textarea-label-inside-transition, transform 150ms ease, font-size 150ms ease);
+    pointer-events: none;
+    color: var(--textarea-label-color, var(--color-neutral-text-weaker));
+    z-index: 1;
+  }
+
+  textarea {
+    padding-top: var(--spacing-lg);
+
+    &::placeholder {
+      color: transparent;
+    }
+  }
+}
+
+/* Floating label when focused or has value */
+:host(.label-position-inside.is-focused) label,
+:host(.label-position-inside.has-value) label {
+  font-size: var(--textarea-label-inside-floated-font-size, var(--font-size-xs));
+  color: var(--textarea-label-color, var(--color-neutral-text-weaker));
+}
+
+/* Label position: outside */
+:host(.label-position-outside) {
+  --textarea-padding-inline: var(--textarea-container-padding-inline-label-outside, var(--spacing-sm));
+  --textarea-padding-block: var(--textarea-container-padding-block-label-outside, var(--spacing-xs));
+
+  .label-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2xs);
+    margin-bottom: 0;
+  }
+
+  .required-asterisk {
+    font-family: var(--textarea-label-font-family, var(--font-family-sans));
+    font-size: var(--textarea-label-font-size, var(--font-size-sm));
+    line-height: var(--textarea-label-line-height, var(--line-height-md));
+    font-weight: var(--textarea-label-font-weight, 400);
+    color: var(--textarea-label-required-color, var(--color-system-error-text));
+    margin-left: 0;
+  }
+
+  .label-info-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  label {
+    display: block;
+    position: relative;
+  }
+}
+
+/* State: focus */
+:host(.is-focused) {
+  textarea {
+    border-color: var(--textarea-container-border-color-focus, var(--color-primary-border-active));
+  }
+}
+
+/* State: disabled */
+:host([disabled]),
+:host([disabled].has-value),
+:host([disabled].is-focused) {
+  cursor: not-allowed;
+
+  textarea {
+    border-color: var(--textarea-border-color-disabled, var(--color-neutral-border-weaker));
+    background-color: var(--textarea-background-color-disabled, var(--color-neutral-background-base));
+    pointer-events: none;
+    color: var(--textarea-input-color-disabled, var(--color-neutral-text-weaker));
+
+    &::placeholder {
+      color: var(--textarea-input-color-disabled, var(--color-neutral-text-weaker));
+    }
+  }
+
+  label {
+    color: var(--textarea-label-color-disabled, var(--color-neutral-text-weaker));
+  }
+
+  .helper-wrapper {
+    color: var(--textarea-color-disabled, var(--color-neutral-text-weaker));
+  }
+
+  .required-asterisk,
+  .label-info-icon {
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+:host([disabled].label-position-inside.is-focused) label,
+:host([disabled].label-position-inside.has-value) label {
+  color: var(--textarea-label-color-disabled, var(--color-neutral-text-weaker));
+}
+
+:host([disabled].label-position-inside) textarea::placeholder {
+  color: transparent;
+}
+
+/* State: invalid */
+:host([invalid]) {
+  textarea {
+    border-color: var(--textarea-border-color-invalid, var(--color-system-error-icon));
+  }
+
+  .helper-wrapper {
+    color: var(--textarea-bottom-helper-color-invalid, var(--color-system-error-text));
+  }
+}
+
+/* State: skeleton */
+:host(.is-skeleton) {
+  cor-skeleton[slot='label-text'] {
+    --skeleton-height: var(--textarea-label-line-height, var(--line-height-2xs));
+    --skeleton-width: 60px;
+    --skeleton-border-radius: var(--radius-2xl);
+  }
+
+  cor-skeleton:not([slot]) {
+    --skeleton-height: var(--textarea-height, 136px);
+    --skeleton-width: 100%;
+    --skeleton-border-radius: var(--radius-xl);
+  }
+
+  cor-skeleton[slot='helper-text'] {
+    --skeleton-height: var(--textarea-bottom-helper-line-height, var(--line-height-2xs));
+    --skeleton-width: 80px;
+    --skeleton-border-radius: var(--radius-2xl);
+  }
+}

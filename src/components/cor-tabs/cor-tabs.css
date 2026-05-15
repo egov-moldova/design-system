@@ -1,0 +1,85 @@
+:host {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* ── Style 1: rounded container with inner padding ── */
+
+:host([tab-style='style-1']) {
+  padding: var(--tabs-padding-style1-md);
+  border: var(--tabs-border-width) solid var(--tabs-border-color-default);
+  border-radius: var(--tabs-border-radius-style1-md);
+  background-color: var(--tabs-background-style1);
+}
+
+:host([tab-style='style-1'][size='lg']) {
+  padding: var(--tabs-padding-style1-lg);
+  border-radius: var(--tabs-border-radius-style1-lg);
+}
+
+:host([tab-style='style-1'][size='sm']) {
+  padding: var(--tabs-padding-style1-sm);
+  border-radius: var(--tabs-border-radius-style1-sm);
+}
+
+/* ── Style 2: container with dividers, no inner radius on segments ── */
+
+:host([tab-style='style-2']) {
+  padding: var(--tabs-padding-style2);
+  border: var(--tabs-border-width) solid var(--tabs-border-color-default);
+  border-radius: var(--tabs-border-radius-style2-md);
+  background-color: var(--tabs-background-style2);
+  overflow: hidden;
+}
+
+:host([tab-style='style-2'][size='lg']) {
+  border-radius: var(--tabs-border-radius-style2-lg);
+}
+
+:host([tab-style='style-2'][size='sm']) {
+  border-radius: var(--tabs-border-radius-style2-sm);
+}
+
+/* Style 2 divider between segments via CSS — set custom property for cor-tab-button to read */
+:host([tab-style='style-2']) {
+  --tab-button-divider-width: var(--tabs-divider-width);
+  --tab-button-divider-color: var(--tabs-divider-color);
+}
+
+/* ── Style 3: no container border, bottom border only, gap between tabs ── */
+
+:host([tab-style='style-3']) {
+  gap: var(--tabs-gap-style3);
+  border: var(--tabs-border-width) solid transparent;
+  border-bottom-color: var(--tabs-border-color-default);
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  overflow: visible;
+}
+
+/* ── Error state ── */
+
+:host([error][tab-style='style-1']),
+:host([error][tab-style='style-2']) {
+  border-color: var(--tabs-border-color-error);
+}
+
+:host([error][tab-style='style-2']) {
+  --tab-button-divider-color: var(--tabs-border-color-error);
+}
+
+:host([error][tab-style='style-3']) {
+  border: var(--tabs-border-width) solid var(--tabs-border-color-error);
+}
+
+/* ── Disabled state ── */
+
+:host([disabled]) {
+  cursor: not-allowed;
+}

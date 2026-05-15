@@ -1,0 +1,81 @@
+{
+  "size": {
+    "base": {
+      "value": "{size.md}",
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "md": {
+      "value": 16,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "lg": {
+      "value": 24,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "xl": {
+      "value": 32,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "2xl": {
+      "value": 40,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "3xl": {
+      "value": 48,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "4xl": {
+      "value": 144,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "5xl": {
+      "value": 216,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "6xl": {
+      "value": 360,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "7xl": {
+      "value": 1224,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "8xl": {
+      "value": 1440,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    }
+  }
+}

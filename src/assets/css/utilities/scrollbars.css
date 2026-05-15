@@ -1,0 +1,68 @@
+/*
+------------------------------------------------------------------------------------------------------------------------
+Scrollbar Utility
+------------------------------------------------------------------------------------------------------------------------
+*/
+
+/*
+  Animated scrollbar fade using @property:
+  1. @property registers --_scrollbar-opacity as animatable <number> with inherits: true
+  2. transition on the host element smoothly interpolates the value on :hover / :not(:hover)
+  3. pseudo-elements inherit the in-progress value every frame via color-mix()
+
+  This is the ONLY reliable way to animate scrollbar colors — transitions declared
+  directly on ::-webkit-scrollbar-* pseudo-elements are silently ignored by browsers.
+*/
+
+@property --_scrollbar-opacity {
+  syntax: '<number>';
+  initial-value: 0;
+  inherits: true;
+}
+
+.cor-overflow-scrollbar {
+  --_scrollbar-opacity: 0;
+  --_scrollbar-track-color: var(--scrollbar-track-background-neutral);
+  --_scrollbar-thumb-color: var(--scrollbar-thumb-background-neutral-default);
+  transition: --_scrollbar-opacity 0.35s ease;
+
+  &:hover {
+    --_scrollbar-opacity: 1;
+  }
+
+  &::-webkit-scrollbar {
+    width: var(--scrollbar-track-size);
+    height: var(--scrollbar-track-size);
+  }
+
+  &::-webkit-scrollbar-track {
+    border-radius: var(--scrollbar-track-radius);
+    background-color: color-mix(
+      in srgb,
+      var(--_scrollbar-track-color) calc(var(--_scrollbar-opacity) * 100%),
+      transparent
+    );
+  }
+
+  &::-webkit-scrollbar-corner {
+    background-color: color-mix(
+      in srgb,
+      var(--_scrollbar-track-color) calc(var(--_scrollbar-opacity) * 100%),
+      transparent
+    );
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: var(--scrollbar-thumb-radius);
+    background-color: color-mix(
+      in srgb,
+      var(--_scrollbar-thumb-color) calc(var(--_scrollbar-opacity) * 100%),
+      transparent
+    );
+  }
+
+  &.cor-overflow-scrollbar--primary {
+    --_scrollbar-track-color: var(--scrollbar-track-background-primary);
+    --_scrollbar-thumb-color: var(--scrollbar-thumb-background-primary-default);
+  }
+}

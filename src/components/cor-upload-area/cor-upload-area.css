@@ -1,0 +1,162 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+}
+
+:host(:focus-visible) .drop-zone {
+  outline: 2px solid var(--color-secondary-border, currentColor);
+  outline-offset: 2px;
+}
+
+/* Drop zone container */
+.drop-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--upload-area-container-gap);
+  padding: var(--upload-area-container-padding-block) var(--upload-area-container-padding-inline);
+  background: var(--upload-area-background-default);
+  border: var(--upload-area-border-width) dashed var(--upload-area-border-color-default);
+  border-radius: var(--upload-area-container-border-radius);
+  box-sizing: border-box;
+  width: 100%;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+  position: relative;
+}
+
+/* Dragging state */
+:host(.is-dragging) .drop-zone {
+  background: var(--upload-area-background-dragging);
+  border-color: var(--upload-area-border-color-dragging);
+  border-style: solid;
+  cursor: pointer;
+}
+
+/* Uploading single state */
+:host(.is-uploading-single) .drop-zone {
+  background: var(--upload-area-background-uploading);
+  border-color: var(--upload-area-border-color-uploading);
+  border-style: solid;
+  cursor: default;
+}
+
+/* Compact layout variant */
+:host([upload-style='compact']) .drop-zone {
+  flex-direction: row;
+  justify-content: flex-start;
+  padding: var(--upload-area-container-padding-block-compact) var(--upload-area-container-padding-inline-compact);
+  gap: var(--upload-area-container-gap);
+}
+
+/* In compact, icon-circle stays fixed */
+:host([upload-style='compact']) .icon-circle {
+  flex-shrink: 0;
+}
+
+/* Icon circle */
+.icon-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--upload-area-icon-circle-size);
+  height: var(--upload-area-icon-circle-size);
+  color: var(--upload-area-icon-circle-color-default);
+  border: 1px solid var(--upload-area-icon-circle-color-default);
+  border-radius: 50%;
+  background: var(--upload-area-icon-circle-background-default);
+  flex-shrink: 0;
+  transition: background 0.15s ease;
+}
+
+:host(.is-dragging) .icon-circle {
+  color: var(--upload-area-icon-circle-color-dragging);
+  background: var(--upload-area-icon-circle-background-dragging);
+}
+
+/* Text group — wraps label + hint, grows in compact layout */
+.text-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: center;
+}
+
+:host([upload-style='compact']) .text-group {
+  align-items: flex-start;
+  text-align: left;
+}
+
+/* Single uploading state — progress message */
+.progress-message-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  overflow: hidden;
+}
+
+:host([upload-style='compact']) .progress-message-wrapper,
+:host([upload-style='compact']) .progress-message-text,
+:host([upload-style='compact']) .default-progress-message {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.progress-message-text {
+  font-family: var(--font-family-body, 'Inter', sans-serif);
+  font-size: var(--upload-area-text-primary-font-size);
+  line-height: var(--upload-area-text-primary-line-height);
+  color: var(--upload-area-text-primary-color);
+  font-weight: 400;
+  text-align: center;
+  width: 100%;
+}
+
+.progress-message-text ::slotted(*) {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+.default-progress-message {
+  display: block;
+}
+
+.progress-percent {
+  font-family: var(--font-family-body, 'Inter', sans-serif);
+  font-size: var(--upload-area-text-secondary-font-size);
+  line-height: var(--upload-area-text-secondary-line-height);
+  color: var(--upload-area-text-secondary-color);
+  font-weight: 400;
+  text-align: center;
+}
+
+/* File list (default slot) */
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--upload-area-file-list-gap);
+  margin-top: var(--upload-area-file-list-margin-top);
+  width: 100%;
+}
+
+.file-list.is-empty {
+  display: none;
+}
+
+/* Hidden file input */
+.hidden-input {
+  display: none;
+  position: absolute;
+  pointer-events: none;
+  visibility: hidden;
+}

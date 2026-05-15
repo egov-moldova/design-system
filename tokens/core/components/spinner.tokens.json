@@ -1,0 +1,47 @@
+{
+  "spinner": {
+    "size": {
+      "xlg": {
+        "value": "{space.6xl}",
+        "type": "dimension"
+      },
+      "lg": {
+        "value": "{space.4xl}",
+        "type": "dimension"
+      },
+      "md": {
+        "value": "{space.xl}",
+        "type": "dimension"
+      },
+      "sm": {
+        "value": "{space.lg}",
+        "type": "dimension"
+      },
+      "xsm": {
+        "value": "{space.sm}",
+        "type": "dimension"
+      }
+    },
+    "stroke": {
+      "width": {
+        "xlg": { "value": "2px", "type": "dimension" },
+        "lg": { "value": "1.75px", "type": "dimension" },
+        "md": { "value": "1.5px", "type": "dimension" },
+        "sm": { "value": "1.25px", "type": "dimension" },
+        "xsm": { "value": "1px", "type": "dimension" }
+      }
+    },
+    "track": {
+      "color": {
+        "value": "{color.neutral.transparent.strong}",
+        "type": "color"
+      }
+    },
+    "arc": {
+      "color": {
+        "value": "{color.neutral.background.base-inverted}",
+        "type": "color"
+      }
+    }
+  }
+}

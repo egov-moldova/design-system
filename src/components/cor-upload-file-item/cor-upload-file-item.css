@@ -1,0 +1,166 @@
+:host {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--upload-file-item-gap);
+  padding: var(--upload-file-item-padding);
+  background: var(--upload-file-item-background-default);
+  box-sizing: border-box;
+  position: relative;
+  width: 100%;
+  height: var(--upload-file-item-height);
+}
+
+/* Framed variant (default: full border) */
+:host(.with-frame) {
+  border: var(--upload-file-item-border-width) solid var(--upload-file-item-border-color);
+  border-radius: var(--upload-file-item-border-radius);
+}
+
+/* No-frame variant: top border only */
+:host(:not(.with-frame)) {
+  border: none;
+  border-top: var(--upload-file-item-border-width) solid var(--upload-file-item-border-color);
+  border-radius: 0;
+  padding-inline: var(--upload-file-item-no-frame-padding-inline);
+}
+/* Hover state */
+:host(:hover) {
+  background: var(--upload-file-item-background-hover);
+}
+
+/* Icon area */
+.icon-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--upload-file-item-icon-area-size);
+  min-height: var(--upload-file-item-icon-area-size);
+}
+
+/* Card variant */
+:host(.card) .icon-area {
+  width: var(--upload-file-item-card-icon-size);
+  min-height: var(--upload-file-item-card-icon-size);
+}
+
+/* Card mode: icon background badge */
+.card-icon-bg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--upload-file-item-card-icon-size);
+  height: var(--upload-file-item-card-icon-size);
+  background: var(--upload-file-item-card-icon-background-default);
+  border-radius: var(--upload-file-item-card-icon-radius);
+  flex-shrink: 0;
+}
+
+:host(.is-error) .card-icon-bg {
+  background: var(--upload-file-item-card-icon-background-error);
+}
+
+/* Image preview */
+.preview-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--upload-file-item-card-icon-radius);
+  display: block;
+}
+
+/* Content area */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--upload-file-item-content-gap);
+  flex: 1 0 0;
+  min-width: 0;
+}
+
+.filename-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--upload-file-item-filename-row-gap);
+  line-height: 0;
+  height: var(--upload-file-item-filename-line-height);
+  min-width: 0;
+}
+
+.filename {
+  font-family: var(--font-family-body, 'Inter', sans-serif);
+  font-size: var(--upload-file-item-filename-font-size);
+  line-height: var(--upload-file-item-filename-line-height);
+  color: var(--upload-file-item-filename-color);
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1 0 0;
+  min-width: 0;
+}
+
+.percentage {
+  font-family: var(--font-family-body, 'Inter', sans-serif);
+  font-size: var(--upload-file-item-percentage-font-size);
+  line-height: var(--upload-file-item-percentage-line-height);
+  color: var(--upload-file-item-percentage-color);
+  font-weight: 400;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Remove button */
+.remove-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: var(--upload-file-item-remove-button-padding);
+  border-radius: var(--upload-file-item-remove-button-border-radius);
+  flex-shrink: 0;
+  color: var(--upload-file-item-remove-button-color-default);
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+.remove-btn:hover {
+  color: var(--upload-file-item-remove-button-color-hover);
+  background: var(--color-neutral-transparent-default, rgb(108 117 132 / 12%));
+}
+
+.remove-btn:focus-visible {
+  outline: var(--upload-file-item-remove-button-focus-outline-width) solid var(--color-secondary-border, currentColor);
+  outline-offset: var(--upload-file-item-remove-button-focus-outline-offset);
+}
+
+/* Card mode: remove button absolutely positioned top-right, hidden until hover */
+:host(.card) .remove-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%);
+  background: var(--upload-file-item-remove-button-card-background);
+  border: var(--upload-file-item-remove-button-card-border-width) solid
+    var(--upload-file-item-remove-button-card-border-color);
+  border-radius: var(--upload-file-item-remove-button-card-border-radius);
+  box-shadow: var(--upload-file-item-remove-button-card-shadow);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+:host(.card) .remove-btn cor-icon {
+  --icon-size: var(--upload-file-item-remove-button-card-icon-size);
+}
+
+:host(.card):host(:hover) .remove-btn {
+  opacity: 1;
+  pointer-events: auto;
+}

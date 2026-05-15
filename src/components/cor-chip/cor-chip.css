@@ -1,0 +1,203 @@
+:host {
+  display: inline-block;
+}
+
+:host([size='lg']) {
+  --chip-size: var(--chip-size-lg);
+  --chip-padding: var(--chip-padding-lg);
+  --chip-border-radius: var(--chip-border-radius-lg);
+  --chip-icon-size: var(--chip-icon-size-lg);
+  --chip-gap: var(--chip-gap-lg);
+}
+
+:host([size='md']) {
+  --chip-size: var(--chip-size-md);
+  --chip-padding: var(--chip-padding-md);
+  --chip-border-radius: var(--chip-border-radius-md);
+  --chip-icon-size: var(--chip-icon-size-md);
+  --chip-gap: var(--chip-gap-md);
+}
+
+:host([size='sm']) {
+  --chip-size: var(--chip-size-sm);
+  --chip-padding: var(--chip-padding-sm);
+  --chip-border-radius: var(--chip-border-radius-sm);
+  --chip-icon-size: var(--chip-icon-size-sm);
+  --chip-gap: var(--chip-gap-sm);
+}
+
+/* chip container */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--chip-gap);
+  height: var(--chip-size);
+  padding: 0 var(--chip-padding);
+  border-radius: var(--chip-border-radius);
+  border: var(--chip-border-width) solid var(--chip-border-color-default);
+  background-color: var(--chip-background-default);
+  font-family: var(--chip-font-family);
+  font-size: var(--chip-font-size);
+  font-weight: var(--chip-font-weight);
+  line-height: var(--chip-line-height);
+  color: var(--chip-color-default);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  box-sizing: border-box;
+  outline: none;
+}
+
+/* interactive states */
+.chip:hover {
+  background-color: var(--chip-background-hover);
+  border-color: var(--chip-border-color-hover);
+}
+
+:host(.chip--pressed) .chip {
+  background-color: var(--chip-background-pressed);
+  border-color: var(--chip-border-color-pressed);
+}
+
+.chip:focus-visible {
+  outline: var(--chip-focus-outline-width) solid var(--chip-focus-outline-color);
+  outline-offset: 2px;
+}
+
+/* active (selected) state — driven by host attribute */
+:host([active]) .chip {
+  background-color: var(--chip-background-active);
+  border-color: var(--chip-border-color-active);
+}
+
+:host([active]) .chip:hover {
+  background-color: var(--chip-background-active);
+  border-color: var(--chip-border-color-active);
+}
+
+/* disabled state */
+:host([disabled]) .chip {
+  background-color: var(--chip-background-disabled);
+  border-color: var(--chip-border-color-disabled);
+  color: var(--chip-color-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* error state */
+:host([error]) .chip {
+  background-color: var(--chip-background-error);
+  border-color: var(--chip-border-color-error);
+}
+
+:host([error]) .chip:hover {
+  background-color: var(--chip-background-error);
+  border-color: var(--chip-border-color-error);
+}
+
+/* content wrapper — label + text with inline padding */
+.chip__content {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--chip-content-gap);
+  padding-inline: var(--chip-content-padding-inline);
+
+  /* Ensure text doesn't wrap and maintains consistent height */
+  white-space: nowrap;
+}
+
+.chip__content--empty {
+  display: none;
+}
+
+/* label (muted prefix) and text spans */
+.chip__label {
+  display: contents;
+  color: var(--chip-color-label);
+}
+
+:host([disabled]) .chip__label {
+  color: var(--chip-color-disabled);
+}
+
+.chip__label--empty {
+  display: none;
+}
+
+.chip__text {
+  display: contents;
+}
+
+.chip__text--empty {
+  display: none;
+}
+
+/* slotted pre-content */
+::slotted([slot='pre-content']) {
+  display: inline-flex;
+  flex-shrink: 0;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+/* slotted icon-left / icon-right */
+::slotted([slot='icon-left']),
+::slotted([slot='icon-right']) {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: var(--chip-icon-size);
+  height: var(--chip-icon-size);
+  color: var(--chip-icon-color-default);
+}
+
+:host([disabled]) ::slotted([slot='icon-left']),
+:host([disabled]) ::slotted([slot='icon-right']) {
+  color: var(--chip-icon-color-disabled);
+}
+
+:host([size='lg']) .chip__icon-wrap--left {
+  margin-left: var(--chip-gap);
+}
+
+/* clickable icon wrapper — rendered when slotted icon has onclick attribute */
+.chip__icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: var(--chip-icon-wrap-border-radius);
+  cursor: pointer;
+  color: var(--chip-icon-color-default);
+  width: var(--chip-icon-size);
+  height: var(--chip-icon-size);
+  box-sizing: border-box;
+  outline: none;
+}
+
+.chip__icon-wrap ::slotted(*) {
+  pointer-events: none;
+}
+
+.chip__icon-wrap:hover,
+.chip__icon-wrap:hover ::slotted(*) {
+  color: var(--chip-icon-color-hover);
+}
+
+.chip__icon-wrap:active,
+.chip__icon-wrap:active ::slotted(*) {
+  color: var(--chip-icon-color-pressed);
+}
+
+.chip__icon-wrap:focus-visible {
+  box-shadow: 0 0 0 var(--chip-focus-outline-width) var(--chip-focus-outline-color);
+  color: var(--chip-icon-color-default);
+}
+
+:host([disabled]) .chip__icon-wrap,
+:host([disabled]) .chip__icon-wrap ::slotted(*) {
+  color: var(--chip-icon-color-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+}

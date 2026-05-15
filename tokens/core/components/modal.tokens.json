@@ -1,0 +1,46 @@
+{
+  "modal": {
+    "container": {
+      "borderRadius": { "value": "{radius.xl}", "type": "dimension" },
+      "background": { "value": "{color.neutral.background.base}", "type": "color" },
+      "elevation": { "value": "{shadow.xl}", "type": "shadow" }
+    },
+    "backdrop": {
+      "background": { "value": "{color.neutral.transparent.backdrop}", "type": "color" },
+      "blur": { "value": "1.5px", "type": "dimension" }
+    },
+    "header": {
+      "paddingInline": { "value": "{spacing.md}", "type": "dimension" },
+      "paddingBlock": { "value": "{spacing.md}", "type": "dimension" },
+      "gap": { "value": "{spacing.xs}", "type": "dimension" },
+      "borderColor": { "value": "{color.neutral.border.weaker}", "type": "color" },
+      "minHeight": { "value": "36px", "type": "dimension" }
+    },
+    "body": {
+      "paddingInline": { "value": "{spacing.md}", "type": "dimension" },
+      "paddingBlock": { "value": "{spacing.md}", "type": "dimension" }
+    },
+    "footer": {
+      "paddingInline": { "value": "{spacing.md}", "type": "dimension" },
+      "paddingBlock": { "value": "{spacing.ms}", "type": "dimension" },
+      "gap": { "value": "{spacing.xs}", "type": "dimension" },
+      "borderColor": { "value": "{color.neutral.border.weaker}", "type": "color" }
+    },
+    "width": {
+      "sm": { "value": "33.333%", "type": "string" },
+      "md": { "value": "50%", "type": "string" },
+      "lg": { "value": "100%", "type": "string" }
+    },
+    "center": {
+      "maxHeight": { "value": "90dvh", "type": "string" },
+      "maxWidth": {
+        "sm": { "value": "33.333%", "type": "string" },
+        "md": { "value": "50%", "type": "string" },
+        "lg": { "value": "100%", "type": "string" }
+      }
+    },
+    "viewport": {
+      "padding": { "value": "{spacing.sm}", "type": "dimension" }
+    }
+  }
+}

@@ -1,0 +1,451 @@
+/* Host */
+
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: var(--timeline-container-gap-on-page);
+  width: 100%;
+  position: relative;
+}
+
+:host(.timeline--has-actions) {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--timeline-actions-gap);
+}
+
+:host([variant='on-map-small']),
+:host([variant='on-card']) {
+  gap: var(--timeline-container-gap-on-map-small);
+}
+
+:host([disabled]) {
+  opacity: var(--timeline-disabled-opacity);
+  pointer-events: none;
+}
+
+:host([variant='on-map-small']) {
+  border: var(--timeline-border-width) solid var(--timeline-track-border-color);
+  padding: var(--timeline-track-padding-block-on-map-small) var(--timeline-track-padding-inline-on-map-small);
+  border-radius: var(--timeline-track-border-radius-on-map-small);
+  box-shadow: var(--shadow-sm);
+}
+
+:host([variant='on-map']) {
+  border-radius: var(--timeline-track-border-radius-on-map);
+  border: var(--timeline-border-width) solid var(--timeline-track-border-color);
+  box-shadow: var(--shadow-sm);
+}
+
+:host([variant='on-card']) {
+  border-top: var(--timeline-border-width) solid var(--timeline-track-border-color);
+}
+
+/* Actions bar */
+
+.timeline__actions {
+  display: none;
+  align-items: center;
+  gap: var(--timeline-actions-gap);
+  flex-shrink: 0;
+}
+
+:host(.timeline--has-actions) .timeline__actions {
+  display: flex;
+}
+
+:host([variant='on-map']) .timeline__actions {
+  padding-right: var(--timeline-actions-padding-right-on-map);
+}
+
+:host([variant='on-card']) .timeline__actions {
+  padding-right: var(--timeline-actions-padding-right-on-card);
+}
+
+:host([variant='on-map-small']) .timeline__actions {
+  padding-right: var(--timeline-actions-padding-right-on-map-small);
+}
+
+/* Scroll container */
+
+.timeline__scroll-container {
+  position: relative;
+  width: 100%;
+  height: var(--timeline-track-height-on-page);
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-radius: var(--timeline-track-border-radius-default);
+  border: var(--timeline-border-width) solid var(--timeline-track-border-color);
+  box-sizing: border-box;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+
+  &:hover {
+    scrollbar-color: var(--timeline-track-border-color) transparent;
+  }
+}
+
+:host([variant='on-map']) .timeline__scroll-container {
+  height: var(--timeline-track-height-on-map);
+  border-radius: var(--timeline-track-border-radius-on-map);
+  border: 0;
+}
+
+:host(.timeline--has-actions[variant='on-map']) .timeline__scroll-container {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+:host([variant='on-card']) .timeline__scroll-container {
+  height: var(--timeline-track-height-on-card);
+  border-radius: 0;
+  border: 0;
+}
+
+:host([variant='on-map-small']) .timeline__scroll-container {
+  height: var(--timeline-track-height-on-map-small);
+  border-radius: var(--timeline-track-border-radius-on-map-small);
+}
+
+/* Track wrapper — overflow visible so drag circle can render above the scroll container */
+
+.timeline__track-wrapper {
+  flex: 1 0 0;
+  min-width: 0;
+  position: relative;
+  width: 100%;
+}
+
+/* Track */
+
+.timeline__track {
+  position: relative;
+  height: 100%;
+  min-width: var(--timeline-track-min-width);
+  width: 100%;
+  background: var(--timeline-track-background-default);
+  overflow: hidden;
+}
+
+:host([variant='on-map-small']) .timeline__track {
+  background: var(--timeline-track-background-on-map-small);
+}
+
+/* Ticks */
+
+.timeline__tick {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  pointer-events: none;
+}
+
+.timeline__tick-line {
+  flex: 1 0 0;
+  min-height: var(--timeline-border-width);
+  width: var(--timeline-tick-width-minor);
+  background: var(--timeline-tick-color);
+}
+
+.timeline__tick--major .timeline__tick-line {
+  width: var(--timeline-tick-width-major);
+  background: var(--timeline-tick-color-major);
+}
+
+/* Bottom-align (on-card): ticks hang from top with fixed pixel heights per Figma */
+:host([variant='on-card']) .timeline__tick--major .timeline__tick-line {
+  flex: none;
+  height: var(--timeline-tick-height-major);
+  width: var(--timeline-tick-width-major);
+}
+
+:host([variant='on-card']) .timeline__tick--minor.timeline__tick--minor-middle .timeline__tick-line {
+  flex: none;
+  height: var(--timeline-tick-height-minor-middle);
+  width: var(--timeline-tick-width-minor);
+}
+
+:host([variant='on-card']) .timeline__tick--minor.timeline__tick--minor-edge .timeline__tick-line {
+  flex: none;
+  height: var(--timeline-tick-height-minor-edge);
+  width: var(--timeline-tick-width-minor);
+}
+
+/* Second tick-line (used for center-align split) is hidden for bottom align */
+:host([variant='on-card']) .timeline__tick--major .timeline__tick-line:nth-child(3) {
+  display: none;
+}
+
+:host([variant='on-card']) .timeline__tick--minor .timeline__tick-line:nth-child(2) {
+  display: none;
+}
+
+/* Centered-align (all non-card usages): two flex:1 lines with 16px gap matching Figma */
+:host(:not([variant='on-card'])) .timeline__tick--major {
+  gap: var(--timeline-tick-gap-center-align);
+}
+
+:host(:not([variant='on-card'])) .timeline__tick--minor {
+  gap: var(--timeline-tick-gap-center-align);
+}
+
+:host(:not([variant='on-card'])) .timeline__tick--major .timeline__tick-line {
+  flex: 1 0 0;
+  height: auto;
+  background: var(--timeline-tick-color);
+}
+
+:host(:not([variant='on-card'])) .timeline__tick--minor .timeline__tick-line {
+  flex: 1 0 0;
+  height: auto;
+  width: var(--timeline-tick-width-center-align-minor);
+}
+
+/* Labels */
+.timeline__label {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: var(--timeline-label-font-size);
+  line-height: var(--timeline-label-line-height);
+  color: var(--timeline-label-color);
+  padding-inline: var(--timeline-label-padding-inline);
+  border-radius: var(--timeline-label-border-radius);
+}
+
+:host([variant='on-card']) .timeline__label {
+  top: var(--timeline-label-position-top);
+}
+
+:host(:not([variant='on-card'])) .timeline__label {
+  bottom: unset;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--timeline-track-background);
+  z-index: 1;
+}
+
+/* First/last tick labels — align to edge instead of center */
+.timeline__tick--first .timeline__label {
+  left: 1px;
+  transform: translateX(0);
+}
+
+:host(:not([variant='on-card'])) .timeline__tick--first .timeline__label {
+  transform: translateY(-50%);
+}
+
+.timeline__tick--last .timeline__label {
+  left: unset;
+  right: 1px;
+  transform: translateX(0);
+}
+
+:host(:not([variant='on-card'])) .timeline__tick--last .timeline__label {
+  transform: translateY(-50%);
+}
+
+/* On-card variant: first/last labels fixed to container edges */
+:host([variant='on-card']) .timeline__tick--first .timeline__label {
+  left: -16px;
+  transform: none;
+}
+
+:host([variant='on-card']) .timeline__tick--last .timeline__label {
+  left: unset;
+  right: -16px;
+  transform: none;
+}
+
+/* Range highlight */
+
+.timeline__range {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: var(--timeline-range-background);
+  pointer-events: auto;
+  cursor: grab;
+  z-index: 1;
+}
+
+:host([variant='on-card']) .timeline__range {
+  height: var(--timeline-range-range-selector-height);
+}
+
+.timeline__range--dragging {
+  cursor: grabbing;
+}
+
+.timeline__range:focus-visible {
+  outline: var(--timeline-range-outline-width) solid var(--timeline-selector-outline-color);
+  outline-offset: var(--timeline-range-outline-offset);
+}
+
+/* Needle */
+
+.timeline__needle {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: grab;
+  outline: none;
+  z-index: 2;
+
+  &.timeline__needle--dragging {
+    cursor: grabbing;
+  }
+
+  &:focus-visible .timeline__needle-handle {
+    outline: var(--timeline-range-outline-width) solid var(--timeline-selector-outline-color);
+    outline-offset: var(--timeline-selector-outline-offset);
+  }
+}
+
+.timeline__needle-line {
+  width: var(--timeline-selector-line-width);
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--timeline-selector-color);
+  border-radius: var(--timeline-selector-line-border-radius);
+}
+
+.timeline__needle-handle {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-inline: var(--timeline-label-active-padding-inline);
+  background: var(--timeline-label-active-background);
+  border-radius: var(--timeline-selector-handle-border-radius);
+}
+
+:host([variant='on-card']) .timeline__needle-handle {
+  top: var(--timeline-selector-position-top);
+}
+
+:host(:not([variant='on-card'])) .timeline__needle-handle {
+  top: 50%;
+  transform: translateY(-50%);
+  bottom: unset;
+}
+
+.timeline__needle-label {
+  font-size: var(--timeline-label-font-size);
+  line-height: var(--timeline-label-line-height);
+  color: var(--timeline-label-active-color);
+  white-space: nowrap;
+}
+
+/* Needle hover area - larger transparent area for robust hover detection */
+.timeline__needle::before {
+  content: '';
+  position: absolute;
+  top: var(--timeline-hover-area-top);
+  left: var(--timeline-hover-area-left);
+  right: var(--timeline-hover-area-right);
+  bottom: var(--timeline-hover-area-bottom);
+  z-index: 1;
+  pointer-events: auto;
+}
+
+.timeline__needle:hover {
+  z-index: 20;
+}
+
+/* Drag control visibility is handled by JavaScript for hover/focus and CSS for dragging */
+.timeline__drag-control--dragging {
+  opacity: 1;
+  visibility: visible;
+  cursor: grabbing;
+}
+
+.timeline__drag-control {
+  position: absolute;
+  top: var(--timeline-drag-control-top);
+  transform: translate(-50%, 0);
+  width: var(--timeline-drag-control-width);
+  height: var(--timeline-drag-control-height);
+  background: var(--timeline-selector-color);
+  border-radius: var(--timeline-drag-control-border-radius);
+  box-shadow: var(--timeline-drag-control-box-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  cursor: grab;
+  z-index: 15;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--timeline-drag-control-transition-opacity),
+    visibility var(--timeline-drag-control-transition-visibility);
+}
+
+/* Keep drag control visible when hovered directly */
+.timeline__drag-control:hover {
+  opacity: 1;
+  visibility: visible;
+}
+
+.timeline__drag-icon {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* Circle at top of needle line for bottom alignment - positioned at track-wrapper level */
+.timeline__bottom-circle {
+  position: absolute;
+  top: 0;
+  transform: translate(-50%, -50%);
+  width: var(--timeline-bottom-circle-width);
+  height: var(--timeline-bottom-circle-height);
+  background: var(--timeline-selector-color);
+  border-radius: var(--timeline-bottom-circle-border-radius);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Triangle caps at top and bottom of needle line (center align, all non-card usages) */
+:host(:not([variant='on-card'])) .timeline__needle-line::before,
+:host(:not([variant='on-card'])) .timeline__needle-line::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--timeline-selector-arrow-width);
+  height: var(--timeline-selector-arrow-height);
+  background: var(--timeline-selector-color);
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
+}
+
+:host(:not([variant='on-card'])) .timeline__needle-line::before {
+  top: 0;
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
+}
+
+:host(:not([variant='on-card'])) .timeline__needle-line::after {
+  bottom: 0;
+  clip-path: polygon(50% 0%, 0 100%, 100% 100%);
+}
+
+:host([variant='on-card']) .timeline__needle-line {
+  height: var(--timeline-selector-position-top);
+}
+
+:host([variant='on-card']) .timeline__needle-line::after {
+  display: none;
+}

@@ -1,0 +1,10 @@
+{
+  "avatar-group": {
+    "container": {
+      "gap": {
+        "value": "{spacing.xs}",
+        "type": "dimension"
+      }
+    }
+  }
+}

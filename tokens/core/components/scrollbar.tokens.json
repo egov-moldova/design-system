@@ -1,0 +1,36 @@
+{
+  "scrollbar": {
+    "track": {
+      "radius": { "value": "{radius.sm}", "type": "dimension" },
+      "size": { "value": "4px", "type": "dimension" },
+      "background": {
+        "neutral": {
+          "value": "{color.neutral.transparent.default}",
+          "type": "color"
+        },
+        "primary": {
+          "value": "{color.neutral.transparent.default}",
+          "type": "color"
+        }
+      }
+    },
+    "thumb": {
+      "radius": { "value": "{radius.sm}", "type": "dimension" },
+      "size": { "value": "4px", "type": "dimension" },
+      "background": {
+        "neutral": {
+          "default": {
+            "value": "{color.neutral.background.strong}",
+            "type": "color"
+          }
+        },
+        "primary": {
+          "default": {
+            "value": "{color.primary.background.strong}",
+            "type": "color"
+          }
+        }
+      }
+    }
+  }
+}

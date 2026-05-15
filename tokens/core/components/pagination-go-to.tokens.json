@@ -1,0 +1,28 @@
+{
+  "pagination-go-to": {
+    "gap": {
+      "value": "{spacing.xs}",
+      "type": "dimension"
+    },
+    "input": {
+      "color": {
+        "value": "{color.neutral.text.weaker}",
+        "type": "color"
+      },
+      "minWidth": {
+        "lg": {
+          "value": "{space.4xl}",
+          "type": "dimension"
+        },
+        "md": {
+          "value": "{space.4xl}",
+          "type": "dimension"
+        },
+        "sm": {
+          "value": "{space.4xl}",
+          "type": "dimension"
+        }
+      }
+    }
+  }
+}

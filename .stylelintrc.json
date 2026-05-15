@@ -1,0 +1,37 @@
+{
+  "extends": ["stylelint-config-standard"],
+  "plugins": ["stylelint-declaration-strict-value"],
+  "rules": {
+    "scale-unlimited/declaration-strict-value": [
+      ["color", "background-color", "border-color", "fill", "stroke"],
+      {
+        "ignoreValues": ["transparent", "currentcolor", "currentColor", "inherit", "initial", "unset", "none", ""],
+        "severity": "warning"
+      }
+    ],
+    "selector-pseudo-element-no-unknown": [true, { "ignorePseudoElements": ["part", "slotted"] }],
+    "selector-pseudo-class-no-unknown": [
+      true,
+      { "ignorePseudoClasses": ["host", "slotted", "defined", "host-context"] }
+    ],
+    "at-rule-no-unknown": null,
+    "no-descending-specificity": null,
+    "alpha-value-notation": null,
+    "color-function-notation": null,
+    "import-notation": null,
+    "custom-property-pattern": null,
+    "custom-property-empty-line-before": null,
+    "declaration-empty-line-before": null,
+    "comment-empty-line-before": null,
+    "rule-empty-line-before": null,
+    "declaration-block-no-redundant-longhand-properties": null,
+    "no-duplicate-selectors": null,
+    "keyframes-name-pattern": null,
+    "selector-class-pattern": null,
+    "selector-id-pattern": null,
+    "selector-not-notation": null,
+    "property-no-vendor-prefix": null,
+    "media-feature-range-notation": null,
+    "comment-whitespace-inside": null
+  }
+}

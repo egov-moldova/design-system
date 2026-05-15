@@ -1,0 +1,41 @@
+{
+  "Screen": {
+    "Display": {
+      "screen width fixed": {
+        "$value": {
+          "Desktop": 1440,
+          "Laptop": 1280,
+          "Tablet": 768
+        },
+        "$type": "number"
+      },
+      "screen min-width fluid": {
+        "$value": {
+          "Desktop": 1440,
+          "Laptop": 1024,
+          "Tablet": 480,
+          "Mobile": 320
+        },
+        "$type": "number"
+      },
+      "screen max-width fluid": {
+        "$value": {
+          "Desktop": 1920,
+          "Laptop": 1440,
+          "Tablet": 1024,
+          "Mobile": 480
+        },
+        "$type": "number"
+      },
+      "screen height fixed": {
+        "$value": {
+          "Desktop": 1024,
+          "Laptop": 832,
+          "Tablet": 1024,
+          "Mobile": 800
+        },
+        "$type": "number"
+      }
+    }
+  }
+}

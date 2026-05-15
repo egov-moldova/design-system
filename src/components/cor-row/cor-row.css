@@ -1,0 +1,151 @@
+:host {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  background: var(--table-row-background-default);
+  color: var(--table-row-color-default);
+  border-top: var(--table-border-width) solid var(--table-border-color);
+  outline: none;
+  transition:
+    background-color 150ms ease-in-out,
+    color 150ms ease-in-out;
+}
+
+/* Hover state */
+:host(:hover:not([disabled]):not([selected])) {
+  background: var(--table-row-background-hover);
+}
+
+/* Active/Pressed state */
+:host(:active:not([disabled])) {
+  background: var(--table-row-background-active);
+}
+
+/* Selected state */
+:host([selected]:not([disabled])) {
+  background: var(--table-row-background-selected);
+  border-color: var(--table-row-border-color-selected);
+}
+
+/* Selected + Hover */
+:host([selected]:hover:not([disabled])) {
+  background: var(--table-row-background-selected);
+}
+
+/* Focus-visible (keyboard only) */
+:host(:focus-visible:not([disabled])) {
+  box-shadow: inset 0 0 0 var(--table-row-outline-width-focus) var(--table-row-outline-color-focus);
+}
+
+/* Border-radius for last row — clips inner cells to table bottom corners */
+:host(:last-child) {
+  border-bottom-left-radius: var(--table-border-radius);
+  border-bottom-right-radius: var(--table-border-radius);
+  overflow: hidden;
+  --_cell-bottom-left-radius: var(--table-border-radius);
+  --_cell-bottom-right-radius: var(--table-border-radius);
+}
+
+/* Zebra striping — only active when --_table-zebra-bg is set by cor-table[zebra] */
+:host(:nth-child(even)) {
+  background: var(--_table-zebra-bg, var(--table-row-background-default));
+}
+
+:host(:nth-child(even):hover:not([disabled]):not([selected])) {
+  background: var(--table-row-background-hover);
+}
+
+/* Disabled state */
+:host([disabled]) {
+  color: var(--table-row-color-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* Action cells (checkbox, expand) — match cor-cell padding pattern */
+.action-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-height: var(--_table-cell-min-height);
+  min-width: var(--_table-cell-min-height);
+  gap: var(--_table-cell-py);
+  padding: var(--_table-cell-py);
+}
+
+.checkbox-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+}
+
+.checkbox-cell:disabled {
+  cursor: not-allowed;
+}
+
+/* Focus ring on the action-cell container when any child button is focused */
+.action-cell:focus-within {
+  box-shadow: inset 0 0 0 var(--table-row-outline-width-focus) var(--table-row-outline-color-focus);
+}
+
+.checkbox-cell cor-checkbox {
+  pointer-events: none;
+}
+
+/* Expand toggle button — compact icon button */
+.expand-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--spacing-ms);
+  height: var(--spacing-ms);
+  padding: 0;
+  border: none;
+  border-radius: var(--table-action-button-border-radius);
+  background: transparent;
+  cursor: pointer;
+  color: var(--color-neutral-icon-default);
+  transition:
+    color 150ms ease-in-out,
+    background 150ms ease-in-out;
+}
+
+.expand-button:hover:not(:disabled) {
+  color: var(--color-primary-icon-weaker);
+}
+
+.expand-button:active:not(:disabled) {
+  color: var(--color-primary-icon-weaker);
+}
+
+.expand-button:focus-visible {
+  outline: var(--table-header-outline-width-focus) solid var(--table-header-outline-color-focus);
+  outline-offset: 0;
+}
+
+.expand-button:disabled {
+  cursor: not-allowed;
+  color: var(--color-neutral-text-disabled);
+}
+
+.expand-button cor-icon {
+  transition: transform 150ms ease-in-out;
+}
+
+.expand-button.is-expanded cor-icon {
+  transform: rotate(180deg);
+}
+
+/* Expanded content area */
+.expand-content {
+  flex-basis: 100%;
+  padding: var(--_table-cell-py) var(--_table-cell-px);
+}

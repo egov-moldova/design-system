@@ -1,0 +1,17 @@
+{
+  "system-message": {
+    "container": {
+      "gap": { "value": "{spacing.2xs}", "type": "dimension" }
+    },
+    "text": {
+      "fontSize": { "value": "{fontSize.xs}", "type": "dimension" },
+      "lineHeight": { "value": "{lineHeight.sm}", "type": "dimension" },
+      "color": {
+        "default": { "value": "{color.neutral.text.weaker}", "type": "color" },
+        "alert": { "value": "{color.system.error.text}", "type": "color" },
+        "info": { "value": "{color.system.info.text}", "type": "color" },
+        "text": { "value": "{color.neutral.text.weaker}", "type": "color" }
+      }
+    }
+  }
+}

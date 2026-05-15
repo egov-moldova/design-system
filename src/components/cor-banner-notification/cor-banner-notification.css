@@ -1,0 +1,203 @@
+/*
+ * cor-banner-notification — Full-width persistent banner, dark inverse surface.
+ * Matches cor-inline-notification default variant pattern.
+ */
+
+:host {
+  /* Local colour tokens — dark inverse surface, info state */
+  --_bg-color: var(--banner-notification-container-background, var(--color-neutral-background-strongest));
+  --_accent-color: var(--banner-notification-accent-color-info, var(--color-system-info-background));
+  --_title-color: var(--banner-notification-title-color, var(--color-neutral-text-inverted));
+  --_subtitle-color: var(--banner-notification-subtitle-color, var(--color-neutral-text-inverted-weak));
+  --_meta-color: var(--banner-notification-meta-color, var(--color-neutral-text-inverted-weak));
+  --_icon-color: var(--banner-notification-icon-color-info, var(--color-system-info-icon-inverted));
+  --_close-opacity-disabled: var(--banner-notification-close-opacity-disabled, 0.4);
+
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%;
+  border-radius: var(--banner-notification-container-border-radius, var(--radius-none));
+  background-color: var(--_bg-color);
+  overflow: hidden;
+  box-sizing: border-box;
+  position: relative;
+}
+
+/* State overrides */
+
+:host(.state-error) {
+  --_accent-color: var(--banner-notification-accent-color-error, var(--color-system-error-background));
+  --_icon-color: var(--banner-notification-icon-color-error, var(--color-system-error-icon-inverted));
+}
+
+:host(.state-warning) {
+  --_accent-color: var(--banner-notification-accent-color-warning, var(--color-system-warning-background));
+  --_icon-color: var(--banner-notification-icon-color-warning, var(--color-system-warning-icon-inverted));
+}
+
+:host(.state-success) {
+  --_accent-color: var(--banner-notification-accent-color-success, var(--color-system-success-background));
+  --_icon-color: var(--banner-notification-icon-color-success, var(--color-system-success-icon-inverted));
+}
+
+/* Layout */
+
+.accent-bar {
+  flex-shrink: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: var(--banner-notification-accent-width, 3px);
+  background-color: var(--_accent-color);
+  align-self: stretch;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    width: 32px;
+    background-color: var(--_accent-color);
+    -webkit-mask-image: linear-gradient(to right, var(--color-neutral-background-base-inverted), transparent);
+    mask-image: linear-gradient(to right, var(--color-neutral-background-base-inverted), transparent);
+    -webkit-mask-size: 100% 100%;
+    mask-size: 100% 100%;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: top;
+    mask-position: top;
+    pointer-events: none;
+    opacity: 0.2;
+  }
+}
+
+.content-wrapper {
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: var(--banner-notification-container-gap, var(--spacing-sm));
+  padding: var(--banner-notification-container-padding-block, var(--spacing-xs))
+    var(--banner-notification-container-padding-inline, var(--spacing-sm));
+  min-width: 0;
+}
+
+.icon-area {
+  --icon-size-md: var(--banner-notification-icon-size, var(--font-size-md));
+  display: flex;
+  flex-shrink: 0;
+  align-items: flex-start;
+  color: var(--_icon-color);
+  padding: var(--banner-notification-icon-padding, var(--radius-xs));
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--banner-notification-body-gap, var(--spacing-2xs));
+  min-width: 0;
+}
+
+.title-wrapper.is-empty,
+.subtitle-wrapper.is-empty,
+.meta-wrapper.is-empty,
+.actions-wrapper.is-empty {
+  display: none;
+}
+
+.title-wrapper {
+  font-size: var(--banner-notification-title-font-size, var(--font-size-sm));
+  font-weight: var(--banner-notification-title-font-weight, var(--font-weight-semi-bold));
+  line-height: var(--banner-notification-title-line-height, var(--font-size-xl));
+  color: var(--_title-color);
+}
+
+.subtitle-wrapper {
+  font-size: var(--banner-notification-subtitle-font-size, var(--font-size-xs));
+  line-height: var(--banner-notification-subtitle-line-height, var(--font-size-md));
+  color: var(--_subtitle-color);
+}
+
+.meta-wrapper {
+  font-size: var(--banner-notification-meta-font-size, var(--font-size-xs));
+  color: var(--_meta-color);
+}
+
+.actions-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--banner-notification-actions-gap, var(--spacing-xs));
+  padding-top: var(--banner-notification-body-gap, var(--spacing-2xs));
+}
+
+::slotted([slot='title']) {
+  font-size: var(--banner-notification-title-font-size, var(--font-size-sm));
+  font-weight: var(--banner-notification-title-font-weight, var(--font-weight-semi-bold));
+  line-height: var(--banner-notification-title-line-height, var(--font-size-xl));
+  color: var(--_title-color);
+  margin: 0;
+}
+
+::slotted([slot='subtitle']) {
+  font-size: var(--banner-notification-subtitle-font-size, var(--font-size-xs));
+  line-height: var(--banner-notification-subtitle-line-height, var(--font-size-md));
+  color: var(--_subtitle-color);
+  margin: 0;
+}
+
+::slotted([slot='meta']) {
+  font-size: var(--banner-notification-meta-font-size, var(--font-size-xs));
+  color: var(--_meta-color);
+}
+
+/* Close area */
+
+.close-area {
+  display: flex;
+  flex-shrink: 0;
+  align-items: flex-start;
+}
+
+.close-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--banner-notification-close-size, var(--font-size-xl));
+  height: var(--banner-notification-close-size, var(--font-size-xl));
+  padding: var(--banner-notification-close-padding, var(--radius-xs));
+  border: none;
+  background: transparent;
+  border-radius: var(--banner-notification-close-border-radius, var(--radius-sm));
+  cursor: pointer;
+  box-sizing: border-box;
+  --icon-color-default: var(--banner-notification-close-color-default, var(--color-neutral-icon-inverted-weak));
+  transition: background-color 100ms ease;
+
+  &:hover:not(:disabled) {
+    background-color: transparent;
+    --icon-color-default: var(--banner-notification-close-color-hover, var(--color-primary-icon-weaker));
+  }
+
+  &:active:not(:disabled) {
+    background-color: transparent;
+    --icon-color-default: var(--banner-notification-close-color-active, var(--color-primary-icon-weak));
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--banner-notification-close-focus-ring-color, var(--color-secondary-border));
+    outline-offset: 2px;
+    --icon-color-default: var(--banner-notification-close-color-focus, var(--color-neutral-icon-inverted-weak));
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: var(--_close-opacity-disabled);
+    --icon-color-default: var(--banner-notification-close-color-disabled, var(--color-neutral-icon-weakest));
+  }
+}
+
+:host([hidden]) {
+  display: none;
+}

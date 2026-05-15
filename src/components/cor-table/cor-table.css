@@ -1,0 +1,47 @@
+:host {
+  display: block;
+  width: 100%;
+  overflow: auto;
+
+  /* Size propagation via CSS custom properties — children read these */
+  --_table-cell-px: var(--table-cell-padding-inline-lg);
+  --_table-cell-py: var(--table-cell-padding-block-lg);
+  --_table-cell-min-height: var(--table-cell-min-height-lg);
+  --_table-cell-font-size: var(--table-cell-font-size-lg);
+  --_table-cell-line-height: var(--table-cell-line-height-lg);
+  --_table-header-font-weight: var(--table-header-font-weight-lg);
+  --_table-header-font-size: var(--table-header-font-size-lg);
+  --_table-header-line-height: var(--table-header-line-height-lg);
+}
+
+:host([size='md']) {
+  --_table-cell-px: var(--table-cell-padding-inline-md);
+  --_table-cell-py: var(--table-cell-padding-block-md);
+  --_table-cell-min-height: var(--table-cell-min-height-md);
+  --_table-cell-font-size: var(--table-cell-font-size-md);
+  --_table-cell-line-height: var(--table-cell-line-height-md);
+  --_table-header-font-weight: var(--table-header-font-weight-md);
+  --_table-header-font-size: var(--table-header-font-size-md);
+  --_table-header-line-height: var(--table-header-line-height-md);
+}
+
+:host([size='sm']) {
+  --_table-cell-px: var(--table-cell-padding-inline-sm);
+  --_table-cell-py: var(--table-cell-padding-block-sm);
+  --_table-cell-min-height: var(--table-cell-min-height-sm);
+  --_table-cell-font-size: var(--table-cell-font-size-sm);
+  --_table-cell-line-height: var(--table-cell-line-height-sm);
+  --_table-header-font-weight: var(--table-header-font-weight-sm);
+  --_table-header-font-size: var(--table-header-font-size-sm);
+  --_table-header-line-height: var(--table-header-line-height-sm);
+}
+
+:host([bordered]) {
+  border: var(--table-border-width) solid var(--table-border-color);
+  border-radius: var(--table-border-radius);
+}
+
+/* Zebra striping — sets CSS custom property that cor-row reads for even rows */
+:host([zebra]) {
+  --_table-zebra-bg: var(--table-row-background-zebra);
+}

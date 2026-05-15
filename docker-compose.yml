@@ -1,0 +1,8 @@
+services:
+  storybook:
+    stdin_open: true
+    tty: true
+    image: ghcr.io/georgel2489/age-design:latest
+    restart: always
+    ports:
+      - 6005:6006

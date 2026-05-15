@@ -1,0 +1,48 @@
+:host {
+  display: block;
+}
+
+.header-row {
+  display: flex;
+  align-items: stretch;
+  background: var(--table-header-background-default);
+}
+
+.checkbox-cell,
+.expand-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--_table-cell-min-height);
+  padding: var(--_table-cell-py);
+  background: var(--table-header-background-default);
+  border-top-left-radius: var(--table-border-radius);
+}
+
+.checkbox-cell {
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+}
+
+.checkbox-cell cor-checkbox {
+  pointer-events: none;
+}
+
+/* Hover state */
+.checkbox-cell:hover {
+  background: var(--table-header-background-hover);
+}
+
+/* Active/Pressed state */
+.checkbox-cell:active {
+  background: var(--table-header-background-active);
+}
+
+/* Focus-visible (keyboard only) */
+.checkbox-cell:focus-visible {
+  background: var(--table-header-background-focus);
+  box-shadow: inset 0 0 0 var(--table-header-outline-width-focus) var(--table-header-outline-color-focus);
+}

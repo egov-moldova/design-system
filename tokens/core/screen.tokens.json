@@ -1,0 +1,32 @@
+{
+  "screen": {
+    "width": {
+      "fixed": {
+        "desktop": { "value": "1440px" },
+        "laptop": { "value": "1280px" },
+        "tablet": { "value": "768px" },
+        "mobile": { "value": "360px" }
+      },
+      "min-fluid": {
+        "desktop": { "value": "1440px" },
+        "laptop": { "value": "1024px" },
+        "tablet": { "value": "480px" },
+        "mobile": { "value": "320px" }
+      },
+      "max-fluid": {
+        "desktop": { "value": "1920px" },
+        "laptop": { "value": "1440px" },
+        "tablet": { "value": "1024px" },
+        "mobile": { "value": "480px" }
+      }
+    },
+    "height": {
+      "fixed": {
+        "desktop": { "value": "1024px" },
+        "laptop": { "value": "832px" },
+        "tablet": { "value": "1024px" },
+        "mobile": { "value": "800px" }
+      }
+    }
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "upload-area": {
+    "container": {
+      "borderRadius": { "value": "{radius.md}", "type": "dimension" },
+      "gap": { "value": "{space.sm}", "type": "dimension" },
+      "paddingInline": { "value": "{space.sm}", "type": "dimension" },
+      "paddingInline-compact": { "value": "{space.sm}", "type": "dimension" },
+      "paddingBlock": { "value": "{space.sm}", "type": "dimension" },
+      "paddingBlock-compact": { "value": "{spacing.sm}", "type": "dimension" }
+    },
+    "border": {
+      "width": { "value": "1px", "type": "dimension" },
+      "color": {
+        "default": { "value": "{color.primary.border.default}", "type": "color" },
+        "dragging": { "value": "{color.primary.border.hover}", "type": "color" },
+        "uploading": { "value": "{color.primary.border.active}", "type": "color" }
+      }
+    },
+    "background": {
+      "default": { "value": "{color.primary.transparent.weaker}", "type": "color" },
+      "dragging": { "value": "{color.primary.transparent.weak}", "type": "color" },
+      "uploading": { "value": "{color.neutral.background.base}", "type": "color" }
+    },
+    "icon-circle": {
+      "size": { "value": "56px", "type": "dimension" },
+      "color": {
+        "default": { "value": "{color.primary.border.default}", "type": "color" },
+        "dragging": { "value": "{color.primary.icon.default}", "type": "color" }
+      },
+      "background": {
+        "default": { "value": "transparent", "type": "color" },
+        "dragging": { "value": "{color.primary.transparent.default}", "type": "color" }
+      }
+    },
+    "text": {
+      "primary": {
+        "color": { "value": "{color.neutral.text.default}", "type": "color" },
+        "fontSize": { "value": "{fontSize.sm}", "type": "dimension" },
+        "lineHeight": { "value": "{lineHeight.md}", "type": "dimension" }
+      },
+      "secondary": {
+        "color": { "value": "{color.neutral.text.weak}", "type": "color" },
+        "fontSize": { "value": "{fontSize.xs}", "type": "dimension" },
+        "lineHeight": { "value": "{lineHeight.sm}", "type": "dimension" }
+      }
+    },
+    "file-list": {
+      "marginTop": { "value": "{space.sm}", "type": "dimension" },
+      "gap": { "value": "{spacing.xs}", "type": "dimension" }
+    },
+    "file-item": {
+      "background": {
+        "default": { "value": "{color.neutral.background.base}", "type": "color" },
+        "hover": { "value": "{color.neutral.background.default}", "type": "color" }
+      },
+      "border": {
+        "color": { "value": "{color.neutral.border.weaker}", "type": "color" },
+        "radius": { "value": "6px", "type": "dimension" }
+      },
+      "padding": { "value": "{spacing.xs}", "type": "dimension" },
+      "gap": { "value": "{spacing.xs}", "type": "dimension" },
+      "icon-area": {
+        "size": { "value": "20px", "type": "dimension" }
+      },
+      "card-icon": {
+        "background": { "value": "{color.neutral.transparent.default}", "type": "color" },
+        "size": { "value": "32px", "type": "dimension" },
+        "radius": { "value": "{radius.xs}", "type": "dimension" }
+      },
+      "content": {
+        "gap": { "value": "{spacing.2xs}", "type": "dimension" }
+      },
+      "filename-row": {
+        "gap": { "value": "{spacing.xs}", "type": "dimension" }
+      },
+      "filename": {
+        "fontSize": { "value": "{fontSize.sm}", "type": "dimension" },
+        "lineHeight": { "value": "{lineHeight.md}", "type": "dimension" },
+        "color": { "value": "{color.neutral.text.default}", "type": "color" }
+      },
+      "percentage": {
+        "fontSize": { "value": "{fontSize.xs}", "type": "dimension" },
+        "lineHeight": { "value": "{lineHeight.sm}", "type": "dimension" },
+        "color": { "value": "{color.neutral.text.weak}", "type": "color" }
+      },
+      "error-message": {
+        "fontSize": { "value": "{fontSize.xs}", "type": "dimension" },
+        "lineHeight": { "value": "1.4", "type": "dimension" },
+        "color": { "value": "{color.system.error.text}", "type": "color" },
+        "gap": { "value": "{spacing.2xs}", "type": "dimension" }
+      },
+      "remove-button": {
+        "padding": { "value": "{spacing.2xs}", "type": "dimension" },
+        "borderRadius": { "value": "{radius.xs}", "type": "dimension" },
+        "color": {
+          "default": { "value": "{color.neutral.icon.weak}", "type": "color" },
+          "hover": { "value": "{color.neutral.icon.default}", "type": "color" }
+        },
+        "focus": {
+          "outlineWidth": { "value": "2px", "type": "dimension" },
+          "outlineOffset": { "value": "1px", "type": "dimension" }
+        },
+        "card": {
+          "position": { "value": "{spacing.2xs}", "type": "dimension" }
+        }
+      }
+    }
+  }
+}

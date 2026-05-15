@@ -1,0 +1,79 @@
+{
+  "breadcrumbs-ellipsis": {
+    "color": {
+      "default": {
+        "value": "{color.primary.text.weak}",
+        "type": "color",
+        "description": "Ellipsis button text color in default state"
+      },
+      "hover": {
+        "value": "{color.primary.text.weaker}",
+        "type": "color",
+        "description": "Ellipsis button text color on hover"
+      },
+      "pressed": {
+        "value": "{color.primary.text.default}",
+        "type": "color",
+        "description": "Ellipsis button text color when pressed"
+      },
+      "disabled": {
+        "value": "{color.neutral.text.weakest}",
+        "type": "color",
+        "description": "Ellipsis button text color when disabled"
+      }
+    },
+    "outlineColor": {
+      "focus": {
+        "value": "{color.secondary.border}",
+        "type": "color",
+        "description": "Ellipsis button focus outline color"
+      }
+    },
+    "outlineWidth": {
+      "value": "{border.width.2}",
+      "type": "dimension",
+      "description": "Ellipsis button focus outline width"
+    },
+    "outlineOffset": {
+      "value": "{spacing.2xs}",
+      "type": "dimension",
+      "description": "Ellipsis button focus outline offset"
+    },
+    "background": {
+      "focus": {
+        "value": "{color.neutral.background.base}",
+        "type": "color",
+        "description": "Ellipsis button background on focus"
+      }
+    },
+    "borderRadius": {
+      "value": "{radius.sm}",
+      "type": "dimension",
+      "description": "Ellipsis button border radius"
+    },
+    "dropdown": {
+      "background": {
+        "value": "{color.neutral.background.base}",
+        "type": "color",
+        "description": "Ellipsis dropdown background"
+      },
+      "borderRadius": {
+        "value": "{radius.md}",
+        "type": "dimension",
+        "description": "Ellipsis dropdown border radius"
+      },
+      "minWidth": {
+        "value": "160px",
+        "type": "dimension",
+        "description": "Ellipsis dropdown minimum width"
+      }
+    },
+    "ellipsis": {
+      "letterSpacing": {
+        "value": "0.1em",
+        "type": "dimension",
+        "description": "Ellipsis button letter spacing"
+      }
+    }
+  }
+}

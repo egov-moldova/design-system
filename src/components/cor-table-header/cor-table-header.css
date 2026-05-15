@@ -1,0 +1,39 @@
+:host {
+  display: block;
+  position: relative;
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--table-header-content-padding-block) var(--table-header-content-padding-inline);
+}
+
+.text-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--table-header-text-gap);
+  flex: 1;
+  min-width: 0;
+
+  ::slotted([slot='title']) {
+    line-height: 0;
+  }
+
+  ::slotted([slot='description']) {
+    line-height: 0;
+    color: var(--color-neutral-text-weaker);
+  }
+}
+
+.actions-container {
+  display: flex;
+  align-items: center;
+  gap: var(--table-header-actions-gap);
+  flex-shrink: 0;
+}
+
+:host([bottom-line]) {
+  border-bottom: var(--table-header-border-width) solid var(--table-header-border-color);
+}

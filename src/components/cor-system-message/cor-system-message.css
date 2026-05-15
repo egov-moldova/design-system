@@ -1,0 +1,38 @@
+:host {
+  display: block;
+  font-size: var(--system-message-text-font-size, var(--font-size-xs));
+  line-height: var(--system-message-text-line-height, var(--line-height-sm));
+  color: var(--system-message-text-color-default, var(--color-neutral-text-weaker));
+}
+
+:host([hidden]) {
+  display: none;
+}
+
+/* State overrides — text colour only */
+:host(.state-alert) {
+  color: var(--system-message-text-color-alert, var(--color-system-error-text));
+}
+
+:host(.state-info) {
+  color: var(--system-message-text-color-info, var(--color-system-info-text));
+}
+
+:host(.state-text) {
+  color: var(--system-message-text-color-text, var(--color-neutral-text-weaker));
+}
+
+/* Layout */
+.system-message-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--system-message-container-gap, var(--spacing-2xs));
+}
+
+/* Slotted text — inherit host colour and size */
+::slotted(*) {
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  margin: 0;
+}

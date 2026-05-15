@@ -1,0 +1,89 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--loading-size);
+  height: var(--loading-size);
+  flex-shrink: 0;
+}
+
+.loading-container {
+  position: relative;
+  width: var(--loading-size);
+  height: var(--loading-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Loading state: track ring */
+.loading-track {
+  box-sizing: border-box;
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: var(--loading-stroke-width) solid var(--loading-track-color);
+}
+
+/* Loading state: value arc (conic-gradient) */
+@property --loading-value {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
+.loading-arc {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  rotate: 90deg;
+  background: conic-gradient(
+    from -90deg,
+    var(--loading-arc-color) calc(var(--loading-value, 0) * 3.6deg),
+    transparent calc(var(--loading-value, 0) * 3.6deg)
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - var(--loading-stroke-width) - 1px),
+    var(--color-neutral-background-base-inverted) calc(100% - var(--loading-stroke-width))
+  );
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - var(--loading-stroke-width) - 1px),
+    var(--color-neutral-background-base-inverted) calc(100% - var(--loading-stroke-width))
+  );
+}
+
+/* Loading state: dots center */
+.loading-dots {
+  position: absolute;
+  width: fit-content;
+  height: fit-content;
+  line-height: 0;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+/* Final state: filled circle */
+.loading-final-ring {
+  box-sizing: border-box;
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background-color: var(--loading-final-background-color);
+  border: var(--loading-final-stroke-width) solid var(--loading-final-border-color);
+}
+
+/* Final state: checkmark center */
+.loading-checkmark {
+  position: absolute;
+  width: fit-content;
+  height: fit-content;
+  line-height: 0;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}

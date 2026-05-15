@@ -1,0 +1,572 @@
+{
+  "name": "@age/design-system",
+  "_id": "@age/design-system@0.0.1",
+  "version": "0.0.78",
+  "description": "Components for the AGE Design System. Built on StencilJS.",
+  "main": "dist/index.cjs.js",
+  "unpkg": "dist/design-system/design-system.esm.js",
+  "module": "dist/index.js",
+  "types": "dist/types/index.d.ts",
+  "collection": "dist/collection/collection-manifest.json",
+  "collection:main": "dist/collection/index.js",
+  "es2015": "dist/esm/index.mjs",
+  "es2017": "dist/esm/index.mjs",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs.js"
+    },
+    "./loader": {
+      "types": "./loader/index.d.ts",
+      "import": "./loader/index.js",
+      "require": "./loader/index.cjs.js"
+    },
+    "./dist/design-system/design-system.css": "./dist/design-system/design-system.css",
+    "./dist/design-system/tokens/*.css": "./dist/design-system/tokens/*.css",
+    "./dist/components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.js"
+    },
+    "./dist/components/*": "./dist/components/*",
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.js"
+    },
+    "./components/*": "./dist/components/*"
+  },
+  "workspaces": [
+    "angular-design-system",
+    "react-design-system",
+    "vue-design-system"
+  ],
+  "resolutions": {
+    "undici-types": "~7.19.0"
+  },
+  "files": [
+    "dist/",
+    "loader/"
+  ],
+  "scripts": {
+    "prepare": "husky install",
+    "build": "wireit",
+    "build.react": "wireit",
+    "build.angular": "wireit",
+    "build.vue": "wireit",
+    "build.watch": "stencil build --dev --watch",
+    "dx:prepare": "wireit",
+    "dev": "wireit",
+    "dx:stencil": "wireit",
+    "dx:storybook": "wireit",
+    "dx:stencil:once": "wireit",
+    "dx:clean": "rimraf .stencil .wireit storybook-static dist loader www",
+    "format": "wireit",
+    "format.icons": "svgo -f ./src/assets/images/icons --config=./svgo.config.icons.js",
+    "generate": "stencil generate",
+    "lint": "wireit",
+    "lint.js": "wireit",
+    "lint.css": "wireit",
+    "lint.css.fix": "stylelint \"src/**/*.css\" --fix",
+    "lint.colors": "node scripts/hardcoded-colors.mjs",
+    "sp.build": "wireit",
+    "sp.dev": "storybook dev -p 6007 --no-open",
+    "sp.dev.watch": "wireit",
+    "sp.prod": "wireit",
+    "sp.docker": "cross-env CI=1 STORYBOOK_DISABLE_TELEMETRY=1 NODE_ENV=production storybook build --disable-telemetry -o storybook-static",
+    "sp.serve": "yarn dlx serve storybook-static -p 6008",
+    "start": "stencil build --dev --watch --serve",
+    "test": "wireit",
+    "test.dev": "stencil test --spec --maxWorkers=0",
+    "test.watch": "stencil test --spec --watchAll --maxWorkers=0",
+    "typecheck": "wireit",
+    "tokens.build": "wireit",
+    "tokens.build.prod": "wireit",
+    "tokens.build.age": "wireit",
+    "tokens.audit": "node scripts/debug-missing-token-references.mjs tokens/core/style-dictionary.config.json",
+    "tokens.audit.dark": "node scripts/debug-missing-token-references.mjs tokens/core.dark/style-dictionary.config.json",
+    "tokens.lint": "node scripts/tokens-lint.mjs --root tokens/core",
+    "tokens.lint.dark": "node scripts/tokens-lint.mjs --root tokens/core.dark",
+    "tokens.lint.all": "node scripts/tokens-lint.mjs --root tokens/core --root tokens/core.dark",
+    "tokens.watch": "wireit",
+    "wca.custom-elements": "wireit",
+    "svg:remove-size": "wireit",
+    "svg:remove-fill": "wireit",
+    "svg:icons": "wireit",
+    "carbon:names": "node scripts/generate-carbon-icon-names.mjs",
+    "sync:tokens": "node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --output tokens/figma-export"
+  },
+  "wireit": {
+    "tokens.build.core": {
+      "command": "style-dictionary build --config tokens/core/style-dictionary.config.json",
+      "files": [
+        "tokens/core/**/*.tokens.json",
+        "tokens/core/style-dictionary.config.json"
+      ],
+      "output": [
+        "tokens/generated/core.tokens.css"
+      ],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "tokens.build.dark": {
+      "command": "style-dictionary build --config tokens/core.dark/style-dictionary.config.json",
+      "files": [
+        "tokens/core.dark/**/*.tokens.json",
+        "tokens/core.dark/style-dictionary.config.json"
+      ],
+      "output": [
+        "tokens/generated/core.dark.tokens.css"
+      ],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "tokens.build": {
+      "dependencies": [
+        "tokens.build.core",
+        "tokens.build.dark"
+      ]
+    },
+    "tokens.build.prod.core": {
+      "command": "style-dictionary build --config tokens/core/style-dictionary.prod.config.json",
+      "files": [
+        "tokens/core/**/*.tokens.json",
+        "tokens/core/style-dictionary.prod.config.json"
+      ],
+      "output": [
+        "dist/design-system/tokens/core.tokens.css",
+        ".storybook/stories/assets/core.tokens.json",
+        "tokens/generated/core.tokens.json"
+      ],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "tokens.build.prod.dark": {
+      "command": "style-dictionary build --config tokens/core.dark/style-dictionary.prod.config.json",
+      "files": [
+        "tokens/core.dark/**/*.tokens.json",
+        "tokens/core.dark/style-dictionary.prod.config.json"
+      ],
+      "output": [
+        "dist/design-system/tokens/core.dark.tokens.css",
+        ".storybook/stories/assets/core.dark.tokens.json",
+        "tokens/generated/core.dark.tokens.json"
+      ],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "tokens.build.prod": {
+      "dependencies": [
+        "tokens.build.prod.core",
+        "tokens.build.prod.dark"
+      ]
+    },
+    "tokens.build.age": {
+      "command": "style-dictionary build --config tokens/age/style-dictionary.config.json",
+      "files": [
+        "tokens/core/**/*.tokens.json",
+        "tokens/age/**/*.tokens.json",
+        "tokens/age/style-dictionary.config.json"
+      ],
+      "output": [
+        "dist/design-system/tokens/age.tokens.css",
+        "tokens/generated/age.tokens.css",
+        "tokens/generated/age.tokens.json"
+      ],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "tokens.watch": {
+      "command": "node scripts/tokens-watch.mjs",
+      "service": true,
+      "files": [
+        "scripts/tokens-watch.mjs"
+      ]
+    },
+    "wca.custom-elements": {
+      "command": "wca analyze src --format json --outFile .storybook/custom-elements.json",
+      "files": [
+        "src/**/*.ts",
+        "src/**/*.tsx"
+      ],
+      "output": [
+        ".storybook/custom-elements.json"
+      ],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "build": {
+      "command": "cross-env NODE_OPTIONS=--max-old-space-size=4096 stencil build --docs",
+      "dependencies": [
+        "tokens.build.prod",
+        "wca.custom-elements"
+      ],
+      "clean": false,
+      "files": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "src/**/*.css",
+        "src/assets/**/*",
+        "stencil.config.ts",
+        "tsconfig.json"
+      ],
+      "output": [
+        "dist/**",
+        "loader/**"
+      ],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "build.react": {
+      "command": "cross-env NODE_OPTIONS=--max-old-space-size=6144 stencil build --docs --react && node react-design-system/scripts/fix-generated.js",
+      "dependencies": [
+        "tokens.build.prod"
+      ],
+      "clean": false,
+      "files": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "src/**/*.css",
+        "src/assets/**/*",
+        "stencil.config.ts",
+        "tsconfig.json"
+      ],
+      "output": [
+        "dist/**",
+        "loader/**",
+        "react-design-system/src/components/stencil-generated/**"
+      ],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "build.angular": {
+      "command": "cross-env NODE_OPTIONS=--max-old-space-size=6144 stencil build --docs --angular && node angular-design-system/scripts/fix-generated.js && node scripts/generate-component-shims.mjs && node angular-design-system/scripts/generate-public-api.mjs",
+      "dependencies": [
+        "tokens.build.prod"
+      ],
+      "clean": false,
+      "files": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "src/**/*.css",
+        "src/assets/**/*",
+        "stencil.config.ts",
+        "tsconfig.json"
+      ],
+      "output": [
+        "dist/**",
+        "loader/**",
+        "components/**",
+        "angular-design-system/src/directives/**",
+        "angular-design-system/src/public-api.ts"
+      ],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "build.vue": {
+      "command": "cross-env NODE_OPTIONS=--max-old-space-size=6144 stencil build --docs --vue",
+      "dependencies": [
+        "tokens.build.prod"
+      ],
+      "clean": false,
+      "files": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "src/**/*.css",
+        "src/assets/**/*",
+        "stencil.config.ts",
+        "tsconfig.json"
+      ],
+      "output": [
+        "dist/**",
+        "loader/**",
+        "vue-design-system/src/components/stencil-generated/**"
+      ],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "dx:prepare": {
+      "dependencies": [
+        "tokens.build",
+        "wca.custom-elements"
+      ]
+    },
+    "dev": {
+      "dependencies": [
+        "dx:prepare",
+        "tokens.watch",
+        "dx:stencil",
+        "dx:storybook"
+      ]
+    },
+    "dx:stencil": {
+      "command": "stencil build --dev --watch --serve=false",
+      "dependencies": [
+        "dx:prepare"
+      ],
+      "service": true
+    },
+    "dx:storybook": {
+      "command": "wait-on --interval 200 dist/design-system/design-system.esm.js dist/design-system/design-system.css tokens/generated/core.tokens.css && storybook dev -p 6007 --no-open",
+      "dependencies": [
+        "dx:prepare"
+      ],
+      "service": true,
+      "files": [
+        ".storybook/**/*"
+      ]
+    },
+    "dx:stencil:once": {
+      "command": "stencil build --dev",
+      "dependencies": [
+        "tokens.build"
+      ],
+      "files": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "src/**/*.css",
+        "stencil.config.ts",
+        "tsconfig.json"
+      ],
+      "output": [
+        "dist/**",
+        "loader/**"
+      ],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "format": {
+      "command": "eslint \"src/**/*.{ts,tsx}\" --fix && prettier --write .",
+      "files": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "src/**/*.css",
+        ".eslintrc.js",
+        ".prettierrc.json"
+      ],
+      "output": [],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "lint.js": {
+      "command": "eslint \"src/**/*.{ts,tsx}\" --max-warnings 0 && prettier --check .",
+      "files": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        ".eslintrc.js",
+        ".eslintignore",
+        ".prettierrc.json",
+        ".prettierignore"
+      ],
+      "output": [],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "lint": {
+      "dependencies": [
+        "lint.js",
+        "lint.css"
+      ]
+    },
+    "lint.css": {
+      "command": "stylelint \"src/**/*.css\"",
+      "files": [
+        "src/**/*.css",
+        ".stylelintrc.json",
+        ".stylelintignore"
+      ],
+      "output": [],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "test": {
+      "command": "stencil test --spec --maxWorkers=0",
+      "dependencies": [
+        "tokens.build"
+      ],
+      "files": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "src/**/*.css",
+        "stencil.config.ts",
+        "tsconfig.json",
+        "jest.setup.ts"
+      ],
+      "output": [],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "typecheck": {
+      "command": "tsc --noEmit",
+      "dependencies": [
+        "dx:prepare"
+      ],
+      "files": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "tsconfig.json"
+      ],
+      "output": [],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "sp.build": {
+      "dependencies": [
+        "build",
+        "wca.custom-elements"
+      ],
+      "command": "cross-env CI=1 STORYBOOK_DISABLE_TELEMETRY=1 NODE_ENV=production storybook build --disable-telemetry -o storybook-static",
+      "files": [
+        ".storybook/**/*",
+        "src/**/*.stories.ts"
+      ],
+      "output": [
+        "storybook-static/**"
+      ],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "sp.prod": {
+      "command": "cross-env CI=1 STORYBOOK_DISABLE_TELEMETRY=1 NODE_ENV=production storybook build --disable-telemetry -o storybook-static",
+      "dependencies": [
+        "build",
+        "wca.custom-elements"
+      ],
+      "files": [
+        ".storybook/**/*",
+        "src/**/*.stories.ts"
+      ],
+      "output": [
+        "storybook-static/**"
+      ],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "sp.dev.watch": {
+      "dependencies": [
+        "dev"
+      ]
+    },
+    "svg:remove-size": {
+      "command": "svgo -f assets/icons --config svgo.config.icons.js --recursive",
+      "files": [
+        "assets/icons/**/*.svg",
+        "svgo.config.icons.js"
+      ],
+      "output": [
+        "assets/icons/**/*.svg"
+      ]
+    },
+    "svg:remove-fill": {
+      "command": "svgo -f assets/icons --config svgo.config.icons.js --recursive",
+      "dependencies": [
+        "svg:remove-size"
+      ],
+      "files": [
+        "assets/icons/**/*.svg",
+        "svgo.config.icons.js"
+      ],
+      "output": [
+        "assets/icons/**/*.svg"
+      ]
+    },
+    "svg:icons": {
+      "command": "node scripts/process-svg.js -i assets/icons -s src/components/cor-icon/assets/local-icons.json",
+      "dependencies": [
+        "svg:remove-fill",
+        "format"
+      ],
+      "files": [
+        "assets/icons/**/*.svg",
+        "scripts/process-svg.js"
+      ],
+      "output": [
+        "src/components/cor-icon/assets/local-icons.json"
+      ]
+    }
+  },
+  "dependencies": {
+    "@carbon/icons": "^11.74.0",
+    "@stencil/core": "^4.43.3"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.4.1",
+    "@commitlint/config-conventional": "^20.4.1",
+    "@etchteam/storybook-addon-css-variables-theme": "^2.1.2",
+    "@stencil/angular-output-target": "^1.3.0",
+    "@stencil/eslint-plugin": "^1.1.0",
+    "@stencil/postcss": "^2.1.0",
+    "@stencil/react-output-target": "^1.4.0",
+    "@stencil/vue-output-target": "^0.13.1",
+    "@storybook/addon-a11y": "^9.1.20",
+    "@storybook/addon-docs": "^9.1.20",
+    "@storybook/addon-links": "^9.1.20",
+    "@storybook/web-components": "^9.1.20",
+    "@storybook/web-components-vite": "^9.1.20",
+    "@types/jest": "29.5.12",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "@typescript-eslint/eslint-plugin": "^8.18.2",
+    "@typescript-eslint/parser": "^8.18.2",
+    "agent-browser": "latest",
+    "agentation": "^3.0.2",
+    "commander": "^14.0.3",
+    "cross-env": "^10.1.0",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-storybook": "10.3.1",
+    "husky": "^9.1.7",
+    "jest": "29.7.0",
+    "jest-cli": "29.7.0",
+    "known-css-properties": "^0.37.0",
+    "lit": "^3.3.2",
+    "lodash": "^4.17.23",
+    "pixelmatch": "^7.1.0",
+    "pngjs": "^7.0.0",
+    "postcss": "^8.5.6",
+    "postcss-nested": "^7.0.2",
+    "postcss-preset-env": "^11.1.3",
+    "prettier": "^3.8.1",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "rimraf": "^6.1.2",
+    "storybook": "^9.1.20",
+    "style-dictionary": "^4.4.0",
+    "stylelint": "^17.4.0",
+    "stylelint-config-standard": "^40.0.0",
+    "stylelint-declaration-strict-value": "^1.11.1",
+    "svgo": "^4.0.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vue": "^3.5.13",
+    "wait-on": "^9.0.3",
+    "web-component-analyzer": "^2.0.0",
+    "wireit": "^0.14.12"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "readme": "./README.md",
+  "publishConfig": {
+    "@age:registry": "https://gitlab.com/api/v4/projects/44763899/packages/npm/"
+  },
+  "packageManager": "yarn@4.9.4+sha512.7b1cb0b62abba6a537b3a2ce00811a843bea02bcf53138581a6ae5b1bf563f734872bd47de49ce32a9ca9dcaff995aa789577ffb16811da7c603dcf69e73750b"
+}

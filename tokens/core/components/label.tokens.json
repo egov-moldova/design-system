@@ -1,0 +1,78 @@
+{
+  "label": {
+    "color": {
+      "default": {
+        "value": "{color.neutral.text.weak}",
+        "type": "color"
+      },
+      "hover": {
+        "value": "{color.neutral.text.default}",
+        "type": "color"
+      },
+      "active": {
+        "value": "{color.neutral.text.default}",
+        "type": "color"
+      },
+      "disabled": {
+        "value": "{color.neutral.text.weakest}",
+        "type": "color"
+      },
+      "error": {
+        "value": "{color.system.error.icon}",
+        "type": "color"
+      }
+    },
+    "fontSize": {
+      "md": {
+        "value": "{fontSize.sm}",
+        "type": "fontSize"
+      },
+      "sm": {
+        "value": "{fontSize.xs}",
+        "type": "fontSize"
+      }
+    },
+    "lineHeight": {
+      "md": {
+        "value": "{lineHeight.md}",
+        "type": "lineHeight"
+      },
+      "sm": {
+        "value": "{lineHeight.sm}",
+        "type": "lineHeight"
+      }
+    },
+    "fontFamily": {
+      "value": "{fontFamily.body}",
+      "type": "fontFamily"
+    },
+    "fontWeight": {
+      "value": "{fontWeight.normal}",
+      "type": "fontWeight"
+    },
+    "gap": {
+      "value": "{spacing.0}",
+      "type": "dimension"
+    },
+    "helper": {
+      "color": {
+        "value": "{color.neutral.text.weaker}",
+        "type": "color"
+      },
+      "fontSize": {
+        "value": "{fontSize.xs}",
+        "type": "fontSize"
+      },
+      "lineHeight": {
+        "value": "{lineHeight.sm}",
+        "type": "lineHeight"
+      },
+      "icon": {
+        "size": {
+          "value": "16px",
+          "type": "dimension"
+        }
+      }
+    }
+  }
+}

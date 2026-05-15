@@ -1,0 +1,18 @@
+{
+  "loading-percentage": {
+    "text": {
+      "color": {
+        "value": "{color.neutral.text.weak}",
+        "type": "color"
+      },
+      "size": {
+        "value": "{fontSize.xs}",
+        "type": "dimension"
+      },
+      "lineHeight": {
+        "value": "{lineHeight.sm}",
+        "type": "dimension"
+      }
+    }
+  }
+}

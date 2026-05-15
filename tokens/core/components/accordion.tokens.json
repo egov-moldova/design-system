@@ -1,0 +1,66 @@
+{
+  "accordion": {
+    "header": {
+      "paddingInline": {
+        "md": { "value": "{space.xs}", "type": "dimension" },
+        "sm": { "value": "{space.3xs}", "type": "dimension" }
+      },
+      "paddingBlock": { "value": "{space.3xs}", "type": "dimension" },
+      "gap": { "value": "{space.6xs}", "type": "dimension" },
+      "background": {
+        "hover": { "value": "{color.neutral.transparent.weak}", "type": "color" },
+        "pressed": { "value": "{color.neutral.transparent.default}", "type": "color" },
+        "disabled": { "value": "transparent", "type": "color" }
+      },
+      "borderColor": { "value": "{color.neutral.border.weakest}", "type": "color" },
+      "borderWidth": { "value": "{border.width.1}", "type": "dimension" },
+      "text": {
+        "default": { "value": "{color.neutral.text.weak}", "type": "color" },
+        "hover": { "value": "{color.neutral.text.default}", "type": "color" },
+        "pressed": { "value": "{color.neutral.text.default}", "type": "color" },
+        "disabled": { "value": "{color.neutral.text.weakest}", "type": "color" }
+      }
+    },
+    "summary": {
+      "gap": { "value": "{space.3xs}", "type": "dimension" },
+      "padding": { "value": "{space.5xs}", "type": "dimension" }
+    },
+    "icon": {
+      "size": {
+        "md": { "value": "{space.md}", "type": "dimension" },
+        "sm": { "value": "{space.sm}", "type": "dimension" }
+      },
+      "padding": { "value": "{space.5xs}", "type": "dimension" },
+      "borderRadius": { "value": "{radius.xs}", "type": "dimension" }
+    },
+    "outline": {
+      "width": {
+        "focus": { "value": "{border.width.2}", "type": "dimension" }
+      },
+      "color": {
+        "focus": { "value": "{color.secondary.border}", "type": "color" }
+      }
+    },
+    "panel": {
+      "padding": { "value": "{space.sm}", "type": "dimension" },
+      "gap": { "value": "{space.sm}", "type": "dimension" }
+    },
+    "font": {
+      "size": {
+        "md": { "value": "{fontSize.sm}", "type": "dimension" },
+        "sm": { "value": "{fontSize.xs}", "type": "dimension" }
+      },
+      "lineHeight": {
+        "md": { "value": "{lineHeight.md}", "type": "dimension" },
+        "sm": { "value": "{lineHeight.sm}", "type": "dimension" }
+      },
+      "weight": { "value": "{fontWeight.semiBold}", "type": "fontWeight" },
+      "family": { "value": "{fontFamily.body}", "type": "fontFamily" }
+    },
+    "skeleton": {
+      "header": {
+        "paddingBlock": { "value": "{space.5xs}", "type": "dimension" }
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "source": ["tokens/core/**/*.tokens.json", "tokens/core.dark/**/*.tokens.json"],
+  "platforms": {
+    "css": {
+      "transforms": ["attribute/cti", "name/kebab", "size/px", "color/hex"],
+      "buildPath": "tokens/generated/",
+      "files": [
+        {
+          "destination": "core.dark.tokens.css",
+          "format": "css/variables",
+          "options": {
+            "showFileHeader": false,
+            "selector": ":root[data-theme=\"dark\"]"
+          }
+        }
+      ]
+    }
+  }
+}

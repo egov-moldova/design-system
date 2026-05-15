@@ -1,0 +1,8 @@
+{
+  "letterSpacing": {
+    "default": {
+      "value": "1.5%",
+      "type": "string"
+    }
+  }
+}

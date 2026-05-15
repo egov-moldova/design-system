@@ -1,0 +1,371 @@
+import { Meta, ColorPalette, ColorItem, Typeset } from '@storybook/blocks';
+import { kebabCase, startCase } from 'lodash';
+
+import * as core from './assets/core.tokens.json';
+
+export const SOURCE_TOKEN_MODULES = import.meta.glob('../../tokens/core/**/*.tokens.json', { eager: true });
+
+export const TOKEN_REFERENCE_PATTERN = /^\{([^}]+)\}$/;
+
+export const TOKEN_META_STYLE = { color: '#a2a2a2', fontSize: 12, fontStyle: 'italic', lineHeight: 1 };
+
+export const TOKEN_REFERENCE_STYLE = { ...TOKEN_META_STYLE };
+
+export const buildTokenReferenceMap = modules => {
+  const referenceMap = {};
+
+const visitNode = (node, pathParts = [], sourcePath = '') => {
+if (!node || typeof node !== 'object' || Array.isArray(node)) {
+return;
+}
+
+    if (Object.prototype.hasOwnProperty.call(node, 'value') && (typeof node.value === 'string' || typeof node.value === 'number')) {
+      if (typeof node.value === 'string') {
+        const normalizedReference = node.value.match(TOKEN_REFERENCE_PATTERN)?.[1] ?? (node.value.includes('{') ? node.value : null);
+
+        if (normalizedReference) {
+          referenceMap[pathParts.join('.')] = {
+            reference: normalizedReference,
+            sourceFile: sourcePath.split('/').pop(),
+          };
+        }
+      }
+
+      return;
+    }
+
+    Object.entries(node).forEach(([key, value]) => {
+      visitNode(value, [...pathParts, key], sourcePath);
+    });
+
+};
+
+Object.entries(modules).forEach(([sourcePath, module]) => {
+visitNode(module.default ?? module, [], sourcePath.replace(/\\/g, '/'));
+});
+
+return referenceMap;
+};
+
+export const TOKEN_REFERENCE_MAP = buildTokenReferenceMap(SOURCE_TOKEN_MODULES);
+
+export const getTokenReference = dotPath => TOKEN_REFERENCE_MAP[dotPath] ?? null;
+
+export const COLOR_KEY_NAMES = ['palette', 'color', 'linearGradient', 'shadow'];
+
+export const COLOR_KEYS = Object.keys(core).filter(k => COLOR_KEY_NAMES.includes(k));
+
+export const TEXT_KEYS = ['font', 'fontFamily', 'fontSize', 'fontWeight', 'letterSpacing', 'lineHeight'];
+
+export const APPEARANCE_KEYS = ['border', 'radius', 'screen', 'size', 'space', 'spacing', 'zIndex'];
+
+export const COMPONENT_KEYS = Object.keys(core).filter(
+  k => !['default', ...COLOR_KEYS, ...TEXT_KEYS, ...APPEARANCE_KEYS].includes(k),
+);
+
+export const renderTokenRows = (group, obj, prefix = null, pathParts = []) => {
+  return Object.entries(obj).map(([k, v]) => {
+    const tokenName = prefix ? `${prefix}-${kebabCase(k)}` : `${kebabCase(group)}-${kebabCase(k)}`;
+    const newPathParts = [...pathParts, k]; // preserve original key names for canonical dot-path
+    const dotPath = [group, ...newPathParts].join('.'); // e.g. color.neutral.text.default
+    const sourceReference = getTokenReference(dotPath);
+
+    const isColorString = s => typeof s === 'string' && (s.match(/^#/) || s.match(/^rgb/) || s.match(/^hsl/));
+
+    const renderTokenName = name => {
+      return (
+        <td>
+          <span style={{display: 'inline-flex', flexDirection: 'column', gap: '2px'}}>
+            {name}
+            <span style={TOKEN_META_STYLE}>
+              path: <code>{dotPath}</code>
+            </span>
+          </span>
+        </td>
+      );
+    };
+
+    const renderTokenValue = (value, swatchSize = 24) => {
+      const showSwatch = isColorString(value);
+
+      return (
+        <td>
+          {showSwatch ? (
+            <span
+              style={{
+                display: 'inline-block',
+                width: `${swatchSize}px`,
+                height: `${swatchSize}px`,
+                borderRadius: '50%',
+                background: String(value),
+                border: '1px solid #ddd',
+                marginRight: '8px',
+                verticalAlign: 'middle',
+              }}
+            />
+          ) : null}
+          <span style={{display: 'inline-flex', flexDirection: 'column', gap: '2px'}}>
+            <span style={{ verticalAlign: 'middle' }}>{value}</span>
+            {sourceReference ? (
+              <span style={TOKEN_REFERENCE_STYLE} title={`Source token: ${sourceReference.sourceFile}`}>
+                ref: <code>{sourceReference.reference}</code>
+              </span>
+          ) : null}
+          </span>
+        </td>
+      );
+    };
+
+    // primitive leaf
+    if (typeof v === 'string' || typeof v === 'number') {
+      return (
+        <tr key={tokenName}>
+          {renderTokenName(tokenName)}
+          {renderTokenValue(v)}
+        </tr>
+      );
+    }
+
+    // If this object is a design token (has a resolved 'value'), render that and DO NOT descend into metadata like 'original'
+    if (v && typeof v === 'object' && Object.prototype.hasOwnProperty.call(v, 'value') && (typeof v.value === 'string' || typeof v.value === 'number')) {
+      return (
+        <tr key={tokenName}>
+          {renderTokenName(tokenName)}
+          {renderTokenValue(v.value, 20)}
+        </tr>
+      );
+    }
+
+    // otherwise recurse
+    if (v && typeof v === 'object') {
+      return renderTokenRows(group, v, tokenName, newPathParts);
+    }
+
+    return null;
+
+});
+};
+
+export const renderTokenTable = group => {
+  if (!core[group]) return null;
+  return (
+    <div key={group}>
+      &nbsp;
+      <h3>{startCase(group)}</h3>
+      <table style={{ width: '100%' }}>
+        <thead>
+          <tr>
+            <th width="50%">Token name</th>
+            <th width="50%">Token value</th>
+          </tr>
+        </thead>
+        <tbody>{renderTokenRows(group, core[group], null, [])}</tbody>
+      </table>
+    </div>
+  );
+};
+
+<Meta title="Design Tokens/Core" />
+
+# Design Tokens: Core
+
+## Colors
+
+_Token composition: `color-{colorGroup}-{colorShade}` (ex: `color-neutral-text-default`)_
+
+<ColorPalette>
+  {COLOR_KEYS.flatMap(group =>
+    Object.entries(core[group] || {}).map(([k, v]) => {
+      if (typeof v === 'string' && (v.match(/^#/) || v.match(/^rgb/) || k.match(/color/i))) {
+        return <ColorItem key={group + '-' + k} title={startCase(k)} colors={{ [k]: v }} />;
+      } else if (typeof v === 'object') {
+        const hasNestedObjects = Object.values(v).some(val => typeof val === 'object');
+
+        return hasNestedObjects ? (
+          <div key={group + '-' + k} style={{ marginBottom: '2rem' }}>
+            <h3 style={{ marginBottom: '1rem', fontSize: '18px', textTransform: 'uppercase', padding: '12px 0', borderBottom: '1px solid #cfd2d6' }}>
+              {startCase(group)} - {startCase(k)}
+            </h3>
+
+            {Object.entries(v).map(([subKey, subValue]) => {
+              if (typeof subValue === 'object') {
+                return (
+                  <div key={group + '-' + k + '-' + subKey} style={{ marginBottom: '1rem' }}>
+                    <h4 style={{ marginBottom: '0.5rem', textTransform: 'capitalize', fontSize: '0.9rem' }}>
+                      {startCase(subKey)}
+                    </h4>
+                    <ColorItem
+                      colors={Object.entries(subValue).reduce(
+                        (acc, [colorKey, colorValue]) =>
+                          (typeof colorValue === 'string' && (colorValue.match(/^#/) || colorValue.match(/^rgb/)))
+                            ? { ...acc, [colorKey]: colorValue }
+                            : acc,
+                        {},
+                      )}
+                    />
+                  </div>
+                );
+              } else if (typeof subValue === 'string' && (subValue.match(/^#/) || subValue.match(/^rgb/))) {
+                return (
+                  <ColorItem
+                    key={group + '-' + k + '-' + subKey}
+                    title={subKey}
+                    colors={{ [subKey]: subValue }}
+                  />
+                );
+              }
+              return null;
+            })}
+          </div>
+        ) : (
+          <ColorItem
+            key={group + '-' + k}
+            title={startCase(k)}
+            colors={Object.entries(v).reduce(
+              (acc, [key, value]) => (typeof value === 'string' && (value.match(/^#/) || value.match(/^rgb/) || key.match(/color/i)) ? { ...acc, [key]: value } : acc),
+              {},
+            )}
+          />
+        );
+      }
+      return null;
+    })
+
+)}
+
+</ColorPalette>
+
+## Text Properties Tokens
+
+_Non-color global tokens from `tokens/core/` ({TEXT_KEYS.join(', ')})_
+
+{TEXT_KEYS.map(group => {
+const tokenObj = core[group];
+if (!tokenObj) return null;
+
+const collectValues = obj => {
+const out = [];
+const recurse = o => {
+if (typeof o === 'string' || typeof o === 'number') {
+out.push(o);
+return;
+}
+if (o && typeof o === 'object') {
+if (Object.prototype.hasOwnProperty.call(o, 'value') && (typeof o.value === 'string' || typeof o.value === 'number')) {
+out.push(o.value);
+return;
+}
+Object.values(o).forEach(v => recurse(v));
+}
+};
+recurse(obj);
+return out;
+};
+
+const values = collectValues(tokenObj) || [];
+
+// Derive Typeset props based on the token group so we don't confuse weights with sizes
+let fontFamily;
+let fontSizes = [];
+let fontWeight;
+let fontWeights = [];
+let letterSpacing;
+let lineHeight;
+let lineHeights = [];
+
+if (group === 'font' || group === 'fontFamily') {
+// prefer a string family value
+fontFamily = values.find(v => typeof v === 'string') || values[0];
+fontSizes = [16];
+} else if (group === 'fontSize') {
+fontSizes = values
+.map(v => {
+const s = String(v).replace(/[^\d.]/g, '');
+const n = Number(s);
+return Number.isFinite(n) ? n : null;
+})
+.filter(Boolean);
+if (!fontSizes.length) fontSizes = [16];
+} else if (group === 'fontWeight') {
+// collect all numeric weights and present them all (do NOT treat as fontSizes)
+const weights = values
+.map(v => {
+const s = String(v).replace(/[^\d]/g, '');
+const n = Number(s);
+return Number.isFinite(n) ? n : null;
+})
+.filter(Boolean);
+fontWeights = weights.sort((a, b) => a - b);
+fontWeight = fontWeights.length ? String(fontWeights[0]) : undefined;
+fontSizes = [16];
+} else if (group === 'letterSpacing') {
+letterSpacing = values.find(v => String(v).match(/(em|px|rem|%)$/)) || values.find(v => String(v).match(/^[\d.-]+$/));
+fontSizes = [16];
+} else if (group === 'lineHeight') {
+const heights = values
+.map(v => String(v).trim())
+.filter(s => s.match(/^(normal|auto|[\d.]+(?:px|em|rem|%)?|[\d.]+)$/));
+  lineHeights = heights;
+  lineHeight = lineHeights.length ? (/^[\d.]+$/.test(lineHeights[0]) ? Number(lineHeights[0]) : lineHeights[0]) : undefined;
+fontSizes = [16];
+} else {
+fontSizes = [16];
+}
+
+return (
+
+<div key={group} style={{ marginBottom: '2rem' }}>
+<h3>{startCase(group)}</h3>
+<div style={{ marginBottom: '1rem' }}>
+  {group === 'fontWeight' && fontWeights && fontWeights.length ? (
+    fontWeights.map(w => (
+      <div key={'fw-' + w} style={{ marginBottom: '0.75rem' }}>
+        <div style={{ fontSize: '12px', color: '#666', marginBottom: '6px' }}>{String(w)}</div>
+        <Typeset
+          fontSizes={[16]}
+          fontWeight={String(w)}
+          sampleText="The quick brown fox jumps over the lazy dog."
+          fontFamily={fontFamily || undefined}
+          style={letterSpacing || lineHeight ? { letterSpacing: letterSpacing, lineHeight: lineHeight } : undefined}
+        />
+      </div>
+    ))
+  ) : group === 'lineHeight' && lineHeights && lineHeights.length ? (
+    lineHeights.map(lh => (
+      <div key={'lh-' + lh} style={{ marginBottom: '0.75rem' }}>
+        <div style={{ fontSize: '12px', color: '#666', marginBottom: '6px' }}>{String(lh)}</div>
+        <Typeset
+          fontSizes={[16]}
+          fontWeight={fontWeight || undefined}
+          sampleText={<span style={{ display: 'inline-block', borderBlock: '1px solid red', lineHeight: lh }}>The quick brown fox jumps over the lazy dog.</span>}
+          fontFamily={fontFamily || undefined}
+          style={{ letterSpacing: letterSpacing, lineHeight: (/^[\d.]+$/.test(String(lh)) ? Number(lh) : String(lh)) }}
+        />
+      </div>
+    ))
+  ) : (
+    <Typeset
+      fontSizes={fontSizes && fontSizes.length ? fontSizes : [16]}
+      fontWeight={fontWeight || undefined}
+      sampleText="The quick brown fox jumps over the lazy dog."
+      fontFamily={fontFamily || undefined}
+      style={letterSpacing || lineHeight ? { letterSpacing: letterSpacing, lineHeight: lineHeight } : undefined}
+    />
+  )}
+</div>
+{renderTokenTable(group)}
+</div>
+);
+})}
+
+## Appearance Properties Tokens
+
+_Non-color global tokens from `tokens/core/` ({APPEARANCE_KEYS.join(', ')})_
+
+<div>{APPEARANCE_KEYS.map(group => renderTokenTable(group))}</div>
+
+## Component Tokens
+
+_Per-component tokens from `tokens/core/components/` ({COMPONENT_KEYS.join(', ')})_
+
+<div>{COMPONENT_KEYS.map(group => renderTokenTable(group))}</div>

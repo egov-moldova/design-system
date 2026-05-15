@@ -1,0 +1,149 @@
+:host {
+  display: inline-flex;
+  font-family: var(--controls-font-family, var(--font-family-sans));
+  font-weight: var(--controls-font-weight, var(--font-weight-normal));
+}
+
+.container {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--controls-gap, var(--spacing-xs));
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+:host([disabled]) .container {
+  cursor: not-allowed;
+}
+
+input[type='checkbox'] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.toggle-track {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: var(--toggle-track-width);
+  height: var(--toggle-track-height);
+  background-color: var(--toggle-track-background);
+  border: var(--toggle-track-border, 1px solid transparent);
+  border-radius: var(--toggle-track-border-radius);
+  transition:
+    background-color 150ms ease-in-out,
+    border-color 150ms ease-in-out;
+  pointer-events: none;
+  box-sizing: content-box;
+}
+
+.toggle-thumb {
+  position: absolute;
+  left: var(--toggle-thumb-position);
+  width: var(--toggle-thumb-size);
+  height: var(--toggle-thumb-size);
+  background-color: var(--toggle-thumb-background);
+  border-radius: 50%;
+  box-shadow: var(--toggle-thumb-shadow, var(--shadow-sm));
+  transition:
+    left 150ms ease-in-out,
+    background-color 150ms ease-in-out;
+}
+
+/* Focus-visible state (keyboard navigation only) */
+input[type='checkbox']:focus-visible ~ .toggle-track {
+  outline: var(--controls-outline-width-focus) solid var(--controls-outline-color-focus);
+  outline-offset: var(--controls-outline-offset-focus);
+}
+
+:host([size='md']) {
+  --toggle-track-width: var(--toggle-track-width-md);
+  --toggle-track-height: var(--toggle-track-height-md);
+  --toggle-track-border-radius: var(--toggle-track-border-radius-md);
+  --toggle-thumb-size: var(--toggle-thumb-size-md);
+  --toggle-thumb-position: var(--toggle-thumb-position-md);
+  --toggle-thumb-position-checked: var(--toggle-thumb-position-checked-md);
+}
+
+:host([size='sm']) {
+  --toggle-track-width: var(--toggle-track-width-sm);
+  --toggle-track-height: var(--toggle-track-height-sm);
+  --toggle-track-border-radius: var(--toggle-track-border-radius-sm);
+  --toggle-thumb-size: var(--toggle-thumb-size-sm);
+  --toggle-thumb-position: var(--toggle-thumb-position-sm);
+  --toggle-thumb-position-checked: var(--toggle-thumb-position-checked-sm);
+}
+
+:host([size='sm']) input[type='checkbox']:checked ~ .toggle-track .toggle-thumb,
+:host([size='sm'][invalid]:not([disabled])) input[type='checkbox']:checked ~ .toggle-track .toggle-thumb,
+:host([size='sm'][invalid]:hover:not([disabled])) input[type='checkbox']:checked ~ .toggle-track .toggle-thumb {
+  left: calc(var(--toggle-thumb-position-checked) + 2px);
+}
+
+:host {
+  --toggle-track-background: var(--toggle-track-background-default);
+  --toggle-thumb-background: var(--toggle-thumb-background-default);
+}
+
+:host(:hover:not([disabled])) {
+  --toggle-track-background: var(--toggle-track-background-hover);
+}
+
+:host(:active:not([disabled])) {
+  --toggle-track-background: var(--toggle-track-background-pressed);
+}
+
+:host([disabled]) {
+  --toggle-track-background: var(--toggle-track-background-disabled);
+  --toggle-thumb-background: var(--toggle-thumb-background-disabled);
+  --toggle-thumb-shadow: none;
+}
+
+:host([invalid]:not([disabled])) {
+  --toggle-track-background: var(--toggle-track-invalid-background);
+  --toggle-track-border: 1px solid var(--toggle-track-invalid-border-color);
+  --toggle-thumb-background: var(--toggle-thumb-invalid-background);
+  --toggle-thumb-shadow: none;
+}
+
+:host([invalid]:hover:not([disabled])) {
+  --toggle-track-background: var(--toggle-track-invalid-hover-background);
+}
+
+input[type='checkbox']:checked ~ .toggle-track {
+  --toggle-track-background: var(--toggle-track-checked-background-default);
+  --toggle-thumb-shadow: none;
+}
+
+:host(:hover:not([disabled])) input[type='checkbox']:checked ~ .toggle-track {
+  --toggle-track-background: var(--toggle-track-checked-background-hover);
+}
+
+:host(:active:not([disabled])) input[type='checkbox']:checked ~ .toggle-track {
+  --toggle-track-background: var(--toggle-track-checked-background-pressed);
+}
+
+:host([disabled]) input[type='checkbox']:checked ~ .toggle-track {
+  --toggle-track-background: var(--toggle-track-checked-background-disabled);
+}
+
+:host([invalid]:not([disabled])) input[type='checkbox']:checked ~ .toggle-track {
+  --toggle-track-background: var(--toggle-track-invalid-background);
+  --toggle-track-border: 1px solid var(--toggle-track-invalid-border-color);
+}
+
+:host([invalid]:hover:not([disabled])) input[type='checkbox']:checked ~ .toggle-track {
+  --toggle-track-background: var(--toggle-track-invalid-hover-background);
+}
+
+input[type='checkbox']:checked ~ .toggle-track .toggle-thumb,
+:host([invalid]:not([disabled])) input[type='checkbox']:checked ~ .toggle-track .toggle-thumb,
+:host([invalid]:hover:not([disabled])) input[type='checkbox']:checked ~ .toggle-track .toggle-thumb {
+  left: calc(var(--toggle-thumb-position-checked) - 2px);
+}

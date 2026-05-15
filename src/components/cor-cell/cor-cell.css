@@ -1,0 +1,56 @@
+:host {
+  display: flex;
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+.cell-content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  width: 100%;
+  min-height: var(--_table-cell-min-height);
+  padding: var(--_table-cell-py) var(--_table-cell-px);
+  font-family: var(--table-cell-font-family);
+  font-size: var(--_table-cell-font-size);
+  line-height: var(--_table-cell-line-height);
+  color: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Bottom corner radii — only for cells in the last row */
+:host(:first-child) {
+  border-bottom-left-radius: var(--_cell-bottom-left-radius, var(--spacing-0));
+}
+
+:host(:last-child) {
+  border-bottom-right-radius: var(--_cell-bottom-right-radius, var(--spacing-0));
+}
+
+/* Interactive: focusable cell */
+:host([interactive]) {
+  cursor: pointer;
+  outline: none;
+}
+
+:host([interactive]:focus-visible) {
+  box-shadow: inset 0 0 0 var(--table-cell-outline-width-focus) var(--table-cell-outline-color-focus);
+}
+
+/* Active: edit-mode cell */
+:host([active]) {
+  background: var(--table-cell-background-active);
+  box-shadow: inset 0 0 0 var(--table-cell-border-width-active) var(--table-cell-border-color-active);
+}
+
+/* Alignment variants */
+:host([align='center']) .cell-content {
+  justify-content: center;
+  text-align: center;
+}
+
+:host([align='right']) .cell-content {
+  justify-content: flex-end;
+  text-align: right;
+}

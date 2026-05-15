@@ -1,0 +1,16 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.percentage {
+  color: var(--loading-percentage-text-color);
+  font-family: var(--font-family-body);
+  font-size: var(--loading-percentage-text-size);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--loading-percentage-text-line-height);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  white-space: nowrap;
+}

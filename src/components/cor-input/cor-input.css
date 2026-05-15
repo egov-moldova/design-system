@@ -1,0 +1,346 @@
+/*
+Input CSS File
+*/
+
+:host {
+  --input-height: var(--input-container-height-lg);
+  --input-padding-inline: var(--input-container-padding-inline-lg);
+  --input-border-radius: var(--input-container-border-radius-lg, var(--radius-lg));
+  --input-font-size: var(--input-container-font-size-lg, var(--font-size-sm));
+  --input-line-height: var(--input-container-line-height-lg, var(--line-height-md));
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--input-gap);
+  position: relative;
+  width: 100%;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  gap: var(--input-container-gap, var(--spacing-xs));
+  position: relative;
+  min-height: var(--input-height);
+  padding-inline: var(--input-padding-inline);
+  border: var(--input-container-border-width) solid var(--input-container-border-color-default);
+  border-radius: var(--input-border-radius, var(--radius-lg));
+  background-color: var(--input-container-background-color-default, var(--color-neutral-background-base));
+  transition:
+    border-color 150ms ease-in-out,
+    background-color 150ms ease-in-out;
+
+  &:hover {
+    border-color: var(--input-container-border-color-hover, var(--color-neutral-border-weak));
+    background-color: var(--input-container-background-color-hover);
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  position: relative;
+  min-width: 0;
+  padding: var(--input-container-content-padding-block) var(--input-container-content-padding-inline);
+  gap: var(--input-container-gap-content);
+}
+
+label {
+  font-family: var(--input-label-font-family, var(--font-family-sans));
+  font-size: var(--input-label-font-size, var(--font-size-2xs));
+  line-height: var(--input-label-line-height, var(--line-height-2xs));
+  font-weight: var(--input-label-font-weight, 400);
+  color: var(--input-label-color-default, var(--color-neutral-text-weaker));
+}
+
+input {
+  font-family: var(--input-container-font-family, var(--font-family-sans));
+  font-size: var(--input-font-size, var(--font-size-sm));
+  line-height: var(--input-line-height, var(--line-height-md));
+  font-weight: var(--input-container-font-weight, 500);
+  color: var(--input-container-color-default, var(--color-neutral-text-default));
+  background: transparent;
+  border: none;
+  outline: none;
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+
+  &::placeholder {
+    color: var(--input-container-color-placeholder, var(--color-neutral-text-weaker));
+  }
+}
+
+:host(.label-position-inside) {
+  input {
+    padding-top: var(--input-label-inside-padding-top);
+
+    &::placeholder {
+      color: transparent;
+    }
+  }
+}
+
+:host([inline]) {
+  display: inline-flex;
+  align-items: flex-start;
+  width: auto;
+
+  .container {
+    width: 100%;
+    min-width: 100%;
+  }
+
+  .content {
+    flex: 1 1 auto;
+    width: auto;
+    min-width: 0;
+  }
+
+  input {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 1ch;
+    field-sizing: content;
+  }
+}
+
+::slotted([slot='icon-left']),
+::slotted([slot='icon-right']),
+.clear-button {
+  --icon-color: var(--input-icon-color-default, var(--color-neutral-icon-weak));
+  --icon-color-hover: var(--input-icon-color-hover, var(--color-neutral-icon-weak));
+  --icon-color-focus: var(--input-icon-color-focus, var(--color-neutral-icon-weak));
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: var(--input-icon-margin, var(--spacing-3xs));
+  border-radius: var(--input-icon-border-radius, var(--radius-xs));
+  flex-shrink: 0;
+  flex-basis: var(--input-icon-size);
+  width: var(--input-icon-size);
+  height: var(--input-icon-size);
+  cursor: pointer;
+}
+
+.clear-button {
+  background: transparent;
+  border: none;
+  padding: 0;
+
+  &:focus {
+    outline-color: var(--input-container-outline-color-focus, var(--color-secondary-border));
+  }
+
+  &.clear-button--hidden {
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+.helper-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--input-container-gap);
+  font-family: var(--input-bottom-helper-font-family, var(--font-family-sans));
+  font-size: var(--input-bottom-helper-font-size, var(--font-size-xs));
+  line-height: var(--input-bottom-helper-line-height, var(--line-height-sm));
+  color: var(--input-bottom-helper-color-default, var(--color-neutral-text-weaker));
+}
+
+:host(:not(.has-helper-text)) .helper-wrapper {
+  display: none;
+}
+
+.line {
+  width: 1px;
+  height: var(--input-line-height);
+  background-color: var(--input-container-border-color-default, var(--color-neutral-border-weaker));
+}
+
+/* Size variants */
+:host([size='lg']) {
+  --input-height: var(--input-container-height-lg);
+  --input-padding-inline: var(--input-container-padding-inline-lg);
+  --input-border-radius: var(--input-container-border-radius-lg, var(--radius-lg));
+  --input-font-size: var(--input-container-font-size-lg, var(--font-size-sm));
+  --input-line-height: var(--input-container-line-height-lg, var(--line-height-md));
+  --input-label-font-size: var(--input-label-font-size-lg, var(--font-size-sm));
+  --input-label-line-height: var(--input-label-line-height-lg, var(--line-height-md));
+}
+
+:host([size='md']) {
+  --input-height: var(--input-container-height-md);
+  --input-padding-inline: var(--input-container-padding-inline-md);
+  --input-border-radius: var(--input-container-border-radius-md, var(--radius-md));
+  --input-font-size: var(--input-container-font-size-md, var(--font-size-xs));
+  --input-line-height: var(--input-container-line-height-md, var(--line-height-sm));
+  --input-label-font-size: var(--input-label-font-size-md, var(--font-size-sm));
+  --input-label-line-height: var(--input-label-line-height-md, var(--line-height-md));
+}
+
+:host([size='sm']) {
+  --input-height: var(--input-container-height-sm);
+  --input-padding-inline: var(--input-container-padding-inline-sm);
+  --input-border-radius: var(--input-container-border-radius-sm, var(--radius-sm));
+  --input-font-size: var(--input-container-font-size-sm, var(--font-size-2xs));
+  --input-line-height: var(--input-container-line-height-sm, var(--line-height-xs));
+  --input-label-font-size: var(--input-label-font-size-sm, var(--font-size-xs));
+  --input-label-line-height: var(--input-label-line-height-sm, var(--line-height-sm));
+}
+
+/* Floating label when focused or has value */
+:host(.label-position-inside.is-focused) label,
+:host(.label-position-inside.has-value) label {
+  transform: var(--input-label-inside-floated-transform);
+  transform-origin: left top;
+  font-size: var(--input-label-inside-floated-font-size, var(--font-size-xs));
+  color: var(--input-label-color-default, var(--color-neutral-text-weaker));
+}
+
+/* Label position: outside */
+:host(.label-position-outside) {
+  .label-wrapper {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2xs);
+    margin-bottom: 0;
+  }
+
+  .required-asterisk {
+    font-family: var(--input-label-font-family, var(--font-family-sans));
+    font-size: var(--input-label-font-size, var(--font-size-sm));
+    line-height: var(--input-label-line-height, var(--line-height-md));
+    font-weight: var(--input-label-font-weight, 400);
+    color: var(--input-label-required-color, var(--color-system-error-text));
+    margin-left: 0;
+  }
+
+  .label-info-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  label {
+    display: block;
+    position: relative;
+  }
+}
+
+:host(:not(.has-label-text)) .label-wrapper {
+  display: none;
+}
+
+/* State: focus */
+:host(.is-focused) {
+  .container {
+    border-color: var(--input-container-border-color-focus, var(--color-neutral-border-weaker));
+  }
+
+  input {
+    caret-color: var(--input-container-border-color-focus, var(--color-neutral-border-weaker));
+  }
+}
+
+/* State: disabled */
+:host([disabled]),
+:host([disabled].has-value),
+:host([disabled].is-focused) {
+  cursor: not-allowed;
+
+  .container {
+    border-color: var(--input-container-border-color-disabled, var(--color-neutral-border-weaker));
+    background-color: var(--input-background-color-disabled, var(--color-neutral-background-base));
+    pointer-events: none;
+  }
+
+  input {
+    color: var(--input-container-color-disabled, var(--color-neutral-text-weaker));
+
+    &::placeholder {
+      color: var(--input-container-color-disabled, var(--color-neutral-text-weaker));
+    }
+  }
+
+  label {
+    color: var(--input-label-color-disabled, var(--color-neutral-text-weaker));
+  }
+
+  ::slotted([slot='icon-left']),
+  ::slotted([slot='icon-right']) {
+    --icon-color: var(--input-icon-color-disabled, var(--color-neutral-text-weaker));
+  }
+
+  .line {
+    background-color: var(--input-container-border-color-disabled, var(--color-neutral-background-base));
+  }
+
+  .helper-wrapper {
+    color: var(--input-container-color-disabled, var(--color-neutral-text-weaker));
+  }
+
+  .required-asterisk,
+  .label-info-icon,
+  .clear-button {
+    --icon-color: var(--input-icon-color-disabled, var(--color-neutral-text-weaker));
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+:host([disabled].label-position-inside.is-focused) label,
+:host([disabled].label-position-inside.has-value) label {
+  color: var(--input-label-color-disabled, var(--color-neutral-text-weakest));
+}
+
+/* State: invalid */
+:host([invalid]) {
+  .container {
+    border-color: var(--input-container-border-color-invalid, var(--color-system-error-icon));
+  }
+
+  .helper-wrapper {
+    color: var(--input-bottom-helper-color-invalid, var(--color-system-error-text));
+  }
+}
+
+/* Label position: inside (floating) */
+:host(.label-position-inside) {
+  label {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: var(--input-label-inside-font-size, var(--font-size-sm));
+    transition: var(--input-label-inside-transition, transform 150ms ease, font-size 150ms ease);
+    pointer-events: none;
+    color: var(--input-label-color-default, var(--color-neutral-text-weaker));
+  }
+
+  input::placeholder {
+    color: transparent;
+  }
+}
+
+/* State: skeleton */
+:host(.is-skeleton) {
+  cor-skeleton[slot='label-text'] {
+    --skeleton-height: var(--input-label-line-height, var(--line-height-2xs));
+    --skeleton-width: 60px;
+    --skeleton-border-radius: var(--radius-2xl);
+  }
+
+  cor-skeleton:not([slot]) {
+    --skeleton-height: var(--input-height);
+    --skeleton-width: 100%;
+    --skeleton-border-radius: var(--radius-md);
+  }
+
+  cor-skeleton[slot='helper-text'] {
+    --skeleton-height: var(--input-bottom-helper-line-height, var(--line-height-2xs));
+    --skeleton-width: 80px;
+    --skeleton-border-radius: var(--radius-2xl);
+  }
+}

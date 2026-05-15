@@ -1,0 +1,38 @@
+{
+  "source": ["tokens/core/**/*.tokens.json"],
+  "platforms": {
+    "css": {
+      "transforms": ["attribute/cti", "name/kebab", "size/px", "color/hex"],
+      "buildPath": "dist/design-system/tokens/",
+      "files": [
+        {
+          "destination": "core.tokens.css",
+          "format": "css/variables",
+          "options": {
+            "showFileHeader": false
+          }
+        }
+      ]
+    },
+    "storybook": {
+      "transforms": ["attribute/cti", "name/pascal", "size/px", "color/hex"],
+      "buildPath": ".storybook/stories/assets/",
+      "files": [
+        {
+          "destination": "core.tokens.json",
+          "format": "json/nested"
+        }
+      ]
+    },
+    "tailwind": {
+      "transforms": ["attribute/cti", "name/pascal", "size/px", "color/hex"],
+      "buildPath": "tokens/generated/",
+      "files": [
+        {
+          "destination": "core.tokens.json",
+          "format": "json/nested"
+        }
+      ]
+    }
+  }
+}

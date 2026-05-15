@@ -1,0 +1,199 @@
+:host {
+  display: block;
+  font-family: var(--select-item-container-font-family);
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  gap: var(--select-item-container-gap);
+  min-height: var(--select-item-container-min-height);
+  padding: var(--select-item-container-padding-block) var(--select-item-container-padding-inline);
+  background: var(--select-item-container-background-default);
+  color: var(--select-item-label-color-default);
+  cursor: pointer;
+  transition: background-color 150ms ease-in-out;
+}
+
+/* Focus visible state */
+:host(:focus-visible) .container,
+.container:focus-visible {
+  outline: var(--select-item-outline-width-focus) solid var(--select-item-outline-color-focus);
+  outline-offset: var(--select-item-outline-offset-focus);
+}
+
+/* Hover state */
+:host(:hover:not([disabled])) .container {
+  background: var(--select-item-container-background-hover);
+  color: var(--select-item-label-color-default);
+}
+
+/* Focused state for keyboard navigation */
+:host([focused]:not([disabled])) .container {
+  background: var(--select-item-container-background-hover);
+  color: var(--select-item-label-color-default);
+}
+
+/* Active/Pressed state */
+:host(:active:not([disabled])) .container {
+  background: var(--select-item-container-background-pressed);
+  color: var(--select-item-label-color-default);
+}
+
+/* Disabled state */
+:host([disabled]) .container {
+  background: var(--select-item-container-background-disabled);
+  color: var(--select-item-label-color-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Selected state */
+:host([selected]:not([disabled])) .container {
+  background: var(--select-item-container-background-selected);
+  color: var(--select-item-label-color-selected);
+}
+
+:host([selected]:not([disabled]):hover) .container {
+  background: var(--select-item-container-background-selected-hover);
+}
+
+:host([selected]:not([disabled]):active) .container {
+  background: var(--select-item-container-background-selected-pressed);
+}
+
+:host([selected][disabled]) .container {
+  background: var(--select-item-container-background-selected-disabled);
+  color: var(--select-item-label-color-selected-disabled);
+}
+
+/* Indeterminate state */
+:host([indeterminate]:not([selected]):not([disabled])) .container {
+  background: var(--select-item-container-background-selected);
+  color: var(--select-item-label-color-default);
+}
+
+:host([indeterminate]:not([selected]):not([disabled]):hover) .container {
+  background: var(--select-item-container-background-selected-hover);
+}
+
+:host([indeterminate]:not([selected]):not([disabled]):active) .container {
+  background: var(--select-item-container-background-selected-pressed);
+}
+
+:host([indeterminate]:not([selected])[disabled]) .container {
+  background: var(--select-item-container-background-selected-disabled);
+  color: var(--select-item-label-color-selected-disabled);
+}
+
+/* Icon slots */
+::slotted(cor-icon) {
+  flex-shrink: 0;
+}
+
+:host([selected]:not([disabled])) ::slotted(cor-icon) {
+  --icon-color: var(--select-item-icon-color-selected);
+}
+
+:host([indeterminate]:not([selected]):not([disabled])) ::slotted(cor-icon) {
+  --icon-color: var(--select-item-icon-color-selected);
+}
+
+:host([disabled]) ::slotted(cor-icon) {
+  --icon-color: var(--select-item-icon-color-disabled);
+}
+
+/* Checkbox */
+cor-checkbox {
+  flex-shrink: 0;
+}
+
+/* Pre-content slot */
+::slotted([slot='pre-content']) {
+  flex-shrink: 0;
+}
+
+/* Content */
+.content {
+  display: flex;
+  flex: 1 0 0;
+  min-width: 0;
+}
+
+.text-basic {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.text-timestamp {
+  display: flex;
+  align-items: baseline;
+  width: 100%;
+}
+
+.label {
+  font-family: var(--select-item-container-font-family);
+  font-size: var(--select-item-label-font-size);
+  line-height: var(--select-item-label-line-height);
+  font-weight: var(--select-item-label-font-weight-default);
+  color: inherit;
+  white-space: pre-wrap;
+}
+
+:host([selected]:not([disabled])) .label {
+  font-weight: var(--select-item-label-font-weight-selected);
+}
+
+:host([indeterminate]:not([selected]):not([disabled])) .label {
+  font-weight: var(--select-item-label-font-weight-selected);
+}
+
+.text-basic .description {
+  font-size: var(--select-item-description-font-size);
+  line-height: var(--select-item-description-line-height);
+  font-weight: var(--select-item-description-font-weight);
+  color: var(--select-item-description-color-default);
+  white-space: pre-wrap;
+}
+
+.text-timestamp .label {
+  flex: 1 0 0;
+  min-width: 0;
+}
+
+.text-timestamp .description {
+  flex-shrink: 0;
+  font-size: var(--select-item-description-font-size);
+  line-height: var(--select-item-description-line-height);
+  font-weight: var(--select-item-description-font-weight);
+  color: var(--select-item-description-color-default);
+}
+
+:host([disabled]) .description {
+  color: var(--select-item-label-color-disabled);
+}
+
+:host([selected]:not([disabled])) .description {
+  color: var(--select-item-description-color-selected);
+}
+
+:host([indeterminate]:not([selected]):not([disabled])) .description {
+  color: var(--select-item-description-color-selected);
+}
+
+/* Badge */
+cor-badge-interactive {
+  flex-shrink: 0;
+}
+
+/* Label-only variant — no checkbox, no icon slots */
+:host([variant='label-only']) .container {
+  gap: 0;
+}
+
+:host([variant='label-only'][selected]:not([disabled])) .label {
+  font-weight: var(--select-item-label-font-weight-selected);
+  color: var(--select-item-label-color-selected);
+}

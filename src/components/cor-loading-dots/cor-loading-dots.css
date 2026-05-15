@@ -1,0 +1,65 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--loading-dots-size);
+  height: var(--loading-dots-size);
+}
+
+.dots-container {
+  position: relative;
+  width: var(--loading-dots-size);
+  height: var(--loading-dots-size);
+}
+
+.dot {
+  --dot-color: var(--loading-dots-dot-color-default);
+  position: absolute;
+  border-radius: 50%;
+  background-color: var(--dot-color);
+  width: var(--loading-dots-dot-size);
+  height: var(--loading-dots-dot-size);
+  top: 50%;
+  transform-origin: center;
+  transform: translate(-50%, -50%) scale(1);
+  animation: cor-dots-wave 3s linear infinite;
+}
+
+@keyframes cor-dots-wave {
+  0% {
+    --dot-color: var(--loading-dots-dot-color-default);
+    transform: translate(-50%, -50%) scale(1);
+  }
+  15% {
+    --dot-color: var(--loading-dots-dot-color-active);
+    transform: translate(-50%, -50%) scale(1.5);
+  }
+  30% {
+    --dot-color: var(--loading-dots-dot-color-active);
+    transform: translate(-50%, -50%) scale(1);
+  }
+  45% {
+    --dot-color: var(--loading-dots-dot-color-active);
+    transform: translate(-50%, -50%) scale(1);
+  }
+  60%,
+  100% {
+    --dot-color: var(--loading-dots-dot-color-default);
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.dot-1 {
+  left: calc(var(--loading-dots-dot-size) * 0.5);
+  animation-delay: 0s;
+}
+
+.dot-2 {
+  left: 50%;
+  animation-delay: 0.2s;
+}
+
+.dot-3 {
+  left: calc(100% - var(--loading-dots-dot-size) * 0.5);
+  animation-delay: 0.4s;
+}

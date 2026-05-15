@@ -1,0 +1,189 @@
+/*
+------------------------------------------------------------------------------------------------------------------------
+Select CSS — Custom dropdown matching pagination-item collapsed variant
+------------------------------------------------------------------------------------------------------------------------
+*/
+
+:host {
+  --_select-height: var(--select-container-height-lg);
+  --_select-padding-left: var(--select-padding-left-lg);
+  --_select-padding-right: var(--select-padding-right-lg);
+  --_select-border-radius: var(--select-container-border-radius-lg, var(--radius-lg));
+  --_select-font-size: var(--select-container-font-size-lg, var(--font-size-sm));
+  --_select-line-height: var(--select-container-line-height-lg, var(--line-height-md));
+  --_select-chevron-right: var(--select-chevron-right-lg);
+
+  display: inline-block;
+  width: 100%;
+  position: relative;
+}
+
+/* Size variants */
+:host([size='lg']) {
+  --_select-height: var(--select-container-height-lg);
+  --_select-padding-left: var(--select-padding-left-lg);
+  --_select-padding-right: var(--select-padding-right-lg);
+  --_select-border-radius: var(--select-container-border-radius-lg, var(--radius-md));
+  --_select-font-size: var(--select-container-font-size-lg, var(--font-size-sm));
+  --_select-line-height: var(--select-container-line-height-lg, var(--line-height-md));
+  --_select-chevron-right: var(--select-chevron-right-lg);
+}
+
+:host([size='md']) {
+  --_select-height: var(--select-container-height-md);
+  --_select-padding-left: var(--select-padding-left-md);
+  --_select-padding-right: var(--select-padding-right-md);
+  --_select-border-radius: var(--select-container-border-radius-md, var(--radius-md));
+  --_select-font-size: var(--select-container-font-size-md, var(--font-size-sm));
+  --_select-line-height: var(--select-container-line-height-md, var(--line-height-md));
+  --_select-chevron-right: var(--select-chevron-right-md);
+}
+
+:host([size='sm']) {
+  --_select-height: var(--select-container-height-sm);
+  --_select-padding-left: var(--select-padding-left-sm);
+  --_select-padding-right: var(--select-padding-right-sm);
+  --_select-border-radius: var(--select-container-border-radius-sm, var(--radius-md));
+  --_select-font-size: var(--select-container-font-size-sm, var(--font-size-xs));
+  --_select-line-height: var(--select-container-line-height-sm, var(--line-height-sm));
+  --_select-chevron-right: var(--select-chevron-right-sm);
+}
+
+/*
+  Trigger button (replaces native select)
+*/
+.trigger {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: var(--_select-height);
+  padding-left: var(--_select-padding-left);
+  padding-right: var(--_select-chevron-right);
+  border: var(--select-container-border-width) solid var(--select-container-border-color-default);
+  border-radius: var(--_select-border-radius, var(--radius-lg));
+  background-color: var(--select-container-background-color-default, var(--color-neutral-background-base));
+  font-family: var(--select-container-font-family, var(--font-family-sans));
+  font-size: var(--_select-font-size, var(--font-size-sm));
+  line-height: var(--_select-line-height, var(--line-height-md));
+  font-weight: var(--select-container-font-weight, 400);
+  color: var(--select-container-color-default, var(--color-neutral-text-default));
+  cursor: pointer;
+  outline: none;
+  transition:
+    border-color 150ms ease-in-out,
+    background-color 150ms ease-in-out;
+
+  &:hover:not(:disabled) {
+    border-color: var(--select-container-border-color-hover, var(--color-neutral-border-weak));
+    background-color: var(--select-container-background-color-hover, var(--color-neutral-transparent-weak));
+  }
+
+  &:focus-visible:not(:disabled) {
+    border-color: var(--select-container-border-color-focus, var(--color-primary-border-active));
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    border-color: var(--select-container-border-color-disabled, var(--color-neutral-border-weaker));
+    background-color: var(--select-container-background-color-disabled, var(--color-neutral-background-base));
+    color: var(--select-container-color-disabled, var(--color-neutral-text-weakest));
+  }
+}
+
+:host(.is-open) .trigger {
+  border-color: var(--select-container-border-color-focus, var(--color-primary-border-active));
+}
+
+.trigger-label {
+  flex: 1;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trigger-label--placeholder {
+  color: var(--select-container-color-placeholder, var(--color-neutral-text-weaker));
+}
+
+.trigger-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: var(--spacing-xs);
+  transition: var(--select-chevron-transition, transform 150ms ease);
+}
+
+:host(.is-open) .trigger-icon {
+  transform: rotate(180deg);
+}
+
+/*
+  Dropdown list container
+*/
+.dropdown {
+  position: absolute;
+  z-index: var(--z-index-dropdown, 1000);
+  display: none;
+  margin: 0;
+  padding: var(--select-dropdown-padding-block) 0;
+  background-color: var(--select-dropdown-background);
+  border: 1px solid var(--select-dropdown-border-color);
+  border-radius: var(--select-dropdown-border-radius);
+  box-shadow: var(--select-dropdown-shadow);
+  min-width: 100%;
+  width: max-content;
+  max-height: var(--select-dropdown-max-height);
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--select-dropdown-border-color);
+    border-radius: 2px;
+  }
+
+  &.dropdown--bottom {
+    top: calc(100% + var(--select-dropdown-offset));
+    left: 0;
+  }
+
+  &.dropdown--top {
+    bottom: calc(100% + var(--select-dropdown-offset));
+    left: 0;
+  }
+
+  &.dropdown--open {
+    display: block;
+  }
+}
+
+/* State: disabled */
+:host([disabled]) {
+  cursor: not-allowed;
+}
+
+/* State: invalid */
+:host([invalid]) .trigger {
+  border-color: var(--select-container-border-color-invalid, var(--color-system-error-icon));
+}
+
+/* Inline mode - width fits content */
+:host(.inline) {
+  display: inline-flex;
+  width: auto;
+
+  .trigger {
+    width: auto;
+    min-width: fit-content;
+  }
+}

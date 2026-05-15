@@ -1,0 +1,45 @@
+{
+  "source": ["tokens/core/**/*.tokens.json", "tokens/core.dark/**/*.tokens.json"],
+  "platforms": {
+    "css": {
+      "transforms": ["attribute/cti", "name/kebab", "size/px", "color/hex"],
+      "buildPath": "dist/design-system/tokens/",
+      "files": [
+        {
+          "destination": "core.dark.tokens.css",
+          "format": "css/variables",
+          "options": {
+            "showFileHeader": false,
+            "selector": ":root[data-theme=\"dark\"]"
+          }
+        }
+      ]
+    },
+    "storybook": {
+      "transforms": ["attribute/cti", "name/pascal", "size/px", "color/hex"],
+      "buildPath": ".storybook/stories/assets/",
+      "files": [
+        {
+          "destination": "core.dark.tokens.json",
+          "format": "json/nested",
+          "options": {
+            "selector": ":root[data-theme=\"dark\"]"
+          }
+        }
+      ]
+    },
+    "tailwind": {
+      "transforms": ["attribute/cti", "name/pascal", "size/px", "color/hex"],
+      "buildPath": "tokens/generated/",
+      "files": [
+        {
+          "destination": "core.dark.tokens.json",
+          "format": "json/nested",
+          "options": {
+            "selector": ":root[data-theme=\"dark\"]"
+          }
+        }
+      ]
+    }
+  }
+}

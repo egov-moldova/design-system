@@ -1,0 +1,244 @@
+:host {
+  display: flex;
+  flex: 1 0 0;
+  min-width: var(--datepicker-day-min-width, var(--space-xl, 32px));
+  height: var(--datepicker-day-size, var(--space-xl, 32px));
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+:host(.is-empty) {
+  pointer-events: none;
+  cursor: default;
+}
+
+:host(.is-disabled) {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+:host(.is-disabled) .day-cell {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+:host(.is-range-middle) {
+  border-radius: 0;
+}
+
+:host(.is-range-start) {
+  border-radius: var(--datepicker-day-border-radius, var(--border-radius-xs, 4px)) 0 0
+    var(--datepicker-day-border-radius, var(--border-radius-xs, 4px));
+}
+
+:host(.is-range-end) {
+  border-radius: 0 var(--datepicker-day-border-radius, var(--border-radius-xs, 4px))
+    var(--datepicker-day-border-radius, var(--border-radius-xs, 4px)) 0;
+}
+
+.day-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  height: var(--datepicker-day-size, var(--space-xl, 32px));
+  width: 100%;
+  min-width: var(--datepicker-day-min-width, var(--space-xl, 32px));
+  padding: var(--datepicker-day-padding-block, var(--spacing-2xs, 4px))
+    var(--datepicker-day-padding-inline, var(--spacing-xs, 8px));
+  border-radius: var(--datepicker-day-border-radius, var(--border-radius-xs, 4px));
+  cursor: pointer;
+  outline: none;
+  transition:
+    background-color 150ms ease-in-out,
+    color 150ms ease-in-out;
+}
+
+.day-cell:focus-visible,
+:host(.is-focused) .day-cell {
+  outline: 2px solid var(--datepicker-day-focus-outline-color, var(--color-secondary-border));
+  outline-offset: 1px;
+}
+
+:host(.is-range-middle:not(.is-skeleton)) .day-cell {
+  border-radius: 0;
+  background-color: var(--datepicker-day-background-range-middle, var(--color-neutral-background-fill, #eff0f1));
+}
+
+:host(.is-range-start:not(.is-skeleton)) .day-cell,
+:host(.is-range-end:not(.is-skeleton)) .day-cell,
+:host(.is-selected:not(.is-skeleton)) .day-cell {
+  border-radius: var(--datepicker-day-border-radius, var(--border-radius-xs, 4px));
+}
+
+:host(.is-range-start.is-today:not(.is-skeleton):not(.is-selected)) .day-cell:not(.day-cell--range-middle),
+:host(.is-range-end.is-today:not(.is-skeleton):not(.is-selected)) .day-cell:not(.day-cell--range-middle) {
+  background-color: var(--datepicker-day-background-range-endpoint, var(--color-primary-background-active, #b92f25));
+}
+
+:host(.is-range-start.is-today.is-hovered:not(.is-skeleton):not(.is-selected)) .day-cell:not(.day-cell--range-middle),
+:host(.is-range-end.is-today.is-hovered:not(.is-skeleton):not(.is-selected)) .day-cell:not(.day-cell--range-middle),
+:host(.is-range-start.is-today.is-focused:not(.is-skeleton):not(.is-selected)) .day-cell:not(.day-cell--range-middle),
+:host(.is-range-end.is-today.is-focused:not(.is-skeleton):not(.is-selected)) .day-cell:not(.day-cell--range-middle) {
+  background-color: var(
+    --datepicker-day-background-range-endpoint-hovered,
+    var(--color-primary-background-active, #b92f25)
+  );
+}
+
+:host(.is-range-start:not(.is-skeleton)) .day-cell,
+:host(.is-range-end:not(.is-skeleton)) .day-cell {
+  background-color: var(--datepicker-day-background-range-endpoint, var(--color-primary-background-active, #b92f25));
+}
+
+:host(.is-range-start.is-hovered:not(.is-skeleton)) .day-cell,
+:host(.is-range-end.is-hovered:not(.is-skeleton)) .day-cell {
+  background-color: var(
+    --datepicker-day-background-range-endpoint-hovered,
+    var(--color-primary-background-active, #b92f25)
+  );
+}
+
+:host(.is-selected:not(.is-skeleton)) .day-cell {
+  background-color: var(--datepicker-day-background-selected, var(--color-primary-background-active, #b92f25));
+}
+
+:host(.is-range-start:not(.is-skeleton)) .day-cell {
+  border-radius: var(--datepicker-day-border-radius, var(--border-radius-xs, 4px)) 0 0
+    var(--datepicker-day-border-radius, var(--border-radius-xs, 4px));
+}
+
+:host(.is-range-end:not(.is-skeleton)) .day-cell {
+  border-radius: 0 var(--datepicker-day-border-radius, var(--border-radius-xs, 4px))
+    var(--datepicker-day-border-radius, var(--border-radius-xs, 4px)) 0;
+}
+
+:host(.is-hovered:not(.is-skeleton)) .day-cell:not(.day-cell--reversed):not(.day-cell--range-middle),
+:host(.is-focused:not(.is-skeleton)) .day-cell:not(.day-cell--reversed):not(.day-cell--range-middle) {
+  background-color: var(--datepicker-day-background-hover, var(--color-primary-transparent-weak));
+}
+
+:host(.is-selected.is-hovered:not(.is-skeleton)) .day-cell:not(.day-cell--range-middle),
+:host(.is-selected.is-focused:not(.is-skeleton)) .day-cell:not(.day-cell--range-middle) {
+  background-color: var(
+    --datepicker-day-background-selected-hovered,
+    var(--color-neutral-background-stronger, #21262e)
+  );
+}
+
+/* Today background - only when NOT selected/range/skeleton */
+:host(.is-today:not(.is-selected):not(.is-range-start):not(.is-range-end):not(.is-skeleton)) .day-cell {
+  background-color: var(--datepicker-day-background-today, var(--color-neutral-background-base-inverted));
+}
+
+:host(.is-today.is-hovered:not(.is-selected):not(.is-range-start):not(.is-range-end):not(.is-skeleton)) .day-cell,
+:host(.is-today.is-focused:not(.is-selected):not(.is-range-start):not(.is-range-end):not(.is-skeleton)) .day-cell {
+  background-color: var(--datepicker-day-background-today-hovered, var(--color-neutral-background-stronger));
+}
+
+/* Today background - when selected (override selected background), not skeleton */
+:host(.is-today:not(.is-skeleton):not(.is-selected)) .day-cell:not(.day-cell--range-middle) {
+  background-color: var(--datepicker-day-background-today, var(--color-neutral-background-base-inverted));
+}
+
+:host(.is-today.is-hovered:not(.is-skeleton):not(.is-selected)) .day-cell:not(.day-cell--range-middle),
+:host(.is-today.is-focused:not(.is-skeleton):not(.is-selected)) .day-cell:not(.day-cell--range-middle) {
+  background-color: var(--datepicker-day-background-today-hovered, var(--color-neutral-background-stronger));
+}
+
+.day-label {
+  font-family: var(--font-family-body, 'Inter', sans-serif);
+  font-size: var(--datepicker-day-font-size, var(--font-size-sm, 14px));
+  line-height: var(--datepicker-day-line-height, var(--line-height-md, 20px));
+  font-weight: var(--font-weight-regular, 400);
+  color: var(--datepicker-day-color-default, var(--color-neutral-text-default, #21262e));
+  min-width: 24px;
+  text-align: center;
+  display: block;
+  height: 16px;
+  white-space: nowrap;
+}
+
+:host(.is-weekend) .day-label {
+  color: var(--datepicker-day-color-weekend, var(--color-system-critical-text-weak, #ac0015));
+}
+
+:host(.is-selected) .day-label,
+:host(.is-range-start) .day-label,
+:host(.is-range-end) .day-label {
+  color: var(--datepicker-day-color-selected, var(--color-neutral-text-inverse, #eff0f1));
+}
+
+:host(.is-today:not(.is-selected):not(.is-range-start):not(.is-range-end):not(.is-skeleton)) .day-label {
+  color: var(--datepicker-day-color-today, var(--color-neutral-text-default, #21262e));
+}
+
+:host(.is-empty) .day-label {
+  opacity: 0;
+}
+
+/* Event signs */
+.event-signs {
+  position: absolute;
+  display: flex;
+  gap: var(--datepicker-event-gap, 1px);
+  align-items: center;
+  justify-content: center;
+}
+
+.event-signs--right {
+  top: var(--datepicker-event-offset-top, 4px);
+  right: var(--datepicker-event-offset-right, 4px);
+  flex-direction: column;
+}
+
+.event-signs--bottom {
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  flex-direction: row;
+}
+
+.event-sign {
+  display: block;
+  flex-shrink: 0;
+  width: var(--datepicker-event-size, 4px);
+  height: var(--datepicker-event-size, 4px);
+}
+
+.event-sign--circle {
+  border-radius: 10px;
+}
+
+.event-sign--diamond {
+  transform: rotate(45deg);
+  width: 2.83px;
+  height: 2.83px;
+}
+
+/* Event color mappings */
+.event-sign--neutral {
+  background-color: var(--datepicker-event-color-neutral, var(--color-neutral-icon-weakest));
+}
+
+.event-sign--primary {
+  background-color: var(--datepicker-event-color-primary, var(--color-primary-icon-weakest));
+}
+
+.event-sign--primary_weakest {
+  background-color: var(--datepicker-event-color-primary-weakest, var(--color-primary-icon-weakest));
+}
+
+.event-sign--info {
+  background-color: var(--datepicker-event-color-info, var(--color-system-info-icon-weak));
+}
+
+.event-sign--secondary {
+  background-color: var(--datepicker-event-color-secondary, var(--color-secondary-icon-weak));
+}
+
+:host(.is-disabled) .event-sign {
+  background-color: var(--datepicker-event-color-neutral, var(--color-neutral-icon-weakest));
+}

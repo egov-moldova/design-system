@@ -1,0 +1,18 @@
+{
+  "source": ["tokens/core/**/*.tokens.json"],
+  "platforms": {
+    "css": {
+      "transforms": ["attribute/cti", "name/kebab", "size/px", "color/hex"],
+      "buildPath": "tokens/generated/",
+      "files": [
+        {
+          "destination": "core.tokens.css",
+          "format": "css/variables",
+          "options": {
+            "showFileHeader": false
+          }
+        }
+      ]
+    }
+  }
+}

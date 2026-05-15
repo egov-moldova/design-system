@@ -1,0 +1,38 @@
+export const ICON_COLOR_OPTIONS: readonly string[] = [
+  'currentColor',
+  // neutral
+  'neutral-icon-default',
+  'neutral-icon-weak',
+  'neutral-icon-weaker',
+  'neutral-icon-weakest',
+  'neutral-icon-static',
+  'neutral-icon-inverted',
+  'neutral-icon-inverted-weak',
+  'neutral-icon-inverted-weaker',
+  'neutral-icon-inverted-weakest',
+  'neutral-icon-inverted-static',
+  // primary
+  'primary-icon-default',
+  'primary-icon-weak',
+  'primary-icon-weaker',
+  'primary-icon-weakest',
+  'primary-icon-inverted',
+  'primary-icon-inverted-weak',
+  'primary-icon-inverted-weakest',
+  // secondary
+  'secondary-icon-default',
+  'secondary-icon-weak',
+  // system
+  'system-error-icon',
+  'system-error-icon-inverted',
+  'system-error-icon-weak',
+  'system-info-icon',
+  'system-info-icon-inverted',
+  'system-info-icon-weak',
+  'system-success-icon',
+  'system-success-icon-inverted',
+  'system-success-icon-weak',
+  'system-warning-icon',
+  'system-warning-icon-inverted',
+  'system-warning-icon-weak',
+] as const;

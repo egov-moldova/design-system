@@ -1,0 +1,21 @@
+export enum textVariants {
+  HEADING_4XL = 'heading-4xl',
+  HEADING_3XL = 'heading-3xl',
+  HEADING_2XL = 'heading-2xl',
+  HEADING_XL = 'heading-xl',
+  HEADING_LG = 'heading-lg',
+  HEADING_MD = 'heading-md',
+  HEADING_SM = 'heading-sm',
+
+  BODY_LG = 'body-lg',
+  BODY_LG_UNDERLINE = 'body-lg-underline',
+  BODY_LG_SEMIBOLD = 'body-lg-semibold',
+  BODY_MD = 'body-md',
+  BODY_MD_UNDERLINE = 'body-md-underline',
+  BODY_MD_SEMIBOLD = 'body-md-semibold',
+  BODY_SM = 'body-sm',
+  BODY_SM_SEMIBOLD = 'body-sm-semibold',
+  BODY_XS = 'body-xs',
+  BODY_XS_SEMIBOLD = 'body-xs-semibold',
+  BODY_XS_UPPERCASE = 'body-xs-uppercase',
+}

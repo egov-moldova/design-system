@@ -1,0 +1,342 @@
+:host {
+  display: contents;
+
+  .tab-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--tab-button-gap);
+    cursor: pointer;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--tab-button-color-default);
+    font-family: var(--font-family-body);
+    font-size: var(--tab-button-font-size);
+    line-height: var(--tab-button-line-height);
+    font-weight: var(--tab-button-font-weight-default);
+    white-space: nowrap;
+    width: 100%;
+    height: var(--tab-button-size-style1-md);
+    padding: 0 var(--tab-button-padding-md);
+    border-radius: 0;
+    box-sizing: border-box;
+    transition:
+      background-color 150ms ease-in-out,
+      color 150ms ease-in-out,
+      font-weight 150ms ease-in-out,
+      box-shadow 150ms ease-in-out;
+  }
+
+  /* Content wrapper */
+  .content {
+    display: flex;
+    align-items: center;
+    gap: var(--tab-button-content-gap);
+  }
+
+  /* Slot styling */
+  ::slotted([slot='icon-left']),
+  ::slotted([slot='icon-right']) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+}
+
+/* ── Size variants ── */
+
+:host([size='lg']) {
+  .tab-button {
+    height: var(--tab-button-size-style1-lg);
+    padding: 0 var(--tab-button-padding-lg);
+    gap: var(--tab-button-gap);
+  }
+}
+
+:host([size='md']) {
+  .tab-button {
+    height: var(--tab-button-size-style1-md);
+    padding: 0 var(--tab-button-padding-md);
+    gap: var(--tab-button-gap);
+  }
+}
+
+:host([size='sm']) {
+  .tab-button {
+    height: var(--tab-button-size-style1-sm);
+    padding: 0 var(--tab-button-padding-sm);
+    gap: var(--tab-button-gap);
+  }
+}
+
+:host([size='lg'][skeleton]),
+:host([size='md'][skeleton]),
+:host([size='sm'][skeleton]),
+:host([size='lg'].is-skeleton),
+:host([size='md'].is-skeleton),
+:host([size='sm'].is-skeleton) {
+  .tab-button {
+    gap: var(--tab-button-gap-content);
+  }
+}
+
+/* ── Icon-only variant: no content padding ── */
+
+:host([icon-only]) {
+  .content {
+    padding: 0;
+  }
+}
+
+/* ── Style 1: Rounded pill segments with shadow on selected ── */
+
+:host([tab-style='style-1']) {
+  .tab-button {
+    border-radius: var(--tab-button-border-radius-style1-md);
+  }
+}
+
+:host([tab-style='style-1'][size='lg']) {
+  .tab-button {
+    border-radius: var(--tab-button-border-radius-style1-lg);
+  }
+}
+
+:host([tab-style='style-1'][size='sm']) {
+  .tab-button {
+    border-radius: var(--tab-button-border-radius-style1-sm);
+  }
+}
+
+/* ── Style 2: Zero gap between icon/content/icon-right + content padding ── */
+
+:host([tab-style='style-2']) {
+  .tab-button {
+    gap: var(--tab-button-gap-style2);
+    height: var(--tab-button-size-style2-md);
+  }
+}
+
+:host([tab-style='style-2']:not([icon-only])) {
+  .content {
+    padding: 0 var(--tab-button-padding-content-style2-md);
+  }
+}
+
+/* Style 2 divider — apply border-left to all except first button */
+:host([tab-style='style-2']:not(:first-of-type)) {
+  .tab-button {
+    border-left: var(--tab-button-divider-width, 0) solid var(--tab-button-divider-color, transparent);
+  }
+}
+
+:host([tab-style='style-2'][size='lg']) {
+  .tab-button {
+    height: var(--tab-button-size-style2-lg);
+  }
+}
+
+:host([tab-style='style-2'][size='lg']:not([icon-only])) {
+  .content {
+    padding: 0 var(--tab-button-padding-content-style2-lg);
+  }
+}
+
+:host([tab-style='style-2'][size='sm']) {
+  .tab-button {
+    height: var(--tab-button-size-style2-sm);
+  }
+}
+
+:host([tab-style='style-2'][size='sm']:not([icon-only])) {
+  .content {
+    padding: 0 var(--tab-button-padding-content-style2-sm);
+  }
+}
+
+/* ── Style 3: bottom-border selection indicator ── */
+
+:host([tab-style='style-3']) {
+  .tab-button {
+    border-bottom: var(--tab-button-border-width-style3) solid transparent;
+    height: calc(var(--tab-button-size-style3-md) - var(--tab-button-border-width-style3));
+    margin-bottom: calc(-1 * var(--tab-button-border-width-style3));
+  }
+}
+
+:host([tab-style='style-3'][size='lg']) {
+  .tab-button {
+    height: calc(var(--tab-button-size-style3-lg) - var(--tab-button-border-width-style3));
+  }
+}
+
+:host([tab-style='style-3'][size='sm']) {
+  .tab-button {
+    height: calc(var(--tab-button-size-style3-sm) - var(--tab-button-border-width-style3));
+  }
+}
+
+/* ── Default (unselected) state ── */
+
+:host(:not([selected]):not([disabled]):not([skeleton])) {
+  .tab-button {
+    color: var(--tab-button-color-default);
+    background-color: var(--tab-button-background-default);
+    font-weight: var(--tab-button-font-weight-default);
+  }
+}
+
+/* ── Hover state ── */
+
+:host(.is-hovered:not([selected]):not([disabled]):not([skeleton])) {
+  .tab-button {
+    color: var(--tab-button-color-hover);
+    background-color: var(--tab-button-background-hover);
+  }
+}
+
+:host([tab-style='style-3'].is-hovered:not([selected]):not([disabled]):not([skeleton])) {
+  .tab-button {
+    border-bottom-color: var(--tab-button-border-color-style3-selected);
+  }
+}
+
+/* ── Selected state ── */
+
+:host([selected]:not([disabled]):not([skeleton])) {
+  .tab-button {
+    color: var(--tab-button-color-selected);
+    background-color: var(--tab-button-background-selected);
+    font-weight: var(--tab-button-font-weight-selected);
+  }
+}
+
+:host([tab-style='style-1'][selected]:not([disabled]):not([skeleton])),
+:host([tab-style='style-2'][selected]:not([disabled]):not([skeleton])) {
+  .tab-button {
+    box-shadow: var(--tab-button-shadow-selected);
+  }
+}
+
+:host([tab-style='style-3'][selected]:not([disabled]):not([skeleton])) {
+  .tab-button {
+    border-bottom-color: var(--tab-button-border-color-style3-selected);
+    background-color: transparent;
+  }
+}
+
+/* ── Pressed state ── */
+
+:host(:not([disabled]):not([skeleton]):not([selected])) {
+  .tab-button:active {
+    color: var(--tab-button-color-pressed);
+    background-color: var(--tab-button-background-pressed);
+  }
+}
+
+/* ── Focus visible ── */
+
+:host(:focus-visible:not([disabled]):not([skeleton])),
+:host(:focus-within:not([disabled]):not([skeleton])) {
+  .tab-button:focus-visible {
+    outline: var(--tab-button-focus-outline-width) solid var(--tab-button-focus-outline-color);
+    outline-offset: var(--tab-button-focus-outline-offset);
+  }
+}
+
+/* ── Disabled state ── */
+
+:host([disabled]) {
+  cursor: not-allowed;
+
+  .tab-button {
+    cursor: not-allowed;
+    pointer-events: none;
+    color: var(--tab-button-color-disabled);
+    background-color: var(--tab-button-background-disabled);
+    font-weight: var(--tab-button-font-weight-default);
+    box-shadow: none;
+  }
+}
+
+/* Style-3 disabled border */
+:host([tab-style='style-3'][disabled]) {
+  .tab-button {
+    border-bottom: var(--tab-button-border-width-style3) solid var(--tab-button-border-color-style3-disabled);
+  }
+}
+
+/* ── Skeleton state ── */
+
+:host([skeleton]),
+:host(.is-skeleton) {
+  pointer-events: none;
+
+  .tab-button {
+    cursor: default;
+    background-color: transparent;
+  }
+
+  .skeleton-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--tab-button-background-skeleton);
+    flex-shrink: 0;
+    width: var(--tab-button-skeleton-placeholder-size-default);
+    height: var(--tab-button-skeleton-placeholder-size-default);
+  }
+
+  .skeleton-icon {
+    width: var(--tab-button-skeleton-icon-size);
+    height: var(--tab-button-skeleton-icon-size);
+    opacity: 0;
+  }
+
+  .skeleton-text {
+    display: flex;
+    gap: var(--tab-button-gap-content);
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    height: auto;
+  }
+
+  .skeleton-label {
+    display: block;
+    width: var(--tab-button-skeleton-label-width);
+    height: var(--tab-button-skeleton-label-height);
+    opacity: 0;
+  }
+
+  .skeleton-badge {
+    display: block;
+    width: var(--tab-button-skeleton-badge-width-default);
+    height: var(--tab-button-skeleton-badge-height-default);
+    opacity: 0;
+  }
+}
+
+/* Sm size skeleton - 16px placeholders, 16px badge */
+:host([size='sm'][skeleton]),
+:host([size='sm'].is-skeleton) {
+  .skeleton-placeholder {
+    width: var(--tab-button-skeleton-placeholder-size-sm);
+    height: var(--tab-button-skeleton-placeholder-size-sm);
+  }
+
+  .skeleton-badge {
+    width: var(--tab-button-skeleton-badge-width-sm);
+    height: var(--tab-button-skeleton-badge-height-sm);
+  }
+}
+
+/* Style-3 skeleton border (same as disabled) */
+:host([tab-style='style-3'][skeleton]),
+:host([tab-style='style-3'].is-skeleton) {
+  .tab-button {
+    border-bottom: var(--tab-button-border-width-style3) solid var(--tab-button-border-color-style3-skeleton);
+  }
+}
