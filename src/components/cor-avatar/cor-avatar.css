@@ -15,7 +15,7 @@
 
 /* Bring avatar to front on hover (useful in avatar groups) */
 :host(:hover) {
-  z-index: var(--z-index-popout);
+  z-index: 950;
 }
 
 .avatar-container {

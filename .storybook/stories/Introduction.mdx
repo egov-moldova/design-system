@@ -2,4 +2,27 @@ import { Meta } from '@storybook/blocks';
 
 <Meta title="Introduction" component="Introduction" />
 
-# Welcome to AGE Design System
+# AGE Design System
+
+The AGE Design System is a library of Stencil-based web components, design tokens, and visual patterns used across Corlab products. Components are framework-agnostic, themable via CSS custom properties, and documented here alongside the tokens that drive them.
+
+## How this Storybook is organized
+
+- **Design Tokens / Core** — Palette primitives, semantic colors, typography, layout, and per-component tokens for the light theme.
+- **Design Tokens / Core Dark** — Same surface as Core, with semantic and component values overridden for the dark theme.
+- **Components** — Atomic, molecular, and organism-level web components. Each page documents props, slots, states, and the matching Figma node.
+- **Patterns** — Composed examples that show how multiple components work together.
+
+## Token tiers
+
+Tokens map directly to the [Figma Foundations](https://www.figma.com/design/wkHMxgDWxZKaXQ7zNxhSxN/Foundations) variables and follow a 3-tier hierarchy:
+
+1. **Palette** (primitive) — raw color swatches: `--palette-{family}-{shade}` (e.g. `--palette-blue-sky-600`).
+2. **Semantic** — intent-based aliases composed as **category · type · role · variant**: `--{category}-{type}-{role}-{variant}` (e.g. `--color-background-brand-default`).
+3. **Component** — per-component overrides: `--{component}-{element}-{property}-{variant}` (e.g. `--button-primary-background-default`, `--input-container-height-lg`).
+
+Component CSS must reference **semantic** or **component** tokens — never palette primitives directly.
+
+## Getting started
+
+Pick any component in the sidebar to see live examples, controls, and accessibility notes. Each component links back to its Figma source under the **Docs** tab. For the full token reference, open **Design Tokens / Core**.

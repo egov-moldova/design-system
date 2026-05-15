@@ -33,14 +33,18 @@ tokens/
 
 ## Token Reference Syntax (JSON)
 
+Component tokens follow `{component}.{element}.{property}.{variant}` and reference semantic tokens, which themselves follow the [Figma Foundations](https://www.figma.com/design/wkHMxgDWxZKaXQ7zNxhSxN/Foundations) 4-part scheme `{category}.{type}.{role}.{variant}`:
+
 ```json
 {
   "button": {
     "primary": {
-      "default": {
-        "background": { "value": "{color.primary.background.default}", "type": "color" },
-        "border":     { "value": "{color.primary.border.default}", "type": "color" },
-        "color":      { "value": "{color.primary.text.inverse}", "type": "color" }
+      "background": {
+        "default": { "$value": "{color.background.brand.default}", "$type": "color" },
+        "hover":   { "$value": "{color.background.brand.hover}",   "$type": "color" }
+      },
+      "border": {
+        "default": { "$value": "{color.border.brand.default}", "$type": "color" }
       }
     }
   }
@@ -48,7 +52,7 @@ tokens/
 ```
 
 - **Always reference** core tokens using `{token.path}` — never raw hex/px in component tokens
-- Component tokens generate CSS vars: `--button-primary-default-background`
+- Component tokens generate CSS vars: `--button-primary-background-default`, `--button-primary-border-default`
 
 ---
 
@@ -101,9 +105,9 @@ Default: follow current structure.
 ```text
 tokens/core/components/button.tokens.json    →  Style Dictionary build
     ↓                                              ↓
-{color.primary.background.default}           →  dist/design-system/tokens/core.tokens.css
+{color.background.brand.default}             →  dist/design-system/tokens/core.tokens.css
     ↓                                              ↓
---button-primary-default-background: #hex    →  Used in cor-button.css
+--button-primary-background-default: #hex    →  Used in cor-button.css
 ```
 
 ---

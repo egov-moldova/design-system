@@ -150,7 +150,7 @@
         "$type": "spacing"
       },
       "maxHeight": {
-        "$value": "{size.5xl}",
+        "$value": "216px",
         "$type": "dimension"
       },
       "paddingBlock": {

@@ -24,6 +24,25 @@ Design tokens are the **single source of truth** for all visual properties. Neve
 
 ---
 
+## Figma → Token → CSS Variable Terminology
+
+Semantic tokens follow [Figma Foundations](https://www.figma.com/design/wkHMxgDWxZKaXQ7zNxhSxN/Foundations)' 4-part naming:
+
+| Position | Figma term | Examples                                                                |
+| -------- | ---------- | ----------------------------------------------------------------------- |
+| 1        | category   | `color`, `palette`, `spacing`, `borderRadius`, `fontSize`               |
+| 2        | type       | `background`, `text`, `border`, `icon`                                  |
+| 3        | role       | `base`, `brand`, `danger`, `positive`, `warning`, `info`, `disabled`    |
+| 4        | variant    | `default`, `hover`, `active`, `focus`, `selected`, `secondary`, …       |
+
+- JSON path: `color.background.brand.default`
+- CSS var:   `--color-background-brand-default`
+
+Palette primitives use a 3-part variant: `palette.{family}.{shade}` → `--palette-{family}-{shade}`.
+Component tokens extend the scheme with an element layer: `{component}.{element}.{property}.{variant}` → `--{component}-{element}-{property}-{variant}`.
+
+---
+
 ## Token File Format (DTCG)
 
 All token JSON files use the **W3C Design Tokens Community Group (DTCG)** format with `$value` and `$type` keys. Style Dictionary v4.4+ is configured with `usesDtcg: true` in all platform configs.

@@ -320,7 +320,7 @@
         "$type": "dimension"
       },
       "size": {
-        "$value": "{size.md}",
+        "$value": "{spacing.16}",
         "$type": "dimension"
       },
       "color": {

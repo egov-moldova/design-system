@@ -899,9 +899,6 @@ async function main(argv = process.argv) {
   ctx.notGenerated = [
     { file: 'effects.tokens.json', reason: 'not in Tokenhaus export — author manually (drop-shadow.100..500 from Figma elevation 1-5)' },
     { file: 'screen.tokens.json', reason: 'not in Tokenhaus export — breakpoints removed from Figma' },
-    { file: 'size.tokens.json', reason: 'not in Tokenhaus export — component sizing authored manually' },
-    { file: 'zIndex.tokens.json', reason: 'not in Tokenhaus export — authored manually' },
-    { file: 'linearGradient.tokens.json', reason: 'not in Tokenhaus export — authored manually' },
     { file: 'letterSpacing (in font.tokens.json)', reason: 'not in Tokenhaus export — emitted as empty placeholder' },
   ];
 

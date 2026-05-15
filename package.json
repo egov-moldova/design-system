@@ -2,7 +2,7 @@
   "name": "@age/design-system",
   "_id": "@age/design-system@0.0.1",
   "version": "0.0.78",
-  "description": "Components for the AGE Design System. Built on StencilJS.",
+  "description": "AGE Design System — Stencil web components, Figma-aligned design tokens, and Storybook docs for Corlab products.",
   "main": "dist/index.cjs.js",
   "unpkg": "dist/design-system/design-system.esm.js",
   "module": "dist/index.js",

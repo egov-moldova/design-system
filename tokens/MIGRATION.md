@@ -387,3 +387,31 @@ yarn test:scripts   # 29 tests pass with DTCG assertions
 diff tmp/pre-dtcg.core.tokens.css tokens/generated/core.tokens.css
 # Expected: only the 4 bugfix lines above
 ```
+
+---
+
+## Consolidation Cleanup (post-Phase 5)
+
+**Status**: ✅ Complete
+
+Three legacy token files removed after auditing usage:
+
+| File | Reason | Migration |
+|------|--------|-----------|
+| `tokens/core/size.tokens.json` | 11 tokens, 2 consumers in component tokens, 0 CSS var consumers | `{size.md}` → `{spacing.16}` in `input.tokens.json`; `{size.5xl}` → inline `"216px"` in `pagination.tokens.json` |
+| `tokens/core/linearGradient.tokens.json` | 7 tokens, **0 consumers anywhere** | Deleted directly — no migration needed |
+| `tokens/core/zIndex.tokens.json` | 15 tokens, 4 source CSS consumers, 0 component token consumers | Values inlined directly into the 4 CSS files (no token replacement) |
+
+### zIndex inlining map
+
+| File | Was | Now |
+|------|-----|-----|
+| `cor-avatar.css` | `var(--z-index-popout)` | `950` |
+| `cor-pagination-item.css` | `var(--z-index-dropdown, 1000)` | `600` |
+| `cor-select.css` | `var(--z-index-dropdown, 1000)` | `600` |
+| `cor-toast-notification.css` | `var(--z-index-toast, 500)` | `500` |
+
+### Net effect
+
+- ~34 CSS variables removed from generated output (`--size-*` × 11, `--linear-gradient-*` × 7, `--z-index-*` × 16)
+- `scripts/sync-tokens-from-tokenhaus.mjs` `notGenerated` list trimmed accordingly (no longer references the deleted files)

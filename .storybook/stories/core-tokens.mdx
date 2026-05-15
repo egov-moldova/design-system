@@ -171,7 +171,13 @@ export const renderTokenTable = group => {
 
 ## Colors
 
-_Token composition: `color-{colorGroup}-{colorShade}` (ex: `color-neutral-text-default`)_
+Color tokens live in two layers, both aligned with [Figma Foundations](https://www.figma.com/design/wkHMxgDWxZKaXQ7zNxhSxN/Foundations):
+
+- **Palette** primitives — `--palette-{family}-{shade}` (e.g. `--palette-blue-sky-600`). Raw swatches; never reference these from component CSS.
+- **Semantic** aliases — `--color-{type}-{role}-{variant}` (e.g. `--color-background-brand-default`):
+  - **type**: `background`, `text`, `border`, `icon`
+  - **role**: `base`, `brand`, `danger`, `positive`, `warning`, `info`, `disabled`, `alpha`
+  - **variant**: `default`, `hover`, `active`, `focus`, `secondary`, `tertiary`, …
 
 <ColorPalette>
   {COLOR_KEYS.flatMap(group =>
@@ -235,9 +241,9 @@ _Token composition: `color-{colorGroup}-{colorShade}` (ex: `color-neutral-text-d
 
 </ColorPalette>
 
-## Text Properties Tokens
+## Typography Tokens
 
-_Non-color global tokens from `tokens/core/` ({TEXT_KEYS.join(', ')})_
+Global type primitives, composed as `--{category}-{scale}` (e.g. `--font-size-16`, `--font-weight-semibold`, `--line-height-20`). Categories: {TEXT_KEYS.join(', ')}.
 
 {TEXT_KEYS.map(group => {
 const tokenObj = core[group];
@@ -358,14 +364,14 @@ return (
 );
 })}
 
-## Appearance Properties Tokens
+## Layout & Effect Tokens
 
-_Non-color global tokens from `tokens/core/` ({APPEARANCE_KEYS.join(', ')})_
+Layout and effect primitives, composed as `--{category}-{scale}` (e.g. `--spacing-12`, `--border-radius-8`, `--drop-shadow-300`). Categories: {APPEARANCE_KEYS.join(', ')}.
 
 <div>{APPEARANCE_KEYS.map(group => renderTokenTable(group))}</div>
 
 ## Component Tokens
 
-_Per-component tokens from `tokens/core/components/` ({COMPONENT_KEYS.join(', ')})_
+Per-component overrides composed as `--{component}-{element}-{property}-{variant}` (e.g. `--button-primary-background-default`, `--input-container-height-lg`). Each component references semantic tokens — never palette primitives. Files: `tokens/core/components/` ({COMPONENT_KEYS.join(', ')}).
 
 <div>{COMPONENT_KEYS.map(group => renderTokenTable(group))}</div>

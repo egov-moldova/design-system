@@ -78,6 +78,18 @@ In token JSON files, compound properties **MUST** use camelCase:
 
 ## CSS Variable Naming Patterns
 
+All token names align with the [Figma Foundations](https://www.figma.com/design/wkHMxgDWxZKaXQ7zNxhSxN/Foundations) 4-part scheme:
+
+| Position | Figma term | Token examples |
+| --- | --- | --- |
+| 1 | category | `color`, `palette`, `spacing`, `borderRadius`, `fontSize` |
+| 2 | type | `background`, `text`, `border`, `icon` (component layer: `container`, `label`, `track`, …) |
+| 3 | role | `base`, `brand`, `danger`, `positive`, `warning`, `info`, `disabled` |
+| 4 | variant | `default`, `hover`, `active`, `focus`, `selected`, `disabled` |
+
+→ Semantic: `color.background.brand.default` → `--color-background-brand-default`.
+→ Component: `{component}.{element}.{property}.{variant}` → `--{component}-{element}-{property}-{variant}`.
+
 ### Multi-Element Component (e.g., select-item)
 
 ```text

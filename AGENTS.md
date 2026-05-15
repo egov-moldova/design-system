@@ -71,7 +71,7 @@ Each scoped file has its own `_agents/` subfiles — see those indexes for topic
 2. **Token-First**: Design tokens are the single source of truth — never hardcode values in CSS
 3. **Reuse-First**: Check existing components before creating new ones
 4. **Pixel-Perfect**: Every component MUST pass visual comparison against Figma — all states, all properties
-5. **3-Tier Token Hierarchy**: Component CSS → semantic tokens → palette tokens (never skip tiers)
+5. **3-Tier Token Hierarchy**: Component CSS → component/semantic tokens (`--color-{type}-{role}-{variant}`) → palette primitives (`--palette-{family}-{shade}`). Never reference palette primitives directly from component CSS. See `tokens/AGENTS.md` for the Figma Foundations naming map.
 6. **TypeScript Strict**: All decorator properties use `!`, all maps use `Record<>`, all optional chains use `??`
 7. **Build Order**: Tokens → component CSS/TSX → stories (always bottom-up: atoms → molecules → organisms)
 8. **No Boolean Slot Props**: Use CSS `:empty` or slot detection — never boolean props to control slot visibility

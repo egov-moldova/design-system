@@ -8,13 +8,15 @@ The 3-tier token hierarchy rule, forbidden vs correct patterns, and palette→se
 
 ## The 3-Tier Rule
 
-Component CSS must ONLY reference **semantic** (`--color-*`) or **component** (`--{component}-*`) tokens. **Never reference `--palette-*` directly.**
+Component CSS must ONLY reference **semantic** (`--color-{type}-{role}-{variant}`) or **component** (`--{component}-{element}-{property}-{variant}`) tokens. **Never reference `--palette-{family}-{shade}` directly.**
+
+The 4-part scheme — **category · type · role · variant** — comes from [Figma Foundations](https://www.figma.com/design/wkHMxgDWxZKaXQ7zNxhSxN/Foundations) and applies to every semantic token in the system.
 
 ```text
-Figma variable  →  palette token       →  semantic token        →  component token   →  CSS var
-(Figma source)     (--palette-ui-*)       (--color-neutral-*)      (--button-*)          .css file
-                   ❌ FORBIDDEN            ✅ Allowed fallback      ✅ Preferred
-                   in component CSS        in component CSS          in component CSS
+Figma variable  →  palette token            →  semantic token                  →  component token              →  CSS var
+(Figma source)     (--palette-{family}-N)      (--color-{type}-{role}-{var})      (--{component}-{el}-{prop})     .css file
+                   ❌ FORBIDDEN                 ✅ Allowed fallback                ✅ Preferred
+                   in component CSS             in component CSS                   in component CSS
 ```
 
 ---
