@@ -137,7 +137,17 @@ Component follows ONE of:
 
 **Check**: component doesn't mix patterns.
 
-## Phase 3: Accessibility Audit
+## Phase 3: Accessibility Audit — WCAG 2.1 Level AA
+
+**Canonical reference:** Skill [`accessibility-compliance`](../skills/accessibility-compliance/SKILL.md). For deepest audit delegate to `/audit-accessibility @cor-<name>`.
+
+**Mandatory automated checks before completing Phase 3:**
+
+```bash
+yarn audit:contrast   # token-level contrast, light + dark
+```
+
+Storybook a11y addon panel: open every modified component story in both `Mode → Light` and `Mode → Dark` — zero violations.
 
 ### 3.1 Keyboard Navigation
 
@@ -165,20 +175,28 @@ Check TSX:
 
 No `aria-*` on non-interactive elements unless they have `role`.
 
-### 3.3 Color Contrast
+### 3.3 Color Contrast (SC 1.4.3 + 1.4.11) — both modes
 
 ```text
 mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-cor-[name]--default" })
 mcp__playwright__browser_evaluate({ function: "() => { const el = document.querySelector('cor-[name]')?.shadowRoot?.querySelector('.target') || document.querySelector('cor-[name]'); const s = window.getComputedStyle(el); return { bg: s.backgroundColor, fg: s.color }; }" })
 ```
 
-**Pass criteria**:
+Toggle dark mode and repeat:
+
+```text
+mcp__playwright__browser_evaluate({ function: "() => { document.documentElement.dataset.theme = 'dark'; return new Promise(r => requestAnimationFrame(() => r(true))); }" })
+```
+
+**Pass criteria** (WCAG 2.1 AA):
 
 - Normal text: 4.5:1 minimum
-- Large text (18pt+): 3:1 minimum
-- Interactive elements: 3:1 against background
+- Large text (≥ 18pt or ≥ 14pt bold): 3:1 minimum
+- UI components, borders, focus rings, icons: 3:1 against adjacent
+- Verified in BOTH light AND dark mode
+- Disabled elements: exempt (per WCAG 1.4.3 inherent exemption)
 
-Dark mode contrast: DEFERRED.
+Run `yarn audit:contrast` for token-level verification of every documented pair.
 
 ### 3.4 Screen Reader Testing
 

@@ -141,6 +141,20 @@ node scripts/debug-missing-token-references.mjs tokens/core/style-dictionary.con
 
 **Pass criteria**: Zero missing token references.
 
+## Step 7a: WCAG 2.1 AA Contrast Audit (mandatory)
+
+Any new or modified color token must respect WCAG 2.1 AA contrast against its documented background pair(s). Run:
+
+```bash
+yarn audit:contrast
+```
+
+- If you added a new color token, also add documented pair(s) to `scripts/audit-token-contrast.mjs` `PAIRS` array. Choose threshold: 4.5 for body text, 3.0 for UI/large text/focus ring.
+- New `FAIL` is a blocker. Either pick a different value or document an exception in `ACCEPTED_EXCEPTIONS` with explicit rationale (reviewer must approve).
+- Test BOTH light and dark themes — the script runs both by default.
+
+Reference: Skill [`accessibility-compliance`](../skills/accessibility-compliance/SKILL.md) sections 2 (Contrast Requirements) and 6 (Dark Mode Validation).
+
 ## Step 8: Visual Check (if component exists)
 
 ```text

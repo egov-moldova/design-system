@@ -204,7 +204,9 @@ Determine which CSS pattern applies and verify:
 
 Failure on any form-element item → **Critical** in report.
 
-## Step 10: Accessibility Audit
+## Step 10: Accessibility Audit (WCAG 2.1 AA subset)
+
+**Canonical reference:** [Skill `accessibility-compliance`](../skills/accessibility-compliance/SKILL.md). For deep audit run `/audit-accessibility @cor-<name>`.
 
 Navigate to the component story:
 
@@ -214,28 +216,35 @@ mcp__playwright__browser_wait_for({ time: 2 })
 mcp__playwright__browser_snapshot()
 ```
 
-**ARIA & semantics**:
+**ARIA & semantics** (SC 4.1.2, 4.1.3, 2.5.3):
 
 - Interactive elements have appropriate ARIA roles
-- ARIA labels present where visible text is absent
+- ARIA labels present where visible text is absent (accessible name includes visible text — SC 2.5.3)
 - `aria-disabled="true"` on non-button disabled elements (e.g., `<a>`)
 - No redundant ARIA (e.g., `role="button"` on `<button>`)
 - Error states have `aria-invalid="true"` and `aria-describedby`
+- Status messages use `role="status"` or `role="alert"` per urgency
 
-**Keyboard navigation**:
+**Keyboard navigation** (SC 2.1.1, 2.1.2, 2.4.3, 2.4.7):
 
 - Focusable via Tab (`mcp__playwright__browser_press_key({ key: "Tab" })`)
 - Focus ring visible: `:focus-visible` styles
 - Enter/Space activates
 - Escape closes overlays/dropdowns
-- No keyboard traps
+- No keyboard traps (Shift+Tab also works)
 
-**Visual accessibility**:
+**Visual accessibility** (SC 1.4.1, 1.4.3, 1.4.11):
 
-- Color contrast WCAG AA (4.5:1 text, 3:1 large text / UI)
+- Color contrast WCAG 2.1 AA: text 4.5:1 (normal) / 3:1 (large) — verified in **light AND dark mode**
+- UI components & focus rings: 3:1 against adjacent colors
 - Disabled state distinguishable (opacity/color, not just cursor)
-- Focus ring has ≥ 3:1 contrast
 - No information by color alone
+
+**Run automated token contrast:**
+
+```bash
+yarn audit:contrast
+```
 
 Check a11y warnings:
 

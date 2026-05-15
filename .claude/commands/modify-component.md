@@ -99,7 +99,25 @@ mcp__image-compare__compare_images({
 5. Fix → rebuild → re-screenshot → REPEAT until correct
 6. **Test ALL states** — not just the new/changed variant. Verify no regressions in: default, hover, active, focus, disabled. A change to one variant can break another.
 
-## Step 6: Verification
+## Step 6: Accessibility — WCAG 2.1 AA (mandatory)
+
+If the change is visual, adds/changes a state, variant, size, prop, or color → run accessibility verification:
+
+```bash
+yarn audit:contrast
+```
+
+For new state/variant/size:
+
+```text
+/audit-accessibility @cor-<name>
+```
+
+Verify in BOTH light and dark mode via Storybook a11y panel. Zero violations required.
+
+Canonical reference: Skill [`accessibility-compliance`](../skills/accessibility-compliance/SKILL.md).
+
+## Step 7: Verification
 
 ```bash
 yarn lint
@@ -107,4 +125,4 @@ yarn test
 yarn sp.build
 ```
 
-Report change summary: files modified, tokens added, stories updated, QA result.
+Report change summary: files modified, tokens added, stories updated, QA result, a11y status.

@@ -20,10 +20,23 @@ Phased verification gates, common troubleshooting, and git/PR conventions. **Rea
 
 - [ ] Tokens created/updated in `tokens/core/components/` → rebuild per `_agents/environment-commands.md`
 - [ ] Component `.tsx` + `.css` follow patterns in `src/components/AGENTS.md`
-- [ ] All visual states implemented (default, hover, active, focus, disabled, skeleton)
+- [ ] All visual states implemented (default, hover, active, focus-visible, disabled, skeleton)
 - [ ] Interactive elements are fully functional (not decorative)
-- [ ] Semantic HTML and ARIA attributes used
-- [ ] Keyboard navigation works (Tab, Enter, Escape)
+
+**Accessibility — WCAG 2.1 Level AA** (canonical reference: Skill [`accessibility-compliance`](../.claude/skills/accessibility-compliance/SKILL.md))
+
+- [ ] Semantic HTML used; ARIA only where native HTML insufficient (SC 4.1.2)
+- [ ] Accessible name on every interactive element; visible text included in name (SC 2.5.3, 4.1.2)
+- [ ] Keyboard navigation: Tab reachable, Enter/Space activates, Escape dismisses, arrow keys for composite widgets (SC 2.1.1, 2.1.2)
+- [ ] `:focus-visible` ring rendered on keyboard focus, ≥ 3:1 contrast against background and adjacent (SC 2.4.7, 1.4.11)
+- [ ] Color contrast 4.5:1 normal text / 3:1 large text / 3:1 UI verified in **light AND dark mode** (SC 1.4.3, 1.4.11) — run `yarn audit:contrast`
+- [ ] No information conveyed by color alone (SC 1.4.1) — error states pair color + icon + text
+- [ ] ARIA states correct: `aria-disabled`, `aria-invalid`, `aria-expanded`, `aria-selected`, `aria-checked`, `aria-required`, `aria-pressed` (SC 4.1.2)
+- [ ] Dynamic status uses `role="status"` (polite) or `role="alert"` (assertive) (SC 4.1.3)
+- [ ] `prefers-reduced-motion: reduce` honored — no override of global rule (SC 2.3.3)
+- [ ] Text spacing tolerated: 1.5× line-height, 0.12em letter-spacing without layout break (SC 1.4.12)
+- [ ] Target size: documented exception if below 24×24 — see `src/components/_agents/target-size-exceptions.md`
+- [ ] Storybook a11y addon panel: zero violations in both light and dark mode
 
 ### Phase 3: Stories
 

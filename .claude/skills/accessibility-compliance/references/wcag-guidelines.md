@@ -1,83 +1,53 @@
-# WCAG 2.2 Guidelines Reference
+# WCAG Guidelines Reference
 
-## Overview
+**Conformance target for `@age/design-system`:** **WCAG 2.1 Level AA**.
 
-The Web Content Accessibility Guidelines (WCAG) 2.2 provide recommendations for making web content more accessible. They are organized into four principles (POUR): Perceivable, Operable, Understandable, and Robust.
+This document is split into two parts:
+
+- **Part A — WCAG 2.1 AA (mandatory)** — every component must conform.
+- **Part B — WCAG 2.2 (future / opt-in)** — not required; reference for forward-looking work.
+
+Examples below are JSX/TSX for clarity, but the same principles apply to Stencil/JSX-in-Stencil components in this repo.
+
+---
+
+# Part A — WCAG 2.1 Level AA (Mandatory)
 
 ## Conformance Levels
 
-- **Level A**: Minimum accessibility (must satisfy)
-- **Level AA**: Standard accessibility (should satisfy)
-- **Level AAA**: Enhanced accessibility (may satisfy)
+- **Level A**: Minimum accessibility — every component **must** satisfy.
+- **Level AA**: Standard accessibility — every component **must** satisfy. ← project target
+- **Level AAA**: Enhanced — out of scope; track in component-level notes only.
 
-Most organizations target Level AA compliance.
+The 4 principles (POUR): **Perceivable, Operable, Understandable, Robust**.
 
-## Principle 1: Perceivable
+---
 
-Content must be presentable in ways users can perceive.
+## Principle 1 — Perceivable
 
-### 1.1 Text Alternatives
-
-#### 1.1.1 Non-text Content (Level A)
+### 1.1.1 Non-text Content (Level A)
 
 All non-text content needs text alternatives.
 
 ```tsx
-// Images
 <img src="chart.png" alt="Q3 sales increased 25% compared to Q2" />
-
-// Decorative images
 <img src="decorative-line.svg" alt="" role="presentation" />
 
-// Complex images with long descriptions
-<figure>
-  <img src="org-chart.png" alt="Organization chart" aria-describedby="org-desc" />
-  <figcaption id="org-desc">
-    The CEO reports to the board. Three VPs report to the CEO:
-    VP Engineering, VP Sales, and VP Marketing...
-  </figcaption>
-</figure>
-
-// Icons with meaning
 <button aria-label="Delete item">
   <TrashIcon aria-hidden="true" />
 </button>
 
-// Icon buttons with visible text
 <button>
   <DownloadIcon aria-hidden="true" />
   <span>Download</span>
 </button>
 ```
 
-### 1.2 Time-based Media
-
-#### 1.2.1 Audio-only and Video-only (Level A)
-
-```tsx
-// Audio with transcript
-<audio src="podcast.mp3" controls />
-<details>
-  <summary>View transcript</summary>
-  <p>Full transcript text here...</p>
-</details>
-
-// Video with captions
-<video controls>
-  <source src="tutorial.mp4" type="video/mp4" />
-  <track kind="captions" src="captions-en.vtt" srclang="en" label="English" />
-  <track kind="subtitles" src="subtitles-es.vtt" srclang="es" label="Spanish" />
-</video>
-```
-
-### 1.3 Adaptable
-
-#### 1.3.1 Info and Relationships (Level A)
+### 1.3.1 Info and Relationships (Level A)
 
 Structure and relationships must be programmatically determinable.
 
 ```tsx
-// Proper heading hierarchy
 <main>
   <h1>Page Title</h1>
   <section>
@@ -86,39 +56,42 @@ Structure and relationships must be programmatically determinable.
   </section>
 </main>
 
-// Data tables with headers
 <table>
   <caption>Quarterly Sales Report</caption>
   <thead>
     <tr>
       <th scope="col">Product</th>
       <th scope="col">Q1</th>
-      <th scope="col">Q2</th>
     </tr>
   </thead>
   <tbody>
     <tr>
       <th scope="row">Widget A</th>
       <td>$10,000</td>
-      <td>$12,000</td>
     </tr>
   </tbody>
 </table>
 
-// Lists for grouped content
-<nav aria-label="Main navigation">
-  <ul>
-    <li><a href="/">Home</a></li>
-    <li><a href="/about">About</a></li>
-    <li><a href="/contact">Contact</a></li>
-  </ul>
-</nav>
+<fieldset>
+  <legend>Notification preferences</legend>
+  <label><input type="checkbox" /> Email</label>
+  <label><input type="checkbox" /> SMS</label>
+</fieldset>
 ```
 
-#### 1.3.5 Identify Input Purpose (Level AA)
+### 1.3.2 Meaningful Sequence (Level A)
+
+Reading order and tab order must match the logical sequence. Don't use CSS `order` to put visually-later content first in the DOM if it changes meaning.
+
+### 1.3.4 Orientation (Level AA)
+
+Content must not be locked to a single orientation. Components must function in both portrait and landscape.
+
+### 1.3.5 Identify Input Purpose (Level AA)
+
+Use `autocomplete` so user agents can autofill.
 
 ```tsx
-// Input with autocomplete for autofill
 <form>
   <label htmlFor="name">Full Name</label>
   <input id="name" name="name" autoComplete="name" />
@@ -128,32 +101,25 @@ Structure and relationships must be programmatically determinable.
 
   <label htmlFor="phone">Phone</label>
   <input id="phone" name="phone" type="tel" autoComplete="tel" />
-
-  <label htmlFor="address">Street Address</label>
-  <input id="address" name="address" autoComplete="street-address" />
-
-  <label htmlFor="cc">Credit Card Number</label>
-  <input id="cc" name="cc" autoComplete="cc-number" />
 </form>
 ```
 
-### 1.4 Distinguishable
+### 1.4.1 Use of Color (Level A)
 
-#### 1.4.1 Use of Color (Level A)
+Color is **not** the only way to convey information.
 
 ```tsx
-// Bad: Color only indicates error
+// Bad
 <input className={hasError ? 'border-red-500' : ''} />
 
-// Good: Color plus icon and text
+// Good
 <div>
   <input
-    className={hasError ? 'border-red-500' : ''}
     aria-invalid={hasError}
     aria-describedby={hasError ? 'error-message' : undefined}
   />
   {hasError && (
-    <p id="error-message" className="text-red-500 flex items-center gap-1">
+    <p id="error-message" className="error">
       <AlertIcon aria-hidden="true" />
       This field is required
     </p>
@@ -161,92 +127,88 @@ Structure and relationships must be programmatically determinable.
 </div>
 ```
 
-#### 1.4.3 Contrast (Minimum) (Level AA)
+### 1.4.3 Contrast (Minimum) (Level AA) — **CRITICAL**
+
+| Element | Min ratio |
+|--------|----------|
+| Normal text (< 18pt / < 14pt bold) | **4.5 : 1** |
+| Large text (≥ 18pt / ≥ 14pt bold) | **3 : 1** |
+| Links (must be distinguishable beyond color alone) | 4.5 : 1 + non-color cue |
 
 ```css
-/* Minimum contrast ratios */
-/* Normal text: 4.5:1 */
-/* Large text (18pt+ or 14pt bold+): 3:1 */
+.text-on-white { color: #595959; }     /* 7:1 ratio */
+.text-on-dark  { color: #ffffff; background: #333; } /* 12.6:1 */
 
-/* Good contrast examples */
-.text-on-white {
-  color: #595959; /* 7:1 ratio on white */
-}
-
-.text-on-dark {
-  color: #ffffff;
-  background: #333333; /* 12.6:1 ratio */
-}
-
-/* Link must be distinguishable from surrounding text */
 .link {
-  color: #0066cc; /* 4.5:1 on white */
-  text-decoration: underline; /* Additional visual cue */
+  color: #0066cc;             /* 4.5:1 on white */
+  text-decoration: underline; /* non-color cue */
 }
 ```
 
-#### 1.4.11 Non-text Contrast (Level AA)
+**Verify:** `yarn audit:contrast` against `tokens/generated/core.tokens.json` AND `core.dark.tokens.json`.
+
+### 1.4.4 Resize Text (Level AA)
+
+Layout survives 200% zoom without horizontal scrolling or loss of content.
+
+### 1.4.10 Reflow (Level AA)
+
+Content reflows to fit a 320 CSS px viewport (single column on mobile). No two-dimensional scrolling for primary content.
+
+### 1.4.11 Non-text Contrast (Level AA) — **CRITICAL**
+
+UI components and graphical objects need **3:1** against adjacent colors.
 
 ```css
-/* UI components need 3:1 contrast */
 .button {
   border: 2px solid #767676; /* 3:1 against white */
   background: white;
 }
 
-.input {
-  border: 1px solid #767676;
-}
+.input { border: 1px solid #767676; }
 
-.input:focus {
-  outline: 2px solid #0066cc; /* Focus indicator needs 3:1 */
+.input:focus-visible {
+  outline: 2px solid #0066cc; /* focus ring 3:1 */
   outline-offset: 2px;
 }
 
-/* Custom checkbox */
-.checkbox {
-  border: 2px solid #767676;
-}
-
+.checkbox { border: 2px solid #767676; }
 .checkbox:checked {
   background: #0066cc;
   border-color: #0066cc;
 }
 ```
 
-#### 1.4.12 Text Spacing (Level AA)
+### 1.4.12 Text Spacing (Level AA)
 
-Content must not be lost when user adjusts text spacing.
+Layout doesn't break when user applies:
+
+- line-height ≥ 1.5× font size
+- letter-spacing ≥ 0.12em
+- word-spacing ≥ 0.16em
+- paragraph spacing ≥ 2× font size
 
 ```css
-/* Allow text spacing adjustments without breaking layout */
 .content {
-  /* Use relative units */
-  line-height: 1.5; /* At least 1.5x font size */
-  letter-spacing: 0.12em; /* Support for 0.12em */
-  word-spacing: 0.16em; /* Support for 0.16em */
-
-  /* Don't use fixed heights on text containers */
-  min-height: auto;
-
-  /* Allow wrapping */
+  line-height: 1.5;
+  letter-spacing: 0.12em;
+  word-spacing: 0.16em;
+  min-height: auto;       /* don't pin heights */
   overflow-wrap: break-word;
 }
-
-/* Test with these values: */
-/* Line height: 1.5x font size */
-/* Letter spacing: 0.12em */
-/* Word spacing: 0.16em */
-/* Paragraph spacing: 2x font size */
 ```
 
-#### 1.4.13 Content on Hover or Focus (Level AA)
+### 1.4.13 Content on Hover or Focus (Level AA)
+
+Tooltips and other hover/focus revealed content must be:
+
+- **Dismissible** — Escape closes without moving pointer/focus.
+- **Hoverable** — pointer can move into the revealed content without it disappearing.
+- **Persistent** — stays visible until trigger loses hover/focus, user dismisses, or the info is no longer valid.
 
 ```tsx
-// Tooltip pattern
 function Tooltip({ content, children }) {
   const [isVisible, setIsVisible] = useState(false);
-
   return (
     <div
       onMouseEnter={() => setIsVisible(true)}
@@ -258,12 +220,9 @@ function Tooltip({ content, children }) {
       {isVisible && (
         <div
           role="tooltip"
-          // Dismissible: user can close without moving pointer
-          onKeyDown={(e) => e.key === "Escape" && setIsVisible(false)}
-          // Hoverable: content stays visible when pointer moves to it
+          onKeyDown={(e) => e.key === 'Escape' && setIsVisible(false)}
           onMouseEnter={() => setIsVisible(true)}
           onMouseLeave={() => setIsVisible(false)}
-          // Persistent: stays until trigger loses focus/hover
         >
           {content}
         </div>
@@ -273,76 +232,62 @@ function Tooltip({ content, children }) {
 }
 ```
 
-## Principle 2: Operable
+---
 
-Interface components must be operable by all users.
+## Principle 2 — Operable
 
-### 2.1 Keyboard Accessible
-
-#### 2.1.1 Keyboard (Level A)
+### 2.1.1 Keyboard (Level A)
 
 All functionality must be operable via keyboard.
 
 ```tsx
-// Custom interactive element
-function CustomButton({ onClick, children }) {
-  return (
-    <div
-      role="button"
-      tabIndex={0}
-      onClick={onClick}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          onClick();
-        }
-      }}
-    >
-      {children}
-    </div>
-  );
-}
+// Bad — div as button without keyboard handler
+<div onClick={onClick}>Save</div>
 
-// Better: just use a button
-function BetterButton({ onClick, children }) {
-  return <button onClick={onClick}>{children}</button>;
-}
+// Good — native button
+<button onClick={onClick}>Save</button>
+
+// Acceptable — custom widget with full keyboard support
+<div
+  role="button"
+  tabIndex={0}
+  onClick={onClick}
+  onKeyDown={(e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onClick();
+    }
+  }}
+>
+  Save
+</div>
 ```
 
-#### 2.1.2 No Keyboard Trap (Level A)
+### 2.1.2 No Keyboard Trap (Level A)
+
+Focus must never be trapped — user can always Tab / Shift+Tab out. Modal focus traps are allowed only when Escape closes them.
 
 ```tsx
-// Modal with proper focus management
 function Modal({ isOpen, onClose, children }) {
-  const closeButtonRef = useRef(null);
+  const closeRef = useRef(null);
 
-  // Return focus on close
   useEffect(() => {
     if (!isOpen) return;
-
-    const previousFocus = document.activeElement;
-    closeButtonRef.current?.focus();
-
-    return () => {
-      (previousFocus as HTMLElement)?.focus();
-    };
+    const prev = document.activeElement;
+    closeRef.current?.focus();
+    return () => (prev as HTMLElement)?.focus();
   }, [isOpen]);
 
-  // Allow Escape to close
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
   }, [onClose]);
 
   return (
     <FocusTrap>
       <div role="dialog" aria-modal="true">
-        <button ref={closeButtonRef} onClick={onClose}>
-          Close
-        </button>
+        <button ref={closeRef} onClick={onClose}>Close</button>
         {children}
       </div>
     </FocusTrap>
@@ -350,156 +295,78 @@ function Modal({ isOpen, onClose, children }) {
 }
 ```
 
-### 2.4 Navigable
+### 2.1.4 Character Key Shortcuts (Level A)
 
-#### 2.4.1 Bypass Blocks (Level A)
+If a single-key shortcut is implemented, it must be: turn-off-able, remappable, or active-only-on-focus.
 
-```tsx
-// Skip links
-<body>
-  <a href="#main" className="skip-link">
-    Skip to main content
-  </a>
-  <a href="#nav" className="skip-link">
-    Skip to navigation
-  </a>
+### 2.4.3 Focus Order (Level A)
 
-  <header>...</header>
+Tab order matches visual/logical reading order. Verify with `mcp__playwright__browser_press_key({ key: 'Tab' })` + snapshot.
 
-  <nav id="nav" aria-label="Main">
-    ...
-  </nav>
+### 2.4.6 Headings and Labels (Level AA)
 
-  <main id="main" tabIndex={-1}>
-    {/* Main content */}
-  </main>
-</body>
-```
+Labels and headings describe topic/purpose. No generic "Click here" labels.
 
-#### 2.4.4 Link Purpose (In Context) (Level A)
+### 2.4.7 Focus Visible (Level AA) — **CRITICAL**
 
-```tsx
-// Bad: Ambiguous link text
-<a href="/report">Click here</a>
-<a href="/report">Read more</a>
-
-// Good: Descriptive link text
-<a href="/report">View quarterly sales report</a>
-
-// Good: Context provides meaning
-<article>
-  <h2>Quarterly Sales Report</h2>
-  <p>Sales increased by 25% this quarter...</p>
-  <a href="/report">Read full report</a>
-</article>
-
-// Good: Visually hidden text for context
-<a href="/report">
-  Read more
-  <span className="sr-only"> about quarterly sales report</span>
-</a>
-```
-
-#### 2.4.7 Focus Visible (Level AA)
+A visible focus indicator must be present on every focusable element when reached via keyboard.
 
 ```css
-/* Always show focus indicator */
+/* Default — use :focus-visible (not :focus) */
 :focus-visible {
   outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
 
-/* Custom focus styles */
+/* Custom focus style on a button */
 .button:focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px var(--color-focus);
 }
-
-/* High visibility focus for links */
-.link:focus-visible {
-  outline: 3px solid var(--color-focus);
-  outline-offset: 2px;
-  background: var(--color-focus-bg);
-}
 ```
 
-### 2.5 Input Modalities (New in 2.2)
+**The focus ring contrast must be ≥ 3:1** against both the background and the adjacent unfocused element (1.4.11).
 
-#### 2.5.8 Target Size (Minimum) (Level AA) - NEW
+### 2.5.1 Pointer Gestures (Level A)
 
-Interactive targets must be at least 24x24 CSS pixels.
+No required multi-finger or path-based gesture without a single-pointer alternative.
 
-```css
-/* Minimum target size */
-.interactive {
-  min-width: 24px;
-  min-height: 24px;
-}
+### 2.5.2 Pointer Cancellation (Level A)
 
-/* Recommended size for touch (44x44) */
-.touch-target {
-  min-width: 44px;
-  min-height: 44px;
-}
+Down-event alone must not trigger destructive action. Use `click` (up-event) and provide a way to abort by moving off.
 
-/* Inline links are exempt if they have adequate spacing */
-.link {
-  /* Inline text links don't need minimum size */
-  /* but should have adequate line-height */
-  line-height: 1.5;
-}
-```
+### 2.5.3 Label in Name (Level A)
 
-## Principle 3: Understandable
+The accessible name must include the visible text. If a button shows "Save" then `aria-label` must not be "Submit form" — it should be "Save" or include "Save".
 
-Content and interface must be understandable.
+### 2.5.4 Motion Actuation (Level A)
 
-### 3.1 Readable
+Don't require device motion (shake, tilt) without an alternative UI control.
 
-#### 3.1.1 Language of Page (Level A)
+---
 
-```html
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    ...
-  </head>
-  <body>
-    ...
-  </body>
-</html>
-```
+## Principle 3 — Understandable
 
-#### 3.1.2 Language of Parts (Level AA)
+### 3.2.1 On Focus (Level A)
+
+Focusing a control must not trigger a context change (navigation, form submission, opening a modal).
+
+### 3.2.2 On Input (Level A)
+
+Changing a control's value must not trigger a context change. Use an explicit submit action.
 
 ```tsx
-<p>
-  The French phrase <span lang="fr">c'est la vie</span> means "that's life."
-</p>
-```
+// Bad — auto-submit on selection
+<select onChange={(e) => form.submit()} />
 
-### 3.2 Predictable
-
-#### 3.2.2 On Input (Level A)
-
-Don't automatically change context on input.
-
-```tsx
-// Bad: Auto-submit on selection
-<select onChange={(e) => form.submit()}>
-  <option>Select country</option>
-</select>
-
-// Good: Explicit submit action
-<select onChange={(e) => setCountry(e.target.value)}>
-  <option>Select country</option>
-</select>
+// Good — explicit submit
+<select onChange={(e) => setCountry(e.target.value)} />
 <button type="submit">Continue</button>
 ```
 
-### 3.3 Input Assistance
+### 3.3.1 Error Identification (Level A)
 
-#### 3.3.1 Error Identification (Level A)
+Errors must be identified in text (not just color/icon).
 
 ```tsx
 function FormField({ id, label, error, ...props }) {
@@ -513,7 +380,7 @@ function FormField({ id, label, error, ...props }) {
         {...props}
       />
       {error && (
-        <p id={`${id}-error`} role="alert" className="text-red-600">
+        <p id={`${id}-error`} role="alert">
           {error}
         </p>
       )}
@@ -522,57 +389,27 @@ function FormField({ id, label, error, ...props }) {
 }
 ```
 
-#### 3.3.7 Redundant Entry (Level A) - NEW
+### 3.3.2 Labels or Instructions (Level A)
 
-Don't require users to re-enter previously provided information.
+All form inputs have a visible label (or `aria-label` if no visible text).
 
-```tsx
-// Auto-fill shipping address from billing
-function CheckoutForm() {
-  const [sameAsBilling, setSameAsBilling] = useState(false);
-  const [billing, setBilling] = useState({});
-  const [shipping, setShipping] = useState({});
+### 3.3.3 Error Suggestion (Level AA)
 
-  return (
-    <form>
-      <fieldset>
-        <legend>Billing Address</legend>
-        <AddressFields value={billing} onChange={setBilling} />
-      </fieldset>
+When an error is detected and a suggestion is known, provide it (e.g., "Did you mean user@example.com?").
 
-      <label>
-        <input
-          type="checkbox"
-          checked={sameAsBilling}
-          onChange={(e) => {
-            setSameAsBilling(e.target.checked);
-            if (e.target.checked) setShipping(billing);
-          }}
-        />
-        Shipping same as billing
-      </label>
+### 3.3.4 Error Prevention (Legal, Financial, Data) (Level AA)
 
-      {!sameAsBilling && (
-        <fieldset>
-          <legend>Shipping Address</legend>
-          <AddressFields value={shipping} onChange={setShipping} />
-        </fieldset>
-      )}
-    </form>
-  );
-}
-```
+For irreversible actions, provide one of: reversal, confirmation, review.
 
-## Principle 4: Robust
+---
 
-Content must be robust enough for assistive technologies.
+## Principle 4 — Robust
 
-### 4.1 Compatible
+### 4.1.2 Name, Role, Value (Level A)
 
-#### 4.1.2 Name, Role, Value (Level A)
+All custom controls expose name, role, and value to assistive technology.
 
 ```tsx
-// Custom components must expose name, role, and value
 function CustomCheckbox({ checked, onChange, label }) {
   return (
     <button
@@ -581,65 +418,115 @@ function CustomCheckbox({ checked, onChange, label }) {
       aria-label={label}
       onClick={() => onChange(!checked)}
     >
-      {checked ? "✓" : "○"} {label}
+      {checked ? '✓' : '○'} {label}
     </button>
   );
 }
-
-// Custom slider
-function CustomSlider({ value, min, max, label, onChange }) {
-  return (
-    <div
-      role="slider"
-      aria-valuemin={min}
-      aria-valuemax={max}
-      aria-valuenow={value}
-      aria-label={label}
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "ArrowRight") onChange(Math.min(value + 1, max));
-        if (e.key === "ArrowLeft") onChange(Math.max(value - 1, min));
-      }}
-    >
-      <div style={{ width: `${((value - min) / (max - min)) * 100}%` }} />
-    </div>
-  );
-}
 ```
 
-## Testing Checklist
+Native HTML is always preferred over `role="..."`.
 
-```markdown
-## Keyboard Testing
+### 4.1.3 Status Messages (Level AA)
+
+Dynamic status messages must be programmatically determinable and announced without focus change.
+
+```tsx
+<div role="status" aria-live="polite">
+  {count} results found
+</div>
+
+<div role="alert" aria-live="assertive">
+  Error: payment failed
+</div>
+```
+
+---
+
+## Testing Checklist (2.1 AA)
+
+### Keyboard
 
 - [ ] All interactive elements focusable with Tab
 - [ ] Focus order matches visual order
-- [ ] Focus indicator always visible
+- [ ] Focus indicator always visible (`:focus-visible`)
+- [ ] Focus ring contrast ≥ 3:1
 - [ ] No keyboard traps
-- [ ] Escape closes modals/dropdowns
-- [ ] Enter/Space activates buttons and links
+- [ ] Escape closes overlays/modals
+- [ ] Enter/Space activates correctly
+- [ ] Arrow keys navigate composite widgets
 
-## Screen Reader Testing
+### Screen Reader
 
-- [ ] All images have alt text
+- [ ] All images have alt text or are decorative
 - [ ] Form inputs have labels
-- [ ] Headings in logical order
-- [ ] Landmarks present (main, nav, header, footer)
-- [ ] Dynamic content announced
-- [ ] Error messages announced
+- [ ] Dynamic status announced (`aria-live` / `role="status"` or `role="alert"`)
+- [ ] Errors announced
+- [ ] Custom widgets expose name/role/value
 
-## Visual Testing
+### Visual
 
-- [ ] Text contrast at least 4.5:1
-- [ ] UI component contrast at least 3:1
+- [ ] Text contrast ≥ 4.5:1 (normal) / 3:1 (large)
+- [ ] UI component contrast ≥ 3:1
 - [ ] Works at 200% zoom
-- [ ] Content readable with text spacing
-- [ ] Focus indicators visible
-- [ ] Color not sole indicator of meaning
+- [ ] Reflows to 320 px wide
+- [ ] Survives 1.5× line-height / 0.12em letter-spacing
+- [ ] Color is never the sole indicator
+- [ ] **Verified in light AND dark mode**
+
+### Motion
+
+- [ ] No content flashes > 3 Hz
+- [ ] `prefers-reduced-motion: reduce` honored
+- [ ] Long auto-playing animations pausable
+
+---
+
+# Part B — WCAG 2.2 (Future / Opt-In, Not Required for 2.1 AA)
+
+The criteria below are **new in WCAG 2.2**. They are **not required** by the project's WCAG 2.1 AA target. Reference them only if a downstream consumer or the Figma project spec requires them.
+
+## 2.4.11 Focus Not Obscured (Minimum) (Level AA, new in 2.2)
+
+When an element receives focus, it must not be entirely hidden by author-created content (e.g., sticky header/footer).
+
+## 2.4.13 Focus Appearance (Level AAA, new in 2.2)
+
+Stronger focus indicator: at least 2 CSS px outline, ≥ 3:1 contrast change, encloses the element.
+
+## 2.5.7 Dragging Movements (Level AA, new in 2.2)
+
+Provide a single-pointer alternative to any drag-and-drop interaction (e.g., reorder via arrow keys or up/down buttons).
+
+## 2.5.8 Target Size (Minimum) (Level AA, new in 2.2)
+
+Interactive targets must be ≥ 24×24 CSS pixels (with exceptions for inline, user-agent default, essential, and equivalent alternatives).
+
+```css
+.interactive { min-width: 24px; min-height: 24px; }
+
+/* 2.5.5 Target Size (Enhanced) is Level AAA: 44×44 */
+.touch-target-aaa { min-width: 44px; min-height: 44px; }
 ```
+
+**Note:** The `@age/design-system` has documented exceptions where `button` sm/xs and `checkbox` sm/md are below 24×24 visually but maintain adequate spacing. See [`src/components/_agents/target-size-exceptions.md`](../../../../src/components/_agents/target-size-exceptions.md).
+
+## 3.2.6 Consistent Help (Level A, new in 2.2)
+
+Help mechanisms (contact info, chat, FAQ link) appear in consistent order across pages — application-layer concern.
+
+## 3.3.7 Redundant Entry (Level A, new in 2.2)
+
+Don't require re-entering information previously provided in the same process (e.g., billing → shipping autofill).
+
+## 3.3.8 Accessible Authentication (Minimum) (Level AA, new in 2.2)
+
+No cognitive function test (transcribing, memorization) required for auth, unless there's an alternative.
+
+---
 
 ## Resources
 
-- [WCAG 2.2 Quick Reference](https://www.w3.org/WAI/WCAG22/quickref/)
-- [Understanding WCAG 2.2](https://www.w3.org/WAI/WCAG22/Understanding/)
-- [Techniques for WCAG 2.2](https://www.w3.org/WAI/WCAG22/Techniques/)
+- [WCAG 2.1 Quick Reference (W3C)](https://www.w3.org/WAI/WCAG21/quickref/) — **canonical**
+- [Understanding WCAG 2.1 (W3C)](https://www.w3.org/WAI/WCAG21/Understanding/)
+- [WCAG 2.2 Quick Reference (W3C)](https://www.w3.org/WAI/WCAG22/quickref/) — future
+- [WAI-ARIA Authoring Practices (W3C)](https://www.w3.org/WAI/ARIA/apg/)

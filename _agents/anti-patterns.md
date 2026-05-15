@@ -34,7 +34,7 @@ Complete list of forbidden patterns. **Read before writing component code.**
 ## Design Fidelity
 
 19. **Ignore states** — every interactive component needs: default, hover, active, focus-visible, disabled
-20. **Forget accessibility** — ARIA labels, keyboard nav, focus rings, color contrast
+20. **Forget accessibility** — every `cor-*` component must conform to **WCAG 2.1 Level AA**. See Skill [`accessibility-compliance`](../.claude/skills/accessibility-compliance/SKILL.md) for the full Success Criteria list, contrast tables, ARIA patterns, and dark-mode requirements. Mandatory: accessible names, keyboard navigation (Tab/Enter/Esc/arrows), visible `:focus-visible` ring (3:1 contrast), color contrast 4.5:1 text / 3:1 UI in **both light and dark mode**, ARIA states, `role="status"`/`role="alert"` for dynamic content, honor `prefers-reduced-motion`
 21. **Assume Figma match** — always screenshot-compare; human eye misses 1–2px diffs
 22. **Use placeholder images** — download real assets from Figma; verify >10KB
 23. **Add elements not in Figma** — never add sections/components/decorations not in the design

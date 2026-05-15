@@ -186,6 +186,26 @@ Test ALL states. Fix → targeted rebuild → re-screenshot → repeat until ide
 
 Reference: `_agents/pixel-perfect-qa.md`.
 
+## Step 8b: Accessibility — WCAG 2.1 AA (mandatory before declaring complete)
+
+**Canonical reference:** Skill [`accessibility-compliance`](../skills/accessibility-compliance/SKILL.md). Required for every new component.
+
+1. Map every Figma-specified color to a semantic token. Confirm contrast against intended background pairs.
+2. Run token-level contrast:
+   ```bash
+   yarn audit:contrast
+   ```
+   Any new `FAIL` is a blocker.
+3. Verify accessible name on every interactive element (SC 2.5.3, 4.1.2). Visible text must be in the accessible name.
+4. Implement keyboard parity (SC 2.1.1): Tab, Enter/Space, Escape, arrow keys where applicable. Verify via `mcp__playwright__browser_press_key`.
+5. `:focus-visible` styles present with ≥ 3:1 contrast (SC 2.4.7, 1.4.11).
+6. ARIA states reflect props: `aria-disabled`, `aria-invalid`, `aria-expanded`, `aria-selected`, `aria-checked`, `aria-required`, `aria-pressed`.
+7. Honor global `prefers-reduced-motion` — do NOT override `src/assets/css/base/html.css`.
+8. Add at least one `jest-axe` assertion per state to `.spec.tsx` — pattern in [`src/components/_agents/a11y-testing.md`](../../src/components/_agents/a11y-testing.md).
+9. Storybook a11y addon panel: zero violations in BOTH light and dark mode for every story variant.
+
+If any check fails → fix before continuing to verification.
+
 ## Step 9: Verification
 
 Invoke `verification-before-completion` skill — must run commands AND read output before claiming complete.
@@ -194,6 +214,7 @@ Invoke `verification-before-completion` skill — must run commands AND read out
 yarn lint
 yarn test
 yarn sp.build
+yarn audit:contrast
 ```
 
 Check console: `mcp__playwright__browser_console_messages({ level: "error" })`.

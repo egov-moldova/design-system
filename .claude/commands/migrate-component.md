@@ -71,6 +71,7 @@ Minimum requirements before migration:
 - Event emission: custom events fire with correct payload
 - Slot rendering: content appears in correct slots
 - Disabled state: interaction blocked
+- **jest-axe assertion**: `axeWcag21aa(page.root)` returns `toHaveNoViolations()` for at least the default + disabled state. See [`src/components/_agents/a11y-testing.md`](../../src/components/_agents/a11y-testing.md).
 
 ## Step 7: Ensure Story Coverage
 
@@ -101,7 +102,27 @@ Check if `src/index.ts` needs updating to export the new component.
 yarn lint
 yarn test
 yarn sp.build
+yarn audit:contrast
 ```
+
+## Step 10a: Accessibility Gate — WCAG 2.1 AA (BLOCKING)
+
+Migration to `src/components/` is **not allowed** unless `/audit-accessibility @cor-<name>` passes with zero Critical and zero High findings.
+
+```text
+/audit-accessibility $ARGUMENTS
+```
+
+Required for both **light** and **dark** mode. Verify:
+
+- Keyboard navigation complete (Tab, Enter, Esc, arrows where applicable)
+- All ARIA states correct
+- Color contrast 4.5/3:1 in both themes
+- Focus ring visible with ≥ 3:1 contrast
+- Storybook a11y addon panel: zero violations
+- `yarn audit:contrast`: exit 0 (or only `ACCEPTED_EXCEPTIONS` failures)
+
+Canonical reference: Skill [`accessibility-compliance`](../skills/accessibility-compliance/SKILL.md).
 
 ## Step 11: Human Approval Gate
 

@@ -125,6 +125,25 @@ Every variant and state should look identical. Any visual difference is a regres
 
 Use `mcp__playwright__browser_evaluate` for computed style comparison if visual diff is ambiguous.
 
+## Step 6.5: Accessibility Regression Check — WCAG 2.1 AA
+
+A refactor must not regress accessibility. Run:
+
+```bash
+yarn audit:contrast
+```
+
+For every captured state (including focus-visible), confirm:
+
+- Focus ring still visible with ≥ 3:1 contrast
+- ARIA states unchanged (or improved)
+- Keyboard navigation still works (Tab, Enter, Esc, arrows)
+- jest-axe spec still passes
+
+Open the component in Storybook, check a11y panel in BOTH light and dark mode — zero violations.
+
+Canonical reference: Skill [`accessibility-compliance`](../skills/accessibility-compliance/SKILL.md).
+
 ## Step 7: Final Verification
 
 Invoke `verification-before-completion` skill.
@@ -133,6 +152,7 @@ Invoke `verification-before-completion` skill.
 yarn lint
 yarn test
 yarn sp.build
+yarn audit:contrast
 ```
 
 ```text

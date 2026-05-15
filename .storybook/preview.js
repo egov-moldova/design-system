@@ -141,8 +141,26 @@ export const parameters = {
       ],
     },
   },
+  // WCAG 2.1 Level AA — Storybook addon-a11y configuration.
+  // Runs axe-core against every story in both light and dark mode.
+  // Canonical reference: .claude/skills/accessibility-compliance/SKILL.md
   a11y: {
-    disable: true,
+    config: {
+      rules: [
+        // 1.4.3 + 1.4.11 — color contrast (text + non-text)
+        { id: 'color-contrast', enabled: true },
+        // AAA — explicitly disabled (not required for 2.1 AA target)
+        { id: 'color-contrast-enhanced', enabled: false },
+      ],
+    },
+    options: {
+      runOnly: {
+        type: 'tag',
+        // Restrict to WCAG 2.0 + 2.1 A/AA criteria.
+        // Best-practice rules are also enabled for design-system robustness.
+        values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'],
+      },
+    },
   },
   actions: {
     disable: true,

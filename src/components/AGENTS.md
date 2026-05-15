@@ -76,3 +76,21 @@ src/components/cor-[name]/
 8. Lifecycle methods
 9. Private methods
 10. `render()` — always last
+
+---
+
+## Accessibility — WCAG 2.1 Level AA
+
+Every `cor-*` component must conform to **WCAG 2.1 Level AA** in both light and dark mode. Canonical guide: Skill [`accessibility-compliance`](../../.claude/skills/accessibility-compliance/SKILL.md). Project-specific spec: Figma [node 2753-5965](https://www.figma.com/design/doJ7tDY0PlQ0PqMgbpFVIC/Components?node-id=2753-5965&m=dev).
+
+**Five essential rules** (full details in the Skill):
+
+1. **Accessible name** on every interactive element — text content, `aria-label`, or `aria-labelledby`. Visible text must be included in the name (SC 2.5.3).
+2. **Keyboard parity** — every action triggerable via mouse must also work via Tab, Enter/Space, Escape, and arrow keys for composite widgets (SC 2.1.1, 2.1.2, 2.4.3).
+3. **`:focus-visible` ring** — always rendered on keyboard focus, ≥ 3:1 contrast against background AND adjacent enabled elements (SC 2.4.7, 1.4.11). Never use bare `:focus` without `-visible`.
+4. **Contrast ratios** — 4.5:1 normal text, 3:1 large text, 3:1 UI components & focus rings. Verified in BOTH light and dark mode via `yarn audit:contrast` and Storybook a11y addon (SC 1.4.3, 1.4.11).
+5. **ARIA states reflect reality** — `aria-disabled`, `aria-invalid`, `aria-expanded`, `aria-selected`, `aria-checked` mirror actual component state. Dynamic status uses `role="status"` (polite) or `role="alert"` (assertive) (SC 4.1.2, 4.1.3).
+
+**Target size exceptions:** button sm/xs (32/24 px) and checkbox sm/md (16/20 px) are below 24×24. WCAG 2.1 AA does NOT require 24×24 (that is 2.2 SC 2.5.8). See [`_agents/target-size-exceptions.md`](_agents/target-size-exceptions.md) for the documented rationale.
+
+**Verification:** `/audit-accessibility @cor-<name>` deep audit; `/audit-component @cor-<name>` for category-level pass; Storybook a11y addon during dev; `yarn audit:contrast` for token-level light + dark.

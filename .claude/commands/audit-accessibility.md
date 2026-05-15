@@ -1,13 +1,15 @@
 ---
-description: Deep WCAG 2.2 AA audit — keyboard navigation, ARIA validation, color contrast, focus indicators, screen reader compatibility
+description: Deep WCAG 2.1 AA audit — keyboard navigation, ARIA validation, color contrast (light + dark mode), focus indicators, screen reader compatibility
 argument-hint: "@cor-<component-name>"
 ---
 
 # /audit-accessibility
 
-Deep accessibility audit for `$ARGUMENTS`. Do **not** auto-fix — report findings, wait for approval.
+Deep WCAG 2.1 Level AA audit for `$ARGUMENTS`. Do **not** auto-fix — report findings, wait for approval.
 
-Reference: [`AGENTS.md`](../../AGENTS.md), `_agents/` files for accessibility patterns, ARIA implementation guidance, and screen reader compatibility rules.
+**Canonical reference:** [Skill `accessibility-compliance`](../skills/accessibility-compliance/SKILL.md) — Success Criteria, ARIA patterns, dark mode requirements, contrast tables. Invoke that Skill before starting this audit.
+
+**Also reference:** [`AGENTS.md`](../../AGENTS.md), `_agents/` files for project-specific patterns.
 
 ## Step 0: Environment Check
 
@@ -119,7 +121,7 @@ For each interactive state, set the prop and verify ARIA in the snapshot:
 
 Navigate to each state's story variant and snapshot. Report any missing or incorrect ARIA.
 
-## Step 5: Color Contrast Verification
+## Step 5: Color Contrast Verification — Light Mode
 
 Extract foreground/background colors via `mcp__playwright__browser_evaluate`:
 
@@ -139,14 +141,36 @@ Extract foreground/background colors via `mcp__playwright__browser_evaluate`:
 }
 ```
 
-**WCAG AA contrast requirements**:
+**WCAG 2.1 AA contrast requirements** (criteria 1.4.3 + 1.4.11):
 
 - Normal text (< 18px or < 14px bold): minimum **4.5:1**
 - Large text (≥ 18px or ≥ 14px bold): minimum **3:1**
 - UI components (borders, focus rings, icons): minimum **3:1**
 - Disabled elements: exempt from contrast requirements
 
-Test across all variants. Test in both light and dark mode if dark tokens exist.
+Test across all variants.
+
+## Step 5b: Color Contrast Verification — Dark Mode
+
+Toggle Storybook to dark mode and re-run contrast extraction:
+
+```javascript
+() => {
+  document.documentElement.dataset.theme = 'dark';
+  // Allow CSS recompute
+  return new Promise(r => requestAnimationFrame(() => r(true)));
+}
+```
+
+Then repeat the contrast extraction from Step 5. Both light and dark must pass independently.
+
+Also run the token-level script:
+
+```bash
+yarn audit:contrast
+```
+
+This validates every documented token pair against `tokens/generated/core.tokens.json` (light) and `tokens/generated/core.dark.tokens.json` (dark). Exit code ≠ 0 means failure.
 
 ## Step 6: Focus Indicator Audit
 
@@ -190,16 +214,23 @@ Read `.css` and verify:
 
 ### WCAG 2.1 AA Compliance Summary
 
-| Category           | Status    | Issues |
-| ---                | ---       | ---    |
-| Keyboard nav       | PASS/FAIL | X      |
-| Focus management   | PASS/FAIL | X      |
-| ARIA attributes    | PASS/FAIL | X      |
-| Color contrast     | PASS/FAIL | X      |
-| Screen reader      | PASS/FAIL | X      |
-| Motion/animation   | PASS/FAIL | X      |
+| Category            | SC ref(s)        | Light  | Dark   | Issues |
+| ---                 | ---              | ---    | ---    | ---    |
+| Keyboard nav        | 2.1.1, 2.4.3     | P/F    | P/F    | X      |
+| No keyboard trap    | 2.1.2            | P/F    | n/a    | X      |
+| Focus visible       | 2.4.7, 1.4.11    | P/F    | P/F    | X      |
+| ARIA name/role/val. | 4.1.2            | P/F    | n/a    | X      |
+| ARIA states         | 4.1.2, 4.1.3     | P/F    | n/a    | X      |
+| Text contrast       | 1.4.3            | P/F    | P/F    | X      |
+| Non-text contrast   | 1.4.11           | P/F    | P/F    | X      |
+| Use of color        | 1.4.1            | P/F    | P/F    | X      |
+| Label in name       | 2.5.3            | P/F    | n/a    | X      |
+| Status messages     | 4.1.3            | P/F    | n/a    | X      |
+| Reduced motion      | 2.3.3            | P/F    | n/a    | X      |
+| Text spacing        | 1.4.12           | P/F    | n/a    | X      |
+| Token audit:contrast| 1.4.3 + 1.4.11   | P/F    | P/F    | X      |
 
-### Critical (blocks users)
+### Critical (blocks users — must fix before merge)
 1. ...
 
 ### High (significant barrier)
@@ -208,8 +239,8 @@ Read `.css` and verify:
 ### Medium (inconvenience)
 1. ...
 
-### Recommendations
+### Recommendations (WCAG 2.2 forward-looking, opt-in)
 1. ...
 ```
 
-Present report. **Do NOT auto-fix** — wait for approval.
+Present report. **Do NOT auto-fix** — wait for approval. Every Critical/High issue blocks PR merge.

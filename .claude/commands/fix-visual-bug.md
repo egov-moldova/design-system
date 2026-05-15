@@ -126,6 +126,25 @@ mcp__image-compare__compare_images({
 
 5. Verify other states haven't regressed (hover, disabled, focus)
 
+## Step 6a: WCAG 2.1 AA Re-Check (mandatory when fix touches color, focus, or state visibility)
+
+If the bug or fix touched:
+
+- a color token / palette value,
+- a focus ring or `:focus-visible` style,
+- a disabled / error / state-driven visual style,
+- contrast between any two adjacent surfaces,
+
+then run accessibility verification before claiming the fix done:
+
+```bash
+yarn audit:contrast
+```
+
+Open the component story in Storybook, check the a11y panel in BOTH light and dark mode. Zero new violations.
+
+Canonical reference: Skill [`accessibility-compliance`](../skills/accessibility-compliance/SKILL.md).
+
 ## Step 7: Verification
 
 Invoke `verification-before-completion` skill, then:

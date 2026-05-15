@@ -94,6 +94,31 @@ mcp__playwright__browser_console_messages({ level: "error" })
 
 Navigate to each modified component's story and verify no runtime errors or warnings.
 
+## Step 7a: Accessibility — WCAG 2.1 AA (mandatory gate)
+
+**Canonical reference:** Skill [`accessibility-compliance`](../skills/accessibility-compliance/SKILL.md).
+
+Run the token-level contrast audit (light + dark):
+
+```bash
+yarn audit:contrast
+```
+
+- Exit 0 required. New `FAIL` entries (outside `ACCEPTED_EXCEPTIONS`) block the PR.
+- If a legitimate exception is needed, add it to `scripts/audit-token-contrast.mjs` `ACCEPTED_EXCEPTIONS` with a written rationale; reviewers must approve.
+
+Run the Storybook a11y panel check for modified components (in both modes):
+
+1. Open `http://localhost:6007/?path=/story/atoms-cor-<name>--default` for each modified component.
+2. Open the "Accessibility" panel.
+3. Verify zero **Violations** in light mode.
+4. Switch global `Mode → Dark` (top toolbar).
+5. Verify zero **Violations** in dark mode.
+
+Record any violation as a blocking issue in the report.
+
+For component-level deep audit, optionally run `/audit-accessibility @cor-<name>`.
+
 ## Step 8: Commit Message Audit
 
 ```bash
@@ -136,6 +161,8 @@ Invoke `verification-before-completion` skill, then present:
 | Stencil build      | PASS/FAIL  |                |
 | Storybook build    | PASS/FAIL  |                |
 | Console errors     | PASS/FAIL  |                |
+| WCAG 2.1 AA — contrast | PASS/FAIL | obligatory pairs both modes |
+| WCAG 2.1 AA — Storybook a11y | PASS/FAIL | per modified component, both modes |
 | Commit messages    | PASS/FAIL  |                |
 | Changed files      | PASS/FAIL  |                |
 
