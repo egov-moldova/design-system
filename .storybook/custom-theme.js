@@ -11,6 +11,6 @@ export default create({
   brandTitle: 'AGE Design System',
   // brandImage: logo,
   fontBase:
-    '"Inter", -apple-system, ".SFNSText-Regular", "San Francisco", BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif',
+    '"Onest", -apple-system, ".SFNSText-Regular", "San Francisco", BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif',
   fontCode: 'monospace',
 });

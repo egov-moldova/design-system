@@ -7,6 +7,7 @@ import { GLOBALS_UPDATED } from 'storybook/internal/core-events';
 
 import coreTokens from './stories/assets/core.tokens.json';
 import coreDarkTokens from './stories/assets/core.dark.tokens.json';
+import customTheme from './custom-theme';
 
 const { color } = coreTokens;
 const { color: colorDark } = coreDarkTokens;
@@ -107,6 +108,7 @@ export const parameters = {
     expanded: true,
   },
   docs: {
+    theme: customTheme,
     source: {
       type: 'code', // Show source code instead of JSDoc
     },

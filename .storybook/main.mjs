@@ -19,6 +19,7 @@ export default {
   staticDirs: [
     { from: '../tokens/generated', to: 'tokens/generated' },
     { from: '../src/components/cor-illustration/assets', to: 'assets/assets' },
+    { from: '../assets/font', to: 'assets/font' },
   ],
   addons: isDev ? devAddons : prodAddons,
   framework: {

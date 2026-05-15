@@ -66,7 +66,7 @@ This document defines the complete design token architecture for the AGE Design 
 | `color` | Color values | `#FFFFFF`, `rgb(255,255,255)` | `#ffffff` |
 | `size` | Size values with units | `16px`, `1rem`, `0.5em` | `16px` |
 | `dimension` | Numeric dimensions | `24`, `1.5` | `24px` or `1.5` |
-| `fontFamily` | Font family stacks | `"Inter", sans-serif` | `"Inter", sans-serif` |
+| `fontFamily` | Font family stacks | `"Onest", sans-serif` | `"Onest", sans-serif` |
 | `fontWeight` | Font weights | `400`, `600`, `bold` | `400` |
 | `borderRadius` | Border radius values | `4px`, `0.25rem` | `4px` |
 | `shadow` | Box shadow values | `0 2px 4px rgba(0,0,0,0.1)` | Full shadow string |
@@ -220,7 +220,7 @@ Examples:
 {
   "fontFamily": {
     "sans": { 
-      "value": "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      "value": "'Onest', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
       "type": "fontFamily" 
     },
   },

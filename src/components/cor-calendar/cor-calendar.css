@@ -38,7 +38,7 @@
 
 .header-label {
   flex: 1 0 0;
-  font-family: var(--font-family-primary, 'Inter', sans-serif);
+  font-family: var(--font-family-primary, 'Onest', sans-serif);
   font-size: var(--calendar-header-label-font-size, var(--font-size-16, 16px));
   font-weight: var(--calendar-header-label-font-weight, var(--font-weight-semibold, 600));
   line-height: var(--calendar-header-label-line-height, var(--line-height-24, 24px));
@@ -90,7 +90,7 @@
   align-items: center;
   justify-content: center;
   padding: var(--calendar-weekday-label-padding, var(--spacing-12, 8px));
-  font-family: var(--font-family-primary, 'Inter', sans-serif);
+  font-family: var(--font-family-primary, 'Onest', sans-serif);
   font-size: var(--calendar-weekday-label-font-size, var(--font-size-14, 14px));
   line-height: var(--line-height-20, 20px);
   font-weight: var(--font-weight-regular, 400);

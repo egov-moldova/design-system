@@ -75,7 +75,10 @@
 
 :host(.is-range-start.is-today:not(.is-skeleton):not(.is-selected)) .day-cell:not(.day-cell--range-middle),
 :host(.is-range-end.is-today:not(.is-skeleton):not(.is-selected)) .day-cell:not(.day-cell--range-middle) {
-  background-color: var(--datepicker-day-background-range-endpoint, var(--color-background-brand-default-active, #b92f25));
+  background-color: var(
+    --datepicker-day-background-range-endpoint,
+    var(--color-background-brand-default-active, #b92f25)
+  );
 }
 
 :host(.is-range-start.is-today.is-hovered:not(.is-skeleton):not(.is-selected)) .day-cell:not(.day-cell--range-middle),
@@ -90,7 +93,10 @@
 
 :host(.is-range-start:not(.is-skeleton)) .day-cell,
 :host(.is-range-end:not(.is-skeleton)) .day-cell {
-  background-color: var(--datepicker-day-background-range-endpoint, var(--color-background-brand-default-active, #b92f25));
+  background-color: var(
+    --datepicker-day-background-range-endpoint,
+    var(--color-background-brand-default-active, #b92f25)
+  );
 }
 
 :host(.is-range-start.is-hovered:not(.is-skeleton)) .day-cell,
@@ -149,7 +155,7 @@
 }
 
 .day-label {
-  font-family: var(--font-family-primary, 'Inter', sans-serif);
+  font-family: var(--font-family-primary, 'Onest', sans-serif);
   font-size: var(--datepicker-day-font-size, var(--font-size-14, 14px));
   line-height: var(--datepicker-day-line-height, var(--line-height-20, 20px));
   font-weight: var(--font-weight-regular, 400);
