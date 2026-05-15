@@ -1,0 +1,43 @@
+{
+  "name": "@age/web-components",
+  "version": "0.0.1",
+  "description": "Vanilla HTML / JS adapter for AGE Design System web components",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist/"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "demo": "vite --config demo/vite.config.ts",
+    "demo.build": "vite build --config demo/vite.config.ts",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "@age/design-system": "portal:.."
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://gitlab.com/age/design-system.git"
+  },
+  "keywords": [
+    "web-components",
+    "custom-elements",
+    "html",
+    "vanilla",
+    "design-system",
+    "stencil"
+  ],
+  "license": "MIT"
+}

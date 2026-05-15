@@ -1,6 +1,6 @@
 # Framework Integration - Complete Setup Guide
 
-This document provides step-by-step instructions for building, publishing, and using the AGE Design System wrappers for Angular, React, and Vue applications.
+This document provides step-by-step instructions for building, publishing, and using the AGE Design System wrappers for Angular, React, Vue, and plain HTML / vanilla JS applications.
 
 ## Table of Contents
 
@@ -8,10 +8,11 @@ This document provides step-by-step instructions for building, publishing, and u
 2. [Angular Build & Setup](#angular-build--setup)
 3. [React Build & Setup](#react-build--setup)
 4. [Vue Build & Setup](#vue-build--setup)
-5. [Publishing Options](#publishing-options)
-6. [Installing in Applications](#installing-in-applications)
-7. [Configuration & Usage](#configuration--usage)
-8. [Troubleshooting](#troubleshooting)
+5. [Web Components (Vanilla HTML / JS) Build & Setup](#web-components-vanilla-html--js-build--setup)
+6. [Publishing Options](#publishing-options)
+7. [Installing in Applications](#installing-in-applications)
+8. [Configuration & Usage](#configuration--usage)
+9. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -178,6 +179,69 @@ The `dist/` folder will contain:
 - `index.js` - Main entry point
 - `index.d.ts` - TypeScript definitions
 - `components/stencil-generated/` - All Vue wrapper components
+
+---
+
+## Web Components (Vanilla HTML / JS) Build & Setup
+
+For plain HTML pages, non-framework apps, or any consumer that prefers raw custom elements over a framework wrapper, use `@age/web-components`. Because Stencil already compiles to native custom elements, this adapter is a *thin* re-export of the loader — no framework-specific build step is required.
+
+### Step 1: Build Stencil Components
+
+In the `age-design` project root:
+
+```bash
+yarn build
+```
+
+This produces `dist/`, `loader/`, and `dist/types/` — all the runtime files the vanilla adapter re-exports.
+
+### Step 2: Build the `@age/web-components` Package
+
+```bash
+yarn build.web
+```
+
+This command:
+- Depends on the base `build` (wireit handles the ordering)
+- Runs `tsc` inside `web-components/` to compile `src/index.ts` → `dist/index.js` + `dist/index.d.ts`
+
+The `web-components/dist/` folder will contain:
+- `index.js` — re-exports `defineCustomElements` and `setNonce` from `@age/design-system/loader`
+- `index.d.ts` — type declarations including full element type augmentation (`HTMLCorButtonElement`, …)
+
+### Step 3: Run the local demo
+
+```bash
+yarn demo.web
+```
+
+Opens `http://localhost:5174` with a live `<cor-button>` showcase (variants + sizes) served by Vite from [`web-components/demo/index.html`](web-components/demo/index.html).
+
+The demo proves the export is *complete* — every component is registered by `defineCustomElements()`, even though the demo only renders the button. Verify in the browser console:
+
+```js
+defineCustomElements().then(() =>
+  console.log(Object.keys(window).filter(k => k.startsWith('HTMLCor')))
+);
+```
+
+You should see the full list (`HTMLCorButtonElement`, `HTMLCorInputElement`, `HTMLCorIconElement`, …).
+
+### Files
+
+```text
+web-components/
+├── src/index.ts              # defineCustomElements + type re-exports
+├── demo/
+│   ├── index.html            # cor-button showcase
+│   ├── main.ts               # CSS imports + defineCustomElements()
+│   ├── demo.css              # @font-face for Onest + body font-family
+│   └── vite.config.ts        # port 5174, allows fs access to portal-linked parent
+├── package.json              # @age/web-components, portal:.. to @age/design-system
+├── tsconfig.json             # ES2020, declaration: true
+└── README.md
+```
 
 ---
 
@@ -1510,6 +1574,87 @@ const handleClick = (event: CorButtonCustomEvent<any>) => {
 };
 </script>
 ```
+
+---
+
+### Vanilla HTML / Plain JS Application
+
+For HTML pages, static sites, or non-framework apps, install `@age/web-components`. No build tooling is strictly required on the consumer side — components are native custom elements.
+
+#### Step 1: Install Dependencies
+
+```bash
+yarn add @age/design-system @age/web-components
+```
+
+#### Step 2: Usage — with a bundler (Vite, webpack, esbuild, …)
+
+```ts
+import '@age/design-system/dist/design-system/tokens/core.tokens.css';
+import '@age/design-system/dist/design-system/design-system.css';
+import { defineCustomElements } from '@age/web-components';
+
+defineCustomElements();
+```
+
+```html
+<cor-button variant="primary"><button>Click me</button></cor-button>
+```
+
+#### Step 3: Usage — plain HTML with `<script type="importmap">`
+
+When you have no bundler, resolve the bare specifiers via an import map:
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="/node_modules/@age/design-system/dist/design-system/tokens/core.tokens.css" />
+    <link rel="stylesheet" href="/node_modules/@age/design-system/dist/design-system/design-system.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "@age/web-components": "/node_modules/@age/web-components/dist/index.js",
+          "@age/design-system/loader": "/node_modules/@age/design-system/loader/index.js"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <cor-button variant="primary"><button>Click me</button></cor-button>
+    <script type="module">
+      import { defineCustomElements } from '@age/web-components';
+      defineCustomElements();
+    </script>
+  </body>
+</html>
+```
+
+#### Self-hosting the Onest font
+
+The compiled `design-system.css` does **not** ship an `@font-face` declaration. If you want the design system's primary font (`Onest`), add one yourself — example pattern (matches the in-repo demo at [`web-components/demo/demo.css`](web-components/demo/demo.css)):
+
+```css
+@font-face {
+  font-family: 'Onest';
+  src: url('/assets/font/Onest/Onest-VariableFont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+html, body {
+  font-family: 'Onest', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+```
+
+You can copy the TTF from `node_modules/@age/design-system/assets/font/Onest/` or load Onest from Google Fonts (`https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap`).
+
+#### API
+
+- `defineCustomElements(opts?)` — registers every Stencil custom element on the current document; returns a `Promise<void>`
+- `setNonce(nonce: string)` — applies a CSP nonce to injected `<style>` tags
+- Full element type augmentation (`HTMLCorButtonElement`, `HTMLCorInputElement`, …) and prop / event interfaces are re-exported via `export type *` from `@age/design-system`
 
 ---
 

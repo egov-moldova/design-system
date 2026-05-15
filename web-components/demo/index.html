@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@age/web-components — cor-button demo</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 32px;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        background: var(--color-background-primary, #fff);
+        color: var(--color-text-primary, #1a1a1a);
+      }
+      h1, h2 { margin: 0; }
+      .row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      code {
+        background: #f4f4f4;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      section { display: flex; flex-direction: column; gap: 12px; }
+    </style>
+  </head>
+  <body>
+    <h1>@age/web-components</h1>
+    <p>
+      Vanilla HTML demo of <code>&lt;cor-button&gt;</code> registered via
+      <code>defineCustomElements()</code>.
+    </p>
+
+    <section>
+      <h2>Variants (size md)</h2>
+      <div class="row">
+        <cor-button variant="primary"><button type="button">Primary</button></cor-button>
+        <cor-button variant="secondary"><button type="button">Secondary</button></cor-button>
+        <cor-button variant="tertiary"><button type="button">Tertiary</button></cor-button>
+        <cor-button variant="ghost"><button type="button">Ghost</button></cor-button>
+        <cor-button variant="negative"><button type="button">Negative</button></cor-button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Sizes (variant primary)</h2>
+      <div class="row">
+        <cor-button variant="primary" size="xs"><button type="button">XS</button></cor-button>
+        <cor-button variant="primary" size="sm"><button type="button">SM</button></cor-button>
+        <cor-button variant="primary" size="md"><button type="button">MD</button></cor-button>
+        <cor-button variant="primary" size="lg"><button type="button">LG</button></cor-button>
+      </div>
+    </section>
+
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

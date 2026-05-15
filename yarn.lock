@@ -59,6 +59,15 @@ __metadata:
   languageName: node
   linkType: soft
 
+"@age/design-system@portal:..::locator=%40age%2Fweb-components%40workspace%3Aweb-components":
+  version: 0.0.0-use.local
+  resolution: "@age/design-system@portal:..::locator=%40age%2Fweb-components%40workspace%3Aweb-components"
+  dependencies:
+    "@carbon/icons": "npm:^11.74.0"
+    "@stencil/core": "npm:^4.43.3"
+  languageName: node
+  linkType: soft
+
 "@age/design-system@workspace:*, @age/design-system@workspace:.":
   version: 0.0.0-use.local
   resolution: "@age/design-system@workspace:."
@@ -149,6 +158,16 @@ __metadata:
     vue: "npm:^3.5.13"
   peerDependencies:
     vue: ">=3.0.0"
+  languageName: unknown
+  linkType: soft
+
+"@age/web-components@workspace:web-components":
+  version: 0.0.0-use.local
+  resolution: "@age/web-components@workspace:web-components"
+  dependencies:
+    "@age/design-system": "portal:.."
+    typescript: "npm:^5.9.3"
+    vite: "npm:^7.3.1"
   languageName: unknown
   linkType: soft
 

@@ -38,7 +38,8 @@
   "workspaces": [
     "angular-design-system",
     "react-design-system",
-    "vue-design-system"
+    "vue-design-system",
+    "web-components"
   ],
   "resolutions": {
     "undici-types": "~7.19.0"
@@ -53,6 +54,8 @@
     "build.react": "wireit",
     "build.angular": "wireit",
     "build.vue": "wireit",
+    "build.web": "wireit",
+    "demo.web": "wireit",
     "build.watch": "stencil build --dev --watch",
     "dx:prepare": "wireit",
     "dev": "wireit",
@@ -295,6 +298,30 @@
       "packageLocks": [
         "yarn.lock"
       ]
+    },
+    "build.web": {
+      "command": "yarn workspace @age/web-components build",
+      "dependencies": [
+        "build"
+      ],
+      "files": [
+        "web-components/src/**/*.ts",
+        "web-components/tsconfig.json",
+        "web-components/package.json"
+      ],
+      "output": [
+        "web-components/dist/**"
+      ],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "demo.web": {
+      "command": "yarn workspace @age/web-components demo",
+      "dependencies": [
+        "build"
+      ],
+      "service": true
     },
     "dx:prepare": {
       "dependencies": [
