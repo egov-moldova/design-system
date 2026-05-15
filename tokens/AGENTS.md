@@ -59,7 +59,11 @@ yarn tokens.audit              # Debug missing token references
 
 ## Tokenhaus Sync Workflow
 
-Use the Tokenhaus sync script to stage imported token changes under `tokens/figma-export/` for review.
+Two modes: **staging** (review) and **apply** (clean break to `tokens/core/`).
+
+### Staging mode (safe, default)
+
+Writes generated files under `tokens/figma-export/` so you can diff before promoting.
 
 ```bash
 yarn sync:tokens
@@ -68,11 +72,35 @@ node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --dry-
 node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --dry-run --strict
 ```
 
-- **Staging only**: The sync script writes to `tokens/figma-export/` and must never auto-promote files into `tokens/core/` or `tokens/core.dark/`
-- **Review required**: Diff staged output, lint it, and copy only approved files into canonical token folders
-- **Dry-run first**: Prefer `--dry-run` when validating a new Tokenhaus export or brand mode
-- **Strict mode**: Use `--strict` when you want skipped sections, missing modes, or unresolved reference namespaces to fail the run
-- **Reports**: Use `--report <file>` when you need a machine-readable manifest of generated files, skips, warnings, and pruned groups
+### Apply mode (destructive, clean break)
+
+`--apply` forces the output base to `tokens/`, overwrites `tokens/core/{palette,color,font,sizes}.tokens.json` and `tokens/core.dark/color.tokens.json`, and deletes legacy orphan files:
+
+```text
+tokens/core/space.tokens.json
+tokens/core/spacing.tokens.json
+tokens/core/radius.tokens.json
+tokens/core/border.tokens.json
+tokens/core/lineHeight.tokens.json
+tokens/core/letterSpacing.tokens.json
+tokens/core/shadow.tokens.json
+```
+
+Always preview first with `--apply --dry-run`. The script refuses an explicit `--output` other than `tokens/` when `--apply` is set.
+
+```bash
+node scripts/sync-tokens-from-tokenhaus.mjs --apply --dry-run     # preview deletions
+yarn sync:tokens:apply                                            # real run
+```
+
+`tokens/core/effects.tokens.json` (drop-shadow.100..500) must be authored manually before the clean break — otherwise the shadow palette is lost. See `.claude/plans/analizeaza-structura-la-fisierul-breezy-tower.md` PR C.
+
+### Flag reference
+
+- **Staging vs apply**: default is staging (`tokens/figma-export/`); `--apply` overwrites canonical token folders and deletes legacy orphans
+- **Dry-run first**: combine `--dry-run` with `--apply` to preview the clean break without writing or deleting anything
+- **Strict mode**: use `--strict` to fail the run on skipped sections, missing modes, or unresolved reference namespaces
+- **Reports**: `--report <file>` writes a machine-readable manifest of generated files, skips, warnings, and orphan deletions
 
 ---
 

@@ -5,10 +5,13 @@ import path from 'node:path';
 import { afterEach, describe, it } from 'node:test';
 
 import {
+  APPLY_OUTPUT_BASE,
   CliError,
   MODE_DARK,
   MODE_LIGHT,
+  ORPHAN_FILES_CORE,
   PROJECT_ROOT,
+  cleanOrphanFiles,
   createRunContext,
   extractPalette,
   extractSemanticColors,
@@ -64,6 +67,39 @@ describe('parseCliOptions', () => {
     assert.equal(result.reportFile, path.join(PROJECT_ROOT, 'reports', 'sync-tokenhaus.json'));
     assert.equal(result.dryRun, true);
     assert.equal(result.strict, true);
+    assert.equal(result.apply, false);
+  });
+
+  it('forces outputBase to tokens/ when --apply is set', () => {
+    const result = parseCliOptions([
+      'node',
+      'sync-tokens-from-tokenhaus.mjs',
+      '--input',
+      'tokens-tokenhaus.json',
+      '--apply',
+    ]);
+
+    assert.equal(result.apply, true);
+    assert.equal(result.outputBase, path.join(PROJECT_ROOT, APPLY_OUTPUT_BASE));
+  });
+
+  it('refuses --apply combined with a conflicting --output', () => {
+    assert.throws(
+      () =>
+        parseCliOptions([
+          'node',
+          'sync-tokens-from-tokenhaus.mjs',
+          '--input',
+          'tokens-tokenhaus.json',
+          '--apply',
+          '--output',
+          'tokens/figma-export',
+        ]),
+      error =>
+        error instanceof CliError &&
+        error.exitCode === 2 &&
+        /forces output to tokens\//.test(error.message),
+    );
   });
 });
 
@@ -293,6 +329,62 @@ describe('rewritePath', () => {
     const result = rewritePath('Some Unknown Section.foo.bar', ctx);
     assert.equal(result, 'Some Unknown Section.foo.bar');
     assert.deepEqual(ctx.unresolvedReferences, ['Some Unknown Section.foo.bar']);
+  });
+});
+
+// ── Orphan cleanup ────────────────────────────────────────────────────────────
+
+describe('cleanOrphanFiles', () => {
+  function seedOrphans(coreDir, names) {
+    fs.mkdirSync(coreDir, { recursive: true });
+    for (const name of names) {
+      fs.writeFileSync(path.join(coreDir, name), '{}\n', 'utf8');
+    }
+  }
+
+  it('records planned deletes without unlinking in dry-run mode', () => {
+    const tempDir = createTempDir();
+    const coreDir = path.join(tempDir, 'core');
+    const darkDir = path.join(tempDir, 'core.dark');
+    const presentOrphan = ORPHAN_FILES_CORE[0];
+    seedOrphans(coreDir, [presentOrphan]);
+
+    const ctx = createRunContext({ apply: true, dryRun: true });
+    cleanOrphanFiles(ctx, coreDir, darkDir);
+
+    assert.equal(fs.existsSync(path.join(coreDir, presentOrphan)), true);
+    const planned = ctx.deletedOrphans.find(entry => entry.relativePath.endsWith(presentOrphan));
+    assert.ok(planned, 'expected a record for the planned orphan');
+    assert.equal(planned.status, 'planned');
+  });
+
+  it('deletes existing orphan files when dry-run is false', () => {
+    const tempDir = createTempDir();
+    const coreDir = path.join(tempDir, 'core');
+    const darkDir = path.join(tempDir, 'core.dark');
+    const presentOrphan = ORPHAN_FILES_CORE[1];
+    seedOrphans(coreDir, [presentOrphan]);
+
+    const ctx = createRunContext({ apply: true, dryRun: false });
+    cleanOrphanFiles(ctx, coreDir, darkDir);
+
+    assert.equal(fs.existsSync(path.join(coreDir, presentOrphan)), false);
+    const deleted = ctx.deletedOrphans.find(entry => entry.relativePath.endsWith(presentOrphan));
+    assert.equal(deleted.status, 'deleted');
+  });
+
+  it('marks absent orphans as absent without raising', () => {
+    const tempDir = createTempDir();
+    const coreDir = path.join(tempDir, 'core');
+    const darkDir = path.join(tempDir, 'core.dark');
+    fs.mkdirSync(coreDir, { recursive: true });
+
+    const ctx = createRunContext({ apply: true, dryRun: false });
+    cleanOrphanFiles(ctx, coreDir, darkDir);
+
+    const absent = ctx.deletedOrphans.every(entry => entry.status === 'absent');
+    assert.equal(absent, true);
+    assert.equal(ctx.deletedOrphans.length, ORPHAN_FILES_CORE.length);
   });
 });
 

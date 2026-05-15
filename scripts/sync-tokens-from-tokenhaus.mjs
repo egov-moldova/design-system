@@ -73,6 +73,24 @@ const MODE_DARK = 'Dark Mode';
 // Figma prefixes stripped when emitting token keys (fs-12 → 12, spacing-2 → 2).
 const FIGMA_KEY_PREFIXES = ['fs-', 'lh-', 'fw-', 'spacing-', 'radius-', 'border-'];
 
+// When --apply is used we overwrite tokens/core and tokens/core.dark directly. Files
+// listed here are leftovers from the pre-2026 schema that no longer have a generator;
+// they must be deleted to avoid stale tokens shadowing the new structure.
+const ORPHAN_FILES_CORE = [
+  'space.tokens.json',
+  'spacing.tokens.json',
+  'radius.tokens.json',
+  'border.tokens.json',
+  'lineHeight.tokens.json',
+  'letterSpacing.tokens.json',
+  'shadow.tokens.json',
+];
+
+const ORPHAN_FILES_DARK = [];
+
+// Forced output base when --apply is set.
+const APPLY_OUTPUT_BASE = 'tokens';
+
 class CliError extends Error {
   constructor(message, exitCode = EXIT_CODES.runtime, details = {}) {
     super(message);
@@ -90,6 +108,10 @@ function createProgram() {
     .description('Convert a Tokenhaus Figma export (2026+ schema) to Style Dictionary token files')
     .requiredOption('--input <file>', 'Path to tokens-tokenhaus.json', DEFAULT_INPUT_FILE)
     .option('-o, --output <dir>', 'Output base directory (parent of core/ and core.dark/)', DEFAULT_OUTPUT_BASE)
+    .option(
+      '--apply',
+      `Clean-break mode: force output to ${APPLY_OUTPUT_BASE}/ and delete legacy orphan files in tokens/core. Destructive — combine with --dry-run to preview.`,
+    )
     .option('--dry-run', 'Preview generated output without writing any token files')
     .option('--report <file>', 'Write a machine-readable JSON report to the specified file')
     .option('--strict', 'Fail when recoverable warnings or skipped sections are detected')
@@ -117,11 +139,24 @@ function parseCliOptions(argv = process.argv) {
   }
 
   const options = program.opts();
+  const apply = Boolean(options.apply);
+
+  // --apply forces the output base. If the user also passed --output explicitly with a
+  // different path, refuse rather than silently overriding — the combination is ambiguous.
+  if (apply && program.getOptionValueSource('output') === 'cli' && options.output !== APPLY_OUTPUT_BASE) {
+    throw new CliError(
+      `--apply forces output to ${APPLY_OUTPUT_BASE}/ — remove the explicit --output or set it to "${APPLY_OUTPUT_BASE}".`,
+      EXIT_CODES.usage,
+    );
+  }
+
+  const outputOption = apply ? APPLY_OUTPUT_BASE : options.output;
 
   return {
     shouldExit: false,
     inputFile: resolveProjectPath(options.input),
-    outputBase: resolveProjectPath(options.output),
+    outputBase: resolveProjectPath(outputOption),
+    apply,
     dryRun: Boolean(options.dryRun),
     reportFile: options.report ? resolveProjectPath(options.report) : null,
     strict: Boolean(options.strict),
@@ -161,6 +196,7 @@ function createRunContext(options) {
     prunedPaths: [],
     fallbacks: [],
     notGenerated: [],
+    deletedOrphans: [],
     seenWarningKeys: new Set(),
   };
 }
@@ -649,11 +685,43 @@ function runExtraction(ctx, label, outDir, filename, producer) {
   }
 }
 
+function cleanOrphanFiles(ctx, outCore, outDark) {
+  const targets = [
+    ...ORPHAN_FILES_CORE.map(name => ({ dir: outCore, name })),
+    ...ORPHAN_FILES_DARK.map(name => ({ dir: outDark, name })),
+  ];
+
+  console.log(`\nOrphan cleanup (${ctx.options.dryRun ? 'DRY RUN' : 'WRITE'}):`);
+
+  for (const { dir, name } of targets) {
+    const filePath = path.join(dir, name);
+    const relativePath = path.relative(PROJECT_ROOT, filePath);
+    const exists = fs.existsSync(filePath);
+
+    if (!exists) {
+      console.log(`  skipped (not present): ${relativePath}`);
+      ctx.deletedOrphans.push({ relativePath, status: 'absent' });
+      continue;
+    }
+
+    if (ctx.options.dryRun) {
+      console.log(`  planned delete: ${relativePath}`);
+      ctx.deletedOrphans.push({ relativePath, status: 'planned' });
+      continue;
+    }
+
+    fs.unlinkSync(filePath);
+    console.log(`  deleted: ${relativePath}`);
+    ctx.deletedOrphans.push({ relativePath, status: 'deleted' });
+  }
+}
+
 function buildReport(ctx, metadata) {
   return {
     version: REPORT_VERSION,
     timestamp: new Date().toISOString(),
     schemaVersion: 'tokenhaus-2026',
+    apply: metadata.options.apply,
     dryRun: metadata.options.dryRun,
     strict: metadata.options.strict,
     inputFile: metadata.options.inputFile,
@@ -664,6 +732,7 @@ function buildReport(ctx, metadata) {
     warningCount: ctx.warnings.length,
     unresolvedReferenceCount: ctx.unresolvedReferences.length,
     prunedCount: ctx.prunedPaths.length,
+    deletedOrphanCount: ctx.deletedOrphans.filter(entry => entry.status === 'deleted').length,
     generated: ctx.generated.map(({ content, ...entry }) => entry),
     skipped: ctx.skipped,
     warnings: ctx.warnings,
@@ -671,6 +740,7 @@ function buildReport(ctx, metadata) {
     prunedPaths: ctx.prunedPaths,
     fallbacks: ctx.fallbacks,
     notGenerated: ctx.notGenerated,
+    deletedOrphans: ctx.deletedOrphans,
   };
 }
 
@@ -687,12 +757,18 @@ function getStrictViolationCount(ctx) {
 }
 
 function printSummary(ctx, metadata) {
+  const deletedCount = ctx.deletedOrphans.filter(entry => entry.status === 'deleted').length;
+  const plannedDeletes = ctx.deletedOrphans.filter(entry => entry.status === 'planned').length;
+
   console.log('\nSummary:');
   console.log(`  generated: ${ctx.generated.length} ${metadata.options.dryRun ? '(planned)' : '(written)'}`);
   console.log(`  skipped: ${ctx.skipped.length}`);
   console.log(`  warnings: ${ctx.warnings.length}`);
   console.log(`  unresolved refs: ${ctx.unresolvedReferences.length}`);
   console.log(`  fallbacks: ${ctx.fallbacks.length}`);
+  if (metadata.options.apply) {
+    console.log(`  orphans: ${metadata.options.dryRun ? `${plannedDeletes} (planned)` : `${deletedCount} (deleted)`}`);
+  }
 
   if (ctx.skipped.length > 0) {
     console.log('\nSkipped outputs:');
@@ -735,6 +811,22 @@ function printSummary(ctx, metadata) {
 function printNextSteps(options) {
   const outCore = formatPathForLog(path.join(options.outputBase, 'core'));
   const outDark = formatPathForLog(path.join(options.outputBase, 'core.dark'));
+
+  if (options.apply) {
+    const action = options.dryRun
+      ? 'would overwrite tokens/core and tokens/core.dark, and remove legacy orphans'
+      : 'wrote directly to tokens/core and tokens/core.dark, and removed legacy orphans';
+    console.log(`
+Done. Apply mode ${action}.
+Next steps:
+  1. Verify tokens/core/effects.tokens.json exists (carry-forward from shadow.tokens.json).
+     If missing, author it manually before yarn tokens.build (drop-shadow.100..500).
+  2. yarn tokens.build && yarn tokens.lint.all
+  3. Run yarn test:scripts to confirm regression suite passes.
+  4. Update src/components/ CSS variable references — see plan PR D for migration script.`);
+    return;
+  }
+
   console.log(`
 Done. Next steps:
   1. Inspect generated foundation files:
@@ -743,14 +835,12 @@ Done. Next steps:
      - ${outCore}/font.tokens.json
      - ${outCore}/sizes.tokens.json
      - ${outDark}/color.tokens.json
-  2. Diff against current tokens/core (skip if you targeted tokens/ directly):
+  2. Diff against current tokens/core:
      diff -r ${outCore} tokens/core
-  3. For a clean break, re-run with --output tokens to overwrite tokens/core and tokens/core.dark.
-  4. After replacing tokens/core, delete the legacy files no longer covered by this script:
-     space.tokens.json, spacing.tokens.json, radius.tokens.json, border.tokens.json,
-     lineHeight.tokens.json, letterSpacing.tokens.json, shadow.tokens.json
-  5. Author tokens/core/effects.tokens.json manually with drop-shadow.100..500 (Figma elevation 1-5).
-  6. yarn tokens.build && yarn tokens.lint.all`);
+  3. For a clean break, re-run with --apply to overwrite tokens/core and tokens/core.dark
+     and delete legacy orphan files automatically.
+  4. Author tokens/core/effects.tokens.json manually with drop-shadow.100..500 (Figma elevation 1-5).
+  5. yarn tokens.build && yarn tokens.lint.all`);
 }
 
 async function main(argv = process.argv) {
@@ -761,9 +851,10 @@ async function main(argv = process.argv) {
 
   validateCliOptions(options);
 
+  const modeLabel = `${options.dryRun ? 'DRY RUN' : 'WRITE'}${options.apply ? ' + APPLY (clean-break)' : ''}`;
   console.log(`Reading: ${formatPathForLog(options.inputFile)}`);
   console.log(`Output:  ${formatPathForLog(options.outputBase)}`);
-  console.log(`Mode:    ${options.dryRun ? 'DRY RUN' : 'WRITE'}`);
+  console.log(`Mode:    ${modeLabel}`);
   if (options.reportFile) {
     console.log(`Report:  ${formatPathForLog(options.reportFile)}`);
   }
@@ -799,6 +890,10 @@ async function main(argv = process.argv) {
 
   runExtraction(ctx, 'sizes.tokens.json', outCore, 'sizes.tokens.json',
     () => extractSizes(data, ctx));
+
+  if (options.apply) {
+    cleanOrphanFiles(ctx, outCore, outDark);
+  }
 
   ctx.notGenerated = [
     { file: 'effects.tokens.json', reason: 'not in Tokenhaus export — author manually (drop-shadow.100..500 from Figma elevation 1-5)' },
@@ -862,14 +957,18 @@ function printFatalError(error) {
 }
 
 export {
+  APPLY_OUTPUT_BASE,
   CliError,
   MODE_DARK,
   MODE_LIGHT,
+  ORPHAN_FILES_CORE,
+  ORPHAN_FILES_DARK,
   PROJECT_ROOT,
   SECTION_PRIMITIVE_COLORS,
   SECTION_SEMANTIC_COLORS,
   SECTION_SIZES,
   SECTION_TYPOGRAPHY,
+  cleanOrphanFiles,
   createRunContext,
   extractPalette,
   extractSemanticColors,
