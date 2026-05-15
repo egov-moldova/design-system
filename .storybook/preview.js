@@ -148,8 +148,8 @@ export const parameters = {
   backgrounds: {
     disable: true,
     options: {
-      light: { name: 'Light', value: color.neutral.background.base },
-      dark: { name: 'Dark', value: colorDark.neutral.background.base },
+      light: { name: 'Light', value: color.background.base },
+      dark: { name: 'Dark', value: colorDark.background.base },
     },
   },
 };
