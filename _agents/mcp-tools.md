@@ -5,9 +5,33 @@ Complete MCP tool reference with correct prefixes and parameter names. **Read wh
 
 ---
 
-## MCP Prefix → Server Mapping
+## Claude Code Tool Names (PRIMARY)
 
-Windsurf assigns `mcp{N}_` prefixes based on **registration order** in `mcp_config.json`. Disabled servers **reserve their slot**.
+Claude Code reads MCP servers from `.mcp.json` at repo root. Tools are exposed as `mcp__<server-name>__<tool>`.
+
+| Server | Logical Alias | Claude Code tool prefix | Examples |
+| --- | --- | --- | --- |
+| **playwright** | `browser_*` | `mcp__playwright__browser_*` | `mcp__playwright__browser_navigate`, `mcp__playwright__browser_snapshot` |
+| **figma** | `figma_*` | `mcp__figma__*` | `mcp__figma__get_design_context`, `mcp__figma__get_screenshot` |
+| **context7** | `ctx7_*` | `mcp__context7__*` | `mcp__context7__resolve-library-id`, `mcp__context7__get-library-docs` |
+| **image-compare** | `compare_*` | `mcp__image-compare__*` | `mcp__image-compare__compare_images` |
+| **agentation** | `agent_*` | `mcp__agentation__*` | `mcp__agentation__get_pending` |
+
+**Configuration**: `.mcp.json` at repo root. Edit there to add/remove servers — restart Claude Code to pick up changes.
+
+**Replaced by native Claude Code tools** (no MCP needed):
+- Filesystem ops → `Read`, `Write`, `Edit`, `Glob`, `Grep`
+- Git ops → `Bash` with `git` CLI
+- Memory → auto-memory at `~/.claude/projects/<project>/memory/`
+- Web fetch → `WebFetch` / `WebSearch`
+
+**Security scanning** (used in `audit-production`): run Snyk via Bash (`yarn snyk:test` or `npx snyk test`) — no MCP server configured.
+
+---
+
+## Windsurf Prefix Mapping (LEGACY — Cross-IDE Reference)
+
+Windsurf assigns `mcp{N}_` prefixes based on **registration order** in `mcp_config.json`. Disabled servers **reserve their slot**. Use this table only when working in Windsurf Cascade.
 
 | Server | Current Prefix | Logical Alias | Examples |
 | --- | --- | --- | --- |

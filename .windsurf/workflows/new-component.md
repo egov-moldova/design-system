@@ -2,6 +2,8 @@
 description: Create a new Stencil web component from a Figma design link, following the full pixel-perfect workflow
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/agents/new-component.md`](../../.claude/agents/new-component.md). New edits should be made there. Kept here for Windsurf users.
+
 # New Component from Figma
 
 **Usage**:
@@ -35,6 +37,8 @@ Classify the component from the Figma design before reading any subfiles.
 
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/agents/new-component.md`](../../.claude/agents/new-component.md). New edits should be made there. Kept here for Windsurf users.
+
 ## Step 1: Environment Check
 
 // turbo
@@ -63,6 +67,8 @@ Check tokens: if `dist/design-system/tokens/*.css` missing → `yarn tokens.buil
 Quick check: search `src/components/cor-*/` and `tokens/core/components/` for existing matches. Reference `cor-button` (slot-based) and `cor-input` (internal DOM) as canonical implementations.
 
 ---
+
+> **MIGRATED**: This workflow has been ported to [`.claude/agents/new-component.md`](../../.claude/agents/new-component.md). New edits should be made there. Kept here for Windsurf users.
 
 ## Step 3: Figma Extraction
 
@@ -106,6 +112,8 @@ For form elements, verify these requirements from `src/components/AGENTS.md` →
 
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/agents/new-component.md`](../../.claude/agents/new-component.md). New edits should be made there. Kept here for Windsurf users.
+
 // turbo
 
 ## Step 5: Plan
@@ -136,6 +144,8 @@ Build: `yarn tokens.build` (~5s). Verify output in `dist/design-system/tokens/*.
 
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/agents/new-component.md`](../../.claude/agents/new-component.md). New edits should be made there. Kept here for Windsurf users.
+
 ## Step 6: Implement Component
 
 Follow `src/components/AGENTS.md` directly.
@@ -159,6 +169,8 @@ Import `invalidSlottedTag` from `../../utils/invalid-slotted-tag`. Add guard at 
 → Read for patterns + valid tag lists: `src/components/_agents/slot-patterns.md`
 
 ---
+
+> **MIGRATED**: This workflow has been ported to [`.claude/agents/new-component.md`](../../.claude/agents/new-component.md). New edits should be made there. Kept here for Windsurf users.
 
 ## Step 7: Write Stories
 
@@ -192,6 +204,8 @@ Test ALL states. Fix → targeted rebuild → re-screenshot → repeat until ide
 → Read for full QA loop detail: `_agents/pixel-perfect-qa.md`
 
 ---
+
+> **MIGRATED**: This workflow has been ported to [`.claude/agents/new-component.md`](../../.claude/agents/new-component.md). New edits should be made there. Kept here for Windsurf users.
 
 ## Step 9: Verification
 

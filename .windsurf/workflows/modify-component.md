@@ -2,6 +2,8 @@
 description: Modify an existing Stencil web component with proper token-first change order
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/commands/modify-component.md`](../../.claude/commands/modify-component.md). New edits should be made there. Kept here for Windsurf users.
+
 # Modify Existing Component
 
 ## Step 0: Classify the Change

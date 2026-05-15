@@ -1,917 +1,277 @@
-# Design Token Architecture Specification
+# Token Architecture — `@age/design-system`
 
-## Overview
+## 1. Purpose
 
-This document defines the complete design token architecture for the AGE Design System. Tokens follow a three-tier hierarchy and use Style Dictionary for transformation and distribution across multiple platforms.
+Design tokens are the **single source of truth** for visual properties in `@age/design-system`. This document describes the 3-tier hierarchy, the DTCG file format, the Figma-aligned naming convention, the Style Dictionary build pipeline, and the Tokenhaus sync workflow.
 
----
+For day-to-day token authoring rules (anti-patterns, validation, build commands), see [`tokens/AGENTS.md`](../tokens/AGENTS.md) and its `_agents/*.md` subfiles.
 
-## 1. Token Hierarchy
-
-### 1.1 Three-Tier System
+## 2. 3-Tier Hierarchy
 
 ```
-┌─────────────────────────────────────────────┐
-│  TIER 1: GLOBAL TOKENS (Core)              │
-│  Raw primitive values                       │
-│  Examples: color.gray.100, space.md         │
-└─────────────────┬───────────────────────────┘
-                  │
-                  ↓
-┌─────────────────────────────────────────────┐
-│  TIER 2: SEMANTIC TOKENS (Core)            │
-│  Purpose-based references                   │
-│  Examples: color.neutral.background.default │
-└─────────────────┬───────────────────────────┘
-                  │
-                  ↓
-┌─────────────────────────────────────────────┐
-│  TIER 3: COMPONENT TOKENS (Core/Client)    │
-│  Component-specific styling                 │
-│  Examples: button.primary.default.background│
-└─────────────────────────────────────────────┘
+Component CSS  →  Component tokens  →  Semantic tokens  →  Palette primitives
+                     (per-component         (cross-component        (raw colors,
+                      overrides)             reusable values)        spacings, etc.)
 ```
 
-### 1.2 Token Scope Rules
+| Tier | Path | Example |
+|---|---|---|
+| **Palette** | `palette.{family}.{shade}` | `{palette.blue.500}` → `--palette-blue-500: #2563eb` |
+| **Semantic** | `{category}.{type}.{role}.{variant}` | `{color.background.brand.default}` → `--color-background-brand-default` |
+| **Component** | `{component}.{element}.{property}.{scale/state}` | `button.primary.background.hover` → `--button-primary-background-hover` |
 
-| Tier | Location | Scope | CSS Output | Usage |
-|------|----------|-------|------------|-------|
-| **Global** | `tokens/core/*.tokens.json` | Project-wide | `:root` | Base values referenced by semantic tokens |
-| **Semantic** | `tokens/core/color.tokens.json` | Project-wide | `:root` | Purpose-based values referenced by components |
-| **Component** | `tokens/core/components/*.tokens.json` | Component-scoped | `:root` | Direct usage in component CSS |
+**Rules**:
 
----
+1. Component CSS uses ONLY component tokens (`var(--button-*)`) and semantic tokens (`var(--color-*)`).
+2. Component tokens reference ONLY semantic tokens via `{color.*}` — never `{palette.*}` directly.
+3. Semantic tokens reference palette primitives.
+4. Tiers cannot be skipped from below: component CSS must never reference `--palette-*` directly.
 
-## 2. Token File Structure
+See [`tokens/_agents/semantic-tokens.md`](../tokens/_agents/semantic-tokens.md) for the palette → semantic mapping table.
 
-### 2.1 JSON Format
+## 3. DTCG File Format
 
-```json
-{
-  "category": {
-    "subcategory": {
-      "property": {
-        "value": "raw-value or {token.reference}",
-        "type": "color|size|dimension|fontFamily|fontWeight|borderRadius|shadow"
-      }
-    }
-  }
-}
-```
-
-### 2.2 Token Types
-
-| Type | Description | Example Value | CSS Output |
-|------|-------------|---------------|------------|
-| `color` | Color values | `#FFFFFF`, `rgb(255,255,255)` | `#ffffff` |
-| `size` | Size values with units | `16px`, `1rem`, `0.5em` | `16px` |
-| `dimension` | Numeric dimensions | `24`, `1.5` | `24px` or `1.5` |
-| `fontFamily` | Font family stacks | `"Onest", sans-serif` | `"Onest", sans-serif` |
-| `fontWeight` | Font weights | `400`, `600`, `bold` | `400` |
-| `borderRadius` | Border radius values | `4px`, `0.25rem` | `4px` |
-| `shadow` | Box shadow values | `0 2px 4px rgba(0,0,0,0.1)` | Full shadow string |
-
----
-
-## 3. Core Token Categories
-
-### 3.1 Palette (Tier 1: Global)
-
-**File:** `tokens/core/palette.tokens.json`
-
-Raw color values organized by color name and shade scale.
-
-```json
-{
-  "palette": {
-    "gray": {
-      "100": { "value": "#171717", "type": "color" },
-      "90": { "value": "#2F2F2F", "type": "color" },
-      "80": { "value": "#454545", "type": "color" },
-      "70": { "value": "#5D5D5D", "type": "color" },
-      "60": { "value": "#747474", "type": "color" },
-      "50": { "value": "#8B8B8B", "type": "color" },
-      "40": { "value": "#A2A2A2", "type": "color" },
-      "30": { "value": "#BABABA", "type": "color" },
-      "20": { "value": "#D1D1D1", "type": "color" },
-      "10": { "value": "#E8E8E8", "type": "color" },
-      "5": { "value": "#E2E5E9", "type": "color" },
-      "1": { "value": "#F3F5F7", "type": "color" }
-    },
-    "primary": {
-      "100": { "value": "#494C83", "type": "color" },
-      "50": { "value": "#9B9CBB", "type": "color" },
-      "10": { "value": "#EBECF2", "type": "color" }
-    }
-  }
-}
-```
-
-**Scale Convention:**
-- `100` = Darkest/Most saturated
-- `50` = Medium
-- `10` = Lightest/Least saturated
-- `1-5` = Extreme light variants
-
-### 3.2 Color (Tier 1 + Tier 2: Global + Semantic)
-
-**File:** `tokens/core/color.tokens.json`
-
-Contains both raw colors (Tier 1) and semantic color mappings (Tier 2).
+All token JSON files use the **W3C Design Tokens Community Group (DTCG)** format with `$value` and `$type` keys. Style Dictionary v4.4+ is configured with `usesDtcg: true` in all platform configs.
 
 ```json
 {
   "color": {
-    "gray": {
-      "100": { "value": "#171717", "type": "color" }
-    },
-    "neutral": {
-      "background": {
-        "default": { "value": "{color.gray.1}", "type": "color" },
-        "subtle": { "value": "{color.gray.5}", "type": "color" },
-        "hover": { "value": "{color.gray.10}", "type": "color" },
-        "active": { "value": "{color.gray.20}", "type": "color" }
-      },
-      "text": {
-        "default": { "value": "{color.gray.100}", "type": "color" },
-        "weak": { "value": "{color.gray.70}", "type": "color" },
-        "inverse": { "value": "{color.white}", "type": "color" }
-      },
-      "border": {
-        "default": { "value": "{color.gray.20}", "type": "color" },
-        "strong": { "value": "{color.gray.40}", "type": "color" }
-      },
-      "icon": {
-        "default": { "value": "{color.gray.100}", "type": "color" },
-        "weak": { "value": "{color.gray.60}", "type": "color" }
-      }
-    },
-    "primary": {
-      "background": {
-        "default": { "value": "{color.darkViolet.100}", "type": "color" },
-        "hover": { "value": "{color.darkViolet.90}", "type": "color" },
-        "active": { "value": "{color.darkViolet.80}", "type": "color" }
-      },
-      "text": {
-        "default": { "value": "{color.darkViolet.100}", "type": "color" }
-      },
-      "border": {
-        "default": { "value": "{color.darkViolet.100}", "type": "color" }
+    "background": {
+      "base": {
+        "default": {
+          "$value": "{palette.white.1000}",
+          "$type": "color"
+        }
       }
     }
-  }
-}
-```
-
-**Semantic Naming Convention:**
-```
-color.{context}.{element}.{variant}
-
-Examples:
-- color.neutral.background.default
-- color.primary.text.hover
-- color.danger.border.active
-```
-
-### 3.3 Spacing (Tier 1: Global)
-
-**Files:** 
-- `tokens/core/space.tokens.json` - Space scale
-- `tokens/core/spacing.tokens.json` - Spacing utilities
-
-```json
-{
-  "space": {
-    "px": { "value": "1px", "type": "size" },
-    "6xs": { "value": "2px", "type": "size" },
-    "5xs": { "value": "4px", "type": "size" },
-    "4xs": { "value": "6px", "type": "size" },
-    "3xs": { "value": "8px", "type": "size" },
-    "2xs": { "value": "10px", "type": "size" },
-    "xs": { "value": "12px", "type": "size" },
-    "sm": { "value": "14px", "type": "size" },
-    "md": { "value": "16px", "type": "size" },
-    "lg": { "value": "20px", "type": "size" },
-    "xl": { "value": "24px", "type": "size" },
-    "2xl": { "value": "32px", "type": "size" },
-    "3xl": { "value": "40px", "type": "size" },
-    "4xl": { "value": "48px", "type": "size" },
-    "5xl": { "value": "64px", "type": "size" },
-    "6xl": { "value": "80px", "type": "size" }
   },
   "spacing": {
-    "px": { "value": "{space.px}", "type": "size" },
-    "2xs": { "value": "{space.2xs}", "type": "size" },
-    "xs": { "value": "{space.xs}", "type": "size" },
-    "sm": { "value": "{space.sm}", "type": "size" },
-    "md": { "value": "{space.md}", "type": "size" },
-    "lg": { "value": "{space.lg}", "type": "size" },
-    "xl": { "value": "{space.xl}", "type": "size" },
-    "2xl": { "value": "{space.2xl}", "type": "size" }
-  }
-}
-```
-
-### 3.4 Typography (Tier 1: Global)
-
-**File:** `tokens/core/font.tokens.json`
-
-```json
-{
-  "fontFamily": {
-    "sans": { 
-      "value": "'Onest', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-      "type": "fontFamily" 
-    },
-  },
-  "fontWeight": {
-    "light": { "value": "300", "type": "fontWeight" },
-    "regular": { "value": "400", "type": "fontWeight" },
-    "medium": { "value": "500", "type": "fontWeight" },
-    "semiBold": { "value": "600", "type": "fontWeight" },
-    "bold": { "value": "700", "type": "fontWeight" },
-    "black": { "value": "900", "type": "fontWeight" }
-  },
-  "fontSize": {
-    "2xs": { "value": "10px", "type": "dimension" },
-    "xs": { "value": "12px", "type": "dimension" },
-    "sm": { "value": "14px", "type": "dimension" },
-    "md": { "value": "16px", "type": "dimension" },
-    "lg": { "value": "18px", "type": "dimension" },
-    "xl": { "value": "20px", "type": "dimension" },
-    "2xl": { "value": "24px", "type": "dimension" },
-    "3xl": { "value": "32px", "type": "dimension" },
-    "4xl": { "value": "40px", "type": "dimension" },
-    "5xl": { "value": "48px", "type": "dimension" }
-  },
-  "lineHeight": {
-    "xs": { "value": "16px", "type": "dimension" },
-    "sm": { "value": "18px", "type": "dimension" },
-    "md": { "value": "20px", "type": "dimension" },
-    "lg": { "value": "24px", "type": "dimension" },
-    "xl": { "value": "28px", "type": "dimension" },
-    "2xl": { "value": "32px", "type": "dimension" },
-    "3xl": { "value": "40px", "type": "dimension" },
-    "4xl": { "value": "48px", "type": "dimension" }
-  },
-  "letterSpacing": {
-    "tight": { "value": "-0.02em", "type": "dimension" },
-    "normal": { "value": "0", "type": "dimension" },
-    "wide": { "value": "0.02em", "type": "dimension" }
-  }
-}
-```
-
-### 3.5 Border Radius (Tier 1: Global)
-
-**File:** `tokens/core/radius.tokens.json`
-
-```json
-{
-  "radius": {
-    "none": { "value": "0px", "type": "borderRadius" },
-    "xs": { "value": "2px", "type": "borderRadius" },
-    "sm": { "value": "4px", "type": "borderRadius" },
-    "md": { "value": "8px", "type": "borderRadius" },
-    "lg": { "value": "12px", "type": "borderRadius" },
-    "xl": { "value": "16px", "type": "borderRadius" },
-    "2xl": { "value": "24px", "type": "borderRadius" },
-    "3xl": { "value": "32px", "type": "borderRadius" },
-    "full": { "value": "9999px", "type": "borderRadius" }
-  }
-}
-```
-
-### 3.6 Shadows (Tier 1: Global)
-
-**File:** `tokens/core/shadow.tokens.json`
-
-```json
-{
-  "shadow": {
-    "xs": { 
-      "value": "0px 1px 2px 0px rgba(0, 0, 0, 0.05)",
-      "type": "shadow" 
-    },
-    "sm": { 
-      "value": "0px 1px 3px 0px rgba(0, 0, 0, 0.1)",
-      "type": "shadow" 
-    },
-    "md": { 
-      "value": "0px 4px 6px -1px rgba(0, 0, 0, 0.1)",
-      "type": "shadow" 
-    },
-    "lg": { 
-      "value": "0px 10px 15px -3px rgba(0, 0, 0, 0.1)",
-      "type": "shadow" 
-    },
-    "xl": { 
-      "value": "0px 20px 25px -5px rgba(0, 0, 0, 0.1)",
-      "type": "shadow" 
-    },
-    "2xl": { 
-      "value": "0px 25px 50px -12px rgba(0, 0, 0, 0.25)",
-      "type": "shadow" 
+    "12": {
+      "$value": "12px",
+      "$type": "dimension"
     }
   }
 }
 ```
 
-### 3.7 Breakpoints (Tier 1: Global)
+**Mandatory**:
 
-**File:** `tokens/core/screen.tokens.json`
+- Use `$value` and `$type` (DTCG-prefixed) — never legacy `value` / `type`
+- Dimensions are strings with explicit unit: `"12px"`, `"0px"`, `"9999px"` — never bare numbers
+- References use `{path.to.token}` syntax pointing at another `$value`
+- `attributes.category` is obsolete — Style Dictionary v4 derives CTI from the token path
+- `fontWeight` values are numeric (`400`, `600`) — never strings
 
-```json
-{
-  "screen": {
-    "xs": { "value": "375px", "type": "dimension" },
-    "sm": { "value": "640px", "type": "dimension" },
-    "md": { "value": "768px", "type": "dimension" },
-    "lg": { "value": "1024px", "type": "dimension" },
-    "xl": { "value": "1280px", "type": "dimension" },
-    "2xl": { "value": "1536px", "type": "dimension" }
-  }
-}
+For legacy → DTCG bulk migration, see `scripts/convert-tokens-to-dtcg.mjs`.
+
+## 4. Component Token Naming Convention
+
+Component CSS variables follow the canonical pattern:
+
+```
+--{component}-{element}-{property}-{scale/state}
 ```
 
-### 3.8 Z-Index Scale (Tier 1: Global)
+The **scale/state segment is always last**: `sm`, `md`, `lg`, `xl`, `hover`, `active`, `focus`, `disabled`, `selected`.
 
-**File:** `tokens/core/z-index.tokens.json`
+| ✅ Correct | ❌ Wrong |
+|---|---|
+| `--label-font-size-md` | `--label-md-font-size` |
+| `--input-border-color-focus` | `--input-focus-border-color` |
+| `--button-primary-background-hover` | `--button-primary-hover-background` |
+| `--button-size-sm` | `--button-sm-size` |
 
-```json
-{
-  "zIndex": {
-    "base": { "value": "0", "type": "dimension" },
-    "dropdown": { "value": "1000", "type": "dimension" },
-    "sticky": { "value": "1100", "type": "dimension" },
-    "fixed": { "value": "1200", "type": "dimension" },
-    "overlay": { "value": "1300", "type": "dimension" },
-    "modal": { "value": "1400", "type": "dimension" },
-    "popover": { "value": "1500", "type": "dimension" },
-    "tooltip": { "value": "1600", "type": "dimension" }
-  }
-}
-```
+### JSON Structure
 
----
-
-## 4. Component Tokens (Tier 3)
-
-### 4.1 Component Token Structure
-
-Component tokens are stored in `tokens/core/components/{component-name}.tokens.json`.
-
-```json
-{
-  "componentName": {
-    "property": {
-      "value": "{reference.token}",
-      "type": "type"
-    },
-    "sizeVariant": {
-      "property": {
-        "value": "{reference.token}",
-        "type": "type"
-      }
-    },
-    "colorVariant": {
-      "state": {
-        "property": {
-          "value": "{reference.token}",
-          "type": "type"
-        }
-      }
-    }
-  }
-}
-```
-
-### 4.2 Button Component Token Example
-
-**File:** `tokens/core/components/button.tokens.json`
+The state/scale lives **under** the property, never above it:
 
 ```json
 {
   "button": {
-    "fontFamily": { "value": "{fontFamily.body}", "type": "fontFamily" },
-    "fontWeight": { "value": "{fontWeight.semiBold}", "type": "fontWeight" },
-    "fontSize": { "value": "{fontSize.sm}", "type": "dimension" },
-    "lineHeight": { "value": "{lineHeight.md}", "type": "dimension" },
-    "gap": { "value": "{spacing.xs}", "type": "size" },
-    "size": { "value": "{space.4xl}", "type": "size" },
-    "padding": {
-      "y": { "value": "{space.2xs}", "type": "size" },
-      "x": { "value": "{spacing.md}", "type": "size" }
-    },
-    "borderRadius": { "value": "{radius.md}", "type": "size" },
-    "borderWidth": { "value": "{spacing.px}", "type": "size" },
-    
-    "tiny": {
-      "fontSize": { "value": "{fontSize.xs}", "type": "dimension" },
-      "lineHeight": { "value": "{lineHeight.sm}", "type": "dimension" },
-      "gap": { "value": "{spacing.2xs}", "type": "size" },
-      "size": { "value": "{space.lg}", "type": "size" },
-      "padding": {
-        "y": { "value": "{space.6xs}", "type": "size" },
-        "x": { "value": "{spacing.xs}", "type": "size" }
-      },
-      "borderRadius": { "value": "{radius.sm}", "type": "size" }
-    },
-    
     "primary": {
-      "default": {
-        "background": { "value": "{color.primary.background.default}", "type": "color" },
-        "border": { "value": "{color.primary.border.default}", "type": "color" },
-        "color": { "value": "{color.white}", "type": "color" }
-      },
-      "hover": {
-        "background": { "value": "{color.primary.background.hover}", "type": "color" },
-        "border": { "value": "{color.primary.border.hover}", "type": "color" },
-        "color": { "value": "{color.white}", "type": "color" }
-      },
-      "active": {
-        "background": { "value": "{color.primary.background.active}", "type": "color" },
-        "border": { "value": "{color.primary.border.active}", "type": "color" },
-        "color": { "value": "{color.white}", "type": "color" }
-      },
-      "focus": {
-        "background": { "value": "{color.primary.background.default}", "type": "color" },
-        "border": { "value": "{color.primary.border.default}", "type": "color" },
-        "color": { "value": "{color.white}", "type": "color" }
-      },
-      "disabled": {
-        "background": { "value": "{color.neutral.background.subtle}", "type": "color" },
-        "border": { "value": "{color.neutral.border.default}", "type": "color" },
-        "color": { "value": "{color.neutral.text.weak}", "type": "color" }
-      }
-    }
-  }
-}
-```
-
-**Component Token Naming Pattern:**
-```
-{component}.{variant}.{state}.{property}
-
-Examples:
-- button.primary.default.background
-- button.primary.hover.background
-- button.small.padding.x
-- input.default.border.color
-```
-
----
-
-## 5. Dark Theme Tokens
-
-### 5.1 Dark Theme Architecture
-
-Dark theme tokens override light theme values using the same token names.
-
-**File:** `tokens/core.dark/color.tokens.json`
-
-```json
-{
-  "color": {
-    "neutral": {
       "background": {
-        "default": { "value": "{color.gray.100}", "type": "color" },
-        "subtle": { "value": "{color.gray.90}", "type": "color" },
-        "hover": { "value": "{color.gray.80}", "type": "color" }
-      },
-      "text": {
-        "default": { "value": "{color.gray.1}", "type": "color" },
-        "weak": { "value": "{color.gray.30}", "type": "color" }
+        "default": { "$value": "{color.background.brand.default}", "$type": "color" },
+        "hover":   { "$value": "{color.background.brand.hover}",   "$type": "color" },
+        "active":  { "$value": "{color.background.brand.active}",  "$type": "color" }
       }
     }
   }
 }
 ```
 
-**CSS Output:**
-```css
-/* tokens/generated/core.tokens.css */
-:root {
-  --color-neutral-background-default: #F3F5F7;
-  --color-neutral-text-default: #171717;
-}
+This generates `--button-primary-background-default`, `--button-primary-background-hover`, `--button-primary-background-active`.
 
-/* tokens/generated/core.dark.tokens.css */
-:root[data-theme="dark"] {
-  --color-neutral-background-default: #171717;
-  --color-neutral-text-default: #F3F5F7;
-}
-```
+### Root Wrapper Rule
 
-### 5.2 Dark Theme Token Files
-
-Only override tokens that change in dark mode:
-
-- `tokens/core.dark/color.tokens.json` - Color overrides
-- `tokens/core.dark/shadow.tokens.json` - Shadow overrides
-- `tokens/core.dark/border-color.tokens.json` - Border color overrides
-- `tokens/core.dark/icon.tokens.json` - Icon color overrides
-
----
-
-## 6. Client-Specific Tokens (Multi-Client)
-
-### 6.1 Client Token Structure
-
-Each client has its own token directory: `tokens/{client-name}/`
-
-**Example: AGE Client**
-
-```
-tokens/age/
-├── base/
-│   └── custom-tokens.tokens.json     # AGE-specific base tokens
-├── components/
-│   ├── avatar.tokens.json
-│   ├── badge.tokens.json
-│   ├── checkbox.tokens.json
-│   ├── datepicker.tokens.json
-│   └── [other-components].tokens.json
-└── style-dictionary.config.json      # AGE build config
-```
-
-### 6.2 Client Build Configuration
-
-**File:** `tokens/age/style-dictionary.config.json`
+The root key is the **component name**, never a `"components"` wrapper:
 
 ```json
-{
-  "source": [
-    "tokens/core/**/*.tokens.json",      // Inherit all core tokens
-    "tokens/age/**/*.tokens.json"        // Override with AGE tokens
-  ],
-  "platforms": {
-    "css": {
-      "transforms": ["attribute/cti", "name/kebab", "color/hex"],
-      "buildPath": "dist/design-system/tokens/",
-      "files": [
-        {
-          "destination": "age.tokens.css",
-          "format": "css/variables"
-        }
-      ]
-    }
-  }
-}
+// ✅ CORRECT — generates --button-* CSS vars
+{ "button": { ... } }
+
+// ❌ WRONG — adds unwanted --components-button-* prefix to all CSS vars
+{ "components": { "button": { ... } } }
 ```
 
-### 6.3 Token Override Example
+A `"components"` wrapper makes Style Dictionary emit `--components-button-*` and silently breaks every token reference in component CSS.
 
-**AGE overrides button primary color:**
+### Property Naming (camelCase in JSON)
 
-```json
-// tokens/age/components/button.tokens.json
-{
-  "button": {
-    "primary": {
-      "default": {
-        "background": { "value": "#FF0000", "type": "color" }
-      }
-    }
-  }
-}
+Use camelCase for compound properties (2+ words) inside JSON — Style Dictionary converts to kebab-case in CSS:
+
+| ✅ JSON | ❌ JSON | Generated CSS |
+|---|---|---|
+| `fontSize` | `font-size` | `--*-font-size` |
+| `lineHeight` | `line-height` | `--*-line-height` |
+| `borderRadius` | `border-radius` | `--*-border-radius` |
+| `backgroundColor` | `background-color` | `--*-background-color` |
+| `iconColor` | `icon-color` | `--*-icon-color` |
+
+See [`tokens/_agents/naming-conventions.md`](../tokens/_agents/naming-conventions.md) for the complete reference.
+
+## 5. Figma → Token → CSS Variable Terminology
+
+Semantic tokens follow [Figma Foundations](https://www.figma.com/design/wkHMxgDWxZKaXQ7zNxhSxN/Foundations) 4-part naming:
+
+| Position | Figma term | Examples |
+|---|---|---|
+| 1 | category | `color`, `palette`, `spacing`, `borderRadius`, `fontSize` |
+| 2 | type | `background`, `text`, `border`, `icon` |
+| 3 | role | `base`, `brand`, `danger`, `positive`, `warning`, `info`, `disabled` |
+| 4 | variant | `default`, `hover`, `active`, `focus`, `selected`, `secondary`, ... |
+
+- JSON path: `color.background.brand.default`
+- CSS var: `--color-background-brand-default`
+
+Palette primitives use a 3-part variant: `palette.{family}.{shade}` → `--palette-{family}-{shade}`.
+
+Component tokens extend with an element layer: `{component}.{element}.{property}.{variant}` → `--{component}-{element}-{property}-{variant}`.
+
+## 6. File Hierarchy
+
+```text
+tokens/
+├── core/                              # Foundation tokens (light theme)
+│   ├── color.tokens.json              # Palette + semantic colors
+│   ├── spacing.tokens.json            # Space scale
+│   ├── font.tokens.json               # Font families
+│   ├── fontSize.tokens.json           # Font size scale
+│   ├── effects.tokens.json            # Drop shadows, etc.
+│   ├── components/                    # Per-component tokens
+│   │   ├── button.tokens.json
+│   │   ├── input.tokens.json
+│   │   └── ...
+│   └── style-dictionary.config.json
+├── core.dark/                         # Dark mode overrides (DEFERRED — out of scope)
+│   ├── color.tokens.json
+│   └── ...
+├── age/                               # AGE client theme overrides
+│   ├── base/
+│   └── style-dictionary.config.json
+├── figma-export/                      # Tokenhaus staging area (gitignored)
+└── MIGRATION.md                       # Current naming-convention migration status
 ```
 
-**Result:** AGE buttons use red instead of the core primary color.
+## 7. Build Pipeline (Style Dictionary v4)
 
----
+Token CSS is produced by Style Dictionary, orchestrated by Wireit. Inputs: `tokens/**/*.tokens.json`. Outputs: `dist/design-system/tokens/*.css`.
 
-## 7. Style Dictionary Configuration
+| Command | Effect | Time |
+|---|---|---|
+| `yarn tokens.build` | Build core + dark tokens | ~5s |
+| `yarn tokens.build.prod` | Production tokens (optimized) | ~5s |
+| `yarn tokens.build.age` | AGE theme only | ~5s |
+| `yarn tokens.watch` | Watch + rebuild | service |
+| `yarn tokens.audit` | Debug missing references | ~2s |
 
-### 7.1 Transform Pipeline
+After token edits, run `yarn tokens.build`. **No Stencil rebuild needed** — token CSS is standalone, loaded at runtime via `<link>`. Components use `var(--name)` so new values apply on page refresh.
 
-Style Dictionary transforms tokens through:
+### Generated Outputs
 
-1. **attribute/cti** - Category/Type/Item attributes
-2. **name/kebab** - Convert to kebab-case CSS variables
-3. **size/px** - Add px unit to dimension values (optional)
-4. **color/hex** - Convert colors to hex format
+```text
+dist/design-system/tokens/
+├── core.tokens.css           # Light theme: --color-*, --spacing-*, --button-*, --input-*, ...
+├── core.dark.tokens.css      # Dark theme overrides (DEFERRED)
+├── age.tokens.css            # AGE theme overrides
+└── ...
+```
 
-### 7.2 Build Process
+Theme switching: `<html data-theme="age">` or `<html data-theme="dark">` (DEFERRED).
+
+## 8. Tokenhaus Sync Workflow
+
+Tokenhaus is the upstream Figma → tokens pipeline. Two modes: **staging** (review) and **apply** (clean break to `tokens/core/`).
+
+### Staging mode (safe, default)
+
+Writes generated files under `tokens/figma-export/` so the result can be diffed before promoting.
 
 ```bash
-# Build all token sets
-yarn tokens.build
-
-# Individual builds
-yarn tokens.build.core      # → core.tokens.css
-                            # → core.dark.tokens.css
-yarn tokens.build.age    # → age.tokens.css
+yarn sync:tokens
+node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --dry-run
+node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --dry-run --report reports/tokenhaus-sync.json
+node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --dry-run --strict
 ```
 
-### 7.3 Output Formats
+### Apply mode (destructive, clean break)
 
-**CSS Variables (Primary):**
-```css
-:root {
-  --color-primary-500: #494C83;
-  --space-md: 16px;
-  --button-primary-default-background: var(--color-primary-500);
-}
+`--apply` forces the output base to `tokens/`, overwrites `tokens/core/{palette,color,font,sizes}.tokens.json` and `tokens/core.dark/color.tokens.json`, and deletes legacy orphan files (`space.tokens.json`, `radius.tokens.json`, `border.tokens.json`, `lineHeight.tokens.json`, `letterSpacing.tokens.json`, `shadow.tokens.json`).
+
+```bash
+node scripts/sync-tokens-from-tokenhaus.mjs --apply --dry-run     # preview deletions
+yarn sync:tokens:apply                                            # real run
 ```
 
-**JSON (For Tailwind/React):**
-```json
-{
-  "color": {
-    "primary": {
-      "500": "#494C83"
-    }
-  }
-}
-```
+Always preview first with `--apply --dry-run`. The script refuses `--output` other than `tokens/` when `--apply` is set.
 
----
+### Flags
 
-## 8. Token Usage in Components
+- **Staging vs apply**: default is staging; `--apply` overwrites canonical token folders and deletes legacy orphans
+- **Dry-run**: combine with `--apply` to preview without writing or deleting
+- **Strict**: `--strict` fails the run on skipped sections, missing modes, or unresolved reference namespaces
+- **Report**: `--report <file>` writes a machine-readable manifest of generated files, skips, warnings, deletions
 
-### 8.1 CSS Variable Reference Pattern
+See [`tokens/AGENTS.md`](../tokens/AGENTS.md) (Tokenhaus Sync Workflow section) for the operational checklist.
 
-```css
-/* Component CSS */
-.component {
-  /* Use component token with core fallback */
-  font-size: var(--component-font-size, var(--font-size-sm));
-  
-  /* Use size-specific token with component fallback */
-  padding: var(--component-large-padding, var(--component-padding, 16px));
-  
-  /* Use variant-specific token (no fallback needed) */
-  background-color: var(--component-primary-default-background);
-}
-```
+## 9. Migration State
 
-### 8.2 Token Priority Order
+A naming-convention migration is in progress — see [`tokens/MIGRATION.md`](../tokens/MIGRATION.md) for current status, component-by-component progress, and remaining items. The target is universal `{component}-{element}-{property}-{scale/state}` ordering across all 20+ components.
 
-1. **Component-specific token** - Highest priority
-2. **Size/variant-specific token** - Medium priority
-3. **Core semantic token** - Fallback
-4. **Raw value** - Last resort (avoid)
+## 10. Token Categories (Reference)
 
-**Example:**
-```css
-::slotted(button) {
-  /* Priority: button-large-font-size > button-font-size > font-size-md > 16px */
-  font-size: var(
-    --button-large-font-size,
-    var(--button-font-size, var(--font-size-md, 16px))
-  );
-}
-```
+Top-level categories the system uses today:
 
----
+- **color**: `palette` (primitives) + `background`, `text`, `border`, `icon` (semantic)
+- **spacing**: scale (`0`, `1`, `2`, ..., `64`) and aliases (`gap`, `paddingInline`, `paddingBlock`)
+- **font**: `family`, `weight`
+- **fontSize**: scale (`xs`, `sm`, `md`, `lg`, `xl`, `2xl`, ...)
+- **lineHeight**: scale
+- **letterSpacing**: scale
+- **borderRadius**: scale
+- **border**: width, style
+- **effects**: drop-shadow scale (drop-shadow.100..500)
+- **breakpoints**: viewport widths
+- **zIndex**: layering scale
+- **opacity**: scale
+- **duration / easing**: motion tokens
 
-## 9. Token Naming Conventions
+Each category lives in its own `tokens/core/*.tokens.json`. Component-level tokens live in `tokens/core/components/`.
 
-### 9.1 File Naming
+## 11. Anti-Patterns (Forbidden)
 
-- Pattern: `{category}.tokens.json`
-- Examples: `color.tokens.json`, `font.tokens.json`, `button.tokens.json`
-- Location determines scope (core vs. client)
+- `var(--palette-*)` directly in component CSS — always use semantic `--color-*` or component-specific tokens
+- `var(--palette-*)` as fallback inside component CSS — use `--color-*` semantic equivalent
+- Raw hex / px / rgb / hsl in component CSS — must be a `var(--token-name)` reference
+- Component token wrapper `{ "components": { "x": ... } }` — generates `--components-x-*` prefix that breaks references
+- State/scale segment NOT last in CSS var name — `--input-focus-border-color` is wrong; use `--input-border-color-focus`
+- kebab-case keys in JSON (`"font-size"`) — use camelCase (`"fontSize"`)
+- Legacy `"value"` / `"type"` keys — must be `"$value"` / `"$type"` (DTCG)
 
-### 9.2 Token Path Naming
+## 12. References
 
-**Format:** `{category}.{subcategory}.{property}.{variant}`
-
-**Examples:**
-```
-color.primary.500
-color.neutral.background.default
-button.primary.default.background
-spacing.md
-space.xl
-radius.lg
-shadow.sm
-```
-
-### 9.3 CSS Variable Naming
-
-Tokens automatically convert to kebab-case CSS variables:
-
-| Token Reference | CSS Variable |
-|----------------|--------------|
-| `{color.primary.500}` | `--color-primary-500` |
-| `{button.primary.default.background}` | `--button-primary-default-background` |
-| `{space.xl}` | `--space-xl` |
-| `{fontFamily.body}` | `--font-family-body` |
-
----
-
-## 10. Token Maintenance
-
-### 10.1 Adding New Tokens
-
-1. **Determine tier** (Global, Semantic, or Component)
-2. **Choose file location** (core vs. client)
-3. **Follow naming convention**
-4. **Add token with proper type**
-5. **Reference existing tokens when possible**
-6. **Build tokens** (`yarn tokens.build`)
-7. **Test in component**
-
-### 10.2 Modifying Existing Tokens
-
-1. **Identify impact** (What components use this token?)
-2. **Update token value**
-3. **Rebuild tokens**
-4. **Test all affected components**
-5. **Update Storybook**
-6. **Document breaking changes** (if any)
-
-### 10.3 Token Validation
-
-**Checklist:**
-- [ ] Token follows naming convention
-- [ ] Token has correct type
-- [ ] Token references existing tokens (where appropriate)
-- [ ] Token builds without errors
-- [ ] Component using token renders correctly
-- [ ] Dark theme works (if color token)
-- [ ] Token documented in component CSS
-
----
-
-## 11. Common Token Patterns
-
-### 11.1 Interactive State Colors
-
-```json
-{
-  "component": {
-    "variant": {
-      "default": { "background": "{color}", "border": "{color}", "color": "{color}" },
-      "hover": { "background": "{color}", "border": "{color}", "color": "{color}" },
-      "active": { "background": "{color}", "border": "{color}", "color": "{color}" },
-      "focus": { "background": "{color}", "border": "{color}", "color": "{color}" },
-      "disabled": { "background": "{color}", "border": "{color}", "color": "{color}" }
-    }
-  }
-}
-```
-
-### 11.2 Size Variants
-
-```json
-{
-  "component": {
-    "tiny": { "fontSize": "{fontSize.xs}", "padding": { "x": "{space.xs}", "y": "{space.6xs}" } },
-    "small": { "fontSize": "{fontSize.sm}", "padding": { "x": "{space.sm}", "y": "{space.4xs}" } },
-    "medium": { "fontSize": "{fontSize.md}", "padding": { "x": "{space.md}", "y": "{space.2xs}" } },
-    "large": { "fontSize": "{fontSize.lg}", "padding": { "x": "{space.lg}", "y": "{space.xs}" } }
-  }
-}
-```
-
-### 11.3 Spacing Consistency
-
-```json
-{
-  "component": {
-    "gap": "{spacing.xs}",
-    "padding": {
-      "x": "{spacing.md}",
-      "y": "{spacing.sm}"
-    },
-    "margin": "{spacing.lg}"
-  }
-}
-```
-
----
-
-## 12. Token Documentation
-
-### 12.1 Component Token Documentation
-
-Each component's CSS file should document available token overrides:
-
-```css
-/**
- * @cssprop --button-font-size - Font size for button text
- * @cssprop --button-padding-inline - Horizontal padding
- * @cssprop --button-primary-default-background - Primary button background
- */
-```
-
-### 12.2 Storybook Token Documentation
-
-Token documentation stories in `.storybook/stories/`:
-- `core-tokens.mdx` - Core token documentation
-- `core-dark-tokens.mdx` - Dark theme tokens
-- `client-tokens.mdx` - Client-specific tokens
-
----
-
-## 13. Token Anti-Patterns (Avoid)
-
-### 13.1 ❌ Hard-Coded Values
-
-```css
-/* BAD */
-.button {
-  padding: 16px;
-  color: #494C83;
-}
-
-/* GOOD */
-.button {
-  padding: var(--button-padding-inline, var(--spacing-md));
-  color: var(--button-primary-default-color);
-}
-```
-
-### 13.2 ❌ Deeply Nested Token References
-
-```json
-// BAD - Too many levels of indirection
-{
-  "token1": { "value": "{token2}" },
-  "token2": { "value": "{token3}" },
-  "token3": { "value": "{token4}" },
-  "token4": { "value": "16px" }
-}
-
-// GOOD - Direct or single-level references
-{
-  "space.md": { "value": "16px" },
-  "button.padding": { "value": "{space.md}" }
-}
-```
-
-### 13.3 ❌ Inconsistent Naming
-
-```json
-// BAD
-{
-  "btn-color": "...",
-  "ButtonSize": "...",
-  "button_padding": "..."
-}
-
-// GOOD
-{
-  "button": {
-    "color": "...",
-    "size": "...",
-    "padding": "..."
-  }
-}
-```
-
----
-
-## 14. Future Token Enhancements
-
-### Phase 1 (Current)
-- ✅ Core token system
-- ✅ Component tokens for atoms
-- ✅ Dark theme support
-- ✅ AGE client tokens
-
-### Phase 2 (Next)
-- [ ] Animation/transition tokens
-- [ ] Motion duration tokens
-- [ ] Easing function tokens
-- [ ] Additional client themes
-
-### Phase 3 (Future)
-- [ ] Token versioning system
-- [ ] Token migration tools
-- [ ] Token analytics/usage tracking
-- [ ] Dynamic token generation
-
----
-
-## Appendix: Token Reference Quick Guide
-
-### Global Token Categories
-- `color.*` - Color palette and semantic colors
-- `space.*` - Space scale (padding, margin, gaps)
-- `spacing.*` - Spacing utilities
-- `fontSize.*` - Font size scale
-- `fontWeight.*` - Font weight scale
-- `fontFamily.*` - Font family stacks
-- `lineHeight.*` - Line height scale
-- `letterSpacing.*` - Letter spacing scale
-- `radius.*` - Border radius scale
-- `shadow.*` - Box shadow definitions
-- `screen.*` - Responsive breakpoints
-- `zIndex.*` - Z-index layering
-- `icon.*` - Icon sizing
-
-### Component Token Pattern
-```
-{component}.{variant}.{state}.{property}
-{component}.{size}.{property}
-{component}.{property}
-```
-
-### CSS Variable Usage
-```css
-var(--specific-token, var(--general-token, fallback-value))
-```
+- [`tokens/AGENTS.md`](../tokens/AGENTS.md) — runtime token rules, critical 5-rule list, skill corrections
+- [`tokens/_agents/token-structure.md`](../tokens/_agents/token-structure.md) — file hierarchy and JSON syntax
+- [`tokens/_agents/semantic-tokens.md`](../tokens/_agents/semantic-tokens.md) — palette → semantic mapping
+- [`tokens/_agents/naming-conventions.md`](../tokens/_agents/naming-conventions.md) — CSS variable naming reference
+- [`tokens/MIGRATION.md`](../tokens/MIGRATION.md) — current convention migration status
+- [`PROJECT-SPECIFICATION.md`](PROJECT-SPECIFICATION.md) — overall project architecture

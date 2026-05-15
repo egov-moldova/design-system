@@ -2,6 +2,8 @@
 description: Update or create design tokens for a component
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/commands/update-tokens.md`](../../.claude/commands/update-tokens.md). New edits should be made there. Kept here for Windsurf users.
+
 # /update-tokens — Token Update Workflow
 
 Lightweight workflow for token-only changes. Use when adding, modifying, or refactoring design tokens without changing component TSX/CSS.
@@ -22,6 +24,8 @@ ls dist/design-system/tokens/*.css
 - **Files missing** → run `yarn tokens.build` first to establish baseline
 
 ---
+
+> **MIGRATED**: This workflow has been ported to [`.claude/commands/update-tokens.md`](../../.claude/commands/update-tokens.md). New edits should be made there. Kept here for Windsurf users.
 
 ## Step 2: Identify Scope
 
@@ -57,6 +61,8 @@ Map Figma variables to semantic tokens (see `tokens/AGENTS.md` → semantic toke
 - Figma `palette/ui/gray/9` → `var(--palette-ui-gray-9)` ❌ (never use palette directly)
 
 ---
+
+> **MIGRATED**: This workflow has been ported to [`.claude/commands/update-tokens.md`](../../.claude/commands/update-tokens.md). New edits should be made there. Kept here for Windsurf users.
 
 ## Step 4: Create/Update Token JSON
 
@@ -128,6 +134,8 @@ Expected: completes in ~5s with no errors.
 
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/commands/update-tokens.md`](../../.claude/commands/update-tokens.md). New edits should be made there. Kept here for Windsurf users.
+
 ## Step 6: Verify CSS Output
 
 ```bash
@@ -162,6 +170,8 @@ yarn tokens.audit
 
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/commands/update-tokens.md`](../../.claude/commands/update-tokens.md). New edits should be made there. Kept here for Windsurf users.
+
 ## Step 8: Visual Check (if component exists)
 
 If the component already exists and uses these tokens, verify visually:
@@ -184,6 +194,8 @@ If dark mode overrides are needed:
 3. Verify dark mode CSS in `dist/design-system/tokens/core.dark.tokens.css`
 
 ---
+
+> **MIGRATED**: This workflow has been ported to [`.claude/commands/update-tokens.md`](../../.claude/commands/update-tokens.md). New edits should be made there. Kept here for Windsurf users.
 
 ## Summary
 

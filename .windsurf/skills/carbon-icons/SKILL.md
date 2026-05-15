@@ -17,7 +17,7 @@ description: Use when implementing any Stencil component that includes a standar
 ## Use
 
 - Inside buttons, use `color="currentColor"`.
-- Use semantic token suffixes for standalone icon color.
+- For standalone icons, pass a semantic color token following the Figma 4-part scheme `--color-icon-{role}-{variant}` (e.g. `--color-icon-brand-default`, `--color-icon-danger-default`).
 - Use token sizes via the `size` prop.
 - Keep icon color aligned with adjacent text.
 - Ensure interactive icon affordances remain accessible.

@@ -2,6 +2,8 @@
 description: Deep accessibility audit of a component — keyboard testing, ARIA validation, contrast checks, screen reader compatibility
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/commands/audit-accessibility.md`](../../.claude/commands/audit-accessibility.md). New edits should be made there. Kept here for Windsurf users.
+
 # Accessibility Audit
 
 ## Step 0: Environment Check

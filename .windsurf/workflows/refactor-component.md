@@ -2,6 +2,8 @@
 description: Refactor an existing component to align with latest AGENTS.md patterns — member order, CSS architecture, token compliance, story format
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/agents/refactor-component.md`](../../.claude/agents/refactor-component.md). New edits should be made there. Kept here for Windsurf users.
+
 # Refactor Component
 
 ## Step 1: Run Audit First

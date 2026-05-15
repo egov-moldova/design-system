@@ -2,6 +2,8 @@
 description: Audit an existing Stencil component for best practices, AGENTS.md compliance, accessibility, security, performance, and common mistakes
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/commands/audit-component.md`](../../.claude/commands/audit-component.md). New edits should be made there. Kept here for Windsurf users.
+
 # Audit Component
 
 ## Step 1: Environment Check

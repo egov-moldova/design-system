@@ -2,6 +2,8 @@
 description: Full production readiness audit — code quality, tokens, accessibility, performance, security, tests, stories, documentation
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/agents/audit-production.md`](../../.claude/agents/audit-production.md). New edits should be made there. Kept here for Windsurf users.
+
 # Production Readiness Audit Workflow
 
 **Purpose**: Comprehensive validation that a component meets all production standards before merging to main.
@@ -18,6 +20,8 @@ description: Full production readiness audit — code quality, tokens, accessibi
 - Component builds without errors
 
 ---
+
+> **MIGRATED**: This workflow has been ported to [`.claude/agents/audit-production.md`](../../.claude/agents/audit-production.md). New edits should be made there. Kept here for Windsurf users.
 
 ## Audit Phases
 
@@ -176,6 +180,8 @@ Verify component follows correct CSS pattern:
 
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/agents/audit-production.md`](../../.claude/agents/audit-production.md). New edits should be made there. Kept here for Windsurf users.
+
 ### Phase 3: Accessibility Audit
 
 #### 3.1 Keyboard Navigation
@@ -312,6 +318,8 @@ yarn sp.build
 
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/agents/audit-production.md`](../../.claude/agents/audit-production.md). New edits should be made there. Kept here for Windsurf users.
+
 ### Phase 5: Testing
 
 #### 5.1 Unit Tests
@@ -404,6 +412,8 @@ Check for unnecessary re-renders:
 
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/agents/audit-production.md`](../../.claude/agents/audit-production.md). New edits should be made there. Kept here for Windsurf users.
+
 ### Phase 7: Security
 
 #### 7.1 XSS Prevention
@@ -473,6 +483,8 @@ Verify:
 
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/agents/audit-production.md`](../../.claude/agents/audit-production.md). New edits should be made there. Kept here for Windsurf users.
+
 ### Phase 9: Git Hygiene
 
 #### 9.1 Branch Naming
@@ -527,6 +539,8 @@ Before marking component as production-ready, verify:
 
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/agents/audit-production.md`](../../.claude/agents/audit-production.md). New edits should be made there. Kept here for Windsurf users.
+
 ## Automated Audit Command
 
 Run all automated checks:
@@ -575,6 +589,8 @@ Print this checklist and review manually:
 
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/agents/audit-production.md`](../../.claude/agents/audit-production.md). New edits should be made there. Kept here for Windsurf users.
+
 ## Pass/Fail Criteria
 
 **PASS**: All automated checks pass + manual review complete + no blockers
@@ -607,6 +623,8 @@ Print this checklist and review manually:
 - `/audit-component` — Component-specific audit (similar but less comprehensive)
 
 ---
+
+> **MIGRATED**: This workflow has been ported to [`.claude/agents/audit-production.md`](../../.claude/agents/audit-production.md). New edits should be made there. Kept here for Windsurf users.
 
 ## Notes
 

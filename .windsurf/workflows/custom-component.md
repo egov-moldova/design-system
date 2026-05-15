@@ -2,6 +2,8 @@
 description: Create a new Stencil web component from custom user requirements (no Figma design)
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/agents/custom-component.md`](../../.claude/agents/custom-component.md). New edits should be made there. Kept here for Windsurf users.
+
 # Custom Component (No Figma)
 
 ## Step 1: Environment Check

@@ -2,6 +2,8 @@
 description: Fix a visual bug in a Stencil component by tracing the root cause through tokens and CSS
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/commands/fix-visual-bug.md`](../../.claude/commands/fix-visual-bug.md). New edits should be made there. Kept here for Windsurf users.
+
 # Fix Visual Bug
 
 ## Step 0: Invoke Systematic Debugging Skill

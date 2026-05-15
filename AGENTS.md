@@ -2,7 +2,9 @@
 
 **Project**: `@age/design-system` — Stencil.js web components with design tokens, Storybook docs, multi-theme support via Style Dictionary.
 
-**Tech Stack**: StencilJS 4.x, TypeScript 5.x, Storybook 8.x (port **6007**), Style Dictionary 4.x, Jest, Wireit (script orchestration + caching), Playwright MCP (`mcp8_`), Figma Remote MCP (`mcp5_`), Snyk MCP (`mcp11_`), Memory MCP (`mcp9_`), Yarn 4.x, Node >=22
+**Tech Stack**: StencilJS 4.x, TypeScript 5.x, Storybook 8.x (port **6007**), Style Dictionary 4.x (DTCG `$value`/`$type`), Jest, Wireit (script orchestration + caching), Yarn 4.x, Node >=22.
+
+**MCP servers** (configured in `.mcp.json` at repo root): Playwright (`mcp__playwright__*`), Figma (`mcp__figma__*`), Context7 (`mcp__context7__*`), Image Compare (`mcp__image-compare__*`), agentation (`mcp__agentation__*`). See `_agents/mcp-tools.md` for full reference.
 
 **This file is the single source of truth.** It overrides all skill files. Scoped subfiles in `src/components/AGENTS.md` and `tokens/AGENTS.md` extend (never contradict) this file.
 
@@ -62,6 +64,20 @@
 | `tokens/AGENTS.md` | Token development: hierarchy, naming, semantic rules, build commands | **When working in `tokens/`** |
 
 Each scoped file has its own `_agents/` subfiles — see those indexes for topic-specific loading instructions.
+
+---
+
+## Automation — Slash Commands & Subagents
+
+The repo ships ready-to-use slash commands and subagents for routine workflows. See [`.claude/commands/README.md`](.claude/commands/README.md) and [`.claude/agents/README.md`](.claude/agents/README.md) for full quick-references and decision guide.
+
+| Type | Examples | Use when |
+|---|---|---|
+| **Slash command** ([.claude/commands/](.claude/commands/)) | `/audit-component`, `/audit-accessibility`, `/pre-pr-check`, `/update-tokens`, `/fix-visual-bug`, `/migrate-component`, `/modify-component`, `/optimize-prompt`, `/optimize-prompt-new-component` | Linear, single-pass workflows. Argument-driven. Invoke directly in prompt. |
+| **Subagent** ([.claude/agents/](.claude/agents/)) | `new-component`, `custom-component`, `audit-production`, `refactor-component` | Multi-phase pipelines with separate context window. Invoke via Task tool or auto-trigger. |
+| **Skill** ([.claude/skills/](.claude/skills/)) | `carbon-icons`, `token-creation`, `systematic-debugging`, `verification-before-completion`, `figma-illustration-import` | Reusable knowledge invoked from inside commands/agents via the Skill tool. |
+
+Legacy Windsurf workflows (`.windsurf/workflows/`) are preserved for cross-IDE users — see [`.windsurf/README.md`](.windsurf/README.md). New automation should target `.claude/`.
 
 ---
 

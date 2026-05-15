@@ -2,6 +2,8 @@
 description: Full pre-PR validation pipeline — lint, test, build, story check, console errors, and git hygiene
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/commands/pre-pr-check.md`](../../.claude/commands/pre-pr-check.md). New edits should be made there. Kept here for Windsurf users.
+
 # Pre-PR Check
 
 ## Step 1: Git Status

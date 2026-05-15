@@ -2,6 +2,31 @@
 
 This document explains how to create OS/environment-specific skill overrides.
 
+## Cross-IDE Sync Status (Claude Code ↔ Windsurf)
+
+Skills are mirrored between `.claude/skills/` (primary, Claude Code) and `.windsurf/skills/` (legacy, Windsurf Cascade). All 14 skill folders are present in both locations with identical or near-identical content.
+
+**Rules**:
+- `.claude/skills/` is the source of truth for Claude Code.
+- `.windsurf/skills/` is preserved for Windsurf users — kept in manual sync.
+- When editing a skill, update **both** copies (or use a sync script).
+- Deprecated skills (accessibility-compliance, e2e-testing-patterns, pix-stencil-storybook, stencil-atomic-design-system, stenciljs-component-development, storybook-story-writing) intentionally redirect to `AGENTS.md` and its `_agents/` subfiles — do not rewrite their content.
+
+**Verifying sync**:
+
+```bash
+# PowerShell
+Compare-Object (Get-ChildItem .claude/skills -Recurse -File) (Get-ChildItem .windsurf/skills -Recurse -File) -Property Name, Length
+
+# Unix
+diff -r .claude/skills .windsurf/skills
+```
+
+Expected drift: zero. If diff appears, decide which side is authoritative and propagate.
+
+---
+
+
 ## Quick Start
 
 ```bash

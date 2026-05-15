@@ -2,6 +2,8 @@
 description: Transform any raw user request into a well-structured, unambiguous prompt for an AI coding agent
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/commands/optimize-prompt.md`](../../.claude/commands/optimize-prompt.md). New edits should be made there. Kept here for Windsurf users.
+
 # Optimize Prompt
 
 Use before any non-trivial coding task: new components, refactors, bug fixes,
@@ -35,6 +37,8 @@ Before rewriting anything:
    DS components, utilities, or tokens can be reused before specifying new ones.
 
 ---
+
+> **MIGRATED**: This workflow has been ported to [`.claude/commands/optimize-prompt.md`](../../.claude/commands/optimize-prompt.md). New edits should be made there. Kept here for Windsurf users.
 
 ## Step 1: Write the Optimized Prompt
 
@@ -76,6 +80,8 @@ Concrete, verifiable statements of done:
 - Quality: build passes, lint passes, stories exist for which variants
 
 ---
+
+> **MIGRATED**: This workflow has been ported to [`.claude/commands/optimize-prompt.md`](../../.claude/commands/optimize-prompt.md). New edits should be made there. Kept here for Windsurf users.
 
 ## Step 2: Output
 

@@ -2,6 +2,8 @@
 description: Graduate a WIP component from src/hidden/ to src/components/ — full audit, test coverage, story completion
 ---
 
+> **MIGRATED**: This workflow has been ported to [`.claude/commands/migrate-component.md`](../../.claude/commands/migrate-component.md). New edits should be made there. Kept here for Windsurf users.
+
 # Migrate Component to Production
 
 ## Step 1: Read Hidden Component
