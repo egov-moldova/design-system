@@ -1,0 +1,30 @@
+{
+  "1. Semantic Colors": {
+    "background": {
+      "base": {
+        "default": {
+          "$value": {
+            "Dark Mode": "{2. Primitive Colors: Do not use directly.gray.900}"
+          },
+          "$type": "color"
+        }
+      }
+    }
+  },
+  "2. Primitive Colors: Do not use directly": {
+    "gray": {
+      "900": { "$value": "#1e1e1e", "$type": "color" }
+    }
+  },
+  "3. Sizes": {
+    "spacings": {},
+    "border-radius": {},
+    "border-width": {}
+  },
+  "4. Typography Primitives": {
+    "font-size": {},
+    "font-family": {},
+    "font-weight": {},
+    "line-height": {}
+  }
+}

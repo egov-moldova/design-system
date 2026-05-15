@@ -1,6 +1,7 @@
 {
-  "Core colors palette": {},
-  "Core numbers": {},
-  "Typography": {},
-  "Screen": {}
+  "4. Typography Primitives": {
+    "font-size": {
+      "fs-12": { "$value": 12, "$type": "number" }
+    }
+  }
 }

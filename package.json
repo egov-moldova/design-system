@@ -93,7 +93,8 @@
     "svg:remove-fill": "wireit",
     "svg:icons": "wireit",
     "carbon:names": "node scripts/generate-carbon-icon-names.mjs",
-    "sync:tokens": "node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --output tokens/figma-export"
+    "sync:tokens": "node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --output tokens/figma-export",
+    "test:scripts": "node --test scripts/__tests__/sync-tokens-from-tokenhaus.spec.mjs"
   },
   "wireit": {
     "tokens.build.core": {
