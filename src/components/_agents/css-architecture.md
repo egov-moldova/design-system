@@ -93,7 +93,7 @@ Use when the component renders its own internal markup.
 
 ---
 
-## stencil-atomic-design-system Skill Corrections
+## Common CSS / Slot-Architecture Mistakes
 
 | Skill Says | Correct |
 | --- | --- |

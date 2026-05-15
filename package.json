@@ -90,6 +90,7 @@
     "tokens.lint": "node scripts/tokens-lint.mjs --root tokens/core",
     "tokens.lint.dark": "node scripts/tokens-lint.mjs --root tokens/core.dark",
     "tokens.lint.all": "node scripts/tokens-lint.mjs --root tokens/core --root tokens/core.dark",
+    "tokens.validate": "node scripts/tokens-validate.mjs --no-color",
     "tokens.watch": "wireit",
     "wca.custom-elements": "wireit",
     "svg:remove-size": "wireit",

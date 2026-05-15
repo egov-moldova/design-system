@@ -11,7 +11,7 @@ File structure per component, TSX class member order, @Watch rule, and stenciljs
 - @Watch Rule (allowed vs forbidden)
 - TypeScript Strict Mode (pointer to canonical)
 - Host Class Management (declarative getHostClasses pattern)
-- stenciljs-component-development Skill Corrections
+- Common Stencil component mistakes
 
 ---
 
@@ -168,7 +168,7 @@ Only for **external events** that don't trigger re-render (rare). For state-driv
 
 ---
 
-## stenciljs-component-development Skill Corrections
+## Common Stencil Component Mistakes
 
 | Skill Says | Correct |
 | --- | --- |

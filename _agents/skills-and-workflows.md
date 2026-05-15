@@ -23,12 +23,7 @@ Skill invocation rules and available workflows. **Read when starting any compone
 **Deprecated Skills (gutted to stubs):** Use AGENTS.md files instead:
 - ~~`design-system-patterns`~~ → `AGENTS.md`, `tokens/AGENTS.md`
 - ~~`implement-design`~~ → `_agents/figma-extraction.md`
-- ~~`pix-stencil-storybook`~~ → `_agents/pixel-perfect-qa.md`
-- ~~`stencil-atomic-design-system`~~ → `AGENTS.md`, `src/components/AGENTS.md`, `tokens/AGENTS.md`
-- ~~`stenciljs-component-development`~~ → `src/components/AGENTS.md`, `src/components/_agents/*.md`
-- ~~`storybook-story-writing`~~ → `src/components/_agents/storybook-stories.md`
-- ~~`accessibility-compliance`~~ → `AGENTS.md`, `.windsurf/workflows/audit-accessibility.md`
-- ~~`e2e-testing-patterns`~~ → `src/components/_agents/e2e-testing.md`
+- ~~`accessibility-compliance`~~ → `AGENTS.md`, `.windsurf/workflows/audit-accessibility.md` (retained as redirect stub)
 
 **Standard component workflow** (atom/molecule with known patterns): follow AGENTS.md directly — no skill invocation needed.
 

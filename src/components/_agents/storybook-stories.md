@@ -127,7 +127,7 @@ Set in meta: `parameters: { docs: { source: { transform: (_src, ctx) => generate
 
 ---
 
-## storybook-story-writing Skill Corrections
+## Common Story-Writing Mistakes (Web Components vs React)
 
 | Skill Says | Correct |
 | --- | --- |
