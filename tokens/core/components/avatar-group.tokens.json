@@ -2,7 +2,7 @@
   "avatar-group": {
     "container": {
       "gap": {
-        "value": "{spacing.xs}",
+        "value": "{spacing.12}",
         "type": "dimension"
       }
     }

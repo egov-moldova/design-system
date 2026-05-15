@@ -1,18 +1,18 @@
 {
   "table-header": {
     "content": {
-      "paddingInline": { "value": "{space.sm}", "type": "dimension" },
-      "paddingBlock": { "value": "{space.xs}", "type": "dimension" }
+      "paddingInline": { "value": "{spacing.16}", "type": "dimension" },
+      "paddingBlock": { "value": "{spacing.12}", "type": "dimension" }
     },
     "text": {
-      "gap": { "value": "{space.5xs}", "type": "dimension" }
+      "gap": { "value": "{spacing.4}", "type": "dimension" }
     },
     "actions": {
-      "gap": { "value": "{space.md}", "type": "dimension" }
+      "gap": { "value": "{spacing.20}", "type": "dimension" }
     },
     "border": {
-      "width": { "value": "{spacing.px}", "type": "dimension" },
-      "color": { "value": "{color.neutral.border.weaker}", "type": "color" }
+      "width": { "value": "{spacing.2}", "type": "dimension" },
+      "color": { "value": "{color.border.base.tertiary}", "type": "color" }
     }
   }
 }

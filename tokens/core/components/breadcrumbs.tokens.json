@@ -2,19 +2,19 @@
   "breadcrumbs": {
     "separator": {
       "color": {
-        "value": "{color.neutral.text.weaker}",
+        "value": "{color.text.base.tertiary}",
         "type": "color",
         "description": "Separator slash color"
       }
     },
     "gap": {
-      "value": "{spacing.2xs}",
+      "value": "{spacing.12}",
       "type": "dimension",
       "description": "Gap between breadcrumb items"
     },
     "item": {
       "borderRadius": {
-        "value": "{radius.sm}",
+        "value": "{borderRadius.4}",
         "type": "dimension",
         "description": "Border radius for breadcrumb items"
       }
@@ -22,28 +22,28 @@
     "current-page": {
       "color": {
         "default": {
-          "value": "{color.neutral.text.weak}",
+          "value": "{color.text.base.secondary}",
           "type": "color",
           "description": "Current page text color"
         },
         "disabled": {
-          "value": "{color.neutral.text.weakest}",
+          "value": "{color.text.base.tertiary}",
           "type": "color",
           "description": "Current page text color when disabled"
         }
       },
       "fontSize": {
-        "value": "{fontSize.sm}",
+        "value": "{fontSize.14}",
         "type": "dimension",
         "description": "Current page font size"
       },
       "lineHeight": {
-        "value": "{lineHeight.md}",
+        "value": "{lineHeight.20}",
         "type": "dimension",
         "description": "Current page line height"
       },
       "fontWeight": {
-        "value": "{fontWeight.normal}",
+        "value": "{fontWeight.regular}",
         "type": "fontWeight",
         "description": "Current page font weight"
       }

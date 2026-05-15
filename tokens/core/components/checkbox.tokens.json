@@ -63,11 +63,11 @@
       },
       "mark": {
         "default": {
-          "value": "{color.neutral.text.inverted-static}",
+          "value": "{color.text.base-inverse.on-color}",
           "type": "color"
         },
         "disabled": {
-          "value": "{color.neutral.text.weakest}",
+          "value": "{color.text.base.tertiary}",
           "type": "color"
         }
       },

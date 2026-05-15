@@ -6,17 +6,17 @@
       "description": "Default width for skeleton loader"
     },
     "height": {
-      "value": "{space.md}",
+      "value": "{spacing.20}",
       "type": "dimension",
       "description": "Default height for skeleton loader"
     },
     "borderRadius": {
-      "value": "{radius.md}",
+      "value": "{borderRadius.8}",
       "type": "dimension",
       "description": "Default border radius for skeleton loader"
     },
     "backgroundColor": {
-      "value": "{color.system.fill-empty-state}",
+      "value": "{color.background.disabled.default}",
       "type": "color",
       "description": "Background color for skeleton loader"
     }

@@ -2,40 +2,40 @@
   "tabs": {
     "gap": {
       "style3": {
-        "value": "{space.xs}",
+        "value": "{spacing.12}",
         "type": "dimension"
       }
     },
     "borderWidth": {
-      "value": "{border.width.1}",
+      "value": "{borderWidth.1}",
       "type": "dimension"
     },
     "borderRadius": {
       "style1": {
         "lg": {
-          "value": "{radius.xl}",
+          "value": "{borderRadius.16}",
           "type": "dimension"
         },
         "md": {
-          "value": "{radius.lg}",
+          "value": "{borderRadius.12}",
           "type": "dimension"
         },
         "sm": {
-          "value": "{radius.md}",
+          "value": "{borderRadius.8}",
           "type": "dimension"
         }
       },
       "style2": {
         "lg": {
-          "value": "{radius.xl}",
+          "value": "{borderRadius.16}",
           "type": "dimension"
         },
         "md": {
-          "value": "{radius.lg}",
+          "value": "{borderRadius.12}",
           "type": "dimension"
         },
         "sm": {
-          "value": "{radius.md}",
+          "value": "{borderRadius.8}",
           "type": "dimension"
         }
       }
@@ -56,41 +56,41 @@
         }
       },
       "style2": {
-        "value": "{space.none}",
+        "value": "{spacing.0}",
         "type": "dimension"
       }
     },
     "borderColor": {
       "default": {
-        "value": "{color.neutral.border.weaker}",
+        "value": "{color.border.base.tertiary}",
         "type": "color"
       },
       "error": {
-        "value": "{color.system.error.border}",
+        "value": "{color.border.danger.default}",
         "type": "color"
       },
       "selected": {
-        "value": "{color.primary.border.active}",
+        "value": "{color.border.brand.default}",
         "type": "color"
       }
     },
     "background": {
       "style1": {
-        "value": "{color.neutral.transparent.weaker}",
+        "value": "{color.background.alpha.large-surface}",
         "type": "color"
       },
       "style2": {
-        "value": "{color.neutral.transparent.weaker}",
+        "value": "{color.background.alpha.large-surface}",
         "type": "color"
       }
     },
     "divider": {
       "color": {
-        "value": "{color.neutral.border.weaker}",
+        "value": "{color.border.base.tertiary}",
         "type": "color"
       },
       "width": {
-        "value": "{border.width.1}",
+        "value": "{borderWidth.1}",
         "type": "dimension"
       }
     }

@@ -2,52 +2,52 @@
   "label": {
     "color": {
       "default": {
-        "value": "{color.neutral.text.weak}",
+        "value": "{color.text.base.secondary}",
         "type": "color"
       },
       "hover": {
-        "value": "{color.neutral.text.default}",
+        "value": "{color.text.base.default}",
         "type": "color"
       },
       "active": {
-        "value": "{color.neutral.text.default}",
+        "value": "{color.text.base.default}",
         "type": "color"
       },
       "disabled": {
-        "value": "{color.neutral.text.weakest}",
+        "value": "{color.text.base.tertiary}",
         "type": "color"
       },
       "error": {
-        "value": "{color.system.error.icon}",
+        "value": "{color.icon.danger.default}",
         "type": "color"
       }
     },
     "fontSize": {
       "md": {
-        "value": "{fontSize.sm}",
+        "value": "{fontSize.14}",
         "type": "fontSize"
       },
       "sm": {
-        "value": "{fontSize.xs}",
+        "value": "{fontSize.12}",
         "type": "fontSize"
       }
     },
     "lineHeight": {
       "md": {
-        "value": "{lineHeight.md}",
+        "value": "{lineHeight.20}",
         "type": "lineHeight"
       },
       "sm": {
-        "value": "{lineHeight.sm}",
+        "value": "{lineHeight.16}",
         "type": "lineHeight"
       }
     },
     "fontFamily": {
-      "value": "{fontFamily.body}",
+      "value": "{fontFamily.primary}",
       "type": "fontFamily"
     },
     "fontWeight": {
-      "value": "{fontWeight.normal}",
+      "value": "{fontWeight.regular}",
       "type": "fontWeight"
     },
     "gap": {
@@ -56,15 +56,15 @@
     },
     "helper": {
       "color": {
-        "value": "{color.neutral.text.weaker}",
+        "value": "{color.text.base.tertiary}",
         "type": "color"
       },
       "fontSize": {
-        "value": "{fontSize.xs}",
+        "value": "{fontSize.12}",
         "type": "fontSize"
       },
       "lineHeight": {
-        "value": "{lineHeight.sm}",
+        "value": "{lineHeight.16}",
         "type": "lineHeight"
       },
       "icon": {

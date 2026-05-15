@@ -1,17 +1,17 @@
 {
   "textarea": {
     "gap": {
-      "value": "{spacing.2xs}",
+      "value": "{spacing.12}",
       "type": "dimension"
     },
     "container": {
       "gap": {
-        "value": "{spacing.2xs}",
+        "value": "{spacing.12}",
         "type": "dimension"
       },
       "content": {
         "gap": {
-          "value": "{spacing.2xs}",
+          "value": "{spacing.12}",
           "type": "dimension"
         }
       },
@@ -24,62 +24,62 @@
         "type": "dimension"
       },
       "borderRadius": {
-        "value": "{radius.md}",
+        "value": "{borderRadius.8}",
         "type": "dimension"
       },
       "borderWidth": {
-        "value": "{spacing.px}",
+        "value": "{spacing.2}",
         "type": "dimension"
       },
       "borderColor": {
         "default": {
-          "value": "{color.neutral.border.weaker}",
+          "value": "{color.border.base.tertiary}",
           "type": "color"
         },
         "disabled": {
-          "value": "{color.neutral.border.weaker}",
+          "value": "{color.border.base.tertiary}",
           "type": "color"
         },
         "focus": {
-          "value": "{color.primary.border.active}",
+          "value": "{color.border.brand.default}",
           "type": "color"
         },
         "hover": {
-          "value": "{color.neutral.border.weak}",
+          "value": "{color.border.base.secondary}",
           "type": "color"
         },
         "invalid": {
-          "value": "{color.system.error.icon}",
+          "value": "{color.icon.danger.default}",
           "type": "color"
         }
       },
       "backgroundColor": {
         "default": {
-          "value": "{color.neutral.background.base}",
+          "value": "{color.background.base.default}",
           "type": "color"
         },
         "hover": {
-          "value": "{color.neutral.transparent.weak}",
+          "value": "{color.background.alpha.overlay-light}",
           "type": "color"
         },
         "disabled": {
-          "value": "{color.neutral.background.base}",
+          "value": "{color.background.base.default}",
           "type": "color"
         },
         "invalid": {
-          "value": "{color.neutral.background.base}",
+          "value": "{color.background.base.default}",
           "type": "color"
         }
       },
       "outlineColor": {
         "focus": {
-          "value": "{color.secondary.border}",
+          "value": "{color.border.brand.default}",
           "type": "color"
         }
       },
       "outlineWidth": {
         "focus": {
-          "value": "{border.width.2}",
+          "value": "{borderWidth.2}",
           "type": "dimension"
         }
       },
@@ -91,53 +91,53 @@
       },
       "paddingInline": {
         "label-outside": {
-          "value": "{spacing.sm}",
+          "value": "{spacing.16}",
           "type": "dimension"
         },
         "label-inside": {
-          "value": "{spacing.sm}",
+          "value": "{spacing.16}",
           "type": "dimension"
         }
       },
       "paddingBlock": {
         "label-outside": {
-          "value": "{spacing.xs}",
+          "value": "{spacing.12}",
           "type": "dimension"
         },
         "label-inline": {
-          "value": "{spacing.xs}",
+          "value": "{spacing.12}",
           "type": "dimension"
         }
       }
     },
     "input": {
       "fontSize": {
-        "value": "{fontSize.sm}",
+        "value": "{fontSize.14}",
         "type": "fontSize"
       },
       "lineHeight": {
-        "value": "{lineHeight.md}",
+        "value": "{lineHeight.20}",
         "type": "lineHeight"
       },
       "fontFamily": {
-        "value": "{fontFamily.body}",
+        "value": "{fontFamily.primary}",
         "type": "fontFamily"
       },
       "fontWeight": {
-        "value": "{fontWeight.normal}",
+        "value": "{fontWeight.regular}",
         "type": "fontWeight"
       },
       "color": {
         "default": {
-          "value": "{color.neutral.text.default}",
+          "value": "{color.text.base.default}",
           "type": "color"
         },
         "placeholder": {
-          "value": "{color.neutral.text.weaker}",
+          "value": "{color.text.base.tertiary}",
           "type": "color"
         },
         "disabled": {
-          "value": "{color.neutral.text.weakest}",
+          "value": "{color.text.base.tertiary}",
           "type": "color"
         }
       }
@@ -145,33 +145,33 @@
     "label": {
       "color": {
         "default": {
-          "value": "{color.neutral.text.weaker}",
+          "value": "{color.text.base.tertiary}",
           "type": "color"
         },
         "disabled": {
-          "value": "{color.neutral.text.weakest}",
+          "value": "{color.text.base.tertiary}",
           "type": "color"
         }
       },
       "fontFamily": {
-        "value": "{fontFamily.body}",
+        "value": "{fontFamily.primary}",
         "type": "fontFamily"
       },
       "fontSize": {
-        "value": "{fontSize.sm}",
+        "value": "{fontSize.14}",
         "type": "fontSize"
       },
       "lineHeight": {
-        "value": "{lineHeight.md}",
+        "value": "{lineHeight.20}",
         "type": "lineHeight"
       },
       "fontWeight": {
-        "value": "{fontWeight.normal}",
+        "value": "{fontWeight.regular}",
         "type": "fontWeight"
       },
       "inside": {
         "fontSize": {
-          "value": "{fontSize.sm}",
+          "value": "{fontSize.14}",
           "type": "fontSize"
         },
         "paddingTop": {
@@ -180,7 +180,7 @@
         },
         "floated": {
           "fontSize": {
-            "value": "{fontSize.xs}",
+            "value": "{fontSize.12}",
             "type": "fontSize"
           }
         },
@@ -191,7 +191,7 @@
       },
       "required": {
         "color": {
-          "value": "{color.system.error.text}",
+          "value": "{color.text.danger.default}",
           "type": "color"
         }
       }
@@ -199,24 +199,24 @@
     "bottom-helper": {
       "color": {
         "default": {
-          "value": "{color.neutral.text.weaker}",
+          "value": "{color.text.base.tertiary}",
           "type": "color"
         },
         "invalid": {
-          "value": "{color.system.error.text}",
+          "value": "{color.text.danger.default}",
           "type": "color"
         }
       },
       "fontFamily": {
-        "value": "{fontFamily.body}",
+        "value": "{fontFamily.primary}",
         "type": "fontFamily"
       },
       "fontSize": {
-        "value": "{fontSize.xs}",
+        "value": "{fontSize.12}",
         "type": "fontSize"
       },
       "lineHeight": {
-        "value": "{lineHeight.sm}",
+        "value": "{lineHeight.16}",
         "type": "lineHeight"
       }
     }

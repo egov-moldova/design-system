@@ -1,25 +1,25 @@
 {
   "pagination-go-to": {
     "gap": {
-      "value": "{spacing.xs}",
+      "value": "{spacing.12}",
       "type": "dimension"
     },
     "input": {
       "color": {
-        "value": "{color.neutral.text.weaker}",
+        "value": "{color.text.base.tertiary}",
         "type": "color"
       },
       "minWidth": {
         "lg": {
-          "value": "{space.4xl}",
+          "value": "{spacing.48}",
           "type": "dimension"
         },
         "md": {
-          "value": "{space.4xl}",
+          "value": "{spacing.48}",
           "type": "dimension"
         },
         "sm": {
-          "value": "{space.4xl}",
+          "value": "{spacing.48}",
           "type": "dimension"
         }
       }

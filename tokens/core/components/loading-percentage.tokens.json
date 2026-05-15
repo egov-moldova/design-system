@@ -2,15 +2,15 @@
   "loading-percentage": {
     "text": {
       "color": {
-        "value": "{color.neutral.text.weak}",
+        "value": "{color.text.base.secondary}",
         "type": "color"
       },
       "size": {
-        "value": "{fontSize.xs}",
+        "value": "{fontSize.12}",
         "type": "dimension"
       },
       "lineHeight": {
-        "value": "{lineHeight.sm}",
+        "value": "{lineHeight.16}",
         "type": "dimension"
       }
     }

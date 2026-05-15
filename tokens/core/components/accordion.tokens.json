@@ -2,64 +2,64 @@
   "accordion": {
     "header": {
       "paddingInline": {
-        "md": { "value": "{space.xs}", "type": "dimension" },
-        "sm": { "value": "{space.3xs}", "type": "dimension" }
+        "md": { "value": "{spacing.12}", "type": "dimension" },
+        "sm": { "value": "{spacing.8}", "type": "dimension" }
       },
-      "paddingBlock": { "value": "{space.3xs}", "type": "dimension" },
-      "gap": { "value": "{space.6xs}", "type": "dimension" },
+      "paddingBlock": { "value": "{spacing.8}", "type": "dimension" },
+      "gap": { "value": "{spacing.2}", "type": "dimension" },
       "background": {
-        "hover": { "value": "{color.neutral.transparent.weak}", "type": "color" },
-        "pressed": { "value": "{color.neutral.transparent.default}", "type": "color" },
+        "hover": { "value": "{color.background.alpha.overlay-light}", "type": "color" },
+        "pressed": { "value": "{color.background.alpha.overlay-light}", "type": "color" },
         "disabled": { "value": "transparent", "type": "color" }
       },
-      "borderColor": { "value": "{color.neutral.border.weakest}", "type": "color" },
-      "borderWidth": { "value": "{border.width.1}", "type": "dimension" },
+      "borderColor": { "value": "{color.border.base.subtle}", "type": "color" },
+      "borderWidth": { "value": "{borderWidth.1}", "type": "dimension" },
       "text": {
-        "default": { "value": "{color.neutral.text.weak}", "type": "color" },
-        "hover": { "value": "{color.neutral.text.default}", "type": "color" },
-        "pressed": { "value": "{color.neutral.text.default}", "type": "color" },
-        "disabled": { "value": "{color.neutral.text.weakest}", "type": "color" }
+        "default": { "value": "{color.text.base.secondary}", "type": "color" },
+        "hover": { "value": "{color.text.base.default}", "type": "color" },
+        "pressed": { "value": "{color.text.base.default}", "type": "color" },
+        "disabled": { "value": "{color.text.base.tertiary}", "type": "color" }
       }
     },
     "summary": {
-      "gap": { "value": "{space.3xs}", "type": "dimension" },
-      "padding": { "value": "{space.5xs}", "type": "dimension" }
+      "gap": { "value": "{spacing.8}", "type": "dimension" },
+      "padding": { "value": "{spacing.4}", "type": "dimension" }
     },
     "icon": {
       "size": {
-        "md": { "value": "{space.md}", "type": "dimension" },
-        "sm": { "value": "{space.sm}", "type": "dimension" }
+        "md": { "value": "{spacing.20}", "type": "dimension" },
+        "sm": { "value": "{spacing.16}", "type": "dimension" }
       },
-      "padding": { "value": "{space.5xs}", "type": "dimension" },
-      "borderRadius": { "value": "{radius.xs}", "type": "dimension" }
+      "padding": { "value": "{spacing.4}", "type": "dimension" },
+      "borderRadius": { "value": "{borderRadius.4}", "type": "dimension" }
     },
     "outline": {
       "width": {
-        "focus": { "value": "{border.width.2}", "type": "dimension" }
+        "focus": { "value": "{borderWidth.2}", "type": "dimension" }
       },
       "color": {
-        "focus": { "value": "{color.secondary.border}", "type": "color" }
+        "focus": { "value": "{color.border.brand.default}", "type": "color" }
       }
     },
     "panel": {
-      "padding": { "value": "{space.sm}", "type": "dimension" },
-      "gap": { "value": "{space.sm}", "type": "dimension" }
+      "padding": { "value": "{spacing.16}", "type": "dimension" },
+      "gap": { "value": "{spacing.16}", "type": "dimension" }
     },
     "font": {
       "size": {
-        "md": { "value": "{fontSize.sm}", "type": "dimension" },
-        "sm": { "value": "{fontSize.xs}", "type": "dimension" }
+        "md": { "value": "{fontSize.14}", "type": "dimension" },
+        "sm": { "value": "{fontSize.12}", "type": "dimension" }
       },
       "lineHeight": {
-        "md": { "value": "{lineHeight.md}", "type": "dimension" },
-        "sm": { "value": "{lineHeight.sm}", "type": "dimension" }
+        "md": { "value": "{lineHeight.20}", "type": "dimension" },
+        "sm": { "value": "{lineHeight.16}", "type": "dimension" }
       },
-      "weight": { "value": "{fontWeight.semiBold}", "type": "fontWeight" },
-      "family": { "value": "{fontFamily.body}", "type": "fontFamily" }
+      "weight": { "value": "{fontWeight.semibold}", "type": "fontWeight" },
+      "family": { "value": "{fontFamily.primary}", "type": "fontFamily" }
     },
     "skeleton": {
       "header": {
-        "paddingBlock": { "value": "{space.5xs}", "type": "dimension" }
+        "paddingBlock": { "value": "{spacing.4}", "type": "dimension" }
       }
     }
   }

@@ -1,95 +1,104 @@
 {
   "fontFamily": {
-    "body": {
-      "value": "'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
-      "type": "fontFamily"
-    },
-    "heading": {
-      "value": "'Bebas Neue', sans-serif",
+    "primary": {
+      "value": "Onest",
       "type": "fontFamily"
     }
   },
   "fontSize": {
-    "base": {
-      "value": "{fontSize.md}",
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
-    },
-    "3xs": {
-      "value": 8,
-      "type": "dimension",
-      "attributes": {
-        "category": "size"
-      }
-    },
-    "2xs": {
+    "10": {
       "value": 10,
       "type": "dimension",
       "attributes": {
         "category": "size"
       }
     },
-    "xs": {
+    "12": {
       "value": 12,
       "type": "dimension",
       "attributes": {
         "category": "size"
       }
     },
-    "sm": {
+    "14": {
       "value": 14,
       "type": "dimension",
       "attributes": {
         "category": "size"
       }
     },
-
-    "md": {
+    "16": {
       "value": 16,
       "type": "dimension",
       "attributes": {
         "category": "size"
       }
     },
-    "lg": {
+    "18": {
       "value": 18,
       "type": "dimension",
       "attributes": {
         "category": "size"
       }
     },
-    "xl": {
+    "20": {
       "value": 20,
       "type": "dimension",
       "attributes": {
         "category": "size"
       }
     },
-    "2xl": {
+    "22": {
+      "value": 22,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "24": {
       "value": 24,
       "type": "dimension",
       "attributes": {
         "category": "size"
       }
     },
-    "3xl": {
-      "value": 30,
+    "28": {
+      "value": 28,
       "type": "dimension",
       "attributes": {
         "category": "size"
       }
     },
-    "4xl": {
-      "value": 36,
+    "32": {
+      "value": 32,
       "type": "dimension",
       "attributes": {
         "category": "size"
       }
     },
-    "5xl": {
-      "value": 44,
+    "40": {
+      "value": 40,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "48": {
+      "value": 48,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "56": {
+      "value": 56,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "64": {
+      "value": 64,
       "type": "dimension",
       "attributes": {
         "category": "size"
@@ -97,17 +106,115 @@
     }
   },
   "fontWeight": {
-    "normal": {
+    "regular": {
       "value": 400,
       "type": "fontWeight"
     },
-    "semiBold": {
+    "medium": {
+      "value": 500,
+      "type": "fontWeight"
+    },
+    "semibold": {
       "value": 600,
       "type": "fontWeight"
     },
-    "light": {
-      "value": 300,
+    "bold": {
+      "value": 700,
       "type": "fontWeight"
     }
-  }
+  },
+  "lineHeight": {
+    "12": {
+      "value": 12,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "16": {
+      "value": 16,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "20": {
+      "value": 20,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "24": {
+      "value": 24,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "26": {
+      "value": 26,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "28": {
+      "value": 28,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "30": {
+      "value": 30,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "32": {
+      "value": 32,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "36": {
+      "value": 36,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "40": {
+      "value": 40,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "48": {
+      "value": 48,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "56": {
+      "value": 56,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    },
+    "64": {
+      "value": 64,
+      "type": "dimension",
+      "attributes": {
+        "category": "size"
+      }
+    }
+  },
+  "letterSpacing": {}
 }

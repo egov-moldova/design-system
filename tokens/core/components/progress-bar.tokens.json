@@ -1,17 +1,17 @@
 {
   "progress-bar": {
     "container": {
-      "gap": { "value": "{spacing.xs}", "type": "dimension" }
+      "gap": { "value": "{spacing.12}", "type": "dimension" }
     },
     "label": {
-      "fontSize": { "value": "{fontSize.sm}", "type": "dimension" },
-      "lineHeight": { "value": "{lineHeight.md}", "type": "dimension" },
-      "color": { "value": "{color.neutral.text.default}", "type": "color" }
+      "fontSize": { "value": "{fontSize.14}", "type": "dimension" },
+      "lineHeight": { "value": "{lineHeight.20}", "type": "dimension" },
+      "color": { "value": "{color.text.base.default}", "type": "color" }
     },
     "percentage": {
-      "fontSize": { "value": "{fontSize.xs}", "type": "dimension" },
-      "lineHeight": { "value": "{lineHeight.sm}", "type": "dimension" },
-      "color": { "value": "{color.neutral.text.weak}", "type": "color" }
+      "fontSize": { "value": "{fontSize.12}", "type": "dimension" },
+      "lineHeight": { "value": "{lineHeight.16}", "type": "dimension" },
+      "color": { "value": "{color.text.base.secondary}", "type": "color" }
     },
     "track": {
       "height": {
@@ -19,16 +19,16 @@
         "md": { "value": "8px", "type": "dimension" },
         "sm": { "value": "4px", "type": "dimension" }
       },
-      "borderRadius": { "value": "{radius.sm}", "type": "dimension" },
+      "borderRadius": { "value": "{borderRadius.4}", "type": "dimension" },
       "background": {
-        "default": { "value": "{color.neutral.transparent.strong}", "type": "color" },
-        "error": { "value": "{color.system.error.background-transparent}", "type": "color" }
+        "default": { "value": "{color.background.alpha.overlay-dark}", "type": "color" },
+        "error": { "value": "{color.background.danger.secondary}", "type": "color" }
       }
     },
     "fill": {
       "background": {
-        "default": { "value": "{color.primary.background.strongest}", "type": "color" },
-        "error": { "value": "{color.system.error.background}", "type": "color" }
+        "default": { "value": "{color.background.brand.default-active}", "type": "color" },
+        "error": { "value": "{color.background.danger.default}", "type": "color" }
       }
     }
   }

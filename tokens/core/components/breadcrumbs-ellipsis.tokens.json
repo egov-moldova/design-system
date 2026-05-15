@@ -2,63 +2,63 @@
   "breadcrumbs-ellipsis": {
     "color": {
       "default": {
-        "value": "{color.primary.text.weak}",
+        "value": "{color.text.brand.on-secondary}",
         "type": "color",
         "description": "Ellipsis button text color in default state"
       },
       "hover": {
-        "value": "{color.primary.text.weaker}",
+        "value": "{color.text.brand.on-secondary}",
         "type": "color",
         "description": "Ellipsis button text color on hover"
       },
       "pressed": {
-        "value": "{color.primary.text.default}",
+        "value": "{color.text.brand.default}",
         "type": "color",
         "description": "Ellipsis button text color when pressed"
       },
       "disabled": {
-        "value": "{color.neutral.text.weakest}",
+        "value": "{color.text.base.tertiary}",
         "type": "color",
         "description": "Ellipsis button text color when disabled"
       }
     },
     "outlineColor": {
       "focus": {
-        "value": "{color.secondary.border}",
+        "value": "{color.border.brand.default}",
         "type": "color",
         "description": "Ellipsis button focus outline color"
       }
     },
     "outlineWidth": {
-      "value": "{border.width.2}",
+      "value": "{borderWidth.2}",
       "type": "dimension",
       "description": "Ellipsis button focus outline width"
     },
     "outlineOffset": {
-      "value": "{spacing.2xs}",
+      "value": "{spacing.12}",
       "type": "dimension",
       "description": "Ellipsis button focus outline offset"
     },
     "background": {
       "focus": {
-        "value": "{color.neutral.background.base}",
+        "value": "{color.background.base.default}",
         "type": "color",
         "description": "Ellipsis button background on focus"
       }
     },
     "borderRadius": {
-      "value": "{radius.sm}",
+      "value": "{borderRadius.4}",
       "type": "dimension",
       "description": "Ellipsis button border radius"
     },
     "dropdown": {
       "background": {
-        "value": "{color.neutral.background.base}",
+        "value": "{color.background.base.default}",
         "type": "color",
         "description": "Ellipsis dropdown background"
       },
       "borderRadius": {
-        "value": "{radius.md}",
+        "value": "{borderRadius.8}",
         "type": "dimension",
         "description": "Ellipsis dropdown border radius"
       },

@@ -3,7 +3,7 @@
     "icon": {
       "color": {
         "selected": {
-          "value": "{color.neutral.text.inverted}",
+          "value": "{color.text.base-inverse.default}",
           "type": "color"
         }
       }
@@ -11,7 +11,7 @@
     "label": {
       "color": {
         "selected": {
-          "value": "{color.neutral.text.inverted}",
+          "value": "{color.text.base-inverse.default}",
           "type": "color"
         }
       }
@@ -19,7 +19,7 @@
     "description": {
       "color": {
         "selected": {
-          "value": "{color.neutral.text.inverted}",
+          "value": "{color.text.base-inverse.default}",
           "type": "color"
         }
       }

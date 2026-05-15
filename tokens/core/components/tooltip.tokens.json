@@ -1,37 +1,37 @@
 {
   "tooltip": {
-    "paddingInline": { "value": "{space.xs}", "type": "spacing" },
-    "paddingBlock": { "value": "{space.3xs}", "type": "spacing" },
-    "gap": { "value": "{space.3xs}", "type": "spacing" },
+    "paddingInline": { "value": "{spacing.12}", "type": "spacing" },
+    "paddingBlock": { "value": "{spacing.8}", "type": "spacing" },
+    "gap": { "value": "{spacing.8}", "type": "spacing" },
     "zIndex": { "value": "9999", "type": "zIndex" },
-    "borderRadius": { "value": "{radius.md}", "type": "borderRadius" },
-    "borderWidth": { "value": "{border.width.1}", "type": "borderWidth" },
-    "borderColor": { "value": "{color.neutral.border.weakest}", "type": "color" },
+    "borderRadius": { "value": "{borderRadius.8}", "type": "borderRadius" },
+    "borderWidth": { "value": "{borderWidth.1}", "type": "borderWidth" },
+    "borderColor": { "value": "{color.border.base.subtle}", "type": "color" },
     "maxWidth": { "value": "280px", "type": "sizing" },
-    "shadow": { "value": "{shadow.md}", "type": "string" },
+    "shadow": { "value": "{dropShadow.200}", "type": "string" },
     "transitionDuration": { "value": "150ms", "type": "duration" },
     "transitionTimingFunction": { "value": "ease-in-out", "type": "cubicBezier" },
     "background": {
-      "default": { "value": "{color.neutral.background.base}", "type": "color" },
-      "contrast": { "value": "{color.neutral.background.strongest}", "type": "color" }
+      "default": { "value": "{color.background.base.default}", "type": "color" },
+      "contrast": { "value": "{color.background.base-inverse.default}", "type": "color" }
     },
     "title": {
       "color": {
-        "default": { "value": "{color.neutral.text.default}", "type": "color" },
-        "contrast": { "value": "{color.neutral.text.inverted}", "type": "color" }
+        "default": { "value": "{color.text.base.default}", "type": "color" },
+        "contrast": { "value": "{color.text.base-inverse.default}", "type": "color" }
       },
-      "fontSize": { "value": "{fontSize.sm}", "type": "fontSizes" },
-      "fontWeight": { "value": "{fontWeight.semiBold}", "type": "fontWeights" },
-      "lineHeight": { "value": "{lineHeight.md}", "type": "lineHeights" }
+      "fontSize": { "value": "{fontSize.14}", "type": "fontSizes" },
+      "fontWeight": { "value": "{fontWeight.semibold}", "type": "fontWeights" },
+      "lineHeight": { "value": "{lineHeight.20}", "type": "lineHeights" }
     },
     "description": {
       "color": {
-        "default": { "value": "{color.neutral.text.weak}", "type": "color" },
-        "contrast": { "value": "{color.neutral.text.inverted-weak}", "type": "color" }
+        "default": { "value": "{color.text.base.secondary}", "type": "color" },
+        "contrast": { "value": "{color.text.base-inverse.default}", "type": "color" }
       },
-      "fontSize": { "value": "{fontSize.xs}", "type": "fontSizes" },
-      "fontWeight": { "value": "{fontWeight.normal}", "type": "fontWeights" },
-      "lineHeight": { "value": "{lineHeight.sm}", "type": "lineHeights" }
+      "fontSize": { "value": "{fontSize.12}", "type": "fontSizes" },
+      "fontWeight": { "value": "{fontWeight.regular}", "type": "fontWeights" },
+      "lineHeight": { "value": "{lineHeight.16}", "type": "lineHeights" }
     },
     "arrow": {
       "size": { "value": "8px", "type": "sizing" },
@@ -39,11 +39,11 @@
       "edge": { "margin": { "value": "12px", "type": "spacing" } }
     },
     "error": {
-      "color": { "value": "{color.primary.text.default}", "type": "color" },
-      "fontSize": { "value": "{fontSize.xs}", "type": "fontSizes" },
-      "padding": { "value": "{space.3xs}", "type": "spacing" },
-      "borderWidth": { "value": "{border.width.1}", "type": "borderWidth" },
-      "borderColor": { "value": "{color.primary.border.default}", "type": "color" }
+      "color": { "value": "{color.text.brand.default}", "type": "color" },
+      "fontSize": { "value": "{fontSize.12}", "type": "fontSizes" },
+      "padding": { "value": "{spacing.8}", "type": "spacing" },
+      "borderWidth": { "value": "{borderWidth.1}", "type": "borderWidth" },
+      "borderColor": { "value": "{color.border.brand.default}", "type": "color" }
     }
   }
 }

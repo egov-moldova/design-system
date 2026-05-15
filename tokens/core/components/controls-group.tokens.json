@@ -2,17 +2,17 @@
   "controls-group": {
     "gap": {
       "vertical": {
-        "value": "{spacing.xs}",
+        "value": "{spacing.12}",
         "type": "dimension",
         "description": "Gap between controls in vertical layout"
       },
       "horizontal": {
-        "value": "{spacing.sm}",
+        "value": "{spacing.16}",
         "type": "dimension",
         "description": "Gap between controls in horizontal layout"
       },
       "column": {
-        "value": "{spacing.sm}",
+        "value": "{spacing.16}",
         "type": "dimension",
         "description": "Gap between columns in multi-column layout"
       }

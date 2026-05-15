@@ -1,62 +1,62 @@
 {
   "upload-file-item": {
     "background": {
-      "default": { "value": "{color.neutral.background.base}", "type": "color" },
-      "hover": { "value": "{color.neutral.background.default}", "type": "color" }
+      "default": { "value": "{color.background.base.default}", "type": "color" },
+      "hover": { "value": "{color.background.base.default}", "type": "color" }
     },
     "height": { "value": "48px", "type": "dimension" },
     "borderWidth": { "value": "1px", "type": "dimension" },
-    "borderColor": { "value": "{color.neutral.border.weakest}", "type": "color" },
-    "borderRadius": { "value": "{radius.md}", "type": "dimension" },
-    "padding": { "value": "{spacing.xs}", "type": "dimension" },
+    "borderColor": { "value": "{color.border.base.subtle}", "type": "color" },
+    "borderRadius": { "value": "{borderRadius.8}", "type": "dimension" },
+    "padding": { "value": "{spacing.12}", "type": "dimension" },
     "no-frame": {
-      "paddingInline": { "value": "{spacing.md}", "type": "dimension" }
+      "paddingInline": { "value": "{spacing.20}", "type": "dimension" }
     },
-    "gap": { "value": "{spacing.xs}", "type": "dimension" },
+    "gap": { "value": "{spacing.12}", "type": "dimension" },
     "icon-area": {
       "size": { "value": "16px", "type": "dimension" }
     },
     "card-icon": {
       "background": {
-        "default": { "value": "{color.neutral.transparent.default}", "type": "color" },
-        "error": { "value": "{color.system.error.background-transparent}", "type": "color" }
+        "default": { "value": "{color.background.alpha.overlay-light}", "type": "color" },
+        "error": { "value": "{color.background.danger.secondary}", "type": "color" }
       },
       "size": { "value": "32px", "type": "dimension" },
-      "radius": { "value": "{radius.sm}", "type": "dimension" }
+      "radius": { "value": "{borderRadius.4}", "type": "dimension" }
     },
     "content": {
-      "gap": { "value": "{spacing.xs}", "type": "dimension" }
+      "gap": { "value": "{spacing.12}", "type": "dimension" }
     },
     "filename-row": {
-      "gap": { "value": "{spacing.xs}", "type": "dimension" }
+      "gap": { "value": "{spacing.12}", "type": "dimension" }
     },
     "filename": {
-      "fontSize": { "value": "{fontSize.sm}", "type": "dimension" },
-      "lineHeight": { "value": "{lineHeight.md}", "type": "dimension" },
-      "color": { "value": "{color.neutral.text.default}", "type": "color" }
+      "fontSize": { "value": "{fontSize.14}", "type": "dimension" },
+      "lineHeight": { "value": "{lineHeight.20}", "type": "dimension" },
+      "color": { "value": "{color.text.base.default}", "type": "color" }
     },
     "percentage": {
-      "fontSize": { "value": "{fontSize.xs}", "type": "dimension" },
-      "lineHeight": { "value": "{lineHeight.sm}", "type": "dimension" },
-      "color": { "value": "{color.neutral.text.weak}", "type": "color" }
+      "fontSize": { "value": "{fontSize.12}", "type": "dimension" },
+      "lineHeight": { "value": "{lineHeight.16}", "type": "dimension" },
+      "color": { "value": "{color.text.base.secondary}", "type": "color" }
     },
     "remove-button": {
-      "padding": { "value": "{spacing.3xs}", "type": "dimension" },
-      "borderRadius": { "value": "{radius.xs}", "type": "dimension" },
+      "padding": { "value": "{spacing.8}", "type": "dimension" },
+      "borderRadius": { "value": "{borderRadius.4}", "type": "dimension" },
       "color": {
-        "default": { "value": "{color.neutral.icon.weak}", "type": "color" },
-        "hover": { "value": "{color.neutral.icon.default}", "type": "color" }
+        "default": { "value": "{color.icon.base.secondary}", "type": "color" },
+        "hover": { "value": "{color.icon.base.default}", "type": "color" }
       },
       "focus": {
         "outlineWidth": { "value": "2px", "type": "dimension" },
         "outlineOffset": { "value": "1px", "type": "dimension" }
       },
       "card": {
-        "background": { "value": "{color.neutral.background.base}", "type": "color" },
+        "background": { "value": "{color.background.base.default}", "type": "color" },
         "borderWidth": { "value": "1px", "type": "dimension" },
-        "borderColor": { "value": "{color.neutral.border.weakest}", "type": "color" },
+        "borderColor": { "value": "{color.border.base.subtle}", "type": "color" },
         "borderRadius": { "value": "24px", "type": "dimension" },
-        "shadow": { "value": "{shadow.sm}", "type": "shadow" },
+        "shadow": { "value": "{dropShadow.100}", "type": "shadow" },
         "icon": {
           "size": { "value": "20px", "type": "dimension" }
         }

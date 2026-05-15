@@ -1,22 +1,22 @@
 {
   "loading-dots": {
     "size": {
-      "value": "{space.2xs}",
+      "value": "{spacing.12}",
       "type": "dimension"
     },
     "dot": {
       "color": {
         "default": {
-          "value": "{color.primary.background.strongest}",
+          "value": "{color.background.brand.default-active}",
           "type": "color"
         },
         "active": {
-          "value": "{color.primary.transparent.strong}",
+          "value": "{color.background.brand.secondary-hover}",
           "type": "color"
         }
       },
       "size": {
-        "value": "{space.6xs}",
+        "value": "{spacing.2}",
         "type": "dimension"
       }
     }

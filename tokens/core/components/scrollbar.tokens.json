@@ -1,32 +1,32 @@
 {
   "scrollbar": {
     "track": {
-      "radius": { "value": "{radius.sm}", "type": "dimension" },
+      "radius": { "value": "{borderRadius.4}", "type": "dimension" },
       "size": { "value": "4px", "type": "dimension" },
       "background": {
         "neutral": {
-          "value": "{color.neutral.transparent.default}",
+          "value": "{color.background.alpha.overlay-light}",
           "type": "color"
         },
         "primary": {
-          "value": "{color.neutral.transparent.default}",
+          "value": "{color.background.alpha.overlay-light}",
           "type": "color"
         }
       }
     },
     "thumb": {
-      "radius": { "value": "{radius.sm}", "type": "dimension" },
+      "radius": { "value": "{borderRadius.4}", "type": "dimension" },
       "size": { "value": "4px", "type": "dimension" },
       "background": {
         "neutral": {
           "default": {
-            "value": "{color.neutral.background.strong}",
+            "value": "{color.background.base.tertiary}",
             "type": "color"
           }
         },
         "primary": {
           "default": {
-            "value": "{color.primary.background.strong}",
+            "value": "{color.background.brand.default-hover}",
             "type": "color"
           }
         }

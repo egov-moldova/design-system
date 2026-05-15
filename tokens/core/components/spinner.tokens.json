@@ -2,23 +2,23 @@
   "spinner": {
     "size": {
       "xlg": {
-        "value": "{space.6xl}",
+        "value": "{spacing.56}",
         "type": "dimension"
       },
       "lg": {
-        "value": "{space.4xl}",
+        "value": "{spacing.48}",
         "type": "dimension"
       },
       "md": {
-        "value": "{space.xl}",
+        "value": "{spacing.32}",
         "type": "dimension"
       },
       "sm": {
-        "value": "{space.lg}",
+        "value": "{spacing.24}",
         "type": "dimension"
       },
       "xsm": {
-        "value": "{space.sm}",
+        "value": "{spacing.16}",
         "type": "dimension"
       }
     },
@@ -33,13 +33,13 @@
     },
     "track": {
       "color": {
-        "value": "{color.neutral.transparent.strong}",
+        "value": "{color.background.alpha.overlay-dark}",
         "type": "color"
       }
     },
     "arc": {
       "color": {
-        "value": "{color.neutral.background.base-inverted}",
+        "value": "{color.background.base-inverse.default}",
         "type": "color"
       }
     }

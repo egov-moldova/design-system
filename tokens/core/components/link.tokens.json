@@ -3,72 +3,72 @@
     "label": {
       "color": {
         "default": {
-          "value": "{color.primary.text.weak}",
+          "value": "{color.text.brand.on-secondary}",
           "type": "color",
           "description": "Link text color in default state (#b92f25)"
         },
         "hover": {
-          "value": "{color.primary.text.weaker}",
+          "value": "{color.text.brand.on-secondary}",
           "type": "color",
           "description": "Link text color on hover (#d7372c)"
         },
         "active": {
-          "value": "{color.primary.text.default}",
+          "value": "{color.text.brand.default}",
           "type": "color",
           "description": "Link text color on active/pressed (#400f0d)"
         },
         "disabled": {
-          "value": "{color.neutral.text.weakest}",
+          "value": "{color.text.base.tertiary}",
           "type": "color",
           "description": "Link text color when disabled"
         },
         "error": {
-          "value": "{color.system.error.text}",
+          "value": "{color.text.danger.default}",
           "type": "color",
           "description": "Link text color in error state"
         }
       },
       "gap": {
         "md": {
-          "value": "{spacing.xs}",
+          "value": "{spacing.12}",
           "type": "size",
           "description": "Gap between icon and text for md link"
         },
         "sm": {
-          "value": "{spacing.2xs}",
+          "value": "{spacing.12}",
           "type": "size",
           "description": "Gap between icon and text for sm link"
         }
       },
       "borderRadius": {
         "md": {
-          "value": "{radius.2xl}",
+          "value": "{borderRadius.24}",
           "type": "dimension",
           "description": "Border radius for md link"
         },
         "sm": {
-          "value": "{radius.2xl}",
+          "value": "{borderRadius.24}",
           "type": "dimension",
           "description": "Border radius for sm link"
         }
       },
       "outlineColor": {
         "focus": {
-          "value": "{color.secondary.border}",
+          "value": "{color.border.brand.default}",
           "type": "color",
           "description": "Focus ring color"
         }
       },
       "outlineWidth": {
         "focus": {
-          "value": "{border.width.2}",
+          "value": "{borderWidth.2}",
           "type": "dimension",
           "description": "Focus ring width"
         }
       },
       "outlineOffset": {
         "focus": {
-          "value": "{border.width.2}",
+          "value": "{borderWidth.2}",
           "type": "dimension",
           "description": "Focus ring offset"
         }
@@ -80,7 +80,7 @@
           "description": "Underline color (inherits from text color)"
         },
         "offset": {
-          "value": "{spacing.3xs}",
+          "value": "{spacing.8}",
           "type": "dimension",
           "description": "Distance between text and underline"
         }
@@ -89,12 +89,12 @@
     "icon": {
       "size": {
         "md": {
-          "value": "{spacing.md}",
+          "value": "{spacing.20}",
           "type": "dimension",
           "description": "Icon size for md link"
         },
         "sm": {
-          "value": "{spacing.sm}",
+          "value": "{spacing.16}",
           "type": "dimension",
           "description": "Icon size for sm link"
         }
@@ -103,7 +103,7 @@
     "skeleton": {
       "backgroundColor": {
         "default": {
-          "value": "{color.system.fill-empty-state}",
+          "value": "{color.background.disabled.default}",
           "type": "color",
           "description": "Skeleton loader background color"
         }
@@ -122,12 +122,12 @@
       },
       "height": {
         "md": {
-          "value": "{spacing.md}",
+          "value": "{spacing.20}",
           "type": "dimension",
           "description": "Skeleton height for md link"
         },
         "sm": {
-          "value": "{spacing.sm}",
+          "value": "{spacing.16}",
           "type": "dimension",
           "description": "Skeleton height for sm link"
         }

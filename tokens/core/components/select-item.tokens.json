@@ -2,23 +2,23 @@
   "select-item": {
     "container": {
       "fontFamily": {
-        "value": "{fontFamily.body}",
+        "value": "{fontFamily.primary}",
         "type": "fontFamily"
       },
       "gap": {
-        "value": "{space.3xs}",
+        "value": "{spacing.8}",
         "type": "dimension"
       },
       "minHeight": {
-        "value": "{space.xl}",
+        "value": "{spacing.32}",
         "type": "dimension"
       },
       "paddingInline": {
-        "value": "{space.xs}",
+        "value": "{spacing.12}",
         "type": "dimension"
       },
       "paddingBlock": {
-        "value": "{space.5xs}",
+        "value": "{spacing.4}",
         "type": "dimension"
       },
       "background": {
@@ -27,27 +27,27 @@
           "type": "color"
         },
         "hover": {
-          "value": "{color.neutral.transparent.default}",
+          "value": "{color.background.alpha.overlay-light}",
           "type": "color"
         },
         "pressed": {
-          "value": "{color.neutral.transparent.strong}",
+          "value": "{color.background.alpha.overlay-dark}",
           "type": "color"
         },
         "selected": {
-          "value": "{color.secondary.background.strong}",
+          "value": "{color.background.brand.default-active}",
           "type": "color"
         },
         "selected-hover": {
-          "value": "{color.secondary.background.default}",
+          "value": "{color.background.brand.default}",
           "type": "color"
         },
         "selected-pressed": {
-          "value": "{color.primary.background.default}",
+          "value": "{color.background.brand.default}",
           "type": "color"
         },
         "selected-disabled": {
-          "value": "{color.neutral.background.base}",
+          "value": "{color.background.base.default}",
           "type": "color"
         },
         "disabled": {
@@ -58,62 +58,62 @@
     },
     "label": {
       "fontSize": {
-        "value": "{fontSize.sm}",
+        "value": "{fontSize.14}",
         "type": "fontSize"
       },
       "lineHeight": {
-        "value": "{lineHeight.md}",
+        "value": "{lineHeight.20}",
         "type": "lineHeight"
       },
       "fontWeight": {
         "default": {
-          "value": "{fontWeight.normal}",
+          "value": "{fontWeight.regular}",
           "type": "fontWeight"
         },
         "selected": {
-          "value": "{fontWeight.semiBold}",
+          "value": "{fontWeight.semibold}",
           "type": "fontWeight"
         }
       },
       "color": {
         "default": {
-          "value": "{color.neutral.text.default}",
+          "value": "{color.text.base.default}",
           "type": "color"
         },
         "disabled": {
-          "value": "{color.neutral.text.weakest}",
+          "value": "{color.text.base.tertiary}",
           "type": "color"
         },
         "selected": {
-          "value": "{color.neutral.text.default}",
+          "value": "{color.text.base.default}",
           "type": "color"
         },
         "selected-disabled": {
-          "value": "{color.neutral.text.weakest}",
+          "value": "{color.text.base.tertiary}",
           "type": "color"
         }
       }
     },
     "description": {
       "fontSize": {
-        "value": "{fontSize.xs}",
+        "value": "{fontSize.12}",
         "type": "fontSize"
       },
       "lineHeight": {
-        "value": "{lineHeight.sm}",
+        "value": "{lineHeight.16}",
         "type": "lineHeight"
       },
       "fontWeight": {
-        "value": "{fontWeight.normal}",
+        "value": "{fontWeight.regular}",
         "type": "fontWeight"
       },
       "color": {
         "default": {
-          "value": "{color.neutral.text.weak}",
+          "value": "{color.text.base.secondary}",
           "type": "color"
         },
         "selected": {
-          "value": "{color.neutral.text.default}",
+          "value": "{color.text.base.default}",
           "type": "color"
         }
       }
@@ -121,24 +121,24 @@
     "icon": {
       "color": {
         "selected": {
-          "value": "{color.neutral.text.default}",
+          "value": "{color.text.base.default}",
           "type": "color"
         },
         "disabled": {
-          "value": "{color.neutral.text.weakest}",
+          "value": "{color.text.base.tertiary}",
           "type": "color"
         }
       }
     },
     "outlineWidth": {
       "focus": {
-        "value": "{border.width.2}",
+        "value": "{borderWidth.2}",
         "type": "dimension"
       }
     },
     "outlineColor": {
       "focus": {
-        "value": "{color.secondary.border}",
+        "value": "{color.border.brand.default}",
         "type": "color"
       }
     },
