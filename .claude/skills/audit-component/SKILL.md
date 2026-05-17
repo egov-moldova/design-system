@@ -68,6 +68,49 @@ Optional Deep Pass (if --deep)
 
 ---
 
+## Fast Path (preferred when scripts are in place)
+
+**Before running any of the manual grep / read steps below, dispatch the local
+audit orchestrator.** It runs the same checks deterministically in parallel,
+producing a JSON envelope you can read in one shot:
+
+```bash
+# Wave A + B (no browser) — covers structure, anti-patterns, git, jsdoc,
+# story exports, integration usage, component contract, token diff, etc.
+node scripts/audit/run-all.mjs <componentName> --no-browser --json
+
+# Add browser-driven checks (a11y tree, contrast pairs, console errors)
+yarn sp.dev.watch     # in another terminal
+node scripts/audit/run-all.mjs <componentName> --json
+```
+
+The envelope shape is documented in `scripts/audit/lib/json-output.mjs`
+(schemaVersion 1.0.0). Per-script details:
+
+| id | script | covers |
+|----|--------|--------|
+| 01 | `01-component-structure.mjs` | required + optional files, tokens file, hidden/components location |
+| 02 | `02-stencil-antipatterns.mjs` | 20 patterns from anti-patterns.md (inline styles, mutations, lifecycle leak, etc.) |
+| 03 | `03-git-hygiene.mjs` | branch naming, conventional commits, forbidden staged paths |
+| 04 | `04-jsdoc-completeness.mjs` | component class + per-prop / per-event / per-method JSDoc |
+| 05 | `05-story-exports.mjs` | enumerates stories, computes Storybook ids, coverage vs Default/AllVariants/AllSizes/States |
+| 06 | `06-test-coverage.mjs` | reads `coverage/coverage-summary.json` per component |
+| 07 | `07-integration-usage.mjs` | usage sites across stories/tests/components/web-components |
+| 08 | `08-bundle-size.mjs` | dist size + per-chunk attribution |
+| 09 | `09-a11y-tree.mjs` | `page.accessibility.snapshot` + interactive-element census (light + dark) |
+| 10 | `10-contrast-pairs.mjs` | WCAG 2.1 AA contrast on every interactive element (light + dark) |
+| 11 | `11-pixel-diff-states.mjs` | Pixelmatch diff vs Figma references for every story (light + dark) |
+| 12 | `12-console-errors.mjs` | console.error / pageerror per story |
+| 13 | `13-token-diff.mjs` | DTCG diff vs Figma export |
+| 14 | `14-component-contract.mjs` | full API surface (props/events/methods/slots/formAssociated) |
+
+After consuming the envelope, **only the judgment-heavy steps remain for AI**:
+ARIA correctness for the captured tree, contrast-failure remediation choice,
+architecture review, naming critique, edge-case story suggestions. The manual
+detail below remains as a fallback when the orchestrator is unavailable.
+
+---
+
 ## Wave 1: Discovery (all parallel)
 
 Dispatch in a SINGLE message with multiple parallel tool calls.

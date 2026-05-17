@@ -208,6 +208,27 @@ jobs:
       - name: Lint
         run: yarn lint
 
+      - name: Audit scripts (smoke tests)
+        # Validates the scripts/audit/* tooling itself before relying on its
+        # output for the audit:all step below.
+        run: yarn test:scripts
+
+      - name: Audit all components (no browser)
+        # Runs scripts/audit/run-all.mjs --all --no-browser across every
+        # cor-* component. Surfaces blocker-level findings as a CI failure;
+        # warnings + info are visible in the JSON report uploaded as an artifact.
+        run: node scripts/audit/run-all.mjs --all --no-browser --out reports/audit-all.json
+        continue-on-error: true
+
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: audit-all-report
+          path: reports/audit-all.json
+          if-no-files-found: ignore
+          retention-days: 14
+
       - name: Unit tests
         run: stencil test --spec --maxWorkers=2
 

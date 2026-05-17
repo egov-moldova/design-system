@@ -94,7 +94,12 @@
     "audit:bundle-size": "node scripts/audit/08-bundle-size.mjs",
     "audit:token-diff": "node scripts/audit/13-token-diff.mjs",
     "audit:contract": "node scripts/audit/14-component-contract.mjs",
+    "audit:a11y-tree": "node scripts/audit/09-a11y-tree.mjs",
+    "audit:contrast-pairs": "node scripts/audit/10-contrast-pairs.mjs",
+    "audit:pixel-diff": "node scripts/audit/11-pixel-diff-states.mjs",
+    "audit:console-errors": "node scripts/audit/12-console-errors.mjs",
     "audit:all": "node scripts/audit/run-all.mjs",
+    "audit:all:no-browser": "node scripts/audit/run-all.mjs --no-browser",
     "scaffold:story": "node scripts/scaffold/story-scaffold.mjs",
     "scaffold:test": "node scripts/scaffold/test-scaffold.mjs"
   },

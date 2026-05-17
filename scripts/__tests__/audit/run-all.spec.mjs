@@ -14,7 +14,7 @@ describe('run-all: AUDIT_SCRIPTS registry', () => {
   it('every script has id, wave, file, name', () => {
     for (const s of AUDIT_SCRIPTS) {
       assert.match(s.id, /^\d{2}$/);
-      assert.ok(['A', 'B'].includes(s.wave));
+      assert.ok(['A', 'B', 'C'].includes(s.wave));
       assert.match(s.file, /^\d{2}-.+\.mjs$/);
       assert.ok(s.name);
     }
@@ -31,6 +31,16 @@ describe('run-all: AUDIT_SCRIPTS registry', () => {
 
   it('Wave B has 3 scripts (build/coverage/token-export-dependent)', () => {
     assert.equal(AUDIT_SCRIPTS.filter(s => s.wave === 'B').length, 3);
+  });
+
+  it('Wave C has 4 scripts (browser-driven)', () => {
+    assert.equal(AUDIT_SCRIPTS.filter(s => s.wave === 'C').length, 4);
+  });
+
+  it('every Wave C script declares requiresBuild: "browser"', () => {
+    for (const s of AUDIT_SCRIPTS.filter(s => s.wave === 'C')) {
+      assert.equal(s.requiresBuild, 'browser', `${s.id} should declare requiresBuild=browser`);
+    }
   });
 });
 

@@ -60,13 +60,20 @@ Options:
   --out <file>        Write the combined JSON envelope to a file
   --skip <ids>        Comma-separated list of script ids to skip (e.g. 06,08)
   --only <ids>        Comma-separated list — only run these scripts
+  --no-browser        Skip Wave C (browser scripts: 09, 10, 11, 12). Equivalent to
+                      --skip 09,10,11,12. Used by CI before Playwright is installed.
+  --figma-dir <dir>   Forwarded to 11-pixel-diff-states (required to run that script)
   --no-color          Disable ANSI colors
   --help, -h          Show this help
 
 Script ids:
-  01 structure, 02 antipatterns, 03 git-hygiene, 04 jsdoc,
-  05 story-exports, 06 test-coverage, 07 integration-usage,
-  08 bundle-size, 13 token-diff, 14 component-contract`;
+  Wave A (fast, no browser, no build):
+    01 structure, 02 antipatterns, 03 git-hygiene, 04 jsdoc,
+    05 story-exports, 07 integration-usage, 14 component-contract
+  Wave B (depends on existing build artifacts):
+    06 test-coverage, 08 bundle-size, 13 token-diff
+  Wave C (browser; needs Storybook + Playwright):
+    09 a11y-tree, 10 contrast-pairs, 11 pixel-diff-states, 12 console-errors`;
 
 const AUDIT_SCRIPTS = [
   {
@@ -121,6 +128,32 @@ const AUDIT_SCRIPTS = [
   },
   { id: '08', wave: 'B', file: '08-bundle-size.mjs', name: 'bundle-size', perComponent: true, requiresBuild: 'dist' },
   { id: '13', wave: 'B', file: '13-token-diff.mjs', name: 'token-diff', perComponent: true, requiresBuild: false },
+  { id: '09', wave: 'C', file: '09-a11y-tree.mjs', name: 'a11y-tree', perComponent: true, requiresBuild: 'browser' },
+  {
+    id: '10',
+    wave: 'C',
+    file: '10-contrast-pairs.mjs',
+    name: 'contrast-pairs',
+    perComponent: true,
+    requiresBuild: 'browser',
+  },
+  {
+    id: '11',
+    wave: 'C',
+    file: '11-pixel-diff-states.mjs',
+    name: 'pixel-diff',
+    perComponent: true,
+    requiresBuild: 'browser',
+    extraArgsKey: 'figmaDir',
+  },
+  {
+    id: '12',
+    wave: 'C',
+    file: '12-console-errors.mjs',
+    name: 'console-errors',
+    perComponent: true,
+    requiresBuild: 'browser',
+  },
 ];
 
 function parseCli() {
@@ -135,6 +168,8 @@ function parseCli() {
         'out': { type: 'string' },
         'skip': { type: 'string', default: '' },
         'only': { type: 'string', default: '' },
+        'no-browser': { type: 'boolean', default: false },
+        'figma-dir': { type: 'string' },
         'no-color': { type: 'boolean', default: false },
         'help': { type: 'boolean', short: 'h', default: false },
       },
@@ -169,6 +204,8 @@ function parseCli() {
     out: parsed.values.out ?? null,
     skip: splitIds(parsed.values.skip),
     only: splitIds(parsed.values.only),
+    noBrowser: parsed.values['no-browser'],
+    figmaDir: parsed.values['figma-dir'] ?? null,
     noColor: parsed.values['no-color'],
   };
 }
@@ -205,16 +242,16 @@ async function main() {
     targetArg = name;
   }
 
-  // Dispatch Wave A in parallel, then Wave B in parallel.
+  // Dispatch each wave sequentially, parallel within a wave.
   const waveA = scriptsToRun.filter(s => s.wave === 'A');
   const waveB = scriptsToRun.filter(s => s.wave === 'B');
+  const waveC = scriptsToRun.filter(s => s.wave === 'C');
 
-  const [waveAResults, waveBResults] = [
-    await Promise.all(waveA.map(s => runScript(s, targetArg))),
-    await Promise.all(waveB.map(s => runScript(s, targetArg))),
-  ];
+  const waveAResults = await Promise.all(waveA.map(s => runScript(s, targetArg, args)));
+  const waveBResults = await Promise.all(waveB.map(s => runScript(s, targetArg, args)));
+  const waveCResults = await Promise.all(waveC.map(s => runScript(s, targetArg, args)));
 
-  const allResults = [...waveAResults, ...waveBResults];
+  const allResults = [...waveAResults, ...waveBResults, ...waveCResults];
 
   const combined = aggregate({ targetArg, results: allResults, durationMs: Date.now() - t0 });
 
@@ -226,6 +263,10 @@ function selectScripts(args) {
   let scripts = AUDIT_SCRIPTS.slice();
   if (args.only.size > 0) scripts = scripts.filter(s => args.only.has(s.id));
   if (args.skip.size > 0) scripts = scripts.filter(s => !args.skip.has(s.id));
+  if (args.noBrowser) scripts = scripts.filter(s => s.wave !== 'C');
+  // 11-pixel-diff requires --figma-dir; silently drop it if not provided so
+  // run-all stays useful in environments where the reference set isn't synced.
+  if (!args.figmaDir) scripts = scripts.filter(s => s.id !== '11');
   return scripts;
 }
 
@@ -234,14 +275,18 @@ function selectScripts(args) {
  * Pure I/O — exported for tests via process injection (unused here; we test
  * aggregate() directly).
  */
-function runScript(script, targetArg) {
+function runScript(script, targetArg, args = {}) {
   const t0 = Date.now();
   const scriptPath = join(REPO_ROOT, 'scripts', 'audit', script.file);
+  const extraArgs = [];
+  if (script.id === '11' && args.figmaDir) {
+    extraArgs.push('--figma-dir', args.figmaDir);
+  }
 
   return new Promise(resolve => {
     let stdout = '';
     let stderr = '';
-    const proc = spawn(process.execPath, [scriptPath, targetArg, '--json'], {
+    const proc = spawn(process.execPath, [scriptPath, targetArg, '--json', ...extraArgs], {
       windowsHide: true,
     });
     proc.stdout.on('data', chunk => {
