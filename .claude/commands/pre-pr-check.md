@@ -12,8 +12,8 @@ Invoke the `verification-before-completion` skill before presenting the final re
 
 The pipeline runs in **5 waves**. Within a wave, all bash commands MUST be dispatched in a single message with multiple parallel `Bash` tool calls. Between waves, results must be aggregated before proceeding (later waves depend on earlier outputs).
 
-```
-Wave 1 (parallel):  git status  +  git log  +  yarn lint  +  yarn test  +  git diff --stat HEAD~1
+```text
+Wave 1 (parallel):  git status  +  git log  +  yarn lint  +  yarn test  +  Stencil grep gates  +  git diff --stat HEAD~1
                                             │
                                             ▼
 Wave 2 (single):                       yarn tokens.build
@@ -55,6 +55,42 @@ yarn test
 git diff --stat HEAD~1
 ```
 
+### Wave 1 — Stencil anti-pattern grep gates (NEW)
+
+Dispatch these in the same parallel message (fast — most return zero hits on a clean codebase). Each non-zero result is a blocker.
+
+```bash
+# @Method must be async or return Promise (Stencil compliance #3)
+rg "@Method\(\)\s+\w+\([^)]*\)\s*:\s*(?!Promise|void)" src/components --type ts -c
+```
+
+```bash
+# Imperative host class manipulation (Anti-Pattern #2)
+rg "this\.host\.classList\.(add|remove|toggle)" src/components --type ts -c
+```
+
+```bash
+# Direct mutation of reactive arrays (Anti-Pattern #5)
+rg "this\.\w+\.(push|pop|shift|unshift|splice|sort|reverse)\(" src/components --type ts -c
+```
+
+```bash
+# Bare EventEmitter without payload type (Anti-Pattern #4)
+rg "EventEmitter(?!<)" src/components --type ts -c
+```
+
+```bash
+# Inline styles in JSX (Anti-Pattern #1)
+rg "style=\{" src/components --type ts -c
+```
+
+```bash
+# Custom event names without cor prefix (Anti-Pattern #25)
+rg "@Event\(\)\s+(?!cor[A-Z])" src/components --type ts -c
+```
+
+For full anti-pattern catalogue see [`stencil-compliance/references/anti-patterns.md`](../skills/stencil-compliance/references/anti-patterns.md). For per-component deep audit invoke `/audit-component @cor-<name> --fast` after Wave 5.
+
 **While waiting for results**, verify (from git status output):
 
 - Branch follows naming: `type/issue-key-description` (e.g., `feat/cor-456-add-tooltip`)
@@ -67,6 +103,7 @@ git diff --stat HEAD~1
 - Lint: zero violations
 - Tests: zero failures; report any with `test file → test name → error message`
 - Diff: no unrelated files, no debug `console.log`, no commented-out code blocks, no stray `TODO`s
+- Stencil grep gates: ALL return 0; non-zero → blocker
 
 ## Wave 2: Token Build (single command)
 

@@ -79,6 +79,36 @@ src/components/cor-[name]/
 
 ---
 
+## Stencil Compliance — Stencil 4.x
+
+Every `cor-*` component must conform to the [`stencil-compliance` Skill](../../.claude/skills/stencil-compliance/SKILL.md). It catalogs the **14 areas** of Stencil rules across decorators, lifecycle, host element, JSX, styling, form-associated custom elements, reactive data, serialization, functional components, and the public API surface.
+
+**Top-10 must-check rules** (full table in the Skill):
+
+1. `@Component`: `tag: 'cor-<name>'`, `shadow: true`, never `scoped: true`.
+2. All `@Method()` are `async` or return `Promise<T>`.
+3. `EventEmitter<T>` always typed with non-empty payload.
+4. Events that must escape shadow DOM use `composed: true` (default).
+5. No direct mutation of reactive arrays/objects — reassign with spread.
+6. Components with `setInterval` / `addEventListener` / `*Observer` have matching `disconnectedCallback` cleanup.
+7. No imperative `this.host.classList.add/remove` — use `<Host class={...}>`.
+8. Form-associated components have full callback set (`formReset`, `formDisabled`, `formStateRestore`).
+9. `setFormValue(value, state)` always called with both arguments.
+10. `!` definite-assignment on decorated fields (`@Element`, `@Event`, `@AttachInternals`).
+
+**Reference files** load on-demand:
+
+- [`stencil-compliance/references/decorators.md`](../../.claude/skills/stencil-compliance/references/decorators.md) — `@Component`, `@Prop`, `@State`, `@Event`/`@Listen`, `@Method`, `@Watch`
+- [`stencil-compliance/references/lifecycle-host.md`](../../.claude/skills/stencil-compliance/references/lifecycle-host.md) — lifecycle hooks + `<Host>` + `@Element`
+- [`stencil-compliance/references/jsx-styling.md`](../../.claude/skills/stencil-compliance/references/jsx-styling.md) — JSX templating + shadow DOM CSS
+- [`stencil-compliance/references/form-reactivity.md`](../../.claude/skills/stencil-compliance/references/form-reactivity.md) — form-associated + reactive data + serialization
+- [`stencil-compliance/references/functional-api.md`](../../.claude/skills/stencil-compliance/references/functional-api.md) — Functional Components + public API
+- [`stencil-compliance/references/anti-patterns.md`](../../.claude/skills/stencil-compliance/references/anti-patterns.md) — top 25 anti-patterns with fixes
+
+**Verification:** `/audit-component @cor-<name> --deep` invokes this Skill end-to-end; `/pre-pr-check` runs Wave 1 grep gates from the anti-pattern catalog.
+
+---
+
 ## Accessibility — WCAG 2.1 Level AA
 
 Every `cor-*` component must conform to **WCAG 2.1 Level AA** in both light and dark mode. Canonical guide: Skill [`accessibility-compliance`](../../.claude/skills/accessibility-compliance/SKILL.md). Project-specific spec: Figma [node 2753-5965](https://www.figma.com/design/doJ7tDY0PlQ0PqMgbpFVIC/Components?node-id=2753-5965&m=dev).

@@ -9,6 +9,8 @@ Deep WCAG 2.1 Level AA audit for `$ARGUMENTS`. Do **not** auto-fix — report fi
 
 **Canonical reference:** [Skill `accessibility-compliance`](../skills/accessibility-compliance/SKILL.md) — Success Criteria, ARIA patterns, dark mode requirements, contrast tables. Invoke that Skill before starting this audit.
 
+**Stencil-side companion:** [Skill `stencil-compliance`](../skills/stencil-compliance/SKILL.md) covers `@Prop` ↔ ARIA mirroring, `delegatesFocus` (SC 2.4.7), and `:host(:state(...))` for invalid/required states (SC 4.1.2/4.1.3). When in doubt about how a Stencil decorator should reflect accessibility state, consult [`stencil-compliance/references/decorators.md`](../skills/stencil-compliance/references/decorators.md) and [`stencil-compliance/references/jsx-styling.md`](../skills/stencil-compliance/references/jsx-styling.md).
+
 **Also reference:** [`AGENTS.md`](../../AGENTS.md), `_agents/` files for project-specific patterns.
 
 ## Step 0: Environment Check
@@ -107,6 +109,8 @@ mcp__playwright__browser_snapshot()
 
 ## Step 4: State ARIA Verification
 
+> **Stencil-side mirror**: `@Prop`-driven states should reflect to attributes via `@Prop({ reflect: true })`, then sync to ARIA via `<Host aria-X={...}>`. For custom states (`:host(:state(invalid))`) use `@AttachInternals({ states: { ... } })`. See [`stencil-compliance/references/decorators.md#prop`](../skills/stencil-compliance/references/decorators.md#prop) and [`form-reactivity.md#form-associated`](../skills/stencil-compliance/references/form-reactivity.md#form-associated).
+
 For each interactive state, set the prop and verify ARIA in the snapshot:
 
 | State | Set Prop | Expected ARIA |
@@ -198,6 +202,8 @@ Check dynamic content announces correctly:
 - Content changes are reflected in accessible name
 
 ## Step 8: CSS Accessibility Check
+
+> **Stencil-side mirror**: `::part(...)` exposure for focus-visible targets, `prefers-reduced-motion` handling, and shadow DOM styling rules live in [`stencil-compliance/references/jsx-styling.md#styling`](../skills/stencil-compliance/references/jsx-styling.md#styling).
 
 Read `.css` and verify:
 

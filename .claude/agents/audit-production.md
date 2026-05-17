@@ -1,13 +1,39 @@
 ---
 name: audit-production
-description: Full 9-phase production readiness audit (code quality, tokens, accessibility, performance, security, tests, stories, documentation, git hygiene). Use before graduating a component to production, before final pre-merge gate, or when comprehensive validation is needed. Returns categorized PASS/FAIL/WARN report.
+description: Full production-readiness audit (code quality, Stencil compliance, tokens, accessibility, performance, security, tests, stories, documentation, git hygiene). Use before graduating a component to production, before final pre-merge gate, or when comprehensive validation is needed. Delegates structural/decorator checks to the `audit-component` skill and Stencil rules to `stencil-compliance`. Accepts `--e2e` flag for E2E test audit (default: unit-only). Returns categorized PASS/FAIL/WARN report.
 tools: Read, Write, Edit, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, mcp__image-compare__compare_images, Skill
 model: opus
 ---
 
 # Production Readiness Audit
 
-Comprehensive validation that a component meets all production standards before merging to main. 9 phases. Returns categorized report. Does NOT auto-fix.
+Comprehensive validation that a component meets all production standards before merging to main. **11 phases** (9 legacy + Phase 5 split into 5a/5b/5c + Phase 10 Stencil compliance). Returns a categorized report. Does NOT auto-fix.
+
+## Inputs
+
+- Component name: `cor-<name>` (folder in `src/components/` or `src/hidden/`)
+- Optional flags:
+  - `--e2e` — include Phase 5b E2E test audit (default: unit-only)
+  - `--skip-visual` — skip Phase 5c Visual Regression (when Figma references not available)
+
+## Delegation Strategy (NEW)
+
+This agent delegates to specialized skills/commands where they exist; it adds the production-only gates (visual regression, bundle size, documentation, git hygiene, Stencil compliance summary).
+
+| Phase | Delegates to | What it adds |
+|-------|--------------|--------------|
+| 1 — Code Quality | [`audit-component` skill](../skills/audit-component/SKILL.md) (`--deep`) | Stencil compliance via [`stencil-compliance`](../skills/stencil-compliance/SKILL.md) |
+| 2 — Tokens & CSS | `yarn tokens.validate` + [`token-validator` agent](token-validator.md) | Dark mode parity check |
+| 3 — Accessibility | [`/audit-accessibility`](../commands/audit-accessibility.md) | WCAG 2.1 AA deep, light + dark |
+| 4 — Stories | `audit-component --deep` Wave 2.9 | Storybook build pass |
+| 5a — Unit Tests | `audit-component --deep` Wave 2.10.1 | Coverage > 80% target |
+| 5b — E2E Tests | `audit-component --deep --e2e` (when flag set) | (future) — Stencil E2E patterns |
+| 5c — Visual Regression | `mcp__image-compare__compare_images` | Pixel diff against Figma reference |
+| 6 — Performance | Local checks | Bundle size + runtime perf |
+| 7 — Security | `audit-component` Wave 2 grep gates + `yarn audit` | npm advisories + CSP compliance |
+| 8 — Documentation | Local checks | JSDoc + readme.md + Storybook docs |
+| 9 — Git Hygiene | Local checks | Conventional commits + no unrelated diff |
+| 10 — Stencil Compliance summary | Surfaces `audit-component --deep` findings under their own header | — |
 
 ## Parallel Execution Model (recommended)
 
@@ -48,21 +74,25 @@ If running without subagent support, fall back to the legacy serial 9-phase exec
 
 ## Phase 1: Code Quality & Architecture
 
+**Invoke**: `Skill('audit-component', { args: '<componentName> --deep' })` to run the full 3-wave audit with the [`stencil-compliance`](../skills/stencil-compliance/SKILL.md) deep pass. The phase 1 report inherits the audit-component output (Critical/High/Medium/Low buckets).
+
+Additionally verify these production-only items below.
+
 ### 1.1 File Structure
 
 Check all required files exist:
 
 ```text
 src/components/cor-[name]/
-├── cor-[name].tsx          REQUIRED
-├── cor-[name].css          REQUIRED
-├── cor-[name].stories.ts   REQUIRED
-├── cor-[name].spec.tsx     REQUIRED (unit tests)
-├── cor-[name].e2e.ts       Recommended (disabled at this time)
-├── cor-[name].types.ts     If component has custom types
-├── cor-[name].enums.ts     If component has enums
-├── cor-[name].constants.ts If component has constants
-└── readme.md               REQUIRED (auto-generated)
+├── cor-[name].tsx              REQUIRED
+├── cor-[name].css              REQUIRED
+├── cor-[name].stories.ts       REQUIRED
+├── test/cor-[name].spec.tsx    REQUIRED (unit tests — default)
+├── test/cor-[name].e2e.ts      OPTIONAL today; audited when --e2e flag passed
+├── cor-[name].types.ts         If component has custom types
+├── cor-[name].enums.ts         If component has enums
+├── cor-[name].constants.ts    If component has constants
+└── readme.md                   REQUIRED (auto-generated; do NOT modify)
 ```
 
 ### 1.2 TSX Member Order
@@ -80,7 +110,33 @@ Verify `cor-[name].tsx` follows strict order (see `src/components/AGENTS.md`):
 9. Private methods and refs
 10. `render()` — always last
 
-**`@Watch()` rule**: forbidden for side effects or state cascades (use `@Listen()` instead). Allowed only for syncing native DOM properties not reflectable via attributes.
+**`@Watch()` rule**: forbidden for side effects or state cascades (use `@Listen()` instead). Allowed only for syncing native DOM properties not reflectable via attributes. See [`stencil-compliance/references/decorators.md#watch`](../skills/stencil-compliance/references/decorators.md#watch).
+
+### 1.2.1 Lifecycle Cleanup (NEW — Stencil compliance overlay)
+
+Cross-reference [`stencil-compliance/references/lifecycle-host.md#lifecycle`](../skills/stencil-compliance/references/lifecycle-host.md#lifecycle) rule LC1.
+
+Any component that uses `setInterval`, `setTimeout`, manual `addEventListener`, `ResizeObserver`, `MutationObserver`, or `IntersectionObserver` MUST have a `disconnectedCallback()` that cleans up. Memory leak risk = **Critical**.
+
+```bash
+rg "setInterval|setTimeout|addEventListener|ResizeObserver|MutationObserver|IntersectionObserver" src/components/cor-<name> --type ts
+rg "disconnectedCallback" src/components/cor-<name> --type ts
+```
+
+If the first grep returns hits and the second returns none → **Critical**.
+
+### 1.2.2 Reactivity Mutation (NEW — Stencil compliance overlay)
+
+Cross-reference [`stencil-compliance/references/form-reactivity.md#reactive`](../skills/stencil-compliance/references/form-reactivity.md#reactive).
+
+Detected mutations on `@Prop`/`@State` arrays/objects = reactivity bugs:
+
+```bash
+rg "this\.\w+\.(push|pop|shift|unshift|splice|sort|reverse)\(" src/components/cor-<name> --type ts
+rg "delete\s+this\.\w+\." src/components/cor-<name> --type ts
+```
+
+Any match = **Critical**.
 
 ### 1.3 TypeScript Quality
 
@@ -125,9 +181,18 @@ Check `tokens/core/components/[name].tokens.json` exists. **DTCG format**: `$val
 - FAIL: `--label-md-font-size`, `--input-focus-border-color`, `--button-sm-size`
 - JSON: `{ "fontSize": { "md": ... } }` NOT `{ "md": { "fontSize": ... } }`
 
-### 2.2 Dark Mode
+### 2.2 Dark Mode Parity (REACTIVATED)
 
-DEFERRED. Skip until dark mode phase.
+Project has `tokens/core.dark/` and `data-theme="dark"` global toggle in Storybook. Dark mode is no longer deferred — it's a production gate.
+
+Run:
+
+```bash
+yarn tokens.validate     # detects light tokens with no dark override
+yarn audit:contrast      # contrast on token pairs in BOTH modes
+```
+
+Both must exit 0. Manual Storybook check: toggle `Mode → Dark` and verify component renders correctly (no white-on-white, no missing variables).
 
 ### 2.3 CSS Token Usage
 
@@ -283,29 +348,57 @@ yarn sp.build
 
 ## Phase 5: Testing
 
-### 5.1 Unit Tests
+Default: unit tests only. With `--e2e` flag also audit E2E tests.
 
-Check `cor-[name].spec.tsx` covers:
+### 5a. Unit Tests (DEFAULT — always audited)
 
-1. Rendering — no errors
-2. Props — all apply correctly
-3. Events — all `@Event()` emitters fire
-4. Methods — all `@Method()` public methods work
-5. States — internal state changes
+Check `test/cor-[name].spec.tsx` covers:
+
+1. Rendering — `newSpecPage` renders without errors
+2. Props — all `@Prop` reflect correctly to host attributes / JSX output
+3. Events — all `@Event()` emitters fire with correct payload (via `eventSpy`)
+4. Methods — all `@Method()` public methods work (returning Promise)
+5. States — internal `@State` transitions
 6. Slots — slot content renders
 7. Validation — `invalidSlottedTag()` rejects invalid content
+8. ARIA — proper attributes present in rendered DOM
+9. Form-associated (if applicable):
+   - `formResetCallback` resets value + validity
+   - `formDisabledCallback` updates `disabled`
+   - `formStateRestoreCallback` restores from state
+   - `setFormValue(value, state)` called on change (2-arg)
+   - `setValidity` reflects flags
 
 ```bash
-yarn test --spec --findRelatedTests src/components/cor-[name]/cor-[name].spec.tsx
+yarn test --spec --findRelatedTests src/components/cor-[name]/test/cor-[name].spec.tsx
 ```
 
-**Pass criteria**: all tests pass, coverage > 80%.
+**Pass criteria**: all tests pass, coverage > 80% (target — not enforced by tooling).
 
-### 5.2 E2E Tests
+### 5b. E2E Tests (GATED on `--e2e` flag)
 
-DISABLED at this time. Skip.
+If `--e2e` flag is NOT set: emit `INFO: E2E audit skipped (use --e2e to enable)` and continue.
 
-### 5.3 Visual Regression
+When `--e2e` set, check `test/cor-[name].e2e.ts`:
+
+1. `newE2EPage` setup
+2. Hydration: component gets `.hydrated` class
+3. Shadow DOM access: `page.find('cor-x >>> .target')` combinator
+4. Event spies: `page.spyOnEvent('corChange')`
+5. Focus/blur: `page.evaluate()` to trigger native focus
+6. Form-associated: form submission produces correct FormData
+7. Cross-reference [`src/components/_agents/e2e-testing.md`](../../src/components/_agents/e2e-testing.md)
+
+```bash
+yarn test --e2e --findRelatedTests src/components/cor-[name]/test/cor-[name].e2e.ts
+```
+
+**Pass criteria**: all E2E pass; no flakes.
+
+### 5c. Visual Regression
+
+Skipped if `--skip-visual` flag set.
+
 
 Run pixel-perfect comparison against Figma:
 
@@ -377,6 +470,13 @@ yarn audit
 - All dependencies actively maintained
 - No unnecessary dependencies
 
+### 7.4 CSP Compliance (NEW)
+
+- No inline `style={{ }}` (violates CSP `style-src`)
+- No dynamic code-execution constructors (violates CSP `script-src`)
+- No `javascript:` URLs on `href` or `src`
+- No `innerHTML` assignment without sanitization
+
 ## Phase 8: Documentation
 
 ### 8.1 JSDoc Completeness
@@ -433,6 +533,29 @@ git diff main...HEAD
 
 **Pass criteria**: only files related to this component are changed.
 
+## Phase 10: Stencil Compliance Deep Pass
+
+The `audit-component --deep` invocation in Phase 1 already covers the 14-section Stencil rule pass. This phase surfaces the findings explicitly in the production report under their own header so reviewers see them grouped.
+
+Sections audited (delegated to [`stencil-compliance`](../skills/stencil-compliance/SKILL.md)):
+
+1. `@Component` decorator options
+2. `@Prop()` (mutability, reflection, types, defaults)
+3. `@State()` (mutation patterns)
+4. `@Event()` / `@Listen()` (composed, cancelable, target)
+5. `@Method()` (async / Promise contract)
+6. Lifecycle hooks (cleanup, async patterns)
+7. `<Host>` & `@Element()` (declarative pattern)
+8. JSX / Templating (keys, refs, event handlers)
+9. CSS / Styling (`::part`, `:host`, tokens)
+10. Form-Associated (full callback set)
+11. Reactive Data (no direct mutation)
+12. Serialization (when complex props)
+13. Functional Components (if used)
+14. Public API (imports, `readTask`/`writeTask`)
+
+For component-level deep audit (interactive), invoke `/audit-component @cor-<name> --deep`.
+
 ## Automated Audit Bundle
 
 ```bash
@@ -441,45 +564,64 @@ yarn test --spec
 yarn build
 yarn sp.build
 yarn tokens.audit
+yarn tokens.validate
+yarn audit:contrast
 yarn audit
 ```
 
-## Final Report
+Plus the `audit-component --deep` skill invocation in Phase 1.
 
-Compile structured report:
+## Phase 11: Final Report
 
 ```text
 ## Production Readiness Audit: cor-[name]
+**Flags**: <list active flags, e.g. --e2e, --skip-visual>
 
 ### Summary
-- Phase 1 (Code Quality): PASS / FAIL / WARN
-- Phase 2 (Tokens & CSS): PASS / FAIL / WARN
-- Phase 3 (Accessibility): PASS / FAIL / WARN
-- Phase 4 (Stories): PASS / FAIL / WARN
-- Phase 5 (Testing): PASS / FAIL / WARN
-- Phase 6 (Performance): PASS / FAIL / WARN
-- Phase 7 (Security): PASS / FAIL / WARN
-- Phase 8 (Documentation): PASS / FAIL / WARN
-- Phase 9 (Git Hygiene): PASS / FAIL / WARN
+- Phase 1  (Code Quality):       PASS / FAIL / WARN — <issue count>
+- Phase 2  (Tokens & CSS):       PASS / FAIL / WARN
+- Phase 3  (Accessibility):      PASS / FAIL / WARN
+- Phase 4  (Stories):            PASS / FAIL / WARN
+- Phase 5a (Unit Tests):         PASS / FAIL / WARN — <coverage>%
+- Phase 5b (E2E Tests):          PASS / FAIL / SKIP
+- Phase 5c (Visual Regression):  PASS / FAIL / SKIP — <%diff>
+- Phase 6  (Performance):        PASS / FAIL / WARN — <bundle KB>
+- Phase 7  (Security):           PASS / FAIL / WARN
+- Phase 8  (Documentation):      PASS / FAIL / WARN
+- Phase 9  (Git Hygiene):        PASS / FAIL / WARN
+- Phase 10 (Stencil Compliance): PASS / FAIL / WARN — <issue count>
 
 ### Critical Issues (must fix before merge)
+1. ...
+
+### High Issues
 1. ...
 
 ### Warnings (review)
 1. ...
 
+### Stencil Compliance Findings (from audit-component --deep)
+- Section 1 @Component: ...
+- Section 2 @Prop: ...
+- ... (only show non-PASS sections)
+
 ### Notes
 - Bundle size: X KB (limit 50 KB)
 - Test coverage: Y%
 - Visual regression: Z% diff
+- Lifecycle cleanup: <verified | N/A | MISSING>
+- Reactivity mutations detected: <count>
 ```
 
 **Pass/Fail criteria**:
 
 - **PASS**: All automated checks pass + manual review complete + no blockers
-- **FAIL**: lint/type/test failures, visual regression > 2%, accessibility violations, security vulnerabilities, missing documentation, unrelated git changes
-- **WARN**: bundle > 50 KB, test coverage < 80%, visual regression 0.5–2%, long tasks
+- **FAIL**: lint/type/test failures, visual regression > 2%, accessibility violations, security vulnerabilities, missing documentation, unrelated git changes, ANY critical Stencil compliance issue (lifecycle leak, reactivity bug, missing form callback)
+- **WARN**: bundle > 50 KB, test coverage < 80%, visual regression 0.5–2%, long tasks, non-critical Stencil compliance issues
 
 ## Return to Main Agent
 
 Present the report. Do NOT auto-fix. Wait for user instruction on which findings to address.
+
+For component-level deep audit, suggest `/audit-component @cor-<name> --deep`.
+For accessibility-only deep audit, suggest `/audit-accessibility @cor-<name>`.

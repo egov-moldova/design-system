@@ -12,7 +12,7 @@ For complex multi-phase workflows (Figma → code → QA pipelines, full product
 
 | Slash Command | Description | When to Use | Complexity |
 |---|---|---|---|
-| `/audit-component` | 12-category health check for a component | Before PR, after major changes, or on-demand review | Low |
+| `/audit-component` | 12-category health check for a component (wraps `audit-component` skill). Flags: `--deep` (full Stencil + a11y), `--e2e`, `--fast`. | Before PR, after major changes, or on-demand review | Low |
 | `/audit-accessibility` | Deep WCAG 2.2 AA audit — keyboard, ARIA, contrast, screen reader | Accessibility review before shipping | Medium |
 | `/update-tokens` | Create or modify design tokens without touching component code | Token-only changes — color, spacing, typography | Low |
 | `/fix-visual-bug` | Diagnose & fix visual bugs via token → CSS → TSX root cause tracing | Something looks wrong — color, spacing, size off | Medium |

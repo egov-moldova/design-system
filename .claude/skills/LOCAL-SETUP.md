@@ -102,6 +102,8 @@ npx wait-on http://localhost:6006 --timeout 3000
 | `verification-before-completion` | Evidence-based completion gates. No "Done!" without verified output. | ✅ No | Active — reference from `/pre-pr-check`, `/new-component` Step 9 |
 | `skill-creator` | Guide for creating new skills with consistent structure | ✅ No | ⚠️ DO NOT PROCEED — use when a new skill creation task arises |
 | `accessibility-compliance` | WCAG 2.2, ARIA, keyboard, contrast for Stencil Shadow DOM | ⚠️ Yes (Stencil override needed) | Retained as redirect stub — primary guidance lives in `AGENTS.md` and `src/components/AGENTS.md`; the `references/` folder is kept for ad-hoc consultation. |
+| `stencil-compliance` | Stencil 4.x best practices — decorators, lifecycle, host, JSX/styling, form-associated, reactive data, serialization. 6 reference files + top-25 anti-patterns. | ✅ No | Active — invoked by `/audit-component @cor-<name> --deep`, `audit-production` Phase 1, and Wave 1 grep gates in `/pre-pr-check`. |
+| `audit-component` | 3-wave production audit per component. Flags: `--deep` (full Stencil + a11y), `--e2e`, `--fast`. | ✅ No | Active — wraps the `/audit-component` slash command logic for reuse from other agents (new-component, refactor-component, migrate-component). |
 
 ## Notes
 
