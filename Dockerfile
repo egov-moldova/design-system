@@ -7,9 +7,7 @@ WORKDIR /app
 
 # Copy package files first for better layer caching
 COPY package.json yarn.lock .yarnrc.yml ./
-COPY angular-design-system/package.json ./angular-design-system/
-COPY react-design-system/package.json ./react-design-system/
-COPY vue-design-system/package.json ./vue-design-system/
+COPY web-components/package.json ./web-components/
 
 # Ensure Yarn 4 via Corepack and install dependencies immutably
 # PERF: BuildKit cache mount for Yarn cache — persists between builds on self-hosted runner
