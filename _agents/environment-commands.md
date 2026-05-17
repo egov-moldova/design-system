@@ -144,8 +144,8 @@ yarn dx:clean                  # Clean all build artifacts
 
 # Build (production / final verification)
 yarn build                     # Full build: tokens + custom-elements + Stencil + docs (4GB RAM)
-yarn build.react               # Production build with React output target (6GB RAM)
-yarn build.angular             # Production build with Angular output target (6GB RAM)
+yarn build.web                 # Build @age/web-components vanilla adapter
+yarn demo.web                  # Serve the @age/web-components demo (http://localhost:5174)
 yarn sp.build                  # Storybook static export (validates everything)
 yarn sp.docker                 # Docker-optimized Storybook build
 

@@ -113,8 +113,8 @@ yarn dx:clean                  # Clean all build artifacts (.stencil, storybook-
 
 # Build (production / final verification)
 yarn build                     # Full production build with tokens, custom-elements, and docs
-yarn build.react               # Production build with React output target
-yarn build.angular             # Production build with Angular output target
+yarn build.web                 # Build @age/web-components vanilla adapter
+yarn demo.web                  # Serve the @age/web-components demo (http://localhost:5174)
 yarn sp.build                  # Storybook static export (validates everything)
 yarn sp.docker                 # Docker-optimized Storybook build
 
@@ -176,9 +176,9 @@ git check-attr merge -- src/components.d.ts
 
 ### What contributors and agents must NEVER do
 
-- Hand-edit `src/components.d.ts`, `src/components/*/readme.md`, adapter outputs under `(react|angular|vue)-design-system/**/stencil-generated/**`, `angular-design-system/src/directives/**`, `components/**`, `.storybook/custom-elements.json`, `tokens/generated/**`.
+- Hand-edit `src/components.d.ts`, `src/components/*/readme.md`, `.storybook/custom-elements.json`, `tokens/generated/**`.
 - Force-stage these files with `git add -A`. The pre-commit hook auto-unstages them — but if you bypass it (`--no-verify`), you can introduce stale snapshots.
-- Resolve a merge conflict in any of these by hand-editing. Run `yarn build && yarn build.react && yarn build.angular && yarn build.vue` instead.
+- Resolve a merge conflict in any of these by hand-editing. Run `yarn build` instead.
 
 ### Why `merge=ours` (and not a custom regenerate driver)
 

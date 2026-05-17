@@ -171,7 +171,7 @@ Before claiming the parallel phase complete, the orchestrator runs `verification
 
 ## Generated-file safety in parallel worktrees
 
-When N worktrees (3-5 per Cline Kanban session) each run `yarn sp.build`, they all regenerate `src/components.d.ts`, per-component `readme.md`, adapter outputs under `(react|angular|vue)-design-system/**/stencil-generated/**`, `.storybook/custom-elements.json`, and `tokens/generated/**`.
+When N worktrees (3-5 per Cline Kanban session) each run `yarn sp.build`, they all regenerate `src/components.d.ts`, per-component `readme.md`, `.storybook/custom-elements.json`, and `tokens/generated/**`.
 
 These paths are governed by:
 
@@ -179,7 +179,7 @@ These paths are governed by:
 - `.husky/pre-commit` GENERATED_PATTERNS block -> auto-unstages these paths so a stray `git add -A` is harmless.
 - `.github/workflows/ci.yml` `Validate (PR)` job -> rebuilds and `git diff --exit-code` verifies the committed snapshot matches a fresh build. This is the single canonical regeneration point.
 
-**Subagent contract:** subagents must NEVER add these paths to commits. If a subagent reports "regenerated N files" it is informational only — the pre-commit hook will discard them before they enter history. Subagents must NEVER hand-edit `components.d.ts` or adapter outputs.
+**Subagent contract:** subagents must NEVER add these paths to commits. If a subagent reports "regenerated N files" it is informational only — the pre-commit hook will discard them before they enter history. Subagents must NEVER hand-edit `components.d.ts` or any other auto-generated file.
 
 If you see conflict markers (`<<<<<<<`) in any of these files locally, treat it as a bug in the merge driver setup — run `node scripts/git/setup-merge-drivers.mjs` and `git check-attr merge -- src/components.d.ts` (expect `merge: ours`). See `AGENTS.md` -> "Merge driver for auto-generated files".
 
