@@ -204,34 +204,152 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
 /**
  * Visit `url` with theme applied; return { theme, tree, interactive }.
  * Performs network + browser side effects.
+ *
+ * Both the tree and the interactive census are scoped to the audited
+ * component's subtree (host + light DOM + own shadow root). Without this
+ * scoping the tree was empty for shadow-root components and the census
+ * leaked Storybook chrome / tooling overlay elements (e.g. Agentation MCP).
+ *
+ * The tree is built by a manual DOM walker in `page.evaluate()` rather than
+ * via `page.accessibility.snapshot()` because that API was removed in
+ * Playwright 1.50+. The walker produces a compatible-ish `{ role, name,
+ * children }` shape from ARIA-relevant attributes.
  */
 async function collectForTheme(url, componentName, theme) {
   return withPage({
     url,
     waitUntil: 'load',
     action: async page => {
-      await page.waitForTimeout(750);
+      // Wait for the component to hydrate before measuring; otherwise the
+      // shadow root may not be populated yet.
+      await page.waitForSelector(`${componentName}.hydrated`, { timeout: 10000 }).catch(() => null);
+      await page.waitForTimeout(250);
       if (theme === 'dark') {
         await setTheme(page, 'dark');
         await page.waitForTimeout(250);
       }
 
-      const tree = await page.accessibility.snapshot();
-      const interactive = await page.evaluate(
+      const { tree, interactive } = await page.evaluate(
         ctx => {
-          const sel = [ctx.componentName, ...ctx.tags, ...ctx.roles.map(r => `[role="${r}"]`)].join(',');
-          const els = Array.from(document.querySelectorAll(sel));
-          return els.map((el, index) => {
+          const hosts = Array.from(document.querySelectorAll(ctx.componentName));
+          const interactiveSel = [...ctx.tags, ...ctx.roles.map(r => `[role="${r}"]`)].join(',');
+
+          // ─ Accessibility tree walker (subtree only) ─────────────────────
+          const implicitRole = el => {
+            const tag = el.tagName.toLowerCase();
+            switch (tag) {
+              case 'a':
+                return el.hasAttribute('href') ? 'link' : null;
+              case 'button':
+                return 'button';
+              case 'input': {
+                const type = (el.getAttribute('type') || 'text').toLowerCase();
+                if (type === 'button' || type === 'submit' || type === 'reset') return 'button';
+                if (type === 'checkbox') return 'checkbox';
+                if (type === 'radio') return 'radio';
+                if (type === 'range') return 'slider';
+                if (type === 'search') return 'searchbox';
+                return 'textbox';
+              }
+              case 'select':
+                return 'combobox';
+              case 'textarea':
+                return 'textbox';
+              case 'nav':
+                return 'navigation';
+              case 'main':
+                return 'main';
+              case 'header':
+                return 'banner';
+              case 'footer':
+                return 'contentinfo';
+              case 'aside':
+                return 'complementary';
+              case 'section':
+                return 'region';
+              case 'img':
+                return 'img';
+              case 'ul':
+              case 'ol':
+                return 'list';
+              case 'li':
+                return 'listitem';
+              default:
+                return null;
+            }
+          };
+          const accessibleName = el => {
+            const aLabel = el.getAttribute('aria-label');
+            if (aLabel) return aLabel.trim();
+            const labelledBy = el.getAttribute('aria-labelledby');
+            if (labelledBy) {
+              const refs = labelledBy
+                .split(/\s+/)
+                .map(id => el.ownerDocument.getElementById(id)?.textContent?.trim())
+                .filter(Boolean);
+              if (refs.length) return refs.join(' ');
+            }
+            // Form-control labels
+            if (el.labels && el.labels.length) {
+              return Array.from(el.labels)
+                .map(l => l.textContent.trim())
+                .filter(Boolean)
+                .join(' ');
+            }
+            const txt = el.textContent && el.textContent.trim();
+            return txt ? txt.slice(0, 80) : '';
+          };
+          const walk = (el, depth = 0) => {
+            if (depth > 20) return null; // cycle / runaway guard
+            const role = el.getAttribute('role') || implicitRole(el);
+            const node = {
+              role: role || el.tagName.toLowerCase(),
+              name: accessibleName(el),
+              children: [],
+            };
+            // Walk light children + assigned-slot content + shadow descendants of THIS host,
+            // but stop at nested custom elements (their shadow roots are out of scope).
+            const stepInto = child => {
+              if (!child || child.nodeType !== 1) return;
+              if (child.tagName.includes('-') && child !== el && child.tagName.toLowerCase() !== ctx.componentName) {
+                // Treat nested custom element as a leaf — still record it.
+                node.children.push({ role: child.tagName.toLowerCase(), name: accessibleName(child), children: [] });
+                return;
+              }
+              const sub = walk(child, depth + 1);
+              if (sub) node.children.push(sub);
+            };
+            for (const child of el.children) stepInto(child);
+            if (el.shadowRoot && depth === 0) {
+              // Only descend the audited host's own shadow root.
+              for (const child of el.shadowRoot.children) stepInto(child);
+            }
+            return node;
+          };
+          const tree =
+            hosts.length === 1 ? walk(hosts[0]) : { role: 'multi', name: '', children: hosts.map(h => walk(h)) };
+
+          // ─ Interactive element census (scoped to subtree) ────────────────
+          const collected = [];
+          for (const host of hosts) {
+            collected.push({ el: host, origin: 'host' });
+            for (const el of host.querySelectorAll(interactiveSel)) {
+              collected.push({ el, origin: 'light' });
+            }
+            if (host.shadowRoot) {
+              for (const el of host.shadowRoot.querySelectorAll(interactiveSel)) {
+                collected.push({ el, origin: 'shadow' });
+              }
+            }
+          }
+          const interactive = collected.map(({ el, origin }, index) => {
             const styles = window.getComputedStyle(el);
             return {
               index,
               tag: el.tagName.toLowerCase(),
+              origin,
               role: el.getAttribute('role') || null,
-              accessibleName:
-                el.getAttribute('aria-label') ||
-                el.getAttribute('aria-labelledby') ||
-                (el.textContent && el.textContent.trim().slice(0, 80)) ||
-                '',
+              accessibleName: accessibleName(el),
               ariaAttributes: Array.from(el.attributes)
                 .filter(a => a.name.startsWith('aria-'))
                 .map(a => `${a.name}="${a.value}"`),
@@ -240,6 +358,8 @@ async function collectForTheme(url, componentName, theme) {
               outlineColor: styles.outlineColor,
             };
           });
+
+          return { tree, interactive };
         },
         { componentName, tags: INTERACTIVE_TAGS, roles: INTERACTIVE_ROLES },
       );

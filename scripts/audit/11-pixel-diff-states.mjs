@@ -228,6 +228,7 @@ export async function analyzeComponent(target, opts) {
       url,
       theme: 'light',
       story,
+      componentName: target.name,
       outDir: opts.outDir,
       figmaDir: opts.figmaDir,
       passThreshold: opts.passThreshold,
@@ -239,6 +240,7 @@ export async function analyzeComponent(target, opts) {
           url,
           theme: 'dark',
           story,
+          componentName: target.name,
           outDir: opts.outDir,
           figmaDir: opts.figmaDir,
           passThreshold: opts.passThreshold,
@@ -282,14 +284,14 @@ export async function analyzeComponent(target, opts) {
   return { findings, states, componentName: target.name };
 }
 
-async function captureAndDiff({ url, theme, story, outDir, figmaDir, passThreshold, warnThreshold }) {
+async function captureAndDiff({ url, theme, story, componentName, outDir, figmaDir, passThreshold, warnThreshold }) {
   const referencePath = pickReferencePath(figmaDir, story.name, theme);
   const screenshotPath = join(outDir, `${kebabCase(story.name)}-${theme}.png`);
   const diffPath = join(outDir, `${kebabCase(story.name)}-${theme}.diff.png`);
 
   if (!referencePath) {
     // Capture screenshot anyway so it can be used as a future baseline.
-    await captureScreenshot({ url, theme, outputPath: screenshotPath });
+    await captureScreenshot({ url, theme, outputPath: screenshotPath, componentName });
     return {
       theme,
       diffPercent: null,
@@ -301,7 +303,7 @@ async function captureAndDiff({ url, theme, story, outDir, figmaDir, passThresho
     };
   }
 
-  await captureScreenshot({ url, theme, outputPath: screenshotPath });
+  await captureScreenshot({ url, theme, outputPath: screenshotPath, componentName });
 
   const diff = runVisualDiff({
     figmaPath: referencePath,
@@ -334,17 +336,37 @@ async function captureAndDiff({ url, theme, story, outDir, figmaDir, passThresho
   };
 }
 
-async function captureScreenshot({ url, theme, outputPath }) {
+async function captureScreenshot({ url, theme, outputPath, componentName }) {
   await withPage({
     url,
     waitUntil: 'load',
     action: async page => {
-      await page.waitForTimeout(750);
+      // Wait for the component to hydrate before screenshotting; otherwise the
+      // captured PNG can show un-styled content.
+      if (componentName) {
+        await page.waitForSelector(`${componentName}.hydrated`, { timeout: 10000 }).catch(() => null);
+      }
+      await page.waitForTimeout(250);
       if (theme === 'dark') {
         await setTheme(page, 'dark');
         await page.waitForTimeout(250);
       }
-      await page.screenshot({ path: outputPath, fullPage: false });
+      // Crop to the component element so Storybook chrome (toolbar, docs page)
+      // and tooling overlays (Agentation MCP) don't bleed into the diff.
+      // Fall back to viewport-cropped capture if no host is locatable.
+      let captured = false;
+      if (componentName) {
+        const locator = page.locator(componentName).first();
+        if ((await locator.count().catch(() => 0)) > 0) {
+          await locator.screenshot({ path: outputPath }).catch(async () => {
+            await page.screenshot({ path: outputPath, fullPage: false });
+          });
+          captured = true;
+        }
+      }
+      if (!captured) {
+        await page.screenshot({ path: outputPath, fullPage: false });
+      }
     },
   });
 }

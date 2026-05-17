@@ -72,16 +72,42 @@ Optional Deep Pass (if --deep)
 
 **Before running any of the manual grep / read steps below, dispatch the local
 audit orchestrator.** It runs the same checks deterministically in parallel,
-producing a JSON envelope you can read in one shot:
+producing a JSON envelope you can read in one shot.
+
+### Step 0 — Storybook orchestration (BEFORE invoking the orchestrator)
+
+The orchestrator's Wave C (a11y tree, contrast pairs, console errors,
+optional pixel diff) requires Storybook on port 6007. **The AI agent is
+responsible for ensuring it is running** — do NOT assume the human will
+start it in another terminal.
+
+```text
+1. Probe port 6007 (one of):
+     - PowerShell: netstat -ano | findstr :6007
+     - Bash:       lsof -i :6007
+     - Or call scripts/audit/lib/storybook-helpers.mjs::isStorybookReachable
+2. Decision:
+     - If --fast flag is set                          → SKIP Wave C, run with --no-browser
+     - Else if Storybook IS reachable                 → run full suite (no flag)
+     - Else (Storybook NOT reachable, --fast not set) → start `yarn sp.dev.watch`
+       in background, poll until reachable (~10s), THEN run full suite
+3. Never silently skip Wave C because Storybook is missing. Either start it
+   or explicitly use --fast / --no-browser and report that browser checks
+   were skipped in the final summary (`Storybook: skipped (not running)`).
+```
+
+### Step 1 — Run the orchestrator
 
 ```bash
-# Wave A + B (no browser) — covers structure, anti-patterns, git, jsdoc,
-# story exports, integration usage, component contract, token diff, etc.
+# Default (full audit): runs Wave A + B + C in parallel inside each wave.
+# Pre-condition: Storybook on :6007 (Step 0 ensured this).
+node scripts/audit/run-all.mjs <componentName> --json
+
+# --fast / pre-commit speed path: skip browser-driven checks.
 node scripts/audit/run-all.mjs <componentName> --no-browser --json
 
-# Add browser-driven checks (a11y tree, contrast pairs, console errors)
-yarn sp.dev.watch     # in another terminal
-node scripts/audit/run-all.mjs <componentName> --json
+# CI without Playwright installed (no Storybook, no browser):
+node scripts/audit/run-all.mjs <componentName> --no-browser --json
 ```
 
 The envelope shape is documented in `scripts/audit/lib/json-output.mjs`
@@ -97,17 +123,36 @@ The envelope shape is documented in `scripts/audit/lib/json-output.mjs`
 | 06 | `06-test-coverage.mjs` | reads `coverage/coverage-summary.json` per component |
 | 07 | `07-integration-usage.mjs` | usage sites across stories/tests/components/web-components |
 | 08 | `08-bundle-size.mjs` | dist size + per-chunk attribution |
-| 09 | `09-a11y-tree.mjs` | `page.accessibility.snapshot` + interactive-element census (light + dark) |
+| 09 | `09-a11y-tree.mjs` | DOM-derived accessibility tree (role/name/children) + interactive-element census, scoped to the audited component's subtree (host + light DOM + own shadow root) — light + dark |
 | 10 | `10-contrast-pairs.mjs` | WCAG 2.1 AA contrast on every interactive element (light + dark) |
 | 11 | `11-pixel-diff-states.mjs` | Pixelmatch diff vs Figma references for every story (light + dark) |
 | 12 | `12-console-errors.mjs` | console.error / pageerror per story |
 | 13 | `13-token-diff.mjs` | DTCG diff vs Figma export |
 | 14 | `14-component-contract.mjs` | full API surface (props/events/methods/slots/formAssociated) |
 
-After consuming the envelope, **only the judgment-heavy steps remain for AI**:
-ARIA correctness for the captured tree, contrast-failure remediation choice,
-architecture review, naming critique, edge-case story suggestions. The manual
-detail below remains as a fallback when the orchestrator is unavailable.
+After consuming the envelope, **only the judgment-heavy steps remain for AI**.
+The orchestrator hands you raw findings; you still own:
+
+1. **Per-script interpretation** — walk `findingsByTool` (not just `summary`):
+   ARIA correctness for the captured a11y tree (09), contrast-failure
+   remediation choice (10), architecture review from the contract (14), naming
+   critique, edge-case story suggestions (05).
+2. **Cross-script synthesis** — correlate findings across tools. Examples:
+   - 02 ANTIPATTERN-007-LIFECYCLE-LEAK + 14 missing `disconnectedCallback` ⇒
+     same defect, report once with both citations.
+   - 09 missing accessible name + 10 contrast failure on same node ⇒ that
+     element is doubly-broken; flag as Critical.
+   - 05 missing AllVariants/States story + 11 pixel-diff WARNING ⇒
+     coverage gap likely hides the regression.
+3. **Severity escalation** — script `error` severity is a default; escalate to
+   Critical in the report when correlated with security/form-association/data
+   loss risk.
+4. **Final synthesis** — produce the pass/fail matrix + categorized issue
+   lists + recommendations in the format under "Final Report" below.
+
+The manual detail in Waves 1–3 below remains as a fallback when the
+orchestrator is unavailable (CI without Node, fresh checkout before
+`yarn install`, etc.).
 
 ---
 
@@ -165,7 +210,12 @@ netstat -ano | findstr :6007
 lsof -i :6007
 ```
 
-If Storybook is NOT listening AND `--fast` is not set → start `yarn sp.dev.watch` in background; wait ~10s.
+**Storybook orchestration** — see the Fast Path "Step 0" above. Default
+behavior: if Storybook is NOT listening AND `--fast` is not set, the AI MUST
+start `yarn sp.dev.watch` in background and wait ~10s for the port to open
+before continuing to Wave 3 / browser scripts. Never silently skip browser
+checks — either start Storybook, or explicitly mark the run as `--fast` and
+note it in the matrix (`Storybook: skipped (not running)`).
 
 ---
 
@@ -473,18 +523,55 @@ Cross-reference Wave 1 grep results.
 
 ## Final Report
 
+The report has two complementary parts: a **machine-readable matrix** (every
+check + status, generated mostly from `findingsByTool`) and the
+**human-readable narrative** (categorized issues + recommendations) that
+follows. The matrix lets the user see at a glance which dimensions passed and
+which need attention; the narrative explains the "why" and what to do.
+
 ```text
 ## Audit Report: <componentName>
 **Flags**: <list active flags, e.g. --deep, --e2e>
-**Storybook**: <reused | started | skipped (fast)>
+**Storybook**: <reused | started | skipped (--fast) | skipped (not running)>
+**Orchestrator**: <run-all.mjs ran in Xms | unavailable, manual fallback used>
+
+### Check Matrix
+
+Symbols: ✅ pass · ⚠️ warnings only · ❌ errors · ⏭️ skipped · ➖ N/A
+Columns: E | W | I — E = Errors (critical, blocking) W = Warnings (recommendations) I = Information/Observations (non-blocking)
+
+| # | Category                         | Status | E | W | I | Source             |
+|---|----------------------------------|--------|---|---|---|--------------------|
+| 01 | Component structure             |  ✅    | 0 | 0 | 0 | script 01          |
+| 02 | Stencil anti-patterns           |  ❌    | 2 | 3 | 0 | script 02          |
+| 03 | Git hygiene                     |  ✅    | 0 | 0 | 1 | script 03          |
+| 04 | JSDoc completeness              |  ⚠️    | 0 | 4 | 0 | script 04          |
+| 05 | Story exports / coverage        |  ⚠️    | 0 | 1 | 0 | script 05          |
+| 06 | Unit-test coverage              |  ✅    | 0 | 0 | 0 | script 06          |
+| 07 | Integration usage               |  ✅    | 0 | 0 | 2 | script 07          |
+| 08 | Bundle size                     |  ✅    | 0 | 0 | 0 | script 08          |
+| 09 | Accessibility tree (light+dark) |  ⚠️    | 0 | 2 | 0 | script 09 + AI ARIA |
+| 10 | Contrast pairs (light+dark)     |  ❌    | 1 | 0 | 0 | script 10          |
+| 11 | Pixel diff vs Figma             |  ⏭️    | – | – | – | --figma-dir absent |
+| 12 | Console errors                  |  ✅    | 0 | 0 | 0 | script 12          |
+| 13 | Token diff                      |  ✅    | 0 | 0 | 0 | script 13          |
+| 14 | Component contract              |  ✅    | 0 | 0 | 0 | script 14          |
+| —  | TypeScript strict (AI)          |  ✅    | – | – | – | yarn lint          |
+| —  | CSS architecture pattern (AI)   |  ✅    | – | – | – | manual review      |
+| —  | Form-associated callbacks (AI)  |  ➖    | – | – | – | non-form component |
+| —  | Security & performance (AI)     |  ✅    | – | – | – | spot-check         |
+| —  | Deep Stencil pass (if --deep)   |  ⏭️    | – | – | – | flag absent        |
+| —  | E2E coverage (if --e2e)         |  ⏭️    | – | – | – | flag absent        |
+
+**Roll-up**: ✅ X · ⚠️ Y · ❌ Z · ⏭️ N skipped
+**Verdict**: <Ready to merge | Block — critical fixes required | Review — non-blocking warnings>
 
 ### Summary
-- Pass: X / Total checks
-- Fail: Y issues found
-- Severity: Critical / High / Medium / Low
+- Total checks: <X> · Pass: <a> · Warning: <b> · Fail: <c> · Skipped: <d>
+- Highest severity: <Critical | High | Medium | Low | None>
 
 ### Critical Issues (must fix before merge)
-1. ...
+1. <code> in <file:line> — <message> — fix: <hint>
 
 ### High Issues (fix before merge)
 1. ...
@@ -494,6 +581,11 @@ Cross-reference Wave 1 grep results.
 
 ### Low Issues (nice to have)
 1. ...
+
+### Cross-Script Synthesis
+- <e.g. "Element <button class='primary'> fails both 09 (no accessible name)
+   and 10 (contrast 3.8:1 < 4.5:1) in dark mode" — single defect, two
+   citations, escalated to Critical>
 
 ### Deep Stencil Audit (if --deep)
 - Section 1 @Component: ...
@@ -509,9 +601,25 @@ Cross-reference Wave 1 grep results.
 1. ...
 
 ### Pipeline timing
-- Total wall-clock time: ~Xs (parallel waves)
-- Sequential equivalent (estimate): ~Ys
+- Orchestrator wall-clock: ~Xms (from `meta.totalDurationMs`)
+- AI-judgment phase:       ~Ys
+- Total report time:       ~Zs
 ```
+
+**Rules for the matrix**
+
+- Drive every numbered row from `findingsByTool[<name>]` — counts come from
+  the per-script `summary` block.
+- Status mapping:
+  - `❌` if `summary.errors > 0`
+  - `⚠️` if `summary.errors === 0 && summary.warnings > 0`
+  - `✅` if `summary.errors === 0 && summary.warnings === 0`
+  - `⏭️` if the script was filtered out (`--no-browser`, `--skip`, or
+    missing prerequisite like `--figma-dir`)
+- AI-only rows (no script equivalent) use `–` for count columns and state the
+  source as `manual review`, `yarn lint`, etc.
+- Always emit the matrix even when the orchestrator was unavailable —
+  populate it from manual Wave 1–3 results.
 
 Present the report. **Do NOT auto-fix** — wait for the user to choose which issues to address.
 

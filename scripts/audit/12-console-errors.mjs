@@ -158,7 +158,7 @@ export async function analyzeComponent(target, { baseUrl, warnAsFinding, explici
   const findings = [];
   for (const storyId of storyIds) {
     const url = storyUrl({ storyId, baseUrl });
-    const collected = await visitAndCollect(url);
+    const collected = await visitAndCollect(url, target.name);
     perStory.push({ storyId, ...collected });
 
     for (const err of collected.errors) {
@@ -213,8 +213,11 @@ function pascal(s) {
 /**
  * Navigate to a single URL and collect console.error / console.warn / pageerror.
  * Pure side-effecting (network + browser) — not unit-testable but isolated.
+ *
+ * Waits for the audited component to hydrate before declaring the page settled
+ * so hydration-time warnings/errors are reliably captured.
  */
-async function visitAndCollect(url) {
+async function visitAndCollect(url, componentName) {
   return withPage({
     url,
     waitUntil: 'load',
@@ -231,8 +234,13 @@ async function visitAndCollect(url) {
       page.on('pageerror', err => {
         errors.push(`uncaught: ${err.message}`);
       });
-      // Give the page a moment to settle (Stencil hydration may run after load)
-      await page.waitForTimeout(1500);
+      // Wait for Stencil hydration to complete on the audited component before
+      // declaring the page settled. Falls back to a fixed timeout when the
+      // host never appears (e.g., story renders a wrapper that nests it).
+      if (componentName) {
+        await page.waitForSelector(`${componentName}.hydrated`, { timeout: 10000 }).catch(() => null);
+      }
+      await page.waitForTimeout(500);
       return { errors, warnings };
     },
   });

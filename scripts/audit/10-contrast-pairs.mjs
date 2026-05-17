@@ -298,33 +298,129 @@ async function measureSamples(url, componentName, theme) {
     url,
     waitUntil: 'load',
     action: async page => {
-      await page.waitForTimeout(750);
+      // Wait for the component to hydrate before measuring; otherwise the host
+      // has no class/attribute mapping yet and bg/fg report defaults.
+      await page.waitForSelector(`${componentName}.hydrated`, { timeout: 10000 }).catch(() => null);
+      await page.waitForTimeout(250);
       if (theme === 'dark') {
         await setTheme(page, 'dark');
         await page.waitForTimeout(250);
       }
       const samples = await page.evaluate(
         ctx => {
-          const sel = [ctx.componentName, ...ctx.tags, ...ctx.roles.map(r => `[role="${r}"]`)].join(',');
-          const els = Array.from(document.querySelectorAll(sel));
-          return els.map((el, index) => {
-            const styles = window.getComputedStyle(el);
-            const fontSize = parseFloat(styles.fontSize) || 16;
-            const fontWeight = Number(styles.fontWeight) || 400;
-            const isLargeText = fontSize >= 24 || (fontSize >= 18.66 && fontWeight >= 700); // 18pt / 14pt bold
+          // Scope element collection to the audited component's subtree only.
+          // Without this, the selector matches Storybook chrome + tooling
+          // overlays (Agentation MCP, docs page) and produces dozens of false
+          // positives unrelated to the cor-* under test.
+          //
+          // Walk: each <cor-X> host + its light-DOM descendants (slotted
+          // content) + its own shadow-root descendants. Do NOT pierce nested
+          // custom-element shadow roots — those belong to other components.
+          const interactiveSel = [...ctx.tags, ...ctx.roles.map(r => `[role="${r}"]`)].join(',');
+          const hosts = Array.from(document.querySelectorAll(ctx.componentName));
+          const collected = [];
+          for (const host of hosts) {
+            // The host itself — measured as "ui" kind. Background may be
+            // transparent (display: inline-flex on :host with no bg); when
+            // that's the case we fall back to the first inner element with a
+            // non-transparent background so the measurement reflects the
+            // visual the user actually sees.
+            collected.push({ el: host, origin: 'host' });
+            for (const el of host.querySelectorAll(interactiveSel)) {
+              collected.push({ el, origin: 'light' });
+            }
+            if (host.shadowRoot) {
+              for (const el of host.shadowRoot.querySelectorAll(interactiveSel)) {
+                collected.push({ el, origin: 'shadow' });
+              }
+            }
+          }
+
+          const isTransparent = s => /^rgba?\(.*,\s*0\s*\)$/.test(s) || s === 'transparent';
+
+          // When the host has a transparent background (typical: `:host { display: inline-flex }`
+          // with no own bg), the real visual contrast lives on a shadow-root
+          // child like `.badge` that paints the colored fill. Walk shadow for
+          // the first such element with non-transparent bg + visible text, and
+          // return BOTH its fg and bg so the contrast pair comes from one
+          // element (a valid WCAG measurement, not a host/inner mash-up).
+          const findRenderedPair = el => {
+            const own = window.getComputedStyle(el);
+            if (!isTransparent(own.backgroundColor)) {
+              return {
+                fg: own.color,
+                bg: own.backgroundColor,
+                fontSize: own.fontSize,
+                fontWeight: own.fontWeight,
+                source: 'host',
+              };
+            }
+            const root = el.shadowRoot ?? null;
+            if (root) {
+              for (const inner of root.querySelectorAll('*')) {
+                const s = window.getComputedStyle(inner);
+                if (!isTransparent(s.backgroundColor)) {
+                  return {
+                    fg: s.color,
+                    bg: s.backgroundColor,
+                    fontSize: s.fontSize,
+                    fontWeight: s.fontWeight,
+                    source: `shadow:${inner.tagName.toLowerCase()}${inner.className ? '.' + inner.className.split(/\s+/).join('.') : ''}`,
+                  };
+                }
+              }
+            }
+            // No rendered surface found (Pattern A: host transparent, shadow
+            // empty of colored elements). The slotted child in light DOM
+            // (collected as origin='light') carries the real measurement;
+            // skip the host to avoid a false "transparent vs default-text"
+            // pair that doesn't reflect any user-visible contrast.
+            return null;
+          };
+
+          return collected.flatMap(({ el, origin }, index) => {
             const isDisabled = el.matches(':disabled, [aria-disabled="true"], [disabled]');
             const tag = el.tagName.toLowerCase();
-            const isInteractive =
-              ctx.tags.includes(tag) || ctx.roles.includes(el.getAttribute('role') || '') || tag === ctx.componentName;
-            // Kind heuristic: text vs UI. The component element itself is "ui".
-            const kind = isLargeText ? 'large' : tag === ctx.componentName ? 'ui' : 'normal';
+            const isHost = tag === ctx.componentName;
+            const isInteractive = ctx.tags.includes(tag) || ctx.roles.includes(el.getAttribute('role') || '') || isHost;
+
+            let fg, bg, borderColor, fontSize, fontWeight, source;
+            if (isHost) {
+              const pair = findRenderedPair(el);
+              if (!pair) return []; // Pattern A wrapper — slotted child carries the measurement.
+              fg = pair.fg;
+              bg = pair.bg;
+              fontSize = parseFloat(pair.fontSize) || 16;
+              fontWeight = Number(pair.fontWeight) || 400;
+              borderColor = window.getComputedStyle(el).borderTopColor;
+              source = pair.source;
+            } else {
+              const styles = window.getComputedStyle(el);
+              fg = styles.color;
+              bg = styles.backgroundColor;
+              borderColor = styles.borderTopColor;
+              fontSize = parseFloat(styles.fontSize) || 16;
+              fontWeight = Number(styles.fontWeight) || 400;
+              source = origin;
+            }
+
+            const isLargeText = fontSize >= 24 || (fontSize >= 18.66 && fontWeight >= 700); // 18pt / 14pt bold
+            // Kind heuristic: if the rendered surface carries visible text
+            // (host with text label, or any tag that normally contains text),
+            // classify as "normal"/"large" so the 4.5:1 threshold applies.
+            // Otherwise "ui" (3:1) for pure visual components.
+            const tagCarriesText = !['hr', 'img', 'svg'].includes(tag);
+            const kind = isLargeText ? 'large' : tagCarriesText ? 'normal' : 'ui';
+
             return {
               index,
               tag,
+              origin,
+              source,
               role: el.getAttribute('role') || null,
-              fg: styles.color,
-              bg: styles.backgroundColor,
-              borderColor: styles.borderTopColor,
+              fg,
+              bg,
+              borderColor,
               disabled: isDisabled,
               interactive: isInteractive,
               kind,
