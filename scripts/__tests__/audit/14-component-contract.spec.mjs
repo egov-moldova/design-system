@@ -10,7 +10,12 @@ import os from 'node:os';
 import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { afterEach, describe, it } from 'node:test';
 
-import { analyzeComponent, extractContractFromTsx, extractSlots } from '../../audit/14-component-contract.mjs';
+import {
+  analyzeComponent,
+  extractContractFromTsx,
+  extractSlots,
+  inferArchetype,
+} from '../../audit/14-component-contract.mjs';
 import { resolveComponentPaths } from '../../audit/lib/component-paths.mjs';
 
 const tempDirs = [];
@@ -153,6 +158,211 @@ describe('14-component-contract: extractContractFromTsx', () => {
     const { findings, contract } = extractContractFromTsx(p, 'cor-test');
     assert.equal(contract, null);
     assert.ok(findings.find(f => f.code === 'CONTRACT-NO-COMPONENT-CLASS'));
+  });
+});
+
+describe('14-component-contract: inferArchetype (pure)', () => {
+  it('returns the override value when @archetype JSDoc tag is set', () => {
+    const result = inferArchetype({
+      contract: { formAssociated: false, props: [], events: [] },
+      tsxContent: '',
+      componentName: 'cor-anything',
+      overrideValue: 'FORM',
+    });
+    assert.equal(result.value, 'FORM');
+    assert.equal(result.source, 'override');
+    assert.equal(result.confidence, 'high');
+    assert.ok(result.signals.some(s => s.includes('@archetype')));
+  });
+
+  it('ignores invalid override values and falls through to heuristics', () => {
+    const result = inferArchetype({
+      contract: { formAssociated: true, props: [], events: [] },
+      tsxContent: '',
+      componentName: 'cor-test',
+      overrideValue: 'NOT_REAL',
+    });
+    assert.equal(result.value, 'FORM');
+    assert.equal(result.source, 'heuristic');
+  });
+
+  it('FORM — high confidence when formAssociated: true', () => {
+    const result = inferArchetype({
+      contract: { formAssociated: true, props: [], events: [] },
+      tsxContent: '<Host>...</Host>',
+      componentName: 'cor-input',
+    });
+    assert.equal(result.value, 'FORM');
+    assert.equal(result.confidence, 'high');
+    assert.ok(result.signals.some(s => s.includes('formAssociated')));
+  });
+
+  it('STATUS — high confidence when TSX has static role="status"', () => {
+    const result = inferArchetype({
+      contract: { formAssociated: false, props: [], events: [] },
+      tsxContent: `return <Host role="status">{children}</Host>;`,
+      componentName: 'cor-banner',
+    });
+    assert.equal(result.value, 'STATUS');
+    assert.equal(result.confidence, 'high');
+    assert.ok(result.signals.some(s => s.includes('role="status"')));
+  });
+
+  it('STATUS — high confidence for alert/progressbar/timer roles', () => {
+    for (const role of ['alert', 'progressbar', 'timer']) {
+      const result = inferArchetype({
+        contract: { formAssociated: false, props: [], events: [] },
+        tsxContent: `<Host role="${role}"></Host>`,
+        componentName: 'cor-something',
+      });
+      assert.equal(result.value, 'STATUS', `role=${role} should map to STATUS`);
+      assert.equal(result.confidence, 'high');
+    }
+  });
+
+  it('STATUS — medium confidence on name fallback when role is dynamic', () => {
+    const result = inferArchetype({
+      contract: { formAssociated: false, props: [], events: [] },
+      tsxContent: `<Host role={this.ariaRole}>...</Host>`,
+      componentName: 'cor-toast-notification',
+    });
+    assert.equal(result.value, 'STATUS');
+    assert.equal(result.confidence, 'medium');
+    assert.ok(result.signals.some(s => s.includes('name')));
+    assert.ok(result.signals.some(s => s.includes('dynamic role')));
+  });
+
+  it('OVERLAY — high confidence when a boolean `open` prop is present', () => {
+    const result = inferArchetype({
+      contract: {
+        formAssociated: false,
+        props: [{ name: 'open', type: 'boolean' }],
+        events: [{ name: 'corOpen' }],
+      },
+      tsxContent: '<div></div>',
+      componentName: 'cor-modal',
+    });
+    assert.equal(result.value, 'OVERLAY');
+    assert.equal(result.confidence, 'high');
+    assert.ok(result.signals.some(s => s.includes('open')));
+  });
+
+  it('OVERLAY — matches expanded/visible/isOpen/active prop names', () => {
+    for (const name of ['expanded', 'visible', 'isOpen', 'active']) {
+      const result = inferArchetype({
+        contract: {
+          formAssociated: false,
+          props: [{ name, type: 'boolean' }],
+          events: [],
+        },
+        tsxContent: '',
+        componentName: 'cor-thing',
+      });
+      assert.equal(result.value, 'OVERLAY', `${name} should map to OVERLAY`);
+    }
+  });
+
+  it('ACTION — high confidence when component has @Event() and no overlay props', () => {
+    const result = inferArchetype({
+      contract: {
+        formAssociated: false,
+        props: [{ name: 'variant', type: 'string' }],
+        events: [{ name: 'corClick' }, { name: 'corHover' }],
+      },
+      tsxContent: '',
+      componentName: 'cor-chip',
+    });
+    assert.equal(result.value, 'ACTION');
+    assert.equal(result.confidence, 'high');
+    assert.ok(result.signals.some(s => s.includes('2 @Event')));
+  });
+
+  it('ACTION not selected when an overlay-style prop is also present (even non-boolean)', () => {
+    const result = inferArchetype({
+      contract: {
+        formAssociated: false,
+        props: [{ name: 'open', type: 'string' /* odd, but realistic for stencil "true"|"false" */ }],
+        events: [{ name: 'corClick' }],
+      },
+      tsxContent: '',
+      componentName: 'cor-weird',
+    });
+    assert.notEqual(result.value, 'ACTION');
+  });
+
+  it('CONTAINER — medium confidence for structural Host role', () => {
+    const result = inferArchetype({
+      contract: { formAssociated: false, props: [], events: [] },
+      tsxContent: `<Host role="rowgroup"><slot/></Host>`,
+      componentName: 'cor-tbody',
+    });
+    assert.equal(result.value, 'CONTAINER');
+    assert.equal(result.confidence, 'medium');
+    assert.ok(result.signals.some(s => s.includes('rowgroup')));
+  });
+
+  it('CONTAINER — low confidence as catch-all when nothing else matches', () => {
+    const result = inferArchetype({
+      contract: { formAssociated: false, props: [], events: [] },
+      tsxContent: `<Host><slot/></Host>`,
+      componentName: 'cor-card',
+    });
+    assert.equal(result.value, 'CONTAINER');
+    assert.equal(result.confidence, 'low');
+  });
+
+  it('priority order: FORM beats STATUS-by-role', () => {
+    const result = inferArchetype({
+      contract: { formAssociated: true, props: [], events: [] },
+      tsxContent: `<Host role="status"></Host>`,
+      componentName: 'cor-progress-input',
+    });
+    assert.equal(result.value, 'FORM');
+  });
+
+  it('priority order: OVERLAY beats ACTION when both signals present', () => {
+    const result = inferArchetype({
+      contract: {
+        formAssociated: false,
+        props: [{ name: 'open', type: 'boolean' }],
+        events: [{ name: 'corOpen' }, { name: 'corClose' }],
+      },
+      tsxContent: '',
+      componentName: 'cor-popover',
+    });
+    assert.equal(result.value, 'OVERLAY');
+  });
+});
+
+describe('14-component-contract: archetype emission (end-to-end)', () => {
+  it('emits contract.archetype for components with formAssociated', () => {
+    const tsx = `
+      import { Component } from '@stencil/core';
+      /** Form input. */
+      @Component({ tag: 'cor-form-input', formAssociated: true })
+      export class CorFormInput {}
+    `;
+    const p = tempTsx('cor-form-input', tsx);
+    const { contract } = extractContractFromTsx(p, 'cor-form-input');
+    assert.equal(contract.archetype.value, 'FORM');
+    assert.equal(contract.archetype.source, 'heuristic');
+  });
+
+  it('respects @archetype JSDoc override on the class', () => {
+    const tsx = `
+      import { Component } from '@stencil/core';
+      /**
+       * Looks like a container but is really a button wrapper.
+       * @archetype ACTION
+       */
+      @Component({ tag: 'cor-fancy-button' })
+      export class CorFancyButton {}
+    `;
+    const p = tempTsx('cor-fancy-button', tsx);
+    const { contract } = extractContractFromTsx(p, 'cor-fancy-button');
+    assert.equal(contract.archetype.value, 'ACTION');
+    assert.equal(contract.archetype.source, 'override');
+    assert.equal(contract.archetype.confidence, 'high');
   });
 });
 

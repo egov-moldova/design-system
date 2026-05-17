@@ -7,13 +7,26 @@ description: Use when auditing a single `cor-*` Stencil component for production
 
 Audit a single `cor-*` Stencil component end-to-end. This skill encapsulates the logic previously in `/audit-component` slash command so it can be invoked from any orchestrator agent (`new-component`, `refactor-component`, `migrate-component`, `custom-component`, `audit-production`).
 
+## Three-Layer Architecture (read this first)
+
+The audit runs in three layers. Each layer has a distinct responsibility, runtime, and skip rule. Lower layers capture deterministic data; higher layers interpret it.
+
+| Layer | What runs | When | Skips if |
+|---|---|---|---|
+| **L1 — Deterministic scripts** | `run-all.mjs` orchestrates scripts 01–14 in 3 parallel waves (A static · B build · C browser). Pure I/O + math; byte-identical output across runs. | local + CI | Wave C only: `--no-browser` or `--ci` or `process.env.CI` |
+| **L2 — AI MCP browser checks** | Mandatory BX checklist + archetype-specific CX + discretionary DX. Drives MCP Playwright (`mcp__playwright__browser_*`) to verify keyboard nav, focus traps, form validation, light/dark structural diff — things scripts cannot adapt to per-component. | local only | `--fast` OR `ciDetected` OR MCP unavailable |
+| **L3 — Cross-layer synthesis** | AI correlates L1 + L2 findings, escalates severity, emits the Check Matrix + Verdict. | local + CI | never |
+
+**Routing flag the orchestrator emits**: `envelope.meta.layer2Required`. AI MUST run L2 when this is `true` (and skip when `false`). `envelope.meta.ciDetected` surfaces the CI state to dashboards.
+
 ## Inputs
 
 - `componentName` (required): `cor-<name>` — folder name in `src/components/` or `src/hidden/`
 - Optional flags:
   - `--deep` — also invoke [`stencil-compliance`](../stencil-compliance/SKILL.md) full rule pass + [`accessibility-compliance`](../accessibility-compliance/SKILL.md) deep audit (via `/audit-accessibility`)
   - `--e2e` — include Phase 5b E2E test audit (default: unit-only). For future when E2E tests are mandated.
-  - `--fast` — skip Wave 3 (browser verification). Used by `pre-pr-check` for sub-30s pre-commit pass.
+  - `--fast` — skip Wave 3 (browser scripts) AND skip L2. Used by `pre-pr-check` for sub-30s pre-commit pass.
+  - `--ci` — skip Wave C AND skip L2 (auto-set when `process.env.CI` is truthy).
 
 ## When to invoke
 
@@ -96,19 +109,33 @@ start it in another terminal.
    were skipped in the final summary (`Storybook: skipped (not running)`).
 ```
 
-### Step 1 — Run the orchestrator
+### Step 1 — Run the orchestrator (Layer 1)
 
 ```bash
 # Default (full audit): runs Wave A + B + C in parallel inside each wave.
 # Pre-condition: Storybook on :6007 (Step 0 ensured this).
 node scripts/audit/run-all.mjs <componentName> --json
 
-# --fast / pre-commit speed path: skip browser-driven checks.
+# --fast / pre-commit speed path: skip browser-driven scripts AND Layer 2.
 node scripts/audit/run-all.mjs <componentName> --no-browser --json
 
-# CI without Playwright installed (no Storybook, no browser):
-node scripts/audit/run-all.mjs <componentName> --no-browser --json
+# CI mode: same as --no-browser PLUS sets meta.ciDetected for downstream tools.
+# Auto-triggered when env.CI is truthy.
+node scripts/audit/run-all.mjs <componentName> --ci --json
 ```
+
+### Step 2 — Run Layer 2 (MCP browser checks) — local only
+
+If `envelope.meta.layer2Required === true`, AI MUST execute Layer 2:
+- §BX — Mandatory browser checklist (BX1–BX7) — see section further down.
+- §CX — Archetype-specific checklist — dispatch on `envelope.findingsByTool['component-contract'][...].meta.contract.archetype.value`.
+- §DX — Discretionary observations (optional, AI-driven).
+
+If `envelope.meta.layer2Required === false` (CI, `--fast`, `--no-browser`): skip L2 entirely and mark all BX/CX/DX rows in the matrix as `⏭️` with reason `layer2-disabled`.
+
+### Step 3 — Cross-layer synthesis (Layer 3)
+
+Always runs. Correlate L1 + L2 findings, escalate severity for compound defects (e.g., "missing accessible name in L1's a11y-tree AND contrast fail in L1's contrast-pairs AND Tab cannot reach the element in L2 BX2 → CRITICAL"), then emit the Check Matrix + Verdict per the **Final Report** section below.
 
 The envelope shape is documented in `scripts/audit/lib/json-output.mjs`
 (schemaVersion 1.0.0). Per-script details:
@@ -493,6 +520,126 @@ mcp__playwright__browser_evaluate({ function: "() => { document.documentElement.
 
 ---
 
+## Layer 2 — AI MCP browser checks (BX mandatory + CX archetypal + DX discretionary)
+
+This is the **adaptive** layer that scripts cannot cover. It runs once L1 is done,
+locally only (skipped when `meta.layer2Required === false`). Three sections,
+parsed in order: **BX → CX → DX**. AI tracks per-section results in the
+Check Matrix at the end of the report.
+
+**Pre-conditions:**
+- L1 envelope in hand (read `meta.contract.archetype.value` to pick the CX block).
+- Storybook reachable on `:6007` (Step 0 already ensured this).
+- MCP Playwright (`mcp__playwright__browser_*`) available. If the first
+  `browser_navigate` fails, mark all BX rows ⏭️ with reason `mcp-unavailable`
+  and verdict `Review — Layer 2 deferred`. Do NOT silently skip.
+
+**Browser session policy:** open ONE session via `browser_navigate` for BX1
+and reuse it across BX2–BX7 + CX + DX. Re-navigate only when changing story.
+
+### §BX — Mandatory Browser Checklist
+
+6 mandatory items + 1 conditional. Earlier items gate later ones — if BX1 fails
+(no hydration), do NOT continue; mark BX2–BX7 ⏭️ with reason `BX1 gate`.
+
+```text
+BX1 — Hydration + first paint
+  mcp__playwright__browser_navigate({ url: storyUrl(componentName, 'default') })
+  mcp__playwright__browser_wait_for({ time: 1 })
+  mcp__playwright__browser_snapshot()
+  PASS: snapshot contains cor-<name> with class `hydrated` and ≥1 child node
+  FAIL: BLOCK (verdict "Block — incomplete audit"; no point running BX2–BX7)
+  Fallback: if no Default story exists, navigate to the FIRST story id from
+            envelope.findingsByTool['story-exports'].
+
+BX2 — Tab order reaches every focusable element
+  Walk the interactive census from L1 (envelope.findingsByTool['a11y-tree'][...]
+  meta-snapshot.light.interactive[]). For each element:
+    mcp__playwright__browser_press_key({ key: 'Tab' })
+    mcp__playwright__browser_evaluate({ function: "() => ({ tag: document.activeElement?.tagName, id: document.activeElement?.id, role: document.activeElement?.getAttribute('role') })" })
+  PASS: every census element receives focus in DOM order; Shift+Tab walks back
+  FAIL: CRITICAL — keyboard trap, skipped element, or wrong order (WCAG 2.1.1)
+  N/A: archetype === CONTAINER AND census.length === 0
+
+BX3 — Focus-visible ring on every focusable element
+  For each focused element from BX2:
+    mcp__playwright__browser_evaluate({ function: "() => { const s = getComputedStyle(document.activeElement); return { outlineWidth: s.outlineWidth, outlineColor: s.outlineColor, boxShadow: s.boxShadow }; }" })
+  PASS: outlineWidth !== '0px' OR boxShadow contains a focus token (non-'none')
+  FAIL: CRITICAL — invisible focus (WCAG 2.4.7)
+  N/A: same as BX2
+
+BX4 — Escape / activation (conditional)
+  Runs only when archetype ∈ {OVERLAY} OR contract has @Method matching /^(open|close|toggle)$/
+  - Open the overlay (set prop via browser_evaluate or click trigger)
+  - mcp__playwright__browser_press_key({ key: 'Escape' })
+  - browser_snapshot() and verify:
+      • overlay no longer visible (open prop flipped OR display:none)
+      • focus returned to the trigger element
+  FAIL: CRITICAL (WCAG 2.1.2 — no keyboard trap)
+  Skip: archetype not in list → row renders as ➖ N/A
+
+BX5 — Light + dark structural diff
+  Snapshot light:
+    mcp__playwright__browser_snapshot({ filename: 'bx5-light.snapshot.yml' })
+  Toggle dark:
+    mcp__playwright__browser_evaluate({ function: "() => { document.documentElement.dataset.theme = 'dark'; return new Promise(r => requestAnimationFrame(() => r(true))); }" })
+  Snapshot dark, then compare DOM structure (element count + tag set), NOT pixels
+  PASS: identical element tree across themes
+  FAIL: HIGH — dark mode loses an element OR throws a console error
+  (Pixel-level diff is pixel-perfect-verifier's job; this is the cheap gate.)
+
+BX6 — Console-error sweep
+  mcp__playwright__browser_console_messages({ level: 'error' })
+  PASS: zero errors across BX1–BX5
+  FAIL: any error → escalate severity of all BX failures to CRITICAL
+        (a console error during a checked action means the component is
+         silently broken in that scenario)
+
+BX7 — Form submission round-trip (conditional: archetype === FORM only)
+  mcp__playwright__browser_evaluate({ function: "/* inject <form>; set value via component API; dispatch submit; read FormData */" })
+  PASS: FormData carries the expected key + value; internals.setFormValue
+        called with TWO args (name, state) — never just one
+  FAIL: CRITICAL — missing key, wrong value, or 1-arg setFormValue
+  Skip: archetype !== FORM → ➖ N/A
+```
+
+**BX exit rules**
+
+- All applicable BX items MUST be done (✅ / ❌) or marked ⏭️ with explicit reason.
+- If any BX item is skipped without `--fast` / `--ci` / `mcp-unavailable` reason → verdict = **"Block — incomplete audit"**.
+- If BX6 reports an error AND any other BX failed → all BX failures upgrade to **CRITICAL**.
+
+### §CX — Archetype-specific checklist
+
+Read `contract.archetype.value` from `envelope.findingsByTool['component-contract'][...meta.contract]` (or from the script-14 stand-alone envelope under `meta.contract.archetype`). Run **only the row for that archetype**.
+
+If `archetype.confidence === 'low'`: AI MUST flag this in the matrix as INFO and may switch to a different CX block if observation contradicts the heuristic (note the override in the report).
+
+| Archetype | CX1 | CX2 | CX3 | CX4 |
+|---|---|---|---|---|
+| **FORM** | `internals.validity` reflects required/pattern (set invalid input, read `aria-invalid` + validity state) | `formResetCallback` resets value + `setValidity({})` (trigger reset on parent form) | `formStateRestoreCallback` serialize → restore → assert equal (dump + restore via API) | Label association: `aria-labelledby` resolves to existing element OR `<label for=>` matches host id |
+| **STATUS** | `aria-live` correct for severity: `polite` for status/loading, `assertive` for alert | Animation respects `prefers-reduced-motion` (toggle media query via `browser_evaluate`, re-check `animation-duration`) | Dismiss path (if any): close button has accessible name AND Esc closes | ➖ N/A |
+| **OVERLAY** | Focus trap inside when open (Tab from last focusable cycles to first, not outside) — CRITICAL on fail | Backdrop click closes (if `closeOnBackdrop` prop or similar) | `aria-modal="true"` AND `role ∈ {dialog, alertdialog}` on the rendered overlay | Body scroll locked while open (read `document.body.style.overflow`) |
+| **ACTION** | Click handler fires the `@Event()` from script 14 (attach listener via `browser_evaluate`, click, assert) | Disabled state blocks BOTH click AND keyboard (Space/Enter) | Loading state (if prop) disables interaction AND sets `aria-busy="true"` | Icon-only variant has `aria-label` (cross-ref script-09 finding) |
+| **CONTAINER** | Slotted content layout doesn't overflow at 320px viewport (`browser_resize`, snapshot, check clipping) | Light + dark token usage parity (cross-ref `tokens.validate` envelope — every token defined in one theme is defined in the other) | `:empty` slot rendering correct (clear slot content via `browser_evaluate`, snapshot for graceful empty state) | ➖ N/A |
+
+**CX exit rules**
+
+- CX must run all applicable checks for the matched archetype. Skipped CX → verdict = **"Review — partial"** (UNLESS BX failed first, in which case "Block").
+- CX failures default to **HIGH** severity; OVERLAY CX1 (focus trap) is **CRITICAL** because a missing focus trap is a compound a11y/security defect.
+
+### §DX — Discretionary observations (AI initiative)
+
+Always **INFO** in the matrix; never blocks. AI adds these based on what it observes:
+
+- `prefers-reduced-motion`: toggle media query, verify animations honor it.
+- Document direction RTL: set `dir='rtl'` via `browser_evaluate`, re-snapshot, eyeball mirror issues.
+- Viewport stress: `mcp__playwright__browser_resize` to 320 / 768 / 1280, snapshot at each.
+- High-contrast mode: toggle `forced-colors` media query (if supported), snapshot.
+- **AI ad-hoc**: any story or interaction the AI deems worth verifying beyond BX/CX — e.g., "Stories include a `LongLabel` variant; I verified text-overflow behavior at narrow widths." Log each ad-hoc DX explicitly in the report so reviewers see what was covered.
+
+---
+
 ## Security & Performance Spot-Check
 
 Cross-reference Wave 1 grep results.
@@ -531,9 +678,11 @@ which need attention; the narrative explains the "why" and what to do.
 
 ```text
 ## Audit Report: <componentName>
-**Flags**: <list active flags, e.g. --deep, --e2e>
+**Flags**: <list active flags, e.g. --deep, --e2e, --ci>
 **Storybook**: <reused | started | skipped (--fast) | skipped (not running)>
 **Orchestrator**: <run-all.mjs ran in Xms | unavailable, manual fallback used>
+**Archetype**: <FORM | STATUS | OVERLAY | ACTION | CONTAINER> (source: <heuristic|override>, confidence: <high|medium|low>)
+**Layer 2**: <executed | skipped (--ci) | skipped (--fast) | skipped (mcp-unavailable)>
 
 ### Check Matrix
 
@@ -556,6 +705,15 @@ Columns: E | W | I — E = Errors (critical, blocking) W = Warnings (recommendat
 | 12 | Console errors                  |  ✅    | 0 | 0 | 0 | script 12          |
 | 13 | Token diff                      |  ✅    | 0 | 0 | 0 | script 13          |
 | 14 | Component contract              |  ✅    | 0 | 0 | 0 | script 14          |
+| BX1 | L2: Hydration + first paint    |  ✅    | – | – | – | MCP browser_snapshot |
+| BX2 | L2: Tab order on focusables    |  ✅    | – | – | – | MCP browser_press_key |
+| BX3 | L2: Focus-visible ring         |  ✅    | – | – | – | MCP browser_evaluate |
+| BX4 | L2: Escape / activation         |  ➖    | – | – | – | archetype not OVERLAY |
+| BX5 | L2: Light + dark structural    |  ✅    | – | – | – | MCP snapshot ×2 |
+| BX6 | L2: Console error sweep         |  ✅    | – | – | – | MCP browser_console_messages |
+| BX7 | L2: Form submission round-trip  |  ➖    | – | – | – | archetype !== FORM |
+| CX  | L2: Archetype-specific (<TYPE>)|  ✅    | – | – | – | see CX sub-bullets |
+| DX  | L2: Discretionary observations |  ✅    | – | – | – | informational |
 | —  | TypeScript strict (AI)          |  ✅    | – | – | – | yarn lint          |
 | —  | CSS architecture pattern (AI)   |  ✅    | – | – | – | manual review      |
 | —  | Form-associated callbacks (AI)  |  ➖    | – | – | – | non-form component |
@@ -563,8 +721,14 @@ Columns: E | W | I — E = Errors (critical, blocking) W = Warnings (recommendat
 | —  | Deep Stencil pass (if --deep)   |  ⏭️    | – | – | – | flag absent        |
 | —  | E2E coverage (if --e2e)         |  ⏭️    | – | – | – | flag absent        |
 
-**Roll-up**: ✅ X · ⚠️ Y · ❌ Z · ⏭️ N skipped
-**Verdict**: <Ready to merge | Block — critical fixes required | Review — non-blocking warnings>
+**CX sub-rows** (rendered inline under the CX row, one per check that ran for the matched archetype):
+- CX1 ...
+- CX2 ...
+- CX3 ...
+- CX4 ... (or ➖ N/A)
+
+**Roll-up**: ✅ X · ⚠️ Y · ❌ Z · ⏭️ N skipped · ➖ M N/A
+**Verdict**: <Ready to merge | Review — partial | Block — critical fixes required | Block — incomplete audit>
 
 ### Summary
 - Total checks: <X> · Pass: <a> · Warning: <b> · Fail: <c> · Skipped: <d>
@@ -608,18 +772,24 @@ Columns: E | W | I — E = Errors (critical, blocking) W = Warnings (recommendat
 
 **Rules for the matrix**
 
-- Drive every numbered row from `findingsByTool[<name>]` — counts come from
-  the per-script `summary` block.
-- Status mapping:
+- Drive every L1 numbered row (01–14) from `findingsByTool[<name>]` — counts come from the per-script `summary` block.
+- L2 rows (BX1–BX7, CX, DX) come from the AI session record — ✅ if the MCP call succeeded and the assertion passed; ❌ if assertion failed; ⏭️ if step was attempted and aborted (with reason); ➖ if step was N/A for the archetype.
+- Status mapping for L1:
   - `❌` if `summary.errors > 0`
   - `⚠️` if `summary.errors === 0 && summary.warnings > 0`
   - `✅` if `summary.errors === 0 && summary.warnings === 0`
-  - `⏭️` if the script was filtered out (`--no-browser`, `--skip`, or
-    missing prerequisite like `--figma-dir`)
-- AI-only rows (no script equivalent) use `–` for count columns and state the
-  source as `manual review`, `yarn lint`, etc.
-- Always emit the matrix even when the orchestrator was unavailable —
-  populate it from manual Wave 1–3 results.
+  - `⏭️` if the script was filtered out (`--no-browser`, `--ci`, `--skip`, missing prerequisite like `--figma-dir`)
+- AI-only rows (no script equivalent) use `–` for count columns and state the source as `manual review`, `yarn lint`, etc.
+- Always emit the matrix even when the orchestrator was unavailable — populate from manual Wave 1–3 results + whatever L2 was attempted.
+
+**Verdict rules** (the verdict line at the top — apply in order, first matching rule wins):
+
+1. **"Block — critical fixes required"** — ANY of: L1 row `❌` (errors), L2 BX row `❌`, L2 CX row `❌`. Reason wins regardless of completeness state.
+2. **"Block — incomplete audit"** — L1 clean BUT any BX row is ⏭️ for a non-flag reason (e.g., `mcp-unavailable` without `--fast`/`--ci`/`env.CI`).
+3. **"Review — partial"** — L1 clean + all BX ✅/➖ but some CX checks skipped or warning-level.
+4. **"Ready to merge"** — L1 clean (no ❌) + all BX ✅/➖ + all applicable CX ✅.
+
+The verdict ALWAYS prioritizes real Layer-1 errors over Layer-2 completeness — an incomplete L2 cannot mask a script-level fail.
 
 Present the report. **Do NOT auto-fix** — wait for the user to choose which issues to address.
 

@@ -62,6 +62,9 @@ Options:
   --only <ids>        Comma-separated list — only run these scripts
   --no-browser        Skip Wave C (browser scripts: 09, 10, 11, 12). Equivalent to
                       --skip 09,10,11,12. Used by CI before Playwright is installed.
+  --ci                Skip Wave C AND set meta.ciDetected: true in the envelope.
+                      Also auto-enabled when process.env.CI is set. Layer 2 (MCP)
+                      checks in the audit-component skill are NOT executed in CI.
   --figma-dir <dir>   Forwarded to 11-pixel-diff-states (required to run that script)
   --no-color          Disable ANSI colors
   --help, -h          Show this help
@@ -169,6 +172,7 @@ function parseCli() {
         'skip': { type: 'string', default: '' },
         'only': { type: 'string', default: '' },
         'no-browser': { type: 'boolean', default: false },
+        'ci': { type: 'boolean', default: false },
         'figma-dir': { type: 'string' },
         'no-color': { type: 'boolean', default: false },
         'help': { type: 'boolean', short: 'h', default: false },
@@ -196,6 +200,12 @@ function parseCli() {
     process.stderr.write(`${TOOL}: choose exactly one of <component>, --all, --changed.\n`);
     process.exit(EXIT_INTERNAL);
   }
+  // CI mode: either the explicit --ci flag or any truthy CI env var
+  // (GitHub Actions, GitLab CI, CircleCI, etc. all set CI=true). When in CI
+  // we skip Wave C (browser scripts) AND signal to the audit-component skill
+  // that Layer 2 (MCP browser checks) should be skipped — there's no AI to
+  // run them in a headless workflow.
+  const ci = parsed.values.ci || !!process.env.CI;
   return {
     component,
     all,
@@ -205,6 +215,7 @@ function parseCli() {
     skip: splitIds(parsed.values.skip),
     only: splitIds(parsed.values.only),
     noBrowser: parsed.values['no-browser'],
+    ci,
     figmaDir: parsed.values['figma-dir'] ?? null,
     noColor: parsed.values['no-color'],
   };
@@ -253,7 +264,13 @@ async function main() {
 
   const allResults = [...waveAResults, ...waveBResults, ...waveCResults];
 
-  const combined = aggregate({ targetArg, results: allResults, durationMs: Date.now() - t0 });
+  const combined = aggregate({
+    targetArg,
+    results: allResults,
+    durationMs: Date.now() - t0,
+    ci: args.ci,
+    noBrowser: args.noBrowser,
+  });
 
   await emit(combined, args);
   process.exit(combined.ok ? 0 : 1);
@@ -263,7 +280,9 @@ function selectScripts(args) {
   let scripts = AUDIT_SCRIPTS.slice();
   if (args.only.size > 0) scripts = scripts.filter(s => args.only.has(s.id));
   if (args.skip.size > 0) scripts = scripts.filter(s => !args.skip.has(s.id));
-  if (args.noBrowser) scripts = scripts.filter(s => s.wave !== 'C');
+  // CI and --no-browser both skip Wave C (the browser-driven scripts). CI
+  // additionally signals the SKILL to skip Layer 2 (see meta.layer2Required).
+  if (args.noBrowser || args.ci) scripts = scripts.filter(s => s.wave !== 'C');
   // 11-pixel-diff requires --figma-dir; silently drop it if not provided so
   // run-all stays useful in environments where the reference set isn't synced.
   if (!args.figmaDir) scripts = scripts.filter(s => s.id !== '11');
@@ -352,8 +371,17 @@ function runScript(script, targetArg, args = {}) {
 
 /**
  * Merge per-script results into a single envelope. Pure — exported for tests.
+ *
+ * `ci` and `noBrowser` drive two meta fields that the audit-component skill
+ * reads to decide whether to execute Layer 2 (MCP browser checks):
+ *
+ *   meta.ciDetected      — true when --ci was passed OR process.env.CI was set
+ *                          at the time of invocation. Surfaces to CI dashboards
+ *                          so misconfigured runners are visible.
+ *   meta.layer2Required  — true ONLY in interactive local runs (no CI, no
+ *                          --no-browser). SKILL.md §BX gates on this flag.
  */
-export function aggregate({ targetArg, results, durationMs }) {
+export function aggregate({ targetArg, results, durationMs, ci = false, noBrowser = false }) {
   const summary = { errors: 0, warnings: 0, info: 0 };
   const blockers = [];
   const findingsByTool = {};
@@ -396,6 +424,8 @@ export function aggregate({ targetArg, results, durationMs }) {
       totalDurationMs: durationMs,
       scriptsRun: results.length,
       parallel: true,
+      ciDetected: ci,
+      layer2Required: !ci && !noBrowser,
     },
   };
 }
@@ -434,9 +464,15 @@ async function emit(combined, args) {
       process.stdout.write(`  ... and ${combined.blockers.length - 10} more.\n`);
     }
   }
-  process.stdout.write(
-    `\nTotal: ${combined.meta.totalDurationMs}ms (${combined.meta.scriptsRun} scripts, parallel)\n\n`,
-  );
+  process.stdout.write(`\nTotal: ${combined.meta.totalDurationMs}ms (${combined.meta.scriptsRun} scripts, parallel)\n`);
+  if (combined.meta.ciDetected) {
+    process.stdout.write(`${C.gray('CI mode detected — Layer 2 (MCP browser checks) skipped.')}\n`);
+  } else if (combined.meta.layer2Required) {
+    process.stdout.write(
+      `${C.bold('Next:')} run Layer 2 — see .claude/skills/audit-component/SKILL.md §BX (mandatory MCP browser checks) + §CX (archetype-specific).\n`,
+    );
+  }
+  process.stdout.write('\n');
 }
 
 function colorize(noColor) {

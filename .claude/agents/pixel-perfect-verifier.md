@@ -61,6 +61,8 @@ Thresholds (tunable via `--pass-threshold` / `--warn-threshold`):
 
 ### Step 2 — Judgment on WARNING/FAIL states
 
+**Pre-requisite**: the cheap structural light/dark diff (BX5 in [`.claude/skills/audit-component/SKILL.md`](../skills/audit-component/SKILL.md) §BX) should pass before this deeper Figma diff is meaningful. If BX5 already flagged a missing element in dark mode, expect this script to FAIL on every dark-mode state — fix BX5 first.
+
 This is where AI value lands. For each non-PASS state:
 
 - `Read` the `diffImagePath` to see what changed.

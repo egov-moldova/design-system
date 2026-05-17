@@ -143,6 +143,7 @@ export function extractContractFromTsx(tsxPath, componentName) {
   const sourceFile = createSourceFile(tsxPath);
   const classNode = getComponentClass(sourceFile);
   const fileRel = relativeToRepo(tsxPath);
+  const tsxContent = readFileSync(tsxPath, 'utf8');
   const findings = [];
 
   if (!classNode) {
@@ -203,9 +204,136 @@ export function extractContractFromTsx(tsxPath, componentName) {
   }
 
   // Slots are scraped from JSX render() output via regex (cheaper than walking JSX).
-  contract.slots = extractSlots(readFileSync(tsxPath, 'utf8'));
+  contract.slots = extractSlots(tsxContent);
+
+  // Archetype routes Layer-2 (AI MCP) checks in the audit-component skill.
+  // Override via class-level `@archetype FORM|STATUS|OVERLAY|ACTION|CONTAINER`
+  // wins over heuristics; otherwise inferred from contract + TSX content.
+  const overrideValue = readArchetypeOverride(classNode);
+  contract.archetype = inferArchetype({ contract, tsxContent, componentName, overrideValue });
 
   return { findings, contract, componentName };
+}
+
+// ─── Archetype inference (drives Layer-2 routing in SKILL.md §CX) ──────────
+
+const VALID_ARCHETYPES = ['FORM', 'STATUS', 'OVERLAY', 'ACTION', 'CONTAINER'];
+const OVERLAY_PROP_NAMES = ['open', 'expanded', 'visible', 'isOpen', 'active'];
+const STATUS_ROLE_PATTERN = /role\s*=\s*['"](status|alert|progressbar|timer)['"]/i;
+const STATUS_NAME_PATTERN = /loading|spinner|skeleton|toast|notification|progress|badge/i;
+const DYNAMIC_ROLE_PATTERN = /role\s*=\s*\{/;
+const STRUCTURAL_ROLE_PATTERN = /role\s*=\s*['"](group|rowgroup|tablist|separator)['"]/i;
+
+/**
+ * Read an explicit `@archetype <VALUE>` override from the component class JSDoc.
+ * Returns the uppercased value (validated against VALID_ARCHETYPES) or null.
+ *
+ * `getJSDocText` strips tag lines, so we walk `ts.getJSDocTags` directly here.
+ */
+function readArchetypeOverride(classNode) {
+  const tags = ts.getJSDocTags(classNode) ?? [];
+  for (const tag of tags) {
+    if (tag.tagName?.text !== 'archetype') continue;
+    const raw =
+      typeof tag.comment === 'string'
+        ? tag.comment
+        : Array.isArray(tag.comment)
+          ? tag.comment.map(c => c.text ?? '').join('')
+          : '';
+    const value = raw.trim().toUpperCase();
+    if (VALID_ARCHETYPES.includes(value)) return value;
+  }
+  return null;
+}
+
+/**
+ * Infer the component's archetype from contract data + raw TSX. Pure — exported
+ * for tests. First match wins; the order encodes our rule priority:
+ *
+ *   override  →  FORM  →  STATUS  →  OVERLAY  →  ACTION  →  CONTAINER
+ *
+ * Returns { value, source: 'override'|'heuristic', confidence: 'high'|'medium'|'low', signals: string[] }.
+ * The `signals` array makes the decision auditable (shown in the SKILL Check Matrix).
+ */
+export function inferArchetype({ contract, tsxContent, componentName, overrideValue } = {}) {
+  if (overrideValue && VALID_ARCHETYPES.includes(overrideValue)) {
+    return {
+      value: overrideValue,
+      source: 'override',
+      confidence: 'high',
+      signals: ['JSDoc @archetype tag'],
+    };
+  }
+
+  if (contract?.formAssociated === true) {
+    return {
+      value: 'FORM',
+      source: 'heuristic',
+      confidence: 'high',
+      signals: ['formAssociated: true in @Component'],
+    };
+  }
+
+  const roleMatch = tsxContent ? tsxContent.match(STATUS_ROLE_PATTERN) : null;
+  if (roleMatch) {
+    return {
+      value: 'STATUS',
+      source: 'heuristic',
+      confidence: 'high',
+      signals: [`role="${roleMatch[1]}" in TSX`],
+    };
+  }
+  const nameSuggestsStatus = STATUS_NAME_PATTERN.test(componentName ?? '');
+  const hasDynamicRole = tsxContent ? DYNAMIC_ROLE_PATTERN.test(tsxContent) : false;
+  if (nameSuggestsStatus) {
+    const signals = ['component name matches STATUS pattern'];
+    if (hasDynamicRole) signals.push('dynamic role={...} detected');
+    return {
+      value: 'STATUS',
+      source: 'heuristic',
+      confidence: 'medium',
+      signals,
+    };
+  }
+
+  const overlayProp = (contract?.props ?? []).find(
+    p => OVERLAY_PROP_NAMES.includes(p.name) && /boolean/i.test(p.type ?? ''),
+  );
+  if (overlayProp) {
+    return {
+      value: 'OVERLAY',
+      source: 'heuristic',
+      confidence: 'high',
+      signals: [`boolean prop "${overlayProp.name}"`],
+    };
+  }
+
+  const hasOverlayPropAnyType = (contract?.props ?? []).some(p => OVERLAY_PROP_NAMES.includes(p.name));
+  if ((contract?.events?.length ?? 0) >= 1 && !hasOverlayPropAnyType) {
+    return {
+      value: 'ACTION',
+      source: 'heuristic',
+      confidence: 'high',
+      signals: [`${contract.events.length} @Event() declaration(s)`, 'no overlay-style prop'],
+    };
+  }
+
+  const structuralMatch = tsxContent ? tsxContent.match(STRUCTURAL_ROLE_PATTERN) : null;
+  if (structuralMatch) {
+    return {
+      value: 'CONTAINER',
+      source: 'heuristic',
+      confidence: 'medium',
+      signals: [`Host role="${structuralMatch[1]}" (structural)`],
+    };
+  }
+
+  return {
+    value: 'CONTAINER',
+    source: 'heuristic',
+    confidence: 'low',
+    signals: ['no specific archetype signal — catch-all'],
+  };
 }
 
 // ─── Per-decorator extractors ──────────────────────────────────────────────

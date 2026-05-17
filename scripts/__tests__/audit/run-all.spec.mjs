@@ -146,4 +146,38 @@ describe('run-all: aggregate', () => {
     assert.equal(combined.meta.totalDurationMs, 42);
     assert.equal(combined.meta.parallel, true);
   });
+
+  it('defaults ciDetected=false and layer2Required=true (interactive local run)', () => {
+    const combined = aggregate({ targetArg: 'cor-button', results: [], durationMs: 1 });
+    assert.equal(combined.meta.ciDetected, false);
+    assert.equal(combined.meta.layer2Required, true);
+  });
+
+  it('ci=true → ciDetected=true and layer2Required=false', () => {
+    const combined = aggregate({ targetArg: 'cor-button', results: [], durationMs: 1, ci: true });
+    assert.equal(combined.meta.ciDetected, true);
+    assert.equal(combined.meta.layer2Required, false);
+  });
+
+  it('noBrowser=true (without ci) → layer2Required=false but ciDetected=false', () => {
+    const combined = aggregate({
+      targetArg: 'cor-button',
+      results: [],
+      durationMs: 1,
+      noBrowser: true,
+    });
+    assert.equal(combined.meta.ciDetected, false);
+    assert.equal(combined.meta.layer2Required, false);
+  });
+
+  it('ci=true wins over noBrowser=false (CI always blocks L2)', () => {
+    const combined = aggregate({
+      targetArg: 'cor-button',
+      results: [],
+      durationMs: 1,
+      ci: true,
+      noBrowser: false,
+    });
+    assert.equal(combined.meta.layer2Required, false);
+  });
 });

@@ -95,6 +95,7 @@ This is where the agent's value lands. For each script finding, decide:
 
 - Use `mcp__playwright__browser_press_key({ key: "Tab" })` + `browser_evaluate`
   to verify Tab order is logical. Script cannot judge "logical for user workflow".
+- **Canonical procedure**: see [`.claude/skills/audit-component/SKILL.md`](../skills/audit-component/SKILL.md) §BX (mandatory browser checklist) for the full BX2 (tab order) + BX3 (focus-visible) + BX4 (Escape) steps with exact MCP call signatures. This agent's keyboard section is a subset; when `--deep` is set, also execute BX5–BX6 here so the a11y verdict is complete.
 - Confirm `:focus-visible` styles render — script reports the computed
   `outlineWidth` / `outlineStyle` / `outlineColor`; if any is `none` / `0px` /
   `transparent`, that's a focus-ring gap.
