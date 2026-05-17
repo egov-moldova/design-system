@@ -88,7 +88,16 @@
     "audit:structure": "node scripts/audit/01-component-structure.mjs",
     "audit:antipatterns": "node scripts/audit/02-stencil-antipatterns.mjs",
     "audit:git-hygiene": "node scripts/audit/03-git-hygiene.mjs",
-    "audit:jsdoc": "node scripts/audit/04-jsdoc-completeness.mjs"
+    "audit:jsdoc": "node scripts/audit/04-jsdoc-completeness.mjs",
+    "audit:story-exports": "node scripts/audit/05-story-exports.mjs",
+    "audit:test-coverage": "node scripts/audit/06-test-coverage.mjs",
+    "audit:integration": "node scripts/audit/07-integration-usage.mjs",
+    "audit:bundle-size": "node scripts/audit/08-bundle-size.mjs",
+    "audit:token-diff": "node scripts/audit/13-token-diff.mjs",
+    "audit:contract": "node scripts/audit/14-component-contract.mjs",
+    "audit:all": "node scripts/audit/run-all.mjs",
+    "scaffold:story": "node scripts/scaffold/story-scaffold.mjs",
+    "scaffold:test": "node scripts/scaffold/test-scaffold.mjs"
   },
   "wireit": {
     "tokens.build.core": {
