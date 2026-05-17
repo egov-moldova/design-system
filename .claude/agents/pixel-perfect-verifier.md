@@ -7,176 +7,137 @@ model: sonnet
 
 # Pixel-Perfect Verifier
 
-Read-only subagent. Captures Storybook screenshots for every story variant and state of a `cor-*` component, diffs them against Figma references, and reports per-state results.
+Read-only subagent. Diffs Storybook captures against Figma references and reports per-state results.
 
-**This agent never modifies source files.** It only reads, screenshots, diffs, and reports.
+**Never modifies source files.** Reads, screenshots, diffs, reports.
 
 ## Inputs (from orchestrator prompt)
 
 Required:
 
 - `componentName` — e.g. `cor-button`
-- `storybookBaseUrl` — defaults to `http://localhost:6007`
-- `figmaNodeId` OR `figmaReferenceDir` — either a Figma node ID (will fetch screenshots via MCP) or a local folder with pre-extracted reference images named `<state>.png`
+- `figmaNodeId` OR `figmaReferenceDir` — Figma node ID (MCP fetches refs) or a local folder with `<state>.png` / `<state>-<theme>.png`
 
 Optional:
 
-- `storyId` — defaults to inferred from componentName: `atoms-<componentName>--default` / `molecules-...` etc.
-- `acceptThreshold` — defaults to `0.5` (% pixel diff). Below this is PASS.
-- `statesToVerify` — array of state names; if omitted, verifies every story variant exported by `*.stories.ts`.
+- `storybookBaseUrl` — default `http://localhost:6007`
+- `storyId` — explicit single story to verify (default: every story export)
+- `acceptThreshold` — default `0.5` (% pixel diff for PASS)
+- `statesToVerify` — array of state names; default = every exported story
 
 ## Procedure
 
-### Fast Path — single script call (preferred)
-
-The `11-pixel-diff-states.mjs` audit script does Steps 2-6 below in one shot:
+### Step 1 — Run the deterministic script (ALWAYS DO THIS FIRST)
 
 ```bash
 node scripts/audit/11-pixel-diff-states.mjs cor-<name> \
-  --figma-dir ./figma-refs/cor-<name> \
+  --figma-dir <figmaReferenceDir> \
   --json
 ```
 
-It enumerates stories via `05-story-exports.mjs`, navigates each in
-Playwright (light + dark), captures screenshots, and diffs against the
-matching `<state>.png` (or `<state>-<theme>.png`) reference using **Pixelmatch
-directly** — the same Mapbox library `scripts/visual-diff.mjs` uses and the
-same algorithm MCP `image-compare` runs underneath. This matches the project's
-deliberate quality preference over Playwright's built-in compare.
+What the script handles automatically (Steps 2-5 of the legacy flow below):
 
-Thresholds:
-- `< 0.5%` → **PASS**
-- `0.5–2.0%` → **WARNING** with `requires-ai-review: true` (AI must inspect the diff image)
-- `>= 2.0%` → **FAIL**
+- Enumerates stories from `*.stories.ts` via `05-story-exports.mjs`
+- Navigates each in Playwright (light + dark) via `lib/browser-context.mjs`
+- Captures screenshots, diffs vs the matching `<state>.png` / `<state>-<theme>.png`
+  reference using **Pixelmatch directly** (the same Mapbox library
+  `scripts/visual-diff.mjs` uses and `mcp__image-compare__compare_images` runs
+  underneath — this matches the project's explicit preference over Playwright's
+  built-in compare)
+- Captures `console.error` / `pageerror` for each story
+- Writes diff images to `.audit-screenshots/<componentName>/`
 
-Read the envelope's `meta.states[]`. Each entry has `light` and `dark` blocks
-with `{ diffPercent, status, diffImagePath, screenshotPath, referencePath }`.
-Open `diffImagePath` via `Read` if a state lands in WARNING territory and
-decide whether the drift is intentional design evolution or a regression.
+Read `meta.states[]`. Each entry has `{ name, storyId, light: {...}, dark: {...} }`
+where each theme block contains `{ diffPercent, status, diffImagePath,
+screenshotPath, referencePath, consoleErrors }`.
 
-If Playwright is not installed, the script fails fast with an install hint —
-fall back to the legacy MCP-driven steps below.
+Thresholds (tunable via `--pass-threshold` / `--warn-threshold`):
 
-### Step 1 — Confirm environment
+| diff % | status | action |
+|--------|--------|--------|
+| `< 0.5` | PASS | accept |
+| `0.5 – 2.0` | WARNING | `requires-ai-review: true` — `Read(diffImagePath)` and judge |
+| `>= 2.0` | FAIL | reject; report fix |
 
-```bash
-# PowerShell
-netstat -ano | findstr :6007
-```
+### Step 2 — Judgment on WARNING/FAIL states
 
-If port 6007 is NOT listening, **abort** and report `environment-not-ready` to the orchestrator — do NOT attempt to start Storybook (that's the orchestrator's job).
+This is where AI value lands. For each non-PASS state:
 
-Then check the browser session:
+- `Read` the `diffImagePath` to see what changed.
+- Compare against Figma: is the drift **intentional design evolution** (Figma
+  was updated and the reference set is stale → update the reference) or a
+  **regression** (component renders wrong → file a fix)?
+- For special states (hover/focus/active) the script captures the default
+  story; if the story does not already render the interactive state, drive it
+  via `mcp__playwright__browser_press_key({ key: 'Tab' })` or
+  `mcp__playwright__browser_evaluate` and re-screenshot via
+  `mcp__playwright__browser_take_screenshot` + `mcp__image-compare__compare_images`.
+- Note WHICH token the drift points at (e.g., `--dropShadow-200` vs
+  `--dropShadow-300`) — the orchestrator uses this to apply the fix.
 
-```text
-mcp__playwright__browser_snapshot()
-```
-
-If no session, navigate to base URL:
-
-```text
-mcp__playwright__browser_navigate({ url: "<storybookBaseUrl>" })
-mcp__playwright__browser_wait_for({ time: 2 })
-```
-
-### Step 2 — Enumerate states
-
-Read `src/components/<componentName>/<componentName>.stories.ts` and extract the named exports (`Default`, `AllVariants`, `AllSizes`, `States`, etc.). These map to story IDs like `atoms-<componentName>--default`, `atoms-<componentName>--all-variants`.
-
-If the orchestrator passed `statesToVerify`, intersect with the exported list.
-
-### Step 3 — Fetch Figma references (parallel)
-
-If `figmaNodeId` was provided:
+### Step 3 — Report
 
 ```text
-mcp__figma__get_metadata({ nodeId: "<figmaNodeId>" })
-mcp__figma__get_screenshot({ nodeId: "<figmaNodeId>" })
-```
-
-For documentation pages with multiple instances (frames named "States", "Variations"), the metadata call returns child node IDs — fetch screenshots for each in parallel.
-
-If `figmaReferenceDir` was provided, list its `.png` files via `Glob`.
-
-### Step 4 — Capture + diff per state (loop)
-
-For each state:
-
-```text
-mcp__playwright__browser_navigate({ url: "<storybookBaseUrl>/iframe.html?id=<storyId>" })
-mcp__playwright__browser_wait_for({ time: 2 })
-mcp__playwright__browser_console_messages({ level: "error" })
-mcp__playwright__browser_take_screenshot({ type: "png", filename: "<componentName>-<state>.png" })
-mcp__image-compare__compare_images({
-  image1_path: "<figma-ref>.png",
-  image2_path: "<componentName>-<state>.png",
-  diff_output_path: "<componentName>-<state>-diff.png",
-  threshold: 0.1
-})
-```
-
-Capture for **light AND dark mode** for each state. Toggle dark mode:
-
-```text
-mcp__playwright__browser_evaluate({ function: "() => { document.documentElement.dataset.theme = 'dark'; return new Promise(r => requestAnimationFrame(() => r(true))); }" })
-```
-
-### Step 5 — Special states (hover, focus, active)
-
-Use `mcp__playwright__browser_press_key` or `evaluate` to drive interaction:
-
-- Hover: `evaluate` to dispatch `mouseover` on element OR navigate to a story already in hover state
-- Focus: `mcp__playwright__browser_press_key({ key: "Tab" })` to focus
-- Active: `evaluate` to dispatch `mousedown`
-
-Re-screenshot and re-diff.
-
-### Step 6 — Report
-
-Return a single markdown report:
-
-```text
-## Pixel-Perfect Report: <componentName>
+## Pixel-Perfect Report: cor-<name>
 
 ### Summary
-- States verified: N
-- PASS (< <threshold>% diff): X
-- WARN (0.5–2% diff): Y
-- FAIL (> 2% diff): Z
+- States verified: <N from meta.states.length>
+- PASS:    <count of light+dark with status=PASS>
+- WARNING: <count requires-ai-review>
+- FAIL:    <count status=FAIL>
 
 ### Per-State Results
 
-| State | Mode  | Diff %  | Status | Notes |
-|-------|-------|---------|--------|-------|
-| default | light | 0.12% | PASS   |       |
-| default | dark  | 0.18% | PASS   |       |
-| hover   | light | 0.85% | WARN   | shadow softer than Figma — recommend `--dropShadow-200` instead of `--dropShadow-300` |
-| disabled| light | 2.34% | FAIL   | text contrast off — Figma uses `color.text.disabled.default`, current renders `color.text.base.weak` |
+| State    | Mode  | Diff % | Status | Notes |
+|----------|-------|--------|--------|-------|
+| default  | light | 0.12%  | PASS   |       |
+| default  | dark  | 0.18%  | PASS   |       |
+| hover    | light | 0.85%  | WARN   | shadow softer than Figma — recommend `--dropShadow-200` instead of `--dropShadow-300` |
+| disabled | light | 2.34%  | FAIL   | text contrast off — Figma uses `color.text.disabled.default`, current renders `color.text.base.weak` |
 
 ### Console errors detected
-- (none) OR list per state
+<from meta.states[*].light.consoleErrors / dark.consoleErrors; "none" if all empty>
 
 ### Suggested fixes (read-only — orchestrator applies)
-1. ...
+1. <token swap or CSS change inferred from diff inspection>
 
 ### Acceptance criteria
-- ✅ / ❌ All states < <threshold>% diff
-- ✅ / ❌ No console errors during capture
-- ✅ / ❌ Light AND dark mode covered for every state
+- [ ] All states < acceptThreshold% diff
+- [ ] No console errors during capture
+- [ ] Light AND dark mode covered for every state
 ```
+
+## When to escalate to MCP-driven steps
+
+The Fast Path fails open in these specific cases — drop down to the legacy
+MCP-driven sequence below if needed:
+
+- Playwright is not installed → script exits with install hint; use
+  `mcp__playwright__*` tools instead.
+- Figma references are NOT pre-extracted to a local `--figma-dir`; instead
+  the orchestrator passed only `figmaNodeId`. Use `mcp__figma__get_metadata`
+  + `mcp__figma__get_screenshot` to fetch them on demand, save to a temp
+  folder, then re-run the script with `--figma-dir`.
+- A state has a custom render path that the auto-enumeration misses (rare).
+  Use `mcp__playwright__browser_take_screenshot` + `mcp__image-compare__compare_images`
+  directly for that single state and merge into the report.
 
 ## Constraints
 
-- **Read-only**: never edit, write, or delete any source file. The orchestrator owns all writes.
-- **No Storybook lifecycle**: do not start, stop, or restart Storybook. If 6007 isn't listening, abort.
-- **No token build**: do not run `yarn tokens.build`. If token-related CSS appears stale, note it and let the orchestrator decide.
-- **Threshold**: `< 0.5%` PASS, `0.5–2%` WARN, `> 2%` FAIL. The orchestrator may override via `acceptThreshold`.
+- **Read-only** on source files. The orchestrator owns all writes.
+- **No Storybook lifecycle**: do NOT start / stop / restart Storybook. If
+  port 6007 isn't listening, abort with `environment-not-ready` — that's the
+  orchestrator's responsibility to bring up.
+- **No token build**: do not run `yarn tokens.build`. If token-related CSS
+  appears stale (e.g., diff > 2% on every state with no design change), note
+  it and let the orchestrator decide.
 
 ## Failure modes
 
 | Symptom | Likely cause | Reported as |
 |---|---|---|
-| 6007 not listening | Storybook not started | `environment-not-ready` |
-| Figma fetch fails | MCP figma unauthenticated or node ID invalid | `figma-unavailable` + abort |
-| `image-compare` returns error | Mismatched image dimensions | `dimension-mismatch` + suggest re-capture |
-| Diff > 50% on every state | Wrong Figma node or Storybook story | `reference-mismatch` + verify inputs |
+| `11-pixel-diff-states` exits with `playwright not installed` | dep missing | `playwright-missing` + fall back to MCP path above |
+| `--figma-dir not found` | references not extracted yet | `figma-unavailable` — extract via `mcp__figma__get_*` then re-run |
+| `meta.states[].light.error: no Figma reference` | reference file naming mismatch | `reference-naming-mismatch` — expected `<kebab-state>.png` or `<kebab-state>-<theme>.png` in figma-dir |
+| Diff > 50% on every state | wrong Figma node or wrong story | `reference-mismatch` + verify inputs |
+| `dimension-mismatch` in visual-diff output | screenshot ≠ reference resolution | re-capture with matching viewport via `mcp__playwright__browser_resize` |

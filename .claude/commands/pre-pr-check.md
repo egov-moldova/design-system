@@ -77,56 +77,27 @@ yarn test
 git diff --stat HEAD~1
 ```
 
-### Wave 1 — Stencil anti-pattern grep gates (NEW)
+### Wave 1 — Stencil anti-pattern + git hygiene gates
 
-Dispatch these in the same parallel message (fast — most return zero hits on a clean codebase). Each non-zero result is a blocker.
-
-```bash
-# @Method must be async or return Promise (Stencil compliance #3)
-rg "@Method\(\)\s+\w+\([^)]*\)\s*:\s*(?!Promise|void)" src/components --type ts -c
-```
+Already covered by the Fast Path orchestrator above (`run-all --changed --no-browser`)
+via scripts `02-stencil-antipatterns` (14+ patterns paralelle) and
+`03-git-hygiene` (branch + commits + forbidden staged paths). If for any
+reason you skip Fast Path, individual scripts are still callable:
 
 ```bash
-# Imperative host class manipulation (Anti-Pattern #2)
-rg "this\.host\.classList\.(add|remove|toggle)" src/components --type ts -c
-```
-
-```bash
-# Direct mutation of reactive arrays (Anti-Pattern #5)
-rg "this\.\w+\.(push|pop|shift|unshift|splice|sort|reverse)\(" src/components --type ts -c
-```
-
-```bash
-# Bare EventEmitter without payload type (Anti-Pattern #4)
-rg "EventEmitter(?!<)" src/components --type ts -c
-```
-
-```bash
-# Inline styles in JSX (Anti-Pattern #1)
-rg "style=\{" src/components --type ts -c
-```
-
-```bash
-# Custom event names without cor prefix (Anti-Pattern #25)
-rg "@Event\(\)\s+(?!cor[A-Z])" src/components --type ts -c
+node scripts/audit/02-stencil-antipatterns.mjs --changed --json
+node scripts/audit/03-git-hygiene.mjs --json
 ```
 
 For full anti-pattern catalogue see [`stencil-compliance/references/anti-patterns.md`](../skills/stencil-compliance/references/anti-patterns.md). For per-component deep audit invoke `/audit-component @cor-<name> --fast` after Wave 5.
 
-**While waiting for results**, verify (from git status output):
-
-- Branch follows naming: `type/issue-key-description` (e.g., `feat/cor-456-add-tooltip`)
-- No untracked files that should be committed
-- **Merge driver registered**: `git check-attr merge -- src/components.d.ts` returns `merge: ours`. If not: `node scripts/git/setup-merge-drivers.mjs`
-- **Pre-commit hook current**: `.husky/pre-commit` contains the `GENERATED_PATTERNS` block (auto-unstages `components.d.ts`, `readme.md`, adapter outputs, `custom-elements.json`, `tokens/generated/`)
-- No `dist/`, `node_modules/`, or build artifacts staged
-
-**Verify after results land**:
+**Verify after Wave 1 results land**:
 
 - Lint: zero violations
 - Tests: zero failures; report any with `test file → test name → error message`
 - Diff: no unrelated files, no debug `console.log`, no commented-out code blocks, no stray `TODO`s
-- Stencil grep gates: ALL return 0; non-zero → blocker
+- Orchestrator `blockers`: empty (or escalate any listed `tool/CODE` immediately)
+- Merge driver + pre-commit hook still in place — `git check-attr merge -- src/components.d.ts` returns `merge: ours`; if not, run `node scripts/git/setup-merge-drivers.mjs`
 
 ## Wave 2: Token Build (single command)
 
@@ -191,6 +162,15 @@ If not LISTENING → start `yarn sp.dev.watch` in background; wait ~10s.
 Then dispatch in parallel (single message, multiple tool calls):
 
 ### 5a. Console Errors
+
+Preferred — the deterministic script visits every story of every changed
+component, captures `console.error` + `pageerror`, and returns one JSON:
+
+```bash
+node scripts/audit/12-console-errors.mjs --changed --json
+```
+
+Fallback (when Playwright isn't installed) — manual via MCP:
 
 ```text
 mcp__playwright__browser_navigate({ url: "http://localhost:6007" })
