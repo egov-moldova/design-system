@@ -149,17 +149,28 @@ Import `invalidSlottedTag` from `../../utils/invalid-slotted-tag`. Add guard at 
 
 Reference: `src/components/_agents/slot-patterns.md`.
 
-## Step 7: Write Stories
+## Step 7: Parallel Auxiliary Tasks (Stories + Tests + Verifiers)
 
-Create: Default, AllVariants (grid), AllSizes (grid), States.
+Once the component renders without console errors in Storybook, invoke the **`parallel-aux-tasks` skill** to dispatch auxiliary work in parallel.
 
-Type all render functions:
+Modes:
 
-- Preferred: `(args: ComponentArgs) =>`
-- Allowed: `(args: any) =>`
-- Forbidden: bare `args =>`
+- `--write-mode=parallel-write` (default): `story-writer` and `test-writer` write their files; verifiers (pixel-perfect, a11y, integration) report findings.
+- `--write-mode=read-only`: all subagents are read-only; main agent applies all writes after aggregation.
 
-Reference: `src/components/_agents/storybook-stories.md`.
+Dispatch ALL of the following in a SINGLE message with parallel `Agent` tool calls (full-5 set):
+
+```
+Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=cor-<name>, figmaNodeId=<id>, threshold=0.5")
+Agent(subagent_type="a11y-verifier",          prompt="componentName=cor-<name>")
+Agent(subagent_type="story-writer",           prompt="componentName=cor-<name>, componentTsxPath=..., atomicLevel=<level>, writeMode=<mode>, figmaMetadata=<metadata>")
+Agent(subagent_type="test-writer",            prompt="componentName=cor-<name>, componentTsxPath=..., writeMode=<mode>")
+Agent(subagent_type="integration-checker",    prompt="componentName=cor-<name>, changeKind=new")
+```
+
+When all 5 reports return, aggregate into a triage table (see `parallel-aux-tasks` skill). Apply critical fixes (TSX/CSS/tokens — orchestrator's responsibility) before continuing to Step 8.
+
+For story writing conventions and reference patterns, see `src/components/_agents/storybook-stories.md` (also used by `story-writer` subagent).
 
 ## Step 8: Pixel-Perfect QA (Iterative Loop)
 

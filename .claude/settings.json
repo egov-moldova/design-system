@@ -1,6 +1,22 @@
 {
   "permissions": {
-    "allow": ["Bash(node scripts/tokens-lint.mjs --root tokens/core --limit 3)"]
+    "allow": [
+      "Bash(node scripts/tokens-lint.mjs --root tokens/core --limit 3)",
+      "Bash(git worktree list)",
+      "Bash(git worktree list:*)",
+      "Bash(git worktree prune)",
+      "Bash(git worktree add:*)",
+      "Bash(git worktree remove:*)",
+      "Bash(git fetch origin main:*)",
+      "Bash(git fetch origin main --quiet)",
+      "Bash(git show-ref --verify --quiet:*)",
+      "Bash(git rev-parse --show-toplevel)",
+      "Bash(git rev-parse --abbrev-ref HEAD)",
+      "Bash(./.claude/kanban/worktree-init.sh:*)",
+      "Bash(bash ./.claude/kanban/worktree-init.sh:*)",
+      "PowerShell(./.claude/kanban/worktree-init.ps1:*)",
+      "PowerShell(.\\.claude\\kanban\\worktree-init.ps1:*)"
+    ]
   },
   "hooks": {
     "PreToolUse": [

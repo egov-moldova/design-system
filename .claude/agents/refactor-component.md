@@ -97,6 +97,26 @@ Strict dependency order:
 7. **Tests** → update `test/cor-<name>.spec.tsx`
    - Add missing test coverage identified by audit
 
+## Step 4.5: Parallel Auxiliary Tasks (refactor-3 set)
+
+Once the refactored component renders without console errors, invoke the **`parallel-aux-tasks` skill** with the **refactor-3** subagent set:
+
+```
+Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=cor-<name>, figmaNodeId=<id-if-available>, threshold=0.5, useBaseline=true")
+Agent(subagent_type="a11y-verifier",          prompt="componentName=cor-<name>")
+Agent(subagent_type="integration-checker",    prompt="componentName=cor-<name>, changeKind=refactor, apiChanges=<list-if-any>")
+```
+
+A refactor SHOULD NOT change the visual or API. The reports should be all-PASS:
+
+- `pixel-perfect-verifier`: every state matches the pre-refactor baseline (Step 1.5) within `< 0.5%`
+- `a11y-verifier`: no new violations vs pre-refactor
+- `integration-checker`: no stale callsites (unless approved breaking change in Step 3.5)
+
+If any report flags an unexpected change, **STOP** — the refactor introduced an unintended regression. Diagnose and fix before continuing.
+
+This phase does NOT dispatch `story-writer` or `test-writer` because a refactor preserves the existing stories/tests structurally. Hand-edit if specific stories need updating.
+
 ## Step 5: Verify After Each Change Group
 
 After each group (tokens, CSS, TSX, stories):

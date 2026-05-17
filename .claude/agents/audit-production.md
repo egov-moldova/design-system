@@ -7,7 +7,37 @@ model: opus
 
 # Production Readiness Audit
 
-Comprehensive validation that a component meets all production standards before merging to main. 9 phases — each must complete before moving on. Returns categorized report. Does NOT auto-fix.
+Comprehensive validation that a component meets all production standards before merging to main. 9 phases. Returns categorized report. Does NOT auto-fix.
+
+## Parallel Execution Model (recommended)
+
+Phases 1–2 must run sequentially (data collection precedes analysis). Phases 3–9 are LOGICALLY INDEPENDENT and SHOULD be dispatched in parallel for ~50% wall-clock reduction:
+
+- **Phase 3 (Accessibility)** — delegate to the `a11y-verifier` subagent in parallel
+- **Phase 5 (Testing)** — run `yarn test --spec` in parallel
+- **Phase 6 (Performance)** — run `yarn build` in parallel; check bundle size
+- **Phase 7 (Security)** — run `yarn audit` + grep anti-patterns in parallel
+- **Phase 8 (Documentation)** — read JSDoc + README in parallel
+- **Phase 9 (Git Hygiene)** — run `git log` + `git diff --stat` in parallel with everything else
+
+Dispatch pattern:
+
+```
+[After Phase 2 completes, send one message with parallel tool calls:]
+
+Agent(subagent_type="a11y-verifier", prompt="componentName=cor-<name>, storyId=atoms-cor-<name>--default")
+Bash("yarn test --spec --findRelatedTests src/components/cor-<name>/test/cor-<name>.spec.tsx")
+Bash("yarn build")
+Bash("yarn audit")
+Bash("git log --oneline -10")
+Bash("git diff --stat main...HEAD -- src/components/cor-<name>/ tokens/core/components/")
+Read("src/components/cor-<name>/cor-<name>.tsx")  // for JSDoc inspection
+Read("src/components/cor-<name>/readme.md")
+```
+
+Collect all outputs before composing the final report (Phase 10).
+
+If running without subagent support, fall back to the legacy serial 9-phase execution documented below.
 
 ## Prerequisites
 

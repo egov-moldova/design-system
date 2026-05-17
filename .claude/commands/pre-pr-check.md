@@ -1,90 +1,136 @@
 ---
-description: Full pre-PR validation pipeline — lint, test, build, story check, console errors, git hygiene
+description: Full pre-PR validation pipeline with parallel waves — lint, test, build, story check, console errors, git hygiene
 ---
 
 # /pre-pr-check
 
-Run the full pre-PR validation pipeline on the current branch. Report pass/fail summary. Do NOT auto-fix.
+Run the full pre-PR validation pipeline on the current branch using **parallel waves** where commands are independent. Report pass/fail summary. Do NOT auto-fix.
 
 Invoke the `verification-before-completion` skill before presenting the final report — must confirm all commands ran AND output was read.
 
-## Step 1: Git Status
+## Execution Model
+
+The pipeline runs in **5 waves**. Within a wave, all bash commands MUST be dispatched in a single message with multiple parallel `Bash` tool calls. Between waves, results must be aggregated before proceeding (later waves depend on earlier outputs).
+
+```
+Wave 1 (parallel):  git status  +  git log  +  yarn lint  +  yarn test  +  git diff --stat HEAD~1
+                                            │
+                                            ▼
+Wave 2 (single):                       yarn tokens.build
+                                            │
+                                            ▼
+Wave 3 (parallel):                yarn build  +  yarn audit:contrast
+                                            │
+                                            ▼
+Wave 4 (single):                        yarn sp.build
+                                            │
+                                            ▼
+Wave 5 (parallel):       console check  +  storybook a11y panel  +  commit message audit
+                                            │
+                                            ▼
+                                       Final Report
+```
+
+## Wave 1: Static Analysis & Test (parallel)
+
+Dispatch ALL of the following in a single message with parallel `Bash` calls:
 
 ```bash
 git status
-git log --oneline -5
 ```
 
-Verify:
+```bash
+git log --oneline -10
+```
+
+```bash
+yarn lint
+```
+
+```bash
+yarn test
+```
+
+```bash
+git diff --stat HEAD~1
+```
+
+**While waiting for results**, verify (from git status output):
 
 - Branch follows naming: `type/issue-key-description` (e.g., `feat/cor-456-add-tooltip`)
 - No untracked files that should be committed
 - No generated files staged (`components.d.ts`, `custom-elements.json`)
 - No `dist/`, `node_modules/`, or build artifacts staged
 
-## Step 2: Lint & Format
+**Verify after results land**:
 
-```bash
-yarn lint
-```
+- Lint: zero violations
+- Tests: zero failures; report any with `test file → test name → error message`
+- Diff: no unrelated files, no debug `console.log`, no commented-out code blocks, no stray `TODO`s
 
-If lint fails → report violations with file, line, and rule name. Do NOT auto-fix without approval.
-
-## Step 3: Test
-
-```bash
-yarn test
-```
-
-Report any failures with: test file → test name → error message.
-
-## Step 4: Token Build
+## Wave 2: Token Build (single command)
 
 ```bash
 yarn tokens.build
 ```
 
-Verify no build errors. Check output:
+Verify no build errors. Check output exists:
 
 ```bash
 # PowerShell
 Get-ChildItem dist/design-system/tokens/*.css -ErrorAction SilentlyContinue
+```
 
+```bash
 # Unix
 ls dist/design-system/tokens/*.css
 ```
 
-## Step 5: Stencil Production Build
+## Wave 3: Compile & Contrast (parallel)
 
-Full production build gate — NOT the dev-time targeted builds. Catches issues that dev/watch builds don't (TypeScript strict mode, dist-custom-elements, docs generation).
+Dispatch in a single message with parallel `Bash` calls:
 
 ```bash
 yarn build
 ```
 
-Verify no TypeScript or Stencil build errors.
+```bash
+yarn audit:contrast
+```
 
-## Step 6: Storybook Production Build
+**Verify**:
+
+- `yarn build`: no TypeScript or Stencil errors
+- `yarn audit:contrast`: exit 0 required; new `FAIL` entries outside `ACCEPTED_EXCEPTIONS` block the PR
+  - If a legitimate exception is needed, add it to `scripts/audit-token-contrast.mjs` `ACCEPTED_EXCEPTIONS` with rationale; reviewers must approve
+
+## Wave 4: Storybook Production Build (single)
 
 ```bash
 yarn sp.build
 ```
 
-Strictest check — if this succeeds, all stories, components, and tokens are wired correctly.
+Strictest gate — if this succeeds, all stories, components, and tokens are wired correctly.
 
-## Step 7: Runtime Console Check
+## Wave 5: Runtime Checks (parallel)
 
 Start Storybook if not running:
 
 ```bash
 # PowerShell
 netstat -ano | findstr :6007
+```
 
+```bash
 # Unix
 lsof -i :6007
 ```
 
-If not running → `yarn sp.dev.watch`.
+If not LISTENING → start `yarn sp.dev.watch` in background; wait ~10s.
+
+Then dispatch in parallel (single message, multiple tool calls):
+
+### 5a. Console Errors
 
 ```text
 mcp__playwright__browser_navigate({ url: "http://localhost:6007" })
@@ -94,81 +140,65 @@ mcp__playwright__browser_console_messages({ level: "error" })
 
 Navigate to each modified component's story and verify no runtime errors or warnings.
 
-## Step 7a: Accessibility — WCAG 2.1 AA (mandatory gate)
+### 5b. Storybook A11y Panel — WCAG 2.1 AA (mandatory)
 
 **Canonical reference:** Skill [`accessibility-compliance`](../skills/accessibility-compliance/SKILL.md).
 
-Run the token-level contrast audit (light + dark):
+For each modified component:
 
-```bash
-yarn audit:contrast
-```
-
-- Exit 0 required. New `FAIL` entries (outside `ACCEPTED_EXCEPTIONS`) block the PR.
-- If a legitimate exception is needed, add it to `scripts/audit-token-contrast.mjs` `ACCEPTED_EXCEPTIONS` with a written rationale; reviewers must approve.
-
-Run the Storybook a11y panel check for modified components (in both modes):
-
-1. Open `http://localhost:6007/?path=/story/atoms-cor-<name>--default` for each modified component.
+1. Open `http://localhost:6007/?path=/story/atoms-cor-<name>--default`.
 2. Open the "Accessibility" panel.
 3. Verify zero **Violations** in light mode.
 4. Switch global `Mode → Dark` (top toolbar).
 5. Verify zero **Violations** in dark mode.
 
-Record any violation as a blocking issue in the report.
+Record any violation as blocking.
 
-For component-level deep audit, optionally run `/audit-accessibility @cor-<name>`.
+For component-level deep audit, optionally run `/audit-accessibility @cor-<name>` after the pipeline.
 
-## Step 8: Commit Message Audit
+### 5c. Commit Message Audit
 
-```bash
-git log --oneline -10
-```
+From the `git log --oneline -10` output captured in Wave 1, verify:
 
-Verify recent commits follow Conventional Commits:
-
-- Prefix: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`
+- Prefix follows Conventional Commits: `feat:`, `fix:`, `docs:`, `refactor:`, `test:`, `chore:`
 - Scope is descriptive (optional but recommended)
 - Message is meaningful (not "wip", "fix", "update")
 - No typos
 
-## Step 9: Changed Files Review
-
-```bash
-git diff --stat HEAD~1
-```
-
-Verify:
-
-- No accidental changes to unrelated files
-- No debug `console.log` left in code
-- No commented-out code blocks
-- No new `TODO` comments in committed code
-
-## Step 10: Report
+## Final Report
 
 Invoke `verification-before-completion` skill, then present:
 
 ```text
 ## Pre-PR Check Report
 
-| Check              | Status     | Notes          |
-| ---                | ---        | ---            |
-| Branch naming      | PASS/FAIL  |                |
-| Lint               | PASS/FAIL  | X warnings     |
-| Tests              | PASS/FAIL  | X pass, Y fail |
-| Token build        | PASS/FAIL  |                |
-| Stencil build      | PASS/FAIL  |                |
-| Storybook build    | PASS/FAIL  |                |
-| Console errors     | PASS/FAIL  |                |
-| WCAG 2.1 AA — contrast | PASS/FAIL | obligatory pairs both modes |
-| WCAG 2.1 AA — Storybook a11y | PASS/FAIL | per modified component, both modes |
-| Commit messages    | PASS/FAIL  |                |
-| Changed files      | PASS/FAIL  |                |
+| Wave | Check | Status | Notes |
+| ---  | ---   | ---    | ---   |
+| 1    | Branch naming      | PASS/FAIL  |  |
+| 1    | Lint               | PASS/FAIL  | X warnings |
+| 1    | Tests              | PASS/FAIL  | X pass, Y fail |
+| 1    | Changed files      | PASS/FAIL  |  |
+| 2    | Token build        | PASS/FAIL  |  |
+| 3    | Stencil build      | PASS/FAIL  |  |
+| 3    | WCAG 2.1 AA contrast | PASS/FAIL | obligatory pairs both modes |
+| 4    | Storybook build    | PASS/FAIL  |  |
+| 5    | Console errors     | PASS/FAIL  |  |
+| 5    | Storybook a11y panel | PASS/FAIL | per modified component, both modes |
+| 5    | Commit messages    | PASS/FAIL  |  |
 
 ### Blocking Issues
 1. ...
 
 ### Warnings (non-blocking)
 1. ...
+
+### Pipeline timing
+- Total wall-clock time: ~Xs
+- Sequential equivalent (estimate): ~Ys
 ```
+
+## Notes on Parallelism
+
+- **Within a wave**, fire all commands in a single message with multiple parallel `Bash` tool calls. PowerShell tool too if mixed shell needed.
+- **Between waves**, wait for prior results — Wave 2+ depends on Wave 1's tokens? No: Wave 2 (tokens.build) is independent of Wave 1 lint/test, but the user expects lint/test results before moving forward. If both Wave 1 and Wave 2 succeed, you can technically start them together — but keeping the wave separation makes failure isolation easier and avoids running expensive token build if lint already fails. Optimize only if speed-critical.
+- **Fail-fast**: if Wave 1 reports critical failures (lint errors, test failures), STOP and report — don't proceed to Wave 2+.

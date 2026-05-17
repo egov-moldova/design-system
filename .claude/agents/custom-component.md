@@ -132,17 +132,28 @@ Host class management (MANDATORY for interactive components):
 - Update state in `@Listen()` handlers, NOT `classList` directly
 - See `src/components/_agents/component-structure.md` → Host Class Management
 
-## Step 7: Write Stories
+## Step 7: Parallel Auxiliary Tasks (Stories + Tests + Verifiers)
 
-Reference: `src/components/_agents/storybook-stories.md` for CSF3 + Web Components patterns.
+Once the component renders without console errors in Storybook, invoke the **`parallel-aux-tasks` skill** to dispatch auxiliary work in parallel.
 
-Create: Default, AllVariants, AllSizes, States stories.
+Modes:
 
-Type all render functions:
+- `--write-mode=parallel-write` (default): `story-writer` and `test-writer` write their files; verifiers report findings.
+- `--write-mode=read-only`: all subagents are read-only; main agent applies all writes after aggregation.
 
-- Preferred: `(args: ComponentArgs) =>` using a local type/interface
-- Allowed fallback: `(args: any) =>` when typing would be disproportionately complex
-- Forbidden: bare `args =>` (implicit any)
+Dispatch ALL of the following in a SINGLE message with parallel `Agent` tool calls (full-5 set; pixel-perfect-verifier uses computed-style assertions only since there's no Figma reference):
+
+```
+Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=cor-<name>, figmaReferenceDir=<optional-folder-or-omit>, threshold=0.5")
+Agent(subagent_type="a11y-verifier",          prompt="componentName=cor-<name>")
+Agent(subagent_type="story-writer",           prompt="componentName=cor-<name>, componentTsxPath=..., atomicLevel=<level>, writeMode=<mode>")
+Agent(subagent_type="test-writer",            prompt="componentName=cor-<name>, componentTsxPath=..., writeMode=<mode>")
+Agent(subagent_type="integration-checker",    prompt="componentName=cor-<name>, changeKind=new")
+```
+
+When all 5 reports return, aggregate into a triage table (see `parallel-aux-tasks` skill). Apply critical fixes (TSX/CSS/tokens — orchestrator's responsibility) before continuing to Step 8.
+
+For story writing conventions and reference patterns, see `src/components/_agents/storybook-stories.md` (also used by `story-writer` subagent).
 
 ## Step 8: User Review
 
