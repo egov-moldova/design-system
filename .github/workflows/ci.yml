@@ -17,10 +17,22 @@ env:
   IMAGE_NAME: georgel2489/age-design
   IMAGE_TAG: ${{ github.ref_name }}
 
+# ─── TEMP: deploy pipeline paused ──────────────────────────────────────────
+# Dev/staging servers are not yet provisioned. The `build-and-push` and
+# `deploy` jobs below are gated with `if: false`; their original trigger
+# conditions are preserved as YAML comments directly underneath. To
+# re-enable, on each of those two jobs:
+#   1. delete the `if: false` line
+#   2. uncomment the `# if: …` line right below it
+# PR jobs (`test`, `validate`) are unaffected and continue to run normally.
+# ───────────────────────────────────────────────────────────────────────────
+
 jobs:
   build-and-push:
     name: Build and Push Docker Image
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref_type == 'tag')
+    # TEMP: paused — see "deploy pipeline paused" note at top of file.
+    if: false
+    # if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref_type == 'tag')
     runs-on: self-hosted
 
     steps:
@@ -68,7 +80,9 @@ jobs:
   deploy:
     name: Deploy
     needs: build-and-push
-    if: needs.build-and-push.result == 'success'
+    # TEMP: paused — see "deploy pipeline paused" note at top of file.
+    if: false
+    # if: needs.build-and-push.result == 'success'
     runs-on: self-hosted
 
     steps:
