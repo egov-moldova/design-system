@@ -49,7 +49,6 @@
     "dx:clean": "rimraf .stencil .wireit storybook-static dist loader www",
     "format": "wireit",
     "format.icons": "svgo -f ./src/assets/images/icons --config=./svgo.config.icons.js",
-    "generate": "stencil generate",
     "lint": "wireit",
     "lint.js": "wireit",
     "lint.css": "wireit",
