@@ -27,6 +27,36 @@ Optional:
 
 ## Procedure
 
+### Fast Path — single script call (preferred)
+
+The `11-pixel-diff-states.mjs` audit script does Steps 2-6 below in one shot:
+
+```bash
+node scripts/audit/11-pixel-diff-states.mjs cor-<name> \
+  --figma-dir ./figma-refs/cor-<name> \
+  --json
+```
+
+It enumerates stories via `05-story-exports.mjs`, navigates each in
+Playwright (light + dark), captures screenshots, and diffs against the
+matching `<state>.png` (or `<state>-<theme>.png`) reference using **Pixelmatch
+directly** — the same Mapbox library `scripts/visual-diff.mjs` uses and the
+same algorithm MCP `image-compare` runs underneath. This matches the project's
+deliberate quality preference over Playwright's built-in compare.
+
+Thresholds:
+- `< 0.5%` → **PASS**
+- `0.5–2.0%` → **WARNING** with `requires-ai-review: true` (AI must inspect the diff image)
+- `>= 2.0%` → **FAIL**
+
+Read the envelope's `meta.states[]`. Each entry has `light` and `dark` blocks
+with `{ diffPercent, status, diffImagePath, screenshotPath, referencePath }`.
+Open `diffImagePath` via `Read` if a state lands in WARNING territory and
+decide whether the drift is intentional design evolution or a regression.
+
+If Playwright is not installed, the script fails fast with an install hint —
+fall back to the legacy MCP-driven steps below.
+
 ### Step 1 — Confirm environment
 
 ```bash

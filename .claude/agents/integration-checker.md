@@ -24,6 +24,39 @@ Optional:
 
 ## Procedure
 
+### Fast Path — single script call (preferred)
+
+The entire integration check is now a deterministic script. Run it first:
+
+```bash
+node scripts/audit/07-integration-usage.mjs cor-<name> --json
+```
+
+What it returns in `meta.usage` + `meta.exports`:
+
+- `usage.total` — total usage count across the codebase
+- `usage.byCategory` — categorized by `stories` / `tests` / `components` /
+  `web-components` / `other`, each entry has `{ file, count, firstLine }`
+- `exports.expectedTypeName` — the auto-generated `Cor<X>CustomEvent` type name
+- `exports.customEventType` — whether it's exported from `src/index.ts`
+
+After consuming the envelope, AI judgment is still needed for:
+
+- Whether each callsite NEEDS an update given the proposed `apiChanges`
+- Whether the missing CustomEvent type export is a real bug (component might
+  have no `@Event()` declarations, in which case it's expected)
+- Prioritizing which callsites to update first based on user impact
+
+If you also need the API surface (props/events/methods), the contract script
+provides it without re-running greps:
+
+```bash
+node scripts/audit/14-component-contract.mjs cor-<name> --json
+```
+
+The legacy manual greps below remain as fallback when the script is
+unavailable.
+
 ### Step 1 — Locate component files
 
 ```text

@@ -29,6 +29,41 @@ Optional:
 
 Invoke the `accessibility-compliance` skill before any checks. This loads the WCAG 2.1 AA Success Criteria catalogue, ARIA patterns, focus visible rules, motion preferences, and dark mode validation guidance.
 
+### Fast Path — script-driven data collection (preferred)
+
+Before doing any manual MCP / Playwright interaction, dispatch the two browser
+audit scripts in parallel. They collect everything Steps 2-6 currently gather
+manually, in light + dark mode, and return structured JSON:
+
+```bash
+# Accessibility tree snapshot + interactive-element census (role / aria / outline)
+node scripts/audit/09-a11y-tree.mjs cor-<name> --json
+
+# WCAG 2.1 AA contrast pairs for every interactive element (light + dark)
+node scripts/audit/10-contrast-pairs.mjs cor-<name> --json
+
+# Optional: also catch runtime errors that affect a11y (e.g. focus-trap crashes)
+node scripts/audit/12-console-errors.mjs cor-<name> --json
+```
+
+The orchestrator wraps all three plus structure/JSDoc/etc. in one call:
+
+```bash
+node scripts/audit/run-all.mjs cor-<name> --only 09,10,12 --json
+```
+
+Read each envelope. The scripts collect DATA; the JUDGMENT stays here:
+
+- "Is `aria-label` appropriate for THIS button context?" — script reports presence;
+  AI decides correctness (`accessibility-compliance` skill is the rubric).
+- "Does the focus indicator have enough contrast against THIS background?" —
+  script reports computed colors + outline; AI judges visibility per SC 1.4.11.
+- "Is this Tab order logical for the user's workflow?" — script reports order;
+  AI judges intent.
+
+If Playwright is not installed, the script fails fast with an install hint —
+fall back to the legacy MCP-driven steps below.
+
 ### Step 1 — Confirm environment
 
 ```bash

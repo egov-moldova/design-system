@@ -31,6 +31,28 @@ Wave 5 (parallel):       console check  +  storybook a11y panel  +  commit messa
                                        Final Report
 ```
 
+## Fast Path — replaces Wave 1 grep gates (preferred)
+
+Instead of running 6 individual `rg` calls and parsing each result, dispatch
+the local audit orchestrator. It runs every static check in parallel and
+returns ONE JSON envelope you can read in a single tool call:
+
+```bash
+# Covers structure, anti-patterns, git hygiene, jsdoc, story exports,
+# integration usage, component contract, token diff — across the components
+# touched in this branch's git diff vs main.
+node scripts/audit/run-all.mjs --changed --no-browser --json
+```
+
+Read the result. The `blockers` array lists every error-severity finding;
+each entry is `tool/CODE` (e.g. `antipatterns/ANTIPATTERN-005-ARRAY-MUTATION`).
+If `blockers` is non-empty, STOP and report — do not proceed to Wave 2.
+
+If you also want git + branch + commit hygiene as part of Wave 1, you already
+have it: the orchestrator includes `03-git-hygiene` automatically.
+
+The fallback grep gates below remain valid when the orchestrator is unavailable.
+
 ## Wave 1: Static Analysis & Test (parallel)
 
 Dispatch ALL of the following in a single message with parallel `Bash` calls:

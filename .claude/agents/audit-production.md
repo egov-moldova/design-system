@@ -35,6 +35,35 @@ This agent delegates to specialized skills/commands where they exist; it adds th
 | 9 — Git Hygiene | Local checks | Conventional commits + no unrelated diff |
 | 10 — Stencil Compliance summary | Surfaces `audit-component --deep` findings under their own header | — |
 
+## Fast Path — single orchestrator call (preferred)
+
+Before dispatching the per-phase work below, run the local audit orchestrator
+ONCE and consume its JSON envelope. It covers most of Phase 1 (structure +
+anti-patterns + JSDoc), Phase 4 (story exports), Phase 5a (test coverage),
+Phase 6.1 (bundle size), and Phase 9 (git hygiene) deterministically and in
+parallel:
+
+```bash
+# All non-browser checks for one component (Wave A + B of the orchestrator)
+node scripts/audit/run-all.mjs cor-<name> --no-browser --json
+
+# With browser checks (a11y tree, contrast, console errors) — requires Storybook + Playwright
+yarn sp.dev.watch
+node scripts/audit/run-all.mjs cor-<name> --json
+```
+
+The envelope has `summary`, `blockers`, and `findingsByTool` keys. After
+reading it, only the JUDGMENT-heavy phases remain for AI:
+
+- **Phase 3.x** — interpreting ARIA correctness from the captured a11y tree
+- **Phase 3.3** — picking the right remediation when contrast fails (token re-map vs design exception)
+- **Phase 7** — security review beyond `yarn audit` (CSP nuances, sensitive data leakage)
+- **Phase 8.3** — Storybook docs quality review (script only verifies JSDoc presence)
+- **Phase 10** — synthesizing the Stencil compliance findings under a separate header
+
+The legacy per-phase Bash + Read instructions below remain valid as a fallback
+when the orchestrator is unavailable (CI without Node 22+, etc.).
+
 ## Parallel Execution Model (recommended)
 
 Phases 1–2 must run sequentially (data collection precedes analysis). Phases 3–9 are LOGICALLY INDEPENDENT and SHOULD be dispatched in parallel for ~50% wall-clock reduction:
