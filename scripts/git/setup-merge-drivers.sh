@@ -25,9 +25,9 @@ cat > "$HOOK_DIR/post-merge" <<'EOF'
 #!/usr/bin/env sh
 # Installed by scripts/git/setup-merge-drivers.sh
 CHANGED=$(git diff-tree -r --name-only --no-commit-id ORIG_HEAD HEAD 2>/dev/null | \
-  grep -E '^(src/components\.d\.ts|src/components/.*/readme\.md|src/hidden/.*/readme\.md|(react|angular|vue)-design-system/.*stencil-generated|angular-design-system/src/directives|angular-design-system/src/public-api\.ts|components/|\.storybook/custom-elements\.json|tokens/generated/)' || true)
+  grep -E '^(src/components\.d\.ts|src/components/.*/readme\.md|src/hidden/.*/readme\.md|\.storybook/custom-elements\.json|tokens/generated/)' || true)
 if [ -n "$CHANGED" ]; then
-  printf "\n[i] Auto-generated files changed during merge. Run:\n    yarn build && yarn build.react && yarn build.angular && yarn build.vue\n  then commit any residual diff.\n\n"
+  printf "\n[i] Auto-generated files changed during merge. Run:\n    yarn build\n  then commit any residual diff.\n\n"
 fi
 EOF
 
