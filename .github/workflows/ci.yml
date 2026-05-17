@@ -191,15 +191,6 @@ jobs:
       - name: Build (Stencil)
         run: yarn build
 
-      - name: Build React adapter
-        run: yarn build.react
-
-      - name: Build Angular adapter
-        run: yarn build.angular
-
-      - name: Build Vue adapter
-        run: yarn build.vue
-
       - name: Lint
         run: yarn lint
 
@@ -210,20 +201,14 @@ jobs:
         # Auto-generated files are tracked with `merge=ours` in .gitattributes;
         # this step is the canonical gate that proves the committed snapshots
         # match what the build produces. If this fails, the contributor must
-        # run `yarn build && yarn build.{react,angular,vue}` locally and commit
-        # the residual diff.
+        # run `yarn build` locally and commit the residual diff.
         run: |
           git diff --exit-code -- \
             src/components.d.ts \
             'src/components/*/readme.md' 'src/hidden/*/readme.md' \
-            react-design-system/src/components/stencil-generated/ \
-            angular-design-system/src/directives/ \
-            angular-design-system/src/public-api.ts \
-            'components/**' \
-            vue-design-system/src/components/stencil-generated/ \
             .storybook/custom-elements.json \
             tokens/generated/ \
-          || (echo "::error::Generated files are stale. Run 'yarn build && yarn build.react && yarn build.angular && yarn build.vue' locally and commit the diff." && exit 1)
+          || (echo "::error::Generated files are stale. Run 'yarn build' locally and commit the diff." && exit 1)
 
       - name: Build Storybook
         run: yarn sp.build

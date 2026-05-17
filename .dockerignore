@@ -54,10 +54,6 @@ docker-compose.yml
 Dockerfile
 .dockerignore
 
-# Angular workspace (if not needed for build)
-angular-design-system/node_modules/
-angular-design-system/dist/
-
 # Misc
 .env
 .env.local

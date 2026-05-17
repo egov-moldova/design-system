@@ -2,10 +2,10 @@
 # AGE Design System — Git attributes for auto-generated files
 # =============================================================================
 #
-# Why: parallel agent worktrees (Cline Kanban + .claude orchestrators) each run
-# `yarn sp.build`, regenerating these tracked files independently per branch.
-# Without `merge=ours`, every PR merge produces conflict markers even though
-# the canonical resolution is deterministic (re-run `yarn build`).
+# Why: parallel agent worktrees (Cline Kanban + .claude orchestrators) each
+# rebuild and regenerate the tracked files below independently per branch.
+# Without `merge=ours`, every PR merge would produce conflict markers even
+# though the canonical resolution is deterministic — just re-run `yarn build`.
 #
 # The built-in `merge=ours` strategy keeps the current branch's version on
 # merge. The CI "Validate (PR)" job rebuilds and verifies no stale content,
@@ -20,18 +20,6 @@ src/components.d.ts                                           merge=ours linguis
 # Per-component readme.md (stencil build --docs output)
 src/components/*/readme.md                                    merge=ours linguist-generated=true
 src/hidden/*/readme.md                                        merge=ours linguist-generated=true
-
-# React adapter generated outputs (build.react wireit target)
-react-design-system/src/components/stencil-generated/**       merge=ours linguist-generated=true
-
-# Angular adapter generated outputs (build.angular wireit target)
-angular-design-system/src/directives/proxies.ts               merge=ours linguist-generated=true
-angular-design-system/src/directives/index.ts                 merge=ours linguist-generated=true
-angular-design-system/src/public-api.ts                       merge=ours linguist-generated=true
-components/**                                                 merge=ours linguist-generated=true
-
-# Vue adapter generated outputs (build.vue wireit target)
-vue-design-system/src/components/stencil-generated/**         merge=ours linguist-generated=true
 
 # Web Components analyzer output (wca.custom-elements wireit target)
 .storybook/custom-elements.json                               merge=ours linguist-generated=true

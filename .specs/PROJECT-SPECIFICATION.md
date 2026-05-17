@@ -29,7 +29,7 @@ Distribution: dual-format `dist/` (ESM + CJS), `loader/` for lazy loading, and p
 
 ## 3. Workspace Structure
 
-Yarn monorepo with four workspaces:
+Yarn monorepo with a single workspace (`web-components`):
 
 ```
 age-design/
@@ -38,13 +38,10 @@ age-design/
 ├── tokens/                    ← design tokens (DTCG JSON)
 ├── .storybook/                ← Storybook config
 ├── dist/                      ← built outputs (gitignored)
-├── angular-design-system/     ← workspace: Angular wrapper
-├── react-design-system/       ← workspace: React wrapper
-├── vue-design-system/         ← workspace: Vue wrapper
-└── web-components/            ← workspace: consumable web-components bundle
+└── web-components/            ← workspace: consumable @age/web-components bundle
 ```
 
-`web-components` is the primary consumable. Framework workspaces wrap it (no logic duplication).
+`web-components` is the supported consumable adapter. Framework wrappers (Angular, React, Vue) were retired in 2026-05; consumers use `defineCustomElements()` from `@age/web-components` directly.
 
 ## 4. Build Orchestration — Wireit
 
@@ -56,7 +53,8 @@ Key entry points (see `package.json` and [`_agents/environment-commands.md`](../
 |---|---|---|
 | `yarn dev` | Stencil + Storybook + token watch (services) | n/a |
 | `yarn build` | Full production: tokens + components + custom-elements + docs | ~30–60s |
-| `yarn build.{react,angular,vue,web}` | Workspace-specific production builds | varies |
+| `yarn build.web` | Build the `@age/web-components` vanilla adapter | varies |
+| `yarn demo.web` | Serve the `@age/web-components` demo (<http://localhost:5174>) | service |
 | `yarn tokens.build` | Build core + dark tokens (cached) | ~5s |
 | `yarn tokens.build.prod` | Production tokens (optimized) | ~5s |
 | `yarn tokens.build.age` | AGE client theme tokens only | ~5s |
@@ -78,8 +76,8 @@ Published artifacts:
 
 Consumers:
 
-- Direct HTML: `<script type="module" src="...design-system.esm.js">`
-- Framework wrappers: `@age/react-design-system`, `@age/angular-design-system`, `@age/vue-design-system` (workspaces)
+- Direct HTML: `<script type="module" src="...design-system.esm.js">` + `defineCustomElements()` from `@age/web-components`
+- Vanilla / bundler-based apps: install `@age/design-system` + `@age/web-components`, then call `defineCustomElements()` once at startup
 - Token CSS: import `@age/design-system/dist/design-system/tokens/core.tokens.css`
 
 ## 6. AI Automation & Agentic Tooling
