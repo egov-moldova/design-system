@@ -124,6 +124,17 @@ Required for both **light** and **dark** mode. Verify:
 
 Canonical reference: Skill [`accessibility-compliance`](../skills/accessibility-compliance/SKILL.md).
 
+## Step 10b: Auto-generated file handling
+
+`yarn sp.build` regenerates these tracked files in your worktree:
+
+- `src/components.d.ts`
+- `src/components/<your-component>/readme.md`
+- Adapter outputs under `(react|angular|vue)-design-system/**/stencil-generated/**`
+- `.storybook/custom-elements.json`, `tokens/generated/**`
+
+**Do not stage them manually.** The pre-commit hook auto-unstages them (`.husky/pre-commit`), the `.gitattributes` `merge=ours` driver auto-resolves cross-branch conflicts, and the CI `Validate (PR)` job rebuilds + verifies on PR. If that CI step fails ("Verify no stale generated files"), run `yarn build && yarn build.react && yarn build.angular && yarn build.vue` locally and commit only the residual diff. Never hand-edit these files. See `AGENTS.md` -> "Merge driver for auto-generated files".
+
 ## Step 11: Human Approval Gate
 
 **STOP** — present migration summary:

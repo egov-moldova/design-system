@@ -21,7 +21,7 @@ Complete list of forbidden patterns. **Read before writing component code.**
 
 9. **Direct DOM manipulation** outside `componentDidLoad` / event handlers
 10. **`any` type in TypeScript** — use proper interfaces. Exception: Storybook stories may use `(args: any)` as a fallback, but prefer a component-specific args type when practical. See `_agents/typescript-strict.md`
-11. **Modify generated files** — `components.d.ts`, `.storybook/custom-elements.json`
+11. **Modify or manually stage auto-generated files** — `src/components.d.ts`, `src/components/*/readme.md`, `src/hidden/*/readme.md`, `(react|angular|vue)-design-system/**/stencil-generated/**`, `angular-design-system/src/directives/**`, `angular-design-system/src/public-api.ts`, `components/**` (Angular shims), `.storybook/custom-elements.json`, `tokens/generated/**`. Never hand-edit; never `git add` them. The `.husky/pre-commit` hook auto-unstages, `.gitattributes` `merge=ours` auto-resolves cross-branch conflicts, and CI `Validate (PR)` job rebuilds + verifies. If you see conflict markers, run `yarn build && yarn build.react && yarn build.angular && yarn build.vue` and continue. See `AGENTS.md` → "Merge driver for auto-generated files"
 12. **Boolean props for slot control** — never use boolean props to control slot rendering/visibility. Use CSS `:empty` or slot detection. See `src/components/_agents/slot-patterns.md`
 13. **Missing `!` on decorator properties** — `@Element()`, `@Event()`, `@AttachInternals()` MUST have `!`. See `_agents/typescript-strict.md`
 14. **Implicit `any` in story renders** — never leave render args untyped. Use `(args: ComponentArgs) =>` (preferred) or `(args: any) =>` (fallback). See `_agents/typescript-strict.md`

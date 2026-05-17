@@ -95,7 +95,8 @@ For full anti-pattern catalogue see [`stencil-compliance/references/anti-pattern
 
 - Branch follows naming: `type/issue-key-description` (e.g., `feat/cor-456-add-tooltip`)
 - No untracked files that should be committed
-- No generated files staged (`components.d.ts`, `custom-elements.json`)
+- **Merge driver registered**: `git check-attr merge -- src/components.d.ts` returns `merge: ours`. If not: `node scripts/git/setup-merge-drivers.mjs`
+- **Pre-commit hook current**: `.husky/pre-commit` contains the `GENERATED_PATTERNS` block (auto-unstages `components.d.ts`, `readme.md`, adapter outputs, `custom-elements.json`, `tokens/generated/`)
 - No `dist/`, `node_modules/`, or build artifacts staged
 
 **Verify after results land**:

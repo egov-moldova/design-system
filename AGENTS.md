@@ -141,3 +141,45 @@ yarn carbon:names              # Generate Carbon icon name mappings
 ```
 
 See `_agents/environment-commands.md` for the full decision matrix and all commands.
+
+---
+
+## Merge driver for auto-generated files
+
+The repo runs **parallel agent worktrees** (Cline Kanban + `.claude` orchestrators) where 3–5 components are built/redesigned simultaneously. Each worktree runs `yarn sp.build`, which regenerates the same tracked files. Without coordination, PR merges would conflict on every parallel branch.
+
+### How conflicts are prevented
+
+| Layer | File | Role |
+| --- | --- | --- |
+| Filesystem isolation | `.claude/kanban/worktree-init.{ps1,sh}` | Each agent runs in its own git worktree — no in-flight write collisions |
+| Built-in merge strategy | `.gitattributes` (`merge=ours`) | Cross-branch merges silently keep current branch — no conflict markers |
+| Pre-commit safety net | `.husky/pre-commit` (`GENERATED_PATTERNS`) | Auto-unstages generated files so `git add -A` is harmless |
+| Canonical regeneration | `.github/workflows/ci.yml` (`Validate (PR)`) | Rebuilds + `git diff --exit-code` proves committed snapshot is current |
+
+### Setup (runs automatically)
+
+`yarn install` invokes `scripts/git/setup-merge-drivers.mjs` via the `prepare` script. It installs a `post-merge` git hook that hints to rebuild when a merge touches generated files. The hook is installed into the **shared** git hooks dir (`git rev-parse --git-common-dir`), so it applies to every linked worktree of one clone automatically.
+
+### Manual setup (only if you ran `yarn install --skip-scripts`)
+
+```bash
+node scripts/git/setup-merge-drivers.mjs
+```
+
+### Verify the setup
+
+```bash
+git check-attr merge -- src/components.d.ts
+# expect: src/components.d.ts: merge: ours
+```
+
+### What contributors and agents must NEVER do
+
+- Hand-edit `src/components.d.ts`, `src/components/*/readme.md`, adapter outputs under `(react|angular|vue)-design-system/**/stencil-generated/**`, `angular-design-system/src/directives/**`, `components/**`, `.storybook/custom-elements.json`, `tokens/generated/**`.
+- Force-stage these files with `git add -A`. The pre-commit hook auto-unstages them — but if you bypass it (`--no-verify`), you can introduce stale snapshots.
+- Resolve a merge conflict in any of these by hand-editing. Run `yarn build && yarn build.react && yarn build.angular && yarn build.vue` instead.
+
+### Why `merge=ours` (and not a custom regenerate driver)
+
+A custom driver that ran `yarn build` on every 3-way merge would add 60–120 s per file per merge and would fail in IDE/GUI git clients that don't load the project environment. The built-in `merge=ours` is instant; CI's `Validate (PR)` job is the single canonical regeneration point and the hard gate that prevents stale content from reaching `main`.

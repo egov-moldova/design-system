@@ -49,7 +49,7 @@
     "loader/"
   ],
   "scripts": {
-    "prepare": "husky install",
+    "prepare": "husky install && node scripts/git/setup-merge-drivers.mjs",
     "build": "wireit",
     "build.react": "wireit",
     "build.angular": "wireit",

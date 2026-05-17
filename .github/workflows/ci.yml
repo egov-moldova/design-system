@@ -163,40 +163,67 @@ jobs:
           docker builder prune -f || true
           echo "✅ Cleanup complete"
 
-  # OR - Workflow with validations
-  # test:
-  #   name: Validate (PR)
-  #   if: github.event_name == 'pull_request'
-  #   runs-on: self-hosted
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
+  validate:
+    name: Validate (PR)
+    if: github.event_name == 'pull_request'
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-  #     - name: Setup Node.js
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: '22'
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
 
-  #     - name: Enable Corepack
-  #       run: corepack enable
+      - name: Enable Corepack
+        run: corepack enable
 
-  #     - name: Install dependencies
-  #       run: yarn install --immutable
+      - name: Install dependencies
+        run: yarn install --immutable
 
-  #     - name: Build tokens
-  #       run: yarn tokens.build
+      - name: Build tokens
+        run: yarn tokens.build
 
-  #     - name: Token reference audit
-  #       run: yarn tokens.audit
+      - name: Token reference audit
+        run: yarn tokens.audit
 
-  #     - name: Lint
-  #       run: yarn lint
+      - name: Build (Stencil)
+        run: yarn build
 
-  #     - name: Build (Stencil)
-  #       run: yarn build
+      - name: Build React adapter
+        run: yarn build.react
 
-  #     - name: Unit tests
-  #       run: stencil test --spec --maxWorkers=2
+      - name: Build Angular adapter
+        run: yarn build.angular
 
-  #     - name: Build Storybook
-  #       run: yarn sp.build
+      - name: Build Vue adapter
+        run: yarn build.vue
+
+      - name: Lint
+        run: yarn lint
+
+      - name: Unit tests
+        run: stencil test --spec --maxWorkers=2
+
+      - name: Verify no stale generated files
+        # Auto-generated files are tracked with `merge=ours` in .gitattributes;
+        # this step is the canonical gate that proves the committed snapshots
+        # match what the build produces. If this fails, the contributor must
+        # run `yarn build && yarn build.{react,angular,vue}` locally and commit
+        # the residual diff.
+        run: |
+          git diff --exit-code -- \
+            src/components.d.ts \
+            'src/components/*/readme.md' 'src/hidden/*/readme.md' \
+            react-design-system/src/components/stencil-generated/ \
+            angular-design-system/src/directives/ \
+            angular-design-system/src/public-api.ts \
+            'components/**' \
+            vue-design-system/src/components/stencil-generated/ \
+            .storybook/custom-elements.json \
+            tokens/generated/ \
+          || (echo "::error::Generated files are stale. Run 'yarn build && yarn build.react && yarn build.angular && yarn build.vue' locally and commit the diff." && exit 1)
+
+      - name: Build Storybook
+        run: yarn sp.build
