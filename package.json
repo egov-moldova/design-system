@@ -1,7 +1,7 @@
 {
   "name": "@age/design-system",
   "_id": "@age/design-system@0.0.1",
-  "version": "0.0.78",
+  "version": "0.0.1",
   "description": "AGE Design System — Stencil web components, Figma-aligned design tokens, and Storybook docs for Corlab products.",
   "main": "dist/index.cjs.js",
   "unpkg": "dist/design-system/design-system.esm.js",
@@ -84,7 +84,11 @@
     "carbon:names": "node scripts/generate-carbon-icon-names.mjs",
     "sync:tokens": "node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --output tokens/figma-export",
     "sync:tokens:apply": "node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --apply",
-    "test:scripts": "node --test scripts/__tests__/sync-tokens-from-tokenhaus.spec.mjs"
+    "test:scripts": "node --test \"scripts/__tests__/**/*.spec.mjs\"",
+    "audit:structure": "node scripts/audit/01-component-structure.mjs",
+    "audit:antipatterns": "node scripts/audit/02-stencil-antipatterns.mjs",
+    "audit:git-hygiene": "node scripts/audit/03-git-hygiene.mjs",
+    "audit:jsdoc": "node scripts/audit/04-jsdoc-completeness.mjs"
   },
   "wireit": {
     "tokens.build.core": {
