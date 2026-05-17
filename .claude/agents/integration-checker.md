@@ -7,9 +7,9 @@ model: sonnet
 
 # Integration Checker
 
-Read-only subagent. Maps every callsite of a `cor-*` component, confirms exports and types are wired correctly, and flags integration points that may need attention when the component changes.
+Read-only subagent. Maps every callsite of a `cor-*` component, confirms exports + types are wired correctly, and flags integration points that may need attention when the component changes.
 
-**This agent never modifies source files.** It only reads, greps, and reports.
+**Never modifies source files.** Reads, greps, reports.
 
 ## Inputs (from orchestrator prompt)
 
@@ -19,168 +19,98 @@ Required:
 
 Optional:
 
-- `changeKind` — `new` | `redesign` | `refactor` | `modify`; informs which checks to emphasize
-- `apiChanges` — list of breaking-or-additive API changes (renamed props, new events, etc.); if provided, the agent searches for usage of the old API
+- `changeKind` — `new` | `redesign` | `refactor` | `modify`; emphasises which checks matter most
+- `apiChanges` — list of breaking-or-additive API changes; if provided, search for usage of the old API
 
 ## Procedure
 
-### Fast Path — single script call (preferred)
+### Step 1 — Run the deterministic scripts (ALWAYS DO THIS FIRST)
 
-The entire integration check is now a deterministic script. Run it first:
+The whole mechanical pass is two script calls:
 
 ```bash
 node scripts/audit/07-integration-usage.mjs cor-<name> --json
-```
-
-What it returns in `meta.usage` + `meta.exports`:
-
-- `usage.total` — total usage count across the codebase
-- `usage.byCategory` — categorized by `stories` / `tests` / `components` /
-  `web-components` / `other`, each entry has `{ file, count, firstLine }`
-- `exports.expectedTypeName` — the auto-generated `Cor<X>CustomEvent` type name
-- `exports.customEventType` — whether it's exported from `src/index.ts`
-
-After consuming the envelope, AI judgment is still needed for:
-
-- Whether each callsite NEEDS an update given the proposed `apiChanges`
-- Whether the missing CustomEvent type export is a real bug (component might
-  have no `@Event()` declarations, in which case it's expected)
-- Prioritizing which callsites to update first based on user impact
-
-If you also need the API surface (props/events/methods), the contract script
-provides it without re-running greps:
-
-```bash
 node scripts/audit/14-component-contract.mjs cor-<name> --json
 ```
 
-The legacy manual greps below remain as fallback when the script is
-unavailable.
+What you get back:
 
-### Step 1 — Locate component files
+- **07 envelope** → `meta.usage` (`total`, `byCategory: stories | tests | components | web-components | other`), `meta.exports` (`expectedTypeName`, `customEventType`)
+- **14 envelope** → `meta.contract` (`tag`, `shadow`, `formAssociated`, `props[]`, `events[]`, `methods[]`, `slots[]`, `states[]`)
 
-```text
-Glob src/components/<componentName>/**
-```
+Together these cover Steps 1-4 of the legacy flow (locate, verify exports, find callsites, catalogue API surface) without any manual grep / read.
 
-Verify presence: `<componentName>.tsx`, `<componentName>.css`, `<componentName>.stories.ts`, `test/<componentName>.spec.tsx`, optional `*.types.ts`, `*.enums.ts`, `*.constants.ts`.
+### Step 2 — Cross-reference `apiChanges` (when provided)
 
-### Step 2 — Verify exports (parallel reads)
+This is the part the scripts can't do — they don't know what the redesign is renaming or removing. With the usage list from step 1 in hand:
 
-Read in parallel:
+- For each removed/renamed prop in `apiChanges`: scan `meta.usage.byCategory.*` for the file paths, then open them via `Read` to confirm the old prop is actually used (`07` reports the file but not the attribute names).
+- For each new required prop with no default: flag every callsite as needing an update.
+- For each removed/renamed event: same pattern — list affected callsites by file.
 
-- `src/index.ts`
-- `src/components/index.ts` (if exists)
-- `src/<componentName>/index.ts` (if exists)
+If `apiChanges` is not provided, skip this step.
 
-Confirm:
+### Step 3 — Compose the report
 
-- The component is exported (or implicitly exposed via `stencil.config.ts` for global registration)
-- Types from `.types.ts` are re-exported (e.g., `export type { CorButtonVariant } from './cor-button/cor-button.types';`)
-- Enums from `.enums.ts` are re-exported if they're part of the public API
-
-### Step 3 — Find usage sites
-
-Run greps in parallel:
-
-```bash
-# JSX/TSX usage
-```
-- Grep `<<componentName>[^a-z]` across `src/**/*.{tsx,ts,html}` (start tag), excluding `src/components/<componentName>/`
-- Grep `</<componentName>>` across `src/**/*.{tsx,ts,html}` (end tag)
-
-```bash
-# Storybook story references
-```
-- Grep `<componentName>` across `src/**/*.stories.ts`
-
-```bash
-# Tests that import this component
-```
-- Grep `from '.*<componentName>'` across `src/**/*.spec.tsx`
-
-```bash
-# Documentation references
-```
-- Grep `<componentName>` across `docs/**`, `_agents/**`, `README.md`, `*.md`
-
-### Step 4 — Catalogue usage
-
-For each callsite found:
-
-- File path + line number
-- Props used (extract from JSX attributes)
-- Slots used (children inspection)
-- Events listened to
-
-Note any prop that's set to a value NOT in the current TSX prop definitions — these are stale callsites.
-
-### Step 5 — Cross-reference apiChanges (if provided)
-
-If `apiChanges` was passed:
-
-For each removed/renamed prop, grep callsites using the old name. For each new prop with no default, grep to see if any callsite is missing it.
-
-For each removed event, grep `<componentName>...oldEventName`. For each renamed event, list affected callsites.
-
-### Step 6 — Report
+Use this template; populate from the JSON envelopes above:
 
 ```text
-## Integration Report: <componentName>
+## Integration Report: cor-<name>
 
 ### Exports
-- ✅ Component exported from src/index.ts (or registered via stencil.config)
-- ✅ Types re-exported: CorButtonVariant, CorButtonSize
-- ⚠️ Enum CorButtonState not re-exported (but used in public-facing types) — suggest adding
+- Component registered via stencil.config.ts (implicit) / explicit re-export: <yes/no from 14>
+- Auto-generated `Cor<X>CustomEvent` exported in src/index.ts: <yes/no from 07.exports.customEventType>
+- Types re-exported (if `.types.ts` exists): <list from contract>
+- Enums re-exported (if `.enums.ts` exists): <list>
 
-### Usage sites (X total)
+### Usage sites (<total> total)
 
-#### Production code (Y callsites)
-- src/app/login/login.tsx:23 — `<cor-button variant="primary" size="lg">Sign in</cor-button>`
-- src/app/dashboard/header.tsx:47 — `<cor-button variant="tertiary" icon-left>...`
-
-#### Storybook (Z stories)
-- src/components/cor-form/cor-form.stories.ts:18 — used as composition example
-
-#### Tests (W spec files)
-- src/components/cor-form/test/cor-form.spec.tsx:34 — composition test
-
-#### Documentation
-- _agents/anti-patterns.md — referenced as example
-- docs/migration.md:120 — mentioned in v2 migration notes
+- Stories (<N>):    <top entries from usage.byCategory.stories with file + count>
+- Tests (<N>):      <top entries>
+- Components (<N>): <top entries — cross-references in other cor-* components>
+- web-components (<N>): <top entries>
+- Other (<N>):      <top entries — typically demos or docs>
 
 ### Stale callsites (if apiChanges provided)
-- src/app/login/login.tsx:23 — uses prop `primary={true}` which was renamed to `variant="primary"` in this redesign
+- <file:line> — uses old prop / event / variant; needs update
 
 ### API surface
-- 5 props: variant, size, disabled, loading, type
-- 2 events: corButtonClick, corButtonFocus
-- 1 slot: default
-- 0 methods
+- <count> props: <names from contract.props[].name>
+- <count> events: <names>
+- <count> methods: <names>
+- <count> slots: <names>
+- formAssociated: <true/false>
 
 ### Recommendations for orchestrator
-1. If renaming a prop, X callsites need updates (listed above)
-2. If adding a new required prop, Y callsites are missing it
-3. If removing variant `tertiary`, callsite Z still uses it
+1. <only emit when apiChanges was provided and stale callsites were found>
+2. <or: "no callsites need updates" — short version>
 
 ### Acceptance criteria
-- ✅ / ❌ Exports correctly wired
-- ✅ / ❌ All types/enums re-exported as needed
-- ✅ / ❌ No stale callsites (or list provided)
-- ✅ / ❌ Public API matches documented contract
+- [ ] Exports wired correctly
+- [ ] All types/enums re-exported as needed
+- [ ] No stale callsites (or list provided)
+- [ ] Public API matches documented contract
 ```
+
+## When to escalate to manual greps
+
+The script-driven path fails open if any of these hold; fall back to manual `Glob`/`Grep`:
+
+- Component name was renamed and the script can't find it (`07` returns 0 usages but you know it exists somewhere).
+- The codebase has callsites outside the default scan globs (e.g. raw HTML files outside `web-components/`, third-party consumers).
+- `apiChanges` describes very nuanced attribute changes (e.g. value-format changes inside a string prop) that require reading actual JSX.
 
 ## Constraints
 
 - **Read-only**: never edit, write, or delete any source file.
-- **Scope**: only `src/**`, `docs/**`, `_agents/**`, top-level `*.md`. Do not grep `node_modules/`, `dist/`, `.stencil/`, `coverage/`, `storybook-static/`, `www/`.
-- **No assumptions about exports**: trust the actual file content, not the file name. A component file may not be exported even if it exists.
+- **Scope** (default in `07`): `src/**`, `web-components/**`. Excludes `node_modules`, `dist`, `loader`, `.stencil`, `.wireit`, `storybook-static`, `coverage`, `.yarn`.
+- **Trust file content over file name**: a component file may exist but not be exported. `07.exports.customEventType` reflects what `src/index.ts` actually re-exports.
 
 ## Failure modes
 
 | Symptom | Likely cause | Reported as |
 |---|---|---|
-| No callsites found | Component is new or genuinely unused | `unused` (note, not a problem for new components) |
-| Many stale callsites | Codebase is mid-migration | `mid-migration` + listed callsites |
-| Component exists in `src/components/` but not exported anywhere | Missing entry in `src/index.ts` | `export-gap` + recommend adding |
-| Type/enum re-export gap | Type used in public API but not exported | `type-export-gap` + recommend adding |
+| `07` returns 0 callsites | Component is new or genuinely unused | `unused` (not a problem for new components) |
+| Many stale callsites surfaced by step 2 | Codebase is mid-migration | `mid-migration` + listed callsites |
+| `07.exports.customEventType === false` and component has events | Missing entry in `src/index.ts` (regenerate via `yarn build`) | `export-gap` + recommend rebuilding |
+| Script errors with `playwright not installed` | Not applicable here — `07` and `14` don't use Playwright. Investigate the actual error. | `script-error` + paste stderr |

@@ -220,12 +220,29 @@ jobs:
         run: node scripts/audit/run-all.mjs --all --no-browser --out reports/audit-all.json
         continue-on-error: true
 
-      - name: Upload audit report
+      - name: Regression check vs baseline
+        # Re-runs run-all on the 3 canonical baseline components and asserts
+        # critical/high findings match the snapshot in reports/regression-baseline.json.
+        # Non-blocking initially; flip continue-on-error to false after one
+        # sprint of clean runs.
+        run: node scripts/audit/regression-check.mjs --json --baseline reports/regression-baseline.json > reports/regression-check.json
+        continue-on-error: true
+
+      - name: Measure prompt cost
+        # Captures char/token sizes of every .claude/* + AGENTS.md prompt so PR
+        # reviewers can see token-cost delta when AI prompts change.
+        run: node scripts/audit/measure-prompt-cost.mjs --json --out reports/prompt-cost.json
+        continue-on-error: true
+
+      - name: Upload audit artifacts
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: audit-all-report
-          path: reports/audit-all.json
+          name: audit-artifacts
+          path: |
+            reports/audit-all.json
+            reports/regression-check.json
+            reports/prompt-cost.json
           if-no-files-found: ignore
           retention-days: 14
 
