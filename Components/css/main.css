@@ -20156,10 +20156,6 @@ button.token-name {
 [data-doc=flags] .flags-doc-item__flag {
   cursor: default;
   user-select: none;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
-}
-[data-doc=flags] .flags-doc-item__flag--fallback {
-  box-shadow: inset 0 0 0 1px var(--gray-300, #c4c4c4);
 }
 [data-doc=flags] .flags-doc-item__flag-img {
   object-fit: cover;
@@ -20191,13 +20187,9 @@ button.token-name {
 }
 
 [data-doc=borders] .token-table .mud-doc-border-preview {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 135px;
   height: 95px;
   max-width: 135px;
-  box-sizing: border-box;
 }
 [data-doc=borders] .token-table .mud-doc-border-preview__inner {
   background-color: rgba(226, 69, 175, 0.1019607843);
@@ -20413,8 +20405,8 @@ button.token-name {
   transition: background-color 0.15s ease;
   position: relative;
 }
-[data-doc=icons] .icon-card:hover .icon-card__border {
-  background: var(--gray-200, #f1f1f1);
+[data-doc=icons] .icon-card:hover .mud-bg-gray-100 {
+  background: var(--gray-200, #f1f1f1) !important;
 }
 [data-doc=icons] .icon-card:focus-visible {
   outline: 2px solid var(--blue-sky-600, #0058d2);
@@ -20423,33 +20415,8 @@ button.token-name {
 [data-doc=icons] .icon-card.is-copied .icon-card__name {
   color: var(--green-700, #06794d);
 }
-[data-doc=icons] .icon-card__border {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  flex: 0 0 40px;
-  border-radius: 8px;
-  background: var(--gray-100, #f5f5f5);
-  color: var(--gray-900, #121212);
-  transition: background-color 0.15s ease, border-color 0.15s ease;
-}
-[data-doc=icons] .icon-card__name {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
 [data-doc=icons] .icon-card--missing {
   cursor: not-allowed;
-}
-[data-doc=icons] .icon-card--missing:hover .icon-card__border--missing {
-  background: transparent;
-}
-[data-doc=icons] .icon-card__border--missing {
-  background: transparent;
-  border: 1px dashed var(--gray-300, #c4c4c4);
-  color: var(--gray-400, #9b9b9b);
 }
 [data-doc=icons] .icon-card__name--missing {
   font-style: italic;
@@ -20507,47 +20474,13 @@ button.token-name {
 [data-doc=cursors] .cursor-card {
   min-width: 0;
   box-sizing: border-box;
-  border: 1px solid var(--gray-200, #e5e5e5);
 }
 [data-doc=cursors] .cursor-card__icon {
-  width: 100%;
   min-height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 12px;
-  background: var(--color-background-base-secondary, #f5f5f5);
-  border-radius: 8px;
   box-sizing: border-box;
 }
 [data-doc=cursors] .cursor-card__glyph {
-  width: 40px;
-  height: 40px;
-  display: block;
   pointer-events: none;
-}
-[data-doc=cursors] .cursor-card__label {
-  all: unset;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  min-width: 0;
-  width: 100%;
-  padding: 8px 10px;
-  border-radius: var(--border-radius-8, 8px);
-  background: transparent;
-  cursor: pointer;
-  letter-spacing: -0.14px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  position: relative;
-  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
-}
-[data-doc=cursors] .cursor-card__label:hover {
-  background: var(--gray-100, #f6f6f6);
 }
 @media (max-width: 599.98px) {
   [data-doc=cursors] .cursors-grid {
@@ -20555,10 +20488,6 @@ button.token-name {
   }
 }
 
-[data-doc=spacings] .spacings-table {
-  display: flex;
-  flex-direction: column;
-}
 [data-doc=spacings] .spacings-table__head,
 [data-doc=spacings] .spacings-table__row {
   display: grid;
@@ -23101,6 +23030,9 @@ label {
   font-size: var(--text-font-size-14, 14px);
   margin-bottom: var(--spacing-8, 8px);
   line-height: var(--text-line-height-20, 20px);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
 label.required::after {
   content: "*";
@@ -24528,6 +24460,18 @@ textarea {
 }
 .textarea[readonly]:not(:disabled)::placeholder {
   color: var(--gray-700);
+}
+
+.justify-content-counter {
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.message-wrap {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .file-input.default {
