@@ -1,7 +1,9 @@
 @use '../abstracts/mud-prefix' as mud;
 
-// Rows that contain color ramp cells: `.mud-col` > `.mud-color-swatch` (no extra row class in HTML).
-$row-color-ramp: '.#{mud.mud-class('row')}:has(> .#{mud.mud-class('col')} > .#{mud.mud-class('color-swatch')})';
+// Rows that contain color ramp cells: `.mud-col` > `.mud-card[class*="mud-bg-"]` (no extra row class in HTML).
+// We intentionally do NOT depend on `.mud-color-swatch` so markup can use only utility classes.
+$row-color-ramp:
+  '[data-doc="colors"] .mud-doc-main .#{mud.mud-class('row')}:has(> .#{mud.mud-class('col')} > .#{mud.mud-class('card')}[class*="mud-bg-"])';
 
 // Shortcuts similar in spirit to Bootstrap stacks (compose once, reuse anywhere).
 .#{mud.mud-class('flex-center')} {
@@ -11,11 +13,9 @@ $row-color-ramp: '.#{mud.mud-class('row')}:has(> .#{mud.mud-class('col')} > .#{m
   text-align: center !important;
 }
 
-// Color preview surface (inside `.mud-col` + optional `.mud-card` + `.mud-radius-*` in markup).
-// Aspect: compose `mud-ar-47-32` (Figma 235×160), `mud-ar-247-80` for `--wide` (494×160), `mud-ar-3-1` for `--alpha`.
-// Border radius comes from utilities (`mud-radius-*`), not here. Click-to-copy only on
-// `[data-doc="colors"]` via `copy-token.js`.
-.#{mud.mud-class('color-swatch')} {
+// Color preview surface: any swatch tile inside the Colors doc.
+// We intentionally base this on `mud-bg-*` so markup doesn't need `.mud-color-swatch` anymore.
+[data-doc='colors'] .mud-doc-main .#{mud.mud-class('card')}[class*='mud-bg-'] {
   box-sizing: border-box;
   min-width: 0;
   display: flex;
@@ -24,16 +24,14 @@ $row-color-ramp: '.#{mud.mud-class('row')}:has(> .#{mud.mud-class('col')} > .#{m
   text-align: center;
 }
 
-// Highlighted step (wider tile): markup uses `mud-color-swatch--wide` for grid span + `mud-ar-247-80` for ratio.
-
-// Alpha / wide flat tiles: compose `mud-ar-3-1`; width rules stay for grid strips.
-.#{mud.mud-class('color-swatch--alpha')} {
+// Alpha tile layout (used in the “Alpha” section): we identify it by aspect ratio `mud-ar-3-1`.
+[data-doc='colors'] .mud-doc-main .#{mud.mud-class('ar-3-1')} {
   width: 100%;
   max-width: none;
   flex: unset;
 }
 
-// Ramp row: same `.mud-row` as everywhere; grid activates when direct children are `.mud-col` > `.mud-color-swatch`.
+// Ramp row: same `.mud-row` as everywhere; grid activates when direct children are `.mud-col` > swatch tiles.
 #{$row-color-ramp} {
   display: grid !important;
   grid-template-columns: repeat(10, minmax(0, 1fr));
@@ -62,17 +60,17 @@ $row-color-ramp: '.#{mud.mud-class('row')}:has(> .#{mud.mud-class('col')} > .#{m
   min-width: 0;
 }
 
-#{$row-color-ramp} > .#{mud.mud-class('col')}:has(> .#{mud.mud-class('color-swatch--wide')}) {
+#{$row-color-ramp} > .#{mud.mud-class('col')}:has(> .#{mud.mud-class('card')}.#{mud.mud-class('ar-247-80')}) {
   grid-column: span 2;
 }
 
-#{$row-color-ramp} > .#{mud.mud-class('col')} > .#{mud.mud-class('color-swatch')}:not(.#{mud.mud-class('color-swatch--wide')}) {
+#{$row-color-ramp} > .#{mud.mud-class('col')} > .#{mud.mud-class('card')}[class*='mud-bg-']:not(.#{mud.mud-class('ar-247-80')}) {
   width: 100%;
   max-width: min(120px, 100%);
   margin-inline: auto;
 }
 
-#{$row-color-ramp} > .#{mud.mud-class('col')}:has(> .#{mud.mud-class('color-swatch--wide')}) > .#{mud.mud-class('color-swatch--wide')} {
+#{$row-color-ramp} > .#{mud.mud-class('col')}:has(> .#{mud.mud-class('card')}.#{mud.mud-class('ar-247-80')}) > .#{mud.mud-class('ar-247-80')} {
   max-width: none;
   width: 100%;
 }
@@ -81,16 +79,12 @@ $row-color-ramp: '.#{mud.mud-class('row')}:has(> .#{mud.mud-class('col')} > .#{m
   margin-bottom: 0;
 }
 
-#{$row-color-ramp} > .#{mud.mud-class('col')} > .#{mud.mud-class('color-swatch')},
-.colors-doc-alpha-grid > .#{mud.mud-class('color-swatch')},
-.alpha-white-strip > .#{mud.mud-class('color-swatch')} {
+[data-doc='colors'] .mud-doc-main .#{mud.mud-class('card')}[class*='mud-bg-'] {
   cursor: pointer;
   position: relative;
 }
 
-#{$row-color-ramp} > .#{mud.mud-class('col')} > .#{mud.mud-class('color-swatch')}.is-copied::after,
-.colors-doc-alpha-grid > .#{mud.mud-class('color-swatch')}.is-copied::after,
-.alpha-white-strip > .#{mud.mud-class('color-swatch')}.is-copied::after {
+[data-doc='colors'] .mud-doc-main .#{mud.mud-class('card')}[class*='mud-bg-'].is-copied::after {
   content: 'Copied';
   position: absolute;
   left: 50%;
@@ -108,57 +102,3 @@ $row-color-ramp: '.#{mud.mud-class('row')}:has(> .#{mud.mud-class('col')} > .#{m
   pointer-events: none;
 }
 
-// Alpha token grids (any doc page — class names stay `colors-doc-*` for HTML compatibility).
-.colors-doc-alpha-grid {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: var(--spacing-24, 24px);
-  margin-bottom: var(--spacing-24, 24px);
-  width: 100%;
-}
-
-@media (max-width: 991.98px) {
-  .colors-doc-alpha-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 479.98px) {
-  .colors-doc-alpha-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.colors-doc-alpha-grid > .#{mud.mud-class('color-swatch')} {
-  padding-left: 0;
-  padding-right: 0;
-}
-
-.alpha-white-strip {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: var(--spacing-24, 24px);
-  box-sizing: border-box;
-  width: 100%;
-  margin-bottom: var(--spacing-24, 24px);
-  padding: var(--spacing-16, 16px);
-  border-radius: var(--border-radius-12, 12px);
-  background: var(--color-background-base-inverse-default, #1e1e1e);
-}
-
-@media (max-width: 991.98px) {
-  .alpha-white-strip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 479.98px) {
-  .alpha-white-strip {
-    grid-template-columns: 1fr;
-  }
-}
-
-.alpha-white-strip > .#{mud.mud-class('color-swatch')} {
-  padding-left: 0;
-  padding-right: 0;
-}

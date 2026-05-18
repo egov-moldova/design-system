@@ -26,18 +26,7 @@
 
 .typo-table__head { padding: 12px 0; }
 
-.typo-cell--token { display: flex; }
-
-.typo-cell--value {
-  margin: 0;
-  font-family: var(--font-family-mono, 'JetBrains Mono', ui-monospace, monospace);
-  font-size: 14px;
-  line-height: 20px;
-  color: var(--gray-700, #383838);
-  white-space: normal;
-}
-
-.typo-cell--value .v { color: #e245af; }
+[data-doc="typography"] .v { color: #e245af; }
 
 [data-doc="typography"] .typo-table__row > :nth-child(4) {
   margin: 0;
