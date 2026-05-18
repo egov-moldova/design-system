@@ -35,6 +35,35 @@ This agent delegates to specialized skills/commands where they exist; it adds th
 | 9 — Git Hygiene | Local checks | Conventional commits + no unrelated diff |
 | 10 — Stencil Compliance summary | Surfaces `audit-component --deep` findings under their own header | — |
 
+## Fast Path — single orchestrator call (preferred)
+
+Before dispatching the per-phase work below, run the local audit orchestrator
+ONCE and consume its JSON envelope. It covers most of Phase 1 (structure +
+anti-patterns + JSDoc), Phase 4 (story exports), Phase 5a (test coverage),
+Phase 6.1 (bundle size), and Phase 9 (git hygiene) deterministically and in
+parallel:
+
+```bash
+# All non-browser checks for one component (Wave A + B of the orchestrator)
+node scripts/audit/run-all.mjs cor-<name> --no-browser --json
+
+# With browser checks (a11y tree, contrast, console errors) — requires Storybook + Playwright
+yarn sp.dev.watch
+node scripts/audit/run-all.mjs cor-<name> --json
+```
+
+The envelope has `summary`, `blockers`, and `findingsByTool` keys. After
+reading it, only the JUDGMENT-heavy phases remain for AI:
+
+- **Phase 3.x** — interpreting ARIA correctness from the captured a11y tree
+- **Phase 3.3** — picking the right remediation when contrast fails (token re-map vs design exception)
+- **Phase 7** — security review beyond `yarn audit` (CSP nuances, sensitive data leakage)
+- **Phase 8.3** — Storybook docs quality review (script only verifies JSDoc presence)
+- **Phase 10** — synthesizing the Stencil compliance findings under a separate header
+
+The legacy per-phase Bash + Read instructions below remain valid as a fallback
+when the orchestrator is unavailable (CI without Node 22+, etc.).
+
 ## Parallel Execution Model (recommended)
 
 Phases 1–2 must run sequentially (data collection precedes analysis). Phases 3–9 are LOGICALLY INDEPENDENT and SHOULD be dispatched in parallel for ~50% wall-clock reduction:
@@ -80,20 +109,9 @@ Additionally verify these production-only items below.
 
 ### 1.1 File Structure
 
-Check all required files exist:
-
-```text
-src/components/cor-[name]/
-├── cor-[name].tsx              REQUIRED
-├── cor-[name].css              REQUIRED
-├── cor-[name].stories.ts       REQUIRED
-├── test/cor-[name].spec.tsx    REQUIRED (unit tests — default)
-├── test/cor-[name].e2e.ts      OPTIONAL today; audited when --e2e flag passed
-├── cor-[name].types.ts         If component has custom types
-├── cor-[name].enums.ts         If component has enums
-├── cor-[name].constants.ts    If component has constants
-└── readme.md                   REQUIRED (auto-generated; do NOT modify)
-```
+Covered by Fast Path script `01-component-structure.mjs` —
+`findingsByTool.structure` lists every missing required file. No manual check
+needed; just confirm the script reported `errors: 0`.
 
 ### 1.2 TSX Member Order
 
@@ -112,31 +130,19 @@ Verify `cor-[name].tsx` follows strict order (see `src/components/AGENTS.md`):
 
 **`@Watch()` rule**: forbidden for side effects or state cascades (use `@Listen()` instead). Allowed only for syncing native DOM properties not reflectable via attributes. See [`stencil-compliance/references/decorators.md#watch`](../skills/stencil-compliance/references/decorators.md#watch).
 
-### 1.2.1 Lifecycle Cleanup (NEW — Stencil compliance overlay)
+### 1.2.1 + 1.2.2 Lifecycle Cleanup + Reactivity Mutation
 
-Cross-reference [`stencil-compliance/references/lifecycle-host.md#lifecycle`](../skills/stencil-compliance/references/lifecycle-host.md#lifecycle) rule LC1.
+Both covered by Fast Path script `02-stencil-antipatterns.mjs`:
 
-Any component that uses `setInterval`, `setTimeout`, manual `addEventListener`, `ResizeObserver`, `MutationObserver`, or `IntersectionObserver` MUST have a `disconnectedCallback()` that cleans up. Memory leak risk = **Critical**.
+- `ANTIPATTERN-007-LIFECYCLE-LEAK` — paired check (setInterval / setTimeout /
+  addEventListener / ResizeObserver / MutationObserver / IntersectionObserver
+  without disconnectedCallback)
+- `ANTIPATTERN-005-ARRAY-MUTATION` — push/pop/shift/unshift/splice/sort/reverse
+  on `this.*`
 
-```bash
-rg "setInterval|setTimeout|addEventListener|ResizeObserver|MutationObserver|IntersectionObserver" src/components/cor-<name> --type ts
-rg "disconnectedCallback" src/components/cor-<name> --type ts
-```
-
-If the first grep returns hits and the second returns none → **Critical**.
-
-### 1.2.2 Reactivity Mutation (NEW — Stencil compliance overlay)
-
-Cross-reference [`stencil-compliance/references/form-reactivity.md#reactive`](../skills/stencil-compliance/references/form-reactivity.md#reactive).
-
-Detected mutations on `@Prop`/`@State` arrays/objects = reactivity bugs:
-
-```bash
-rg "this\.\w+\.(push|pop|shift|unshift|splice|sort|reverse)\(" src/components/cor-<name> --type ts
-rg "delete\s+this\.\w+\." src/components/cor-<name> --type ts
-```
-
-Any match = **Critical**.
+Any match in `findingsByTool.antipatterns` with these codes = **Critical**.
+References: [`stencil-compliance/references/lifecycle-host.md#lifecycle`](../skills/stencil-compliance/references/lifecycle-host.md#lifecycle) (LC1),
+[`stencil-compliance/references/form-reactivity.md#reactive`](../skills/stencil-compliance/references/form-reactivity.md#reactive).
 
 ### 1.3 TypeScript Quality
 
@@ -149,14 +155,15 @@ yarn build
 
 ### 1.4 Prop Validation
 
-For each `@Prop()`:
+Mechanical part covered by Fast Path scripts:
 
-- JSDoc with description
-- Correct TypeScript type (not `any`)
-- `@default` tag if optional
-- Enum props use imported enum types
-- Boolean props default to `false`
-- `@Watch()` used only for syncing native DOM properties
+- `04-jsdoc-completeness` reports per-prop JSDoc presence + `@default` tag
+- `02-stencil-antipatterns` flags `: any`
+- `14-component-contract` exposes the full prop list with types + defaults
+
+Judgment that STAYS here: are enum props using the right enum type? Do
+booleans default to `false` (project convention, not script-enforced)? Is
+`@Watch()` used only for syncing native DOM properties (not state cascades)?
 
 ### 1.5 Slot Validation
 
@@ -272,12 +279,17 @@ No `aria-*` on non-interactive elements unless they have `role`.
 
 ### 3.3 Color Contrast (SC 1.4.3 + 1.4.11) — both modes
 
-```text
-mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-cor-[name]--default" })
-mcp__playwright__browser_evaluate({ function: "() => { const el = document.querySelector('cor-[name]')?.shadowRoot?.querySelector('.target') || document.querySelector('cor-[name]'); const s = window.getComputedStyle(el); return { bg: s.backgroundColor, fg: s.color }; }" })
-```
+Covered by Fast Path script `10-contrast-pairs.mjs` which captures computed
+fg/bg/border for every interactive element in both themes and applies the
+WCAG 2.1 AA thresholds (4.5:1 normal, 3:1 large/UI, disabled exempt).
 
-Toggle dark mode and repeat:
+Cross-reference with `yarn audit:contrast` (token-level). Both must exit 0;
+any runtime FAIL that token-level didn't catch indicates the component CSS
+picked the wrong token (fix the component); any token-level FAIL that
+runtime didn't catch indicates a token mapping issue (fix the token).
+
+For one-off spot checks at a specific selector, the legacy MCP path still
+works:
 
 ```text
 mcp__playwright__browser_evaluate({ function: "() => { document.documentElement.dataset.theme = 'dark'; return new Promise(r => requestAnimationFrame(() => r(true))); }" })
@@ -509,29 +521,18 @@ Open `http://localhost:6007/?path=/docs/components-cor-[name]--docs` and verify:
 
 ## Phase 9: Git Hygiene
 
-### 9.1 Branch Naming
+Entirely covered by Fast Path script `03-git-hygiene.mjs`:
 
-- `feature/cor-[name]` for new components
-- `fix/cor-[name]-[issue]` for bug fixes
-- `refactor/cor-[name]` for refactors
+- `GIT-BRANCH-NAMING` — branch matches `type/desc` convention
+- `GIT-COMMIT-CONVENTIONAL` — last N commits follow Conventional Commits
+- `GIT-COMMIT-WIP` — no `wip` / `fixup!` / `squash!` left in the log
+- `GIT-STAGED-*` — no `dist/`, `node_modules/`, `.stencil/`, `tokens/generated/`,
+  `.env`, or `*.log` staged
+- Branch types accepted: `feat`, `fix`, `refactor`, `redesign`, `test`,
+  `docs`, `chore`, `build`, `ci`, `perf`, `style`
 
-### 9.2 Commit Messages (Conventional Commits)
-
-```text
-feat(cor-[name]): add new component
-fix(cor-[name]): resolve focus trap issue
-refactor(cor-[name]): align with AGENTS.md patterns
-test(cor-[name]): add missing unit tests
-docs(cor-[name]): update JSDoc
-```
-
-### 9.3 No Unrelated Changes
-
-```bash
-git diff main...HEAD
-```
-
-**Pass criteria**: only files related to this component are changed.
+Cross-reference with manual `git diff main...HEAD` only when the script
+surfaces an unexpected change; otherwise trust the envelope.
 
 ## Phase 10: Stencil Compliance Deep Pass
 
@@ -570,6 +571,20 @@ yarn audit
 ```
 
 Plus the `audit-component --deep` skill invocation in Phase 1.
+
+## Phase 11.5: Layer 2 Verification (interactive only — skipped in CI)
+
+For local runs (where `run-all.mjs` envelope has `meta.layer2Required: true`),
+execute Layer 2 of the `audit-component` skill: §BX (mandatory MCP browser
+checklist) + §CX (archetype-specific checks) + §DX (discretionary).
+
+See [`.claude/skills/audit-component/SKILL.md`](../skills/audit-component/SKILL.md) §Layer 2 for the canonical procedure. The archetype is read from
+`envelope.findingsByTool['component-contract'][...].meta.contract.archetype.value`
+(emitted by script 14). Surface BX/CX/DX results in the final report's Check
+Matrix; a failing BX row escalates the overall verdict to "Block".
+
+Skip in CI runs (`envelope.meta.ciDetected === true`) — those produce a
+Layer-1-only verdict and the matrix shows L2 rows as ⏭️ with reason `--ci`.
 
 ## Phase 11: Final Report
 

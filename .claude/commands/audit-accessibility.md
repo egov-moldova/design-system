@@ -13,6 +13,8 @@ Deep WCAG 2.1 Level AA audit for `$ARGUMENTS`. Do **not** auto-fix — report fi
 
 **Also reference:** [`AGENTS.md`](../../AGENTS.md), `_agents/` files for project-specific patterns.
 
+**Relation to `/audit-component`**: the §BX block of [`audit-component`](../skills/audit-component/SKILL.md) (BX2 Tab order, BX3 focus-visible, BX4 Escape) is a subset of this command's keyboard-nav coverage. Use `/audit-component` for the BX/CX/DX gate during a full audit; use `/audit-accessibility` here for the deeper WCAG 2.1 AA pass when a component fails BX or needs explicit accessibility sign-off.
+
 ## Step 0: Environment Check
 
 ```bash
