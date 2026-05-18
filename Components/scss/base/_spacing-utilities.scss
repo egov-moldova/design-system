@@ -20,6 +20,7 @@
     --spacing-48: 48px;
     --spacing-56: 56px;
     --spacing-64: 64px;
+    --spacing-80: 80px;
     --spacing-72: 72px;
     --spacing-120: 120px;
 }
@@ -40,6 +41,7 @@ $spacing-map: (
   56: tokens.$token-spacing-56,
   64: tokens.$token-spacing-64,
   72: tokens.$token-spacing-72,
+  80: var(--spacing-80, 80px),
   120: tokens.$token-spacing-120
 );
 

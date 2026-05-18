@@ -2800,6 +2800,7 @@ div.descriptor {
   --spacing-48: 48px;
   --spacing-56: 56px;
   --spacing-64: 64px;
+  --spacing-80: 80px;
   --spacing-72: 72px;
   --spacing-120: 120px;
 }
@@ -4304,6 +4305,108 @@ div.descriptor {
   margin-bottom: -var(--spacing-72) !important;
 }
 
+.mud-p-80 {
+  padding: var(--spacing-80, 80px) !important;
+}
+
+.mud-pt-80 {
+  padding-top: var(--spacing-80, 80px) !important;
+}
+
+.mud-pr-80 {
+  padding-right: var(--spacing-80, 80px) !important;
+}
+
+.mud-pb-80 {
+  padding-bottom: var(--spacing-80, 80px) !important;
+}
+
+.mud-pl-80 {
+  padding-left: var(--spacing-80, 80px) !important;
+}
+
+.mud-px-80 {
+  padding-left: var(--spacing-80, 80px) !important;
+  padding-right: var(--spacing-80, 80px) !important;
+}
+
+.mud-py-80 {
+  padding-top: var(--spacing-80, 80px) !important;
+  padding-bottom: var(--spacing-80, 80px) !important;
+}
+
+.mud-m-80 {
+  margin: var(--spacing-80, 80px) !important;
+}
+
+.mud-mt-80 {
+  margin-top: var(--spacing-80, 80px) !important;
+}
+
+.mud-mr-80 {
+  margin-right: var(--spacing-80, 80px) !important;
+}
+
+.mud-mb-80 {
+  margin-bottom: var(--spacing-80, 80px) !important;
+}
+
+.mud-ml-80 {
+  margin-left: var(--spacing-80, 80px) !important;
+}
+
+.mud-mx-80 {
+  margin-left: var(--spacing-80, 80px) !important;
+  margin-right: var(--spacing-80, 80px) !important;
+}
+
+.mud-my-80 {
+  margin-top: var(--spacing-80, 80px) !important;
+  margin-bottom: var(--spacing-80, 80px) !important;
+}
+
+.mud-gap-80 {
+  gap: var(--spacing-80, 80px) !important;
+}
+
+.mud-row-gap-80 {
+  row-gap: var(--spacing-80, 80px) !important;
+}
+
+.mud-column-gap-80 {
+  column-gap: var(--spacing-80, 80px) !important;
+}
+
+.mud-m-n80 {
+  margin: -var(--spacing-80, 80px) !important;
+}
+
+.mud-mt-n80 {
+  margin-top: -var(--spacing-80, 80px) !important;
+}
+
+.mud-mr-n80 {
+  margin-right: -var(--spacing-80, 80px) !important;
+}
+
+.mud-mb-n80 {
+  margin-bottom: -var(--spacing-80, 80px) !important;
+}
+
+.mud-ml-n80 {
+  margin-left: -var(--spacing-80, 80px) !important;
+}
+
+.mud-mx-n80 {
+  margin-left: -var(--spacing-80, 80px) !important;
+  margin-right: -var(--spacing-80, 80px) !important;
+}
+
+.mud-my-n80 {
+  margin-top: -var(--spacing-80, 80px) !important;
+  margin-bottom: -var(--spacing-80, 80px) !important;
+}
+
 .mud-p-120 {
   padding: var(--spacing-120) !important;
 }
@@ -5584,6 +5687,84 @@ div.descriptor {
     margin-top: -var(--spacing-72) !important;
     margin-bottom: -var(--spacing-72) !important;
   }
+  .mud-p-xs-80 {
+    padding: var(--spacing-80, 80px) !important;
+  }
+  .mud-pt-xs-80 {
+    padding-top: var(--spacing-80, 80px) !important;
+  }
+  .mud-pr-xs-80 {
+    padding-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-pb-xs-80 {
+    padding-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-pl-xs-80 {
+    padding-left: var(--spacing-80, 80px) !important;
+  }
+  .mud-px-xs-80 {
+    padding-left: var(--spacing-80, 80px) !important;
+    padding-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-py-xs-80 {
+    padding-top: var(--spacing-80, 80px) !important;
+    padding-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-m-xs-80 {
+    margin: var(--spacing-80, 80px) !important;
+  }
+  .mud-mt-xs-80 {
+    margin-top: var(--spacing-80, 80px) !important;
+  }
+  .mud-mr-xs-80 {
+    margin-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-mb-xs-80 {
+    margin-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-ml-xs-80 {
+    margin-left: var(--spacing-80, 80px) !important;
+  }
+  .mud-mx-xs-80 {
+    margin-left: var(--spacing-80, 80px) !important;
+    margin-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-my-xs-80 {
+    margin-top: var(--spacing-80, 80px) !important;
+    margin-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-gap-xs-80 {
+    gap: var(--spacing-80, 80px) !important;
+  }
+  .mud-row-gap-xs-80 {
+    row-gap: var(--spacing-80, 80px) !important;
+  }
+  .mud-column-gap-xs-80 {
+    column-gap: var(--spacing-80, 80px) !important;
+  }
+  .mud-m-xs-n80 {
+    margin: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mt-xs-n80 {
+    margin-top: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mr-xs-n80 {
+    margin-right: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mb-xs-n80 {
+    margin-bottom: -var(--spacing-80, 80px) !important;
+  }
+  .mud-ml-xs-n80 {
+    margin-left: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mx-xs-n80 {
+    margin-left: -var(--spacing-80, 80px) !important;
+    margin-right: -var(--spacing-80, 80px) !important;
+  }
+  .mud-my-xs-n80 {
+    margin-top: -var(--spacing-80, 80px) !important;
+    margin-bottom: -var(--spacing-80, 80px) !important;
+  }
   .mud-p-xs-120 {
     padding: var(--spacing-120) !important;
   }
@@ -6833,6 +7014,84 @@ div.descriptor {
   .mud-my-sm-n72 {
     margin-top: -var(--spacing-72) !important;
     margin-bottom: -var(--spacing-72) !important;
+  }
+  .mud-p-sm-80 {
+    padding: var(--spacing-80, 80px) !important;
+  }
+  .mud-pt-sm-80 {
+    padding-top: var(--spacing-80, 80px) !important;
+  }
+  .mud-pr-sm-80 {
+    padding-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-pb-sm-80 {
+    padding-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-pl-sm-80 {
+    padding-left: var(--spacing-80, 80px) !important;
+  }
+  .mud-px-sm-80 {
+    padding-left: var(--spacing-80, 80px) !important;
+    padding-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-py-sm-80 {
+    padding-top: var(--spacing-80, 80px) !important;
+    padding-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-m-sm-80 {
+    margin: var(--spacing-80, 80px) !important;
+  }
+  .mud-mt-sm-80 {
+    margin-top: var(--spacing-80, 80px) !important;
+  }
+  .mud-mr-sm-80 {
+    margin-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-mb-sm-80 {
+    margin-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-ml-sm-80 {
+    margin-left: var(--spacing-80, 80px) !important;
+  }
+  .mud-mx-sm-80 {
+    margin-left: var(--spacing-80, 80px) !important;
+    margin-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-my-sm-80 {
+    margin-top: var(--spacing-80, 80px) !important;
+    margin-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-gap-sm-80 {
+    gap: var(--spacing-80, 80px) !important;
+  }
+  .mud-row-gap-sm-80 {
+    row-gap: var(--spacing-80, 80px) !important;
+  }
+  .mud-column-gap-sm-80 {
+    column-gap: var(--spacing-80, 80px) !important;
+  }
+  .mud-m-sm-n80 {
+    margin: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mt-sm-n80 {
+    margin-top: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mr-sm-n80 {
+    margin-right: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mb-sm-n80 {
+    margin-bottom: -var(--spacing-80, 80px) !important;
+  }
+  .mud-ml-sm-n80 {
+    margin-left: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mx-sm-n80 {
+    margin-left: -var(--spacing-80, 80px) !important;
+    margin-right: -var(--spacing-80, 80px) !important;
+  }
+  .mud-my-sm-n80 {
+    margin-top: -var(--spacing-80, 80px) !important;
+    margin-bottom: -var(--spacing-80, 80px) !important;
   }
   .mud-p-sm-120 {
     padding: var(--spacing-120) !important;
@@ -8084,6 +8343,84 @@ div.descriptor {
     margin-top: -var(--spacing-72) !important;
     margin-bottom: -var(--spacing-72) !important;
   }
+  .mud-p-md-80 {
+    padding: var(--spacing-80, 80px) !important;
+  }
+  .mud-pt-md-80 {
+    padding-top: var(--spacing-80, 80px) !important;
+  }
+  .mud-pr-md-80 {
+    padding-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-pb-md-80 {
+    padding-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-pl-md-80 {
+    padding-left: var(--spacing-80, 80px) !important;
+  }
+  .mud-px-md-80 {
+    padding-left: var(--spacing-80, 80px) !important;
+    padding-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-py-md-80 {
+    padding-top: var(--spacing-80, 80px) !important;
+    padding-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-m-md-80 {
+    margin: var(--spacing-80, 80px) !important;
+  }
+  .mud-mt-md-80 {
+    margin-top: var(--spacing-80, 80px) !important;
+  }
+  .mud-mr-md-80 {
+    margin-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-mb-md-80 {
+    margin-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-ml-md-80 {
+    margin-left: var(--spacing-80, 80px) !important;
+  }
+  .mud-mx-md-80 {
+    margin-left: var(--spacing-80, 80px) !important;
+    margin-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-my-md-80 {
+    margin-top: var(--spacing-80, 80px) !important;
+    margin-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-gap-md-80 {
+    gap: var(--spacing-80, 80px) !important;
+  }
+  .mud-row-gap-md-80 {
+    row-gap: var(--spacing-80, 80px) !important;
+  }
+  .mud-column-gap-md-80 {
+    column-gap: var(--spacing-80, 80px) !important;
+  }
+  .mud-m-md-n80 {
+    margin: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mt-md-n80 {
+    margin-top: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mr-md-n80 {
+    margin-right: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mb-md-n80 {
+    margin-bottom: -var(--spacing-80, 80px) !important;
+  }
+  .mud-ml-md-n80 {
+    margin-left: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mx-md-n80 {
+    margin-left: -var(--spacing-80, 80px) !important;
+    margin-right: -var(--spacing-80, 80px) !important;
+  }
+  .mud-my-md-n80 {
+    margin-top: -var(--spacing-80, 80px) !important;
+    margin-bottom: -var(--spacing-80, 80px) !important;
+  }
   .mud-p-md-120 {
     padding: var(--spacing-120) !important;
   }
@@ -9333,6 +9670,84 @@ div.descriptor {
   .mud-my-lg-n72 {
     margin-top: -var(--spacing-72) !important;
     margin-bottom: -var(--spacing-72) !important;
+  }
+  .mud-p-lg-80 {
+    padding: var(--spacing-80, 80px) !important;
+  }
+  .mud-pt-lg-80 {
+    padding-top: var(--spacing-80, 80px) !important;
+  }
+  .mud-pr-lg-80 {
+    padding-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-pb-lg-80 {
+    padding-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-pl-lg-80 {
+    padding-left: var(--spacing-80, 80px) !important;
+  }
+  .mud-px-lg-80 {
+    padding-left: var(--spacing-80, 80px) !important;
+    padding-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-py-lg-80 {
+    padding-top: var(--spacing-80, 80px) !important;
+    padding-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-m-lg-80 {
+    margin: var(--spacing-80, 80px) !important;
+  }
+  .mud-mt-lg-80 {
+    margin-top: var(--spacing-80, 80px) !important;
+  }
+  .mud-mr-lg-80 {
+    margin-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-mb-lg-80 {
+    margin-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-ml-lg-80 {
+    margin-left: var(--spacing-80, 80px) !important;
+  }
+  .mud-mx-lg-80 {
+    margin-left: var(--spacing-80, 80px) !important;
+    margin-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-my-lg-80 {
+    margin-top: var(--spacing-80, 80px) !important;
+    margin-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-gap-lg-80 {
+    gap: var(--spacing-80, 80px) !important;
+  }
+  .mud-row-gap-lg-80 {
+    row-gap: var(--spacing-80, 80px) !important;
+  }
+  .mud-column-gap-lg-80 {
+    column-gap: var(--spacing-80, 80px) !important;
+  }
+  .mud-m-lg-n80 {
+    margin: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mt-lg-n80 {
+    margin-top: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mr-lg-n80 {
+    margin-right: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mb-lg-n80 {
+    margin-bottom: -var(--spacing-80, 80px) !important;
+  }
+  .mud-ml-lg-n80 {
+    margin-left: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mx-lg-n80 {
+    margin-left: -var(--spacing-80, 80px) !important;
+    margin-right: -var(--spacing-80, 80px) !important;
+  }
+  .mud-my-lg-n80 {
+    margin-top: -var(--spacing-80, 80px) !important;
+    margin-bottom: -var(--spacing-80, 80px) !important;
   }
   .mud-p-lg-120 {
     padding: var(--spacing-120) !important;
@@ -10584,6 +10999,84 @@ div.descriptor {
     margin-top: -var(--spacing-72) !important;
     margin-bottom: -var(--spacing-72) !important;
   }
+  .mud-p-xl-80 {
+    padding: var(--spacing-80, 80px) !important;
+  }
+  .mud-pt-xl-80 {
+    padding-top: var(--spacing-80, 80px) !important;
+  }
+  .mud-pr-xl-80 {
+    padding-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-pb-xl-80 {
+    padding-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-pl-xl-80 {
+    padding-left: var(--spacing-80, 80px) !important;
+  }
+  .mud-px-xl-80 {
+    padding-left: var(--spacing-80, 80px) !important;
+    padding-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-py-xl-80 {
+    padding-top: var(--spacing-80, 80px) !important;
+    padding-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-m-xl-80 {
+    margin: var(--spacing-80, 80px) !important;
+  }
+  .mud-mt-xl-80 {
+    margin-top: var(--spacing-80, 80px) !important;
+  }
+  .mud-mr-xl-80 {
+    margin-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-mb-xl-80 {
+    margin-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-ml-xl-80 {
+    margin-left: var(--spacing-80, 80px) !important;
+  }
+  .mud-mx-xl-80 {
+    margin-left: var(--spacing-80, 80px) !important;
+    margin-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-my-xl-80 {
+    margin-top: var(--spacing-80, 80px) !important;
+    margin-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-gap-xl-80 {
+    gap: var(--spacing-80, 80px) !important;
+  }
+  .mud-row-gap-xl-80 {
+    row-gap: var(--spacing-80, 80px) !important;
+  }
+  .mud-column-gap-xl-80 {
+    column-gap: var(--spacing-80, 80px) !important;
+  }
+  .mud-m-xl-n80 {
+    margin: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mt-xl-n80 {
+    margin-top: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mr-xl-n80 {
+    margin-right: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mb-xl-n80 {
+    margin-bottom: -var(--spacing-80, 80px) !important;
+  }
+  .mud-ml-xl-n80 {
+    margin-left: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mx-xl-n80 {
+    margin-left: -var(--spacing-80, 80px) !important;
+    margin-right: -var(--spacing-80, 80px) !important;
+  }
+  .mud-my-xl-n80 {
+    margin-top: -var(--spacing-80, 80px) !important;
+    margin-bottom: -var(--spacing-80, 80px) !important;
+  }
   .mud-p-xl-120 {
     padding: var(--spacing-120) !important;
   }
@@ -11833,6 +12326,84 @@ div.descriptor {
   .mud-my-xxl-n72 {
     margin-top: -var(--spacing-72) !important;
     margin-bottom: -var(--spacing-72) !important;
+  }
+  .mud-p-xxl-80 {
+    padding: var(--spacing-80, 80px) !important;
+  }
+  .mud-pt-xxl-80 {
+    padding-top: var(--spacing-80, 80px) !important;
+  }
+  .mud-pr-xxl-80 {
+    padding-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-pb-xxl-80 {
+    padding-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-pl-xxl-80 {
+    padding-left: var(--spacing-80, 80px) !important;
+  }
+  .mud-px-xxl-80 {
+    padding-left: var(--spacing-80, 80px) !important;
+    padding-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-py-xxl-80 {
+    padding-top: var(--spacing-80, 80px) !important;
+    padding-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-m-xxl-80 {
+    margin: var(--spacing-80, 80px) !important;
+  }
+  .mud-mt-xxl-80 {
+    margin-top: var(--spacing-80, 80px) !important;
+  }
+  .mud-mr-xxl-80 {
+    margin-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-mb-xxl-80 {
+    margin-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-ml-xxl-80 {
+    margin-left: var(--spacing-80, 80px) !important;
+  }
+  .mud-mx-xxl-80 {
+    margin-left: var(--spacing-80, 80px) !important;
+    margin-right: var(--spacing-80, 80px) !important;
+  }
+  .mud-my-xxl-80 {
+    margin-top: var(--spacing-80, 80px) !important;
+    margin-bottom: var(--spacing-80, 80px) !important;
+  }
+  .mud-gap-xxl-80 {
+    gap: var(--spacing-80, 80px) !important;
+  }
+  .mud-row-gap-xxl-80 {
+    row-gap: var(--spacing-80, 80px) !important;
+  }
+  .mud-column-gap-xxl-80 {
+    column-gap: var(--spacing-80, 80px) !important;
+  }
+  .mud-m-xxl-n80 {
+    margin: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mt-xxl-n80 {
+    margin-top: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mr-xxl-n80 {
+    margin-right: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mb-xxl-n80 {
+    margin-bottom: -var(--spacing-80, 80px) !important;
+  }
+  .mud-ml-xxl-n80 {
+    margin-left: -var(--spacing-80, 80px) !important;
+  }
+  .mud-mx-xxl-n80 {
+    margin-left: -var(--spacing-80, 80px) !important;
+    margin-right: -var(--spacing-80, 80px) !important;
+  }
+  .mud-my-xxl-n80 {
+    margin-top: -var(--spacing-80, 80px) !important;
+    margin-bottom: -var(--spacing-80, 80px) !important;
   }
   .mud-p-xxl-120 {
     padding: var(--spacing-120) !important;
@@ -18857,36 +19428,6 @@ ul[role=menu] .menu__item.menu__item--current:active:not([aria-disabled=true]):n
   font-size: 0.95em;
 }
 
-[data-doc=menu] .section-header {
-  display: flex;
-  align-items: center;
-  box-sizing: border-box;
-  width: 100%;
-  height: 64px;
-  margin-inline: 0;
-  padding: 0;
-  border-bottom: var(--border-width-1, 1px) solid var(--gray-200, #d9d9d9);
-}
-
-[data-doc=menu] .section-header h2,
-[data-doc=menu] .section-header h3 {
-  margin: 0;
-  color: var(--color-text-base-default, var(--gray-900, #121212));
-  font-family: var(--font-family-primary-font, var(--font-family-base, "Onest", system-ui, sans-serif));
-  font-size: var(--font-size-fs-32, 32px);
-  font-style: normal;
-  font-weight: var(--font-weight-fw-semibold, 600);
-  line-height: var(--line-height-lh-40, 40px);
-  letter-spacing: -0.64px;
-}
-
-[data-doc=menu] .section-content {
-  box-sizing: border-box;
-  width: 100%;
-  padding-top: var(--spacing-48, 48px);
-  padding-bottom: var(--spacing-80, 80px);
-}
-
 .menu-doc-hero {
   display: flex;
   flex-direction: column;
@@ -18937,20 +19478,6 @@ ul[role=menu] .menu__item.menu__item--current:active:not([aria-disabled=true]):n
 .menu-doc-meta__logo--compact {
   height: 34px;
   max-width: 120px;
-}
-
-.menu-doc-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--menu-doc-composition-gap);
-  align-items: flex-start;
-}
-
-.menu-doc-variations {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--menu-doc-composition-gap);
-  align-items: flex-start;
 }
 
 [data-doc=menu] .menu-doc-variations > .select-wrap.menu-doc-select-static > div.descriptor,
