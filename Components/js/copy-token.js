@@ -89,7 +89,7 @@ function handleTokenCopyInteraction(token) {
 
 document.addEventListener('click', (e) => {
   const token = e.target.closest('.token-name');
-  if (token) {
+  if (token && !token.closest('.icon-card--missing')) {
     e.preventDefault();
     handleTokenCopyInteraction(token);
     return;
@@ -119,7 +119,7 @@ document.addEventListener('click', (e) => {
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Enter' && e.key !== ' ') return;
   const token = e.target.closest('.token-name');
-  if (!token) return;
+  if (!token || token.closest('.icon-card--missing')) return;
   e.preventDefault();
   handleTokenCopyInteraction(token);
 });

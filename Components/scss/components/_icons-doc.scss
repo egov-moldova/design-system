@@ -32,28 +32,15 @@
     &:not(.is-copied)::after {
       content: 'Copy';
     }
-
-    &.is-copied .icon-card__name {
-      color: var(--green-700, #06794d);
-    }
   }
 
   .icon-card--missing {
-    cursor: not-allowed;
+    cursor: default;
+    pointer-events: none;
 
-    &:hover .icon-card__media {
-      background-color: transparent !important;
+    &:hover .icon-card__media.mud-bg-gray-100 {
+      background-color: var(--gray-200, #f1f1f1) !important;
     }
-  }
-
-  .icon-card__name {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .icon-card__name--missing {
-    font-style: italic;
   }
 
   code {

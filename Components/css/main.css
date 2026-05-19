@@ -20882,6 +20882,10 @@ button.token-name {
   padding: 12px 0;
 }
 
+[data-doc=typography] .typo-table__row > :nth-child(3) .v {
+  color: #e245af;
+}
+
 [data-doc=typography] .typo-table__row > :nth-child(4) {
   margin: 0;
   color: var(--gray-900, #1e1e1e);
@@ -20936,22 +20940,12 @@ button.token-name {
 [data-doc=icons] .icon-card.token-name:not(.is-copied)::after {
   content: "Copy";
 }
-[data-doc=icons] .icon-card.token-name.is-copied .icon-card__name {
-  color: var(--green-700, #06794d);
-}
 [data-doc=icons] .icon-card--missing {
-  cursor: not-allowed;
+  cursor: default;
+  pointer-events: none;
 }
-[data-doc=icons] .icon-card--missing:hover .icon-card__media {
-  background-color: transparent !important;
-}
-[data-doc=icons] .icon-card__name {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-[data-doc=icons] .icon-card__name--missing {
-  font-style: italic;
+[data-doc=icons] .icon-card--missing:hover .icon-card__media.mud-bg-gray-100 {
+  background-color: var(--gray-200, #f1f1f1) !important;
 }
 [data-doc=icons] code {
   font-family: var(--font-family-mono, "JetBrains Mono", ui-monospace, monospace);

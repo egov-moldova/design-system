@@ -26,6 +26,10 @@
 
 .typo-table__head { padding: 12px 0; }
 
+[data-doc="typography"] .typo-table__row > :nth-child(3) .v {
+  color: #e245af;
+}
+
 [data-doc="typography"] .typo-table__row > :nth-child(4) {
   margin: 0;
   color: var(--gray-900, #1e1e1e);
