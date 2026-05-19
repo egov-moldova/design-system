@@ -84,35 +84,61 @@ export const Default: Story = {
     interactive: false,
     disabled: false,
   },
+  parameters: {
+    docs: {
+      source: {
+        type: 'dynamic',
+        transform: (_code: string, { args }: { args: IconArgs }) => {
+          const attrs = [
+            `name="${args.name}"`,
+            `size="${args.size}"`,
+            `color="${args.color}"`,
+            args.interactive ? 'interactive' : '',
+            args.disabled ? 'disabled' : '',
+            args.ariaLabel ? `aria-label="${args.ariaLabel}"` : '',
+          ]
+            .filter(Boolean)
+            .join(' ');
+          return `<cor-icon ${attrs}></cor-icon>`;
+        },
+      },
+    },
+  },
 };
+
+const allSizesName =
+  ICON_NAMES.find(n => (manifest as Record<string, { sizes: number[] }>)[n].sizes.length === 4) ?? 'checkmark-large';
 
 export const AllSizes: Story = {
   name: 'All Sizes',
   render: () => {
-    // Pick an icon that exists at all four sizes if possible, otherwise the most common
-    const allSizesIcon = ICON_NAMES.find(n => {
-      const e = (manifest as Record<string, { sizes: number[] }>)[n];
-      return e.sizes.length === 4;
-    });
-    const name = allSizesIcon ?? 'checkmark-large';
     return /*html*/ `
       <div style="display: flex; align-items: flex-end; gap: var(--spacing-24); padding: var(--spacing-24);">
         ${ICON_SIZES.map(
           size => /*html*/ `
           <div style="${gridCellStyle}">
-            <cor-icon name="${name}" size="${size}"></cor-icon>
+            <cor-icon name="${allSizesName}" size="${size}"></cor-icon>
             <span style="${cellLabelStyle}">${size}px</span>
           </div>`,
         ).join('')}
       </div>
       <p style="${cellLabelStyle}; padding: 0 var(--spacing-24);">
-        Showing <code>${name}</code> at each available size. When a size is missing
+        Showing <code>${allSizesName}</code> at each available size. When a size is missing
         the provider falls back to the closest larger SVG (preferred) or smaller.
       </p>
     `;
   },
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: ICON_SIZES.map(size => `<cor-icon name="${allSizesName}" size="${size}"></cor-icon>`).join('\n'),
+      },
+    },
+  },
 };
+
+const OUTLINED_VS_FILLED_SAMPLE = FILLED_PAIRS.slice(0, 10);
 
 export const OutlinedVsFilled: Story = {
   name: 'Outlined vs Filled',
@@ -120,29 +146,36 @@ export const OutlinedVsFilled: Story = {
     if (!FILLED_PAIRS.length) {
       return `<p>No icons have both outlined and filled variants.</p>`;
     }
-    const sample = FILLED_PAIRS.slice(0, 10);
     return /*html*/ `
       <div style="display: grid; grid-template-columns: 120px repeat(2, 1fr); gap: var(--spacing-16); padding: var(--spacing-24); place-items: center;">
         <div></div>
         <div style="${cellLabelStyle}">outlined</div>
         <div style="${cellLabelStyle}">filled</div>
-        ${sample
-          .map(
-            ({ outlined, filled }) => /*html*/ `
+        ${OUTLINED_VS_FILLED_SAMPLE.map(
+          ({ outlined, filled }) => /*html*/ `
               <code style="${cellLabelStyle}; text-align: start;">${outlined}</code>
               <cor-icon name="${outlined}" size="24"></cor-icon>
               <cor-icon name="${filled}" size="24"></cor-icon>
             `,
-          )
-          .join('')}
+        ).join('')}
       </div>
       <p style="${cellLabelStyle}; padding: 0 var(--spacing-24);">
         Append <code>-filled</code> to the base name to select the filled variant.
-        Showing first ${sample.length} of ${FILLED_PAIRS.length} pairs.
+        Showing first ${OUTLINED_VS_FILLED_SAMPLE.length} of ${FILLED_PAIRS.length} pairs.
       </p>
     `;
   },
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: OUTLINED_VS_FILLED_SAMPLE.map(
+          ({ outlined, filled }) =>
+            `<cor-icon name="${outlined}" size="24"></cor-icon>\n<cor-icon name="${filled}" size="24"></cor-icon>`,
+        ).join('\n\n'),
+      },
+    },
+  },
 };
 
 export const Gallery: Story = {
@@ -179,30 +212,46 @@ export const Gallery: Story = {
       </div>
     `;
   },
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        // Full coverage matrix — show the rendering pattern for one icon at every
+        // available size. The page itself renders all 195 names × 4 sizes; the
+        // snippet only documents the markup shape.
+        code: ICON_NAMES.slice(0, 3)
+          .flatMap(name => {
+            const sizes = (manifest as Record<string, { sizes: number[] }>)[name].sizes;
+            return sizes.map(size => `<cor-icon name="${name}" size="${size}"></cor-icon>`);
+          })
+          .concat([`<!-- …${ICON_NAMES.length - 3} more icons at their available sizes -->`])
+          .join('\n'),
+      },
+    },
+  },
 };
+
+const fallbackName =
+  ICON_NAMES.find(n => {
+    const sizes = (manifest as Record<string, { sizes: number[] }>)[n].sizes;
+    return sizes.length > 0 && sizes.length < 4;
+  }) ?? ICON_NAMES[0];
 
 export const FallbackBehavior: Story = {
   name: 'Fallback Behavior',
   render: () => {
-    // Find icons that exist at some sizes but not all — those are the fallback demo cases.
-    const partial = ICON_NAMES.find(n => {
-      const e = (manifest as Record<string, { sizes: number[] }>)[n];
-      return e.sizes.length > 0 && e.sizes.length < 4;
-    });
-    const name = partial ?? ICON_NAMES[0];
-    const availableSizes = (manifest as Record<string, { sizes: number[] }>)[name].sizes;
+    const availableSizes = (manifest as Record<string, { sizes: number[] }>)[fallbackName].sizes;
     return /*html*/ `
       <div style="display: flex; flex-direction: column; gap: var(--spacing-16); padding: var(--spacing-24);">
         <p style="${cellLabelStyle}; text-align: left;">
-          <code>${name}</code> has optimized SVGs at: <strong>${availableSizes.join(', ')}px</strong>.
+          <code>${fallbackName}</code> has optimized SVGs at: <strong>${availableSizes.join(', ')}px</strong>.
           Requesting unavailable sizes triggers the fallback (prefer larger size, else largest smaller).
         </p>
         <div style="display: flex; gap: var(--spacing-24);">
           ${ICON_SIZES.map(
             size => /*html*/ `
             <div style="${gridCellStyle}">
-              <cor-icon name="${name}" size="${size}"></cor-icon>
+              <cor-icon name="${fallbackName}" size="${size}"></cor-icon>
               <span style="${cellLabelStyle}">requested ${size}px${availableSizes.includes(size) ? '' : ' (fallback)'}</span>
             </div>`,
           ).join('')}
@@ -210,7 +259,14 @@ export const FallbackBehavior: Story = {
       </div>
     `;
   },
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: ICON_SIZES.map(size => `<cor-icon name="${fallbackName}" size="${size}"></cor-icon>`).join('\n'),
+      },
+    },
+  },
 };
 
 export const Interactive: Story = {
@@ -235,7 +291,17 @@ export const Interactive: Story = {
       </p>
     </div>
   `,
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          `<cor-icon name="checkmark-large" size="24" interactive aria-label="Confirm"></cor-icon>`,
+          `<cor-icon name="cross-large" size="24" interactive aria-label="Cancel"></cor-icon>`,
+        ].join('\n'),
+      },
+    },
+  },
 };
 
 export const Disabled: Story = {
@@ -249,7 +315,17 @@ export const Disabled: Story = {
       </p>
     </div>
   `,
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          `<cor-icon name="checkmark-large" size="24" interactive aria-label="Confirm"></cor-icon>`,
+          `<cor-icon name="checkmark-large" size="24" interactive disabled aria-label="Confirm (disabled)"></cor-icon>`,
+        ].join('\n'),
+      },
+    },
+  },
 };
 
 export const NotFound: Story = {
@@ -263,5 +339,12 @@ export const NotFound: Story = {
       </p>
     </div>
   `,
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: `<cor-icon name="this-icon-does-not-exist" size="24"></cor-icon>`,
+      },
+    },
+  },
 };
