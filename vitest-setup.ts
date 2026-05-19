@@ -61,10 +61,18 @@ class MockElementInternals {
   }
 }
 
-const mockDoc = await import('@stencil/core/mock-doc');
+type MockDocModule = {
+  MockHTMLElement?: {
+    prototype: {
+      attachInternals?: () => ElementInternals;
+    };
+  };
+};
 
-if ((mockDoc as { MockHTMLElement?: { prototype: HTMLElement } }).MockHTMLElement) {
-  (mockDoc as { MockHTMLElement: { prototype: HTMLElement } }).MockHTMLElement.prototype.attachInternals = function () {
+const mockDoc = (await import('@stencil/core/mock-doc')) as unknown as MockDocModule;
+
+if (mockDoc.MockHTMLElement) {
+  mockDoc.MockHTMLElement.prototype.attachInternals = function () {
     return new MockElementInternals() as unknown as ElementInternals;
   };
 }
