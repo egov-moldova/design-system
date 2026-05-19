@@ -29,6 +29,18 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineVitestConfig({
   stencilConfig: './stencil.config.ts',
+  // Vite 8 transforms JSX via Oxc; setting `oxc.jsx` explicitly tells
+  // `@stencil/vitest/config` that Oxc is configured, so it stops emitting
+  // the legacy `esbuild.jsxFactory` fallback. Without this, Vite logs:
+  //   "Both esbuild and oxc options were set. oxc options will be used..."
+  // on every test run.
+  oxc: {
+    jsx: {
+      runtime: 'classic',
+      pragma: 'h',
+      pragmaFrag: 'Fragment',
+    },
+  },
   test: {
     // Coverage excludes — legacy components are in active redesign (see memory
     // legacy-components-migration) and must not pollute the headline number.
