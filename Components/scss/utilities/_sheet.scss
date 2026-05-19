@@ -1,6 +1,5 @@
 // Reusable CSS-grid “tables” (token matrices, spec sheets). Not tied to documentation markup.
 // Variants:
-//   .mud-sheet--3col     → token | value | preview (e.g. shadows)
 //   .mud-sheet--wide     → dense multi-column sheet + horizontal scroll wrapper (min-width)
 
 .mud-sheet {
@@ -56,74 +55,12 @@
   justify-content: flex-start;
 }
 
-.mud-sheet.mud-sheet--3col {
-  .mud-sheet__head,
-  .mud-sheet__row {
-    grid-template-columns: minmax(180px, 1fr) minmax(200px, 2fr) 280px;
-  }
-
-  .mud-sheet__head {
-    margin-bottom: var(--spacing-48, 48px);
-  }
-
-  .mud-sheet__head .mud-sheet__cell {
-    font-size: 18px;
-    line-height: 28px;
-    letter-spacing: -0.18px;
-  }
-
-  .mud-sheet__row + .mud-sheet__row {
-    margin-top: var(--spacing-64, 64px);
-  }
-
-  .mud-sheet__cell--preview {
-    width: 280px;
-    height: 96px;
-    flex-shrink: 0;
-    position: relative;
-  }
-}
-
-.mud-spec {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-4, 4px);
-}
-
-.mud-spec__row {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-8, 8px);
-}
-
-.mud-spec__icon {
-  flex: 0 0 24px;
-  width: 24px;
-  height: 24px;
-  color: rgba(0, 0, 0, 0.5);
-}
-
-.mud-spec__text {
-  white-space: nowrap;
-  color: var(--gray-700, #383838);
-}
-
-.mud-preview-tile {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 136px;
-  height: 96px;
-  background: var(--color-background-base-default, #fff);
-  border-radius: var(--border-radius-12, 12px);
-}
-
 @media (max-width: 991px) {
-  .mud-sheet:not(.mud-sheet--wide):not(.mud-sheet--3col) .mud-sheet__head {
+  .mud-sheet:not(.mud-sheet--wide) .mud-sheet__head {
     display: none;
   }
 
-  .mud-sheet:not(.mud-sheet--wide):not(.mud-sheet--3col) .mud-sheet__row {
+  .mud-sheet:not(.mud-sheet--wide) .mud-sheet__row {
     grid-template-columns: 1fr 1fr;
     grid-template-areas:
       'token preview'
@@ -135,66 +72,24 @@
     border-bottom: 1px solid var(--gray-200, #ebebeb);
   }
 
-  .mud-sheet:not(.mud-sheet--wide):not(.mud-sheet--3col) .mud-sheet__row + .mud-sheet__row {
+  .mud-sheet:not(.mud-sheet--wide) .mud-sheet__row + .mud-sheet__row {
     margin-top: 0;
   }
 
-  .mud-sheet:not(.mud-sheet--wide):not(.mud-sheet--3col) .mud-sheet__cell--token {
+  .mud-sheet:not(.mud-sheet--wide) .mud-sheet__cell--token {
     grid-area: token;
   }
 
-  .mud-sheet:not(.mud-sheet--wide):not(.mud-sheet--3col) .mud-sheet__cell--rem {
+  .mud-sheet:not(.mud-sheet--wide) .mud-sheet__cell--rem {
     grid-area: rem;
   }
 
-  .mud-sheet:not(.mud-sheet--wide):not(.mud-sheet--3col) .mud-sheet__cell--px {
+  .mud-sheet:not(.mud-sheet--wide) .mud-sheet__cell--px {
     grid-area: px;
   }
 
-  .mud-sheet:not(.mud-sheet--wide):not(.mud-sheet--3col) .mud-sheet__cell--preview {
+  .mud-sheet:not(.mud-sheet--wide) .mud-sheet__cell--preview {
     grid-area: preview;
-    justify-content: flex-end;
-  }
-
-  .mud-sheet.mud-sheet--3col:not(.mud-sheet--wide) .mud-sheet__head {
-    display: none;
-  }
-
-  .mud-sheet.mud-sheet--3col:not(.mud-sheet--wide) .mud-sheet__row {
-    grid-template-columns: 1fr auto;
-    grid-template-areas:
-      'token preview'
-      'value preview';
-    min-height: 0;
-    row-gap: var(--spacing-8, 8px);
-    padding: var(--spacing-16, 16px) 0;
-    border-bottom: 1px solid var(--gray-200, #ebebeb);
-    align-items: start;
-  }
-
-  .mud-sheet.mud-sheet--3col:not(.mud-sheet--wide) .mud-sheet__row + .mud-sheet__row {
-    margin-top: 0;
-  }
-
-  .mud-sheet.mud-sheet--3col:not(.mud-sheet--wide) .mud-sheet__cell--token {
-    grid-area: token;
-  }
-
-  .mud-sheet.mud-sheet--3col:not(.mud-sheet--wide) .mud-sheet__cell--value {
-    grid-area: value;
-  }
-
-  .mud-sheet.mud-sheet--3col:not(.mud-sheet--wide) .mud-sheet__cell--token,
-  .mud-sheet.mud-sheet--3col:not(.mud-sheet--wide) .mud-sheet__cell--value {
-    width: 100%;
-    min-width: 0;
-  }
-
-  .mud-sheet.mud-sheet--3col:not(.mud-sheet--wide) .mud-sheet__cell--preview {
-    grid-area: preview;
-    width: 280px;
-    max-width: 100%;
-    justify-self: end;
     justify-content: flex-end;
   }
 }
