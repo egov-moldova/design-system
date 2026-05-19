@@ -1,6 +1,5 @@
 
 [data-doc="cursors"] {
-  // Live OS cursor on the preview strip (SVG remains static documentation art).
   $demo-cursors: default, copy, not-allowed, progress, text, pointer, grab, grabbing;
 
   @each $c in $demo-cursors {
@@ -11,7 +10,7 @@
 
   .cursors-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     column-gap: 24px;
     row-gap: 24px;
   }
@@ -19,51 +18,15 @@
   .cursor-card {
     min-width: 0;
     box-sizing: border-box;
-    border: 1px solid var(--gray-200, #e5e5e5);
   }
 
   .cursor-card__icon {
-    width: 100%;
     min-height: 56px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 12px;
-    background: var(--color-background-base-secondary, #f5f5f5);
-    border-radius: 8px;
     box-sizing: border-box;
   }
 
   .cursor-card__glyph {
-    width: 40px;
-    height: 40px;
-    display: block;
     pointer-events: none;
-  }
-
-  .cursor-card__label {
-    all: unset;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    min-width: 0;
-    width: 100%;
-    padding: 8px 10px;
-    border-radius: var(--border-radius-8, 8px);
-    background: transparent;
-    cursor: pointer;
-    letter-spacing: -0.14px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    position: relative;
-    transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
-  }
-
-  .cursor-card__label:hover {
-    background: var(--gray-100, #f6f6f6);
   }
 
   @media (max-width: 599.98px) {

@@ -13,8 +13,6 @@ const spriteText = fs.readFileSync(
 const spriteIds = new Set();
 for (const m of spriteText.matchAll(/id="(icon-[^"]+)"/g)) spriteIds.add(m[1]);
 
-// Figma occasionally spells the calendar add/remove icons as "calender-…".
-// Map them back to the sprite ids.
 const ALIAS = new Map([
   ['calender-add', 'calendar-add'],
   ['calender-remove', 'calendar-remove'],
@@ -34,7 +32,6 @@ function renderSizeLabel(size) {
           </div>`;
 }
 
-// Matches scss/utilities/_icons.scss: default=24, medium=20, small=16, extra-small=12.
 const SIZE_CLASS = {
   24: '',
   20: 'medium',
@@ -86,8 +83,6 @@ function renderSection(title, intro, sizeSections) {
   return parts.join('\n');
 }
 
-// Figma's frame order: y=512 (24 out), 3936 (20 out), 6480 (16 out), 7264 (12 out),
-// 7552 (24 fill), 8336 (20 fill), 8960 (16 fill).
 const outlined = sections.filter((s) => s.y < 7488);
 const filled = sections.filter((s) => s.y >= 7488);
 

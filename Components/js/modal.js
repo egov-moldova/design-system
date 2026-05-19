@@ -134,10 +134,7 @@
 
   const SEARCH_MODAL_IDS = ['#search-modal', '#search-modal-mobile'];
 
-  /**
-   * Must match elements/footer.html (search modals only). Inlined so #search-modal works when
-   * elements/footer.html cannot be fetched (Live Server root, file://, subpath, etc.).
-   */
+  
   const DOC_SEARCH_MODALS_HTML = `
 <div class="modal-overlay" id="search-modal" aria-hidden="true">
   <div class="modal modal--md modal--simple mud-py-40 mud-px-32" tabindex="-1" role="dialog" aria-modal="true"
@@ -255,7 +252,7 @@
 
   
   function init() {
-    // Delegation: works when header/footer are injected after this script runs (XHR includes).
+    
     document.addEventListener('click', (ev) => {
       const opener = ev.target.closest('[data-open]');
       if (opener) {

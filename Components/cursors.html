@@ -25,9 +25,6 @@
             <p class="mud-text-gray-400 mud-desktop-body-xl mud-mb-16">
               These cursor components are designed to provide relevant context in the Design System documentation.
             </p>
-            <p class="mud-text-gray-400 mud-desktop-body-xl mud-mb-0">
-              Static SVG artwork for <strong class="mud-text-gray-700">macOS</strong> and <strong class="mud-text-gray-700">Windows</strong> (approximate system shapes). Hover the grey preview area to see the <strong class="mud-text-gray-700">native</strong> OS cursor for that CSS keyword (on Windows you get the Windows system glyph; on macOS, the macOS one — it will not match the SVG pixel-for-pixel). Click the label under each icon to copy the matching <code class="font-mono mud-text-gray-700">cursor</code> declaration.
-            </p>
           </div>
         </div>
         <div class="mud-doc-main">
@@ -36,110 +33,57 @@
               <section aria-labelledby="cursors-system-heading">
                 <div class="mud-doc-section-head">
                   <h2 class="mud-desktop-heading-sm" id="cursors-system-heading">System cursors</h2>
-                  <p class="mud-desktop-body-sm mud-text-gray-500 mud-mb-0">
-                    Same CSS <span class="font-mono">cursor</span> keywords for both platforms; artwork below is static documentation only (inline SVG, not loaded from the network).
-                  </p>
                 </div>
 
                 <h3 class="mud-desktop-heading-sm mud-mt-32 mud-mb-16" id="cursors-macos-heading">macOS</h3>
                 <div class="cursors-grid mud-mb-40" role="list" aria-labelledby="cursors-macos-heading">
-                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white" role="listitem" data-demo-cursor="default">
+                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white mud-border mud-border-1 mud-border-gray-200" role="listitem" data-demo-cursor="default">
+                    <div class="cursor-card__icon mud-w-full mud-flex mud-items-center mud-justify-center mud-mb-12 mud-bg-gray-100 mud-radius-8" aria-hidden="true">
+                      <svg class="cursor-card__glyph mud-block mud-size-40" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-arrow"></use></svg>
                     </div>
-                    <button type="button" class="cursor-card__label token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: default;" title="Click to copy: cursor: default;">arrow</button>
+                    <button type="button" class="token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: default;" title="Click to copy: cursor: default;">arrow</button>
                   </article>
-                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white" role="listitem" data-demo-cursor="copy">
-                    <div class="cursor-card__icon" aria-hidden="true">
-                      <svg class="cursor-card__glyph" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-add"></use></svg>
+                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white mud-border mud-border-1 mud-border-gray-200" role="listitem" data-demo-cursor="copy">
+                    <div class="cursor-card__icon mud-w-full mud-flex mud-items-center mud-justify-center mud-mb-12 mud-bg-gray-100 mud-radius-8" aria-hidden="true">
+                      <svg class="cursor-card__glyph mud-block mud-size-40" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-add"></use></svg>
                     </div>
-                    <button type="button" class="cursor-card__label token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: copy;" title="Click to copy: cursor: copy;">add</button>
+                    <button type="button" class="token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: copy;" title="Click to copy: cursor: copy;">add</button>
                   </article>
-                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white" role="listitem" data-demo-cursor="not-allowed">
-                    <div class="cursor-card__icon" aria-hidden="true">
-                      <svg class="cursor-card__glyph" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-not-allowed"></use></svg>
+                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white mud-border mud-border-1 mud-border-gray-200" role="listitem" data-demo-cursor="not-allowed">
+                    <div class="cursor-card__icon mud-w-full mud-flex mud-items-center mud-justify-center mud-mb-12 mud-bg-gray-100 mud-radius-8" aria-hidden="true">
+                      <svg class="cursor-card__glyph mud-block mud-size-40" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-not-allowed"></use></svg>
                     </div>
-                    <button type="button" class="cursor-card__label token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: not-allowed;" title="Click to copy: cursor: not-allowed;">not-allowed</button>
+                    <button type="button" class="token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: not-allowed;" title="Click to copy: cursor: not-allowed;">not-allowed</button>
                   </article>
-                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white" role="listitem" data-demo-cursor="progress">
-                    <div class="cursor-card__icon" aria-hidden="true">
-                      <svg class="cursor-card__glyph" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-busy-but-clickable"></use></svg>
+                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white mud-border mud-border-1 mud-border-gray-200" role="listitem" data-demo-cursor="progress">
+                    <div class="cursor-card__icon mud-w-full mud-flex mud-items-center mud-justify-center mud-mb-12 mud-bg-gray-100 mud-radius-8" aria-hidden="true">
+                      <svg class="cursor-card__glyph mud-block mud-size-40" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-busy-but-clickable"></use></svg>
                     </div>
-                    <button type="button" class="cursor-card__label token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: progress;" title="Click to copy: cursor: progress;">busy-but-clickable</button>
+                    <button type="button" class="token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: progress;" title="Click to copy: cursor: progress;">busy-but-clickable</button>
                   </article>
-                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white" role="listitem" data-demo-cursor="text">
-                    <div class="cursor-card__icon" aria-hidden="true">
-                      <svg class="cursor-card__glyph" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-text"></use></svg>
+                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white mud-border mud-border-1 mud-border-gray-200" role="listitem" data-demo-cursor="text">
+                    <div class="cursor-card__icon mud-w-full mud-flex mud-items-center mud-justify-center mud-mb-12 mud-bg-gray-100 mud-radius-8" aria-hidden="true">
+                      <svg class="cursor-card__glyph mud-block mud-size-40" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-text"></use></svg>
                     </div>
-                    <button type="button" class="cursor-card__label token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: text;" title="Click to copy: cursor: text;">Text</button>
+                    <button type="button" class="token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: text;" title="Click to copy: cursor: text;">Text</button>
                   </article>
-                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white" role="listitem" data-demo-cursor="pointer">
-                    <div class="cursor-card__icon" aria-hidden="true">
-                      <svg class="cursor-card__glyph" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-hand-pointing"></use></svg>
+                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white mud-border mud-border-1 mud-border-gray-200" role="listitem" data-demo-cursor="pointer">
+                    <div class="cursor-card__icon mud-w-full mud-flex mud-items-center mud-justify-center mud-mb-12 mud-bg-gray-100 mud-radius-8" aria-hidden="true">
+                      <svg class="cursor-card__glyph mud-block mud-size-40" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-hand-pointing"></use></svg>
                     </div>
-                    <button type="button" class="cursor-card__label token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: pointer;" title="Click to copy: cursor: pointer;">hand-pointing</button>
+                    <button type="button" class="token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: pointer;" title="Click to copy: cursor: pointer;">hand-pointing</button>
                   </article>
-                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white" role="listitem" data-demo-cursor="grab">
-                    <div class="cursor-card__icon" aria-hidden="true">
-                      <svg class="cursor-card__glyph" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-hand-open"></use></svg>
+                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white mud-border mud-border-1 mud-border-gray-200" role="listitem" data-demo-cursor="grab">
+                    <div class="cursor-card__icon mud-w-full mud-flex mud-items-center mud-justify-center mud-mb-12 mud-bg-gray-100 mud-radius-8" aria-hidden="true">
+                      <svg class="cursor-card__glyph mud-block mud-size-40" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-hand-open"></use></svg>
                     </div>
-                    <button type="button" class="cursor-card__label token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: grab;" title="Click to copy: cursor: grab;">hand-open</button>
+                    <button type="button" class="token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: grab;" title="Click to copy: cursor: grab;">hand-open</button>
                   </article>
-                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white" role="listitem" data-demo-cursor="grabbing">
-                    <div class="cursor-card__icon" aria-hidden="true">
-                      <svg class="cursor-card__glyph" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-hand-closed"></use></svg>
+                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white mud-border mud-border-1 mud-border-gray-200" role="listitem" data-demo-cursor="grabbing">
+                    <div class="cursor-card__icon mud-w-full mud-flex mud-items-center mud-justify-center mud-mb-12 mud-bg-gray-100 mud-radius-8" aria-hidden="true">
+                      <svg class="cursor-card__glyph mud-block mud-size-40" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-hand-closed"></use></svg>
                     </div>
-                    <button type="button" class="cursor-card__label token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: grabbing;" title="Click to copy: cursor: grabbing;">hand-closed</button>
-                  </article>
-                </div>
-
-                <h3 class="mud-desktop-heading-sm mud-mt-32 mud-mb-16" id="cursors-windows-heading">Windows</h3>
-                <div class="cursors-grid" role="list" aria-labelledby="cursors-windows-heading">
-                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white" role="listitem" data-demo-cursor="default">
-                    <div class="cursor-card__icon" aria-hidden="true">
-                      <svg class="cursor-card__glyph" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-win-arrow"></use></svg>
-                    </div>
-                    <button type="button" class="cursor-card__label token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: default;" title="Click to copy: cursor: default;">arrow</button>
-                  </article>
-                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white" role="listitem" data-demo-cursor="copy">
-                    <div class="cursor-card__icon" aria-hidden="true">
-                      <svg class="cursor-card__glyph" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-win-add"></use></svg>
-                    </div>
-                    <button type="button" class="cursor-card__label token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: copy;" title="Click to copy: cursor: copy;">add</button>
-                  </article>
-                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white" role="listitem" data-demo-cursor="not-allowed">
-                    <div class="cursor-card__icon" aria-hidden="true">
-                      <svg class="cursor-card__glyph" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-win-not-allowed"></use></svg>
-                    </div>
-                    <button type="button" class="cursor-card__label token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: not-allowed;" title="Click to copy: cursor: not-allowed;">not-allowed</button>
-                  </article>
-                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white" role="listitem" data-demo-cursor="progress">
-                    <div class="cursor-card__icon" aria-hidden="true">
-                      <svg class="cursor-card__glyph" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-win-busy-but-clickable"></use></svg>
-                    </div>
-                    <button type="button" class="cursor-card__label token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: progress;" title="Click to copy: cursor: progress;">busy-but-clickable</button>
-                  </article>
-                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white" role="listitem" data-demo-cursor="text">
-                    <div class="cursor-card__icon" aria-hidden="true">
-                      <svg class="cursor-card__glyph" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-win-text"></use></svg>
-                    </div>
-                    <button type="button" class="cursor-card__label token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: text;" title="Click to copy: cursor: text;">Text</button>
-                  </article>
-                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white" role="listitem" data-demo-cursor="pointer">
-                    <div class="cursor-card__icon" aria-hidden="true">
-                      <svg class="cursor-card__glyph" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-win-hand-pointing"></use></svg>
-                    </div>
-                    <button type="button" class="cursor-card__label token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: pointer;" title="Click to copy: cursor: pointer;">hand-pointing</button>
-                  </article>
-                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white" role="listitem" data-demo-cursor="grab">
-                    <div class="cursor-card__icon" aria-hidden="true">
-                      <svg class="cursor-card__glyph" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-win-hand-open"></use></svg>
-                    </div>
-                    <button type="button" class="cursor-card__label token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: grab;" title="Click to copy: cursor: grab;">hand-open</button>
-                  </article>
-                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white" role="listitem" data-demo-cursor="grabbing">
-                    <div class="cursor-card__icon" aria-hidden="true">
-                      <svg class="cursor-card__glyph" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-win-hand-closed"></use></svg>
-                    </div>
-                    <button type="button" class="cursor-card__label token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: grabbing;" title="Click to copy: cursor: grabbing;">hand-closed</button>
+                    <button type="button" class="token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: grabbing;" title="Click to copy: cursor: grabbing;">hand-closed</button>
                   </article>
                 </div>
               </section>
@@ -154,7 +98,7 @@
         <filter id="cursor-shadow" x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow dx="0" dy="1" stdDeviation="0.6" flood-color="#000" flood-opacity="0.35" />
         </filter>
-        <!-- Lighter shadow for Windows pointer (less muddy when scaled to 40px). -->
+        
         <filter id="cursor-shadow-win" x="-40%" y="-40%" width="180%" height="180%">
           <feDropShadow dx="0" dy="0.5" stdDeviation="0.38" flood-color="#0d0d0d" flood-opacity="0.2" />
         </filter>

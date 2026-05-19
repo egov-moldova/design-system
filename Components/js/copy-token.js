@@ -5,9 +5,7 @@ function extractMudBgUtilityClass(element) {
   return m ? m[0] : null;
 }
 
-/**
- * Icons / flags: copy ready-to-paste markup instead of only `#icon-*` or `flag-xx`.
- */
+
 function resolveTokenCopyText(token) {
   const explicitCopy =
     token.dataset && token.dataset.copyText != null ? String(token.dataset.copyText).trim() : '';
@@ -102,7 +100,8 @@ document.addEventListener('click', (e) => {
 
   if (e.target.closest('.mud-doc-section-head')) return;
 
-  const swatch = e.target.closest('.mud-color-swatch');
+  
+  const swatch = e.target.closest('.mud-card[class*="mud-bg-"]');
   if (!swatch || !paletteColumn.contains(swatch)) return;
 
   const bgClass = extractMudBgUtilityClass(swatch);

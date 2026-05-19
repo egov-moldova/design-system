@@ -41,7 +41,7 @@ const NAMES = {
 
 const SVG_BASE = 'https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.2.3/flags/1x1';
 
-/** SVG load error: neutral box with "?" — classList only, no inline styles. */
+
 const IMG_ONERROR =
   "this.classList.add('mud-hidden');var p=this.parentElement;p.classList.remove('mud-bg-gray-100');p.classList.add('mud-bg-transparent','mud-flex','mud-items-center','mud-justify-center','mud-desktop-caption-sm','mud-text-gray-400','flags-doc-item__flag--fallback');p.textContent='?';";
 
@@ -102,7 +102,7 @@ const html = `<!doctype html>
             <h1 class="mud-desktop-display-xl mud-mb-24">Flags</h1>
             <p class="mud-text-gray-400 mud-desktop-body-xl mud-mb-32">
               Country and region flags are provided as square 24 × 24 SVG icons. Codes follow
-              <a href="https://www.iso.org/iso-3166-country-codes.html" target="_blank" rel="noopener">ISO 3166-1 alpha-2</a>
+              <a href="https:
               with a handful of additional codes for subdivisions (for example <code>gb-eng</code>, <code>es-ct</code>)
               and supranational entities (<code>eu</code>, <code>un</code>, <code>cefta</code>).
             </p>

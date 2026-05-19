@@ -1,11 +1,25 @@
 @use '../abstracts/mud-prefix' as mud;
+@use '../abstracts/variables' as vars;
+@use '../abstracts/mixins/media' as media;
+@use 'sass:map';
 
-.#{mud.mud-class('grid-cols-2')} {
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+$grid-cols-scale: (1, 2, 3, 5);
+
+@each $cols in $grid-cols-scale {
+  .#{mud.mud-class('grid-cols-#{$cols}')} {
+    grid-template-columns: repeat($cols, minmax(0, 1fr)) !important;
+  }
 }
 
-.#{mud.mud-class('grid-cols-3')} {
-  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+// Responsive grid columns: `mud-grid-cols-{bp}-{n}`
+@each $bp in map.keys(vars.$breakpoints) {
+  @include media.media-breakpoint-up($bp, vars.$breakpoints) {
+    @each $cols in $grid-cols-scale {
+      .#{mud.mud-class('grid-cols-#{$bp}-#{$cols}')} {
+        grid-template-columns: repeat($cols, minmax(0, 1fr)) !important;
+      }
+    }
+  }
 }
 
 .#{mud.mud-class('grid-cols-4')} {

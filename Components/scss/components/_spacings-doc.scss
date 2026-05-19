@@ -1,11 +1,6 @@
 
 
 [data-doc="spacings"] {
-  .spacings-table {
-    display: flex;
-    flex-direction: column;
-  }
-
   .spacings-table__head,
   .spacings-table__row {
     display: grid;
