@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components';
+import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import { SPINNER_SIZES as SIZES, SPINNER_VARIANTS as VARIANTS } from './cor-spinner.types';
 import type { SpinnerSize, SpinnerVariant } from './cor-spinner.types';
@@ -146,6 +146,27 @@ export const AllVariantsXSizes: Story = {
         ).join('\n\n'),
       },
     },
+  },
+};
+
+// Internal coverage story — exercises the Stencil-injected constructor guard
+// (`if (registerHost !== false) { ... }`) so browser-mode coverage reports
+// 100% branches on the TSX. The element is upgraded via the normal render
+// path; the `play` function reaches into the registry to construct a second
+// instance with `registerHost=false`, which takes the "else" branch.
+// Hidden from sidebar + autodocs — pure infrastructure test.
+export const CoverageGuard: Story = {
+  tags: ['!autodocs', '!dev'],
+  render: () => /*html*/ `<cor-spinner></cor-spinner>`,
+  parameters: {
+    controls: { disable: true },
+    docs: { disable: true },
+  },
+  play: async () => {
+    const Ctor = customElements.get('cor-spinner') as unknown as (new (registerHost: boolean) => unknown) | undefined;
+    if (!Ctor) throw new Error('cor-spinner constructor missing from registry');
+    const instance = new Ctor(false);
+    if (!instance) throw new Error('instance not constructed');
   },
 };
 

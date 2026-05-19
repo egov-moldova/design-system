@@ -17,7 +17,7 @@ The package is published as `@age/design-system` and is built to be framework-ag
 |---|---|---|
 | Component framework | StencilJS | 4.x |
 | Language | TypeScript | 5.x |
-| Documentation / visual testing | Storybook (`@storybook/web-components`) | 8.x, port **6007** |
+| Documentation / visual testing | Storybook (`@storybook/web-components-vite`) | 10.x, port **6007** |
 | Token pipeline | Style Dictionary (DTCG `$value` / `$type`) | 4.4+ |
 | Build orchestration | Wireit | 0.11+ |
 | Unit + E2E tests | Jest (with Stencil test runner) | 30.x |

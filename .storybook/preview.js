@@ -1,4 +1,4 @@
-import { setCustomElements } from '@storybook/web-components';
+import { setCustomElements } from '@storybook/web-components-vite';
 import { createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { PageFeedbackToolbarCSS } from 'agentation';
@@ -7,7 +7,7 @@ import { GLOBALS_UPDATED } from 'storybook/internal/core-events';
 
 import coreTokens from './stories/assets/core.tokens.json';
 import coreDarkTokens from './stories/assets/core.dark.tokens.json';
-import customTheme from './custom-theme';
+import { lightTheme } from './custom-theme';
 
 const { color } = coreTokens;
 const { color: colorDark } = coreDarkTokens;
@@ -108,10 +108,17 @@ export const parameters = {
     expanded: true,
   },
   docs: {
-    theme: customTheme,
+    // addon-docs reads `parameters.docs.theme` once at render time; it does
+    // not re-render on globals change. The light theme is used as the base
+    // here, and dark-mode coloring of the Docs page / Code / HTML panels is
+    // applied via CSS overrides scoped on `html[data-theme="dark"]` inside
+    // `.storybook/storybook-overrides.css` — that selector is toggled live
+    // by the GLOBALS_UPDATED listener above and by manager.mjs.
+    theme: lightTheme,
     source: {
       type: 'code', // Show source code instead of JSDoc
     },
+    codePanel: true, // Enable the code panel in Docs view
     extractArgTypes: component => {
       // Filter out CSS custom properties (@cssprop)
       const argTypes = {};

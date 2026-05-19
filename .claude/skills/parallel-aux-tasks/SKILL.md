@@ -124,7 +124,7 @@ After all subagents return, the orchestrator collects findings into a **single t
 | a11y              | critical   | Focus ring 2.1:1 contrast (need 3:1)                 | Update token |
 | a11y              | warning    | Disabled element missing aria-disabled               | Fix TSX |
 | story-writer      | info       | Generated 6 stories: Default, Variants, Sizes, ...   | Verify |
-| test-writer       | info       | Coverage 86%, 12 tests, jest-axe assertion added     | Verify |
+| test-writer       | info       | Coverage 86%, 12 tests, WCAG contract assertions added | Verify |
 | integration       | warning    | Used in src/app/login.tsx — variant `primary` only   | Note in PR |
 ```
 

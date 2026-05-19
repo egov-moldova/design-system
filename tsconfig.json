@@ -17,7 +17,7 @@
     "esModuleInterop": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["@stencil/core", "jest", "node"],
+    "types": ["@stencil/core", "node"],
     "isolatedModules": true,
     "useDefineForClassFields": true,
     "incremental": true,

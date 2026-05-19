@@ -397,7 +397,7 @@ Cross-reference `src/components/_agents/slot-patterns.md`.
 Read `.stories.ts` (already loaded) and verify:
 
 **Format**:
-- CSF3 format with `@storybook/web-components` (NOT `@storybook/react`)
+- CSF3 format with `@storybook/web-components-vite` (NOT `@storybook/react`)
 - `component: 'cor-<name>'` is string tag name (not JS reference)
 - `render` function with HTML template strings (`/*html*/` prefix)
 - `title` follows atomic hierarchy: `Atoms/CorName`, `Molecules/CorName`, etc.
@@ -407,9 +407,15 @@ Read `.stories.ts` (already loaded) and verify:
 - `STORY-MISSING-GENERIC` — `Meta` or `StoryObj` used without a generic type parameter (bare `Meta` resolves to `Meta<any>` and disables every type check the pattern is supposed to provide). Required form: `Meta<Args>` and `StoryObj<Args>`.
 - `STORY-ESLINT-DISABLE-WRAP` — `/* eslint-disable */` wrapping the `Meta, StoryObj` import. The only reason for it is unused imports, which means the generic was forgotten. Fix the generic and drop the wrapper.
 - `STORY-ARGS-ANY` — `render: (args: any) => ...` or any `(args: any)` callback in stories. Typed args param required.
-- `STORY-TYPEOF-META` — `type Story = StoryObj<typeof meta>`. Works in React/Vue Storybook but breaks in `@storybook/web-components@^9.1.x` (nests `Meta<Args>` into the args slot). Required form: `type Story = StoryObj<Args>`.
+- `STORY-TYPEOF-META` — `type Story = StoryObj<typeof meta>`. Works in React/Vue Storybook but breaks in `@storybook/web-components-vite@^10.x` (nests `Meta<Args>` into the args slot). Required form: `type Story = StoryObj<Args>`.
 - `STORY-DOCS-SOURCE-MISSING-DYNAMIC` — `parameters.docs.source` provides a `transform` without `type: 'dynamic'`. The global `type: 'code'` (in `.storybook/preview.js`) caches the snippet at story registration and ignores Controls changes; per-story `type: 'dynamic'` is required to make the transform re-run.
 - `STORY-DOCS-SOURCE-ARGS-ANY` — `transform: (_code, { args }: any) => ...`. Type the destructure: `{ args }: { args: ComponentArgs }`.
+
+**Spec-file anti-patterns** (flag any of these in Wave 2.10):
+- `SPEC-LEGACY-NEWSPECPAGE` — `import { newSpecPage } from '@stencil/core/testing';`. Retired Jest harness. Must use `import { render, ... } from '@stencil/vitest';`.
+- `SPEC-MISSING-SOURCE-IMPORT` — no side-effect `import '../<componentName>';` line. Without it `stencilVitestPlugin` cannot compile the source on-the-fly and coverage v8 reports 0%. **Critical** — silent regression for coverage.
+- `SPEC-JEST-AXE-IMPORT` — `import ... from 'jest-axe';`. Axe runs against mock-doc nodes fail; visual axe is delegated to Storybook addon-a11y. Replace with structural WCAG contract assertions.
+- `SPEC-MANUAL-EVENT-SPY` — `vi.fn()` + `root.addEventListener('cor...', spy)` where `spyOnEvent('cor...')` from the `RenderResult` would do the same with `{ length, lastEvent, events }` accessors. Prefer the destructured spy.
 
 **Required stories**:
 - `Default` — basic usage with default props
@@ -434,10 +440,11 @@ Read `.stories.ts` (already loaded) and verify:
 
 Read `test/<componentName>.spec.tsx` (already loaded from Wave 1) and verify:
 
-- Uses `newSpecPage({ components: [...], html: '<cor-x ...></cor-x>' })`
+- Uses `render(<cor-x ... />)` from `@stencil/vitest` (the Jest-era `newSpecPage` was retired)
+- **MANDATORY** side-effect source import: `import '../<componentName>';` is present as the first non-vitest import. Without it `stencilVitestPlugin` cannot compile the source on-the-fly and coverage v8 will report 0% for the TSX. Flag missing import as **High** — silent coverage regressions otherwise. See `src/components/_agents/testing.md` → Coverage rules.
 - At least 1 smoke test (renders without throwing)
 - Props tested: each `@Prop` reflected to host attribute and JSX output
-- Events tested: each `@Event` emitted with correct payload via `eventSpy`
+- Events tested: each `@Event` emitted with correct payload via `spyOnEvent('eventName')` (NOT manual `addEventListener` + `vi.fn()`)
 - States tested: internal state transitions (where applicable)
 - Slot content renders correctly
 - Disabled state blocks interaction
@@ -448,7 +455,30 @@ Read `test/<componentName>.spec.tsx` (already loaded from Wave 1) and verify:
   - `formStateRestoreCallback` restores state
   - `internals.setFormValue` called on change with both args
   - `internals.setValidity` reflects required/pattern/etc.
-- Coverage target > 80% (not enforced by tooling; manual review)
+
+##### Coverage gate (Wave 2.10.1.a)
+
+Run a one-off coverage check on the component:
+
+```bash
+yarn vitest --project spec --coverage --run --reporter=verbose 2>&1 | tail -40
+```
+
+Inspect the summary row for `src/components/<componentName>/<componentName>.tsx`. Expected:
+
+- **File missing from the summary table** → 100% on all four metrics (v8 hides perfect rows) → **PASS**.
+- Statements ≥ 80, Branches ≥ 70, Functions ≥ 80, Lines ≥ 80 → **PASS**.
+- **0 / 0 / 0 / 0** → side-effect source import is missing → flag **Critical**; the spec is exercising a black-box dist bundle, not the source.
+- **Branches stuck at exactly 50% (1/2)** while statements/functions/lines are 100% → the Stencil-injected `registerHost !== false` guard isn't being hit. Flag **Low** with the canonical fix: add the boilerplate test below + a hidden `CoverageGuard` story. Recipe documented in [`src/components/_agents/testing.md`](../../../src/components/_agents/testing.md) → "Reaching 100% Branches".
+  ```ts
+  it('constructs without registering a host when registerHost=false', () => {
+    const Ctor = customElements.get('cor-<name>') as unknown as new (registerHost: boolean) => unknown;
+    expect(Ctor).toBeTruthy();
+    const instance = new Ctor(false);
+    expect(instance).toBeTruthy();
+  });
+  ```
+- Below threshold but non-zero (and not the 50%-branches signature) → flag **Medium** + list uncovered line numbers from the report.
 
 **If `test/<componentName>.spec.tsx` does NOT exist** → **High** severity (not Critical for current repo state, since not all components have unit tests yet). Recommend creation.
 

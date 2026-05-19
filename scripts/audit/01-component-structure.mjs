@@ -197,7 +197,7 @@ function kindHint(kind, name) {
     case 'stories':
       return `Create src/components/${name}/${name}.stories.ts in CSF3 format. Use story-writer subagent or scripts/scaffold/story-scaffold.mjs (Sprint 2).`;
     case 'spec':
-      return `Create src/components/${name}/test/${name}.spec.tsx with newSpecPage tests. Use test-writer subagent.`;
+      return `Create src/components/${name}/test/${name}.spec.tsx using @stencil/vitest render() tests. Use test-writer subagent.`;
     case 'readme':
       return `Run yarn build (or stencil build --docs) to auto-generate readme.md.`;
     default:

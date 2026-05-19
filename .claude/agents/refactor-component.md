@@ -92,7 +92,7 @@ Strict dependency order:
    - Create interfaces for event payloads
 6. **Stories** → update `cor-<name>.stories.ts`
    - Switch to CSF3 if not already
-   - Use `@storybook/web-components` imports
+   - Use `@storybook/web-components-vite` imports
    - Add missing story variants (AllVariants, AllSizes, States)
 7. **Tests** → update `test/cor-<name>.spec.tsx`
    - Add missing test coverage identified by audit
@@ -158,7 +158,7 @@ For every captured state (including focus-visible), confirm:
 - Focus ring still visible with ≥ 3:1 contrast
 - ARIA states unchanged (or improved)
 - Keyboard navigation still works (Tab, Enter, Esc, arrows)
-- jest-axe spec still passes
+- Structural WCAG contract spec still passes (`yarn test`)
 
 Open the component in Storybook, check a11y panel in BOTH light and dark mode — zero violations.
 

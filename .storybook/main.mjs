@@ -1,11 +1,22 @@
+// This file has been automatically migrated to valid ESM format by Storybook.
 import fs from 'node:fs';
-import path from 'node:path';
+import path, { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const isDev = process.env.NODE_ENV !== 'production';
 
-const devAddons = ['@storybook/addon-docs', '@storybook/addon-a11y'];
+// In order of appearance in the UI (toolbar, addons panel, then docs)
+const devAddons = [
+  '@storybook/addon-docs',
+  '@whitespace/storybook-addon-html',
+  '@storybook/addon-vitest',
+  '@storybook/addon-a11y',
+];
 
-const prodAddons = [...devAddons, '@storybook/addon-links'];
+const prodAddons = ['@storybook/addon-docs', '@storybook/addon-links', '@storybook/addon-a11y'];
 
 export default {
   stories: ['./stories/**/*.mdx', '../src/components/**/*.stories.@(js|jsx|ts|tsx)'],
@@ -25,7 +36,7 @@ export default {
   ],
   addons: isDev ? devAddons : prodAddons,
   framework: {
-    name: '@storybook/web-components-vite',
+    name: getAbsolutePath('@storybook/web-components-vite'),
     options: {},
   },
   typescript: {
@@ -46,7 +57,7 @@ export default {
     //   exclude: [...(config.optimizeDeps?.exclude || []), '@stencil/core'],
     //   include: [
     //     ...(config.optimizeDeps?.include || []),
-    //     '@storybook/web-components',
+    //     '@storybook/web-components-vite',
     //     '@storybook/web-components-vite',
     //     '@storybook/addon-a11y/preview',
     //     'lit-html',
@@ -95,14 +106,15 @@ export default {
     };
 
     // PERF: Skip syntax lowering in dev — modern browsers don't need it
-    config.esbuild = {
-      ...config.esbuild,
+    // Vite 8: esbuild replaced by Oxc; use config.oxc.* in place of config.esbuild.*
+    config.oxc = {
+      ...config.oxc,
       target: 'esnext',
       legalComments: 'none',
     };
 
-    // Vite 7 changed default build.target from 'modules' to 'baseline-widely-available'
-    // Preserve the previous dev behavior with explicit esnext target
+    // Vite 7 changed default build.target from 'modules' to 'baseline-widely-available'.
+    // Vite 8 raises it further (Chrome 111 / FF 114 / Safari 16.4) — keep explicit esnext.
     config.build = {
       ...config.build,
       target: 'esnext',
@@ -203,3 +215,7 @@ export default {
     return config;
   },
 };
+
+function getAbsolutePath(value) {
+  return dirname(fileURLToPath(import.meta.resolve(`${value}/package.json`)));
+}

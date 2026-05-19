@@ -1,9 +1,14 @@
-// Increase default test timeout for E2E tests to prevent flaky failures
-// from browser resource contention when running multiple suites in parallel
-jest.setTimeout(60_000);
+// Vitest setup — runs before each spec file in the `spec` project.
+//
+// With `stencilVitestPlugin` in the project config, components are compiled
+// on-the-fly when their source is imported (`import '../cor-spinner'`) and
+// `customElements.define()` is appended automatically. No dist lazy-bundle
+// loader is needed here.
+//
+// The only setup responsibility left is patching Stencil's mock-doc
+// `MockHTMLElement` with an `ElementInternals` shim so components calling
+// `attachInternals()` work under the mock-doc environment.
 
-// Mock ElementInternals API for form-associated custom elements
-// This is required for components using attachInternals() in tests
 class MockElementInternals {
   private _form: HTMLFormElement | null = null;
   private _labels: NodeList | null = null;
@@ -23,9 +28,7 @@ class MockElementInternals {
   private _validationMessage = '';
   private _willValidate = true;
 
-  setFormValue(_value: FormDataEntryValue | FormData | null): void {
-    // no-op for mock
-  }
+  setFormValue(_value: FormDataEntryValue | FormData | null): void {}
 
   checkValidity(): boolean {
     return this._validity.valid;
@@ -35,9 +38,7 @@ class MockElementInternals {
     return this._validity.valid;
   }
 
-  setValidity(_flags?: Partial<ValidityState>, _message?: string, _anchor?: HTMLElement): void {
-    // no-op for mock
-  }
+  setValidity(_flags?: Partial<ValidityState>, _message?: string, _anchor?: HTMLElement): void {}
 
   get form(): HTMLFormElement | null {
     return this._form;
@@ -60,12 +61,20 @@ class MockElementInternals {
   }
 }
 
-// Apply mock to Stencil's mock-doc environment
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const mockDoc = require('@stencil/core/mock-doc');
+type MockDocModule = {
+  MockHTMLElement?: {
+    prototype: {
+      attachInternals?: () => ElementInternals;
+    };
+  };
+};
+
+const mockDoc = (await import('@stencil/core/mock-doc')) as unknown as MockDocModule;
 
 if (mockDoc.MockHTMLElement) {
   mockDoc.MockHTMLElement.prototype.attachInternals = function () {
     return new MockElementInternals() as unknown as ElementInternals;
   };
 }
+
+export {};

@@ -109,11 +109,11 @@ Use `type` keyword for type-only imports/exports.
 
 ```typescript
 // ✅ CORRECT
-import type { Meta, StoryObj } from '@storybook/web-components';
+import type { Meta, StoryObj } from '@storybook/web-components-vite';
 export type { Components, JSX } from './components';
 
 // ❌ WRONG — imports types as values
-import { Meta, StoryObj } from '@storybook/web-components';
+import { Meta, StoryObj } from '@storybook/web-components-vite';
 ```
 
 ---
@@ -148,5 +148,5 @@ declare module '<package-name>';
 const render = (args: any) => /*html*/ `...`;
 const map: Record<string, number> = { ... };
 const tag = el?.tagName?.toLowerCase() ?? '';
-import type { Meta, StoryObj } from '@storybook/web-components';
+import type { Meta, StoryObj } from '@storybook/web-components-vite';
 ```

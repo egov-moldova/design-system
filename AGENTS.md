@@ -2,7 +2,7 @@
 
 **Project**: `@age/design-system` — Stencil.js web components with design tokens, Storybook docs, multi-theme support via Style Dictionary.
 
-**Tech Stack**: StencilJS 4.x, TypeScript 5.x, Storybook 8.x (port **6007**), Style Dictionary 4.x (DTCG `$value`/`$type`), Jest, Wireit (script orchestration + caching), Yarn 4.x, Node >=22.
+**Tech Stack**: StencilJS 4.x, TypeScript 5.x, Storybook 10.x (`@storybook/web-components-vite`, Vite 8 / Rolldown + Oxc, port **6007**), Style Dictionary 4.x (DTCG `$value`/`$type`), Vitest 4.x via `@stencil/vitest` (`yarn test` → `stencil-test --project spec`), Wireit (script orchestration + caching), Yarn 4.x, Node >=22.
 
 **MCP servers** (configured in `.mcp.json` at repo root): Playwright (`mcp__playwright__*`), Figma (`mcp__figma__*`), Context7 (`mcp__context7__*`), Image Compare (`mcp__image-compare__*`), agentation (`mcp__agentation__*`). See `_agents/mcp-tools.md` for full reference.
 
@@ -124,9 +124,9 @@ yarn tokens.watch              # Watch token files and rebuild on change
 yarn dx:stencil:once           # Single Stencil dev build without docs (~20s)
 
 # Test & Lint
-yarn test                      # Jest unit + Stencil E2E tests (with token rebuild)
-yarn test.dev                  # Fast tests without token rebuild (for specific components)
-yarn test.watch                # Test in watch mode
+yarn test                      # Vitest spec project (rebuilds Stencil + token bundle, then `stencil-test --project spec`)
+yarn test.dev                  # `stencil-test --project spec` — fast run without wireit-level cache (rebuilds Stencil once)
+yarn test.watch                # `stencil-test --project spec --watch`
 yarn lint                      # ESLint + Prettier check (cached)
 yarn format                    # Auto-fix code style
 

@@ -368,14 +368,14 @@ Storybook is available at `http://localhost:6007`.
 Compiles the full component library (`dist/`) then builds the static Storybook site (`storybook-static/`). Use this to verify the production output before deploying.
 
 ```bash
-yarn sp.prod
+yarn sp.build
 ```
 
 > `sp.build` is an alias for the same task — both are equivalent.
 
 ### Preview the production build locally
 
-After `sp.prod` completes, serve `storybook-static/` locally to inspect it exactly as it will appear in production:
+After `sp.build` completes, serve `storybook-static/` locally to inspect it exactly as it will appear in production:
 
 ```bash
 yarn sp.serve
@@ -388,7 +388,7 @@ Opens at `http://localhost:6008` (port 6008 is intentionally one above the dev s
 | Script | Output | Purpose |
 | --- | --- | --- |
 | `yarn dev` | — | Dev server with hot-reload (Stencil + Storybook) |
-| `yarn sp.prod` | `storybook-static/` | Full production build |
+| `yarn sp.build` | `storybook-static/` | Full production build |
 | `yarn sp.serve` | — | Serve `storybook-static/` at port 6008 |
 
 ---

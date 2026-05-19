@@ -172,15 +172,18 @@ import {
 ### Testing utilities
 
 ```ts
-import { newSpecPage } from '@stencil/core/testing';    // unit tests
-import { newE2EPage }  from '@stencil/core/testing';    // E2E tests (Puppeteer)
+import { render, h, describe, it, expect, vi } from '@stencil/vitest';    // spec tests (Vitest + mock-doc)
+// Browser tests (when @vitest/browser-playwright project is added) use the
+// Vitest browser context — `import { page } from '@vitest/browser/context'`.
 ```
+
+The Jest-era `newSpecPage` / `newE2EPage` imports from `@stencil/core/testing` were retired with the Vitest migration. `@stencil/vitest` is Stencil's official Vitest wrapper and exports both Vitest globals and Stencil-aware helpers (`render`, `waitForStable`, `waitForExist`, `spyOnEvent`).
 
 ### Rules
 
 | # | Rule | Verification |
 |---|------|--------------|
-| API1 | Import ONLY from `@stencil/core` and `@stencil/core/testing` — never deep paths (`@stencil/core/internal/...`) | Grep imports |
+| API1 | Import test helpers ONLY from `@stencil/vitest`; component runtime imports ONLY from `@stencil/core` — never deep paths (`@stencil/core/internal/...`) | Grep imports |
 | API2 | Use `readTask()` for DOM reads that should batch in the next animation frame | Manual review |
 | API3 | Use `writeTask()` for DOM writes that should batch | Manual review |
 | API4 | `componentOnReady()` is CALLED BY CONSUMERS on the element instance — you don't override it | Conceptual |
@@ -193,7 +196,7 @@ import { newE2EPage }  from '@stencil/core/testing';    // E2E tests (Puppeteer)
 | API11 | `EventEmitter` is a TYPE imported alongside `Event` — usage is purely typed (no runtime new) | Read TSX |
 | API12 | Stencil 4 exposes additional types via TS: `FunctionalComponent`, `JSX.IntrinsicElements`, generated `HTMLCorXElement` | Use as needed |
 | API13 | Don't import from `@stencil/core/internal/...` — internal, unstable across versions | Grep |
-| API14 | `newSpecPage` and `newE2EPage` are testing-only imports; never used at runtime | Read imports |
+| API14 | `@stencil/vitest` `render()` is a testing-only import; never used at runtime | Read imports |
 
 ### `readTask` / `writeTask` example
 

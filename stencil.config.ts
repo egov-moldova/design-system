@@ -47,10 +47,8 @@ export const config: Config = {
   // module graph stays valid between rebuilds (fewer modules need invalidating).
   hashFileNames: !isWatchMode,
   outputTargets,
-  testing: {
-    setupFilesAfterEnv: ['./jest.setup.ts'],
-    testPathIgnorePatterns: ['/node_modules/', '/dist/', '/src/legacy/'],
-  },
+  // Testing is now handled by Vitest via @stencil/vitest.
+  // See vitest.config.ts + vitest-setup.ts.
   extras: {
     // Enable import injection for Vite/Storybook static build compatibility
     enableImportInjection: true,

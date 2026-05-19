@@ -333,7 +333,7 @@ Check `cor-[name].stories.ts` includes:
 
 Verify:
 
-- Imports from `@storybook/web-components` (NOT react)
+- Imports from `@storybook/web-components-vite` (NOT react / not the bare `@storybook/web-components` renderer)
 - `component: 'cor-[name]'` (string tag, NOT JS reference)
 - `render` function with HTML template strings
 - `/*html*/` prefix for IDE syntax highlighting
@@ -366,7 +366,7 @@ Default: unit tests only. With `--e2e` flag also audit E2E tests.
 
 Check `test/cor-[name].spec.tsx` covers:
 
-1. Rendering — `newSpecPage` renders without errors
+1. Rendering — `render()` from `@stencil/vitest` resolves without errors
 2. Props — all `@Prop` reflect correctly to host attributes / JSX output
 3. Events — all `@Event()` emitters fire with correct payload (via `eventSpy`)
 4. Methods — all `@Method()` public methods work (returning Promise)

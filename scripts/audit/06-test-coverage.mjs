@@ -2,14 +2,15 @@
 /**
  * 06-test-coverage.mjs
  *
- * Reports Jest test coverage for a `cor-*` component by reading the existing
- * `coverage/coverage-summary.json` (the project standard output of
- * `stencil test --spec --coverage`). With `--run`, executes the test runner
- * first; otherwise expects the report to be present.
+ * Reports Vitest test coverage for a `cor-*` component by reading the existing
+ * `coverage/coverage-summary.json` (produced by `@vitest/coverage-v8` when
+ * `stencil-test --project spec --coverage` is run). With `--run`, executes
+ * the test runner first; otherwise expects the report to be present.
  *
  * Strategy:
- *   1. (Optional `--run`) execute `yarn test --coverage --json` and wait.
- *   2. Read `coverage/coverage-summary.json`.
+ *   1. (Optional `--run`) execute `yarn test.dev --coverage` and wait.
+ *   2. Read `coverage/coverage-summary.json` (Istanbul-format summary, same
+ *      shape produced by Vitest's v8 / istanbul coverage providers).
  *   3. Filter entries to the target component(s) — match by absolute TSX path.
  *   4. Emit { statements, branches, functions, lines, pass80 } per component.
  *
@@ -22,7 +23,7 @@
  *   fast scripts; coverage is typically generated once per CI/pre-PR pipeline.
  *
  * Usage:
- *   yarn test --coverage     # generate coverage report (once)
+ *   yarn test.dev --coverage              # generate coverage report (once)
  *   node scripts/audit/06-test-coverage.mjs cor-button --json
  *   node scripts/audit/06-test-coverage.mjs --all --json
  *   node scripts/audit/06-test-coverage.mjs cor-button --run    # force fresh run
@@ -41,11 +42,11 @@ const TOOL = 'test-coverage';
 
 const USAGE = defaultUsage(
   '06-test-coverage',
-  'Read existing Jest coverage report and report per-component coverage % (statements / branches / functions / lines).',
+  'Read existing Vitest coverage report and report per-component coverage % (statements / branches / functions / lines).',
   [
     '',
     'Extra options:',
-    '  --run               Run `yarn test --coverage` first (slow; 30-60s)',
+    '  --run               Run `yarn test.dev --coverage` first (slow; 30-60s)',
     '  --threshold <N>     Pass threshold for each metric (default: 80)',
   ],
 );
@@ -88,7 +89,7 @@ async function main() {
   }
 
   if (args.extras.run) {
-    const runRes = runJestCoverage();
+    const runRes = runVitestCoverage();
     if (!runRes.ok) {
       process.stderr.write(`${TOOL}: test runner failed (exit ${runRes.exitCode}). Aborting coverage parse.\n`);
       process.exit(EXIT_INTERNAL);
@@ -160,7 +161,7 @@ export function analyzeComponent(target, summary, threshold = DEFAULT_THRESHOLD)
   }
 
   const tsxAbs = target.paths.tsx;
-  // Jest summaries use absolute paths; on Windows they may have forward or backward slashes
+  // Vitest summaries use absolute paths; on Windows they may have forward or backward slashes
   const normalizedTsx = tsxAbs.replace(/\\/g, '/');
   const matchedKey = Object.keys(summary).find(k => k.replace(/\\/g, '/') === normalizedTsx);
 
@@ -223,12 +224,11 @@ function percentOf(metric) {
   return 0;
 }
 
-function runJestCoverage() {
-  // `stencil test` underneath is Jest. The project's `yarn test` runs:
-  //   stencil test --spec --maxWorkers=0
-  // We can't easily pass --coverage through wireit without editing package.json,
-  // so call stencil directly via npx.
-  const res = spawnSync('yarn', ['stencil', 'test', '--spec', '--maxWorkers=0', '--coverage'], {
+function runVitestCoverage() {
+  // `yarn test.dev` invokes `stencil-test --project spec` (Vitest under the hood).
+  // Vitest reads coverage providers from package.json devDeps; @vitest/coverage-v8
+  // produces a `coverage/coverage-summary.json` compatible with the parsing below.
+  const res = spawnSync('yarn', ['stencil-test', '--project', 'spec', '--coverage'], {
     stdio: 'inherit',
     shell: true,
   });

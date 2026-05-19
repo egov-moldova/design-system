@@ -87,7 +87,7 @@ describe('05-story-exports: helpers', () => {
         tempStoriesFile(
           'c',
           `
-        import type { Meta } from '@storybook/web-components';
+        import type { Meta } from '@storybook/web-components-vite';
         const meta = { title: 'Atoms/Foo', component: 'cor-foo' } satisfies Meta;
         export default meta;
       `,
