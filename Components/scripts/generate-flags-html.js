@@ -66,7 +66,7 @@ function renderCard(code) {
     `                      <span class="flags-doc-item__flag mud-inline-flex mud-items-center mud-justify-center mud-size-24 mud-flex-shrink-0 mud-radius-4 mud-overflow-hidden mud-bg-gray-100"${flagWrapAttrs}>`,
     `                        <img class="flags-doc-item__flag-img mud-size-24 mud-block" loading="lazy" decoding="async" src="${SVG_BASE}/${code}.svg" alt="" onerror="${IMG_ONERROR}" />`,
     `                      </span>`,
-    `                      <button type="button" class="flags-doc-item__copy token-name mud-inline-flex mud-items-center mud-justify-center mud-min-w-0 mud-py-4 mud-px-8 mud-radius-8 mud-flex-shrink-0" data-token="${tokenValue}" title="Click to copy ${tokenValue}">`,
+    `                      <button type="button" class="token-name mud-inline-flex mud-items-center mud-justify-center mud-min-w-0 mud-py-4 mud-px-8 mud-radius-8 mud-flex-shrink-0" data-token="${tokenValue}" title="Click to copy ${tokenValue}">`,
     `                        <span class="mud-text-lowercase mud-text-gray-700 font-mono mud-desktop-body-sm-500">${code}</span>`,
     `                      </button>`,
     `                    </div>`,

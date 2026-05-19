@@ -266,26 +266,10 @@ button.token-name {
     box-sizing: border-box;
   }
 
-  &.token-table--width-tokens .mud-doc-border-preview__inner {
+  &.mud-doc-border-width-tokens .mud-doc-border-preview__inner {
     width: 36px;
     height: 36px;
     border-radius: var(--border-radius-8, 8px);
-  }
-}
-
-.spacing-table {
-  width: 100%;
-  border-collapse: collapse;
-
-  th,
-  td {
-    text-align: left;
-  }
-
-  td:first-child code {
-    background-color: var(--gray-100, #f6f6f6);
-    border-radius: var(--border-radius-8, 8px);
-    font-family: inherit;
   }
 }
 

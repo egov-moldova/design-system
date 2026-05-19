@@ -14,13 +14,6 @@ The **Unitar Design System** is a comprehensive design system launched by the Ag
 
 The design system is based on best practices and aligns with international standards to provide an intuitive and accessible user interface for government platforms in Moldova.
 
-## Component documentation (RO / EN)
-
-| Pagină | Fișier |
-|--------|--------|
-| Menu — atribute, BEM, variabile, demo `data-menu-doc-fill` | [`Components/docs/menu.md`](Components/docs/menu.md) |
-| Select (dropdown) — `custom-select`, `CustomSelect`, tokeni | [`Components/docs/select-dropdown.md`](Components/docs/select-dropdown.md) |
-
 ## Project Structure
 
 The project contains two primary components:
