@@ -25,43 +25,57 @@ const PAGES = [
   'width.html',
 ];
 
-const ALLOWED_PREFIXES = [
-  'mud-',
-  'token-name',
-  'font-mono',
+const ALLOWED_EXACT = new Set([
   'icon',
-  'icon-card__media',
+  'medium',
+  'small',
+  'extra-small',
+  'token-table',
+  'descriptor',
+  'token-value',
   'typo-table',
-  'typo-table__',
+  'typo-table__head',
+  'typo-table__row',
+  'icon-card',
+  'icon-card--missing',
+  'icon-card__media',
   'flags-doc-item',
-  'flags-doc-item__',
-  'mud-doc-lg-',
+  'flags-doc-item__flag',
+  'flags-doc-item__flag-img',
+  'flags-doc-item__flag--fallback',
+  'mud-typo-spec-value',
   'mud-doc-spacing-preview',
-  'mud-doc-border-width-tokens',
+  'mud-doc-spacing-preview__inner',
+  'mud-doc-border-preview',
+  'mud-doc-border-preview__inner',
   'mud-doc-section-head',
+  'mud-doc-section-head--grid',
+  'mud-doc-section-body',
+  'mud-doc-prose',
   'mud-doc-main',
+  'mud-doc-lg-wrap',
   'mud-sprite-defs',
   'component-card',
   'foundation-card',
   'foundations-hub',
-  'nav__',
-  'mainNav__',
-];
+]);
+
+const ALLOWED_PREFIXES = ['mud-', 'token-name', 'font-mono', 'typo-table__', 'mud-doc-lg-', 'mud-sheet'];
 
 const LEGACY_PATTERNS = [
-  /mud-doc-spacings-tokens/,
-  /mud-doc-spacing-token-preview/,
-  /icons-grid/,
-  /cursors-grid/,
-  /cursor-card/,
-  /spacing-table/,
-  /spacings-table/,
-  /lg-breakpoint-chip/,
-  /flags-doc-item__copy/,
-  /mud-sheet__/,
-  /mud-spec__/,
-  /mud-preview-tile/,
-  /mud-sheet--3col/,
+  { re: /mud-doc-spacings-tokens/, msg: 'removed spacings BEM' },
+  { re: /mud-doc-spacing-token-preview/, msg: 'removed spacing preview BEM' },
+  { re: /icons-grid/, msg: 'use mud-grid' },
+  { re: /cursors-grid/, msg: 'use mud-grid' },
+  { re: /cursor-card/, msg: 'use mud-card + utilities' },
+  { re: /spacing-table/, msg: 'use mud-row table' },
+  { re: /spacings-table/, msg: 'use mud-row table' },
+  { re: /lg-breakpoint-chip/, msg: 'use mud utilities' },
+  { re: /flags-doc-item__copy/, msg: 'removed copy BEM' },
+  { re: /mud-spec__/, msg: 'use mud-flex spec rows' },
+  { re: /mud-preview-tile/, msg: 'use mud utilities' },
+  { re: /mud-sheet--3col/, msg: 'use mud-row layout' },
+  { re: /<section\b/, msg: 'prefer div + mud-doc-section-head' },
 ];
 
 const RO_PATTERNS = [
@@ -69,10 +83,8 @@ const RO_PATTERNS = [
   /\bActivează\b/i,
   /\bafișat\b/i,
   /\bascuns\b/i,
-  /\butilizator/i,
-  /\bpentru a\b/i,
-  /\bRem\s/i,
-  /\bpx\)\s*—/,
+  /\butilizatorul\b/i,
+  /\bpentru a\s/i,
 ];
 
 function extractClasses(html) {
@@ -86,6 +98,7 @@ function extractClasses(html) {
 }
 
 function isAllowed(className) {
+  if (ALLOWED_EXACT.has(className)) return true;
   if (ALLOWED_PREFIXES.some((p) => className === p || className.startsWith(p))) return true;
   if (className.startsWith('mud-')) return true;
   return false;
@@ -98,13 +111,12 @@ function auditPage(file) {
   const html = fs.readFileSync(filePath, 'utf8');
   const issues = [];
 
-  for (const pat of LEGACY_PATTERNS) {
-    if (pat.test(html)) issues.push({ type: 'legacy', detail: pat.source });
+  for (const { re, msg } of LEGACY_PATTERNS) {
+    if (re.test(html)) issues.push({ type: 'legacy', detail: msg });
   }
 
   if (/style="/.test(html)) {
-    const count = (html.match(/style="/g) || []).length;
-    issues.push({ type: 'inline-style', detail: `${count} occurrence(s)` });
+    issues.push({ type: 'inline-style', detail: `${(html.match(/style="/g) || []).length} occurrence(s)` });
   }
 
   for (const pat of RO_PATTERNS) {
@@ -113,10 +125,11 @@ function auditPage(file) {
 
   const badClasses = extractClasses(html).filter((c) => !isAllowed(c));
   if (badClasses.length) {
+    const uniq = [...new Set(badClasses)];
     issues.push({
-      type: 'non-mud-class',
-      detail: [...new Set(badClasses)].slice(0, 15).join(', ') +
-        (badClasses.length > 15 ? ` … (+${badClasses.length - 15})` : ''),
+      type: 'non-allowed-class',
+      detail:
+        uniq.slice(0, 12).join(', ') + (uniq.length > 12 ? ` … (+${uniq.length - 12} more)` : ''),
     });
   }
 

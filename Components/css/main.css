@@ -20886,7 +20886,7 @@ button.token-name {
   padding: 12px 0;
 }
 
-[data-doc=typography] .typo-table__row > :nth-child(3) .v {
+[data-doc=typography] .typo-table__row > :nth-child(3) .mud-typo-spec-value {
   color: #e245af;
 }
 
