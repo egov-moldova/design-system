@@ -139,6 +139,7 @@ export const parameters = {
     storySort: {
       order: [
         'Introduction',
+        'Foundations',
         'Design Tokens',
         ['Core', 'Core Dark'],
         'Atoms',
