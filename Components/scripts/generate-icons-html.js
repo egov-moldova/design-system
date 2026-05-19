@@ -43,17 +43,17 @@ const ICON_CARD =
   'mud-inline-flex mud-items-center mud-gap-16';
 const ICON_MEDIA =
   'icon-card__media mud-inline-flex mud-items-center mud-justify-center mud-size-40 mud-flex-shrink-0 mud-radius-8 mud-bg-gray-100 mud-text-gray-900';
-const ICON_MEDIA_MISSING =
-  'icon-card__media mud-inline-flex mud-items-center mud-justify-center mud-size-40 mud-flex-shrink-0 mud-radius-8 mud-bg-transparent mud-border-1 mud-border-dashed mud-border-gray-300 mud-text-gray-400';
 const ICON_GRID = 'mud-grid mud-grid-cols-4 mud-column-gap-80 mud-row-gap-16';
+const ICON_NAME =
+  'mud-truncate mud-min-w-0 font-mono mud-desktop-body-sm-500 mud-text-gray-700';
 
 function renderCard(name, size) {
   const id = svgRef(name);
   const sizeCls = SIZE_CLASS[size] ? ` ${SIZE_CLASS[size]}` : '';
   if (id) {
-    return `        <button type="button" class="icon-card token-name ${ICON_CARD}" title="Click to copy" data-token="#${id}">\n          <span class="${ICON_MEDIA}">\n            <svg class="icon${sizeCls}" aria-hidden="true">\n              <use href="assets/icons/sprite.svg#${id}"></use>\n            </svg>\n          </span>\n          <span class="icon-card__name font-mono mud-desktop-body-sm-500 mud-text-gray-700">${name}</span>\n        </button>`;
+    return `        <button type="button" class="icon-card token-name ${ICON_CARD}" title="Click to copy" data-token="#${id}">\n          <span class="${ICON_MEDIA}">\n            <svg class="icon${sizeCls}" aria-hidden="true">\n              <use href="assets/icons/sprite.svg#${id}"></use>\n            </svg>\n          </span>\n          <span class="${ICON_NAME}">${name}</span>\n        </button>`;
   }
-  return `        <button type="button" class="icon-card icon-card--missing ${ICON_CARD}" title="Not yet exported to sprite.svg" aria-disabled="true">\n          <span class="${ICON_MEDIA_MISSING}">\n            <svg class="icon${sizeCls}" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M6 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>\n          </span>\n          <span class="icon-card__name icon-card__name--missing font-mono mud-desktop-body-sm-500 mud-text-gray-400">${name}</span>\n        </button>`;
+  return `        <div class="icon-card icon-card--missing ${ICON_CARD}" title="Not yet exported to sprite.svg">\n          <span class="${ICON_MEDIA}">\n            <svg class="icon${sizeCls}" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M6 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>\n          </span>\n          <span class="${ICON_NAME}">${name}</span>\n        </div>`;
 }
 
 function renderSection(title, intro, sizeSections) {
