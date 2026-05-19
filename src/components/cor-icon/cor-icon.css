@@ -1,0 +1,60 @@
+:host {
+  display: inline-flex;
+  width: var(--icon-size);
+  height: var(--icon-size);
+  vertical-align: middle;
+}
+
+.svg-icon {
+  display: inline-flex;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    fill: var(--icon-color, var(--color-icon-base-secondary));
+    transition: fill 0.1s ease-in-out;
+  }
+}
+
+:host([color='currentColor']) .svg-icon svg {
+  fill: currentcolor;
+}
+
+:host([interactive]:not([interactive='false'])) {
+  cursor: pointer;
+}
+
+:host([interactive]:not([interactive='false']):not([disabled])) {
+  .svg-icon:hover svg {
+    fill: var(--color-icon-brand-default);
+  }
+
+  .svg-icon:active svg {
+    fill: var(--color-icon-brand-strong);
+  }
+}
+
+/* Focus ring on the host (role=button + tabindex sit on the host now).
+   Falls back to the brand-border token until the dedicated focus token lands. */
+:host([interactive]:not([interactive='false']):not([disabled]):focus-visible) {
+  outline: var(--border-width-2, 2px) solid var(--color-border-focus-default, var(--color-border-brand-default));
+  outline-offset: var(--spacing-2, 2px);
+}
+
+:host([disabled]:not([disabled='false'])) {
+  cursor: not-allowed;
+
+  .svg-icon svg {
+    fill: var(--color-icon-base-disabled);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .svg-icon svg {
+    transition: none;
+  }
+}

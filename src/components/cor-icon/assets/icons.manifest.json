@@ -1,0 +1,1137 @@
+{
+  "add-cart": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "alarm": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "arrow-down": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "arrow-left": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "arrow-right": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "arrow-up": {
+    "sizes": [
+      20
+    ]
+  },
+  "arrow-up-right": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "asterisk": {
+    "sizes": [
+      12
+    ]
+  },
+  "attachment": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "award": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "backspace": {
+    "sizes": [
+      24
+    ]
+  },
+  "barcode": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "barrier": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "book": {
+    "sizes": [
+      24
+    ]
+  },
+  "bookmark": {
+    "sizes": [
+      24
+    ]
+  },
+  "bubble-alert": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "bubble-heart": {
+    "sizes": [
+      24
+    ]
+  },
+  "bubble-question": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "building": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "bullet-list": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "business": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "business-filled": {
+    "sizes": [
+      24
+    ]
+  },
+  "calculator": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "calendar": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "calendar-edit": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "calendar-filled": {
+    "sizes": [
+      16,
+      20
+    ]
+  },
+  "calender-add": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "calender-remove": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "calender-remove-filled": {
+    "sizes": [
+      16,
+      20
+    ]
+  },
+  "car": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "card-link": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "carousel": {
+    "sizes": [
+      24
+    ]
+  },
+  "cart": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "chart": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "check-all": {
+    "sizes": [
+      24
+    ]
+  },
+  "checklist": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "checkmark-large": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "checkmark-small": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "chevron-bottom": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "chevron-bottom-filled": {
+    "sizes": [
+      16
+    ]
+  },
+  "chevron-bottom-medium": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "chevron-bottom-small": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "chevron-grabber": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "chevron-left": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "chevron-left-small": {
+    "sizes": [
+      20
+    ]
+  },
+  "chevron-right": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "chevron-right-small": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "chevron-top": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "chevron-top-small": {
+    "sizes": [
+      16
+    ]
+  },
+  "child": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "circle-checkmark-filled": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "circle-download": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "circle-error": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "circle-error-filled": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "circle-info": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "circle-info-filled": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "clock": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "cloud-upload": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "coins": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "contacts": {
+    "sizes": [
+      24
+    ]
+  },
+  "copy": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "credit-card": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "cross-large": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "cross-small": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "data-access": {
+    "sizes": [
+      24
+    ]
+  },
+  "delete": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "delete-filled": {
+    "sizes": [
+      16,
+      20
+    ]
+  },
+  "direction": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "dislike": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "document": {
+    "sizes": [
+      24
+    ]
+  },
+  "document-filled": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "document-info-filled": {
+    "sizes": [
+      24
+    ]
+  },
+  "dot": {
+    "sizes": [
+      16
+    ]
+  },
+  "dot-grid": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "download": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "drag": {
+    "sizes": [
+      24
+    ]
+  },
+  "edit": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "education": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "electronic-signature": {
+    "sizes": [
+      16
+    ]
+  },
+  "empty-bin": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "envelope": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "envelope-filled": {
+    "sizes": [
+      24
+    ]
+  },
+  "external-link": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "eye-open": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "face-id": {
+    "sizes": [
+      24
+    ]
+  },
+  "facebook-filled": {
+    "sizes": [
+      24
+    ]
+  },
+  "faq": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "feedback": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "file-download": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "filter": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "flag": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "flash-filled": {
+    "sizes": [
+      24
+    ]
+  },
+  "flash-off-filled": {
+    "sizes": [
+      24
+    ]
+  },
+  "globe": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "group": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "group-filled": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "hashtag": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "health": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "help": {
+    "sizes": [
+      24
+    ]
+  },
+  "history": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "home-line": {
+    "sizes": [
+      24
+    ]
+  },
+  "home-line-filled": {
+    "sizes": [
+      24
+    ]
+  },
+  "home-round-door": {
+    "sizes": [
+      16
+    ]
+  },
+  "house": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "id-card": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "id-card-filled": {
+    "sizes": [
+      24
+    ]
+  },
+  "identity": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "image": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "instagram-filled": {
+    "sizes": [
+      24
+    ]
+  },
+  "judge-gavel": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "light-bulb": {
+    "sizes": [
+      24
+    ]
+  },
+  "like": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "linkedin-filled": {
+    "sizes": [
+      24
+    ]
+  },
+  "lock": {
+    "sizes": [
+      24
+    ]
+  },
+  "logout": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "map-pin": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "map-pin-filled": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "mark-all": {
+    "sizes": [
+      24
+    ]
+  },
+  "menu": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "minus-small": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "mobile-phone": {
+    "sizes": [
+      24
+    ]
+  },
+  "moon": {
+    "sizes": [
+      24
+    ]
+  },
+  "more-horizontal": {
+    "sizes": [
+      24
+    ]
+  },
+  "more-vertical": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "notification": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "old-man": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "organisation": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "page-add": {
+    "sizes": [
+      24
+    ]
+  },
+  "page-child": {
+    "sizes": [
+      24
+    ]
+  },
+  "page-download": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "page-download-filled": {
+    "sizes": [
+      24
+    ]
+  },
+  "page-house": {
+    "sizes": [
+      24
+    ]
+  },
+  "page-text": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "page-text-lock": {
+    "sizes": [
+      24
+    ]
+  },
+  "page-upload": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "page-upload-filled": {
+    "sizes": [
+      24
+    ]
+  },
+  "passport": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "pdf-file": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "people": {
+    "sizes": [
+      16,
+      24
+    ]
+  },
+  "people-like": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "permission": {
+    "sizes": [
+      24
+    ]
+  },
+  "person": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "phone": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "phone-filled": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "pin": {
+    "sizes": [
+      24
+    ]
+  },
+  "plus-large": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "plus-small": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "qr-code": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "receipt-bill": {
+    "sizes": [
+      24
+    ]
+  },
+  "receipt-check": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "receipt-check-filled": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "reorder": {
+    "sizes": [
+      24
+    ]
+  },
+  "reschedule": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "resize": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "rotate-arrow": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "scan": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "search": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "services": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "settings": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "share-android": {
+    "sizes": [
+      24
+    ]
+  },
+  "share-ios": {
+    "sizes": [
+      24
+    ]
+  },
+  "shield": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "shield-keyhole": {
+    "sizes": [
+      24
+    ]
+  },
+  "shield-user": {
+    "sizes": [
+      24
+    ]
+  },
+  "sidebar": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "sidebar-filled": {
+    "sizes": [
+      24
+    ]
+  },
+  "signal": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "signature": {
+    "sizes": [
+      24
+    ]
+  },
+  "sort": {
+    "sizes": [
+      24
+    ]
+  },
+  "sparkles-filled": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "stamp": {
+    "sizes": [
+      24
+    ]
+  },
+  "store": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "suitcase": {
+    "sizes": [
+      24
+    ]
+  },
+  "suitcase-2": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "sun": {
+    "sizes": [
+      24
+    ]
+  },
+  "support": {
+    "sizes": [
+      24
+    ]
+  },
+  "templates": {
+    "sizes": [
+      24
+    ]
+  },
+  "tiktok": {
+    "sizes": [
+      24
+    ]
+  },
+  "time": {
+    "sizes": [
+      16
+    ]
+  },
+  "time-filled": {
+    "sizes": [
+      16,
+      20
+    ]
+  },
+  "tree": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "umbrella": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "unlocked-filled": {
+    "sizes": [
+      20
+    ]
+  },
+  "upload": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "user-account": {
+    "sizes": [
+      24
+    ]
+  },
+  "user-account-filled": {
+    "sizes": [
+      24
+    ]
+  },
+  "vacation": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "visiting-card": {
+    "sizes": [
+      24
+    ]
+  },
+  "voucher": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "wallet": {
+    "sizes": [
+      24
+    ]
+  },
+  "wallet-filled": {
+    "sizes": [
+      24
+    ]
+  },
+  "warning": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "warning-filled": {
+    "sizes": [
+      16,
+      20,
+      24
+    ]
+  },
+  "wheelchair": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
+  "youtube-filled": {
+    "sizes": [
+      24
+    ]
+  }
+}
