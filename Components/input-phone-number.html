@@ -1,547 +1,896 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Phone Numbers</title>
-  <script src="js/search.js"></script>
-  <script src="js/phone-input.js"></script>
-  <link rel="stylesheet" href="css/main.css" />
-  <script src="js/include-header.js" defer></script>
-  <script src="js/include-footer.js" defer></script>
-  <script src="js/toggler.js" defer></script>
-  <script src="js/modal.js" defer></script>
-  <script src="js/mega-nav.js" defer></script>
-  <script src="js/dropdown.js" defer></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Phone Number Input</title>
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@7.0.0/css/flag-icons.min.css" />
+    <script src="js/include-header.js" defer></script>
+    <script src="js/include-footer.js" defer></script>
 </head>
 <body>
-  <div id="site-header"></div>
+    <div id="site-header"></div>
 
-<div class="container py-56">
-    <div class="row">
-        <div class="col-sm-7">
-            <h1>Phone Number Input</h1>
-            <p class="text-gray-400">
-                Phone Number Input is designed to capture a user’s phone number in a clear and structured way.
-                Within the design system, it follows consistent formatting rules, validation, and interaction patterns to ensure accuracy and reliability.
-            </p>
-        </div>
-    </div>
-    <!-- Styles -->
-    <!-- =============================== -->
-    <!-- Input telefon cu flag -->
-    <!-- =============================== -->
-     <div class="row">
-      <div class="col-3">
-        <div class="phone-input">
-          <div class="phone-field">
-            <select id="country-select" class="phone-field__select">
-              <option value="+1" data-country="us" selected>+1 United States</option>
-              <option value="+44" data-country="gb">+44 United Kingdom</option>
-              <option value="+33" data-country="fr">+33 France</option>
-              <option value="+49" data-country="de">+49 Germany</option>
-              <option value="+40" data-country="ro">+40 Romania</option>
-              <option value="+373" data-country="md">+373 Moldova</option>
-            </select>
-
-            <div class="phone-field__input-wrapper">
-              <span id="selected-flag" class="phone-field__flag fi fi-us" aria-hidden="true"></span>
-              <input id="phone-input" type="tel" class="phone-field__input" placeholder="+1 555 123 4567" autocomplete="tel" data-phone-input="true" data-country="us" data-dial-code="+1" aria-label="Phone number" />
+    <div class="container py-56">
+        <div class="row">
+            <div class="col-sm-7">
+                <h1>Phone Number Input</h1>
+                <p class="text-gray-400">
+                    Phone Number Input is designed to capture a user’s phone number in a clear and structured way. Within the design system, it follows consistent formatting rules, validation, and interaction patterns to ensure accuracy and reliability.
+                </p>
             </div>
-          </div>
-
         </div>
 
-      </div>
-     </div>
-    <div class="row">
-      <div class="col-3">
-        <div class="mb-16">default</div>
-        <label for="phone-demo-r1-us">Label</label>
-        <div class="input-wrapper-number has-leading">
-          <span class="input-icon input-icon--flag fi fi-us" aria-hidden="true"></span>
-          <input id="phone-demo-r1-us" type="tel" class="input-number" placeholder="(+1) 555-1234" data-phone-input="true" data-country="us" data-dial-code="+1" />
-        </div>
-      </div>
-
-      <div class="col-3">
-        <div class="mb-16">warning</div>
-        <label for="phone-demo-r1-gb">Label</label>
-        <div class="input-wrapper-number has-leading">
-          <span class="input-icon input-icon--flag fi fi-gb" aria-hidden="true"></span>
-          <input id="phone-demo-r1-gb" type="tel" class="input-number input-number--warning" placeholder="(+44) 7777-123456" data-phone-input="true" data-country="gb" data-dial-code="+44" />
-        </div>
-      </div>
-
-      <div class="col-3">
-        <div class="mb-16">destructive</div>
-        <label for="phone-demo-r1-fr">Label</label>
-        <div class="input-wrapper-number has-leading">
-          <span class="input-icon input-icon--flag fi fi-fr" aria-hidden="true"></span>
-          <input id="phone-demo-r1-fr" type="tel" class="input-number input-number--destructive" placeholder="(+33) 6 12 34 56 78" data-phone-input="true" data-country="fr" data-dial-code="+33" />
-        </div>
-      </div>
-
-      <div class="col-3">
-        <div class="mb-16">success</div>
-        <label for="phone-demo-r1-de">Label</label>
-        <div class="input-wrapper-number has-leading">
-          <span class="input-icon input-icon--flag fi fi-de" aria-hidden="true"></span>
-          <input id="phone-demo-r1-de" type="tel" class="input-number input-number--success" placeholder="(+49) 151 12345678" data-phone-input="true" data-country="de" data-dial-code="+49" />
-        </div>
-      </div>
-    </div>
-
-    <div class="row mt-32">
-      <div class="col-3">
-        <div class="mb-16">default</div>
-        <label for="phone-demo-r2-us">Label</label>
-        <div class="input-wrapper-number has-leading">
-          <span class="input-icon input-icon--flag fi fi-us" aria-hidden="true"></span>
-          <input id="phone-demo-r2-us" type="tel" class="input-number" placeholder="(+1) 555-1234" data-phone-input="true" data-country="us" data-dial-code="+1" />
-        </div>
-      </div>
-
-      <div class="col-3">
-        <div class="mb-16">warning</div>
-        <label for="phone-demo-r2-gb">Label</label>
-        <div class="input-wrapper-number has-leading">
-          <span class="input-icon input-icon--flag fi fi-gb" aria-hidden="true"></span>
-          <input id="phone-demo-r2-gb" type="tel" class="input-number input-number--warning" placeholder="(+44) 7777-123456" data-phone-input="true" data-country="gb" data-dial-code="+44" />
-        </div>
-      </div>
-
-      <div class="col-3">
-        <div class="mb-16">destructive</div>
-        <label for="phone-demo-r2-fr">Label</label>
-        <div class="input-wrapper-number has-leading">
-          <span class="input-icon input-icon--flag fi fi-fr" aria-hidden="true"></span>
-          <input id="phone-demo-r2-fr" type="tel" class="input-number input-number--destructive" placeholder="(+33) 6 12 34 56 78" data-phone-input="true" data-country="fr" data-dial-code="+33" />
-        </div>
-      </div>
-
-      <div class="col-3">
-        <div class="mb-16">success</div>
-        <label for="phone-demo-r2-de">Label</label>
-        <div class="input-wrapper-number has-leading">
-          <span class="input-icon input-icon--flag fi fi-de" aria-hidden="true"></span>
-          <input id="phone-demo-r2-de" type="tel" class="input-number input-number--success" placeholder="(+49) 151 12345678" data-phone-input="true" data-country="de" data-dial-code="+49" />
-        </div>
-      </div>
-    </div>
-
-<!-- =============================== -->
-<!-- Input telefon loading -->
-<!-- =============================== -->
-    <div class="row">
-      <div class="col-3">
-        <div class="mb-16">loading</div>
-        <div class="input-wrapper-number has-leading is-loading">
-          <span class="input-icon input-icon--flag fi fi-it" aria-hidden="true"></span>
-          <input type="tel" class="input-number" placeholder="(+39) 333 1234567" data-phone-input="true" data-country="it" data-dial-code="+39" aria-label="Phone number" />
-          <span class="input-icon--loading visible"></span>
-        </div>
-      </div>
-
-      <div class="col-3">
-        <div class="mb-16">disabled</div>
-        <div class="input-wrapper-number has-leading">
-          <span class="input-icon input-icon--flag fi fi-es" aria-hidden="true"></span>
-          <input type="tel" class="input-number" placeholder="(+34) 612 345 678" data-phone-input="true" data-country="es" data-dial-code="+34" disabled aria-label="Phone number" />
-        </div>
-      </div>
-
-      <div class="col-3">
-        <div class="mb-16">read-only</div>
-        <div class="input-wrapper-number has-leading">
-          <span class="input-icon input-icon--flag fi fi-ca" aria-hidden="true"></span>
-          <input type="tel" class="input-number" value="(+1) 416 123 4567" data-phone-input="true" data-country="ca" data-dial-code="+1" readonly aria-label="Phone number (read-only example)" />
-        </div>
-      </div>
-    </div>
-
-
-    <!-- Variations -->
-    <div class="row d-none">
-      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-          <h2>Variations</h2>
-      </div>
-      <div class="col-3">
-        <div class="mb-16">icon-none</div>
-        <div class="input-group">
-          <label for="icon-none">Label</label>
-          <input id="icon-none" type="text" placeholder="Placeholder" class="input" />
-        </div>
-      </div>
-      <div class="col-3">
-        <div class="mb-16">icon-leading</div>
-        <div class="input-group icon-leading">
-            <label for="icon-leading">Label</label>
-            <div class="search-input rectangular ">
-              <span class="p-2 radius-8 d-inline-flex icon-search icon-search">
-                  <svg class="icon medium" aria-hidden="true"> 
-                      <use href="assets/icons/sprite.svg#icon-search"></use> 
-                  </svg>
-              </span>
-              <input id="icon-leading" type="text" placeholder="Placeholder" class="input" />
-              <span class="icon-loading">⟳</span>
-              <button type="button" class="btn-icon clear" aria-label="Clear search">
-                  <svg class="icon small" aria-hidden="true"> 
-                      <use href="assets/icons/sprite.svg#icon-cross-small"></use> 
-                  </svg>
-              </button>
-          </div> 
-        </div> 
-          
-      </div>
-      <div class="col-3">
-        <div class="mb-16">icon-trailing</div>
-        <div class="input-group icon-trailing">
-          <label for="icon-trailing">Label</label>
-          <div class="input-wrapper">
-            <input id="icon-trailing" type="text" placeholder="Placeholder" class="input" />
-            <span class="input-icon right chevron-bottom">
-                <svg class="icon large" aria-hidden="true"> 
-                  <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
-                </svg>
-            </span>
-          </div>
-        </div>
-      </div>
-      <div class="col-3">
-        <div class="mb-16">icon-both</div>
-        <div class="input-group icon-both">
-          <label for="icon-both">Label</label>
-          <div class="input-wrapper">
-            <span class="input-icon left icon-search">
-                <svg class="icon small" aria-hidden="true">
-                    <use href="assets/icons/sprite.svg#icon-search"></use>
-                </svg>
-            </span>
-            <input id="icon-both" type="text" placeholder="Placeholder" class="input" />
-            <span class="input-icon right chevron-bottom">
-                <svg class="icon large" aria-hidden="true"> 
-                  <use href="assets/icons/sprite.svg#icon-chevron-bottom"></use> 
-                </svg>
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- States -->
-    <div class="row d-none">
-      <div class="col-12">
-         <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-              <h2>States</h2>
-          </div>
-      </div>
-    </div>
-
-    <div class="row d-none">
-      <!-- default states -->
-      <div class="col-3">
-        <div class="input-group mb-24">
-          <label for="default-default">default: default</label>
-          <input id="default-default" type="text" placeholder="Placeholder" class="input" />
-        </div>
-
-        <div class="input-group mb-24">
-          <label for="default-hover">default: hover</label>
-          <input id="default-hover" type="text" placeholder="Placeholder" class="input" />
-        </div>
-
-        <div class="input-group mb-24">
-          <label for="default-focus-empty">default: focus-empty</label>
-          <input id="default-focus-empty" type="text" placeholder="Placeholder" class="input" />
-        </div>
-
-        <div class="input-group mb-24">
-          <label for="default-focus-populated">default: focus-populated</label>
-          <input id="default-focus-populated" type="text" placeholder="Placeholder" value="Populated" class="input" />
-        </div>
-
-        <div class="input-group mb-24">
-          <label for="default-loading">destructive: loading</label>
-          <div class="input-wrapper is-loading">
-            <input id="default-loading" type="text" placeholder="Loading..." class="input">
-            <span class="input-icon--loading">⟳</span>
-          </div>
-        </div>
-
-        <div class="input-group mb-24">
-          <label for="default-focus-populated">default: field</label>
-          <input id="default-focus-populated" type="text" placeholder="Placeholder" class="input" />
-        </div>
-
-        <div class="input-group mb-24">
-          <p>default: disabled</p>
-          <label for="default-disabled">Label</label>
-          <input id="default-disabled" type="text" placeholder="Placeholder" class="input" disabled />
-        </div>
-
-        <div class="input-group mb-24">
-          <label for="default" class="required">default: field</label>
-          <input id="default" type="text" placeholder="Placeholder" class="input" />
-        </div>
-
-        <div class="input-group mb-24">
-          <p>default: read-only</p>
-          <label for="phone-states-ro-default">Label</label>
-          <div class="input-wrapper">
-            <input id="phone-states-ro-default" type="text" placeholder="Placeholder" class="input" readonly/>
-            <span class="input-icon right checkmark">
-              <svg class="icon large" aria-hidden="true"> 
-                <use href="assets/icons/sprite.svg#icon-checkmark-small"></use> 
-              </svg>
-            </span>
-          </div> 
-        </div>
-      </div>
-
-      <!-- warning states -->
-      <div class="col-3">
-        <div class="input-group mb-24">
-          <label for="input-warning">warning: default</label>
-          <input id="input-warning" type="text" placeholder="Placeholder" class=" input--warning" />
-        </div>
-
-        <div class="input-group mb-24">
-          <label for="warning-hover">warning: hover</label>
-          <input id="warning-hover" type="text" placeholder="Placeholder" class=" input--warning" />
-        </div>
-
-        <div class="input-group mb-24">
-          <label for="warning-focus-empty">warning: focus-empty</label>
-          <input id="warning-focus-empty" type="text" placeholder="Placeholder" class=" input--warning" />
-        </div>
-
-        <div class="input-group mb-24">
-          <label for="warning-focus-populated">warning: focus-populated</label>
-          <input id="warning-focus-populated" type="text" placeholder="Placeholder" value="Populated" class=" input--warning" />
-        </div>
-
-        <div class="input-group mb-24">
-          <label for="warning-loading">destructive: loading</label>
-          <div class="input-wrapper is-loading">
-            <input id="warning-loading" type="text" placeholder="Loading..." class="input--warning">
-            <span class="input-icon--loading">⟳</span>
-          </div>
-        </div>
-
-        <div class="input-group mb-24">
-          <label for="warning-focus-populated">warning: field</label>
-          <input id="warning-focus-populated" type="text" placeholder="Placeholder" class="input--warning" />
-        </div>
-
-        <div class="input-group mb-24">
-          <p>warning: disabled</p>
-          <label for="warning-disabled">Label</label>
-          <input id="warning-disabled" type="text" placeholder="Placeholder" class="input--warning" disabled />
-        </div>
-
-        <div class="input-group mb-24">
-          <label for="warning" class="required">warning: field</label>
-          <input id="warning" type="text" placeholder="Placeholder" class="input--warning" />
-        </div>
-
-        <div class="input-group mb-24">
-          <p>warning: read-only</p>
-          <label for="phone-states-ro-warning">Label</label>
-          <div class="input-wrapper">
-            <input id="phone-states-ro-warning" type="text" placeholder="Placeholder" class="input--warning" readonly/>
-          </div> 
-        </div>
-      </div>
-
-       <!-- destructive states -->
-      <div class="col-3"> 
-        <div class="input-group mb-24">
-          <label for="destructive-default">destructive: default</label>
-          <input id="destructive-default" type="text" placeholder="Placeholder" class=" input--destructive" />
-        </div>
-
-        <div class="input-group mb-24">
-          <label for="destructive-hover">destructive: hover</label>
-          <input id="destructive-hover" type="text" placeholder="Placeholder" class="input--destructive" />
-        </div>
-
-        <div class="input-group mb-24">
-          <label for="destructive-focus-empty">destructive: focus-empty</label>
-          <input id="destructive-focus-empty" type="text" placeholder="Placeholder" class="input--destructive" />
-        </div>
-
-        <div class="input-group mb-24">
-          <label for="destructive-focus-populated">destructive: focus-populated</label>
-          <input id="destructive-focus-populated" type="text" placeholder="Placeholder" value="Populated" class="input--destructive" />
-        </div>
-
-        <div class="input-group mb-24">
-          <label for="destructive-loading">destructive: loading</label>
-          <div class="input-wrapper is-loading">
-            <input id="destructive" type="text" placeholder="Loading..." class="input--destructive">
-            <span class="input-icon--loading">⟳</span>
-          </div>
-        </div>
-
-        <div class="input-group mb-24">
-          <label for="destructive-focus-populated">destructive: field</label>
-          <input id="destructive-focus-populated" type="text" placeholder="Placeholder" class="input--destructive" />
-        </div>
-
-        <div class="input-group mb-24">
-          <p>destructive: disabled</p>
-          <label for="destructive-disabled">Label</label>
-          <input id="destructive-disabled" type="text" placeholder="Placeholder" class="input--destructive" disabled />
-        </div>
-
-        <div class="input-group mb-24">
-          <label for="destructive" class="required">destructive: field</label>
-          <input id="destructive-loading" type="text" placeholder="Placeholder" class="input--destructive" />
-        </div>
-
-         <div class="input-group mb-24">
-          <p>destructive: read-only</p>
-          <label for="readonly-destructive">Label</label>
-          <div class="input-wrapper">
-            <input id="readonly-destructive" type="text" placeholder="Placeholder" class="input--destructive" readonly/>
-          </div> 
-        </div>
-      </div>
-
-      <!-- success states -->
-      <div class="col-3">
-          <div class="input-group mb-24">
-            <label for="success-default">success: default</label>
-            <input id="success-default" type="text" placeholder="Placeholder" class="input--success" />
-          </div>
-
-          <div class="input-group mb-24">
-            <label for="success-hover">success: hover</label>
-            <input id="success-hover" type="text" placeholder="Placeholder" class="input--success" />
-          </div>
-
-          <div class="input-group mb-24">
-            <label for="success-focus-empty">success: focus-empty</label>
-            <input id="success-focus-empty" type="text" placeholder="Placeholder" class="input--success" />
-          </div>
-
-          <div class="input-group mb-24">
-            <label for="success-focus-populated">success: focus-populated</label>
-            <input id="success-focus-populated" type="text" placeholder="Placeholder" value="Populated" class="input--success" />
-          </div>
-
-          <div class="input-group mb-24">
-            <label for="success-loading">destructive: loading</label>
-            <div class="input-wrapper is-loading">
-              <input id="success" type="text" placeholder="Loading..." class="input--success">
-              <span class="input-icon--loading">⟳</span>
+        <!-- Styles -->
+        <div class="row">
+            <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+                <h4>Styles</h4>
             </div>
-          </div>
- 
-          <div class="input-group mb-24">
-            <label for="success-focus-populated">success: field</label>
-            <input id="success-focus-populated" type="text" placeholder="Placeholder" class="input--success" />
-          </div>
-
-          <div class="input-group mb-24">
-            <p>success: disabled</p>
-            <label for="success-disabled">Label</label>
-            <input id="success-disabled" type="text" placeholder="Placeholder" class="input--success" disabled />
-          </div>
-
-          <div class="input-group mb-24">
-            <label for="success" class="required">success: field</label>
-            <input id="success-loading" type="text" placeholder="Placeholder" class="input--success" />
-          </div>
-
-           <div class="input-group mb-24">
-            <p>success: read-only</p>
-            <label for="phone-states-ro-success">Label</label>
-            <div class="input-wrapper">
-              <input id="phone-states-ro-success" type="text" placeholder="Placeholder" class="input--success" readonly/>
-            </div> 
-          </div>
+            <div class="col-3">
+                <div class="mb-16 descriptor">default</div>
+                <div>
+                    <label for="pn-styles-default">Label</label>
+                    <div class="phone-ddl-wrap">
+                        <div class="phone-ddl" data-phone-ddl data-open="false">
+                            <button type="button" class="phone-ddl__btn" data-phone-ddl-btn aria-haspopup="listbox" aria-expanded="true">
+                                <span class="fi" data-phone-ddl-flag aria-hidden="true"></span>
+                                <span class="phone-ddl__code" data-phone-ddl-code></span>
+                                <svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg>
+                            </button>
+                            <div class="phone-ddl__panel" data-phone-ddl-panel>
+                                <div class="phone-ddl__search-wrap">
+                                    <svg class="phone-ddl__search-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.5" /><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg>
+                                    <input type="text" class="phone-ddl__search" data-phone-ddl-search placeholder="Search country" autocomplete="off" />
+                                </div>
+                                <ul class="phone-ddl__list" role="listbox" data-phone-ddl-list>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-au" data-code="+61"><span class="fi fi-au" aria-hidden="true"></span><span>Australia</span><span class="phone-ddl__code">+61</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-be" data-code="+32"><span class="fi fi-be" aria-hidden="true"></span><span>Belgium</span><span class="phone-ddl__code">+32</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-br" data-code="+55"><span class="fi fi-br" aria-hidden="true"></span><span>Brazil</span><span class="phone-ddl__code">+55</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-cn" data-code="+86"><span class="fi fi-cn" aria-hidden="true"></span><span>China</span><span class="phone-ddl__code">+86</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-fr" data-code="+33"><span class="fi fi-fr" aria-hidden="true"></span><span>France</span><span class="phone-ddl__code">+33</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-de" data-code="+49"><span class="fi fi-de" aria-hidden="true"></span><span>Germany</span><span class="phone-ddl__code">+49</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-in" data-code="+91"><span class="fi fi-in" aria-hidden="true"></span><span>India</span><span class="phone-ddl__code">+91</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-it" data-code="+39"><span class="fi fi-it" aria-hidden="true"></span><span>Italy</span><span class="phone-ddl__code">+39</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-jp" data-code="+81"><span class="fi fi-jp" aria-hidden="true"></span><span>Japan</span><span class="phone-ddl__code">+81</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-yt" data-code="+262"><span class="fi fi-yt" aria-hidden="true"></span><span>Mayotte</span><span class="phone-ddl__code">+262</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-mx" data-code="+52"><span class="fi fi-mx" aria-hidden="true"></span><span>Mexico</span><span class="phone-ddl__code">+52</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-md" data-code="+373" aria-selected="true"><span class="fi fi-md" aria-hidden="true"></span><span>Moldova</span><span class="phone-ddl__code">+373</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-mc" data-code="+377"><span class="fi fi-mc" aria-hidden="true"></span><span>Monaco</span><span class="phone-ddl__code">+377</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-mn" data-code="+976"><span class="fi fi-mn" aria-hidden="true"></span><span>Mongolia</span><span class="phone-ddl__code">+976</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-me" data-code="+382"><span class="fi fi-me" aria-hidden="true"></span><span>Montenegro</span><span class="phone-ddl__code">+382</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ms" data-code="+1"><span class="fi fi-ms" aria-hidden="true"></span><span>Montserrat</span><span class="phone-ddl__code">+1</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ma" data-code="+212"><span class="fi fi-ma" aria-hidden="true"></span><span>Morocco</span><span class="phone-ddl__code">+212</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-nl" data-code="+31"><span class="fi fi-nl" aria-hidden="true"></span><span>Netherlands</span><span class="phone-ddl__code">+31</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-pl" data-code="+48"><span class="fi fi-pl" aria-hidden="true"></span><span>Poland</span><span class="phone-ddl__code">+48</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ro" data-code="+40"><span class="fi fi-ro" aria-hidden="true"></span><span>Romania</span><span class="phone-ddl__code">+40</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-es" data-code="+34"><span class="fi fi-es" aria-hidden="true"></span><span>Spain</span><span class="phone-ddl__code">+34</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-tr" data-code="+90"><span class="fi fi-tr" aria-hidden="true"></span><span>Turkey</span><span class="phone-ddl__code">+90</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ua" data-code="+380"><span class="fi fi-ua" aria-hidden="true"></span><span>Ukraine</span><span class="phone-ddl__code">+380</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-gb" data-code="+44"><span class="fi fi-gb" aria-hidden="true"></span><span>United Kingdom</span><span class="phone-ddl__code">+44</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-us" data-code="+1"><span class="fi fi-us" aria-hidden="true"></span><span>United States</span><span class="phone-ddl__code">+1</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <input id="pn-cd-default" type="tel" class="phone-ddl__input" placeholder="## ### ###" autocomplete="tel" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="mb-16 descriptor">warning</div>
+                <div>
+                    <label for="pn-styles-warning">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--warning">
+                        <div class="phone-ddl" data-phone-ddl data-open="false">
+                            <button type="button" class="phone-ddl__btn" data-phone-ddl-btn aria-haspopup="listbox" aria-expanded="true">
+                                <span class="fi" data-phone-ddl-flag aria-hidden="true"></span>
+                                <span class="phone-ddl__code" data-phone-ddl-code></span>
+                                <svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg>
+                            </button>
+                            <div class="phone-ddl__panel" data-phone-ddl-panel>
+                                <div class="phone-ddl__search-wrap">
+                                    <svg class="phone-ddl__search-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.5" /><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg>
+                                    <input type="text" class="phone-ddl__search" data-phone-ddl-search placeholder="Search country" autocomplete="off" />
+                                </div>
+                                <ul class="phone-ddl__list" role="listbox" data-phone-ddl-list>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-au" data-code="+61"><span class="fi fi-au" aria-hidden="true"></span><span>Australia</span><span class="phone-ddl__code">+61</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-be" data-code="+32"><span class="fi fi-be" aria-hidden="true"></span><span>Belgium</span><span class="phone-ddl__code">+32</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-br" data-code="+55"><span class="fi fi-br" aria-hidden="true"></span><span>Brazil</span><span class="phone-ddl__code">+55</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-cn" data-code="+86"><span class="fi fi-cn" aria-hidden="true"></span><span>China</span><span class="phone-ddl__code">+86</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-fr" data-code="+33"><span class="fi fi-fr" aria-hidden="true"></span><span>France</span><span class="phone-ddl__code">+33</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-de" data-code="+49"><span class="fi fi-de" aria-hidden="true"></span><span>Germany</span><span class="phone-ddl__code">+49</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-in" data-code="+91"><span class="fi fi-in" aria-hidden="true"></span><span>India</span><span class="phone-ddl__code">+91</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-it" data-code="+39"><span class="fi fi-it" aria-hidden="true"></span><span>Italy</span><span class="phone-ddl__code">+39</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-jp" data-code="+81"><span class="fi fi-jp" aria-hidden="true"></span><span>Japan</span><span class="phone-ddl__code">+81</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-yt" data-code="+262"><span class="fi fi-yt" aria-hidden="true"></span><span>Mayotte</span><span class="phone-ddl__code">+262</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-mx" data-code="+52"><span class="fi fi-mx" aria-hidden="true"></span><span>Mexico</span><span class="phone-ddl__code">+52</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-md" data-code="+373" aria-selected="true"><span class="fi fi-md" aria-hidden="true"></span><span>Moldova</span><span class="phone-ddl__code">+373</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-mc" data-code="+377"><span class="fi fi-mc" aria-hidden="true"></span><span>Monaco</span><span class="phone-ddl__code">+377</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-mn" data-code="+976"><span class="fi fi-mn" aria-hidden="true"></span><span>Mongolia</span><span class="phone-ddl__code">+976</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-me" data-code="+382"><span class="fi fi-me" aria-hidden="true"></span><span>Montenegro</span><span class="phone-ddl__code">+382</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ms" data-code="+1"><span class="fi fi-ms" aria-hidden="true"></span><span>Montserrat</span><span class="phone-ddl__code">+1</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ma" data-code="+212"><span class="fi fi-ma" aria-hidden="true"></span><span>Morocco</span><span class="phone-ddl__code">+212</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-nl" data-code="+31"><span class="fi fi-nl" aria-hidden="true"></span><span>Netherlands</span><span class="phone-ddl__code">+31</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-pl" data-code="+48"><span class="fi fi-pl" aria-hidden="true"></span><span>Poland</span><span class="phone-ddl__code">+48</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ro" data-code="+40"><span class="fi fi-ro" aria-hidden="true"></span><span>Romania</span><span class="phone-ddl__code">+40</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-es" data-code="+34"><span class="fi fi-es" aria-hidden="true"></span><span>Spain</span><span class="phone-ddl__code">+34</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-tr" data-code="+90"><span class="fi fi-tr" aria-hidden="true"></span><span>Turkey</span><span class="phone-ddl__code">+90</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ua" data-code="+380"><span class="fi fi-ua" aria-hidden="true"></span><span>Ukraine</span><span class="phone-ddl__code">+380</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-gb" data-code="+44"><span class="fi fi-gb" aria-hidden="true"></span><span>United Kingdom</span><span class="phone-ddl__code">+44</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-us" data-code="+1"><span class="fi fi-us" aria-hidden="true"></span><span>United States</span><span class="phone-ddl__code">+1</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <input id="pn-cd-default" type="tel" class="phone-ddl__input" placeholder="## ### ###" autocomplete="tel" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="mb-16 descriptor">destructive</div>
+                <div>
+                    <label for="pn-styles-destructive">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--destructive">
+                        <div class="phone-ddl" data-phone-ddl data-open="false">
+                            <button type="button" class="phone-ddl__btn" data-phone-ddl-btn aria-haspopup="listbox" aria-expanded="true">
+                                <span class="fi" data-phone-ddl-flag aria-hidden="true"></span>
+                                <span class="phone-ddl__code" data-phone-ddl-code></span>
+                                <svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg>
+                            </button>
+                            <div class="phone-ddl__panel" data-phone-ddl-panel>
+                                <div class="phone-ddl__search-wrap">
+                                    <svg class="phone-ddl__search-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.5" /><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg>
+                                    <input type="text" class="phone-ddl__search" data-phone-ddl-search placeholder="Search country" autocomplete="off" />
+                                </div>
+                                <ul class="phone-ddl__list" role="listbox" data-phone-ddl-list>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-au" data-code="+61"><span class="fi fi-au" aria-hidden="true"></span><span>Australia</span><span class="phone-ddl__code">+61</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-be" data-code="+32"><span class="fi fi-be" aria-hidden="true"></span><span>Belgium</span><span class="phone-ddl__code">+32</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-br" data-code="+55"><span class="fi fi-br" aria-hidden="true"></span><span>Brazil</span><span class="phone-ddl__code">+55</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-cn" data-code="+86"><span class="fi fi-cn" aria-hidden="true"></span><span>China</span><span class="phone-ddl__code">+86</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-fr" data-code="+33"><span class="fi fi-fr" aria-hidden="true"></span><span>France</span><span class="phone-ddl__code">+33</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-de" data-code="+49"><span class="fi fi-de" aria-hidden="true"></span><span>Germany</span><span class="phone-ddl__code">+49</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-in" data-code="+91"><span class="fi fi-in" aria-hidden="true"></span><span>India</span><span class="phone-ddl__code">+91</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-it" data-code="+39"><span class="fi fi-it" aria-hidden="true"></span><span>Italy</span><span class="phone-ddl__code">+39</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-jp" data-code="+81"><span class="fi fi-jp" aria-hidden="true"></span><span>Japan</span><span class="phone-ddl__code">+81</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-yt" data-code="+262"><span class="fi fi-yt" aria-hidden="true"></span><span>Mayotte</span><span class="phone-ddl__code">+262</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-mx" data-code="+52"><span class="fi fi-mx" aria-hidden="true"></span><span>Mexico</span><span class="phone-ddl__code">+52</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-md" data-code="+373" aria-selected="true"><span class="fi fi-md" aria-hidden="true"></span><span>Moldova</span><span class="phone-ddl__code">+373</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-mc" data-code="+377"><span class="fi fi-mc" aria-hidden="true"></span><span>Monaco</span><span class="phone-ddl__code">+377</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-mn" data-code="+976"><span class="fi fi-mn" aria-hidden="true"></span><span>Mongolia</span><span class="phone-ddl__code">+976</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-me" data-code="+382"><span class="fi fi-me" aria-hidden="true"></span><span>Montenegro</span><span class="phone-ddl__code">+382</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ms" data-code="+1"><span class="fi fi-ms" aria-hidden="true"></span><span>Montserrat</span><span class="phone-ddl__code">+1</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ma" data-code="+212"><span class="fi fi-ma" aria-hidden="true"></span><span>Morocco</span><span class="phone-ddl__code">+212</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-nl" data-code="+31"><span class="fi fi-nl" aria-hidden="true"></span><span>Netherlands</span><span class="phone-ddl__code">+31</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-pl" data-code="+48"><span class="fi fi-pl" aria-hidden="true"></span><span>Poland</span><span class="phone-ddl__code">+48</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ro" data-code="+40"><span class="fi fi-ro" aria-hidden="true"></span><span>Romania</span><span class="phone-ddl__code">+40</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-es" data-code="+34"><span class="fi fi-es" aria-hidden="true"></span><span>Spain</span><span class="phone-ddl__code">+34</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-tr" data-code="+90"><span class="fi fi-tr" aria-hidden="true"></span><span>Turkey</span><span class="phone-ddl__code">+90</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ua" data-code="+380"><span class="fi fi-ua" aria-hidden="true"></span><span>Ukraine</span><span class="phone-ddl__code">+380</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-gb" data-code="+44"><span class="fi fi-gb" aria-hidden="true"></span><span>United Kingdom</span><span class="phone-ddl__code">+44</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-us" data-code="+1"><span class="fi fi-us" aria-hidden="true"></span><span>United States</span><span class="phone-ddl__code">+1</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <input id="pn-cd-default" type="tel" class="phone-ddl__input" placeholder="## ### ###" autocomplete="tel" />
+                    </div>
+                </div>
+            </div>
         </div>
-    </div> 
 
-    <!-- Assistive Text -->
-    <div class="row d-none">
-      <div class="col-12">
-         <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-              <h2>Assistive Text</h2>
-          </div>
-      </div>
-      <div class="col-7 my-32">
-        <div>
-          Assistive text conveys additional guidance about the input field, such as how it will be used. It should only take up one or two lines, being persistently visible or visible only on focus.
+        <!-- Sizes -->
+        <div class="row">
+            <div class="col-12">
+                <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+                    <h4>Sizes</h4>
+                </div>
+            </div>
         </div>
-      </div>
+        <div class="row">
+            <div class="col-3">
+                <div class="mb-16 descriptor">medium</div>
+                <div class="mb-24">
+                    <label for="pn-st-d-default">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap-medium">
+                        <div class="phone-ddl phone-ddl-medium"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code phone-ddl__code-medium">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-d-default" type="tel" class="phone-ddl__input phone-ddl__input-medium" placeholder="## ### ###" />
+                    </div>
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="mb-16 descriptor">large</div>
+                <div class="mb-24">
+                    <label for="pn-st-d-default">Label</label>
+                    <div class="phone-ddl-wrap">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-d-default" type="tel" class="phone-ddl__input" placeholder="## ### ###" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- States -->
+        <div class="row">
+            <div class="col-12">
+                <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+                    <h4>States</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- default column -->
+            <div class="col-3">
+                <div class="mb-16 descriptor">default: default</div>
+                <div class="mb-24">
+                    <label for="pn-st-d-default">Label</label>
+                    <div class="phone-ddl-wrap">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-d-default" type="tel" class="phone-ddl__input" placeholder="## ### ###" />
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">default: hover</div>
+                <div class="mb-24">
+                    <label for="pn-st-d-hover">Label</label>
+                    <div class="phone-ddl-wrap is-hover">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-d-hover" type="tel" class="phone-ddl__input" placeholder="## ### ###" />
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">default: focus-empty</div>
+                <div class="mb-24">
+                    <label for="pn-st-d-focus-empty">Label</label>
+                    <div class="phone-ddl-wrap is-focus">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-d-focus-empty" type="tel" class="phone-ddl__input" placeholder="## ### ###" />
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">default: focus-filled</div>
+                <div class="mb-24">
+                    <label for="pn-st-d-focus-filled">Label</label>
+                    <div class="phone-ddl-wrap is-focus">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-d-focus-filled" type="tel" class="phone-ddl__input" value="22 123 456" />
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">default: loading</div>
+                <div class="mb-24">
+                    <label for="pn-st-d-loading">Label</label>
+                    <div class="phone-ddl-wrap is-loading">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-d-loading" type="tel" class="phone-ddl__input" placeholder="Loading..." />
+                        <span class="spinner spinner--extra-small spinner--brand"></span>
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">default: filled</div>
+                <div class="mb-24">
+                    <label for="pn-st-d-filled">Label</label>
+                    <div class="phone-ddl-wrap">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-d-filled" type="tel" class="phone-ddl__input" value="22 123 456" />
+                    </div>
+                </div>
+
+                <!--<div class="mb-16 descriptor">default: disabled</div>
+                <div class="mb-24">
+                    <label for="pn-st-d-disabled">Label</label>
+                    <div class="phone-ddl-wrap is-disabled">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-d-disabled" type="tel" class="phone-ddl__input" placeholder="## ### ###" disabled />
+                    </div>
+                </div>-->
+
+                <div class="mb-16 descriptor">default: mandatory</div>
+                <div class="mb-24">
+                    <label for="pn-st-d-mandatory" class="required">Label</label>
+                    <div class="phone-ddl-wrap">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-d-mandatory" type="tel" class="phone-ddl__input" placeholder="## ### ###" />
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">read-only</div>
+                <div class="mb-24">
+                    <label for="pn-st-d-readonly">Label</label>
+                    <div class="phone-ddl-wrap is-readonly">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-d-readonly" type="tel" class="phone-ddl__input" value="22 123 456" readonly />
+                        <span class="input-icon right checkmark">
+                            <svg class="icon large" aria-hidden="true">
+                                <use href="assets/icons/sprite.svg#icon-checkmark-small"></use>
+                            </svg>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- warning column -->
+            <div class="col-3">
+                <div class="mb-16 descriptor">warning: default</div>
+                <div class="mb-24">
+                    <label for="pn-st-w-default">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--warning">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-w-default" type="tel" class="phone-ddl__input" placeholder="## ### ###" />
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">warning: hover</div>
+                <div class="mb-24">
+                    <label for="pn-st-w-hover">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--warning is-hover">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-w-hover" type="tel" class="phone-ddl__input" placeholder="## ### ###" />
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">warning: focus-empty</div>
+                <div class="mb-24">
+                    <label for="pn-st-w-focus-empty">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--warning is-focus">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-w-focus-empty" type="tel" class="phone-ddl__input" placeholder="## ### ###" />
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">warning: focus-filled</div>
+                <div class="mb-24">
+                    <label for="pn-st-w-focus-filled">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--warning is-focus">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-w-focus-filled" type="tel" class="phone-ddl__input" value="22 123 456" />
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">warning: loading</div>
+                <div class="mb-24">
+                    <label for="pn-st-w-loading">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--warning is-loading">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-w-loading" type="tel" class="phone-ddl__input" placeholder="Loading..." />
+                        <span class="spinner spinner--extra-small spinner--brand"></span>
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">warning: filled</div>
+                <div class="mb-24">
+                    <label for="pn-st-w-filled">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--warning">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-w-filled" type="tel" class="phone-ddl__input" value="22 123 456" />
+                    </div>
+                </div>
+
+                <!--<div class="mb-16 descriptor">warning: disabled</div>
+                <div class="mb-24">
+                    <label for="pn-st-w-disabled">Label</label>
+                    <div class="phone-ddl-wrap is-disabled">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-w-disabled" type="tel" class="phone-ddl__input" placeholder="## ### ###" disabled />
+                    </div>
+                </div>-->
+
+                <div class="mb-16 descriptor">warning: mandatory</div>
+                <div class="mb-24">
+                    <label for="pn-st-w-mandatory" class="required">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--warning">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-w-mandatory" type="tel" class="phone-ddl__input" placeholder="## ### ###" />
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">disabled</div>
+                <div class="mb-24">
+                    <label for="pn-st-w-disabled">Label</label>
+                    <div class="phone-ddl-wrap is-disabled">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-w-disabled" type="tel" class="phone-ddl__input" placeholder="## ### ###" disabled />
+                    </div>
+                </div>
+            </div>
+
+            <!-- destructive column -->
+            <div class="col-3">
+                <div class="mb-16 descriptor">destructive: default</div>
+                <div class="mb-24">
+                    <label for="pn-st-e-default">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--destructive">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-e-default" type="tel" class="phone-ddl__input" placeholder="## ### ###" />
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">destructive: hover</div>
+                <div class="mb-24">
+                    <label for="pn-st-e-hover">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--destructive is-hover">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-e-hover" type="tel" class="phone-ddl__input" placeholder="## ### ###" />
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">destructive: focus-empty</div>
+                <div class="mb-24">
+                    <label for="pn-st-e-focus-empty">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--destructive is-focus">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-e-focus-empty" type="tel" class="phone-ddl__input" placeholder="## ### ###" />
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">destructive: focus-filled</div>
+                <div class="mb-24">
+                    <label for="pn-st-e-focus-filled">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--destructive is-focus">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-e-focus-filled" type="tel" class="phone-ddl__input" value="22 123 456" />
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">destructive: loading</div>
+                <div class="mb-24">
+                    <label for="pn-st-e-loading">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--destructive is-loading">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-e-loading" type="tel" class="phone-ddl__input" placeholder="Loading..." />
+                        <span class="spinner spinner--extra-small spinner--brand"></span>
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">destructive: filled</div>
+                <div class="mb-24">
+                    <label for="pn-st-e-filled">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--destructive">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-e-filled" type="tel" class="phone-ddl__input" value="22 123 456" />
+                    </div>
+                </div>
+
+                <!--<div class="mb-16 descriptor">destructive: disabled</div>
+                <div class="mb-24">
+                    <label for="pn-st-e-disabled">Label</label>
+                    <div class="phone-ddl-wrap is-disabled">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-e-disabled" type="tel" class="phone-ddl__input" placeholder="## ### ###" disabled />
+                    </div>
+                </div>-->
+
+                <div class="mb-16 descriptor">destructive: mandatory</div>
+                <div class="mb-24">
+                    <label for="pn-st-e-mandatory" class="required">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--destructive">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-e-mandatory" type="tel" class="phone-ddl__input" placeholder="## ### ###" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- success column -->
+            <div class="col-3">
+                <div class="mb-16 descriptor">success: default</div>
+                <div class="mb-24">
+                    <label for="pn-st-s-default">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--success">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-s-default" type="tel" class="phone-ddl__input" placeholder="## ### ###" />
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">success: hover</div>
+                <div class="mb-24">
+                    <label for="pn-st-s-hover">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--success is-hover">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-s-hover" type="tel" class="phone-ddl__input" placeholder="## ### ###" />
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">success: focus-empty</div>
+                <div class="mb-24">
+                    <label for="pn-st-s-focus-empty">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--success is-focus">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-s-focus-empty" type="tel" class="phone-ddl__input" placeholder="## ### ###" />
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">success: focus-filled</div>
+                <div class="mb-24">
+                    <label for="pn-st-s-focus-filled">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--success is-focus">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-s-focus-filled" type="tel" class="phone-ddl__input" value="22 123 456" />
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">success: loading</div>
+                <div class="mb-24">
+                    <label for="pn-st-s-loading">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--success is-loading">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-s-loading" type="tel" class="phone-ddl__input" placeholder="Loading..." />
+                        <span class="spinner spinner--extra-small spinner--brand"></span>
+                    </div>
+                </div>
+
+                <div class="mb-16 descriptor">success: filled</div>
+                <div class="mb-24">
+                    <label for="pn-st-s-filled">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--success">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-s-filled" type="tel" class="phone-ddl__input" value="22 123 456" />
+                    </div>
+                </div>
+
+                <!--<div class="mb-16 descriptor">success: disabled</div>
+                <div class="mb-24">
+                    <label for="pn-st-s-disabled">Label</label>
+                    <div class="phone-ddl-wrap is-disabled">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-s-disabled" type="tel" class="phone-ddl__input" placeholder="## ### ###" disabled />
+                    </div>
+                </div>-->
+
+                <div class="mb-16 descriptor">success: mandatory</div>
+                <div class="mb-24">
+                    <label for="pn-st-s-mandatory" class="required">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--success">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-st-s-mandatory" type="tel" class="phone-ddl__input" placeholder="## ### ###" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Country Dropdown -->
+        <div class="row">
+            <div class="col-12">
+                <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+                    <h4>Country Dropdown</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="row country-dropdown-showcase">
+            <div class="col-4">
+                <div class="mb-16 descriptor">default</div>
+                <div>
+                    <label for="pn-cd-default">Label</label>
+                    <div class="phone-ddl-wrap">
+                        <div class="phone-ddl" data-phone-ddl data-open="true">
+                            <button type="button" class="phone-ddl__btn" data-phone-ddl-btn aria-haspopup="listbox" aria-expanded="true">
+                                <span class="fi" data-phone-ddl-flag aria-hidden="true"></span>
+                                <span class="phone-ddl__code" data-phone-ddl-code></span>
+                                <svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg>
+                            </button>
+                            <div class="phone-ddl__panel" data-phone-ddl-panel>
+                                <div class="phone-ddl__search-wrap">
+                                    <svg class="phone-ddl__search-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.5" /><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg>
+                                    <input type="text" class="phone-ddl__search" data-phone-ddl-search placeholder="Search country" autocomplete="off" />
+                                </div>
+                                <ul class="phone-ddl__list" role="listbox" data-phone-ddl-list>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-au" data-code="+61"><span class="fi fi-au" aria-hidden="true"></span><span>Australia</span><span class="phone-ddl__code">+61</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-be" data-code="+32"><span class="fi fi-be" aria-hidden="true"></span><span>Belgium</span><span class="phone-ddl__code">+32</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-br" data-code="+55"><span class="fi fi-br" aria-hidden="true"></span><span>Brazil</span><span class="phone-ddl__code">+55</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-cn" data-code="+86"><span class="fi fi-cn" aria-hidden="true"></span><span>China</span><span class="phone-ddl__code">+86</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-fr" data-code="+33"><span class="fi fi-fr" aria-hidden="true"></span><span>France</span><span class="phone-ddl__code">+33</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-de" data-code="+49"><span class="fi fi-de" aria-hidden="true"></span><span>Germany</span><span class="phone-ddl__code">+49</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-in" data-code="+91"><span class="fi fi-in" aria-hidden="true"></span><span>India</span><span class="phone-ddl__code">+91</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-it" data-code="+39"><span class="fi fi-it" aria-hidden="true"></span><span>Italy</span><span class="phone-ddl__code">+39</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-jp" data-code="+81"><span class="fi fi-jp" aria-hidden="true"></span><span>Japan</span><span class="phone-ddl__code">+81</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-yt" data-code="+262"><span class="fi fi-yt" aria-hidden="true"></span><span>Mayotte</span><span class="phone-ddl__code">+262</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-mx" data-code="+52"><span class="fi fi-mx" aria-hidden="true"></span><span>Mexico</span><span class="phone-ddl__code">+52</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-md" data-code="+373" aria-selected="true"><span class="fi fi-md" aria-hidden="true"></span><span>Moldova</span><span class="phone-ddl__code">+373</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-mc" data-code="+377"><span class="fi fi-mc" aria-hidden="true"></span><span>Monaco</span><span class="phone-ddl__code">+377</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-mn" data-code="+976"><span class="fi fi-mn" aria-hidden="true"></span><span>Mongolia</span><span class="phone-ddl__code">+976</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-me" data-code="+382"><span class="fi fi-me" aria-hidden="true"></span><span>Montenegro</span><span class="phone-ddl__code">+382</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ms" data-code="+1"><span class="fi fi-ms" aria-hidden="true"></span><span>Montserrat</span><span class="phone-ddl__code">+1</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ma" data-code="+212"><span class="fi fi-ma" aria-hidden="true"></span><span>Morocco</span><span class="phone-ddl__code">+212</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-nl" data-code="+31"><span class="fi fi-nl" aria-hidden="true"></span><span>Netherlands</span><span class="phone-ddl__code">+31</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-pl" data-code="+48"><span class="fi fi-pl" aria-hidden="true"></span><span>Poland</span><span class="phone-ddl__code">+48</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ro" data-code="+40"><span class="fi fi-ro" aria-hidden="true"></span><span>Romania</span><span class="phone-ddl__code">+40</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-es" data-code="+34"><span class="fi fi-es" aria-hidden="true"></span><span>Spain</span><span class="phone-ddl__code">+34</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-tr" data-code="+90"><span class="fi fi-tr" aria-hidden="true"></span><span>Turkey</span><span class="phone-ddl__code">+90</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ua" data-code="+380"><span class="fi fi-ua" aria-hidden="true"></span><span>Ukraine</span><span class="phone-ddl__code">+380</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-gb" data-code="+44"><span class="fi fi-gb" aria-hidden="true"></span><span>United Kingdom</span><span class="phone-ddl__code">+44</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-us" data-code="+1"><span class="fi fi-us" aria-hidden="true"></span><span>United States</span><span class="phone-ddl__code">+1</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <input id="pn-cd-default" type="tel" class="phone-ddl__input" placeholder="## ### ###" autocomplete="tel" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="mb-16 descriptor">scrolled</div>
+                <div>
+                    <label for="pn-cd-scrolled">Label</label>
+                    <div class="phone-ddl-wrap">
+                        <div class="phone-ddl" data-phone-ddl data-open="true">
+                            <button type="button" class="phone-ddl__btn" data-phone-ddl-btn aria-haspopup="listbox" aria-expanded="true">
+                                <span class="fi" data-phone-ddl-flag aria-hidden="true"></span>
+                                <span class="phone-ddl__code" data-phone-ddl-code></span>
+                                <svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg>
+                            </button>
+                            <div class="phone-ddl__panel" data-phone-ddl-panel>
+                                <div class="phone-ddl__search-wrap">
+                                    <svg class="phone-ddl__search-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.5" /><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg>
+                                    <input type="text" class="phone-ddl__search" data-phone-ddl-search placeholder="Search country" autocomplete="off" />
+                                </div>
+                                <ul class="phone-ddl__list" role="listbox" data-phone-ddl-list data-initial-scroll="280">
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-au" data-code="+61"><span class="fi fi-au" aria-hidden="true"></span><span>Australia</span><span class="phone-ddl__code">+61</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-be" data-code="+32"><span class="fi fi-be" aria-hidden="true"></span><span>Belgium</span><span class="phone-ddl__code">+32</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-br" data-code="+55"><span class="fi fi-br" aria-hidden="true"></span><span>Brazil</span><span class="phone-ddl__code">+55</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-cn" data-code="+86"><span class="fi fi-cn" aria-hidden="true"></span><span>China</span><span class="phone-ddl__code">+86</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-fr" data-code="+33"><span class="fi fi-fr" aria-hidden="true"></span><span>France</span><span class="phone-ddl__code">+33</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-de" data-code="+49"><span class="fi fi-de" aria-hidden="true"></span><span>Germany</span><span class="phone-ddl__code">+49</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-in" data-code="+91"><span class="fi fi-in" aria-hidden="true"></span><span>India</span><span class="phone-ddl__code">+91</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-it" data-code="+39"><span class="fi fi-it" aria-hidden="true"></span><span>Italy</span><span class="phone-ddl__code">+39</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-jp" data-code="+81"><span class="fi fi-jp" aria-hidden="true"></span><span>Japan</span><span class="phone-ddl__code">+81</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-yt" data-code="+262"><span class="fi fi-yt" aria-hidden="true"></span><span>Mayotte</span><span class="phone-ddl__code">+262</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-mx" data-code="+52"><span class="fi fi-mx" aria-hidden="true"></span><span>Mexico</span><span class="phone-ddl__code">+52</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-md" data-code="+373" aria-selected="true"><span class="fi fi-md" aria-hidden="true"></span><span>Moldova</span><span class="phone-ddl__code">+373</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-mc" data-code="+377"><span class="fi fi-mc" aria-hidden="true"></span><span>Monaco</span><span class="phone-ddl__code">+377</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-mn" data-code="+976"><span class="fi fi-mn" aria-hidden="true"></span><span>Mongolia</span><span class="phone-ddl__code">+976</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-me" data-code="+382"><span class="fi fi-me" aria-hidden="true"></span><span>Montenegro</span><span class="phone-ddl__code">+382</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ms" data-code="+1"><span class="fi fi-ms" aria-hidden="true"></span><span>Montserrat</span><span class="phone-ddl__code">+1</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ma" data-code="+212"><span class="fi fi-ma" aria-hidden="true"></span><span>Morocco</span><span class="phone-ddl__code">+212</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-nl" data-code="+31"><span class="fi fi-nl" aria-hidden="true"></span><span>Netherlands</span><span class="phone-ddl__code">+31</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-pl" data-code="+48"><span class="fi fi-pl" aria-hidden="true"></span><span>Poland</span><span class="phone-ddl__code">+48</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ro" data-code="+40"><span class="fi fi-ro" aria-hidden="true"></span><span>Romania</span><span class="phone-ddl__code">+40</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-es" data-code="+34"><span class="fi fi-es" aria-hidden="true"></span><span>Spain</span><span class="phone-ddl__code">+34</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-tr" data-code="+90"><span class="fi fi-tr" aria-hidden="true"></span><span>Turkey</span><span class="phone-ddl__code">+90</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ua" data-code="+380"><span class="fi fi-ua" aria-hidden="true"></span><span>Ukraine</span><span class="phone-ddl__code">+380</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-gb" data-code="+44"><span class="fi fi-gb" aria-hidden="true"></span><span>United Kingdom</span><span class="phone-ddl__code">+44</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-us" data-code="+1"><span class="fi fi-us" aria-hidden="true"></span><span>United States</span><span class="phone-ddl__code">+1</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <input id="pn-cd-scrolled" type="tel" class="phone-ddl__input" placeholder="## ### ###" autocomplete="tel" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-4">
+                <div class="mb-16 descriptor">filtered</div>
+                <div>
+                    <label for="pn-cd-filtered">Label</label>
+                    <div class="phone-ddl-wrap">
+                        <div class="phone-ddl" data-phone-ddl data-open="true">
+                            <button type="button" class="phone-ddl__btn" data-phone-ddl-btn aria-haspopup="listbox" aria-expanded="true">
+                                <span class="fi" data-phone-ddl-flag aria-hidden="true"></span>
+                                <span class="phone-ddl__code" data-phone-ddl-code></span>
+                                <svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg>
+                            </button>
+                            <div class="phone-ddl__panel" data-phone-ddl-panel>
+                                <div class="phone-ddl__search-wrap">
+                                    <svg class="phone-ddl__search-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true"><circle cx="6.5" cy="6.5" r="4" stroke="currentColor" stroke-width="1.5" /><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" /></svg>
+                                    <input type="text" class="phone-ddl__search" data-phone-ddl-search value="Mo" placeholder="Search country" autocomplete="off" />
+                                </div>
+                                <ul class="phone-ddl__list" role="listbox" data-phone-ddl-list>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-au" data-code="+61" style="display:none"><span class="fi fi-au" aria-hidden="true"></span><span>Australia</span><span class="phone-ddl__code">+61</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-be" data-code="+32" style="display:none"><span class="fi fi-be" aria-hidden="true"></span><span>Belgium</span><span class="phone-ddl__code">+32</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-br" data-code="+55" style="display:none"><span class="fi fi-br" aria-hidden="true"></span><span>Brazil</span><span class="phone-ddl__code">+55</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-cn" data-code="+86" style="display:none"><span class="fi fi-cn" aria-hidden="true"></span><span>China</span><span class="phone-ddl__code">+86</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-fr" data-code="+33" style="display:none"><span class="fi fi-fr" aria-hidden="true"></span><span>France</span><span class="phone-ddl__code">+33</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-de" data-code="+49" style="display:none"><span class="fi fi-de" aria-hidden="true"></span><span>Germany</span><span class="phone-ddl__code">+49</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-in" data-code="+91" style="display:none"><span class="fi fi-in" aria-hidden="true"></span><span>India</span><span class="phone-ddl__code">+91</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-it" data-code="+39" style="display:none"><span class="fi fi-it" aria-hidden="true"></span><span>Italy</span><span class="phone-ddl__code">+39</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-jp" data-code="+81" style="display:none"><span class="fi fi-jp" aria-hidden="true"></span><span>Japan</span><span class="phone-ddl__code">+81</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-yt" data-code="+262" style="display:none"><span class="fi fi-yt" aria-hidden="true"></span><span>Mayotte</span><span class="phone-ddl__code">+262</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-mx" data-code="+52" style="display:none"><span class="fi fi-mx" aria-hidden="true"></span><span>Mexico</span><span class="phone-ddl__code">+52</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-md" data-code="+373" aria-selected="true"><span class="fi fi-md" aria-hidden="true"></span><span>Moldova</span><span class="phone-ddl__code">+373</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-mc" data-code="+377"><span class="fi fi-mc" aria-hidden="true"></span><span>Monaco</span><span class="phone-ddl__code">+377</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-mn" data-code="+976"><span class="fi fi-mn" aria-hidden="true"></span><span>Mongolia</span><span class="phone-ddl__code">+976</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-me" data-code="+382"><span class="fi fi-me" aria-hidden="true"></span><span>Montenegro</span><span class="phone-ddl__code">+382</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ms" data-code="+1"><span class="fi fi-ms" aria-hidden="true"></span><span>Montserrat</span><span class="phone-ddl__code">+1</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ma" data-code="+212"><span class="fi fi-ma" aria-hidden="true"></span><span>Morocco</span><span class="phone-ddl__code">+212</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-nl" data-code="+31" style="display:none"><span class="fi fi-nl" aria-hidden="true"></span><span>Netherlands</span><span class="phone-ddl__code">+31</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-pl" data-code="+48" style="display:none"><span class="fi fi-pl" aria-hidden="true"></span><span>Poland</span><span class="phone-ddl__code">+48</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ro" data-code="+40" style="display:none"><span class="fi fi-ro" aria-hidden="true"></span><span>Romania</span><span class="phone-ddl__code">+40</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-es" data-code="+34" style="display:none"><span class="fi fi-es" aria-hidden="true"></span><span>Spain</span><span class="phone-ddl__code">+34</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-tr" data-code="+90" style="display:none"><span class="fi fi-tr" aria-hidden="true"></span><span>Turkey</span><span class="phone-ddl__code">+90</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-ua" data-code="+380" style="display:none"><span class="fi fi-ua" aria-hidden="true"></span><span>Ukraine</span><span class="phone-ddl__code">+380</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-gb" data-code="+44" style="display:none"><span class="fi fi-gb" aria-hidden="true"></span><span>United Kingdom</span><span class="phone-ddl__code">+44</span></li>
+                                    <li class="phone-ddl__option" role="option" data-flag="fi-us" data-code="+1" style="display:none"><span class="fi fi-us" aria-hidden="true"></span><span>United States</span><span class="phone-ddl__code">+1</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <input id="pn-cd-filtered" type="tel" class="phone-ddl__input" placeholder="## ### ###" autocomplete="tel" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Assistive Text -->
+        <div class="row">
+            <div class="col-12">
+                <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+                    <h4>Assistive Text</h4>
+                </div>
+            </div>
+            <div class="col-7 my-32">
+                <div>
+                    Assistive text conveys additional guidance about the input field, such as how it will be used. It should only take up one or two lines, being persistently visible or visible only on focus.
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-3">
+                <div class="mb-16 descriptor">default</div>
+                <div class="mb-24">
+                    <label for="pn-at-default">Label</label>
+                    <div class="phone-ddl-wrap">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-at-default" type="tel" class="phone-ddl__input" placeholder="## ### ###" />
+                    </div>
+                    <div class="input-message default">Helper message displayed here</div>
+                </div>
+            </div>
+
+            <div class="col-3">
+                <div class="mb-16 descriptor">warning</div>
+                <div class="mb-24">
+                    <label for="pn-at-warning">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--warning">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-at-warning" type="tel" class="phone-ddl__input" placeholder="## ### ###" />
+                    </div>
+                    <div class="input-message warning">
+                        <span><svg class="icon medium" aria-hidden="true"><use href="assets/icons/sprite.svg#icon-warning-filled"></use></svg></span>
+                        Helper message displayed here
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-3">
+                <div class="mb-16 descriptor">destructive</div>
+                <div class="mb-24">
+                    <label for="pn-at-destructive">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--destructive">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-at-destructive" type="tel" class="phone-ddl__input" placeholder="## ### ###" />
+                    </div>
+                    <div class="input-message destructive">
+                        <span><svg class="icon medium" aria-hidden="true"><use href="assets/icons/sprite.svg#icon-circle-error-filled"></use></svg></span>
+                        Helper message displayed here
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-3">
+                <div class="mb-16 descriptor">success</div>
+                <div class="mb-24">
+                    <label for="pn-at-success">Label</label>
+                    <div class="phone-ddl-wrap phone-ddl-wrap--success">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-at-success" type="tel" class="phone-ddl__input" placeholder="## ### ###" />
+                    </div>
+                    <div class="input-message success mt-6">
+                        <span><svg class="icon medium" aria-hidden="true"><use href="assets/icons/sprite.svg#icon-circle-checkmark-filled"></use></svg></span>
+                        Helper message displayed here
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Clearing Input -->
+        <div class="row">
+            <div class="col-12">
+                <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+                    <h4>Clearing Input</h4>
+                </div>
+            </div>
+            <div class="col-7 my-32">
+                <div>
+                    The clear button may automatically appear as a trailing icon when the input field is focused and contains one or more characters. It also may become visible when the text input is populated and in a filled state.
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-3">
+                <div class="mb-16 descriptor">focus</div>
+                <div>
+                    <label for="pn-cl-focus">Label</label>
+                    <div class="phone-ddl-wrap is-focus">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-cl-focus" type="tel" class="phone-ddl__input" value="22 123 456" />
+                        <button type="button" class="btn-icon clear" aria-label="Clear" onclick="clearPhoneInput('pn-cl-focus')">
+                            <svg class="icon small" aria-hidden="true">
+                                <use href="assets/icons/sprite.svg#icon-cross-small"></use>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-3">
+                <div class="mb-16 descriptor">filled</div>
+                <div>
+                    <label for="pn-cl-filled">Label</label>
+                    <div class="phone-ddl-wrap">
+                        <div class="phone-ddl"><span class="phone-ddl__btn"><span class="fi fi-md" aria-hidden="true"></span><span class="phone-ddl__code">+373</span><svg class="phone-ddl__chevron" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8.28284 9.71716C8.12663 9.87337 7.87337 9.87337 7.71716 9.71716L4.34142 6.34142C4.21543 6.21543 4.30466 6 4.48284 6H11.5172C11.6953 6 11.7846 6.21543 11.6586 6.34142L8.28284 9.71716Z" fill="#121212" /></svg></span></div>
+                        <input id="pn-cl-filled" type="tel" class="phone-ddl__input" value="22 123 456" />
+                        <button type="button" class="btn-icon clear" aria-label="Clear" onclick="clearPhoneInput('pn-cl-filled')">
+                            <svg class="icon small" aria-hidden="true">
+                                <use href="assets/icons/sprite.svg#icon-cross-small"></use>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
-    <div class="row d-none">
-      <div class="col-3">
-        <div class="input-group mb-24">
-          <p>default</p>
-          <label for="default-default">Label</label>
-          <input id="default-default" type="text" placeholder="Placeholder" class="input">
-          <div class="input-message default">
-            Helper message displayed here
-          </div>
-        </div>
-      </div>
+    <div id="site-footer"></div>
 
-      <div class="col-3">
-        <div class="input-group mb-24">
-          <p>warning</p>
-          <label for="default-default">Label</label>
-          <input id="default-default" type="text" placeholder="Placeholder" class="input--warning">
-           <div class="input-message warning">
-            <span class="">
-              <svg class="icon medium" aria-hidden="true"> 
-                <use href="assets/icons/sprite.svg#icon-warning-filled"></use> 
-              </svg>
-            </span>
-                Helper message displayed here
-          </div>
-        </div>
-      </div>
+    <script>
+        document.querySelectorAll('[data-phone-ddl]').forEach(root => {
+            const list = root.querySelector('[data-phone-ddl-list]');
+            const flagEl = root.querySelector('[data-phone-ddl-flag]');
+            const codeEl = root.querySelector('[data-phone-ddl-code]');
+            const search = root.querySelector('[data-phone-ddl-search]');
+            const options = () => list.querySelectorAll('[role="option"]');
 
-      <div class="col-3">
-        <div class="input-group mb-24">
-          <p>destructive</p>
-          <label for="default-default">Label</label>
-          <input id="default-default" type="text" placeholder="Placeholder" class="input--destructive">
-           <div class="input-message destructive">
-            <span class="">
-              <svg class="icon medium" aria-hidden="true"> 
-                <use href="assets/icons/sprite.svg#icon-circle-error-filled"></use> 
-              </svg>
-            </span>
-            Helper message displayed here
-          </div>
-        </div>
-      </div>
+            const apply = li => {
+                flagEl.className = `fi ${li.dataset.flag}`;
+                codeEl.textContent = li.dataset.code;
+            };
 
-      <div class="col-3">
-        <div class="input-group mb-24">
-          <p>success</p>
-          <label for="default-default">Label</label>
-          <input id="default-default" type="text" placeholder="Placeholder" class="input--success">
-           <div class="input-message success mt-6">
-            <span class="">
-              <svg class="icon medium" aria-hidden="true"> 
-                <use href="assets/icons/sprite.svg#icon-circle-checkmark-filled"></use> 
-              </svg>
-            </span>
-            Helper message displayed here
-          </div>
-        </div>
-      </div>
-    </div>
-</div>
+            const resetSearch = () => {
+                if (!search) return;
+                search.value = '';
+                options().forEach(li => li.style.display = '');
+            };
 
-  <div id="site-footer"></div>
+            const selected = list.querySelector('[aria-selected="true"]');
+            if (selected) apply(selected);
+
+            root.querySelector('[data-phone-ddl-btn]').onclick = () => {
+                const opening = root.dataset.open !== 'true';
+                root.dataset.open = opening ? 'true' : 'false';
+                if (opening) { resetSearch(); search?.focus(); }
+            };
+
+            if (search) {
+                search.oninput = () => {
+                    const q = search.value.trim().toLowerCase();
+                    options().forEach(li => {
+                        li.style.display = (!!q && !li.textContent.toLowerCase().includes(q)) ? 'none' : '';
+                    });
+                };
+            }
+
+            list.onclick = e => {
+                const li = e.target.closest('[role="option"]');
+                if (!li) return;
+                list.querySelector('[aria-selected="true"]')?.removeAttribute('aria-selected');
+                li.setAttribute('aria-selected', 'true');
+                apply(li);
+                root.dataset.open = 'false';
+                resetSearch();
+            };
+        });
+
+        // Country Dropdown showcase: apply initial scroll for the "scrolled" example
+        document.querySelectorAll('[data-phone-ddl-list][data-initial-scroll]').forEach(list => {
+            list.scrollTop = parseInt(list.dataset.initialScroll, 10) || 0;
+        });
+
+        // Clearing Input: clear the given phone input when its trailing clear button is pressed
+        function clearPhoneInput(inputId) {
+            const input = document.getElementById(inputId);
+            if (!input) return;
+            input.value = '';
+            input.focus();
+        }
+    </script>
 </body>
 </html>

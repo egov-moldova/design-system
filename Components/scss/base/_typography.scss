@@ -8,6 +8,10 @@ body {
   margin: 0;
 }
 
+input {
+    @include typ.apply-text-style('body-md');
+}
+
 h1 { @include typ.apply-text-style('heading-h1-lg'); }
 h2 { @include typ.apply-text-style('heading-h2-md'); }
 h3 { @include typ.apply-text-style('heading-h3-sm'); }
