@@ -170,7 +170,7 @@ export class CorInput {
 | F8 | `internals.setValidity(flags, message?, anchor?)` — anchor element for focus-on-invalid | Manual review |
 | F9 | All native validity flags copied (`valueMissing`, `patternMismatch`, `tooLong`, `tooShort`, `rangeOverflow`, `rangeUnderflow`, `stepMismatch`, `typeMismatch`, `badInput`, `customError`) | Manual review |
 | F10 | Optional: Custom States via `@AttachInternals({ states: { invalid: false, … } })` for `:host(:state(invalid))` CSS | Manual review |
-| F11 | Test coverage MUST include `formResetCallback`, `formDisabledCallback`, `formStateRestoreCallback`, and a `FormData` submission check | See `jest.setup.ts` for ElementInternals mock |
+| F11 | Test coverage MUST include `formResetCallback`, `formDisabledCallback`, `formStateRestoreCallback`, and a `FormData` submission check | See `vitest-setup.ts` for ElementInternals mock |
 
 ### Custom States API (Stencil 4 + browsers Chrome 90+/Firefox 119+/Safari 17.4+)
 
@@ -221,7 +221,7 @@ export class CorX { /* missing @AttachInternals */ }
 
 ### Project-specific extras
 
-- ElementInternals is mocked in `jest.setup.ts` — unit tests have access to:
+- ElementInternals is mocked in `vitest-setup.ts` — Vitest spec tests have access to:
   - `setFormValue(value, state)`
   - `checkValidity()`, `reportValidity()`
   - `setValidity({ … }, message?, anchor?)`

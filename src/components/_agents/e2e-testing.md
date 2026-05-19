@@ -1,54 +1,66 @@
-# E2E Test Patterns — Shadow DOM Access
+# Browser & Shadow DOM Test Patterns
 
 ## Scope
 
-Stencil E2E testing patterns for `shadow: true` components. **Read when writing E2E tests.**
+Patterns for exercising `shadow: true` `cor-*` components in a **real browser**. Read when:
+
+- Adding a Vitest `browser` project (via `@vitest/browser-playwright`)
+- Writing custom Playwright tests against the built Storybook
+- Driving the live Storybook story through the Playwright MCP (`mcp__playwright__browser_*`) during `/audit-accessibility`
+
+> **Note**: the project's `vitest.config.ts` currently exposes only the `spec` project (mock-doc + `@stencil/vitest` `render()`). The Stencil 4 `newE2EPage` Puppeteer harness was retired with the Jest → Vitest migration. Live browser interactions are validated either through the Playwright MCP against `storybook-static`, or — when a dedicated browser project is added — through Vitest's Playwright provider. The shadow-DOM patterns below apply to **any** Playwright-driven context (Vitest browser, raw Playwright, MCP).
 
 ---
 
 ## The Problem
 
-Stencil E2E's `element.find()` **cannot** pierce Shadow DOM — it returns `null`.
+`document.querySelector()` and Playwright's default selectors **cannot** pierce a closed-by-convention Shadow DOM root in one step. Light-DOM queries against the host return `null` for shadow-rooted children, and slotted children render via `<slot>` instead of being direct DOM descendants.
 
 ### ❌ Anti-Patterns (return null)
 
 ```typescript
-const element = await page.find('cor-input');
-const input = await element.find('input');           // ❌ null
-const btn = await element.find('.clear-button');      // ❌ null
-const items = await element.findAll('cor-skeleton');  // ❌ empty array
+const host = await page.locator('cor-input');
+const input = await host.locator('input');          // ❌ doesn't enter shadow root
+const btn = await host.locator('.clear-button');     // ❌ same
 ```
 
 ---
 
 ## ✅ Correct Patterns
 
-### 1. Shadow DOM child — `>>>` combinator via `page.find()`
+### 1. Shadow DOM child — Playwright shadow selectors
+
+Playwright's default selector engine pierces shadow roots when you reach across with CSS:
 
 ```typescript
-const input = await page.find('cor-input >>> input');
-const btn = await page.find('cor-input >>> .clear-button');
-const items = await page.findAll('cor-input >>> cor-skeleton');
+const input = page.locator('cor-input input');
+const btn = page.locator('cor-input .clear-button');
+const items = page.locator('cor-input cor-skeleton');
 ```
 
-### 2. Light DOM slotted elements — query from host (no `>>>`)
+If you need explicit shadow-root piercing (custom selector engines / older versions):
 
 ```typescript
-const icon = await element.find('[slot="icon-left"]');
-const helper = await element.find('[slot="helper-text"]');
-const child = await element.find('cor-icon');
+const input = page.locator('css:light=cor-input >> css:shadow=input');
+```
+
+### 2. Light DOM slotted elements — query from host
+
+```typescript
+const icon = page.locator('cor-input [slot="icon-left"]');
+const helper = page.locator('cor-input [slot="helper-text"]');
+const child = page.locator('cor-input > cor-icon');
 ```
 
 ### 3. Complex interactions — `page.evaluate()` with `shadowRoot`
 
-Preferred for focus/blur/keyboard to avoid double-firing:
+Preferred for focus/blur/keyboard to avoid double-firing, and required when driving via the Playwright MCP:
 
 ```typescript
 await page.evaluate(() => {
   const el = document.querySelector('cor-input');
   el?.shadowRoot?.querySelector('input')?.focus();
 });
-await page.waitForChanges();
 ```
 
 ### 4. Shadow DOM text content
@@ -64,10 +76,22 @@ expect(text).toContain('expected content');
 ### 5. Host properties/attributes
 
 ```typescript
-const element = await page.find('cor-input');
-expect(await element.getProperty('value')).toBe('test');
-expect(element).toHaveAttribute('invalid');
-expect(element).toHaveClass('hydrated');
+const host = page.locator('cor-input');
+expect(await host.evaluate((el: HTMLElement) => (el as any).value)).toBe('test');
+await expect(host).toHaveAttribute('invalid', '');
+await expect(host).toHaveClass(/hydrated/);
+```
+
+### 6. Custom-event spies — listen via `addEventListener`
+
+```typescript
+await page.evaluate(() => {
+  const events: CustomEvent[] = [];
+  const el = document.querySelector('cor-input');
+  el?.addEventListener('corChange', (e) => events.push(e as CustomEvent));
+  (globalThis as Record<string, unknown>).__capturedEvents = events;
+});
+// trigger the interaction, then read `__capturedEvents.length` via another evaluate()
 ```
 
 ---
@@ -76,51 +100,25 @@ expect(element).toHaveClass('hydrated');
 
 | What to Query | Method | Example |
 |---|---|---|
-| Shadow DOM element | `page.find('host >>> selector')` | `page.find('cor-input >>> input')` |
-| Shadow DOM list | `page.findAll('host >>> selector')` | `page.findAll('cor-input >>> cor-skeleton')` |
-| Light DOM slot | `element.find('[slot="name"]')` | `element.find('[slot="icon-left"]')` |
-| Light DOM child | `element.find('child-tag')` | `element.find('cor-icon')` |
-| Host property | `element.getProperty('prop')` | `element.getProperty('checked')` |
-| Host attribute | `element.getAttribute('attr')` | `element.getAttribute('size')` |
+| Shadow DOM element | `page.locator('host selector')` | `page.locator('cor-input input')` |
+| Shadow DOM list | `page.locator('host selector').all()` | `page.locator('cor-input cor-skeleton').all()` |
+| Light DOM slot | `page.locator('host [slot="name"]')` | `page.locator('cor-input [slot="icon-left"]')` |
+| Light DOM child | `page.locator('host > child-tag')` | `page.locator('cor-input > cor-icon')` |
+| Host property | `host.evaluate(el => el.prop)` | `host.evaluate(el => el.checked)` |
+| Host attribute | `expect(host).toHaveAttribute('attr', val)` | `toHaveAttribute('size', 'lg')` |
 | Focus/blur/keyboard | `page.evaluate(() => {...})` | Avoids double-fire |
 | Shadow DOM text | `page.evaluate(() => {...})` | Read `shadowRoot.textContent` |
 | Form submission | `page.evaluate(() => {...})` | Read `FormData` entries |
 
 ---
 
-## Test Skeleton
+## Future browser project (Vitest)
 
-```typescript
-import { newE2EPage } from '@stencil/core/testing';
+When a Vitest `browser` project is added (`@vitest/browser-playwright`), spec files live alongside the component (`*.browser.tsx`) and the Vitest browser-context API replaces the retired `newE2EPage`:
 
-describe('cor-component', () => {
-  it('renders', async () => {
-    const page = await newE2EPage();
-    await page.setContent('<cor-component>Content</cor-component>');
-    await page.waitForChanges();
-    const element = await page.find('cor-component');
-    expect(element).toHaveClass('hydrated');
-  });
+- `import { page } from '@vitest/browser/context'` — locators, keyboard, mouse
+- `expect.element(locator).toHaveAttribute(...)` — Vitest browser matchers
+- Mount the component by appending a real custom element node to `page.body` (use `document.createElement('cor-...')` + `appendChild` — avoid `innerHTML`)
+- All shadow-DOM patterns above apply unchanged
 
-  it('accesses shadow DOM child', async () => {
-    const page = await newE2EPage();
-    await page.setContent('<cor-component>Content</cor-component>');
-    await page.waitForChanges();
-    const inner = await page.find('cor-component >>> .inner-element');
-    expect(inner).not.toBeNull();
-  });
-
-  it('handles focus events', async () => {
-    const page = await newE2EPage();
-    await page.setContent('<cor-component>Content</cor-component>');
-    await page.waitForChanges();
-    const element = await page.find('cor-component');
-    const spy = await element.spyOnEvent('corFocus');
-    await page.evaluate(() => {
-      document.querySelector('cor-component')?.shadowRoot?.querySelector('input')?.focus();
-    });
-    await page.waitForChanges();
-    expect(spy).toHaveReceivedEventTimes(1);
-  });
-});
-```
+Until the browser project is wired into `vitest.config.ts`, exercise live browser behavior through the Playwright MCP (`/audit-accessibility`, `/audit-component --deep`) or a manual Playwright script.

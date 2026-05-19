@@ -2,93 +2,90 @@
 
 **Canonical reference:** Skill [`accessibility-compliance`](../../../.claude/skills/accessibility-compliance/SKILL.md) and Success Criteria list.
 
-This file describes how to write automated accessibility tests for every `cor-*` component using `jest-axe` (unit / spec) and `@axe-core/playwright` (E2E).
+This file describes the three layers used to validate accessibility of every `cor-*` component:
+
+1. **Structural WCAG contract assertions** inside `.spec.tsx` (Vitest + `@stencil/vitest`)
+2. **Visual axe-core scans** inside Storybook (`addon-a11y`, both light and dark)
+3. **Browser-driven axe + keyboard checks** during `/audit-accessibility` via the Playwright MCP
+
+> **Why no `jest-axe`?** The project migrated from Jest + `newSpecPage` to Vitest + `@stencil/vitest` `render()`. axe-core runs against Stencil's mock-doc nodes fail the `instanceof Node` check (mock-doc elements aren't real `Node` instances). Component-level visual axe is delegated to Storybook (`addon-a11y`) where the elements are real DOM. Specs focus on the static role/aria-* contract.
 
 ---
 
-## When to write an a11y test
+## When to add a11y coverage
 
-**Every interactive `cor-*` component must have at least one `axe()` assertion** in its `.spec.tsx` or `.e2e.ts`. Non-interactive presentational components (`cor-illustration-*`, `cor-icon`) need only a basic snapshot covering accessible name.
+**Every interactive `cor-*` component must include structural WCAG contract assertions** in its `.spec.tsx` (role, aria-* attributes, focusability) AND must have at least one Storybook story whose `addon-a11y` panel runs in both light and dark modes. Non-interactive presentational components (`cor-illustration-*`, `cor-icon`) need only the accessible-name assertion (label / aria-hidden).
 
-Components with state changes (modal open/close, dropdown expand, error state) must run `axe()` on each meaningful state.
+Components with state changes (modal open/close, dropdown expand, error state) must assert the contract for every meaningful state.
 
 ---
 
-## jest-axe — Unit / Spec Tests
+## Layer 1 — Structural contract in `.spec.tsx`
 
-Use `jest-axe` inside Stencil's `newSpecPage()` test harness for fast, deterministic checks in CI.
+Use `render()` from `@stencil/vitest` and assert documented role / aria-* / focus attributes. This is fast, deterministic, and runs on every `yarn test`.
 
-### Setup (once)
+> **Coverage requirement (always add this side-effect import)**: every spec MUST `import '../<componentName>';` at the top so `stencilVitestPlugin` compiles the source file on-the-fly and `coverage v8` sees real per-file numbers. Without it the test still passes IF the element was registered elsewhere, but coverage reports **0%** for the component TSX — see `_agents/testing.md` for the full rule.
 
-Add to `jest.setup.ts` (or whichever file Stencil's `jest.preset` points to):
-
-```ts
-import { configureAxe, toHaveNoViolations } from 'jest-axe';
-
-expect.extend(toHaveNoViolations);
-
-export const axeWcag21aa = configureAxe({
-  runOnly: {
-    type: 'tag',
-    values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'],
-  },
-  rules: {
-    // 2.1 AA target. AAA disabled.
-    'color-contrast-enhanced': { enabled: false },
-  },
-});
-```
-
-### Per-component test
-
-```ts
+```tsx
 // src/components/cor-button/test/cor-button.spec.tsx
-import { newSpecPage } from '@stencil/core/testing';
-import { CorButton } from '../cor-button';
-import { axeWcag21aa } from '../../../../jest.setup';
+import { render, describe, it, expect } from '@stencil/vitest';
 
-describe('cor-button a11y (WCAG 2.1 AA)', () => {
-  it('passes axe in default state', async () => {
-    const page = await newSpecPage({
-      components: [CorButton],
-      html: `<cor-button>Save</cor-button>`,
-    });
-    const results = await axeWcag21aa(page.root!);
-    expect(results).toHaveNoViolations();
+// Side-effect import — registers <cor-button> AND makes coverage v8 see the source.
+import '../cor-button';
+
+describe('cor-button — WCAG 2.1 AA contract', () => {
+  it('default state exposes the button role and an accessible name', async () => {
+    const { root } = await render(<cor-button>Save</cor-button>);
+    expect(root?.getAttribute('role') ?? 'button').toBe('button');
+    expect(root?.textContent?.trim()).toBe('Save');
   });
 
-  it('passes axe in disabled state', async () => {
-    const page = await newSpecPage({
-      components: [CorButton],
-      html: `<cor-button disabled="true">Save</cor-button>`,
-    });
-    const results = await axeWcag21aa(page.root!);
-    expect(results).toHaveNoViolations();
+  it('disabled state mirrors aria-disabled', async () => {
+    const { root } = await render(<cor-button disabled>Save</cor-button>);
+    expect(root?.getAttribute('aria-disabled')).toBe('true');
   });
 
-  it('passes axe in loading/skeleton state', async () => {
-    const page = await newSpecPage({
-      components: [CorButton],
-      html: `<cor-button skeleton="true">Save</cor-button>`,
-    });
-    const results = await axeWcag21aa(page.root!);
-    expect(results).toHaveNoViolations();
+  it('loading state announces busy', async () => {
+    const { root } = await render(<cor-button skeleton>Save</cor-button>);
+    expect(root?.getAttribute('aria-busy')).toBe('true');
   });
 });
 ```
 
 **Coverage minimum per component:**
 
-- Default state
-- Each variant (primary, secondary, ghost, etc.)
-- Each interactive state (hover doesn't need a11y test, but disabled, loading, invalid, expanded do)
-- Empty / placeholder state if applicable
+- Default state — role + accessible name
+- Each interactive state — disabled, loading, invalid, expanded, selected (whichever apply)
+- Each variant only if the variant changes the contract (most don't)
 
-### What `axe()` checks
+---
 
-Out-of-the-box rule coverage relevant to 2.1 AA:
+## Layer 2 — Visual axe via Storybook `addon-a11y`
 
-- `color-contrast` (1.4.3) — but limited inside spec (jsdom has no real rendering); run a contrast check via `audit:contrast` script and Storybook addon for accurate values
+Real axe-core runs against the rendered DOM inside the Storybook iframe. Configured globally in `.storybook/preview.js`:
+
+```ts
+parameters.a11y = {
+  config: {
+    rules: [
+      { id: 'color-contrast', enabled: true },
+      { id: 'color-contrast-enhanced', enabled: false }, // AAA, not required
+    ],
+  },
+  options: {
+    runOnly: {
+      type: 'tag',
+      values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'best-practice'],
+    },
+  },
+};
+```
+
+Every story variant (Default, AllVariants, AllSizes, States, ResponsiveLayouts) is scanned in both light and dark mode automatically. Failures appear in the `Accessibility` panel.
+
+### What axe-core covers (when run in Storybook)
+
+- `color-contrast` (1.4.3) — true contrast against real CSS
 - `aria-*-attr` family (4.1.2) — ARIA validity, name/role/value
 - `label` / `label-content-name-mismatch` (2.5.3, 3.3.2)
 - `link-name`, `button-name` (4.1.2)
@@ -96,47 +93,12 @@ Out-of-the-box rule coverage relevant to 2.1 AA:
 - `aria-roles`, `aria-allowed-attr`, `aria-allowed-role` (4.1.2)
 - `aria-required-attr`, `aria-required-children`, `aria-required-parent` (4.1.2)
 - `aria-valid-attr`, `aria-valid-attr-value` (4.1.2)
-- `meta-viewport` and reflow rules (1.4.10) — page-level, skip in component tests
 
 ---
 
-## @axe-core/playwright — E2E Tests
+## Layer 3 — Browser-driven axe via Playwright MCP
 
-Use `AxeBuilder` inside Stencil E2E tests for full-rendered axe runs against the real shadow DOM.
-
-```ts
-// src/components/cor-modal/test/cor-modal.e2e.ts
-import { newE2EPage } from '@stencil/core/testing';
-import AxeBuilder from '@axe-core/playwright';
-
-describe('cor-modal e2e a11y', () => {
-  it('has no axe violations when opened', async () => {
-    const page = await newE2EPage();
-    await page.setContent(`
-      <cor-modal aria-label="Test dialog" open="true">
-        <button>Action</button>
-      </cor-modal>
-    `);
-
-    // Stencil's newE2EPage exposes a Puppeteer-like page; for @axe-core/playwright
-    // direct use in the project's Playwright MCP-driven audits, run inside the browser:
-    const results = await page.evaluate(async () => {
-      // axe is injected globally by AxeBuilder in real Playwright; in Stencil E2E we use
-      // axe-core directly via @axe-core/playwright with the underlying browser context.
-      const axe = (window as unknown as { axe: typeof import('axe-core') }).axe;
-      return axe.run(document, {
-        runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] },
-      });
-    });
-
-    expect(results.violations).toHaveLength(0);
-  });
-});
-```
-
-### Via the Playwright MCP (during /audit-accessibility)
-
-When auditing through the Playwright MCP (`mcp__playwright__browser_*`), inject axe-core and run:
+During `/audit-accessibility`, inject axe-core into the live Storybook story and run a full scan in both light and dark mode:
 
 ```text
 mcp__playwright__browser_evaluate({
@@ -154,37 +116,38 @@ mcp__playwright__browser_evaluate({
 })
 ```
 
-Then snapshot the result. Repeat with `data-theme="dark"` set on `<html>` for dark-mode coverage.
+Snapshot the result. Repeat with `data-theme="dark"` set on `<html>` for dark-mode coverage. Pair with manual keyboard tests (Tab, Enter, Esc, arrows) and screen-reader spot-checks.
 
 ---
 
 ## Coverage Matrix per Component Type
 
-| Component family | jest-axe required | E2E axe required | States to cover |
-|--|--|--|--|
-| `cor-button`, `cor-link` | yes | no | default, disabled, loading, all variants |
-| `cor-input`, `cor-textarea`, `cor-select` | yes | yes | default, invalid (error), disabled, focused, with value, empty |
-| `cor-checkbox`, `cor-radio-*`, `cor-toggle` | yes | yes | unchecked, checked, disabled, indeterminate (if applicable) |
-| `cor-modal`, `cor-tooltip`, `cor-menu-*`, `cor-tabs` | yes | yes | closed/open, with arrow keys, with Escape |
-| `cor-toast-notification`, `cor-banner-notification`, `cor-inline-notification` | yes | no | each severity (info, success, warning, error) |
-| `cor-table`, `cor-pagination`, `cor-datepicker` | yes | yes | data-rich states, empty state, error state |
-| `cor-icon`, `cor-illustration-*`, `cor-skeleton`, `cor-loading` | yes (basic) | no | accessible name OR `aria-hidden` correct |
+| Component family | Spec contract required | Storybook a11y required | Browser axe required | States to cover |
+|--|--|--|--|--|
+| `cor-button`, `cor-link` | yes | yes | yes | default, disabled, loading, all variants |
+| `cor-input`, `cor-textarea`, `cor-select` | yes | yes | yes | default, invalid (error), disabled, focused, with value, empty |
+| `cor-checkbox`, `cor-radio-*`, `cor-toggle` | yes | yes | yes | unchecked, checked, disabled, indeterminate (if applicable) |
+| `cor-modal`, `cor-tooltip`, `cor-menu-*`, `cor-tabs` | yes | yes | yes | closed/open, with arrow keys, with Escape |
+| `cor-toast-notification`, `cor-banner-notification`, `cor-inline-notification` | yes | yes | no | each severity (info, success, warning, error) |
+| `cor-table`, `cor-pagination`, `cor-datepicker` | yes | yes | yes | data-rich states, empty state, error state |
+| `cor-icon`, `cor-illustration-*`, `cor-skeleton`, `cor-loading` | accessible-name only | yes | no | accessible name OR `aria-hidden` correct |
 
 ---
 
 ## Anti-patterns
 
-- **Don't disable axe rules per-test.** If a rule fails legitimately, fix the component. The only allowed disable is project-wide for `color-contrast-enhanced` (AAA, not required) and `region` (page-level, not component-scoped).
+- **Don't run axe inside specs.** Stencil mock-doc nodes fail axe-core's runtime `instanceof Node` check. Use Layer 2 (Storybook) or Layer 3 (Playwright MCP) instead.
+- **Don't disable Storybook axe rules per-story.** If a rule fails legitimately, fix the component. The only allowed disables are project-wide: `color-contrast-enhanced` (AAA, not required) and `region` (page-level, not component-scoped).
 - **Don't pin to a non-2.1 AA tag set.** The project standard is 2.1 AA. New rules from 2.2 may be added explicitly per Skill section 9.
 - **Don't skip dark mode** for components with theme-dependent colors.
-- **Don't claim "axe passes" as full a11y compliance.** Axe catches ~30–40% of WCAG violations; pair with `/audit-accessibility` (keyboard, screen reader, focus contrast) for full coverage.
+- **Don't claim "Storybook axe passes" as full a11y compliance.** axe catches ~30–40% of WCAG violations; pair with `/audit-accessibility` (keyboard, screen reader, focus contrast) for full coverage.
 
 ---
 
 ## CI Integration
 
-`yarn test` runs jest-axe spec tests automatically (no separate command needed once `jest.setup.ts` is wired up).
+`yarn test` runs the Vitest spec project; structural a11y assertions block on failure.
 
-`yarn audit:contrast` runs the token-level contrast script. Both should be added to `pre-pr-check` and required on every PR.
+`yarn audit:contrast` runs the token-level contrast script. Both run inside `pre-pr-check` and are required on every PR.
 
-For Storybook a11y addon coverage, run `yarn sp.dev.watch` and check the a11y panel manually, OR set up a CI job that runs `storybook-axe` (separate setup — see Storybook docs).
+For the visual axe scan, `yarn sp.build` produces `storybook-static/` and an external `storybook-axe` job (or `/audit-accessibility` ran locally) reports violations per story.

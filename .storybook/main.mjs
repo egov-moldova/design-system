@@ -8,9 +8,15 @@ const __dirname = path.dirname(__filename);
 
 const isDev = process.env.NODE_ENV !== 'production';
 
-const devAddons = ['@storybook/addon-docs', '@storybook/addon-a11y'];
+// In order of appearance in the UI (toolbar, addons panel, then docs)
+const devAddons = [
+  '@storybook/addon-docs',
+  '@whitespace/storybook-addon-html',
+  '@storybook/addon-vitest',
+  '@storybook/addon-a11y',
+];
 
-const prodAddons = [...devAddons, '@storybook/addon-links'];
+const prodAddons = ['@storybook/addon-docs', '@storybook/addon-links', '@storybook/addon-a11y'];
 
 export default {
   stories: ['./stories/**/*.mdx', '../src/components/**/*.stories.@(js|jsx|ts|tsx)'],

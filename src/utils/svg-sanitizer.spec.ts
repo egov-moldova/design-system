@@ -1,3 +1,5 @@
+import { describe, it, expect } from '@stencil/vitest';
+
 import { sanitizeSvgMarkup } from './svg-sanitizer';
 
 describe('sanitizeSvgMarkup', () => {

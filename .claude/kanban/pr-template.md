@@ -39,7 +39,7 @@ Redesigns `cor-<name>` to align with the new AGE Design System. Source of truth:
 ### Test Writer
 - Tests added: `<N>`
 - Coverage delta: `<before>% → <after>%`
-- jest-axe assertions: `<M>`
+- Structural WCAG contract assertions: `<M>`
 - All tests pass: ✅
 
 ### Integration Checker

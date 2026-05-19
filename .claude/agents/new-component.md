@@ -211,7 +211,7 @@ Reference: `_agents/pixel-perfect-qa.md`.
 5. `:focus-visible` styles present with ≥ 3:1 contrast (SC 2.4.7, 1.4.11).
 6. ARIA states reflect props: `aria-disabled`, `aria-invalid`, `aria-expanded`, `aria-selected`, `aria-checked`, `aria-required`, `aria-pressed`.
 7. Honor global `prefers-reduced-motion` — do NOT override `src/assets/css/base/html.css`.
-8. Add at least one `jest-axe` assertion per state to `.spec.tsx` — pattern in [`src/components/_agents/a11y-testing.md`](../../src/components/_agents/a11y-testing.md).
+8. Add at least one structural WCAG contract assertion per state to `.spec.tsx` (role / aria-* / focus). Visual axe runs in Storybook + `/audit-accessibility`. Pattern in [`src/components/_agents/a11y-testing.md`](../../src/components/_agents/a11y-testing.md).
 9. Storybook a11y addon panel: zero violations in BOTH light and dark mode for every story variant.
 
 If any check fails → fix before continuing to verification.

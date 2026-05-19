@@ -141,13 +141,17 @@ describe('story-scaffold: guessEnumName', () => {
 describe('test-scaffold: generateSpecFile', () => {
   it('produces smoke + props + slots + a11y blocks for a basic component', () => {
     const out = generateSpecFile({ contract: makeContract() });
-    assert.match(out, /import \{ newSpecPage \}/);
-    assert.match(out, /import \{ axe, toHaveNoViolations \}/);
+    assert.match(out, /from '@stencil\/vitest'/);
+    assert.match(out, /import '\.\.\/cor-button';/);
     assert.match(out, /describe\('cor-button'/);
     assert.match(out, /smoke: renders without crashing/);
     assert.match(out, /describe\('props'/);
     assert.match(out, /describe\('slots'/);
-    assert.match(out, /has no axe violations/);
+    assert.match(out, /describe\('accessibility'/);
+    assert.match(out, /exposes the documented WCAG contract/);
+    // 100%-branches boilerplate — exercises the Stencil registerHost guard.
+    assert.match(out, /registerHost=false/);
+    assert.match(out, /customElements\.get\('cor-button'\)/);
   });
 
   it('emits event spy stubs per @Event', () => {
@@ -182,7 +186,7 @@ describe('test-scaffold: generateSpecFile', () => {
 
     const out2 = generateSpecFile({ contract: makeContract({ formAssociated: true }) });
     assert.match(out2, /describe\('form-associated'/);
-    assert.match(out2, /formAssociated: true/);
+    assert.match(out2, /renders inside a form context/);
   });
 
   it('only generates prop reflection tests for reflected props', () => {

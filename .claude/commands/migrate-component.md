@@ -71,7 +71,7 @@ Minimum requirements before migration:
 - Event emission: custom events fire with correct payload
 - Slot rendering: content appears in correct slots
 - Disabled state: interaction blocked
-- **jest-axe assertion**: `axeWcag21aa(page.root)` returns `toHaveNoViolations()` for at least the default + disabled state. See [`src/components/_agents/a11y-testing.md`](../../src/components/_agents/a11y-testing.md).
+- **Structural WCAG contract assertion**: assert documented role / aria-* / focus attributes via `@stencil/vitest` `render()` for at least the default + disabled state. Visual axe runs in Storybook (`addon-a11y`). See [`src/components/_agents/a11y-testing.md`](../../src/components/_agents/a11y-testing.md).
 
 ## Step 7: Ensure Story Coverage
 

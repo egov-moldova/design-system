@@ -143,7 +143,7 @@ Update reference files accordingly and bump the "Aligned with" line at the top o
 ## 7. Out-of-Scope (Not Covered Here)
 
 - **Build configuration** — `stencil.config.ts` (output targets, plugins) — see [`stencil.config.ts`](../../../stencil.config.ts) directly
-- **Testing infrastructure** — see `jest.setup.ts`, `_agents/e2e-testing.md`, audit-component Phase 5
+- **Testing infrastructure** — see `vitest.config.ts`, `vitest-setup.ts`, `_agents/e2e-testing.md`, audit-component Phase 5
 - **Design tokens** — see `token-creation` skill
 - **Figma extraction** — see `new-component` agent
 - **WCAG 2.1 AA** — see `accessibility-compliance` skill (referenced where overlap)

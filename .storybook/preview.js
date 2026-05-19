@@ -112,6 +112,7 @@ export const parameters = {
     source: {
       type: 'code', // Show source code instead of JSDoc
     },
+    codePanel: true, // Enable the code panel in Docs view
     extractArgTypes: component => {
       // Filter out CSS custom properties (@cssprop)
       const argTypes = {};
