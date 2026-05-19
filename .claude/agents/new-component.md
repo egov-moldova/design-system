@@ -32,7 +32,6 @@ Classify from the Figma design before reading any subfiles.
 - Token/slot architecture → `AGENTS.md`, `src/components/AGENTS.md`, `tokens/AGENTS.md`
 - Stencil patterns → `src/components/_agents/component-structure.md`
 - Token creation → invoke `token-creation` skill or read `tokens/_agents/*.md`
-- Icons → invoke `carbon-icons` skill — **MANDATORY** if component has icon slots or uses `cor-icon`
 - Storybook stories → `src/components/_agents/storybook-stories.md`
 
 **`--fast` output**: show inventory, state matrix, per-component summary as compact 1-liners. Do not wait for user response — continue immediately.
@@ -79,7 +78,7 @@ mcp__figma__get_metadata({ nodeId: "..." })
 
 **If documentation page** (multiple instances visible, frame named "States" / "Variations" / "Examples"): extract from ALL instances — get design context + screenshot per instance. Build a state matrix from results.
 
-**Asset check**: custom graphics (not Carbon icons) → download to `assets/icons/`.
+**Asset check**: custom graphics → download to `assets/icons/`.
 
 Read for detail: `_agents/figma-extraction.md`. For interactive/form components: `_agents/state-extraction.md`.
 

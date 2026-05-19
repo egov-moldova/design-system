@@ -7,29 +7,19 @@
 
 ## Overview
 
-Spinner component — animated circular loading indicator with three-dot center.
+Spinner — animated circular loading indicator.
+
+Pattern B (atom-visual): renders a CSS-only rotating arc.
+No slots, no events, no interactivity.
 
 ## Properties
 
-| Property   | Attribute   | Description                          | Type                                                                                       | Default           |
-| ---------- | ----------- | ------------------------------------ | ------------------------------------------------------------------------------------------ | ----------------- |
-| `hideDots` | `hide-dots` | Hide the center loading dots.        | `boolean`                                                                                  | `false`           |
-| `label`    | `label`     | Accessible label for screen readers. | `string`                                                                                   | `'Loading'`       |
-| `size`     | `size`      | Size of the spinner.                 | `SpinnerSize.LG \| SpinnerSize.MD \| SpinnerSize.SM \| SpinnerSize.XLG \| SpinnerSize.XSM` | `SpinnerSize.XLG` |
+| Property  | Attribute | Description                          | Type                                               | Default     |
+| --------- | --------- | ------------------------------------ | -------------------------------------------------- | ----------- |
+| `label`   | `label`   | Accessible label for screen readers. | `string`                                           | `'Loading'` |
+| `size`    | `size`    | Visual size rung.                    | `"lg" \| "md" \| "sm" \| "xs"`                     | `'md'`      |
+| `variant` | `variant` | Color treatment.                     | `"brand" \| "dark" \| "light" \| "light-on-color"` | `'brand'`   |
 
-
-## Dependencies
-
-### Depends on
-
-- [cor-loading-dots](../cor-loading-dots)
-
-### Graph
-```mermaid
-graph TD;
-  cor-spinner --> cor-loading-dots
-  style cor-spinner fill:#f9f,stroke:#333,stroke-width:4px
-```
 
 ----------------------------------------------
 

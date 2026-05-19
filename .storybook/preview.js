@@ -162,6 +162,17 @@ export const parameters = {
       ],
     },
     options: {
+      // Per-run rule overrides. IMPORTANT: when `runOnly.type === 'tag'` is set,
+      // axe-core's `ruleShouldRun()` ignores the `enabled` flag from
+      // `axe.configure({ rules: [...] })` and selects rules purely by tag match.
+      // The only way to disable a rule whose tags overlap `runOnly.values` is to
+      // branch. See axe-core core/base/audit.js → ruleShouldRun.
+      rules: {
+        // Best-practice (not WCAG 2.1 AA) — structurally inapplicable to atomic
+        // component fragments, which have no page-level landmark ancestor in the
+        // Storybook preview iframe. Re-enable per-story for Templates/Pages.
+        region: { enabled: false },
+      },
       runOnly: {
         type: 'tag',
         // Restrict to WCAG 2.0 + 2.1 A/AA criteria.
@@ -185,3 +196,8 @@ export const parameters = {
 export const initialGlobals = {
   backgrounds: { value: 'light' },
 };
+
+// Storybook v8+ replaced `docs.autodocs: true` in main.js with the tag system.
+// Adding `autodocs` here generates a Docs page for every story globally —
+// individual stories can opt out via `tags: ['!autodocs']` on the meta.
+export const tags = ['autodocs'];

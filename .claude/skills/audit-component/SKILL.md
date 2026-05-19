@@ -403,6 +403,14 @@ Read `.stories.ts` (already loaded) and verify:
 - `title` follows atomic hierarchy: `Atoms/CorName`, `Molecules/CorName`, etc.
 - No `tags: ['autodocs']` — autodocs configured globally in `.storybook/main.mjs`
 
+**Type-safety anti-patterns** (flag any of these):
+- `STORY-MISSING-GENERIC` — `Meta` or `StoryObj` used without a generic type parameter (bare `Meta` resolves to `Meta<any>` and disables every type check the pattern is supposed to provide). Required form: `Meta<Args>` and `StoryObj<Args>`.
+- `STORY-ESLINT-DISABLE-WRAP` — `/* eslint-disable */` wrapping the `Meta, StoryObj` import. The only reason for it is unused imports, which means the generic was forgotten. Fix the generic and drop the wrapper.
+- `STORY-ARGS-ANY` — `render: (args: any) => ...` or any `(args: any)` callback in stories. Typed args param required.
+- `STORY-TYPEOF-META` — `type Story = StoryObj<typeof meta>`. Works in React/Vue Storybook but breaks in `@storybook/web-components@^9.1.x` (nests `Meta<Args>` into the args slot). Required form: `type Story = StoryObj<Args>`.
+- `STORY-DOCS-SOURCE-MISSING-DYNAMIC` — `parameters.docs.source` provides a `transform` without `type: 'dynamic'`. The global `type: 'code'` (in `.storybook/preview.js`) caches the snippet at story registration and ignores Controls changes; per-story `type: 'dynamic'` is required to make the transform re-run.
+- `STORY-DOCS-SOURCE-ARGS-ANY` — `transform: (_code, { args }: any) => ...`. Type the destructure: `{ args }: { args: ComponentArgs }`.
+
 **Required stories**:
 - `Default` — basic usage with default props
 - `AllVariants` — grid showing all variant values
@@ -416,6 +424,9 @@ Read `.stories.ts` (already loaded) and verify:
 - `options` array for enum props
 - `description` text
 - `table.defaultValue` if prop has default
+
+**Story styling — design tokens preferred (warning, not error)**:
+- `STORY-RAW-VALUE` — inline `style="..."` attributes containing raw `#hex` colors, raw `Npx` values (except `0` and `1px` for borders), or `var(--palette-*)` references. Prefer semantic tokens (`var(--spacing-X)`, `var(--color-background-*-*)`, `var(--font-size-X)`, `var(--border-radius-X)`). Exceptions: preview-stability widths (`width: 200px`) and grid label-gutters (`grid-template-columns: 80px ...`) are legitimate.
 
 ### 2.10 Test Coverage Check
 
@@ -820,6 +831,5 @@ When invoked headlessly, the skill returns the Final Report string. The orchestr
 - [`stencil-compliance/SKILL.md`](../stencil-compliance/SKILL.md) — full Stencil rule catalog (14 sections)
 - [`accessibility-compliance/SKILL.md`](../accessibility-compliance/SKILL.md) — WCAG 2.1 AA companion
 - [`token-creation/SKILL.md`](../token-creation/SKILL.md) — token-tier rules
-- [`carbon-icons/SKILL.md`](../carbon-icons/SKILL.md) — icon usage
 - [`src/components/AGENTS.md`](../../../src/components/AGENTS.md) — project-specific component patterns
 - [`src/components/_agents/anti-patterns.md`](../../../src/components/_agents/anti-patterns.md) — project anti-pattern list

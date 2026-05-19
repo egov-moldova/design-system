@@ -52,7 +52,7 @@
     "lint": "wireit",
     "lint.js": "wireit",
     "lint.css": "wireit",
-    "lint.css.fix": "stylelint \"src/**/*.css\" --fix",
+    "lint.css.fix": "stylelint \"src/**/*.css\" --fix --allow-empty-input",
     "lint.colors": "node scripts/hardcoded-colors.mjs",
     "sp.build": "wireit",
     "sp.dev": "storybook dev -p 6007 --no-open",
@@ -67,7 +67,6 @@
     "typecheck": "wireit",
     "tokens.build": "wireit",
     "tokens.build.prod": "wireit",
-    "tokens.build.age": "wireit",
     "tokens.audit": "node scripts/debug-missing-token-references.mjs tokens/core/style-dictionary.config.json",
     "audit:contrast": "node scripts/audit-token-contrast.mjs",
     "tokens.audit.dark": "node scripts/debug-missing-token-references.mjs tokens/core.dark/style-dictionary.config.json",
@@ -80,7 +79,6 @@
     "svg:remove-size": "wireit",
     "svg:remove-fill": "wireit",
     "svg:icons": "wireit",
-    "carbon:names": "node scripts/generate-carbon-icon-names.mjs",
     "sync:tokens": "node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --output tokens/figma-export",
     "sync:tokens:apply": "node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --apply",
     "test:scripts": "node --test \"scripts/__tests__/**/*.spec.mjs\"",
@@ -120,6 +118,7 @@
     "tokens.build.dark": {
       "command": "style-dictionary build --config tokens/core.dark/style-dictionary.config.json",
       "files": [
+        "tokens/core/**/*.tokens.json",
         "tokens/core.dark/**/*.tokens.json",
         "tokens/core.dark/style-dictionary.config.json"
       ],
@@ -154,6 +153,7 @@
     "tokens.build.prod.dark": {
       "command": "style-dictionary build --config tokens/core.dark/style-dictionary.prod.config.json",
       "files": [
+        "tokens/core/**/*.tokens.json",
         "tokens/core.dark/**/*.tokens.json",
         "tokens/core.dark/style-dictionary.prod.config.json"
       ],
@@ -172,22 +172,6 @@
         "tokens.build.prod.dark"
       ]
     },
-    "tokens.build.age": {
-      "command": "style-dictionary build --config tokens/age/style-dictionary.config.json",
-      "files": [
-        "tokens/core/**/*.tokens.json",
-        "tokens/age/**/*.tokens.json",
-        "tokens/age/style-dictionary.config.json"
-      ],
-      "output": [
-        "dist/design-system/tokens/age.tokens.css",
-        "tokens/generated/age.tokens.css",
-        "tokens/generated/age.tokens.json"
-      ],
-      "packageLocks": [
-        "yarn.lock"
-      ]
-    },
     "tokens.watch": {
       "command": "node scripts/tokens-watch.mjs",
       "service": true,
@@ -196,10 +180,11 @@
       ]
     },
     "wca.custom-elements": {
-      "command": "wca analyze src --format json --outFile .storybook/custom-elements.json",
+      "command": "wca analyze src/components --format json --outFile .storybook/custom-elements.json && node scripts/ensure-custom-elements-manifest.mjs",
       "files": [
-        "src/**/*.ts",
-        "src/**/*.tsx"
+        "src/components/**/*.ts",
+        "src/components/**/*.tsx",
+        "scripts/ensure-custom-elements-manifest.mjs"
       ],
       "output": [
         ".storybook/custom-elements.json"
@@ -342,7 +327,7 @@
       ]
     },
     "lint.css": {
-      "command": "stylelint \"src/**/*.css\"",
+      "command": "stylelint \"src/**/*.css\" --allow-empty-input",
       "files": [
         "src/**/*.css",
         ".stylelintrc.json",
@@ -464,7 +449,6 @@
     }
   },
   "dependencies": {
-    "@carbon/icons": "^11.74.0",
     "@stencil/core": "^4.43.3"
   },
   "devDependencies": {
@@ -489,6 +473,7 @@
     "cross-env": "^10.1.0",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-storybook": "10.3.1",
     "husky": "^9.1.7",
     "jest": "29.7.0",

@@ -412,7 +412,7 @@ componentDidLoad() {
 
 **Why**: Doesn't follow token-based sizing/coloring, balloons bundle size, harder to maintain.
 
-**Fix**: Use `<cor-icon name="..." />`. See `carbon-icons` skill.
+**Fix**: Use `<cor-icon name="..." />`.
 
 ---
 

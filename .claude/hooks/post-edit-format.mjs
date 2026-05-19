@@ -9,13 +9,7 @@ import { spawnSync } from 'node:child_process';
 
 const REPO_ROOT = resolve(import.meta.dirname, '..', '..');
 
-const SOURCE_PREFIXES = [
-  'src/',
-  'tokens/',
-  'scripts/',
-  '.storybook/',
-  '_agents/',
-];
+const SOURCE_PREFIXES = ['src/', 'tokens/', 'scripts/', '.storybook/', '_agents/'];
 
 // Single-file files at the repo root that should still be formatted.
 const ROOT_CONFIG_FILES = new Set([
@@ -54,8 +48,8 @@ function readStdin() {
 }
 
 function isInScope(rel) {
-  if (PROTECTED_PATTERNS.some((p) => p.test(rel))) return false;
-  if (SOURCE_PREFIXES.some((prefix) => rel.startsWith(prefix))) return true;
+  if (PROTECTED_PATTERNS.some(p => p.test(rel))) return false;
+  if (SOURCE_PREFIXES.some(prefix => rel.startsWith(prefix))) return true;
   if (!rel.includes('/') && ROOT_CONFIG_FILES.has(rel)) return true;
   return false;
 }

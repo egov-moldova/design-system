@@ -36,7 +36,7 @@ Steps A through A.1.5 of the pre-implementation protocol: Figma screenshot analy
 After `figma_get_design_context`, check for non-icon assets.
 
 **Download**: Custom illustrations, logos, background images, decorative SVGs
-**Skip**: Carbon icons → `cor-icon`, standard UI icons → `assets/icons/*.svg`
+**Skip**: standard UI icons → handled separately by `cor-icon` component (loaded via Figma-exported SVG set, TBD in next branch)
 
 **Download workflow** (only if custom graphics found):
 

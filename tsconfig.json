@@ -17,12 +17,12 @@
     "esModuleInterop": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["@stencil/core", "jest"],
+    "types": ["@stencil/core", "jest", "node"],
     "isolatedModules": true,
     "useDefineForClassFields": true,
     "incremental": true,
     "tsBuildInfoFile": ".stencil/.tsbuildinfo"
   },
   "include": ["src", "types", "*.ts"],
-  "exclude": ["node_modules", "dist", "loader", "www"]
+  "exclude": ["node_modules", "dist", "loader", "www", "src/legacy/**"]
 }

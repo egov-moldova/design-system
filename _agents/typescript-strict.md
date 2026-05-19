@@ -123,8 +123,8 @@ import { Meta, StoryObj } from '@storybook/web-components';
 Create `.d.ts` files in `src/types/` for packages without TypeScript definitions.
 
 ```typescript
-// src/types/carbon-icons.d.ts
-declare module '@carbon/icons';
+// src/types/<package-name>.d.ts
+declare module '<package-name>';
 ```
 
 ---

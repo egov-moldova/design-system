@@ -22,7 +22,6 @@ node_modules/
 .stencil/
 .wireit/
 .playwright-mcp
-.windsurf/qa/
 .remember/
 .sass-cache/
 .versions/
@@ -66,4 +65,4 @@ $RECYCLE.BIN/
 .env
 CLAUDE.local.md
 .claude/*.local.json
-.windsurf/skills.local/
+.claude/skills.local/

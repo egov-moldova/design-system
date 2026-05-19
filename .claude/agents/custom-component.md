@@ -115,7 +115,6 @@ Reference documentation:
 
 - `AGENTS.md`, `src/components/AGENTS.md`, `tokens/AGENTS.md` — architecture
 - `src/components/_agents/component-structure.md` — implementation patterns
-- Invoke `carbon-icons` skill — **MANDATORY** if component has icon slots or uses `cor-icon`
 
 Follow file structure and CSS patterns from `src/components/AGENTS.md`.
 

@@ -99,13 +99,26 @@ export const Default: Story = {
 // ... AllVariants, AllSizes, States, etc.
 ```
 
+**Single source of truth for union types**: when the component exposes enum-like props (`size`, `variant`), declare both the runtime list and the type from one `as const` array in `<componentName>.types.ts` and import both into the story:
+
+```ts
+// cor-spinner.types.ts
+export const SPINNER_SIZES = ['xs', 'sm', 'md', 'lg'] as const;
+export type SpinnerSize = (typeof SPINNER_SIZES)[number];
+```
+
+Then in the story: `import { SPINNER_SIZES as SIZES } from './...types';` and use `options: SIZES` in `argTypes`. This eliminates the dual-declaration drift where the type union and the runtime array diverge silently.
+
 **Rules**:
 
 - Title: `Atoms/CorName`, `Molecules/CorName` — atomic hierarchy
 - `component`: string tag name (NOT JS reference)
 - `render`: function with HTML template strings, prefixed `/*html*/` for IDE syntax highlighting
 - Typed `args: Args` parameter (no bare `args =>`)
-- No `tags: ['autodocs']`
+- `Meta<Args>` and `StoryObj<Args>` MUST have the generic — bare `Meta` / `StoryObj` resolves to `<any>` and silently disables typechecking
+- No `/* eslint-disable */` wrapping the Meta/StoryObj import — once the generics are in place, the imports are used and ESLint stays quiet
+- `type Story = StoryObj<Args>` — NOT `StoryObj<typeof meta>`. The `<typeof meta>` form works in React/Vue Storybook but breaks in `@storybook/web-components@^9.1.x`: it nests `Meta<Args>` into the args slot of `StoryObj`, producing a type that demands `args: Partial<Meta<Args>>` and fails typecheck.
+- No `tags: ['autodocs']` — autodocs is configured globally in `.storybook/main.mjs`
 - Imports from `@storybook/web-components` (NOT react / not vue)
 - For grids of variants/sizes: use a wrapper element with `display: grid` and CSS template strings, NOT JS map
 
@@ -128,6 +141,47 @@ argTypes: {
   },
 }
 ```
+
+### Step 5a — Story styling: prefer design tokens
+
+Inline `style="..."` attributes inside `render` templates should use semantic CSS variables, not raw `px` / `hex` / palette tokens. Semantic tokens adapt across light/dark globals; palette tokens are mode-locked.
+
+| ❌ Avoid | ✅ Prefer |
+| --- | --- |
+| `padding: 16px` | `padding: var(--spacing-16)` |
+| `gap: 8px` | `gap: var(--spacing-8)` |
+| `font-size: 12px` | `font-size: var(--font-size-12)` |
+| `border-radius: 8px` | `border-radius: var(--border-radius-4)` |
+| `background: var(--palette-gray-900)` | `background: var(--color-background-base-inverse-default)` |
+| `background: var(--palette-blue-sky-600)` | `background: var(--color-background-brand-default)` |
+| `color: #0058d2` | `color: var(--color-text-brand-default)` |
+
+**Exceptions** (raw `px` is fine):
+- Preview-stability wrappers — `<div style="width: 200px;">` to lock screenshot dimensions
+- Grid label-gutters — `grid-template-columns: 80px repeat(N, 1fr)`
+- `0` and `1px` for borders
+
+Full catalog of available tokens: `dist/design-system/tokens/core.tokens.css`. When showcasing a `light` variant on a deliberately dark surface (or vice versa) for visual contrast, use the mode-inverse semantic token (`--color-background-base-inverse-default`), never `--palette-*`.
+
+### Step 5b — Docs source snippet
+
+If the story sets a per-story `parameters.docs.source.transform`, it MUST also set `type: 'dynamic'`:
+
+```ts
+parameters: {
+  docs: {
+    source: {
+      type: 'dynamic',  // overrides global 'code' from .storybook/preview.js:113
+      transform: (_code: string, { args }: { args: ComponentArgs }) =>
+        `<cor-component prop="${args.prop}">...</cor-component>`,
+    },
+  },
+},
+```
+
+The global `parameters.docs.source.type: 'code'` from `.storybook/preview.js` caches the rendered snippet at story registration time and ignores Controls panel changes. `type: 'dynamic'` per-story overrides this so the transform re-runs on each args change. The `{ args }` destructure must be typed (`{ args }: { args: ComponentArgs }`), never `any`. Reference: `src/components/cor-spinner/cor-spinner.stories.ts:59-70`.
+
+For static stories (grid comparisons, no Controls), omit `parameters.docs.source` entirely — the global `'code'` mode is correct for those.
 
 ### Step 6 — Write or draft
 

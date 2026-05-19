@@ -123,7 +123,7 @@ componentDidLoad() {
 - **NO `className=`** — Stencil uses native `class=` (React's `className` is JSX-specific and not the Stencil convention).
 - **NO inline `style={{ }}`** — Anti-Pattern #2. Use CSS classes + `:host([attr])` selectors + CSS variables.
 - **All slot-accepting components MUST validate slotted content** via `invalidSlottedTag()` utility — see `src/utils/invalid-slotted-tag` and `src/components/_agents/slot-patterns.md`.
-- **Carbon-style icons** — use `<cor-icon name="...">`, NEVER inline SVG. See `carbon-icons` skill.
+- **Icons** — use `<cor-icon name="...">`, NEVER inline SVG (a new `cor-icon` component loading Figma-exported SVGs by `name` prop is coming in a follow-up branch).
 
 ---
 

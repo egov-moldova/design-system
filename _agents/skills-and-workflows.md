@@ -13,17 +13,12 @@ Skill invocation rules and available workflows. **Read when starting any compone
 
 | Skill Name | When to Invoke | Notes |
 | --- | --- | --- |
-| `optimize-prompt` | **On explicit user request only** — when user invokes `/optimize-prompt` or asks to structure/improve/optimize a prompt. Do NOT invoke automatically on normal tasks. | Active skill |
+| `optimize-prompt` | **On explicit user request only** — when user invokes `/optimize-prompt` or asks to structure/improve/optimize a prompt. Do NOT invoke automatically on normal tasks. Compiles raw requests into AGE-aware specs: routes on archetype (atom-visual / atom-interactive / form-associated / molecule / molecule-interactive / organism / layout), applies canonical defaults, runs 12-pattern contradiction detector + reuse scan, validates against codebase snapshot. Modes: `new`, `redesign`, `modify`, `fix`, `tokens`. Replaces the former `/optimize-prompt-new-component` command. | Active skill |
 | `token-creation` | Creating new component tokens, unfamiliar token structure or naming | Active skill |
 | `systematic-debugging` | **ALWAYS** at `/fix-visual-bug` Step 0 — before touching any code | Active skill |
 | `verification-before-completion` | **ALWAYS** before claiming any step complete — must run verification AND read output | Active skill |
-| `carbon-icons` | **MANDATORY** when any component includes an icon slot or `cor-icon` usage | Active skill |
-| `figma-illustration-import` | Custom multi-layer illustration (NOT standard Carbon icon) — check `src/components/cor-illustration-*/` first | Active skill |
-
-**Deprecated Skills (gutted to stubs):** Use AGENTS.md files instead:
-- ~~`design-system-patterns`~~ → `AGENTS.md`, `tokens/AGENTS.md`
-- ~~`implement-design`~~ → `_agents/figma-extraction.md`
-- ~~`accessibility-compliance`~~ → `AGENTS.md`, `.windsurf/workflows/audit-accessibility.md` (retained as redirect stub)
+| `figma-illustration-import` | Custom multi-layer illustration — check `src/components/cor-illustration-*/` first | Active skill |
+| `accessibility-compliance` | **MANDATORY** reference for every `cor-*` component — WCAG 2.1 AA criteria, ARIA, contrast, keyboard, focus, dark mode | Active skill |
 
 **Standard component workflow** (atom/molecule with known patterns): follow AGENTS.md directly — no skill invocation needed.
 
@@ -35,7 +30,11 @@ Skill invocation rules and available workflows. **Read when starting any compone
 
 ---
 
-## Windsurf Workflow Slash Commands
+## Slash Commands
+
+**Spec preparation**:
+
+- `/optimize-prompt` — Compile a raw request into an AGE-aware spec for downstream agents. Auto-routes by archetype + mode (`new` | `redesign` | `modify` | `fix` | `tokens`). See [`.claude/skills/optimize-prompt/SKILL.md`](../.claude/skills/optimize-prompt/SKILL.md).
 
 **Creation**:
 - `/new-component` — Create component from Figma (`--fast` for auto-proceed)

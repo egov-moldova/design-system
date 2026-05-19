@@ -1,9 +1,13 @@
 import { newSpecPage } from '@stencil/core/testing';
+
 import { CorSpinner } from '../cor-spinner';
-import { SpinnerSize } from '../cor-spinner.enums';
+import type { SpinnerSize, SpinnerVariant } from '../cor-spinner.types';
+
+const SIZES: SpinnerSize[] = ['xs', 'sm', 'md', 'lg'];
+const VARIANTS: SpinnerVariant[] = ['brand', 'dark', 'light', 'light-on-color'];
 
 describe('cor-spinner', () => {
-  it('renders', async () => {
+  it('renders with default props', async () => {
     const page = await newSpecPage({
       components: [CorSpinner],
       html: `<cor-spinner></cor-spinner>`,
@@ -12,51 +16,64 @@ describe('cor-spinner', () => {
     expect(page.root?.getAttribute('role')).toBe('status');
     expect(page.root?.getAttribute('aria-label')).toBe('Loading');
     expect(page.root?.getAttribute('aria-live')).toBe('polite');
-    expect(page.root?.getAttribute('size')).toBe(SpinnerSize.XLG);
-    expect(page.root?.shadowRoot?.querySelector('.spinner-container')).toBeTruthy();
+    expect(page.root?.getAttribute('size')).toBe('md');
+    expect(page.root?.getAttribute('variant')).toBe('brand');
   });
 
-  it('renders with custom label', async () => {
+  it('reflects a custom label to aria-label', async () => {
     const page = await newSpecPage({
       components: [CorSpinner],
-      html: `<cor-spinner label="Custom loading text"></cor-spinner>`,
+      html: `<cor-spinner label="Fetching data"></cor-spinner>`,
     });
 
-    expect(page.root?.getAttribute('role')).toBe('status');
-    expect(page.root?.getAttribute('aria-label')).toBe('Custom loading text');
-    expect(page.root?.getAttribute('aria-live')).toBe('polite');
-    expect(page.root?.getAttribute('label')).toBe('Custom loading text');
-    expect(page.root?.shadowRoot?.querySelector('.spinner-container')).toBeTruthy();
+    expect(page.root?.getAttribute('aria-label')).toBe('Fetching data');
   });
 
-  it('renders with different sizes', async () => {
-    const sizes = Object.values(SpinnerSize);
+  it.each(SIZES)('reflects size="%s" to the host attribute', async size => {
+    const page = await newSpecPage({
+      components: [CorSpinner],
+      html: `<cor-spinner size="${size}"></cor-spinner>`,
+    });
 
-    for (const size of sizes) {
-      const page = await newSpecPage({
-        components: [CorSpinner],
-        html: `<cor-spinner size="${size}"></cor-spinner>`,
-      });
-
-      expect(page.root).toBeTruthy();
-      expect(page.root?.getAttribute('size')).toBe(size);
-    }
+    expect(page.root?.getAttribute('size')).toBe(size);
   });
 
-  it('has correct accessibility attributes', async () => {
+  it.each(VARIANTS)('reflects variant="%s" to the host attribute', async variant => {
+    const page = await newSpecPage({
+      components: [CorSpinner],
+      html: `<cor-spinner variant="${variant}"></cor-spinner>`,
+    });
+
+    expect(page.root?.getAttribute('variant')).toBe(variant);
+  });
+
+  it('renders an aria-hidden arc layer in shadow DOM', async () => {
     const page = await newSpecPage({
       components: [CorSpinner],
       html: `<cor-spinner></cor-spinner>`,
     });
 
-    const spinner = page.root;
-    expect(spinner?.getAttribute('role')).toBe('status');
-    expect(spinner?.getAttribute('aria-label')).toBe('Loading');
-    expect(spinner?.getAttribute('aria-live')).toBe('polite');
+    const arc = page.root?.shadowRoot?.querySelector('.arc');
+    expect(arc).toBeTruthy();
+    expect(arc?.getAttribute('aria-hidden')).toBe('true');
+  });
 
-    // Query shadow DOM for the container
-    const shadowRoot = spinner?.shadowRoot;
-    const container = shadowRoot?.querySelector('.spinner-container');
-    expect(container?.getAttribute('aria-hidden')).toBe('true');
+  // Note: jest-axe runs against Stencil's mock-doc Element fail the axe-core
+  // `instanceof Node` check (mock-doc nodes aren't instances of real Node).
+  // Visual axe verification happens in Storybook (a11y addon) and in pre-PR
+  // /audit-accessibility runs against the live browser. The structural assertion
+  // below covers the static-DOM contract.
+  it('exposes the WCAG-required status-role contract', async () => {
+    const page = await newSpecPage({
+      components: [CorSpinner],
+      html: `<cor-spinner label="Saving"></cor-spinner>`,
+    });
+
+    expect(page.root?.getAttribute('role')).toBe('status');
+    expect(page.root?.getAttribute('aria-live')).toBe('polite');
+    expect(page.root?.getAttribute('aria-label')).toBe('Saving');
+
+    const arc = page.root?.shadowRoot?.querySelector('.arc');
+    expect(arc?.getAttribute('aria-hidden')).toBe('true');
   });
 });

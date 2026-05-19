@@ -49,6 +49,7 @@ export const config: Config = {
   outputTargets,
   testing: {
     setupFilesAfterEnv: ['./jest.setup.ts'],
+    testPathIgnorePatterns: ['/node_modules/', '/dist/', '/src/legacy/'],
   },
   extras: {
     // Enable import injection for Vite/Storybook static build compatibility

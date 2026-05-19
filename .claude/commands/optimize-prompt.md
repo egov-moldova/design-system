@@ -1,82 +1,157 @@
 ---
-description: Transform a raw user request into a well-structured, unambiguous prompt for an AI coding agent
-argument-hint: "<raw user request>"
+description: Compile a raw component request into an AGE-aware, audit-ready spec for downstream agents (new-component, redesign-component, modify-component, fix-visual-bug, update-tokens)
+argument-hint: "<raw request> [--mode=new|redesign|modify|fix|tokens] [--archetype=atom-visual|atom-interactive|form-associated|molecule|molecule-interactive|organism|layout] [--concise|--full] [--no-detector=<n>|all]"
 ---
 
 # /optimize-prompt
 
-Optimize the request `$ARGUMENTS` into a structured spec. Use before any non-trivial coding task: new components, refactors, bug fixes, token updates, story additions, or architecture changes. For new-component requests specifically, prefer `/optimize-prompt-new-component` (richer template).
+Optimize the request `$ARGUMENTS` into a project-aware spec for AGE Design System. This is the **only** entry point for prompt optimization — the previous `/optimize-prompt-new-component` variant has been collapsed into this command via `--mode=new`.
 
-## Step 0: Analyze Before Writing
+The full methodology lives in [`.claude/skills/optimize-prompt/SKILL.md`](../skills/optimize-prompt/SKILL.md). This file is a thin command wrapper.
 
-1. **Classify the request type**:
-   - New component / sub-component
-   - Modify existing component
-   - Bug fix / regression
-   - Token / styling change
-   - Refactor / architecture change
-   - Story / documentation addition
+## What it does
 
-2. **Extract design sources** — for every Figma URL or node ID in the request:
+1. **Classifies** the request (mode + archetype) from `$ARGUMENTS` or explicit flags
+2. **Routes** to the right references per `.claude/skills/optimize-prompt/references/`
+3. **Snapshots** the codebase (Glob/Read on tokens, components, slot constants, utils) for live ground-truth
+4. **Detects** 12 contradiction patterns and auto-fixes or asks for clarification
+5. **Composes** the spec via the mode template (`new` | `redesign` | `modify` | `fix` | `tokens`)
+6. **Validates** the draft against the must-enforce checklist (15 rules) and emits a `## Validation Issues` block if needed
 
-   ```text
-   mcp__figma__get_design_context({ nodeId: "...", forceCode: true })
-   ```
+Output is immediately consumable by:
 
-   Never reference a Figma URL without first fetching its content.
+- `new-component` agent (Step 5 plan)
+- `redesign-component` agent (Step 4 plan)
+- `refactor-component` agent
+- `/modify-component`, `/fix-visual-bug`, `/update-tokens` slash commands
 
-3. **Resolve ambiguities** — identify and resolve before writing:
-   - Conflicting constraints (e.g., prop mixing internal + external state)
-   - Unclear scope boundaries (what is NOT part of this task)
-   - Architectural decisions affecting the API (control model, slot vs prop, etc.)
+## Flags
 
-   If unresolvable alone, ask the user one focused question. Do not proceed on a guess.
+| Flag                     | Effect                                                                                                       |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| `--mode=<value>`         | Force mode: `new`, `redesign`, `modify`, `fix`, `tokens`. Auto-detected when omitted.                        |
+| `--archetype=<value>`    | Force archetype: `atom-visual`, `atom-interactive`, `form-associated`, `molecule`, `molecule-interactive`, `organism`, `layout`. Auto-detected when omitted. |
+| `--concise` (default)    | Compact emission with citations to `_agents/*.md`; ~60–150 lines depending on archetype                      |
+| `--full`                 | Inlines all cited rules + full token-path-per-cell tables; ~2.5× longer                                      |
+| `--no-detector=<n>`      | Suppress contradiction-detector pattern `<n>` (1–12). Use `--no-detector=all` for emergency override.        |
+| `--size-scale=single`    | Atom has no size axis (emit single literal, no enum)                                                         |
+| `--theme=light-only`     | Skip dark mode column in Token Mapping (rare; theme-invariant atoms only)                                    |
+| `--no-a11y-block`        | Suppress auto-injected A11y Acceptance Criteria block (only valid for `--mode=tokens`)                       |
 
-4. **Check reuse** — for any component work, confirm which existing DS components, utilities, or tokens can be reused before specifying new ones. See `_agents/reuse-architecture.md`.
+## Workflow
 
-## Step 1: Write the Optimized Prompt
+```text
+Step 0   — Classify
+  - Detect mode from keywords ("create", "redesign", "add variant", "fix", "update tokens")
+  - Detect archetype from prompt context + Figma extraction context
+  - Apply explicit --mode / --archetype flags as overrides
 
-Structure depends on request type. Use only the sections relevant to the task. Omit sections that add no value. Prefer short, precise statements over lists.
+Step 0.5 — Snapshot (Phase 3 live lookups)
+  - 8 parallel lookups: components, tokens, slot constants, utils
+  - Pass payload to Steps 2 and 4
 
-### Goal *(always required)*
+Step 1   — Route
+  - Load archetype-router.md § <archetype>
+  - Load canonical-defaults.md (always)
+  - Load must-enforce-checklist.md (filter by archetype × mode)
+  - Load output-templates.md § <mode>
+  - Load contradiction-detector.md (always)
 
-One or two sentences: **what** is being built or changed, and **why**. Include: Figma node IDs (after extraction), atomic level for components, file/component name for modifications.
+Step 2   — Detect contradictions + reuse
+  - Run 12 patterns from contradiction-detector.md
+  - Run reuse-lookup.md against snapshot
+  - High-confidence: auto-fix + note in ## Auto-corrections
+  - Ambiguous: emit ## Clarification Needed
 
-### Scope *(include when non-obvious)*
+Step 3   — Compose
+  - Emit sections per output-templates.md § <mode>
+  - Apply must-enforce rules per checklist (cite, don't inline)
+  - Generate Token Mapping table per token-mapping-table.md
+  - Inject canonical defaults silently
 
-What is explicitly **in** and **out** of scope. Prevents scope creep and mid-task pivots.
+Step 4   — Validate (7-point check against snapshot)
+  - V1 component refs, V2 token regex, V3 slot constants,
+  - V4 color unmapped, V5 px unmapped,
+  - V6 Pattern match, V7 sections present
+  - On failure: emit ## Validation Issues block at top of output
+  - Continue emission with caveats
+```
 
-### Architecture Constraints *(required for new components and refactors)*
+## Examples
 
-State the control model and ownership boundaries explicitly:
+### Example 1 — atom-visual (spinner)
 
-- What state is internal vs. externally controlled
-- What the component must NOT do (e.g., no HTTP requests, no data manipulation)
-- Slot vs. prop decisions and why
+Input:
 
-### API *(required for new/modified components)*
+```text
+/optimize-prompt Create cor-spinner component, slot based approach, reuse existing components where possible, token-driven. Figma: https://www.figma.com/design/.../?node-id=724-41243
+```
 
-Document only what is being added or changed:
+Expected behavior:
 
-- **Props**: name, type, default, description — separate configuration props from controlled state props
-- **Events**: name, payload interface, exact trigger
-- **Slots**: name, purpose, empty-detection strategy
-- **Types/utilities**: any exported `*.types.ts`, enums, or `src/utils/` files
+- Mode auto-detected: `new`
+- Archetype auto-detected: `atom-visual`
+- Detector pattern 1 fires: "slot based approach" on visual atom → rewrite to Pattern B (auto-correction noted)
+- Output includes: Animation spec, A11y (`role="status"`, `aria-label`, `prefers-reduced-motion`), Token Mapping for size×color matrix, Stories list (Default, AllSizes, AllVariants)
+- Build Order block emitted (spinner is a dependency for cor-button loading)
 
-### Behavior *(required when interaction logic is non-trivial)*
+### Example 2 — atom-interactive (button)
 
-State transitions, validation pipelines, memory management, keyboard/ARIA. One sentence per behavior. No prose.
+Input:
 
-### Acceptance Criteria *(always required)*
+```text
+/optimize-prompt Create cor-button with primary/secondary/strict/neutral/destructive variants, sm/md/lg sizes, leading-icon and trailing-icon slots, loading state uses cor-spinner. Future Outlined/Text/Badge variants will come later.
+```
 
-Concrete, verifiable statements of done:
+Expected behavior:
 
-- Visual: pixel-perfect against Figma nodes X, Y, Z — all states
-- Functional: which interactions must work
-- Quality: build passes, lint passes, stories exist for which variants
+- Mode: `new`; Archetype: `atom-interactive`
+- Detector pattern 3 fires: "Future Outlined/Text/Badge" → moved to `## Out of Scope`
+- Detector pattern 8 fires: `cor-spinner` referenced in loading → Build Order block emitted
+- Output: per-variant Token Mapping (5 variants × 6 states), Stories (Default, AllVariants, AllSizes, States, AllStatesTable), Loading interactivity strategy (disabled + aria-busy + pointer-events:none)
 
-## Step 2: Output
+### Example 3 — redesign legacy (badge)
 
-Return **only** the optimized prompt. No preamble, no explanation. The result should be immediately usable as input to the `new-component` / `custom-component` / `refactor-component` subagents, or to `/modify-component` / `/fix-visual-bug` slash commands.
+Input:
 
-**Calibration**: long enough to prevent wrong decisions, short enough that an agent reads it fully before starting. If it exceeds ~80 lines, reconsider what is truly needed.
+```text
+/optimize-prompt --mode=redesign Redesign cor-badge per AGE Design System. Figma: https://www.figma.com/design/.../?node-id=...
+```
+
+Expected behavior:
+
+- Mode: `redesign` (explicit)
+- Archetype: auto-detected `atom-visual`
+- Output uses `redesign` template: Visual Changes + Token Diff + API Changes (or "none") + Migration (if breaking)
+- Cites existing tokens from `tokens/core/components/badge.tokens.json`
+
+### Example 4 — token-only change
+
+Input:
+
+```text
+/optimize-prompt --mode=tokens Rename --badge-iconColor-error to --cor-badge-icon-color-error (kebab-case canonicalization)
+```
+
+Expected behavior:
+
+- Mode: `tokens`; archetype not relevant
+- Output: Token Diff table + validation commands (`yarn lint.tokens`, `yarn tokens.build`)
+- Skips API/Behavior/Stories/A11y sections (gated out per output-templates.md § Mode: tokens)
+
+## Output contract
+
+Returns **only** the optimized prompt. No preamble. No "Here's the optimized prompt:" wrapper. The output starts directly at the `# <Component / Task name>` line (or at the first preamble block when contradictions/validation triggered).
+
+## Related commands
+
+- `/modify-component` — execution-side counterpart for `--mode=modify`
+- `/fix-visual-bug` — execution-side counterpart for `--mode=fix`
+- `/update-tokens` — execution-side counterpart for `--mode=tokens`
+
+## See also
+
+- [`.claude/skills/optimize-prompt/SKILL.md`](../skills/optimize-prompt/SKILL.md) — full methodology
+- [`.claude/skills/optimize-prompt/references/`](../skills/optimize-prompt/references/) — 8 reference files
+- [`_agents/reuse-architecture.md`](../../_agents/reuse-architecture.md) — Pattern A/B/C decision tree
+- [`tokens/AGENTS.md`](../../tokens/AGENTS.md) — token naming convention

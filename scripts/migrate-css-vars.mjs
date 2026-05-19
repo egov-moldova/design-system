@@ -34,22 +34,12 @@ import { MAPPING as TOKEN_MAPPING } from './migrate-component-token-refs.mjs';
 const SCRIPT_FILE = fileURLToPath(import.meta.url);
 const PROJECT_ROOT = path.resolve(path.dirname(SCRIPT_FILE), '..');
 
-const DEFAULT_ROOTS = [
-  'src/components',
-  '.storybook',
-];
+const DEFAULT_ROOTS = ['src/components', '.storybook'];
 
 const SUPPORTED_EXTENSIONS = new Set(['.scss', '.css', '.tsx', '.ts', '.svg', '.mdx', '.md']);
 
 // Directories we never descend into.
-const SKIP_DIRECTORIES = new Set([
-  'node_modules',
-  'dist',
-  'build',
-  'tokens',
-  'generated',
-  '.git',
-]);
+const SKIP_DIRECTORIES = new Set(['node_modules', 'dist', 'build', 'tokens', 'generated', '.git']);
 
 // ── CSS NAME TRANSFORM ────────────────────────────────────────────────────────
 
@@ -58,11 +48,14 @@ const SKIP_DIRECTORIES = new Set([
 // Dictionary emits via the `name/kebab` transform: dots become dashes and
 // camelCase boundaries get split with dashes.
 function tokenPathToCssVar(tokenPath) {
-  return '--' + tokenPath
-    .replace(/\./g, '-')
-    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
-    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
-    .toLowerCase();
+  return (
+    '--' +
+    tokenPath
+      .replace(/\./g, '-')
+      .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+      .replace(/([A-Z]+)([A-Z][a-z])/g, '$1-$2')
+      .toLowerCase()
+  );
 }
 
 function buildCssMapping(tokenMapping) {
@@ -284,15 +277,23 @@ function main(argv = process.argv) {
   if (opts.report) {
     const reportPath = path.isAbsolute(opts.report) ? opts.report : path.resolve(PROJECT_ROOT, opts.report);
     fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-    fs.writeFileSync(reportPath, JSON.stringify({
-      timestamp: new Date().toISOString(),
-      dryRun,
-      roots,
-      mappingEntries: Object.keys(cssMapping).length,
-      totalSubstitutions: totalSubs,
-      unmatched: Object.fromEntries(unmatchedAggregate),
-      files: fileReports,
-    }, null, 2) + '\n', 'utf8');
+    fs.writeFileSync(
+      reportPath,
+      JSON.stringify(
+        {
+          timestamp: new Date().toISOString(),
+          dryRun,
+          roots,
+          mappingEntries: Object.keys(cssMapping).length,
+          totalSubstitutions: totalSubs,
+          unmatched: Object.fromEntries(unmatchedAggregate),
+          files: fileReports,
+        },
+        null,
+        2,
+      ) + '\n',
+      'utf8',
+    );
     console.log(`\nReport written: ${path.relative(PROJECT_ROOT, reportPath)}`);
   }
 

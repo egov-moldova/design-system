@@ -18,16 +18,15 @@ export default {
   // /dist/design-system/assets/illustrations/* regardless of this mapping.
   staticDirs: [
     { from: '../tokens/generated', to: 'tokens/generated' },
-    { from: '../src/components/cor-illustration/assets', to: 'assets/assets' },
+    // Disabled during legacy migration — cor-illustration is in src/legacy/ and not shipped.
+    // Re-enable (and update path) when a new illustration component is introduced.
+    // { from: '../src/components/cor-illustration/assets', to: 'assets/assets' },
     { from: '../assets/font', to: 'assets/font' },
   ],
   addons: isDev ? devAddons : prodAddons,
   framework: {
     name: '@storybook/web-components-vite',
     options: {},
-  },
-  docs: {
-    autodocs: true,
   },
   typescript: {
     check: false,
@@ -44,7 +43,7 @@ export default {
     // Disabled on Vite v7+ - optimizeDeps is now handled automatically
     // config.optimizeDeps = {
     //   ...config.optimizeDeps,
-    //   exclude: [...(config.optimizeDeps?.exclude || []), '@stencil/core', '@carbon/icons'],
+    //   exclude: [...(config.optimizeDeps?.exclude || []), '@stencil/core'],
     //   include: [
     //     ...(config.optimizeDeps?.include || []),
     //     '@storybook/web-components',

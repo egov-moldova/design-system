@@ -1,6 +1,6 @@
 ---
 name: figma-illustration-import
-description: Use when a Figma design requires a custom multi-layer illustration rather than a standard Carbon icon. Check for an existing `cor-illustration-*` component first, then extract the Figma node, create a reusable Stencil illustration component, add stories, and verify it visually in Storybook.
+description: Use when a Figma design requires a custom multi-layer illustration rather than a standard single-glyph icon. Check for an existing `cor-illustration-*` component first, then extract the Figma node, create a reusable Stencil illustration component, add stories, and verify it visually in Storybook.
 ---
 
 # Figma Illustration Import

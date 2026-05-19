@@ -154,9 +154,7 @@ export function generateStoriesFile({ contract, atomic, target }) {
   const enumsAvailable = target?.exists?.enums ?? false;
 
   const lines = [];
-  lines.push('/* eslint-disable */');
   lines.push("import type { Meta, StoryObj } from '@storybook/web-components';");
-  lines.push('/* eslint-enable */');
 
   // Import enums if present — story argTypes consume them for select controls
   const enumImports = [];
@@ -191,6 +189,8 @@ export function generateStoriesFile({ contract, atomic, target }) {
     const options = optionsFor(prop, enumsAvailable);
     if (options) lines.push(`      options: ${options},`);
     if (prop.jsDoc) lines.push(`      description: ${JSON.stringify(prop.jsDoc.split('\n')[0])},`);
+    const defaultSummary = defaultSummaryFor(prop);
+    if (defaultSummary) lines.push(`      table: { defaultValue: { summary: ${defaultSummary} } },`);
     lines.push(`    },`);
   }
   lines.push(`  },`);
@@ -222,7 +222,7 @@ export function generateStoriesFile({ contract, atomic, target }) {
   if (variantProp) {
     lines.push(`// TODO (AI/dev): expand each variant into a labeled cell or its own story.`);
     lines.push(`export const AllVariants: Story = {`);
-    lines.push(`  render: () => \`<div style="display:flex;gap:8px;flex-wrap:wrap;">`);
+    lines.push(`  render: () => \`<div style="display:flex;gap:var(--spacing-8);flex-wrap:wrap;">`);
     lines.push(`    <!-- one <${tag} variant="..."> per ${variantProp.type ?? 'value'} -->`);
     lines.push(`  </div>\`,`);
     lines.push(`};`);
@@ -234,7 +234,7 @@ export function generateStoriesFile({ contract, atomic, target }) {
   if (sizeProp) {
     lines.push(`// TODO (AI/dev): expand each size into a labeled cell.`);
     lines.push(`export const AllSizes: Story = {`);
-    lines.push(`  render: () => \`<div style="display:flex;gap:8px;align-items:center;">`);
+    lines.push(`  render: () => \`<div style="display:flex;gap:var(--spacing-8);align-items:center;">`);
     lines.push(`    <!-- one <${tag} size="..."> per ${sizeProp.type ?? 'value'} -->`);
     lines.push(`  </div>\`,`);
     lines.push(`};`);
@@ -316,6 +316,16 @@ function defaultArgLiteral(prop) {
   if (m) return JSON.stringify(m[1]);
   // Enum member like `ButtonVariant.PRIMARY` — pass through verbatim
   return prop.default;
+}
+
+function defaultSummaryFor(prop) {
+  if (!prop.default) return null;
+  // `table.defaultValue.summary` accepts a string. Strip outer quotes if present,
+  // otherwise pass the source through (covers enum refs like `ButtonVariant.PRIMARY`,
+  // booleans like `false`, numbers like `0`).
+  const m = prop.default.match(/^['"`]([^'"`]+)['"`]$/);
+  const summary = m ? m[1] : prop.default;
+  return JSON.stringify(summary);
 }
 
 function argAttrString(props) {

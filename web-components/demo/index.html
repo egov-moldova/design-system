@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -14,7 +14,10 @@
         background: var(--color-background-primary, #fff);
         color: var(--color-text-primary, #1a1a1a);
       }
-      h1, h2 { margin: 0; }
+      h1,
+      h2 {
+        margin: 0;
+      }
       .row {
         display: flex;
         gap: 12px;
@@ -27,15 +30,16 @@
         border-radius: 4px;
         font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
       }
-      section { display: flex; flex-direction: column; gap: 12px; }
+      section {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
     </style>
   </head>
   <body>
     <h1>@age/web-components</h1>
-    <p>
-      Vanilla HTML demo of <code>&lt;cor-button&gt;</code> registered via
-      <code>defineCustomElements()</code>.
-    </p>
+    <p>Vanilla HTML demo of <code>&lt;cor-button&gt;</code> registered via <code>defineCustomElements()</code>.</p>
 
     <section>
       <h2>Variants (size md)</h2>

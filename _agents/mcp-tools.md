@@ -5,7 +5,7 @@ Complete MCP tool reference with correct prefixes and parameter names. **Read wh
 
 ---
 
-## Claude Code Tool Names (PRIMARY)
+## Claude Code Tool Names
 
 Claude Code reads MCP servers from `.mcp.json` at repo root. Tools are exposed as `mcp__<server-name>__<tool>`.
 
@@ -26,41 +26,6 @@ Claude Code reads MCP servers from `.mcp.json` at repo root. Tools are exposed a
 - Web fetch → `WebFetch` / `WebSearch`
 
 **Security scanning** (used in `audit-production`): run Snyk via Bash (`yarn snyk:test` or `npx snyk test`) — no MCP server configured.
-
----
-
-## Windsurf Prefix Mapping (LEGACY — Cross-IDE Reference)
-
-Windsurf assigns `mcp{N}_` prefixes based on **registration order** in `mcp_config.json`. Disabled servers **reserve their slot**. Use this table only when working in Windsurf Cascade.
-
-| Server | Current Prefix | Logical Alias | Examples |
-| --- | --- | --- | --- |
-| **GitKraken** | `mcp0_` | **`git_*`** | `git_log`, `git_status` |
-| **a11y-mcp** | `mcp1_` | **`a11y_*`** | `a11y_check` (DISABLED) |
-| **agentation** | `mcp2_` | **`agent_*`** | `agent_get_pending`, `agent_acknowledge` |
-| **chrome-devtools** | `mcp3_` | **`chrome_*`** | `chrome_*` (DISABLED) |
-| **Context7** | `mcp4_` | **`ctx7_*`** | `ctx7_query-docs`, `ctx7_resolve-library-id` |
-| **fetch** | `mcp5_` | **`fetch_*`** | `fetch_*` (DISABLED) |
-| **figma-desktop** | `mcp6_` | **`figma_desktop_*`** | `figma_desktop_*` (DISABLED) |
-| **figma-remote-mcp-server** | `mcp7_` | **`figma_*`** | `figma_get_design_context` |
-| **filesystem** | `mcp8_` | **`fs_*`** | `fs_read_file`, `fs_write_file` |
-| **mcp-image-compare** | `mcp9_` | **`compare_*`** | `compare_images`, `compare_urls` |
-| **mcp-playwright** | `mcp10_` | **`browser_*`** | `browser_snapshot`, `browser_navigate` |
-| **memory** | `mcp11_` | **`memory_*`** | `memory_read_graph`, `memory_search_nodes` |
-| **sequential-thinking** | `mcp12_` | **`sequential_*`** | `sequential_*` (DISABLED) |
-| **Snyk** | `mcp13_` | **`snyk_*`** | `snyk_code_scan`, `snyk_sca_scan` |
-
-### Translation Protocol
-**When you see a Logical Alias in any `.md` file, you MUST translate it to the Current Prefix before execution.**
-
-1. **Check this table** for the mapping.
-2. **Execute** using the `mcp{N}_` prefix.
-
-> ⚠️ **Maintenance**: Only this table needs to be updated if the `mcp_config.json` registration order changes. All workflows and skills use Logical Aliases.
->
-> ⚠️ If servers are added/removed/reordered in `mcp_config.json`, ALL prefixes may shift. Verify before calling.
->
-> ⚠️ **Disabled servers reserve their slots** - a11y-mcp (mcp1_), chrome-devtools (mcp3_), fetch (mcp5_), figma-desktop (mcp6_), sequential-thinking (mcp12_) are disabled but their prefixes are reserved.
 
 ---
 
@@ -308,23 +273,22 @@ browser_evaluate({
 
 ## Skill File Tool Name Corrections
 
-| Skill/Legacy Says | Logical Alias |
+| Skill Says | Claude Code Tool |
 | --- | --- |
-| `figma_get_metadata({ node_id })` | `figma_get_metadata` |
-| `figma_get_design_context({ node_id })` | `figma_get_design_context` |
-| `mcp{N}_browser_*` | `browser_*` |
-| `mcp{N}_compare_*` | `compare_*` |
+| `figma_get_metadata({ node_id })` | `mcp__figma__get_metadata` |
+| `figma_get_design_context({ node_id })` | `mcp__figma__get_design_context` |
+| `browser_*` | `mcp__playwright__browser_*` |
+| `compare_*` | `mcp__image-compare__*` |
 
 ---
 
 ## Critical Override Rules (Apply to ALL Skills)
 
-1. **MCP prefixes**: GitKraken = `mcp0_`, a11y-mcp = `mcp1_`, agentation = `mcp2_`, chrome-devtools = `mcp3_`, Context7 = `mcp4_`, fetch = `mcp5_`, figma-desktop = `mcp6_`, figma-remote = `mcp7_`, filesystem = `mcp8_`, Image Compare = `mcp9_`, Playwright = `mcp10_`, Memory = `mcp11_`, sequential-thinking = `mcp12_`, Snyk = `mcp13_`
-2. **Port**: Storybook runs on **6007** - never 6006
-3. **Shell**: Cross-platform project - support both **PowerShell** (Windows) and **Unix** (macOS/Linux) commands.
-4. **Build commands**: Always **`yarn`**, never `npm run`
-5. **CSS patterns**: `:host([attr])` + `::slotted(*)` for slot components
-6. **Tokens**: JSON → Style Dictionary → CSS vars → component CSS
-7. **Props**: `@Prop({ reflect: true })` default for visual props
-8. **Story format**: CSF3 with `@storybook/web-components`, string tag names
-9. **Environment**: Always check `_agents/environment-commands.md` before starting servers
+1. **Port**: Storybook runs on **6007** - never 6006
+2. **Shell**: Cross-platform project - support both **PowerShell** (Windows) and **Unix** (macOS/Linux) commands.
+3. **Build commands**: Always **`yarn`**, never `npm run`
+4. **CSS patterns**: `:host([attr])` + `::slotted(*)` for slot components
+5. **Tokens**: JSON → Style Dictionary → CSS vars → component CSS
+6. **Props**: `@Prop({ reflect: true })` default for visual props
+7. **Story format**: CSF3 with `@storybook/web-components`, string tag names
+8. **Environment**: Always check `_agents/environment-commands.md` before starting servers

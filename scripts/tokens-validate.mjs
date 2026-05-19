@@ -49,7 +49,15 @@ const push = f => findings.push(f);
 
 function walk(dir, out = []) {
   for (const name of readdirSync(dir)) {
-    if (name === 'generated' || name === 'figma-export' || name === 'node_modules' || name.startsWith('.')) continue;
+    if (
+      name === 'generated' ||
+      name === 'figma-export' ||
+      name === 'legacy' ||
+      name === 'legacy.dark' ||
+      name === 'node_modules' ||
+      name.startsWith('.')
+    )
+      continue;
     const full = join(dir, name);
     const st = statSync(full);
     if (st.isDirectory()) walk(full, out);

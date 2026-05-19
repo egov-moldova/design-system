@@ -541,9 +541,10 @@ function extractSemanticColors(data, modeName, ctx) {
 
 function readLeafScalar(leaf, ctx, pathLabel) {
   if (!isLeaf(leaf)) return undefined;
-  const raw = typeof leaf.$value === 'object' && leaf.$value !== null
-    ? getModeValue(leaf.$value, MODE_LIGHT, ctx, { path: pathLabel })
-    : leaf.$value;
+  const raw =
+    typeof leaf.$value === 'object' && leaf.$value !== null
+      ? getModeValue(leaf.$value, MODE_LIGHT, ctx, { path: pathLabel })
+      : leaf.$value;
   if (raw === '' || raw === null || raw === undefined) return undefined;
   return raw;
 }
@@ -877,27 +878,29 @@ async function main(argv = process.argv) {
   const outCore = path.join(options.outputBase, 'core');
   const outDark = path.join(options.outputBase, 'core.dark');
 
-  runExtraction(ctx, 'palette.tokens.json', outCore, 'palette.tokens.json',
-    () => extractPalette(data, ctx));
+  runExtraction(ctx, 'palette.tokens.json', outCore, 'palette.tokens.json', () => extractPalette(data, ctx));
 
-  runExtraction(ctx, 'color.tokens.json (Light)', outCore, 'color.tokens.json',
-    () => extractSemanticColors(data, MODE_LIGHT, ctx));
+  runExtraction(ctx, 'color.tokens.json (Light)', outCore, 'color.tokens.json', () =>
+    extractSemanticColors(data, MODE_LIGHT, ctx),
+  );
 
-  runExtraction(ctx, 'core.dark/color.tokens.json', outDark, 'color.tokens.json',
-    () => extractSemanticColors(data, MODE_DARK, ctx));
+  runExtraction(ctx, 'core.dark/color.tokens.json', outDark, 'color.tokens.json', () =>
+    extractSemanticColors(data, MODE_DARK, ctx),
+  );
 
-  runExtraction(ctx, 'font.tokens.json', outCore, 'font.tokens.json',
-    () => extractTypography(data, ctx));
+  runExtraction(ctx, 'font.tokens.json', outCore, 'font.tokens.json', () => extractTypography(data, ctx));
 
-  runExtraction(ctx, 'sizes.tokens.json', outCore, 'sizes.tokens.json',
-    () => extractSizes(data, ctx));
+  runExtraction(ctx, 'sizes.tokens.json', outCore, 'sizes.tokens.json', () => extractSizes(data, ctx));
 
   if (options.apply) {
     cleanOrphanFiles(ctx, outCore, outDark);
   }
 
   ctx.notGenerated = [
-    { file: 'effects.tokens.json', reason: 'not in Tokenhaus export — author manually (drop-shadow.100..500 from Figma elevation 1-5)' },
+    {
+      file: 'effects.tokens.json',
+      reason: 'not in Tokenhaus export — author manually (drop-shadow.100..500 from Figma elevation 1-5)',
+    },
     { file: 'screen.tokens.json', reason: 'not in Tokenhaus export — breakpoints removed from Figma' },
     { file: 'letterSpacing (in font.tokens.json)', reason: 'not in Tokenhaus export — emitted as empty placeholder' },
   ];

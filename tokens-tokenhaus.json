@@ -272,23 +272,11 @@
         "#responsive typography test.headings.h3": "#Responsive typography test/Headings/H3"
       },
       "modes": {
-        "VariableCollectionId:5:46": [
-          "5:0"
-        ],
-        "VariableCollectionId:11:62": [
-          "11:0"
-        ],
-        "VariableCollectionId:74:1294": [
-          "74:0"
-        ],
-        "VariableCollectionId:103:681": [
-          "103:0",
-          "518:0"
-        ],
-        "VariableCollectionId:4432:842": [
-          "4432:0",
-          "4432:1"
-        ]
+        "VariableCollectionId:5:46": ["5:0"],
+        "VariableCollectionId:11:62": ["11:0"],
+        "VariableCollectionId:74:1294": ["74:0"],
+        "VariableCollectionId:103:681": ["103:0", "518:0"],
+        "VariableCollectionId:4432:842": ["4432:0", "4432:1"]
       },
       "modeNames": {
         "VariableCollectionId:5:46": {
@@ -327,9 +315,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "FONT_SIZE"
-            ]
+            "scopes": ["FONT_SIZE"]
           }
         }
       },
@@ -338,9 +324,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "FONT_SIZE"
-            ]
+            "scopes": ["FONT_SIZE"]
           }
         }
       },
@@ -349,9 +333,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "FONT_SIZE"
-            ]
+            "scopes": ["FONT_SIZE"]
           }
         }
       },
@@ -360,9 +342,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "FONT_SIZE"
-            ]
+            "scopes": ["FONT_SIZE"]
           }
         }
       },
@@ -371,9 +351,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "FONT_SIZE"
-            ]
+            "scopes": ["FONT_SIZE"]
           }
         }
       },
@@ -382,9 +360,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "FONT_SIZE"
-            ]
+            "scopes": ["FONT_SIZE"]
           }
         }
       },
@@ -393,9 +369,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "FONT_SIZE"
-            ]
+            "scopes": ["FONT_SIZE"]
           }
         }
       },
@@ -404,9 +378,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "FONT_SIZE"
-            ]
+            "scopes": ["FONT_SIZE"]
           }
         }
       },
@@ -415,9 +387,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "FONT_SIZE"
-            ]
+            "scopes": ["FONT_SIZE"]
           }
         }
       },
@@ -426,9 +396,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "FONT_SIZE"
-            ]
+            "scopes": ["FONT_SIZE"]
           }
         }
       },
@@ -437,9 +405,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "FONT_SIZE"
-            ]
+            "scopes": ["FONT_SIZE"]
           }
         }
       },
@@ -448,9 +414,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "FONT_SIZE"
-            ]
+            "scopes": ["FONT_SIZE"]
           }
         }
       },
@@ -459,9 +423,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "FONT_SIZE"
-            ]
+            "scopes": ["FONT_SIZE"]
           }
         }
       },
@@ -470,9 +432,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "FONT_SIZE"
-            ]
+            "scopes": ["FONT_SIZE"]
           }
         }
       }
@@ -483,9 +443,7 @@
         "$type": "string",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "FONT_FAMILY"
-            ]
+            "scopes": ["FONT_FAMILY"]
           }
         }
       }
@@ -496,9 +454,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "FONT_WEIGHT"
-            ]
+            "scopes": ["FONT_WEIGHT"]
           }
         }
       },
@@ -507,9 +463,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "FONT_WEIGHT"
-            ]
+            "scopes": ["FONT_WEIGHT"]
           }
         }
       },
@@ -518,9 +472,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "FONT_WEIGHT"
-            ]
+            "scopes": ["FONT_WEIGHT"]
           }
         }
       },
@@ -529,9 +481,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "FONT_WEIGHT"
-            ]
+            "scopes": ["FONT_WEIGHT"]
           }
         }
       }
@@ -542,9 +492,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "LINE_HEIGHT"
-            ]
+            "scopes": ["LINE_HEIGHT"]
           }
         }
       },
@@ -553,9 +501,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "LINE_HEIGHT"
-            ]
+            "scopes": ["LINE_HEIGHT"]
           }
         }
       },
@@ -564,9 +510,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "LINE_HEIGHT"
-            ]
+            "scopes": ["LINE_HEIGHT"]
           }
         }
       },
@@ -575,9 +519,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "LINE_HEIGHT"
-            ]
+            "scopes": ["LINE_HEIGHT"]
           }
         }
       },
@@ -586,9 +528,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "LINE_HEIGHT"
-            ]
+            "scopes": ["LINE_HEIGHT"]
           }
         }
       },
@@ -597,9 +537,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "LINE_HEIGHT"
-            ]
+            "scopes": ["LINE_HEIGHT"]
           }
         }
       },
@@ -608,9 +546,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "LINE_HEIGHT"
-            ]
+            "scopes": ["LINE_HEIGHT"]
           }
         }
       },
@@ -619,9 +555,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "LINE_HEIGHT"
-            ]
+            "scopes": ["LINE_HEIGHT"]
           }
         }
       },
@@ -630,9 +564,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "LINE_HEIGHT"
-            ]
+            "scopes": ["LINE_HEIGHT"]
           }
         }
       },
@@ -641,9 +573,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "LINE_HEIGHT"
-            ]
+            "scopes": ["LINE_HEIGHT"]
           }
         }
       },
@@ -652,9 +582,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "LINE_HEIGHT"
-            ]
+            "scopes": ["LINE_HEIGHT"]
           }
         }
       },
@@ -663,9 +591,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "LINE_HEIGHT"
-            ]
+            "scopes": ["LINE_HEIGHT"]
           }
         }
       },
@@ -674,9 +600,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "LINE_HEIGHT"
-            ]
+            "scopes": ["LINE_HEIGHT"]
           }
         }
       }
@@ -689,9 +613,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "GAP"
-            ]
+            "scopes": ["GAP"]
           }
         }
       },
@@ -700,9 +622,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "GAP"
-            ]
+            "scopes": ["GAP"]
           }
         }
       },
@@ -711,9 +631,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "GAP"
-            ]
+            "scopes": ["GAP"]
           }
         }
       },
@@ -722,9 +640,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "GAP"
-            ]
+            "scopes": ["GAP"]
           }
         }
       },
@@ -733,9 +649,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "GAP"
-            ]
+            "scopes": ["GAP"]
           }
         }
       },
@@ -744,9 +658,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "GAP"
-            ]
+            "scopes": ["GAP"]
           }
         }
       },
@@ -755,9 +667,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "GAP"
-            ]
+            "scopes": ["GAP"]
           }
         }
       },
@@ -766,9 +676,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "GAP"
-            ]
+            "scopes": ["GAP"]
           }
         }
       },
@@ -777,9 +685,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "GAP"
-            ]
+            "scopes": ["GAP"]
           }
         }
       },
@@ -788,9 +694,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "GAP"
-            ]
+            "scopes": ["GAP"]
           }
         }
       },
@@ -799,9 +703,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "GAP"
-            ]
+            "scopes": ["GAP"]
           }
         }
       },
@@ -810,9 +712,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "GAP"
-            ]
+            "scopes": ["GAP"]
           }
         }
       },
@@ -821,9 +721,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "GAP"
-            ]
+            "scopes": ["GAP"]
           }
         }
       },
@@ -832,9 +730,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "GAP"
-            ]
+            "scopes": ["GAP"]
           }
         }
       },
@@ -843,9 +739,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "GAP"
-            ]
+            "scopes": ["GAP"]
           }
         }
       },
@@ -854,9 +748,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "GAP"
-            ]
+            "scopes": ["GAP"]
           }
         }
       },
@@ -865,9 +757,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "GAP"
-            ]
+            "scopes": ["GAP"]
           }
         }
       }
@@ -878,9 +768,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "CORNER_RADIUS"
-            ]
+            "scopes": ["CORNER_RADIUS"]
           }
         }
       },
@@ -889,9 +777,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "CORNER_RADIUS"
-            ]
+            "scopes": ["CORNER_RADIUS"]
           }
         }
       },
@@ -900,9 +786,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "CORNER_RADIUS"
-            ]
+            "scopes": ["CORNER_RADIUS"]
           }
         }
       },
@@ -911,9 +795,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "CORNER_RADIUS"
-            ]
+            "scopes": ["CORNER_RADIUS"]
           }
         }
       },
@@ -922,9 +804,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "CORNER_RADIUS"
-            ]
+            "scopes": ["CORNER_RADIUS"]
           }
         }
       },
@@ -933,9 +813,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "CORNER_RADIUS"
-            ]
+            "scopes": ["CORNER_RADIUS"]
           }
         }
       },
@@ -944,9 +822,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "CORNER_RADIUS"
-            ]
+            "scopes": ["CORNER_RADIUS"]
           }
         }
       },
@@ -955,9 +831,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "CORNER_RADIUS"
-            ]
+            "scopes": ["CORNER_RADIUS"]
           }
         }
       },
@@ -966,9 +840,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "CORNER_RADIUS"
-            ]
+            "scopes": ["CORNER_RADIUS"]
           }
         }
       }
@@ -979,9 +851,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "STROKE_FLOAT"
-            ]
+            "scopes": ["STROKE_FLOAT"]
           }
         }
       },
@@ -990,9 +860,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "STROKE_FLOAT"
-            ]
+            "scopes": ["STROKE_FLOAT"]
           }
         }
       },
@@ -1001,9 +869,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "STROKE_FLOAT"
-            ]
+            "scopes": ["STROKE_FLOAT"]
           }
         }
       },
@@ -1012,9 +878,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "STROKE_FLOAT"
-            ]
+            "scopes": ["STROKE_FLOAT"]
           }
         }
       },
@@ -1023,9 +887,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "STROKE_FLOAT"
-            ]
+            "scopes": ["STROKE_FLOAT"]
           }
         }
       }
@@ -1035,9 +897,7 @@
       "$type": "number",
       "$extensions": {
         "com.figma": {
-          "scopes": [
-            "ALL_SCOPES"
-          ]
+          "scopes": ["ALL_SCOPES"]
         }
       }
     },
@@ -1046,9 +906,7 @@
       "$type": "number",
       "$extensions": {
         "com.figma": {
-          "scopes": [
-            "ALL_SCOPES"
-          ]
+          "scopes": ["ALL_SCOPES"]
         }
       }
     }
@@ -1060,9 +918,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1071,9 +927,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1082,9 +936,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1093,9 +945,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1104,9 +954,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1115,9 +963,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1126,9 +972,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1137,9 +981,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1148,9 +990,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1159,9 +999,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       }
@@ -1172,9 +1010,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1183,9 +1019,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1194,9 +1028,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1205,9 +1037,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1216,9 +1046,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1227,9 +1055,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1238,9 +1064,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1249,9 +1073,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1260,9 +1082,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       }
@@ -1273,9 +1093,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1284,9 +1102,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1295,9 +1111,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1306,9 +1120,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1317,9 +1129,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1328,9 +1138,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1339,9 +1147,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1350,9 +1156,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1361,9 +1165,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       }
@@ -1374,9 +1176,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1385,9 +1185,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1396,9 +1194,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1407,9 +1203,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1418,9 +1212,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1429,9 +1221,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1440,9 +1230,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1451,9 +1239,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1462,9 +1248,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       }
@@ -1475,9 +1259,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1486,9 +1268,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1497,9 +1277,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1508,9 +1286,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1519,9 +1295,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1530,9 +1304,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1541,9 +1313,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1552,9 +1322,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1563,9 +1331,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1574,9 +1340,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       }
@@ -1587,9 +1351,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1598,9 +1360,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1609,9 +1369,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1620,9 +1378,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1631,9 +1387,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1642,9 +1396,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1653,9 +1405,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1664,9 +1414,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1675,9 +1423,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1686,9 +1432,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       }
@@ -1699,9 +1443,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1710,9 +1452,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1721,9 +1461,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1732,9 +1470,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1743,9 +1479,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1754,9 +1488,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1765,9 +1497,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1776,9 +1506,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1787,9 +1515,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1798,9 +1524,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       }
@@ -1811,9 +1535,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1822,9 +1544,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1833,9 +1553,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1844,9 +1562,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1855,9 +1571,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1866,9 +1580,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1877,9 +1589,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1888,9 +1598,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1899,9 +1607,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1910,9 +1616,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       }
@@ -1923,9 +1627,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1934,9 +1636,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1945,9 +1645,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1956,9 +1654,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1967,9 +1663,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1978,9 +1672,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -1989,9 +1681,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -2000,9 +1690,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -2011,9 +1699,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -2022,9 +1708,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -2033,9 +1717,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -2044,9 +1726,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       }
@@ -2057,9 +1737,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       }
@@ -2070,9 +1748,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       }
@@ -2084,9 +1760,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "ALL_SCOPES"
-              ]
+              "scopes": ["ALL_SCOPES"]
             }
           }
         },
@@ -2095,9 +1769,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "ALL_SCOPES"
-              ]
+              "scopes": ["ALL_SCOPES"]
             }
           }
         },
@@ -2106,9 +1778,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "ALL_SCOPES"
-              ]
+              "scopes": ["ALL_SCOPES"]
             }
           }
         },
@@ -2117,9 +1787,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "ALL_SCOPES"
-              ]
+              "scopes": ["ALL_SCOPES"]
             }
           }
         },
@@ -2128,9 +1796,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "ALL_SCOPES"
-              ]
+              "scopes": ["ALL_SCOPES"]
             }
           }
         }
@@ -2141,9 +1807,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "ALL_SCOPES"
-              ]
+              "scopes": ["ALL_SCOPES"]
             }
           }
         },
@@ -2152,9 +1816,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "ALL_SCOPES"
-              ]
+              "scopes": ["ALL_SCOPES"]
             }
           }
         },
@@ -2163,9 +1825,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "ALL_SCOPES"
-              ]
+              "scopes": ["ALL_SCOPES"]
             }
           }
         },
@@ -2174,9 +1834,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "ALL_SCOPES"
-              ]
+              "scopes": ["ALL_SCOPES"]
             }
           }
         },
@@ -2185,9 +1843,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "ALL_SCOPES"
-              ]
+              "scopes": ["ALL_SCOPES"]
             }
           }
         }
@@ -2198,9 +1854,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "ALL_SCOPES"
-              ]
+              "scopes": ["ALL_SCOPES"]
             }
           }
         },
@@ -2209,9 +1863,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "ALL_SCOPES"
-              ]
+              "scopes": ["ALL_SCOPES"]
             }
           }
         },
@@ -2220,9 +1872,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "ALL_SCOPES"
-              ]
+              "scopes": ["ALL_SCOPES"]
             }
           }
         },
@@ -2231,9 +1881,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "ALL_SCOPES"
-              ]
+              "scopes": ["ALL_SCOPES"]
             }
           }
         },
@@ -2242,9 +1890,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "ALL_SCOPES"
-              ]
+              "scopes": ["ALL_SCOPES"]
             }
           }
         }
@@ -2262,11 +1908,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2278,11 +1920,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2294,11 +1932,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2310,11 +1944,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2326,11 +1956,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2342,11 +1968,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2358,11 +1980,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2374,11 +1992,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2390,11 +2004,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         }
@@ -2408,11 +2018,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2424,11 +2030,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2440,11 +2042,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2456,11 +2054,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2472,11 +2066,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2488,11 +2078,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2504,11 +2090,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         }
@@ -2522,11 +2104,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2538,11 +2116,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2554,11 +2128,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2570,11 +2140,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2586,11 +2152,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         }
@@ -2604,11 +2166,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2620,11 +2178,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2636,11 +2190,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2652,11 +2202,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2668,11 +2214,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2684,11 +2226,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         }
@@ -2702,11 +2240,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2718,11 +2252,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2734,11 +2264,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2750,11 +2276,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2766,11 +2288,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2782,11 +2300,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         }
@@ -2800,11 +2314,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2816,11 +2326,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2832,11 +2338,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         }
@@ -2850,11 +2352,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2866,11 +2364,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         }
@@ -2884,11 +2378,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2900,11 +2390,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         },
@@ -2916,11 +2402,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "FRAME_FILL",
-                "SHAPE_FILL",
-                "EFFECT_COLOR"
-              ]
+              "scopes": ["FRAME_FILL", "SHAPE_FILL", "EFFECT_COLOR"]
             }
           }
         }
@@ -2936,9 +2418,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "STROKE_COLOR"
-              ]
+              "scopes": ["STROKE_COLOR"]
             }
           }
         },
@@ -2950,9 +2430,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "STROKE_COLOR"
-              ]
+              "scopes": ["STROKE_COLOR"]
             }
           }
         },
@@ -2964,9 +2442,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "STROKE_COLOR"
-              ]
+              "scopes": ["STROKE_COLOR"]
             }
           }
         },
@@ -2978,9 +2454,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "STROKE_COLOR"
-              ]
+              "scopes": ["STROKE_COLOR"]
             }
           }
         },
@@ -2992,9 +2466,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "STROKE_COLOR"
-              ]
+              "scopes": ["STROKE_COLOR"]
             }
           }
         }
@@ -3008,9 +2480,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "STROKE_COLOR"
-              ]
+              "scopes": ["STROKE_COLOR"]
             }
           }
         }
@@ -3024,9 +2494,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "STROKE_COLOR"
-              ]
+              "scopes": ["STROKE_COLOR"]
             }
           }
         }
@@ -3040,9 +2508,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "STROKE_COLOR"
-              ]
+              "scopes": ["STROKE_COLOR"]
             }
           }
         }
@@ -3056,9 +2522,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "STROKE_COLOR"
-              ]
+              "scopes": ["STROKE_COLOR"]
             }
           }
         }
@@ -3072,9 +2536,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "STROKE_COLOR"
-              ]
+              "scopes": ["STROKE_COLOR"]
             }
           }
         }
@@ -3090,9 +2552,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "TEXT_FILL"
-              ]
+              "scopes": ["TEXT_FILL"]
             }
           }
         },
@@ -3104,9 +2564,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "TEXT_FILL"
-              ]
+              "scopes": ["TEXT_FILL"]
             }
           }
         },
@@ -3118,9 +2576,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "TEXT_FILL"
-              ]
+              "scopes": ["TEXT_FILL"]
             }
           }
         },
@@ -3132,9 +2588,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "TEXT_FILL"
-              ]
+              "scopes": ["TEXT_FILL"]
             }
           }
         },
@@ -3146,9 +2600,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "TEXT_FILL"
-              ]
+              "scopes": ["TEXT_FILL"]
             }
           }
         }
@@ -3162,9 +2614,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "TEXT_FILL"
-              ]
+              "scopes": ["TEXT_FILL"]
             }
           }
         },
@@ -3176,9 +2626,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "TEXT_FILL"
-              ]
+              "scopes": ["TEXT_FILL"]
             }
           }
         }
@@ -3192,9 +2640,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "TEXT_FILL"
-              ]
+              "scopes": ["TEXT_FILL"]
             }
           }
         },
@@ -3206,9 +2652,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "TEXT_FILL"
-              ]
+              "scopes": ["TEXT_FILL"]
             }
           }
         },
@@ -3220,9 +2664,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "TEXT_FILL"
-              ]
+              "scopes": ["TEXT_FILL"]
             }
           }
         },
@@ -3234,9 +2676,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "TEXT_FILL"
-              ]
+              "scopes": ["TEXT_FILL"]
             }
           }
         }
@@ -3250,9 +2690,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "TEXT_FILL"
-              ]
+              "scopes": ["TEXT_FILL"]
             }
           }
         },
@@ -3264,9 +2702,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "TEXT_FILL"
-              ]
+              "scopes": ["TEXT_FILL"]
             }
           }
         }
@@ -3280,9 +2716,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "TEXT_FILL"
-              ]
+              "scopes": ["TEXT_FILL"]
             }
           }
         },
@@ -3294,9 +2728,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "TEXT_FILL"
-              ]
+              "scopes": ["TEXT_FILL"]
             }
           }
         }
@@ -3310,9 +2742,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "TEXT_FILL"
-              ]
+              "scopes": ["TEXT_FILL"]
             }
           }
         },
@@ -3324,9 +2754,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "TEXT_FILL"
-              ]
+              "scopes": ["TEXT_FILL"]
             }
           }
         }
@@ -3340,9 +2768,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "TEXT_FILL"
-              ]
+              "scopes": ["TEXT_FILL"]
             }
           }
         },
@@ -3354,9 +2780,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "TEXT_FILL"
-              ]
+              "scopes": ["TEXT_FILL"]
             }
           }
         }
@@ -3372,9 +2796,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "SHAPE_FILL"
-              ]
+              "scopes": ["SHAPE_FILL"]
             }
           }
         },
@@ -3386,9 +2808,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "SHAPE_FILL"
-              ]
+              "scopes": ["SHAPE_FILL"]
             }
           }
         },
@@ -3400,9 +2820,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "SHAPE_FILL"
-              ]
+              "scopes": ["SHAPE_FILL"]
             }
           }
         },
@@ -3414,9 +2832,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "SHAPE_FILL"
-              ]
+              "scopes": ["SHAPE_FILL"]
             }
           }
         },
@@ -3428,9 +2844,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "SHAPE_FILL"
-              ]
+              "scopes": ["SHAPE_FILL"]
             }
           }
         }
@@ -3444,9 +2858,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "SHAPE_FILL"
-              ]
+              "scopes": ["SHAPE_FILL"]
             }
           }
         },
@@ -3458,9 +2870,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "SHAPE_FILL"
-              ]
+              "scopes": ["SHAPE_FILL"]
             }
           }
         },
@@ -3472,9 +2882,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "SHAPE_FILL"
-              ]
+              "scopes": ["SHAPE_FILL"]
             }
           }
         }
@@ -3488,9 +2896,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "SHAPE_FILL"
-              ]
+              "scopes": ["SHAPE_FILL"]
             }
           }
         },
@@ -3502,9 +2908,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "SHAPE_FILL"
-              ]
+              "scopes": ["SHAPE_FILL"]
             }
           }
         }
@@ -3518,9 +2922,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "SHAPE_FILL"
-              ]
+              "scopes": ["SHAPE_FILL"]
             }
           }
         },
@@ -3532,9 +2934,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "SHAPE_FILL"
-              ]
+              "scopes": ["SHAPE_FILL"]
             }
           }
         }
@@ -3548,9 +2948,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "SHAPE_FILL"
-              ]
+              "scopes": ["SHAPE_FILL"]
             }
           }
         },
@@ -3562,9 +2960,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "SHAPE_FILL"
-              ]
+              "scopes": ["SHAPE_FILL"]
             }
           }
         }
@@ -3578,9 +2974,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "SHAPE_FILL"
-              ]
+              "scopes": ["SHAPE_FILL"]
             }
           }
         },
@@ -3592,9 +2986,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "SHAPE_FILL"
-              ]
+              "scopes": ["SHAPE_FILL"]
             }
           }
         }
@@ -3608,9 +3000,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "SHAPE_FILL"
-              ]
+              "scopes": ["SHAPE_FILL"]
             }
           }
         },
@@ -3622,9 +3012,7 @@
           "$type": "color",
           "$extensions": {
             "com.figma": {
-              "scopes": [
-                "SHAPE_FILL"
-              ]
+              "scopes": ["SHAPE_FILL"]
             }
           }
         }
@@ -3639,9 +3027,7 @@
         "$type": "color",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       }
@@ -3657,9 +3043,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -3671,9 +3055,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       },
@@ -3685,9 +3067,7 @@
         "$type": "number",
         "$extensions": {
           "com.figma": {
-            "scopes": [
-              "ALL_SCOPES"
-            ]
+            "scopes": ["ALL_SCOPES"]
           }
         }
       }

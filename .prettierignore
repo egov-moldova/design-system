@@ -3,6 +3,8 @@ dist/
 www/
 loader/
 storybook-static/
+src/legacy/
+scripts/__fixtures__/
 
 # File Types
 *.md

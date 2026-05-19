@@ -242,7 +242,8 @@ const MAPPING = {
 function collectTokenFiles(rootDir) {
   const absRoot = path.isAbsolute(rootDir) ? rootDir : path.resolve(PROJECT_ROOT, rootDir);
   if (!fs.existsSync(absRoot)) return [];
-  return fs.readdirSync(absRoot, { withFileTypes: true })
+  return fs
+    .readdirSync(absRoot, { withFileTypes: true })
     .filter(entry => entry.isFile() && entry.name.endsWith('.tokens.json'))
     .map(entry => path.join(absRoot, entry.name));
 }
@@ -257,8 +258,9 @@ function rewriteFile(filePath, mapping) {
     if (!updated.includes(needle)) continue;
     const before = updated;
     updated = updated.split(needle).join(replacement);
-    const count = (before.length - updated.length + (replacement.length - needle.length) * estimateCount(before, needle))
-      / Math.max(1, (replacement.length - needle.length) || 1);
+    const count =
+      (before.length - updated.length + (replacement.length - needle.length) * estimateCount(before, needle)) /
+      Math.max(1, replacement.length - needle.length || 1);
     // Simpler: recount by splitting.
     replacements[oldPath] = (before.match(new RegExp(escapeRegex(needle), 'g')) || []).length;
   }
@@ -279,10 +281,24 @@ function findRemainingLegacyRefs(text, mapping) {
   const known = new Set(Object.values(mapping));
   // Add known new namespaces so we don't flag them.
   const newNamespacePrefixes = [
-    'palette.', 'color.background.', 'color.border.', 'color.text.', 'color.icon.',
-    'spacing.', 'borderRadius.', 'borderWidth.',
-    'fontFamily.', 'fontSize.', 'fontWeight.', 'lineHeight.', 'letterSpacing.',
-    'dropShadow.', 'size.', 'screen.', 'zIndex.', 'linearGradient.',
+    'palette.',
+    'color.background.',
+    'color.border.',
+    'color.text.',
+    'color.icon.',
+    'spacing.',
+    'borderRadius.',
+    'borderWidth.',
+    'fontFamily.',
+    'fontSize.',
+    'fontWeight.',
+    'lineHeight.',
+    'letterSpacing.',
+    'dropShadow.',
+    'size.',
+    'screen.',
+    'zIndex.',
+    'linearGradient.',
   ];
   const remaining = new Set();
   for (const match of text.matchAll(/\{([^}]+)\}/g)) {
@@ -291,9 +307,21 @@ function findRemainingLegacyRefs(text, mapping) {
     if (newNamespacePrefixes.some(prefix => ref.startsWith(prefix))) continue;
     // Allow local refs like {button.something}, {controls-group.gap.column}.
     // We flag only legacy foundation namespaces (color.neutral, color.primary, etc.).
-    const legacyPrefixes = ['color.neutral', 'color.primary', 'color.secondary', 'color.system',
-      'space.', 'spacing.', 'radius.', 'fontSize.', 'lineHeight.', 'fontFamily.',
-      'fontWeight.', 'shadow.', 'border.width.'];
+    const legacyPrefixes = [
+      'color.neutral',
+      'color.primary',
+      'color.secondary',
+      'color.system',
+      'space.',
+      'spacing.',
+      'radius.',
+      'fontSize.',
+      'lineHeight.',
+      'fontFamily.',
+      'fontWeight.',
+      'shadow.',
+      'border.width.',
+    ];
     if (legacyPrefixes.some(prefix => ref.startsWith(prefix))) {
       remaining.add(ref);
     }
@@ -376,14 +404,22 @@ function main(argv = process.argv) {
   if (opts.report) {
     const reportPath = path.isAbsolute(opts.report) ? opts.report : path.resolve(PROJECT_ROOT, opts.report);
     fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-    fs.writeFileSync(reportPath, JSON.stringify({
-      timestamp: new Date().toISOString(),
-      dryRun,
-      roots,
-      totalSubstitutions: totalSubs,
-      unmatched: [...unmatchedAggregate].sort(),
-      files: fileReports,
-    }, null, 2) + '\n', 'utf8');
+    fs.writeFileSync(
+      reportPath,
+      JSON.stringify(
+        {
+          timestamp: new Date().toISOString(),
+          dryRun,
+          roots,
+          totalSubstitutions: totalSubs,
+          unmatched: [...unmatchedAggregate].sort(),
+          files: fileReports,
+        },
+        null,
+        2,
+      ) + '\n',
+      'utf8',
+    );
     console.log(`\nReport written: ${path.relative(PROJECT_ROOT, reportPath)}`);
   }
 

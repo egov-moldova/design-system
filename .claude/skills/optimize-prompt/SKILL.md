@@ -1,144 +1,178 @@
 ---
 name: optimize-prompt
-description: Use ONLY when the user explicitly requests prompt optimization — e.g. invokes /optimize-prompt, says "optimize this prompt", "help me structure this request", or "follow the optimize-prompt workflow". Do NOT auto-trigger on normal coding tasks, even complex ones. Framework-agnostic methodology for transforming vague requests into unambiguous specs for any stack (Stencil, React, Angular, Vue, etc.).
+description: Use ONLY when the user explicitly requests prompt optimization — e.g. invokes /optimize-prompt, says "optimize this prompt", "structure this request", or "follow the optimize-prompt workflow". Do NOT auto-trigger on normal coding tasks. Compiles raw component requests into project-aware specs for AGE Design System (Stencil 4.x) — routes on archetype, applies canonical defaults, detects contradictions, and emits an audit-ready spec for `new-component`, `redesign-component`, `modify-component`, `fix-visual-bug`, or `update-tokens` downstream consumers.
 ---
 
-# Optimize Prompt
+# Optimize Prompt — AGE Design System Compiler
 
-Transforms a raw request into a structured, unambiguous specification that an AI coding agent can execute without guessing. Works for any stack and any request type.
+Transforms a raw request into an unambiguous, project-aware spec. Unlike a generic prompt-shaper, this skill **knows the AGE codebase**: it routes on archetype, cites real `_agents/*.md` rules, references existing tokens/constants, and auto-injects design-system defaults so the user never has to repeat them.
 
-## Step 0: Analyze Before Writing
+**Project source of truth:** [`AGENTS.md`](../../../AGENTS.md) (root) + [`src/components/AGENTS.md`](../../../src/components/AGENTS.md) + [`tokens/AGENTS.md`](../../../tokens/AGENTS.md). Every must-enforce rule in this skill cross-references one of these.
 
-Run all four checks before writing a single line of the prompt.
-
-### 1. Classify the request type
-- New component / sub-component
-- Modify existing component
-- Bug fix / regression
-- Token / styling change
-- Refactor / architecture change
-- Story / documentation addition
-
-Classification determines which sections are required in Step 1.
-
-### 2. Extract visual sources
-If the request contains design URLs (Figma, Zeplin, Storybook, screenshots):
-- Fetch and analyze every linked design state before writing the prompt
-- Extract: layout direction, spacing values, border/background per state, icon behavior, hover/focus diffs
-- Never reference a design URL in the output without first reading its content
-- If no design tool MCP is available, ask the user to provide screenshots or annotated descriptions
-
-### 3. Identify and resolve ambiguities
-Look for these common conflict patterns before writing:
-
-| Pattern | Example | Resolution |
-|---|---|---|
-| Mixed state ownership | A single prop controls both internal and external state | Split: internal state = never a prop; external state = controlled prop |
-| Overlapping APIs | `accept`, `allowedTypes`, `allowedExtensions` all doing the same thing | Consolidate into one structured prop |
-| Unclear scope | "Add upload support" — does that mean HTTP requests too? | Define explicit in/out of scope |
-| Slot vs prop ambiguity | Label text: should it be a string prop or slotted rich content? | Decide based on: does it need rich content? is it state-coupled? |
-| Sub-component boundary | One large component vs. two smaller ones | Decide based on: can each be used standalone? |
-
-If a conflict cannot be resolved with available information, ask the user **one focused question**. Do not proceed on a guess. Do not ask multiple questions at once.
-
-### 4. Check reuse
-For any component work, identify before writing:
-- Which existing components in the codebase can be reused
-- Which utility files, types, or helpers already exist
-- What tokens are already defined vs. need to be created
-
-Reuse findings directly affect the API section — no need to specify behavior that's already handled by a reused component.
+**Companion skills loaded by reference:** [`stencil-compliance`](../stencil-compliance/SKILL.md), [`accessibility-compliance`](../accessibility-compliance/SKILL.md), [`token-creation`](../token-creation/SKILL.md), [`audit-component`](../audit-component/SKILL.md).
 
 ---
 
-## Step 1: Write the Optimized Prompt
+## 1. Orchestrator — 7-Step Pipeline
 
-Use only sections relevant to the task. Omit sections that add no value. Prefer short, precise statements over prose. One sentence per behavior in the Behavior section.
-
----
-
-### Goal *(always required)*
-One or two sentences: **what** is built or changed, and **why**.
-- For components: include design source references (with node IDs after extraction), atomic level (Atom/Molecule/Organism), and file/directory name
-- For modifications: include the exact file and what changes
-- For bug fixes: include the symptom, the root cause (if known), and the affected file
-
-### Scope *(include when non-obvious)*
-Explicit **in** and **out** of scope statements.
-- Prevents mid-task pivots
-- Required when the request could reasonably be interpreted as including more than intended
-- Example: "Out of scope: HTTP upload requests, retry logic, backend communication"
-
-### Architecture Constraints *(required for new components and refactors)*
-State ownership and control model explicitly:
-- **Internal state**: what the component manages privately (e.g. drag state, open/closed, focus)
-- **External state**: what the consumer controls via props (e.g. loading, progress, selected value)
-- **Control model**: fully controlled / uncontrolled / partially controlled
-- **Hard boundaries**: what the component must NOT do (no HTTP, no data manipulation, no business logic)
-- **Slot vs prop decisions**: state the choice and why for any content that could go either way
-
-### API *(required for new/modified components)*
-Only document what is being added or changed.
-
-**Props** — separate configuration props (static, set-once) from controlled state props (consumer drives reactively):
 ```
-name | type | default | description
+Step 0:   Classify  → request type + archetype + mode
+Step 0.5: Snapshot  → run 8 live codebase lookups in parallel (Phase 3 — see codebase-snapshots.md)
+Step 1:   Route     → load required references for this archetype + mode
+Step 2:   Detect    → run contradiction-detector + reuse-lookup against the raw prompt + snapshot
+Step 3:   Compose   → emit spec via output-templates (default --concise)
+Step 4:   Validate  → run live checks; emit Validation Issues block if any
 ```
 
-**Events** — name, payload interface (exported type), exact trigger condition
-
-**Slots** — name, purpose, empty-detection strategy (how the component knows if the slot is populated)
-
-**Exported types/utilities** — any `*.types.ts`, enum files, or helper utilities the component requires
-
-### Behavior *(required when interaction logic is non-trivial)*
-One sentence per behavior. No prose paragraphs. Cover:
-- State transitions and their triggers
-- Validation pipelines (order of checks, rejection reasons)
-- Memory management (object URLs, event listeners, timers — when created and destroyed)
-- Keyboard interactions and ARIA requirements
-- Edge cases: empty slots, missing props, unmount cleanup, boundary conditions
-
-### Acceptance Criteria *(always required)*
-Concrete, verifiable statements of done:
-- **Visual**: pixel-perfect against design source X — list all states that must match
-- **Functional**: list specific interactions that must work end-to-end
-- **Quality**: build passes, lint passes, unit tests pass, stories exist for which variants
+Steps 0–3 run on the raw request enriched by the codebase snapshot. Step 4 runs on the composed draft before final emission. Live lookups (Phase 3) provide ground truth so the emitted spec references **real** components, tokens, constants, and utilities — never invented names.
 
 ---
 
-## Step 2: Output
+## 2. Step 0 — Classify
 
-Return **only** the optimized prompt. No preamble. No explanation. No meta-commentary.
+### 2.1 Request type (mode)
 
-The result must be immediately usable as input to a coding workflow.
+Auto-detect from the prompt, with `--mode=<value>` as escape hatch:
 
-**Calibration rule**: long enough to prevent wrong architectural decisions, short enough that the agent reads it fully before starting. If the output exceeds ~80 lines, reconsider — remove sections that duplicate information the agent already has from the codebase or framework conventions.
-
----
-
-## Trade-offs Checklist
-
-Before finalizing, verify these decisions are explicit in the prompt:
-
-| Decision | Options | When to choose each |
+| Mode | Trigger keywords / context | Sections emitted |
 |---|---|---|
-| **Props vs slots for text** | Prop = type-safe, state-coupled | Use prop when text is simple and tied to component state |
-| | Slot = rich content, escape hatch | Use slot when consumer may need markup, i18n nodes, or dynamic content |
-| **Control model** | Fully controlled | When consumer must drive all state (e.g. form inputs) |
-| | Partially controlled | When some state is too low-level to expose (e.g. drag, hover) |
-| | Uncontrolled | When component is self-contained with no external state needs |
-| **Single vs sub-components** | Single | When complexity is low and standalone reuse of parts is unlikely |
-| | Sub-components | When each part can be used independently or has distinct behavior |
-| **Utility in library vs consumer** | In library | When logic is generic, stateless, and reusable across projects |
-| | In consumer | When logic is business-specific, stateful, or backend-coupled |
-| **Validation scope** | Client-side only | Always for UI components — backend validation is consumer concern |
+| `new` | "Create cor-X", "new component", no existing component named | Full template |
+| `redesign` | "Redesign cor-X", target in `src/legacy/`, Figma reference for new design | Visual Changes + API Changes + Migration |
+| `modify` | "Add variant", "add prop", target in `src/components/` already exists | API Changes + Behavior delta |
+| `fix` | "Fix", "bug", "regression", file path in prompt | Symptom + root cause + regression test |
+| `tokens` | "Update tokens", "rename token", no TSX/CSS changes | Token Diff only |
 
-## Common Mistakes to Avoid
+### 2.2 Archetype (component shape)
 
-- **Referencing design URLs without extracting them first** — always fetch before writing
-- **Specifying behavior already handled by reused components** — redundant and contradictory
-- **Mixing CSS interaction states (hover, focus) with component modes (loading, error)** — document them separately
-- **One prop controlling both internal and external state** — always split
-- **Over-specifying implementation** — specify the *what*, not the *how*, unless a specific approach is required
-- **Under-specifying acceptance criteria** — vague "it should work" statements cause rework
+Per [`references/archetype-router.md`](references/archetype-router.md). Auto-detect from prompt context; `--archetype=<level>` overrides:
+
+- **atom-visual** — pure visual, no interaction (spinner, badge, divider, icon)
+- **atom-interactive** — single interaction (button, link, chip, checkbox visual)
+- **form-associated** — must use Pattern C (input, textarea, select, datepicker)
+- **molecule** — composes atoms (avatar, breadcrumbs, pagination-item, label)
+- **molecule-interactive** — composes atoms with composite interaction (tab-button, accordion-header)
+- **organism** — complex composition with internal state (modal, table, dropdown, calendar)
+- **layout** — structural only (row, column, grid)
+
+Archetype determines: which CSS Pattern (A/B/C), which sections are required, which a11y baseline applies, which story variants are mandatory.
+
+---
+
+## 2bis. Step 0.5 — Snapshot
+
+Run 8 lookups in parallel against the working tree per [`references/codebase-snapshots.md`](references/codebase-snapshots.md):
+
+1. `Glob src/components/cor-*/cor-*.tsx` → `componentInventory.production`
+2. `Glob src/legacy/cor-*/cor-*.tsx` → `componentInventory.legacy`
+3. `Glob tokens/core/components/*.tokens.json` → `tokenInventory`
+4. `Read src/legacy/shared.constants.ts` → `slotConstants`
+5. `Read tokens/core/color.tokens.json` → `colorTokens`
+6. `Read tokens/core/sizes.tokens.json` → `sizeTokens`
+7. `Read tokens/core/font.tokens.json` → `fontTokens`
+8. `Glob src/utils/*.ts` → `utilsInventory`
+
+Total wall time: ~2s. All payloads are passed to Steps 2 and 4. Failed lookups emit a one-line warning in `## Validation Issues` and return an empty payload; other lookups continue.
+
+After the snapshot completes, run [`references/reuse-lookup.md`](references/reuse-lookup.md) Step B (name match) — produces the `## Reuse candidates` block when relevant. For `--mode=new` with an exact name collision in `componentInventory.production`, emission stops with an error.
+
+---
+
+## 3. Step 1 — Route
+
+Load on-demand based on (mode, archetype):
+
+| Mode + Archetype | References to load |
+|---|---|
+| `new` / `redesign` + any | `archetype-router.md` § <archetype>, `canonical-defaults.md`, `must-enforce-checklist.md`, `token-mapping-table.md`, `output-templates.md` § <mode> |
+| `modify` / `fix` + any | `must-enforce-checklist.md` (only items being changed), `output-templates.md` § <mode> |
+| `tokens` + any | `token-mapping-table.md`, `output-templates.md` § tokens |
+| All modes | `contradiction-detector.md` (always run) |
+
+Every section emitted must end with a one-line citation to the canonical rule: `(see _agents/<file>.md § <section>)`. The downstream agent loads the cited file on-demand instead of re-deriving the rule.
+
+---
+
+## 4. Step 2 — Detect Contradictions
+
+Run [`references/contradiction-detector.md`](references/contradiction-detector.md) against the raw prompt. The detector flags 12 patterns:
+
+1. Slot-based on visual atom → rewrite Pattern B
+2. Color descriptor unmapped → cite semantic token or ask
+3. Future-scope mixed with current → move to `## Out of Scope`
+4. Boolean state prop → rewrite to `@State()` private
+5. Hardcoded CSS fallback → rewrite chained token reference
+6. setTimeout-based slot detection → rewrite `slotchange`
+7. Slot prefix unmapped → rewrite to canonical `leading-icon`/`trailing-icon`
+8. Cross-component dependency unresolved → emit Build Order
+9. Hardcoded px value → map to sizing token
+10. Custom event without payload type → force exported type
+11. Reuse candidate missed → emit "Reuse candidate" block
+12. `disabled` without `aria-disabled` → auto-add a11y rule
+
+Each detection produces a one-line auto-fix in the output. If the detector cannot resolve confidently, emit a `## Clarification Needed` block with one focused question — never proceed on a guess.
+
+---
+
+## 5. Step 3 — Compose
+
+Use [`references/output-templates.md`](references/output-templates.md) for the section order per mode. Default emission is `--concise`:
+
+- Token Mapping & State × Element matrix emitted summary-form with pointer to execution-phase extraction
+- Citations to `_agents/*.md` replace inlined rules
+- Target output length: 60–80 lines for atoms, 80–120 for molecules, 100–150 for organisms
+
+Opt-in `--full` inlines every reference and the complete token matrix (200+ lines, useful for autonomous agents that won't resolve references on their own).
+
+**Mandatory sections per mode** are declared in [`references/output-templates.md`](references/output-templates.md). The must-enforce checklist applies item-by-item per [`references/must-enforce-checklist.md`](references/must-enforce-checklist.md).
+
+---
+
+## 6. Step 4 — Validate
+
+Run the 7-point validator from [`references/codebase-snapshots.md`](references/codebase-snapshots.md) § Step 1.5 against the composed draft + the Step 0.5 snapshot:
+
+| # | Check | Against |
+|---|---|---|
+| V1 | Every `cor-X` referenced exists in `componentInventory` (production ∪ legacy) OR appears in `## Build Order` | snapshot |
+| V2 | Every `cor.<comp>.<...>` token path matches the regex in [`token-mapping-table.md`](references/token-mapping-table.md) § 1 | draft |
+| V3 | Every slot validation constant cited exists in `slotConstants` | snapshot |
+| V4 | No raw color descriptor outside cited tokens | draft + `colorTokens` |
+| V5 | No `\d+px` literal outside Token Mapping or Sizing Tokens sections | draft + `sizeTokens` |
+| V6 | CSS Pattern (A/B/C) matches the routed archetype | draft + archetype |
+| V7 | Required sections per (mode, archetype) are present | draft + [`output-templates.md`](references/output-templates.md) |
+
+Failures emit a `## Validation Issues` block at the top of the output with the offending check + suggestion. Continue emission — validation is advisory, never blocking.
+
+---
+
+## 7. Output Contract
+
+Return **only** the optimized prompt. No preamble, no explanation, no meta-commentary. The result is immediately usable as input to:
+
+- `new-component` agent (consumes as Step 5 plan)
+- `redesign-component` agent (consumes as Step 4 plan)
+- `refactor-component` agent
+- `/modify-component`, `/fix-visual-bug`, `/update-tokens` slash commands
+
+Every section ends with `(see <_agents/file.md>)` so the downstream agent re-resolves rules on demand. This is what makes the spec stable across iterations and prevents stale-rule drift.
+
+---
+
+## 8. Calibration
+
+- Long enough to prevent wrong architectural decisions
+- Short enough that the consumer agent reads it fully before starting
+- ~60–80 lines for atoms, ~120 for molecules, ~150 for organisms in `--concise` mode
+- If output exceeds the calibration: reconsider what is truly needed — most of the time, a citation replaces an inlined rule
+
+---
+
+## 9. Common Mistakes to Avoid
+
+- **Inlining `_agents/*.md` rules** — always cite by reference; never duplicate. Rules drift; citations don't.
+- **Skipping contradiction detection** — even if the prompt feels clean, the detector catches subtle errors (boolean state props, slot on visual atom, etc.)
+- **Skipping archetype routing** — emitting a generic spec wastes the consumer agent's first iteration
+- **Over-specifying implementation** — specify the *what*, not the *how*, unless an explicit approach is required (the consumer agent decides implementation details)
+- **Under-specifying acceptance criteria** — vague "it should work" causes rework; always emit the WCAG block + Stories list + Token Mapping pointer
+- **Emitting Figma URLs as flat prose** — always reorganize into State × Variant matrix per [`token-mapping-table.md`](references/token-mapping-table.md)
+- **Forgetting Build Order** — when a dependency doesn't exist, emit a Build Order block; never assume it'll be ready

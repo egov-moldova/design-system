@@ -68,7 +68,6 @@ For standard atoms and molecules in `--fast` mode, follow `AGENTS.md` + subfile 
 - Token/slot architecture → `AGENTS.md`, `src/components/AGENTS.md`, `tokens/AGENTS.md`
 - Stencil patterns → `src/components/_agents/component-structure.md`
 - Token creation → `tokens/_agents/token-structure.md`, `tokens/_agents/naming-conventions.md`
-- Icons → `skill("carbon-icons")` — **MANDATORY** if component has icon slots or uses `cor-icon`
 - Storybook stories → `src/components/_agents/storybook-stories.md`
 
 **`--fast` output rule**: Show inventory table, state matrix, and per-component summary as compact 1-liners. Do not wait for user response — continue immediately.

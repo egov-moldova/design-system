@@ -95,10 +95,7 @@ describe('parseCliOptions', () => {
           '--output',
           'tokens/figma-export',
         ]),
-      error =>
-        error instanceof CliError &&
-        error.exitCode === 2 &&
-        /forces output to tokens\//.test(error.message),
+      error => error instanceof CliError && error.exitCode === 2 && /forces output to tokens\//.test(error.message),
     );
   });
 });
@@ -125,8 +122,7 @@ describe('validateInputStructure', () => {
 
     assert.throws(
       () => validateInputStructure(fixture),
-      error =>
-        error instanceof CliError && error.message.includes('2. Primitive Colors: Do not use directly'),
+      error => error instanceof CliError && error.message.includes('2. Primitive Colors: Do not use directly'),
     );
   });
 
@@ -204,10 +200,7 @@ describe('extractSemanticColors', () => {
     const ctx = createRunContext({ dryRun: true });
     const result = extractSemanticColors(fixture, MODE_LIGHT, ctx);
 
-    assert.equal(
-      result.color.background.alpha['overlay-dark'].$value,
-      '{palette.alpha.black.100-alpha}',
-    );
+    assert.equal(result.color.background.alpha['overlay-dark'].$value, '{palette.alpha.black.100-alpha}');
   });
 
   it('skips the hack section entirely', () => {
@@ -299,10 +292,7 @@ describe('extractSizes', () => {
 describe('rewritePath', () => {
   it('rewrites primitive color paths to the palette namespace', () => {
     const ctx = createRunContext({ dryRun: true });
-    assert.equal(
-      rewritePath('2. Primitive Colors: Do not use directly.gray.100', ctx),
-      'palette.gray.100',
-    );
+    assert.equal(rewritePath('2. Primitive Colors: Do not use directly.gray.100', ctx), 'palette.gray.100');
     assert.equal(
       rewritePath('2. Primitive Colors: Do not use directly.alpha.black.100-alpha', ctx),
       'palette.alpha.black.100-alpha',
@@ -314,10 +304,7 @@ describe('rewritePath', () => {
     assert.equal(rewritePath('4. Typography Primitives.font-size.fs-12', ctx), 'fontSize.12');
     assert.equal(rewritePath('4. Typography Primitives.line-height.lh-16', ctx), 'lineHeight.16');
     assert.equal(rewritePath('4. Typography Primitives.font-weight.fw-regular', ctx), 'fontWeight.regular');
-    assert.equal(
-      rewritePath('4. Typography Primitives.font-family.primary-font', ctx),
-      'fontFamily.primary',
-    );
+    assert.equal(rewritePath('4. Typography Primitives.font-family.primary-font', ctx), 'fontFamily.primary');
   });
 
   it('rewrites size paths and sanitizes commas in border-width', () => {
@@ -421,22 +408,10 @@ describe('main', () => {
     assert.equal(report.schemaVersion, 'tokenhaus-2026');
     assert.equal(report.outputFormat, 'dtcg');
     assert.equal(report.generatedCount, 5);
-    assert.ok(
-      report.generated.some(entry => entry.relativePath.endsWith(path.join('core', 'palette.tokens.json'))),
-    );
-    assert.ok(
-      report.generated.some(entry => entry.relativePath.endsWith(path.join('core', 'color.tokens.json'))),
-    );
-    assert.ok(
-      report.generated.some(entry =>
-        entry.relativePath.endsWith(path.join('core.dark', 'color.tokens.json')),
-      ),
-    );
-    assert.ok(
-      report.generated.some(entry => entry.relativePath.endsWith(path.join('core', 'font.tokens.json'))),
-    );
-    assert.ok(
-      report.generated.some(entry => entry.relativePath.endsWith(path.join('core', 'sizes.tokens.json'))),
-    );
+    assert.ok(report.generated.some(entry => entry.relativePath.endsWith(path.join('core', 'palette.tokens.json'))));
+    assert.ok(report.generated.some(entry => entry.relativePath.endsWith(path.join('core', 'color.tokens.json'))));
+    assert.ok(report.generated.some(entry => entry.relativePath.endsWith(path.join('core.dark', 'color.tokens.json'))));
+    assert.ok(report.generated.some(entry => entry.relativePath.endsWith(path.join('core', 'font.tokens.json'))));
+    assert.ok(report.generated.some(entry => entry.relativePath.endsWith(path.join('core', 'sizes.tokens.json'))));
   });
 });

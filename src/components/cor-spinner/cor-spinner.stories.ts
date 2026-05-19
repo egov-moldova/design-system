@@ -1,132 +1,188 @@
-import { SpinnerSize } from './cor-spinner.enums';
+import type { Meta, StoryObj } from '@storybook/web-components';
 
-export default {
+import { SPINNER_SIZES as SIZES, SPINNER_VARIANTS as VARIANTS } from './cor-spinner.types';
+import type { SpinnerSize, SpinnerVariant } from './cor-spinner.types';
+
+type SpinnerArgs = {
+  size: SpinnerSize;
+  variant: SpinnerVariant;
+  label: string;
+};
+
+const renderSpinner = (args: SpinnerArgs) => /*html*/ `
+  <cor-spinner size="${args.size}" variant="${args.variant}" label="${args.label}"></cor-spinner>
+`;
+
+const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary); text-align: center;';
+const swatchStyle = (variant: SpinnerVariant) => {
+  const base =
+    'display: inline-flex; padding: var(--spacing-4); border-radius: var(--border-radius-4); width: fit-content;';
+  if (variant === 'light') {
+    return `${base} background: var(--color-background-base-inverse-default);`;
+  }
+  if (variant === 'light-on-color') {
+    return `${base} background: var(--color-background-brand-default);`;
+  }
+  return base;
+};
+
+const meta: Meta<SpinnerArgs> = {
   title: 'Atoms/Spinner',
   component: 'cor-spinner',
-  tags: ['autodocs'],
   argTypes: {
     size: {
       control: 'select',
-      options: Object.values(SpinnerSize),
+      options: SIZES,
+      description: 'Visual size rung.',
+      table: { defaultValue: { summary: 'md' } },
+    },
+    variant: {
+      control: 'select',
+      options: VARIANTS,
+      description: 'Color treatment.',
+      table: { defaultValue: { summary: 'brand' } },
     },
     label: {
       control: 'text',
-    },
-    hideDots: {
-      control: 'boolean',
+      description: 'Accessible label announced to screen readers.',
+      table: { defaultValue: { summary: 'Loading' } },
     },
   },
 };
+export default meta;
 
-const renderSpinner = (args: { size: SpinnerSize; label?: string; hideDots?: boolean }) => {
-  const attrs = [`size="${args.size}"`, args.label ? `label="${args.label}"` : '', args.hideDots ? 'hide-dots' : '']
-    .filter(Boolean)
-    .join(' ');
-  return /*html*/ `<cor-spinner ${attrs}></cor-spinner>`;
-};
+type Story = StoryObj<SpinnerArgs>;
 
-export const Default = {
+export const Default: Story = {
   render: renderSpinner,
-  args: {
-    size: SpinnerSize.XLG,
-    label: 'Loading',
+  args: { size: 'md', variant: 'brand', label: 'Loading' },
+  parameters: {
+    docs: {
+      source: {
+        // Override global `type: 'code'` (set in preview.js) — that mode caches the
+        // snippet at registration and ignores args changes. `'dynamic'` re-runs the
+        // transform whenever controls change, so the snippet stays in sync.
+        type: 'dynamic',
+        transform: (_code: string, { args }: { args: SpinnerArgs }) =>
+          `<cor-spinner size="${args.size}" variant="${args.variant}" label="${args.label}"></cor-spinner>`,
+      },
+    },
   },
 };
 
-export const AllSizes = {
+export const AllSizes: Story = {
   render: () => /*html*/ `
-    <div style="display: flex; align-items: center; gap: 32px; padding: 24px; flex-wrap: wrap;">
-      <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-        <cor-spinner size="xlg"></cor-spinner>
-        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">xlg (56px)</span>
-      </div>
-      <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-        <cor-spinner size="lg"></cor-spinner>
-        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">lg (44px)</span>
-      </div>
-      <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-        <cor-spinner size="md"></cor-spinner>
-        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">md (32px)</span>
-      </div>
-      <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-        <cor-spinner size="sm"></cor-spinner>
-        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">sm (24px)</span>
-      </div>
-      <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-        <cor-spinner size="xsm"></cor-spinner>
-        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">xsm (16px)</span>
-      </div>
+    <div style="display: flex; align-items: center; gap: var(--spacing-24); padding: var(--spacing-24); flex-wrap: wrap;">
+      ${SIZES.map(
+        size => /*html*/ `
+        <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-8);">
+          <cor-spinner size="${size}" variant="brand"></cor-spinner>
+          <span style="${cellLabelStyle}">${size}</span>
+        </div>`,
+      ).join('')}
     </div>
   `,
   parameters: {
-    controls: {
-      disable: true,
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: SIZES.map(size => `<cor-spinner size="${size}" variant="brand"></cor-spinner>`).join('\n'),
+      },
     },
   },
 };
 
-export const Xlg = {
-  render: renderSpinner,
-  args: { size: SpinnerSize.XLG, label: 'Loading' },
-};
-
-export const Lg = {
-  render: renderSpinner,
-  args: { size: SpinnerSize.LG, label: 'Loading' },
-};
-
-export const Md = {
-  render: renderSpinner,
-  args: { size: SpinnerSize.MD, label: 'Loading' },
-};
-
-export const Sm = {
-  render: renderSpinner,
-  args: { size: SpinnerSize.SM, label: 'Loading' },
-};
-
-export const Xsm = {
-  render: renderSpinner,
-  args: { size: SpinnerSize.XSM, label: 'Loading' },
-};
-
-export const WithoutDots = {
-  render: renderSpinner,
-  args: {
-    size: SpinnerSize.XLG,
-    label: 'Loading',
-    hideDots: true,
-  },
-};
-
-export const AllSizesWithoutDots = {
+export const AllVariants: Story = {
   render: () => /*html*/ `
-    <div style="display: flex; align-items: center; gap: 32px; padding: 24px; flex-wrap: wrap;">
-      <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-        <cor-spinner size="xlg" hide-dots></cor-spinner>
-        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">xlg (56px)</span>
-      </div>
-      <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-        <cor-spinner size="lg" hide-dots></cor-spinner>
-        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">lg (44px)</span>
-      </div>
-      <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-        <cor-spinner size="md" hide-dots></cor-spinner>
-        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">md (32px)</span>
-      </div>
-      <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-        <cor-spinner size="sm" hide-dots></cor-spinner>
-        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">sm (24px)</span>
-      </div>
-      <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-        <cor-spinner size="xsm" hide-dots></cor-spinner>
-        <span style="font-size: 12px; color: var(--color-text-base-tertiary);">xsm (16px)</span>
-      </div>
+    <div style="display: flex; align-items: center; gap: var(--spacing-24); padding: var(--spacing-24); flex-wrap: wrap;">
+      ${VARIANTS.map(
+        variant => /*html*/ `
+        <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-8);">
+          <div style="${swatchStyle(variant)}">
+            <cor-spinner size="md" variant="${variant}"></cor-spinner>
+          </div>
+          <span style="${cellLabelStyle}">${variant}</span>
+        </div>`,
+      ).join('')}
     </div>
   `,
   parameters: {
-    controls: {
-      disable: true,
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: VARIANTS.map(variant => `<cor-spinner size="md" variant="${variant}"></cor-spinner>`).join('\n'),
+      },
+    },
+  },
+};
+
+export const AllVariantsXSizes: Story = {
+  name: 'All Variants + Sizes',
+  render: () => /*html*/ `
+    <div style="display: grid; grid-template-columns: 80px repeat(${SIZES.length}, 1fr); gap: var(--spacing-16); padding: var(--spacing-24); place-items: center;">
+      <div></div>
+      ${SIZES.map(size => /*html*/ `<div style="${cellLabelStyle}">${size}</div>`).join('')}
+      ${VARIANTS.map(
+        variant => /*html*/ `
+          <div style="${cellLabelStyle}; text-align: start;">${variant}</div>
+          ${SIZES.map(
+            size => /*html*/ `
+            <div style="${swatchStyle(variant)}; justify-content: center;">
+              <cor-spinner size="${size}" variant="${variant}"></cor-spinner>
+            </div>`,
+          ).join('')}
+        `,
+      ).join('')}
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: VARIANTS.map(
+          variant =>
+            `<!-- variant: ${variant} -->\n` +
+            SIZES.map(size => `<cor-spinner size="${size}" variant="${variant}"></cor-spinner>`).join('\n'),
+        ).join('\n\n'),
+      },
+    },
+  },
+};
+
+export const ReducedMotion: Story = {
+  render: () => /*html*/ `
+    <style>
+      .reduced-motion-wrapper {
+        --spinner-transition-duration: 0ms;
+        display: flex;
+        gap: var(--spacing-24);
+        padding: var(--spacing-24);
+        align-items: center;
+      }
+    </style>
+    <div class="reduced-motion-wrapper">
+      ${SIZES.map(size => /*html*/ `<cor-spinner size="${size}" variant="brand" label="Loading (reduced motion)"></cor-spinner>`).join('')}
+    </div>
+    <p style="${cellLabelStyle}; max-width: 540px; padding: 0 var(--spacing-24); text-align: left; font-style: italic;">
+      This story overrides <code>--spinner-transition-duration</code> to demonstrate the
+      static state shown when the user enables OS-level "reduce motion".
+    </p>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: `<style>
+  /* Honor user's reduce-motion preference, or force it locally. */
+  .reduced-motion-wrapper {
+    --spinner-transition-duration: 0ms;
+  }
+</style>
+
+<div class="reduced-motion-wrapper">
+  <cor-spinner size="md" variant="brand" label="Loading (reduced motion)"></cor-spinner>
+</div>`,
+      },
     },
   },
 };

@@ -45,13 +45,7 @@ function isLegacyLeaf(obj) {
 }
 
 function isDtcgLeaf(obj) {
-  return (
-    obj !== null &&
-    typeof obj === 'object' &&
-    !Array.isArray(obj) &&
-    '$value' in obj &&
-    '$type' in obj
-  );
+  return obj !== null && typeof obj === 'object' && !Array.isArray(obj) && '$value' in obj && '$type' in obj;
 }
 
 function convertLeaf(leaf, options) {
@@ -165,7 +159,10 @@ function createProgram() {
     .option('--root <dir>', 'Token root to scan (repeatable)', collectRoot, [])
     .option('--dry-run', 'Preview without modifying any file')
     .option('--report <file>', 'Write a machine-readable JSON report')
-    .option('--preserve-attributes', 'Migrate the legacy `attributes` field into `$extensions["com.cor.attributes"]` (default: drop)')
+    .option(
+      '--preserve-attributes',
+      'Migrate the legacy `attributes` field into `$extensions["com.cor.attributes"]` (default: drop)',
+    )
     .showHelpAfterError();
 }
 
@@ -256,17 +253,25 @@ function main(argv = process.argv) {
   if (opts.report) {
     const reportPath = path.isAbsolute(opts.report) ? opts.report : path.resolve(PROJECT_ROOT, opts.report);
     fs.mkdirSync(path.dirname(reportPath), { recursive: true });
-    fs.writeFileSync(reportPath, JSON.stringify({
-      timestamp: new Date().toISOString(),
-      dryRun,
-      preserveAttributes,
-      roots,
-      totalLeavesConverted,
-      totalLeavesAlreadyDtcg,
-      totalAttributesDropped,
-      types: Object.fromEntries(aggregateTypes),
-      files: fileReports,
-    }, null, 2) + '\n', 'utf8');
+    fs.writeFileSync(
+      reportPath,
+      JSON.stringify(
+        {
+          timestamp: new Date().toISOString(),
+          dryRun,
+          preserveAttributes,
+          roots,
+          totalLeavesConverted,
+          totalLeavesAlreadyDtcg,
+          totalAttributesDropped,
+          types: Object.fromEntries(aggregateTypes),
+          files: fileReports,
+        },
+        null,
+        2,
+      ) + '\n',
+      'utf8',
+    );
     console.log(`\nReport written: ${path.relative(PROJECT_ROOT, reportPath)}`);
   }
 

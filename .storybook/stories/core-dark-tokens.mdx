@@ -19,9 +19,13 @@ if (!node || typeof node !== 'object' || Array.isArray(node)) {
 return;
 }
 
-    if (Object.prototype.hasOwnProperty.call(node, 'value') && (typeof node.value === 'string' || typeof node.value === 'number')) {
-      if (typeof node.value === 'string') {
-        const normalizedReference = node.value.match(TOKEN_REFERENCE_PATTERN)?.[1] ?? (node.value.includes('{') ? node.value : null);
+    // Source token files (tokens/core/**/*.tokens.json) use the DTCG format —
+    // the resolved value lives under `$value`, not `value`. Reading `value` here
+    // silently produced an empty referenceMap, so the "ref: {…}" hint never
+    // rendered in the Storybook docs.
+    if (Object.prototype.hasOwnProperty.call(node, '$value') && (typeof node.$value === 'string' || typeof node.$value === 'number')) {
+      if (typeof node.$value === 'string') {
+        const normalizedReference = node.$value.match(TOKEN_REFERENCE_PATTERN)?.[1] ?? (node.$value.includes('{') ? node.$value : null);
 
         if (normalizedReference) {
           referenceMap[pathParts.join('.')] = {
@@ -57,7 +61,7 @@ export const COLOR_KEYS = Object.keys(coreDark).filter(k => COLOR_KEY_NAMES.incl
 
 export const TEXT_KEYS = ['font', 'fontFamily', 'fontSize', 'fontWeight', 'letterSpacing', 'lineHeight'];
 
-export const APPEARANCE_KEYS = ['border', 'radius', 'screen', 'size', 'space', 'spacing', 'zIndex'];
+export const APPEARANCE_KEYS = ['screen', 'spacing', 'borderRadius', 'borderWidth', 'zIndex', 'dropShadow'];
 
 export const COMPONENT_KEYS = Object.keys(coreDark).filter(
   k => !['default', ...COLOR_KEYS, ...TEXT_KEYS, ...APPEARANCE_KEYS].includes(k),
@@ -171,6 +175,8 @@ export const renderTokenTable = group => {
 
 The dark theme overrides selected **semantic** and **component** token values. Palette primitives, typography, and layout values remain shared with the light theme. Components automatically adopt dark values when `data-theme="dark"` is set on the document root.
 
+<br />
+<br />
 ## Colors
 
 Color tokens live in two layers, both aligned with [Figma Foundations](https://www.figma.com/design/wkHMxgDWxZKaXQ7zNxhSxN/Foundations):
@@ -243,6 +249,8 @@ Color tokens live in two layers, both aligned with [Figma Foundations](https://w
 
 </ColorPalette>
 
+<br />
+<br />
 ## Typography Tokens
 
 Global type primitives, composed as `--{category}-{scale}` (e.g. `--font-size-16`, `--font-weight-semibold`, `--line-height-20`). Categories: {TEXT_KEYS.join(', ')}.
@@ -366,12 +374,16 @@ return (
 );
 })}
 
+<br />
+<br />
 ## Layout & Effect Tokens
 
 Layout and effect primitives, composed as `--{category}-{scale}` (e.g. `--spacing-12`, `--border-radius-8`, `--drop-shadow-300`). Categories: {APPEARANCE_KEYS.join(', ')}.
 
 <div>{APPEARANCE_KEYS.map(group => renderTokenTable(group))}</div>
 
+<br />
+<br />
 ## Component Tokens
 
 Per-component overrides composed as `--{component}-{element}-{property}-{variant}` (e.g. `--button-primary-background-default`, `--input-container-height-lg`). Each component references semantic tokens — never palette primitives. Files: `tokens/core/components/` ({COMPONENT_KEYS.join(', ')}).

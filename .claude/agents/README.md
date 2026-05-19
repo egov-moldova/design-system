@@ -14,7 +14,8 @@ For simple linear workflows, use [`.claude/commands/`](../commands/README.md) in
 | `custom-component` | Create a Stencil component from user requirements (no Figma) | Utility/internal components with no design file | Medium |
 | `audit-production` | Full 9-phase production readiness gate | Before graduating to production or final pre-merge | High |
 | `refactor-component` | Align an existing component to latest patterns; visual regression loop | Code smells, outdated patterns, breaking changes needed | High |
-| `optimize-prompt-new-component` | Transform vague new-component requests into structured specs | Pre-step before invoking `new-component` on ambiguous input | Medium |
+
+> **Note:** Prompt structuring was previously listed here as `optimize-prompt-new-component`. It is **not** a subagent — it has been converged into the slash command [`/optimize-prompt`](../commands/README.md). Use the slash command before invoking `new-component`, `redesign-component`, or `refactor-component` on a vague request.
 
 ---
 
@@ -44,7 +45,7 @@ Most subagents include human-approval gates between phases. The subagent will re
 - **Storybook port**: 6007 (never 6006)
 - **Token-first change order**: tokens JSON → `yarn tokens.build` → CSS → TSX → stories
 - **Pixel-perfect QA**: screenshot via `mcp__playwright__browser_take_screenshot`, diff via `mcp__image-compare__compare_images` (threshold: < 0.5% PASS, 0.5–2% WARNING, > 2% FAIL)
-- **Skills invoked**: `systematic-debugging`, `token-creation`, `carbon-icons`, `verification-before-completion`, `figma-illustration-import`
+- **Skills invoked**: `systematic-debugging`, `token-creation`, `verification-before-completion`, `figma-illustration-import`
 - **MCP tool names**: `mcp__playwright__browser_*`, `mcp__figma__*`, `mcp__context7__*`, `mcp__image-compare__*`. See [`_agents/mcp-tools.md`](../../_agents/mcp-tools.md)
 
 ## See Also

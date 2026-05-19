@@ -182,7 +182,6 @@ yarn wca.custom-elements       # Generate custom-elements.json for Storybook
 yarn svg:icons                 # Process SVG icons (remove size/fill + generate JSON)
 yarn svg:remove-size           # Remove size attributes from SVGs
 yarn svg:remove-fill           # Remove fill attributes from SVGs
-yarn carbon:names              # Generate Carbon icon name mappings
 yarn format.icons              # Format SVG icons with SVGO
 
 # Storybook URLs (port 6007)

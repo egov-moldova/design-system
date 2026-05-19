@@ -109,7 +109,6 @@ rg "innerHTML\s*=" src/components --type ts
 | Color contrast on focus rings (delegatesFocus) | [`accessibility-compliance/SKILL.md`](../accessibility-compliance/SKILL.md) §2 | WCAG SC 1.4.11 |
 | `prefers-reduced-motion` (CSS) | [`accessibility-compliance/SKILL.md`](../accessibility-compliance/SKILL.md) §5 | WCAG SC 2.3.3 |
 | Token validation (3-tier hierarchy) | [`token-creation/SKILL.md`](../token-creation/SKILL.md) | 3-tier rule precedes CSS audit |
-| Icon usage (`cor-icon`) | [`carbon-icons/SKILL.md`](../carbon-icons/SKILL.md) | Component-internal icons |
 | Component scaffolding | [`src/components/_agents/component-structure.md`](../../../src/components/_agents/component-structure.md) | Member order is the project-specific overlay |
 | Anti-patterns (project-specific) | [`src/components/_agents/anti-patterns.md`](../../../src/components/_agents/anti-patterns.md) | 25 forbidden patterns; complements Stencil docs |
 

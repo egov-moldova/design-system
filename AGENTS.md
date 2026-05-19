@@ -73,11 +73,9 @@ The repo ships ready-to-use slash commands and subagents for routine workflows. 
 
 | Type | Examples | Use when |
 |---|---|---|
-| **Slash command** ([.claude/commands/](.claude/commands/)) | `/audit-component`, `/audit-accessibility`, `/pre-pr-check`, `/update-tokens`, `/fix-visual-bug`, `/migrate-component`, `/modify-component`, `/optimize-prompt`, `/optimize-prompt-new-component` | Linear, single-pass workflows. Argument-driven. Invoke directly in prompt. |
+| **Slash command** ([.claude/commands/](.claude/commands/)) | `/audit-component`, `/audit-accessibility`, `/pre-pr-check`, `/update-tokens`, `/fix-visual-bug`, `/migrate-component`, `/modify-component`, `/optimize-prompt` (mode-routed: new / redesign / modify / fix / tokens) | Linear, single-pass workflows. Argument-driven. Invoke directly in prompt. |
 | **Subagent** ([.claude/agents/](.claude/agents/)) | `new-component`, `custom-component`, `audit-production`, `refactor-component` | Multi-phase pipelines with separate context window. Invoke via Task tool or auto-trigger. |
-| **Skill** ([.claude/skills/](.claude/skills/)) | `stencil-compliance`, `accessibility-compliance`, `audit-component`, `carbon-icons`, `token-creation`, `systematic-debugging`, `verification-before-completion`, `figma-illustration-import` | Reusable knowledge invoked from inside commands/agents via the Skill tool. **`stencil-compliance`** catalogs Stencil 4.x rules across 14 areas (decorators, lifecycle, host, JSX, styling, form-associated, reactivity, serialization, functional components, public API). **`audit-component`** wraps the 3-wave production audit so other agents can invoke it programmatically. |
-
-Legacy Windsurf workflows (`.windsurf/workflows/`) are preserved for cross-IDE users — see [`.windsurf/README.md`](.windsurf/README.md). New automation should target `.claude/`.
+| **Skill** ([.claude/skills/](.claude/skills/)) | `stencil-compliance`, `accessibility-compliance`, `audit-component`, `token-creation`, `systematic-debugging`, `verification-before-completion`, `figma-illustration-import` | Reusable knowledge invoked from inside commands/agents via the Skill tool. **`stencil-compliance`** catalogs Stencil 4.x rules across 14 areas (decorators, lifecycle, host, JSX, styling, form-associated, reactivity, serialization, functional components, public API). **`audit-component`** wraps the 3-wave production audit so other agents can invoke it programmatically. |
 
 ---
 
@@ -137,7 +135,6 @@ yarn generate                  # Stencil component generator scaffolding
 yarn tokens.audit              # Debug missing token references
 yarn wca.custom-elements       # Generate custom-elements.json for Storybook
 yarn svg:icons                 # Process SVG icons (remove size/fill + generate JSON)
-yarn carbon:names              # Generate Carbon icon name mappings
 ```
 
 See `_agents/environment-commands.md` for the full decision matrix and all commands.

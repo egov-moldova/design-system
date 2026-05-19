@@ -332,8 +332,8 @@ If issues arise during migration:
 ## References
 
 - **Full specification**: `tokens/AGENTS.md` § Component Token Naming Convention
-- **Workflow guidance**: `.windsurf/workflows/update-tokens.md`
-- **Refactor workflow**: `.windsurf/workflows/refactor-component.md`
+- **Workflow guidance**: `.claude/commands/update-tokens.md`
+- **Refactor workflow**: `.claude/agents/refactor-component.md`
 - **Root documentation**: `AGENTS.md` § 4. Token-First Development Pipeline
 
 ---
@@ -344,7 +344,6 @@ For questions about the migration:
 
 1. Check `tokens/AGENTS.md` for detailed naming rules
 2. Review examples in this document
-3. Consult the refactoring plan at `C:\Users\Dan\.windsurf\plans\token-naming-refactor-1939bd.md`
 
 ---
 

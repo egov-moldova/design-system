@@ -19,8 +19,7 @@ For complex multi-phase workflows (Figma → code → QA pipelines, full product
 | `/migrate-component` | Graduate a WIP component from `src/hidden/` to `src/components/` | Component is ready to ship | Medium |
 | `/modify-component` | Add a variant, prop, size, or state to an existing component | Planned enhancement to existing component | Medium |
 | `/pre-pr-check` | Full pre-PR validation — lint, test, build, console, git hygiene | Before opening a pull request | Low |
-| `/optimize-prompt` | Restructure a raw user request into an unambiguous spec | Before starting `/new-component` on a vague request | Medium |
-| `/optimize-prompt-new-component` | Same as above, scoped to new-component requests | Pre-step for new-component subagent | Medium |
+| `/optimize-prompt` | Compile a raw request into an AGE-aware spec. Auto-routes by archetype + mode (`new` / `redesign` / `modify` / `fix` / `tokens`). Replaces former `/optimize-prompt-new-component`. | Before `/new-component`, `/redesign-component`, `/modify-component`, `/fix-visual-bug`, or `/update-tokens` on a vague request | Medium |
 
 For broader pipelines (new components from Figma, full production gate, refactoring loops) → see [`.claude/agents/`](../agents/README.md).
 

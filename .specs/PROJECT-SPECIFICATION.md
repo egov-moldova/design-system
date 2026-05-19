@@ -92,7 +92,6 @@ The repo ships a layered automation stack:
 | `.claude/commands/` | [`.claude/commands/`](../.claude/commands/) | Slash commands for linear workflows |
 | `.claude/agents/` | [`.claude/agents/`](../.claude/agents/) | Subagents for multi-phase pipelines |
 | `.claude/skills/` | [`.claude/skills/`](../.claude/skills/) | Reusable knowledge invoked from commands/agents |
-| `.windsurf/` | [`.windsurf/`](../.windsurf/) | Legacy mirror for Windsurf Cascade users |
 
 ### MCP servers (`.mcp.json` at repo root)
 

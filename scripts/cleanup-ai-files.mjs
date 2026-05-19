@@ -14,7 +14,6 @@ const pathsToDelete = [
   '.specs/',
   '.claude/',
   '.vscode/',
-  '.windsurf/',
   '_agents/',
   'tokens/_agents/',
   'AGENTS.md',
