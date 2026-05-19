@@ -65,6 +65,8 @@
     "test.watch": "stencil-test --project spec --watch",
     "test.storybook": "vitest --project storybook --run",
     "test.storybook.watch": "vitest --project storybook",
+    "check": "yarn format && yarn typecheck && yarn lint && yarn test",
+    "check.ci": "yarn typecheck && yarn lint && yarn test",
     "typecheck": "wireit",
     "tokens.build": "wireit",
     "tokens.build.prod": "wireit",
