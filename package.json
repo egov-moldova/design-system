@@ -394,7 +394,7 @@
     "@storybook/addon-links": "^10.4.0",
     "@storybook/addon-vitest": "^10.4.0",
     "@storybook/web-components-vite": "^10.4.0",
-    "@types/node": "^25.9.0",
+    "@types/node": "^24.12.4",
     "@typescript-eslint/eslint-plugin": "^8.59.4",
     "@typescript-eslint/parser": "^8.59.4",
     "@vitest/browser-playwright": "^4.1.6",
@@ -436,7 +436,7 @@
     "wireit": "^0.14.12"
   },
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=24.0.0 <25.0.0"
   },
   "readme": "./README.md",
   "publishConfig": {

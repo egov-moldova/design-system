@@ -44,7 +44,7 @@ __metadata:
     "@storybook/addon-links": "npm:^10.4.0"
     "@storybook/addon-vitest": "npm:^10.4.0"
     "@storybook/web-components-vite": "npm:^10.4.0"
-    "@types/node": "npm:^25.9.0"
+    "@types/node": "npm:^24.12.4"
     "@typescript-eslint/eslint-plugin": "npm:^8.59.4"
     "@typescript-eslint/parser": "npm:^8.59.4"
     "@vitest/browser-playwright": "npm:^4.1.6"
@@ -3207,12 +3207,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^25.9.0":
-  version: 25.9.0
-  resolution: "@types/node@npm:25.9.0"
+"@types/node@npm:^24.12.4":
+  version: 24.12.4
+  resolution: "@types/node@npm:24.12.4"
   dependencies:
-    undici-types: "npm:>=7.24.0 <7.24.7"
-  checksum: 10c0/1845f0ce5471213a4f0c887845c50993968ea863c03bb355282b59bdcc877d009a2785f0f506cfc40b8ce7548a21e33ac826e998be62d42b000bfd9ccdc6c910
+    undici-types: "npm:~7.16.0"
+  checksum: 10c0/d2c36b78b6050d8677769fa05a32243061675e81ddc2bb43955d91a671af3465506ef2731a24c0c9ab42b6b679bd5c1513de45bbe9ea278c2c07ee63b564b61b
   languageName: node
   linkType: hard
 
