@@ -290,5 +290,5 @@ browser_evaluate({
 4. **CSS patterns**: `:host([attr])` + `::slotted(*)` for slot components
 5. **Tokens**: JSON → Style Dictionary → CSS vars → component CSS
 6. **Props**: `@Prop({ reflect: true })` default for visual props
-7. **Story format**: CSF3 with `@storybook/web-components`, string tag names
+7. **Story format**: CSF3 with `@storybook/web-components-vite`, string tag names
 8. **Environment**: Always check `_agents/environment-commands.md` before starting servers

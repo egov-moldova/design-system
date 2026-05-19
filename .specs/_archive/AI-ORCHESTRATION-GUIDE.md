@@ -1274,7 +1274,7 @@ export const Primary: Story = {
 
 // ✅ CORRECT (Web Components pattern for this project)
 import { html } from 'lit-html';
-import type { Meta, StoryObj } from '@storybook/web-components';
+import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import { ButtonVariant, ButtonSize } from './cor-button.enums';
 
 export default {

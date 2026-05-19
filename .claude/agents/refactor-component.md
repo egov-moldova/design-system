@@ -92,7 +92,7 @@ Strict dependency order:
    - Create interfaces for event payloads
 6. **Stories** → update `cor-<name>.stories.ts`
    - Switch to CSF3 if not already
-   - Use `@storybook/web-components` imports
+   - Use `@storybook/web-components-vite` imports
    - Add missing story variants (AllVariants, AllSizes, States)
 7. **Tests** → update `test/cor-<name>.spec.tsx`
    - Add missing test coverage identified by audit

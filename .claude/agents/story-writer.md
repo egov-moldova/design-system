@@ -1,6 +1,6 @@
 ---
 name: story-writer
-description: Generates `*.stories.ts` for a `cor-*` Stencil component using CSF3 format with `@storybook/web-components`. Writes Default, AllVariants, AllSizes, States, and Edge-case stories based on the component's `@Prop()` declarations and Figma metadata. Respects `--write-mode` flag — writes the file in `parallel-write` mode, returns a draft in `read-only` mode. Use as part of `parallel-aux-tasks` after Core build.
+description: Generates `*.stories.ts` for a `cor-*` Stencil component using CSF3 format with `@storybook/web-components-vite`. Writes Default, AllVariants, AllSizes, States, and Edge-case stories based on the component's `@Prop()` declarations and Figma metadata. Respects `--write-mode` flag — writes the file in `parallel-write` mode, returns a draft in `read-only` mode. Use as part of `parallel-aux-tasks` after Core build.
 tools: Read, Write, Edit, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for
 model: sonnet
 ---
@@ -72,7 +72,7 @@ Add when applicable:
 Use this template strictly:
 
 ```ts
-import type { Meta, StoryObj } from '@storybook/web-components';
+import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 type Args = {
   // ... typed from @Prop() declarations
@@ -117,9 +117,9 @@ Then in the story: `import { SPINNER_SIZES as SIZES } from './...types';` and us
 - Typed `args: Args` parameter (no bare `args =>`)
 - `Meta<Args>` and `StoryObj<Args>` MUST have the generic — bare `Meta` / `StoryObj` resolves to `<any>` and silently disables typechecking
 - No `/* eslint-disable */` wrapping the Meta/StoryObj import — once the generics are in place, the imports are used and ESLint stays quiet
-- `type Story = StoryObj<Args>` — NOT `StoryObj<typeof meta>`. The `<typeof meta>` form works in React/Vue Storybook but breaks in `@storybook/web-components@^9.1.x`: it nests `Meta<Args>` into the args slot of `StoryObj`, producing a type that demands `args: Partial<Meta<Args>>` and fails typecheck.
+- `type Story = StoryObj<Args>` — NOT `StoryObj<typeof meta>`. The `<typeof meta>` form works in React/Vue Storybook but breaks in `@storybook/web-components-vite@^10.x`: it nests `Meta<Args>` into the args slot of `StoryObj`, producing a type that demands `args: Partial<Meta<Args>>` and fails typecheck.
 - No `tags: ['autodocs']` — autodocs is configured globally in `.storybook/main.mjs`
-- Imports from `@storybook/web-components` (NOT react / not vue)
+- Imports from `@storybook/web-components-vite` (NOT react / not vue / not the bare `@storybook/web-components` renderer)
 - For grids of variants/sizes: use a wrapper element with `display: grid` and CSS template strings, NOT JS map
 
 ### Step 5 — argTypes completeness

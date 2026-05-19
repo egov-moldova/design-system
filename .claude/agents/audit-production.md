@@ -333,7 +333,7 @@ Check `cor-[name].stories.ts` includes:
 
 Verify:
 
-- Imports from `@storybook/web-components` (NOT react)
+- Imports from `@storybook/web-components-vite` (NOT react / not the bare `@storybook/web-components` renderer)
 - `component: 'cor-[name]'` (string tag, NOT JS reference)
 - `render` function with HTML template strings
 - `/*html*/` prefix for IDE syntax highlighting

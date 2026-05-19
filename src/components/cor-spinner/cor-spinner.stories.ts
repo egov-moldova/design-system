@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components';
+import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import { SPINNER_SIZES as SIZES, SPINNER_VARIANTS as VARIANTS } from './cor-spinner.types';
 import type { SpinnerSize, SpinnerVariant } from './cor-spinner.types';

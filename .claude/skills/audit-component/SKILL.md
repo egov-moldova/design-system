@@ -397,7 +397,7 @@ Cross-reference `src/components/_agents/slot-patterns.md`.
 Read `.stories.ts` (already loaded) and verify:
 
 **Format**:
-- CSF3 format with `@storybook/web-components` (NOT `@storybook/react`)
+- CSF3 format with `@storybook/web-components-vite` (NOT `@storybook/react`)
 - `component: 'cor-<name>'` is string tag name (not JS reference)
 - `render` function with HTML template strings (`/*html*/` prefix)
 - `title` follows atomic hierarchy: `Atoms/CorName`, `Molecules/CorName`, etc.
@@ -407,7 +407,7 @@ Read `.stories.ts` (already loaded) and verify:
 - `STORY-MISSING-GENERIC` — `Meta` or `StoryObj` used without a generic type parameter (bare `Meta` resolves to `Meta<any>` and disables every type check the pattern is supposed to provide). Required form: `Meta<Args>` and `StoryObj<Args>`.
 - `STORY-ESLINT-DISABLE-WRAP` — `/* eslint-disable */` wrapping the `Meta, StoryObj` import. The only reason for it is unused imports, which means the generic was forgotten. Fix the generic and drop the wrapper.
 - `STORY-ARGS-ANY` — `render: (args: any) => ...` or any `(args: any)` callback in stories. Typed args param required.
-- `STORY-TYPEOF-META` — `type Story = StoryObj<typeof meta>`. Works in React/Vue Storybook but breaks in `@storybook/web-components@^9.1.x` (nests `Meta<Args>` into the args slot). Required form: `type Story = StoryObj<Args>`.
+- `STORY-TYPEOF-META` — `type Story = StoryObj<typeof meta>`. Works in React/Vue Storybook but breaks in `@storybook/web-components-vite@^10.x` (nests `Meta<Args>` into the args slot). Required form: `type Story = StoryObj<Args>`.
 - `STORY-DOCS-SOURCE-MISSING-DYNAMIC` — `parameters.docs.source` provides a `transform` without `type: 'dynamic'`. The global `type: 'code'` (in `.storybook/preview.js`) caches the snippet at story registration and ignores Controls changes; per-story `type: 'dynamic'` is required to make the transform re-run.
 - `STORY-DOCS-SOURCE-ARGS-ANY` — `transform: (_code, { args }: any) => ...`. Type the destructure: `{ args }: { args: ComponentArgs }`.
 

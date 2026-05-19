@@ -40,7 +40,7 @@ Phased verification gates, common troubleshooting, and git/PR conventions. **Rea
 
 ### Phase 3: Stories
 
-- [ ] Story file created (CSF3, `@storybook/web-components`, string tag names)
+- [ ] Story file created (CSF3, `@storybook/web-components-vite`, string tag names)
 - [ ] Default + AllVariants + AllSizes + States stories present
 - [ ] Responsive stories for molecules/organisms (375px, 768px, 1440px)
 

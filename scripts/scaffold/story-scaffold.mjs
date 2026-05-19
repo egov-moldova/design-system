@@ -154,7 +154,7 @@ export function generateStoriesFile({ contract, atomic, target }) {
   const enumsAvailable = target?.exists?.enums ?? false;
 
   const lines = [];
-  lines.push("import type { Meta, StoryObj } from '@storybook/web-components';");
+  lines.push("import type { Meta, StoryObj } from '@storybook/web-components-vite';");
 
   // Import enums if present — story argTypes consume them for select controls
   const enumImports = [];

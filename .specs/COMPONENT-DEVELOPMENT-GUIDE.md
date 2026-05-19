@@ -213,7 +213,7 @@ Required stories:
 
 Format rules:
 
-- Import from `@storybook/web-components` (NOT React)
+- Import from `@storybook/web-components-vite` (NOT React)
 - `component: 'cor-<name>'` — string tag name, NOT JS reference
 - `render` function with HTML template strings, `/*html*/` prefix for IDE highlighting
 - `title` follows atomic hierarchy: `Atoms/CorName`, `Molecules/CorName`, `Organisms/CorName`

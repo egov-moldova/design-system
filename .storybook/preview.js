@@ -1,4 +1,4 @@
-import { setCustomElements } from '@storybook/web-components';
+import { setCustomElements } from '@storybook/web-components-vite';
 import { createElement } from 'react';
 import { createRoot } from 'react-dom/client';
 import { PageFeedbackToolbarCSS } from 'agentation';

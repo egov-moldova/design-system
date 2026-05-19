@@ -11,7 +11,7 @@ Reference implementation: [`src/components/cor-spinner/cor-spinner.stories.ts`](
 ## CSF3 Story Pattern (type-safe)
 
 ```typescript
-import type { Meta, StoryObj } from '@storybook/web-components';
+import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import { SPINNER_SIZES as SIZES, SPINNER_VARIANTS as VARIANTS } from './cor-spinner.types';
 import type { SpinnerSize, SpinnerVariant } from './cor-spinner.types';
@@ -63,7 +63,7 @@ export const Default: Story = {
 
 - **Title**: `Atoms/CorButton`, `Molecules/CorFormField`, `Organisms/CorNavbar` (Atomic hierarchy)
 - **Sort**: `Introduction → Design Tokens → Atoms → Molecules → Organisms → Templates`
-- **Import**: `@storybook/web-components` — NOT `@storybook/react`
+- **Import**: `@storybook/web-components-vite` — NOT `@storybook/react`, and NOT the bare `@storybook/web-components` renderer (framework-based config is required since Storybook 10)
 - **Component**: string tag `'cor-button'` — NOT JS reference
 - **Render**: always use `render` with HTML template strings (backticks)
 - **HTML highlight**: `/*html*/` prefix for IDE syntax — e.g., `render: (args: ComponentArgs) => /*html*/ \`...\``
@@ -79,7 +79,7 @@ export const Default: Story = {
   export type SpinnerSize = (typeof SPINNER_SIZES)[number];
   ```
   Stories then use `options: SPINNER_SIZES` — no duplicate string array in two files.
-- **Storybook v9 quirk**: use `StoryObj<Args>` directly. **Do NOT** use `StoryObj<typeof meta>` — in `@storybook/web-components@^9.1.x` it nests `Meta<Args>` into the args slot of `StoryObj`, producing a type that demands `args: Partial<Meta<Args>>` and fails typecheck. (This differs from React/Vue Storybook setups where `StoryObj<typeof meta>` works.)
+- **Web-components type quirk**: use `StoryObj<Args>` directly. **Do NOT** use `StoryObj<typeof meta>` — in `@storybook/web-components-vite@^10.x` it nests `Meta<Args>` into the args slot of `StoryObj`, producing a type that demands `args: Partial<Meta<Args>>` and fails typecheck. (This differs from React/Vue Storybook setups where `StoryObj<typeof meta>` works.)
 
 ---
 
@@ -205,11 +205,11 @@ For static snippets that don't need to react to controls (e.g., the grid stories
 
 | ❌ Wrong | ✅ Correct | Why |
 | --- | --- | --- |
-| `import from '@storybook/react'` | `import from '@storybook/web-components'` | This is a Web Components project; React types break shape |
+| `import from '@storybook/react'` | `import from '@storybook/web-components-vite'` | This is a Web Components project; React types break shape |
 | `/* eslint-disable */` around `Meta, StoryObj` import | drop the wrapper | Wrapper is only needed when the imports are unused — meaning the generic was forgotten |
 | `const meta: Meta = { ... }` | `const meta: Meta<Args> = { ... }` | Without the generic, `Meta = Meta<any>` — no type checking |
 | `export const Default: StoryObj = { ... }` | `export const Default: Story = { ... }` (with `type Story = StoryObj<Args>`) | Same — bare `StoryObj` is `StoryObj<any>` |
-| `type Story = StoryObj<typeof meta>` | `type Story = StoryObj<Args>` | Storybook v9 web-components type quirk — `<typeof meta>` nests `Meta<Args>` into the args slot |
+| `type Story = StoryObj<typeof meta>` | `type Story = StoryObj<Args>` | Storybook web-components type quirk — `<typeof meta>` nests `Meta<Args>` into the args slot |
 | `render: (args: any) => ...` | `render: (args: ComponentArgs) => ...` | Typed args param is the whole point of the generic |
 | `satisfies Meta<typeof Button>` | `const meta: Meta<Args> = { ... }` | `satisfies` + JS-reference form is React-Storybook idiom; web-components use string tags |
 | `component: Button` (JS ref) | `component: 'cor-button'` (string tag) | Web components register globally; string tag is what Storybook needs |
