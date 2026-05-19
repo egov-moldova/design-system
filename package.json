@@ -47,7 +47,7 @@
     "dx:storybook": "wireit",
     "dx:stencil:once": "wireit",
     "dx:clean": "rimraf .stencil .wireit storybook-static dist loader www",
-    "format": "wireit",
+    "format": "eslint \"src/**/*.{ts,tsx}\" --fix && prettier --write .",
     "format.icons": "svgo -f ./src/assets/images/icons --config=./svgo.config.icons.js",
     "lint": "wireit",
     "lint.js": "wireit",
@@ -77,9 +77,9 @@
     "tokens.validate": "node scripts/tokens-validate.mjs --no-color",
     "tokens.watch": "wireit",
     "wca.custom-elements": "wireit",
-    "svg:remove-size": "wireit",
-    "svg:remove-fill": "wireit",
-    "svg:icons": "wireit",
+    "svg:remove-size": "svgo -f assets/icons --config svgo.config.icons.js --recursive",
+    "svg:remove-fill": "svgo -f assets/icons --config svgo.config.icons.js --recursive",
+    "svg:icons": "yarn svg:remove-size && yarn svg:remove-fill && yarn format && node scripts/process-svg.js -i assets/icons -s src/components/cor-icon/assets/local-icons.json",
     "sync:tokens": "node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --output tokens/figma-export",
     "sync:tokens:apply": "node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --apply",
     "test:scripts": "node --test \"scripts/__tests__/**/*.spec.mjs\"",
@@ -292,20 +292,6 @@
         "yarn.lock"
       ]
     },
-    "format": {
-      "command": "eslint \"src/**/*.{ts,tsx}\" --fix && prettier --write .",
-      "files": [
-        "src/**/*.ts",
-        "src/**/*.tsx",
-        "src/**/*.css",
-        ".eslintrc.js",
-        ".prettierrc.json"
-      ],
-      "output": [],
-      "packageLocks": [
-        "yarn.lock"
-      ]
-    },
     "lint.js": {
       "command": "eslint \"src/**/*.{ts,tsx}\" --max-warnings 0 && prettier --check .",
       "files": [
@@ -390,43 +376,6 @@
     "sp.dev.watch": {
       "dependencies": [
         "dev"
-      ]
-    },
-    "svg:remove-size": {
-      "command": "svgo -f assets/icons --config svgo.config.icons.js --recursive",
-      "files": [
-        "assets/icons/**/*.svg",
-        "svgo.config.icons.js"
-      ],
-      "output": [
-        "assets/icons/**/*.svg"
-      ]
-    },
-    "svg:remove-fill": {
-      "command": "svgo -f assets/icons --config svgo.config.icons.js --recursive",
-      "dependencies": [
-        "svg:remove-size"
-      ],
-      "files": [
-        "assets/icons/**/*.svg",
-        "svgo.config.icons.js"
-      ],
-      "output": [
-        "assets/icons/**/*.svg"
-      ]
-    },
-    "svg:icons": {
-      "command": "node scripts/process-svg.js -i assets/icons -s src/components/cor-icon/assets/local-icons.json",
-      "dependencies": [
-        "svg:remove-fill",
-        "format"
-      ],
-      "files": [
-        "assets/icons/**/*.svg",
-        "scripts/process-svg.js"
-      ],
-      "output": [
-        "src/components/cor-icon/assets/local-icons.json"
       ]
     }
   },
