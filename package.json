@@ -57,7 +57,6 @@
     "sp.build": "wireit",
     "sp.dev": "storybook dev -p 6007 --no-open",
     "sp.dev.watch": "wireit",
-    "sp.prod": "wireit",
     "sp.docker": "cross-env CI=1 STORYBOOK_DISABLE_TELEMETRY=1 NODE_ENV=production storybook build --disable-telemetry -o storybook-static",
     "sp.serve": "yarn dlx serve storybook-static -p 6008",
     "start": "stencil build --dev --watch --serve",
@@ -377,23 +376,6 @@
         "wca.custom-elements"
       ],
       "command": "cross-env CI=1 STORYBOOK_DISABLE_TELEMETRY=1 NODE_ENV=production storybook build --disable-telemetry -o storybook-static",
-      "files": [
-        ".storybook/**/*",
-        "src/**/*.stories.ts"
-      ],
-      "output": [
-        "storybook-static/**"
-      ],
-      "packageLocks": [
-        "yarn.lock"
-      ]
-    },
-    "sp.prod": {
-      "command": "cross-env CI=1 STORYBOOK_DISABLE_TELEMETRY=1 NODE_ENV=production storybook build --disable-telemetry -o storybook-static",
-      "dependencies": [
-        "build",
-        "wca.custom-elements"
-      ],
       "files": [
         ".storybook/**/*",
         "src/**/*.stories.ts"
