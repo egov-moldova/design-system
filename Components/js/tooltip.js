@@ -4,7 +4,7 @@ class Tooltip {
     this.message = el.dataset.tooltip || "";
     this.placement = el.dataset.placement || "top-center";
     this.size = el.dataset.size || "";
-    this.hasClose = el.dataset.close === "true";   // <--- nou
+    this.hasClose = el.dataset.close === "true";   
     this.tooltip = null;
     this.persistent = false;
 
@@ -12,13 +12,13 @@ class Tooltip {
   }
 
   init() {
-    // Hover / focus
+    
     this.el.addEventListener("mouseenter", () => { if (!this.persistent) this.show(); });
     this.el.addEventListener("mouseleave", () => { if (!this.persistent) this.hide(); });
     this.el.addEventListener("focus", () => { if (!this.persistent) this.show(); });
     this.el.addEventListener("blur", () => { if (!this.persistent) this.hide(); });
 
-    // Click toggle persistent
+    
     this.el.addEventListener("click", (e) => {
       e.stopPropagation();
 
@@ -31,7 +31,7 @@ class Tooltip {
       }
     });
 
-    // Click în afara tooltipului → închide persistent
+    
     document.addEventListener("click", (e) => {
       if (
         this.persistent &&
@@ -44,7 +44,7 @@ class Tooltip {
       }
     });
 
-    // Repozitionare fluidă
+    
     window.addEventListener("resize", () => { if (this.tooltip) this.position(); });
     window.addEventListener("scroll", () => { if (this.tooltip) this.position(); });
   }
@@ -54,18 +54,18 @@ class Tooltip {
     wrapper.className = `tooltip tooltip--${this.placement}`;
     if (this.size) wrapper.classList.add(`tooltip--${this.size}`);
 
-    // Inner text
+    
     const inner = document.createElement("div");
     inner.className = "tooltip-inner";
     inner.innerText = this.message;
 
-    // Arrow
+    
     const arrow = document.createElement("div");
     arrow.className = "tooltip-arrow";
 
-    // ----------------------------------------------
-    // ✔ Close button (opțional)
-    // ----------------------------------------------
+    
+    
+    
     if (this.hasClose) {
       const closeBtn = document.createElement("button");
       closeBtn.className = "tooltip-close";

@@ -25,7 +25,7 @@
   position: relative;
   background-color: transparent;
 
-  // Segment  Separator 
+  
   &:not(:last-child)::after {
     content: '';
     display: block;
@@ -41,18 +41,18 @@
     opacity: 1;
   }
 
-  // Hover
+  
   &:hover {
     background-color: var(--gray-250, #d9d9d9);
   }
 
-  // Focus
+  
   &:focus-visible {
     outline: 3px solid var(--blue-sky-500, #337ab7);
     outline-offset: 2px;
   }
 
-  // Selected
+  
   &.is-selected {
     background-color: var(--gray-900, #1e1e1e);
     color: var(--white, #fff); 
@@ -68,7 +68,7 @@
     height: 0;
   }
 
-  // Disabled
+  
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -79,7 +79,6 @@
   }
 }
 
-// Dimmensions
 .segmented-control--small .segment-item {
   font-size: var(--font-size-12, 12px);
   padding: var(--spacing-6, 6px) var(--spacing-12, 12px);

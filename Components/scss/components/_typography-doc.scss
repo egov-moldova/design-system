@@ -1,0 +1,57 @@
+
+.typography-typeface-card__body {
+  margin: 0;
+  max-width: 720px;  
+}
+
+.typography-typeface-card__body a {
+  color: var(--blue-sky-600, #0058d2);
+  text-decoration: underline;
+}
+
+.typo-table {
+  display: flex;
+  flex-direction: column;
+}
+
+.typo-table__head,
+.typo-table__row {
+  display: grid;
+  grid-template-columns: 164px 211px 311px minmax(0, 1fr);
+  column-gap: 148px;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--gray-200, #f1f1f1);
+}
+
+.typo-table__head { padding: 12px 0; }
+
+[data-doc="typography"] .typo-table__row > :nth-child(3) .mud-typo-spec-value {
+  color: #e245af;
+}
+
+[data-doc="typography"] .typo-table__row > :nth-child(4) {
+  margin: 0;
+  color: var(--gray-900, #1e1e1e);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+@media (max-width: 1399.98px) {
+  .typo-table__head { display: none; }
+
+  .typo-table__row {
+    grid-template-columns: 1fr;
+    column-gap: 0;
+    row-gap: 12px;
+    padding: 24px 0;
+  }
+
+  [data-doc="typography"] .typo-table__row > :nth-child(4) {
+    -webkit-line-clamp: unset;
+    display: block;
+  }
+}

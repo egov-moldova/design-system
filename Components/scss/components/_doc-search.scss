@@ -1,0 +1,75 @@
+.doc-search {
+  position: relative;
+}
+
+.doc-search__hits li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.doc-search__hits {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + var(--spacing-8, 8px));
+  z-index: 5;
+  max-height: min(50vh, 360px);
+  overflow-y: auto;
+  margin: 0;
+  padding: var(--spacing-4, 4px) 0;
+  list-style: none;
+  background: var(--white, #fff);
+  border: 1px solid var(--gray-200, #e5e5e5);
+  border-radius: var(--border-radius-8, 8px);
+  box-shadow: var(--mud-shadow-200, 0 2px 8px rgba(0, 0, 0, 0.08));
+}
+
+.doc-search__hits[hidden] {
+  display: none !important;
+}
+
+.doc-search__hit {
+  display: block;
+  width: 100%;
+  padding: var(--spacing-12, 12px) var(--spacing-16, 16px);
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: var(--gray-900, #1a1a1a);
+  text-decoration: none;
+}
+
+.doc-search__hit:hover,
+.doc-search__hit:focus-visible {
+  background: var(--gray-100, #f5f5f5);
+  outline: none;
+}
+
+.doc-search__hit.is-active {
+  background: var(--blue-sky-100, #e0f2fe);
+}
+
+.doc-search__hit-q {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-900, #1a1a1a);
+}
+
+.doc-search__hit-meta {
+  display: block;
+  margin-top: var(--spacing-4, 4px);
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--gray-600, #666);
+}
+
+.doc-search__empty {
+  padding: var(--spacing-16, 16px);
+  font-size: 14px;
+  color: var(--gray-500, #737373);
+}

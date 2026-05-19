@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Spacing Preview Widths</title>
-  <link rel="stylesheet" href="css/main.css" />
-  <script src="js/main.js" defer></script>
+  <title>Width utilities — Design System</title>
+    <script src="js/include-head-assets.js"></script>
+    <link rel="stylesheet" href="css/main.css" />
   <script src="js/include-header.js" defer></script>
   <script src="js/include-footer.js" defer></script>
   <script src="js/toggler.js" defer></script>
@@ -13,137 +13,135 @@
   <script src="js/mega-nav.js" defer></script>
   <script src="js/search.js" defer></script>
   <script src="js/dropdown.js" defer></script>
+  <script src="js/copy-token.js" defer></script>
 </head>
 <body>
   <div id="site-header"></div>
-  <div class="container py-56">
-    <div class="row">
-      <div class="col-sm-7">
-         <h1>Width Preview</h1>
-        <p class="text-gray-400">
-          Width tokens are predefined values used to maintain consistent widths between elements, particularly within auto layout settings. 
-          They provide a standardised system for widths, ensuring uniformity and harmony across different components within a design project.
-        </p>
-      </div>
-    </div>
+  <div class="mud-container" data-doc="width">
+    <div class="mud-row mud-mb-40">
+          <div class="mud-col-8">
+            <h1 class="mud-desktop-display-xl mud-mb-24">Width</h1>
+            <p class="mud-text-gray-400 mud-desktop-body-xl">
+              Width tokens are predefined values used to maintain consistent widths between elements, particularly within auto layout settings.
+              They provide a standardised system for widths, ensuring uniformity and harmony across different components within a design project.
+            </p>
+          </div>
+        </div>
+      <div class="mud-doc-main">
+        <div class="mud-row">
+          <div class="mud-col-12">
+        <div class="mud-doc-section-head">
+          <h2 class="mud-desktop-heading-sm">Width utilities</h2>
+        </div>
 
-    <div class="row">
-      <div class="col-12"> 
-        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-          <h2>Widths Utilities</h2> 
-        </div>   
-      </div>
-    </div>  
-
-    <div class="row fw-semibold bg-gray-100 mb-20 py-12">
-      <div class="col-3">Token Name</div>
-      <div class="col-2">Value, %</div>
-      <div class="col-2">Class Example</div>
-      <div class="col-5">Width Preview</div>
+    <div class="mud-row mud-font-semibold mud-bg-gray-100 mud-mb-20 mud-py-12">
+      <div class="mud-col-3">Token Name</div>
+      <div class="mud-col-2">Value, %</div>
+      <div class="mud-col-2">Class Example</div>
+      <div class="mud-col-5">Width Preview</div>
     </div>
     
-    <div class="row align-items-center py-12">
-      <div class="col-3">
-        <code class="bg-gray-200 token-name radius-8 py-4 px-6">--width-25</code>
+    <div class="mud-row mud-items-center mud-py-12">
+      <div class="mud-col-3">
+        <code class="mud-bg-gray-200 token-name mud-radius-8 mud-py-2 mud-px-6">--width-25</code>
       </div>
-      <div class="col-2">25%</div>
-      <div class="col-2">
-        <code class="token-name bg-white">.w-25</code>
+      <div class="mud-col-2">25%</div>
+      <div class="mud-col-2">
+        <code class="token-name mud-bg-white">.mud-w-25</code>
       </div>
-      <div class="col-5">
-        <div class="bg-green-100">
-          <div class="preview w-25 py-6 bg-green-600 my-16"></div>
+      <div class="mud-col-5">
+        <div class="mud-bg-green-100">
+          <div class="mud-w-25 mud-py-6 mud-bg-green-600 mud-my-16"></div>
         </div>
       </div>
     </div>
 
     
-    <div class="row align-items-center py-12">
-      <div class="col-3">
-        <code class="bg-gray-200 token-name radius-8 py-2 px-6">--width-33</code>
+    <div class="mud-row mud-items-center mud-py-12">
+      <div class="mud-col-3">
+        <code class="mud-bg-gray-200 token-name mud-radius-8 mud-py-2 mud-px-6">--width-33</code>
       </div>
-      <div class="col-2">33.3333%</div>
-      <div class="col-2">
-        <code class="token-name bg-white">.w-33</code>
+      <div class="mud-col-2">33.3333%</div>
+      <div class="mud-col-2">
+        <code class="token-name mud-bg-white">.mud-w-33</code>
       </div>
-      <div class="col-5">
-        <div class="bg-green-100">
-          <div class="preview w-33 py-6 bg-green-600 my-16"></div>
-        </div> 
+      <div class="mud-col-5">
+        <div class="mud-bg-green-100">
+          <div class="mud-w-33 mud-py-6 mud-bg-green-600 mud-my-16"></div>
+        </div>
       </div>
     </div>
 
      
-    <div class="row align-items-center py-12">
-      <div class="col-3">
-        <code class="bg-gray-200 token-name radius-8 py-2 px-6">--width-50</code>
+    <div class="mud-row mud-items-center mud-py-12">
+      <div class="mud-col-3">
+        <code class="mud-bg-gray-200 token-name mud-radius-8 mud-py-2 mud-px-6">--width-50</code>
       </div>
-      <div class="col-2">50%</div>
-      <div class="col-2">
-        <code class="token-name bg-white">.w-50</code>
+      <div class="mud-col-2">50%</div>
+      <div class="mud-col-2">
+        <code class="token-name mud-bg-white">.mud-w-50</code>
       </div>
-      <div class="col-5">
-        <div class="bg-green-100">
-          <div class="preview w-50 py-6 bg-green-600 my-16"></div>
-        </div> 
-      </div>
-    </div>
-
- 
-    <div class="row align-items-center py-12">
-      <div class="col-3">
-        <code class="bg-gray-200 token-name radius-8 py-2 px-6">--width-66</code>
-      </div>
-      <div class="col-2">66.6667%</div>
-      <div class="col-2">
-        <code class="token-name bg-white">.w-66</code>
-      </div>
-      <div class="col-5">
-        <div class="bg-green-100">
-          <div class="preview w-66 py-6 bg-green-600 my-16"></div>
-        </div> 
+      <div class="mud-col-5">
+        <div class="mud-bg-green-100">
+          <div class="mud-w-50 mud-py-6 mud-bg-green-600 mud-my-16"></div>
+        </div>
       </div>
     </div>
 
  
-    <div class="row align-items-center py-12">
-      <div class="col-3">
-        <code class="bg-gray-200 token-name radius-8 py-2 px-6">--width-75</code>
+    <div class="mud-row mud-items-center mud-py-12">
+      <div class="mud-col-3">
+        <code class="mud-bg-gray-200 token-name mud-radius-8 mud-py-2 mud-px-6">--width-66</code>
       </div>
-      <div class="col-2">75%</div>
-      <div class="col-2">
-        <code class="token-name bg-white">.w-75</code>
+      <div class="mud-col-2">66.6667%</div>
+      <div class="mud-col-2">
+        <code class="token-name mud-bg-white">.mud-w-66</code>
       </div>
-      <div class="col-5">
-        <div class="bg-green-100">
-          <div class="preview w-75 py-6 bg-green-600 my-16"></div>
-        </div> 
+      <div class="mud-col-5">
+        <div class="mud-bg-green-100">
+          <div class="mud-w-66 mud-py-6 mud-bg-green-600 mud-my-16"></div>
+        </div>
+      </div>
+    </div>
+
+ 
+    <div class="mud-row mud-items-center mud-py-12">
+      <div class="mud-col-3">
+        <code class="mud-bg-gray-200 token-name mud-radius-8 mud-py-2 mud-px-6">--width-75</code>
+      </div>
+      <div class="mud-col-2">75%</div>
+      <div class="mud-col-2">
+        <code class="token-name mud-bg-white">.mud-w-75</code>
+      </div>
+      <div class="mud-col-5">
+        <div class="mud-bg-green-100">
+          <div class="mud-w-75 mud-py-6 mud-bg-green-600 mud-my-16"></div>
+        </div>
       </div>
     </div>
 
   
-    <div class="row align-items-center py-12">
-      <div class="col-3">
-        <code class="bg-gray-200 token-name radius-8 py-2 px-6">--width-100</code>
+    <div class="mud-row mud-items-center mud-py-12">
+      <div class="mud-col-3">
+        <code class="mud-bg-gray-200 token-name mud-radius-8 mud-py-2 mud-px-6">--width-100</code>
       </div>
-      <div class="col-2">100%</div>
-      <div class="col-2">
-        <code class="token-name bg-white">.w-100</code>
+      <div class="mud-col-2">100%</div>
+      <div class="mud-col-2">
+        <code class="token-name mud-bg-white">.mud-w-100</code>
       </div>
-      <div class="col-5">
-        <div class="bg-green-100">
-          <div class="preview w-100 py-6 bg-green-600 my-16"></div>
-        </div> 
+      <div class="mud-col-5">
+        <div class="mud-bg-green-100">
+          <div class="mud-w-100 mud-py-6 mud-bg-green-600 mud-my-16"></div>
+        </div>
       </div>
-    </div> 
+    </div>
+          </div>
+        </div>
+      </div>
+    
   </div>
-
 
   <div id="site-footer"></div>
 </body>
 </html>
-
-
-
-
 

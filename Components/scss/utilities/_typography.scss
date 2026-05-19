@@ -1,4 +1,5 @@
 @use '../abstracts/mixins/typography' as typ;
+@use '../abstracts/mud-prefix' as mud;
 
 $typography-styles: (
   'display-lg',
@@ -20,7 +21,7 @@ $typography-styles: (
 );
 
 @each $style in $typography-styles {
-  .text-#{$style} {
+  .#{mud.mud-class('type-' + $style)} {
     @include typ.apply-text-style($style);
   }
 }

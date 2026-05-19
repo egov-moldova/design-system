@@ -1,31 +1,29 @@
 @use '../abstracts/variables' as vars;
+@use '../abstracts/mud-prefix' as mud;
 @use 'sass:list';
 
-// Culori normale
 @each $color, $shades in vars.$color-palettes {
   @if list.length($shades) > 0 {
     @each $shade in $shades {
-      .bg-#{$color}-#{$shade} {
+      .#{mud.mud-class('bg-#{$color}-#{$shade}')} {
         background-color: var(--#{$color}-#{$shade}) !important;
       }
     }
   } @else {
-    .bg-#{$color} {
+    .#{mud.mud-class('bg-#{$color}')} {
       background-color: var(--#{$color}) !important;
     }
   }
 }
 
-// Culori alpha
 @each $color, $shades in vars.$alpha-palettes {
   @each $shade in $shades {
-    .bg-#{$color}-#{$shade} {
+    .#{mud.mud-class('bg-#{$color}-#{$shade}')} {
       background-color: var(--#{$color}-#{$shade}) !important;
     }
   }
 }
 
-
-.bg-transparent {
+.#{mud.mud-class('bg-transparent')} {
   background-color: transparent !important;
 }

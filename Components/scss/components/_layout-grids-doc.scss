@@ -1,0 +1,451 @@
+@use 'sass:map' as map;
+@use '../abstracts/variables' as vars;
+@use '../abstracts/mud-prefix' as mud;
+
+$cw-xs: map.get(vars.$container-max-widths, xs);
+$cw-sm: map.get(vars.$container-max-widths, sm);
+$cw-md: map.get(vars.$container-max-widths, md);
+$cw-lg: map.get(vars.$container-max-widths, lg);
+$cw-xl: map.get(vars.$container-max-widths, xl);
+$cw-xxl: map.get(vars.$container-max-widths, xxl);
+
+$bp-md: map.get(vars.$breakpoints, md);
+
+@mixin lg-diagram-strip-cell {
+  flex: unset;
+  width: auto;
+  max-width: none;
+  padding-left: 0;
+  padding-right: 0;
+  min-width: 0;
+  box-sizing: border-box;
+  background: var(--red-100, #fee4e2);
+  height: 100%;
+}
+
+@mixin lg-12col-row-col-reset {
+  flex: unset;
+  width: auto;
+  max-width: none;
+  padding-left: 0;
+  padding-right: 0;
+  min-width: 0;
+}
+
+@mixin lg-12col-demo-tile {
+  @include lg-12col-row-col-reset;
+  height: 64px;
+  background: #e6f4ff;
+  border: 1px solid var(--gray-600, #444444);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  font-family: var(--font-family-base, 'Onest', system-ui, sans-serif);
+  font-style: normal;
+  font-size: var(--font-size-fs-20, 20px);
+  font-weight: var(--font-weight-fw-regular, 400);
+  line-height: var(--line-height-lh-32, 32px);
+  letter-spacing: -0.4px;
+  color: var(--gray-900, #1e1e1e);
+}
+
+[data-doc='layout-grids'] .mud-doc-main {
+
+  
+  
+  .mud-doc-lg-grid-diagram {
+    min-width: 0;
+    overflow-x: visible;
+    align-items: flex-start;
+  }
+
+  .mud-doc-lg-grid-diagram__container {
+    box-sizing: border-box;
+    background: #f9fafb;
+    display: grid;
+    grid-template-columns: min(100%, var(--lg-space-width)) minmax(0, 1fr);
+    align-items: stretch;
+    align-self: flex-start;
+    width: min(100%, var(--lg-container-width));
+    max-width: var(--lg-container-width);
+    margin-inline: 0;
+  }
+
+  .mud-doc-lg-grid-diagram[data-size='2XL'] .mud-doc-lg-grid-diagram__container {
+    grid-template-columns: minmax(0, 1fr) min(100%, var(--lg-space-width)) minmax(0, 1fr);
+  }
+
+  .mud-doc-lg-grid-diagram__container-lead {
+    min-width: 0;
+  }
+
+  .mud-doc-lg-grid-diagram[data-size='2XL'] .mud-doc-lg-grid-diagram__container-lead {
+    grid-column: 1;
+  }
+
+  .mud-doc-lg-grid-diagram[data-size='2XL'] .mud-doc-lg-grid-diagram__space {
+    grid-column: 2;
+    padding-inline: 0;
+  }
+
+  .mud-doc-lg-grid-diagram__container-trail {
+    grid-column: 2;
+    min-width: 0;
+  }
+
+  .mud-doc-lg-grid-diagram[data-size='2XL'] .mud-doc-lg-grid-diagram__container-trail {
+    grid-column: 3;
+  }
+
+  .mud-doc-lg-grid-diagram__space {
+    grid-column: 1;
+    width: 100%;
+    max-width: var(--lg-space-width);
+    height: 318px;
+    background: rgba(249, 250, 251, 0.8);
+    box-sizing: border-box;
+    padding: 0 var(--lg-margin);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+
+  .mud-doc-lg-grid-diagram__columns {
+    display: grid;
+    grid-template-columns: repeat(var(--lg-cols), 1fr);
+    column-gap: var(--lg-gap);
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .mud-doc-lg-grid-diagram__columns > .#{mud.mud-class('col')} {
+    @include lg-diagram-strip-cell;
+  }
+
+  @for $i from 1 through 12 {
+    .mud-doc-lg-grid-diagram__columns > .#{mud.mud-class('col')}-#{$i} {
+      @include lg-diagram-strip-cell;
+    }
+  }
+
+  
+  
+  
+  .mud-doc-lg-grid-diagram__spacer {
+    box-sizing: border-box;
+    align-self: flex-start;
+    width: min(100%, var(--lg-container-width));
+    max-width: var(--lg-container-width);
+    margin-inline: 0;
+  }
+
+  .mud-doc-lg-ticks-row {
+    display: grid;
+    grid-template-columns: min(100%, var(--lg-space-width)) minmax(0, 1fr);
+    width: min(100%, var(--lg-container-width));
+    max-width: var(--lg-container-width);
+    margin-inline: 0;
+    align-items: end;
+  }
+
+  .mud-doc-lg-ticks-row--balanced {
+    grid-template-columns: minmax(0, 1fr) min(100%, var(--lg-space-width)) minmax(0, 1fr);
+    max-width: var(--lg-container-width);
+  }
+
+  .mud-doc-lg-ticks-row__lead {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  .mud-doc-lg-ticks-row__lead .mud-doc-lg-tick--auto {
+    width: 100%;
+  }
+
+  .mud-doc-lg-ticks-row--balanced .mud-doc-lg-ticks-row__main {
+    grid-column: 2;
+    min-width: 0;
+  }
+
+  .mud-doc-lg-grid-diagram[data-size='2XL'] .mud-doc-lg-ticks-row--balanced .mud-doc-lg-ticks-row__main {
+    padding-inline: 0;
+  }
+
+  .mud-doc-lg-ticks-row--balanced .mud-doc-lg-ticks-row__trail {
+    grid-column: 3;
+  }
+
+  .mud-doc-lg-ticks-row.mud-doc-lg-ticks-row--edge-margins {
+    grid-template-columns: var(--lg-margin) minmax(0, 1fr) var(--lg-margin);
+    max-width: var(--lg-space-width);
+    margin-inline: 0;
+  }
+
+  .mud-doc-lg-ticks-row__edge {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  .mud-doc-lg-ticks-row__edge .mud-doc-lg-tick {
+    width: 100%;
+  }
+
+  .mud-doc-lg-ticks-row__main {
+    min-width: 0;
+    padding-inline: var(--lg-margin);
+  }
+
+  .mud-doc-lg-ticks-row--edge-margins .mud-doc-lg-ticks-row__main {
+    min-width: 0;
+    padding-inline: 0;
+  }
+
+  .mud-doc-lg-ticks-row__trail {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    min-width: 0;
+  }
+
+  .mud-doc-lg-ticks-row__trail .mud-doc-lg-tick--auto {
+    width: 100%;
+  }
+
+  .mud-doc-lg-ticks--gutter-ruler {
+    display: grid;
+    width: 100%;
+    height: 40px;
+  }
+
+  @for $cols from 4 through 12 {
+    $gutters: $cols - 1;
+
+    .mud-doc-lg-ticks--cols-#{$cols} {
+      grid-template-columns: repeat($gutters, minmax(0, 1fr) var(--lg-gap)) minmax(0, 1fr);
+
+      @for $g from 1 through $gutters {
+        > .mud-doc-lg-tick:nth-child(#{$g}) {
+          grid-column: #{$g * 2};
+        }
+      }
+    }
+  }
+
+  .mud-doc-lg-ticks {
+    height: 40px;
+  }
+
+  .mud-doc-lg-tick {
+    position: relative;
+    width: 100%;
+    min-width: 0;
+    height: 40px;
+    flex-shrink: 0;
+  }
+
+  
+  
+  .mud-doc-lg-tick::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -36px;
+    height: 36px;
+    box-sizing: border-box;
+    border-left: 1px dashed var(--red-600, #d92d20);
+    border-right: 1px dashed var(--red-600, #d92d20);
+    pointer-events: none;
+  }
+
+  
+  .mud-doc-lg-tick::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 12px;
+    box-sizing: border-box;
+    border-left: 1px solid var(--red-600, #d92d20);
+    border-right: 1px solid var(--red-600, #d92d20);
+    background: linear-gradient(
+      to bottom,
+      transparent calc(50% - 0.5px),
+      var(--red-600, #d92d20) calc(50% - 0.5px),
+      var(--red-600, #d92d20) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    );
+  }
+
+  .mud-doc-lg-tick__label {
+    position: absolute;
+    left: 50%;
+    top: 14px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    font-family: var(--font-family-base, 'Onest', system-ui, sans-serif);
+    font-size: var(--text-caption-md-500-font-size, 12px);
+    font-weight: var(--text-caption-md-500-font-weight, 500);
+    line-height: 1.4;
+    letter-spacing: 0;
+    color: var(--red-600, #d92d20);
+    font-style: normal;
+  }
+
+  .mud-doc-lg-total {
+    position: relative;
+    height: 40px;
+    width: 100%;
+  }
+
+  .mud-doc-lg-total::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 12px;
+    box-sizing: border-box;
+    border-left: 1px solid var(--red-600, #d92d20);
+    border-right: 1px solid var(--red-600, #d92d20);
+    background: linear-gradient(
+      to bottom,
+      transparent calc(50% - 0.5px),
+      var(--red-600, #d92d20) calc(50% - 0.5px),
+      var(--red-600, #d92d20) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    );
+  }
+
+  .mud-doc-lg-total__label {
+    position: absolute;
+    left: 50%;
+    top: 14px;
+    transform: translateX(-50%);
+    background: #fff;
+    padding: 0 8px;
+    font-family: var(--font-family-base, 'Onest', system-ui, sans-serif);
+    font-size: var(--text-caption-md-500-font-size, 12px);
+    font-weight: var(--text-caption-md-500-font-weight, 500);
+    line-height: 1.4;
+    letter-spacing: 0;
+    color: var(--red-600, #d92d20);
+    font-style: normal;
+  }
+
+  
+  .mud-doc-lg-grid-diagram[data-size='2XL'] {
+    --lg-cols: 12;
+    --lg-gap: 24px;
+    --lg-margin: 24px;
+    --lg-space-width: #{$cw-xl};
+    --lg-container-width: #{$cw-xxl};
+  }
+  .mud-doc-lg-grid-diagram[data-size='XL'] {
+    --lg-cols: 12;
+    --lg-gap: 24px;
+    --lg-margin: 24px;
+    --lg-space-width: #{$cw-xl};
+    --lg-container-width: #{$cw-xl};
+  }
+  .mud-doc-lg-grid-diagram[data-size='L'] {
+    --lg-cols: 12;
+    --lg-gap: 24px;
+    --lg-margin: 24px;
+    --lg-space-width: #{$cw-lg};
+    --lg-container-width: #{$cw-lg};
+  }
+  .mud-doc-lg-grid-diagram[data-size='M'] {
+    --lg-cols: 8;
+    --lg-gap: 24px;
+    --lg-margin: 24px;
+    --lg-space-width: #{$cw-md};
+    --lg-container-width: #{$cw-md};
+  }
+  .mud-doc-lg-grid-diagram[data-size='S'] {
+    --lg-cols: 4;
+    --lg-gap: 16px;
+    --lg-margin: 16px;
+    --lg-space-width: #{$cw-sm};
+    --lg-container-width: #{$cw-sm};
+  }
+  .mud-doc-lg-grid-diagram[data-size='XS'] {
+    --lg-cols: 4;
+    --lg-gap: 16px;
+    --lg-margin: 16px;
+    --lg-space-width: #{$cw-xs};
+    --lg-container-width: #{$cw-xs};
+  }
+
+  
+  .mud-doc-lg-grid-diagram--stretch .mud-doc-lg-grid-diagram__container {
+    background: transparent;
+  }
+
+  .mud-doc-lg-12col-grid {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-32, 32px);
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    align-self: stretch;
+    margin-inline: 0;
+  }
+
+  .mud-doc-lg-12col-row {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: 24px;
+  }
+
+  .mud-doc-lg-12col-row > .#{mud.mud-class('col')} {
+    @include lg-12col-demo-tile;
+    grid-column: span 1;
+  }
+
+  @for $i from 1 through 12 {
+    .mud-doc-lg-12col-row > .#{mud.mud-class('col')}-#{$i} {
+      @include lg-12col-demo-tile;
+      grid-column: span #{$i};
+    }
+  }
+
+  .mud-doc-lg-scroll-x {
+    overflow-x: auto;
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+// Layout Columns demo: stack cells on narrow viewports (avoid 12-col shrink/overlap).
+@media (max-width: #{$bp-md - 0.02px}) {
+  [data-doc='layout-grids'] .mud-doc-main {
+    .mud-doc-lg-scroll-x {
+      overflow-x: visible;
+    }
+
+    .mud-doc-lg-12col-row {
+      grid-template-columns: 1fr;
+      column-gap: 0;
+      row-gap: var(--spacing-16, 16px);
+    }
+
+    .mud-doc-lg-12col-row > .#{mud.mud-class('col')} {
+      grid-column: 1 / -1 !important;
+    }
+
+    @for $i from 1 through 12 {
+      .mud-doc-lg-12col-row > .#{mud.mud-class('col')}-#{$i} {
+        grid-column: 1 / -1 !important;
+      }
+    }
+  }
+}

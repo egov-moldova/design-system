@@ -1,0 +1,5 @@
+@use '../abstracts/mud-prefix' as mud;
+
+.#{mud.mud-class('text-uppercase')} { text-transform: uppercase !important; }
+.#{mud.mud-class('text-lowercase')} { text-transform: lowercase !important; }
+.#{mud.mud-class('text-capitalize')} { text-transform: capitalize !important; }

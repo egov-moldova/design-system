@@ -1,236 +1,13 @@
-﻿@use '../abstracts/variables' as *;
+@use '../abstracts/variables' as *;
 
-html {
-    font-size: 16px;
-}
+html { font-size: 16px; }
+
 body {
-    background-color: var(--color-background-base-default);
-    margin: 0;
-  }
-  
-  .button { 
-    background-color: var(--color-background-brand-default);
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;  
-  
-    &:hover {
-      background-color: var(--color-background-brand-default-hover);
-    }
-  
-    &:active {
-      background-color: var(--color-background-brand-default-active);
-    }
-  }
-  .color-palette {
-    font-family: sans-serif; 
-
-    .color-row {
-      display: flex;
-    }
-  
-    .color {
-      width: 100px;
-      height: 100px;
-      border-radius: 6px;
-      display: flex;
-      justify-content: center;
-      align-items: center;  
-      font-size: 0.75rem;
-      text-align: center;
-      box-sizing: border-box;
-    }
-  
-    .border {
-      border: 1px solid #ddd;
-    }
-  }
-  
-
-  //SHADOW EFFECTS
-.token-table{
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 20px;
-  font-size: 16px;
-  line-height: 24px;
-  text-align: left;
-
-  .border-preview-box {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 135px;
-    height: 95px;
-  }
-
-  .border-preview-inner {
-    background-color: #E245AF1A;
-    border-color: #E245AF;
-    width: 2rem;
-    height: 2rem;
-  }   
+  background-color: var(--color-background-base-default);
+  margin: 0;
 }
 
-.token {
-  margin: 15px;
-  text-align: center;
-  background-color: white;
-  cursor: pointer;
-  padding: 20px;  
-  border-radius: 5px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-  width: 200px;
-}
-
-.shadow-box {
-  width: 136px;
-  height: 96px;   
-}
-
-.token-name {
-  background-color: #f6f6f6;
-  border-radius: var(--border-radius-8);
-  padding: 2px 6px; 
-  margin-bottom: 10px;
-  cursor: pointer;  
-  transition: all 0.3s ease;
-  position: relative;
-
-  &:hover {
-    background-color: var(--gray-250) !important;
-
-    &::after {
-      opacity: 1;
-      transform: translateX(-50%) translateY(-30px);
-      z-index: 1;
-    }
-
-    &:before {
-      border-top-color: var(--blue-sky-200);
-      transform: translateY(-100%);
-      top: -3px;
-      opacity: 1;
-      z-index: 1;
-    }
-  }
-
-  &:before {
-    content: "";
-    position: absolute; 
-    top: 5px;
-    left: 50%;
-    width: 0px;
-    height: 0px;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid var(--blue-sky-200);
-    opacity: 0;
-    transform: translateX(-50%);
-    transition: all 0.45s ease;
-    z-index: -1;
-  }
-
-  &::after {
-    content: "Click to copy";
-    position: absolute;
-    top: 0;
-    left: 50%;
-    width: max-content;
-    text-align: center;
-    transform: translateX(-50%);
-    background-color: var(--blue-sky-200);
-    color: var(--blue-sky-800);
-    border-radius: var(--border-radius-8);
-    padding-inline: var(--spacing-8);
-    padding-block: var(--spacing-4);
-    font-size: 12px;
-    line-height: 1.2;
-    opacity: 0;
-    pointer-events: none;
-    transition: all .35s ease;
-    z-index: -1;
-  }
-
-  &.is-copied {
-    &:before {
-      border-top-color: var(--green-100);
-      transform: translateY(-100%);
-      top: -3px;
-      opacity: 1;
-      z-index: 1;
-    }
-
-    &::after {
-      content: "Copied";
-      background-color: var(--green-100) !important;
-      color: var(--green-700) !important;
-    }
-  }
-
-
-  &.is-copied {
-    
-    font-weight: 500; 
-  }
-
-  &:focus, &:active, &:focus-visible {
-    outline: 2px solid var(--blue-sky-500);
-    outline-offset: 2px; 
-
-    &::after {
-      opacity: 1;
-      transform: translateX(-50%) translateY(-30px);
-      z-index: 1;
-    }
-
-    &:before {
-      border-top-color: var(--blue-sky-100);
-      transform: translateY(-100%);
-      top: -3px;
-      opacity: 1;
-      z-index: 1;
-    }
-  }
-}
-
-
-
-
-
-.value {
-  font-size: 0.9em;
-  color: #555;
-  margin-bottom: 10px;
-}
-
-.shadow-preview {
-  display: block;
-  width: 100%;
-  height: 50px;
-  margin-top: 10px;
-}
-
-.text-preview {
-     overflow: hidden;
-   text-overflow: ellipsis;
-   display: -webkit-box;
-   -webkit-line-clamp: 2;
-           line-clamp: 2;
-   -webkit-box-orient: vertical;
-}
-p{
-  margin-top: 0;
-}
-  
-
-.icon-16px { transform: scale(0.6667); }  /* 16px */
-.icon-18px { transform: scale(0.75); }    /* 18px */ 
-.icon-20px { transform: scale(0.8333); }  /* 20px */
-.icon-24px { transform: scale(1); }       /* 24px (original) */
-.icon-32px { transform: scale(1.3333); }  /* 32px */
-
+p { margin-top: 0; }
 
 .sr-only {
   position: absolute;
@@ -240,7 +17,7 @@ p{
   margin: -1px;
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
-  white-space: nowrap; /* Prevent text from wrapping */
+  white-space: nowrap;
   border: 0;
 }
 
@@ -253,9 +30,4 @@ p{
   overflow: visible;
   clip: auto;
   white-space: normal;
-}
-
-.typography-table {
-  max-width: 95%;
-  margin: 20px auto;
 }

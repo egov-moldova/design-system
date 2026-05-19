@@ -1,0 +1,301 @@
+@use '../abstracts/mixins/doc-intro-typography' as doc;
+
+$font-family-onest: var(--font-family-base, 'Onest', system-ui, sans-serif);
+
+%text-token {
+  font-family: $font-family-onest;
+  font-style: normal;
+}
+
+.mud-documentation-mono-xl {
+  @include doc.documentation-mono-xl;
+}
+
+.mud-desktop-display-xl {
+  @extend %text-token;
+  margin: 0;
+  color: var(--color-text-base-default);
+  font-size: 72px;
+  font-weight: 500;
+  line-height: 80px;
+  letter-spacing: -4px;
+}
+
+.mud-desktop-display-lg {
+  @extend %text-token;
+  font-size: 56px;
+  font-weight: 600;
+  line-height: 140%;
+  letter-spacing: -1.12px;
+}
+
+.mud-desktop-display-md {
+  @extend %text-token;
+  font-size: 48px;
+  font-weight: 600;
+  line-height: 140%;
+  letter-spacing: -0.96px;
+}
+
+.mud-desktop-heading-lg {
+  @extend %text-token;
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 150%;
+  letter-spacing: -0.8px;
+}
+
+.mud-desktop-heading-md {
+  @extend %text-token;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 150%;
+  letter-spacing: -0.64px;
+}
+
+.mud-desktop-heading-sm {
+  @extend %text-token;
+  color: var(--color-text-base-default);
+  font-size: var(--font-size-fs-24, 24px);
+  font-weight: var(--font-weight-fw-semibold, 600);
+  line-height: var(--line-height-lh-32, 32px);
+  letter-spacing: -0.24px;
+}
+
+.mud-desktop-heading-xs {
+  @extend %text-token;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 150%;
+  letter-spacing: -0.2px;
+}
+
+.mud-desktop-heading-xxs,
+.mud-desktop-heading-2xs {
+  @extend %text-token;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 150%;
+  letter-spacing: -0.18px;
+}
+
+.mud-desktop-body-lg {
+  @extend %text-token;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: 0;
+}
+
+.mud-desktop-body-lg-500 {
+  @extend %text-token;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 150%;
+  letter-spacing: 0;
+}
+
+.mud-desktop-body-xl {
+  @extend %text-token;
+  font-size: var(--font-size-fs-20, 20px);
+  font-weight: var(--font-weight-fw-regular, 400);
+  line-height: var(--line-height-lh-32, 32px);
+  letter-spacing: -0.4px;
+}
+
+.mud-desktop-body-default,
+.mud-desktop-body-md {
+  @extend %text-token;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 140%;
+  letter-spacing: 0;
+}
+
+.mud-desktop-body-default-500,
+.mud-desktop-body-md-500 {
+  @extend %text-token;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 140%;
+  letter-spacing: 0;
+}
+
+.mud-desktop-body-sm {
+  @extend %text-token;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 140%;
+  letter-spacing: 0;
+}
+
+.mud-desktop-body-sm-500 {
+  @extend %text-token;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 140%;
+  letter-spacing: 0;
+}
+
+.mud-desktop-caption-md {
+  @extend %text-token;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 140%;
+  letter-spacing: 0;
+}
+
+.mud-desktop-caption-md-500 {
+  @extend %text-token;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 140%;
+  letter-spacing: 0;
+}
+
+.mud-desktop-caption-sm {
+  @extend %text-token;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 140%;
+  letter-spacing: 0;
+}
+
+.mud-mobile-display-lg {
+  @extend %text-token;
+  font-size: 48px;
+  font-weight: 600;
+  line-height: 140%;
+  letter-spacing: -0.96px;
+}
+
+.mud-mobile-display-md {
+  @extend %text-token;
+  font-size: 40px;
+  font-weight: 600;
+  line-height: 140%;
+  letter-spacing: -0.8px;
+}
+
+.mud-mobile-heading-lg {
+  @extend %text-token;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 150%;
+  letter-spacing: -0.64px;
+}
+
+.mud-mobile-heading-md {
+  @extend %text-token;
+  font-size: 28px;
+  font-weight: 600;
+  line-height: 150%;
+  letter-spacing: -0.28px;
+}
+
+.mud-mobile-heading-sm {
+  @extend %text-token;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 150%;
+  letter-spacing: -0.22px;
+}
+
+.mud-mobile-heading-xs {
+  @extend %text-token;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 150%;
+  letter-spacing: -0.18px;
+}
+
+.mud-mobile-heading-xxs,
+.mud-mobile-heading-2xs {
+  @extend %text-token;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 150%;
+  letter-spacing: -0.16px;
+}
+
+.mud-mobile-body-lg {
+  @extend %text-token;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 150%;
+  letter-spacing: 0;
+}
+
+.mud-mobile-body-lg-500 {
+  @extend %text-token;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 150%;
+  letter-spacing: 0;
+}
+
+.mud-mobile-body-xl {
+  @extend %text-token;
+  font-size: var(--font-size-fs-20, 20px);
+  font-weight: var(--font-weight-fw-regular, 400);
+  line-height: var(--line-height-lh-32, 32px);
+  letter-spacing: -0.4px;
+}
+
+.mud-mobile-body-default,
+.mud-mobile-body-md {
+  @extend %text-token;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 140%;
+  letter-spacing: 0;
+}
+
+.mud-mobile-body-default-500,
+.mud-mobile-body-md-500 {
+  @extend %text-token;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 140%;
+  letter-spacing: 0;
+}
+
+.mud-mobile-body-sm {
+  @extend %text-token;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 140%;
+  letter-spacing: 0;
+}
+
+.mud-mobile-body-sm-500 {
+  @extend %text-token;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 140%;
+  letter-spacing: 0;
+}
+
+.mud-mobile-caption-md {
+  @extend %text-token;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 140%;
+  letter-spacing: 0;
+}
+
+.mud-mobile-caption-md-500 {
+  @extend %text-token;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 140%;
+  letter-spacing: 0;
+}
+
+.mud-mobile-caption-sm {
+  @extend %text-token;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 140%;
+  letter-spacing: 0;
+}

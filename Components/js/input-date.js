@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function formatDate(e) {
         const input = e.target;
-        let digits = input.value.replace(/\D/g, ""); // păstrăm doar cifrele
+        let digits = input.value.replace(/\D/g, ""); 
 
         if (digits.length > 8) digits = digits.substring(0, 8);
 
@@ -23,16 +23,16 @@ document.addEventListener("DOMContentLoaded", () => {
         let month = digits.substring(2, 4);
         let year = digits.substring(4, 8);
 
-        // limite pentru zi și lună
+        
         if (day.length === 2 && parseInt(day) > 31) day = "31";
         if (month.length === 2 && parseInt(month) > 12) month = "12";
 
-        // construim string-ul final
+        
         let formatted = day;
         if (month) formatted += "/" + month;
         if (year) formatted += "/" + year;
 
-        // determinăm poziția cursorului
+        
         let cursorPos = input.selectionStart;
         const prevLength = input.value.length;
 
@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const newLength = input.value.length;
 
-        // ajustăm cursorul automat dacă am trecut peste "/"
+        
         if (cursorPos === 2 || cursorPos === 5) cursorPos++;
         if (newLength > prevLength && cursorPos < newLength) cursorPos++;
 

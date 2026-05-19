@@ -1,0 +1,30 @@
+@use '../abstracts/tokens' as tokens;
+@use '../abstracts/mud-prefix' as mud;
+
+// Square box: width + height from spacing tokens (Tailwind-style `size-*`, e.g. `mud-size-64` ≈ 64×64px).
+$size-scale: (
+  0: tokens.$token-spacing-0,
+  2: tokens.$token-spacing-2,
+  4: tokens.$token-spacing-4,
+  6: tokens.$token-spacing-6,
+  8: tokens.$token-spacing-8,
+  12: tokens.$token-spacing-12,
+  16: tokens.$token-spacing-16,
+  20: tokens.$token-spacing-20,
+  24: tokens.$token-spacing-24,
+  32: tokens.$token-spacing-32,
+  40: tokens.$token-spacing-40,
+  48: tokens.$token-spacing-48,
+  56: tokens.$token-spacing-56,
+  64: tokens.$token-spacing-64,
+  72: tokens.$token-spacing-72,
+  120: tokens.$token-spacing-120
+);
+
+@each $name, $value in $size-scale {
+  .#{mud.mud-class('size-#{$name}')} {
+    width: $value !important;
+    height: $value !important;
+    box-sizing: border-box;
+  }
+}

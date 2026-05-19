@@ -13,7 +13,7 @@
     display: inline-flex;
   }
 
-  // Button style
+  
   &__link {
     display: inline-flex;
     align-items: center;
@@ -82,7 +82,7 @@
     }
   }
 
-  // Compact mode
+  
   &--compact {
     gap: var(--spacing-8, 8px);
 

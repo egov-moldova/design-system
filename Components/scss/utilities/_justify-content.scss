@@ -1,6 +1,7 @@
 @use 'sass:map';
 @use '../abstracts/variables' as vars;
 @use '../abstracts/mixins/media' as media;
+@use '../abstracts/mud-prefix' as mud;
 
 $justify-content-values: (
   flex-start,
@@ -18,7 +19,7 @@ $justify-content-values: (
         if($value == "space-around", "around",
         if($value == "space-evenly", "evenly", $value)))));
 
-  .justify-#{$cls} {
+  .#{mud.mud-class('justify-#{$cls}')} {
     justify-content: $value !important;
   }
 }
@@ -33,7 +34,7 @@ $justify-content-values: (
             if($value == "space-around", "around",
             if($value == "space-evenly", "evenly", $value)))));
 
-      .justify-#{$breakpoint}-#{$cls} {
+      .#{mud.mud-class('justify-#{$breakpoint}-#{$cls}')} {
         justify-content: $value !important;
       }
     }

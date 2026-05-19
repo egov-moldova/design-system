@@ -1,6 +1,5 @@
 @use '../../abstracts/tokens' as tokens;
 
-// ======================================
 .tag-item { 
     display: var(--flex, flex);
     gap: var(--spacing-16, 16px);
@@ -38,27 +37,24 @@
   }
 }
 
-// ==============  Variants (Color Categories) 
-
-// Utility mixin to simplify repetitive patterns
 @mixin status-variant($name, $bg-subtle, $text-subtle, $bg-strong, $text-strong, $border-color) {
   .status-tag--#{$name} {
 
-    // Subtle
+    
     &.is-subtle {
       background-color: #{$bg-subtle};
       color: #{$text-subtle};
       border: 1px solid transparent;
     }
 
-    // Strong
+    
     &.is-strong {
       background-color: #{$bg-strong};
       color: #{$text-strong};
       border: 1px solid transparent;
     }
 
-    // Outlined
+    
     &.is-outlined {
       background-color: transparent;
       color: #{$border-color};
@@ -69,10 +65,6 @@
 .status-tag--neutral.is-outlined {
   color: var(--black) !important;
 }
-
-
-
-// ========= Apply Variants 
 
 @include status-variant(
   'muted',

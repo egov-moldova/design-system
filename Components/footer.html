@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Footer Preview</title>
-  <link rel="stylesheet" href="css/main.css">
+    <script src="js/include-head-assets.js"></script>
+    <link rel="stylesheet" href="css/main.css">
   <script src="js/include-header.js" defer></script>
   <script src="js/include-footer.js" defer></script>
   <script src="js/toggler.js" defer></script>
@@ -15,46 +16,43 @@
 </head>
 <body>
   <div id="site-header"></div>
-  <div>
-    <div class="container">
-      <div class="row mt-40">
-        <div class="col-sm-7">
+  <div class="mud-container" data-doc="footer">
+      <div class="mud-row mud-mb-40">
+        <div class="mud-col-8">
           <h1>Footer</h1>
-          <p class="text-gray-400">
+          <p class="mud-text-gray-400">
             The general footer is a flexible and reusable component designed to provide essential navigational and informational links across a variety of digital products under the M ecosystem. It ensures consistency, accessibility, and brand alignment while offering quick access to commonly needed pages.
           </p>
         </div>
       </div>
-      <div class="row">
-        <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+      <div class="mud-doc-main">
+      <div class="mud-row">
+        <div class="mud-col-12 mud-mt-56 mud-mb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
             <h2>Breakpoints</h2>
         </div>
       </div>
-      <div class="row">
-        <div class="col-12">
+      <div class="mud-row">
+        <div class="mud-col-12">
           <p>desktop</p>
         </div>
       </div>
-    </div> 
-    <footer class="footer" role="contentinfo">
-      <div class="container">
-        <div class="row">
-          <div class="col-12">
+      <footer class="footer" role="contentinfo">
+      <div class="mud-container">
+        <div class="mud-row">
+          <div class="mud-col-12">
             <div class="footer__container">
-              <!-- =====================
-                  TOP
-              ====================== -->
+              
               <div class="footer__top">
                
-                <!-- Brand & contact -->
+                
                 <div class="footer__brand">
                   <a href="/" class="footer__logo">
                      <div class="footer__brand--logo">
                         <img src="assets/logos/mpay.png" alt="MPay logo"> 
                       </div>
-                      <div class="footer__brand--details d-flex">
-                          <span class="brand-text">mpay</span>
-                          <span class="brand-description">
+                      <div class="footer__brand--details mud-flex">
+                          <span class="mud-desktop-body-lg-500 mud-text-gray-900">mpay</span>
+                          <span class="mud-desktop-caption-sm mud-text-gray-700">
                             serviciul guvernamental de plăți electronice
                           </span>
                       </div> 
@@ -63,7 +61,7 @@
                   <ul class="footer__contact">
                     <li>
                       <a href="tel:022820000"> 
-                        <span class="d-inline-flex">
+                        <span class="mud-inline-flex">
                           <svg class="icon medium" aria-hidden="true"> 
                             <use href="assets/icons/sprite.svg#icon-phone"></use> 
                           </svg>
@@ -73,7 +71,7 @@
                     </li>
                     <li>
                       <a href="mailto:suport.mpay@gov.md"> 
-                        <span class="d-inline-flex">
+                        <span class="mud-inline-flex">
                             <svg class="icon medium" aria-hidden="true"> 
                               <use href="assets/icons/sprite.svg#icon-envelope"></use> 
                             </svg>
@@ -84,7 +82,7 @@
                   </ul>
                 </div>
 
-                <!-- Navigation columns -->
+                
                 <nav class="footer__nav" aria-label="Footer navigation">
                   <div class="footer__nav-col">
                     <div class="footer__heading">Heading</div>
@@ -141,7 +139,7 @@
                   </div>
                 </nav>
 
-                <!-- Payments & apps -->
+                
                 <div class="footer__extras">
                   <div class="footer__heading">Opțiuni de plată</div>
 
@@ -166,9 +164,7 @@
 
               </div>
                <hr class="separator separator--horizontal separator--thin separator--subtle">
-              <!-- =====================
-                  MIDDLE
-              ====================== -->
+              
               <div class="footer__middle">
                 <div class="footer__logos"> 
                   <a href="#">
@@ -178,11 +174,11 @@
                     <img src="assets/logos/gov.svg" alt="Guvernul Republicii Moldova">
                   </a> 
                 </div>
-                <hr class="separator separator--horizontal separator--thin separator--subtle d-sm-none">
+                <hr class="separator separator--horizontal separator--thin separator--subtle mud-sm-hidden">
                 <ul class="footer__social">
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="Facebook">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-facebook-filled"></use> 
                         </svg>
@@ -191,7 +187,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="Instagram">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-instagram-filled"></use>
                         </svg>
@@ -200,7 +196,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="YouTube">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-youtube-filled"></use>
                         </svg>
@@ -209,7 +205,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="LinkedIn">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-linkedin-filled"></use>
                         </svg>
@@ -225,18 +221,16 @@
         </div>
       </div>
 
-       <!-- =====================
-        BOTTOM
-        ====================== -->
+       
         
       <div class="footer__bottom">
-        <div class="footer__container footer__bottom-inner py-0">
-          <div class="container">
-            <div class="row row-gap-20">
-              <div class="col-12 col-md-6">
+        <div class="footer__container footer__bottom-inner mud-py-0">
+          <div class="mud-container">
+            <div class="mud-row mud-row-gap-20">
+              <div class="mud-col-12 mud-col-md-6">
                 <div>© 2025 Agenția de Guvernare Electronică. Toate drepturile rezervate.</div>
               </div>
-              <div class="col-12 col-md-6">
+              <div class="mud-col-12 mud-col-md-6">
                 <ul class="footer__legal">
                     <li><a href="#">Termeni și condiții</a></li>
                     <li><a href="#">Politica de confidențialitate</a></li>
@@ -248,34 +242,34 @@
       </div>
     </footer> 
 
-    <!--TYPES-->
-    <div class="container mt-56">
-      <div class="row">
-        <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+    
+    <div class="mud-mt-56">
+      <div class="mud-row">
+        <div class="mud-col-12 mud-mt-56 mud-mb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
             <h2>Types</h2>
         </div>  
       </div>
-      <div class="row">
-        <div class="col-12">
+      <div class="mud-row">
+        <div class="mud-col-12">
           <p>desktop: extended</p>
         </div>
       </div>
     </div>  
     <footer class="footer" role="contentinfo">
-      <div class="container">
-        <div class="row">
-          <div class="col-12">
+      <div class="mud-container">
+        <div class="mud-row">
+          <div class="mud-col-12">
             <div class="footer__container">
-               <div class="row d-none">
-                  <div class="col-12 col-sm-3">
+               <div class="mud-row mud-hidden">
+                  <div class="mud-col-12 mud-col-sm-3">
                     <div class="footer__brand">
                       <a href="/" class="footer__logo">
                         <div class="footer__brand--logo">
                             <img src="assets/logos/mpay.png" alt="MPay logo"> 
                           </div>
-                          <div class="footer__brand--details d-flex">
-                              <span class="brand-text">mpay</span>
-                              <span class="brand-description">
+                          <div class="footer__brand--details mud-flex">
+                              <span class="mud-desktop-body-lg-500 mud-text-gray-900">mpay</span>
+                              <span class="mud-desktop-caption-sm mud-text-gray-700">
                                 serviciul guvernamental de plăți electronice
                               </span>
                           </div> 
@@ -284,7 +278,7 @@
                         <ul class="footer__contact">
                           <li>
                             <a href="tel:022820000"> 
-                              <span class="d-inline-flex">
+                              <span class="mud-inline-flex">
                                 <svg class="icon medium" aria-hidden="true"> 
                                   <use href="assets/icons/sprite.svg#icon-phone"></use> 
                                 </svg>
@@ -294,7 +288,7 @@
                           </li>
                           <li>
                             <a href="mailto:suport.mpay@gov.md"> 
-                              <span class="d-inline-flex">
+                              <span class="mud-inline-flex">
                                   <svg class="icon medium" aria-hidden="true"> 
                                     <use href="assets/icons/sprite.svg#icon-envelope"></use> 
                                   </svg>
@@ -306,7 +300,7 @@
                       </div>
                   </div>
 
-                  <div class="col-12 col-sm-6">
+                  <div class="mud-col-12 mud-col-sm-6">
                     <nav class="footer__nav" aria-label="Footer navigation">
                       <div class="footer__nav-col">
                         <div class="footer__heading">Heading</div>
@@ -364,7 +358,7 @@
                     </nav>
                   </div>
 
-                  <div class="col-12 col-sm-3">
+                  <div class="mud-col-12 mud-col-sm-3">
                     <div class="footer__extras">
                       <div class="footer__heading">Opțiuni de plată</div>
 
@@ -389,20 +383,18 @@
                   </div>
                 </div>
 
-              <!-- =====================
-                  TOP
-              ====================== -->
+              
               <div class="footer__top">
                
-                <!-- Brand & contact -->
+                
                 <div class="footer__brand">
                   <a href="/" class="footer__logo">
                      <div class="footer__brand--logo">
                         <img src="assets/logos/mpay.png" alt="MPay logo"> 
                       </div>
-                      <div class="footer__brand--details d-flex">
-                          <span class="brand-text">mpay</span>
-                          <span class="brand-description">
+                      <div class="footer__brand--details mud-flex">
+                          <span class="mud-desktop-body-lg-500 mud-text-gray-900">mpay</span>
+                          <span class="mud-desktop-caption-sm mud-text-gray-700">
                             serviciul guvernamental de plăți electronice
                           </span>
                       </div> 
@@ -411,7 +403,7 @@
                   <ul class="footer__contact">
                     <li>
                       <a href="tel:022820000"> 
-                        <span class="d-inline-flex">
+                        <span class="mud-inline-flex">
                           <svg class="icon medium" aria-hidden="true"> 
                             <use href="assets/icons/sprite.svg#icon-phone"></use> 
                           </svg>
@@ -421,7 +413,7 @@
                     </li>
                     <li>
                       <a href="mailto:suport.mpay@gov.md"> 
-                        <span class="d-inline-flex">
+                        <span class="mud-inline-flex">
                             <svg class="icon medium" aria-hidden="true"> 
                               <use href="assets/icons/sprite.svg#icon-envelope"></use> 
                             </svg>
@@ -432,7 +424,7 @@
                   </ul>
                 </div>
 
-                <!-- Navigation columns -->
+                
                 <nav class="footer__nav" aria-label="Footer navigation">
                   <div class="footer__nav-col">
                     <div class="footer__heading">Heading</div>
@@ -489,7 +481,7 @@
                   </div>
                 </nav>
 
-                <!-- Payments & apps -->
+                
                 <div class="footer__extras">
                   <div class="footer__heading">Opțiuni de plată</div>
 
@@ -514,9 +506,7 @@
 
               </div>
                <hr class="separator separator--horizontal separator--thin separator--subtle">
-              <!-- =====================
-                  MIDDLE
-              ====================== -->
+              
               <div class="footer__middle">
                 <div class="footer__logos"> 
                   <a href="#">
@@ -526,11 +516,11 @@
                     <img src="assets/logos/gov.svg" alt="Guvernul Republicii Moldova">
                   </a> 
                 </div>
-                <hr class="separator separator--horizontal separator--thin separator--subtle d-sm-none">
+                <hr class="separator separator--horizontal separator--thin separator--subtle mud-sm-hidden">
                 <ul class="footer__social">
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="Facebook">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-facebook-filled"></use> 
                         </svg>
@@ -539,7 +529,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="Instagram">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-instagram-filled"></use>
                         </svg>
@@ -548,7 +538,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="YouTube">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-youtube-filled"></use>
                         </svg>
@@ -557,7 +547,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="LinkedIn">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-linkedin-filled"></use>
                         </svg>
@@ -573,18 +563,16 @@
         </div>
       </div>
 
-       <!-- =====================
-        BOTTOM
-        ====================== -->
+       
         
       <div class="footer__bottom">
-        <div class="footer__container footer__bottom-inner py-0">
-          <div class="container">
-            <div class="row row-gap-20">
-              <div class="col-12 col-md-6">
+        <div class="footer__container footer__bottom-inner mud-py-0">
+          <div class="mud-container">
+            <div class="mud-row mud-row-gap-20">
+              <div class="mud-col-12 mud-col-md-6">
                 <div>© 2025 Agenția de Guvernare Electronică. Toate drepturile rezervate.</div>
               </div>
-              <div class="col-12 col-md-6">
+              <div class="mud-col-12 mud-col-md-6">
                 <ul class="footer__legal">
                     <li><a href="#">Termeni și condiții</a></li>
                     <li><a href="#">Politica de confidențialitate</a></li>
@@ -596,40 +584,38 @@
       </div>
     </footer>
 
-    <div class="container mt-40">
-      <div class="row">
-        <div class="col-12">
+    <div class="mud-container mud-mt-40">
+      <div class="mud-row">
+        <div class="mud-col-12">
           <p>desktop: compact</p>
         </div>
       </div>
     </div>
     <footer class="footer" role="contentinfo">
-      <div class="container">
-        <div class="row">
-          <div class="col-12">
+      <div class="mud-container">
+        <div class="mud-row">
+          <div class="mud-col-12">
             <div class="footer__container">
 
-              <!-- =====================
-                  TOP
-              ====================== -->
+              
               <div class="footer__top footer__top--compact">
                
-                <!-- Brand & contact -->
+                
                 <div class="footer__brand">
                   <a href="/" class="footer__logo">
                      <div class="footer__brand--logo">
                         <img src="assets/logos/mpay.png" alt="MPay logo"> 
                       </div>
-                      <div class="footer__brand--details d-flex">
-                          <span class="brand-text">mpay</span>
-                          <span class="brand-description">
+                      <div class="footer__brand--details mud-flex">
+                          <span class="mud-desktop-body-lg-500 mud-text-gray-900">mpay</span>
+                          <span class="mud-desktop-caption-sm mud-text-gray-700">
                             serviciul guvernamental de plăți electronice
                           </span>
                       </div> 
                   </a>  
                 </div>
 
-                <!-- Navigation columns -->
+                
                 <nav class="footer__nav" aria-label="Footer navigation">
                   <div class="footer__nav-col"> 
                     <ul class="footer__nav--list">
@@ -649,7 +635,7 @@
                   </div> 
                 </nav>
 
-                <!-- Payments & apps -->
+                
                 <div class="footer__extras"> 
                   <ul class="footer__payments">
                     <li><img src="assets/logos/payment-method-mastercard.svg" alt="Mastercard"></li>
@@ -659,9 +645,7 @@
 
               </div>
                <hr class="separator separator--horizontal separator--thin separator--subtle">
-              <!-- =====================
-                  MIDDLE
-              ====================== -->
+              
               <div class="footer__middle">
                 <div class="footer__logos"> 
                   <a href="#">
@@ -671,11 +655,11 @@
                     <img src="assets/logos/gov.svg" alt="Guvernul Republicii Moldova">
                   </a> 
                 </div>
-                <hr class="separator separator--horizontal separator--thin separator--subtle d-sm-none">
+                <hr class="separator separator--horizontal separator--thin separator--subtle mud-sm-hidden">
                 <ul class="footer__social">
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="Facebook">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-facebook-filled"></use> 
                         </svg>
@@ -684,7 +668,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="Instagram">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-instagram-filled"></use>
                         </svg>
@@ -693,7 +677,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="YouTube">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-youtube-filled"></use>
                         </svg>
@@ -702,7 +686,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="LinkedIn">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-linkedin-filled"></use>
                         </svg>
@@ -718,18 +702,16 @@
         </div>
       </div>
 
-       <!-- =====================
-        BOTTOM
-        ====================== -->
+       
         
       <div class="footer__bottom">
-        <div class="footer__container footer__bottom-inner py-0">
-          <div class="container">
-            <div class="row row-gap-20">
-              <div class="col-12 col-md-6">
+        <div class="footer__container footer__bottom-inner mud-py-0">
+          <div class="mud-container">
+            <div class="mud-row mud-row-gap-20">
+              <div class="mud-col-12 mud-col-md-6">
                 <div>© 2025 Agenția de Guvernare Electronică. Toate drepturile rezervate.</div>
               </div>
-              <div class="col-12 col-md-6">
+              <div class="mud-col-12 mud-col-md-6">
                 <ul class="footer__legal">
                     <li><a href="#">Termeni și condiții</a></li>
                     <li><a href="#">Politica de confidențialitate</a></li>
@@ -741,34 +723,34 @@
       </div>
     </footer>
 
-        <!--TYPES-->
-    <div class="container mt-56">
-      <div class="row">
-        <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+        
+    <div class="mud-mt-56">
+      <div class="mud-row">
+        <div class="mud-col-12 mud-mt-56 mud-mb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
             <h2>Variations</h2>
         </div>  
       </div>
-      <div class="row">
-        <div class="col-12">
+      <div class="mud-row">
+        <div class="mud-col-12">
           <p>3-columns</p>
         </div>
       </div>
     </div>  
     <footer class="footer" role="contentinfo">
-      <div class="container">
-        <div class="row">
-          <div class="col-12">
+      <div class="mud-container">
+        <div class="mud-row">
+          <div class="mud-col-12">
             <div class="footer__container">
-               <div class="row d-none">
-                  <div class="col-12 col-sm-3">
+               <div class="mud-row mud-hidden">
+                  <div class="mud-col-12 mud-col-sm-3">
                     <div class="footer__brand">
                       <a href="/" class="footer__logo">
                         <div class="footer__brand--logo">
                             <img src="assets/logos/mpay.png" alt="MPay logo"> 
                           </div>
-                          <div class="footer__brand--details d-flex">
-                              <span class="brand-text">mpay</span>
-                              <span class="brand-description">
+                          <div class="footer__brand--details mud-flex">
+                              <span class="mud-desktop-body-lg-500 mud-text-gray-900">mpay</span>
+                              <span class="mud-desktop-caption-sm mud-text-gray-700">
                                 serviciul guvernamental de plăți electronice
                               </span>
                           </div> 
@@ -777,7 +759,7 @@
                         <ul class="footer__contact">
                           <li>
                             <a href="tel:022820000"> 
-                              <span class="d-inline-flex">
+                              <span class="mud-inline-flex">
                                 <svg class="icon medium" aria-hidden="true"> 
                                   <use href="assets/icons/sprite.svg#icon-phone"></use> 
                                 </svg>
@@ -787,7 +769,7 @@
                           </li>
                           <li>
                             <a href="mailto:suport.mpay@gov.md"> 
-                              <span class="d-inline-flex">
+                              <span class="mud-inline-flex">
                                   <svg class="icon medium" aria-hidden="true"> 
                                     <use href="assets/icons/sprite.svg#icon-envelope"></use> 
                                   </svg>
@@ -799,7 +781,7 @@
                       </div>
                   </div>
 
-                  <div class="col-12 col-sm-6">
+                  <div class="mud-col-12 mud-col-sm-6">
                     <nav class="footer__nav" aria-label="Footer navigation">
                       <div class="footer__nav-col">
                         <div class="footer__heading">Heading</div>
@@ -857,7 +839,7 @@
                     </nav>
                   </div>
 
-                  <div class="col-12 col-sm-3">
+                  <div class="mud-col-12 mud-col-sm-3">
                     <div class="footer__extras">
                       <div class="footer__heading">Opțiuni de plată</div>
 
@@ -882,20 +864,18 @@
                   </div>
                 </div>
 
-              <!-- =====================
-                  TOP
-              ====================== -->
+              
               <div class="footer__top">
                
-                <!-- Brand & contact -->
+                
                 <div class="footer__brand">
                   <a href="/" class="footer__logo">
                      <div class="footer__brand--logo">
                         <img src="assets/logos/mpay.png" alt="MPay logo"> 
                       </div>
-                      <div class="footer__brand--details d-flex">
-                          <span class="brand-text">mpay</span>
-                          <span class="brand-description">
+                      <div class="footer__brand--details mud-flex">
+                          <span class="mud-desktop-body-lg-500 mud-text-gray-900">mpay</span>
+                          <span class="mud-desktop-caption-sm mud-text-gray-700">
                             serviciul guvernamental de plăți electronice
                           </span>
                       </div> 
@@ -904,7 +884,7 @@
                   <ul class="footer__contact">
                     <li>
                       <a href="tel:022820000"> 
-                        <span class="d-inline-flex">
+                        <span class="mud-inline-flex">
                           <svg class="icon medium" aria-hidden="true"> 
                             <use href="assets/icons/sprite.svg#icon-phone"></use> 
                           </svg>
@@ -914,7 +894,7 @@
                     </li>
                     <li>
                       <a href="mailto:suport.mpay@gov.md"> 
-                        <span class="d-inline-flex">
+                        <span class="mud-inline-flex">
                             <svg class="icon medium" aria-hidden="true"> 
                               <use href="assets/icons/sprite.svg#icon-envelope"></use> 
                             </svg>
@@ -925,7 +905,7 @@
                   </ul>
                 </div>
 
-                <!-- Navigation columns -->
+                
                 <nav class="footer__nav" aria-label="Footer navigation">
                   <div class="footer__nav-col">
                     <div class="footer__heading">Heading</div>
@@ -982,7 +962,7 @@
                   </div>
                 </nav>
 
-                <!-- Payments & apps -->
+                
                 <div class="footer__extras">
                   <div class="footer__heading">Opțiuni de plată</div>
 
@@ -1007,9 +987,7 @@
 
               </div>
                <hr class="separator separator--horizontal separator--thin separator--subtle">
-              <!-- =====================
-                  MIDDLE
-              ====================== -->
+              
               <div class="footer__middle">
                 <div class="footer__logos"> 
                   <a href="#">
@@ -1019,11 +997,11 @@
                     <img src="assets/logos/gov.svg" alt="Guvernul Republicii Moldova">
                   </a> 
                 </div>
-                <hr class="separator separator--horizontal separator--thin separator--subtle d-sm-none">
+                <hr class="separator separator--horizontal separator--thin separator--subtle mud-sm-hidden">
                 <ul class="footer__social">
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="Facebook">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-facebook-filled"></use> 
                         </svg>
@@ -1032,7 +1010,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="Instagram">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-instagram-filled"></use>
                         </svg>
@@ -1041,7 +1019,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="YouTube">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-youtube-filled"></use>
                         </svg>
@@ -1050,7 +1028,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="LinkedIn">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-linkedin-filled"></use>
                         </svg>
@@ -1066,18 +1044,16 @@
         </div>
       </div>
 
-       <!-- =====================
-        BOTTOM
-        ====================== -->
+       
         
       <div class="footer__bottom">
-        <div class="footer__container footer__bottom-inner py-0">
-          <div class="container">
-            <div class="row row-gap-20">
-              <div class="col-12 col-md-6">
+        <div class="footer__container footer__bottom-inner mud-py-0">
+          <div class="mud-container">
+            <div class="mud-row mud-row-gap-20">
+              <div class="mud-col-12 mud-col-md-6">
                 <div>© 2025 Agenția de Guvernare Electronică. Toate drepturile rezervate.</div>
               </div>
-              <div class="col-12 col-md-6">
+              <div class="mud-col-12 mud-col-md-6">
                 <ul class="footer__legal">
                     <li><a href="#">Termeni și condiții</a></li>
                     <li><a href="#">Politica de confidențialitate</a></li>
@@ -1089,33 +1065,31 @@
       </div>
     </footer>
 
-    <div class="container mt-32"> 
-      <div class="row">
-        <div class="col-12">
+    <div class="mud-container mud-mt-32"> 
+      <div class="mud-row">
+        <div class="mud-col-12">
           <p>2-columns</p>
         </div>
       </div>
     </div>  
     <footer class="footer" role="contentinfo">
-      <div class="container">
-        <div class="row">
-          <div class="col-12">
+      <div class="mud-container">
+        <div class="mud-row">
+          <div class="mud-col-12">
             <div class="footer__container">
               
-              <!-- =====================
-                  TOP
-              ====================== -->
+              
               <div class="footer__top">
                
-                <!-- Brand & contact -->
+                
                 <div class="footer__brand">
                   <a href="/" class="footer__logo">
                      <div class="footer__brand--logo">
                         <img src="assets/logos/mpay.png" alt="MPay logo"> 
                       </div>
-                      <div class="footer__brand--details d-flex">
-                          <span class="brand-text">mpay</span>
-                          <span class="brand-description">
+                      <div class="footer__brand--details mud-flex">
+                          <span class="mud-desktop-body-lg-500 mud-text-gray-900">mpay</span>
+                          <span class="mud-desktop-caption-sm mud-text-gray-700">
                             serviciul guvernamental de plăți electronice
                           </span>
                       </div> 
@@ -1124,7 +1098,7 @@
                   <ul class="footer__contact">
                     <li>
                       <a href="tel:022820000"> 
-                        <span class="d-inline-flex">
+                        <span class="mud-inline-flex">
                           <svg class="icon medium" aria-hidden="true"> 
                             <use href="assets/icons/sprite.svg#icon-phone"></use> 
                           </svg>
@@ -1134,7 +1108,7 @@
                     </li>
                     <li>
                       <a href="mailto:suport.mpay@gov.md"> 
-                        <span class="d-inline-flex">
+                        <span class="mud-inline-flex">
                             <svg class="icon medium" aria-hidden="true"> 
                               <use href="assets/icons/sprite.svg#icon-envelope"></use> 
                             </svg>
@@ -1145,7 +1119,7 @@
                   </ul>
                 </div>
 
-                <!-- Navigation columns -->
+                
                 <nav class="footer__nav" aria-label="Footer navigation">
                    
                   <div class="footer__nav-col">
@@ -1185,7 +1159,7 @@
                   </div>
                 </nav>
 
-                <!-- Payments & apps -->
+                
                 <div class="footer__extras">
                   <div class="footer__heading">Opțiuni de plată</div>
 
@@ -1210,9 +1184,7 @@
 
               </div>
                <hr class="separator separator--horizontal separator--thin separator--subtle">
-              <!-- =====================
-                  MIDDLE
-              ====================== -->
+              
               <div class="footer__middle">
                 <div class="footer__logos"> 
                   <a href="#">
@@ -1222,11 +1194,11 @@
                     <img src="assets/logos/gov.svg" alt="Guvernul Republicii Moldova">
                   </a> 
                 </div>
-                <hr class="separator separator--horizontal separator--thin separator--subtle d-sm-none">
+                <hr class="separator separator--horizontal separator--thin separator--subtle mud-sm-hidden">
                 <ul class="footer__social">
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="Facebook">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-facebook-filled"></use> 
                         </svg>
@@ -1235,7 +1207,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="Instagram">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-instagram-filled"></use>
                         </svg>
@@ -1244,7 +1216,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="YouTube">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-youtube-filled"></use>
                         </svg>
@@ -1253,7 +1225,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="LinkedIn">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-linkedin-filled"></use>
                         </svg>
@@ -1269,18 +1241,16 @@
         </div>
       </div>
 
-       <!-- =====================
-        BOTTOM
-        ====================== -->
+       
         
       <div class="footer__bottom">
-        <div class="footer__container footer__bottom-inner py-0">
-          <div class="container">
-            <div class="row row-gap-20">
-              <div class="col-12 col-md-6">
+        <div class="footer__container footer__bottom-inner mud-py-0">
+          <div class="mud-container">
+            <div class="mud-row mud-row-gap-20">
+              <div class="mud-col-12 mud-col-md-6">
                 <div>© 2025 Agenția de Guvernare Electronică. Toate drepturile rezervate.</div>
               </div>
-              <div class="col-12 col-md-6">
+              <div class="mud-col-12 mud-col-md-6">
                 <ul class="footer__legal">
                     <li><a href="#">Termeni și condiții</a></li>
                     <li><a href="#">Politica de confidențialitate</a></li>
@@ -1292,33 +1262,31 @@
       </div>
     </footer>
 
-    <div class="container mt-32"> 
-      <div class="row">
-        <div class="col-12">
+    <div class="mud-container mud-mt-32"> 
+      <div class="mud-row">
+        <div class="mud-col-12">
           <p>promo-none</p>
         </div>
       </div>
     </div>  
     <footer class="footer" role="contentinfo">
-      <div class="container">
-        <div class="row">
-          <div class="col-12">
+      <div class="mud-container">
+        <div class="mud-row">
+          <div class="mud-col-12">
             <div class="footer__container">
               
-              <!-- =====================
-                  TOP
-              ====================== -->
+              
               <div class="footer__top">
                
-                <!-- Brand & contact -->
+                
                 <div class="footer__brand">
                   <a href="/" class="footer__logo">
                      <div class="footer__brand--logo">
                         <img src="assets/logos/mpay.png" alt="MPay logo"> 
                       </div>
-                      <div class="footer__brand--details d-flex">
-                          <span class="brand-text">mpay</span>
-                          <span class="brand-description">
+                      <div class="footer__brand--details mud-flex">
+                          <span class="mud-desktop-body-lg-500 mud-text-gray-900">mpay</span>
+                          <span class="mud-desktop-caption-sm mud-text-gray-700">
                             serviciul guvernamental de plăți electronice
                           </span>
                       </div> 
@@ -1327,7 +1295,7 @@
                   <ul class="footer__contact">
                     <li>
                       <a href="tel:022820000"> 
-                        <span class="d-inline-flex">
+                        <span class="mud-inline-flex">
                           <svg class="icon medium" aria-hidden="true"> 
                             <use href="assets/icons/sprite.svg#icon-phone"></use> 
                           </svg>
@@ -1337,7 +1305,7 @@
                     </li>
                     <li>
                       <a href="mailto:suport.mpay@gov.md"> 
-                        <span class="d-inline-flex">
+                        <span class="mud-inline-flex">
                             <svg class="icon medium" aria-hidden="true"> 
                               <use href="assets/icons/sprite.svg#icon-envelope"></use> 
                             </svg>
@@ -1348,7 +1316,7 @@
                   </ul>
                 </div>
 
-                <!-- Navigation columns -->
+                
                 <nav class="footer__nav" aria-label="Footer navigation">
                    
                   <div class="footer__nav-col">
@@ -1408,9 +1376,7 @@
                 
               </div>
                <hr class="separator separator--horizontal separator--thin separator--subtle">
-              <!-- =====================
-                  MIDDLE
-              ====================== -->
+              
               <div class="footer__middle">
                 <div class="footer__logos"> 
                   <a href="#">
@@ -1420,11 +1386,11 @@
                     <img src="assets/logos/gov.svg" alt="Guvernul Republicii Moldova">
                   </a> 
                 </div>
-                <hr class="separator separator--horizontal separator--thin separator--subtle d-sm-none">
+                <hr class="separator separator--horizontal separator--thin separator--subtle mud-sm-hidden">
                 <ul class="footer__social">
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="Facebook">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-facebook-filled"></use> 
                         </svg>
@@ -1433,7 +1399,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="Instagram">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-instagram-filled"></use>
                         </svg>
@@ -1442,7 +1408,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="YouTube">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-youtube-filled"></use>
                         </svg>
@@ -1451,7 +1417,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="LinkedIn">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-linkedin-filled"></use>
                         </svg>
@@ -1467,18 +1433,16 @@
         </div>
       </div>
 
-       <!-- =====================
-        BOTTOM
-        ====================== -->
+       
         
       <div class="footer__bottom">
-        <div class="footer__container footer__bottom-inner py-0">
-          <div class="container">
-            <div class="row row-gap-20">
-              <div class="col-12 col-md-6">
+        <div class="footer__container footer__bottom-inner mud-py-0">
+          <div class="mud-container">
+            <div class="mud-row mud-row-gap-20">
+              <div class="mud-col-12 mud-col-md-6">
                 <div>© 2025 Agenția de Guvernare Electronică. Toate drepturile rezervate.</div>
               </div>
-              <div class="col-12 col-md-6">
+              <div class="mud-col-12 mud-col-md-6">
                 <ul class="footer__legal">
                     <li><a href="#">Termeni și condiții</a></li>
                     <li><a href="#">Politica de confidențialitate</a></li>
@@ -1490,40 +1454,38 @@
       </div>
     </footer>
 
-    <div class="container mt-32"> 
-      <div class="row">
-        <div class="col-12">
+    <div class="mud-container mud-mt-32"> 
+      <div class="mud-row">
+        <div class="mud-col-12">
           <p>contacts-none</p>
         </div>
       </div>
     </div>  
     <footer class="footer" role="contentinfo">
-      <div class="container">
-        <div class="row">
-          <div class="col-12">
+      <div class="mud-container">
+        <div class="mud-row">
+          <div class="mud-col-12">
             <div class="footer__container">
               
-              <!-- =====================
-                  TOP
-              ====================== -->
+              
               <div class="footer__top">
                
-                <!-- Brand & contact -->
+                
                 <div class="footer__brand">
                   <a href="/" class="footer__logo">
                      <div class="footer__brand--logo">
                         <img src="assets/logos/mpay.png" alt="MPay logo"> 
                       </div>
-                      <div class="footer__brand--details d-flex">
-                          <span class="brand-text">mpay</span>
-                          <span class="brand-description">
+                      <div class="footer__brand--details mud-flex">
+                          <span class="mud-desktop-body-lg-500 mud-text-gray-900">mpay</span>
+                          <span class="mud-desktop-caption-sm mud-text-gray-700">
                             serviciul guvernamental de plăți electronice
                           </span>
                       </div> 
                   </a>  
                 </div>
 
-                <!-- Navigation columns -->
+                
                 <nav class="footer__nav" aria-label="Footer navigation">
                    
                   <div class="footer__nav-col">
@@ -1603,9 +1565,7 @@
                 </div>
               </div>
                <hr class="separator separator--horizontal separator--thin separator--subtle">
-              <!-- =====================
-                  MIDDLE
-              ====================== -->
+              
               <div class="footer__middle">
                 <div class="footer__logos"> 
                   <a href="#">
@@ -1615,11 +1575,11 @@
                     <img src="assets/logos/gov.svg" alt="Guvernul Republicii Moldova">
                   </a> 
                 </div>
-                <hr class="separator separator--horizontal separator--thin separator--subtle d-sm-none">
+                <hr class="separator separator--horizontal separator--thin separator--subtle mud-sm-hidden">
                 <ul class="footer__social">
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="Facebook">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-facebook-filled"></use> 
                         </svg>
@@ -1628,7 +1588,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="Instagram">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-instagram-filled"></use>
                         </svg>
@@ -1637,7 +1597,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="YouTube">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-youtube-filled"></use>
                         </svg>
@@ -1646,7 +1606,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="LinkedIn">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-linkedin-filled"></use>
                         </svg>
@@ -1662,18 +1622,16 @@
         </div>
       </div>
 
-       <!-- =====================
-        BOTTOM
-        ====================== -->
+       
         
       <div class="footer__bottom">
-        <div class="footer__container footer__bottom-inner py-0">
-          <div class="container">
-            <div class="row row-gap-20">
-              <div class="col-12 col-md-6">
+        <div class="footer__container footer__bottom-inner mud-py-0">
+          <div class="mud-container">
+            <div class="mud-row mud-row-gap-20">
+              <div class="mud-col-12 mud-col-md-6">
                 <div>© 2025 Agenția de Guvernare Electronică. Toate drepturile rezervate.</div>
               </div>
-              <div class="col-12 col-md-6">
+              <div class="mud-col-12 mud-col-md-6">
                 <ul class="footer__legal">
                     <li><a href="#">Termeni și condiții</a></li>
                     <li><a href="#">Politica de confidențialitate</a></li>
@@ -1685,40 +1643,38 @@
       </div>
     </footer>
 
-    <div class="container mt-32"> 
-      <div class="row">
-        <div class="col-12">
+    <div class="mud-container mud-mt-32"> 
+      <div class="mud-row">
+        <div class="mud-col-12">
           <p>evo-promo</p>
         </div>
       </div>
     </div>  
     <footer class="footer" role="contentinfo">
-      <div class="container">
-        <div class="row">
-          <div class="col-12">
+      <div class="mud-container">
+        <div class="mud-row">
+          <div class="mud-col-12">
             <div class="footer__container">
               
-              <!-- =====================
-                  TOP
-              ====================== -->
+              
               <div class="footer__top">
                
-                <!-- Brand & contact -->
+                
                 <div class="footer__brand">
                   <a href="/" class="footer__logo">
                      <div class="footer__brand--logo">
                         <img src="assets/logos/mpay.png" alt="MPay logo"> 
                       </div>
-                      <div class="footer__brand--details d-flex">
-                          <span class="brand-text">mpay</span>
-                          <span class="brand-description">
+                      <div class="footer__brand--details mud-flex">
+                          <span class="mud-desktop-body-lg-500 mud-text-gray-900">mpay</span>
+                          <span class="mud-desktop-caption-sm mud-text-gray-700">
                             serviciul guvernamental de plăți electronice
                           </span>
                       </div> 
                   </a>  
                 </div>
 
-                <!-- Navigation columns -->
+                
                 <nav class="footer__nav" aria-label="Footer navigation">
                    
                   <div class="footer__nav-col">
@@ -1799,9 +1755,7 @@
                 </div>
               </div>
                <hr class="separator separator--horizontal separator--thin separator--subtle">
-              <!-- =====================
-                  MIDDLE
-              ====================== -->
+              
               <div class="footer__middle">
                 <div class="footer__logos"> 
                   <a href="#">
@@ -1811,11 +1765,11 @@
                     <img src="assets/logos/gov.svg" alt="Guvernul Republicii Moldova">
                   </a> 
                 </div>
-                <hr class="separator separator--horizontal separator--thin separator--subtle d-sm-none">
+                <hr class="separator separator--horizontal separator--thin separator--subtle mud-sm-hidden">
                 <ul class="footer__social">
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="Facebook">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-facebook-filled"></use> 
                         </svg>
@@ -1824,7 +1778,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="Instagram">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-instagram-filled"></use>
                         </svg>
@@ -1833,7 +1787,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="YouTube">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-youtube-filled"></use>
                         </svg>
@@ -1842,7 +1796,7 @@
                   </li>
                   <li class="footer__social--item">
                     <a href="#" class="footer__social--link" aria-label="LinkedIn">
-                      <span class="d-inline-flex">
+                      <span class="mud-inline-flex">
                         <svg class="icon large" aria-hidden="true"> 
                           <use href="assets/icons/sprite.svg#icon-linkedin-filled"></use>
                         </svg>
@@ -1858,18 +1812,16 @@
         </div>
       </div>
 
-       <!-- =====================
-        BOTTOM
-        ====================== -->
+       
         
       <div class="footer__bottom">
-        <div class="footer__container footer__bottom-inner py-0">
-          <div class="container">
-            <div class="row row-gap-20">
-              <div class="col-12 col-md-6">
+        <div class="footer__container footer__bottom-inner mud-py-0">
+          <div class="mud-container">
+            <div class="mud-row mud-row-gap-20">
+              <div class="mud-col-12 mud-col-md-6">
                 <div>© 2025 Agenția de Guvernare Electronică. Toate drepturile rezervate.</div>
               </div>
-              <div class="col-12 col-md-6">
+              <div class="mud-col-12 mud-col-md-6">
                 <ul class="footer__legal">
                     <li><a href="#">Termeni și condiții</a></li>
                     <li><a href="#">Politica de confidențialitate</a></li>
@@ -1880,6 +1832,8 @@
         </div>
       </div>
     </footer>
+  </div>
+</div>
   <div id="site-footer"></div>
 </body>
 </html>

@@ -6,6 +6,8 @@
   "scripts": {
     "sass": "sass --watch scss/main.scss css/main.css",
     "build:css": "sass scss/main.scss css/main.css",
+    "build:doc-search": "node ../scripts/build-doc-search-index.mjs",
+    "sync:head-icons": "node ../scripts/sync-html-head-icons.mjs",
     "serve": "serve .",
     "dev": "concurrently \"npm run sass\" \"npm run serve\""
   },
@@ -15,5 +17,10 @@
     "concurrently": "^9.2.1",
     "sass": "^1.97.3",
     "serve": "^14.2.6"
+  },
+  "overrides": {
+    "immutable": ">=5.1.5",
+    "fast-uri": ">=3.1.2",
+    "picomatch": ">=2.3.2"
   }
 }

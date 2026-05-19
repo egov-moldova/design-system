@@ -1,6 +1,4 @@
-/* =====================================================
-   🔗 LINK COMPONENT
-===================================================== */
+
 
 .link {
   --_link-color: var(--color-link-primary-hover);
@@ -44,8 +42,6 @@
   }
 }
 
-/* ================= SIZES ================= */
-
 .link-lg {
   font-size: var(--text-body-lg-font-size);
   line-height: var(--text-body-lg-line-height);
@@ -66,8 +62,6 @@
   line-height: var(--text-caption-md-line-height);
 }
 
-/* ================= UNDERLINE ================= */
-
 .link-underline {
   --_link-underline: underline;
 }
@@ -75,8 +69,6 @@
 .link-no-underline {
   --_link-underline: none;
 }
-
-/* ================= STYLES ================= */
 
 .link-primary {
   --_link-color: var(--color-link-primary-default);
@@ -95,8 +87,6 @@
   --_link-hover: var(--white);
   --_link-visited: var(--white);
 }
-
-/* ================= TARGET SIZES (A11Y) ================= */
 
 .link-target-pointer {
   min-height: 32px;

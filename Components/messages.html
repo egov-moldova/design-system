@@ -4,8 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Messaging Components Preview</title>
-  <link rel="stylesheet" href="css/main.css"> 
-  <script defer src="../Components/js/messages.js"></script>
+    <script src="js/include-head-assets.js"></script>
+    <link rel="stylesheet" href="css/main.css"> 
+  <script defer src="js/messages.js"></script>
   <script src="js/include-header.js" defer></script>
   <script src="js/include-footer.js" defer></script>
   <script src="js/toggler.js" defer></script>
@@ -16,24 +17,17 @@
 </head>
 <body>
   <div id="site-header"></div>
-  <div class="container py-56">
-    <div class="row">
-      <div class="col-sm-7">
-        <h1>Spinner</h1>
-        <p class="text-gray-400">
-          A spinner component is a visual element used to indicate that a process is ongoing, such as loading content or performing an action in the background. It typically takes the form of a circular or rotating graphic, often accompanied by a subtle animation to suggest motion and progress.
+  <div class="mud-container mud-py-56">
+    <div class="mud-row">
+      <div class="mud-col-sm-7">
+        <h1>Messaging</h1>
+        <p class="mud-text-gray-400">
+          Message and toast patterns for user feedback, alerts, and inline notifications.
         </p>
       </div>
     </div>
-    <div class="row">
-      <div class="col-12"> 
-        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-          <h2>Sizes</h2>  
-        </div>
-      </div>
-    </div>   
   </div>
-  <div class="banners d-none">
+  <div class="banners mud-hidden">
     <div class="banner banner--info modal--fade">
       <span class="banner__icon">ℹ️</span>
       <div class="banner__content">
@@ -66,20 +60,20 @@
       <button class="banner__close" aria-label="Close">×</button>
     </div>   
   </div> 
-  <div class="container">
+  <div class="mud-container">
 
-  <!-- Toast Controls -->
+  
   <div class="toast-demo-controls">
-    <button class="btn btn--primary" data-toast="info">Show Info Toast</button>
-    <button class="btn btn--success" data-toast="success">Show Success Toast</button>
-    <button class="btn btn--warning" data-toast="warning">Show Warning Toast</button>
-    <button class="btn btn--danger" data-toast="danger">Show Error Toast</button>
+    <button class="mud-btn btn--primary" data-toast="info">Show Info Toast</button>
+    <button class="mud-btn btn--success" data-toast="success">Show Success Toast</button>
+    <button class="mud-btn btn--warning" data-toast="warning">Show Warning Toast</button>
+    <button class="mud-btn btn--danger" data-toast="danger">Show Error Toast</button>
   </div>
 
-  <!-- Toast container -->
+  
   <div class="toast-container" aria-live="polite" aria-atomic="true"></div>
 
-  <!-- Banner Messages -->
+  
   <div class="message message--banner message--info">
     <span class="message__icon">ℹ️</span>
     <div class="message__content">
@@ -98,7 +92,7 @@
     <button class="message__close">×</button>
   </div>
 
-  <!-- Info Boxes -->
+  
   <div class="message message--informational-box message--info">
     <span class="message__icon">💬</span>
     <div class="message__content">
@@ -115,7 +109,7 @@
     </div>
   </div>
 
-  <!-- Inline Messages -->
+  
   <div class="message message--inline message--info">
     <span class="message__icon">ℹ️</span>
     <span class="message__text">This is an inline informational message.</span>
@@ -128,30 +122,26 @@
 
 </div>
 
-  <div class="container mt-48">
-    <!-- ======================================================
-         🟦 TOAST MESSAGES
-    ======================================================= -->
-    <section class="row">
-      <div class="col">
+  <div class="mud-container mud-mt-48">
+    
+    <section class="mud-row">
+      <div class="mud-col">
         <h2 class="section-title">Toast Messages</h2>
         <div class="toast-demo-controls">
-          <button class="btn btn--primary" data-toast="info">Show Info Toast</button>
-          <button class="btn btn--success" data-toast="success">Show Success Toast</button>
-          <button class="btn btn--warning" data-toast="warning">Show Warning Toast</button>
-          <button class="btn btn--danger" data-toast="error">Show Error Toast</button>
+          <button class="mud-btn btn--primary" data-toast="info">Show Info Toast</button>
+          <button class="mud-btn btn--success" data-toast="success">Show Success Toast</button>
+          <button class="mud-btn btn--warning" data-toast="warning">Show Warning Toast</button>
+          <button class="mud-btn btn--danger" data-toast="error">Show Error Toast</button>
         </div>
 
-        <!-- Toast container -->
+        
         <div class="toast-container" aria-live="polite" aria-atomic="true"></div>
       </div>
     </section>
 
-    <!-- ======================================================
-         🟩 BANNERS
-    ======================================================= -->
-    <section class="row">
-      <div class="col">
+    
+    <section class="mud-row">
+      <div class="mud-col">
         <h2 class="section-title">Banners</h2>
         <div class="banner banner--info modal--fade">
           <span class="banner__icon">ℹ️</span>
@@ -191,11 +181,9 @@
       </div>
     </section>
 
-    <!-- ======================================================
-         🟨 INFO BOXES
-    ======================================================= -->
-    <section class="row">
-      <div class="col">
+    
+    <section class="mud-row">
+      <div class="mud-col">
         <h2 class="section-title">Info Boxes</h2>
 
         <div class="info-box info-box--info">
@@ -232,11 +220,9 @@
       </div>
     </section>
 
-    <!-- ======================================================
-         🟥 INLINE MESSAGES
-    ======================================================= -->
-    <section class="row">
-      <div class="col">
+    
+    <section class="mud-row">
+      <div class="mud-col">
         <h2 class="section-title">Inline Messages</h2>
 
         <div class="inline-message inline-message--info">
@@ -262,13 +248,7 @@
     </section>
 
   </div>
-
-  <script src="messages.js"></script>
   <div id="site-footer"></div>
 </body>
 </html>
-
-
-
-
 

@@ -1,33 +1,45 @@
 @use 'sass:map';
 @use '../abstracts/variables' as vars;
 @use '../abstracts/mixins/media' as media;
+@use '../abstracts/mud-prefix' as mud;
 
-
-$displays: (
-  none,
-  block,
-  inline,
-  inline-block,
-  flex,
-  inline-flex,
-  grid,
-  inline-grid,
-  table,
-  table-cell
+// Canonical names: mud-hidden, mud-block, mud-flex, … (prefixed; safe alongside Bootstrap / Tailwind).
+$display-map: (
+  none: hidden,
+  block: block,
+  inline: inline,
+  inline-block: inline-block,
+  flex: flex,
+  inline-flex: inline-flex,
+  grid: grid,
+  inline-grid: inline-grid,
+  table: table,
+  table-row: table-row,
+  table-cell: table-cell
 );
 
-
-@each $display in $displays {
-  .d-#{$display} {
+@each $display, $class-token in $display-map {
+  .#{mud.mud-class($class-token)} {
     display: $display !important;
   }
 }
 
+.#{mud.mud-class('visible')} {
+  visibility: visible !important;
+}
+
+.#{mud.mud-class('overflow-hidden')} {
+  overflow: hidden !important;
+}
+
+.#{mud.mud-class('overflow-x-auto')} {
+  overflow-x: auto !important;
+}
 
 @each $breakpoint in map.keys(vars.$breakpoints) {
   @include media.media-breakpoint-up($breakpoint, vars.$breakpoints) {
-    @each $display in $displays {
-      .d-#{$breakpoint}-#{$display} {
+    @each $display, $class-token in $display-map {
+      .#{mud.mud-class('#{$breakpoint}-#{$class-token}')} {
         display: $display !important;
       }
     }

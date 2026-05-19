@@ -1,6 +1,7 @@
 @use 'sass:map';
 @use '../abstracts/variables' as vars;
 @use '../abstracts/mixins/media' as media;
+@use '../abstracts/mud-prefix' as mud;
 
 $align-items-values: (
   flex-start,
@@ -10,16 +11,14 @@ $align-items-values: (
   stretch
 );
 
-
 @each $value in $align-items-values {
   $cls: if($value == "flex-start", "start",
           if($value == "flex-end", "end", $value));
 
-  .align-items-#{$cls} {
+  .#{mud.mud-class('items-#{$cls}')} {
     align-items: $value !important;
   }
 }
-
 
 @each $breakpoint in map.keys(vars.$breakpoints) {
   @include media.media-breakpoint-up($breakpoint, vars.$breakpoints) {
@@ -27,7 +26,7 @@ $align-items-values: (
       $cls: if($value == "flex-start", "start",
               if($value == "flex-end", "end", $value));
 
-      .align-items-#{$breakpoint}-#{$cls} {
+      .#{mud.mud-class('items-#{$breakpoint}-#{$cls}')} {
         align-items: $value !important;
       }
     }

@@ -1,7 +1,7 @@
 @use 'sass:map';
 @use '../abstracts/variables' as vars;
 @use '../abstracts/mixins/media' as media;
-
+@use '../abstracts/mud-prefix' as mud;
 
 $flex-direction-values: (
   row,
@@ -10,14 +10,13 @@ $flex-direction-values: (
   column-reverse
 );
 
-
 @each $value in $flex-direction-values {
 
   $cls: if($value == "row-reverse", "row-reverse",
          if($value == "column-reverse", "column-reverse",
-         if($value == "column", "column", "row")));
+         if($value == "column", "col", "row")));
 
-  .flex-#{$cls} {
+  .#{mud.mud-class('flex-#{$cls}')} {
     flex-direction: $value !important;
   }
 }
@@ -29,9 +28,9 @@ $flex-direction-values: (
 
       $cls: if($value == "row-reverse", "row-reverse",
              if($value == "column-reverse", "column-reverse",
-             if($value == "column", "column", "row")));
+             if($value == "column", "col", "row")));
 
-      .flex-#{$breakpoint}-#{$cls} {
+      .#{mud.mud-class('flex-#{$breakpoint}-#{$cls}')} {
         flex-direction: $value !important;
       }
     }

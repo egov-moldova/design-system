@@ -1,0 +1,35 @@
+@use '../abstracts/tokens' as tokens;
+@use '../abstracts/mud-prefix' as mud;
+
+// Width and height from spacing design tokens (for previews, bars, etc.).
+$spacing-axis-scale: (
+  0: tokens.$token-spacing-0,
+  2: tokens.$token-spacing-2,
+  4: tokens.$token-spacing-4,
+  6: tokens.$token-spacing-6,
+  8: tokens.$token-spacing-8,
+  12: tokens.$token-spacing-12,
+  16: tokens.$token-spacing-16,
+  20: tokens.$token-spacing-20,
+  24: tokens.$token-spacing-24,
+  32: tokens.$token-spacing-32,
+  40: tokens.$token-spacing-40,
+  48: tokens.$token-spacing-48,
+  56: tokens.$token-spacing-56,
+  64: tokens.$token-spacing-64,
+  80: var(--spacing-80, 80px),
+  96: var(--spacing-96, 96px),
+  120: tokens.$token-spacing-120
+);
+
+@each $name, $value in $spacing-axis-scale {
+  .#{mud.mud-class('w-spacing-#{$name}')} {
+    width: $value !important;
+    box-sizing: border-box;
+  }
+
+  .#{mud.mud-class('h-spacing-#{$name}')} {
+    height: $value !important;
+    box-sizing: border-box;
+  }
+}

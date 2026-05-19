@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const exclusive = toggle.dataset.exclusive === "true";
 
-    // Setări inițiale
+    
     target.hidden = true;
     target.style.overflow = "hidden";
     target.style.maxHeight = "0";
@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
       toggle.setAttribute("aria-expanded", "true");
       target.hidden = false;
 
-      // calculează înălțimea reală și animăm
+      
       requestAnimationFrame(() => {
         const fullHeight = target.scrollHeight + "px";
         target.style.maxHeight = fullHeight;
@@ -39,18 +39,18 @@ document.addEventListener("DOMContentLoaded", () => {
     function closePanel(btn = toggle, panel = target) {
       btn.classList.remove("is-active");
       btn.setAttribute("aria-expanded", "false");
-      panel.style.maxHeight = panel.scrollHeight + "px"; // setăm înălțimea actuală
+      panel.style.maxHeight = panel.scrollHeight + "px"; 
       requestAnimationFrame(() => {
         panel.style.maxHeight = "0";
       });
 
-      // ascundem după animație
+      
       setTimeout(() => {
         panel.hidden = true;
       }, 300);
     }
 
-    // Click pe buton
+    
     toggle.addEventListener("click", e => {
       e.stopPropagation();
       const isOpen = toggle.classList.contains("is-active");
@@ -58,14 +58,14 @@ document.addEventListener("DOMContentLoaded", () => {
       else openPanel();
     });
 
-    // Click în afară → închide
+    
     document.addEventListener("click", e => {
       if (!toggle.contains(e.target) && !target.contains(e.target)) {
         closePanel();
       }
     });
 
-    // Escape → închide
+    
     document.addEventListener("keydown", e => {
       if (e.key === "Escape") closePanel();
     });

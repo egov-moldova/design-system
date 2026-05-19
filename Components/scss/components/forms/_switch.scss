@@ -22,7 +22,7 @@
   flex-direction: column;
   gap: var(--spacing-4, 4px);
 
-  // ===== Wrapper general 
+  
   &-wrapper {
     display: flex;
     align-items: center;
@@ -32,7 +32,7 @@
     width: fit-content;
   }
 
-  // ===== Input hidden 
+  
   &-input {
     position: absolute;
     opacity: 0;
@@ -42,7 +42,7 @@
     width: 0;
   }
 
-  // ===== Track + thumb 
+  
   &-track {
     position: relative;
     width: var(--track-width);
@@ -65,12 +65,12 @@
     transition: transform var(--transition), background-color var(--transition);
   }
 
-  // ===== Hover state
+  
   &-wrapper:hover .switch-track {
     background-color: var(--track-bg-hover);
   }
 
-  // ===== Checked  
+  
   &-input:checked + .switch-track {
     background-color: var(--track-bg-checked);
   }
@@ -79,7 +79,7 @@
     transform: translate(calc(var(--track-width) - var(--thumb-size) - 4px), -50%);
   }
 
-  // ===== Focus effect
+  
     .switch-input:focus + .switch-track {
         outline: 2px solid var(--blue-sky-500, #3379DD);
         outline-offset: 1px;
@@ -92,33 +92,7 @@
     box-shadow: var(--focus-ring);
   }
 
-/*  // ===== Disabled state
-  &--disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-
-    .switch-input {
-      pointer-events: none;
-    }
-
-    .switch-track {
-      background-color: var(--track-bg-disabled);
-    }
-
-    .switch-thumb {
-      background-color: var(--thumb-bg-disabled);
-    }
-
-    .switch-label {
-      color: var(--gray-500, #6B7280);
-    }
-
-    .switch-description {
-      color: var(--gray-400, #9CA3AF);
-    }
-  }*/
-
-  // ===== Error
+  
   &--error .switch-track {
     background-color: var(--error-track);
   }
@@ -127,7 +101,7 @@
     color: var(--error-text);
   }
 
-  // ===== Label + description
+  
   &-text {
     display: flex;
     flex-direction: column;
@@ -148,7 +122,7 @@
     line-height: 1.2;
   }
 
-  // ===== Size variants
+  
   &--small {
     --track-width: var(--spacing-32, 32px);
     --track-height: var(--spacing-16, 16px);

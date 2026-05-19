@@ -1,13 +1,14 @@
 @use 'sass:map';
 @use '../abstracts/variables' as vars;
 @use '../abstracts/mixins/media' as media;
+@use '../abstracts/mud-prefix' as mud;
 
 $flex-wrap-values: (nowrap, wrap, wrap-reverse);
 
 @each $value in $flex-wrap-values {
-  $cls: if($value == "wrap-reverse", "reverse", $value);
+  $cls: if($value == "wrap-reverse", "wrap-reverse", $value);
 
-  .flex-#{$cls} {
+  .#{mud.mud-class('flex-#{$cls}')} {
     flex-wrap: $value !important;
   }
 }
@@ -16,9 +17,9 @@ $flex-wrap-values: (nowrap, wrap, wrap-reverse);
   @include media.media-breakpoint-up($breakpoint, vars.$breakpoints) {
     @each $value in $flex-wrap-values {
 
-      $cls: if($value == "wrap-reverse", "reverse", $value);
+      $cls: if($value == "wrap-reverse", "wrap-reverse", $value);
 
-      .flex-#{$breakpoint}-#{$cls} {
+      .#{mud.mud-class('flex-#{$breakpoint}-#{$cls}')} {
         flex-wrap: $value !important;
       }
     }

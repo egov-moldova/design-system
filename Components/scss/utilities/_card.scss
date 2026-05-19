@@ -1,0 +1,48 @@
+@use '../abstracts/mud-prefix' as mud;
+@use '../abstracts/tokens' as tokens;
+
+// Minimal surface primitive: compose with `mud-radius-*`, `mud-bg-*`, shadows, `mud-size-*` for fixed squares, etc.
+.#{mud.mud-class('card')} {
+  box-sizing: border-box;
+  min-width: 0;
+  width: 100%;
+  overflow: hidden;
+}
+
+// Vertical card: top band ~60% + body ~40% (Figma foundations hub); icon or image in media.
+.#{mud.mud-class('card--stack')} {
+  display: grid;
+  grid-template-rows: minmax(0, 3fr) minmax(0, 2fr);
+  height: 100%;
+  min-height: 0;
+}
+
+.#{mud.mud-class('card__media')} {
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: tokens.$token-spacing-24 tokens.$token-spacing-16;
+  box-sizing: border-box;
+}
+
+.#{mud.mud-class('card__media--bleed')} {
+  padding: 0;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+.#{mud.mud-class('card__media-img')} {
+  display: block;
+  width: 100%;
+  height: auto;
+  vertical-align: middle;
+  object-fit: cover;
+}
+
+.#{mud.mud-class('card__body')} {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}

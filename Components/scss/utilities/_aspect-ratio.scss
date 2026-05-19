@@ -1,0 +1,16 @@
+@use '../abstracts/mud-prefix' as mud;
+
+// Reusable aspect boxes (integers = exact CSS ratio). Figma color ramp tile 235×160 → gcd 5 → 47:32.
+.#{mud.mud-class('ar-47-32')} {
+  aspect-ratio: 47 / 32;
+}
+
+// Wide ramp cell 494×160 → gcd 2 → 247:80.
+.#{mud.mud-class('ar-247-80')} {
+  aspect-ratio: 247 / 80;
+}
+
+// Flat alpha / banner strips.
+.#{mud.mud-class('ar-3-1')} {
+  aspect-ratio: 3 / 1;
+}

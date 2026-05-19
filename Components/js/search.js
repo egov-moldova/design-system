@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.search-input').forEach((searchInput) => {
     const input = searchInput.querySelector('input');
     const clearBtn = searchInput.querySelector('.btn-icon.clear');
-    const searchBtn = searchInput.querySelector('.btn-search');
+    const searchBtn = searchInput.querySelector('.mud-btn-search');
 
     if (!input) return;
 

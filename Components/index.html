@@ -1,89 +1,125 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ro">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Moldovan Unified Design System - Components Library</title>
+    <script src="js/include-head-assets.js"></script>
     <link rel="stylesheet" href="css/main.css" />
     <style>
-        .component-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 24px;
-            margin-bottom: 48px;
-        }
+      /* gap + margin-bottom → .mud-gap-24 .mud-mb-48 utilities on HTML */
+      .component-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      }
 
-        .component-card {
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 24px;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            color: inherit;
-            display: block;
-        }
+      /* display + radius + padding → .mud-block .mud-radius-8 .mud-p-24 utilities on HTML */
+      .component-card {
+        background: white;
+        border: 1px solid #e0e0e0;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: inherit;
+      }
 
-        .component-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--drop-shadow-400);
-        }
+      .component-card:hover,
+      .component-card:focus,
+      .component-card:focus-visible,
+      .component-card:active,
+      .component-card:visited {
+        text-decoration: none !important;
+      }
 
-        .component-card h3 {
-            margin: 0 0 8px 0;
-            color: #333;
-            font-size: 20px;
-        }
+      .component-card:hover *,
+      .component-card:focus *,
+      .component-card:focus-visible *,
+      .component-card:active * {
+        text-decoration: none !important;
+      }
 
-        .component-card p {
-            margin: 0;
-            color: #666;
-            font-size: 14px;
-            line-height: 1.5;
-        }
+      .component-card:focus-visible {
+        outline: 2px solid var(--gray-600, #616161);
+        outline-offset: 2px;
+      }
 
-        .category-section {
-            margin-bottom: 56px;
-        }
+      .component-card h3 {
+        margin: 0 0 8px 0;
+        color: #333;
+      }
 
-        .category-title {
-            font-size: 28px;
-            margin-bottom: 24px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #e0e0e0;
-            color: #333;
-        }
+      .component-card p {
+        margin: 0;
+        color: #666;
+        font-size: 14px;
+        line-height: 1.5;
+      }
 
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            font-size: 11px;
-            font-weight: 600;
-            border-radius: 4px;
-            margin-top: 8px;
-            text-transform: uppercase;
-        }
+      /* margin-bottom → .mud-mb-56 utility on HTML */
 
-        .badge-foundation {
-            background: #E3F2FD;
-            color: #1976D2;
-        }
+      .category-title {
+        font-size: 28px;
+        margin-bottom: 24px;
+        padding-bottom: 12px;
+        border-bottom: 2px solid #e0e0e0;
+        color: #333;
+      }
 
-        .badge-component {
-            background: #F3E5F5;
-            color: #7B1FA2;
-        }
+      /* display + padding + radius + margin-top → utilities on HTML */
+      .badge {
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
 
-        .badge-pattern {
-            background: #E8F5E9;
-            color: #388E3C;
-        }
+      .badge-component {
+        background: #f3e5f5;
+        color: #7b1fa2;
+      }
+      .badge-pattern {
+        background: #e8f5e9;
+        color: #2e7d32;
+      }
+      .badge-form {
+        background: #fff3e0;
+        color: #bf360c;
+      }
 
-        .badge-form {
-            background: #FFF3E0;
-            color: #F57C00;
+      .foundations-hub {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+      }
+
+      @media (max-width: 992px) {
+        .foundations-hub {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
         }
+      }
+
+      @media (max-width: 560px) {
+        .foundations-hub {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .foundation-card.mud-card--stack {
+        min-height: 280px;
+      }
+
+      .foundation-card .mud-card__media {
+        min-height: 148px;
+      }
+
+      .foundation-card__figure {
+        width: 100%;
+        max-width: 152px;
+        height: auto;
+        display: block;
+      }
+
+      .foundations-lede {
+        max-width: 42rem;
+      }
     </style>
     <script src="js/include-header.js" defer></script>
     <script src="js/include-footer.js" defer></script>
@@ -92,313 +128,1019 @@
     <script src="js/mega-nav.js" defer></script>
     <script src="js/search.js" defer></script>
     <script src="js/dropdown.js" defer></script>
-</head>
+  </head>
 
-<body>
+  <body>
     <div id="site-header"></div>
 
-    <div class="container">
-        <div class="row mt-">
-            <div class="col-xs-12">
+    <div class="mud-container">
+      <div class="mud-row mud-mb-40">
+        <div class="mud-col-xs-12">
+          <header class="mud-mb-32" lang="en">
+            <h2 class="mud-desktop-display-xl mud-mt-56 mud-mb-24">Foundations</h2>
+          </header>
 
-                <h1 class="text-heading-h1-lg mt-56">Foundations</h1>
-
-                <section class="category-section">
-                    <h2 class="text-heading-h2-md">Basic elements</h2>
-                    <div class="component-grid">
-                        <a href="SCSSDesignTokens.html" class="component-card">
-                            <h3>SCSS Design Tokens</h3>
-                            <p>Color palette, brand colors, status colors, and alpha colors</p>
-                            <span class="badge badge-foundation">Foundation</span>
-                        </a>
-                        <a href="typography.html" class="component-card">
-                            <h3>Typography</h3>
-                            <p>Font families, sizes, weights, and text styles</p>
-                            <span class="badge badge-foundation">Foundation</span>
-                        </a>
-                        <a href="radius-preview.html" class="component-card">
-                            <h3>Border Radius</h3>
-                            <p>Border radius tokens and examples</p>
-                            <span class="badge badge-foundation">Foundation</span>
-                        </a>
-                        <a href="border-width-preview.html" class="component-card">
-                            <h3>Border Width</h3>
-                            <p>Border width tokens and examples</p>
-                            <span class="badge badge-foundation">Foundation</span>
-                        </a>
-                        <a href="displays.html" class="component-card">
-                            <h3>Display Utilities</h3>
-                            <p>Display and visibility utilities</p>
-                            <span class="badge badge-foundation">Foundation</span>
-                        </a>
-                        <a href="efects.html" class="component-card">
-                            <h3>Effects</h3>
-                            <p>Shadows, transitions, and visual effects</p>
-                            <span class="badge badge-foundation">Foundation</span>
-                        </a>
-                    </div>
-                </section>
-
-                <section class="category-section">
-                    <h2 class="text-heading-h2-md">Layout</h2>
-                    <div class="component-grid">
-                        <a href="spacings.html" class="component-card">
-                            <h3>Spacings</h3>
-                            <p>Spacing system and layout utilities</p>
-                            <span class="badge badge-foundation">Foundation</span>
-                        </a>
-                        <a href="spacings-margins.html" class="component-card">
-                            <h3>Margins</h3>
-                            <p>Margin spacing utilities</p>
-                            <span class="badge badge-foundation">Foundation</span>
-                        </a>
-                        <a href="spacings-paddings.html" class="component-card">
-                            <h3>Paddings</h3>
-                            <p>Padding spacing utilities</p>
-                            <span class="badge badge-foundation">Foundation</span>
-                        </a>
-                        <a href="grid-system.html" class="component-card">
-                            <h3>Grid System</h3>
-                            <p>Responsive grid layout system</p>
-                            <span class="badge badge-foundation">Layout</span>
-                        </a>
-                        <a href="grid-preview.html" class="component-card">
-                            <h3>Grid Preview</h3>
-                            <p>Grid system examples and preview</p>
-                            <span class="badge badge-foundation">Layout</span>
-                        </a>
-                        <a href="width.html" class="component-card">
-                            <h3>Width Utilities</h3>
-                            <p>Width sizing utilities</p>
-                            <span class="badge badge-foundation">Foundation</span>
-                        </a>
-                    </div>
-                </section>
-
-                <h1 class="text-heading-h1-lg">Components</h1>
-
-                                <!-- Navigation & Structure Section -->
-                <section class="category-section">
-                    <h2 class="text-heading-h2-md">Navigation &amp; Structure</h2>
-                    <div class="component-grid">
-                        <a href="header.html" class="component-card">
-                            <h3>Header</h3>
-                            <p>Main header component</p>
-                            <span class="badge badge-pattern">Pattern</span>
-                        </a>
-                        <a href="menu.html" class="component-card">
-                            <h3>Menu</h3>
-                            <p>Selection and contextual menus (Figma Menu)</p>
-                            <span class="badge badge-component">Component</span>
-                        </a>
-                        <a href="header-with-avatar.html" class="component-card">
-                            <h3>Header with Avatar</h3>
-                            <p>Header with user avatar</p>
-                            <span class="badge badge-pattern">Pattern</span>
-                        </a>
-                        <a href="footer.html" class="component-card">
-                            <h3>Footer</h3>
-                            <p>Main footer component</p>
-                            <span class="badge badge-pattern">Pattern</span>
-                        </a>
-                        <a href="breadcrumbs.html" class="component-card">
-                            <h3>Breadcrumbs</h3>
-                            <p>Navigation breadcrumb trail</p>
-                            <span class="badge badge-pattern">Navigation</span>
-                        </a>
-                        <a href="tabs.html" class="component-card">
-                            <h3>Tabs</h3>
-                            <p>Tabbed navigation component</p>
-                            <span class="badge badge-pattern">Navigation</span>
-                        </a>
-                        <a href="pagination.html" class="component-card">
-                            <h3>Pagination</h3>
-                            <p>Page navigation component</p>
-                            <span class="badge badge-pattern">Navigation</span>
-                        </a>
-                        <a href="segmented-controls.html" class="component-card">
-                            <h3>Segmented Controls</h3>
-                            <p>Segmented control switcher</p>
-                            <span class="badge badge-pattern">Navigation</span>
-                        </a>
-                        <a href="progress-tracker.html" class="component-card">
-                            <h3>Progress Tracker</h3>
-                            <p>Step-by-step progress indicator</p>
-                            <span class="badge badge-pattern">Navigation</span>
-                        </a>
-                        <a href="table.html" class="component-card">
-                            <h3>Table</h3>
-                            <p>Data table component</p>
-                            <span class="badge badge-component">Component</span>
-                        </a>
-                        <a href="accordion.html" class="component-card">
-                            <h3>Accordion</h3>
-                            <p>Collapsible content panels</p>
-                            <span class="badge badge-component">Component</span>
-                        </a>
-                    </div>
-                </section>
-                
-                <!-- Form Elements Section -->
-                <section class="category-section">
-                    <h2 class="text-heading-h2-md">Form Elements</h2>
-                    <div class="component-grid">
-                        <a href="link.html" class="component-card">
-                            <h3>Link</h3>
-                            <p>Text links for navigation and actions</p>
-                            <span class="badge badge-form">Form</span>
-                        </a>
-                        <a href="buttons.html" class="component-card">
-                            <h3>Buttons</h3>
-                            <p>Primary, secondary, and tertiary button styles</p>
-                            <span class="badge badge-form">Form</span>
-                        </a>
-                        <a href="badge-buttons.html" class="component-card">
-                            <h3>Badge Buttons</h3>
-                            <p>Platform entry buttons with branded government service badges</p>
-                            <span class="badge badge-form">Form</span>
-                        </a>
-                        <a href="input-preview.html" class="component-card">
-                            <h3>Input Fields</h3>
-                            <p>Text input fields and variations</p>
-                            <span class="badge badge-form">Form</span>
-                        </a>
-                        <a href="search-input-preview.html" class="component-card">
-                            <h3>Search Input</h3>
-                            <p>Search field component</p>
-                            <span class="badge badge-form">Form</span>
-                        </a>
-                        <a href="input-date.html" class="component-card">
-                            <h3>Date Input</h3>
-                            <p>Date input field</p>
-                            <span class="badge badge-form">Form</span>
-                        </a>
-                        <a href="input-date-picker.html" class="component-card">
-                            <h3>Date Picker</h3>
-                            <p>Interactive date picker component</p>
-                            <span class="badge badge-form">Form</span>
-                        </a>
-                        <a href="input-phone-number.html" class="component-card">
-                            <h3>Phone Number Input</h3>
-                            <p>Phone number input with formatting</p>
-                            <span class="badge badge-form">Form</span>
-                        </a>
-                        <a href="input-file.html" class="component-card">
-                            <h3>File Input</h3>
-                            <p>File upload component</p>
-                            <span class="badge badge-form">Form</span>
-                        </a>
-                        <a href="textarea.html" class="component-card">
-                            <h3>Textarea</h3>
-                            <p>Multi-line text input</p>
-                            <span class="badge badge-form">Form</span>
-                        </a>
-                        <a href="checkbox.html" class="component-card">
-                            <h3>Checkbox</h3>
-                            <p>Checkbox input component</p>
-                            <span class="badge badge-form">Form</span>
-                        </a>
-                        <a href="radio-buttons.html" class="component-card">
-                            <h3>Radio Buttons</h3>
-                            <p>Radio button group component</p>
-                            <span class="badge badge-form">Form</span>
-                        </a>
-                        <a href="switch.html" class="component-card">
-                            <h3>Switch</h3>
-                            <p>Toggle switch component</p>
-                            <span class="badge badge-form">Form</span>
-                        </a>
-                        <a href="dropdown.html" class="component-card">
-                            <h3>Dropdown</h3>
-                            <p>Dropdown menu component</p>
-                            <span class="badge badge-form">Form</span>
-                        </a>
-                    </div>
-                </section>
-
-                <!-- Feedback & Utilities Section -->
-                <section class="category-section">
-                    <h2 class="text-heading-h2-md">Feedback &amp; Utilities</h2>
-                    <div class="component-grid">
-                        <a href="messages.html" class="component-card">
-                            <h3>Messages</h3>
-                            <p>Message components</p>
-                            <span class="badge badge-component">Component</span>
-                        </a>
-                        <a href="banner.html" class="component-card">
-                            <h3>Banner</h3>
-                            <p>Persistent top-of-screen system messages</p>
-                            <span class="badge badge-component">Component</span>
-                        </a>
-                        <a href="messages-information.html" class="component-card">
-                            <h3>Information Messages</h3>
-                            <p>Informational message styles</p>
-                            <span class="badge badge-component">Component</span>
-                        </a>
-                        <a href="messages-inline.html" class="component-card">
-                            <h3>Inline Messages</h3>
-                            <p>Inline notification messages</p>
-                            <span class="badge badge-component">Component</span>
-                        </a>
-                        <a href="messaget-toast.html" class="component-card">
-                            <h3>Toast Messages</h3>
-                            <p>Toast notification component</p>
-                            <span class="badge badge-component">Component</span>
-                        </a>
-                        <a href="modals.html" class="component-card">
-                            <h3>Modals</h3>
-                            <p>Modal dialog component</p>
-                            <span class="badge badge-pattern">Pattern</span>
-                        </a>
-                        <a href="cookie-banner.html" class="component-card">
-                            <h3>Cookie Banner</h3>
-                            <p>Cookie consent banner</p>
-                            <span class="badge badge-pattern">Pattern</span>
-                        </a>
-                        <a href="avatar.html" class="component-card">
-                            <h3>Avatar</h3>
-                            <p>User avatar component</p>
-                            <span class="badge badge-component">Component</span>
-                        </a>
-                        <a href="badge.html" class="component-card">
-                            <h3>Badge</h3>
-                            <p>Status and label badges</p>
-                            <span class="badge badge-component">Component</span>
-                        </a>
-                        <a href="chip.html" class="component-card">
-                            <h3>Chip</h3>
-                            <p>Chip component for tags and filters</p>
-                            <span class="badge badge-component">Component</span>
-                        </a>
-                        <a href="tags.html" class="component-card">
-                            <h3>Tags</h3>
-                            <p>Tag components</p>
-                            <span class="badge badge-component">Component</span>
-                        </a>
-                        <a href="icons.html" class="component-card">
-                            <h3>Icons</h3>
-                            <p>Icon library and usage</p>
-                            <span class="badge badge-component">Component</span>
-                        </a>
-                        <a href="spinner.html" class="component-card">
-                            <h3>Spinner</h3>
-                            <p>Loading spinner component</p>
-                            <span class="badge badge-component">Component</span>
-                        </a>
-                        <a href="tooltip.html" class="component-card">
-                            <h3>Tooltip</h3>
-                            <p>Contextual tooltip component</p>
-                            <span class="badge badge-component">Component</span>
-                        </a>
-                    </div>
-                </section>
-
+          <section class="category-section mud-mb-56" lang="en">
+            <div
+              class="foundations-hub mud-mb-48"
+              role="navigation"
+              aria-label="Primary foundations"
+            >
+              <a
+                href="layout-grids.html"
+                class="component-card foundation-card mud-card mud-card--stack mud-radius-8 mud-overflow-hidden"
+              >
+                <div class="mud-card__media mud-bg-gray-100" aria-hidden="true">
+                  <svg
+                    class="foundation-card__figure"
+                    viewBox="0 0 120 80"
+                    xmlns="http://www.w3.org/2000/svg"
+                    focusable="false"
+                  >
+                    <g fill="var(--blue-sky-600)">
+                      <rect x="8" y="14" width="7" height="52" rx="1" />
+                      <rect x="17" y="14" width="7" height="52" rx="1" />
+                      <rect x="26" y="14" width="7" height="52" rx="1" />
+                      <rect x="35" y="14" width="7" height="52" rx="1" />
+                      <rect x="44" y="14" width="7" height="52" rx="1" />
+                      <rect x="53" y="14" width="7" height="52" rx="1" />
+                      <rect x="62" y="14" width="7" height="52" rx="1" />
+                      <rect x="71" y="14" width="7" height="52" rx="1" />
+                      <rect x="80" y="14" width="7" height="52" rx="1" />
+                      <rect x="89" y="14" width="7" height="52" rx="1" />
+                      <rect x="98" y="14" width="7" height="52" rx="1" />
+                      <rect x="107" y="14" width="5" height="52" rx="1" />
+                    </g>
+                  </svg>
+                </div>
+                <div class="mud-card__body mud-p-24">
+                  <h3 class="mud-desktop-heading-sm mud-mb-8">Layout grids</h3>
+                  <p class="mud-desktop-body-sm mud-text-gray-600">
+                    Adaptive grid for desktop, tablet, and mobile, for clear
+                    alignment of layouts.
+                  </p>
+                </div>
+              </a>
+              <a
+                href="colors.html"
+                class="component-card foundation-card mud-card mud-card--stack mud-radius-8 mud-overflow-hidden"
+              >
+                <div class="mud-card__media mud-bg-gray-100" aria-hidden="true">
+                  <svg
+                    class="foundation-card__figure"
+                    viewBox="0 0 120 80"
+                    xmlns="http://www.w3.org/2000/svg"
+                    focusable="false"
+                  >
+                    <rect
+                      fill="var(--gray-800)"
+                      x="12"
+                      y="18"
+                      width="32"
+                      height="44"
+                      rx="8"
+                    />
+                    <rect
+                      fill="var(--blue-sky-600)"
+                      x="44"
+                      y="14"
+                      width="32"
+                      height="48"
+                      rx="8"
+                    />
+                    <rect
+                      fill="var(--blue-sky-200)"
+                      x="76"
+                      y="22"
+                      width="32"
+                      height="40"
+                      rx="8"
+                    />
+                  </svg>
+                </div>
+                <div class="mud-card__body mud-p-24">
+                  <h3 class="mud-desktop-heading-sm mud-mb-8">Colors</h3>
+                  <p class="mud-desktop-body-sm mud-text-gray-600">
+                    Defines primary, semantic, and neutral colors, ensuring
+                    consistency and accessibility.
+                  </p>
+                </div>
+              </a>
+              <a
+                href="typography-desktop.html"
+                class="component-card foundation-card mud-card mud-card--stack mud-radius-8 mud-overflow-hidden"
+              >
+                <div class="mud-card__media mud-bg-gray-100" aria-hidden="true">
+                  <svg
+                    class="foundation-card__figure"
+                    viewBox="0 0 120 80"
+                    xmlns="http://www.w3.org/2000/svg"
+                    focusable="false"
+                  >
+                    <text
+                      x="60"
+                      y="54"
+                      text-anchor="middle"
+                      font-family="system-ui,-apple-system,sans-serif"
+                      font-size="40"
+                      font-weight="700"
+                      fill="var(--blue-sky-600)"
+                    >
+                      Aa
+                    </text>
+                  </svg>
+                </div>
+                <div class="mud-card__body mud-p-24">
+                  <h3 class="mud-desktop-heading-sm mud-mb-8">
+                    Typography — desktop
+                  </h3>
+                  <p class="mud-desktop-body-sm mud-text-gray-600">
+                    Sets the text hierarchy for clear and unified communication.
+                  </p>
+                </div>
+              </a>
+              <a
+                href="typography-mobile.html"
+                class="component-card foundation-card mud-card mud-card--stack mud-radius-8 mud-overflow-hidden"
+              >
+                <div class="mud-card__media mud-bg-gray-100" aria-hidden="true">
+                  <svg
+                    class="foundation-card__figure"
+                    viewBox="0 0 120 80"
+                    xmlns="http://www.w3.org/2000/svg"
+                    focusable="false"
+                  >
+                    <rect
+                      fill="var(--gray-100)"
+                      x="38"
+                      y="10"
+                      width="44"
+                      height="60"
+                      rx="8"
+                      stroke="var(--gray-300)"
+                      stroke-width="2"
+                    />
+                    <text
+                      x="60"
+                      y="50"
+                      text-anchor="middle"
+                      font-family="system-ui,-apple-system,sans-serif"
+                      font-size="22"
+                      font-weight="700"
+                      fill="var(--blue-sky-600)"
+                    >
+                      Aa
+                    </text>
+                  </svg>
+                </div>
+                <div class="mud-card__body mud-p-24">
+                  <h3 class="mud-desktop-heading-sm mud-mb-8">
+                    Typography — mobile
+                  </h3>
+                  <p class="mud-desktop-body-sm mud-text-gray-600">
+                    Same hierarchy as desktop, tuned for smaller viewports and
+                    touch.
+                  </p>
+                </div>
+              </a>
+              <a
+                href="spacings.html"
+                class="component-card foundation-card mud-card mud-card--stack mud-radius-8 mud-overflow-hidden"
+              >
+                <div class="mud-card__media mud-bg-gray-100" aria-hidden="true">
+                  <svg
+                    class="foundation-card__figure"
+                    viewBox="0 0 120 80"
+                    xmlns="http://www.w3.org/2000/svg"
+                    focusable="false"
+                  >
+                    <rect
+                      fill="var(--blue-sky-150)"
+                      x="20"
+                      y="28"
+                      width="28"
+                      height="24"
+                      rx="2"
+                    />
+                    <rect
+                      fill="var(--blue-sky-600)"
+                      x="54"
+                      y="28"
+                      width="46"
+                      height="24"
+                      rx="2"
+                    />
+                    <path
+                      stroke="var(--gray-700)"
+                      stroke-width="2"
+                      fill="none"
+                      d="M12 40h6M102 40h6"
+                    />
+                    <path
+                      fill="var(--gray-700)"
+                      d="M18 36v8l-4-4 4-4zM102 36v8l4-4-4-4z"
+                    />
+                  </svg>
+                </div>
+                <div class="mud-card__body mud-p-24">
+                  <h3 class="mud-desktop-heading-sm mud-mb-8">Spacings</h3>
+                  <p class="mud-desktop-body-sm mud-text-gray-600">
+                    Defines standard space increments for margins, padding, and
+                    gaps.
+                  </p>
+                </div>
+              </a>
+              <a
+                href="borders.html"
+                class="component-card foundation-card mud-card mud-card--stack mud-radius-8 mud-overflow-hidden"
+              >
+                <div class="mud-card__media mud-bg-gray-100" aria-hidden="true">
+                  <svg
+                    class="foundation-card__figure"
+                    viewBox="0 0 120 80"
+                    xmlns="http://www.w3.org/2000/svg"
+                    focusable="false"
+                  >
+                    <path
+                      fill="var(--blue-sky-100)"
+                      d="M38 58V30a8 8 0 0 1 8-8h32v36Z"
+                    />
+                    <path
+                      fill="none"
+                      stroke="var(--blue-sky-600)"
+                      stroke-width="2.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M38 58V30a8 8 0 0 1 8-8h32"
+                    />
+                  </svg>
+                </div>
+                <div class="mud-card__body mud-p-24">
+                  <h3 class="mud-desktop-heading-sm mud-mb-8">Borders</h3>
+                  <p class="mud-desktop-body-sm mud-text-gray-600">
+                    Rules for thicknesses and radii that give shape to
+                    components and containers.
+                  </p>
+                </div>
+              </a>
+              <a
+                href="icons.html"
+                class="component-card foundation-card mud-card mud-card--stack mud-radius-8 mud-overflow-hidden"
+              >
+                <div class="mud-card__media mud-bg-gray-100" aria-hidden="true">
+                  <svg
+                    class="foundation-card__figure"
+                    viewBox="0 0 120 80"
+                    xmlns="http://www.w3.org/2000/svg"
+                    focusable="false"
+                  >
+                    <rect
+                      fill="var(--blue-sky-600)"
+                      x="14"
+                      y="22"
+                      width="26"
+                      height="20"
+                      rx="3"
+                    />
+                    <path fill="var(--gray-700)" d="M48 26h24v4H48zm0 10h20v4H48z" />
+                    <rect
+                      fill="var(--blue-sky-400)"
+                      x="86"
+                      y="26"
+                      width="22"
+                      height="24"
+                      rx="2"
+                    />
+                  </svg>
+                </div>
+                <div class="mud-card__body mud-p-24">
+                  <h3 class="mud-desktop-heading-sm mud-mb-8">Iconography</h3>
+                  <p class="mud-desktop-body-sm mud-text-gray-600">
+                    Unified icon library for a coherent and recognizable style.
+                  </p>
+                </div>
+              </a>
+              <a
+                href="elevation.html"
+                class="component-card foundation-card mud-card mud-card--stack mud-radius-8 mud-overflow-hidden"
+              >
+                <div class="mud-card__media mud-bg-gray-100" aria-hidden="true">
+                  <svg
+                    class="foundation-card__figure"
+                    viewBox="0 0 120 80"
+                    xmlns="http://www.w3.org/2000/svg"
+                    focusable="false"
+                  >
+                    <rect
+                      fill="var(--gray-200)"
+                      x="28"
+                      y="38"
+                      width="64"
+                      height="24"
+                      rx="2"
+                    />
+                    <rect
+                      fill="var(--gray-300)"
+                      x="32"
+                      y="30"
+                      width="56"
+                      height="22"
+                      rx="2"
+                    />
+                    <rect
+                      fill="var(--blue-sky-600)"
+                      x="36"
+                      y="18"
+                      width="48"
+                      height="24"
+                      rx="2"
+                    />
+                  </svg>
+                </div>
+                <div class="mud-card__body mud-p-24">
+                  <h3 class="mud-desktop-heading-sm mud-mb-8">Effects</h3>
+                  <p class="mud-desktop-body-sm mud-text-gray-600">
+                    Shadows, elevation levels, and overlays add depth and visual
+                    hierarchy to the interface.
+                  </p>
+                </div>
+              </a>
+              <a
+                href="cursors.html"
+                class="component-card foundation-card mud-card mud-card--stack mud-radius-8 mud-overflow-hidden"
+              >
+                <div class="mud-card__media mud-bg-gray-100" aria-hidden="true">
+                  <svg
+                    class="foundation-card__figure"
+                    viewBox="0 0 120 80"
+                    xmlns="http://www.w3.org/2000/svg"
+                    focusable="false"
+                  >
+                    <defs>
+                      <path
+                        id="foundation-cursor-arrow"
+                        d="M3 2.5 3 23.5 8.25 19.25 11 26.5 13.5 25.5 10.75 18.25 18.5 18.25 3 2.5Z"
+                      />
+                    </defs>
+                    <!-- Loading -->
+                    <g transform="translate(2 11)">
+                      <use
+                        href="#foundation-cursor-arrow"
+                        fill="var(--gray-900)"
+                        stroke="var(--white, #fff)"
+                        stroke-width="1.25"
+                        stroke-linejoin="round"
+                      />
+                      <g transform="translate(13.5 20.5)">
+                        <circle
+                          r="6.5"
+                          fill="var(--white)"
+                          stroke="var(--gray-200)"
+                          stroke-width="0.75"
+                        />
+                        <path
+                          fill="var(--blue-sky-200)"
+                          d="M0-6.5A6.5 6.5 0 0 1 6.5 0H0Z"
+                        />
+                        <path
+                          fill="var(--blue-sky-400)"
+                          d="M6.5 0A6.5 6.5 0 0 1 0 6.5H0Z"
+                        />
+                        <path
+                          fill="var(--blue-sky-600)"
+                          d="M0 6.5A6.5 6.5 0 0 1-6.5 0H0Z"
+                        />
+                        <path
+                          fill="var(--blue-sky-800)"
+                          d="M-6.5 0A6.5 6.5 0 0 1 0-6.5H0Z"
+                        />
+                      </g>
+                    </g>
+                    <!-- Disabled -->
+                    <g transform="translate(48 11)">
+                      <use
+                        href="#foundation-cursor-arrow"
+                        fill="var(--gray-900)"
+                        stroke="var(--white, #fff)"
+                        stroke-width="1.25"
+                        stroke-linejoin="round"
+                      />
+                      <g transform="translate(13.5 20.5)">
+                        <circle
+                          r="6.5"
+                          fill="var(--gray-200)"
+                          stroke="var(--gray-400)"
+                          stroke-width="0.75"
+                        />
+                        <path
+                          stroke="var(--gray-500)"
+                          stroke-width="1.75"
+                          stroke-linecap="round"
+                          d="M-4.25-4.25 4.25 4.25"
+                        />
+                      </g>
+                    </g>
+                    <!-- Add / clickable -->
+                    <g transform="translate(94 11)">
+                      <use
+                        href="#foundation-cursor-arrow"
+                        fill="var(--gray-900)"
+                        stroke="var(--white, #fff)"
+                        stroke-width="1.25"
+                        stroke-linejoin="round"
+                      />
+                      <g transform="translate(13.5 20.5)">
+                        <circle r="6.5" fill="var(--blue-sky-600)" />
+                        <path
+                          stroke="var(--white, #fff)"
+                          stroke-width="1.75"
+                          stroke-linecap="round"
+                          d="M0-3.25v6.5M-3.25 0h6.5"
+                        />
+                      </g>
+                    </g>
+                  </svg>
+                </div>
+                <div class="mud-card__body mud-p-24">
+                  <h3 class="mud-desktop-heading-sm mud-mb-8">Cursors</h3>
+                  <p class="mud-desktop-body-sm mud-text-gray-600">
+                    Defines cursor states including default, hover, clickable,
+                    disabled, and loading.
+                  </p>
+                </div>
+              </a>
             </div>
+
+            <h2 class="mud-desktop-heading-sm mud-mb-24">
+              More tokens and utilities
+            </h2>
+            <div
+              class="foundations-hub mud-mb-0"
+              role="navigation"
+              aria-label="Additional foundation pages"
+            >
+              <a
+                href="semantic-colors.html"
+                class="component-card foundation-card mud-card mud-card--stack mud-radius-8 mud-overflow-hidden"
+              >
+                <div class="mud-card__media mud-bg-gray-100" aria-hidden="true">
+                  <svg
+                    class="icon mud-size-40 mud-text-blue-sky-600"
+                    focusable="false"
+                    aria-hidden="true"
+                  >
+                    <use href="assets/icons/sprite.svg#icon-data-access"></use>
+                  </svg>
+                </div>
+                <div class="mud-card__body mud-p-24">
+                  <h3 class="mud-desktop-heading-sm mud-mb-8">
+                    Semantic colors
+                  </h3>
+                  <p class="mud-desktop-body-sm mud-text-gray-600">
+                    Role tokens for surfaces, text, and borders — click to copy.
+                  </p>
+                </div>
+              </a>
+              <a
+                href="flags.html"
+                class="component-card foundation-card mud-card mud-card--stack mud-radius-8 mud-overflow-hidden"
+              >
+                <div class="mud-card__media mud-bg-gray-100" aria-hidden="true">
+                  <svg
+                    class="icon mud-size-40 mud-text-blue-sky-600"
+                    focusable="false"
+                    aria-hidden="true"
+                  >
+                    <use href="assets/icons/sprite.svg#icon-flag"></use>
+                  </svg>
+                </div>
+                <div class="mud-card__body mud-p-24">
+                  <h3 class="mud-desktop-heading-sm mud-mb-8">Flags</h3>
+                  <p class="mud-desktop-body-sm mud-text-gray-600">
+                    Country and region flags at 24×24 SVG.
+                  </p>
+                </div>
+              </a>
+              <a
+                href="displays.html"
+                class="component-card foundation-card mud-card mud-card--stack mud-radius-8 mud-overflow-hidden"
+              >
+                <div class="mud-card__media mud-bg-gray-100" aria-hidden="true">
+                  <svg
+                    class="icon mud-size-40 mud-text-blue-sky-600"
+                    focusable="false"
+                    aria-hidden="true"
+                  >
+                    <use href="assets/icons/sprite.svg#icon-eye-open"></use>
+                  </svg>
+                </div>
+                <div class="mud-card__body mud-p-24">
+                  <h3 class="mud-desktop-heading-sm mud-mb-8">
+                    Display utilities
+                  </h3>
+                  <p class="mud-desktop-body-sm mud-text-gray-600">
+                    Display, overflow, and visibility utilities.
+                  </p>
+                </div>
+              </a>
+              <a
+                href="spacings-margins.html"
+                class="component-card foundation-card mud-card mud-card--stack mud-radius-8 mud-overflow-hidden"
+              >
+                <div class="mud-card__media mud-bg-gray-100" aria-hidden="true">
+                  <svg
+                    class="icon mud-size-40 mud-text-blue-sky-600"
+                    focusable="false"
+                    aria-hidden="true"
+                  >
+                    <use href="assets/icons/sprite.svg#icon-direction"></use>
+                  </svg>
+                </div>
+                <div class="mud-card__body mud-p-24">
+                  <h3 class="mud-desktop-heading-sm mud-mb-8">Margins</h3>
+                  <p class="mud-desktop-body-sm mud-text-gray-600">
+                    Margin utilities from the shared spacing scale.
+                  </p>
+                </div>
+              </a>
+              <a
+                href="spacings-paddings.html"
+                class="component-card foundation-card mud-card mud-card--stack mud-radius-8 mud-overflow-hidden"
+              >
+                <div class="mud-card__media mud-bg-gray-100" aria-hidden="true">
+                  <svg
+                    class="icon mud-size-40 mud-text-blue-sky-600"
+                    focusable="false"
+                    aria-hidden="true"
+                  >
+                    <use href="assets/icons/sprite.svg#icon-checklist"></use>
+                  </svg>
+                </div>
+                <div class="mud-card__body mud-p-24">
+                  <h3 class="mud-desktop-heading-sm mud-mb-8">Paddings</h3>
+                  <p class="mud-desktop-body-sm mud-text-gray-600">
+                    Padding utilities on the shared scale.
+                  </p>
+                </div>
+              </a>
+              <a
+                href="width.html"
+                class="component-card foundation-card mud-card mud-card--stack mud-radius-8 mud-overflow-hidden"
+              >
+                <div class="mud-card__media mud-bg-gray-100" aria-hidden="true">
+                  <svg
+                    class="icon mud-size-40 mud-text-blue-sky-600"
+                    focusable="false"
+                    aria-hidden="true"
+                  >
+                    <use
+                      href="assets/icons/sprite.svg#icon-chevron-grabber"
+                    ></use>
+                  </svg>
+                </div>
+                <div class="mud-card__body mud-p-24">
+                  <h3 class="mud-desktop-heading-sm mud-mb-8">
+                    Width utilities
+                  </h3>
+                  <p class="mud-desktop-body-sm mud-text-gray-600">
+                    Width and max-width helpers for layouts.
+                  </p>
+                </div>
+              </a>
+            </div>
+          </section>
+
+          <h1 class="mud-desktop-display-xl mud-mb-24">Components</h1>
+
+          <section class="category-section mud-mb-56">
+            <h2 class="mud-desktop-heading-sm">Navigation &amp; Structure</h2>
+            <div class="component-grid mud-gap-24 mud-mb-48">
+              <a
+                href="header.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Header</h3>
+                <p>Main navigation — anonymous and authenticated (avatar)</p>
+                <span
+                  class="badge badge-pattern mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Pattern</span
+                >
+              </a>
+              <a
+                href="menu.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Menu</h3>
+                <p>Selection and contextual menus (Figma Menu)</p>
+                <span
+                  class="badge badge-component mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Component</span
+                >
+              </a>
+              <a
+                href="footer.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Footer</h3>
+                <p>Main footer component</p>
+                <span
+                  class="badge badge-pattern mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Pattern</span
+                >
+              </a>
+              <a
+                href="breadcrumbs.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Breadcrumbs</h3>
+                <p>Navigation breadcrumb trail</p>
+                <span
+                  class="badge badge-pattern mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Navigation</span
+                >
+              </a>
+              <a
+                href="tabs.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Tabs</h3>
+                <p>Tabbed navigation component</p>
+                <span
+                  class="badge badge-pattern mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Navigation</span
+                >
+              </a>
+              <a
+                href="pagination.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Pagination</h3>
+                <p>Page navigation component</p>
+                <span
+                  class="badge badge-pattern mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Navigation</span
+                >
+              </a>
+              <a
+                href="segmented-controls.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Segmented Controls</h3>
+                <p>Segmented control switcher</p>
+                <span
+                  class="badge badge-pattern mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Navigation</span
+                >
+              </a>
+              <a
+                href="progress-tracker.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Progress Tracker</h3>
+                <p>Step-by-step progress indicator</p>
+                <span
+                  class="badge badge-pattern mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Navigation</span
+                >
+              </a>
+              <a
+                href="table.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Table</h3>
+                <p>Data table component</p>
+                <span
+                  class="badge badge-component mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Component</span
+                >
+              </a>
+              <a
+                href="accordion.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Accordion</h3>
+                <p>Collapsible content panels</p>
+                <span
+                  class="badge badge-component mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Component</span
+                >
+              </a>
+            </div>
+          </section>
+
+          <section class="category-section mud-mb-56">
+            <h2 class="mud-desktop-heading-sm">Form Elements</h2>
+            <div class="component-grid mud-gap-24 mud-mb-48">
+              <a
+                href="link.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Link</h3>
+                <p>Text links for navigation and actions</p>
+                <span
+                  class="badge badge-form mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Form</span
+                >
+              </a>
+              <a
+                href="buttons.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Buttons</h3>
+                <p>Primary, secondary, and tertiary button styles</p>
+                <span
+                  class="badge badge-form mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Form</span
+                >
+              </a>
+              <a
+                href="badge-buttons.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Badge Buttons</h3>
+                <p>
+                  Platform entry buttons with branded government service badges
+                </p>
+                <span
+                  class="badge badge-form mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Form</span
+                >
+              </a>
+              <a
+                href="input-preview.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Input Fields</h3>
+                <p>Text input fields and variations</p>
+                <span
+                  class="badge badge-form mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Form</span
+                >
+              </a>
+              <a
+                href="search-input-preview.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Search Input</h3>
+                <p>Search field component</p>
+                <span
+                  class="badge badge-form mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Form</span
+                >
+              </a>
+              <a
+                href="input-date.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Date Input</h3>
+                <p>Date input field</p>
+                <span
+                  class="badge badge-form mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Form</span
+                >
+              </a>
+              <a
+                href="input-date-picker.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Date Picker</h3>
+                <p>Interactive date picker component</p>
+                <span
+                  class="badge badge-form mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Form</span
+                >
+              </a>
+              <a
+                href="input-phone-number.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Phone Number Input</h3>
+                <p>Phone number input with formatting</p>
+                <span
+                  class="badge badge-form mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Form</span
+                >
+              </a>
+              <a
+                href="input-file.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">File Input</h3>
+                <p>File upload component</p>
+                <span
+                  class="badge badge-form mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Form</span
+                >
+              </a>
+              <a
+                href="textarea.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Textarea</h3>
+                <p>Multi-line text input</p>
+                <span
+                  class="badge badge-form mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Form</span
+                >
+              </a>
+              <a
+                href="checkbox.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Checkbox</h3>
+                <p>Checkbox input component</p>
+                <span
+                  class="badge badge-form mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Form</span
+                >
+              </a>
+              <a
+                href="radio-buttons.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Radio Buttons</h3>
+                <p>Radio button group component</p>
+                <span
+                  class="badge badge-form mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Form</span
+                >
+              </a>
+              <a
+                href="switch.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Switch</h3>
+                <p>Toggle switch component</p>
+                <span
+                  class="badge badge-form mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Form</span
+                >
+              </a>
+              <a
+                href="dropdown.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Dropdown</h3>
+                <p>Dropdown menu component</p>
+                <span
+                  class="badge badge-form mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Form</span
+                >
+              </a>
+            </div>
+          </section>
+
+          <section class="category-section mud-mb-56">
+            <h2 class="mud-desktop-heading-sm">Feedback &amp; Utilities</h2>
+            <div class="component-grid mud-gap-24 mud-mb-48">
+              <a
+                href="messages.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Messages</h3>
+                <p>Message components</p>
+                <span
+                  class="badge badge-component mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Component</span
+                >
+              </a>
+              <a
+                href="banner.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Banner</h3>
+                <p>Persistent top-of-screen system messages</p>
+                <span
+                  class="badge badge-component mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Component</span
+                >
+              </a>
+              <a
+                href="messages-information.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Information Messages</h3>
+                <p>Informational message styles</p>
+                <span
+                  class="badge badge-component mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Component</span
+                >
+              </a>
+              <a
+                href="messages-inline.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Inline Messages</h3>
+                <p>Inline notification messages</p>
+                <span
+                  class="badge badge-component mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Component</span
+                >
+              </a>
+              <a
+                href="messaget-toast.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Toast Messages</h3>
+                <p>Toast notification component</p>
+                <span
+                  class="badge badge-component mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Component</span
+                >
+              </a>
+              <a
+                href="modals.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Modals</h3>
+                <p>Modal dialog component</p>
+                <span
+                  class="badge badge-pattern mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Pattern</span
+                >
+              </a>
+              <a
+                href="cookie-banner.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Cookie Banner</h3>
+                <p>Cookie consent banner</p>
+                <span
+                  class="badge badge-pattern mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Pattern</span
+                >
+              </a>
+              <a
+                href="avatar.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Avatar</h3>
+                <p>User avatar component</p>
+                <span
+                  class="badge badge-component mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Component</span
+                >
+              </a>
+              <a
+                href="badge.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Badge</h3>
+                <p>Status and label badges</p>
+                <span
+                  class="badge badge-component mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Component</span
+                >
+              </a>
+              <a
+                href="chip.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Chip</h3>
+                <p>Chip component for tags and filters</p>
+                <span
+                  class="badge badge-component mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Component</span
+                >
+              </a>
+              <a
+                href="tags.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Tags</h3>
+                <p>Tag components</p>
+                <span
+                  class="badge badge-component mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Component</span
+                >
+              </a>
+              <a
+                href="spinner.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Spinner</h3>
+                <p>Loading spinner component</p>
+                <span
+                  class="badge badge-component mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Component</span
+                >
+              </a>
+              <a
+                href="tooltip.html"
+                class="component-card mud-block mud-radius-8 mud-p-24"
+              >
+                <h3 class="mud-desktop-heading-sm">Tooltip</h3>
+                <p>Contextual tooltip component</p>
+                <span
+                  class="badge badge-component mud-inline-block mud-py-4 mud-px-8 mud-radius-4 mud-mt-8"
+                  >Component</span
+                >
+              </a>
+            </div>
+          </section>
         </div>
+      </div>
     </div>
     <div id="site-footer"></div>
-</body>
-
+  </body>
 </html>
-
-

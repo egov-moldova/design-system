@@ -1,18 +1,18 @@
-<footer class="footer mt-32" role="contentinfo">
-  <div class="container">
-    <div class="row">
-      <div class="col-12">
+<footer class="footer mud-mt-32" role="contentinfo">
+  <div class="mud-container">
+    <div class="mud-row">
+      <div class="mud-col-12">
         <div class="footer__container" style="padding-bottom: var(--spacing-32)">
           <div class="footer__middle" style="padding-top: var(--spacing-0)">
             <div class="footer__logos">
               <img src="assets/logos/gov.svg" alt="Guvernul Republicii Moldova">
               <img src="assets/logos/Logo100Percent_Black.svg" alt="100 percent digital">
             </div>
-            <hr class="separator separator--horizontal separator--thin separator--subtle d-sm-none">
+            <hr class="separator separator--horizontal separator--thin separator--subtle mud-sm-hidden">
             <ul class="footer__social">
               <li class="footer__social--item">
                 <a href="#" class="footer__social--link" aria-label="Facebook">
-                  <span class="d-inline-flex">
+                  <span class="mud-inline-flex">
                     <svg class="icon large" aria-hidden="true">
                       <use href="assets/icons/sprite.svg#icon-facebook-filled"></use>
                     </svg>
@@ -21,7 +21,7 @@
               </li>
               <li class="footer__social--item">
                 <a href="#" class="footer__social--link" aria-label="Instagram">
-                  <span class="d-inline-flex">
+                  <span class="mud-inline-flex">
                     <svg class="icon large" aria-hidden="true">
                       <use href="assets/icons/sprite.svg#icon-instagram-filled"></use>
                     </svg>
@@ -30,7 +30,7 @@
               </li>
               <li class="footer__social--item">
                 <a href="#" class="footer__social--link" aria-label="YouTube">
-                  <span class="d-inline-flex">
+                  <span class="mud-inline-flex">
                     <svg class="icon large" aria-hidden="true">
                       <use href="assets/icons/sprite.svg#icon-youtube-filled"></use>
                     </svg>
@@ -39,7 +39,7 @@
               </li>
               <li class="footer__social--item">
                 <a href="#" class="footer__social--link" aria-label="LinkedIn">
-                  <span class="d-inline-flex">
+                  <span class="mud-inline-flex">
                     <svg class="icon large" aria-hidden="true">
                       <use href="assets/icons/sprite.svg#icon-linkedin-filled"></use>
                     </svg>
@@ -54,13 +54,13 @@
   </div>
 
   <div class="footer__bottom">
-    <div class="footer__container footer__bottom-inner py-0">
-      <div class="container">
-        <div class="row row-gap-20">
-          <div class="col-12 col-md-6">
+    <div class="footer__container footer__bottom-inner mud-py-0">
+      <div class="mud-container">
+        <div class="mud-row mud-row-gap-20">
+          <div class="mud-col-12 mud-col-md-6">
             <div>© 2026 Agenția de Guvernare Electronică. Toate drepturile rezervate.</div>
           </div>
-          <div class="col-12 col-md-6">
+          <div class="mud-col-12 mud-col-md-6">
             <ul class="footer__legal">
               <li>
                 Nu ezitați să contribuiți <a href="https://github.com/egov-moldova/design-system/tree/main"
@@ -73,3 +73,78 @@
     </div>
   </div>
 </footer>
+
+
+<div class="modal-overlay" id="search-modal" aria-hidden="true">
+  <div class="modal modal--md modal--simple mud-py-40 mud-px-32" tabindex="-1" role="dialog" aria-modal="true"
+    aria-labelledby="doc-search-title-desktop">
+    <div class="mud-flex mud-items-start mud-justify-between mud-gap-16 mud-mb-16">
+      <h2 class="mud-desktop-heading-sm mud-my-0" id="doc-search-title-desktop">Căutare în documentație</h2>
+      <button type="button" class="mud-btn-icon" data-close aria-label="Închide">
+        <svg class="icon small" aria-hidden="true">
+          <use href="assets/icons/sprite.svg#icon-cross-small"></use>
+        </svg>
+      </button>
+    </div>
+    <p class="mud-my-0 mud-mb-16" style="font-size: 14px; color: var(--gray-600, #666);">
+      Tastează o clasă utilitară (ex. <code class="mud-text-gray-800">mud-container</code>) — vei fi dus la pagina
+      unde este documentată.
+    </p>
+    <div class="doc-search" data-doc-search-root>
+      <div class="search-input medium">
+        <span class="mud-p-2 mud-radius-8 mud-inline-flex icon-search" aria-hidden="true">
+          <svg class="icon medium" aria-hidden="true">
+            <use href="assets/icons/sprite.svg#icon-search"></use>
+          </svg>
+        </span>
+        <input type="search" class="input" data-doc-search id="doc-search-input-desktop"
+          list="doc-search-datalist-desktop" placeholder="Caută clasă (ex. mud-container)" autocomplete="off"
+          autocorrect="off" spellcheck="false" aria-label="Căutare clasă în documentație"
+          aria-controls="doc-search-hits-desktop" aria-autocomplete="list" />
+        <button type="button" class="mud-btn-icon clear" aria-label="Șterge căutarea">
+          <svg class="icon small" aria-hidden="true">
+            <use href="assets/icons/sprite.svg#icon-cross-small"></use>
+          </svg>
+        </button>
+      </div>
+      <p class="doc-search__empty" data-doc-search-empty hidden>Nu s-au găsit rezultate.</p>
+      <ul class="doc-search__hits" id="doc-search-hits-desktop" data-doc-search-hits role="listbox" hidden></ul>
+    </div>
+    <datalist id="doc-search-datalist-desktop"></datalist>
+  </div>
+</div>
+
+<div class="modal-overlay" id="search-modal-mobile" aria-hidden="true">
+  <div class="modal modal--md modal--simple mud-py-32 mud-px-24" tabindex="-1" role="dialog" aria-modal="true"
+    aria-labelledby="doc-search-title-mobile">
+    <div class="mud-flex mud-items-start mud-justify-between mud-gap-16 mud-mb-16">
+      <h2 class="mud-mobile-heading-sm mud-my-0" id="doc-search-title-mobile">Căutare</h2>
+      <button type="button" class="mud-btn-icon" data-close aria-label="Închide">
+        <svg class="icon small" aria-hidden="true">
+          <use href="assets/icons/sprite.svg#icon-cross-small"></use>
+        </svg>
+      </button>
+    </div>
+    <div class="doc-search" data-doc-search-root>
+      <div class="search-input medium">
+        <span class="mud-p-2 mud-radius-8 mud-inline-flex icon-search" aria-hidden="true">
+          <svg class="icon medium" aria-hidden="true">
+            <use href="assets/icons/sprite.svg#icon-search"></use>
+          </svg>
+        </span>
+        <input type="search" class="input" data-doc-search id="doc-search-input-mobile"
+          list="doc-search-datalist-mobile" placeholder="Clasă (ex. mud-p-16)" autocomplete="off" autocorrect="off"
+          spellcheck="false" aria-label="Căutare clasă în documentație" aria-controls="doc-search-hits-mobile"
+          aria-autocomplete="list" />
+        <button type="button" class="mud-btn-icon clear" aria-label="Șterge căutarea">
+          <svg class="icon small" aria-hidden="true">
+            <use href="assets/icons/sprite.svg#icon-cross-small"></use>
+          </svg>
+        </button>
+      </div>
+      <p class="doc-search__empty" data-doc-search-empty hidden>Nu s-au găsit rezultate.</p>
+      <ul class="doc-search__hits" id="doc-search-hits-mobile" data-doc-search-hits role="listbox" hidden></ul>
+    </div>
+    <datalist id="doc-search-datalist-mobile"></datalist>
+  </div>
+</div>
