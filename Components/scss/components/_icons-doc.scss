@@ -1,47 +1,36 @@
 
-
 [data-doc="icons"] {
-  
-  
-
-  
-  
-  .icons-size-block__chip {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 10px;
-    border: 1px solid var(--gray-300, #c4c4c4);
-    border-radius: 999px;
-  }
-
-  
-
-  .icons-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    column-gap: 80px;
-    row-gap: 16px;
-  }
-
-  
-  
-  .icon-card {
-    all: unset;
-    box-sizing: border-box;
-    display: inline-flex;
-    align-items: center;
-    gap: 16px;
-    height: 40px;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: background-color 0.15s ease;
+  .icon-card.token-name {
     position: relative;
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    font: inherit;
+    text-align: inherit;
+    color: inherit;
+    appearance: none;
+    cursor: pointer;
+    overflow: visible;
 
-    &:hover .mud-bg-gray-100 { background: var(--gray-200, #f1f1f1) !important; }
+    &:hover {
+      background: transparent;
+    }
 
     &:focus-visible {
       outline: 2px solid var(--blue-sky-600, #0058d2);
       outline-offset: 2px;
+    }
+
+    &:hover .icon-card__media.mud-bg-gray-100 {
+      background-color: var(--gray-200, #f1f1f1) !important;
+    }
+
+    &:not(.is-copied)::after {
+      content: 'Copy';
     }
 
     &.is-copied .icon-card__name {
@@ -49,15 +38,20 @@
     }
   }
 
-  .icon-card__name {
-  }
-
-  
   .icon-card--missing {
     cursor: not-allowed;
+
+    &:hover .icon-card__media {
+      background-color: transparent !important;
+    }
   }
 
-  
+  .icon-card__name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .icon-card__name--missing {
     font-style: italic;
   }
@@ -73,14 +67,17 @@
 }
 
 @media (max-width: 1199.98px) {
-  [data-doc="icons"] .icons-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    column-gap: 40px;
+  [data-doc="icons"] .mud-grid-cols-4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  [data-doc="icons"] .mud-column-gap-80 {
+    column-gap: var(--spacing-40, 40px) !important;
   }
 }
 
 @media (max-width: 599.98px) {
-  [data-doc="icons"] .icons-grid {
-    grid-template-columns: 1fr;
+  [data-doc="icons"] .mud-grid-cols-4 {
+    grid-template-columns: 1fr !important;
   }
 }

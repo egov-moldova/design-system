@@ -1,6 +1,0 @@
-mud-shadow-lg
-mud-shadow-md
-mud-shadow-none
-mud-shadow-sm
-mud-shadow-xl
-mud-shadow-xs

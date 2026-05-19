@@ -21,3 +21,7 @@ $grid-cols-scale: (1, 2, 3, 5);
     }
   }
 }
+
+.#{mud.mud-class('grid-cols-4')} {
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+}

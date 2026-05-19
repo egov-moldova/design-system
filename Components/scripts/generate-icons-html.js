@@ -25,12 +25,12 @@ function svgRef(name) {
   return spriteIds.has(id) ? id : null;
 }
 
-const SIZE_LABELS = {
-  24: 'Size: 24 × 24 px',
-  20: 'Size: 20 × 20 px',
-  16: 'Size: 16 × 16 px',
-  12: 'Size: 12 × 12 px',
-};
+function renderSizeLabel(size) {
+  return `          <div class="mud-inline-flex mud-items-center mud-gap-8 mud-mb-24">
+            <span class="mud-desktop-body-sm mud-text-gray-900">Size</span>
+            <span class="font-mono mud-desktop-body-sm mud-text-gray-900 mud-py-2 mud-px-8 mud-radius-6 mud-bg-white mud-border-1 mud-border-solid mud-border-gray-300">${size}px</span>
+          </div>`;
+}
 
 const SIZE_CLASS = {
   24: '',
@@ -39,13 +39,21 @@ const SIZE_CLASS = {
   12: 'extra-small',
 };
 
+const ICON_CARD =
+  'mud-inline-flex mud-items-center mud-gap-16';
+const ICON_MEDIA =
+  'icon-card__media mud-inline-flex mud-items-center mud-justify-center mud-size-40 mud-flex-shrink-0 mud-radius-8 mud-bg-gray-100 mud-text-gray-900';
+const ICON_MEDIA_MISSING =
+  'icon-card__media mud-inline-flex mud-items-center mud-justify-center mud-size-40 mud-flex-shrink-0 mud-radius-8 mud-bg-transparent mud-border-1 mud-border-dashed mud-border-gray-300 mud-text-gray-400';
+const ICON_GRID = 'mud-grid mud-grid-cols-4 mud-column-gap-80 mud-row-gap-16';
+
 function renderCard(name, size) {
   const id = svgRef(name);
   const sizeCls = SIZE_CLASS[size] ? ` ${SIZE_CLASS[size]}` : '';
   if (id) {
-    return `        <button type="button" class="icon-card token-name" title="Click to copy" data-token="#${id}">\n          <span class="icon-card__border">\n            <svg class="icon${sizeCls}" aria-hidden="true">\n              <use href="assets/icons/sprite.svg#${id}"></use>\n            </svg>\n          </span>\n          <span class="icon-card__name font-mono text-desktop-body-sm-500 text-gray-700">${name}</span>\n        </button>`;
+    return `        <button type="button" class="icon-card token-name ${ICON_CARD}" title="Click to copy" data-token="#${id}">\n          <span class="${ICON_MEDIA}">\n            <svg class="icon${sizeCls}" aria-hidden="true">\n              <use href="assets/icons/sprite.svg#${id}"></use>\n            </svg>\n          </span>\n          <span class="icon-card__name font-mono mud-desktop-body-sm-500 mud-text-gray-700">${name}</span>\n        </button>`;
   }
-  return `        <button type="button" class="icon-card icon-card--missing" title="Not yet exported to sprite.svg" aria-disabled="true">\n          <span class="icon-card__border icon-card__border--missing">\n            <svg class="icon${sizeCls}" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M6 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>\n          </span>\n          <span class="icon-card__name icon-card__name--missing font-mono text-desktop-body-sm-500 text-gray-400">${name}</span>\n        </button>`;
+  return `        <button type="button" class="icon-card icon-card--missing ${ICON_CARD}" title="Not yet exported to sprite.svg" aria-disabled="true">\n          <span class="${ICON_MEDIA_MISSING}">\n            <svg class="icon${sizeCls}" aria-hidden="true" focusable="false" viewBox="0 0 24 24"><path d="M6 12h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>\n          </span>\n          <span class="icon-card__name icon-card__name--missing font-mono mud-desktop-body-sm-500 mud-text-gray-400">${name}</span>\n        </button>`;
 }
 
 function renderSection(title, intro, sizeSections) {
@@ -64,18 +72,9 @@ function renderSection(title, intro, sizeSections) {
     );
   }
   for (const s of sizeSections) {
-    parts.push(`        <div class="icons-size-block mt-40">`);
-    parts.push(
-      `          <div class="icons-size-block__title d-inline-flex align-items-center gap-12 mb-24">`,
-    );
-    parts.push(
-      `            <span class="icons-size-block__chip font-mono text-desktop-caption-md-500 text-gray-700 bg-gray-100">${s.size}px</span>`,
-    );
-    parts.push(
-      `            <span class="icons-size-block__caption text-desktop-body-sm text-gray-500">${SIZE_LABELS[s.size]}</span>`,
-    );
-    parts.push(`          </div>`);
-    parts.push(`          <div class="icons-grid">`);
+    parts.push(`        <div class="mud-mt-40">`);
+    parts.push(renderSizeLabel(s.size));
+    parts.push(`          <div class="${ICON_GRID}">`);
     for (const name of s.names) parts.push(renderCard(name, s.size));
     parts.push(`          </div>`);
     parts.push(`        </div>`);
