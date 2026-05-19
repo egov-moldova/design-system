@@ -19,7 +19,6 @@
   }
 }
 
-
 .tooltip--small .tooltip-inner {
   padding: var(--spacing-8) var(--spacing-12); 
 }
@@ -63,9 +62,6 @@
   transform: rotate(45deg);
 }
 
-// ================  POSITION: TOP 
-
-// TOP-LEFT
 .tooltip--top-left {
   .tooltip-arrow {
     bottom: 1px;
@@ -74,7 +70,6 @@
   }
 }
 
-// TOP-CENTER
 .tooltip--top-center {
   .tooltip-arrow {
     bottom: 1px;
@@ -84,7 +79,6 @@
   }
 }
 
-// TOP-RIGHT
 .tooltip--top-right {
   .tooltip-arrow {
     bottom: 1px;
@@ -93,11 +87,6 @@
   }
 }
 
-
-
-// =================== POSITION: BOTTOM 
-
-// BOTTOM-LEFT
 .tooltip--bottom-left {
   .tooltip-arrow {
     top: 1px;
@@ -106,7 +95,6 @@
   }
 }
 
-// BOTTOM-CENTER
 .tooltip--bottom-center {
   .tooltip-arrow {
     top: 1px;
@@ -116,7 +104,6 @@
   }
 }
 
-// BOTTOM-RIGHT
 .tooltip--bottom-right {
   .tooltip-arrow {
     top: 1px;
@@ -124,8 +111,6 @@
     border-radius: 3px 0 0 0;
   }
 }
-
-// ==================  POSITION: LEFT 
 
 .tooltip--left-center {
   .tooltip-arrow {
@@ -151,8 +136,6 @@
     border-radius: 0 3px 0 0;
   }
 }
-
-// ================== POSITION: RIGHT 
 
 .tooltip--right-center {
   .tooltip-arrow {

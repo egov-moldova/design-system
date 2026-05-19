@@ -188,7 +188,7 @@ body:has(.modal-overlay.modal-overlay.is-active) {
     gap: var(--spacing-8, 8px);
   }
 
-  // Fade-in / Fade-out
+  
   &--fade {
     opacity: 0;
     transform: none;
@@ -199,7 +199,7 @@ body:has(.modal-overlay.modal-overlay.is-active) {
     }
   }
 
-  // Slide-up (translateY)
+  
   &--slide {
     transform: translateY(40px);
     opacity: 0;
@@ -210,7 +210,7 @@ body:has(.modal-overlay.modal-overlay.is-active) {
     }
   }
 
-  // Zoom-in (scale)
+  
   &--zoom {
     transform: scale(var(--motion-scale-sm, 0.9));
     opacity: 0;
@@ -222,7 +222,6 @@ body:has(.modal-overlay.modal-overlay.is-active) {
   }
 }
 
-// Responsive adjustments
 @media (max-width: 680px) {
   .modal {
     border-radius: var(--border-radius-10, 10px);
@@ -231,7 +230,7 @@ body:has(.modal-overlay.modal-overlay.is-active) {
       flex-direction: column-reverse;
       align-items: stretch;
 
-      .btn {
+      .mud-btn {
         width: 100%;
         text-align: center;
       }

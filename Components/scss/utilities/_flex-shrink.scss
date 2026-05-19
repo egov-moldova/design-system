@@ -1,11 +1,12 @@
 @use 'sass:map';
 @use '../abstracts/variables' as vars;
 @use '../abstracts/mixins/media' as media;
+@use '../abstracts/mud-prefix' as mud;
 
 $flex-shrink-values: (0, 1);
 
 @each $value in $flex-shrink-values {
-  .flex-shrink-#{$value} {
+  .#{mud.mud-class('flex-shrink-#{$value}')} {
     flex-shrink: $value !important;
   }
 }
@@ -13,7 +14,7 @@ $flex-shrink-values: (0, 1);
 @each $breakpoint in map.keys(vars.$breakpoints) {
   @include media.media-breakpoint-up($breakpoint, vars.$breakpoints) {
     @each $value in $flex-shrink-values {
-      .flex-shrink-#{$breakpoint}-#{$value} {
+      .#{mud.mud-class('flex-shrink-#{$breakpoint}-#{$value}')} {
         flex-shrink: $value !important;
       }
     }

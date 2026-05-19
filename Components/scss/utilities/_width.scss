@@ -1,4 +1,7 @@
+@use 'sass:map';
 @use '../abstracts/mixins/media' as media;
+@use '../abstracts/mud-prefix' as mud;
+@use '../abstracts/variables' as vars;
 
 $width-scale: (
   25: 25%,
@@ -10,29 +13,57 @@ $width-scale: (
 );
 
 @each $key, $value in $width-scale {
-  .w-#{$key} {
+  .#{mud.mud-class('w-#{$key}')} {
     width: $value;
   }
 }
 
-@each $breakpoint, $bp-value in (
-  xs: 480px,
-  sm: 576px,
-  md: 768px,
-  lg: 992px,
-  xl: 1200px
-) {
-  @include media.media-breakpoint-up($breakpoint, (
-    xs: 480px,
-    sm: 576px,
-    md: 768px,
-    lg: 992px,
-    xl: 1200px
-  )) {
+@each $breakpoint in map.keys(vars.$breakpoints) {
+  @include media.media-breakpoint-up($breakpoint, vars.$breakpoints) {
     @each $key, $value in $width-scale {
-      .w-#{$breakpoint}-#{$key} {
+      .#{mud.mud-class('w-#{$breakpoint}-#{$key}')} {
         width: $value;
       }
     }
+  }
+}
+
+.#{mud.mud-class('w-auto')} {
+  width: auto !important;
+}
+
+.#{mud.mud-class('w-full')} {
+  width: 100% !important;
+}
+
+.#{mud.mud-class('w-screen')} {
+  width: 100vw !important;
+}
+
+.#{mud.mud-class('min-w-0')} {
+  min-width: 0 !important;
+}
+
+.#{mud.mud-class('min-w-full')} {
+  min-width: 100% !important;
+}
+
+.#{mud.mud-class('truncate')} {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+$max-w-scale: (
+  sm: map.get(vars.$container-max-widths, sm),
+  md: map.get(vars.$container-max-widths, md),
+  lg: map.get(vars.$container-max-widths, lg),
+  xl: map.get(vars.$container-max-widths, xl),
+  xxl: map.get(vars.$container-max-widths, xxl)
+);
+
+@each $key, $value in $max-w-scale {
+  .#{mud.mud-class('max-w-#{$key}')} {
+    max-width: $value !important;
   }
 }

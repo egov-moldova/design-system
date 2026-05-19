@@ -7,7 +7,8 @@
   <title>Date Picker Preview</title>
   <script src="js/input-date.js" defer></script>
   <script src="js/input-date-picker.js" defer></script>
-  <link rel="stylesheet" href="css/main.css" />
+    <script src="js/include-head-assets.js"></script>
+    <link rel="stylesheet" href="css/main.css" />
   <script src="js/include-header.js" defer></script>
   <script src="js/include-footer.js" defer></script>
   <script src="js/toggler.js" defer></script>
@@ -20,36 +21,36 @@
 <body>
   <div id="site-header"></div>
 
-  <div class="container py-56">
-    <div class="row">
-      <div class="col-sm-7">
+  <div class="mud-container mud-py-56">
+    <div class="mud-row">
+      <div class="mud-col-sm-7">
         <h1>Date Picker</h1>
-        <p class="text-gray-400">
+        <p class="mud-text-gray-400">
           Date Picker is an interactive component that allows users to select a date (and optionally time) from a visual
           calendar interface. It simplifies the process of choosing dates, improves accuracy, and ensures consistency in
           formatting.
         </p>
       </div>
     </div>
-    <div class="mt-56 border-bottom-1 border-bottom-solid border-gray-200">
+    <div class="mud-mt-56 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
       <h2>Date Input</h2>
     </div>
-    <div class="row">
-      <div class="col-6 col-md-8 text-gray-400 mt-56 mb-32">
+    <div class="mud-row">
+      <div class="mud-col-6 mud-col-md-8 mud-text-gray-400 mud-mt-56 mud-mb-32">
         Additional information about the Date Input component can be accessed through the provided
         <a href="https://www.figma.com/design/doJ7tDY0PlQ0PqMgbpFVIC/Components?node-id=470-32032"
-          class="text-blue-sky-600">Figma link</a>.
+          class="mud-text-blue-sky-600">Figma link</a>.
       </div>
     </div>
-    <!-- Date Input -->
-    <div class="row">
-      <div class="col-12 col-sm-6 col-lg-3">
+    
+    <div class="mud-row">
+      <div class="mud-col-12 mud-col-sm-6 mud-col-lg-3">
         <div class="date-picker__field" data-date-picker data-type="default" data-open="false" data-year="2025" data-month="0" data-selected="2025-01-11" data-today="2025-01-07">
           <div class="input-group input-date-wrapper">
             <label for="date-input-default">Label</label>
             <div class="input-wrapper">
               <input type="text" id="date-input-default" class="input js-date-picker-input" placeholder="DD/MM/YYYY" autocomplete="off" />
-              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle" aria-label="Open calendar" aria-controls="panel-date-input-default" aria-expanded="false">
+              <button type="button" class="input-icon right icon-calendar mud-border-0 mud-bg-transparent js-date-picker-toggle" aria-label="Open calendar" aria-controls="panel-date-input-default" aria-expanded="false">
                 <svg class="icon medium" aria-hidden="true">
                   <use href="assets/icons/sprite.svg#icon-calendar"></use>
                 </svg>
@@ -89,17 +90,17 @@
       </div>
     </div>
 
-    <!-- Breakpoints -->
-    <div class="row">
-      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+    
+    <div class="mud-row">
+      <div class="mud-col-12 mud-mt-56 mud-mb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
         <h2>Breakpoints</h2>
       </div>
     </div>
-    <div class="row row-gap-32">
-      <div class="col-12 col-lg-8">
-        <div class="row row-gap-32">
-          <div class="col-12 col-lg-6">
-            <div class="text-body-sm-500 mb-12">Desktop</div>
+    <div class="mud-row mud-row-gap-32">
+      <div class="mud-col-12 mud-col-lg-8">
+        <div class="mud-row mud-row-gap-32">
+          <div class="mud-col-12 mud-col-lg-6">
+            <div class="mud-type-body-sm-500 mud-mb-12">Desktop</div>
             <div class="date-picker__field" data-date-picker data-type="default" data-open="false" data-year="2025"
               data-month="0" data-selected="2025-01-11" data-today="2025-01-07">
               <div class="input-group input-date-wrapper">
@@ -107,7 +108,7 @@
                 <div class="input-wrapper">
                   <input type="text" id="date-breakpoint-desktop" class="input js-date-picker-input"
                     placeholder="DD/MM/YYYY" autocomplete="off" />
-                  <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+                  <button type="button" class="input-icon right icon-calendar mud-border-0 mud-bg-transparent js-date-picker-toggle"
                     aria-label="Open calendar" aria-controls="panel-breakpoint-desktop" aria-expanded="true">
                     <svg class="icon medium" aria-hidden="true">
                       <use href="assets/icons/sprite.svg#icon-calendar"></use>
@@ -147,8 +148,8 @@
             </div>
           </div>
 
-          <div class="col-12 col-lg-6">
-            <div class="text-body-sm-500 mb-12">Tablet</div>
+          <div class="mud-col-12 mud-col-lg-6">
+            <div class="mud-type-body-sm-500 mud-mb-12">Tablet</div>
             <div class="date-picker__field" data-date-picker data-type="default" data-open="false" data-year="2025"
               data-month="0" data-selected="2025-01-11" data-today="2025-01-07">
               <div class="input-group input-date-wrapper">
@@ -156,7 +157,7 @@
                 <div class="input-wrapper">
                   <input type="text" id="date-breakpoint-tablet" class="input js-date-picker-input" placeholder="DD/MM/YYYY"
                     autocomplete="off" />
-                  <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+                  <button type="button" class="input-icon right icon-calendar mud-border-0 mud-bg-transparent js-date-picker-toggle"
                     aria-label="Open calendar" aria-controls="panel-breakpoint-tablet" aria-expanded="true">
                     <svg class="icon medium" aria-hidden="true">
                       <use href="assets/icons/sprite.svg#icon-calendar"></use>
@@ -196,7 +197,7 @@
             </div>
           </div>
 
-          <div class="col-12 text-gray-400">
+          <div class="mud-col-12 mud-text-gray-400">
             The Date Picker can adapt to different mobile contexts by appearing either as a dropdown anchored to the input
             field or as a full-width bottom sheet modal. The dropdown variant is useful for quick selections, while the
             bottom sheet provides a more focused and accessible experience for date input.
@@ -204,8 +205,8 @@
         </div>
       </div>
 
-      <div class="col-12 col-lg-4">
-        <div class="text-body-sm-500 mb-12">Mobile bottom sheet</div>
+      <div class="mud-col-12 mud-col-lg-4">
+        <div class="mud-type-body-sm-500 mud-mb-12">Mobile bottom sheet</div>
         <div class="bottom-sheet bottom-sheet--static" aria-hidden="false" data-date-picker data-type="advanced" data-open="false" data-year="2025" data-month="0" data-selected="2025-01-11" data-today="2025-01-07">
           <div class="bottom-sheet__overlay"></div>
           <div class="bottom-sheet__panel">
@@ -262,15 +263,15 @@
         </div>
       </div>
     </div>
-    <!-- Types -->
-    <div class="row">
-      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+    
+    <div class="mud-row">
+      <div class="mud-col-12 mud-mt-56 mud-mb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
         <h2>Types</h2>
       </div>
     </div>
-    <div class="row row-gap-32">
-      <div class="col-12 col-lg-4">
-        <div class="text-body-sm-500 mb-12">Default</div>
+    <div class="mud-row mud-row-gap-32">
+      <div class="mud-col-12 mud-col-lg-4">
+        <div class="mud-type-body-sm-500 mud-mb-12">Default</div>
         <div class="date-picker__field" data-date-picker data-type="default" data-open="false" data-year="2025"
           data-month="0" data-selected="2025-01-11" data-today="2025-01-07">
           <div class="input-group input-date-wrapper">
@@ -278,7 +279,7 @@
             <div class="input-wrapper">
               <input type="text" id="date-type-default" class="input js-date-picker-input" placeholder="DD/MM/YYYY"
                 autocomplete="off" />
-              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+              <button type="button" class="input-icon right icon-calendar mud-border-0 mud-bg-transparent js-date-picker-toggle"
                 aria-label="Open calendar" aria-controls="panel-type-default" aria-expanded="true">
                 <svg class="icon medium" aria-hidden="true">
                   <use href="assets/icons/sprite.svg#icon-calendar"></use>
@@ -318,8 +319,8 @@
         </div>
       </div>
 
-      <div class="col-12 col-lg-4">
-        <div class="text-body-sm-500 mb-12">Advanced</div>
+      <div class="mud-col-12 mud-col-lg-4">
+        <div class="mud-type-body-sm-500 mud-mb-12">Advanced</div>
         <div class="date-picker__field" data-date-picker data-type="advanced" data-open="false" data-year="2025"
           data-month="0" data-selected="2025-01-11" data-today="2025-01-07">
           <div class="input-group input-date-wrapper">
@@ -327,7 +328,7 @@
             <div class="input-wrapper">
               <input type="text" id="date-type-advanced" class="input js-date-picker-input" placeholder="DD/MM/YYYY"
                 autocomplete="off" />
-              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+              <button type="button" class="input-icon right icon-calendar mud-border-0 mud-bg-transparent js-date-picker-toggle"
                 aria-label="Open calendar" aria-controls="panel-type-advanced" aria-expanded="true">
                 <svg class="icon medium" aria-hidden="true">
                   <use href="assets/icons/sprite.svg#icon-calendar"></use>
@@ -388,8 +389,8 @@
         </div>
       </div>
 
-      <div class="col-12 col-lg-4">
-        <div class="text-body-sm-500 mb-12">Date Range</div>
+      <div class="mud-col-12 mud-col-lg-4">
+        <div class="mud-type-body-sm-500 mud-mb-12">Date Range</div>
         <div class="date-picker__field" data-date-picker data-type="range" data-open="false" data-year="2025"
           data-month="0" data-range-start="2025-01-18" data-range-end="2025-01-22" data-today="2025-01-07">
           <div class="input-group input-date-wrapper">
@@ -397,7 +398,7 @@
             <div class="input-wrapper">
               <input type="text" id="date-type-range" class="input js-date-picker-input"
                 placeholder="DD/MM/YYYY - DD/MM/YYYY" autocomplete="off" />
-              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+              <button type="button" class="input-icon right icon-calendar mud-border-0 mud-bg-transparent js-date-picker-toggle"
                 aria-label="Open calendar" aria-controls="panel-type-range" aria-expanded="true">
                 <svg class="icon medium" aria-hidden="true">
                   <use href="assets/icons/sprite.svg#icon-calendar"></use>
@@ -438,15 +439,15 @@
       </div>
     </div>
 
-    <!-- States -->
-    <div class="row">
-      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+    
+    <div class="mud-row">
+      <div class="mud-col-12 mud-mt-56 mud-mb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
         <h2>States</h2>
       </div>
     </div>
-    <div class="row row-gap-32">
-      <div class="col-12 col-lg-4">
-        <div class="text-body-sm-500 mb-12">Default</div>
+    <div class="mud-row mud-row-gap-32">
+      <div class="mud-col-12 mud-col-lg-4">
+        <div class="mud-type-body-sm-500 mud-mb-12">Default</div>
         <div class="date-picker__days date-picker__days--states">
           <div class="date-picker__day">1</div>
           <div class="date-picker__day">2</div>
@@ -457,8 +458,8 @@
           <div class="date-picker__day">7</div>
         </div>
       </div>
-      <div class="col-12 col-lg-4">
-        <div class="text-body-sm-500 mb-12">Hover</div>
+      <div class="mud-col-12 mud-col-lg-4">
+        <div class="mud-type-body-sm-500 mud-mb-12">Hover</div>
         <div class="date-picker__days date-picker__days--states">
           <div class="date-picker__day">1</div>
           <div class="date-picker__day">2</div>
@@ -469,8 +470,8 @@
           <div class="date-picker__day">7</div>
         </div>
       </div>
-      <div class="col-12 col-lg-4">
-        <div class="text-body-sm-500 mb-12">Active</div>
+      <div class="mud-col-12 mud-col-lg-4">
+        <div class="mud-type-body-sm-500 mud-mb-12">Active</div>
         <div class="date-picker__days date-picker__days--states">
           <div class="date-picker__day">1</div>
           <div class="date-picker__day">2</div>
@@ -481,8 +482,8 @@
           <div class="date-picker__day">7</div>
         </div>
       </div>
-      <div class="col-12 col-lg-4">
-        <div class="text-body-sm-500 mb-12">Current</div>
+      <div class="mud-col-12 mud-col-lg-4">
+        <div class="mud-type-body-sm-500 mud-mb-12">Current</div>
         <div class="date-picker__days date-picker__days--states">
           <div class="date-picker__day">1</div>
           <div class="date-picker__day">2</div>
@@ -493,8 +494,8 @@
           <div class="date-picker__day">7</div>
         </div>
       </div>
-      <div class="col-12 col-lg-4">
-        <div class="text-body-sm-500 mb-12">Inactive</div>
+      <div class="mud-col-12 mud-col-lg-4">
+        <div class="mud-type-body-sm-500 mud-mb-12">Inactive</div>
         <div class="date-picker__days date-picker__days--states">
           <div class="date-picker__day is-outside">1</div>
           <div class="date-picker__day is-outside">2</div>
@@ -505,8 +506,8 @@
           <div class="date-picker__day">7</div>
         </div>
       </div>
-      <div class="col-12 col-lg-4">
-        <div class="text-body-sm-500 mb-12">Range</div>
+      <div class="mud-col-12 mud-col-lg-4">
+        <div class="mud-type-body-sm-500 mud-mb-12">Range</div>
         <div class="date-picker__days date-picker__days--states">
           <div class="date-picker__day">1</div>
           <div class="date-picker__day">2</div>
@@ -517,8 +518,8 @@
           <div class="date-picker__day">7</div>
         </div>
       </div>
-      <div class="col-12 col-lg-4">
-        <div class="text-body-sm-500 mb-12">Range Middle</div>
+      <div class="mud-col-12 mud-col-lg-4">
+        <div class="mud-type-body-sm-500 mud-mb-12">Range Middle</div>
         <div class="date-picker__days date-picker__days--states">
           <div class="date-picker__day">1</div>
           <div class="date-picker__day is-in-range">2</div>
@@ -529,8 +530,8 @@
           <div class="date-picker__day">7</div>
         </div>
       </div>
-      <div class="col-12 col-lg-4">
-        <div class="text-body-sm-500 mb-12">Range End</div>
+      <div class="mud-col-12 mud-col-lg-4">
+        <div class="mud-type-body-sm-500 mud-mb-12">Range End</div>
         <div class="date-picker__days date-picker__days--states">
           <div class="date-picker__day">1</div>
           <div class="date-picker__day">2</div>
@@ -541,8 +542,8 @@
           <div class="date-picker__day">7</div>
         </div>
       </div>
-      <div class="col-12 col-lg-4">
-        <div class="text-body-sm-500 mb-12">Focus</div>
+      <div class="mud-col-12 mud-col-lg-4">
+        <div class="mud-type-body-sm-500 mud-mb-12">Focus</div>
         <div class="date-picker__days date-picker__days--states">
           <div class="date-picker__day">1</div>
           <div class="date-picker__day is-focus">2</div>
@@ -555,14 +556,14 @@
       </div>
     </div>
 
-    <!-- Behavior -->
-    <div class="row">
-      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+    
+    <div class="mud-row">
+      <div class="mud-col-12 mud-mt-56 mud-mb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
         <h2>Behavior</h2>
       </div>
     </div>
-    <div class="row row-gap-32">
-      <div class="col-12 col-lg-4">
+    <div class="mud-row mud-row-gap-32">
+      <div class="mud-col-12 mud-col-lg-4">
         <div class="date-picker__field" data-date-picker data-type="advanced" data-open="false" data-view="month"
           data-year="2025" data-month="0">
           <div class="input-group input-date-wrapper">
@@ -570,7 +571,7 @@
             <div class="input-wrapper">
               <input type="text" id="date-behavior-month" class="input js-date-picker-input" placeholder="DD/MM/YYYY"
                 autocomplete="off" />
-              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+              <button type="button" class="input-icon right icon-calendar mud-border-0 mud-bg-transparent js-date-picker-toggle"
                 aria-label="Open calendar" aria-controls="panel-behavior-month" aria-expanded="true">
                 <svg class="icon medium" aria-hidden="true">
                   <use href="assets/icons/sprite.svg#icon-calendar"></use>
@@ -631,7 +632,7 @@
         </div>
       </div>
 
-      <div class="col-12 col-lg-4">
+      <div class="mud-col-12 mud-col-lg-4">
         <div class="date-picker__field" data-date-picker data-type="advanced" data-open="false" data-view="year"
           data-year="2025" data-month="0">
           <div class="input-group input-date-wrapper">
@@ -639,7 +640,7 @@
             <div class="input-wrapper">
               <input type="text" id="date-behavior-year" class="input js-date-picker-input" placeholder="DD/MM/YYYY"
                 autocomplete="off" />
-              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+              <button type="button" class="input-icon right icon-calendar mud-border-0 mud-bg-transparent js-date-picker-toggle"
                 aria-label="Open calendar" aria-controls="panel-behavior-year" aria-expanded="true">
                 <svg class="icon medium" aria-hidden="true">
                   <use href="assets/icons/sprite.svg#icon-calendar"></use>
@@ -700,7 +701,7 @@
         </div>
       </div>
 
-      <div class="col-12 col-lg-4">
+      <div class="mud-col-12 mud-col-lg-4">
         <div class="date-picker__field" data-date-picker data-type="advanced" data-open="false" data-year="2025"
           data-month="0" data-selected="2025-01-11">
           <div class="input-group input-date-wrapper">
@@ -708,7 +709,7 @@
             <div class="input-wrapper">
               <input type="text" id="date-behavior-day" class="input js-date-picker-input" placeholder="DD/MM/YYYY"
                 autocomplete="off" />
-              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+              <button type="button" class="input-icon right icon-calendar mud-border-0 mud-bg-transparent js-date-picker-toggle"
                 aria-label="Open calendar" aria-controls="panel-behavior-day" aria-expanded="true">
                 <svg class="icon medium" aria-hidden="true">
                   <use href="assets/icons/sprite.svg#icon-calendar"></use>
@@ -769,8 +770,8 @@
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-12 col-md-8 text-gray-400 mt-24">
+    <div class="mud-row">
+      <div class="mud-col-12 mud-col-md-8 mud-text-gray-400 mud-mt-24">
         Selecting the month name in the header opens a month selection view, displaying all 12 months in a grid format.
         <br />
         <br />
@@ -778,8 +779,8 @@
         selection.
       </div>
     </div>
-    <div class="row row-gap-32 mt-32">
-      <div class="col-12 col-lg-4">
+    <div class="mud-row mud-row-gap-32 mud-mt-32">
+      <div class="mud-col-12 mud-col-lg-4">
         <div class="date-picker__field" data-date-picker data-type="advanced" data-open="false" data-view="year"
           data-year="2025" data-month="0">
           <div class="input-group input-date-wrapper">
@@ -787,7 +788,7 @@
             <div class="input-wrapper">
               <input type="text" id="date-behavior-year-range" class="input js-date-picker-input"
                 placeholder="DD/MM/YYYY" autocomplete="off" />
-              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+              <button type="button" class="input-icon right icon-calendar mud-border-0 mud-bg-transparent js-date-picker-toggle"
                 aria-label="Open calendar" aria-controls="panel-behavior-year-range" aria-expanded="true">
                 <svg class="icon medium" aria-hidden="true">
                   <use href="assets/icons/sprite.svg#icon-calendar"></use>
@@ -847,7 +848,7 @@
           </div>
         </div>
       </div>
-      <div class="col-12 col-lg-4">
+      <div class="mud-col-12 mud-col-lg-4">
         <div class="date-picker__field" data-date-picker data-type="advanced" data-open="false" data-view="year"
           data-year="2025" data-month="0">
           <div class="input-group input-date-wrapper">
@@ -855,7 +856,7 @@
             <div class="input-wrapper">
               <input type="text" id="date-behavior-year-range-2" class="input js-date-picker-input"
                 placeholder="DD/MM/YYYY" autocomplete="off" />
-              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+              <button type="button" class="input-icon right icon-calendar mud-border-0 mud-bg-transparent js-date-picker-toggle"
                 aria-label="Open calendar" aria-controls="panel-behavior-year-range-2" aria-expanded="true">
                 <svg class="icon medium" aria-hidden="true">
                   <use href="assets/icons/sprite.svg#icon-calendar"></use>
@@ -915,7 +916,7 @@
           </div>
         </div>
       </div>
-      <div class="col-12 col-lg-4">
+      <div class="mud-col-12 mud-col-lg-4">
         <div class="date-picker__field" data-date-picker data-type="advanced" data-open="false" data-view="year"
           data-year="2025" data-month="0">
           <div class="input-group input-date-wrapper">
@@ -923,7 +924,7 @@
             <div class="input-wrapper">
               <input type="text" id="date-behavior-year-range-3" class="input js-date-picker-input"
                 placeholder="DD/MM/YYYY" autocomplete="off" />
-              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+              <button type="button" class="input-icon right icon-calendar mud-border-0 mud-bg-transparent js-date-picker-toggle"
                 aria-label="Open calendar" aria-controls="panel-behavior-year-range-3" aria-expanded="true">
                 <svg class="icon medium" aria-hidden="true">
                   <use href="assets/icons/sprite.svg#icon-calendar"></use>
@@ -984,8 +985,8 @@
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-12 col-md-8 text-gray-400 mt-24">
+    <div class="mud-row">
+      <div class="mud-col-12 mud-col-md-8 mud-text-gray-400 mud-mt-24">
         Tapping the year label (e.g., 2025) within the month view transitions to a year selection view, which shows a
         range of years.
         <br />
@@ -995,14 +996,14 @@
       </div>
     </div>
 
-    <!-- Dismissal -->
-    <div class="row">
-      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+    
+    <div class="mud-row">
+      <div class="mud-col-12 mud-mt-56 mud-mb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
         <h2>Dismissal</h2>
       </div>
     </div>
-    <div class="row row-gap-32">
-      <div class="col-12 col-lg-4">
+    <div class="mud-row mud-row-gap-32">
+      <div class="mud-col-12 mud-col-lg-4">
         <div class="date-picker__field" data-date-picker data-type="default" data-open="false" data-year="2025"
           data-month="0" data-selected="2025-01-11">
           <div class="input-group input-date-wrapper">
@@ -1010,7 +1011,7 @@
             <div class="input-wrapper">
               <input type="text" id="date-dismissal-complete" class="input js-date-picker-input"
                 placeholder="DD/MM/YYYY" autocomplete="off" />
-              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+              <button type="button" class="input-icon right icon-calendar mud-border-0 mud-bg-transparent js-date-picker-toggle"
                 aria-label="Open calendar" aria-controls="panel-dismissal-complete" aria-expanded="true">
                 <svg class="icon medium" aria-hidden="true">
                   <use href="assets/icons/sprite.svg#icon-calendar"></use>
@@ -1048,13 +1049,13 @@
             </div>
           </div>
         </div>
-        <p class="text-gray-400 mt-16">
+        <p class="mud-text-gray-400 mud-mt-16">
           When a user selects a complete date (e.g., day, month, and year), the date picker automatically closes to
           confirm the selection.
         </p>
       </div>
 
-      <div class="col-12 col-lg-4">
+      <div class="mud-col-12 mud-col-lg-4">
         <div class="date-picker__field" data-date-picker data-type="default" data-open="false" data-year="2025"
           data-month="0" data-selected="2025-01-11">
           <div class="input-group input-date-wrapper">
@@ -1062,7 +1063,7 @@
             <div class="input-wrapper">
               <input type="text" id="date-dismissal-outside" class="input js-date-picker-input" placeholder="DD/MM/YYYY"
                 autocomplete="off" />
-              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+              <button type="button" class="input-icon right icon-calendar mud-border-0 mud-bg-transparent js-date-picker-toggle"
                 aria-label="Open calendar" aria-controls="panel-dismissal-outside" aria-expanded="true">
                 <svg class="icon medium" aria-hidden="true">
                   <use href="assets/icons/sprite.svg#icon-calendar"></use>
@@ -1100,13 +1101,13 @@
             </div>
           </div>
         </div>
-        <p class="text-gray-400 mt-16">
+        <p class="mud-text-gray-400 mud-mt-16">
           Clicking or tapping outside the date picker closes it without applying a new value. This preserves the
           previously selected or entered date.
         </p>
       </div>
 
-      <div class="col-12 col-lg-4">
+      <div class="mud-col-12 mud-col-lg-4">
         <div class="date-picker__field" data-date-picker data-type="default" data-open="false" data-year="2025"
           data-month="0" data-selected="2025-01-11">
           <div class="input-group input-date-wrapper">
@@ -1114,7 +1115,7 @@
             <div class="input-wrapper">
               <input type="text" id="date-dismissal-escape" class="input js-date-picker-input" placeholder="DD/MM/YYYY"
                 autocomplete="off" />
-              <button type="button" class="input-icon right icon-calendar border-0 bg-transparent js-date-picker-toggle"
+              <button type="button" class="input-icon right icon-calendar mud-border-0 mud-bg-transparent js-date-picker-toggle"
                 aria-label="Open calendar" aria-controls="panel-dismissal-escape" aria-expanded="true">
                 <svg class="icon medium" aria-hidden="true">
                   <use href="assets/icons/sprite.svg#icon-calendar"></use>
@@ -1152,7 +1153,7 @@
             </div>
           </div>
         </div>
-        <p class="text-gray-400 mt-16">
+        <p class="mud-text-gray-400 mud-mt-16">
           Pressing the Escape key dismisses the date picker immediately, canceling any in-progress selection.
         </p>
       </div>
@@ -1162,11 +1163,4 @@
 </body>
 
 </html>
-
-
-
-
-
-
-
 

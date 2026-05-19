@@ -1,7 +1,7 @@
 @use '../abstracts/mixins/buttons' as buttons;
+@use '../abstracts/mud-prefix' as mud;
 @use 'sass:map' as map;
 
-// ============= Variante butoane - Filled 
 @include buttons.button-variant(
   "primary",
   var(--blue-sky-600, #0058D2),
@@ -53,7 +53,6 @@
   var(--white, #ffffff)
 );
 
-// =============  Variante butoane - Outlined 
 @include buttons.button-variant(
   "outline-primary",
   transparent,
@@ -104,7 +103,6 @@
   var(--red-800, #9C0000)
 );
 
-// ============ Variante butoane - Text 
 @include buttons.button-variant(
   "text-primary",
   transparent,
@@ -155,7 +153,6 @@
   var(--red-300, #FDA19B)
 );
 
-// ==============  Dimensiuni butoane 
 $button-sizes: (
   sm: (padding: var(--spacing-4, 0.25rem) var(--spacing-12, 0.5rem), font-size: 14px),
   md: (padding: var(--spacing-8, 0.5rem) var(--spacing-16, 1rem), font-size: 16px),
@@ -163,29 +160,27 @@ $button-sizes: (
 );
 
 @each $size, $values in $button-sizes {
-  .btn.btn-#{$size} {
+  .#{mud.mud-class('btn')}.#{mud.mud-class('btn-' + $size)} {
     padding: map.get($values, padding);
     font-size: map.get($values, font-size);
   }
 }
 
-// ============ Forme butoane 
-.btn-pill { border-radius: 9999px; }
-.btn-rounded { border-radius: var(--border-radius-full, 9999px); }
+.#{mud.mud-class('btn-pill')} { border-radius: 9999px; }
+.#{mud.mud-class('btn-rounded')} { border-radius: var(--border-radius-full, 9999px); }
 
-// ============  Loading - (FIXED & NORMALIZED) 
-.btn-loading {
+.#{mud.mud-class('btn-loading')} {
   position: relative;
   pointer-events: none;
   height: var(--spacing-48);
   width: 92px;
 }
 
-.btn-loading .btn-label {
+.#{mud.mud-class('btn-loading')} .#{mud.mud-class('btn-label')} {
   visibility: hidden;
 }
 
-.btn-loading::after {
+.#{mud.mud-class('btn-loading')}::after {
   content: '';
   position: absolute; 
 
@@ -200,14 +195,12 @@ $button-sizes: (
   animation: spin 0.75s linear infinite;
 }
 
-
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
 
-// ============= Focus implicit 
-.btn:focus:not(:disabled) {
+.#{mud.mud-class('btn')}:focus:not(:disabled) {
   outline: 2px solid var(--white, #ffffff);
   box-shadow: 0 0 0 4px var(--focus-ring, var(--blue-sky-500, #3379DB));
 }

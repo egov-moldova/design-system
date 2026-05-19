@@ -1,0 +1,6 @@
+@use '../abstracts/mud-prefix' as mud;
+
+.#{mud.mud-class('font-regular')}   { font-weight: 400 !important; }
+.#{mud.mud-class('font-medium')}    { font-weight: 500 !important; }
+.#{mud.mud-class('font-semibold')}  { font-weight: 600 !important; }
+.#{mud.mud-class('font-bold')}      { font-weight: 700 !important; }

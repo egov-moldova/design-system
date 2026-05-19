@@ -1,8 +1,9 @@
 @use 'sass:map' as map;
+@use '../mud-prefix' as mud;
 
 @mixin make-container($max-widths, $breakpoints) {
   @at-root {
-    .container {
+    .#{mud.mud-class('container')} {
       width: 100%;
       margin-left: auto;
       margin-right: auto;
@@ -12,8 +13,9 @@
 
       @each $bp, $max in $max-widths {
         @if $bp != default {
+          // `var(--breakpoint-*)` in @media is not reliably applied; use Sass map for min-width.
           @media (min-width: map.get($breakpoints, $bp)) {
-            max-width: $max;
+            max-width: var(--container-max-width-#{$bp});
           }
         } @else {
           max-width: $max;
@@ -21,7 +23,7 @@
       }
     }
 
-    .container-fluid {
+    .#{mud.mud-class('container-fluid')} {
       width: 100%;
       margin-left: auto;
       margin-right: auto;

@@ -1,4 +1,6 @@
+@use 'sass:map';
 @use '../abstracts/tokens' as tokens;
+@use '../abstracts/mud-prefix' as mud;
 
 :root {
   @each $key, $shadows in tokens.$drop-shadows {
@@ -7,7 +9,26 @@
 }
 
 @each $key, $value in tokens.$drop-shadows {
-  .drop-shadow-#{$key} {
+  .#{mud.mud-class('shadow-#{$key}')} {
     box-shadow: #{$value} !important;
   }
+}
+
+// Friendly aliases (token-backed; same values as numeric keys above).
+$shadow-aliases: (
+  'xs': 100,
+  'sm': 200,
+  'md': 300,
+  'lg': 400,
+  'xl': 500
+);
+
+@each $alias, $src in $shadow-aliases {
+  .#{mud.mud-class('shadow-#{$alias}')} {
+    box-shadow: #{map.get(tokens.$drop-shadows, $src)} !important;
+  }
+}
+
+.#{mud.mud-class('shadow-none')} {
+  box-shadow: none !important;
 }

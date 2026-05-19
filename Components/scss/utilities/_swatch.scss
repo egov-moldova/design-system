@@ -1,0 +1,104 @@
+@use '../abstracts/mud-prefix' as mud;
+
+// Rows that contain color ramp cells: `.mud-col` > `.mud-card[class*="mud-bg-"]` (no extra row class in HTML).
+// We intentionally do NOT depend on `.mud-color-swatch` so markup can use only utility classes.
+$row-color-ramp:
+  '[data-doc="colors"] .mud-doc-main .#{mud.mud-class('row')}:has(> .#{mud.mud-class('col')} > .#{mud.mud-class('card')}[class*="mud-bg-"])';
+
+// Shortcuts similar in spirit to Bootstrap stacks (compose once, reuse anywhere).
+.#{mud.mud-class('flex-center')} {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+// Color preview surface: any swatch tile inside the Colors doc.
+// We intentionally base this on `mud-bg-*` so markup doesn't need `.mud-color-swatch` anymore.
+[data-doc='colors'] .mud-doc-main .#{mud.mud-class('card')}[class*='mud-bg-'] {
+  box-sizing: border-box;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+// Alpha tile layout (used in the “Alpha” section): we identify it by aspect ratio `mud-ar-3-1`.
+[data-doc='colors'] .mud-doc-main .#{mud.mud-class('ar-3-1')} {
+  width: 100%;
+  max-width: none;
+  flex: unset;
+}
+
+// Ramp row: same `.mud-row` as everywhere; grid activates when direct children are `.mud-col` > swatch tiles.
+#{$row-color-ramp} {
+  display: grid !important;
+  grid-template-columns: repeat(10, minmax(0, 1fr));
+  gap: var(--spacing-24, 24px);
+  width: 100%;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  box-sizing: border-box;
+}
+
+@media (max-width: 1199.98px) {
+  #{$row-color-ramp} {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 575.98px) {
+  #{$row-color-ramp} {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+#{$row-color-ramp} > .#{mud.mud-class('col')} {
+  padding-left: 0;
+  padding-right: 0;
+  min-width: 0;
+}
+
+#{$row-color-ramp} > .#{mud.mud-class('col')}:has(> .#{mud.mud-class('card')}.#{mud.mud-class('ar-247-80')}) {
+  grid-column: span 2;
+}
+
+#{$row-color-ramp} > .#{mud.mud-class('col')} > .#{mud.mud-class('card')}[class*='mud-bg-']:not(.#{mud.mud-class('ar-247-80')}) {
+  width: 100%;
+  max-width: min(120px, 100%);
+  margin-inline: auto;
+}
+
+#{$row-color-ramp} > .#{mud.mud-class('col')}:has(> .#{mud.mud-class('card')}.#{mud.mud-class('ar-247-80')}) > .#{mud.mud-class('ar-247-80')} {
+  max-width: none;
+  width: 100%;
+}
+
+#{$row-color-ramp} .mud-desktop-body-sm-500 {
+  margin-bottom: 0;
+}
+
+[data-doc='colors'] .mud-doc-main .#{mud.mud-class('card')}[class*='mud-bg-'] {
+  cursor: pointer;
+  position: relative;
+}
+
+[data-doc='colors'] .mud-doc-main .#{mud.mud-class('card')}[class*='mud-bg-'].is-copied::after {
+  content: 'Copied';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  padding: var(--spacing-4, 4px) var(--spacing-8, 8px);
+  border-radius: var(--border-radius-6, 6px);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--green-800, #065f46);
+  background: var(--green-100, #e6f5ee);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+}
+

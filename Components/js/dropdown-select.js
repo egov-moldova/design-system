@@ -1,4 +1,4 @@
-/* custom-select.js — unificat: single, multi, searchable */
+
 (function () {
   const KEY = {
     DOWN: 'ArrowDown',
@@ -27,7 +27,7 @@
       this.docStaticFocus = root.dataset.docStaticFocus === 'true';
       this.docOpenDefault = root.dataset.docOpenDefault === 'true';
 
-      // Detect options
+      
       this.isMultiple = root.dataset.multiple === "true";
       this.isSearchable = root.dataset.searchable === "true";
       this.isRequired =
@@ -69,7 +69,7 @@
 
       this.wireSearchField();
 
-      // ARIA wiring
+      
       this.control.setAttribute('aria-haspopup', 'listbox');
       this.control.setAttribute('aria-expanded', 'false');
       this.options.forEach((opt, i) => {
@@ -89,7 +89,7 @@
         }
       }
 
-      // Stări explicite hover / focus (clase, ca în Figma)
+      
       this.control.addEventListener('mouseenter', () => {
         this.control.classList.add('select-control--state-hover');
       });
@@ -107,13 +107,13 @@
         }
       });
 
-      // Toggle dropdown
+      
       this.control.addEventListener('click', (e) => {
         e.preventDefault();
         this.toggle();
       });
 
-      // Keyboard navigation on control
+      
       this.control.addEventListener('keydown', (e) => {
         if ([KEY.DOWN, KEY.UP].includes(e.key)) {
           e.preventDefault();
@@ -125,7 +125,7 @@
         }
       });
 
-      // Keyboard on list
+      
       this.list.addEventListener('keydown', (e) => {
         if ([KEY.DOWN, KEY.UP, KEY.ENTER, KEY.ESC, KEY.HOME, KEY.END].includes(e.key)) {
           e.preventDefault();
@@ -143,7 +143,7 @@
         }
       });
 
-      // Click option
+      
       this.list.addEventListener('click', (e) => {
         const li = e.target.closest('.select-option');
         if (!li) return;
@@ -154,7 +154,7 @@
         }
       });
 
-      // Search input
+      
       if (this.isSearchable && this.searchInput) {
         this.searchInput.addEventListener('input', (e) => {
           this.filterText = e.target.value.trim().toLowerCase();
@@ -168,13 +168,13 @@
         });
       }
 
-      // Click outside
+      
       document.addEventListener('click', (e) => {
         if (!this.open) return;
         if (!this.root.contains(e.target)) this.closeDropdown(true);
       });
 
-      // Resize/scroll
+      
       window.addEventListener('resize', () => { if (this.open) this.reposition(); });
       window.addEventListener('scroll', () => { if (this.open) this.reposition(); }, true);
 

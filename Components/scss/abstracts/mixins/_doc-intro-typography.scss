@@ -11,7 +11,6 @@
   color: var(--color-text-base-tertiary, var(--gray-500, #757575));
 }
 
-/// Desktop/Body/Large — section intros (Figma text styles)
 @mixin doc-body-large {
   font-family: var(
     --font-family-primary-font,
@@ -31,4 +30,23 @@
   line-height: var(--line-height-lh-24, 24px);
   letter-spacing: -0.01em;
   font-weight: var(--font-weight-fw-medium, 500);
+}
+
+/// Figma: Documentation / Extra Large — JetBrains Mono (typography.html / tokens).
+/// @param {Boolean} $use-inverse-default-color When false, omit `color` so the caller can use `inherit` (e.g. swatches with `text-white` / `text-gray-900`).
+@mixin documentation-mono-xl($use-inverse-default-color: true) {
+  font-family: var(--font-family-mono, 'JetBrains Mono', ui-monospace, monospace);
+  font-size: var(--font-size-fs-20, 20px);
+  font-style: normal;
+  font-weight: var(--font-weight-fw-medium, 500);
+  line-height: var(--line-height-lh-28, 28px);
+  letter-spacing: -0.2px;
+  text-align: center;
+
+  @if $use-inverse-default-color {
+    color: var(
+      --color-background-base-inverse-default,
+      var(--gray-900, #1e1e1e)
+    );
+  }
 }

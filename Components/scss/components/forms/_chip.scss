@@ -1,6 +1,5 @@
 @use '../../abstracts/tokens' as tokens;
 
-// ============== CHIP BASE 
 .chip {
   display: inline-flex;
   align-items: center;
@@ -36,7 +35,7 @@
     cursor: not-allowed;
   }
 
-  // ============ SELECTED STATE 
+  
   &.is-selected {
     background-color: var(--black);
     border-color: var(--black);
@@ -58,7 +57,7 @@
     }
   }
 
-  // ============ Avatar 
+  
   &:has(.chip__avatar) {
     background-color: var(--color-white, #fff);
     border-color: var(--gray-300);
@@ -89,7 +88,7 @@
     }
   }
 
-  // ==============  Icon 
+  
   &__icon {
     display: inline-flex;
     align-items: center;
@@ -97,14 +96,14 @@
     flex-shrink: 0; 
   }
 
-  // ==========  Label 
+  
   &__label {
     border: none;
     background-color: transparent;
     white-space: nowrap;
   }
 
-  // Badge
+  
   &:has(.chip__badge) {
     padding-right: var(--spacing-8, 8px);
   }
@@ -130,7 +129,7 @@
     }
   }
 
-  // =============  Close button 
+  
 
   &:has(.chip__close) {
     padding-right: var(--spacing-8, 8px);

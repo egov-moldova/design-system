@@ -1,7 +1,6 @@
 @use './input' as *;
 @use '../../abstracts/tokens' as tokens;
 
-// =============  Input variants
 @mixin input-variant($variant) {
   @include input-style($variant);
 }
@@ -16,7 +15,7 @@
     appearance: textfield;
   }
 
-  // Focus states
+  
   &:focus:not(:placeholder-shown) {
     border-color: var(--blue-sky-500);
   }
@@ -25,7 +24,7 @@
     border-color: var(--blue-sky-300);
   }
 
-  // Disabled
+  
   &:disabled {
     background-color: var(--gray-100);
     border-color: var(--gray-250);
@@ -35,7 +34,7 @@
     opacity: 0.7;
   }
 
-  // Read-only
+  
   &[readonly]:not(:disabled) {
     background-color: var(--gray-100);
     border-color: var(--gray-200);
@@ -55,7 +54,6 @@
 .input-number--destructive { @include input-variant(destructive); }
 .input-number--success     { @include input-variant(success); }
 
-// ===========  State: filled 
 .input-number--filled {
   background-color: var(--white);
   border-color: var(--gray-300);
@@ -66,7 +64,6 @@
   }
 }
 
-// ============== Wrapper pentru icon / flag / loader 
 .input-wrapper-number {
   position: relative;
   display: flex;
@@ -85,7 +82,7 @@
     padding-right: var(--spacing-40);  
   }
 
-  // Flag / Icon leading
+  
   .input-icon--flag {
     position: absolute;
     left: var(--spacing-8);
@@ -111,7 +108,7 @@
     }
   }
 
-  // Loading spinner
+  
   &.is-loading {
     .input-number {
       padding-right: var(--spacing-40);

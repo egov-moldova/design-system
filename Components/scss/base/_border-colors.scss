@@ -1,25 +1,24 @@
 @use '../abstracts/variables' as vars;
+@use '../abstracts/mud-prefix' as mud;
 @use 'sass:list';
 
-// Border color — palete normale
 @each $color, $shades in vars.$color-palettes {
   @if list.length($shades) > 0 {
     @each $shade in $shades {
-      .border-#{$color}-#{$shade} {
+      .#{mud.mud-class('border-#{$color}-#{$shade}')} {
         border-color: var(--#{$color}-#{$shade}) !important;
       }
     }
   } @else {
-    .border-#{$color} {
+    .#{mud.mud-class('border-#{$color}')} {
       border-color: var(--#{$color}) !important;
     }
   }
 }
 
-// Border color — culori alpha
 @each $color, $shades in vars.$alpha-palettes {
   @each $shade in $shades {
-    .border-#{$color}-#{$shade} {
+    .#{mud.mud-class('border-#{$color}-#{$shade}')} {
       border-color: var(--#{$color}-#{$shade}) !important;
     }
   }

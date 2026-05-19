@@ -6,7 +6,8 @@
   <title>Phone Numbers</title>
   <script src="js/search.js"></script>
   <script src="js/phone-input.js"></script>
-  <link rel="stylesheet" href="css/main.css" />
+    <script src="js/include-head-assets.js"></script>
+    <link rel="stylesheet" href="css/main.css" />
   <script src="js/include-header.js" defer></script>
   <script src="js/include-footer.js" defer></script>
   <script src="js/toggler.js" defer></script>
@@ -18,22 +19,22 @@
 <body>
   <div id="site-header"></div>
 
-<div class="container py-56">
-    <div class="row">
-        <div class="col-sm-7">
+<div class="mud-container mud-py-56">
+    <div class="mud-row">
+        <div class="mud-col-sm-7">
             <h1>Phone Number Input</h1>
-            <p class="text-gray-400">
+            <p class="mud-text-gray-400">
                 Phone Number Input is designed to capture a user’s phone number in a clear and structured way.
                 Within the design system, it follows consistent formatting rules, validation, and interaction patterns to ensure accuracy and reliability.
             </p>
         </div>
     </div>
-    <!-- Styles -->
-    <!-- =============================== -->
-    <!-- Input telefon cu flag -->
-    <!-- =============================== -->
-     <div class="row">
-      <div class="col-3">
+    
+    
+    
+    
+     <div class="mud-row">
+      <div class="mud-col-3">
         <div class="phone-input">
           <div class="phone-field">
             <select id="country-select" class="phone-field__select">
@@ -55,9 +56,9 @@
 
       </div>
      </div>
-    <div class="row">
-      <div class="col-3">
-        <div class="mb-16">default</div>
+    <div class="mud-row">
+      <div class="mud-col-3">
+        <div class="mud-mb-16">default</div>
         <label for="phone-demo-r1-us">Label</label>
         <div class="input-wrapper-number has-leading">
           <span class="input-icon input-icon--flag fi fi-us" aria-hidden="true"></span>
@@ -65,8 +66,8 @@
         </div>
       </div>
 
-      <div class="col-3">
-        <div class="mb-16">warning</div>
+      <div class="mud-col-3">
+        <div class="mud-mb-16">warning</div>
         <label for="phone-demo-r1-gb">Label</label>
         <div class="input-wrapper-number has-leading">
           <span class="input-icon input-icon--flag fi fi-gb" aria-hidden="true"></span>
@@ -74,8 +75,8 @@
         </div>
       </div>
 
-      <div class="col-3">
-        <div class="mb-16">destructive</div>
+      <div class="mud-col-3">
+        <div class="mud-mb-16">destructive</div>
         <label for="phone-demo-r1-fr">Label</label>
         <div class="input-wrapper-number has-leading">
           <span class="input-icon input-icon--flag fi fi-fr" aria-hidden="true"></span>
@@ -83,8 +84,8 @@
         </div>
       </div>
 
-      <div class="col-3">
-        <div class="mb-16">success</div>
+      <div class="mud-col-3">
+        <div class="mud-mb-16">success</div>
         <label for="phone-demo-r1-de">Label</label>
         <div class="input-wrapper-number has-leading">
           <span class="input-icon input-icon--flag fi fi-de" aria-hidden="true"></span>
@@ -93,9 +94,9 @@
       </div>
     </div>
 
-    <div class="row mt-32">
-      <div class="col-3">
-        <div class="mb-16">default</div>
+    <div class="mud-row mud-mt-32">
+      <div class="mud-col-3">
+        <div class="mud-mb-16">default</div>
         <label for="phone-demo-r2-us">Label</label>
         <div class="input-wrapper-number has-leading">
           <span class="input-icon input-icon--flag fi fi-us" aria-hidden="true"></span>
@@ -103,8 +104,8 @@
         </div>
       </div>
 
-      <div class="col-3">
-        <div class="mb-16">warning</div>
+      <div class="mud-col-3">
+        <div class="mud-mb-16">warning</div>
         <label for="phone-demo-r2-gb">Label</label>
         <div class="input-wrapper-number has-leading">
           <span class="input-icon input-icon--flag fi fi-gb" aria-hidden="true"></span>
@@ -112,8 +113,8 @@
         </div>
       </div>
 
-      <div class="col-3">
-        <div class="mb-16">destructive</div>
+      <div class="mud-col-3">
+        <div class="mud-mb-16">destructive</div>
         <label for="phone-demo-r2-fr">Label</label>
         <div class="input-wrapper-number has-leading">
           <span class="input-icon input-icon--flag fi fi-fr" aria-hidden="true"></span>
@@ -121,8 +122,8 @@
         </div>
       </div>
 
-      <div class="col-3">
-        <div class="mb-16">success</div>
+      <div class="mud-col-3">
+        <div class="mud-mb-16">success</div>
         <label for="phone-demo-r2-de">Label</label>
         <div class="input-wrapper-number has-leading">
           <span class="input-icon input-icon--flag fi fi-de" aria-hidden="true"></span>
@@ -131,12 +132,9 @@
       </div>
     </div>
 
-<!-- =============================== -->
-<!-- Input telefon loading -->
-<!-- =============================== -->
-    <div class="row">
-      <div class="col-3">
-        <div class="mb-16">loading</div>
+    <div class="mud-row">
+      <div class="mud-col-3">
+        <div class="mud-mb-16">loading</div>
         <div class="input-wrapper-number has-leading is-loading">
           <span class="input-icon input-icon--flag fi fi-it" aria-hidden="true"></span>
           <input type="tel" class="input-number" placeholder="(+39) 333 1234567" data-phone-input="true" data-country="it" data-dial-code="+39" aria-label="Phone number" />
@@ -144,16 +142,16 @@
         </div>
       </div>
 
-      <div class="col-3">
-        <div class="mb-16">disabled</div>
+      <div class="mud-col-3">
+        <div class="mud-mb-16">disabled</div>
         <div class="input-wrapper-number has-leading">
           <span class="input-icon input-icon--flag fi fi-es" aria-hidden="true"></span>
           <input type="tel" class="input-number" placeholder="(+34) 612 345 678" data-phone-input="true" data-country="es" data-dial-code="+34" disabled aria-label="Phone number" />
         </div>
       </div>
 
-      <div class="col-3">
-        <div class="mb-16">read-only</div>
+      <div class="mud-col-3">
+        <div class="mud-mb-16">read-only</div>
         <div class="input-wrapper-number has-leading">
           <span class="input-icon input-icon--flag fi fi-ca" aria-hidden="true"></span>
           <input type="tel" class="input-number" value="(+1) 416 123 4567" data-phone-input="true" data-country="ca" data-dial-code="+1" readonly aria-label="Phone number (read-only example)" />
@@ -161,32 +159,31 @@
       </div>
     </div>
 
-
-    <!-- Variations -->
-    <div class="row d-none">
-      <div class="col-12 mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+    
+    <div class="mud-row mud-hidden">
+      <div class="mud-col-12 mud-mt-56 mud-mb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
           <h2>Variations</h2>
       </div>
-      <div class="col-3">
-        <div class="mb-16">icon-none</div>
+      <div class="mud-col-3">
+        <div class="mud-mb-16">icon-none</div>
         <div class="input-group">
           <label for="icon-none">Label</label>
           <input id="icon-none" type="text" placeholder="Placeholder" class="input" />
         </div>
       </div>
-      <div class="col-3">
-        <div class="mb-16">icon-leading</div>
+      <div class="mud-col-3">
+        <div class="mud-mb-16">icon-leading</div>
         <div class="input-group icon-leading">
             <label for="icon-leading">Label</label>
-            <div class="search-input rectangular ">
-              <span class="p-2 radius-8 d-inline-flex icon-search icon-search">
+            <div class="search-input rectangular">
+              <span class="mud-p-2 mud-radius-8 mud-inline-flex icon-search icon-search">
                   <svg class="icon medium" aria-hidden="true"> 
                       <use href="assets/icons/sprite.svg#icon-search"></use> 
                   </svg>
               </span>
               <input id="icon-leading" type="text" placeholder="Placeholder" class="input" />
               <span class="icon-loading">⟳</span>
-              <button type="button" class="btn-icon clear" aria-label="Clear search">
+              <button type="button" class="mud-btn-icon clear" aria-label="Clear search">
                   <svg class="icon small" aria-hidden="true"> 
                       <use href="assets/icons/sprite.svg#icon-cross-small"></use> 
                   </svg>
@@ -195,8 +192,8 @@
         </div> 
           
       </div>
-      <div class="col-3">
-        <div class="mb-16">icon-trailing</div>
+      <div class="mud-col-3">
+        <div class="mud-mb-16">icon-trailing</div>
         <div class="input-group icon-trailing">
           <label for="icon-trailing">Label</label>
           <div class="input-wrapper">
@@ -209,8 +206,8 @@
           </div>
         </div>
       </div>
-      <div class="col-3">
-        <div class="mb-16">icon-both</div>
+      <div class="mud-col-3">
+        <div class="mud-mb-16">icon-both</div>
         <div class="input-group icon-both">
           <label for="icon-both">Label</label>
           <div class="input-wrapper">
@@ -230,39 +227,39 @@
       </div>
     </div>
 
-    <!-- States -->
-    <div class="row d-none">
-      <div class="col-12">
-         <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+    
+    <div class="mud-row mud-hidden">
+      <div class="mud-col-12">
+         <div class="mud-mt-56 mud-mb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
               <h2>States</h2>
           </div>
       </div>
     </div>
 
-    <div class="row d-none">
-      <!-- default states -->
-      <div class="col-3">
-        <div class="input-group mb-24">
+    <div class="mud-row mud-hidden">
+      
+      <div class="mud-col-3">
+        <div class="input-group mud-mb-24">
           <label for="default-default">default: default</label>
           <input id="default-default" type="text" placeholder="Placeholder" class="input" />
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <label for="default-hover">default: hover</label>
           <input id="default-hover" type="text" placeholder="Placeholder" class="input" />
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <label for="default-focus-empty">default: focus-empty</label>
           <input id="default-focus-empty" type="text" placeholder="Placeholder" class="input" />
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <label for="default-focus-populated">default: focus-populated</label>
           <input id="default-focus-populated" type="text" placeholder="Placeholder" value="Populated" class="input" />
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <label for="default-loading">destructive: loading</label>
           <div class="input-wrapper is-loading">
             <input id="default-loading" type="text" placeholder="Loading..." class="input">
@@ -270,23 +267,23 @@
           </div>
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <label for="default-focus-populated">default: field</label>
           <input id="default-focus-populated" type="text" placeholder="Placeholder" class="input" />
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <p>default: disabled</p>
           <label for="default-disabled">Label</label>
           <input id="default-disabled" type="text" placeholder="Placeholder" class="input" disabled />
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <label for="default" class="required">default: field</label>
           <input id="default" type="text" placeholder="Placeholder" class="input" />
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <p>default: read-only</p>
           <label for="phone-states-ro-default">Label</label>
           <div class="input-wrapper">
@@ -300,29 +297,29 @@
         </div>
       </div>
 
-      <!-- warning states -->
-      <div class="col-3">
-        <div class="input-group mb-24">
+      
+      <div class="mud-col-3">
+        <div class="input-group mud-mb-24">
           <label for="input-warning">warning: default</label>
-          <input id="input-warning" type="text" placeholder="Placeholder" class=" input--warning" />
+          <input id="input-warning" type="text" placeholder="Placeholder" class="input--warning" />
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <label for="warning-hover">warning: hover</label>
-          <input id="warning-hover" type="text" placeholder="Placeholder" class=" input--warning" />
+          <input id="warning-hover" type="text" placeholder="Placeholder" class="input--warning" />
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <label for="warning-focus-empty">warning: focus-empty</label>
-          <input id="warning-focus-empty" type="text" placeholder="Placeholder" class=" input--warning" />
+          <input id="warning-focus-empty" type="text" placeholder="Placeholder" class="input--warning" />
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <label for="warning-focus-populated">warning: focus-populated</label>
-          <input id="warning-focus-populated" type="text" placeholder="Placeholder" value="Populated" class=" input--warning" />
+          <input id="warning-focus-populated" type="text" placeholder="Placeholder" value="Populated" class="input--warning" />
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <label for="warning-loading">destructive: loading</label>
           <div class="input-wrapper is-loading">
             <input id="warning-loading" type="text" placeholder="Loading..." class="input--warning">
@@ -330,23 +327,23 @@
           </div>
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <label for="warning-focus-populated">warning: field</label>
           <input id="warning-focus-populated" type="text" placeholder="Placeholder" class="input--warning" />
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <p>warning: disabled</p>
           <label for="warning-disabled">Label</label>
           <input id="warning-disabled" type="text" placeholder="Placeholder" class="input--warning" disabled />
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <label for="warning" class="required">warning: field</label>
           <input id="warning" type="text" placeholder="Placeholder" class="input--warning" />
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <p>warning: read-only</p>
           <label for="phone-states-ro-warning">Label</label>
           <div class="input-wrapper">
@@ -355,29 +352,29 @@
         </div>
       </div>
 
-       <!-- destructive states -->
-      <div class="col-3"> 
-        <div class="input-group mb-24">
+       
+      <div class="mud-col-3"> 
+        <div class="input-group mud-mb-24">
           <label for="destructive-default">destructive: default</label>
-          <input id="destructive-default" type="text" placeholder="Placeholder" class=" input--destructive" />
+          <input id="destructive-default" type="text" placeholder="Placeholder" class="input--destructive" />
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <label for="destructive-hover">destructive: hover</label>
           <input id="destructive-hover" type="text" placeholder="Placeholder" class="input--destructive" />
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <label for="destructive-focus-empty">destructive: focus-empty</label>
           <input id="destructive-focus-empty" type="text" placeholder="Placeholder" class="input--destructive" />
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <label for="destructive-focus-populated">destructive: focus-populated</label>
           <input id="destructive-focus-populated" type="text" placeholder="Placeholder" value="Populated" class="input--destructive" />
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <label for="destructive-loading">destructive: loading</label>
           <div class="input-wrapper is-loading">
             <input id="destructive" type="text" placeholder="Loading..." class="input--destructive">
@@ -385,23 +382,23 @@
           </div>
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <label for="destructive-focus-populated">destructive: field</label>
           <input id="destructive-focus-populated" type="text" placeholder="Placeholder" class="input--destructive" />
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <p>destructive: disabled</p>
           <label for="destructive-disabled">Label</label>
           <input id="destructive-disabled" type="text" placeholder="Placeholder" class="input--destructive" disabled />
         </div>
 
-        <div class="input-group mb-24">
+        <div class="input-group mud-mb-24">
           <label for="destructive" class="required">destructive: field</label>
           <input id="destructive-loading" type="text" placeholder="Placeholder" class="input--destructive" />
         </div>
 
-         <div class="input-group mb-24">
+         <div class="input-group mud-mb-24">
           <p>destructive: read-only</p>
           <label for="readonly-destructive">Label</label>
           <div class="input-wrapper">
@@ -410,29 +407,29 @@
         </div>
       </div>
 
-      <!-- success states -->
-      <div class="col-3">
-          <div class="input-group mb-24">
+      
+      <div class="mud-col-3">
+          <div class="input-group mud-mb-24">
             <label for="success-default">success: default</label>
             <input id="success-default" type="text" placeholder="Placeholder" class="input--success" />
           </div>
 
-          <div class="input-group mb-24">
+          <div class="input-group mud-mb-24">
             <label for="success-hover">success: hover</label>
             <input id="success-hover" type="text" placeholder="Placeholder" class="input--success" />
           </div>
 
-          <div class="input-group mb-24">
+          <div class="input-group mud-mb-24">
             <label for="success-focus-empty">success: focus-empty</label>
             <input id="success-focus-empty" type="text" placeholder="Placeholder" class="input--success" />
           </div>
 
-          <div class="input-group mb-24">
+          <div class="input-group mud-mb-24">
             <label for="success-focus-populated">success: focus-populated</label>
             <input id="success-focus-populated" type="text" placeholder="Placeholder" value="Populated" class="input--success" />
           </div>
 
-          <div class="input-group mb-24">
+          <div class="input-group mud-mb-24">
             <label for="success-loading">destructive: loading</label>
             <div class="input-wrapper is-loading">
               <input id="success" type="text" placeholder="Loading..." class="input--success">
@@ -440,23 +437,23 @@
             </div>
           </div>
  
-          <div class="input-group mb-24">
+          <div class="input-group mud-mb-24">
             <label for="success-focus-populated">success: field</label>
             <input id="success-focus-populated" type="text" placeholder="Placeholder" class="input--success" />
           </div>
 
-          <div class="input-group mb-24">
+          <div class="input-group mud-mb-24">
             <p>success: disabled</p>
             <label for="success-disabled">Label</label>
             <input id="success-disabled" type="text" placeholder="Placeholder" class="input--success" disabled />
           </div>
 
-          <div class="input-group mb-24">
+          <div class="input-group mud-mb-24">
             <label for="success" class="required">success: field</label>
             <input id="success-loading" type="text" placeholder="Placeholder" class="input--success" />
           </div>
 
-           <div class="input-group mb-24">
+           <div class="input-group mud-mb-24">
             <p>success: read-only</p>
             <label for="phone-states-ro-success">Label</label>
             <div class="input-wrapper">
@@ -466,23 +463,23 @@
         </div>
     </div> 
 
-    <!-- Assistive Text -->
-    <div class="row d-none">
-      <div class="col-12">
-         <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+    
+    <div class="mud-row mud-hidden">
+      <div class="mud-col-12">
+         <div class="mud-mt-56 mud-mb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
               <h2>Assistive Text</h2>
           </div>
       </div>
-      <div class="col-7 my-32">
+      <div class="mud-col-7 mud-my-32">
         <div>
           Assistive text conveys additional guidance about the input field, such as how it will be used. It should only take up one or two lines, being persistently visible or visible only on focus.
         </div>
       </div>
     </div>
 
-    <div class="row d-none">
-      <div class="col-3">
-        <div class="input-group mb-24">
+    <div class="mud-row mud-hidden">
+      <div class="mud-col-3">
+        <div class="input-group mud-mb-24">
           <p>default</p>
           <label for="default-default">Label</label>
           <input id="default-default" type="text" placeholder="Placeholder" class="input">
@@ -492,8 +489,8 @@
         </div>
       </div>
 
-      <div class="col-3">
-        <div class="input-group mb-24">
+      <div class="mud-col-3">
+        <div class="input-group mud-mb-24">
           <p>warning</p>
           <label for="default-default">Label</label>
           <input id="default-default" type="text" placeholder="Placeholder" class="input--warning">
@@ -508,8 +505,8 @@
         </div>
       </div>
 
-      <div class="col-3">
-        <div class="input-group mb-24">
+      <div class="mud-col-3">
+        <div class="input-group mud-mb-24">
           <p>destructive</p>
           <label for="default-default">Label</label>
           <input id="default-default" type="text" placeholder="Placeholder" class="input--destructive">
@@ -524,12 +521,12 @@
         </div>
       </div>
 
-      <div class="col-3">
-        <div class="input-group mb-24">
+      <div class="mud-col-3">
+        <div class="input-group mud-mb-24">
           <p>success</p>
           <label for="default-default">Label</label>
           <input id="default-default" type="text" placeholder="Placeholder" class="input--success">
-           <div class="input-message success mt-6">
+           <div class="input-message success mud-mt-6">
             <span class="">
               <svg class="icon medium" aria-hidden="true"> 
                 <use href="assets/icons/sprite.svg#icon-circle-checkmark-filled"></use> 

@@ -92,8 +92,6 @@
   text-align: center;
 }
 
-
-
 .date-picker__grid[hidden] {
   display: none;
 }
@@ -127,7 +125,7 @@
 }
 
 .date-picker__days--states {
-  // gap: var(--spacing-4);
+  
 }
 
 .date-picker__day {
@@ -309,5 +307,4 @@
 .date-picker__field.is-mobile .date-picker-panel[hidden] {
   display: none;
 }
-
 

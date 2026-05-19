@@ -65,8 +65,6 @@
   font-weight: 600;
 }
 
-// ---------------  Content (Scroll Shadows) 
-
 .cookie-body {
     display: flex;
     flex-direction: column;
@@ -90,7 +88,7 @@
         max-height: 50vh;
     
 
-        // Scroll Shadows
+        
         &::before,
         &::after {
             content: "";
@@ -135,8 +133,6 @@
     }
 }
 
-// -------------- Buttons 
-
 .cookie-buttons { 
   display: flex;
   justify-content: space-between;
@@ -170,9 +166,6 @@
   color: #121212;
   border-color: #121212;
 }
-
-
-// --------------  Detail Section 
 
 .cookie-detail-container { 
   display: flex;
@@ -225,10 +218,7 @@
   align-items: center;
 }
 
-
-// --------------- Caret button 
-
-.btn-caret {
+.mud-btn-caret {
   position: absolute;
   top: 32px;
   right: 24px;
@@ -248,8 +238,6 @@
 .rotate-180 {
   transform: rotate(180deg);
 }
-
-// ---------------- Responsive 
 
 @media (max-width: 768px) {
   .cookie-banner {
@@ -285,7 +273,7 @@
     width: 100%;
   }
 
-  .btn-caret {
+  .mud-btn-caret {
     top: 16px;
     right: 16px;
   }

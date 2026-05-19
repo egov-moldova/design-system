@@ -1,5 +1,7 @@
+@use '../mud-prefix' as mud;
+
 @mixin button-variant($name, $bg, $color, $border, $hover-bg, $hover-color, $active-bg, $spinner-color: $color, $focus-ring: true) {
-  .btn-#{$name} {
+  .#{mud.mud-class('btn-' + $name)} {
     background-color: #{$bg};
     color: #{$color};
     border: 1px solid #{$border};
@@ -22,7 +24,7 @@
       }
     }
 
-    &.btn-loading {
+    &.#{mud.mud-class('btn-loading')} {
       position: relative;
       pointer-events: none;
       color: transparent !important;

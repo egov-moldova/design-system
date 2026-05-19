@@ -10,7 +10,6 @@
   pointer-events: auto;
 }
 
-/* Overlay */
 .bottom-sheet {
 
     &__overlay {
@@ -166,7 +165,6 @@
         padding: var(--spacing-16);
     }
 }
-
 
 .bottom-sheet[aria-hidden="false"] .bottom-sheet__overlay {
   opacity: 1;

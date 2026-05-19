@@ -1,4 +1,4 @@
-// phone-input.js
+
 
 document.addEventListener("DOMContentLoaded", () => {
   const countrySelect = document.getElementById("country-select");

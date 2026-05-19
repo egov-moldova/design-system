@@ -6,7 +6,8 @@
   <title>Sidebar Preview</title>
   <script src="../Components/js/toggler.js" defer=""></script> 
   <script src="js/toggler.js" defer=""></script>
-  <link rel="stylesheet" href="css/main.css" />
+    <script src="js/include-head-assets.js"></script>
+    <link rel="stylesheet" href="css/main.css" />
   <script src="js/modal.js" defer></script>
   <script src="js/mega-nav.js" defer></script>
   <script src="js/search.js" defer></script>
@@ -16,33 +17,31 @@
 </head>
 <body>
   <div id="site-header"></div>
-  <div class="container">
-    <div class="row">
-      <div class="col-sm-7">
+  <div class="mud-container">
+    <div class="mud-row">
+      <div class="mud-col-sm-7">
          <h1>Sidebar</h1>
-        <p class="text-gray-400">
+        <p class="mud-text-gray-400">
           The sidebar serves as a persistent vertical navigation area, allowing users to access primary sections or features of an application or website.
           It helps organize complex interfaces by grouping related content and providing quick access to key destinations, improving overall navigation efficiency and user orientation.
         </p>
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-12"> 
-        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+    <div class="mud-row">
+      <div class="mud-col-12"> 
+        <div class="mud-mt-56 mud-mb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
           <h2>Breakpoints</h2> 
         </div>
       </div>
     </div> 
-    <div class="row mb-32">
-      <div class="col-12">
+    <div class="mud-row mud-mb-32">
+      <div class="mud-col-12">
         <p>desktop</p>
         <aside class="sidebar" aria-label="Primary navigation">
           <nav class="sidebar__nav">
 
-            <!-- =========================
-                Section 1
-                ========================= -->
+            
             <section class="sidebar__section" aria-labelledby="sidebar-heading-1">
               <div class="sidebar__heading">
                 <h2 class="sidebar__title" id="sidebar-heading-1">
@@ -118,14 +117,10 @@
               </ul>
             </section>
 
-            <!-- =========================
-                Divider
-                ========================= -->
+            
            
 
-            <!-- =========================
-                Section 2
-                ========================= -->
+            
             <section class="sidebar__section" aria-labelledby="sidebar-heading-2">
               <div class="sidebar__heading"> 
                 <hr class="separator separator--horizontal separator--thin separator--subtle"> 
@@ -152,27 +147,24 @@
 
           </nav>
         </aside>
-
 
       </div>
     </div>   
     
-    <div class="row">
-      <div class="col-12"> 
-        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+    <div class="mud-row">
+      <div class="mud-col-12"> 
+        <div class="mud-mt-56 mud-mb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
           <h2>Types</h2> 
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-12 col-md-6">
+    <div class="mud-row">
+      <div class="mud-col-12 mud-col-md-6">
         <p>1st-level</p>
         <aside class="sidebar" aria-label="Primary navigation">
           <nav class="sidebar__nav">
 
-            <!-- =========================
-                Section 1
-                ========================= -->
+            
             <section class="sidebar__section" aria-labelledby="sidebar-heading-1">
               <div class="sidebar__heading">
                 <h2 class="sidebar__title" id="sidebar-heading-1">
@@ -248,14 +240,10 @@
               </ul>
             </section>
 
-            <!-- =========================
-                Divider
-                ========================= -->
+            
            
 
-            <!-- =========================
-                Section 2
-                ========================= -->
+            
             <section class="sidebar__section" aria-labelledby="sidebar-heading-2">
               <div class="sidebar__heading"> 
                 <hr class="separator separator--horizontal separator--thin separator--subtle"> 
@@ -284,14 +272,12 @@
         </aside>
       </div>
 
-      <div class="col-12 col-md-6">
+      <div class="mud-col-12 mud-col-md-6">
         <p>2nd-level</p>
         <aside class="sidebar" aria-label="Primary navigation">
           <nav class="sidebar__nav">
 
-            <!-- =========================
-                Section 1
-                ========================= -->
+            
             <section class="sidebar__section" aria-labelledby="sidebar-heading-1">
               <div class="sidebar__heading">
                 <h2 class="sidebar__title" id="sidebar-heading-1">
@@ -411,14 +397,10 @@
               </ul>
             </section>
 
-            <!-- =========================
-                Divider
-                ========================= -->
+            
            
 
-            <!-- =========================
-                Section 2
-                ========================= -->
+            
             <section class="sidebar__section" aria-labelledby="sidebar-heading-2">
               <div class="sidebar__heading"> 
                 <hr class="separator separator--horizontal separator--thin separator--subtle"> 
@@ -448,22 +430,20 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-12"> 
-        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+    <div class="mud-row">
+      <div class="mud-col-12"> 
+        <div class="mud-mt-56 mud-mb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
           <h2>List Item States</h2> 
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-12 col-md-3">
+    <div class="mud-row">
+      <div class="mud-col-12 mud-col-md-3">
         <p>default</p>
-        <aside class="sidebar  border-0" aria-label="Primary navigation">
-          <nav class="sidebar__nav pt-0">
+        <aside class="sidebar mud-border-0" aria-label="Primary navigation">
+          <nav class="sidebar__nav mud-pt-0">
 
-            <!-- =========================
-                Section 1
-                ========================= -->
+            
             <section class="sidebar__section" aria-labelledby="sidebar-heading-1">              
 
               <ul class="sidebar__list">
@@ -491,14 +471,12 @@
         </aside>
       </div>
 
-      <div class="col-12 col-md-3">
+      <div class="mud-col-12 mud-col-md-3">
         <p>hover</p>
-        <aside class="sidebar  border-0" aria-label="Primary navigation">
-          <nav class="sidebar__nav pt-0">
+        <aside class="sidebar mud-border-0" aria-label="Primary navigation">
+          <nav class="sidebar__nav mud-pt-0">
 
-            <!-- =========================
-                Section 1
-                ========================= -->
+            
             <section class="sidebar__section" aria-labelledby="sidebar-heading-1">              
 
               <ul class="sidebar__list">
@@ -527,14 +505,12 @@
         </aside>
       </div>
 
-      <div class="col-12 col-md-3">
+      <div class="mud-col-12 mud-col-md-3">
         <p>focus</p>
-        <aside class="sidebar  border-0" aria-label="Primary navigation">
-          <nav class="sidebar__nav pt-0">
+        <aside class="sidebar mud-border-0" aria-label="Primary navigation">
+          <nav class="sidebar__nav mud-pt-0">
 
-            <!-- =========================
-                Section 1
-                ========================= -->
+            
             <section class="sidebar__section" aria-labelledby="sidebar-heading-1">              
 
               <ul class="sidebar__list">
@@ -563,14 +539,12 @@
         </aside>
       </div>
 
-      <div class="col-12 col-md-3">
+      <div class="mud-col-12 mud-col-md-3">
         <p>active</p>
-        <aside class="sidebar  border-0" aria-label="Primary navigation">
-          <nav class="sidebar__nav pt-0">
+        <aside class="sidebar mud-border-0" aria-label="Primary navigation">
+          <nav class="sidebar__nav mud-pt-0">
 
-            <!-- =========================
-                Section 1
-                ========================= -->
+            
             <section class="sidebar__section" aria-labelledby="sidebar-heading-1">              
 
               <ul class="sidebar__list">
@@ -599,22 +573,20 @@
       </div>
     </div>
 
-    <div class="row">
-      <div class="col-12"> 
-        <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
+    <div class="mud-row">
+      <div class="mud-col-12"> 
+        <div class="mud-mt-56 mud-mb-32 mud-border-bottom-1 mud-border-bottom-solid mud-border-gray-200">
           <h2>List Item Types</h2> 
         </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-12 col-md-3">
+    <div class="mud-row">
+      <div class="mud-col-12 mud-col-md-3">
         <p>1st-level</p>
-        <aside class="sidebar  border-0" aria-label="Primary navigation">
-          <nav class="sidebar__nav pt-0">
+        <aside class="sidebar mud-border-0" aria-label="Primary navigation">
+          <nav class="sidebar__nav mud-pt-0">
 
-            <!-- =========================
-                Section 1
-                ========================= -->
+            
             <section class="sidebar__section" aria-labelledby="sidebar-heading-1">              
 
               <ul class="sidebar__list">
@@ -655,21 +627,17 @@
           </nav>
         </aside>
       </div>
-      <div class="col-12 col-md-3">
+      <div class="mud-col-12 mud-col-md-3">
         <p>2nd-level</p>
-        <aside class="sidebar  border-0" aria-label="Primary navigation">
-          <nav class="sidebar__nav pt-0">
+        <aside class="sidebar mud-border-0" aria-label="Primary navigation">
+          <nav class="sidebar__nav mud-pt-0">
 
-            <!-- =========================
-                Section 1
-                ========================= -->
+            
             <section class="sidebar__section" aria-labelledby="sidebar-heading-1">              
 
               <ul class="sidebar__list">
 
-                <!-- =========================
-                    Parent item (toggle)
-                    ========================= -->
+                
                 <li class="sidebar__item sidebar__item--has-children">
 
   <button
@@ -734,7 +702,4 @@
   <div id="site-footer"></div>
 </body>
 </html>
-
-
-
 

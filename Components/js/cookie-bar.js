@@ -11,15 +11,15 @@
 
         if (!banner || !overlay) return;
 
-        // Show banner if no prior consent
+        
         if (!localStorage.getItem("cookieConsent")) {
-            banner.classList.remove("d-none");
-            overlay.classList.remove("d-none");
+            banner.classList.remove("mud-hidden");
+            overlay.classList.remove("mud-hidden");
         }
 
         let isExpanded = false;
 
-        // Scroll Shadows
+        
         const cookieBody = banner.querySelector(".cookie-body");
         const topShadowClass = "cookie-scroll--top";
         const bottomShadowClass = "cookie-scroll--bottom";
@@ -38,49 +38,49 @@
             cookieBody.addEventListener("scroll", updateShadows);
         }
 
-        // EXPAND
+        
         function showDetails() {
             if (isExpanded) return;
 
-            // Hide header + main buttons instantly (no glitch)
-            info.classList.add("d-none");
-            mainButtons.classList.add("d-none");
+            
+            info.classList.add("mud-hidden");
+            mainButtons.classList.add("mud-hidden");
 
-            // Show collapse arrow
-            btnToggle.classList.remove("d-none");
+            
+            btnToggle.classList.remove("mud-hidden");
             btnToggle.classList.add("rotate-180");
 
-            // Expand details
+            
             detail.classList.add("show");
 
-            // Update shadows after expansion
+            
             setTimeout(updateShadows, 50);
 
             isExpanded = true;
         }
 
-        // COLLAPSE
+        
         function hideDetails() {
             if (!isExpanded) return;
 
-            // Collapse details
+            
             detail.classList.remove("show");
 
-            // Reset arrow
+            
             btnToggle.classList.remove("rotate-180");
-            btnToggle.classList.add("d-none");
+            btnToggle.classList.add("mud-hidden");
 
-            // Instantly show header + buttons
-            info.classList.remove("d-none");
-            mainButtons.classList.remove("d-none");
+            
+            info.classList.remove("mud-hidden");
+            mainButtons.classList.remove("mud-hidden");
 
-            // Remove scroll shadows
+            
             cookieBody.classList.remove(topShadowClass, bottomShadowClass);
 
             isExpanded = false;
         }
 
-        // Events
+        
         btnToggle.onclick = () => (isExpanded ? hideDetails() : showDetails());
         btnManage.onclick = () => showDetails();
         btnConfirm.onclick = () => saveConsent();

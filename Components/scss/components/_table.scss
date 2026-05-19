@@ -1,13 +1,11 @@
 @use "../abstracts/tokens" as tokens;
 
-
 .table {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
   font-size: var(--font-size-14);
   color: var(--gray-900);
-
 
   &__row {}
 
@@ -18,7 +16,7 @@
     color: var(--black);
     font-size: var(--text-caption-md-500-font-size);
     font-weight: 500;
-    position: relative; // required for icons
+    position: relative; 
     background: var(--white);
   }
 
@@ -29,7 +27,6 @@
     border-bottom: 0.5px solid var(--gray-250);
     background: var(--white);
   }
-
 
   &__icon {
     font-size: 6px;
@@ -44,7 +41,6 @@
       margin-left: var(--spacing-8);
     }
   }
-
 
   &__row {
     &:nth-child(even) .table__body-cell {
@@ -94,7 +90,6 @@
     }
   } 
 
-
   &--icon-none {
     .table__head-cell {
       padding-left: var(--spacing-16);
@@ -133,7 +128,6 @@
     align-items: center;
     gap: var(--spacing-8);
   }
-
 
   &--mobile {
     .table__body-cell {

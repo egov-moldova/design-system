@@ -1,4 +1,4 @@
-// modal.js — Lightweight, accessible modal controller
+
 (function () {
   const FOCUSABLE = [
     'a[href]',
@@ -14,38 +14,42 @@
     '[tabindex]:not([tabindex^="-"])'
   ].join(',');
 
-  // Helpers
+  
   const qs = (sel, ctx = document) => ctx.querySelector(sel);
   const qsa = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
 
-  // Open modal overlay element
+  
   function openModal(overlay) {
     if (!overlay) return;
     const modal = qs('.modal', overlay);
     if (!modal) return;
 
-    // Save last focused element to restore later
+    if (!modal.hasAttribute('tabindex')) {
+      modal.setAttribute('tabindex', '-1');
+    }
+
+    
     overlay.__lastFocused = document.activeElement;
 
-    // show
+    
     overlay.classList.add('is-active');
     modal.classList.add('is-active');
 
     overlay.setAttribute('aria-hidden', 'false');
 
-    // prevent body scroll
+    
     document.body.classList.add('modal-open');
 
-    // focus first focusable inside modal, or the modal itself
+    
     const first = qsa(FOCUSABLE, overlay)[0];
     (first || modal).focus();
 
-    // attach focus trap + ESC handler
+    
     overlay.__keydownHandler = (e) => handleKeydown(e, overlay);
     document.addEventListener('keydown', overlay.__keydownHandler, true);
   }
 
-  // Close modal overlay element
+  
   function closeModal(overlay) {
     if (!overlay) return;
     const modal = qs('.modal', overlay);
@@ -54,32 +58,32 @@
 
     overlay.setAttribute('aria-hidden', 'true');
 
-    // restore body scroll (only if no other modals open)
+    
     setTimeout(() => {
       if (!document.querySelector('.modal-overlay.is-active')) {
         document.body.classList.remove('modal-open');
       }
     }, 0);
 
-    // restore focus
+    
     const last = overlay.__lastFocused;
-    try { last?.focus(); } catch (e) { /* noop */ }
+    try { last?.focus(); } catch (e) {  }
 
-    // remove keydown handler
+    
     if (overlay.__keydownHandler) {
       document.removeEventListener('keydown', overlay.__keydownHandler, true);
       overlay.__keydownHandler = null;
     }
   }
 
-  // Toggle if needed
+  
   function toggleModal(overlay) {
     if (!overlay) return;
     if (overlay.classList.contains('is-active')) closeModal(overlay);
     else openModal(overlay);
   }
 
-  // Key handling: Esc + Tab trap
+  
   function handleKeydown(e, overlay) {
     const modal = qs('.modal', overlay);
     if (!modal) return;
@@ -91,10 +95,10 @@
     }
 
     if (e.key === 'Tab') {
-      // focus trap
+      
       const focusables = qsa(FOCUSABLE, overlay).filter(el => el.offsetParent !== null);
       if (focusables.length === 0) {
-        // if nothing focusable, keep focus on modal
+        
         e.preventDefault();
         modal.focus();
         return;
@@ -102,13 +106,13 @@
       const first = focusables[0];
       const last = focusables[focusables.length - 1];
       if (e.shiftKey) {
-        // shift+tab
+        
         if (document.activeElement === first || document.activeElement === modal) {
           e.preventDefault();
           last.focus();
         }
       } else {
-        // tab
+        
         if (document.activeElement === last) {
           e.preventDefault();
           first.focus();
@@ -117,60 +121,175 @@
     }
   }
 
-  // Resolve target from data-open attribute value
+  
   function resolveOverlay(selectorOrId) {
     if (!selectorOrId) return null;
-    // if selector string like "#modalSm" or ".myModal"
+    
     if (selectorOrId.trim().startsWith('#') || selectorOrId.trim().startsWith('.')) {
       return document.querySelector(selectorOrId.trim());
     }
-    // otherwise treat as id (without #)
+    
     return document.getElementById(selectorOrId.trim());
   }
 
-  // Init on DOM ready
+  const SEARCH_MODAL_IDS = ['#search-modal', '#search-modal-mobile'];
+
+  
+  const DOC_SEARCH_MODALS_HTML = `
+<div class="modal-overlay" id="search-modal" aria-hidden="true">
+  <div class="modal modal--md modal--simple mud-py-40 mud-px-32" tabindex="-1" role="dialog" aria-modal="true"
+    aria-labelledby="doc-search-title-desktop">
+    <div class="mud-flex mud-items-start mud-justify-between mud-gap-16 mud-mb-16">
+      <h2 class="mud-desktop-heading-sm mud-my-0" id="doc-search-title-desktop">Căutare în documentație</h2>
+      <button type="button" class="mud-btn-icon" data-close aria-label="Închide">
+        <svg class="icon small" aria-hidden="true">
+          <use href="assets/icons/sprite.svg#icon-cross-small"></use>
+        </svg>
+      </button>
+    </div>
+    <p class="mud-my-0 mud-mb-16" style="font-size: 14px; color: var(--gray-600, #666);">
+      Tastează o clasă utilitară (ex. <code class="mud-text-gray-800">mud-container</code>) — vei fi dus la pagina
+      unde este documentată.
+    </p>
+    <div class="doc-search" data-doc-search-root>
+      <div class="search-input medium">
+        <span class="mud-p-2 mud-radius-8 mud-inline-flex icon-search" aria-hidden="true">
+          <svg class="icon medium" aria-hidden="true">
+            <use href="assets/icons/sprite.svg#icon-search"></use>
+          </svg>
+        </span>
+        <input type="search" class="input" data-doc-search id="doc-search-input-desktop"
+          list="doc-search-datalist-desktop" placeholder="Caută clasă (ex. mud-container)" autocomplete="off"
+          autocorrect="off" spellcheck="false" aria-label="Căutare clasă în documentație"
+          aria-controls="doc-search-hits-desktop" aria-autocomplete="list" />
+        <button type="button" class="mud-btn-icon clear" aria-label="Șterge căutarea">
+          <svg class="icon small" aria-hidden="true">
+            <use href="assets/icons/sprite.svg#icon-cross-small"></use>
+          </svg>
+        </button>
+      </div>
+      <p class="doc-search__empty" data-doc-search-empty hidden>Nu s-au găsit rezultate.</p>
+      <ul class="doc-search__hits" id="doc-search-hits-desktop" data-doc-search-hits role="listbox" hidden></ul>
+    </div>
+    <datalist id="doc-search-datalist-desktop"></datalist>
+  </div>
+</div>
+
+<div class="modal-overlay" id="search-modal-mobile" aria-hidden="true">
+  <div class="modal modal--md modal--simple mud-py-32 mud-px-24" tabindex="-1" role="dialog" aria-modal="true"
+    aria-labelledby="doc-search-title-mobile">
+    <div class="mud-flex mud-items-start mud-justify-between mud-gap-16 mud-mb-16">
+      <h2 class="mud-mobile-heading-sm mud-my-0" id="doc-search-title-mobile">Căutare</h2>
+      <button type="button" class="mud-btn-icon" data-close aria-label="Închide">
+        <svg class="icon small" aria-hidden="true">
+          <use href="assets/icons/sprite.svg#icon-cross-small"></use>
+        </svg>
+      </button>
+    </div>
+    <div class="doc-search" data-doc-search-root>
+      <div class="search-input medium">
+        <span class="mud-p-2 mud-radius-8 mud-inline-flex icon-search" aria-hidden="true">
+          <svg class="icon medium" aria-hidden="true">
+            <use href="assets/icons/sprite.svg#icon-search"></use>
+          </svg>
+        </span>
+        <input type="search" class="input" data-doc-search id="doc-search-input-mobile"
+          list="doc-search-datalist-mobile" placeholder="Clasă (ex. mud-p-16)" autocomplete="off" autocorrect="off"
+          spellcheck="false" aria-label="Căutare clasă în documentație" aria-controls="doc-search-hits-mobile"
+          aria-autocomplete="list" />
+        <button type="button" class="mud-btn-icon clear" aria-label="Șterge căutarea">
+          <svg class="icon small" aria-hidden="true">
+            <use href="assets/icons/sprite.svg#icon-cross-small"></use>
+          </svg>
+        </button>
+      </div>
+      <p class="doc-search__empty" data-doc-search-empty hidden>Nu s-au găsit rezultate.</p>
+      <ul class="doc-search__hits" id="doc-search-hits-mobile" data-doc-search-hits role="listbox" hidden></ul>
+    </div>
+    <datalist id="doc-search-datalist-mobile"></datalist>
+  </div>
+</div>`.trim();
+
+  function appendDocSearchScriptOnce() {
+    if (window.__docSearchScriptRequested) return;
+    window.__docSearchScriptRequested = true;
+    const s = document.createElement('script');
+    s.src = 'js/doc-search.js';
+    s.async = true;
+    document.body.appendChild(s);
+  }
+
+  function wireSearchModalOverlays() {
+    qsa('#search-modal, #search-modal-mobile').forEach((overlay) => {
+      if (!overlay.hasAttribute('aria-hidden')) overlay.setAttribute('aria-hidden', 'true');
+      const modalEl = qs('.modal', overlay);
+      if (modalEl && !modalEl.hasAttribute('tabindex')) modalEl.setAttribute('tabindex', '-1');
+    });
+  }
+
+  function tryEnsureSearchModals() {
+    if (document.getElementById('search-modal')) return true;
+    try {
+      document.body.insertAdjacentHTML('beforeend', DOC_SEARCH_MODALS_HTML);
+      appendDocSearchScriptOnce();
+      wireSearchModalOverlays();
+      return true;
+    } catch (e) {
+      console.error('Search modals bootstrap failed:', e);
+      return false;
+    }
+  }
+
+  function resolveOverlayWithSearchFallback(selectorOrId) {
+    const trimmed = String(selectorOrId || '').trim();
+    let overlay = resolveOverlay(trimmed);
+    if (!overlay && SEARCH_MODAL_IDS.indexOf(trimmed) !== -1) {
+      tryEnsureSearchModals();
+      overlay = resolveOverlay(trimmed);
+    }
+    return overlay;
+  }
+
+  
   function init() {
-    // Open triggers: data-open value can be "#modalId" or "modalId"
-    qsa('[data-open]').forEach(btn => {
-      btn.addEventListener('click', (ev) => {
-        const targetSel = btn.getAttribute('data-open');
-        const overlay = resolveOverlay(targetSel);
-        if (!overlay) {
-          console.warn('Modal target not found for', targetSel);
-          return;
+    
+    document.addEventListener('click', (ev) => {
+      const opener = ev.target.closest('[data-open]');
+      if (opener) {
+        const targetSel = opener.getAttribute('data-open');
+        if (targetSel) {
+          const overlay = resolveOverlayWithSearchFallback(targetSel);
+          if (!overlay) {
+            console.warn('Modal target not found for', targetSel);
+            return;
+          }
+          if (opener.tagName === 'A') ev.preventDefault();
+          openModal(overlay);
         }
-        openModal(overlay);
-      });
-    });
+        return;
+      }
 
-    // Close triggers: elements inside modal with [data-close] or .modal-close
-    qsa('[data-close], .modal-close').forEach(btn => {
-      btn.addEventListener('click', (ev) => {
-        const overlay = btn.closest('.modal-overlay');
+      const closer = ev.target.closest('[data-close], .modal-close');
+      if (closer) {
+        const overlay = closer.closest('.modal-overlay');
         if (overlay) closeModal(overlay);
-      });
+        return;
+      }
+
+      const overlayHit = ev.target.closest('.modal-overlay');
+      if (overlayHit && ev.target === overlayHit) {
+        closeModal(overlayHit);
+      }
     });
 
-    // Click outside modal content (overlay click)
-    qsa('.modal-overlay').forEach(overlay => {
-      overlay.addEventListener('click', (e) => {
-        // close only when clicking directly on overlay, not on modal children
-        if (e.target === overlay) {
-          closeModal(overlay);
-        }
-      });
-
-      // set initial aria-hidden
+    qsa('.modal-overlay').forEach((overlay) => {
       if (!overlay.hasAttribute('aria-hidden')) overlay.setAttribute('aria-hidden', 'true');
 
-      // ensure modal element is focusable for trapping fallback
       const modalEl = qs('.modal', overlay);
       if (modalEl && !modalEl.hasAttribute('tabindex')) {
         modalEl.setAttribute('tabindex', '-1');
       }
     });
-
-    // Optional: allow opening by [data-open-id] or other custom patterns in future
   }
 
   if (document.readyState === 'loading') {
@@ -179,10 +298,10 @@
     init();
   }
 
-  // Expose some methods for debugging if needed
+  
   window.__modal = {
     open: (sel) => {
-      const overlay = resolveOverlay(sel);
+      const overlay = resolveOverlayWithSearchFallback(sel);
       openModal(overlay);
     },
     close: (sel) => {
@@ -190,7 +309,7 @@
       closeModal(overlay);
     },
     toggle: (sel) => {
-      const overlay = resolveOverlay(sel);
+      const overlay = resolveOverlayWithSearchFallback(sel);
       toggleModal(overlay);
     }
   };

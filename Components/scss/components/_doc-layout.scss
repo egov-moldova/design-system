@@ -1,0 +1,310 @@
+@use '../abstracts/mud-prefix' as mud;
+
+.#{mud.mud-class('container')}[data-doc] {
+  box-sizing: border-box;
+  padding-top: var(--spacing-64, 64px);
+  padding-bottom: var(--spacing-64, 64px);
+
+  // Page shell: vertical padding on the doc container (replaces former `mud-py-64` wrapper).
+
+  // Hero row (first direct row): same typography measure on every doc page.
+  > .#{mud.mud-class('row')}:first-child h1 {
+    margin: 0;
+    max-width: 800px;
+  }
+
+  > .#{mud.mud-class('row')}:first-child p {
+    max-width: 800px;
+    margin: 0;
+  }
+
+  @media (max-width: 991px) {
+    > .#{mud.mud-class('row')}:first-child > [class*='#{mud.$mud-prefix}col-'] {
+      flex: 0 0 100%;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    > .#{mud.mud-class('row')}:first-child h1 {
+      font-size: 48px;
+      font-weight: 600;
+      line-height: 140%;
+      letter-spacing: -0.96px;
+    }
+  }
+
+  @media (max-width: 575.98px) {
+    > .#{mud.mud-class('row')}:first-child h1 {
+      font-size: 40px;
+      letter-spacing: -0.8px;
+    }
+  }
+
+  .mud-doc-main > .typography-typeface-card:first-child,
+  .mud-doc-main > .#{mud.mud-class('row')} > .#{mud.mud-class('col-12')} > .typography-typeface-card:first-child {
+    margin-top: 0;
+  }
+
+  .mud-doc-main div.descriptor {
+    margin-bottom: 0;
+    color: var(--gray-700, #383838);
+  }
+}
+
+.mud-doc-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-16, 16px);
+  height: 64px;
+  margin-top: var(--spacing-64, 64px);
+  margin-bottom: var(--spacing-32, 32px);
+  border-bottom: 1px solid var(--gray-250, #d9d9d9);
+}
+
+.mud-doc-section-head h2,
+.mud-doc-section-head h3 {
+  margin: 0;
+}
+
+.mud-doc-section-head.mud-doc-section-head--grid {
+  margin-bottom: 0;
+}
+
+.mud-doc-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-40, 40px);
+}
+
+.mud-doc-prose {
+  max-width: 800px;
+
+  > p {
+    margin: 0;
+  }
+}
+
+.mud-doc-main > .#{mud.mud-class('row')}:first-child .mud-doc-section-head:first-child,
+.mud-doc-main > section:first-child > .mud-doc-section-head:first-child,
+.mud-doc-main > .mud-doc-section-head:first-child,
+.mud-doc-main > .#{mud.mud-class('row')} > .#{mud.mud-class('col-12')} > section:first-child > .mud-doc-section-head:first-child,
+.mud-doc-main > .#{mud.mud-class('row')} > .#{mud.mud-class('col-12')} > .mud-doc-section-head:first-child {
+  margin-top: 0;
+}
+
+.token-name {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 2px 6px;
+  border-radius: var(--border-radius-8, 8px);
+  background: var(--gray-100, #f6f6f6);
+  font-family: var(--font-family-mono, 'JetBrains Mono', ui-monospace, monospace);
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 500;
+  letter-spacing: -0.16px;
+  color: var(--gray-700, #383838);
+  white-space: nowrap;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+button.token-name {
+  border: none;
+  font: inherit;
+  text-align: inherit;
+  color: var(--gray-700, #383838);
+  appearance: none;
+}
+
+.token-name:hover {
+  background: var(--gray-250, #e8e8e8);
+}
+
+.token-name:focus-visible {
+  outline: 2px solid var(--blue-sky-500, #2c69e0);
+  outline-offset: 2px;
+}
+
+.token-name::before {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid var(--blue-sky-200, #b8dafd);
+  opacity: 0;
+  transform: translateX(-50%);
+  transition: all 0.35s ease;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.token-name::after {
+  content: 'Click to copy';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: max-content;
+  transform: translateX(-50%);
+  padding: var(--spacing-4, 4px) var(--spacing-8, 8px);
+  background: var(--blue-sky-200, #b8dafd);
+  color: var(--blue-sky-800, #003a8c);
+  border-radius: var(--border-radius-8, 8px);
+  font-family: var(--font-family-base, 'Onest', system-ui, sans-serif);
+  font-size: 12px;
+  line-height: 1.2;
+  font-weight: 500;
+  letter-spacing: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.35s ease;
+  z-index: -1;
+}
+
+.token-name:hover::after,
+.token-name:focus-visible::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-30px);
+  z-index: 1;
+}
+
+.token-name:hover::before,
+.token-name:focus-visible::before {
+  top: -3px;
+  transform: translateX(-50%) translateY(-100%);
+  opacity: 1;
+  z-index: 1;
+}
+
+.token-name.is-copied {
+  background: var(--green-100, #e6f5ee);
+  color: var(--green-700, #047857);
+}
+
+.token-name.is-copied::after {
+  content: 'Copied';
+  background: var(--green-100, #e6f5ee);
+  color: var(--green-700, #047857);
+  opacity: 1;
+  transform: translateX(-50%) translateY(-30px);
+  z-index: 1;
+}
+
+.token-name.is-copied::before {
+  border-top-color: var(--green-100, #e6f5ee);
+  top: -3px;
+  transform: translateX(-50%) translateY(-100%);
+  opacity: 1;
+  z-index: 1;
+}
+
+.token-name.is-copied .mud-text-gray-700,
+.token-name.is-copied .mud-text-gray-500,
+.token-name.is-copied .mud-text-gray-400 {
+  color: inherit !important;
+}
+
+[data-doc="flags"] {
+  .flags-doc-item__flag {
+    cursor: default;
+    user-select: none;
+  }
+
+  .flags-doc-item__flag-img {
+    object-fit: cover;
+  }
+}
+
+.token-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--spacing-20, 20px);
+  font-size: 16px;
+  line-height: 24px;
+  text-align: left;
+
+  thead th {
+    vertical-align: top;
+    padding: 0 var(--spacing-16, 16px) 0 0;
+
+    &:last-child {
+      padding-right: 0;
+    }
+  }
+
+  .token-value {
+    font-family: var(--font-family-mono, 'JetBrains Mono', monospace);
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    color: var(--gray-800, #383838);
+    background-color: var(--gray-100, #f6f6f6);
+    border-radius: var(--border-radius-8, 8px);
+    padding: 0.125rem 0.375rem;
+  }
+}
+
+// Borders doc: preview cells use `mud-card` + BEM helpers (see borders.html).
+[data-doc='borders'] .token-table {
+  .mud-doc-border-preview {
+    width: 135px;
+    height: 95px;
+    max-width: 135px;
+  }
+
+  .mud-doc-border-preview__inner {
+    background-color: #e245af1a;
+    border-color: #e245af;
+    width: 2rem;
+    height: 2rem;
+    box-sizing: border-box;
+  }
+
+  &.token-table--width-tokens .mud-doc-border-preview__inner {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--border-radius-8, 8px);
+  }
+}
+
+.spacing-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th,
+  td {
+    text-align: left;
+  }
+
+  td:first-child code {
+    background-color: var(--gray-100, #f6f6f6);
+    border-radius: var(--border-radius-8, 8px);
+    font-family: inherit;
+  }
+}
+
+[data-doc='spacings-margins'],
+[data-doc='spacings-paddings'] {
+  .mud-doc-spacing-preview {
+    display: inline-flex;
+    background: var(--gray-100, #f5f5f5);
+    border-radius: var(--border-radius-8, 8px);
+    width: 200px;
+    min-height: 95px;
+    box-sizing: border-box;
+  }
+
+  .mud-doc-spacing-preview__inner {
+    background: rgba(255, 0, 128, 0.2);
+    border: 1px dashed deeppink;
+    width: 1.5rem;
+    height: 1.5rem;
+    box-sizing: border-box;
+  }
+}

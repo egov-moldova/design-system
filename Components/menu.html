@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Menu — Design System</title>
+    <script src="js/include-head-assets.js"></script>
     <link rel="stylesheet" href="css/main.css" />
     <script src="js/include-header.js" defer></script>
     <script src="js/include-footer.js" defer></script>
@@ -26,23 +27,23 @@
     <div id="site-header"></div>
 
     <main id="menu-doc-main" tabindex="-1">
-      <div class="container select-doc-page menu-doc-page">
-        <div class="menu-doc-hero">
-          <header class="select-doc-documentation-header">
-            <h1 class="select-doc-title">Menu</h1>
-            <p class="select-doc-body select-doc-body--intro">
+      <div class="mud-container mud-mt-56" data-doc="menu">
+        <div class="mud-row">
+          <div class="mud-col-12 mud-col-lg-8">
+            <h1>Menu</h1>
+            <p class="mud-text-gray-400">
               The dropdown menu component provides a compact way to present a
               list of options or actions without overwhelming the interface. It
               allows users to select a value, trigger an action, or navigate to
               another section while conserving space on the screen.
             </p>
-          </header>
+          </div>
         </div>
 
-        <div class="section-header">
+        <div class="select-doc-section-header">
           <h2>Selection Menu</h2>
         </div>
-        <div class="section-content">
+        <div class="select-doc-section-content">
           <p class="menu-doc-intro menu-doc-intro--selection">
             The single-selection dropdown allows users to choose one option from
             a predefined list. It's typically used in forms, filters, or
@@ -52,10 +53,10 @@
           </p>
         </div>
 
-        <div class="section-header">
+        <div class="select-doc-section-header">
           <h3>Breakpoints</h3>
         </div>
-        <div class="section-content">
+        <div class="select-doc-section-content">
           <p class="menu-doc-breakpoints-intro">
             Additional information about the Menu component treatment on Mobile
             can be accessed through the provided
@@ -68,7 +69,7 @@
             >.
           </p>
           <div class="menu-doc-breakpoints">
-            <div class="menu-doc-row menu-doc-row--breakpoints">
+            <div class="mud-flex mud-flex-wrap mud-gap-80 mud-items-start menu-doc-row menu-doc-row--breakpoints">
               <div class="select-wrap menu-doc-select-static">
                 <div class="descriptor" id="menu-doc-lbl-bp-desktop">desktop</div>
                 <div
@@ -132,11 +133,11 @@
           </div>
         </div>
 
-        <div class="section-header">
+        <div class="select-doc-section-header">
           <h3>States</h3>
         </div>
-        <div class="section-content">
-          <div class="menu-doc-row menu-doc-state-row">
+        <div class="select-doc-section-content">
+          <div class="mud-flex mud-flex-wrap mud-gap-80 mud-items-start menu-doc-row menu-doc-state-row">
             <div class="select-wrap menu-doc-select-static">
               <div class="descriptor" id="menu-doc-lbl-state-unselected">unselected</div>
               <div
@@ -254,11 +255,11 @@
           </div>
         </div>
 
-        <div class="section-header">
+        <div class="select-doc-section-header">
           <h3>Edge Cases</h3>
         </div>
-        <div class="section-content">
-          <div class="menu-doc-row">
+        <div class="select-doc-section-content">
+          <div class="mud-flex mud-flex-wrap mud-gap-80 mud-items-start menu-doc-row">
             <div class="select-wrap menu-doc-select-static">
               <div class="descriptor" id="menu-doc-lbl-trunc-unselected">truncation: unselected</div>
               <div
@@ -319,10 +320,10 @@
           </div>
         </div>
 
-        <div class="section-header">
+        <div class="select-doc-section-header">
           <h2>Contextual Menu</h2>
         </div>
-        <div class="section-content">
+        <div class="select-doc-section-content">
           <p class="menu-doc-intro">
             Contextual Menu – widely accepted, flexible, and communicates that
             the menu adapts to the user's current context, offering both actions
@@ -330,11 +331,11 @@
           </p>
         </div>
 
-        <div class="section-header">
+        <div class="select-doc-section-header">
           <h3>States</h3>
         </div>
-        <div class="section-content">
-          <div class="menu-doc-row">
+        <div class="select-doc-section-content">
+          <div class="mud-flex mud-flex-wrap mud-gap-80 mud-items-start menu-doc-row">
             <div
               class="select-wrap menu-doc-select-static menu-doc-select-static--contextual"
             >
@@ -474,11 +475,11 @@
           </div>
         </div>
 
-        <div class="section-header">
+        <div class="select-doc-section-header">
           <h3>Variations</h3>
         </div>
-        <div class="section-content menu-doc-section--variations">
-          <div class="menu-doc-variations">
+        <div class="select-doc-section-content menu-doc-section--variations">
+          <div class="mud-flex mud-flex-wrap mud-gap-80 mud-items-start menu-doc-variations">
             <div class="select-wrap menu-doc-select-static">
               <div class="descriptor" id="menu-doc-lbl-var-none">none</div>
               <div
@@ -647,15 +648,15 @@
           </div>
         </div>
 
-        <div class="section-header">
+        <div class="select-doc-section-header">
           <h3>Scrollable Content</h3>
         </div>
-        <div class="section-content">
+        <div class="select-doc-section-content">
           <p class="menu-doc-intro menu-doc-intro--tight">
             Scrolling is enabled whenever content extends beyond the popover
             container.
           </p>
-          <div class="menu-doc-row">
+          <div class="mud-flex mud-flex-wrap mud-gap-80 mud-items-start menu-doc-row">
             <div class="select-wrap menu-doc-select-static">
               <div
                 class="select-wrap menu-doc-select-static menu-doc-select-static--scroll-panel"
@@ -687,10 +688,10 @@
           </div>
         </div>
 
-        <div class="section-header">
+        <div class="select-doc-section-header">
           <h3>Dismissal</h3>
         </div>
-        <div class="section-content">
+        <div class="select-doc-section-content">
           <p class="menu-doc-dismissal-intro">
             Popovers can be dismissed by: interacting with the button that
             presented it again, making a decision within the popover,
@@ -703,7 +704,7 @@
                   <button
                     type="button"
                     id="menu-doc-dismissal-btn-1"
-                    class="btn btn-primary btn-rounded menu-doc-dismissal-trigger"
+                    class="mud-btn mud-btn-primary mud-btn-rounded menu-doc-dismissal-trigger"
                     aria-expanded="true"
                     aria-haspopup="menu"
                     aria-controls="menu-doc-dismissal-panel-1"
@@ -774,7 +775,7 @@
                   <button
                     type="button"
                     id="menu-doc-dismissal-btn-2"
-                    class="btn btn-primary btn-rounded menu-doc-dismissal-trigger"
+                    class="mud-btn mud-btn-primary mud-btn-rounded menu-doc-dismissal-trigger"
                     aria-expanded="true"
                     aria-haspopup="menu"
                     aria-controls="menu-doc-dismissal-panel-2"
@@ -849,7 +850,7 @@
                   <button
                     type="button"
                     id="menu-doc-dismissal-btn-3"
-                    class="btn btn-primary btn-rounded menu-doc-dismissal-trigger"
+                    class="mud-btn mud-btn-primary mud-btn-rounded menu-doc-dismissal-trigger"
                     aria-expanded="true"
                     aria-haspopup="menu"
                     aria-controls="menu-doc-dismissal-panel-3"
@@ -918,11 +919,11 @@
           </div>
         </div>
 
-        <div class="section-header">
+        <div class="select-doc-section-header">
           <h3>Edge Cases</h3>
         </div>
-        <div class="section-content">
-          <div class="menu-doc-row menu-doc-edge-row">
+        <div class="select-doc-section-content">
+          <div class="mud-flex mud-flex-wrap mud-gap-80 mud-items-start menu-doc-row menu-doc-edge-row">
             <div class="select-wrap menu-doc-select-static">
               <div class="descriptor" id="menu-doc-ctx-edge-opt-label">option-label-truncation</div>
               <div class="select-wrap menu-doc-select-static">
@@ -982,17 +983,17 @@
           </div>
         </div>
 
-        <div class="section-header">
+        <div class="select-doc-section-header">
           <h2>Target Sizes</h2>
         </div>
-        <div class="section-content">
+        <div class="select-doc-section-content">
           <p class="menu-doc-items-target-copy">
             Each menu item (cell) serves as the primary interactive target for
             selection. To ensure accessibility and ease of use across devices,
             the menu cell height is set to 44px. This provides a reliable touch
             and click area, reducing the chance of accidental selections.
           </p>
-          <div class="menu-doc-row">
+          <div class="mud-flex mud-flex-wrap mud-gap-80 mud-items-start menu-doc-row">
             <div class="select-wrap menu-doc-select-static">
               <div class="descriptor" id="menu-doc-lbl-items-pointer">
                 pointer-devices

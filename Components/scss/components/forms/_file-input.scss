@@ -1,7 +1,6 @@
 @use "sass:map";
 @use "../../abstracts/tokens" as tokens;
 
-// ============= Semantic variants
 @mixin file-input-variant($variant) {
   --border-color: map.get(map.get(tokens.$input-colors, $variant), border);
   --focus-color: map.get(map.get(tokens.$input-colors, $variant), focus);
@@ -17,7 +16,6 @@
   @include file-input-variant(destructive);
 }
 
-// =============  Upload block
 .upload-block {
   &__title {
     margin-bottom: var(--spacing-16);
@@ -64,11 +62,10 @@
   }
 }
 
-// ============ Upload list items
 .upload {
   &__item {
-    // display: flex;
-    // align-items: center;
+    
+    
     gap: var(--spacing-12);
     padding: var(--spacing-6) var(--spacing-12);
 

@@ -56,7 +56,7 @@
     }
   }
 
-  // ===========  Types with fixed colors
+  
   &--info {
     background-color: var(--blue-sky-600);
     color: var(--white, #fff);
@@ -97,7 +97,7 @@
     }
   }
 
-  // ============ Variants
+  
   &--banner {
     border-radius: 0;
     justify-content: center;
@@ -112,7 +112,7 @@
     }
   }
 
-  // Subtle variants
+  
   &--subtle {
     background-color: transparent;
 
@@ -212,7 +212,7 @@
     padding-left: 16px;
   }
 
-  // =============  States
+  
   &.is-hidden {
     animation: message-fade-out 0.3s ease forwards;
   }
@@ -223,7 +223,6 @@
   }
 }
 
-// ========== TOASTS MESSAGES
 .toast-container {
   position: fixed;
   right: var(--spacing-24, 24px);
@@ -365,7 +364,6 @@
   }
 }
 
-// ======= BANNER
 .banner {
   border-radius: 0;
   display: var(--flex, flex);
@@ -416,7 +414,6 @@
   }
 }
 
-//INFORMATION BOX
 .info-box {
   background-color: var(--gray-100, #f5f5f5);
   border-radius: var(--border-radius-8, 8px);
@@ -469,7 +466,7 @@
       }
     }
 
-    .btn {
+    .mud-btn {
       font-size: var(--text-body-sm-font-size);
       line-height: 22px;
       padding: var(--spacing-4, 4px) var(--spacing-12, 12px);
@@ -494,7 +491,6 @@
   }
 }
 
-// ============ Toast container (dynamic stacking)
 .toast-container {
   position: fixed;
   display: flex;
@@ -518,7 +514,6 @@
   }
 }
 
-// ============== Animations
 @keyframes message-slide-in {
   0% {
     opacity: 0;

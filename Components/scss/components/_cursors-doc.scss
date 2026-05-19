@@ -1,0 +1,37 @@
+
+[data-doc="cursors"] {
+  $demo-cursors: default, copy, not-allowed, progress, text, pointer, grab, grabbing;
+
+  @each $c in $demo-cursors {
+    [data-demo-cursor='#{$c}'] .cursor-card__icon {
+      cursor: #{$c};
+    }
+  }
+
+  .cursors-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: 24px;
+    row-gap: 24px;
+  }
+
+  .cursor-card {
+    min-width: 0;
+    box-sizing: border-box;
+  }
+
+  .cursor-card__icon {
+    min-height: 56px;
+    box-sizing: border-box;
+  }
+
+  .cursor-card__glyph {
+    pointer-events: none;
+  }
+
+  @media (max-width: 599.98px) {
+    .cursors-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}

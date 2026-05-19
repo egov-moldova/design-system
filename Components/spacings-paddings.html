@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Paddings Spacing Preview</title>
-  <link rel="stylesheet" href="css/main.css" />
-  <script src="js/main.js" defer></script>
+  <title>Spacing utilities — paddings — Design System</title>
+    <script src="js/include-head-assets.js"></script>
+    <link rel="stylesheet" href="css/main.css" />
   <script src="js/include-header.js" defer></script>
   <script src="js/include-footer.js" defer></script>
   <script src="js/toggler.js" defer></script>
@@ -13,906 +13,868 @@
   <script src="js/mega-nav.js" defer></script>
   <script src="js/search.js" defer></script>
   <script src="js/dropdown.js" defer></script>
+  <script src="js/copy-token.js" defer></script>
 </head>
 <body>
   <div id="site-header"></div>
-  <div class="container pt-56">
-    <div class="row">
-      <div class="col-sm-7">
-         <h1>Spacing Utilities Preview</h1>
-        <p class="text-gray-400">
-          Spacing tokens are predefined values used to maintain consistent distances between elements such as margins, padding, and gaps, particularly within auto layout settings. 
-          They provide a standardised system for spacing, ensuring uniformity and harmony across different components within a design project.
-        </p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-12">  
-          <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-            <h2>Padding Utilities</h2>
-          </div> 
-      </div>
-    </div>
+  <div class="mud-container" data-doc="spacings-paddings">
+    <div class="mud-row mud-mb-40">
+          <div class="mud-col-8">
+            <h1 class="mud-desktop-display-xl mud-mb-24">Spacing utilities — paddings preview</h1>
+            <p class="mud-text-gray-400 mud-desktop-body-xl">
+              Spacing tokens are predefined values used to maintain consistent distances between elements such as margins, padding, and gaps, particularly within auto layout settings.
+              They provide a standardised system for spacing, ensuring uniformity and harmony across different components within a design project.
+            </p>
+          </div>
+        </div>
+      <div class="mud-doc-main">
+        <div class="mud-row">
+          <div class="mud-col-12 spacing-table">
+        <div class="mud-doc-section-head">
+          <h2 class="mud-desktop-heading-sm">Padding utilities</h2>
+        </div>
+
+  <div class="mud-doc-section-head">
+    <h3 class="mud-desktop-heading-sm">Padding — All sides <code class="token-name">.p-*</code></h3>
   </div>
 
-  <div class="container py-32 spacing-table">
-
-  <!-- SECTION TITLE -->
-  <div class="row mb-16">
-    <div class="col-12">
-      <h4 class="fw-semibold mb-0">
-        Paddings — All sides <code class="bg-gray-200 radius-8 py-2 px-6 text-body-md-500">.p-*</code>
-      </h4>
-    </div>
+  
+  <div class="mud-row mud-font-semibold mud-bg-gray-100 mud-mb-20 mud-py-12 mud-sticky-top-z1">
+    <div class="mud-col-3">Token</div>
+    <div class="mud-col-2">rem</div>
+    <div class="mud-col-2">px</div>
+    <div class="mud-col-2">Class</div>
+    <div class="mud-col-3">Preview</div>
   </div>
 
-  <!-- HEADER -->
-  <div class="row fw-semibold bg-gray-100 mb-20 py-12" style="position: sticky; top: 0; z-index: 1;">
-    <div class="col-3">Token</div>
-    <div class="col-2">rem</div>
-    <div class="col-2">px</div>
-    <div class="col-2">Class</div>
-    <div class="col-3">Preview</div>
-  </div>
-
-  <!-- p-0 -->
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3">
-      <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-0</code>
+  
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3">
+      <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-0</code>
     </div>
-    <div class="col-2">0rem</div>
-    <div class="col-2">0px</div>
-    <div class="col-2">
-      <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.p-0</code>
+    <div class="mud-col-2">0rem</div>
+    <div class="mud-col-2">0px</div>
+    <div class="mud-col-2">
+      <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-p-0</code>
     </div>
-    <div class="col-3">
-      <div class="preview-box py-16">
-        <div class="preview-inner p-0"></div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview mud-py-16">
+        <div class="mud-doc-spacing-preview__inner mud-p-0"></div>
       </div>
     </div>
   </div>
 
-  <!-- p-2 -->
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-2</code></div>
-    <div class="col-2">0.125rem</div>
-    <div class="col-2">2px</div>
-    <div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.p-2</code></div>
-    <div class="col-3">
-      <div class="preview-box py-16">
-        <div class="preview-inner p-2"></div>
+  
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-2</code></div>
+    <div class="mud-col-2">0.125rem</div>
+    <div class="mud-col-2">2px</div>
+    <div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-p-2</code></div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview mud-py-16">
+        <div class="mud-doc-spacing-preview__inner mud-p-2"></div>
       </div>
     </div>
   </div>
 
-  <!-- p-4 -->
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-4</code></div>
-    <div class="col-2">0.25rem</div>
-    <div class="col-2">4px</div>
-    <div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.p-4</code></div>
-    <div class="col-3">
-      <div class="preview-box py-16">
-        <div class="preview-inner p-4"></div>
+  
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-4</code></div>
+    <div class="mud-col-2">0.25rem</div>
+    <div class="mud-col-2">4px</div>
+    <div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-p-4</code></div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview mud-py-16">
+        <div class="mud-doc-spacing-preview__inner mud-p-4"></div>
       </div>
     </div>
   </div>
 
-  <!-- p-8 -->
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-8</code></div>
-    <div class="col-2">0.5rem</div>
-    <div class="col-2">8px</div>
-    <div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.p-8</code></div>
-    <div class="col-3">
-      <div class="preview-box py-16">
-        <div class="preview-inner p-8"></div>
+  
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-8</code></div>
+    <div class="mud-col-2">0.5rem</div>
+    <div class="mud-col-2">8px</div>
+    <div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-p-8</code></div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview mud-py-16">
+        <div class="mud-doc-spacing-preview__inner mud-p-8"></div>
       </div>
     </div>
   </div>
 
-  <!-- p-12 -->
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-12</code></div>
-    <div class="col-2">0.75rem</div>
-    <div class="col-2">12px</div>
-    <div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.p-12</code></div>
-    <div class="col-3">
-      <div class="preview-box py-16">
-        <div class="preview-inner p-12"></div>
+  
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-12</code></div>
+    <div class="mud-col-2">0.75rem</div>
+    <div class="mud-col-2">12px</div>
+    <div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-p-12</code></div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview mud-py-16">
+        <div class="mud-doc-spacing-preview__inner mud-p-12"></div>
       </div>
     </div>
   </div>
 
-  <!-- p-16 -->
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-16</code></div>
-    <div class="col-2">1rem</div>
-    <div class="col-2">16px</div>
-    <div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.p-16</code></div>
-    <div class="col-3">
-      <div class="preview-box py-16">
-        <div class="preview-inner p-16"></div>
+  
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-16</code></div>
+    <div class="mud-col-2">1rem</div>
+    <div class="mud-col-2">16px</div>
+    <div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-p-16</code></div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview mud-py-16">
+        <div class="mud-doc-spacing-preview__inner mud-p-16"></div>
       </div>
     </div>
   </div>
 
-  <!-- p-24 -->
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-24</code></div>
-    <div class="col-2">1.5rem</div>
-    <div class="col-2">24px</div>
-    <div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.p-24</code></div>
-    <div class="col-3">
-      <div class="preview-box py-16">
-        <div class="preview-inner p-24"></div>
+  
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-24</code></div>
+    <div class="mud-col-2">1.5rem</div>
+    <div class="mud-col-2">24px</div>
+    <div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-p-24</code></div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview mud-py-16">
+        <div class="mud-doc-spacing-preview__inner mud-p-24"></div>
       </div>
     </div>
   </div>
 
-  <!-- p-32 -->
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-32</code></div>
-    <div class="col-2">2rem</div>
-    <div class="col-2">32px</div>
-    <div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.p-32</code></div>
-    <div class="col-3">
-      <div class="preview-box py-16">
-        <div class="preview-inner p-32"></div>
+  
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-32</code></div>
+    <div class="mud-col-2">2rem</div>
+    <div class="mud-col-2">32px</div>
+    <div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-p-32</code></div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview mud-py-16">
+        <div class="mud-doc-spacing-preview__inner mud-p-32"></div>
       </div>
     </div>
   </div>
 
-  <!-- p-40 -->
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-40</code></div>
-    <div class="col-2">2.5rem</div>
-    <div class="col-2">40px</div>
-    <div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.p-40</code></div>
-    <div class="col-3">
-      <div class="preview-box py-16">
-        <div class="preview-inner p-40"></div>
+  
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-40</code></div>
+    <div class="mud-col-2">2.5rem</div>
+    <div class="mud-col-2">40px</div>
+    <div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-p-40</code></div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview mud-py-16">
+        <div class="mud-doc-spacing-preview__inner mud-p-40"></div>
       </div>
     </div>
   </div>
 
-  <!-- p-48 -->
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-48</code></div>
-    <div class="col-2">3rem</div>
-    <div class="col-2">48px</div>
-    <div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.p-48</code></div>
-    <div class="col-3">
-      <div class="preview-box py-16">
-        <div class="preview-inner p-48"></div>
+  
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-48</code></div>
+    <div class="mud-col-2">3rem</div>
+    <div class="mud-col-2">48px</div>
+    <div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-p-48</code></div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview mud-py-16">
+        <div class="mud-doc-spacing-preview__inner mud-p-48"></div>
       </div>
     </div>
   </div>
 
-  <!-- p-56 -->
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-56</code></div>
-    <div class="col-2">3.5rem</div>
-    <div class="col-2">56px</div>
-    <div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.p-56</code></div>
-    <div class="col-3">
-      <div class="preview-box py-16">
-        <div class="preview-inner p-56"></div>
+  
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-56</code></div>
+    <div class="mud-col-2">3.5rem</div>
+    <div class="mud-col-2">56px</div>
+    <div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-p-56</code></div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview mud-py-16">
+        <div class="mud-doc-spacing-preview__inner mud-p-56"></div>
       </div>
     </div>
   </div>
 
-  <!-- p-64 -->
-  <div class="row align-items-center py-8">
-    <div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-64</code></div>
-    <div class="col-2">4rem</div>
-    <div class="col-2">64px</div>
-    <div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.p-64</code></div>
-    <div class="col-3">
-      <div class="preview-box py-16">
-        <div class="preview-inner p-64"></div>
+  
+  <div class="mud-row mud-items-center mud-py-8">
+    <div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-64</code></div>
+    <div class="mud-col-2">4rem</div>
+    <div class="mud-col-2">64px</div>
+    <div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-p-64</code></div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview mud-py-16">
+        <div class="mud-doc-spacing-preview__inner mud-p-64"></div>
       </div>
     </div>
   </div>
 
-  <!-- =============================== -->
-<!-- Padding — Top -->
-<!-- =============================== -->
+  
 
-<div class="row mt-56 mb-16">
-  <div class="col-12">
-    <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-      <h4 class="mb-16">Padding — Top <code class="bg-gray-200 radius-8 py-2 px-6 text-body-md-500">.pt-*</code></h4>
+<div class="mud-doc-section-head">
+  <h3 class="mud-desktop-heading-sm">Padding — Top <code class="token-name">.pt-*</code></h3>
+</div>
+
+<div class="mud-row mud-font-semibold mud-bg-gray-100 mud-mb-20 mud-py-12 mud-hidden">
+  <div class="mud-col-3">Token</div>
+  <div class="mud-col-2">rem</div>
+  <div class="mud-col-2">px</div>
+  <div class="mud-col-2">Class</div>
+  <div class="mud-col-3">Preview</div>
+</div>
+
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-0</code>
+  </div>
+  <div class="mud-col-2">0</div>
+  <div class="mud-col-2">0</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pt-0</code>
+  </div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pt-0"></div>
     </div>
   </div>
 </div>
-
-<div class="row fw-semibold bg-gray-100 mb-20 py-12 d-none">
-  <div class="col-3">Token</div>
-  <div class="col-2">rem</div>
-  <div class="col-2">px</div>
-  <div class="col-2">Class</div>
-  <div class="col-3">Preview</div>
-</div>
-
-<!-- mt values -->
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-0</code>
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-2</code>
   </div>
-  <div class="col-2">0</div>
-  <div class="col-2">0</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pt-0</code>
+  <div class="mud-col-2">0.125</div>
+  <div class="mud-col-2">2</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pt-2</code>
   </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pt-0"></div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pt-2"></div>
     </div>
   </div>
 </div>
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-2</code>
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-4</code>
   </div>
-  <div class="col-2">0.125</div>
-  <div class="col-2">2</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pt-2</code>
+  <div class="mud-col-2">0.25</div>
+  <div class="mud-col-2">4</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pt-4</code>
   </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pt-2"></div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pt-4"></div>
     </div>
   </div>
 </div>
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-4</code>
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-8</code>
   </div>
-  <div class="col-2">0.25</div>
-  <div class="col-2">4</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pt-4</code>
+  <div class="mud-col-2">0.5</div>
+  <div class="mud-col-2">8</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pt-8</code>
   </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pt-4"></div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pt-8"></div>
     </div>
   </div>
 </div>
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-8</code>
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-12</code>
   </div>
-  <div class="col-2">0.5</div>
-  <div class="col-2">8</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pt-8</code>
+  <div class="mud-col-2">0.75</div>
+  <div class="mud-col-2">12</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pt-12</code>
   </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pt-8"></div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pt-12"></div>
     </div>
   </div>
 </div>
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-12</code>
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-16</code>
   </div>
-  <div class="col-2">0.75</div>
-  <div class="col-2">12</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pt-12</code>
+  <div class="mud-col-2">1</div>
+  <div class="mud-col-2">16</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pt-16</code>
   </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pt-12"></div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pt-16"></div>
     </div>
   </div>
 </div>
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-16</code>
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-24</code>
   </div>
-  <div class="col-2">1</div>
-  <div class="col-2">16</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pt-16</code>
+  <div class="mud-col-2">1.5</div>
+  <div class="mud-col-2">24</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pt-24</code>
   </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pt-16"></div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pt-24"></div>
     </div>
   </div>
 </div>
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-24</code>
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-32</code>
   </div>
-  <div class="col-2">1.5</div>
-  <div class="col-2">24</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pt-24</code>
+  <div class="mud-col-2">2</div>
+  <div class="mud-col-2">32</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pt-32</code>
   </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pt-24"></div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pt-32"></div>
     </div>
   </div>
 </div>
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-32</code>
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-40</code>
   </div>
-  <div class="col-2">2</div>
-  <div class="col-2">32</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pt-32</code>
+  <div class="mud-col-2">2.5</div>
+  <div class="mud-col-2">40</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pt-40</code>
   </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pt-32"></div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pt-40"></div>
     </div>
   </div>
 </div>
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-40</code>
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-48</code>
   </div>
-  <div class="col-2">2.5</div>
-  <div class="col-2">40</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pt-40</code>
+  <div class="mud-col-2">3</div>
+  <div class="mud-col-2">48</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pt-48</code>
   </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pt-40"></div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pt-48"></div>
     </div>
   </div>
 </div>
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-48</code>
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-56</code>
   </div>
-  <div class="col-2">3</div>
-  <div class="col-2">48</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pt-48</code>
+  <div class="mud-col-2">3.5</div>
+  <div class="mud-col-2">56</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pt-56</code>
   </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pt-48"></div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pt-56"></div>
     </div>
   </div>
 </div>
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-56</code>
+<div class="mud-row mud-items-center mud-py-8">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-64</code>
   </div>
-  <div class="col-2">3.5</div>
-  <div class="col-2">56</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pt-56</code>
+  <div class="mud-col-2">4</div>
+  <div class="mud-col-2">64</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pt-64</code>
   </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pt-56"></div>
-    </div>
-  </div>
-</div>
-<div class="row align-items-center py-8">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-64</code>
-  </div>
-  <div class="col-2">4</div>
-  <div class="col-2">64</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pt-64</code>
-  </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pt-64"></div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pt-64"></div>
     </div>
   </div>
 </div>
 
  
-<!-- Padding Bottom -->
- <div class="row mt-56 mb-16">
-  <div class="col-12">
-    <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-      <h4 class="mb-16">Padding — Bottom <code class="bg-gray-200 radius-8 py-2 px-6 text-body-md-500">.pb-*</code></h4>
+
+<div class="mud-doc-section-head">
+  <h3 class="mud-desktop-heading-sm">Padding — Bottom <code class="token-name">.pb-*</code></h3>
+</div>
+
+<div class="mud-row mud-font-semibold mud-bg-gray-100 mud-mb-20 mud-py-12 mud-hidden">
+  <div class="mud-col-3">Token</div>
+  <div class="mud-col-2">rem</div>
+  <div class="mud-col-2">px</div>
+  <div class="mud-col-2">Class</div>
+  <div class="mud-col-3">Preview</div>
+</div>
+
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-0</code>
+  </div>
+  <div class="mud-col-2">0</div>
+  <div class="mud-col-2">0</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pb-0</code>
+  </div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pb-0"></div>
+    </div>
+  </div>
+</div>
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-2</code>
+  </div>
+  <div class="mud-col-2">0.125</div>
+  <div class="mud-col-2">2</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pb-2</code>
+  </div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pb-2"></div>
+    </div>
+  </div>
+</div>
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-4</code>
+  </div>
+  <div class="mud-col-2">0.25</div>
+  <div class="mud-col-2">4</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pb-4</code>
+  </div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pb-4"></div>
+    </div>
+  </div>
+</div>
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-8</code>
+  </div>
+  <div class="mud-col-2">0.5</div>
+  <div class="mud-col-2">8</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pb-8</code>
+  </div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pb-8"></div>
+    </div>
+  </div>
+</div>
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-12</code>
+  </div>
+  <div class="mud-col-2">0.75</div>
+  <div class="mud-col-2">12</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pb-12</code>
+  </div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pb-12"></div>
+    </div>
+  </div>
+</div>
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-16</code>
+  </div>
+  <div class="mud-col-2">1</div>
+  <div class="mud-col-2">16</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pb-16</code>
+  </div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pb-16"></div>
+    </div>
+  </div>
+</div>
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-24</code>
+  </div>
+  <div class="mud-col-2">1.5</div>
+  <div class="mud-col-2">24</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pb-24</code>
+  </div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pb-24"></div>
+    </div>
+  </div>
+</div>
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-32</code>
+  </div>
+  <div class="mud-col-2">2</div>
+  <div class="mud-col-2">32</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pb-32</code>
+  </div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pb-32"></div>
+    </div>
+  </div>
+</div>
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-40</code>
+  </div>
+  <div class="mud-col-2">2.5</div>
+  <div class="mud-col-2">40</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pb-40</code>
+  </div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pb-40"></div>
+    </div>
+  </div>
+</div>
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-48</code>
+  </div>
+  <div class="mud-col-2">3</div>
+  <div class="mud-col-2">48</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pb-48</code>
+  </div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pb-48"></div>
+    </div>
+  </div>
+</div>
+<div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-56</code>
+  </div>
+  <div class="mud-col-2">3.5</div>
+  <div class="mud-col-2">56</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pb-56</code>
+  </div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pb-56"></div>
+    </div>
+  </div>
+</div>
+<div class="mud-row mud-items-center mud-py-8">
+  <div class="mud-col-3">
+    <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-64</code>
+  </div>
+  <div class="mud-col-2">4</div>
+  <div class="mud-col-2">64</div>
+  <div class="mud-col-2">
+    <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pb-64</code>
+  </div>
+  <div class="mud-col-3">
+    <div class="mud-card mud-doc-spacing-preview">
+      <div class="mud-doc-spacing-preview__inner mud-pb-64"></div>
     </div>
   </div>
 </div>
 
-<div class="row fw-semibold bg-gray-100 mb-20 py-12 d-none">
-  <div class="col-3">Token</div>
-  <div class="col-2">rem</div>
-  <div class="col-2">px</div>
-  <div class="col-2">Class</div>
-  <div class="col-3">Preview</div>
+<div class="mud-doc-section-head">
+  <h3 class="mud-desktop-heading-sm">Padding — Left <code class="token-name">.pl-*</code></h3>
 </div>
 
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-0</code>
+  <div class="mud-row mud-font-semibold mud-bg-gray-100 mud-mb-20 mud-py-12 mud-hidden">
+    <div class="mud-col-3">Token</div>
+    <div class="mud-col-2">rem</div>
+    <div class="mud-col-2">px</div>
+    <div class="mud-col-2">Class</div>
+    <div class="mud-col-3">Preview</div>
   </div>
-  <div class="col-2">0</div>
-  <div class="col-2">0</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pb-0</code>
-  </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pb-0"></div>
+
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3">
+      <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-0</code>
+    </div>
+    <div class="mud-col-2">0</div>
+    <div class="mud-col-2">0</div>
+    <div class="mud-col-2">
+      <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pl-0</code>
+    </div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview">
+        <div class="mud-doc-spacing-preview__inner mud-pl-0"></div>
+      </div>
     </div>
   </div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3">
+      <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-2</code>
+    </div>
+    <div class="mud-col-2">0.125</div>
+    <div class="mud-col-2">2</div>
+    <div class="mud-col-2">
+      <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pl-2</code>
+    </div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview">
+        <div class="mud-doc-spacing-preview__inner mud-pl-2"></div>
+      </div>
+    </div>
+  </div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3">
+      <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-4</code>
+    </div>
+    <div class="mud-col-2">0.25</div>
+    <div class="mud-col-2">4</div>
+    <div class="mud-col-2">
+      <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pl-4</code>
+    </div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview">
+        <div class="mud-doc-spacing-preview__inner mud-pl-4"></div>
+      </div>
+    </div>
+  </div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3">
+      <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-8</code>
+    </div>
+    <div class="mud-col-2">0.5</div>
+    <div class="mud-col-2">8</div>
+    <div class="mud-col-2">
+      <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pl-8</code>
+    </div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview">
+        <div class="mud-doc-spacing-preview__inner mud-pl-8"></div>
+      </div>
+    </div>
+  </div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3">
+      <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-12</code>
+    </div>
+    <div class="mud-col-2">0.75</div>
+    <div class="mud-col-2">12</div>
+    <div class="mud-col-2">
+      <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pl-12</code>
+    </div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview">
+        <div class="mud-doc-spacing-preview__inner mud-pl-12"></div>
+      </div>
+    </div>
+  </div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3">
+      <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-16</code>
+    </div>
+    <div class="mud-col-2">1</div>
+    <div class="mud-col-2">16</div>
+    <div class="mud-col-2">
+      <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pl-16</code>
+    </div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview">
+        <div class="mud-doc-spacing-preview__inner mud-pl-16"></div>
+      </div>
+    </div>
+  </div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3">
+      <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-24</code>
+    </div>
+    <div class="mud-col-2">1.5</div>
+    <div class="mud-col-2">24</div>
+    <div class="mud-col-2">
+      <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pl-24</code>
+    </div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview">
+        <div class="mud-doc-spacing-preview__inner mud-pl-24"></div>
+      </div>
+    </div>
+  </div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3">
+      <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-32</code>
+    </div>
+    <div class="mud-col-2">2</div>
+    <div class="mud-col-2">32</div>
+    <div class="mud-col-2">
+      <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pl-32</code>
+    </div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview">
+        <div class="mud-doc-spacing-preview__inner mud-pl-32"></div>
+      </div>
+    </div>
+  </div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3">
+      <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-40</code>
+    </div>
+    <div class="mud-col-2">2.5</div>
+    <div class="mud-col-2">40</div>
+    <div class="mud-col-2">
+      <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pl-40</code>
+    </div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview">
+        <div class="mud-doc-spacing-preview__inner mud-pl-40"></div>
+      </div>
+    </div>
+  </div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3">
+      <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-48</code>
+    </div>
+    <div class="mud-col-2">3</div>
+    <div class="mud-col-2">48</div>
+    <div class="mud-col-2">
+      <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pl-48</code>
+    </div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview">
+        <div class="mud-doc-spacing-preview__inner mud-pl-48"></div>
+      </div>
+    </div>
+  </div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom">
+    <div class="mud-col-3">
+      <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-56</code>
+    </div>
+    <div class="mud-col-2">3.5</div>
+    <div class="mud-col-2">56</div>
+    <div class="mud-col-2">
+      <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pl-56</code>
+    </div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview">
+        <div class="mud-doc-spacing-preview__inner mud-pl-56"></div>
+      </div>
+    </div>
+  </div>
+  <div class="mud-row mud-items-center mud-py-8">
+    <div class="mud-col-3">
+      <code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-64</code>
+    </div>
+    <div class="mud-col-2">4</div>
+    <div class="mud-col-2">64</div>
+    <div class="mud-col-2">
+      <code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pl-64</code>
+    </div>
+    <div class="mud-col-3">
+      <div class="mud-card mud-doc-spacing-preview">
+        <div class="mud-doc-spacing-preview__inner mud-pl-64"></div>
+      </div>
+    </div>
+  </div>
+
+  
+<div class="mud-doc-section-head">
+  <h3 class="mud-desktop-heading-sm">Padding — Right <code class="token-name">.pr-*</code></h3>
 </div>
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-2</code>
+
+  <div class="mud-row mud-font-semibold mud-bg-gray-100 mud-mb-20 mud-py-12 mud-hidden">
+    <div class="mud-col-3">Token</div>
+    <div class="mud-col-2">rem</div>
+    <div class="mud-col-2">px</div>
+    <div class="mud-col-2">Class</div>
+    <div class="mud-col-3">Preview</div>
   </div>
-  <div class="col-2">0.125</div>
-  <div class="col-2">2</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pb-2</code>
-  </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pb-2"></div>
-    </div>
-  </div>
-</div>
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-4</code>
-  </div>
-  <div class="col-2">0.25</div>
-  <div class="col-2">4</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pb-4</code>
-  </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pb-4"></div>
-    </div>
-  </div>
-</div>
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-8</code>
-  </div>
-  <div class="col-2">0.5</div>
-  <div class="col-2">8</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pb-8</code>
-  </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pb-8"></div>
-    </div>
-  </div>
-</div>
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-12</code>
-  </div>
-  <div class="col-2">0.75</div>
-  <div class="col-2">12</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pb-12</code>
-  </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pb-12"></div>
-    </div>
-  </div>
-</div>
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-16</code>
-  </div>
-  <div class="col-2">1</div>
-  <div class="col-2">16</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pb-16</code>
-  </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pb-16"></div>
-    </div>
-  </div>
-</div>
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-24</code>
-  </div>
-  <div class="col-2">1.5</div>
-  <div class="col-2">24</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pb-24</code>
-  </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pb-24"></div>
-    </div>
-  </div>
-</div>
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-32</code>
-  </div>
-  <div class="col-2">2</div>
-  <div class="col-2">32</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pb-32</code>
-  </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pb-32"></div>
-    </div>
-  </div>
-</div>
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-40</code>
-  </div>
-  <div class="col-2">2.5</div>
-  <div class="col-2">40</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pb-40</code>
-  </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pb-40"></div>
-    </div>
-  </div>
-</div>
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-48</code>
-  </div>
-  <div class="col-2">3</div>
-  <div class="col-2">48</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pb-48</code>
-  </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pb-48"></div>
-    </div>
-  </div>
-</div>
-<div class="row align-items-center py-8 border-bottom">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-56</code>
-  </div>
-  <div class="col-2">3.5</div>
-  <div class="col-2">56</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pb-56</code>
-  </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pb-56"></div>
-    </div>
-  </div>
-</div>
-<div class="row align-items-center py-8">
-  <div class="col-3">
-    <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-64</code>
-  </div>
-  <div class="col-2">4</div>
-  <div class="col-2">64</div>
-  <div class="col-2">
-    <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pb-64</code>
-  </div>
-  <div class="col-3">
-    <div class="preview-box">
-      <div class="preview-inner pb-64"></div>
-    </div>
-  </div>
+
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-0</code></div><div class="mud-col-2">0</div><div class="mud-col-2">0</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pr-0</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-pr-0"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-2</code></div><div class="mud-col-2">0.125</div><div class="mud-col-2">2</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pr-2</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-pr-2"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-4</code></div><div class="mud-col-2">0.25</div><div class="mud-col-2">4</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pr-4</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-pr-4"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-8</code></div><div class="mud-col-2">0.5</div><div class="mud-col-2">8</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pr-8</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-pr-8"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-12</code></div><div class="mud-col-2">0.75</div><div class="mud-col-2">12</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pr-12</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-pr-12"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-16</code></div><div class="mud-col-2">1</div><div class="mud-col-2">16</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pr-16</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-pr-16"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-24</code></div><div class="mud-col-2">1.5</div><div class="mud-col-2">24</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pr-24</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-pr-24"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-32</code></div><div class="mud-col-2">2</div><div class="mud-col-2">32</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pr-32</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-pr-32"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-40</code></div><div class="mud-col-2">2.5</div><div class="mud-col-2">40</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pr-40</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-pr-40"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-48</code></div><div class="mud-col-2">3</div><div class="mud-col-2">48</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pr-48</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-pr-48"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-56</code></div><div class="mud-col-2">3.5</div><div class="mud-col-2">56</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pr-56</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-pr-56"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-64</code></div><div class="mud-col-2">4</div><div class="mud-col-2">64</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-pr-64</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-pr-64"></div></div></div></div>
+
+  
+<div class="mud-doc-section-head">
+  <h3 class="mud-desktop-heading-sm">Padding — Horizontal <code class="token-name">.px-*</code></h3>
 </div>
 
-<!-- Padding Left -->
- <div class="row mt-56 mb-16">
-    <div class="col-12">
-      <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-        <h4 class="mb-16">Padding — Left <code class="bg-gray-200 radius-8 py-2 px-6 text-body-md-500">.pl-*</code></h4>
-      </div>
-    </div>
+  <div class="mud-row mud-font-semibold mud-bg-gray-100 mud-mb-20 mud-py-12 mud-hidden">
+    <div class="mud-col-3">Token</div>
+    <div class="mud-col-2">rem</div>
+    <div class="mud-col-2">px</div>
+    <div class="mud-col-2">Class</div>
+    <div class="mud-col-3">Preview</div>
   </div>
 
-  <div class="row fw-semibold bg-gray-100 mb-20 py-12 d-none">
-    <div class="col-3">Token</div>
-    <div class="col-2">rem</div>
-    <div class="col-2">px</div>
-    <div class="col-2">Class</div>
-    <div class="col-3">Preview</div>
-  </div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-0</code></div><div class="mud-col-2">0</div><div class="mud-col-2">0</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-px-0</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-px-0"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-2</code></div><div class="mud-col-2">0.125</div><div class="mud-col-2">2</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-px-2</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-px-2"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-4</code></div><div class="mud-col-2">0.25</div><div class="mud-col-2">4</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-px-4</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-px-4"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-8</code></div><div class="mud-col-2">0.5</div><div class="mud-col-2">8</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-px-8</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-px-8"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-12</code></div><div class="mud-col-2">0.75</div><div class="mud-col-2">12</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-px-12</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-px-12"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-16</code></div><div class="mud-col-2">1</div><div class="mud-col-2">16</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-px-16</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-px-16"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-24</code></div><div class="mud-col-2">1.5</div><div class="mud-col-2">24</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-px-24</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-px-24"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-32</code></div><div class="mud-col-2">2</div><div class="mud-col-2">32</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-px-32</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-px-32"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-40</code></div><div class="mud-col-2">2.5</div><div class="mud-col-2">40</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-px-40</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-px-40"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-48</code></div><div class="mud-col-2">3</div><div class="mud-col-2">48</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-px-48</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-px-48"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-56</code></div><div class="mud-col-2">3.5</div><div class="mud-col-2">56</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-px-56</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-px-56"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-64</code></div><div class="mud-col-2">4</div><div class="mud-col-2">64</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-px-64</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-px-64"></div></div></div></div>
 
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3">
-      <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-0</code>
-    </div>
-    <div class="col-2">0</div>
-    <div class="col-2">0</div>
-    <div class="col-2">
-      <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pl-0</code>
-    </div>
-    <div class="col-3">
-      <div class="preview-box">
-        <div class="preview-inner pl-0"></div>
-      </div>
-    </div>
-  </div>
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3">
-      <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-2</code>
-    </div>
-    <div class="col-2">0.125</div>
-    <div class="col-2">2</div>
-    <div class="col-2">
-      <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pl-2</code>
-    </div>
-    <div class="col-3">
-      <div class="preview-box">
-        <div class="preview-inner pl-2"></div>
-      </div>
-    </div>
-  </div>
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3">
-      <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-4</code>
-    </div>
-    <div class="col-2">0.25</div>
-    <div class="col-2">4</div>
-    <div class="col-2">
-      <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pl-4</code>
-    </div>
-    <div class="col-3">
-      <div class="preview-box">
-        <div class="preview-inner pl-4"></div>
-      </div>
-    </div>
-  </div>
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3">
-      <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-8</code>
-    </div>
-    <div class="col-2">0.5</div>
-    <div class="col-2">8</div>
-    <div class="col-2">
-      <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pl-8</code>
-    </div>
-    <div class="col-3">
-      <div class="preview-box">
-        <div class="preview-inner pl-8"></div>
-      </div>
-    </div>
-  </div>
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3">
-      <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-12</code>
-    </div>
-    <div class="col-2">0.75</div>
-    <div class="col-2">12</div>
-    <div class="col-2">
-      <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pl-12</code>
-    </div>
-    <div class="col-3">
-      <div class="preview-box">
-        <div class="preview-inner ml-12"></div>
-      </div>
-    </div>
-  </div>
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3">
-      <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-16</code>
-    </div>
-    <div class="col-2">1</div>
-    <div class="col-2">16</div>
-    <div class="col-2">
-      <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pl-16</code>
-    </div>
-    <div class="col-3">
-      <div class="preview-box">
-        <div class="preview-inner pl-16"></div>
-      </div>
-    </div>
-  </div>
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3">
-      <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-24</code>
-    </div>
-    <div class="col-2">1.5</div>
-    <div class="col-2">24</div>
-    <div class="col-2">
-      <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pl-24</code>
-    </div>
-    <div class="col-3">
-      <div class="preview-box">
-        <div class="preview-inner pl-24"></div>
-      </div>
-    </div>
-  </div>
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3">
-      <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-32</code>
-    </div>
-    <div class="col-2">2</div>
-    <div class="col-2">32</div>
-    <div class="col-2">
-      <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pl-32</code>
-    </div>
-    <div class="col-3">
-      <div class="preview-box">
-        <div class="preview-inner pl-32"></div>
-      </div>
-    </div>
-  </div>
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3">
-      <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-40</code>
-    </div>
-    <div class="col-2">2.5</div>
-    <div class="col-2">40</div>
-    <div class="col-2">
-      <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pl-40</code>
-    </div>
-    <div class="col-3">
-      <div class="preview-box">
-        <div class="preview-inner pl-40"></div>
-      </div>
-    </div>
-  </div>
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3">
-      <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-48</code>
-    </div>
-    <div class="col-2">3</div>
-    <div class="col-2">48</div>
-    <div class="col-2">
-      <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pl-48</code>
-    </div>
-    <div class="col-3">
-      <div class="preview-box">
-        <div class="preview-inner pl-48"></div>
-      </div>
-    </div>
-  </div>
-  <div class="row align-items-center py-8 border-bottom">
-    <div class="col-3">
-      <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-56</code>
-    </div>
-    <div class="col-2">3.5</div>
-    <div class="col-2">56</div>
-    <div class="col-2">
-      <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pl-56</code>
-    </div>
-    <div class="col-3">
-      <div class="preview-box">
-        <div class="preview-inner pl-56"></div>
-      </div>
-    </div>
-  </div>
-  <div class="row align-items-center py-8">
-    <div class="col-3">
-      <code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-64</code>
-    </div>
-    <div class="col-2">4</div>
-    <div class="col-2">64</div>
-    <div class="col-2">
-      <code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pl-64</code>
-    </div>
-    <div class="col-3">
-      <div class="preview-box">
-        <div class="preview-inner pl-64"></div>
-      </div>
-    </div>
-  </div>
-
-
-  <!-- Padding Right -->
- <div class="row mt-56 mb-16">
-    <div class="col-12">
-      <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-        <h4 class="mb-16">Padding — Right <code class="bg-gray-200 radius-8 py-2 px-6 text-body-md-500">.pr-*</code></h4>
-      </div>
-    </div>
-  </div>
-
-  <div class="row fw-semibold bg-gray-100 mb-20 py-12 d-none">
-    <div class="col-3">Token</div>
-    <div class="col-2">rem</div>
-    <div class="col-2">px</div>
-    <div class="col-2">Class</div>
-    <div class="col-3">Preview</div>
-  </div>
-
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-0</code></div><div class="col-2">0</div><div class="col-2">0</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pr-0</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner pr-0"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-2</code></div><div class="col-2">0.125</div><div class="col-2">2</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pr-2</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner pr-2"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-4</code></div><div class="col-2">0.25</div><div class="col-2">4</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pr-4</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner pr-4"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-8</code></div><div class="col-2">0.5</div><div class="col-2">8</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pr-8</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner pr-8"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-12</code></div><div class="col-2">0.75</div><div class="col-2">12</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pr-12</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner pr-12"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-16</code></div><div class="col-2">1</div><div class="col-2">16</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pr-16</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner pr-16"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-24</code></div><div class="col-2">1.5</div><div class="col-2">24</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pr-24</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner pr-24"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-32</code></div><div class="col-2">2</div><div class="col-2">32</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pr-32</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner pr-32"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-40</code></div><div class="col-2">2.5</div><div class="col-2">40</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pr-40</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner pr-40"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-48</code></div><div class="col-2">3</div><div class="col-2">48</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pr-48</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner pr-48"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-56</code></div><div class="col-2">3.5</div><div class="col-2">56</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pr-56</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner pr-56"></div></div></div></div>
-  <div class="row align-items-center py-8"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-64</code></div><div class="col-2">4</div><div class="col-2">64</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.pr-64</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner pr-64"></div></div></div></div>
-
-
-  <!-- Padding Horizontal -->
- <div class="row mt-56 mb-16">
-    <div class="col-12">
-      <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-        <h4 class="mb-16">Padding — Horizontal <code class="bg-gray-200 radius-8 py-2 px-6 text-body-md-500">.px-*</code></h4>
-      </div>
-    </div>
-  </div>
-
-  <div class="row fw-semibold bg-gray-100 mb-20 py-12 d-none">
-    <div class="col-3">Token</div>
-    <div class="col-2">rem</div>
-    <div class="col-2">px</div>
-    <div class="col-2">Class</div>
-    <div class="col-3">Preview</div>
-  </div>
-
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-0</code></div><div class="col-2">0</div><div class="col-2">0</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.px-0</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner px-0"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-2</code></div><div class="col-2">0.125</div><div class="col-2">2</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.px-2</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner px-2"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-4</code></div><div class="col-2">0.25</div><div class="col-2">4</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.px-4</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner px-4"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-8</code></div><div class="col-2">0.5</div><div class="col-2">8</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.px-8</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner px-8"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-12</code></div><div class="col-2">0.75</div><div class="col-2">12</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.px-12</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner px-12"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-16</code></div><div class="col-2">1</div><div class="col-2">16</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.px-16</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner px-16"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-24</code></div><div class="col-2">1.5</div><div class="col-2">24</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.px-24</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner px-24"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-32</code></div><div class="col-2">2</div><div class="col-2">32</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.px-32</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner px-32"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-40</code></div><div class="col-2">2.5</div><div class="col-2">40</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.px-40</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner px-40"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-48</code></div><div class="col-2">3</div><div class="col-2">48</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.px-48</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner px-48"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-56</code></div><div class="col-2">3.5</div><div class="col-2">56</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.px-56</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner px-56"></div></div></div></div>
-  <div class="row align-items-center py-8"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-64</code></div><div class="col-2">4</div><div class="col-2">64</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.px-64</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner px-64"></div></div></div></div>
-
-  <!-- Padding Vertical -->
- <div class="row mt-56 mb-16">
-    <div class="col-12">
-      <div class="mt-56 mb-32 border-bottom-1 border-bottom-solid border-gray-200">
-        <h4 class="mb-16">Padding — Vertical <code class="bg-gray-200 radius-8 py-2 px-6 text-body-md-500">.py-*</code></h4>
-      </div>
-    </div>
-  </div>
-
-  <div class="row fw-semibold bg-gray-100 mb-20 py-12 d-none">
-    <div class="col-3">Token</div>
-    <div class="col-2">rem</div>
-    <div class="col-2">px</div>
-    <div class="col-2">Class</div>
-    <div class="col-3">Preview</div>
-  </div>
-
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-0</code></div><div class="col-2">0</div><div class="col-2">0</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.py-0</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner py-0"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-2</code></div><div class="col-2">0.125</div><div class="col-2">2</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.py-2</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner py-2"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-4</code></div><div class="col-2">0.25</div><div class="col-2">4</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.py-4</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner py-4"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-8</code></div><div class="col-2">0.5</div><div class="col-2">8</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.py-8</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner py-8"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-12</code></div><div class="col-2">0.75</div><div class="col-2">12</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.py-12</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner py-12"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-16</code></div><div class="col-2">1</div><div class="col-2">16</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.py-16</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner py-16"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-24</code></div><div class="col-2">1.5</div><div class="col-2">24</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.py-24</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner py-24"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-32</code></div><div class="col-2">2</div><div class="col-2">32</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.py-32</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner py-32"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-40</code></div><div class="col-2">2.5</div><div class="col-2">40</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.py-40</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner py-40"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-48</code></div><div class="col-2">3</div><div class="col-2">48</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.py-48</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner py-48"></div></div></div></div>
-  <div class="row align-items-center py-8 border-bottom"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-56</code></div><div class="col-2">3.5</div><div class="col-2">56</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.py-56</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner py-56"></div></div></div></div>
-  <div class="row align-items-center py-8"><div class="col-3"><code class="token-name radius-8 py-2 px-6" tabindex="0">--spacing-64</code></div><div class="col-2">4</div><div class="col-2">64</div><div class="col-2"><code class="token-name bg-white radius-8 py-2 px-6" tabindex="0">.py-64</code></div><div class="col-3"><div class="preview-box"><div class="preview-inner py-64"></div></div></div></div>
-
+  
+<div class="mud-doc-section-head">
+  <h3 class="mud-desktop-heading-sm">Padding — Vertical <code class="token-name">.py-*</code></h3>
 </div>
+
+  <div class="mud-row mud-font-semibold mud-bg-gray-100 mud-mb-20 mud-py-12 mud-hidden">
+    <div class="mud-col-3">Token</div>
+    <div class="mud-col-2">rem</div>
+    <div class="mud-col-2">px</div>
+    <div class="mud-col-2">Class</div>
+    <div class="mud-col-3">Preview</div>
+  </div>
+
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-0</code></div><div class="mud-col-2">0</div><div class="mud-col-2">0</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-py-0</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-py-0"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-2</code></div><div class="mud-col-2">0.125</div><div class="mud-col-2">2</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-py-2</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-py-2"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-4</code></div><div class="mud-col-2">0.25</div><div class="mud-col-2">4</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-py-4</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-py-4"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-8</code></div><div class="mud-col-2">0.5</div><div class="mud-col-2">8</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-py-8</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-py-8"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-12</code></div><div class="mud-col-2">0.75</div><div class="mud-col-2">12</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-py-12</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-py-12"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-16</code></div><div class="mud-col-2">1</div><div class="mud-col-2">16</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-py-16</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-py-16"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-24</code></div><div class="mud-col-2">1.5</div><div class="mud-col-2">24</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-py-24</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-py-24"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-32</code></div><div class="mud-col-2">2</div><div class="mud-col-2">32</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-py-32</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-py-32"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-40</code></div><div class="mud-col-2">2.5</div><div class="mud-col-2">40</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-py-40</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-py-40"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-48</code></div><div class="mud-col-2">3</div><div class="mud-col-2">48</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-py-48</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-py-48"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8 mud-border-bottom"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-56</code></div><div class="mud-col-2">3.5</div><div class="mud-col-2">56</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-py-56</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-py-56"></div></div></div></div>
+  <div class="mud-row mud-items-center mud-py-8"><div class="mud-col-3"><code class="token-name mud-radius-8 mud-py-2 mud-px-6" tabindex="0">--spacing-64</code></div><div class="mud-col-2">4</div><div class="mud-col-2">64</div><div class="mud-col-2"><code class="token-name mud-bg-white mud-radius-8 mud-py-2 mud-px-6" tabindex="0">.mud-py-64</code></div><div class="mud-col-3"><div class="mud-card mud-doc-spacing-preview"><div class="mud-doc-spacing-preview__inner mud-py-64"></div></div></div></div>
+
+          </div>
+        </div>
+      </div>
+    
+  </div>
 
   <div id="site-footer"></div>
 </body>
 </html>
-
-
-
-
 

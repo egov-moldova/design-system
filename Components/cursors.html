@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cursors — Design System</title>
+    <script src="js/include-head-assets.js"></script>
+    <link rel="stylesheet" href="css/main.css" />
+    <script src="js/include-header.js" defer></script>
+    <script src="js/include-footer.js" defer></script>
+    <script src="js/toggler.js" defer></script>
+    <script src="js/modal.js" defer></script>
+    <script src="js/mega-nav.js" defer></script>
+    <script src="js/search.js" defer></script>
+    <script src="js/dropdown.js" defer></script>
+    <script src="js/copy-token.js" defer></script>
+  </head>
+  <body>
+    <div id="site-header"></div>
+
+    <div class="mud-container" data-doc="cursors">
+      <div class="mud-row mud-mb-40">
+          <div class="mud-col-8">
+            <h1 class="mud-desktop-display-xl mud-mb-24">Cursors</h1>
+            <p class="mud-text-gray-400 mud-desktop-body-xl mud-mb-16">
+              These cursor components are designed to provide relevant context in the Design System documentation.
+            </p>
+          </div>
+        </div>
+        <div class="mud-doc-main">
+          <div class="mud-row">
+            <div class="mud-col-12">
+              <section aria-labelledby="cursors-system-heading">
+                <div class="mud-doc-section-head">
+                  <h2 class="mud-desktop-heading-sm" id="cursors-system-heading">System cursors</h2>
+                </div>
+
+                <h3 class="mud-desktop-heading-sm mud-mt-32 mud-mb-16" id="cursors-macos-heading">macOS</h3>
+                <div class="cursors-grid mud-mb-40" role="list" aria-labelledby="cursors-macos-heading">
+                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white mud-border mud-border-1 mud-border-gray-200" role="listitem" data-demo-cursor="default">
+                    <div class="cursor-card__icon mud-w-full mud-flex mud-items-center mud-justify-center mud-mb-12 mud-bg-gray-100 mud-radius-8" aria-hidden="true">
+                      <svg class="cursor-card__glyph mud-block mud-size-40" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-arrow"></use></svg>
+                    </div>
+                    <button type="button" class="token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: default;" title="Click to copy: cursor: default;">arrow</button>
+                  </article>
+                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white mud-border mud-border-1 mud-border-gray-200" role="listitem" data-demo-cursor="copy">
+                    <div class="cursor-card__icon mud-w-full mud-flex mud-items-center mud-justify-center mud-mb-12 mud-bg-gray-100 mud-radius-8" aria-hidden="true">
+                      <svg class="cursor-card__glyph mud-block mud-size-40" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-add"></use></svg>
+                    </div>
+                    <button type="button" class="token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: copy;" title="Click to copy: cursor: copy;">add</button>
+                  </article>
+                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white mud-border mud-border-1 mud-border-gray-200" role="listitem" data-demo-cursor="not-allowed">
+                    <div class="cursor-card__icon mud-w-full mud-flex mud-items-center mud-justify-center mud-mb-12 mud-bg-gray-100 mud-radius-8" aria-hidden="true">
+                      <svg class="cursor-card__glyph mud-block mud-size-40" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-not-allowed"></use></svg>
+                    </div>
+                    <button type="button" class="token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: not-allowed;" title="Click to copy: cursor: not-allowed;">not-allowed</button>
+                  </article>
+                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white mud-border mud-border-1 mud-border-gray-200" role="listitem" data-demo-cursor="progress">
+                    <div class="cursor-card__icon mud-w-full mud-flex mud-items-center mud-justify-center mud-mb-12 mud-bg-gray-100 mud-radius-8" aria-hidden="true">
+                      <svg class="cursor-card__glyph mud-block mud-size-40" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-busy-but-clickable"></use></svg>
+                    </div>
+                    <button type="button" class="token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: progress;" title="Click to copy: cursor: progress;">busy-but-clickable</button>
+                  </article>
+                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white mud-border mud-border-1 mud-border-gray-200" role="listitem" data-demo-cursor="text">
+                    <div class="cursor-card__icon mud-w-full mud-flex mud-items-center mud-justify-center mud-mb-12 mud-bg-gray-100 mud-radius-8" aria-hidden="true">
+                      <svg class="cursor-card__glyph mud-block mud-size-40" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-text"></use></svg>
+                    </div>
+                    <button type="button" class="token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: text;" title="Click to copy: cursor: text;">Text</button>
+                  </article>
+                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white mud-border mud-border-1 mud-border-gray-200" role="listitem" data-demo-cursor="pointer">
+                    <div class="cursor-card__icon mud-w-full mud-flex mud-items-center mud-justify-center mud-mb-12 mud-bg-gray-100 mud-radius-8" aria-hidden="true">
+                      <svg class="cursor-card__glyph mud-block mud-size-40" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-hand-pointing"></use></svg>
+                    </div>
+                    <button type="button" class="token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: pointer;" title="Click to copy: cursor: pointer;">hand-pointing</button>
+                  </article>
+                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white mud-border mud-border-1 mud-border-gray-200" role="listitem" data-demo-cursor="grab">
+                    <div class="cursor-card__icon mud-w-full mud-flex mud-items-center mud-justify-center mud-mb-12 mud-bg-gray-100 mud-radius-8" aria-hidden="true">
+                      <svg class="cursor-card__glyph mud-block mud-size-40" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-hand-open"></use></svg>
+                    </div>
+                    <button type="button" class="token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: grab;" title="Click to copy: cursor: grab;">hand-open</button>
+                  </article>
+                  <article class="cursor-card mud-radius-8 mud-p-16 mud-bg-white mud-border mud-border-1 mud-border-gray-200" role="listitem" data-demo-cursor="grabbing">
+                    <div class="cursor-card__icon mud-w-full mud-flex mud-items-center mud-justify-center mud-mb-12 mud-bg-gray-100 mud-radius-8" aria-hidden="true">
+                      <svg class="cursor-card__glyph mud-block mud-size-40" width="40" height="40" viewBox="0 0 32 32"><use href="#cursor-system-hand-closed"></use></svg>
+                    </div>
+                    <button type="button" class="token-name font-mono mud-desktop-body-sm-500 mud-text-gray-700 mud-block mud-w-full" data-copy-text="cursor: grabbing;" title="Click to copy: cursor: grabbing;">hand-closed</button>
+                  </article>
+                </div>
+              </section>
+            </div>
+          </div>
+        
+      </div>
+    </div>
+
+    <svg width="0" height="0" class="mud-sprite-defs" aria-hidden="true" focusable="false">
+      <defs>
+        <filter id="cursor-shadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0" dy="1" stdDeviation="0.6" flood-color="#000" flood-opacity="0.35" />
+        </filter>
+        
+        <filter id="cursor-shadow-win" x="-40%" y="-40%" width="180%" height="180%">
+          <feDropShadow dx="0" dy="0.5" stdDeviation="0.38" flood-color="#0d0d0d" flood-opacity="0.2" />
+        </filter>
+      </defs>
+
+      <symbol id="cursor-system-arrow" viewBox="0 0 32 32">
+        <g filter="url(#cursor-shadow)">
+          <path fill="#FFFFFF" stroke="#121212" stroke-width="1.25" stroke-linejoin="round"
+                d="M11 9 L11 25.5 L14.7 22 L17.4 28 L19.9 27 L17.3 21 L22 21 Z" />
+        </g>
+      </symbol>
+
+      <symbol id="cursor-system-add" viewBox="0 0 32 32">
+        <g filter="url(#cursor-shadow)">
+          <path fill="#FFFFFF" stroke="#121212" stroke-width="1.25" stroke-linejoin="round"
+                d="M11 9 L11 25.5 L14.7 22 L17.4 28 L19.9 27 L17.3 21 L22 21 Z" />
+          <circle cx="22" cy="22" r="5" fill="#1FB573" stroke="#FFFFFF" stroke-width="1.25" />
+          <path stroke="#FFFFFF" stroke-width="1.5" stroke-linecap="round" d="M22 19.5 V24.5 M19.5 22 H24.5" />
+        </g>
+      </symbol>
+
+      <symbol id="cursor-system-not-allowed" viewBox="0 0 32 32">
+        <g filter="url(#cursor-shadow)">
+          <path fill="#FFFFFF" stroke="#121212" stroke-width="1.25" stroke-linejoin="round"
+                d="M11 9 L11 25.5 L14.7 22 L17.4 28 L19.9 27 L17.3 21 L22 21 Z" />
+          <circle cx="22" cy="22" r="5" fill="#FFFFFF" stroke="#9E9E9E" stroke-width="1.25" />
+          <path stroke="#9E9E9E" stroke-width="1.5" stroke-linecap="round" d="M18.7 25.3 L25.3 18.7" />
+        </g>
+      </symbol>
+
+      <symbol id="cursor-system-busy-but-clickable" viewBox="0 0 32 32">
+        <g filter="url(#cursor-shadow)">
+          <circle cx="22" cy="22" r="6" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="1.25" />
+          <g transform="translate(22 22)">
+            <path d="M0 -4 A4 4 0 0 1 3.46 -2 L1.73 -1 A2 2 0 0 0 0 -2 Z" fill="#FF3B30" />
+            <path d="M3.46 -2 A4 4 0 0 1 3.46 2 L1.73 1 A2 2 0 0 0 1.73 -1 Z" fill="#FF9500" />
+            <path d="M3.46 2 A4 4 0 0 1 0 4 L0 2 A2 2 0 0 0 1.73 1 Z" fill="#FFCC00" />
+            <path d="M0 4 A4 4 0 0 1 -3.46 2 L-1.73 1 A2 2 0 0 0 0 2 Z" fill="#34C759" />
+            <path d="M-3.46 2 A4 4 0 0 1 -3.46 -2 L-1.73 -1 A2 2 0 0 0 -1.73 1 Z" fill="#007AFF" />
+            <path d="M-3.46 -2 A4 4 0 0 1 0 -4 L0 -2 A2 2 0 0 0 -1.73 -1 Z" fill="#AF52DE" />
+          </g>
+          <path fill="#FFFFFF" stroke="#121212" stroke-width="1.25" stroke-linejoin="round"
+                d="M11 9 L11 25.5 L14.7 22 L17.4 28 L19.9 27 L17.3 21 L22 21 Z" />
+        </g>
+      </symbol>
+
+      <symbol id="cursor-system-text" viewBox="0 0 32 32">
+        <g filter="url(#cursor-shadow)" fill="none" stroke="#121212" stroke-width="1.5" stroke-linecap="round">
+          <path d="M16 8 V24" />
+          <path d="M13.5 8 H18.5" />
+          <path d="M13.5 24 H18.5" />
+          <path d="M14 8 H18" stroke="#FFFFFF" stroke-width="0.6" />
+        </g>
+      </symbol>
+
+      <symbol id="cursor-system-hand-pointing" viewBox="0 0 32 32">
+        <g filter="url(#cursor-shadow)">
+          <path fill="#FFFFFF" stroke="#121212" stroke-width="1.1" stroke-linejoin="round"
+                d="M13.5 18 V11 a1.4 1.4 0 0 1 2.8 0 V17
+                   a1.2 1.2 0 0 1 2.3 .3 V17.6
+                   a1.2 1.2 0 0 1 2.3 .3 V18.6
+                   a1.2 1.2 0 0 1 2.2 .5 V23
+                   a4 4 0 0 1 -4 4 H17
+                   a4 4 0 0 1 -3.5 -2.2 L11.8 21.6
+                   a1.3 1.3 0 0 1 .8 -1.9
+                   a1.3 1.3 0 0 1 1.4 .5 Z" />
+        </g>
+      </symbol>
+
+      <symbol id="cursor-system-hand-open" viewBox="0 0 32 32">
+        <g filter="url(#cursor-shadow)">
+          <path fill="#FFFFFF" stroke="#121212" stroke-width="1.1" stroke-linejoin="round"
+                d="M11.5 18 V13 a1.3 1.3 0 0 1 2.5 0 V17
+                   V11 a1.3 1.3 0 0 1 2.5 0 V17
+                   V11.6 a1.3 1.3 0 0 1 2.5 0 V17
+                   V13 a1.3 1.3 0 0 1 2.5 0 V19
+                   a5 5 0 0 1 -5 5 H16
+                   a5 5 0 0 1 -4.3 -2.5 L10.4 19.5
+                   a1.3 1.3 0 0 1 2.2 -1.4 Z" />
+        </g>
+      </symbol>
+
+      <symbol id="cursor-system-hand-closed" viewBox="0 0 32 32">
+        <g filter="url(#cursor-shadow)">
+          <path fill="#FFFFFF" stroke="#121212" stroke-width="1.1" stroke-linejoin="round"
+                d="M12 19 V16 a1.2 1.2 0 0 1 2.4 0 V17.5
+                   V15 a1.2 1.2 0 0 1 2.4 0 V17.5
+                   V15.4 a1.2 1.2 0 0 1 2.4 0 V17.5
+                   V16 a1.2 1.2 0 0 1 2.4 0 V19
+                   a4.5 4.5 0 0 1 -4.5 4.5 H16.5
+                   A4.5 4.5 0 0 1 12 19 Z" />
+        </g>
+      </symbol>
+
+      <symbol id="cursor-win-arrow" viewBox="0 0 32 32" shape-rendering="geometricPrecision">
+        <g filter="url(#cursor-shadow-win)">
+          <path
+            fill="#FFFFFF"
+            stroke="#1a1a1a"
+            stroke-width="1"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+            paint-order="stroke fill"
+            d="M4.25 3.25 L4.25 22.6 L9.35 17.85 L12.15 25.85 L14.05 25.15 L11.15 15.85 L21.25 15.85 L21.25 13.95 L10.05 13.95 L10.05 3.25 Z"
+          />
+        </g>
+      </symbol>
+
+      <symbol id="cursor-win-add" viewBox="0 0 32 32" shape-rendering="geometricPrecision">
+        <g filter="url(#cursor-shadow-win)">
+          <path
+            fill="#FFFFFF"
+            stroke="#1a1a1a"
+            stroke-width="1"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+            paint-order="stroke fill"
+            d="M4.25 3.25 L4.25 22.6 L9.35 17.85 L12.15 25.85 L14.05 25.15 L11.15 15.85 L18.6 15.85 L18.6 13.95 L10.05 13.95 L10.05 3.25 Z"
+          />
+        </g>
+        <circle cx="23.25" cy="23.25" r="4.75" fill="#0078D4" stroke="#FFFFFF" stroke-width="1" />
+        <path stroke="#FFFFFF" stroke-width="1.15" stroke-linecap="round" d="M23.25 20.9 V25.6 M20.55 23.25 H25.95" />
+      </symbol>
+
+      <symbol id="cursor-win-not-allowed" viewBox="0 0 32 32" shape-rendering="geometricPrecision">
+        <g filter="url(#cursor-shadow-win)">
+          <path
+            fill="#FFFFFF"
+            stroke="#1a1a1a"
+            stroke-width="1"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+            paint-order="stroke fill"
+            d="M4.25 3.25 L4.25 22.6 L9.35 17.85 L12.15 25.85 L14.05 25.15 L11.15 15.85 L18.6 15.85 L18.6 13.95 L10.05 13.95 L10.05 3.25 Z"
+          />
+        </g>
+        <circle cx="23.25" cy="23.25" r="4.85" fill="none" stroke="#E81123" stroke-width="1.5" />
+        <path stroke="#E81123" stroke-width="1.35" stroke-linecap="round" d="M19.9 26.6 L26.6 19.9" />
+      </symbol>
+
+      <symbol id="cursor-win-busy-but-clickable" viewBox="0 0 32 32" shape-rendering="geometricPrecision">
+        <g filter="url(#cursor-shadow-win)">
+          <path
+            fill="#FFFFFF"
+            stroke="#1a1a1a"
+            stroke-width="1"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+            paint-order="stroke fill"
+            d="M4.25 3.25 L4.25 22.6 L9.35 17.85 L12.15 25.85 L14.05 25.15 L11.15 15.85 L17.85 15.85 L17.85 13.95 L10.05 13.95 L10.05 3.25 Z"
+          />
+        </g>
+        <circle cx="23.5" cy="23.25" r="5.25" fill="#FFFFFF" stroke="#0078D4" stroke-width="1.1" />
+        <path
+          fill="none"
+          stroke="#0078D4"
+          stroke-width="1.65"
+          stroke-linecap="round"
+          d="M23.5 18.15 A5.1 5.1 0 0 1 27.95 23.25"
+        />
+      </symbol>
+
+      <symbol id="cursor-win-text" viewBox="0 0 32 32" shape-rendering="geometricPrecision">
+        <g filter="url(#cursor-shadow-win)">
+          <path
+            fill="#FFFFFF"
+            stroke="#1a1a1a"
+            stroke-width="1"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+            paint-order="stroke fill"
+            d="M14.35 6.35 H17.65 V25.65 H14.35 V6.35 Z M11.35 6.35 H20.65 V8.85 H11.35 V6.35 Z M11.35 23.15 H20.65 V25.65 H11.35 V23.15 Z"
+          />
+        </g>
+      </symbol>
+
+      <symbol id="cursor-win-hand-pointing" viewBox="0 0 32 32" shape-rendering="geometricPrecision">
+        <g filter="url(#cursor-shadow-win)">
+          <path
+            fill="#FFFFFF"
+            stroke="#1a1a1a"
+            stroke-width="1"
+            stroke-linejoin="round"
+            d="M12.1 18.9 V12.6 a1.32 1.32 0 0 1 2.64 0 V17.4
+                 a1.08 1.08 0 0 1 2.12 0.22 V17.85
+                 a1.08 1.08 0 0 1 2.1 0.24 V18.85
+                 a1.02 1.02 0 0 1 2 0.32 V23.1
+                 a3.75 3.75 0 0 1 -3.75 3.75 H16.15
+                 a3.75 3.75 0 0 1 -3.25 -2.05 L10.65 21.15
+                 a1.22 1.22 0 0 1 0.72 -1.82 1.22 1.22 0 0 1 1.33 0.42 Z"
+          />
+        </g>
+      </symbol>
+
+      <symbol id="cursor-win-hand-open" viewBox="0 0 32 32" shape-rendering="geometricPrecision">
+        <g filter="url(#cursor-shadow-win)">
+          <path
+            fill="#FFFFFF"
+            stroke="#1a1a1a"
+            stroke-width="1"
+            stroke-linejoin="round"
+            d="M11.35 18.45 V13.25 a1.22 1.22 0 0 1 2.4 0 V17.1
+                 V11.55 a1.22 1.22 0 0 1 2.4 0 V17.1
+                 V11.85 a1.22 1.22 0 0 1 2.4 0 V17.1
+                 V13.25 a1.22 1.22 0 0 1 2.4 0 V19.05
+                 a4.65 4.65 0 0 1 -4.65 4.65 H15.75
+                 a4.65 4.65 0 0 1 -3.95 -2.35 L10.25 19.65
+                 a1.22 1.22 0 0 1 2.05 -1.32 Z"
+          />
+        </g>
+      </symbol>
+
+      <symbol id="cursor-win-hand-closed" viewBox="0 0 32 32" shape-rendering="geometricPrecision">
+        <g filter="url(#cursor-shadow-win)">
+          <path
+            fill="#FFFFFF"
+            stroke="#1a1a1a"
+            stroke-width="1"
+            stroke-linejoin="round"
+            d="M11.85 19.05 V16.25 a1.12 1.12 0 0 1 2.24 0 V17.65
+                 V15.15 a1.12 1.12 0 0 1 2.24 0 V17.65
+                 V15.55 a1.12 1.12 0 0 1 2.24 0 V17.65
+                 V15.75 a1.12 1.12 0 0 1 2.24 0 V19.05
+                 a4.2 4.2 0 0 1 -4.2 4.2 H16.35
+                 A4.2 4.2 0 0 1 11.85 19.05 Z"
+          />
+        </g>
+      </symbol>
+    </svg>
+
+    <div id="site-footer"></div>
+  </body>
+</html>
