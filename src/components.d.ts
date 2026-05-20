@@ -11,10 +11,10 @@ export { IconSize } from "./components/cor-icon/cor-icon.types";
 export { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
 export namespace Components {
     /**
-     * Icon — renders an inline SVG from the per-size icon registry.
+     * Icon — renders an inline SVG fetched on-demand from per-size asset files.
      * Names follow the Material Symbols convention: append `-filled` to the base name
      * to request the filled variant (e.g. `check` outlined vs `check-filled`).
-     * When the exact `size`/`name` combination is missing from the registry, the
+     * When the exact `size`/`name` combination is missing from the manifest, the
      * provider falls back to the closest larger size (preferred) and then to the
      * largest smaller size before giving up.
      * @element cor-icon
@@ -76,10 +76,10 @@ export namespace Components {
 }
 declare global {
     /**
-     * Icon — renders an inline SVG from the per-size icon registry.
+     * Icon — renders an inline SVG fetched on-demand from per-size asset files.
      * Names follow the Material Symbols convention: append `-filled` to the base name
      * to request the filled variant (e.g. `check` outlined vs `check-filled`).
-     * When the exact `size`/`name` combination is missing from the registry, the
+     * When the exact `size`/`name` combination is missing from the manifest, the
      * provider falls back to the closest larger size (preferred) and then to the
      * largest smaller size before giving up.
      * @element cor-icon
@@ -109,10 +109,10 @@ declare global {
 }
 declare namespace LocalJSX {
     /**
-     * Icon — renders an inline SVG from the per-size icon registry.
+     * Icon — renders an inline SVG fetched on-demand from per-size asset files.
      * Names follow the Material Symbols convention: append `-filled` to the base name
      * to request the filled variant (e.g. `check` outlined vs `check-filled`).
-     * When the exact `size`/`name` combination is missing from the registry, the
+     * When the exact `size`/`name` combination is missing from the manifest, the
      * provider falls back to the closest larger size (preferred) and then to the
      * largest smaller size before giving up.
      * @element cor-icon
@@ -196,10 +196,10 @@ declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
             /**
-             * Icon — renders an inline SVG from the per-size icon registry.
+             * Icon — renders an inline SVG fetched on-demand from per-size asset files.
              * Names follow the Material Symbols convention: append `-filled` to the base name
              * to request the filled variant (e.g. `check` outlined vs `check-filled`).
-             * When the exact `size`/`name` combination is missing from the registry, the
+             * When the exact `size`/`name` combination is missing from the manifest, the
              * provider falls back to the closest larger size (preferred) and then to the
              * largest smaller size before giving up.
              * @element cor-icon

@@ -2,7 +2,8 @@
 /**
  * Scan src/components/cor-icon/assets/{12,16,20,24}/*.svg and emit:
  *   - icons.manifest.json — public surface (API name → sizes available)
- *   - icons.registry.ts   — static SVG strings keyed by name + size
+ *
+ * SVGs are served as individual static assets (lazy-loaded on demand).
  *
  * Naming normalization:
  *   Figma sometimes uses `-fill` and sometimes `-filled` for filled variants.
@@ -18,7 +19,6 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
 const ASSETS_ROOT = path.join(PROJECT_ROOT, 'src/components/cor-icon/assets');
-const REGISTRY_TS = path.join(ASSETS_ROOT, 'icons.registry.ts');
 const MANIFEST_JSON = path.join(ASSETS_ROOT, 'icons.manifest.json');
 
 const SIZES = [12, 16, 20, 24];
@@ -30,15 +30,8 @@ function toApiName(figmaName) {
   return figmaName;
 }
 
-async function readSvg(filePath) {
-  const raw = await fs.readFile(filePath, 'utf8');
-  return raw.trim();
-}
-
 async function main() {
-  /**
-   * intermediate: Map<apiName, Map<size, { figmaName, svg }>>
-   */
+  // Map<apiName, Map<size, figmaName>>
   const collected = new Map();
   const collisions = [];
 
@@ -58,29 +51,18 @@ async function main() {
       const sizeMap = collected.get(apiName) ?? new Map();
 
       if (sizeMap.has(size)) {
-        const existing = sizeMap.get(size);
-        collisions.push({
-          apiName,
-          size,
-          keeping: existing.figmaName,
-          dropped: figmaName,
-        });
+        const existingName = sizeMap.get(size);
+        collisions.push({ apiName, size, keeping: existingName, dropped: figmaName });
         // Keep the entry that matches the API name verbatim. Otherwise keep first.
-        if (existing.figmaName === apiName) {
-          continue;
-        }
+        if (existingName === apiName) continue;
         if (figmaName === apiName) {
-          const svg = await readSvg(path.join(dir, file));
-          sizeMap.set(size, { figmaName, svg });
+          sizeMap.set(size, figmaName);
           collected.set(apiName, sizeMap);
-          continue;
         }
-        // Neither matches API exactly — drop the new one.
         continue;
       }
 
-      const svg = await readSvg(path.join(dir, file));
-      sizeMap.set(size, { figmaName, svg });
+      sizeMap.set(size, figmaName);
       collected.set(apiName, sizeMap);
     }
   }
@@ -92,41 +74,15 @@ async function main() {
     }
   }
 
-  // Build manifest + registry payloads
+  // Build manifest
   const manifest = {};
-  const registryEntries = [];
-
   const sortedNames = [...collected.keys()].sort();
   for (const apiName of sortedNames) {
     const sizeMap = collected.get(apiName);
     const sizes = [...sizeMap.keys()].sort((a, b) => a - b);
     manifest[apiName] = { sizes };
-
-    const svgsLiteral = sizes
-      .map(s => {
-        const { svg } = sizeMap.get(s);
-        const escaped = svg.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/\$/g, '\\$');
-        return `    ${s}: \`${escaped}\``;
-      })
-      .join(',\n');
-
-    registryEntries.push(
-      `  '${apiName.replace(/'/g, "\\'")}': {\n    sizes: [${sizes.join(', ')}],\n    svgs: {\n${svgsLiteral},\n    },\n  }`,
-    );
   }
 
-  const tsHeader = `// THIS FILE IS GENERATED — DO NOT EDIT BY HAND.
-// Regenerate with: \`node scripts/icons/build-registry.mjs\`
-// Source: src/components/cor-icon/assets/{12,16,20,24}/*.svg
-
-import type { IconRegistry } from '../cor-icon.types';
-
-export const iconRegistry: IconRegistry = {\n`;
-  const tsFooter = `\n};\n`;
-
-  const registryTs = tsHeader + registryEntries.join(',\n') + tsFooter;
-
-  await fs.writeFile(REGISTRY_TS, registryTs, 'utf8');
   await fs.writeFile(MANIFEST_JSON, JSON.stringify(manifest, null, 2) + '\n', 'utf8');
 
   // Summary
@@ -136,11 +92,10 @@ export const iconRegistry: IconRegistry = {\n`;
     return acc;
   }, {});
 
-  console.log(`[icons] Registry built — ${total} icons:`);
+  console.log(`[icons] Manifest built — ${total} icons:`);
   for (const s of SIZES) {
     console.log(`  ${s}px: ${perSize[s]} icons`);
   }
-  console.log(`[icons] Wrote ${path.relative(PROJECT_ROOT, REGISTRY_TS)}`);
   console.log(`[icons] Wrote ${path.relative(PROJECT_ROOT, MANIFEST_JSON)}`);
 }
 

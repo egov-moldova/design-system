@@ -1,17 +1,16 @@
-import { Component, Element, Host, Prop, h } from '@stencil/core';
+import { Component, Element, Host, Prop, State, Watch, h } from '@stencil/core';
 
-import { sanitizeSvgToElement } from '../../utils/svg-sanitizer';
-
-import { resolveIcon } from './cor-icon.providers';
-import type { IconSize } from './cor-icon.types';
+import defaultManifest from './assets/icons.manifest.json';
+import { fetchIconSvg, resolveIconAsset } from './cor-icon.providers';
+import type { IconManifest, IconSize } from './cor-icon.types';
 
 /**
- * Icon — renders an inline SVG from the per-size icon registry.
+ * Icon — renders an inline SVG fetched on-demand from per-size asset files.
  *
  * Names follow the Material Symbols convention: append `-filled` to the base name
  * to request the filled variant (e.g. `check` outlined vs `check-filled`).
  *
- * When the exact `size`/`name` combination is missing from the registry, the
+ * When the exact `size`/`name` combination is missing from the manifest, the
  * provider falls back to the closest larger size (preferred) and then to the
  * largest smaller size before giving up.
  *
@@ -21,6 +20,7 @@ import type { IconSize } from './cor-icon.types';
   tag: 'cor-icon',
   styleUrl: 'cor-icon.css',
   shadow: true,
+  assetsDirs: ['assets'],
 })
 export class CorIcon {
   /**
@@ -60,8 +60,9 @@ export class CorIcon {
 
   @Element() host!: HTMLElement;
 
+  @State() private svgElement: Element | null = null;
+
   private svgCacheKey: string = '';
-  private cachedSvgElement: Element | null = null;
 
   private handleKeyDown = (ev: KeyboardEvent) => {
     if (this.interactive && !this.disabled && (ev.key === 'Enter' || ev.key === ' ')) {
@@ -69,6 +70,22 @@ export class CorIcon {
       this.host.click();
     }
   };
+
+  async componentWillLoad(): Promise<void> {
+    await this.loadSvg();
+  }
+
+  @Watch('name')
+  async onNameChange(newVal: string, oldVal: string): Promise<void> {
+    if (newVal === oldVal) return;
+    await this.loadSvg();
+  }
+
+  @Watch('size')
+  async onSizeChange(newVal: IconSize, oldVal: IconSize): Promise<void> {
+    if (newVal === oldVal) return;
+    await this.loadSvg();
+  }
 
   componentWillRender() {
     if (this.color && this.color !== 'currentColor') {
@@ -82,31 +99,60 @@ export class CorIcon {
     const container = this.host.shadowRoot?.querySelector('.svg-icon');
     if (!container) return;
     while (container.firstChild) container.removeChild(container.firstChild);
-    if (this.cachedSvgElement) {
-      container.appendChild(this.cachedSvgElement.cloneNode(true));
+    if (this.svgElement) {
+      container.appendChild(this.svgElement.cloneNode(true));
     }
   }
 
-  render() {
-    const result = resolveIcon(this.name, this.size);
-
-    if (!result) {
-      console.warn(`[cor-icon] Icon not found: name="${this.name}" size=${this.size}`);
+  private async loadSvg(): Promise<void> {
+    const requestedName = this.name;
+    const requestedSize = this.size;
+    const manifest = defaultManifest as IconManifest;
+    if (!manifest[requestedName]) {
+      console.warn(`[cor-icon] Icon not found: name="${requestedName}" size=${requestedSize}`);
       this.svgCacheKey = '';
-      this.cachedSvgElement = null;
-      return null;
+      this.svgElement = null;
+      return;
     }
 
-    const cacheKey = `${this.name}|${this.size}|${result.resolvedSize}`;
-    if (this.svgCacheKey !== cacheKey) {
-      this.svgCacheKey = cacheKey;
-      this.cachedSvgElement = sanitizeSvgToElement(result.svg);
+    const result = resolveIconAsset(requestedName, requestedSize, manifest);
+    if (!result) {
+      console.warn(`[cor-icon] Icon not found: name="${requestedName}" size=${requestedSize}`);
+      this.svgCacheKey = '';
+      this.svgElement = null;
+      return;
+    }
+
+    const cacheKey = `${requestedName}|${result.resolvedSize}`;
+    if (this.svgCacheKey === cacheKey) return;
+
+    const element = await fetchIconSvg(result.url);
+
+    // Guard: props changed during the async fetch — discard stale result
+    if (this.name !== requestedName || this.size !== requestedSize) return;
+
+    if (!element) {
+      console.warn(`[cor-icon] Failed to load SVG: name="${requestedName}" size=${result.resolvedSize}`);
+      this.svgCacheKey = '';
+      this.svgElement = null;
+      return;
+    }
+
+    this.svgCacheKey = cacheKey;
+    this.svgElement = element.cloneNode(true) as Element;
+  }
+
+  private get isKnownName(): boolean {
+    return this.name in defaultManifest;
+  }
+
+  render() {
+    if (!this.svgElement && !this.isKnownName) {
+      return null;
     }
 
     const isDecorative = !this.ariaLabel;
 
-    // Expose ARIA semantics on the host so screen readers + shadow-piercing
-    // assistive tech see them on the custom element itself.
     const hostAttrs: Record<string, string | number | ((ev: KeyboardEvent) => void)> = {};
     if (!isDecorative) {
       hostAttrs['aria-label'] = this.ariaLabel as string;

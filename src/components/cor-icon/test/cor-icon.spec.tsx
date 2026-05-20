@@ -1,9 +1,10 @@
 import { render, h, describe, it, expect, vi, beforeEach, afterEach } from '@stencil/vitest';
+import { setAssetPath } from '@stencil/core';
 
 import '../cor-icon';
 import manifest from '../assets/icons.manifest.json';
-import { resolveIcon } from '../cor-icon.providers';
-import type { IconRegistry } from '../cor-icon.types';
+import { clearIconSvgCache, resolveIconAsset } from '../cor-icon.providers';
+import type { IconManifest } from '../cor-icon.types';
 
 const ICON_NAMES = Object.keys(manifest);
 const NAME_WITH_ALL_SIZES = ICON_NAMES.find(
@@ -14,21 +15,37 @@ const NAME_PARTIAL_SIZES = ICON_NAMES.find(n => {
   return s.length > 0 && s.length < 4;
 });
 
+function makeFetchMock() {
+  return vi.spyOn(globalThis, 'fetch').mockImplementation(async url => {
+    const match = String(url).match(/\/(\d+)\/([^/]+)\.svg/);
+    if (!match) return new Response('', { status: 404 });
+    return new Response(`<svg data-name="${match[2]}" data-size="${match[1]}"></svg>`, {
+      status: 200,
+      headers: { 'Content-Type': 'image/svg+xml' },
+    });
+  });
+}
+
 describe('cor-icon', () => {
   let warnSpy: ReturnType<typeof vi.spyOn>;
+  let fetchSpy: ReturnType<typeof vi.spyOn>;
 
   beforeEach(() => {
+    setAssetPath('http://localhost/');
     warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    fetchSpy = makeFetchMock();
+    clearIconSvgCache();
   });
 
   afterEach(() => {
     warnSpy.mockRestore();
+    fetchSpy.mockRestore();
   });
 
   it('renders with default props (size=16, name="check")', async () => {
-    // "check" may or may not exist in the real registry; pick the first real name as default for the test
     const defaultName = ICON_NAMES[0];
-    const { root } = await render(<cor-icon name={defaultName} />);
+    const { root, waitForChanges } = await render(<cor-icon name={defaultName} />);
+    await waitForChanges();
 
     expect(root?.getAttribute('size')).toBe('16');
     expect(root?.getAttribute('color')).toBe('icon-base-secondary');
@@ -50,21 +67,24 @@ describe('cor-icon', () => {
 
   it('treats absent ariaLabel as decorative (aria-hidden on host)', async () => {
     const name = ICON_NAMES[0];
-    const { root } = await render(<cor-icon name={name} />);
+    const { root, waitForChanges } = await render(<cor-icon name={name} />);
+    await waitForChanges();
     expect(root?.getAttribute('aria-hidden')).toBe('true');
     expect(root?.hasAttribute('aria-label')).toBe(false);
   });
 
   it('announces with ariaLabel when provided', async () => {
     const name = ICON_NAMES[0];
-    const { root } = await render(<cor-icon name={name} aria-label="Confirm" />);
+    const { root, waitForChanges } = await render(<cor-icon name={name} aria-label="Confirm" />);
+    await waitForChanges();
     expect(root?.getAttribute('aria-label')).toBe('Confirm');
     expect(root?.hasAttribute('aria-hidden')).toBe(false);
   });
 
   it('adds button role + tabindex on host when interactive and not disabled', async () => {
     const name = ICON_NAMES[0];
-    const { root } = await render(<cor-icon name={name} interactive />);
+    const { root, waitForChanges } = await render(<cor-icon name={name} interactive />);
+    await waitForChanges();
     expect(root?.getAttribute('role')).toBe('button');
     expect(root?.getAttribute('tabindex')).toBe('0');
     expect(root?.hasAttribute('aria-disabled')).toBe(false);
@@ -72,7 +92,8 @@ describe('cor-icon', () => {
 
   it('announces aria-disabled and drops tabindex when interactive + disabled', async () => {
     const name = ICON_NAMES[0];
-    const { root } = await render(<cor-icon name={name} interactive disabled />);
+    const { root, waitForChanges } = await render(<cor-icon name={name} interactive disabled />);
+    await waitForChanges();
     expect(root?.getAttribute('role')).toBe('button');
     expect(root?.getAttribute('aria-disabled')).toBe('true');
     expect(root?.getAttribute('tabindex')).toBeFalsy();
@@ -89,7 +110,8 @@ describe('cor-icon', () => {
 
   it('activates on Enter when interactive (preventDefault + click)', async () => {
     const name = ICON_NAMES[0];
-    const { root } = await render(<cor-icon name={name} interactive />);
+    const { root, waitForChanges } = await render(<cor-icon name={name} interactive />);
+    await waitForChanges();
     const clickSpy = vi.spyOn(root as unknown as HTMLElement, 'click').mockImplementation(() => {});
     const ev = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
     getHandler(root!)(ev);
@@ -99,7 +121,8 @@ describe('cor-icon', () => {
 
   it('activates on Space when interactive', async () => {
     const name = ICON_NAMES[0];
-    const { root } = await render(<cor-icon name={name} interactive />);
+    const { root, waitForChanges } = await render(<cor-icon name={name} interactive />);
+    await waitForChanges();
     const clickSpy = vi.spyOn(root as unknown as HTMLElement, 'click').mockImplementation(() => {});
     getHandler(root!)(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }));
     expect(clickSpy).toHaveBeenCalledTimes(1);
@@ -107,7 +130,8 @@ describe('cor-icon', () => {
 
   it('ignores other keys (does not activate on Tab/ArrowDown)', async () => {
     const name = ICON_NAMES[0];
-    const { root } = await render(<cor-icon name={name} interactive />);
+    const { root, waitForChanges } = await render(<cor-icon name={name} interactive />);
+    await waitForChanges();
     const clickSpy = vi.spyOn(root as unknown as HTMLElement, 'click').mockImplementation(() => {});
     const handler = getHandler(root!);
     handler(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true }));
@@ -117,7 +141,8 @@ describe('cor-icon', () => {
 
   it('keydown handler is a no-op when interactive + disabled', async () => {
     const name = ICON_NAMES[0];
-    const { root } = await render(<cor-icon name={name} interactive disabled />);
+    const { root, waitForChanges } = await render(<cor-icon name={name} interactive disabled />);
+    await waitForChanges();
     const clickSpy = vi.spyOn(root as unknown as HTMLElement, 'click').mockImplementation(() => {});
     getHandler(root!)(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
     expect(clickSpy).not.toHaveBeenCalled();
@@ -126,6 +151,7 @@ describe('cor-icon', () => {
   it('sets --icon-color on the host for a token name and removes it for currentColor', async () => {
     const name = ICON_NAMES[0];
     const { root, waitForChanges } = await render(<cor-icon name={name} color="icon-brand-default" />);
+    await waitForChanges();
     expect((root as HTMLElement).style.getPropertyValue('--icon-color')).toBe('var(--color-icon-brand-default)');
 
     (root as unknown as { color: string }).color = 'currentColor';
@@ -134,91 +160,110 @@ describe('cor-icon', () => {
   });
 
   it('logs a warning and renders nothing when the name is unknown', async () => {
-    const { root } = await render(<cor-icon name="this-icon-does-not-exist" />);
+    const { root, waitForChanges } = await render(<cor-icon name="this-icon-does-not-exist" />);
+    await waitForChanges();
     expect(warnSpy).toHaveBeenCalled();
     expect(root?.shadowRoot?.children.length ?? 0).toBe(0);
   });
 
   it('renders inline SVG markup in shadow DOM for a known icon', async () => {
     const name = ICON_NAMES[0];
-    const { root } = await render(<cor-icon name={name} size={24} />);
+    const { root, waitForChanges } = await render(<cor-icon name={name} size={24} />);
+    await waitForChanges();
     const innerHtml = root?.shadowRoot?.querySelector('.svg-icon')?.innerHTML ?? '';
     expect(innerHtml.toLowerCase()).toContain('<svg');
   });
+
+  it('cache hit: fetch called only once for two instances with the same name+size', async () => {
+    const name = ICON_NAMES[0];
+    // Render both instances concurrently; they share the same cache URL Promise.
+    const renders = await Promise.all([
+      render(<cor-icon name={name} size={16} />),
+      render(<cor-icon name={name} size={16} />),
+    ]);
+    await renders[0].waitForChanges();
+    await renders[1].waitForChanges();
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('graceful degrade: fetch 404 → warn + .svg-icon empty', async () => {
+    fetchSpy.mockRestore();
+    fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('', { status: 404 }));
+
+    const name = ICON_NAMES[0];
+    const { root, waitForChanges } = await render(<cor-icon name={name} size={16} />);
+    await waitForChanges();
+    expect(warnSpy).toHaveBeenCalled();
+    const container = root?.shadowRoot?.querySelector('.svg-icon');
+    expect(container?.children.length ?? 0).toBe(0);
+  });
 });
 
-describe('resolveIcon (provider fallback)', () => {
-  const registry: IconRegistry = {
-    sun: {
-      sizes: [16, 24],
-      svgs: {
-        16: '<svg data-marker="sun-16"></svg>',
-        24: '<svg data-marker="sun-24"></svg>',
-      },
-    },
-    moon: {
-      sizes: [12],
-      svgs: {
-        12: '<svg data-marker="moon-12"></svg>',
-      },
-    },
+describe('resolveIconAsset (provider URL builder)', () => {
+  beforeEach(() => {
+    setAssetPath('http://localhost/');
+  });
+
+  const manifest: IconManifest = {
+    sun: { sizes: [16, 24] },
+    moon: { sizes: [12] },
   };
 
-  it('returns an exact-size match when available', () => {
-    const r = resolveIcon('sun', 16, registry);
+  it('returns an exact-size URL when available', () => {
+    const r = resolveIconAsset('sun', 16, manifest);
     expect(r?.resolvedSize).toBe(16);
-    expect(r?.svg).toContain('sun-16');
+    expect(r?.url).toContain('/16/sun.svg');
   });
 
   it('falls back UP to the next larger size when the requested size is missing', () => {
-    // sun has 16 + 24; requesting 20 should pick 24 (next larger)
-    const r = resolveIcon('sun', 20, registry);
+    // sun has 16 + 24; requesting 20 should pick 24
+    const r = resolveIconAsset('sun', 20, manifest);
     expect(r?.resolvedSize).toBe(24);
+    expect(r?.url).toContain('/24/sun.svg');
   });
 
   it('falls back DOWN to the largest smaller size when no larger size exists', () => {
     // moon only has 12; requesting 24 should pick 12
-    const r = resolveIcon('moon', 24, registry);
+    const r = resolveIconAsset('moon', 24, manifest);
     expect(r?.resolvedSize).toBe(12);
+    expect(r?.url).toContain('/12/moon.svg');
   });
 
   it('falls back UP rather than DOWN when both options exist', () => {
-    // sun has 16 + 24; requesting 12 should prefer 16 over none-larger fallback path
-    const r = resolveIcon('sun', 12, registry);
+    // sun has 16 + 24; requesting 12 should prefer 16
+    const r = resolveIconAsset('sun', 12, manifest);
     expect(r?.resolvedSize).toBe(16);
   });
 
   it('returns undefined for unknown names', () => {
-    const r = resolveIcon('unknown', 16, registry);
+    const r = resolveIconAsset('unknown', 16, manifest);
     expect(r).toBeUndefined();
   });
 
-  it('returns undefined when entry exists but no usable size (no larger, no smaller)', () => {
-    // Entry whose `sizes` list claims 16 but `svgs` map is missing 16 — neither
-    // larger nor smaller can resolve, so the final fallback returns undefined.
-    const ghostRegistry: IconRegistry = {
-      ghost: { sizes: [16], svgs: {} },
-    };
-    const r = resolveIcon('ghost', 16, ghostRegistry);
+  it('returns undefined when entry has no usable size', () => {
+    const empty: IconManifest = { ghost: { sizes: [] } };
+    const r = resolveIconAsset('ghost', 16, empty);
     expect(r).toBeUndefined();
   });
 
-  // Sanity check against the real generated registry — at least one icon should resolve.
-  it('resolves an icon from the real generated registry', () => {
+  // Sanity check against the real manifest — at least one icon should resolve.
+  it('resolves a URL from the real manifest', () => {
     if (!ICON_NAMES.length) return;
     const name = NAME_WITH_ALL_SIZES ?? ICON_NAMES[0];
-    const r = resolveIcon(name, 24);
-    expect(r?.svg).toBeTruthy();
+    const r = resolveIconAsset(name, 24);
+    expect(r?.url).toBeTruthy();
+    expect(r?.url).toContain('/24/');
   });
 
-  it('exercises fallback against the real registry when partial sizes exist', () => {
+  it('exercises fallback against the real manifest when partial sizes exist', () => {
     if (!NAME_PARTIAL_SIZES) return;
     const entry = (manifest as Record<string, { sizes: number[] }>)[NAME_PARTIAL_SIZES];
+    if (!entry) return;
     const allSizes = [12, 16, 20, 24];
     const missing = allSizes.find(s => !entry.sizes.includes(s)) as 12 | 16 | 20 | 24 | undefined;
     if (!missing) return;
-    const r = resolveIcon(NAME_PARTIAL_SIZES, missing);
-    expect(r?.svg).toBeTruthy();
+    const r = resolveIconAsset(NAME_PARTIAL_SIZES, missing);
+    expect(r?.url).toBeTruthy();
     expect(r?.resolvedSize).not.toBe(missing);
   });
 });
