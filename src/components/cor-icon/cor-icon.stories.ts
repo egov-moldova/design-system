@@ -196,7 +196,7 @@ export const Gallery: Story = {
       </tr>`;
     }).join('');
     return /*html*/ `
-      <div style="padding: var(--spacing-24); max-height: 720px; overflow: auto;">
+      <div style="padding: var(--spacing-24); overflow: auto;">
         <p style="${cellLabelStyle}; text-align: left; margin-bottom: var(--spacing-12);">
           ${ICON_NAMES.length} icons across ${ICON_SIZES.join(' / ')} px. Em-dash = no optimized SVG at that size.
         </p>
