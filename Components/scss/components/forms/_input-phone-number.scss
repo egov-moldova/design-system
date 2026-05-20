@@ -119,6 +119,7 @@
         color: var(--gray-500);
         height: var(--spacing-20, 20px);
         width: var(--spacing-20, 20px);
+        border-radius: var(--radius-10, 10px);
     }
 }
 
@@ -142,6 +143,15 @@
         min-width: var(--spacing-22, 22px);
         border-radius: var(--radius-2, 2px);
         background-size: cover;
+    }
+}
+
+.phone-ddl--no-chevron {
+    width: 84px;
+
+    &.phone-ddl-medium {
+        width: 78px;
+        margin: var(--spacing-4, 4px) var(--spacing-12, 12px) var(--spacing-4, 4px) var(--spacing-4, 4px);
     }
 }
 
@@ -340,4 +350,9 @@
 .checkmark {
     margin-right: var(--spacing-12, 12px);
     color: var(--green-600);
+}
+
+.icon-cross.small {
+    width: var(--spacing-20, 20px);
+    height: var(--spacing-20, 20px);
 }
