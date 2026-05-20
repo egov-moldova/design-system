@@ -78,6 +78,61 @@ describe('cor-icon', () => {
     expect(root?.getAttribute('tabindex')).toBeFalsy();
   });
 
+  // Mock-doc does not propagate keyboard events to JSX-bound `onKeyDown` handlers. In
+  // Stencil's custom-elements output the element IS the instance, so the arrow-function
+  // field `handleKeyDown` is reachable directly on `root`.
+  type Instance = { handleKeyDown: (ev: KeyboardEvent) => void };
+  const getHandler = (root: Element): ((ev: KeyboardEvent) => void) => {
+    const instance = root as unknown as Instance;
+    return instance.handleKeyDown.bind(instance);
+  };
+
+  it('activates on Enter when interactive (preventDefault + click)', async () => {
+    const name = ICON_NAMES[0];
+    const { root } = await render(<cor-icon name={name} interactive />);
+    const clickSpy = vi.spyOn(root as unknown as HTMLElement, 'click').mockImplementation(() => {});
+    const ev = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true });
+    getHandler(root!)(ev);
+    expect(clickSpy).toHaveBeenCalledTimes(1);
+    expect(ev.defaultPrevented).toBe(true);
+  });
+
+  it('activates on Space when interactive', async () => {
+    const name = ICON_NAMES[0];
+    const { root } = await render(<cor-icon name={name} interactive />);
+    const clickSpy = vi.spyOn(root as unknown as HTMLElement, 'click').mockImplementation(() => {});
+    getHandler(root!)(new KeyboardEvent('keydown', { key: ' ', bubbles: true, cancelable: true }));
+    expect(clickSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('ignores other keys (does not activate on Tab/ArrowDown)', async () => {
+    const name = ICON_NAMES[0];
+    const { root } = await render(<cor-icon name={name} interactive />);
+    const clickSpy = vi.spyOn(root as unknown as HTMLElement, 'click').mockImplementation(() => {});
+    const handler = getHandler(root!);
+    handler(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true }));
+    handler(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, cancelable: true }));
+    expect(clickSpy).not.toHaveBeenCalled();
+  });
+
+  it('keydown handler is a no-op when interactive + disabled', async () => {
+    const name = ICON_NAMES[0];
+    const { root } = await render(<cor-icon name={name} interactive disabled />);
+    const clickSpy = vi.spyOn(root as unknown as HTMLElement, 'click').mockImplementation(() => {});
+    getHandler(root!)(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+    expect(clickSpy).not.toHaveBeenCalled();
+  });
+
+  it('sets --icon-color on the host for a token name and removes it for currentColor', async () => {
+    const name = ICON_NAMES[0];
+    const { root, waitForChanges } = await render(<cor-icon name={name} color="icon-brand-default" />);
+    expect((root as HTMLElement).style.getPropertyValue('--icon-color')).toBe('var(--color-icon-brand-default)');
+
+    (root as unknown as { color: string }).color = 'currentColor';
+    await waitForChanges();
+    expect((root as HTMLElement).style.getPropertyValue('--icon-color')).toBe('');
+  });
+
   it('logs a warning and renders nothing when the name is unknown', async () => {
     const { root } = await render(<cor-icon name="this-icon-does-not-exist" />);
     expect(warnSpy).toHaveBeenCalled();
@@ -135,6 +190,16 @@ describe('resolveIcon (provider fallback)', () => {
 
   it('returns undefined for unknown names', () => {
     const r = resolveIcon('unknown', 16, registry);
+    expect(r).toBeUndefined();
+  });
+
+  it('returns undefined when entry exists but no usable size (no larger, no smaller)', () => {
+    // Entry whose `sizes` list claims 16 but `svgs` map is missing 16 — neither
+    // larger nor smaller can resolve, so the final fallback returns undefined.
+    const ghostRegistry: IconRegistry = {
+      ghost: { sizes: [16], svgs: {} },
+    };
+    const r = resolveIcon('ghost', 16, ghostRegistry);
     expect(r).toBeUndefined();
   });
 

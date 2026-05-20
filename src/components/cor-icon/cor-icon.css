@@ -5,6 +5,19 @@
   vertical-align: middle;
 }
 
+:host([size='12']) {
+  --icon-size: var(--spacing-12);
+}
+:host([size='16']) {
+  --icon-size: var(--spacing-16);
+}
+:host([size='20']) {
+  --icon-size: var(--spacing-20);
+}
+:host([size='24']) {
+  --icon-size: var(--spacing-24);
+}
+
 .svg-icon {
   display: inline-flex;
   width: 100%;
@@ -38,15 +51,15 @@
   }
 }
 
-/* Focus ring on the host (role=button + tabindex sit on the host now).
-   Falls back to the brand-border token until the dedicated focus token lands. */
+/* Focus ring on the host (role=button + tabindex sit on the host now). */
 :host([interactive]:not([interactive='false']):not([disabled]):focus-visible) {
-  outline: var(--border-width-2, 2px) solid var(--color-border-focus-default, var(--color-border-brand-default));
-  outline-offset: var(--spacing-2, 2px);
+  outline: var(--border-width-2) solid var(--color-border-focus-default);
+  outline-offset: var(--spacing-2);
 }
 
 :host([disabled]:not([disabled='false'])) {
   cursor: not-allowed;
+  pointer-events: none;
 
   .svg-icon svg {
     fill: var(--color-icon-base-disabled);

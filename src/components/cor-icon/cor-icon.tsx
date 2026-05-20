@@ -1,5 +1,7 @@
 import { Component, Element, Host, Prop, h } from '@stencil/core';
 
+import { sanitizeSvgToElement } from '../../utils/svg-sanitizer';
+
 import { resolveIcon } from './cor-icon.providers';
 import type { IconSize } from './cor-icon.types';
 
@@ -56,28 +58,49 @@ export class CorIcon {
    */
   @Prop() ariaLabel?: string;
 
-  @Element() el!: HTMLElement;
+  @Element() host!: HTMLElement;
+
+  private svgCacheKey: string = '';
+  private cachedSvgElement: Element | null = null;
 
   private handleKeyDown = (ev: KeyboardEvent) => {
     if (this.interactive && !this.disabled && (ev.key === 'Enter' || ev.key === ' ')) {
       ev.preventDefault();
-      this.el.click();
+      this.host.click();
     }
   };
+
+  componentWillRender() {
+    if (this.color && this.color !== 'currentColor') {
+      this.host.style.setProperty('--icon-color', `var(--color-${this.color})`);
+    } else {
+      this.host.style.removeProperty('--icon-color');
+    }
+  }
+
+  componentDidRender() {
+    const container = this.host.shadowRoot?.querySelector('.svg-icon');
+    if (!container) return;
+    while (container.firstChild) container.removeChild(container.firstChild);
+    if (this.cachedSvgElement) {
+      container.appendChild(this.cachedSvgElement.cloneNode(true));
+    }
+  }
 
   render() {
     const result = resolveIcon(this.name, this.size);
 
     if (!result) {
       console.warn(`[cor-icon] Icon not found: name="${this.name}" size=${this.size}`);
+      this.svgCacheKey = '';
+      this.cachedSvgElement = null;
       return null;
     }
 
-    const hostStyles: Record<string, string> = {
-      '--icon-size': `${this.size}px`,
-    };
-    if (this.color && this.color !== 'currentColor') {
-      hostStyles['--icon-color'] = `var(--color-${this.color})`;
+    const cacheKey = `${this.name}|${this.size}|${result.resolvedSize}`;
+    if (this.svgCacheKey !== cacheKey) {
+      this.svgCacheKey = cacheKey;
+      this.cachedSvgElement = sanitizeSvgToElement(result.svg);
     }
 
     const isDecorative = !this.ariaLabel;
@@ -101,8 +124,8 @@ export class CorIcon {
     }
 
     return (
-      <Host style={hostStyles} {...hostAttrs}>
-        <span class="svg-icon" innerHTML={result.svg} aria-hidden="true" />
+      <Host {...hostAttrs}>
+        <span class="svg-icon" aria-hidden="true" />
       </Host>
     );
   }
