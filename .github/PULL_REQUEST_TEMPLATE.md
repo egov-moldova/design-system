@@ -2,9 +2,9 @@
 <!-- 1-3 bullets describing what changed and why -->
 
 ## Test plan
-- [ ] `yarn typecheck && yarn lint && yarn test` pass locally
+- [ ] `yarn check` pass locally
 - [ ] `yarn build` runs clean
-- [ ] Storybook stories render (`yarn sp.dev`)
+- [ ] Storybook stories render (`yarn dev`)
 - [ ] Visual changes verified against Figma (if applicable)
 
 ## Auto-generated files
