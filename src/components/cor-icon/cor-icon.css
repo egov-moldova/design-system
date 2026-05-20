@@ -25,16 +25,22 @@
   align-items: center;
   justify-content: center;
 
+  /*
+   * Color path: source SVGs use `<path fill="currentColor">`, so the active
+   * color comes from the `color` CSS property (NOT from `fill` on the parent
+   * <svg>, which is overridden by the path's own attribute). Setting `color`
+   * on the <svg> lets `currentColor` on the path resolve to the token value.
+   */
   svg {
     width: 100%;
     height: 100%;
-    fill: var(--icon-color, var(--color-icon-base-secondary));
-    transition: fill 0.1s ease-in-out;
+    color: var(--icon-color, var(--color-icon-base-secondary));
+    transition: color 0.1s ease-in-out;
   }
 }
 
 :host([color='currentColor']) .svg-icon svg {
-  fill: currentcolor;
+  color: currentcolor;
 }
 
 :host([interactive]:not([interactive='false'])) {
@@ -43,11 +49,11 @@
 
 :host([interactive]:not([interactive='false']):not([disabled])) {
   .svg-icon:hover svg {
-    fill: var(--color-icon-brand-default);
+    color: var(--color-icon-brand-default);
   }
 
   .svg-icon:active svg {
-    fill: var(--color-icon-brand-strong);
+    color: var(--color-icon-brand-strong);
   }
 }
 
@@ -62,7 +68,7 @@
   pointer-events: none;
 
   .svg-icon svg {
-    fill: var(--color-icon-base-disabled);
+    color: var(--color-icon-base-disabled);
   }
 }
 

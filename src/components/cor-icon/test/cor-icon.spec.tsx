@@ -197,6 +197,137 @@ describe('cor-icon', () => {
     const container = root?.shadowRoot?.querySelector('.svg-icon');
     expect(container?.children.length ?? 0).toBe(0);
   });
+
+  it('fetch rejects with network error → .catch() path → warn + .svg-icon empty', async () => {
+    fetchSpy.mockRestore();
+    fetchSpy = vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Network error'));
+
+    const name = ICON_NAMES[0];
+    const { root, waitForChanges } = await render(<cor-icon name={name} />);
+    await waitForChanges();
+    expect(warnSpy).toHaveBeenCalled();
+    const container = root?.shadowRoot?.querySelector('.svg-icon');
+    expect(container?.children.length ?? 0).toBe(0);
+  });
+
+  it('onNameChange: changing name to a different icon loads the new SVG', async () => {
+    if (ICON_NAMES.length < 2) return;
+    const [name1, name2] = ICON_NAMES;
+    const { root, waitForChanges } = await render(<cor-icon name={name1} size={16} />);
+    await waitForChanges();
+
+    (root as unknown as { name: string }).name = name2;
+    await waitForChanges();
+
+    expect(fetchSpy.mock.calls.some((args: unknown[]) => String(args[0]).includes(`/${name2}.svg`))).toBe(true);
+    const innerHTML = root?.shadowRoot?.querySelector('.svg-icon')?.innerHTML ?? '';
+    expect(innerHTML.toLowerCase()).toContain('<svg');
+  });
+
+  it('onSizeChange: changing size reloads the SVG at the new size', async () => {
+    const name = ICON_NAMES[0];
+    const { root, waitForChanges } = await render(<cor-icon name={name} size={16} />);
+    await waitForChanges();
+
+    (root as unknown as { size: number }).size = 24;
+    await waitForChanges();
+
+    expect(fetchSpy.mock.calls.some((args: unknown[]) => String(args[0]).includes('/24/'))).toBe(true);
+  });
+
+  it('onNameChange: same-value guard (newVal === oldVal) skips reload', async () => {
+    const name = ICON_NAMES[0];
+    const { root, waitForChanges } = await render(<cor-icon name={name} />);
+    await waitForChanges();
+    clearIconSvgCache();
+    fetchSpy.mockClear();
+
+    // Invoke the watch handler directly with identical values to exercise the equality guard
+    type WatchInstance = { onNameChange: (newVal: string, oldVal: string) => Promise<void> };
+    await (root as unknown as WatchInstance).onNameChange(name, name);
+    await waitForChanges();
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('onSizeChange: same-value guard (newVal === oldVal) skips reload', async () => {
+    const name = ICON_NAMES[0];
+    const { root, waitForChanges } = await render(<cor-icon name={name} size={16} />);
+    await waitForChanges();
+    clearIconSvgCache();
+    fetchSpy.mockClear();
+
+    type WatchInstance = { onSizeChange: (newVal: number, oldVal: number) => Promise<void> };
+    await (root as unknown as WatchInstance).onSizeChange(16, 16);
+    await waitForChanges();
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('svgCacheKey guard: size fallback to already-loaded resolved size skips fetch', async () => {
+    // Find an icon that has 16px but not 12px; requesting 12 falls back to 16.
+    const name = ICON_NAMES.find(n => {
+      const s = (manifest as Record<string, { sizes: number[] }>)[n].sizes;
+      return s.includes(16) && !s.includes(12);
+    });
+    if (!name) return;
+
+    const { root, waitForChanges } = await render(<cor-icon name={name} size={16} />);
+    await waitForChanges();
+    // svgCacheKey is now "name|16"
+    fetchSpy.mockClear();
+
+    // size=12 → resolveIconAsset falls back to 16 → cacheKey === svgCacheKey → early return
+    (root as unknown as { size: number }).size = 12;
+    await waitForChanges();
+
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it('race condition guard: stale name-change fetch discarded when name changes again', async () => {
+    if (ICON_NAMES.length < 3) return;
+    const [nameA, nameB, nameC] = ICON_NAMES;
+
+    const { root, waitForChanges } = await render(<cor-icon name={nameA} size={16} />);
+    await waitForChanges();
+
+    // Replace fetch: nameB hangs until explicitly resolved, nameC resolves immediately
+    fetchSpy.mockRestore();
+    clearIconSvgCache();
+    let resolveBFetch!: (r: Response) => void;
+    fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(async (url: unknown) => {
+      const match = String(url).match(/\/(\d+)\/([^/]+)\.svg/);
+      if (!match) return new Response('', { status: 404 });
+      const [, size, iconName] = match;
+      if (iconName === nameB) {
+        return new Promise<Response>(resolve => {
+          resolveBFetch = resolve;
+        });
+      }
+      return new Response(`<svg data-name="${iconName}" data-size="${size}"></svg>`, {
+        status: 200,
+        headers: { 'Content-Type': 'image/svg+xml' },
+      });
+    });
+
+    // Trigger nameB (fetch hangs), then immediately trigger nameC (resolves fast)
+    (root as unknown as { name: string }).name = nameB;
+    (root as unknown as { name: string }).name = nameC;
+    await waitForChanges();
+
+    // Resolve the stale nameB fetch — race condition guard must discard it
+    resolveBFetch!(
+      new Response(`<svg data-name="${nameB}"></svg>`, {
+        status: 200,
+        headers: { 'Content-Type': 'image/svg+xml' },
+      }),
+    );
+    await waitForChanges();
+
+    const innerHTML = root?.shadowRoot?.querySelector('.svg-icon')?.innerHTML ?? '';
+    expect(innerHTML).toContain(`data-name="${nameC}"`);
+    expect(innerHTML).not.toContain(`data-name="${nameB}"`);
+  });
 });
 
 describe('resolveIconAsset (provider URL builder)', () => {

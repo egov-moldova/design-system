@@ -3,7 +3,11 @@ import '@age/design-system/dist/design-system/tokens/core.dark.tokens.css';
 import '@age/design-system/dist/design-system/design-system.css';
 import './demo.css';
 
-import { defineCustomElements } from '@age/web-components';
+// Import the lazy bundle entry directly so Stencil resolves `getAssetPath()`
+// relative to dist/design-system/ (where the SVG assets live) via import.meta.url.
+// Using `defineCustomElements` from the loader instead would leave the bundle
+// rooted at dist/esm/ where no assets folder exists → 404 for cor-icon SVGs.
+import '@age/design-system/dist/design-system/design-system.esm.js';
 
 type Theme = 'light' | 'dark';
 
@@ -36,7 +40,4 @@ function setupThemeToggle() {
 }
 
 setupThemeToggle();
-
-defineCustomElements().then(() => {
-  console.info('[demo] @age/web-components registered all custom elements');
-});
+console.info('[demo] @age/design-system custom elements registered');
