@@ -1,0 +1,358 @@
+@use '../../abstracts/tokens' as tokens;
+@use 'sass:map';
+
+@mixin input-phone-number($variant: default) {
+    $colors: map.get(tokens.$input-colors, $variant);
+
+    border: var(--border-width-1) var(--border-style-solid) map.get($colors, border);
+
+    &:hover:not(:disabled), &.is-hover {
+        outline: var(--spacing-2, 2px) solid map.get($colors, border-hover);
+        outline-offset: var(--spacing-minus-2, -2px);
+    }
+
+    &:focus-within:not(:disabled), &.is-focus {
+        outline: var(--spacing-2, 2px) solid map.get($colors, focus-border);
+        outline-offset: var(--spacing-minus-2, -2px);
+        box-shadow: 0 0 0 var(--spacing-4, 4px) map.get($colors, focus);
+    }
+
+    &.is-readonly, & [readonly]:not(:disabled) {
+        background-color: map.get($colors, readonly-bg);
+        border-color: map.get($colors, readonly-border);
+        color: map.get($colors, readonly-text);
+        cursor: default;
+        pointer-events: none;
+        opacity: 1;
+
+        &::placeholder {
+            color: map.get($colors, readonly-text);
+        }
+    }
+}
+
+.phone-ddl-wrap {
+    @include input-phone-number(default);
+}
+
+.phone-ddl-wrap--warning {
+    @include input-phone-number(warning);
+}
+
+.phone-ddl-wrap--destructive {
+    @include input-phone-number(destructive);
+}
+
+.phone-ddl-wrap--success {
+    @include input-phone-number(success);
+}
+
+.phone-ddl-wrap {
+    position: relative;
+    display: flex;
+    background: var(--white, #fff);
+    align-items: center;
+    width: 100%;
+    height: var(--spacing-48, 48px);
+    border-radius: var(--radius-8, 8px);
+    transition: border-color .15s, box-shadow .15s;
+    padding: 0;
+
+    &.is-disabled {
+        background: var(--gray-100);
+        opacity: .7;
+        pointer-events: none;
+    }
+
+    &[readonly] {
+        background: var(--gray-100);
+    }
+
+    &.is-readonly {
+        background: var(--gray-100);
+        border-color: var(--gray-300);
+        box-shadow: none;
+
+        & .phone-ddl {
+            background-color: var(--white, #fff);
+        }
+
+        &:hover {
+            border-color: var(--gray-300);
+            box-shadow: none;
+        }
+
+        &:focus-within {
+            border-color: var(--gray-300);
+            box-shadow: none;
+        }
+
+        & .phone-ddl__btn, & .phone-ddl__btn:hover {
+            background: transparent;
+            cursor: default;
+        }
+
+        & .phone-ddl__input {
+            cursor: default;
+        }
+    }
+
+    & .spinner {
+        margin-right: var(--spacing-12, 12px);
+        flex-shrink: 0;
+    }
+
+    & .input-icon--trailing {
+        margin-right: var(--spacing-12, 12px);
+        flex-shrink: 0;
+    }
+
+    & .btn-icon.clear {
+        background: transparent;
+        background-color: var(--gray-200);
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        margin-right: var(--spacing-8, 8px);
+        display: inline-flex;
+        align-items: center;
+        color: var(--gray-500);
+        height: var(--spacing-20, 20px);
+        width: var(--spacing-20, 20px);
+        border-radius: var(--radius-10, 10px);
+    }
+}
+
+.phone-ddl-wrap-medium {
+    height: var(--spacing-40, 40px);
+    margin-top: var(--spacing-12, 12px);
+}
+
+.phone-ddl {
+    border-right: var(--border-width-1, 1px) solid var(--gray-200,#e6e9ee);
+    display: flex;
+    height: var(--spacing-36, 36px);
+    margin: var(--spacing-6, 6px);
+    background-color: var(--gray-100);
+    border-radius: var(--radius-4, 4px);
+    width: 100px;
+
+    & .fi {
+        width: var(--spacing-22, 22px);
+        height: var(--spacing-16, 16px);
+        min-width: var(--spacing-22, 22px);
+        border-radius: var(--radius-2, 2px);
+        background-size: cover;
+    }
+}
+
+.phone-ddl--no-chevron {
+    width: 84px;
+
+    &.phone-ddl-medium {
+        width: 78px;
+        margin: var(--spacing-4, 4px) var(--spacing-12, 12px) var(--spacing-4, 4px) var(--spacing-4, 4px);
+    }
+}
+
+.phone-ddl-medium {
+    margin: var(--spacing-6, 6px);
+    height: var(--spacing-32, 32px);
+}
+
+
+.phone-ddl__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-4, 4px);
+    padding: var(--spacing-6, 6px) var(--spacing-8, 8px);
+    border: none;
+    background: transparent;
+    color: var(--gray-900);
+    cursor: pointer;
+    border-radius: var(--radius-8,8px) 0 0 var(--radius-8,8px);
+    width: inherit;
+    position: relative;
+
+    &.phone-ddl__btn:hover {
+        background: var(--gray-100);
+    }
+}
+
+.phone-ddl__chevron {
+    color: var(--gray-500);
+    transition: transform .2s;
+    position: absolute;
+    right: var(--spacing-10, 10px);
+    height: var(--spacing-16, 16px);
+    width: var(--spacing-16, 16px);
+}
+
+.phone-ddl[data-open="true"] .phone-ddl__chevron {
+    transform: rotate(180deg);
+}
+
+.phone-ddl__panel {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: -1px;
+    right: -1px;
+    z-index: 20;
+    background: var(--white,#fff);
+    border: var(--border-width-1, 1px) solid var(--gray-200);
+    border-radius: var(--radius-8, 8px);
+    box-shadow: 0 8px 24px rgba(20,28,45,.12);
+}
+
+.phone-ddl[data-open="false"] .phone-ddl__panel {
+    display: none;
+}
+
+.phone-ddl__search-wrap {
+    position: relative;
+    padding: var(--spacing-8, 8px);
+    border-bottom: var(--border-width-1, 1px) solid var(--gray-100,#f4f6f9);
+}
+
+.phone-ddl__search-icon {
+    position: absolute;
+    left: var(--spacing-20, 20px);
+    top: 50%;
+    transform: translateY(-50%);
+    width: var(--spacing-16, 16px);
+    height: var(--spacing-16, 16px);
+    color: var(--gray-400);
+    pointer-events: none;
+}
+
+.phone-ddl__search {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    border: var(--border-width-1, 1px) solid var(--gray-200);
+    border-radius: var(--radius-8, 8px);
+    outline: none;
+    padding: var(--spacing-8, 8px) var(--spacing-10, 10px) var(--spacing-8, 8px) var(--spacing-34, 34px);
+    font-size: var(--font-size-14, 14px);
+    font-family: inherit;
+    color: var(--gray-900);
+    background: transparent;
+
+    &:focus {
+        border-color: var(--blue-sky-500);
+    }
+
+    &::placeholder {
+        color: var(--gray-400);
+    }
+}
+
+.phone-ddl__list {
+    max-height: 240px;
+    overflow-y: auto;
+    margin: 0;
+    padding: var(--spacing-6, 6px);
+    list-style: none;
+    scrollbar-width: thin;
+    scrollbar-color: var(--gray-300) transparent;
+
+    &::-webkit-scrollbar {
+        width: var(--spacing-6, 6px);
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--gray-300);
+        border-radius: var(--radius-4, 4px);
+
+        &:hover {
+            background: var(--gray-400);
+        }
+    }
+}
+
+.country-dropdown-showcase {
+    min-height: 420px;
+    margin-bottom: 56px;
+}
+
+.phone-ddl__option {
+    display: grid;
+    grid-template-columns: 22px 1fr auto 16px;
+    align-items: center;
+    column-gap: var(--spacing-12, 12px);
+    padding: var(--spacing-8, 8px) var(--spacing-10, 10px);
+    border-radius: var(--radius-6, 6px);
+    cursor: pointer;
+    font-size: var(--font-size-14, 14px);
+    line-height: var(--line-height-20, 20px);
+    color: var(--gray-700);
+
+    &:hover {
+        background: var(--gray-100);
+    }
+
+    &[aria-selected="true"] {
+        background: var(--gray-100);
+        color: var(--blue-sky-600);
+
+        &::after {
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M3 8l3.5 3.5L13 4.5' stroke='%230058D2' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat;
+        }
+    }
+
+    &::after {
+        content: '';
+        width: var(--spacing-16, 16px);
+        height: var(--spacing-16, 16px);
+        align-self: center;
+    }
+}
+
+.phone-ddl__code {
+    font-size: var(--font-size-16, 16px);
+    line-height: var(--line-height-24, 24px);
+}
+
+.phone-ddl__code-medium {
+    font-size: var(--font-size-14, 14px);
+    line-height: var(--line-height-20, 20px);
+}
+
+.phone-ddl__option[aria-selected="true"] .phone-ddl__code {
+    color: var(--gray-400);
+}
+
+.phone-ddl__input {
+    border: none;
+    outline: none;
+    padding: var(--spacing-8) var(--spacing-8) var(--spacing-8) var(--spacing-12S);
+    font-size: var(--font-size-16, 16px);
+    line-height: var(--line-height-24, 24px);
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border-radius: 0 var(--radius-8, 8px) var(--radius-8, 8px) 0;
+
+    &::placeholder {
+        color: var(--gray-500);
+    }
+}
+
+.phone-ddl__input-medium {
+    font-size: var(--font-size-14, 14px);
+    line-height: var(--line-height-20, 20px);
+}
+
+.checkmark {
+    margin-right: var(--spacing-12, 12px);
+    color: var(--green-600);
+}
+
+.icon-cross.small {
+    width: var(--spacing-20, 20px);
+    height: var(--spacing-20, 20px);
+}
