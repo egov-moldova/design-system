@@ -33,17 +33,18 @@ addons.getChannel().on(GLOBALS_UPDATED, ({ globals }) => {
 });
 
 // Mount agentation visual feedback toolbar (dev only)
-if (import.meta.env.DEV) {
-  const container = document.createElement('div');
-  container.id = 'agentation-root';
-  document.body.appendChild(container);
-  const root = createRoot(container);
-  root.render(
-    createElement(PageFeedbackToolbarCSS, {
-      endpoint: 'http://localhost:4747',
-    }),
-  );
-}
+//* Disabled
+// if (import.meta.env.DEV) {
+//   const container = document.createElement('div');
+//   container.id = 'agentation-root';
+//   document.body.appendChild(container);
+//   const root = createRoot(container);
+//   root.render(
+//     createElement(PageFeedbackToolbarCSS, {
+//       endpoint: 'http://localhost:4747',
+//     }),
+//   );
+// }
 
 // Token CSS is loaded via static <link> tags in preview-head.html.
 // Hot-reload is handled by polling in preview-head.html (no Vite HMR dependency).
@@ -138,6 +139,7 @@ export const parameters = {
     storySort: {
       order: [
         'Introduction',
+        'Foundations',
         'Design Tokens',
         ['Core', 'Core Dark'],
         'Atoms',

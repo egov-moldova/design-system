@@ -23,7 +23,8 @@
       "require": "./loader/index.cjs.js"
     },
     "./dist/design-system/design-system.css": "./dist/design-system/design-system.css",
-    "./dist/design-system/tokens/*.css": "./dist/design-system/tokens/*.css"
+    "./dist/design-system/tokens/*.css": "./dist/design-system/tokens/*.css",
+    "./dist/design-system/*": "./dist/design-system/*"
   },
   "workspaces": [
     "web-components"

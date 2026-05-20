@@ -32,6 +32,7 @@ export default {
     // Disabled during legacy migration — cor-illustration is in src/legacy/ and not shipped.
     // Re-enable (and update path) when a new illustration component is introduced.
     // { from: '../src/components/cor-illustration/assets', to: 'assets/assets' },
+    { from: '../src/components/cor-icon/assets', to: 'assets/assets' },
     { from: '../assets/font', to: 'assets/font' },
   ],
   addons: isDev ? devAddons : prodAddons,

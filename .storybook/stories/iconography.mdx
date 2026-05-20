@@ -1,0 +1,198 @@
+import { Meta } from '@storybook/blocks';
+
+import manifest from '../../src/components/cor-icon/assets/icons.manifest.json';
+
+<Meta title="Foundations/Iconography" />
+
+export const SIZES = [24, 20, 16, 12];
+
+export const namesAt = (size, kind) =>
+  Object.entries(manifest)
+    .filter(([, entry]) => entry.sizes.includes(size))
+    .map(([name]) => name)
+    .filter(name => (kind === 'filled' ? name.endsWith('-filled') : !name.endsWith('-filled')))
+    .sort();
+
+export const headerWrap = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 'var(--spacing-12)',
+  marginTop: '32px',
+  marginBottom: '40px',
+};
+
+export const headerTitle = {
+  margin: 0,
+  fontFamily: 'var(--font-family-primary)',
+  fontSize: 'var(--font-size-24)',
+  fontWeight: 'var(--font-weight-semibold)',
+  lineHeight: 'var(--line-height-24)',
+  color: 'var(--color-text-base-secondary)',
+};
+
+export const headerBadge = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  border: '1.5px solid var(--color-border-base-default)',
+  borderRadius: 'var(--border-radius-6)',
+  padding: 'var(--spacing-4) var(--spacing-6)',
+  fontFamily: 'var(--font-family-primary)',
+  fontSize: 'var(--font-size-16)',
+  fontWeight: 'var(--font-weight-medium)',
+  lineHeight: 'var(--line-height-24)',
+  color: 'var(--color-text-base-secondary)',
+};
+
+export const grid = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(4, minmax(0, 1fr))',
+  columnGap: '80px',
+  rowGap: '40px',
+  width: '100%',
+  marginTop: '32px',
+  marginBottom: '80px',
+};
+
+export const cell = {
+  position: 'relative',
+  display: 'flex',
+  alignItems: 'center',
+  gap: 'var(--spacing-16)',
+  minWidth: 0,
+  cursor: 'pointer',
+  borderRadius: 'var(--border-radius-8)',
+};
+
+export const copiedToast = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  padding: 'var(--spacing-4) var(--spacing-8)',
+  background: 'var(--color-background-base-inverse-default, #1e1e1e)',
+  color: 'var(--color-text-base-inverse, #ffffff)',
+  fontFamily: 'var(--font-family-primary)',
+  fontSize: 'var(--font-size-12)',
+  fontWeight: 'var(--font-weight-medium)',
+  lineHeight: 1,
+  borderRadius: 'var(--border-radius-6)',
+  opacity: 0,
+  pointerEvents: 'none',
+  transition: 'opacity 0.15s ease-in-out',
+  whiteSpace: 'nowrap',
+  zIndex: 1,
+  boxShadow: 'var(--drop-shadow-300)',
+};
+
+export const handleCopy = (name, ev) => {
+  const cellEl = ev.currentTarget;
+  const tip = cellEl.querySelector('[data-role="copied-tip"]');
+  const reveal = () => {
+    if (!tip) return;
+    tip.style.opacity = '1';
+    if (cellEl._copiedTimer) clearTimeout(cellEl._copiedTimer);
+    cellEl._copiedTimer = setTimeout(() => {
+      tip.style.opacity = '0';
+    }, 1200);
+  };
+  if (navigator.clipboard?.writeText) {
+    navigator.clipboard
+      .writeText(name)
+      .then(reveal)
+      .catch(() => {
+        // Fallback for environments where async clipboard is blocked.
+        const ta = document.createElement('textarea');
+        ta.value = name;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          document.execCommand('copy');
+        } finally {
+          document.body.removeChild(ta);
+        }
+        reveal();
+      });
+  }
+};
+
+export const iconWell = {
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  width: 40,
+  height: 40,
+  padding: 8,
+  background: 'var(--color-background-base-secondary)',
+  borderRadius: 'var(--border-radius-8)',
+  flexShrink: 0,
+  overflow: 'hidden',
+};
+
+export const label = {
+  fontFamily: '"Onest", ui-monospace, SFMono-Regular, Menlo, monospace',
+  fontSize: 'var(--font-size-14)',
+  fontWeight: 'var(--font-weight-medium)',
+  lineHeight: 'var(--line-height-20)',
+  letterSpacing: '-0.14px',
+  color: 'var(--color-text-base-secondary)',
+  wordBreak: 'break-word',
+};
+
+export const SizeSection = ({ size, names }) =>
+  names.length ? (
+    <section>
+      <div style={headerWrap}>
+        <p style={headerTitle}>Size</p>
+        <span style={headerBadge}>{size}px</span>
+      </div>
+      <div style={grid}>
+        {names.map(name => (
+          <div
+            key={name}
+            style={cell}
+            title={`Click to copy "${name}"`}
+            role="button"
+            tabIndex={0}
+            onClick={ev => handleCopy(name, ev)}
+            onKeyDown={ev => {
+              if (ev.key === 'Enter' || ev.key === ' ') {
+                ev.preventDefault();
+                handleCopy(name, ev);
+              }
+            }}
+          >
+            <div style={iconWell}>
+              <cor-icon name={name} size={size}></cor-icon>
+            </div>
+            <code style={label}>{name}</code>
+            <span data-role="copied-tip" style={copiedToast}>
+              Copied
+            </span>
+          </div>
+        ))}
+      </div>
+    </section>
+  ) : null;
+
+# Iconography
+
+These icons are designed to enhance visual communication, improve user experience, and maintain consistency across different interfaces and platforms. Click any icon to copy its name.
+
+## Outlined
+
+<div>
+  {SIZES.map(size => (
+    <SizeSection key={`out-${size}`} size={size} names={namesAt(size, 'outlined')} />
+  ))}
+</div>
+
+## Filled
+
+<div>
+  {SIZES.map(size => (
+    <SizeSection key={`fil-${size}`} size={size} names={namesAt(size, 'filled')} />
+  ))}
+</div>

@@ -5,9 +5,51 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { IconSize } from "./components/cor-icon/cor-icon.types";
 import { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
+export { IconSize } from "./components/cor-icon/cor-icon.types";
 export { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
 export namespace Components {
+    /**
+     * Icon — renders an inline SVG fetched on-demand from per-size asset files.
+     * Names follow the Material Symbols convention: append `-filled` to the base name
+     * to request the filled variant (e.g. `check` outlined vs `check-filled`).
+     * When the exact `size`/`name` combination is missing from the manifest, the
+     * provider falls back to the closest larger size (preferred) and then to the
+     * largest smaller size before giving up.
+     * @element cor-icon
+     */
+    interface CorIcon {
+        /**
+          * Accessible label. When provided, the icon is announced; when omitted it is decorative.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Color token suffix (mapped to `--color-{value}`), or `currentColor` to inherit text color.
+          * @default 'icon-base-secondary'
+         */
+        "color": string;
+        /**
+          * Reflects to `[disabled]` and visually disables the icon.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Enables interactive treatment (cursor, hover, focus ring, keyboard activation).
+          * @default false
+         */
+        "interactive": boolean;
+        /**
+          * Icon identifier (kebab-case). Suffix `-filled` selects the filled variant.
+          * @default 'check'
+         */
+        "name": string;
+        /**
+          * Pixel size, aligned with Figma Foundations: 12 / 16 / 20 / 24.
+          * @default 16
+         */
+        "size": IconSize;
+    }
     /**
      * Spinner — animated circular loading indicator.
      * Pattern B (atom-visual): renders a CSS-only rotating arc.
@@ -34,6 +76,21 @@ export namespace Components {
 }
 declare global {
     /**
+     * Icon — renders an inline SVG fetched on-demand from per-size asset files.
+     * Names follow the Material Symbols convention: append `-filled` to the base name
+     * to request the filled variant (e.g. `check` outlined vs `check-filled`).
+     * When the exact `size`/`name` combination is missing from the manifest, the
+     * provider falls back to the closest larger size (preferred) and then to the
+     * largest smaller size before giving up.
+     * @element cor-icon
+     */
+    interface HTMLCorIconElement extends Components.CorIcon, HTMLStencilElement {
+    }
+    var HTMLCorIconElement: {
+        prototype: HTMLCorIconElement;
+        new (): HTMLCorIconElement;
+    };
+    /**
      * Spinner — animated circular loading indicator.
      * Pattern B (atom-visual): renders a CSS-only rotating arc.
      * No slots, no events, no interactivity.
@@ -46,10 +103,51 @@ declare global {
         new (): HTMLCorSpinnerElement;
     };
     interface HTMLElementTagNameMap {
+        "cor-icon": HTMLCorIconElement;
         "cor-spinner": HTMLCorSpinnerElement;
     }
 }
 declare namespace LocalJSX {
+    /**
+     * Icon — renders an inline SVG fetched on-demand from per-size asset files.
+     * Names follow the Material Symbols convention: append `-filled` to the base name
+     * to request the filled variant (e.g. `check` outlined vs `check-filled`).
+     * When the exact `size`/`name` combination is missing from the manifest, the
+     * provider falls back to the closest larger size (preferred) and then to the
+     * largest smaller size before giving up.
+     * @element cor-icon
+     */
+    interface CorIcon {
+        /**
+          * Accessible label. When provided, the icon is announced; when omitted it is decorative.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Color token suffix (mapped to `--color-{value}`), or `currentColor` to inherit text color.
+          * @default 'icon-base-secondary'
+         */
+        "color"?: string;
+        /**
+          * Reflects to `[disabled]` and visually disables the icon.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Enables interactive treatment (cursor, hover, focus ring, keyboard activation).
+          * @default false
+         */
+        "interactive"?: boolean;
+        /**
+          * Icon identifier (kebab-case). Suffix `-filled` selects the filled variant.
+          * @default 'check'
+         */
+        "name"?: string;
+        /**
+          * Pixel size, aligned with Figma Foundations: 12 / 16 / 20 / 24.
+          * @default 16
+         */
+        "size"?: IconSize;
+    }
     /**
      * Spinner — animated circular loading indicator.
      * Pattern B (atom-visual): renders a CSS-only rotating arc.
@@ -74,6 +172,14 @@ declare namespace LocalJSX {
         "variant"?: SpinnerVariant;
     }
 
+    interface CorIconAttributes {
+        "name": string;
+        "size": IconSize;
+        "color": string;
+        "interactive": boolean;
+        "disabled": boolean;
+        "ariaLabel": string;
+    }
     interface CorSpinnerAttributes {
         "size": SpinnerSize;
         "variant": SpinnerVariant;
@@ -81,6 +187,7 @@ declare namespace LocalJSX {
     }
 
     interface IntrinsicElements {
+        "cor-icon": Omit<CorIcon, keyof CorIconAttributes> & { [K in keyof CorIcon & keyof CorIconAttributes]?: CorIcon[K] } & { [K in keyof CorIcon & keyof CorIconAttributes as `attr:${K}`]?: CorIconAttributes[K] } & { [K in keyof CorIcon & keyof CorIconAttributes as `prop:${K}`]?: CorIcon[K] };
         "cor-spinner": Omit<CorSpinner, keyof CorSpinnerAttributes> & { [K in keyof CorSpinner & keyof CorSpinnerAttributes]?: CorSpinner[K] } & { [K in keyof CorSpinner & keyof CorSpinnerAttributes as `attr:${K}`]?: CorSpinnerAttributes[K] } & { [K in keyof CorSpinner & keyof CorSpinnerAttributes as `prop:${K}`]?: CorSpinner[K] };
     }
 }
@@ -88,6 +195,16 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            /**
+             * Icon — renders an inline SVG fetched on-demand from per-size asset files.
+             * Names follow the Material Symbols convention: append `-filled` to the base name
+             * to request the filled variant (e.g. `check` outlined vs `check-filled`).
+             * When the exact `size`/`name` combination is missing from the manifest, the
+             * provider falls back to the closest larger size (preferred) and then to the
+             * largest smaller size before giving up.
+             * @element cor-icon
+             */
+            "cor-icon": LocalJSX.IntrinsicElements["cor-icon"] & JSXBase.HTMLAttributes<HTMLCorIconElement>;
             /**
              * Spinner — animated circular loading indicator.
              * Pattern B (atom-visual): renders a CSS-only rotating arc.

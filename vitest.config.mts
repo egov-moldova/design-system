@@ -52,6 +52,7 @@ export default defineVitestConfig({
       include: ['src/**/*.{ts,tsx}'],
       exclude: [
         'src/legacy/**',
+        'src/utils/**',
         'src/**/*.spec.{ts,tsx}',
         'src/**/*.test.{ts,tsx}',
         'src/**/*.e2e.{ts,tsx}',

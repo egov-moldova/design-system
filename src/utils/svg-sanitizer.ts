@@ -1,25 +1,7 @@
 const BLOCKED_SVG_TAGS: ReadonlySet<string> = new Set(['script', 'foreignobject', 'iframe', 'object', 'embed', 'link']);
 const URL_BASED_SVG_ATTRIBUTES: ReadonlySet<string> = new Set(['href', 'xlink:href', 'src']);
 
-/**
- * Sanitizes an SVG markup string so it is safer to inject via `innerHTML`.
- *
- * Rules:
- * - Drops blocked elements (`script`, `foreignObject`, `iframe`, etc.)
- * - Removes event handler attributes (`on*`)
- * - Allows URL-like attributes only when they are local fragment references (`#...`)
- *
- * Returns an empty string when no SVG root exists.
- */
-export function sanitizeSvgMarkup(svgMarkup: string): string {
-  const template = document.createElement('template');
-  template.innerHTML = svgMarkup.trim();
-
-  const svgRoot = template.content.querySelector('svg');
-  if (!svgRoot) {
-    return '';
-  }
-
+function sanitizeInPlace(svgRoot: Element): void {
   const allElements = [svgRoot, ...Array.from(svgRoot.querySelectorAll('*'))];
 
   allElements.forEach(element => {
@@ -49,8 +31,43 @@ export function sanitizeSvgMarkup(svgMarkup: string): string {
       }
     });
   });
+}
 
+function parseAndSanitize(svgMarkup: string): Element | null {
+  const template = document.createElement('template');
+  template.innerHTML = svgMarkup.trim();
+  const svgRoot = template.content.querySelector('svg');
+  if (!svgRoot) return null;
+  sanitizeInPlace(svgRoot);
+  return svgRoot;
+}
+
+/**
+ * Sanitizes an SVG markup string so it is safer to inject via `innerHTML`.
+ *
+ * Rules:
+ * - Drops blocked elements (`script`, `foreignObject`, `iframe`, etc.)
+ * - Removes event handler attributes (`on*`)
+ * - Allows URL-like attributes only when they are local fragment references (`#...`)
+ *
+ * Returns an empty string when no SVG root exists.
+ */
+export function sanitizeSvgMarkup(svgMarkup: string): string {
+  const svgRoot = parseAndSanitize(svgMarkup);
+  if (!svgRoot) return '';
   const wrapper = document.createElement('div');
   wrapper.appendChild(svgRoot.cloneNode(true));
   return wrapper.innerHTML;
+}
+
+/**
+ * Same sanitization as {@link sanitizeSvgMarkup}, but returns the cloned SVG element
+ * ready to attach via `appendChild` / `replaceChildren`. Lets callers avoid assigning
+ * markup strings to `innerHTML` at the call site.
+ *
+ * Returns `null` when no SVG root exists.
+ */
+export function sanitizeSvgToElement(svgMarkup: string): Element | null {
+  const svgRoot = parseAndSanitize(svgMarkup);
+  return svgRoot ? (svgRoot.cloneNode(true) as Element) : null;
 }
