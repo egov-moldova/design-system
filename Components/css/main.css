@@ -223,8 +223,8 @@
   --layout-columns-xl: 12;
   --layout-columns-xxl: 12;
   --font-family-base: 'Onest', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-family-mono:
-    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-family-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-family-descriptor: 'JetBrainsMono';
   --font-weight-regular: 400;
   --font-weight-semibold: 500;
   --font-weight-bold: 600;

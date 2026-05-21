@@ -159,35 +159,33 @@ $drop-shadows: (
   )
 );
 
-:root { 
-  --layout-container-max-width: #{$layout-container-max-width};
+:root {
+    --layout-container-max-width: #{$layout-container-max-width};
 
-  @each $key, $val in $breakpoints {
-    --breakpoint-#{$key}: #{$val};
-  }
+    @each $key, $val in $breakpoints {
+        --breakpoint-#{$key}: #{$val};
+    }
 
-  @each $key, $max in $container-max-widths {
-    --container-max-width-#{$key}: #{$max};
-  }
+    @each $key, $max in $container-max-widths {
+        --container-max-width-#{$key}: #{$max};
+    }
 
-  --grid-columns: #{$grid-columns};
+    --grid-columns: #{$grid-columns};
 
-  @each $key, $g in $gutters {
-    --grid-gutter-#{$key}: #{$g};
-  }
+    @each $key, $g in $gutters {
+        --grid-gutter-#{$key}: #{$g};
+    }
 
-  @each $key, $cols in $layout-columns {
-    --layout-columns-#{$key}: #{$cols};
-  }
+    @each $key, $cols in $layout-columns {
+        --layout-columns-#{$key}: #{$cols};
+    }
 
-  --font-family-base: 'Onest', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-  
-  --font-family-mono:
-    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-
-  --font-weight-regular: 400;
-  --font-weight-semibold: 500;
-  --font-weight-bold: 600;
+    --font-family-base: 'Onest', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-family-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --font-family-descriptor: 'JetBrainsMono';
+    --font-weight-regular: 400;
+    --font-weight-semibold: 500;
+    --font-weight-bold: 600;
 }
 
 :root {
