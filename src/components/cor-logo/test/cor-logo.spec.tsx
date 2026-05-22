@@ -69,6 +69,14 @@ describe('cor-logo', () => {
     expect(inner.toLowerCase()).toContain('<svg');
   });
 
+  it('renders only the .logomark container — no separate text nodes', async () => {
+    const { root, waitForChanges } = await render(<cor-logo name="mpay" variant="with-verb" />);
+    await waitForChanges();
+    const shadowChildren = root?.shadowRoot?.children;
+    expect(shadowChildren?.length ?? 0).toBe(1);
+    expect(shadowChildren?.[0].className).toBe('logomark');
+  });
+
   it('logs a warning and renders nothing when name is unknown', async () => {
     const { root, waitForChanges } = await render(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -87,27 +95,6 @@ describe('cor-logo', () => {
     await waitForChanges();
     expect(warnSpy).toHaveBeenCalled();
     expect(root?.shadowRoot?.children.length ?? 0).toBe(0);
-  });
-
-  it('with-name variant renders the service name text', async () => {
-    const { root, waitForChanges } = await render(<cor-logo name="mpass" variant="with-name" />);
-    await waitForChanges();
-    const textName = root?.shadowRoot?.querySelector('.text-name')?.textContent;
-    expect(textName).toBe('mpass');
-  });
-
-  it('with-verb variant renders name + verb', async () => {
-    const { root, waitForChanges } = await render(<cor-logo name="mpay" variant="with-verb" />);
-    await waitForChanges();
-    expect(root?.shadowRoot?.querySelector('.text-name')?.textContent).toBe('mpay');
-    expect(root?.shadowRoot?.querySelector('.text-verb')?.textContent).toBe('plătește');
-  });
-
-  it('with-long-name-medium variant renders 2-line description', async () => {
-    const { root, waitForChanges } = await render(<cor-logo name="msign" variant="with-long-name-medium" />);
-    await waitForChanges();
-    const description = root?.shadowRoot?.querySelector('.text-description');
-    expect(description?.children.length).toBe(2);
   });
 
   it('cache hit: fetch called only once for two instances with the same name+variant', async () => {
@@ -148,5 +135,12 @@ describe('cor-logo', () => {
         expect(url).toContain(`${name}-logo-${variant}.svg`);
       }
     }
+  });
+
+  it('exposes all 11 services', () => {
+    expect(LOGO_NAMES.length).toBe(11);
+    expect(LOGO_NAMES).toContain('mpay');
+    expect(LOGO_NAMES).toContain('mcloud');
+    expect(LOGO_NAMES).toContain('mlog');
   });
 });

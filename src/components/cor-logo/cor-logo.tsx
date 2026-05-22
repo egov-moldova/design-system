@@ -1,17 +1,15 @@
 import { Component, Element, Host, Prop, State, Watch, h } from '@stencil/core';
 
-import logosManifest from './assets/logos.manifest.json';
 import { fetchLogoSvg, resolveLogoAssetUrl } from './cor-logo.providers';
-import { LOGO_NAMES, LOGO_VARIANTS, type LogoManifest, type LogoName, type LogoVariant } from './cor-logo.types';
-
-const manifest = logosManifest as unknown as LogoManifest;
+import { LOGO_NAMES, LOGO_VARIANTS, type LogoName, type LogoVariant } from './cor-logo.types';
 
 /**
- * Brand logo for Moldovan M-products (mpay, mpass, msign, mpower, mdelivery).
+ * Brand logo for Moldovan M-products.
  *
- * Renders the service logomark plus optional accompanying text (service name,
- * verb, or two-line description) based on the `variant` prop. Variant `logomark-only`
- * displays just the badge — used inside `cor-service-button` and other compact contexts.
+ * Each `name × variant` combination resolves to a single self-contained SVG —
+ * logomark and any accompanying wordmark/description are baked as vector paths
+ * (no live text in the DOM). The component fetches and renders that SVG into
+ * shadow DOM; layout follows the SVG's intrinsic dimensions.
  *
  * @element cor-logo
  */
@@ -23,14 +21,14 @@ const manifest = logosManifest as unknown as LogoManifest;
 })
 export class CorLogo {
   /**
-   * Service identifier. Determines which logomark + text content to render.
+   * Service identifier. Determines which logo composition is rendered.
    * @default 'mpay'
    */
   @Prop({ reflect: true }) name: LogoName = 'mpay';
 
   /**
    * Layout variant. `logomark-only` renders just the badge; other variants
-   * pair the logomark with text composed inline.
+   * pair the logomark with vectorised wordmark/description text.
    * @default 'logomark-only'
    */
   @Prop({ reflect: true }) variant: LogoVariant = 'logomark-only';
@@ -125,27 +123,9 @@ export class CorLogo {
       hostAttrs['aria-hidden'] = 'true';
     }
 
-    const spec = manifest[this.name];
-
     return (
       <Host {...hostAttrs}>
         <span class="logomark" aria-hidden="true" />
-        {this.variant === 'with-name' && <span class="text-name">{spec.name}</span>}
-        {this.variant === 'with-verb' && (
-          <span class="text-stack">
-            <span class="text-name">{spec.name}</span>
-            <span class="text-verb">{spec.verb}</span>
-          </span>
-        )}
-        {(this.variant === 'with-long-name-medium' || this.variant === 'with-long-name-large') && (
-          <span class="text-stack">
-            <span class="text-name">{spec.name}</span>
-            <span class="text-description">
-              <span>{spec.description[0]}</span>
-              <span>{spec.description[1]}</span>
-            </span>
-          </span>
-        )}
       </Host>
     );
   }

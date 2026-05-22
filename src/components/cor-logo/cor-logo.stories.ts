@@ -15,7 +15,8 @@ const meta: Meta<LogoArgs> = {
     name: {
       control: 'select',
       options: [...LOGO_NAMES],
-      description: 'Service identifier — mpay, mpass, msign, mpower, mdelivery.',
+      description:
+        'Service identifier — mcloud, mconnect, mdelivery, mdocs, mlearn, mlog, mnotify, mpass, mpay, mpower, msign.',
       table: { defaultValue: { summary: 'mpay' } },
     },
     variant: {
@@ -57,7 +58,7 @@ export const AllLogos: Story = {
   name: 'All logos × variants',
   parameters: { controls: { disable: true } },
   render: () => /*html*/ `
-    <div style="display: grid; grid-template-columns: repeat(${LOGO_VARIANTS.length}, minmax(0, 1fr)); gap: var(--spacing-16);">
+    <div style="display: grid; grid-template-columns: repeat(${LOGO_VARIANTS.length}, minmax(280px, 1fr)); gap: var(--spacing-16);">
       ${LOGO_VARIANTS.map(v => /*html*/ `<div style="${cellLabelStyle} text-align: center;">${v}</div>`).join('')}
       ${LOGO_NAMES.flatMap(n =>
         LOGO_VARIANTS.map(

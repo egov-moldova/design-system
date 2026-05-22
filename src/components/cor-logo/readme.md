@@ -7,19 +7,20 @@
 
 ## Overview
 
-Brand logo for Moldovan M-products (mpay, mpass, msign, mpower, mdelivery).
+Brand logo for Moldovan M-products.
 
-Renders the service logomark plus optional accompanying text (service name,
-verb, or two-line description) based on the `variant` prop. Variant `logomark-only`
-displays just the badge — used inside `cor-service-button` and other compact contexts.
+Each `name × variant` combination resolves to a single self-contained SVG —
+logomark and any accompanying wordmark/description are baked as vector paths
+(no live text in the DOM). The component fetches and renders that SVG into
+shadow DOM; layout follows the SVG's intrinsic dimensions.
 
 ## Properties
 
-| Property    | Attribute    | Description                                                                                                         | Type                                                                                                 | Default           |
-| ----------- | ------------ | ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ----------------- |
-| `ariaLabel` | `aria-label` | Accessible label. When provided, the logo is announced; when omitted it is decorative (aria-hidden).                | `string \| undefined`                                                                                | `undefined`       |
-| `name`      | `name`       | Service identifier. Determines which logomark + text content to render.                                             | `"mdelivery" \| "mpass" \| "mpay" \| "mpower" \| "msign"`                                            | `'mpay'`          |
-| `variant`   | `variant`    | Layout variant. `logomark-only` renders just the badge; other variants pair the logomark with text composed inline. | `"logomark-only" \| "with-long-name-large" \| "with-long-name-medium" \| "with-name" \| "with-verb"` | `'logomark-only'` |
+| Property    | Attribute    | Description                                                                                                                         | Type                                                                                                                              | Default           |
+| ----------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| `ariaLabel` | `aria-label` | Accessible label. When provided, the logo is announced; when omitted it is decorative (aria-hidden).                                | `string \| undefined`                                                                                                             | `undefined`       |
+| `name`      | `name`       | Service identifier. Determines which logo composition is rendered.                                                                  | `"mcloud" \| "mconnect" \| "mdelivery" \| "mdocs" \| "mlearn" \| "mlog" \| "mnotify" \| "mpass" \| "mpay" \| "mpower" \| "msign"` | `'mpay'`          |
+| `variant`   | `variant`    | Layout variant. `logomark-only` renders just the badge; other variants pair the logomark with vectorised wordmark/description text. | `"logomark-only" \| "with-long-name-large" \| "with-long-name-medium" \| "with-name" \| "with-verb"`                              | `'logomark-only'` |
 
 
 ----------------------------------------------

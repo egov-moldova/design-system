@@ -157,10 +157,11 @@ export namespace Components {
         "size": IconSize;
     }
     /**
-     * Brand logo for Moldovan M-products (mpay, mpass, msign, mpower, mdelivery).
-     * Renders the service logomark plus optional accompanying text (service name,
-     * verb, or two-line description) based on the `variant` prop. Variant `logomark-only`
-     * displays just the badge — used inside `cor-service-button` and other compact contexts.
+     * Brand logo for Moldovan M-products.
+     * Each `name × variant` combination resolves to a single self-contained SVG —
+     * logomark and any accompanying wordmark/description are baked as vector paths
+     * (no live text in the DOM). The component fetches and renders that SVG into
+     * shadow DOM; layout follows the SVG's intrinsic dimensions.
      * @element cor-logo
      */
     interface CorLogo {
@@ -169,12 +170,12 @@ export namespace Components {
          */
         "ariaLabel"?: string;
         /**
-          * Service identifier. Determines which logomark + text content to render.
+          * Service identifier. Determines which logo composition is rendered.
           * @default 'mpay'
          */
         "name": LogoName;
         /**
-          * Layout variant. `logomark-only` renders just the badge; other variants pair the logomark with text composed inline.
+          * Layout variant. `logomark-only` renders just the badge; other variants pair the logomark with vectorised wordmark/description text.
           * @default 'logomark-only'
          */
         "variant": LogoVariant;
@@ -310,10 +311,11 @@ declare global {
         new (): HTMLCorIconElement;
     };
     /**
-     * Brand logo for Moldovan M-products (mpay, mpass, msign, mpower, mdelivery).
-     * Renders the service logomark plus optional accompanying text (service name,
-     * verb, or two-line description) based on the `variant` prop. Variant `logomark-only`
-     * displays just the badge — used inside `cor-service-button` and other compact contexts.
+     * Brand logo for Moldovan M-products.
+     * Each `name × variant` combination resolves to a single self-contained SVG —
+     * logomark and any accompanying wordmark/description are baked as vector paths
+     * (no live text in the DOM). The component fetches and renders that SVG into
+     * shadow DOM; layout follows the SVG's intrinsic dimensions.
      * @element cor-logo
      */
     interface HTMLCorLogoElement extends Components.CorLogo, HTMLStencilElement {
@@ -504,10 +506,11 @@ declare namespace LocalJSX {
         "size"?: IconSize;
     }
     /**
-     * Brand logo for Moldovan M-products (mpay, mpass, msign, mpower, mdelivery).
-     * Renders the service logomark plus optional accompanying text (service name,
-     * verb, or two-line description) based on the `variant` prop. Variant `logomark-only`
-     * displays just the badge — used inside `cor-service-button` and other compact contexts.
+     * Brand logo for Moldovan M-products.
+     * Each `name × variant` combination resolves to a single self-contained SVG —
+     * logomark and any accompanying wordmark/description are baked as vector paths
+     * (no live text in the DOM). The component fetches and renders that SVG into
+     * shadow DOM; layout follows the SVG's intrinsic dimensions.
      * @element cor-logo
      */
     interface CorLogo {
@@ -516,12 +519,12 @@ declare namespace LocalJSX {
          */
         "ariaLabel"?: string;
         /**
-          * Service identifier. Determines which logomark + text content to render.
+          * Service identifier. Determines which logo composition is rendered.
           * @default 'mpay'
          */
         "name"?: LogoName;
         /**
-          * Layout variant. `logomark-only` renders just the badge; other variants pair the logomark with text composed inline.
+          * Layout variant. `logomark-only` renders just the badge; other variants pair the logomark with vectorised wordmark/description text.
           * @default 'logomark-only'
          */
         "variant"?: LogoVariant;
@@ -711,10 +714,11 @@ declare module "@stencil/core" {
              */
             "cor-icon": LocalJSX.IntrinsicElements["cor-icon"] & JSXBase.HTMLAttributes<HTMLCorIconElement>;
             /**
-             * Brand logo for Moldovan M-products (mpay, mpass, msign, mpower, mdelivery).
-             * Renders the service logomark plus optional accompanying text (service name,
-             * verb, or two-line description) based on the `variant` prop. Variant `logomark-only`
-             * displays just the badge — used inside `cor-service-button` and other compact contexts.
+             * Brand logo for Moldovan M-products.
+             * Each `name × variant` combination resolves to a single self-contained SVG —
+             * logomark and any accompanying wordmark/description are baked as vector paths
+             * (no live text in the DOM). The component fetches and renders that SVG into
+             * shadow DOM; layout follows the SVG's intrinsic dimensions.
              * @element cor-logo
              */
             "cor-logo": LocalJSX.IntrinsicElements["cor-logo"] & JSXBase.HTMLAttributes<HTMLCorLogoElement>;

@@ -1,142 +1,27 @@
 :host {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--spacing-6);
+  display: inline-block;
   vertical-align: middle;
   color: var(--logo-color-default);
 }
 
 .logomark {
   display: inline-block;
-  flex-shrink: 0;
 }
 
 .logomark svg {
   display: block;
-  width: 100%;
-  height: 100%;
 }
 
-.text-stack {
-  display: inline-flex;
-  flex-direction: column;
-  align-items: flex-start;
-  white-space: nowrap;
-}
-
-.text-name {
-  font-family: var(--font-family-primary);
-  color: var(--color-text-base-default);
-  letter-spacing: -0.01em;
-  text-transform: lowercase;
-}
-
-.text-verb,
-.text-description {
-  font-family: var(--font-family-primary);
-  font-weight: var(--font-weight-regular);
-  color: var(--color-text-base-secondary);
-}
-
-.text-description {
-  display: inline-flex;
-  flex-direction: column;
-}
-
-/* ---------- Variant: logomark-only (40x40 default; size controllable via host) ---------- */
-
+/* logomark-only has a fixed 40×40 footprint so consumers (e.g. service-button
+   badge slot) can reserve space before the async SVG fetch resolves. All other
+   variants follow the SVG's intrinsic width/height. */
 :host([variant='logomark-only']) {
-  gap: 0;
   inline-size: 40px;
   block-size: 40px;
 }
 
-:host([variant='logomark-only']) .logomark {
+:host([variant='logomark-only']) .logomark,
+:host([variant='logomark-only']) .logomark svg {
   inline-size: 100%;
   block-size: 100%;
-}
-
-/* ---------- Variant: with-name (logomark 24x24 + inline name) ---------- */
-
-:host([variant='with-name']) .logomark {
-  inline-size: 24px;
-  block-size: 24px;
-}
-
-:host([variant='with-name']) .text-name {
-  font-size: 16px;
-  font-weight: var(--font-weight-bold);
-  line-height: 1;
-}
-
-/* ---------- Variant: with-verb (logomark 40x40 + 2-line text) ---------- */
-
-:host([variant='with-verb']) {
-  gap: var(--spacing-12);
-  align-items: flex-start;
-}
-
-:host([variant='with-verb']) .logomark {
-  inline-size: 40px;
-  block-size: 40px;
-}
-
-:host([variant='with-verb']) .text-name {
-  font-size: var(--font-size-18);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-26);
-  letter-spacing: -0.01em;
-}
-
-:host([variant='with-verb']) .text-verb {
-  font-size: var(--font-size-12);
-  line-height: var(--line-height-16);
-}
-
-/* ---------- Variant: with-long-name-medium (logomark 40 + name + 2-line caption-small) ---------- */
-
-:host([variant='with-long-name-medium']) {
-  gap: var(--spacing-12);
-  align-items: flex-start;
-}
-
-:host([variant='with-long-name-medium']) .logomark {
-  inline-size: 40px;
-  block-size: 40px;
-}
-
-:host([variant='with-long-name-medium']) .text-name {
-  font-size: var(--font-size-18);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-26);
-  letter-spacing: -0.01em;
-}
-
-:host([variant='with-long-name-medium']) .text-description {
-  font-size: var(--font-size-10);
-  line-height: var(--line-height-12);
-}
-
-/* ---------- Variant: with-long-name-large (logomark 40 + name + 2-line caption-medium) ---------- */
-
-:host([variant='with-long-name-large']) {
-  gap: var(--spacing-12);
-  align-items: flex-start;
-}
-
-:host([variant='with-long-name-large']) .logomark {
-  inline-size: 40px;
-  block-size: 40px;
-}
-
-:host([variant='with-long-name-large']) .text-name {
-  font-size: var(--font-size-18);
-  font-weight: var(--font-weight-semibold);
-  line-height: var(--line-height-26);
-  letter-spacing: -0.01em;
-}
-
-:host([variant='with-long-name-large']) .text-description {
-  font-size: var(--font-size-12);
-  line-height: var(--line-height-16);
 }
