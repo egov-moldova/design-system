@@ -11,7 +11,7 @@ and updates PR https://github.com/corlab-org/age-design/pull/5.
 |---|---|---|---|---|---|
 | 1 | `cor-input` (text-input) | `f035f11544e0883bc29ca99b48309238db82edf8` | ✅ done | `6624b85` | `docs/screenshots/cor-input/` |
 | 2 | `cor-select-input` | `24351877baeb81b99cceea90d885b3455191ac62` | ✅ done | `41171ea` | `docs/screenshots/cor-select-input/` |
-| 3 | `cor-date-input` | `4449e61e554888eb4357b4f2e6e16dacf738fda3` | ⏳ pending | — | — |
+| 3 | `cor-date-input` | `4449e61e554888eb4357b4f2e6e16dacf738fda3` | ✅ done | `d762ec9` | `docs/screenshots/cor-date-input/` |
 | 4 | `cor-file-input` | `2e8a0a8cc37b76d197dfdd8af2a4cac5ce8aa884` | ⏳ pending | — | — |
 | 5 | `cor-search-input-rectangular` | `a27b4efaed053f6cd4a57411a032d7391174c425` | ⏳ pending | — | — |
 | 6 | `cor-search-input-circular` | `b33c35c72dbe621375862c300c0238c4a4eacc78` | ⏳ pending | — | — |
@@ -25,4 +25,4 @@ and updates PR https://github.com/corlab-org/age-design/pull/5.
 
 ## Last updated
 
-2026-05-22 — `cor-select-input` shipped (dropdown atom — visual primitives shared with `cor-input`, adds chevron + listbox + WAI-ARIA combobox keyboard contract).
+2026-05-22 — `cor-date-input` shipped (date-input molecule — composes `cor-input` visual primitives, adds segment-mask formatter, ghost-overlay placeholder remnant, per-segment validation messages, trailing 20/24 calendar icon, `format` prop supporting `DD/MM/YYYY` / `MM/DD/YYYY` / `YYYY-MM-DD`, min/max ISO bounds, form-associated). 56 tokens added under `--date-input-*`. Spec coverage: 48 tests across rendering, prop reflection, shadow structure, value + form association, format variations, min/max bounds, disabled/readonly behavior, and full ARIA contract.
