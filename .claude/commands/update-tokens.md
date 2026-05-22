@@ -159,7 +159,7 @@ Reference: Skill [`accessibility-compliance`](../skills/accessibility-compliance
 
 ```text
 mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-cor-<name>--default" })
-mcp__playwright__browser_take_screenshot({ type: "png", filename: "token-update-check.png" })
+mcp__playwright__browser_take_screenshot({ type: "png", filename: ".playwright-mcp/token-update-check.png" })
 ```
 
 Verify the component renders correctly with updated token values.

@@ -5,11 +5,117 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/cor-button/cor-button.types";
+import { ButtonGroupOrientation } from "./components/cor-button-group/cor-button-group.types";
 import { IconSize } from "./components/cor-icon/cor-icon.types";
+import { LogoName } from "./components/cor-logo/cor-logo.types";
+import { ServiceButtonAppearance, ServiceButtonType } from "./components/cor-service-button/cor-service-button.types";
 import { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
+export { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/cor-button/cor-button.types";
+export { ButtonGroupOrientation } from "./components/cor-button-group/cor-button-group.types";
 export { IconSize } from "./components/cor-icon/cor-icon.types";
+export { LogoName } from "./components/cor-logo/cor-logo.types";
+export { ServiceButtonAppearance, ServiceButtonType } from "./components/cor-service-button/cor-service-button.types";
 export { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
 export namespace Components {
+    /**
+     * Button — interactive control.
+     * Pattern B (atom-interactive): renders its own `<button>` (or `<a>` when `href`
+     * is set) inside shadow DOM. Form participation works via `formAssociated` +
+     * `ElementInternals`.
+     * @element cor-button
+     */
+    interface CorButton {
+        /**
+          * Visual treatment. - `filled` (default) — solid background per variant - `outlined` — 1.5px border with transparent fill in default/focus; hover/active fill solid (matches filled) - `text` — no border, transparent fill, hover/active tint background; designed for inline use  `outlined` and `text` only support `primary`, `strict`, and `destructive` variants. Other variants fall back to `primary` visuals with a dev-time console warning.
+          * @default 'filled'
+         */
+        "appearance": ButtonAppearance;
+        /**
+          * Disables interactivity. When set the internal control receives `aria-disabled` and (for `<button>`) the native `disabled` attribute.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Makes the button expand to fill the inline-size of its container. The host becomes a block-level flex container and the internal control stretches to 100% width — designed for use inside `cor-button-group` (vertical orientation) or in narrow form layouts.
+          * @default false
+         */
+        "fullWidth": boolean;
+        /**
+          * If set, the button renders as `<a href="…">` and behaves as a link. `type`, `name`, and `value` are ignored in this mode.
+         */
+        "href"?: string;
+        /**
+          * Switches the button into icon-only mode: the container becomes square with equal zero-padding, and `icon-start`/`icon-end`/default-slot content is suppressed. Icon content should be placed in `slot="icon"`. Requires `label` (or `aria-label`) for screen readers.
+          * @default false
+         */
+        "iconOnly": boolean;
+        /**
+          * Accessible name. Required when the button has no visible text label (icon-only). Forwarded to `aria-label` on the internal control.
+         */
+        "label"?: string;
+        /**
+          * Renders a centred spinner and blocks interactivity while preserving the accessible name. Sets `aria-busy` on the internal control.
+          * @default false
+         */
+        "loading": boolean;
+        /**
+          * Form-control `name`. Used when `type="submit"` and a value is submitted.
+         */
+        "name"?: string;
+        /**
+          * `rel` for the anchor when `href` is set.
+         */
+        "rel"?: string;
+        /**
+          * Container silhouette. `circular` produces a fully-rounded pill; combine with an icon-only label to render a circle.
+          * @default 'rectangular'
+         */
+        "shape": ButtonShape;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size": ButtonSize;
+        /**
+          * `target` for the anchor when `href` is set.
+         */
+        "target"?: string;
+        /**
+          * Native button `type` attribute. Ignored when `href` is set.
+          * @default 'button'
+         */
+        "type": ButtonType;
+        /**
+          * Form-control `value` submitted alongside `name`.
+         */
+        "value"?: string;
+        /**
+          * Color treatment.
+          * @default 'primary'
+         */
+        "variant": ButtonVariant;
+    }
+    /**
+     * Button group — layout container for stacking multiple `cor-button` elements
+     * with consistent spacing (12px gap) per the AGE Design System.
+     * Pure layout primitive: does not propagate props to children, does not emit
+     * events, does not manage focus order beyond the natural DOM tab sequence.
+     * Each child `cor-button` controls its own size, variant, and full-width
+     * behavior independently.
+     * @element cor-button-group
+     */
+    interface CorButtonGroup {
+        /**
+          * Accessible name for the group. Forwarded to `aria-label` on the host element so assistive technologies announce the buttons as a unit (e.g. "Form actions").
+         */
+        "label"?: string;
+        /**
+          * Axis along which buttons are stacked. `horizontal` lays out children in a row; `vertical` stacks them in a column and stretches each child to the group's inline-size (so children with `full-width` fill it).
+          * @default 'horizontal'
+         */
+        "orientation": ButtonGroupOrientation;
+    }
     /**
      * Icon — renders an inline SVG fetched on-demand from per-size asset files.
      * Names follow the Material Symbols convention: append `-filled` to the base name
@@ -51,6 +157,92 @@ export namespace Components {
         "size": IconSize;
     }
     /**
+     * Brand logo for Moldovan M-products.
+     * Each `name` resolves to a single self-contained SVG asset under `./assets/`.
+     * The component fetches and renders that SVG into shadow DOM; the host's
+     * dimensions follow the SVG's intrinsic `width`/`height`/`viewBox` exactly as
+     * exported from Figma — so a future asset with non-standard dimensions
+     * "just works" without a CSS contract change.
+     * Consumers that need to reserve layout space before the async fetch
+     * resolves (e.g. above-the-fold marketing, dense grids) should wrap the
+     * logo in a sized container — `cor-service-button` does this for its
+     * `badge` slot (24 × 24).
+     * @element cor-logo
+     */
+    interface CorLogo {
+        /**
+          * Accessible label. When provided (and non-whitespace), the logo is announced as an image; when omitted or whitespace-only the logo is decorative (aria-hidden).
+         */
+        "ariaLabel"?: string;
+        /**
+          * Logo asset identifier — the bare filename (without `.svg`) of an asset in `./assets/`. Format: `{service}-logo-{layout}`. See `LOGO_NAMES` for the complete enumeration.
+          * @default 'mpay-logo-logomark-only'
+         */
+        "name": LogoName;
+    }
+    /**
+     * Service Button — interactive control for Moldovan M-products (mpay, mpass,
+     * msign, mpower, mdelivery).
+     * A specialised filled button with a logo badge embedded on the inline-start
+     * edge of the geometry. Fixed 48 px height (= minimum touch target) and
+     * asymmetric padding (16 start / 20 end) per Figma spec.
+     * Slot `badge` reserves a 24×24 box for a `<cor-logo>` rendering a
+     * `*-logo-logomark-only` asset (or any other element rendered at that size).
+     * The default slot carries the label text.
+     * @element cor-service-button
+     */
+    interface CorServiceButton {
+        /**
+          * Visual treatment. - `primary` — solid brand background, white label - `neutral` — light surface background, dark label
+          * @default 'primary'
+         */
+        "appearance": ServiceButtonAppearance;
+        /**
+          * Disables interactivity.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Makes the button expand to fill the inline-size of its container.
+          * @default false
+         */
+        "fullWidth": boolean;
+        /**
+          * If set, the button renders as `<a href="…">` and behaves as a link. `type`, `name`, and `value` are ignored in this mode.
+         */
+        "href"?: string;
+        /**
+          * Accessible name override. When omitted, the visible default-slot text is used as the accessible name (the standard pattern).
+         */
+        "label"?: string;
+        /**
+          * Renders a centred spinner and blocks interactivity while preserving the accessible name. Sets `aria-busy` on the internal control.
+          * @default false
+         */
+        "loading": boolean;
+        /**
+          * Form-control `name`. Used when `type="submit"` and a value is submitted.
+         */
+        "name"?: string;
+        /**
+          * `rel` for the anchor when `href` is set.
+         */
+        "rel"?: string;
+        /**
+          * `target` for the anchor when `href` is set.
+         */
+        "target"?: string;
+        /**
+          * Native button `type` attribute. Ignored when `href` is set.
+          * @default 'button'
+         */
+        "type": ServiceButtonType;
+        /**
+          * Form-control `value` submitted alongside `name`.
+         */
+        "value"?: string;
+    }
+    /**
      * Spinner — animated circular loading indicator.
      * Pattern B (atom-visual): renders a CSS-only rotating arc.
      * No slots, no events, no interactivity.
@@ -74,7 +266,39 @@ export namespace Components {
         "variant": SpinnerVariant;
     }
 }
+export interface CorLogoCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorLogoElement;
+}
 declare global {
+    /**
+     * Button — interactive control.
+     * Pattern B (atom-interactive): renders its own `<button>` (or `<a>` when `href`
+     * is set) inside shadow DOM. Form participation works via `formAssociated` +
+     * `ElementInternals`.
+     * @element cor-button
+     */
+    interface HTMLCorButtonElement extends Components.CorButton, HTMLStencilElement {
+    }
+    var HTMLCorButtonElement: {
+        prototype: HTMLCorButtonElement;
+        new (): HTMLCorButtonElement;
+    };
+    /**
+     * Button group — layout container for stacking multiple `cor-button` elements
+     * with consistent spacing (12px gap) per the AGE Design System.
+     * Pure layout primitive: does not propagate props to children, does not emit
+     * events, does not manage focus order beyond the natural DOM tab sequence.
+     * Each child `cor-button` controls its own size, variant, and full-width
+     * behavior independently.
+     * @element cor-button-group
+     */
+    interface HTMLCorButtonGroupElement extends Components.CorButtonGroup, HTMLStencilElement {
+    }
+    var HTMLCorButtonGroupElement: {
+        prototype: HTMLCorButtonGroupElement;
+        new (): HTMLCorButtonGroupElement;
+    };
     /**
      * Icon — renders an inline SVG fetched on-demand from per-size asset files.
      * Names follow the Material Symbols convention: append `-filled` to the base name
@@ -90,6 +314,53 @@ declare global {
         prototype: HTMLCorIconElement;
         new (): HTMLCorIconElement;
     };
+    interface HTMLCorLogoElementEventMap {
+        "corLogoError": { name: string; reason: 'unknown' | 'fetch-failed' };
+    }
+    /**
+     * Brand logo for Moldovan M-products.
+     * Each `name` resolves to a single self-contained SVG asset under `./assets/`.
+     * The component fetches and renders that SVG into shadow DOM; the host's
+     * dimensions follow the SVG's intrinsic `width`/`height`/`viewBox` exactly as
+     * exported from Figma — so a future asset with non-standard dimensions
+     * "just works" without a CSS contract change.
+     * Consumers that need to reserve layout space before the async fetch
+     * resolves (e.g. above-the-fold marketing, dense grids) should wrap the
+     * logo in a sized container — `cor-service-button` does this for its
+     * `badge` slot (24 × 24).
+     * @element cor-logo
+     */
+    interface HTMLCorLogoElement extends Components.CorLogo, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorLogoElementEventMap>(type: K, listener: (this: HTMLCorLogoElement, ev: CorLogoCustomEvent<HTMLCorLogoElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorLogoElementEventMap>(type: K, listener: (this: HTMLCorLogoElement, ev: CorLogoCustomEvent<HTMLCorLogoElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorLogoElement: {
+        prototype: HTMLCorLogoElement;
+        new (): HTMLCorLogoElement;
+    };
+    /**
+     * Service Button — interactive control for Moldovan M-products (mpay, mpass,
+     * msign, mpower, mdelivery).
+     * A specialised filled button with a logo badge embedded on the inline-start
+     * edge of the geometry. Fixed 48 px height (= minimum touch target) and
+     * asymmetric padding (16 start / 20 end) per Figma spec.
+     * Slot `badge` reserves a 24×24 box for a `<cor-logo>` rendering a
+     * `*-logo-logomark-only` asset (or any other element rendered at that size).
+     * The default slot carries the label text.
+     * @element cor-service-button
+     */
+    interface HTMLCorServiceButtonElement extends Components.CorServiceButton, HTMLStencilElement {
+    }
+    var HTMLCorServiceButtonElement: {
+        prototype: HTMLCorServiceButtonElement;
+        new (): HTMLCorServiceButtonElement;
+    };
     /**
      * Spinner — animated circular loading indicator.
      * Pattern B (atom-visual): renders a CSS-only rotating arc.
@@ -103,11 +374,117 @@ declare global {
         new (): HTMLCorSpinnerElement;
     };
     interface HTMLElementTagNameMap {
+        "cor-button": HTMLCorButtonElement;
+        "cor-button-group": HTMLCorButtonGroupElement;
         "cor-icon": HTMLCorIconElement;
+        "cor-logo": HTMLCorLogoElement;
+        "cor-service-button": HTMLCorServiceButtonElement;
         "cor-spinner": HTMLCorSpinnerElement;
     }
 }
 declare namespace LocalJSX {
+    /**
+     * Button — interactive control.
+     * Pattern B (atom-interactive): renders its own `<button>` (or `<a>` when `href`
+     * is set) inside shadow DOM. Form participation works via `formAssociated` +
+     * `ElementInternals`.
+     * @element cor-button
+     */
+    interface CorButton {
+        /**
+          * Visual treatment. - `filled` (default) — solid background per variant - `outlined` — 1.5px border with transparent fill in default/focus; hover/active fill solid (matches filled) - `text` — no border, transparent fill, hover/active tint background; designed for inline use  `outlined` and `text` only support `primary`, `strict`, and `destructive` variants. Other variants fall back to `primary` visuals with a dev-time console warning.
+          * @default 'filled'
+         */
+        "appearance"?: ButtonAppearance;
+        /**
+          * Disables interactivity. When set the internal control receives `aria-disabled` and (for `<button>`) the native `disabled` attribute.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Makes the button expand to fill the inline-size of its container. The host becomes a block-level flex container and the internal control stretches to 100% width — designed for use inside `cor-button-group` (vertical orientation) or in narrow form layouts.
+          * @default false
+         */
+        "fullWidth"?: boolean;
+        /**
+          * If set, the button renders as `<a href="…">` and behaves as a link. `type`, `name`, and `value` are ignored in this mode.
+         */
+        "href"?: string;
+        /**
+          * Switches the button into icon-only mode: the container becomes square with equal zero-padding, and `icon-start`/`icon-end`/default-slot content is suppressed. Icon content should be placed in `slot="icon"`. Requires `label` (or `aria-label`) for screen readers.
+          * @default false
+         */
+        "iconOnly"?: boolean;
+        /**
+          * Accessible name. Required when the button has no visible text label (icon-only). Forwarded to `aria-label` on the internal control.
+         */
+        "label"?: string;
+        /**
+          * Renders a centred spinner and blocks interactivity while preserving the accessible name. Sets `aria-busy` on the internal control.
+          * @default false
+         */
+        "loading"?: boolean;
+        /**
+          * Form-control `name`. Used when `type="submit"` and a value is submitted.
+         */
+        "name"?: string;
+        /**
+          * `rel` for the anchor when `href` is set.
+         */
+        "rel"?: string;
+        /**
+          * Container silhouette. `circular` produces a fully-rounded pill; combine with an icon-only label to render a circle.
+          * @default 'rectangular'
+         */
+        "shape"?: ButtonShape;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size"?: ButtonSize;
+        /**
+          * `target` for the anchor when `href` is set.
+         */
+        "target"?: string;
+        /**
+          * Native button `type` attribute. Ignored when `href` is set.
+          * @default 'button'
+         */
+        "type"?: ButtonType;
+        /**
+          * Form-control `value` submitted alongside `name`.
+         */
+        "value"?: string;
+        /**
+          * Color treatment.
+          * @default 'primary'
+         */
+        "variant"?: ButtonVariant;
+    }
+    /**
+     * Button group — layout container for stacking multiple `cor-button` elements
+     * with consistent spacing (12px gap) per the AGE Design System.
+     * Pure layout primitive: does not propagate props to children, does not emit
+     * events, does not manage focus order beyond the natural DOM tab sequence.
+     * Each child `cor-button` controls its own size, variant, and full-width
+     * behavior independently.
+     * @element cor-button-group
+     */
+    interface CorButtonGroup {
+        /**
+          * Accessible name for the group. Forwarded to `aria-label` on the host element so assistive technologies announce the buttons as a unit (e.g. "Form actions").
+         */
+        "label"?: string;
+        /**
+          * Axis along which buttons are stacked. `horizontal` lays out children in a row; `vertical` stacks them in a column and stretches each child to the group's inline-size (so children with `full-width` fill it).
+          * @default 'horizontal'
+         */
+        "orientation"?: ButtonGroupOrientation;
+    }
     /**
      * Icon — renders an inline SVG fetched on-demand from per-size asset files.
      * Names follow the Material Symbols convention: append `-filled` to the base name
@@ -149,6 +526,100 @@ declare namespace LocalJSX {
         "size"?: IconSize;
     }
     /**
+     * Brand logo for Moldovan M-products.
+     * Each `name` resolves to a single self-contained SVG asset under `./assets/`.
+     * The component fetches and renders that SVG into shadow DOM; the host's
+     * dimensions follow the SVG's intrinsic `width`/`height`/`viewBox` exactly as
+     * exported from Figma — so a future asset with non-standard dimensions
+     * "just works" without a CSS contract change.
+     * Consumers that need to reserve layout space before the async fetch
+     * resolves (e.g. above-the-fold marketing, dense grids) should wrap the
+     * logo in a sized container — `cor-service-button` does this for its
+     * `badge` slot (24 × 24).
+     * @element cor-logo
+     */
+    interface CorLogo {
+        /**
+          * Accessible label. When provided (and non-whitespace), the logo is announced as an image; when omitted or whitespace-only the logo is decorative (aria-hidden).
+         */
+        "ariaLabel"?: string;
+        /**
+          * Logo asset identifier — the bare filename (without `.svg`) of an asset in `./assets/`. Format: `{service}-logo-{layout}`. See `LOGO_NAMES` for the complete enumeration.
+          * @default 'mpay-logo-logomark-only'
+         */
+        "name"?: LogoName;
+        /**
+          * Emitted when an asset fails to load — either because the `name` is not in the manifest (`'unknown'`) or because the SVG fetch failed (`'fetch-failed'`). Lets consumers react in production where `console.warn` is invisible (telemetry, fallback UI, etc.).  Note: events emitted during `componentWillLoad` (initial mount) fire before consumer listeners can attach to a freshly-inserted host. Attach the listener BEFORE setting the `name` prop, or rely on the warning for mount-time failures.
+         */
+        "onCorLogoError"?: (event: CorLogoCustomEvent<{ name: string; reason: 'unknown' | 'fetch-failed' }>) => void;
+    }
+    /**
+     * Service Button — interactive control for Moldovan M-products (mpay, mpass,
+     * msign, mpower, mdelivery).
+     * A specialised filled button with a logo badge embedded on the inline-start
+     * edge of the geometry. Fixed 48 px height (= minimum touch target) and
+     * asymmetric padding (16 start / 20 end) per Figma spec.
+     * Slot `badge` reserves a 24×24 box for a `<cor-logo>` rendering a
+     * `*-logo-logomark-only` asset (or any other element rendered at that size).
+     * The default slot carries the label text.
+     * @element cor-service-button
+     */
+    interface CorServiceButton {
+        /**
+          * Visual treatment. - `primary` — solid brand background, white label - `neutral` — light surface background, dark label
+          * @default 'primary'
+         */
+        "appearance"?: ServiceButtonAppearance;
+        /**
+          * Disables interactivity.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Makes the button expand to fill the inline-size of its container.
+          * @default false
+         */
+        "fullWidth"?: boolean;
+        /**
+          * If set, the button renders as `<a href="…">` and behaves as a link. `type`, `name`, and `value` are ignored in this mode.
+         */
+        "href"?: string;
+        /**
+          * Accessible name override. When omitted, the visible default-slot text is used as the accessible name (the standard pattern).
+         */
+        "label"?: string;
+        /**
+          * Renders a centred spinner and blocks interactivity while preserving the accessible name. Sets `aria-busy` on the internal control.
+          * @default false
+         */
+        "loading"?: boolean;
+        /**
+          * Form-control `name`. Used when `type="submit"` and a value is submitted.
+         */
+        "name"?: string;
+        /**
+          * `rel` for the anchor when `href` is set.
+         */
+        "rel"?: string;
+        /**
+          * `target` for the anchor when `href` is set.
+         */
+        "target"?: string;
+        /**
+          * Native button `type` attribute. Ignored when `href` is set.
+          * @default 'button'
+         */
+        "type"?: ServiceButtonType;
+        /**
+          * Form-control `value` submitted alongside `name`.
+         */
+        "value"?: string;
+    }
+    /**
      * Spinner — animated circular loading indicator.
      * Pattern B (atom-visual): renders a CSS-only rotating arc.
      * No slots, no events, no interactivity.
@@ -172,6 +643,27 @@ declare namespace LocalJSX {
         "variant"?: SpinnerVariant;
     }
 
+    interface CorButtonAttributes {
+        "variant": ButtonVariant;
+        "appearance": ButtonAppearance;
+        "size": ButtonSize;
+        "shape": ButtonShape;
+        "type": ButtonType;
+        "disabled": boolean;
+        "loading": boolean;
+        "iconOnly": boolean;
+        "fullWidth": boolean;
+        "href": string;
+        "target": string;
+        "rel": string;
+        "name": string;
+        "value": string;
+        "label": string;
+    }
+    interface CorButtonGroupAttributes {
+        "orientation": ButtonGroupOrientation;
+        "label": string;
+    }
     interface CorIconAttributes {
         "name": string;
         "size": IconSize;
@@ -180,6 +672,23 @@ declare namespace LocalJSX {
         "disabled": boolean;
         "ariaLabel": string;
     }
+    interface CorLogoAttributes {
+        "name": LogoName;
+        "ariaLabel": string;
+    }
+    interface CorServiceButtonAttributes {
+        "appearance": ServiceButtonAppearance;
+        "type": ServiceButtonType;
+        "disabled": boolean;
+        "loading": boolean;
+        "fullWidth": boolean;
+        "href": string;
+        "target": string;
+        "rel": string;
+        "name": string;
+        "value": string;
+        "label": string;
+    }
     interface CorSpinnerAttributes {
         "size": SpinnerSize;
         "variant": SpinnerVariant;
@@ -187,7 +696,11 @@ declare namespace LocalJSX {
     }
 
     interface IntrinsicElements {
+        "cor-button": Omit<CorButton, keyof CorButtonAttributes> & { [K in keyof CorButton & keyof CorButtonAttributes]?: CorButton[K] } & { [K in keyof CorButton & keyof CorButtonAttributes as `attr:${K}`]?: CorButtonAttributes[K] } & { [K in keyof CorButton & keyof CorButtonAttributes as `prop:${K}`]?: CorButton[K] };
+        "cor-button-group": Omit<CorButtonGroup, keyof CorButtonGroupAttributes> & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes]?: CorButtonGroup[K] } & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes as `attr:${K}`]?: CorButtonGroupAttributes[K] } & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes as `prop:${K}`]?: CorButtonGroup[K] };
         "cor-icon": Omit<CorIcon, keyof CorIconAttributes> & { [K in keyof CorIcon & keyof CorIconAttributes]?: CorIcon[K] } & { [K in keyof CorIcon & keyof CorIconAttributes as `attr:${K}`]?: CorIconAttributes[K] } & { [K in keyof CorIcon & keyof CorIconAttributes as `prop:${K}`]?: CorIcon[K] };
+        "cor-logo": Omit<CorLogo, keyof CorLogoAttributes> & { [K in keyof CorLogo & keyof CorLogoAttributes]?: CorLogo[K] } & { [K in keyof CorLogo & keyof CorLogoAttributes as `attr:${K}`]?: CorLogoAttributes[K] } & { [K in keyof CorLogo & keyof CorLogoAttributes as `prop:${K}`]?: CorLogo[K] };
+        "cor-service-button": Omit<CorServiceButton, keyof CorServiceButtonAttributes> & { [K in keyof CorServiceButton & keyof CorServiceButtonAttributes]?: CorServiceButton[K] } & { [K in keyof CorServiceButton & keyof CorServiceButtonAttributes as `attr:${K}`]?: CorServiceButtonAttributes[K] } & { [K in keyof CorServiceButton & keyof CorServiceButtonAttributes as `prop:${K}`]?: CorServiceButton[K] };
         "cor-spinner": Omit<CorSpinner, keyof CorSpinnerAttributes> & { [K in keyof CorSpinner & keyof CorSpinnerAttributes]?: CorSpinner[K] } & { [K in keyof CorSpinner & keyof CorSpinnerAttributes as `attr:${K}`]?: CorSpinnerAttributes[K] } & { [K in keyof CorSpinner & keyof CorSpinnerAttributes as `prop:${K}`]?: CorSpinner[K] };
     }
 }
@@ -195,6 +708,24 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            /**
+             * Button — interactive control.
+             * Pattern B (atom-interactive): renders its own `<button>` (or `<a>` when `href`
+             * is set) inside shadow DOM. Form participation works via `formAssociated` +
+             * `ElementInternals`.
+             * @element cor-button
+             */
+            "cor-button": LocalJSX.IntrinsicElements["cor-button"] & JSXBase.HTMLAttributes<HTMLCorButtonElement>;
+            /**
+             * Button group — layout container for stacking multiple `cor-button` elements
+             * with consistent spacing (12px gap) per the AGE Design System.
+             * Pure layout primitive: does not propagate props to children, does not emit
+             * events, does not manage focus order beyond the natural DOM tab sequence.
+             * Each child `cor-button` controls its own size, variant, and full-width
+             * behavior independently.
+             * @element cor-button-group
+             */
+            "cor-button-group": LocalJSX.IntrinsicElements["cor-button-group"] & JSXBase.HTMLAttributes<HTMLCorButtonGroupElement>;
             /**
              * Icon — renders an inline SVG fetched on-demand from per-size asset files.
              * Names follow the Material Symbols convention: append `-filled` to the base name
@@ -205,6 +736,32 @@ declare module "@stencil/core" {
              * @element cor-icon
              */
             "cor-icon": LocalJSX.IntrinsicElements["cor-icon"] & JSXBase.HTMLAttributes<HTMLCorIconElement>;
+            /**
+             * Brand logo for Moldovan M-products.
+             * Each `name` resolves to a single self-contained SVG asset under `./assets/`.
+             * The component fetches and renders that SVG into shadow DOM; the host's
+             * dimensions follow the SVG's intrinsic `width`/`height`/`viewBox` exactly as
+             * exported from Figma — so a future asset with non-standard dimensions
+             * "just works" without a CSS contract change.
+             * Consumers that need to reserve layout space before the async fetch
+             * resolves (e.g. above-the-fold marketing, dense grids) should wrap the
+             * logo in a sized container — `cor-service-button` does this for its
+             * `badge` slot (24 × 24).
+             * @element cor-logo
+             */
+            "cor-logo": LocalJSX.IntrinsicElements["cor-logo"] & JSXBase.HTMLAttributes<HTMLCorLogoElement>;
+            /**
+             * Service Button — interactive control for Moldovan M-products (mpay, mpass,
+             * msign, mpower, mdelivery).
+             * A specialised filled button with a logo badge embedded on the inline-start
+             * edge of the geometry. Fixed 48 px height (= minimum touch target) and
+             * asymmetric padding (16 start / 20 end) per Figma spec.
+             * Slot `badge` reserves a 24×24 box for a `<cor-logo>` rendering a
+             * `*-logo-logomark-only` asset (or any other element rendered at that size).
+             * The default slot carries the label text.
+             * @element cor-service-button
+             */
+            "cor-service-button": LocalJSX.IntrinsicElements["cor-service-button"] & JSXBase.HTMLAttributes<HTMLCorServiceButtonElement>;
             /**
              * Spinner — animated circular loading indicator.
              * Pattern B (atom-visual): renders a CSS-only rotating arc.

@@ -416,11 +416,11 @@ Run pixel-perfect comparison against Figma:
 
 ```text
 mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-cor-[name]--default" })
-mcp__playwright__browser_take_screenshot({ type: "png", filename: "current.png" })
+mcp__playwright__browser_take_screenshot({ type: "png", filename: ".playwright-mcp/current.png" })
 mcp__image-compare__compare_images({
-  image1_path: "figma-ref.png",
-  image2_path: "current.png",
-  diff_output_path: "diff.png"
+  image1_path: ".playwright-mcp/figma-ref.png",
+  image2_path: ".playwright-mcp/current.png",
+  diff_output_path: ".playwright-mcp/diff.png"
 })
 ```
 

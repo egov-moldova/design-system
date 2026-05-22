@@ -32,8 +32,9 @@ export default {
     // Disabled during legacy migration — cor-illustration is in src/legacy/ and not shipped.
     // Re-enable (and update path) when a new illustration component is introduced.
     // { from: '../src/components/cor-illustration/assets', to: 'assets/assets' },
-    { from: '../src/components/cor-icon/assets', to: 'assets/assets' },
     { from: '../assets/font', to: 'assets/font' },
+    { from: '../src/components/cor-icon/assets', to: 'assets/assets' },
+    { from: '../src/components/cor-logo/assets', to: 'assets/assets' },
   ],
   addons: isDev ? devAddons : prodAddons,
   framework: {
@@ -120,6 +121,8 @@ export default {
       ...config.build,
       target: 'esnext',
     };
+
+    config.base = process.env.STORYBOOK_BASE_PATH || '/';
 
     // Storybook v9: @storybook/blocks is a subpath export of @storybook/addon-docs.
     // Vite cannot resolve the bare specifier without this alias.

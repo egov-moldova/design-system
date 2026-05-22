@@ -160,9 +160,11 @@ describe('03-git-hygiene: checkForbiddenPaths', () => {
     assert.ok(findings.every(f => f.severity === 'error'));
   });
 
-  it('flags src/components.d.ts (auto-generated)', () => {
+  it('does NOT flag src/components.d.ts — that file is allowed in commits', () => {
+    // Policy: although auto-generated, `src/components.d.ts` ships with each
+    // commit (external consumers depend on the in-sync type surface).
+    // Conflicts are absorbed by `.gitattributes` (`merge=ours`).
     const findings = checkForbiddenPaths(['src/components.d.ts'], 'staged');
-    assert.equal(findings.length, 1);
-    assert.ok(findings[0].code.includes('COMPONENTS-DTS'));
+    assert.equal(findings.length, 0);
   });
 });

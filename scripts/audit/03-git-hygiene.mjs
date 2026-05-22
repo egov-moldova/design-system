@@ -88,11 +88,10 @@ const FORBIDDEN_PATH_PATTERNS = [
     code: 'GIT-STAGED-GENERATED-TOKENS',
     message: 'Generated token CSS should not be committed (built from source).',
   },
-  {
-    pattern: /^src\/components\.d\.ts$/,
-    code: 'GIT-STAGED-COMPONENTS-DTS',
-    message: 'src/components.d.ts is auto-generated; pre-commit hook auto-unstages it.',
-  },
+  // Note: `src/components.d.ts` is intentionally NOT flagged here. Although
+  // auto-generated, it is tracked and ships with each commit so external
+  // consumers see the type surface in sync between releases. Merge conflicts
+  // are silenced by `.gitattributes` (`merge=ours`).
   {
     pattern: /^\.storybook\/custom-elements\.json$/,
     code: 'GIT-STAGED-CE-MANIFEST',

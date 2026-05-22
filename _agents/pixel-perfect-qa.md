@@ -81,7 +81,7 @@ If CSS variable doesn't exist:
 1. Ensure Storybook on port 6007
 2. browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-cor-[name]--default&viewMode=story" })
 3. browser_wait_for({ time: 2 })
-4. browser_take_screenshot({ type: "png", filename: "storybook-render.png" })
+4. browser_take_screenshot({ type: "png", filename: ".playwright-mcp/storybook-render.png" })
 ```
 
 ## Step 3: Compare & Identify Differences

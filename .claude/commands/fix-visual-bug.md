@@ -50,7 +50,7 @@ No Figma link → rely on computed style expectations.
 ```text
 mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=..." })
 mcp__playwright__browser_wait_for({ time: 2 })
-mcp__playwright__browser_take_screenshot({ type: "png", filename: "before-fix.png" })
+mcp__playwright__browser_take_screenshot({ type: "png", filename: ".playwright-mcp/before-fix.png" })
 ```
 
 ## Step 3: Identify the Problem
@@ -101,16 +101,16 @@ Apply the minimal fix at the correct layer:
 2. Screenshot after fix:
 
 ```text
-mcp__playwright__browser_take_screenshot({ type: "png", filename: "after-fix.png" })
+mcp__playwright__browser_take_screenshot({ type: "png", filename: ".playwright-mcp/after-fix.png" })
 ```
 
 3. Diff before vs after:
 
 ```text
 mcp__image-compare__compare_images({
-  image1_path: "before-fix.png",
-  image2_path: "after-fix.png",
-  diff_output_path: "diff-fix.png"
+  image1_path: ".playwright-mcp/before-fix.png",
+  image2_path: ".playwright-mcp/after-fix.png",
+  diff_output_path: ".playwright-mcp/diff-fix.png"
 })
 ```
 
@@ -118,9 +118,9 @@ mcp__image-compare__compare_images({
 
 ```text
 mcp__image-compare__compare_images({
-  image1_path: "figma-ref.png",
-  image2_path: "after-fix.png",
-  diff_output_path: "diff-figma.png"
+  image1_path: ".playwright-mcp/figma-ref.png",
+  image2_path: ".playwright-mcp/after-fix.png",
+  diff_output_path: ".playwright-mcp/diff-figma.png"
 })
 ```
 

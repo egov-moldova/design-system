@@ -1,0 +1,44 @@
+{
+  "service-button": {
+    "container": {
+      "height": { "$value": "{spacing.48}", "$type": "dimension" },
+      "minWidth": { "$value": "72px", "$type": "dimension" },
+      "paddingInlineStart": { "$value": "{spacing.16}", "$type": "dimension" },
+      "paddingInlineEnd": { "$value": "{spacing.20}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.6}", "$type": "dimension" },
+      "borderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" },
+      "transitionDuration": { "$value": "150ms", "$type": "duration" },
+      "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" }
+    },
+    "label": {
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSize": { "$value": "{fontSize.16}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.24}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" }
+    },
+    "badge": {
+      "size": { "$value": "{spacing.24}", "$type": "dimension" }
+    },
+    "primary": {
+      "background": {
+        "default": { "$value": "{color.background.brand.default}", "$type": "color" },
+        "hover": { "$value": "{color.background.brand.default-hover}", "$type": "color" },
+        "active": { "$value": "{color.background.brand.default-active}", "$type": "color" }
+      },
+      "label": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" }
+    },
+    "neutral": {
+      "background": {
+        "default": { "$value": "{color.background.base.secondary}", "$type": "color" },
+        "hover": { "$value": "{color.background.base.tertiary-hover}", "$type": "color" },
+        "active": { "$value": "{color.background.base.tertiary-active}", "$type": "color" }
+      },
+      "label": { "$value": "{color.text.base.default}", "$type": "color" }
+    },
+    "disabled": {
+      "background": { "$value": "{color.background.disabled.default}", "$type": "color" },
+      "label": { "$value": "{color.text.disabled.on-disabled}", "$type": "color" },
+      "badgeOpacity": { "$value": "0.3", "$type": "number" }
+    }
+  }
+}

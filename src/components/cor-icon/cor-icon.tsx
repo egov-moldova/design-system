@@ -147,8 +147,11 @@ export class CorIcon {
   }
 
   render() {
+    // Unknown name: keep the host in the a11y tree as decorative so screen
+    // readers don't traverse a nameless generic element. (See
+    // ANTIPATTERN-RENDER-NULL-NO-FALLBACK-ARIA.)
     if (!this.svgElement && !this.isKnownName) {
-      return null;
+      return <Host aria-hidden="true" />;
     }
 
     const isDecorative = !this.ariaLabel;

@@ -1,0 +1,24 @@
+{
+  "focusRing": {
+    "color": {
+      "inner": {
+        "$value": "{color.text.base-inverse.on-color}",
+        "$type": "color"
+      },
+      "outer": {
+        "$value": "{color.background.brand.focus-ring}",
+        "$type": "color"
+      }
+    },
+    "width": {
+      "inner": {
+        "$value": "2px",
+        "$type": "dimension"
+      },
+      "outer": {
+        "$value": "3px",
+        "$type": "dimension"
+      }
+    }
+  }
+}

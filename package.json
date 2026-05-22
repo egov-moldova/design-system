@@ -39,6 +39,7 @@
   "scripts": {
     "prepare": "husky install && node scripts/git/setup-merge-drivers.mjs",
     "build": "wireit",
+    "build.age": "yarn cross-env STORYBOOK_BASE_PATH=/age/ yarn sp.build",
     "build.web": "wireit",
     "demo.web": "wireit",
     "build.watch": "stencil build --dev --watch",
@@ -49,6 +50,7 @@
     "dx:stencil:once": "wireit",
     "dx:clean": "rimraf .stencil .wireit storybook-static dist loader www",
     "format": "eslint \"src/**/*.{ts,tsx}\" --fix && prettier --write .",
+    "format.fix": "wireit",
     "format.icons": "svgo -f ./src/assets/images/icons --config=./svgo.config.icons.js",
     "lint": "wireit",
     "lint.js": "wireit",
@@ -58,7 +60,7 @@
     "sp.build": "wireit",
     "sp.dev": "storybook dev -p 6007 --no-open",
     "sp.dev.watch": "wireit",
-    "sp.docker": "cross-env CI=1 STORYBOOK_DISABLE_TELEMETRY=1 NODE_ENV=production storybook build --disable-telemetry -o storybook-static",
+    "sp.docker": "cross-env CI=1 STORYBOOK_DISABLE_TELEMETRY=1 NODE_ENV=production storybook build --disable-telemetry -o storybook-static && node scripts/cleanup-storybook-fonts.mjs",
     "sp.serve": "yarn dlx serve storybook-static -p 6008",
     "start": "stencil build --dev --watch --serve",
     "test": "wireit",
@@ -66,8 +68,9 @@
     "test.watch": "stencil-test --project spec --watch",
     "test.storybook": "vitest --project storybook --run",
     "test.storybook.watch": "vitest --project storybook",
-    "check": "yarn format && yarn typecheck && yarn lint && yarn test",
-    "check.ci": "yarn typecheck && yarn lint && yarn test",
+    "check": "wireit",
+    "check.ci": "wireit",
+    "check.verify": "wireit",
     "typecheck": "wireit",
     "tokens.build": "wireit",
     "tokens.build.prod": "wireit",
@@ -102,8 +105,11 @@
     "audit:console-errors": "node scripts/audit/12-console-errors.mjs",
     "audit:all": "node scripts/audit/run-all.mjs",
     "audit:all:no-browser": "node scripts/audit/run-all.mjs --no-browser",
+    "audit:test": "node scripts/audit/__tests__/02-antipatterns.test.mjs",
     "scaffold:story": "node scripts/scaffold/story-scaffold.mjs",
-    "scaffold:test": "node scripts/scaffold/test-scaffold.mjs"
+    "scaffold:test": "node scripts/scaffold/test-scaffold.mjs",
+    "cleanup:agents": "node scripts/cleanup-agents.mjs",
+    "cleanup:agents:dry": "node scripts/cleanup-agents.mjs --dry-run"
   },
   "wireit": {
     "tokens.build.core": {
@@ -309,10 +315,57 @@
         "yarn.lock"
       ]
     },
+    "format.fix": {
+      "command": "eslint \"src/**/*.{ts,tsx}\" --fix && prettier --write .",
+      "files": [
+        "src/**/*.ts",
+        "src/**/*.tsx",
+        "src/**/*.css",
+        "eslint.config.mjs",
+        ".prettierrc.json",
+        ".prettierignore"
+      ],
+      "output": [],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "check": {
+      "command": "yarn check.verify",
+      "dependencies": [
+        "format.fix"
+      ],
+      "files": [],
+      "output": [],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
+    "check.ci": {
+      "command": "yarn check.verify",
+      "files": [],
+      "output": [],
+      "packageLocks": [
+        "yarn.lock"
+      ]
+    },
     "lint": {
       "dependencies": [
         "lint.js",
         "lint.css"
+      ]
+    },
+    "check.verify": {
+      "command": "node -e \"process.exit(0)\"",
+      "dependencies": [
+        "typecheck",
+        "lint",
+        "test"
+      ],
+      "files": [],
+      "output": [],
+      "packageLocks": [
+        "yarn.lock"
       ]
     },
     "lint.css": {
@@ -363,9 +416,10 @@
         "build",
         "wca.custom-elements"
       ],
-      "command": "cross-env CI=1 STORYBOOK_DISABLE_TELEMETRY=1 NODE_ENV=production storybook build --disable-telemetry -o storybook-static",
+      "command": "cross-env CI=1 STORYBOOK_DISABLE_TELEMETRY=1 NODE_ENV=production storybook build --disable-telemetry -o storybook-static && node scripts/cleanup-storybook-fonts.mjs",
       "files": [
         ".storybook/**/*",
+        "scripts/cleanup-storybook-fonts.mjs",
         "src/**/*.stories.ts"
       ],
       "output": [
@@ -388,6 +442,7 @@
     "@axe-core/playwright": "^4.10.2",
     "@commitlint/cli": "^21.0.1",
     "@commitlint/config-conventional": "^21.0.1",
+    "@playwright/test": "^1.60.0",
     "@prettier/plugin-oxc": "^0.1.4",
     "@stencil/eslint-plugin": "^1.3.0",
     "@stencil/postcss": "^2.1.0",
