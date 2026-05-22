@@ -45,14 +45,49 @@ const cellLabelStyle =
 const SERVICES = [...new Set(LOGO_NAMES.map(n => n.split('-logo-')[0]))];
 const LAYOUTS = [...new Set(LOGO_NAMES.map(n => n.split('-logo-')[1]))];
 
+// ---------------------------------------------------------------------------
+// Docs-source helpers — return clean web-component markup (no demo chrome,
+// no wrapper divs, no inline styles) so the Storybook docs "Show code" panel
+// shows what a consumer would actually paste into their HTML.
+// ---------------------------------------------------------------------------
+
+const docsSourceDefault = (args: LogoArgs) => {
+  const attrs = [`name="${args.name}"`, args.ariaLabel ? `aria-label="${args.ariaLabel}"` : '']
+    .filter(Boolean)
+    .join(' ');
+  return `<cor-logo ${attrs}></cor-logo>`;
+};
+
+const docsSourceAllLogos = SERVICES.flatMap(s =>
+  LAYOUTS.map(l => /*html*/ `<cor-logo name="${s}-logo-${l}"></cor-logo>`),
+).join('\n');
+
+const docsSourceLogomarks = SERVICES.map(s => /*html*/ `<cor-logo name="${s}-logo-logomark-only"></cor-logo>`).join(
+  '\n',
+);
+
 export const Default: Story = {
   render: renderLogo,
   args: { name: 'mpay-logo-logomark-only' },
+  parameters: {
+    docs: {
+      source: {
+        type: 'dynamic',
+        // Returns the minimal `<cor-logo></cor-logo>` markup a consumer would
+        // write — omits the `aria-label` attribute when the control is empty
+        // so the snippet stays clean as the Controls panel changes.
+        transform: (_code: string, { args }: { args: LogoArgs }) => docsSourceDefault(args),
+      },
+    },
+  },
 };
 
 export const AllLogos: Story = {
   name: 'All services × layouts',
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: { source: { code: docsSourceAllLogos } },
+  },
   render: () => /*html*/ `
     <div style="display: grid; grid-template-columns: repeat(${LAYOUTS.length}, minmax(280px, 1fr)); gap: var(--spacing-16);">
       ${LAYOUTS.map(l => /*html*/ `<div style="${cellLabelStyle} text-align: center;">${l}</div>`).join('')}
@@ -72,7 +107,10 @@ export const AllLogos: Story = {
 
 export const Logomarks: Story = {
   name: 'Logomarks only',
-  parameters: { controls: { disable: true } },
+  parameters: {
+    controls: { disable: true },
+    docs: { source: { code: docsSourceLogomarks } },
+  },
   render: () => /*html*/ `
     <div style="display: flex; gap: var(--spacing-24); align-items: center;">
       ${SERVICES.map(
