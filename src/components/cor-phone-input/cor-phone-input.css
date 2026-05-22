@@ -1,0 +1,436 @@
+:host {
+  --_height: var(--phone-input-container-height-md);
+  --_padding-inline: var(--phone-input-container-padding-inline-md);
+  --_gap: var(--phone-input-container-gap-md);
+  --_radius: var(--phone-input-container-border-radius);
+  --_border-width-default: var(--phone-input-container-border-width-default);
+  --_border-width-emphasized: var(--phone-input-container-border-width-emphasized);
+  --_focus-ring-width: var(--phone-input-container-focus-ring-width);
+  --_transition-duration: var(--phone-input-container-transition-duration);
+  --_transition-easing: var(--phone-input-container-transition-timing-function);
+
+  --_control-font-size: var(--phone-input-control-font-size-md);
+  --_control-line-height: var(--phone-input-control-line-height-md);
+  --_icon-size: var(--phone-input-icon-size-md);
+
+  --_trigger-font-size: var(--phone-input-country-trigger-font-size-md);
+  --_trigger-line-height: var(--phone-input-country-trigger-line-height-md);
+  --_trigger-chevron-size: var(--phone-input-country-trigger-chevron-size-md);
+
+  --_option-min-block-size: var(--phone-input-option-min-block-size-md);
+  --_option-font-size: var(--phone-input-option-font-size-md);
+  --_option-line-height: var(--phone-input-option-line-height-md);
+  --_option-icon-size: var(--phone-input-option-icon-size-md);
+
+  --_bg: var(--phone-input-default-background-default);
+  --_text: var(--phone-input-default-text-default);
+  --_text-placeholder: var(--phone-input-default-text-placeholder);
+  --_border-color: var(--phone-input-default-border-default);
+  --_border-color-hover: var(--phone-input-default-border-hover);
+  --_border-color-focus: var(--phone-input-default-border-focus);
+  --_focus-ring-color: var(--phone-input-default-focus-ring);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--phone-input-field-gap);
+  inline-size: 100%;
+  font-family: var(--phone-input-control-font-family);
+  color: var(--_text);
+}
+
+:host([size='lg']) {
+  --_height: var(--phone-input-container-height-lg);
+  --_padding-inline: var(--phone-input-container-padding-inline-lg);
+  --_gap: var(--phone-input-container-gap-lg);
+  --_control-font-size: var(--phone-input-control-font-size-lg);
+  --_control-line-height: var(--phone-input-control-line-height-lg);
+  --_icon-size: var(--phone-input-icon-size-lg);
+  --_trigger-font-size: var(--phone-input-country-trigger-font-size-lg);
+  --_trigger-line-height: var(--phone-input-country-trigger-line-height-lg);
+  --_trigger-chevron-size: var(--phone-input-country-trigger-chevron-size-lg);
+  --_option-min-block-size: var(--phone-input-option-min-block-size-lg);
+  --_option-font-size: var(--phone-input-option-font-size-lg);
+  --_option-line-height: var(--phone-input-option-line-height-lg);
+  --_option-icon-size: var(--phone-input-option-icon-size-lg);
+}
+
+:host(.variant-destructive) {
+  --_border-color: var(--phone-input-destructive-border-default);
+  --_border-color-hover: var(--phone-input-destructive-border-hover);
+  --_border-color-focus: var(--phone-input-destructive-border-focus);
+  --_focus-ring-color: var(--phone-input-destructive-focus-ring);
+}
+
+/* ---------- Label ---------- */
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: var(--phone-input-label-gap);
+  font-family: var(--phone-input-label-font-family);
+  font-size: var(--phone-input-label-font-size);
+  line-height: var(--phone-input-label-line-height);
+  font-weight: var(--phone-input-label-font-weight);
+  color: var(--phone-input-label-color-default);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.label-text {
+  display: block;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.required-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--phone-input-label-required-mark-size);
+  block-size: var(--phone-input-label-required-mark-size);
+  color: var(--phone-input-label-required-mark-color);
+  font-weight: var(--phone-input-control-font-weight);
+  line-height: 1;
+}
+
+:host(.is-disabled) .label {
+  color: var(--phone-input-label-color-disabled);
+}
+
+:host(.is-disabled) .required-mark {
+  color: var(--phone-input-label-color-disabled);
+}
+
+:host(:not(.has-label)) .label {
+  display: none;
+}
+
+/* ---------- Control row ---------- */
+
+.control-wrapper {
+  position: relative;
+  inline-size: 100%;
+}
+
+.control {
+  display: flex;
+  align-items: stretch;
+  block-size: var(--_height);
+  padding-inline: var(--_padding-inline);
+  background-color: var(--_bg);
+  border: var(--_border-width-default) solid var(--_border-color);
+  border-radius: var(--_radius);
+  transition:
+    border-color var(--_transition-duration) var(--_transition-easing),
+    box-shadow var(--_transition-duration) var(--_transition-easing),
+    background-color var(--_transition-duration) var(--_transition-easing);
+}
+
+:host(:not(.is-disabled):not(.is-focused):not(.is-open):hover) .control {
+  border-color: var(--_border-color-hover);
+  /* Inset shadow mimics the 2px border thickening on hover without shifting layout. */
+  box-shadow: inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default))
+    var(--_border-color-hover);
+}
+
+:host(.is-focused:not(.is-disabled)) .control,
+:host(.is-open:not(.is-disabled)) .control {
+  border-color: var(--_border-color-focus);
+  box-shadow:
+    inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default)) var(--_border-color-focus),
+    0 0 0 var(--spacing-4) var(--_focus-ring-color);
+}
+
+:host(.is-disabled) .control {
+  background-color: var(--phone-input-default-background-disabled);
+  border-color: var(--phone-input-default-border-disabled);
+  cursor: not-allowed;
+}
+
+/* ---------- Country trigger ---------- */
+
+.country-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--phone-input-country-trigger-gap);
+  padding: 0;
+  padding-inline-end: var(--phone-input-country-trigger-padding-inline-end);
+  margin: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--phone-input-country-trigger-font-family);
+  font-weight: var(--phone-input-country-trigger-font-weight);
+  font-size: var(--_trigger-font-size);
+  line-height: var(--_trigger-line-height);
+  color: var(--phone-input-country-trigger-color-default);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  flex-shrink: 0;
+}
+
+.country-trigger:focus,
+.country-trigger:focus-visible {
+  outline: none;
+}
+
+.country-trigger:disabled {
+  cursor: not-allowed;
+  color: var(--phone-input-country-trigger-color-disabled);
+  -webkit-text-fill-color: var(--phone-input-country-trigger-color-disabled);
+}
+
+:host(.is-readonly:not(.is-disabled)) .country-trigger {
+  cursor: default;
+}
+
+.country-trigger-code {
+  white-space: nowrap;
+  /* Tabular numerics keep dial codes (+1, +373, +380) optically aligned. */
+  font-variant-numeric: tabular-nums;
+}
+
+.country-trigger-chevron {
+  inline-size: var(--_trigger-chevron-size);
+  block-size: var(--_trigger-chevron-size);
+  color: var(--phone-input-country-trigger-chevron-color-default);
+  transition: transform var(--phone-input-country-trigger-chevron-transition-duration)
+    var(--phone-input-country-trigger-chevron-transition-timing-function);
+  flex-shrink: 0;
+}
+
+:host(.is-open) .country-trigger-chevron {
+  transform: rotate(180deg);
+}
+
+:host(.is-disabled) .country-trigger-chevron {
+  color: var(--phone-input-country-trigger-chevron-color-disabled);
+}
+
+/* ---------- Divider between trigger and input ---------- */
+
+.divider {
+  display: block;
+  flex-shrink: 0;
+  inline-size: var(--phone-input-divider-width);
+  /* Block-size ratio renders a centered hairline (60% of the control height). */
+  block-size: var(--phone-input-divider-block-size-ratio);
+  align-self: center;
+  margin-inline: var(--phone-input-divider-margin-inline);
+  background-color: var(--phone-input-divider-color-default);
+}
+
+:host(.is-disabled) .divider {
+  background-color: var(--phone-input-divider-color-disabled);
+}
+
+/* ---------- Native input ---------- */
+
+.native {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: var(--_control-font-size);
+  line-height: var(--_control-line-height);
+  font-weight: var(--phone-input-control-font-weight);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  text-overflow: ellipsis;
+  font-variant-numeric: tabular-nums;
+}
+
+.native::placeholder {
+  color: var(--_text-placeholder);
+  opacity: 1;
+}
+
+.native:disabled {
+  color: var(--phone-input-default-text-disabled);
+  cursor: not-allowed;
+  -webkit-text-fill-color: var(--phone-input-default-text-disabled);
+}
+
+.native:disabled::placeholder {
+  color: var(--phone-input-default-text-disabled);
+  -webkit-text-fill-color: var(--phone-input-default-text-disabled);
+}
+
+.native[readonly] {
+  cursor: default;
+}
+
+.native:focus,
+.native:focus-visible {
+  outline: none;
+}
+
+.native:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 var(--spacing-120) var(--_bg) inset;
+  -webkit-text-fill-color: var(--_text);
+}
+
+/* ---------- Listbox popover ---------- */
+
+.listbox {
+  position: absolute;
+  inset-inline-start: 0;
+  inline-size: max(100%, var(--phone-input-listbox-min-inline-size));
+  inset-block-start: calc(100% + var(--phone-input-listbox-margin-block-start));
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: var(--phone-input-listbox-gap);
+  padding: var(--phone-input-listbox-padding);
+  background-color: var(--phone-input-listbox-background);
+  border: var(--phone-input-listbox-border-width) solid var(--phone-input-listbox-border-color);
+  border-radius: var(--phone-input-listbox-border-radius);
+  box-shadow: var(--phone-input-listbox-shadow);
+  max-block-size: var(--phone-input-listbox-max-block-size);
+  overflow-y: auto;
+}
+
+.listbox[hidden] {
+  display: none;
+}
+
+.listbox-empty {
+  padding: var(--spacing-8) var(--spacing-12);
+  font-size: var(--_option-font-size);
+  line-height: var(--_option-line-height);
+  color: var(--_text-placeholder);
+}
+
+/* ---------- Listbox option ---------- */
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--phone-input-option-gap);
+  min-block-size: var(--_option-min-block-size);
+  padding-block: var(--phone-input-option-padding-block);
+  padding-inline: var(--phone-input-option-padding-inline);
+  border-radius: var(--phone-input-option-border-radius);
+  color: var(--phone-input-option-text-default);
+  font-family: var(--phone-input-option-font-family);
+  font-size: var(--_option-font-size);
+  line-height: var(--_option-line-height);
+  font-weight: var(--phone-input-option-font-weight-default);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color var(--_transition-duration) var(--_transition-easing),
+    color var(--_transition-duration) var(--_transition-easing);
+}
+
+.option.is-highlighted {
+  background-color: var(--phone-input-option-background-hover);
+}
+
+.option.is-selected {
+  background-color: var(--phone-input-option-background-selected);
+  color: var(--phone-input-option-text-selected);
+  font-weight: var(--phone-input-option-font-weight-selected);
+}
+
+.option.is-selected.is-highlighted {
+  background-color: var(--phone-input-option-background-active);
+}
+
+.option-name {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.option-code {
+  flex-shrink: 0;
+  min-inline-size: var(--phone-input-option-dial-code-min-inline-size);
+  text-align: end;
+  color: var(--phone-input-option-dial-code-color);
+  font-variant-numeric: tabular-nums;
+}
+
+.option.is-selected .option-code {
+  color: inherit;
+}
+
+.option-check {
+  inline-size: var(--_option-icon-size);
+  block-size: var(--_option-icon-size);
+  flex-shrink: 0;
+  color: var(--phone-input-option-check-color);
+}
+
+/* ---------- Assistive (helper / error) ---------- */
+
+.assistive {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--phone-input-assistive-gap-default);
+  font-family: var(--phone-input-assistive-font-family);
+  font-size: var(--phone-input-assistive-font-size);
+  line-height: var(--phone-input-assistive-line-height);
+  font-weight: var(--phone-input-assistive-font-weight);
+  color: var(--phone-input-assistive-color-default);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.assistive-error {
+  gap: var(--phone-input-assistive-gap-error);
+  color: var(--phone-input-assistive-color-error);
+}
+
+.assistive-icon {
+  flex-shrink: 0;
+  inline-size: var(--phone-input-assistive-icon-size);
+  block-size: var(--phone-input-assistive-icon-size);
+  margin-block-start: 0;
+}
+
+.assistive-text {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Live region (screen-reader only) ---------- */
+
+.live-region {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- prefers-reduced-motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .control,
+  .option,
+  .country-trigger-chevron {
+    transition: none;
+  }
+}

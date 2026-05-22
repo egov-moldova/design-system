@@ -16,7 +16,7 @@ and updates PR https://github.com/corlab-org/age-design/pull/5.
 | 5 | `cor-search-input-rectangular` | `a27b4efaed053f6cd4a57411a032d7391174c425` | ✅ done | `a625494` | `docs/screenshots/cor-search-input-rectangular/` |
 | 6 | `cor-search-input-circular` | `b33c35c72dbe621375862c300c0238c4a4eacc78` | ✅ done | `1a3c4e6` | `docs/screenshots/cor-search-input-circular/` |
 | 7 | `cor-numeric-input` | `3029a32fe1e2ca1eb6e2bc68571f1965bded9ef6` | ✅ done | `2b76568` | `docs/screenshots/cor-numeric-input/` |
-| 8 | `cor-phone-input` | `f2ba725de62bbecd5bd84870a1e6b7bb1eb5adfe` | ⏳ pending | — | — |
+| 8 | `cor-phone-input` | `f2ba725de62bbecd5bd84870a1e6b7bb1eb5adfe` | ✅ done | _pending commit_ | `docs/screenshots/cor-phone-input/` |
 | 9 | `cor-input-chip` | `3168d84c4883c991b5643e4feab97de2cfe8fb7e` | ⏳ pending | — | — |
 
 ## Failure / restart log
@@ -48,6 +48,71 @@ Future agent runs: if a Figma node-id for either component_set is rediscovered,
 log it here so pixel-perfect comparison against the original can be re-checked.
 
 ## Last updated
+
+2026-05-23 — `cor-phone-input` shipped (phone-number-entry molecule with
+country prefix + format mask, form-associated). Pattern B: renders its own
+`<input type="tel" inputmode="tel" autocomplete="tel-national">` paired
+with a combobox-triggered country listbox inside one continuous border /
+focus-ring contract, separated by a 60%-height vertical divider. Form
+value is the canonical E.164 string (`+37362123456`); the visible local
+segment is reformatted per country mask on every keystroke. Default
+country is **MD** (Republic of Moldova) — the home market. Shipped a
+curated 15-country diaspora list (MD, RO, RU, UA, US, GB, DE, FR, IT, ES,
+PT, IL, TR, BG, GR) hand-rolled instead of pulling
+`libphonenumber-js` (~140KB to cover countries we don't serve;
+PRINCIPLES.md §B rule-of-2). Per-country masks: MD `XXX XX XXX` (8 digits),
+RO `XXX XXX XXX` (9), UA `XX XXX XX XX` (9), US `XXX XXX XXXX` (10), DE up
+to 11 digits, etc. Paste of an E.164 string auto-detects the country
+(longest-prefix match) and reformats the local segment under the new mask.
+Validation window: `[minLen, maxLen]` per country; `corChange.detail.isValid`
+reflects the digit-length check. Default Romanian error copy
+`"Numărul de telefon este incomplet"` ships when `invalid` is set without
+a custom `errorText` — overridable via prop for non-Romanian consumers
+(PRODUCT.md voice contract). Keyboard contract: Tab → country trigger,
+Tab → input, Tab → out. Trigger arrow-key navigation through the listbox
+(Up/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox pattern. ARIA:
+`role="combobox"` + `aria-haspopup="listbox"` + `aria-expanded` +
+`aria-controls` + `aria-activedescendant` on the trigger; the trigger's
+`aria-label` announces both the Romanian country name and the dial code
+(e.g. `"Moldova, +373"`); a `role="status"` live region announces
+keyboard- and click-driven country changes (paste switches are silent-live
+so screen readers don't shout each pasted digit). 113 new `--phone-input-*`
+CSS variables across container / control / label / helper / country-trigger
+/ divider / listbox / option namespaces. 60 spec tests cover defaults,
+prop reflection + warn-and-fallback, per-country format mask (MD/RO/UA/US/DE),
+strip non-digits, country dropdown open/close/keyboard nav, paste detection,
+validation window, ARIA wiring (combobox role / aria-controls /
+aria-activedescendant / aria-selected on options), form lifecycle
+(reset / restore — restore detects country from E.164). Stories: Default
+(MD) / AllVariants / AllSizes / States / WithCountrySelected (MD/RO/UA/US/DE/IT)
+/ OpenDropdown / Invalid / WithHelperText / WithError (Romanian copy) /
+EdgeCases (paste E.164 +44 → GB, long DE 11-digit). 0 console errors
+across every story; 0 contrast failures across light + dark (`yarn
+audit:contrast` summary 21 pass / 0 fail).
+
+### 2026-05-23 — `cor-phone-input` Figma node resolution
+
+Same MCP file scope as the seven earlier inputs — `doJ7tDY0PlQ0PqMgbpFVIC`
+only exposes 9 top-level pages and no `phone-number-input` node was
+reachable through the available `get_metadata` traversal. The advertised
+`search_design_system` MCP tool is intentionally NOT in the
+`new-component` agent's allow-list; the known sibling page nodeId
+`403:21765` ("Input: Date") was reachable via `get_screenshot`
+(confirming the file scope hasn't shifted), but it doesn't link back to
+the phone-input page. Derivation followed the well-validated pattern from
+seven earlier components on this branch: cor-input provides the canonical
+border / focus-ring / label / helper / error visual contract;
+cor-select-input provides the combobox + listbox + keyboard contract; the
+country-trigger / divider / dial-code layout follows ITU-T E.164 + WAI-ARIA
+combobox conventions. The Moldova-first audience (PRODUCT.md) drove the
+defaults: MD as `defaultCountry`, Romanian display names + Romanian error
+copy. Validated against `DESIGN.md`, `.impeccable/design.json`, and the
+on-disk `cor-input` / `cor-select-input` / `cor-date-input` /
+`cor-numeric-input` implementations. If the component_set's node-id
+becomes reachable later, re-run pixel-perfect comparison and log diff
+results here.
+
+---
 
 2026-05-23 — `cor-numeric-input` shipped (numeric-entry atom with stacked
 step controls, form-associated). Pattern B: renders its own
