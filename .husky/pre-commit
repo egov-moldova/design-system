@@ -5,11 +5,15 @@
 # Auto-unstage Stencil-generated files (informative; does NOT abort commit)
 #
 # Why: parallel agents and `yarn test`/`yarn build` regenerate these tracked
-# files. A `git add -A` would accidentally stage them. CI is the canonical
-# regeneration point — see .gitattributes (merge=ours) and
-# .github/workflows/ci.yml "Validate (PR)" job.
+# files. A `git add -A` would accidentally stage them.
+#
+# Exception — `src/components.d.ts`: this file IS allowed in commits. New
+# components legitimately grow it, and external consumers depend on the type
+# surface being in sync between releases. Conflicts during merge/rebase are
+# silenced by `.gitattributes` (`merge=ours`); drift is validated by CI.
+# Stale-state risk is caught by the typecheck/lint/test below.
 # -----------------------------------------------------------------------------
-GENERATED_PATTERNS='^(src/components\.d\.ts$|src/components/[^/]+/readme\.md$|src/hidden/[^/]+/readme\.md$|\.storybook/custom-elements\.json$|tokens/generated/)'
+GENERATED_PATTERNS='^(src/components/[^/]+/readme\.md$|src/hidden/[^/]+/readme\.md$|\.storybook/custom-elements\.json$|tokens/generated/)'
 
 STAGED_GEN=$(git diff --cached --name-only | grep -E "$GENERATED_PATTERNS" || true)
 if [ -n "$STAGED_GEN" ]; then

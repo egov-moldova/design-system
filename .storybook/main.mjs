@@ -121,6 +121,8 @@ export default {
       target: 'esnext',
     };
 
+    config.base = process.env.STORYBOOK_BASE_PATH || '/';
+
     // Storybook v9: @storybook/blocks is a subpath export of @storybook/addon-docs.
     // Vite cannot resolve the bare specifier without this alias.
     config.resolve = {

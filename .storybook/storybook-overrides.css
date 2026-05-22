@@ -227,3 +227,12 @@ html[data-theme='dark'] .sbdocs td {
 html[data-theme='dark'] .sbdocs thead {
   background-color: var(--color-background-base-secondary);
 }
+
+html[data-theme='dark'] label input[type='checkbox'] ~ span {
+  color: var(--color-text-base-inverse, #000);
+}
+
+label input[type='checkbox']:checked ~ span:last-of-type,
+label input[type='checkbox']:not(:checked) ~ span:first-of-type {
+  color: var(--color-text-base-inverse-on-color, #fff);
+}

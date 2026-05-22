@@ -5,11 +5,108 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/cor-button/cor-button.types";
+import { ButtonGroupOrientation } from "./components/cor-button-group/cor-button-group.types";
 import { IconSize } from "./components/cor-icon/cor-icon.types";
 import { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
+export { ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/cor-button/cor-button.types";
+export { ButtonGroupOrientation } from "./components/cor-button-group/cor-button-group.types";
 export { IconSize } from "./components/cor-icon/cor-icon.types";
 export { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
 export namespace Components {
+    /**
+     * Button — interactive control.
+     * Pattern B (atom-interactive): renders its own `<button>` (or `<a>` when `href`
+     * is set) inside shadow DOM. Form participation works via `formAssociated` +
+     * `ElementInternals`.
+     * @element cor-button
+     */
+    interface CorButton {
+        /**
+          * Disables interactivity. When set the internal control receives `aria-disabled` and (for `<button>`) the native `disabled` attribute.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Makes the button expand to fill the inline-size of its container. The host becomes a block-level flex container and the internal control stretches to 100% width — designed for use inside `cor-button-group` (vertical orientation) or in narrow form layouts.
+          * @default false
+         */
+        "fullWidth": boolean;
+        /**
+          * If set, the button renders as `<a href="…">` and behaves as a link. `type`, `name`, and `value` are ignored in this mode.
+         */
+        "href"?: string;
+        /**
+          * Switches the button into icon-only mode: the container becomes square with equal zero-padding, and `leading-icon`/`trailing-icon`/default-slot content is suppressed. Icon content should be placed in `slot="icon"`. Requires `label` (or `aria-label`) for screen readers.
+          * @default false
+         */
+        "iconOnly": boolean;
+        /**
+          * Accessible name. Required when the button has no visible text label (icon-only). Forwarded to `aria-label` on the internal control.
+         */
+        "label"?: string;
+        /**
+          * Renders a centred spinner and blocks interactivity while preserving the accessible name. Sets `aria-busy` on the internal control.
+          * @default false
+         */
+        "loading": boolean;
+        /**
+          * Form-control `name`. Used when `type="submit"` and a value is submitted.
+         */
+        "name"?: string;
+        /**
+          * `rel` for the anchor when `href` is set.
+         */
+        "rel"?: string;
+        /**
+          * Container silhouette. `circular` produces a fully-rounded pill; combine with an icon-only label to render a circle.
+          * @default 'rectangular'
+         */
+        "shape": ButtonShape;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size": ButtonSize;
+        /**
+          * `target` for the anchor when `href` is set.
+         */
+        "target"?: string;
+        /**
+          * Native button `type` attribute. Ignored when `href` is set.
+          * @default 'button'
+         */
+        "type": ButtonType;
+        /**
+          * Form-control `value` submitted alongside `name`.
+         */
+        "value"?: string;
+        /**
+          * Color treatment.
+          * @default 'primary'
+         */
+        "variant": ButtonVariant;
+    }
+    /**
+     * Button group — layout container for stacking multiple `cor-button` elements
+     * with consistent spacing (12px gap) per the AGE Design System.
+     * Pure layout primitive: does not propagate props to children, does not emit
+     * events, does not manage focus order beyond the natural DOM tab sequence.
+     * Each child `cor-button` controls its own size, variant, and full-width
+     * behavior independently.
+     * @element cor-button-group
+     */
+    interface CorButtonGroup {
+        /**
+          * Accessible name for the group. Forwarded to `aria-label` on the host element so assistive technologies announce the buttons as a unit (e.g. "Form actions").
+         */
+        "label"?: string;
+        /**
+          * Axis along which buttons are stacked. `horizontal` lays out children in a row; `vertical` stacks them in a column and stretches each child to the group's inline-size (so children with `full-width` fill it).
+          * @default 'horizontal'
+         */
+        "orientation": ButtonGroupOrientation;
+    }
     /**
      * Icon — renders an inline SVG fetched on-demand from per-size asset files.
      * Names follow the Material Symbols convention: append `-filled` to the base name
@@ -76,6 +173,34 @@ export namespace Components {
 }
 declare global {
     /**
+     * Button — interactive control.
+     * Pattern B (atom-interactive): renders its own `<button>` (or `<a>` when `href`
+     * is set) inside shadow DOM. Form participation works via `formAssociated` +
+     * `ElementInternals`.
+     * @element cor-button
+     */
+    interface HTMLCorButtonElement extends Components.CorButton, HTMLStencilElement {
+    }
+    var HTMLCorButtonElement: {
+        prototype: HTMLCorButtonElement;
+        new (): HTMLCorButtonElement;
+    };
+    /**
+     * Button group — layout container for stacking multiple `cor-button` elements
+     * with consistent spacing (12px gap) per the AGE Design System.
+     * Pure layout primitive: does not propagate props to children, does not emit
+     * events, does not manage focus order beyond the natural DOM tab sequence.
+     * Each child `cor-button` controls its own size, variant, and full-width
+     * behavior independently.
+     * @element cor-button-group
+     */
+    interface HTMLCorButtonGroupElement extends Components.CorButtonGroup, HTMLStencilElement {
+    }
+    var HTMLCorButtonGroupElement: {
+        prototype: HTMLCorButtonGroupElement;
+        new (): HTMLCorButtonGroupElement;
+    };
+    /**
      * Icon — renders an inline SVG fetched on-demand from per-size asset files.
      * Names follow the Material Symbols convention: append `-filled` to the base name
      * to request the filled variant (e.g. `check` outlined vs `check-filled`).
@@ -103,11 +228,110 @@ declare global {
         new (): HTMLCorSpinnerElement;
     };
     interface HTMLElementTagNameMap {
+        "cor-button": HTMLCorButtonElement;
+        "cor-button-group": HTMLCorButtonGroupElement;
         "cor-icon": HTMLCorIconElement;
         "cor-spinner": HTMLCorSpinnerElement;
     }
 }
 declare namespace LocalJSX {
+    /**
+     * Button — interactive control.
+     * Pattern B (atom-interactive): renders its own `<button>` (or `<a>` when `href`
+     * is set) inside shadow DOM. Form participation works via `formAssociated` +
+     * `ElementInternals`.
+     * @element cor-button
+     */
+    interface CorButton {
+        /**
+          * Disables interactivity. When set the internal control receives `aria-disabled` and (for `<button>`) the native `disabled` attribute.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Makes the button expand to fill the inline-size of its container. The host becomes a block-level flex container and the internal control stretches to 100% width — designed for use inside `cor-button-group` (vertical orientation) or in narrow form layouts.
+          * @default false
+         */
+        "fullWidth"?: boolean;
+        /**
+          * If set, the button renders as `<a href="…">` and behaves as a link. `type`, `name`, and `value` are ignored in this mode.
+         */
+        "href"?: string;
+        /**
+          * Switches the button into icon-only mode: the container becomes square with equal zero-padding, and `leading-icon`/`trailing-icon`/default-slot content is suppressed. Icon content should be placed in `slot="icon"`. Requires `label` (or `aria-label`) for screen readers.
+          * @default false
+         */
+        "iconOnly"?: boolean;
+        /**
+          * Accessible name. Required when the button has no visible text label (icon-only). Forwarded to `aria-label` on the internal control.
+         */
+        "label"?: string;
+        /**
+          * Renders a centred spinner and blocks interactivity while preserving the accessible name. Sets `aria-busy` on the internal control.
+          * @default false
+         */
+        "loading"?: boolean;
+        /**
+          * Form-control `name`. Used when `type="submit"` and a value is submitted.
+         */
+        "name"?: string;
+        /**
+          * `rel` for the anchor when `href` is set.
+         */
+        "rel"?: string;
+        /**
+          * Container silhouette. `circular` produces a fully-rounded pill; combine with an icon-only label to render a circle.
+          * @default 'rectangular'
+         */
+        "shape"?: ButtonShape;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size"?: ButtonSize;
+        /**
+          * `target` for the anchor when `href` is set.
+         */
+        "target"?: string;
+        /**
+          * Native button `type` attribute. Ignored when `href` is set.
+          * @default 'button'
+         */
+        "type"?: ButtonType;
+        /**
+          * Form-control `value` submitted alongside `name`.
+         */
+        "value"?: string;
+        /**
+          * Color treatment.
+          * @default 'primary'
+         */
+        "variant"?: ButtonVariant;
+    }
+    /**
+     * Button group — layout container for stacking multiple `cor-button` elements
+     * with consistent spacing (12px gap) per the AGE Design System.
+     * Pure layout primitive: does not propagate props to children, does not emit
+     * events, does not manage focus order beyond the natural DOM tab sequence.
+     * Each child `cor-button` controls its own size, variant, and full-width
+     * behavior independently.
+     * @element cor-button-group
+     */
+    interface CorButtonGroup {
+        /**
+          * Accessible name for the group. Forwarded to `aria-label` on the host element so assistive technologies announce the buttons as a unit (e.g. "Form actions").
+         */
+        "label"?: string;
+        /**
+          * Axis along which buttons are stacked. `horizontal` lays out children in a row; `vertical` stacks them in a column and stretches each child to the group's inline-size (so children with `full-width` fill it).
+          * @default 'horizontal'
+         */
+        "orientation"?: ButtonGroupOrientation;
+    }
     /**
      * Icon — renders an inline SVG fetched on-demand from per-size asset files.
      * Names follow the Material Symbols convention: append `-filled` to the base name
@@ -172,6 +396,26 @@ declare namespace LocalJSX {
         "variant"?: SpinnerVariant;
     }
 
+    interface CorButtonAttributes {
+        "variant": ButtonVariant;
+        "size": ButtonSize;
+        "shape": ButtonShape;
+        "type": ButtonType;
+        "disabled": boolean;
+        "loading": boolean;
+        "iconOnly": boolean;
+        "fullWidth": boolean;
+        "href": string;
+        "target": string;
+        "rel": string;
+        "name": string;
+        "value": string;
+        "label": string;
+    }
+    interface CorButtonGroupAttributes {
+        "orientation": ButtonGroupOrientation;
+        "label": string;
+    }
     interface CorIconAttributes {
         "name": string;
         "size": IconSize;
@@ -187,6 +431,8 @@ declare namespace LocalJSX {
     }
 
     interface IntrinsicElements {
+        "cor-button": Omit<CorButton, keyof CorButtonAttributes> & { [K in keyof CorButton & keyof CorButtonAttributes]?: CorButton[K] } & { [K in keyof CorButton & keyof CorButtonAttributes as `attr:${K}`]?: CorButtonAttributes[K] } & { [K in keyof CorButton & keyof CorButtonAttributes as `prop:${K}`]?: CorButton[K] };
+        "cor-button-group": Omit<CorButtonGroup, keyof CorButtonGroupAttributes> & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes]?: CorButtonGroup[K] } & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes as `attr:${K}`]?: CorButtonGroupAttributes[K] } & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes as `prop:${K}`]?: CorButtonGroup[K] };
         "cor-icon": Omit<CorIcon, keyof CorIconAttributes> & { [K in keyof CorIcon & keyof CorIconAttributes]?: CorIcon[K] } & { [K in keyof CorIcon & keyof CorIconAttributes as `attr:${K}`]?: CorIconAttributes[K] } & { [K in keyof CorIcon & keyof CorIconAttributes as `prop:${K}`]?: CorIcon[K] };
         "cor-spinner": Omit<CorSpinner, keyof CorSpinnerAttributes> & { [K in keyof CorSpinner & keyof CorSpinnerAttributes]?: CorSpinner[K] } & { [K in keyof CorSpinner & keyof CorSpinnerAttributes as `attr:${K}`]?: CorSpinnerAttributes[K] } & { [K in keyof CorSpinner & keyof CorSpinnerAttributes as `prop:${K}`]?: CorSpinner[K] };
     }
@@ -195,6 +441,24 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            /**
+             * Button — interactive control.
+             * Pattern B (atom-interactive): renders its own `<button>` (or `<a>` when `href`
+             * is set) inside shadow DOM. Form participation works via `formAssociated` +
+             * `ElementInternals`.
+             * @element cor-button
+             */
+            "cor-button": LocalJSX.IntrinsicElements["cor-button"] & JSXBase.HTMLAttributes<HTMLCorButtonElement>;
+            /**
+             * Button group — layout container for stacking multiple `cor-button` elements
+             * with consistent spacing (12px gap) per the AGE Design System.
+             * Pure layout primitive: does not propagate props to children, does not emit
+             * events, does not manage focus order beyond the natural DOM tab sequence.
+             * Each child `cor-button` controls its own size, variant, and full-width
+             * behavior independently.
+             * @element cor-button-group
+             */
+            "cor-button-group": LocalJSX.IntrinsicElements["cor-button-group"] & JSXBase.HTMLAttributes<HTMLCorButtonGroupElement>;
             /**
              * Icon — renders an inline SVG fetched on-demand from per-size asset files.
              * Names follow the Material Symbols convention: append `-filled` to the base name

@@ -12,6 +12,7 @@ Claude Code reads MCP servers from `.mcp.json` at repo root. Tools are exposed a
 | Server | Logical Alias | Claude Code tool prefix | Examples |
 | --- | --- | --- | --- |
 | **playwright** | `browser_*` | `mcp__playwright__browser_*` | `mcp__playwright__browser_navigate`, `mcp__playwright__browser_snapshot` |
+| **chrome-devtools** | `cdt_*` | `mcp__chrome-devtools__*` | `mcp__chrome-devtools__performance_start_trace`, `mcp__chrome-devtools__lighthouse_audit` |
 | **figma** | `figma_*` | `mcp__figma__*` | `mcp__figma__get_design_context`, `mcp__figma__get_screenshot` |
 | **context7** | `ctx7_*` | `mcp__context7__*` | `mcp__context7__resolve-library-id`, `mcp__context7__get-library-docs` |
 | **image-compare** | `compare_*` | `mcp__image-compare__*` | `mcp__image-compare__compare_images` |
@@ -155,6 +156,61 @@ browser_evaluate({ function: "..." })
 browser_console_messages({ level: "error" })
 ```
 
+**Use for**: visual checks (computed styles, screenshots, hover/focus), Shadow DOM piercing, Figma pixel diff loop, generic E2E interactions. Default browser MCP.
+
+---
+
+## Chrome DevTools MCP (`cdt_*`)
+
+Native Chrome DevTools Protocol bridge — adds performance traces, Lighthouse audits, deep network inspection, heap profiling and source-mapped console that Playwright MCP does not expose. Runs `--headless --isolated` (temp profile, auto-cleanup) so it does **not** share state with Playwright MCP's Chromium.
+
+### Performance (3)
+
+```text
+performance_start_trace({ reload: true, autoStop: true })
+performance_stop_trace()
+performance_analyze_insight({ insight: "LCP" | "CLS" | "TBT" | ... })
+```
+
+### Debugging (8)
+
+```text
+lighthouse_audit({ url: "...", categories: ["performance","accessibility","best-practices"] })
+evaluate_script({ function: "() => ..." })
+list_console_messages()
+get_console_message({ id: "..." })
+take_screenshot({ format: "png", fullPage: false })
+take_snapshot()              // accessibility tree
+screencast_start() / screencast_stop()
+```
+
+### Network (2)
+
+```text
+list_network_requests({ resourceTypes: ["fetch","xhr","script","stylesheet"] })
+get_network_request({ url: "..." })
+```
+
+### Memory / Heap (5)
+
+```text
+take_heapsnapshot()
+get_heapsnapshot_summary()
+get_heapsnapshot_details({ snapshotId: "..." })
+get_heapsnapshot_class_nodes({ className: "HTMLElement" })
+get_heapsnapshot_retainers({ nodeId: "..." })
+```
+
+### Navigation & input (16)
+
+`navigate_page`, `new_page`, `list_pages`, `select_page`, `close_page`, `wait_for`, `click`, `click_at`, `drag`, `fill`, `fill_form`, `hover`, `press_key`, `type_text`, `upload_file`, `handle_dialog`
+
+### Emulation (2)
+
+`emulate({ device: "..." })`, `resize_page({ width, height })`
+
+**Use for**: Lighthouse pass in `audit-production` and `pre-pr-check`, perf regressions on Storybook iframe, network failure debugging, memory-leak hunts in long-running stories. **Do NOT** use it as the default browser MCP — Playwright MCP stays primary because the rest of the audit pipeline (`pixel-perfect-verifier`, `a11y-verifier`, `scripts/audit/*.mjs`) is wired to `mcp__playwright__*` tool names.
+
 ---
 
 ## Snyk MCP (`snyk_*`)
@@ -218,14 +274,31 @@ compare_image_with_url({ image_path: "...", url: "...", diff_output_path: "..." 
 
 ## Browser Tool Decision Guide
 
-At each QA step, ask: **"Does this check need a pixel value, computed style, screenshot, or user interaction?"**
+Three browser tools, three jobs. Pick the cheapest that answers the question:
 
 ```
-YES → Playwright MCP (browser_*)
- NO → "Is the answer in the accessibility tree?"
-       YES → agent-browser (fast, cheap)
-        NO → Playwright MCP (default)
+Q1: Is it perf / network / memory / Lighthouse?
+     YES → Chrome DevTools MCP (mcp__chrome-devtools__*)
+      NO ↓
+Q2: Does it need a pixel value, computed style, screenshot,
+    Shadow DOM access, or an interactive state (hover/focus/active)?
+     YES → Playwright MCP (mcp__playwright__browser_*)
+      NO ↓
+Q3: Can the answer come from the accessibility tree alone?
+     YES → agent-browser CLI (cheapest, ~200-400 tok per snapshot)
+      NO → Playwright MCP (default fallback)
 ```
+
+### Pick Chrome DevTools MCP for
+
+| Check | Tool |
+| --- | --- |
+| Page-load performance / Core Web Vitals on a story | `performance_start_trace` → `performance_stop_trace` → `performance_analyze_insight` |
+| Lighthouse audit (perf, a11y, best-practices) | `lighthouse_audit` |
+| Network request list / failed requests / slow assets | `list_network_requests`, `get_network_request` |
+| Console with source-mapped stack traces | `list_console_messages`, `get_console_message` |
+| Memory leak / DOM retention in long-running story | `take_heapsnapshot` → `get_heapsnapshot_summary` / `_retainers` |
+| Device emulation for responsive perf | `emulate` + `performance_start_trace` |
 
 ### Safe with agent-browser (accessibility tree is authoritative)
 
@@ -278,6 +351,7 @@ browser_evaluate({
 | `figma_get_metadata({ node_id })` | `mcp__figma__get_metadata` |
 | `figma_get_design_context({ node_id })` | `mcp__figma__get_design_context` |
 | `browser_*` | `mcp__playwright__browser_*` |
+| `cdt_*` / `chrome_devtools_*` / `performance_*` / `lighthouse_*` | `mcp__chrome-devtools__*` |
 | `compare_*` | `mcp__image-compare__*` |
 
 ---

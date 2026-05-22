@@ -1,0 +1,287 @@
+:host {
+  --_height: var(--button-container-height-md);
+  --_touch-target: var(--button-container-touch-target-md);
+  --_min-width: var(--button-container-min-width-md);
+  --_max-width: var(--button-container-max-width);
+  --_padding-inline: var(--button-container-padding-inline-md);
+  --_padding-inline-icon: var(--button-container-padding-inline-icon-md);
+  --_gap: var(--button-container-gap-md);
+  --_border-radius: var(--button-container-border-radius-rectangular-md);
+  --_font-size: var(--button-label-font-size-md);
+  --_line-height: var(--button-label-line-height-md);
+  --_icon-size: var(--button-icon-size-md);
+  --_bg: var(--button-primary-background-default);
+  --_bg-hover: var(--button-primary-background-hover);
+  --_bg-active: var(--button-primary-background-active);
+  --_label: var(--button-primary-label);
+  --_icon: var(--button-primary-icon);
+
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+/* ---------- Size axis ---------- */
+
+:host([size='sm']) {
+  --_height: var(--button-container-height-sm);
+  --_touch-target: var(--button-container-touch-target-sm);
+  --_min-width: var(--button-container-min-width-sm);
+  --_padding-inline: var(--button-container-padding-inline-sm);
+  --_padding-inline-icon: var(--button-container-padding-inline-icon-sm);
+  --_gap: var(--button-container-gap-sm);
+  --_border-radius: var(--button-container-border-radius-rectangular-sm);
+  --_font-size: var(--button-label-font-size-sm);
+  --_line-height: var(--button-label-line-height-sm);
+  --_icon-size: var(--button-icon-size-sm);
+}
+
+:host([size='md']) {
+  --_height: var(--button-container-height-md);
+  --_touch-target: var(--button-container-touch-target-md);
+  --_min-width: var(--button-container-min-width-md);
+  --_padding-inline: var(--button-container-padding-inline-md);
+  --_padding-inline-icon: var(--button-container-padding-inline-icon-md);
+  --_gap: var(--button-container-gap-md);
+  --_border-radius: var(--button-container-border-radius-rectangular-md);
+  --_font-size: var(--button-label-font-size-md);
+  --_line-height: var(--button-label-line-height-md);
+  --_icon-size: var(--button-icon-size-md);
+}
+
+:host([size='lg']) {
+  --_height: var(--button-container-height-lg);
+  --_touch-target: var(--button-container-touch-target-lg);
+  --_min-width: var(--button-container-min-width-lg);
+  --_padding-inline: var(--button-container-padding-inline-lg);
+  --_padding-inline-icon: var(--button-container-padding-inline-icon-lg);
+  --_gap: var(--button-container-gap-lg);
+  --_border-radius: var(--button-container-border-radius-rectangular-lg);
+  --_font-size: var(--button-label-font-size-lg);
+  --_line-height: var(--button-label-line-height-lg);
+  --_icon-size: var(--button-icon-size-lg);
+}
+
+/* ---------- Shape axis ---------- */
+
+:host([shape='circular'][size='sm']) {
+  --_border-radius: var(--button-container-border-radius-circular-sm);
+}
+:host([shape='circular'][size='md']) {
+  --_border-radius: var(--button-container-border-radius-circular-md);
+}
+:host([shape='circular'][size='lg']) {
+  --_border-radius: var(--button-container-border-radius-circular-lg);
+}
+
+/* ---------- Variant axis ---------- */
+
+:host([variant='primary']) {
+  --_bg: var(--button-primary-background-default);
+  --_bg-hover: var(--button-primary-background-hover);
+  --_bg-active: var(--button-primary-background-active);
+  --_label: var(--button-primary-label);
+  --_icon: var(--button-primary-icon);
+}
+
+:host([variant='secondary']) {
+  --_bg: var(--button-secondary-background-default);
+  --_bg-hover: var(--button-secondary-background-hover);
+  --_bg-active: var(--button-secondary-background-active);
+  --_label: var(--button-secondary-label);
+  --_icon: var(--button-secondary-icon);
+}
+
+:host([variant='strict']) {
+  --_bg: var(--button-strict-background-default);
+  --_bg-hover: var(--button-strict-background-hover);
+  --_bg-active: var(--button-strict-background-active);
+  --_label: var(--button-strict-label);
+  --_icon: var(--button-strict-icon);
+}
+
+:host([variant='neutral']) {
+  --_bg: var(--button-neutral-background-default);
+  --_bg-hover: var(--button-neutral-background-hover);
+  --_bg-active: var(--button-neutral-background-active);
+  --_label: var(--button-neutral-label);
+  --_icon: var(--button-neutral-icon);
+}
+
+:host([variant='destructive']) {
+  --_bg: var(--button-destructive-background-default);
+  --_bg-hover: var(--button-destructive-background-hover);
+  --_bg-active: var(--button-destructive-background-active);
+  --_label: var(--button-destructive-label);
+  --_icon: var(--button-destructive-icon);
+}
+
+/* ---------- Internal control (button or anchor) ---------- */
+
+.control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--_gap);
+
+  block-size: var(--_height);
+  min-inline-size: var(--_min-width);
+  max-inline-size: var(--_max-width);
+  padding-block: 0;
+  padding-inline-start: var(--_padding-inline);
+  padding-inline-end: var(--_padding-inline);
+
+  border: 0;
+  border-radius: var(--_border-radius);
+  background-color: var(--_bg);
+  color: var(--_label);
+
+  font-family: var(--button-label-font-family);
+  font-size: var(--_font-size);
+  line-height: var(--_line-height);
+  font-weight: var(--button-label-font-weight);
+  text-align: center;
+  text-decoration: none;
+
+  cursor: pointer;
+  user-select: none;
+  appearance: none;
+  -webkit-appearance: none;
+
+  transition:
+    background-color var(--button-container-transition-duration) var(--button-container-transition-timing-function),
+    color var(--button-container-transition-duration) var(--button-container-transition-timing-function),
+    box-shadow var(--button-container-transition-duration) var(--button-container-transition-timing-function);
+}
+
+/* Label — handles ellipsis truncation while keeping icons untruncated */
+.label {
+  display: inline-flex;
+  min-inline-size: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.label:empty {
+  display: none;
+}
+
+/* Hover / Active — disabled when inert (disabled, fieldset-disabled, or loading) */
+:host(:not([disabled]):not([loading]):not(.is-fieldset-disabled)) .control:hover {
+  background-color: var(--_bg-hover);
+}
+
+:host(:not([disabled]):not([loading]):not(.is-fieldset-disabled)) .control:active {
+  background-color: var(--_bg-active);
+}
+
+/* Focus ring — dual halo, same across all variants */
+.control:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
+    0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
+}
+
+/* ---------- Asymmetric padding when icons sit on a side ---------- */
+
+:host(.has-leading) .control {
+  padding-inline-start: var(--_padding-inline-icon);
+}
+
+:host(.has-trailing) .control {
+  padding-inline-end: var(--_padding-inline-icon);
+}
+
+/* ---------- Icon-only shape (square container, equal zero padding) ----------
+   Driven by the `icon` slot. When that slot has assigned content, the label
+   text and leading/trailing icons are suppressed and the control becomes
+   square with symmetric 0 padding so the icon centers naturally. */
+
+:host([icon-only]) .control {
+  min-inline-size: var(--_height);
+  inline-size: var(--_height);
+  padding-inline-start: 0;
+  padding-inline-end: 0;
+}
+
+:host([icon-only]) .label,
+:host([icon-only]) ::slotted([slot='leading-icon']),
+:host([icon-only]) ::slotted([slot='trailing-icon']) {
+  display: none;
+}
+
+/* ---------- Full-width ----------
+   Stretches the button to fill its container's inline-size. The internal
+   control loses its intrinsic min-width and inherits the full host width.
+   Designed for use inside cor-button-group (vertical) and narrow forms. */
+
+:host([full-width]) {
+  display: flex;
+  inline-size: 100%;
+}
+
+:host([full-width]) .control {
+  inline-size: 100%;
+  max-inline-size: none;
+}
+
+/* ---------- Disabled ---------- */
+
+:host([disabled]) .control,
+:host(.is-fieldset-disabled) .control {
+  background-color: var(--button-disabled-background);
+  color: var(--button-disabled-label);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ---------- Loading ---------- */
+
+:host([loading]) .control {
+  /* Background unchanged from default. Hide label visually via transparent
+     color while preserving the accessible name; aria-busy informs ATs. */
+  color: transparent;
+  cursor: progress;
+  pointer-events: none;
+}
+
+.spinner-overlay {
+  position: absolute;
+  inset: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* ---------- Slotted icons (cor-icon receives currentColor) ---------- */
+
+::slotted(cor-icon) {
+  --icon-color: currentcolor;
+  flex-shrink: 0;
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .control {
+    transition: none;
+  }
+}
+
+/* ---------- Touch target expansion (coarse pointer) ----------
+   On touch devices, extend the hit area on both axes to meet the Figma
+   spec minimums (sm → 40px, md/lg → 48px) without changing the visual
+   size. The pseudo-element is purely a hit-test extension — it sits
+   below sibling content in paint order and inherits click events on
+   `.control`. */
+
+@media (pointer: coarse) {
+  .control::before {
+    content: '';
+    position: absolute;
+    inset: calc((var(--_height) - var(--_touch-target)) / 2);
+  }
+}

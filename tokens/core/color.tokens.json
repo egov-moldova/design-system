@@ -67,6 +67,10 @@
         "tertiary": {
           "$value": "{palette.blue-sky.900}",
           "$type": "color"
+        },
+        "focus-ring": {
+          "$value": "{palette.blue-sky.500}",
+          "$type": "color"
         }
       },
       "positive": {

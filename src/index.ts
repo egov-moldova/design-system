@@ -8,3 +8,11 @@
 
 export { CorSpinner } from './components/cor-spinner/cor-spinner';
 export type { SpinnerSize, SpinnerVariant } from './components/cor-spinner/cor-spinner.types';
+
+export { CorButton } from './components/cor-button/cor-button';
+export { BUTTON_SIZES, BUTTON_VARIANTS, BUTTON_SHAPES, BUTTON_TYPES } from './components/cor-button/cor-button.types';
+export type { ButtonSize, ButtonVariant, ButtonShape, ButtonType } from './components/cor-button/cor-button.types';
+
+export { CorButtonGroup } from './components/cor-button-group/cor-button-group';
+export { BUTTON_GROUP_ORIENTATIONS } from './components/cor-button-group/cor-button-group.types';
+export type { ButtonGroupOrientation } from './components/cor-button-group/cor-button-group.types';

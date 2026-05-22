@@ -2,19 +2,20 @@
   "mcpServers": {
     "agentation": {
       "command": "npx",
-      "args": ["-y", "agentation-mcp", "server"]
+      "args": ["-y", "agentation-mcp", "server"],
+      "disabled": true
     },
     "playwright": {
       "command": "npx",
-      "args": ["@playwright/mcp@latest", "--output-dir", ".playwright-mcp"]
+      "args": ["@playwright/mcp@latest", "--output-dir", ".playwright-mcp", "--headless"]
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": ["-y", "chrome-devtools-mcp@latest", "--headless", "--isolated"]
     },
     "figma": {
       "type": "http",
       "url": "https://mcp.figma.com/mcp"
-    },
-    "context7": {
-      "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp"]
     },
     "image-compare": {
       "command": "npx",

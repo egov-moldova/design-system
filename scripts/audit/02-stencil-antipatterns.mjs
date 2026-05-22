@@ -406,12 +406,25 @@ export async function analyzeComponent(target) {
 }
 
 /**
+ * Replace every character inside CSS block comments with a space, preserving
+ * newlines (and therefore line numbers) so downstream regex matching skips
+ * the comment text without disturbing the file's line layout.
+ */
+export function stripCssBlockComments(content) {
+  return content.replace(/\/\*[\s\S]*?\*\//g, match => match.replace(/[^\n]/g, ' '));
+}
+
+/**
  * Apply all patterns + file checks to one file's content. Exported for tests
  * so we can pass synthetic content without touching disk.
  */
 export function scanFile(file, componentName) {
   const findings = [];
-  const lines = file.content.split('\n');
+  // For CSS, blank out block-comment bodies so multi-line comments don't
+  // trip patterns like RAW-PIXELS / RAW-HEX. Line numbers stay intact because
+  // we only replace non-newline characters with spaces.
+  const scanContent = file.kind === 'css' ? stripCssBlockComments(file.content) : file.content;
+  const lines = scanContent.split('\n');
 
   for (const pattern of PATTERNS) {
     if (pattern.scope !== file.kind) continue;
@@ -420,9 +433,9 @@ export function scanFile(file, componentName) {
     if (isMultilinePattern) {
       const multiRe = new RegExp(pattern.regex.source, 'g');
       let m;
-      while ((m = multiRe.exec(file.content)) !== null) {
+      while ((m = multiRe.exec(scanContent)) !== null) {
         if (pattern.filter && !pattern.filter({ match: m, line: m[0], componentName })) continue;
-        const lineNum = file.content.slice(0, m.index).split('\n').length;
+        const lineNum = scanContent.slice(0, m.index).split('\n').length;
         findings.push(
           finding({
             severity: pattern.severity,

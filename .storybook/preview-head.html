@@ -6,3 +6,47 @@
      Uses relative paths to work under any base path (e.g., /app/ in production). -->
 <link rel="stylesheet" href="./tokens/generated/core.tokens.css" />
 <link rel="stylesheet" href="./tokens/generated/core.dark.tokens.css" />
+
+<style>
+  @font-face {
+    font-family: 'Onest';
+    src: url('./assets/font/Onest/Onest-VariableFont_wght.ttf') format('truetype');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  /* Storybook core inlines 4 @font-face rules for "Nunito Sans" into the
+     iframe.html above this <%- head %> block. We re-declare each rule with
+     identical identifying descriptors so the last-declared wins per CSS
+     Fonts spec — every "Nunito Sans" lookup (.sb-wrapper, error display,
+     "preparing story" loader) is silently served by Onest. */
+  @font-face {
+    font-family: 'Nunito Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('./assets/font/Onest/Onest-VariableFont_wght.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'Nunito Sans';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url('./assets/font/Onest/Onest-VariableFont_wght.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'Nunito Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('./assets/font/Onest/Onest-VariableFont_wght.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'Nunito Sans';
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+    src: url('./assets/font/Onest/Onest-VariableFont_wght.ttf') format('truetype');
+  }
+</style>
