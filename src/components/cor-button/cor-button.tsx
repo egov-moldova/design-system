@@ -1,7 +1,7 @@
 import { AttachInternals, Component, Element, Host, Prop, State, h } from '@stencil/core';
 
 import type { SpinnerSize, SpinnerVariant } from '../cor-spinner/cor-spinner.types';
-import type { ButtonShape, ButtonSize, ButtonType, ButtonVariant } from './cor-button.types';
+import type { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from './cor-button.types';
 
 type SpinnerSizeForButton = Extract<SpinnerSize, 'xs' | 'sm'>;
 
@@ -15,11 +15,11 @@ type SpinnerSizeForButton = Extract<SpinnerSize, 'xs' | 'sm'>;
  * @element cor-button
  *
  * @slot - (default) The label content. Plain text or rich inline content.
- * @slot leading-icon - Optional `cor-icon` rendered before the label.
- * @slot trailing-icon - Optional `cor-icon` rendered after the label.
+ * @slot icon-start - Optional `cor-icon` rendered before the label.
+ * @slot icon-end - Optional `cor-icon` rendered after the label.
  * @slot icon - When filled, switches the button into icon-only mode: the
  *               container becomes square with equal zero-padding, and any
- *               `leading-icon`, `trailing-icon`, or default-slot label content
+ *               `icon-start`, `icon-end`, or default-slot label content
  *               is suppressed. Requires `label` (or `aria-label`) for AT.
  */
 @Component({
@@ -34,6 +34,19 @@ export class CorButton {
    * @default 'primary'
    */
   @Prop({ reflect: true }) variant: ButtonVariant = 'primary';
+
+  /**
+   * Visual treatment.
+   * - `filled` (default) — solid background per variant
+   * - `outlined` — 1.5px border with transparent fill in default/focus; hover/active fill solid (matches filled)
+   * - `text` — no border, transparent fill, hover/active tint background; designed for inline use
+   *
+   * `outlined` and `text` only support `primary`, `strict`, and `destructive` variants.
+   * Other variants fall back to `primary` visuals with a dev-time console warning.
+   *
+   * @default 'filled'
+   */
+  @Prop({ reflect: true }) appearance: ButtonAppearance = 'filled';
 
   /**
    * Visual size rung.
@@ -70,7 +83,7 @@ export class CorButton {
 
   /**
    * Switches the button into icon-only mode: the container becomes square
-   * with equal zero-padding, and `leading-icon`/`trailing-icon`/default-slot
+   * with equal zero-padding, and `icon-start`/`icon-end`/default-slot
    * content is suppressed. Icon content should be placed in `slot="icon"`.
    * Requires `label` (or `aria-label`) for screen readers.
    * @default false
@@ -118,8 +131,8 @@ export class CorButton {
    */
   @Prop() label?: string;
 
-  @State() private hasLeading: boolean = false;
-  @State() private hasTrailing: boolean = false;
+  @State() private hasIconStart: boolean = false;
+  @State() private hasIconEnd: boolean = false;
   @State() private hasIcon: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
 
@@ -139,6 +152,15 @@ export class CorButton {
           '[cor-button] icon-only is set but no `<cor-icon slot="icon">` was provided. The button will render an empty square.',
         );
       }
+    }
+    if (
+      (this.appearance === 'outlined' || this.appearance === 'text') &&
+      (this.variant === 'secondary' || this.variant === 'neutral')
+    ) {
+      console.warn(
+        `[cor-button] appearance="${this.appearance}" does not support variant="${this.variant}". ` +
+          'Supported variants: primary, strict, destructive. Falling back to primary visuals.',
+      );
     }
   }
 
@@ -160,12 +182,12 @@ export class CorButton {
     this.internals.setFormValue(null, null);
   }
 
-  private onLeadingSlotChange = (ev: Event) => {
-    this.hasLeading = this.slotHasContent(ev);
+  private onIconStartSlotChange = (ev: Event) => {
+    this.hasIconStart = this.slotHasContent(ev);
   };
 
-  private onTrailingSlotChange = (ev: Event) => {
-    this.hasTrailing = this.slotHasContent(ev);
+  private onIconEndSlotChange = (ev: Event) => {
+    this.hasIconEnd = this.slotHasContent(ev);
   };
 
   private onIconSlotChange = (ev: Event) => {
@@ -216,7 +238,12 @@ export class CorButton {
     return buttonSize === 'sm' ? 'xs' : 'sm';
   }
 
-  private spinnerVariantFor(variant: ButtonVariant): SpinnerVariant {
+  private spinnerVariantFor(variant: ButtonVariant, appearance: ButtonAppearance): SpinnerVariant {
+    if (appearance === 'outlined' || appearance === 'text') {
+      // Per Figma: primary -> brand spinner (icon.brand.default);
+      // strict + destructive -> dark spinner (icon.base.default).
+      return variant === 'primary' ? 'brand' : 'dark';
+    }
     if (variant === 'secondary' || variant === 'neutral') return 'dark';
     return 'light-on-color';
   }
@@ -226,8 +253,8 @@ export class CorButton {
     const effectivelyDisabled = this.disabled || this.fieldsetDisabled;
 
     const hostClasses = {
-      'has-leading': this.hasLeading && !this.iconOnly,
-      'has-trailing': this.hasTrailing && !this.iconOnly,
+      'has-icon-start': this.hasIconStart && !this.iconOnly,
+      'has-icon-end': this.hasIconEnd && !this.iconOnly,
       'is-fieldset-disabled': this.fieldsetDisabled && !this.disabled,
     };
 
@@ -237,15 +264,18 @@ export class CorButton {
     const tabIndexAttr = effectivelyDisabled ? -1 : 0;
 
     const slots = [
-      <slot name="leading-icon" onSlotchange={this.onLeadingSlotChange} />,
+      <slot name="icon-start" onSlotchange={this.onIconStartSlotChange} />,
       <span class="label">
         <slot />
       </span>,
-      <slot name="trailing-icon" onSlotchange={this.onTrailingSlotChange} />,
+      <slot name="icon-end" onSlotchange={this.onIconEndSlotChange} />,
       <slot name="icon" onSlotchange={this.onIconSlotChange} />,
       this.loading ? (
         <span class="spinner-overlay" aria-hidden="true">
-          <cor-spinner size={this.spinnerSizeFor(this.size)} variant={this.spinnerVariantFor(this.variant)} />
+          <cor-spinner
+            size={this.spinnerSizeFor(this.size)}
+            variant={this.spinnerVariantFor(this.variant, this.appearance)}
+          />
         </span>
       ) : null,
     ];

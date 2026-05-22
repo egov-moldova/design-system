@@ -3,7 +3,7 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 import '../cor-button';
 import '../../cor-spinner/cor-spinner';
 
-import { BUTTON_VARIANTS, BUTTON_SIZES, BUTTON_SHAPES, BUTTON_TYPES } from '../cor-button.types';
+import { BUTTON_APPEARANCES, BUTTON_SHAPES, BUTTON_SIZES, BUTTON_TYPES, BUTTON_VARIANTS } from '../cor-button.types';
 
 const queryControl = (root: Element | null | undefined): HTMLButtonElement | HTMLAnchorElement | null =>
   (root?.shadowRoot?.querySelector('.control') ?? null) as HTMLButtonElement | HTMLAnchorElement | null;
@@ -13,6 +13,7 @@ describe('cor-button', () => {
     const { root } = await render(<cor-button>Click me</cor-button>);
 
     expect(root?.getAttribute('variant')).toBe('primary');
+    expect(root?.getAttribute('appearance')).toBe('filled');
     expect(root?.getAttribute('size')).toBe('md');
     expect(root?.getAttribute('shape')).toBe('rectangular');
     expect(root?.getAttribute('type')).toBe('button');
@@ -60,6 +61,54 @@ describe('cor-button', () => {
     it.each(BUTTON_VARIANTS)('reflects variant="%s" to the host attribute', async variant => {
       const { root } = await render(<cor-button variant={variant}>Click</cor-button>);
       expect(root?.getAttribute('variant')).toBe(variant);
+    });
+  });
+
+  describe('appearance prop', () => {
+    it.each(BUTTON_APPEARANCES)('reflects appearance="%s" to the host attribute', async appearance => {
+      const { root } = await render(<cor-button appearance={appearance}>Click</cor-button>);
+      expect(root?.getAttribute('appearance')).toBe(appearance);
+    });
+
+    it('defaults to appearance="filled" when not set', async () => {
+      const { root } = await render(<cor-button>Click</cor-button>);
+      expect(root?.getAttribute('appearance')).toBe('filled');
+    });
+
+    it('does not warn for supported combinations (outlined + primary)', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      await render(
+        <cor-button appearance="outlined" variant="primary">
+          Click
+        </cor-button>,
+      );
+      expect(warn).not.toHaveBeenCalled();
+      warn.mockRestore();
+    });
+
+    it.each([
+      ['outlined', 'secondary'],
+      ['outlined', 'neutral'],
+      ['text', 'secondary'],
+      ['text', 'neutral'],
+    ] as const)('warns when appearance="%s" is combined with variant="%s"', async (appearance, variant) => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      await render(
+        <cor-button appearance={appearance} variant={variant}>
+          Click
+        </cor-button>,
+      );
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining(`appearance="${appearance}"`));
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining(`variant="${variant}"`));
+      warn.mockRestore();
+    });
+
+    it('renders the same internal <button> structure across appearances', async () => {
+      for (const appearance of BUTTON_APPEARANCES) {
+        const { root } = await render(<cor-button appearance={appearance}>Save</cor-button>);
+        const control = queryControl(root);
+        expect(control?.tagName).toBe('BUTTON');
+      }
     });
   });
 
@@ -247,16 +296,16 @@ describe('cor-button', () => {
   });
 
   // Note: slotchange events don't fire in Stencil's mock-doc test env, so we
-  // can't assert the .has-leading / .has-trailing / .is-icon-only classes here.
+  // can't assert the .has-icon-start / .has-icon-end / .is-icon-only classes here.
   // The class application is verified visually in Storybook + Playwright.
   // What we *can* assert is the structural contract — the named slots exist in
   // shadow DOM in the right order, ready to receive content at runtime.
   describe('slot structure (shadow DOM contract)', () => {
-    it('exposes leading-icon, default, and trailing-icon slots in order', async () => {
+    it('exposes icon-start, default, and icon-end slots in order', async () => {
       const { root } = await render(<cor-button>Click</cor-button>);
       const slots = Array.from(root?.shadowRoot?.querySelectorAll('slot') ?? []);
       const names = slots.map(s => s.getAttribute('name') ?? '(default)');
-      expect(names).toEqual(['leading-icon', '(default)', 'trailing-icon', 'icon']);
+      expect(names).toEqual(['icon-start', '(default)', 'icon-end', 'icon']);
     });
   });
 
@@ -514,30 +563,30 @@ describe('cor-button', () => {
   });
 
   describe('slot content reactivity', () => {
-    it('reflects the has-leading class on the host after slotchange', async () => {
+    it('reflects the has-icon-start class on the host after slotchange', async () => {
       const { root } = await render(
         <cor-button>
-          <cor-icon slot="leading-icon" name="arrow-left" size={20}></cor-icon>
+          <cor-icon slot="icon-start" name="arrow-left" size={20}></cor-icon>
           Save
         </cor-button>,
       );
-      const slot = root?.shadowRoot?.querySelector('slot[name="leading-icon"]') as HTMLSlotElement | null;
+      const slot = root?.shadowRoot?.querySelector('slot[name="icon-start"]') as HTMLSlotElement | null;
       slot?.dispatchEvent(new Event('slotchange'));
       await new Promise(r => setTimeout(r, 0));
-      expect(root?.classList.contains('has-leading')).toBe(true);
+      expect(root?.classList.contains('has-icon-start')).toBe(true);
     });
 
-    it('reflects the has-trailing class on the host after slotchange', async () => {
+    it('reflects the has-icon-end class on the host after slotchange', async () => {
       const { root } = await render(
         <cor-button>
           Save
-          <cor-icon slot="trailing-icon" name="arrow-right" size={20}></cor-icon>
+          <cor-icon slot="icon-end" name="arrow-right" size={20}></cor-icon>
         </cor-button>,
       );
-      const slot = root?.shadowRoot?.querySelector('slot[name="trailing-icon"]') as HTMLSlotElement | null;
+      const slot = root?.shadowRoot?.querySelector('slot[name="icon-end"]') as HTMLSlotElement | null;
       slot?.dispatchEvent(new Event('slotchange'));
       await new Promise(r => setTimeout(r, 0));
-      expect(root?.classList.contains('has-trailing')).toBe(true);
+      expect(root?.classList.contains('has-icon-end')).toBe(true);
     });
 
     it('accepts an icon-only configuration with a labelled `slot="icon"`', async () => {

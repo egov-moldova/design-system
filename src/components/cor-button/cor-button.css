@@ -14,7 +14,13 @@
   --_bg-hover: var(--button-primary-background-hover);
   --_bg-active: var(--button-primary-background-active);
   --_label: var(--button-primary-label);
+  --_label-hover: var(--_label);
+  --_label-active: var(--_label);
   --_icon: var(--button-primary-icon);
+  --_border-width: 0;
+  --_border-color: transparent;
+  --_border-color-hover: var(--_border-color);
+  --_border-color-active: var(--_border-color);
 
   display: inline-flex;
   vertical-align: middle;
@@ -115,6 +121,106 @@
   --_icon: var(--button-destructive-icon);
 }
 
+/* ---------- Appearance axis ---------- */
+
+/* Outlined — 1.5px border by default, transparent fill, label brand-coloured.
+   On hover/active the border drops (transparent) and the fill turns solid
+   brand-default-hover/active, with the label flipping to on-color white —
+   per Figma, outlined visually converges to filled on interaction. */
+:host([appearance='outlined']) {
+  --_border-width: var(--border-width-1-5);
+  --_bg: transparent;
+}
+
+:host([appearance='outlined'][variant='primary']) {
+  --_border-color: var(--button-outlined-primary-border-default);
+  --_border-color-hover: var(--button-outlined-primary-border-hover);
+  --_border-color-active: var(--button-outlined-primary-border-active);
+  --_label: var(--button-outlined-primary-label-default);
+  --_label-hover: var(--button-outlined-primary-label-hover);
+  --_label-active: var(--button-outlined-primary-label-active);
+  --_icon: var(--button-outlined-primary-icon-default);
+  --_bg-hover: var(--button-outlined-primary-background-hover);
+  --_bg-active: var(--button-outlined-primary-background-active);
+}
+
+:host([appearance='outlined'][variant='strict']) {
+  --_border-color: var(--button-outlined-strict-border-default);
+  --_border-color-hover: var(--button-outlined-strict-border-hover);
+  --_border-color-active: var(--button-outlined-strict-border-active);
+  --_label: var(--button-outlined-strict-label-default);
+  --_label-hover: var(--button-outlined-strict-label-hover);
+  --_label-active: var(--button-outlined-strict-label-active);
+  --_icon: var(--button-outlined-strict-icon-default);
+  --_bg-hover: var(--button-outlined-strict-background-hover);
+  --_bg-active: var(--button-outlined-strict-background-active);
+}
+
+:host([appearance='outlined'][variant='destructive']) {
+  --_border-color: var(--button-outlined-destructive-border-default);
+  --_border-color-hover: var(--button-outlined-destructive-border-hover);
+  --_border-color-active: var(--button-outlined-destructive-border-active);
+  --_label: var(--button-outlined-destructive-label-default);
+  --_label-hover: var(--button-outlined-destructive-label-hover);
+  --_label-active: var(--button-outlined-destructive-label-active);
+  --_icon: var(--button-outlined-destructive-icon-default);
+  --_bg-hover: var(--button-outlined-destructive-background-hover);
+  --_bg-active: var(--button-outlined-destructive-background-active);
+}
+
+/* Text — no border, hover/active tint background. Label stays in variant color. */
+:host([appearance='text']) {
+  --_bg: transparent;
+}
+
+:host([appearance='text'][variant='primary']) {
+  --_label: var(--button-text-primary-label-default);
+  --_label-hover: var(--button-text-primary-label-hover);
+  --_label-active: var(--button-text-primary-label-active);
+  --_icon: var(--button-text-primary-icon-default);
+  --_bg-hover: var(--button-text-primary-background-hover);
+  --_bg-active: var(--button-text-primary-background-active);
+}
+
+:host([appearance='text'][variant='strict']) {
+  --_label: var(--button-text-strict-label-default);
+  --_icon: var(--button-text-strict-icon-default);
+  --_bg-hover: var(--button-text-strict-background-hover);
+  --_bg-active: var(--button-text-strict-background-active);
+}
+
+:host([appearance='text'][variant='destructive']) {
+  --_label: var(--button-text-destructive-label-default);
+  --_icon: var(--button-text-destructive-icon-default);
+  --_bg-hover: var(--button-text-destructive-background-hover);
+  --_bg-active: var(--button-text-destructive-background-active);
+}
+
+/* Invalid combos (appearance != filled + variant in {secondary, neutral}) fall back
+   to primary visuals. componentDidLoad emits a console.warn in dev. */
+:host([appearance='outlined'][variant='secondary']),
+:host([appearance='outlined'][variant='neutral']) {
+  --_border-color: var(--button-outlined-primary-border-default);
+  --_border-color-hover: var(--button-outlined-primary-border-hover);
+  --_border-color-active: var(--button-outlined-primary-border-active);
+  --_label: var(--button-outlined-primary-label-default);
+  --_label-hover: var(--button-outlined-primary-label-hover);
+  --_label-active: var(--button-outlined-primary-label-active);
+  --_icon: var(--button-outlined-primary-icon-default);
+  --_bg-hover: var(--button-outlined-primary-background-hover);
+  --_bg-active: var(--button-outlined-primary-background-active);
+}
+
+:host([appearance='text'][variant='secondary']),
+:host([appearance='text'][variant='neutral']) {
+  --_label: var(--button-text-primary-label-default);
+  --_label-hover: var(--button-text-primary-label-hover);
+  --_label-active: var(--button-text-primary-label-active);
+  --_icon: var(--button-text-primary-icon-default);
+  --_bg-hover: var(--button-text-primary-background-hover);
+  --_bg-active: var(--button-text-primary-background-active);
+}
+
 /* ---------- Internal control (button or anchor) ---------- */
 
 .control {
@@ -131,7 +237,8 @@
   padding-inline-start: var(--_padding-inline);
   padding-inline-end: var(--_padding-inline);
 
-  border: 0;
+  box-sizing: border-box;
+  border: var(--_border-width) solid var(--_border-color);
   border-radius: var(--_border-radius);
   background-color: var(--_bg);
   color: var(--_label);
@@ -170,10 +277,14 @@
 /* Hover / Active — disabled when inert (disabled, fieldset-disabled, or loading) */
 :host(:not([disabled]):not([loading]):not(.is-fieldset-disabled)) .control:hover {
   background-color: var(--_bg-hover);
+  color: var(--_label-hover);
+  border-color: var(--_border-color-hover);
 }
 
 :host(:not([disabled]):not([loading]):not(.is-fieldset-disabled)) .control:active {
   background-color: var(--_bg-active);
+  color: var(--_label-active);
+  border-color: var(--_border-color-active);
 }
 
 /* Focus ring — dual halo, same across all variants */
@@ -186,17 +297,17 @@
 
 /* ---------- Asymmetric padding when icons sit on a side ---------- */
 
-:host(.has-leading) .control {
+:host(.has-icon-start) .control {
   padding-inline-start: var(--_padding-inline-icon);
 }
 
-:host(.has-trailing) .control {
+:host(.has-icon-end) .control {
   padding-inline-end: var(--_padding-inline-icon);
 }
 
 /* ---------- Icon-only shape (square container, equal zero padding) ----------
    Driven by the `icon` slot. When that slot has assigned content, the label
-   text and leading/trailing icons are suppressed and the control becomes
+   text and icon-start/icon-end slots are suppressed and the control becomes
    square with symmetric 0 padding so the icon centers naturally. */
 
 :host([icon-only]) .control {
@@ -207,8 +318,8 @@
 }
 
 :host([icon-only]) .label,
-:host([icon-only]) ::slotted([slot='leading-icon']),
-:host([icon-only]) ::slotted([slot='trailing-icon']) {
+:host([icon-only]) ::slotted([slot='icon-start']),
+:host([icon-only]) ::slotted([slot='icon-end']) {
   display: none;
 }
 
@@ -235,6 +346,21 @@
   color: var(--button-disabled-label);
   cursor: not-allowed;
   pointer-events: none;
+}
+
+/* Outlined disabled — border stays visible (muted), fill transparent. */
+:host([disabled][appearance='outlined']) .control,
+:host(.is-fieldset-disabled[appearance='outlined']) .control {
+  background-color: var(--button-outlined-primary-background-disabled);
+  border-color: var(--button-outlined-primary-border-disabled);
+  color: var(--button-outlined-primary-label-disabled);
+}
+
+/* Text disabled — transparent fill, muted label. */
+:host([disabled][appearance='text']) .control,
+:host(.is-fieldset-disabled[appearance='text']) .control {
+  background-color: var(--button-text-primary-background-disabled);
+  color: var(--button-text-primary-label-disabled);
 }
 
 /* ---------- Loading ---------- */

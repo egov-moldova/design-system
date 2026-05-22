@@ -1,10 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
-import { BUTTON_SHAPES, BUTTON_SIZES, BUTTON_TYPES, BUTTON_VARIANTS } from './cor-button.types';
-import type { ButtonShape, ButtonSize, ButtonType, ButtonVariant } from './cor-button.types';
+import { BUTTON_APPEARANCES, BUTTON_SHAPES, BUTTON_SIZES, BUTTON_TYPES, BUTTON_VARIANTS } from './cor-button.types';
+import type { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from './cor-button.types';
 
 type ButtonArgs = {
   variant: ButtonVariant;
+  appearance: ButtonAppearance;
   size: ButtonSize;
   shape: ButtonShape;
   type: ButtonType;
@@ -18,6 +19,7 @@ type ButtonArgs = {
 const renderButton = (args: ButtonArgs) => /*html*/ `
   <cor-button
     variant="${args.variant}"
+    appearance="${args.appearance}"
     size="${args.size}"
     shape="${args.shape}"
     type="${args.type}"
@@ -37,6 +39,7 @@ const renderButton = (args: ButtonArgs) => /*html*/ `
 const docsSourceDefault = (args: ButtonArgs) => {
   const attrs = [
     args.variant !== 'primary' ? `variant="${args.variant}"` : '',
+    args.appearance !== 'filled' ? `appearance="${args.appearance}"` : '',
     args.size !== 'md' ? `size="${args.size}"` : '',
     args.shape !== 'rectangular' ? `shape="${args.shape}"` : '',
     args.type !== 'button' && !args.href ? `type="${args.type}"` : '',
@@ -66,23 +69,23 @@ const docsSourceAllShapes = /*html*/ `<cor-button shape="rectangular">Rectangula
 const docsSourceSlotVariations = /*html*/ /*html*/ `<!-- text-only -->
 <cor-button>Text only</cor-button>
 
-<!-- leading-icon -->
+<!-- icon-start -->
 <cor-button>
-  <cor-icon slot="leading-icon" name="arrow-left" size="20" color="currentColor"></cor-icon>
+  <cor-icon slot="icon-start" name="arrow-left" size="20" color="currentColor"></cor-icon>
   Leading icon
 </cor-button>
 
-<!-- trailing-icon -->
+<!-- icon-end -->
 <cor-button>
   Trailing icon
-  <cor-icon slot="trailing-icon" name="arrow-right" size="20" color="currentColor"></cor-icon>
+  <cor-icon slot="icon-end" name="arrow-right" size="20" color="currentColor"></cor-icon>
 </cor-button>
 
-<!-- leading + trailing -->
+<!-- icon-start + icon-end -->
 <cor-button>
   Leading + Trailing icon
-  <cor-icon slot="leading-icon" name="arrow-left" size="20" color="currentColor"></cor-icon>
-  <cor-icon slot="trailing-icon" name="arrow-right" size="20" color="currentColor"></cor-icon>
+  <cor-icon slot="icon-start" name="arrow-left" size="20" color="currentColor"></cor-icon>
+  <cor-icon slot="icon-end" name="arrow-right" size="20" color="currentColor"></cor-icon>
 </cor-button>
 
 <!-- icon-only (requires \`label\` for screen readers) -->
@@ -163,6 +166,129 @@ const renderAllShapes = () => /*html*/ `
   </div>
 `;
 
+const renderAllAppearances = () => /*html*/ `
+  <div style="display: flex; align-items: flex-end; gap: var(--spacing-16); padding: var(--spacing-24); flex-wrap: wrap;">
+    ${BUTTON_APPEARANCES.map(
+      appearance => /*html*/ `
+      <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-4);">
+        <cor-button variant="primary" appearance="${appearance}" size="md">${appearance}</cor-button>
+        <span style="${cellLabelStyle}">${appearance}</span>
+      </div>`,
+    ).join('')}
+  </div>
+`;
+
+const docsSourceAllAppearances = BUTTON_APPEARANCES.map(
+  a => /*html*/ `<cor-button appearance="${a}">${a}</cor-button>`,
+).join('\n');
+
+// Variants × Appearances grid — appearance on columns (filled / outlined / text),
+// variants on rows. Surfaces unsupported cells (secondary/neutral × outlined/text)
+// which fall back to primary visuals.
+const renderAppearancesXVariants = () => /*html*/ `
+  <style>
+    .appearance-variant-grid {
+      display: grid;
+      grid-template-columns: 110px repeat(${BUTTON_APPEARANCES.length}, auto);
+      gap: var(--spacing-16) var(--spacing-24);
+      padding: var(--spacing-24);
+      align-items: center;
+    }
+    .appearance-variant-grid > .row-label,
+    .appearance-variant-grid > .col-label {
+      font-size: var(--font-size-12);
+      color: var(--color-text-base-tertiary);
+      font-style: italic;
+    }
+    .appearance-variant-grid > .row-label { text-align: right; }
+    .appearance-variant-grid > .col-label { text-align: center; }
+    .appearance-variant-grid > .cell {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .appearance-variant-grid > .cell[data-fallback]::after {
+      content: 'fallback → primary';
+      position: absolute;
+      top: calc(100% + 2px);
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: var(--color-text-base-tertiary);
+      font-style: italic;
+      white-space: nowrap;
+    }
+  </style>
+  <div class="appearance-variant-grid">
+    <span></span>
+    ${BUTTON_APPEARANCES.map(a => /*html*/ `<span class="col-label">${a}</span>`).join('')}
+    ${BUTTON_VARIANTS.map(
+      variant => /*html*/ `
+        <span class="row-label">${variant}</span>
+        ${BUTTON_APPEARANCES.map(appearance => {
+          const isFallback = appearance !== 'filled' && (variant === 'secondary' || variant === 'neutral');
+          return /*html*/ `<span class="cell"${isFallback ? ' data-fallback' : ''}>
+            <cor-button variant="${variant}" appearance="${appearance}" size="md">${variant}</cor-button>
+          </span>`;
+        }).join('')}
+      `,
+    ).join('')}
+  </div>
+`;
+
+// Sizes × Appearances grid — appearance on columns, sizes on rows.
+const renderAppearancesXSizes = () => /*html*/ `
+  <style>
+    .appearance-size-grid {
+      display: grid;
+      grid-template-columns: 110px repeat(${BUTTON_APPEARANCES.length}, auto);
+      gap: var(--spacing-16) var(--spacing-24);
+      padding: var(--spacing-24);
+      align-items: center;
+    }
+    .appearance-size-grid > .row-label,
+    .appearance-size-grid > .col-label {
+      font-size: var(--font-size-12);
+      color: var(--color-text-base-tertiary);
+      font-style: italic;
+    }
+    .appearance-size-grid > .col-label { text-align: center; }
+    .appearance-size-grid > .row-label { text-align: right; }
+    .appearance-size-grid > .cell { text-align: center; }
+  </style>
+  <div class="appearance-size-grid">
+    <span></span>
+    ${BUTTON_APPEARANCES.map(a => /*html*/ `<span class="col-label">${a}</span>`).join('')}
+    ${BUTTON_SIZES.map(
+      size => /*html*/ `
+        <span class="row-label">${size}</span>
+        ${BUTTON_APPEARANCES.map(
+          appearance => /*html*/ `<div class="cell">
+              <cor-button variant="primary" appearance="${appearance}" size="${size}">Button</cor-button>
+            </div>`,
+        ).join('')}
+      `,
+    ).join('')}
+  </div>
+`;
+
+const renderInvalidComboFallback = () => /*html*/ `
+  <div style="display: flex; flex-direction: column; gap: var(--spacing-16); padding: var(--spacing-24); max-width: 540px;">
+    <p style="font-size: var(--font-size-14); color: var(--color-text-base-default); margin: 0;">
+      Outlined and Text only support <code>primary</code>, <code>strict</code>, <code>destructive</code>.
+      Setting <code>appearance="outlined"</code> with <code>variant="secondary"</code> renders the
+      <strong>primary</strong> visual and emits a <code>console.warn</code> in dev (open DevTools).
+    </p>
+    <div style="display: flex; gap: var(--spacing-16); align-items: center;">
+      <cor-button variant="secondary" appearance="outlined">outlined + secondary</cor-button>
+      <cor-button variant="neutral" appearance="outlined">outlined + neutral</cor-button>
+      <cor-button variant="secondary" appearance="text">text + secondary</cor-button>
+      <cor-button variant="neutral" appearance="text">text + neutral</cor-button>
+    </div>
+  </div>
+`;
+
 const renderSlotVariations = () => /*html*/ `
   <div style="display: flex; align-items: flex-end; gap: var(--spacing-16); padding: var(--spacing-24); flex-wrap: wrap;">
     <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-4);">
@@ -171,25 +297,25 @@ const renderSlotVariations = () => /*html*/ `
     </div>
     <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-4);">
       <cor-button variant="primary" size="md">
-        <cor-icon slot="leading-icon" name="arrow-left" size="20" color="currentColor"></cor-icon>
+        <cor-icon slot="icon-start" name="arrow-left" size="20" color="currentColor"></cor-icon>
         Leading icon
       </cor-button>
-      <span style="${cellLabelStyle}">leading-icon</span>
+      <span style="${cellLabelStyle}">icon-start</span>
     </div>
     <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-4);">
       <cor-button variant="primary" size="md">
         Trailing icon
-        <cor-icon slot="trailing-icon" name="arrow-right" size="20" color="currentColor"></cor-icon>
+        <cor-icon slot="icon-end" name="arrow-right" size="20" color="currentColor"></cor-icon>
       </cor-button>
-      <span style="${cellLabelStyle}">trailing-icon</span>
+      <span style="${cellLabelStyle}">icon-end</span>
     </div>
     <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-4);">
       <cor-button variant="primary" size="md">
         Leading + Trailing icon
-        <cor-icon slot="leading-icon" name="arrow-left" size="20" color="currentColor"></cor-icon>
-        <cor-icon slot="trailing-icon" name="arrow-right" size="20" color="currentColor"></cor-icon>
+        <cor-icon slot="icon-start" name="arrow-left" size="20" color="currentColor"></cor-icon>
+        <cor-icon slot="icon-end" name="arrow-right" size="20" color="currentColor"></cor-icon>
       </cor-button>
-      <span style="${cellLabelStyle}">leading-icon + trailing-icon</span>
+      <span style="${cellLabelStyle}">icon-start + icon-end</span>
     </div>
     <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-4);">
       <cor-button variant="primary" size="md" icon-only label="Navigate forward">
@@ -235,20 +361,20 @@ const renderWidthBoundaries = () => {
     </div>
 
     <div>
-      <p style="${sectionLabelStyle}">Truncation preserves icons — only the label clips; leading / trailing icons stay intact.</p>
+      <p style="${sectionLabelStyle}">Truncation preserves icons — only the label clips; icon-start / icon-end stay intact.</p>
       <div style="display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-8);">
         <cor-button variant="primary" size="md">
-          <cor-icon slot="leading-icon" name="arrow-left" size="20" color="currentColor"></cor-icon>
+          <cor-icon slot="icon-start" name="arrow-left" size="20" color="currentColor"></cor-icon>
           ${longLabel}
         </cor-button>
         <cor-button variant="primary" size="md">
           ${longLabel}
-          <cor-icon slot="trailing-icon" name="arrow-right" size="20" color="currentColor"></cor-icon>
+          <cor-icon slot="icon-end" name="arrow-right" size="20" color="currentColor"></cor-icon>
         </cor-button>
         <cor-button variant="primary" size="md">
-          <cor-icon slot="leading-icon" name="arrow-left" size="20" color="currentColor"></cor-icon>
+          <cor-icon slot="icon-start" name="arrow-left" size="20" color="currentColor"></cor-icon>
           ${longLabel}
-          <cor-icon slot="trailing-icon" name="arrow-right" size="20" color="currentColor"></cor-icon>
+          <cor-icon slot="icon-end" name="arrow-right" size="20" color="currentColor"></cor-icon>
         </cor-button>
       </div>
     </div>
@@ -267,9 +393,9 @@ const docsSourceWidthBoundaries = /*html*/ `<!-- Min-width — short labels held
 
 <!-- Truncation preserves icons -->
 <cor-button>
-  <cor-icon slot="leading-icon" name="arrow-left" size="20" color="currentColor"></cor-icon>
+  <cor-icon slot="icon-start" name="arrow-left" size="20" color="currentColor"></cor-icon>
   Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore
-  <cor-icon slot="trailing-icon" name="arrow-right" size="20" color="currentColor"></cor-icon>
+  <cor-icon slot="icon-end" name="arrow-right" size="20" color="currentColor"></cor-icon>
 </cor-button>`;
 
 const renderTouchTarget = () => {
@@ -434,6 +560,13 @@ const meta: Meta<ButtonArgs> = {
       description: 'Color treatment.',
       table: { defaultValue: { summary: 'primary' } },
     },
+    appearance: {
+      control: 'select',
+      options: BUTTON_APPEARANCES,
+      description:
+        'Visual treatment. `outlined` and `text` only support `primary`, `strict`, `destructive`; other variants fall back to `primary` with a dev console warning.',
+      table: { defaultValue: { summary: 'filled' } },
+    },
     size: {
       control: 'select',
       options: BUTTON_SIZES,
@@ -490,6 +623,7 @@ export const Default: Story = {
   render: renderButton,
   args: {
     variant: 'primary',
+    appearance: 'filled',
     size: 'md',
     shape: 'rectangular',
     type: 'button',
@@ -541,6 +675,55 @@ export const AllShapes: Story = {
   parameters: {
     controls: { disable: true },
     docs: { source: { code: docsSourceAllShapes } },
+  },
+};
+
+// ---------------------------------------------------------------------------
+// AllAppearances — 3 appearances in a row, variant=primary
+// ---------------------------------------------------------------------------
+export const AllAppearances: Story = {
+  render: renderAllAppearances,
+  parameters: {
+    controls: { disable: true },
+    docs: { source: { code: docsSourceAllAppearances } },
+  },
+};
+
+// ---------------------------------------------------------------------------
+// AppearancesXVariants — 3×5 grid (appearances × variants), surfaces fallback cells
+// ---------------------------------------------------------------------------
+export const AppearancesXVariants: Story = {
+  name: 'Appearances × Variants',
+  render: renderAppearancesXVariants,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'Outlined and Text only support primary / strict / destructive. The cells marked "fallback" render the primary visuals when an unsupported variant is set, and emit a console.warn in dev.',
+      },
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
+// AppearancesXSizes — 3×3 grid (appearances × sizes), variant=primary
+// ---------------------------------------------------------------------------
+export const AppearancesXSizes: Story = {
+  name: 'Appearances × Sizes',
+  render: renderAppearancesXSizes,
+  parameters: {
+    controls: { disable: true },
+  },
+};
+
+// ---------------------------------------------------------------------------
+// InvalidComboFallback — documents the warning + visual fallback behaviour
+// ---------------------------------------------------------------------------
+export const InvalidComboFallback: Story = {
+  render: renderInvalidComboFallback,
+  parameters: {
+    controls: { disable: true },
   },
 };
 
@@ -616,7 +799,7 @@ export const States: Story = {
 };
 
 // ---------------------------------------------------------------------------
-// SlotVariations — text-only, leading-icon, trailing-icon, icon-only
+// SlotVariations — text-only, icon-start, icon-end, icon-only
 // ---------------------------------------------------------------------------
 export const SlotVariations: Story = {
   render: renderSlotVariations,
@@ -694,7 +877,7 @@ const renderFullWidth = () => /*html*/ `
     </div>
     <div style="width: 320px;">
       <cor-button variant="secondary" full-width>
-        <cor-icon slot="leading-icon" name="arrow-left" size="20" color="currentColor"></cor-icon>
+        <cor-icon slot="icon-start" name="arrow-left" size="20" color="currentColor"></cor-icon>
         Back to dashboard
       </cor-button>
     </div>
@@ -708,7 +891,7 @@ const docsSourceFullWidth = /*html*/ `<!-- Add the \`full-width\` attribute to e
 
 <div style="width: 320px;">
   <cor-button variant="secondary" full-width>
-    <cor-icon slot="leading-icon" name="arrow-left" size="20" color="currentColor"></cor-icon>
+    <cor-icon slot="icon-start" name="arrow-left" size="20" color="currentColor"></cor-icon>
     Back to dashboard
   </cor-button>
 </div>`;

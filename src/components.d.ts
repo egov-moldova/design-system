@@ -5,11 +5,11 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/cor-button/cor-button.types";
+import { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/cor-button/cor-button.types";
 import { ButtonGroupOrientation } from "./components/cor-button-group/cor-button-group.types";
 import { IconSize } from "./components/cor-icon/cor-icon.types";
 import { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
-export { ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/cor-button/cor-button.types";
+export { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/cor-button/cor-button.types";
 export { ButtonGroupOrientation } from "./components/cor-button-group/cor-button-group.types";
 export { IconSize } from "./components/cor-icon/cor-icon.types";
 export { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
@@ -22,6 +22,11 @@ export namespace Components {
      * @element cor-button
      */
     interface CorButton {
+        /**
+          * Visual treatment. - `filled` (default) — solid background per variant - `outlined` — 1.5px border with transparent fill in default/focus; hover/active fill solid (matches filled) - `text` — no border, transparent fill, hover/active tint background; designed for inline use  `outlined` and `text` only support `primary`, `strict`, and `destructive` variants. Other variants fall back to `primary` visuals with a dev-time console warning.
+          * @default 'filled'
+         */
+        "appearance": ButtonAppearance;
         /**
           * Disables interactivity. When set the internal control receives `aria-disabled` and (for `<button>`) the native `disabled` attribute.
           * @default false
@@ -37,7 +42,7 @@ export namespace Components {
          */
         "href"?: string;
         /**
-          * Switches the button into icon-only mode: the container becomes square with equal zero-padding, and `leading-icon`/`trailing-icon`/default-slot content is suppressed. Icon content should be placed in `slot="icon"`. Requires `label` (or `aria-label`) for screen readers.
+          * Switches the button into icon-only mode: the container becomes square with equal zero-padding, and `icon-start`/`icon-end`/default-slot content is suppressed. Icon content should be placed in `slot="icon"`. Requires `label` (or `aria-label`) for screen readers.
           * @default false
          */
         "iconOnly": boolean;
@@ -244,6 +249,11 @@ declare namespace LocalJSX {
      */
     interface CorButton {
         /**
+          * Visual treatment. - `filled` (default) — solid background per variant - `outlined` — 1.5px border with transparent fill in default/focus; hover/active fill solid (matches filled) - `text` — no border, transparent fill, hover/active tint background; designed for inline use  `outlined` and `text` only support `primary`, `strict`, and `destructive` variants. Other variants fall back to `primary` visuals with a dev-time console warning.
+          * @default 'filled'
+         */
+        "appearance"?: ButtonAppearance;
+        /**
           * Disables interactivity. When set the internal control receives `aria-disabled` and (for `<button>`) the native `disabled` attribute.
           * @default false
          */
@@ -262,7 +272,7 @@ declare namespace LocalJSX {
          */
         "href"?: string;
         /**
-          * Switches the button into icon-only mode: the container becomes square with equal zero-padding, and `leading-icon`/`trailing-icon`/default-slot content is suppressed. Icon content should be placed in `slot="icon"`. Requires `label` (or `aria-label`) for screen readers.
+          * Switches the button into icon-only mode: the container becomes square with equal zero-padding, and `icon-start`/`icon-end`/default-slot content is suppressed. Icon content should be placed in `slot="icon"`. Requires `label` (or `aria-label`) for screen readers.
           * @default false
          */
         "iconOnly"?: boolean;
@@ -398,6 +408,7 @@ declare namespace LocalJSX {
 
     interface CorButtonAttributes {
         "variant": ButtonVariant;
+        "appearance": ButtonAppearance;
         "size": ButtonSize;
         "shape": ButtonShape;
         "type": ButtonType;
