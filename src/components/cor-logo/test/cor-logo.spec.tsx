@@ -2,7 +2,7 @@ import { render, h, describe, it, expect, vi, beforeEach, afterEach } from '@ste
 import { setAssetPath } from '@stencil/core';
 
 import '../cor-logo';
-import { clearLogoSvgCache, resolveLogoAssetUrl } from '../cor-logo.providers';
+import { clearLogoSvgCache, fetchLogoSvg, resolveLogoAssetUrl } from '../cor-logo.providers';
 import { LOGO_NAMES } from '../cor-logo.types';
 
 function makeFetchMock() {
@@ -52,6 +52,15 @@ describe('cor-logo', () => {
     expect(root?.hasAttribute('aria-label')).toBe(false);
   });
 
+  it('treats whitespace-only ariaLabel as decorative (Issue 2)', async () => {
+    const { root, waitForChanges } = await render(<cor-logo name="mpay-logo-logomark-only" aria-label="   " />);
+    await waitForChanges();
+    // Whitespace-only ariaLabel must NOT promote the host to role=img — that
+    // would surface a nameless image to screen readers. `aria-hidden` wins.
+    expect(root?.getAttribute('aria-hidden')).toBe('true');
+    expect(root?.getAttribute('role')).toBeNull();
+  });
+
   it('announces with ariaLabel + role=img when provided', async () => {
     const { root, waitForChanges } = await render(
       <cor-logo name="mpay-logo-logomark-only" aria-label="Pay with MPay" />,
@@ -77,14 +86,50 @@ describe('cor-logo', () => {
     expect(shadowChildren?.[0].className).toBe('svg-logo');
   });
 
-  it('logs a warning and renders nothing when name is unknown', async () => {
+  it('unknown name → warns, no SVG, but host stays decorative (Issue 3)', async () => {
     const { root, waitForChanges } = await render(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       <cor-logo name={'totally-fake-logo' as any} />,
     );
     await waitForChanges();
     expect(warnSpy).toHaveBeenCalled();
-    expect(root?.shadowRoot?.children.length ?? 0).toBe(0);
+    expect(root?.shadowRoot?.querySelector('.svg-logo')).toBeNull();
+    // Host must still be aria-hidden so screen readers don't traverse it as a
+    // nameless generic element.
+    expect(root?.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('emits corLogoError with reason="unknown" when name is unknown (Issue 7)', async () => {
+    const errorSpy = vi.fn();
+    document.addEventListener('corLogoError', errorSpy);
+
+    await render(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      <cor-logo name={'nope' as any} />,
+    );
+
+    document.removeEventListener('corLogoError', errorSpy);
+    // Event fires during componentWillLoad on initial mount; listener attached
+    // on document captures bubbled custom events.
+    expect(errorSpy).toHaveBeenCalled();
+    const detail = (errorSpy.mock.calls[0][0] as CustomEvent).detail;
+    expect(detail).toEqual({ name: 'nope', reason: 'unknown' });
+  });
+
+  it('emits corLogoError with reason="fetch-failed" when the SVG cannot be loaded (Issue 7)', async () => {
+    fetchSpy.mockRestore();
+    fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('', { status: 404 }));
+
+    const errorSpy = vi.fn();
+    document.addEventListener('corLogoError', errorSpy);
+
+    const { waitForChanges } = await render(<cor-logo name="mpay-logo-logomark-only" />);
+    await waitForChanges();
+
+    document.removeEventListener('corLogoError', errorSpy);
+    expect(errorSpy).toHaveBeenCalled();
+    const detail = (errorSpy.mock.calls[0][0] as CustomEvent).detail;
+    expect(detail).toEqual({ name: 'mpay-logo-logomark-only', reason: 'fetch-failed' });
   });
 
   it('cache hit: fetch called only once for two instances with the same name', async () => {
@@ -105,6 +150,28 @@ describe('cor-logo', () => {
     await waitForChanges();
     expect(warnSpy).toHaveBeenCalled();
     expect(root?.shadowRoot?.querySelector('.svg-logo')?.children.length ?? 0).toBe(0);
+  });
+
+  it('cache eviction on failure: a transient 404 does not lock out future retries (Issue 1)', async () => {
+    // First call: 404 → null result → cache must evict
+    fetchSpy.mockRestore();
+    fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(new Response('', { status: 404 }));
+    const url = resolveLogoAssetUrl('mpay-logo-logomark-only');
+    const first = await fetchLogoSvg(url);
+    expect(first).toBeNull();
+    // Drain microtask so the cache-eviction `.then` runs.
+    await new Promise(r => setTimeout(r, 0));
+
+    // Second call: backend recovered → should re-fetch (cache was evicted).
+    fetchSpy.mockResolvedValueOnce(
+      new Response('<svg viewBox="0 0 40 40"></svg>', {
+        status: 200,
+        headers: { 'Content-Type': 'image/svg+xml' },
+      }),
+    );
+    const second = await fetchLogoSvg(url);
+    expect(second).not.toBeNull();
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
   });
 
   it('onNameChange: changing to a different name loads the new SVG', async () => {

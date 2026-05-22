@@ -1,18 +1,37 @@
 :host {
-  display: inline-block;
+  display: inline-flex;
   vertical-align: middle;
+
+  /* Default to the SVG's intrinsic dimensions (driven by its width/height
+     attributes from Figma). `max-content` opts the host out of a flex/grid
+     parent's `align-items: stretch`, so the logo never gets blown up to
+     fill an unrelated container. Consumers that constrain the host
+     explicitly (e.g. cor-service-button's `::slotted([slot='badge'])`
+     rule) override these values and the inner SVG scales to match. */
+  inline-size: max-content;
+  block-size: max-content;
 }
 
 .svg-logo {
-  display: inline-block;
+  display: inline-flex;
+  inline-size: 100%;
+  block-size: 100%;
+  min-inline-size: 0;
+  min-block-size: 0;
 }
 
 .svg-logo svg {
   display: block;
-}
-
-:host([name$='-logomark-only']) .svg-logo,
-:host([name$='-logomark-only']) .svg-logo svg {
+  /* Force the SVG to obey the host's actual size — `min-inline-size: 0`
+     overrides the default `auto` (= SVG intrinsic width), letting CSS
+     `inline-size: 100%` shrink the SVG below its `width` attribute when
+     the host is constrained by a consumer. */
   inline-size: 100%;
   block-size: 100%;
+  min-inline-size: 0;
+  min-block-size: 0;
+
+  /* Brand colors are part of the logo's identity — keep them in Windows
+     high-contrast / forced-colors mode instead of letting the OS recolor them. */
+  forced-color-adjust: none;
 }

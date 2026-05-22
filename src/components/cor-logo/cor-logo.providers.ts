@@ -18,6 +18,11 @@ export function fetchLogoSvg(url: string): Promise<Element | null> {
     .catch(() => null);
 
   svgCache.set(url, p);
+  // Evict null results so a transient failure (network blip, 404 during deploy)
+  // doesn't permanently lock subsequent consumers out of retrying.
+  p.then(result => {
+    if (result === null) svgCache.delete(url);
+  });
   return p;
 }
 

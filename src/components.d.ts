@@ -158,16 +158,20 @@ export namespace Components {
     }
     /**
      * Brand logo for Moldovan M-products.
-     * Each `name` resolves to a single self-contained SVG asset under
-     * `./assets/`. The component fetches and renders that SVG into shadow DOM;
-     * layout follows the SVG's intrinsic dimensions, except for `*-logomark-only`
-     * assets which receive a fixed footprint so consumers can reserve space
-     * before the async fetch resolves.
+     * Each `name` resolves to a single self-contained SVG asset under `./assets/`.
+     * The component fetches and renders that SVG into shadow DOM; the host's
+     * dimensions follow the SVG's intrinsic `width`/`height`/`viewBox` exactly as
+     * exported from Figma — so a future asset with non-standard dimensions
+     * "just works" without a CSS contract change.
+     * Consumers that need to reserve layout space before the async fetch
+     * resolves (e.g. above-the-fold marketing, dense grids) should wrap the
+     * logo in a sized container — `cor-service-button` does this for its
+     * `badge` slot (24 × 24).
      * @element cor-logo
      */
     interface CorLogo {
         /**
-          * Accessible label. When provided, the logo is announced; when omitted it is decorative (aria-hidden).
+          * Accessible label. When provided (and non-whitespace), the logo is announced as an image; when omitted or whitespace-only the logo is decorative (aria-hidden).
          */
         "ariaLabel"?: string;
         /**
@@ -262,6 +266,10 @@ export namespace Components {
         "variant": SpinnerVariant;
     }
 }
+export interface CorLogoCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorLogoElement;
+}
 declare global {
     /**
      * Button — interactive control.
@@ -306,16 +314,31 @@ declare global {
         prototype: HTMLCorIconElement;
         new (): HTMLCorIconElement;
     };
+    interface HTMLCorLogoElementEventMap {
+        "corLogoError": { name: string; reason: 'unknown' | 'fetch-failed' };
+    }
     /**
      * Brand logo for Moldovan M-products.
-     * Each `name` resolves to a single self-contained SVG asset under
-     * `./assets/`. The component fetches and renders that SVG into shadow DOM;
-     * layout follows the SVG's intrinsic dimensions, except for `*-logomark-only`
-     * assets which receive a fixed footprint so consumers can reserve space
-     * before the async fetch resolves.
+     * Each `name` resolves to a single self-contained SVG asset under `./assets/`.
+     * The component fetches and renders that SVG into shadow DOM; the host's
+     * dimensions follow the SVG's intrinsic `width`/`height`/`viewBox` exactly as
+     * exported from Figma — so a future asset with non-standard dimensions
+     * "just works" without a CSS contract change.
+     * Consumers that need to reserve layout space before the async fetch
+     * resolves (e.g. above-the-fold marketing, dense grids) should wrap the
+     * logo in a sized container — `cor-service-button` does this for its
+     * `badge` slot (24 × 24).
      * @element cor-logo
      */
     interface HTMLCorLogoElement extends Components.CorLogo, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorLogoElementEventMap>(type: K, listener: (this: HTMLCorLogoElement, ev: CorLogoCustomEvent<HTMLCorLogoElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorLogoElementEventMap>(type: K, listener: (this: HTMLCorLogoElement, ev: CorLogoCustomEvent<HTMLCorLogoElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
     var HTMLCorLogoElement: {
         prototype: HTMLCorLogoElement;
@@ -504,16 +527,20 @@ declare namespace LocalJSX {
     }
     /**
      * Brand logo for Moldovan M-products.
-     * Each `name` resolves to a single self-contained SVG asset under
-     * `./assets/`. The component fetches and renders that SVG into shadow DOM;
-     * layout follows the SVG's intrinsic dimensions, except for `*-logomark-only`
-     * assets which receive a fixed footprint so consumers can reserve space
-     * before the async fetch resolves.
+     * Each `name` resolves to a single self-contained SVG asset under `./assets/`.
+     * The component fetches and renders that SVG into shadow DOM; the host's
+     * dimensions follow the SVG's intrinsic `width`/`height`/`viewBox` exactly as
+     * exported from Figma — so a future asset with non-standard dimensions
+     * "just works" without a CSS contract change.
+     * Consumers that need to reserve layout space before the async fetch
+     * resolves (e.g. above-the-fold marketing, dense grids) should wrap the
+     * logo in a sized container — `cor-service-button` does this for its
+     * `badge` slot (24 × 24).
      * @element cor-logo
      */
     interface CorLogo {
         /**
-          * Accessible label. When provided, the logo is announced; when omitted it is decorative (aria-hidden).
+          * Accessible label. When provided (and non-whitespace), the logo is announced as an image; when omitted or whitespace-only the logo is decorative (aria-hidden).
          */
         "ariaLabel"?: string;
         /**
@@ -521,6 +548,10 @@ declare namespace LocalJSX {
           * @default 'mpay-logo-logomark-only'
          */
         "name"?: LogoName;
+        /**
+          * Emitted when an asset fails to load — either because the `name` is not in the manifest (`'unknown'`) or because the SVG fetch failed (`'fetch-failed'`). Lets consumers react in production where `console.warn` is invisible (telemetry, fallback UI, etc.).  Note: events emitted during `componentWillLoad` (initial mount) fire before consumer listeners can attach to a freshly-inserted host. Attach the listener BEFORE setting the `name` prop, or rely on the warning for mount-time failures.
+         */
+        "onCorLogoError"?: (event: CorLogoCustomEvent<{ name: string; reason: 'unknown' | 'fetch-failed' }>) => void;
     }
     /**
      * Service Button — interactive control for Moldovan M-products (mpay, mpass,
@@ -707,11 +738,15 @@ declare module "@stencil/core" {
             "cor-icon": LocalJSX.IntrinsicElements["cor-icon"] & JSXBase.HTMLAttributes<HTMLCorIconElement>;
             /**
              * Brand logo for Moldovan M-products.
-             * Each `name` resolves to a single self-contained SVG asset under
-             * `./assets/`. The component fetches and renders that SVG into shadow DOM;
-             * layout follows the SVG's intrinsic dimensions, except for `*-logomark-only`
-             * assets which receive a fixed footprint so consumers can reserve space
-             * before the async fetch resolves.
+             * Each `name` resolves to a single self-contained SVG asset under `./assets/`.
+             * The component fetches and renders that SVG into shadow DOM; the host's
+             * dimensions follow the SVG's intrinsic `width`/`height`/`viewBox` exactly as
+             * exported from Figma — so a future asset with non-standard dimensions
+             * "just works" without a CSS contract change.
+             * Consumers that need to reserve layout space before the async fetch
+             * resolves (e.g. above-the-fold marketing, dense grids) should wrap the
+             * logo in a sized container — `cor-service-button` does this for its
+             * `badge` slot (24 × 24).
              * @element cor-logo
              */
             "cor-logo": LocalJSX.IntrinsicElements["cor-logo"] & JSXBase.HTMLAttributes<HTMLCorLogoElement>;
