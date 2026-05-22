@@ -14,9 +14,9 @@ A specialised filled button with a logo badge embedded on the inline-start
 edge of the geometry. Fixed 48 px height (= minimum touch target) and
 asymmetric padding (16 start / 20 end) per Figma spec.
 
-Slot `badge` reserves a 24×24 box for a `<cor-logo variant="logomark-only">`
-(or any other element rendered at that size). The default slot carries the
-label text.
+Slot `badge` reserves a 24×24 box for a `<cor-logo>` rendering a
+`*-logo-logomark-only` asset (or any other element rendered at that size).
+The default slot carries the label text.
 
 ## Properties
 
@@ -37,10 +37,10 @@ label text.
 
 ## Slots
 
-| Slot      | Description                                                                                                   |
-| --------- | ------------------------------------------------------------------------------------------------------------- |
-|           | (default) The label text (e.g. "Plătește cu mpay").                                                           |
-| `"badge"` | The service logomark, sized 24×24. Typically `<cor-logo slot="badge" name="mpay" variant="logomark-only" />`. |
+| Slot      | Description                                                                                              |
+| --------- | -------------------------------------------------------------------------------------------------------- |
+|           | (default) The label text (e.g. "Plătește cu mpay").                                                      |
+| `"badge"` | The service logomark, sized 24×24. Typically `<cor-logo slot="badge" name="mpay-logo-logomark-only" />`. |
 
 
 ## Dependencies

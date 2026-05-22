@@ -4,24 +4,24 @@
   color: var(--logo-color-default);
 }
 
-.logomark {
+.svg-logo {
   display: inline-block;
 }
 
-.logomark svg {
+.svg-logo svg {
   display: block;
 }
 
-/* logomark-only has a fixed 40×40 footprint so consumers (e.g. service-button
+/* logomark-only assets have a fixed footprint so consumers (e.g. service-button
    badge slot) can reserve space before the async SVG fetch resolves. All other
    variants follow the SVG's intrinsic width/height. */
-:host([variant='logomark-only']) {
-  inline-size: 40px;
-  block-size: 40px;
+:host([name$='-logomark-only']) {
+  inline-size: var(--logo-size-logomark);
+  block-size: var(--logo-size-logomark);
 }
 
-:host([variant='logomark-only']) .logomark,
-:host([variant='logomark-only']) .logomark svg {
+:host([name$='-logomark-only']) .svg-logo,
+:host([name$='-logomark-only']) .svg-logo svg {
   inline-size: 100%;
   block-size: 100%;
 }

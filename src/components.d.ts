@@ -8,13 +8,13 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/cor-button/cor-button.types";
 import { ButtonGroupOrientation } from "./components/cor-button-group/cor-button-group.types";
 import { IconSize } from "./components/cor-icon/cor-icon.types";
-import { LogoName, LogoVariant } from "./components/cor-logo/cor-logo.types";
+import { LogoName } from "./components/cor-logo/cor-logo.types";
 import { ServiceButtonAppearance, ServiceButtonType } from "./components/cor-service-button/cor-service-button.types";
 import { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
 export { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/cor-button/cor-button.types";
 export { ButtonGroupOrientation } from "./components/cor-button-group/cor-button-group.types";
 export { IconSize } from "./components/cor-icon/cor-icon.types";
-export { LogoName, LogoVariant } from "./components/cor-logo/cor-logo.types";
+export { LogoName } from "./components/cor-logo/cor-logo.types";
 export { ServiceButtonAppearance, ServiceButtonType } from "./components/cor-service-button/cor-service-button.types";
 export { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
 export namespace Components {
@@ -158,10 +158,11 @@ export namespace Components {
     }
     /**
      * Brand logo for Moldovan M-products.
-     * Each `name × variant` combination resolves to a single self-contained SVG —
-     * logomark and any accompanying wordmark/description are baked as vector paths
-     * (no live text in the DOM). The component fetches and renders that SVG into
-     * shadow DOM; layout follows the SVG's intrinsic dimensions.
+     * Each `name` resolves to a single self-contained SVG asset under
+     * `./assets/`. The component fetches and renders that SVG into shadow DOM;
+     * layout follows the SVG's intrinsic dimensions, except for `*-logomark-only`
+     * assets which receive a fixed footprint so consumers can reserve space
+     * before the async fetch resolves.
      * @element cor-logo
      */
     interface CorLogo {
@@ -170,15 +171,10 @@ export namespace Components {
          */
         "ariaLabel"?: string;
         /**
-          * Service identifier. Determines which logo composition is rendered.
-          * @default 'mpay'
+          * Logo asset identifier — the bare filename (without `.svg`) of an asset in `./assets/`. Format: `{service}-logo-{layout}`. See `LOGO_NAMES` for the complete enumeration.
+          * @default 'mpay-logo-logomark-only'
          */
         "name": LogoName;
-        /**
-          * Layout variant. `logomark-only` renders just the badge; other variants pair the logomark with vectorised wordmark/description text.
-          * @default 'logomark-only'
-         */
-        "variant": LogoVariant;
     }
     /**
      * Service Button — interactive control for Moldovan M-products (mpay, mpass,
@@ -186,9 +182,9 @@ export namespace Components {
      * A specialised filled button with a logo badge embedded on the inline-start
      * edge of the geometry. Fixed 48 px height (= minimum touch target) and
      * asymmetric padding (16 start / 20 end) per Figma spec.
-     * Slot `badge` reserves a 24×24 box for a `<cor-logo variant="logomark-only">`
-     * (or any other element rendered at that size). The default slot carries the
-     * label text.
+     * Slot `badge` reserves a 24×24 box for a `<cor-logo>` rendering a
+     * `*-logo-logomark-only` asset (or any other element rendered at that size).
+     * The default slot carries the label text.
      * @element cor-service-button
      */
     interface CorServiceButton {
@@ -312,10 +308,11 @@ declare global {
     };
     /**
      * Brand logo for Moldovan M-products.
-     * Each `name × variant` combination resolves to a single self-contained SVG —
-     * logomark and any accompanying wordmark/description are baked as vector paths
-     * (no live text in the DOM). The component fetches and renders that SVG into
-     * shadow DOM; layout follows the SVG's intrinsic dimensions.
+     * Each `name` resolves to a single self-contained SVG asset under
+     * `./assets/`. The component fetches and renders that SVG into shadow DOM;
+     * layout follows the SVG's intrinsic dimensions, except for `*-logomark-only`
+     * assets which receive a fixed footprint so consumers can reserve space
+     * before the async fetch resolves.
      * @element cor-logo
      */
     interface HTMLCorLogoElement extends Components.CorLogo, HTMLStencilElement {
@@ -330,9 +327,9 @@ declare global {
      * A specialised filled button with a logo badge embedded on the inline-start
      * edge of the geometry. Fixed 48 px height (= minimum touch target) and
      * asymmetric padding (16 start / 20 end) per Figma spec.
-     * Slot `badge` reserves a 24×24 box for a `<cor-logo variant="logomark-only">`
-     * (or any other element rendered at that size). The default slot carries the
-     * label text.
+     * Slot `badge` reserves a 24×24 box for a `<cor-logo>` rendering a
+     * `*-logo-logomark-only` asset (or any other element rendered at that size).
+     * The default slot carries the label text.
      * @element cor-service-button
      */
     interface HTMLCorServiceButtonElement extends Components.CorServiceButton, HTMLStencilElement {
@@ -507,10 +504,11 @@ declare namespace LocalJSX {
     }
     /**
      * Brand logo for Moldovan M-products.
-     * Each `name × variant` combination resolves to a single self-contained SVG —
-     * logomark and any accompanying wordmark/description are baked as vector paths
-     * (no live text in the DOM). The component fetches and renders that SVG into
-     * shadow DOM; layout follows the SVG's intrinsic dimensions.
+     * Each `name` resolves to a single self-contained SVG asset under
+     * `./assets/`. The component fetches and renders that SVG into shadow DOM;
+     * layout follows the SVG's intrinsic dimensions, except for `*-logomark-only`
+     * assets which receive a fixed footprint so consumers can reserve space
+     * before the async fetch resolves.
      * @element cor-logo
      */
     interface CorLogo {
@@ -519,15 +517,10 @@ declare namespace LocalJSX {
          */
         "ariaLabel"?: string;
         /**
-          * Service identifier. Determines which logo composition is rendered.
-          * @default 'mpay'
+          * Logo asset identifier — the bare filename (without `.svg`) of an asset in `./assets/`. Format: `{service}-logo-{layout}`. See `LOGO_NAMES` for the complete enumeration.
+          * @default 'mpay-logo-logomark-only'
          */
         "name"?: LogoName;
-        /**
-          * Layout variant. `logomark-only` renders just the badge; other variants pair the logomark with vectorised wordmark/description text.
-          * @default 'logomark-only'
-         */
-        "variant"?: LogoVariant;
     }
     /**
      * Service Button — interactive control for Moldovan M-products (mpay, mpass,
@@ -535,9 +528,9 @@ declare namespace LocalJSX {
      * A specialised filled button with a logo badge embedded on the inline-start
      * edge of the geometry. Fixed 48 px height (= minimum touch target) and
      * asymmetric padding (16 start / 20 end) per Figma spec.
-     * Slot `badge` reserves a 24×24 box for a `<cor-logo variant="logomark-only">`
-     * (or any other element rendered at that size). The default slot carries the
-     * label text.
+     * Slot `badge` reserves a 24×24 box for a `<cor-logo>` rendering a
+     * `*-logo-logomark-only` asset (or any other element rendered at that size).
+     * The default slot carries the label text.
      * @element cor-service-button
      */
     interface CorServiceButton {
@@ -650,7 +643,6 @@ declare namespace LocalJSX {
     }
     interface CorLogoAttributes {
         "name": LogoName;
-        "variant": LogoVariant;
         "ariaLabel": string;
     }
     interface CorServiceButtonAttributes {
@@ -715,10 +707,11 @@ declare module "@stencil/core" {
             "cor-icon": LocalJSX.IntrinsicElements["cor-icon"] & JSXBase.HTMLAttributes<HTMLCorIconElement>;
             /**
              * Brand logo for Moldovan M-products.
-             * Each `name × variant` combination resolves to a single self-contained SVG —
-             * logomark and any accompanying wordmark/description are baked as vector paths
-             * (no live text in the DOM). The component fetches and renders that SVG into
-             * shadow DOM; layout follows the SVG's intrinsic dimensions.
+             * Each `name` resolves to a single self-contained SVG asset under
+             * `./assets/`. The component fetches and renders that SVG into shadow DOM;
+             * layout follows the SVG's intrinsic dimensions, except for `*-logomark-only`
+             * assets which receive a fixed footprint so consumers can reserve space
+             * before the async fetch resolves.
              * @element cor-logo
              */
             "cor-logo": LocalJSX.IntrinsicElements["cor-logo"] & JSXBase.HTMLAttributes<HTMLCorLogoElement>;
@@ -728,9 +721,9 @@ declare module "@stencil/core" {
              * A specialised filled button with a logo badge embedded on the inline-start
              * edge of the geometry. Fixed 48 px height (= minimum touch target) and
              * asymmetric padding (16 start / 20 end) per Figma spec.
-             * Slot `badge` reserves a 24×24 box for a `<cor-logo variant="logomark-only">`
-             * (or any other element rendered at that size). The default slot carries the
-             * label text.
+             * Slot `badge` reserves a 24×24 box for a `<cor-logo>` rendering a
+             * `*-logo-logomark-only` asset (or any other element rendered at that size).
+             * The default slot carries the label text.
              * @element cor-service-button
              */
             "cor-service-button": LocalJSX.IntrinsicElements["cor-service-button"] & JSXBase.HTMLAttributes<HTMLCorServiceButtonElement>;

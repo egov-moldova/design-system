@@ -1,11 +1,25 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
-import { LOGO_NAMES, type LogoName } from '../cor-logo/cor-logo.types';
 import { SERVICE_BUTTON_APPEARANCES, type ServiceButtonAppearance } from './cor-service-button.types';
+
+const SERVICES = [
+  'mcloud',
+  'mconnect',
+  'mdelivery',
+  'mdocs',
+  'mlearn',
+  'mlog',
+  'mnotify',
+  'mpass',
+  'mpay',
+  'mpower',
+  'msign',
+] as const;
+type Service = (typeof SERVICES)[number];
 
 type ServiceButtonArgs = {
   appearance: ServiceButtonAppearance;
-  service: LogoName;
+  service: Service;
   label: string;
   disabled: boolean;
   loading: boolean;
@@ -14,7 +28,7 @@ type ServiceButtonArgs = {
 };
 
 /** Default verbose labels per Figma — service name + verb. */
-const DEFAULT_LABELS: Record<LogoName, string> = {
+const DEFAULT_LABELS: Record<Service, string> = {
   mcloud: 'Stochează cu mcloud',
   mconnect: 'Conectează prin mconnect',
   mdelivery: 'Livrează prin mdelivery',
@@ -36,7 +50,7 @@ const renderButton = (args: ServiceButtonArgs) => /*html*/ `
     ${args.fullWidth ? 'full-width' : ''}
     ${args.href ? `href="${args.href}"` : ''}
   >
-    <cor-logo slot="badge" name="${args.service}" variant="logomark-only"></cor-logo>
+    <cor-logo slot="badge" name="${args.service}-logo-logomark-only"></cor-logo>
     ${args.label}
   </cor-service-button>
 `;
@@ -59,15 +73,15 @@ const docsSourceDefault = (args: ServiceButtonArgs) => {
     .join(' ');
   const open = attrs ? `<cor-service-button ${attrs}>` : '<cor-service-button>';
   return `${open}
-  <cor-logo slot="badge" name="${args.service}" variant="logomark-only"></cor-logo>
+  <cor-logo slot="badge" name="${args.service}-logo-logomark-only"></cor-logo>
   ${args.label}
 </cor-service-button>`;
 };
 
 const docsSourceAllServices = SERVICE_BUTTON_APPEARANCES.flatMap(a =>
-  LOGO_NAMES.map(
+  SERVICES.map(
     n => /*html*/ `<cor-service-button appearance="${a}">
-  <cor-logo slot="badge" name="${n}" variant="logomark-only"></cor-logo>
+  <cor-logo slot="badge" name="${n}-logo-logomark-only"></cor-logo>
   ${DEFAULT_LABELS[n]}
 </cor-service-button>`,
   ),
@@ -77,47 +91,47 @@ const docsSourceStates = /*html*/ `<!-- default · disabled · loading — for e
 ${SERVICE_BUTTON_APPEARANCES.map(
   a => `<!-- ${a} -->
 <cor-service-button appearance="${a}">
-  <cor-logo slot="badge" name="mpay" variant="logomark-only"></cor-logo>
+  <cor-logo slot="badge" name="mpay-logo-logomark-only"></cor-logo>
   Plătește cu mpay
 </cor-service-button>
 
 <cor-service-button appearance="${a}" disabled>
-  <cor-logo slot="badge" name="mpay" variant="logomark-only"></cor-logo>
+  <cor-logo slot="badge" name="mpay-logo-logomark-only"></cor-logo>
   Plătește cu mpay
 </cor-service-button>
 
 <cor-service-button appearance="${a}" loading>
-  <cor-logo slot="badge" name="mpay" variant="logomark-only"></cor-logo>
+  <cor-logo slot="badge" name="mpay-logo-logomark-only"></cor-logo>
   Plătește cu mpay
 </cor-service-button>`,
 ).join('\n\n')}`;
 
 const docsSourceFullWidth = /*html*/ `<!-- Add the \`full-width\` attribute to expand the button to its container. -->
 <cor-service-button full-width appearance="primary">
-  <cor-logo slot="badge" name="mpass" variant="logomark-only"></cor-logo>
+  <cor-logo slot="badge" name="mpass-logo-logomark-only"></cor-logo>
   Autentifică-te prin mpass
 </cor-service-button>
 
 <cor-service-button full-width appearance="neutral">
-  <cor-logo slot="badge" name="msign" variant="logomark-only"></cor-logo>
+  <cor-logo slot="badge" name="msign-logo-logomark-only"></cor-logo>
   Semnează prin msign
 </cor-service-button>`;
 
 const docsSourceLinkMode = /*html*/ `<!-- When \`href\` is set, the button renders as <a> instead of <button>. -->
 <cor-service-button href="https://mpay.gov.md" target="_blank" rel="noopener noreferrer">
-  <cor-logo slot="badge" name="mpay" variant="logomark-only"></cor-logo>
+  <cor-logo slot="badge" name="mpay-logo-logomark-only"></cor-logo>
   Plătește cu mpay
 </cor-service-button>`;
 
 const docsSourceCustomLabel = /*html*/ `<!-- The default slot accepts any inline text — override the verbose Figma label
      with shorter copy when the surrounding context already implies intent. -->
 <cor-service-button appearance="primary">
-  <cor-logo slot="badge" name="mpay" variant="logomark-only"></cor-logo>
+  <cor-logo slot="badge" name="mpay-logo-logomark-only"></cor-logo>
   Continuă
 </cor-service-button>
 
 <cor-service-button appearance="neutral">
-  <cor-logo slot="badge" name="mpay" variant="logomark-only"></cor-logo>
+  <cor-logo slot="badge" name="mpay-logo-logomark-only"></cor-logo>
   Pay
 </cor-service-button>`;
 
@@ -133,7 +147,7 @@ const meta: Meta<ServiceButtonArgs> = {
     },
     service: {
       control: 'select',
-      options: [...LOGO_NAMES],
+      options: [...SERVICES],
       description: 'Service identifier — drives the slotted logomark + default label text.',
       table: { defaultValue: { summary: 'mpay' } },
     },
@@ -189,13 +203,13 @@ export const AllServices: Story = {
     <div style="display: grid; grid-template-columns: max-content repeat(${SERVICE_BUTTON_APPEARANCES.length}, max-content); gap: var(--spacing-12) var(--spacing-24); align-items: center;">
       <span></span>
       ${SERVICE_BUTTON_APPEARANCES.map(a => /*html*/ `<span style="${cellLabelStyle}; text-align: center;">${a}</span>`).join('')}
-      ${LOGO_NAMES.map(
+      ${SERVICES.map(
         n => /*html*/ `
           <span style="${cellLabelStyle}">${n}</span>
           ${SERVICE_BUTTON_APPEARANCES.map(
             a => /*html*/ `
               <cor-service-button appearance="${a}">
-                <cor-logo slot="badge" name="${n}" variant="logomark-only"></cor-logo>
+                <cor-logo slot="badge" name="${n}-logo-logomark-only"></cor-logo>
                 ${DEFAULT_LABELS[n]}
               </cor-service-button>
             `,
@@ -229,7 +243,7 @@ export const States: Story = {
               .map(
                 s => /*html*/ `
                   <cor-service-button appearance="${a}" ${s.attrs}>
-                    <cor-logo slot="badge" name="mpay" variant="logomark-only"></cor-logo>
+                    <cor-logo slot="badge" name="mpay-logo-logomark-only"></cor-logo>
                     Plătește cu mpay
                   </cor-service-button>
                 `,
@@ -254,11 +268,11 @@ export const FullWidth: Story = {
   render: () => /*html*/ `
     <div style="${stateCellStyle} max-width: 320px;">
       <cor-service-button full-width appearance="primary">
-        <cor-logo slot="badge" name="mpass" variant="logomark-only"></cor-logo>
+        <cor-logo slot="badge" name="mpass-logo-logomark-only"></cor-logo>
         Autentifică-te prin mpass
       </cor-service-button>
       <cor-service-button full-width appearance="neutral">
-        <cor-logo slot="badge" name="msign" variant="logomark-only"></cor-logo>
+        <cor-logo slot="badge" name="msign-logo-logomark-only"></cor-logo>
         Semnează prin msign
       </cor-service-button>
     </div>
@@ -273,7 +287,7 @@ export const LinkMode: Story = {
   },
   render: () => /*html*/ `
     <cor-service-button href="https://mpay.gov.md" target="_blank" rel="noopener noreferrer">
-      <cor-logo slot="badge" name="mpay" variant="logomark-only"></cor-logo>
+      <cor-logo slot="badge" name="mpay-logo-logomark-only"></cor-logo>
       Plătește cu mpay
     </cor-service-button>
   `,
@@ -288,11 +302,11 @@ export const CustomLabel: Story = {
   render: () => /*html*/ `
     <div style="${stateCellStyle}">
       <cor-service-button appearance="primary">
-        <cor-logo slot="badge" name="mpay" variant="logomark-only"></cor-logo>
+        <cor-logo slot="badge" name="mpay-logo-logomark-only"></cor-logo>
         Continuă
       </cor-service-button>
       <cor-service-button appearance="neutral">
-        <cor-logo slot="badge" name="mpay" variant="logomark-only"></cor-logo>
+        <cor-logo slot="badge" name="mpay-logo-logomark-only"></cor-logo>
         Pay
       </cor-service-button>
     </div>

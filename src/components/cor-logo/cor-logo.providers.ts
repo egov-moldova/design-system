@@ -1,10 +1,10 @@
 import { getAssetPath } from '@stencil/core';
 
 import { sanitizeSvgToElement } from '../../utils/svg-sanitizer';
-import type { LogoName, LogoVariant } from './cor-logo.types';
+import type { LogoName } from './cor-logo.types';
 
-export function resolveLogoAssetUrl(name: LogoName, variant: LogoVariant): string {
-  return getAssetPath(`./assets/${name}-logo-${variant}.svg`);
+export function resolveLogoAssetUrl(name: LogoName): string {
+  return getAssetPath(`./assets/${name}.svg`);
 }
 
 const svgCache = new Map<string, Promise<Element | null>>();

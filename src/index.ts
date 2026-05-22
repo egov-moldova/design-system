@@ -18,8 +18,8 @@ export { BUTTON_GROUP_ORIENTATIONS } from './components/cor-button-group/cor-but
 export type { ButtonGroupOrientation } from './components/cor-button-group/cor-button-group.types';
 
 export { CorLogo } from './components/cor-logo/cor-logo';
-export { LOGO_NAMES, LOGO_VARIANTS } from './components/cor-logo/cor-logo.types';
-export type { LogoName, LogoVariant } from './components/cor-logo/cor-logo.types';
+export { LOGO_NAMES } from './components/cor-logo/cor-logo.types';
+export type { LogoName } from './components/cor-logo/cor-logo.types';
 
 export { CorServiceButton } from './components/cor-service-button/cor-service-button';
 export {
