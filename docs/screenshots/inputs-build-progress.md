@@ -17,7 +17,9 @@ and updates PR https://github.com/corlab-org/age-design/pull/5.
 | 6 | `cor-search-input-circular` | `b33c35c72dbe621375862c300c0238c4a4eacc78` | ✅ done | `1a3c4e6` | `docs/screenshots/cor-search-input-circular/` |
 | 7 | `cor-numeric-input` | `3029a32fe1e2ca1eb6e2bc68571f1965bded9ef6` | ✅ done | `2b76568` | `docs/screenshots/cor-numeric-input/` |
 | 8 | `cor-phone-input` | `f2ba725de62bbecd5bd84870a1e6b7bb1eb5adfe` | ✅ done | `70df409` | `docs/screenshots/cor-phone-input/` |
-| 9 | `cor-input-chip` | `3168d84c4883c991b5643e4feab97de2cfe8fb7e` | ⏳ pending | — | — |
+| 9 | `cor-input-chip` | `3168d84c4883c991b5643e4feab97de2cfe8fb7e` | ✅ done | (this commit) | `docs/screenshots/cor-input-chip/` |
+
+**Input family complete — 9/9 components shipped.**
 
 ## Failure / restart log
 
@@ -48,6 +50,88 @@ Future agent runs: if a Figma node-id for either component_set is rediscovered,
 log it here so pixel-perfect comparison against the original can be re-checked.
 
 ## Last updated
+
+2026-05-23 — `cor-input-chip` shipped (multi-value chip-input molecule with
+form association). LAST input variant — input family is now complete (9/9).
+Pattern B: hosts an internal `<input type="text">` for the next chip plus
+inline pill rendering for confirmed values, all inside a single
+shadow-DOM container that mirrors the `cor-input` visual contract (1px
+border, brand-blue focus ring, label, helper / error, sizes md/lg, states
+default / hover / focus / filled / disabled / mandatory / destructive).
+Chips kept INTERNAL to `cor-input-chip` (not as a separate `cor-chip`
+sibling) — no standalone chip component was visible in the Figma file
+scope reachable via MCP, and the rule-of-two (PRINCIPLES.md §B) hasn't
+fired yet (one consumer). Sibling extraction can come later via
+`/refactor-component` if a second consumer emerges. Each chip is a soft
+gray pill (`color.background.base.secondary`) with the value label
+truncated by `text-overflow: ellipsis` at 100% of the container width,
+followed by a circular × remove button. Romanian aria-labels:
+`Elimină <chip-text>`. Behaviour: Enter or any character from
+`separators` confirms the chip; Backspace on empty input removes the
+last chip; ArrowLeft on empty input focuses the last chip's × button;
+ArrowLeft / ArrowRight nav between chips; Enter / Space / Delete /
+Backspace on a focused × removes that chip; Escape clears the partial
+input. Paste auto-splits by `separators` + newlines and adds each
+non-empty token (longer pastes are bulk-added, single-token paste falls
+through to the browser). Validation surface: optional
+`validate-pattern` regex (each chip must match), `maxChips`
+(disables the input when reached), and duplicate detection (rejects
+exact-match values). Every rejection emits `corError` with code
+`pattern` / `duplicate` / `max` plus a Romanian human-readable message
+(`"Valoarea ‘X’ este deja adăugată."`). Form value is a JSON-encoded
+string array (`["a@b.md","c@d.md"]`) via `ElementInternals.setFormValue`
+when `name` is set. 86 new `--input-chip-*` CSS variables across field
+/ container / control / label / assistive / chip / chip.remove / focus
+namespaces. 38 spec tests cover defaults, prop reflection +
+warn-and-fallback, shadow structure (label, helper / error assistive,
+live region), chip rendering (count, remove-button aria-labels, disabled
+state), container ARIA wiring (`role="group"`, `aria-labelledby`,
+`aria-required`, `aria-invalid`), keyboard add (Enter, comma separator,
+custom separator), trim whitespace, duplicate detection (rejects, emits
+`corError`), max-chips enforcement (rejects, disables input), pattern
+validation (rejects invalid, accepts valid), remove paths (Backspace on
+empty, × click, Enter on chip), Escape clears partial, disabled state
+ignores keyboard. Stories: Default / WithChips / AllVariants / AllSizes
+/ States (default-empty / filled / mandatory / disabled / disabled-with-
+chips / destructive) / WithEmailValidation / WithMaxChips (active +
+limit-reached) / WithSeparators (`,;` / space) / DuplicateRejection /
+WithHelperText / WithError / Wrapping (7 chips across 3 lines) /
+EdgeCases (long-chip truncate, long-label truncate, long-helper
+two-line truncate). 0 console errors across every story; 0 contrast
+failures across light + dark (`yarn audit:contrast` summary 21 pass / 0
+fail). Live keyboard contract verified in browser: Enter adds a chip,
+clears the input, and emits `corChipAdd` + `corChange`; × click removes
+and emits `corChipRemove` + `corChange`.
+
+### 2026-05-23 — `cor-input-chip` Figma node resolution
+
+Same MCP file scope as the eight earlier inputs — `doJ7tDY0PlQ0PqMgbpFVIC`
+only exposes 9 top-level pages (Getting Started, Badge, Button, Checkbox,
+Link, Messaging, Pagination, Progress Indicator, Separator) and no
+`input-chip` page was reachable through the available `get_metadata`
+traversal. The advertised `mcp__figma__search_design_system` MCP tool is
+NOT in this environment's allow-list (only `get_design_context`,
+`get_screenshot`, `get_metadata`, `get_variable_defs` were exposed).
+Probed the known sibling page nodeId `403:21765` ("Input: Date") via
+`get_screenshot` (PNG rendered successfully — file scope hasn't shifted)
+plus `get_metadata` (returned date-input subtree, no cross-link to
+input-chip). Derivation followed the established graceful-fallback
+pattern from the eight earlier inputs: cor-input provides the canonical
+container / focus-ring / label / helper / error visual contract;
+cor-file-input provides the multi-value list-inside-container precedent
+plus the `role="status"` live-region pattern. Chip pill styling
+(soft-gray background `color.background.base.secondary`,
+borderRadius.6, medium-weight label) follows the `cor-button` neutral
+variant's tinting cues (read via `git show origin/feat/cor-button:...`
+without switching branches per the prompt constraint). Romanian copy
+follows PRODUCT.md voice (verbs over nouns, second-person formal
+implied). Validated against `DESIGN.md`, `.impeccable/design.json`, and
+the on-disk `cor-input` / `cor-file-input` / `cor-file-item` /
+`cor-select-input` / `cor-button` implementations. If the
+component_set's node-id becomes reachable later, re-run pixel-perfect
+comparison and log diff results here.
+
+---
 
 2026-05-23 — `cor-phone-input` shipped (phone-number-entry molecule with
 country prefix + format mask, form-associated). Pattern B: renders its own
