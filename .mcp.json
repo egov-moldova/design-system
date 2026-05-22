@@ -7,7 +7,16 @@
     },
     "playwright": {
       "command": "npx",
-      "args": ["@playwright/mcp@latest", "--output-dir", ".playwright-mcp", "--headless"]
+      "args": [
+        "-y",
+        "@playwright/mcp@0.0.75",
+        "--output-dir", ".playwright-mcp",
+        "--headless",
+        "--isolated",
+        "--no-sandbox",
+        "--viewport-size", "1280x800",
+        "--image-responses", "omit"
+      ]
     },
     "chrome-devtools": {
       "command": "npx",

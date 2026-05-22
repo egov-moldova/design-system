@@ -7,8 +7,10 @@
  * agent sessions (Playwright MCP servers, agentation, context7, image-compare).
  *
  * Run after heavy parallel-agent sessions when RAM/CPU stays high:
- *   node scripts/cleanup-agents.mjs
- *   node scripts/cleanup-agents.mjs --dry-run
+ *   node scripts/cleanup-agents.mjs                # full sweep, verbose
+ *   node scripts/cleanup-agents.mjs --dry-run      # preview only
+ *   node scripts/cleanup-agents.mjs --orphans-only # only kill procs whose parent is dead (safe mid-session)
+ *   node scripts/cleanup-agents.mjs --quiet        # suppress output unless something was killed
  *
  * Equivalent to the /cleanup-agents Claude slash command, but standalone —
  * no AI roundtrip, faster, and scriptable from package.json.
@@ -27,12 +29,19 @@ const colors = {
 };
 
 const DRY_RUN = process.argv.includes('--dry-run');
+const ORPHANS_ONLY = process.argv.includes('--orphans-only');
+const QUIET = process.argv.includes('--quiet');
 
 // Patterns identifying processes that belong to MCP / Playwright agent infra.
 const PLAYWRIGHT_CHROME_PATTERN = /remote-debugging-port|--no-sandbox.*--disable-background|playwright/;
 const MCP_NODE_PATTERN = /agentation-mcp|context7-mcp|mcp-image-compare|@playwright[/\\]mcp|@upstash[/\\]context7/;
 
 function log(msg, color = colors.reset) {
+  if (QUIET) return;
+  console.log(`${color}${msg}${colors.reset}`);
+}
+
+function logAlways(msg, color = colors.reset) {
   console.log(`${color}${msg}${colors.reset}`);
 }
 
@@ -53,7 +62,7 @@ function snapshotProcesses() {
   const ps = [
     'Get-CimInstance Win32_Process',
     "-Filter \"Name='chrome.exe' OR Name='node.exe'\"",
-    '| Select-Object ProcessId, Name, CommandLine, WorkingSetSize',
+    '| Select-Object ProcessId, ParentProcessId, Name, CommandLine, WorkingSetSize',
     '| ConvertTo-Json -Compress',
   ].join(' ');
 
@@ -93,6 +102,12 @@ function killPids(pids) {
   }
 }
 
+function isOrphan(proc, livePidSet) {
+  const ppid = Number(proc.ParentProcessId);
+  if (!ppid) return true;
+  return !livePidSet.has(ppid);
+}
+
 function main() {
   const before = snapshotProcesses();
   const beforeTotals = totals(before);
@@ -100,10 +115,19 @@ function main() {
   log(`Before: Node ${formatGB(beforeTotals.node)} GB | Chrome ${formatGB(beforeTotals.chrome)} GB`, colors.gray);
   log('');
 
-  const playwrightChrome = before.filter(
+  let playwrightChrome = before.filter(
     p => p.Name === 'chrome.exe' && p.CommandLine && PLAYWRIGHT_CHROME_PATTERN.test(p.CommandLine),
   );
-  const mcpNodes = before.filter(p => p.Name === 'node.exe' && p.CommandLine && MCP_NODE_PATTERN.test(p.CommandLine));
+  let mcpNodes = before.filter(p => p.Name === 'node.exe' && p.CommandLine && MCP_NODE_PATTERN.test(p.CommandLine));
+
+  if (ORPHANS_ONLY) {
+    // A process is an "orphan" if its parent PID no longer exists in the live
+    // process list (parent crashed / exited without reaping its children).
+    // Safe to run mid-session: won't touch agents whose parent (Claude Code) is still alive.
+    const livePids = new Set(before.map(p => Number(p.ProcessId)));
+    playwrightChrome = playwrightChrome.filter(p => isOrphan(p, livePids));
+    mcpNodes = mcpNodes.filter(p => isOrphan(p, livePids));
+  }
 
   if (DRY_RUN) {
     log(`[dry-run] Would kill ${playwrightChrome.length} Playwright Chrome process(es):`, colors.yellow);
@@ -112,6 +136,8 @@ function main() {
     for (const p of mcpNodes) log(`  PID ${p.ProcessId}  ${(p.CommandLine || '').slice(0, 120)}`, colors.gray);
     return;
   }
+
+  const totalKilled = playwrightChrome.length + mcpNodes.length;
 
   if (playwrightChrome.length) {
     killPids(playwrightChrome.map(p => p.ProcessId));
@@ -126,6 +152,18 @@ function main() {
   } else {
     log('No orphaned MCP node processes found.', colors.gray);
   }
+
+  // In quiet mode, surface a single line if anything was actually killed — so
+  // the hook leaves a breadcrumb in the transcript when it does real work.
+  if (QUIET && totalKilled > 0) {
+    logAlways(
+      `cleanup-agents: reaped ${totalKilled} orphan(s) (${playwrightChrome.length} chrome, ${mcpNodes.length} node)`,
+      colors.gray,
+    );
+    return;
+  }
+
+  if (QUIET) return;
 
   // Give the kernel a moment to release the memory before re-snapshotting.
   const start = Date.now();
