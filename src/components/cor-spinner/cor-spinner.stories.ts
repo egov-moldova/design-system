@@ -117,7 +117,7 @@ export const AllVariants: Story = {
 };
 
 export const AllVariantsXSizes: Story = {
-  name: 'All Variants + Sizes',
+  name: 'All Variants × Sizes',
   render: () => /*html*/ `
     <div style="display: grid; grid-template-columns: 80px repeat(${SIZES.length}, 1fr); gap: var(--spacing-16); padding: var(--spacing-24); place-items: center;">
       <div></div>
