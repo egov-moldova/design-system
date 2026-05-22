@@ -16,3 +16,17 @@ export type { ButtonSize, ButtonVariant, ButtonShape, ButtonType } from './compo
 export { CorButtonGroup } from './components/cor-button-group/cor-button-group';
 export { BUTTON_GROUP_ORIENTATIONS } from './components/cor-button-group/cor-button-group.types';
 export type { ButtonGroupOrientation } from './components/cor-button-group/cor-button-group.types';
+
+export { CorLogo } from './components/cor-logo/cor-logo';
+export { LOGO_NAMES, LOGO_VARIANTS } from './components/cor-logo/cor-logo.types';
+export type { LogoName, LogoVariant } from './components/cor-logo/cor-logo.types';
+
+export { CorServiceButton } from './components/cor-service-button/cor-service-button';
+export {
+  SERVICE_BUTTON_APPEARANCES,
+  SERVICE_BUTTON_TYPES,
+} from './components/cor-service-button/cor-service-button.types';
+export type {
+  ServiceButtonAppearance,
+  ServiceButtonType,
+} from './components/cor-service-button/cor-service-button.types';

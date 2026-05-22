@@ -8,10 +8,14 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/cor-button/cor-button.types";
 import { ButtonGroupOrientation } from "./components/cor-button-group/cor-button-group.types";
 import { IconSize } from "./components/cor-icon/cor-icon.types";
+import { LogoName, LogoVariant } from "./components/cor-logo/cor-logo.types";
+import { ServiceButtonAppearance, ServiceButtonType } from "./components/cor-service-button/cor-service-button.types";
 import { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
 export { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/cor-button/cor-button.types";
 export { ButtonGroupOrientation } from "./components/cor-button-group/cor-button-group.types";
 export { IconSize } from "./components/cor-icon/cor-icon.types";
+export { LogoName, LogoVariant } from "./components/cor-logo/cor-logo.types";
+export { ServiceButtonAppearance, ServiceButtonType } from "./components/cor-service-button/cor-service-button.types";
 export { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
 export namespace Components {
     /**
@@ -153,6 +157,91 @@ export namespace Components {
         "size": IconSize;
     }
     /**
+     * Brand logo for Moldovan M-products (mpay, mpass, msign, mpower, mdelivery).
+     * Renders the service logomark plus optional accompanying text (service name,
+     * verb, or two-line description) based on the `variant` prop. Variant `logomark-only`
+     * displays just the badge — used inside `cor-service-button` and other compact contexts.
+     * @element cor-logo
+     */
+    interface CorLogo {
+        /**
+          * Accessible label. When provided, the logo is announced; when omitted it is decorative (aria-hidden).
+         */
+        "ariaLabel"?: string;
+        /**
+          * Service identifier. Determines which logomark + text content to render.
+          * @default 'mpay'
+         */
+        "name": LogoName;
+        /**
+          * Layout variant. `logomark-only` renders just the badge; other variants pair the logomark with text composed inline.
+          * @default 'logomark-only'
+         */
+        "variant": LogoVariant;
+    }
+    /**
+     * Service Button — interactive control for Moldovan M-products (mpay, mpass,
+     * msign, mpower, mdelivery).
+     * A specialised filled button with a logo badge embedded on the inline-start
+     * edge of the geometry. Fixed 48 px height (= minimum touch target) and
+     * asymmetric padding (16 start / 20 end) per Figma spec.
+     * Slot `badge` reserves a 24×24 box for a `<cor-logo variant="logomark-only">`
+     * (or any other element rendered at that size). The default slot carries the
+     * label text.
+     * @element cor-service-button
+     */
+    interface CorServiceButton {
+        /**
+          * Visual treatment. - `primary` — solid brand background, white label - `neutral` — light surface background, dark label
+          * @default 'primary'
+         */
+        "appearance": ServiceButtonAppearance;
+        /**
+          * Disables interactivity.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Makes the button expand to fill the inline-size of its container.
+          * @default false
+         */
+        "fullWidth": boolean;
+        /**
+          * If set, the button renders as `<a href="…">` and behaves as a link. `type`, `name`, and `value` are ignored in this mode.
+         */
+        "href"?: string;
+        /**
+          * Accessible name override. When omitted, the visible default-slot text is used as the accessible name (the standard pattern).
+         */
+        "label"?: string;
+        /**
+          * Renders a centred spinner and blocks interactivity while preserving the accessible name. Sets `aria-busy` on the internal control.
+          * @default false
+         */
+        "loading": boolean;
+        /**
+          * Form-control `name`. Used when `type="submit"` and a value is submitted.
+         */
+        "name"?: string;
+        /**
+          * `rel` for the anchor when `href` is set.
+         */
+        "rel"?: string;
+        /**
+          * `target` for the anchor when `href` is set.
+         */
+        "target"?: string;
+        /**
+          * Native button `type` attribute. Ignored when `href` is set.
+          * @default 'button'
+         */
+        "type": ServiceButtonType;
+        /**
+          * Form-control `value` submitted alongside `name`.
+         */
+        "value"?: string;
+    }
+    /**
      * Spinner — animated circular loading indicator.
      * Pattern B (atom-visual): renders a CSS-only rotating arc.
      * No slots, no events, no interactivity.
@@ -221,6 +310,36 @@ declare global {
         new (): HTMLCorIconElement;
     };
     /**
+     * Brand logo for Moldovan M-products (mpay, mpass, msign, mpower, mdelivery).
+     * Renders the service logomark plus optional accompanying text (service name,
+     * verb, or two-line description) based on the `variant` prop. Variant `logomark-only`
+     * displays just the badge — used inside `cor-service-button` and other compact contexts.
+     * @element cor-logo
+     */
+    interface HTMLCorLogoElement extends Components.CorLogo, HTMLStencilElement {
+    }
+    var HTMLCorLogoElement: {
+        prototype: HTMLCorLogoElement;
+        new (): HTMLCorLogoElement;
+    };
+    /**
+     * Service Button — interactive control for Moldovan M-products (mpay, mpass,
+     * msign, mpower, mdelivery).
+     * A specialised filled button with a logo badge embedded on the inline-start
+     * edge of the geometry. Fixed 48 px height (= minimum touch target) and
+     * asymmetric padding (16 start / 20 end) per Figma spec.
+     * Slot `badge` reserves a 24×24 box for a `<cor-logo variant="logomark-only">`
+     * (or any other element rendered at that size). The default slot carries the
+     * label text.
+     * @element cor-service-button
+     */
+    interface HTMLCorServiceButtonElement extends Components.CorServiceButton, HTMLStencilElement {
+    }
+    var HTMLCorServiceButtonElement: {
+        prototype: HTMLCorServiceButtonElement;
+        new (): HTMLCorServiceButtonElement;
+    };
+    /**
      * Spinner — animated circular loading indicator.
      * Pattern B (atom-visual): renders a CSS-only rotating arc.
      * No slots, no events, no interactivity.
@@ -236,6 +355,8 @@ declare global {
         "cor-button": HTMLCorButtonElement;
         "cor-button-group": HTMLCorButtonGroupElement;
         "cor-icon": HTMLCorIconElement;
+        "cor-logo": HTMLCorLogoElement;
+        "cor-service-button": HTMLCorServiceButtonElement;
         "cor-spinner": HTMLCorSpinnerElement;
     }
 }
@@ -383,6 +504,95 @@ declare namespace LocalJSX {
         "size"?: IconSize;
     }
     /**
+     * Brand logo for Moldovan M-products (mpay, mpass, msign, mpower, mdelivery).
+     * Renders the service logomark plus optional accompanying text (service name,
+     * verb, or two-line description) based on the `variant` prop. Variant `logomark-only`
+     * displays just the badge — used inside `cor-service-button` and other compact contexts.
+     * @element cor-logo
+     */
+    interface CorLogo {
+        /**
+          * Accessible label. When provided, the logo is announced; when omitted it is decorative (aria-hidden).
+         */
+        "ariaLabel"?: string;
+        /**
+          * Service identifier. Determines which logomark + text content to render.
+          * @default 'mpay'
+         */
+        "name"?: LogoName;
+        /**
+          * Layout variant. `logomark-only` renders just the badge; other variants pair the logomark with text composed inline.
+          * @default 'logomark-only'
+         */
+        "variant"?: LogoVariant;
+    }
+    /**
+     * Service Button — interactive control for Moldovan M-products (mpay, mpass,
+     * msign, mpower, mdelivery).
+     * A specialised filled button with a logo badge embedded on the inline-start
+     * edge of the geometry. Fixed 48 px height (= minimum touch target) and
+     * asymmetric padding (16 start / 20 end) per Figma spec.
+     * Slot `badge` reserves a 24×24 box for a `<cor-logo variant="logomark-only">`
+     * (or any other element rendered at that size). The default slot carries the
+     * label text.
+     * @element cor-service-button
+     */
+    interface CorServiceButton {
+        /**
+          * Visual treatment. - `primary` — solid brand background, white label - `neutral` — light surface background, dark label
+          * @default 'primary'
+         */
+        "appearance"?: ServiceButtonAppearance;
+        /**
+          * Disables interactivity.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Makes the button expand to fill the inline-size of its container.
+          * @default false
+         */
+        "fullWidth"?: boolean;
+        /**
+          * If set, the button renders as `<a href="…">` and behaves as a link. `type`, `name`, and `value` are ignored in this mode.
+         */
+        "href"?: string;
+        /**
+          * Accessible name override. When omitted, the visible default-slot text is used as the accessible name (the standard pattern).
+         */
+        "label"?: string;
+        /**
+          * Renders a centred spinner and blocks interactivity while preserving the accessible name. Sets `aria-busy` on the internal control.
+          * @default false
+         */
+        "loading"?: boolean;
+        /**
+          * Form-control `name`. Used when `type="submit"` and a value is submitted.
+         */
+        "name"?: string;
+        /**
+          * `rel` for the anchor when `href` is set.
+         */
+        "rel"?: string;
+        /**
+          * `target` for the anchor when `href` is set.
+         */
+        "target"?: string;
+        /**
+          * Native button `type` attribute. Ignored when `href` is set.
+          * @default 'button'
+         */
+        "type"?: ServiceButtonType;
+        /**
+          * Form-control `value` submitted alongside `name`.
+         */
+        "value"?: string;
+    }
+    /**
      * Spinner — animated circular loading indicator.
      * Pattern B (atom-visual): renders a CSS-only rotating arc.
      * No slots, no events, no interactivity.
@@ -435,6 +645,24 @@ declare namespace LocalJSX {
         "disabled": boolean;
         "ariaLabel": string;
     }
+    interface CorLogoAttributes {
+        "name": LogoName;
+        "variant": LogoVariant;
+        "ariaLabel": string;
+    }
+    interface CorServiceButtonAttributes {
+        "appearance": ServiceButtonAppearance;
+        "type": ServiceButtonType;
+        "disabled": boolean;
+        "loading": boolean;
+        "fullWidth": boolean;
+        "href": string;
+        "target": string;
+        "rel": string;
+        "name": string;
+        "value": string;
+        "label": string;
+    }
     interface CorSpinnerAttributes {
         "size": SpinnerSize;
         "variant": SpinnerVariant;
@@ -445,6 +673,8 @@ declare namespace LocalJSX {
         "cor-button": Omit<CorButton, keyof CorButtonAttributes> & { [K in keyof CorButton & keyof CorButtonAttributes]?: CorButton[K] } & { [K in keyof CorButton & keyof CorButtonAttributes as `attr:${K}`]?: CorButtonAttributes[K] } & { [K in keyof CorButton & keyof CorButtonAttributes as `prop:${K}`]?: CorButton[K] };
         "cor-button-group": Omit<CorButtonGroup, keyof CorButtonGroupAttributes> & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes]?: CorButtonGroup[K] } & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes as `attr:${K}`]?: CorButtonGroupAttributes[K] } & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes as `prop:${K}`]?: CorButtonGroup[K] };
         "cor-icon": Omit<CorIcon, keyof CorIconAttributes> & { [K in keyof CorIcon & keyof CorIconAttributes]?: CorIcon[K] } & { [K in keyof CorIcon & keyof CorIconAttributes as `attr:${K}`]?: CorIconAttributes[K] } & { [K in keyof CorIcon & keyof CorIconAttributes as `prop:${K}`]?: CorIcon[K] };
+        "cor-logo": Omit<CorLogo, keyof CorLogoAttributes> & { [K in keyof CorLogo & keyof CorLogoAttributes]?: CorLogo[K] } & { [K in keyof CorLogo & keyof CorLogoAttributes as `attr:${K}`]?: CorLogoAttributes[K] } & { [K in keyof CorLogo & keyof CorLogoAttributes as `prop:${K}`]?: CorLogo[K] };
+        "cor-service-button": Omit<CorServiceButton, keyof CorServiceButtonAttributes> & { [K in keyof CorServiceButton & keyof CorServiceButtonAttributes]?: CorServiceButton[K] } & { [K in keyof CorServiceButton & keyof CorServiceButtonAttributes as `attr:${K}`]?: CorServiceButtonAttributes[K] } & { [K in keyof CorServiceButton & keyof CorServiceButtonAttributes as `prop:${K}`]?: CorServiceButton[K] };
         "cor-spinner": Omit<CorSpinner, keyof CorSpinnerAttributes> & { [K in keyof CorSpinner & keyof CorSpinnerAttributes]?: CorSpinner[K] } & { [K in keyof CorSpinner & keyof CorSpinnerAttributes as `attr:${K}`]?: CorSpinnerAttributes[K] } & { [K in keyof CorSpinner & keyof CorSpinnerAttributes as `prop:${K}`]?: CorSpinner[K] };
     }
 }
@@ -480,6 +710,26 @@ declare module "@stencil/core" {
              * @element cor-icon
              */
             "cor-icon": LocalJSX.IntrinsicElements["cor-icon"] & JSXBase.HTMLAttributes<HTMLCorIconElement>;
+            /**
+             * Brand logo for Moldovan M-products (mpay, mpass, msign, mpower, mdelivery).
+             * Renders the service logomark plus optional accompanying text (service name,
+             * verb, or two-line description) based on the `variant` prop. Variant `logomark-only`
+             * displays just the badge — used inside `cor-service-button` and other compact contexts.
+             * @element cor-logo
+             */
+            "cor-logo": LocalJSX.IntrinsicElements["cor-logo"] & JSXBase.HTMLAttributes<HTMLCorLogoElement>;
+            /**
+             * Service Button — interactive control for Moldovan M-products (mpay, mpass,
+             * msign, mpower, mdelivery).
+             * A specialised filled button with a logo badge embedded on the inline-start
+             * edge of the geometry. Fixed 48 px height (= minimum touch target) and
+             * asymmetric padding (16 start / 20 end) per Figma spec.
+             * Slot `badge` reserves a 24×24 box for a `<cor-logo variant="logomark-only">`
+             * (or any other element rendered at that size). The default slot carries the
+             * label text.
+             * @element cor-service-button
+             */
+            "cor-service-button": LocalJSX.IntrinsicElements["cor-service-button"] & JSXBase.HTMLAttributes<HTMLCorServiceButtonElement>;
             /**
              * Spinner — animated circular loading indicator.
              * Pattern B (atom-visual): renders a CSS-only rotating arc.

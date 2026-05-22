@@ -1,0 +1,7 @@
+{
+  "logo": {
+    "color": {
+      "default": { "$value": "{color.icon.base.default}", "$type": "color" }
+    }
+  }
+}

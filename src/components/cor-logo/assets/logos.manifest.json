@@ -1,0 +1,27 @@
+{
+  "mpay": {
+    "name": "mpay",
+    "verb": "plătește",
+    "description": ["serviciul guvernamental", "de plăți electronice"]
+  },
+  "mpass": {
+    "name": "mpass",
+    "verb": "loghează-te",
+    "description": ["serviciul de autentificare", "și control al accesului"]
+  },
+  "msign": {
+    "name": "msign",
+    "verb": "semnează",
+    "description": ["serviciul guvernamental", "de semnătură electronică"]
+  },
+  "mpower": {
+    "name": "mpower",
+    "verb": "împuternicește",
+    "description": ["registrul împuternicirilor de reprezentare", "în bază semnăturilor electronica"]
+  },
+  "mdelivery": {
+    "name": "mdelivery",
+    "verb": "solicită și primește",
+    "description": ["serviciul guvernamental", "de livrare"]
+  }
+}

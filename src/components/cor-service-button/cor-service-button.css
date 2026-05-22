@@ -1,0 +1,158 @@
+:host {
+  --_height: var(--service-button-container-height);
+  --_min-width: var(--service-button-container-min-width);
+  --_padding-inline-start: var(--service-button-container-padding-inline-start);
+  --_padding-inline-end: var(--service-button-container-padding-inline-end);
+  --_gap: var(--service-button-container-gap);
+  --_border-radius: var(--service-button-container-border-radius);
+  --_badge-size: var(--service-button-badge-size);
+
+  --_bg: var(--service-button-primary-background-default);
+  --_bg-hover: var(--service-button-primary-background-hover);
+  --_bg-active: var(--service-button-primary-background-active);
+  --_label: var(--service-button-primary-label);
+
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+/* ---------- Appearance: neutral ---------- */
+
+:host([appearance='neutral']) {
+  --_bg: var(--service-button-neutral-background-default);
+  --_bg-hover: var(--service-button-neutral-background-hover);
+  --_bg-active: var(--service-button-neutral-background-active);
+  --_label: var(--service-button-neutral-label);
+}
+
+/* ---------- Internal control ---------- */
+
+.control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--_gap);
+
+  block-size: var(--_height);
+  min-inline-size: var(--_min-width);
+  padding-block: 0;
+  padding-inline-start: var(--_padding-inline-start);
+  padding-inline-end: var(--_padding-inline-end);
+
+  box-sizing: border-box;
+  border: none;
+  border-radius: var(--_border-radius);
+  background-color: var(--_bg);
+  color: var(--_label);
+
+  font-family: var(--service-button-label-font-family);
+  font-size: var(--service-button-label-font-size);
+  line-height: var(--service-button-label-line-height);
+  font-weight: var(--service-button-label-font-weight);
+  text-align: center;
+  text-decoration: none;
+
+  cursor: pointer;
+  user-select: none;
+  appearance: none;
+  -webkit-appearance: none;
+
+  transition:
+    background-color var(--service-button-container-transition-duration)
+      var(--service-button-container-transition-timing-function),
+    box-shadow var(--service-button-container-transition-duration)
+      var(--service-button-container-transition-timing-function);
+}
+
+/* ---------- Badge slot (logo container) ---------- */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--_badge-size);
+  block-size: var(--_badge-size);
+}
+
+::slotted([slot='badge']) {
+  display: block;
+  inline-size: var(--_badge-size) !important;
+  block-size: var(--_badge-size) !important;
+}
+
+/* ---------- Label ---------- */
+
+.label {
+  display: inline-flex;
+  min-inline-size: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.label:empty {
+  display: none;
+}
+
+/* ---------- Hover / Active (only when interactive) ---------- */
+
+:host(:not([disabled]):not([loading]):not(.is-fieldset-disabled)) .control:hover {
+  background-color: var(--_bg-hover);
+}
+
+:host(:not([disabled]):not([loading]):not(.is-fieldset-disabled)) .control:active {
+  background-color: var(--_bg-active);
+}
+
+/* ---------- Focus ring — dual halo, same across both appearances ---------- */
+
+.control:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
+    0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
+}
+
+/* ---------- Full-width ---------- */
+
+:host([full-width]) {
+  display: flex;
+  inline-size: 100%;
+}
+
+:host([full-width]) .control {
+  inline-size: 100%;
+}
+
+/* ---------- Disabled ---------- */
+
+:host([disabled]) .control,
+:host(.is-fieldset-disabled) .control {
+  background-color: var(--service-button-disabled-background);
+  color: var(--service-button-disabled-label);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ---------- Loading — hide badge + label, show centred spinner over default bg ---------- */
+
+:host([loading]) .control {
+  cursor: progress;
+  pointer-events: none;
+}
+
+.spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .control {
+    transition: none;
+  }
+}
