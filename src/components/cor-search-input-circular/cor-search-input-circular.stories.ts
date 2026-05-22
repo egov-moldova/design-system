@@ -1,0 +1,420 @@
+import type { Meta, StoryObj } from '@storybook/web-components-vite';
+
+import { SEARCH_INPUT_CIRCULAR_SIZES, SEARCH_INPUT_CIRCULAR_VARIANTS } from './cor-search-input-circular.types';
+import type { SearchInputCircularSize, SearchInputCircularVariant } from './cor-search-input-circular.types';
+
+type SearchArgs = {
+  variant: SearchInputCircularVariant;
+  size: SearchInputCircularSize;
+  label: string;
+  placeholder: string;
+  value: string;
+  helperText: string;
+  errorText: string;
+  required: boolean;
+  disabled: boolean;
+  readonly: boolean;
+  invalid: boolean;
+  clearable: boolean;
+};
+
+const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary);';
+
+const renderSearch = (args: SearchArgs) => /*html*/ `
+  <cor-search-input-circular
+    variant="${args.variant}"
+    size="${args.size}"
+    label="${args.label}"
+    placeholder="${args.placeholder}"
+    value="${args.value}"
+    helper-text="${args.helperText}"
+    error-text="${args.errorText}"
+    ${args.required ? 'required' : ''}
+    ${args.disabled ? 'disabled' : ''}
+    ${args.readonly ? 'readonly' : ''}
+    ${args.invalid ? 'invalid' : ''}
+    ${args.clearable ? '' : 'clearable="false"'}
+  ></cor-search-input-circular>
+`;
+
+const docsSourceDefault = (args: SearchArgs) => {
+  const attrs = [
+    args.variant !== 'default' ? `variant="${args.variant}"` : '',
+    args.size !== 'md' ? `size="${args.size}"` : '',
+    args.label ? `label="${args.label}"` : '',
+    args.placeholder ? `placeholder="${args.placeholder}"` : '',
+    args.value ? `value="${args.value}"` : '',
+    args.helperText ? `helper-text="${args.helperText}"` : '',
+    args.errorText ? `error-text="${args.errorText}"` : '',
+    args.required ? 'required' : '',
+    args.disabled ? 'disabled' : '',
+    args.readonly ? 'readonly' : '',
+    args.invalid ? 'invalid' : '',
+    args.clearable ? '' : 'clearable="false"',
+  ]
+    .filter(Boolean)
+    .join(' ');
+  return `<cor-search-input-circular ${attrs}></cor-search-input-circular>`;
+};
+
+const meta: Meta<SearchArgs> = {
+  title: 'Atoms/Search Input/Circular',
+  component: 'cor-search-input-circular',
+  argTypes: {
+    variant: {
+      control: 'select',
+      options: SEARCH_INPUT_CIRCULAR_VARIANTS,
+      description: 'Color treatment. `destructive` is forced when `invalid` is set.',
+      table: { defaultValue: { summary: 'default' } },
+    },
+    size: {
+      control: 'select',
+      options: SEARCH_INPUT_CIRCULAR_SIZES,
+      description: 'Visual size rung.',
+      table: { defaultValue: { summary: 'md' } },
+    },
+    label: { control: 'text', description: 'Plain-text label.' },
+    placeholder: { control: 'text' },
+    value: { control: 'text' },
+    helperText: { control: 'text' },
+    errorText: { control: 'text' },
+    required: { control: 'boolean' },
+    disabled: { control: 'boolean' },
+    readonly: { control: 'boolean' },
+    invalid: { control: 'boolean' },
+    clearable: { control: 'boolean' },
+  },
+};
+
+export default meta;
+
+type Story = StoryObj<SearchArgs>;
+
+export const Default: Story = {
+  render: renderSearch,
+  args: {
+    variant: 'default',
+    size: 'lg',
+    label: '',
+    placeholder: 'Caută…',
+    value: '',
+    helperText: '',
+    errorText: '',
+    required: false,
+    disabled: false,
+    readonly: false,
+    invalid: false,
+    clearable: true,
+  },
+  parameters: {
+    docs: {
+      source: {
+        type: 'dynamic',
+        transform: (_code: string, { args }: { args: SearchArgs }) => docsSourceDefault(args),
+      },
+    },
+  },
+};
+
+const wrap = (children: string) => /*html*/ `
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 320px)); gap: var(--spacing-32) var(--spacing-48); padding: var(--spacing-24); max-width: 760px;">
+    ${children}
+  </div>
+`;
+
+const cell = (caption: string, body: string) => /*html*/ `
+  <div style="display: flex; flex-direction: column; gap: var(--spacing-8);">
+    <span style="${cellLabelStyle}">${caption}</span>
+    ${body}
+  </div>
+`;
+
+export const AllSizes: Story = {
+  name: 'All Sizes',
+  render: () =>
+    wrap(
+      SEARCH_INPUT_CIRCULAR_SIZES.map(size =>
+        cell(
+          size,
+          /*html*/ `<cor-search-input-circular size="${size}" placeholder="Caută…"></cor-search-input-circular>`,
+        ),
+      ).join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: SEARCH_INPUT_CIRCULAR_SIZES.map(
+          s => `<cor-search-input-circular size="${s}" placeholder="Caută…"></cor-search-input-circular>`,
+        ).join('\n'),
+      },
+    },
+  },
+};
+
+export const States: Story = {
+  name: 'States',
+  render: () =>
+    wrap(
+      [
+        cell(
+          'default',
+          /*html*/ `<cor-search-input-circular size="lg" placeholder="Caută…"></cor-search-input-circular>`,
+        ),
+        cell(
+          'filled (clear button visible)',
+          /*html*/ `<cor-search-input-circular size="lg" value="permis de conducere"></cor-search-input-circular>`,
+        ),
+        cell(
+          'disabled',
+          /*html*/ `<cor-search-input-circular size="lg" placeholder="Caută…" disabled></cor-search-input-circular>`,
+        ),
+        cell(
+          'readonly (filled)',
+          /*html*/ `<cor-search-input-circular size="lg" value="permis de conducere" readonly></cor-search-input-circular>`,
+        ),
+        cell(
+          'destructive (invalid)',
+          /*html*/ `<cor-search-input-circular size="lg" variant="destructive" placeholder="Caută…"></cor-search-input-circular>`,
+        ),
+        cell(
+          'required + labeled',
+          /*html*/ `<cor-search-input-circular size="lg" label="Căutare" placeholder="Caută…" required></cor-search-input-circular>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          '<cor-search-input-circular size="lg" placeholder="Caută…"></cor-search-input-circular>',
+          '<cor-search-input-circular size="lg" value="permis de conducere"></cor-search-input-circular>',
+          '<cor-search-input-circular size="lg" placeholder="Caută…" disabled></cor-search-input-circular>',
+          '<cor-search-input-circular size="lg" value="permis de conducere" readonly></cor-search-input-circular>',
+          '<cor-search-input-circular size="lg" variant="destructive" placeholder="Caută…"></cor-search-input-circular>',
+          '<cor-search-input-circular size="lg" label="Căutare" placeholder="Caută…" required></cor-search-input-circular>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const WithValue: Story = {
+  name: 'With Value',
+  render: () =>
+    wrap(
+      [
+        cell(
+          'md',
+          /*html*/ `<cor-search-input-circular size="md" value="cazier judiciar"></cor-search-input-circular>`,
+        ),
+        cell(
+          'lg',
+          /*html*/ `<cor-search-input-circular size="lg" value="cazier judiciar"></cor-search-input-circular>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          '<cor-search-input-circular size="md" value="cazier judiciar"></cor-search-input-circular>',
+          '<cor-search-input-circular size="lg" value="cazier judiciar"></cor-search-input-circular>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const WithCustomIcon: Story = {
+  name: 'With Custom Icon',
+  render: () =>
+    wrap(
+      [
+        cell(
+          'icon-start slot override',
+          /*html*/ `<cor-search-input-circular size="lg" placeholder="Filtrează…">
+            <cor-icon slot="icon-start" name="filter" size="24" color="currentColor"></cor-icon>
+          </cor-search-input-circular>`,
+        ),
+        cell(
+          'iconName prop override',
+          /*html*/ `<cor-search-input-circular size="lg" icon-name="document" placeholder="Caută în documente"></cor-search-input-circular>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          '<cor-search-input-circular size="lg" placeholder="Filtrează…"><cor-icon slot="icon-start" name="filter" size="24" color="currentColor"></cor-icon></cor-search-input-circular>',
+          '<cor-search-input-circular size="lg" icon-name="document" placeholder="Caută în documente"></cor-search-input-circular>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const WithoutClearButton: Story = {
+  name: 'Without Clear Button',
+  render: () =>
+    wrap(
+      [
+        cell(
+          'clearable=false (persistent filter)',
+          /*html*/ `<cor-search-input-circular size="lg" value="serviciu activ" clearable="false"></cor-search-input-circular>`,
+        ),
+        cell(
+          'default (clear visible)',
+          /*html*/ `<cor-search-input-circular size="lg" value="serviciu activ"></cor-search-input-circular>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          '<cor-search-input-circular size="lg" value="serviciu activ" clearable="false"></cor-search-input-circular>',
+          '<cor-search-input-circular size="lg" value="serviciu activ"></cor-search-input-circular>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const WithHelperText: Story = {
+  name: 'With Helper Text',
+  render: () =>
+    wrap(
+      [
+        cell(
+          'default',
+          /*html*/ `<cor-search-input-circular size="lg" label="Căutare" placeholder="Caută…" helper-text="Caută după nume, MIDR sau IDNP."></cor-search-input-circular>`,
+        ),
+        cell(
+          'mandatory + helper',
+          /*html*/ `<cor-search-input-circular size="lg" label="Căutare" placeholder="Caută…" helper-text="Câmp obligatoriu." required></cor-search-input-circular>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          '<cor-search-input-circular size="lg" label="Căutare" placeholder="Caută…" helper-text="Caută după nume, MIDR sau IDNP."></cor-search-input-circular>',
+          '<cor-search-input-circular size="lg" label="Căutare" placeholder="Caută…" helper-text="Câmp obligatoriu." required></cor-search-input-circular>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const WithError: Story = {
+  name: 'With Error',
+  render: () =>
+    wrap(
+      [
+        cell(
+          'invalid + error message',
+          /*html*/ `<cor-search-input-circular size="lg" label="Căutare" value="!!" invalid error-text="Foloseste doar caractere alfanumerice."></cor-search-input-circular>`,
+        ),
+        cell(
+          'explicit destructive',
+          /*html*/ `<cor-search-input-circular size="lg" variant="destructive" label="Căutare" placeholder="Caută…" error-text="Termen invalid." invalid></cor-search-input-circular>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          '<cor-search-input-circular size="lg" label="Căutare" value="!!" invalid error-text="Foloseste doar caractere alfanumerice."></cor-search-input-circular>',
+          '<cor-search-input-circular size="lg" variant="destructive" label="Căutare" placeholder="Caută…" error-text="Termen invalid." invalid></cor-search-input-circular>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const ShapeComparison: Story = {
+  name: 'Shape Comparison',
+  render: () =>
+    wrap(
+      [
+        cell(
+          'circular (pill silhouette)',
+          /*html*/ `<cor-search-input-circular size="lg" placeholder="Caută…"></cor-search-input-circular>`,
+        ),
+        cell(
+          'rectangular (rounded corners)',
+          /*html*/ `<cor-search-input-rectangular size="lg" placeholder="Caută…"></cor-search-input-rectangular>`,
+        ),
+        cell(
+          'circular — filled',
+          /*html*/ `<cor-search-input-circular size="lg" value="permis de conducere"></cor-search-input-circular>`,
+        ),
+        cell(
+          'rectangular — filled',
+          /*html*/ `<cor-search-input-rectangular size="lg" value="permis de conducere"></cor-search-input-rectangular>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'Side-by-side comparison with the rectangular sibling — the silhouette is the only visual difference (fully rounded ends + +4px padding-inline to balance the curve).',
+      },
+      source: {
+        code: [
+          '<cor-search-input-circular size="lg" placeholder="Caută…"></cor-search-input-circular>',
+          '<cor-search-input-rectangular size="lg" placeholder="Caută…"></cor-search-input-rectangular>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const EdgeCases: Story = {
+  name: 'Edge Cases',
+  render: () =>
+    wrap(
+      [
+        cell(
+          'long value truncation (in pill)',
+          /*html*/ `<cor-search-input-circular size="lg" value="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services"></cor-search-input-circular>`,
+        ),
+        cell(
+          'long helper truncation (two lines)',
+          /*html*/ `<cor-search-input-circular size="lg" label="Căutare" placeholder="Caută…" helper-text="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services that respect their time."></cor-search-input-circular>`,
+        ),
+        cell(
+          'no label (toolbar usage)',
+          /*html*/ `<cor-search-input-circular size="md" aria-label="Caută" placeholder="Caută…"></cor-search-input-circular>`,
+        ),
+        cell(
+          'mid-typing (with value, md)',
+          /*html*/ `<cor-search-input-circular size="md" value="permis"></cor-search-input-circular>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          '<cor-search-input-circular size="lg" value="…long value…"></cor-search-input-circular>',
+          '<cor-search-input-circular size="lg" label="Căutare" helper-text="…long helper…"></cor-search-input-circular>',
+          '<cor-search-input-circular size="md" aria-label="Caută" placeholder="Caută…"></cor-search-input-circular>',
+        ].join('\n'),
+      },
+    },
+  },
+};
