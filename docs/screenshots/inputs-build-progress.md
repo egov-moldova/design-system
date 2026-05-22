@@ -13,7 +13,7 @@ and updates PR https://github.com/corlab-org/age-design/pull/5.
 | 2 | `cor-select-input` | `24351877baeb81b99cceea90d885b3455191ac62` | ✅ done | `41171ea` | `docs/screenshots/cor-select-input/` |
 | 3 | `cor-date-input` | `4449e61e554888eb4357b4f2e6e16dacf738fda3` | ✅ done | `f503fec` | `docs/screenshots/cor-date-input/` |
 | 4 | `cor-file-input` + `cor-file-item` | `2e8a0a8cc37b76d197dfdd8af2a4cac5ce8aa884` / `f7e6d1eed8dd15497025e1a9cad9d355403a68b8` | ✅ done | `299c6a2` | `docs/screenshots/cor-file-input/` |
-| 5 | `cor-search-input-rectangular` | `a27b4efaed053f6cd4a57411a032d7391174c425` | ⏳ pending | — | — |
+| 5 | `cor-search-input-rectangular` | `a27b4efaed053f6cd4a57411a032d7391174c425` | ✅ done | `d45d8e0` | `docs/screenshots/cor-search-input-rectangular/` |
 | 6 | `cor-search-input-circular` | `b33c35c72dbe621375862c300c0238c4a4eacc78` | ⏳ pending | — | — |
 | 7 | `cor-numeric-input` | `3029a32fe1e2ca1eb6e2bc68571f1965bded9ef6` | ⏳ pending | — | — |
 | 8 | `cor-phone-input` | `f2ba725de62bbecd5bd84870a1e6b7bb1eb5adfe` | ⏳ pending | — | — |
@@ -48,6 +48,38 @@ Future agent runs: if a Figma node-id for either component_set is rediscovered,
 log it here so pixel-perfect comparison against the original can be re-checked.
 
 ## Last updated
+
+2026-05-23 — `cor-search-input-rectangular` shipped (rectangular search-field
+atom, form-associated). Pattern B: renders its own `<input type="search">`
+inside shadow DOM. Reuses the input-family visual primitives (border, focus
+ring, label, helper / error, sizes md/lg, states default/hover/focus/filled
+/disabled/readonly/invalid) and adds a `--search-input-rectangular-icon-end-clear-*`
+namespace for the rounded trailing × clear button. Default leading icon is
+the local `search` glyph (Mdi-magnify equivalent); `iconName` prop overrides
+it. Keyboard contract: Tab → input, Enter → `corSearch` event, Escape →
+clears value + emits `corClear` + `corChange` + `corInput`. Mouse Tab path:
+the clear `×` is `tabindex=-1` so consumers reach it via Escape, not Tab.
+Native `<input type="search">` gives the searchbox role for free; `::-webkit-
+search-cancel-button` is suppressed so the visual contract is engine-stable.
+Romanian default placeholder `Caută…` and clear button `aria-label="Șterge"`.
+42 spec tests cover render, prop reflection + warn-and-fallback, clear-button
+visibility (value/clearable/disabled/readonly), keyboard contract (Enter/
+Escape), mouse click clear, ARIA wiring, slots. 0 contrast failures across
+light + dark, 0 console errors.
+
+### 2026-05-23 — `cor-search-input-rectangular` Figma node resolution
+
+Same MCP file scope as the earlier inputs — `doJ7tDY0PlQ0PqMgbpFVIC` only
+exposes 9 top-level pages and no `search-input-rectangular` node was
+reachable through the available `get_metadata` traversal. Derivation
+followed the established pattern (see prior failure log entry): cor-input
+provides the canonical input-family visual contract, and the affordance
+specifics (leading search icon, trailing × clear) match
+the documented design-system search pattern (`mdi:magnify` /
+`mdi:close-circle` semantics, render-as-`role="searchbox"`). Validated
+against `DESIGN.md`, `.impeccable/design.json`, and the cor-input on-disk
+implementation. If the component_set's node-id becomes reachable later,
+re-run pixel-perfect comparison and log diff results here.
 
 2026-05-22 — `cor-file-input` + `cor-file-item` shipped (drag-and-drop file
 selection molecule + per-file row atom). Sibling components, both
