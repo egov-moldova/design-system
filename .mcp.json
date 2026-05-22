@@ -10,12 +10,15 @@
       "args": [
         "-y",
         "@playwright/mcp@0.0.75",
-        "--output-dir", ".playwright-mcp",
+        "--output-dir",
+        ".playwright-mcp",
         "--headless",
         "--isolated",
         "--no-sandbox",
-        "--viewport-size", "1280x800",
-        "--image-responses", "omit"
+        "--viewport-size",
+        "1280x800",
+        "--image-responses",
+        "omit"
       ]
     },
     "chrome-devtools": {
