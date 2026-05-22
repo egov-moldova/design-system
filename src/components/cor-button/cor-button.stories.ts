@@ -182,6 +182,27 @@ const docsSourceAllAppearances = BUTTON_APPEARANCES.map(
   a => /*html*/ `<cor-button appearance="${a}">${a}</cor-button>`,
 ).join('\n');
 
+const docsSourceAppearancesXVariants = BUTTON_VARIANTS.map(variant =>
+  BUTTON_APPEARANCES.map(
+    appearance => /*html*/ `<cor-button variant="${variant}" appearance="${appearance}">${variant}</cor-button>`,
+  ).join('\n'),
+).join('\n\n');
+
+const docsSourceAppearancesXSizes = BUTTON_SIZES.map(size =>
+  BUTTON_APPEARANCES.map(
+    appearance =>
+      /*html*/ `<cor-button variant="primary" appearance="${appearance}" size="${size}">Button</cor-button>`,
+  ).join('\n'),
+).join('\n\n');
+
+const docsSourceInvalidComboFallback = /*html*/ `<!-- Outlined and Text only support primary / strict / destructive.
+     Pairing them with secondary or neutral renders the primary visual
+     and emits a console.warn in dev (open DevTools to verify). -->
+<cor-button variant="secondary" appearance="outlined">outlined + secondary</cor-button>
+<cor-button variant="neutral" appearance="outlined">outlined + neutral</cor-button>
+<cor-button variant="secondary" appearance="text">text + secondary</cor-button>
+<cor-button variant="neutral" appearance="text">text + neutral</cor-button>`;
+
 // Variants × Appearances grid — appearance on columns (filled / outlined / text),
 // variants on rows. Surfaces unsupported cells (secondary/neutral × outlined/text)
 // which fall back to primary visuals.
@@ -702,6 +723,7 @@ export const AppearancesXVariants: Story = {
         story:
           'Outlined and Text only support primary / strict / destructive. The cells marked "fallback" render the primary visuals when an unsupported variant is set, and emit a console.warn in dev.',
       },
+      source: { code: docsSourceAppearancesXVariants },
     },
   },
 };
@@ -714,6 +736,7 @@ export const AppearancesXSizes: Story = {
   render: renderAppearancesXSizes,
   parameters: {
     controls: { disable: true },
+    docs: { source: { code: docsSourceAppearancesXSizes } },
   },
 };
 
@@ -724,6 +747,7 @@ export const InvalidComboFallback: Story = {
   render: renderInvalidComboFallback,
   parameters: {
     controls: { disable: true },
+    docs: { source: { code: docsSourceInvalidComboFallback } },
   },
 };
 
