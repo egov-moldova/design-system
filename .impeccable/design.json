@@ -8,7 +8,18 @@
         "role": "primary",
         "displayName": "Institutional Blue",
         "canonical": "#0058d2",
-        "tonalRamp": ["#00295a", "#00357e", "#0046a8", "#0058d2", "#3379db", "#669be4", "#99bced", "#ccdef6", "#d6e5f8", "#e8f0fb"]
+        "tonalRamp": [
+          "#00295a",
+          "#00357e",
+          "#0046a8",
+          "#0058d2",
+          "#3379db",
+          "#669be4",
+          "#99bced",
+          "#ccdef6",
+          "#d6e5f8",
+          "#e8f0fb"
+        ]
       },
       "visited-magenta": {
         "role": "secondary",
@@ -38,7 +49,18 @@
         "role": "neutral",
         "displayName": "Ink",
         "canonical": "#121212",
-        "tonalRamp": ["#121212", "#1e1e1e", "#2c2c2c", "#383838", "#444444", "#616161", "#757575", "#8a8a8a", "#b2b2b2", "#d9d9d9"]
+        "tonalRamp": [
+          "#121212",
+          "#1e1e1e",
+          "#2c2c2c",
+          "#383838",
+          "#444444",
+          "#616161",
+          "#757575",
+          "#8a8a8a",
+          "#b2b2b2",
+          "#d9d9d9"
+        ]
       },
       "surface-canvas": {
         "role": "neutral",
@@ -74,15 +96,43 @@
       }
     },
     "shadows": [
-      { "name": "elevation-100", "value": "0px 2px 8px 0px rgba(19,22,29,0.06), 0px 4px 8px 1px rgba(19,22,29,0.04)", "purpose": "Hover lift on resting cards." },
-      { "name": "elevation-200", "value": "0px 4px 8px 2px rgba(40,46,55,0.06), 0px 2px 4px 0px rgba(40,46,55,0.04)", "purpose": "Dropdowns, popovers, tooltips." },
-      { "name": "elevation-300", "value": "0px 8px 12px 4px rgba(40,46,55,0.06), 0px 2px 4px 0px rgba(40,46,55,0.06)", "purpose": "Floating actions, sticky toolbars." },
-      { "name": "elevation-400", "value": "0px 12px 16px 6px rgba(40,46,55,0.06), 0px 4px 6px 0px rgba(40,46,55,0.06)", "purpose": "Modal cards, side sheets." },
-      { "name": "elevation-500", "value": "0px 16px 20px 6px rgba(40,46,55,0.06), 0px 4px 8px 0px rgba(40,46,55,0.06)", "purpose": "Full-screen overlays, command palettes." }
+      {
+        "name": "elevation-100",
+        "value": "0px 2px 8px 0px rgba(19,22,29,0.06), 0px 4px 8px 1px rgba(19,22,29,0.04)",
+        "purpose": "Hover lift on resting cards."
+      },
+      {
+        "name": "elevation-200",
+        "value": "0px 4px 8px 2px rgba(40,46,55,0.06), 0px 2px 4px 0px rgba(40,46,55,0.04)",
+        "purpose": "Dropdowns, popovers, tooltips."
+      },
+      {
+        "name": "elevation-300",
+        "value": "0px 8px 12px 4px rgba(40,46,55,0.06), 0px 2px 4px 0px rgba(40,46,55,0.06)",
+        "purpose": "Floating actions, sticky toolbars."
+      },
+      {
+        "name": "elevation-400",
+        "value": "0px 12px 16px 6px rgba(40,46,55,0.06), 0px 4px 6px 0px rgba(40,46,55,0.06)",
+        "purpose": "Modal cards, side sheets."
+      },
+      {
+        "name": "elevation-500",
+        "value": "0px 16px 20px 6px rgba(40,46,55,0.06), 0px 4px 8px 0px rgba(40,46,55,0.06)",
+        "purpose": "Full-screen overlays, command palettes."
+      }
     ],
     "motion": [
-      { "name": "ease-standard", "value": "cubic-bezier(0, 0, 0.2, 1)", "purpose": "Default ease-out for all interactive transitions." },
-      { "name": "duration-fast", "value": "150ms", "purpose": "Button hover/active/focus transitions. The canonical interaction duration." },
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0, 0, 0.2, 1)",
+        "purpose": "Default ease-out for all interactive transitions."
+      },
+      {
+        "name": "duration-fast",
+        "value": "150ms",
+        "purpose": "Button hover/active/focus transitions. The canonical interaction duration."
+      },
       { "name": "duration-medium", "value": "200ms", "purpose": "Popover and dropdown reveal." }
     ],
     "breakpoints": [
@@ -162,14 +212,46 @@
       "WCAG 2.1 AA is the floor, enforced by the audit pipeline."
     ],
     "rules": [
-      { "name": "The One Brand Blue Rule", "body": "Only #0058d2 carries primary CTA weight. Secondary buttons take gray; strict emphasis takes black; destructive takes red. Brand blue is never used decoratively. Coverage on any screen stays at ≤10%.", "section": "colors" },
-      { "name": "The Visited Magenta Rule", "body": "Visited links and visited brand-icon states flip to #aa18ce. Magenta is not a CTA, accent, or decoration anywhere else.", "section": "colors" },
-      { "name": "The No Pure Black or White Surface Rule", "body": "Body text is #121212, not #000. Backgrounds are #ffffff in the canvas role only; all other surfaces step into the warm-gray ramp.", "section": "colors" },
-      { "name": "The Single Onest Rule", "body": "Onest is the only font face in the system. Hierarchy is created with the four weights (400/500/600/700) and the type scale.", "section": "typography" },
-      { "name": "The Medium-Weight Label Rule", "body": "All interactive controls render their text label in fontWeight 500. Bold is reserved for emphasis inside body copy.", "section": "typography" },
-      { "name": "The 65–75ch Body Rule", "body": "Long-form body text is capped at 65–75 characters per line.", "section": "typography" },
-      { "name": "The Ambient Shadow Rule", "body": "Every shadow uses low-alpha values between 0.04 and 0.06 against blue-tinged dark base colors. Shadows never reach 0.10 or higher.", "section": "elevation" },
-      { "name": "The Flat-By-Default Rule", "body": "Surfaces at rest are flat. Elevation is a state response, never a default style.", "section": "elevation" }
+      {
+        "name": "The One Brand Blue Rule",
+        "body": "Only #0058d2 carries primary CTA weight. Secondary buttons take gray; strict emphasis takes black; destructive takes red. Brand blue is never used decoratively. Coverage on any screen stays at ≤10%.",
+        "section": "colors"
+      },
+      {
+        "name": "The Visited Magenta Rule",
+        "body": "Visited links and visited brand-icon states flip to #aa18ce. Magenta is not a CTA, accent, or decoration anywhere else.",
+        "section": "colors"
+      },
+      {
+        "name": "The No Pure Black or White Surface Rule",
+        "body": "Body text is #121212, not #000. Backgrounds are #ffffff in the canvas role only; all other surfaces step into the warm-gray ramp.",
+        "section": "colors"
+      },
+      {
+        "name": "The Single Onest Rule",
+        "body": "Onest is the only font face in the system. Hierarchy is created with the four weights (400/500/600/700) and the type scale.",
+        "section": "typography"
+      },
+      {
+        "name": "The Medium-Weight Label Rule",
+        "body": "All interactive controls render their text label in fontWeight 500. Bold is reserved for emphasis inside body copy.",
+        "section": "typography"
+      },
+      {
+        "name": "The 65–75ch Body Rule",
+        "body": "Long-form body text is capped at 65–75 characters per line.",
+        "section": "typography"
+      },
+      {
+        "name": "The Ambient Shadow Rule",
+        "body": "Every shadow uses low-alpha values between 0.04 and 0.06 against blue-tinged dark base colors. Shadows never reach 0.10 or higher.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Surfaces at rest are flat. Elevation is a state response, never a default style.",
+        "section": "elevation"
+      }
     ],
     "dos": [
       "Do use Institutional Blue #0058d2 only as primary CTA, brand icon fill, or focus indicator; cap its coverage at ≤10% of any screen.",

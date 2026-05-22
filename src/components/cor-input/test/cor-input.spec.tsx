@@ -1,0 +1,258 @@
+import { render, h, describe, it, expect, vi } from '@stencil/vitest';
+
+import '../cor-input';
+
+// `cor-icon` is intentionally NOT imported here: its `componentWillLoad`
+// resolves SVG asset URLs via `getAssetPath`, which the mock-doc test
+// environment cannot resolve. We only need to observe that the wrapped
+// element exists in the shadow tree, not that it loads pixels.
+
+import { INPUT_SIZES, INPUT_TYPES, INPUT_VARIANTS } from '../cor-input.types';
+
+const queryNative = (root: Element | null | undefined): HTMLInputElement | null =>
+  (root?.shadowRoot?.querySelector('input.native') ?? null) as HTMLInputElement | null;
+
+const queryLabel = (root: Element | null | undefined): HTMLElement | null =>
+  (root?.shadowRoot?.querySelector('label.label') ?? null) as HTMLElement | null;
+
+const queryAssistive = (root: Element | null | undefined): HTMLElement | null =>
+  (root?.shadowRoot?.querySelector('.assistive') ?? null) as HTMLElement | null;
+
+const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
+
+describe('cor-input', () => {
+  describe('defaults + prop reflection', () => {
+    it('renders with default props reflected on host', async () => {
+      const { root } = await render(<cor-input label="Email"></cor-input>);
+      expect(root?.getAttribute('variant')).toBe('default');
+      expect(root?.getAttribute('size')).toBe('md');
+      expect(root?.getAttribute('type')).toBe('text');
+      expect(root?.getAttribute('disabled')).toBeNull();
+      expect(root?.getAttribute('required')).toBeNull();
+      expect(root?.getAttribute('readonly')).toBeNull();
+      expect(root?.getAttribute('invalid')).toBeNull();
+    });
+
+    it.each(INPUT_VARIANTS)('reflects variant="%s" to host', async variant => {
+      const { root } = await render(<cor-input variant={variant} label="x"></cor-input>);
+      expect(root?.getAttribute('variant')).toBe(variant);
+    });
+
+    it.each(INPUT_SIZES)('reflects size="%s" to host', async size => {
+      const { root } = await render(<cor-input size={size} label="x"></cor-input>);
+      expect(root?.getAttribute('size')).toBe(size);
+    });
+
+    it.each(INPUT_TYPES)('forwards type="%s" to the native input', async type => {
+      const { root } = await render(<cor-input type={type} label="x"></cor-input>);
+      const native = queryNative(root);
+      expect(native?.getAttribute('type')).toBe(type);
+    });
+
+    it('warns and falls back when variant is invalid', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const { root } = await render(<cor-input label="x"></cor-input>);
+      (root as unknown as { variant: string }).variant = 'bogus';
+      await flush();
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('variant="bogus"'));
+      expect(root?.getAttribute('variant')).toBe('default');
+      warn.mockRestore();
+    });
+
+    it('warns and falls back when size is invalid', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const { root } = await render(<cor-input label="x"></cor-input>);
+      (root as unknown as { size: string }).size = 'huge';
+      await flush();
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('size="huge"'));
+      expect(root?.getAttribute('size')).toBe('md');
+      warn.mockRestore();
+    });
+  });
+
+  describe('shadow structure', () => {
+    it('renders an internal <input> inside shadow DOM', async () => {
+      const { root } = await render(<cor-input label="x"></cor-input>);
+      const native = queryNative(root);
+      expect(native).toBeTruthy();
+      expect(native?.tagName).toBe('INPUT');
+    });
+
+    it('renders the label text via `label` prop', async () => {
+      const { root } = await render(<cor-input label="Email address"></cor-input>);
+      const label = queryLabel(root);
+      expect(label?.textContent).toContain('Email address');
+    });
+
+    it('adds a required mark when `required` is set', async () => {
+      const { root } = await render(<cor-input label="x" required></cor-input>);
+      const mark = root?.shadowRoot?.querySelector('.required-mark');
+      expect(mark).toBeTruthy();
+      expect(mark?.textContent?.trim()).toBe('*');
+    });
+
+    it('omits the required mark when `required` is unset', async () => {
+      const { root } = await render(<cor-input label="x"></cor-input>);
+      const mark = root?.shadowRoot?.querySelector('.required-mark');
+      expect(mark).toBeNull();
+    });
+
+    it('renders a helper assistive row when `helper-text` is set', async () => {
+      const { root } = await render(<cor-input label="x" helper-text="Helpful tip"></cor-input>);
+      const assistive = queryAssistive(root);
+      expect(assistive?.classList.contains('assistive-helper')).toBe(true);
+      expect(assistive?.textContent).toContain('Helpful tip');
+    });
+
+    it('renders an error assistive row with the error icon when invalid + error-text', async () => {
+      const { root } = await render(<cor-input label="x" invalid error-text="Required"></cor-input>);
+      const assistive = queryAssistive(root);
+      expect(assistive?.classList.contains('assistive-error')).toBe(true);
+      expect(assistive?.textContent).toContain('Required');
+      const icon = assistive?.querySelector('cor-icon');
+      expect(icon?.getAttribute('name')).toBe('circle-error-filled');
+    });
+
+    it('error message takes priority over helper text', async () => {
+      const { root } = await render(<cor-input label="x" invalid helper-text="Hint" error-text="Required"></cor-input>);
+      const assistive = queryAssistive(root);
+      expect(assistive?.textContent).toContain('Required');
+      expect(assistive?.textContent).not.toContain('Hint');
+    });
+  });
+
+  describe('value + form association', () => {
+    it('reflects value to the host attribute', async () => {
+      const { root } = await render(<cor-input label="x" value="hello"></cor-input>);
+      expect(root?.getAttribute('value')).toBe('hello');
+      expect(queryNative(root)?.value).toBe('hello');
+    });
+
+    it('emits corInput on each keystroke', async () => {
+      const onInput = vi.fn();
+      const { root } = await render(<cor-input label="x" onCorInput={onInput}></cor-input>);
+      const native = queryNative(root)!;
+      native.value = 'a';
+      native.dispatchEvent(new Event('input', { bubbles: true }));
+      await flush();
+      expect(onInput).toHaveBeenCalledTimes(1);
+      expect(onInput.mock.calls[0][0].detail).toEqual({ value: 'a' });
+    });
+
+    it('emits corChange on change (blur)', async () => {
+      const onChange = vi.fn();
+      const { root } = await render(<cor-input label="x" onCorChange={onChange}></cor-input>);
+      const native = queryNative(root)!;
+      native.value = 'done';
+      native.dispatchEvent(new Event('change', { bubbles: true }));
+      await flush();
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange.mock.calls[0][0].detail).toEqual({ value: 'done' });
+    });
+
+    it('emits corFocus and corBlur and toggles the is-focused class', async () => {
+      const onFocus = vi.fn();
+      const onBlur = vi.fn();
+      const { root } = await render(<cor-input label="x" onCorFocus={onFocus} onCorBlur={onBlur}></cor-input>);
+      const native = queryNative(root)!;
+      native.dispatchEvent(new FocusEvent('focus'));
+      await flush();
+      expect(onFocus).toHaveBeenCalledTimes(1);
+      expect(root?.classList.contains('is-focused')).toBe(true);
+      native.dispatchEvent(new FocusEvent('blur'));
+      await flush();
+      expect(onBlur).toHaveBeenCalledTimes(1);
+      expect(root?.classList.contains('is-focused')).toBe(false);
+    });
+  });
+
+  describe('disabled + readonly behavior', () => {
+    it('passes disabled through to the native input', async () => {
+      const { root } = await render(<cor-input label="x" disabled></cor-input>);
+      const native = queryNative(root);
+      expect(native?.disabled).toBe(true);
+      expect(native?.getAttribute('aria-disabled')).toBe('true');
+    });
+
+    it('passes readonly through to the native input', async () => {
+      const { root } = await render(<cor-input label="x" readonly value="x"></cor-input>);
+      const native = queryNative(root);
+      expect(native?.readOnly).toBe(true);
+    });
+
+    it('responds to fieldset disabled via formDisabledCallback', async () => {
+      const { root } = await render(<cor-input label="x"></cor-input>);
+      const native = queryNative(root);
+      expect(native?.disabled).toBe(false);
+      (root as unknown as { formDisabledCallback: (d: boolean) => void }).formDisabledCallback(true);
+      await flush();
+      expect(queryNative(root)?.disabled).toBe(true);
+    });
+  });
+
+  describe('ARIA contract', () => {
+    it('links the label via aria-labelledby', async () => {
+      const { root } = await render(<cor-input label="Email"></cor-input>);
+      const native = queryNative(root);
+      const label = queryLabel(root);
+      const id = native?.getAttribute('aria-labelledby');
+      expect(id).toBeTruthy();
+      expect(label?.id).toBe(id);
+    });
+
+    it('exposes aria-required when required', async () => {
+      const { root } = await render(<cor-input label="x" required></cor-input>);
+      expect(queryNative(root)?.getAttribute('aria-required')).toBe('true');
+    });
+
+    it('exposes aria-invalid when invalid', async () => {
+      const { root } = await render(<cor-input label="x" invalid></cor-input>);
+      expect(queryNative(root)?.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('wires aria-describedby to the helper id when helper-text present', async () => {
+      const { root } = await render(<cor-input label="x" helper-text="hint"></cor-input>);
+      const describedBy = queryNative(root)?.getAttribute('aria-describedby');
+      const helper = root?.shadowRoot?.querySelector('.assistive-helper');
+      expect(describedBy).toBeTruthy();
+      expect(helper?.id).toBe(describedBy);
+    });
+
+    it('wires aria-describedby to the error id when invalid + error-text present', async () => {
+      const { root } = await render(<cor-input label="x" invalid error-text="Required"></cor-input>);
+      const describedBy = queryNative(root)?.getAttribute('aria-describedby');
+      const error = root?.shadowRoot?.querySelector('.assistive-error');
+      expect(describedBy).toBeTruthy();
+      expect(error?.id).toBe(describedBy);
+    });
+
+    it('uses aria-label as the accessible name when no visible label is present', async () => {
+      const { root } = await render(<cor-input aria-label="Search"></cor-input>);
+      const native = queryNative(root);
+      expect(native?.getAttribute('aria-label')).toBe('Search');
+      expect(native?.getAttribute('aria-labelledby')).toBeNull();
+    });
+  });
+
+  describe('slots', () => {
+    it('forwards content into the icon-start slot', async () => {
+      const { root } = await render(
+        <cor-input label="Search">
+          <cor-icon slot="icon-start" name="search" size={20}></cor-icon>
+        </cor-input>,
+      );
+      const slotted = root?.querySelector('[slot="icon-start"]');
+      expect(slotted?.tagName.toLowerCase()).toBe('cor-icon');
+    });
+
+    it('forwards content into the icon-end slot', async () => {
+      const { root } = await render(
+        <cor-input label="Date">
+          <cor-icon slot="icon-end" name="calendar" size={24}></cor-icon>
+        </cor-input>,
+      );
+      const slotted = root?.querySelector('[slot="icon-end"]');
+      expect(slotted?.tagName.toLowerCase()).toBe('cor-icon');
+    });
+  });
+});
