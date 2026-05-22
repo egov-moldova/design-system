@@ -106,7 +106,9 @@
     "audit:all": "node scripts/audit/run-all.mjs",
     "audit:all:no-browser": "node scripts/audit/run-all.mjs --no-browser",
     "scaffold:story": "node scripts/scaffold/story-scaffold.mjs",
-    "scaffold:test": "node scripts/scaffold/test-scaffold.mjs"
+    "scaffold:test": "node scripts/scaffold/test-scaffold.mjs",
+    "cleanup:agents": "node scripts/cleanup-agents.mjs",
+    "cleanup:agents:dry": "node scripts/cleanup-agents.mjs --dry-run"
   },
   "wireit": {
     "tokens.build.core": {
