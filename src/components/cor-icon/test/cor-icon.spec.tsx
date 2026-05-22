@@ -3,7 +3,7 @@ import { setAssetPath } from '@stencil/core';
 
 import '../cor-icon';
 import manifest from '../assets/icons.manifest.json';
-import { clearIconSvgCache, resolveIconAsset } from '../cor-icon.providers';
+import { clearIconSvgCache, fetchIconSvg, resolveIconAsset } from '../cor-icon.providers';
 import type { IconManifest } from '../cor-icon.types';
 
 const ICON_NAMES = Object.keys(manifest);
@@ -159,11 +159,14 @@ describe('cor-icon', () => {
     expect((root as HTMLElement).style.getPropertyValue('--icon-color')).toBe('');
   });
 
-  it('logs a warning and renders nothing when the name is unknown', async () => {
+  it('unknown name → warns, no SVG, but host stays decorative (aria-hidden)', async () => {
     const { root, waitForChanges } = await render(<cor-icon name="this-icon-does-not-exist" />);
     await waitForChanges();
     expect(warnSpy).toHaveBeenCalled();
-    expect(root?.shadowRoot?.children.length ?? 0).toBe(0);
+    expect(root?.shadowRoot?.querySelector('.svg-icon')).toBeNull();
+    // Host must still be aria-hidden so screen readers don't traverse it as a
+    // nameless generic element. (Same contract as cor-logo Issue 3.)
+    expect(root?.getAttribute('aria-hidden')).toBe('true');
   });
 
   it('renders inline SVG markup in shadow DOM for a known icon', async () => {
@@ -208,6 +211,28 @@ describe('cor-icon', () => {
     expect(warnSpy).toHaveBeenCalled();
     const container = root?.shadowRoot?.querySelector('.svg-icon');
     expect(container?.children.length ?? 0).toBe(0);
+  });
+
+  it('cache eviction on failure: a transient 404 does not lock out future retries', async () => {
+    fetchSpy.mockRestore();
+    // First call: 404 → null → cache must evict
+    fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(new Response('', { status: 404 }));
+    const url = 'http://localhost/16/test.svg';
+    const first = await fetchIconSvg(url);
+    expect(first).toBeNull();
+    // Drain microtask so the eviction `.then` runs.
+    await new Promise(r => setTimeout(r, 0));
+
+    // Second call: backend recovered → must actually re-fetch (cache evicted)
+    fetchSpy.mockResolvedValueOnce(
+      new Response('<svg viewBox="0 0 16 16"></svg>', {
+        status: 200,
+        headers: { 'Content-Type': 'image/svg+xml' },
+      }),
+    );
+    const second = await fetchIconSvg(url);
+    expect(second).not.toBeNull();
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
   });
 
   it('onNameChange: changing name to a different icon loads the new SVG', async () => {
