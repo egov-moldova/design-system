@@ -1,7 +1,6 @@
 :host {
   display: inline-block;
   vertical-align: middle;
-  color: var(--logo-color-default);
 }
 
 .svg-logo {
@@ -10,14 +9,6 @@
 
 .svg-logo svg {
   display: block;
-}
-
-/* logomark-only assets have a fixed footprint so consumers (e.g. service-button
-   badge slot) can reserve space before the async SVG fetch resolves. All other
-   variants follow the SVG's intrinsic width/height. */
-:host([name$='-logomark-only']) {
-  inline-size: var(--logo-size-logomark);
-  block-size: var(--logo-size-logomark);
 }
 
 :host([name$='-logomark-only']) .svg-logo,
