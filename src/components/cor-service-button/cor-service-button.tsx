@@ -154,16 +154,21 @@ export class CorServiceButton {
 
     const spinnerVariant: SpinnerVariant = this.appearance === 'neutral' ? 'dark' : 'light-on-color';
 
-    const innerContent = this.loading
-      ? [<cor-spinner size="sm" variant={spinnerVariant} class="spinner" />]
-      : [
-          <span class="badge" aria-hidden="true">
-            <slot name="badge" />
-          </span>,
-          <span class="label">
-            <slot />
-          </span>,
-        ];
+    // Always render badge + label so the button preserves its natural width;
+    // CSS hides them visually when loading and overlays a centred spinner.
+    const innerContent = [
+      <span class="badge" aria-hidden="true">
+        <slot name="badge" />
+      </span>,
+      <span class="label">
+        <slot />
+      </span>,
+      this.loading ? (
+        <span class="spinner-overlay" aria-hidden="true">
+          <cor-spinner size="sm" variant={spinnerVariant} />
+        </span>
+      ) : null,
+    ];
 
     if (this.href) {
       return (

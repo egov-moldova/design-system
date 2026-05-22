@@ -136,17 +136,31 @@
   pointer-events: none;
 }
 
-/* ---------- Loading — hide badge + label, show centred spinner over default bg ---------- */
+/* Disabled badge — logo dims to 30% per Figma spec */
+:host([disabled]) .badge,
+:host(.is-fieldset-disabled) .badge {
+  opacity: var(--service-button-disabled-badge-opacity);
+}
+
+/* ---------- Loading — hide badge + label (preserve width), show centred spinner over default bg ---------- */
 
 :host([loading]) .control {
   cursor: progress;
   pointer-events: none;
 }
 
-.spinner {
+:host([loading]) .badge,
+:host([loading]) .label {
+  visibility: hidden;
+}
+
+.spinner-overlay {
+  position: absolute;
+  inset: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
 }
 
 /* ---------- Reduced motion ---------- */

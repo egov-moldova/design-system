@@ -62,13 +62,34 @@ describe('cor-service-button', () => {
     expect(btn?.getAttribute('aria-disabled')).toBe('true');
   });
 
-  it('loading state: aria-busy=true and renders the loading overlay', async () => {
+  it('loading state: aria-busy=true, spinner shown, badge+label remain in DOM (CSS hides visually to preserve width)', async () => {
     const { root, waitForChanges } = await render(<cor-service-button loading>Pay</cor-service-button>);
     await waitForChanges();
 
     const btn = root?.shadowRoot?.querySelector('button.control') as HTMLButtonElement | null;
     expect(btn?.getAttribute('aria-busy')).toBe('true');
-    expect(root?.shadowRoot?.querySelector('.loading-overlay')).toBeTruthy();
+    expect(root?.shadowRoot?.querySelector('cor-spinner')).toBeTruthy();
+    // Badge + label remain in DOM so the button keeps its intrinsic width — CSS hides them.
+    expect(root?.shadowRoot?.querySelector('.badge')).toBeTruthy();
+    expect(root?.shadowRoot?.querySelector('.label')).toBeTruthy();
+  });
+
+  it('loading: spinner variant is light-on-color for primary, dark for neutral', async () => {
+    const { root: rootPrimary, waitForChanges: waitPrimary } = await render(
+      <cor-service-button loading appearance="primary">
+        Pay
+      </cor-service-button>,
+    );
+    await waitPrimary();
+    expect(rootPrimary?.shadowRoot?.querySelector('cor-spinner')?.getAttribute('variant')).toBe('light-on-color');
+
+    const { root: rootNeutral, waitForChanges: waitNeutral } = await render(
+      <cor-service-button loading appearance="neutral">
+        Pay
+      </cor-service-button>,
+    );
+    await waitNeutral();
+    expect(rootNeutral?.shadowRoot?.querySelector('cor-spinner')?.getAttribute('variant')).toBe('dark');
   });
 
   it('renders badge slot and default label slot', async () => {
