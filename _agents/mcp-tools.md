@@ -148,7 +148,7 @@ Always call `resolve-library-id` first, then `query-docs`.
 
 ```text
 browser_navigate({ url: "..." })
-browser_take_screenshot({ type: "png", filename: "..." })
+browser_take_screenshot({ type: "png", filename: ".playwright-mcp/<name>.png" })   // ALWAYS prefix with `.playwright-mcp/` — bare filenames land in repo root (Playwright MCP resolves them against cwd, not --output-dir)
 browser_snapshot()
 browser_hover({ ref: "...", element: "..." })
 browser_click({ ref: "...", element: "..." })

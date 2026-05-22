@@ -160,7 +160,7 @@ For story writing conventions and reference patterns, see `src/components/_agent
 2. Screenshot:
 
 ```text
-mcp__playwright__browser_take_screenshot({ type: "png", filename: "custom-component.png" })
+mcp__playwright__browser_take_screenshot({ type: "png", filename: ".playwright-mcp/custom-component.png" })
 ```
 
 3. Present to user for review

@@ -82,16 +82,16 @@ mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=.
 2. Screenshot:
 
 ```text
-mcp__playwright__browser_take_screenshot({ type: "png", filename: "after-change.png" })
+mcp__playwright__browser_take_screenshot({ type: "png", filename: ".playwright-mcp/after-change.png" })
 ```
 
 3. Compare vs Figma reference (from Step 1) or expected appearance:
 
 ```text
 mcp__image-compare__compare_images({
-  image1_path: "figma-ref.png",
-  image2_path: "after-change.png",
-  diff_output_path: "diff.png"
+  image1_path: ".playwright-mcp/figma-ref.png",
+  image2_path: ".playwright-mcp/after-change.png",
+  diff_output_path: ".playwright-mcp/diff.png"
 })
 ```
 
