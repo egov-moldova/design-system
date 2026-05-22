@@ -410,6 +410,7 @@ Read `.stories.ts` (already loaded) and verify:
 - `STORY-TYPEOF-META` — `type Story = StoryObj<typeof meta>`. Works in React/Vue Storybook but breaks in `@storybook/web-components-vite@^10.x` (nests `Meta<Args>` into the args slot). Required form: `type Story = StoryObj<Args>`.
 - `STORY-DOCS-SOURCE-MISSING-DYNAMIC` — `parameters.docs.source` provides a `transform` without `type: 'dynamic'`. The global `type: 'code'` (in `.storybook/preview.js`) caches the snippet at story registration and ignores Controls changes; per-story `type: 'dynamic'` is required to make the transform re-run.
 - `STORY-DOCS-SOURCE-ARGS-ANY` — `transform: (_code, { args }: any) => ...`. Type the destructure: `{ args }: { args: ComponentArgs }`.
+- `STORY-COMPOSITE-NO-CODE-OVERRIDE` — story with `controls: { disable: true }` AND a helper-laden `render` (template-string `.map(...)`, local `cellStyle` constants, etc.) AND no `parameters.docs.source.code` override. The global `'code'` mode then captures the demo-chrome render output verbatim, exposing wrapper divs and `${LOOP.map(...)}` template guts as the "consumer-ready" snippet. Provide a static `code` with one clean `<cor-component …></cor-component>` per variation. See `src/components/cor-logo/cor-logo.stories.ts` for the canonical example.
 
 **Spec-file anti-patterns** (flag any of these in Wave 2.10):
 - `SPEC-LEGACY-NEWSPECPAGE` — `import { newSpecPage } from '@stencil/core/testing';`. Retired Jest harness. Must use `import { render, ... } from '@stencil/vitest';`.

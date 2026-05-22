@@ -204,7 +204,145 @@ export function analyzeStoriesFile(storiesPath, componentName) {
     );
   }
 
+  // docs.source contract checks — lessons captured from the cor-logo audit
+  // (2026-05): see .claude/skills/audit-component/SKILL.md story-coverage list.
+  findings.push(...checkDocsSource(sourceFile, fileRel));
+
   return { findings, stories, coverage, title, componentName };
+}
+
+// ─── docs.source contract helpers ────────────────────────────────────────────
+
+function findPropertyInit(objLiteral, name) {
+  if (!objLiteral || !ts.isObjectLiteralExpression(objLiteral)) return null;
+  for (const prop of objLiteral.properties) {
+    if (!ts.isPropertyAssignment(prop)) continue;
+    const key = ts.isIdentifier(prop.name) || ts.isStringLiteralLike(prop.name) ? prop.name.text : null;
+    if (key === name) return prop.initializer;
+  }
+  return null;
+}
+
+function unwrapAsSatisfies(node) {
+  while (node && (ts.isAsExpression(node) || ts.isSatisfiesExpression(node) || ts.isParenthesizedExpression(node))) {
+    node = node.expression;
+  }
+  return node ?? null;
+}
+
+/**
+ * Walk each named story export and apply 3 docs.source rules.
+ *
+ * Returns findings for any of:
+ *   - STORY-DOCS-SOURCE-MISSING-DYNAMIC — `transform` is present but
+ *     `parameters.docs.source.type` is not `'dynamic'`. The global `'code'`
+ *     mode (.storybook/preview.js) caches the snippet at registration so the
+ *     transform never re-runs on Controls changes.
+ *   - STORY-DOCS-SOURCE-ARGS-ANY — the transform signature uses `any` for
+ *     its parameter type(s) — usually `({ args }: any)`. Type the destructure.
+ *   - STORY-COMPOSITE-NO-CODE-OVERRIDE — story disables Controls AND uses a
+ *     helper-laden render (template-string `${…}` interpolations) AND
+ *     provides neither `code` nor `transform`. The global `'code'` mode then
+ *     exposes the demo render verbatim (wrapper divs, inline styles, loop
+ *     guts) as the "Show code" snippet — useless to consumers.
+ */
+export function checkDocsSource(sourceFile, fileRel) {
+  const findings = [];
+  const sourceText = sourceFile.text;
+
+  for (const stmt of sourceFile.statements) {
+    if (!ts.isVariableStatement(stmt) || !hasExport(stmt)) continue;
+    for (const decl of stmt.declarationList.declarations) {
+      if (!ts.isIdentifier(decl.name) || !decl.initializer) continue;
+      const storyName = decl.name.text;
+      const init = unwrapAsSatisfies(decl.initializer);
+      if (!init || !ts.isObjectLiteralExpression(init)) continue;
+
+      const params = findPropertyInit(init, 'parameters');
+      const render = findPropertyInit(init, 'render');
+
+      let controlsDisabled = false;
+      let hasSourceCode = false;
+      let hasSourceTransform = false;
+      let sourceTypeIsDynamic = false;
+      let transformNode = null;
+
+      if (params && ts.isObjectLiteralExpression(params)) {
+        const controls = findPropertyInit(params, 'controls');
+        if (controls && ts.isObjectLiteralExpression(controls)) {
+          const disable = findPropertyInit(controls, 'disable');
+          if (disable && disable.kind === ts.SyntaxKind.TrueKeyword) controlsDisabled = true;
+        }
+        const docs = findPropertyInit(params, 'docs');
+        const source = docs && ts.isObjectLiteralExpression(docs) ? findPropertyInit(docs, 'source') : null;
+        if (source && ts.isObjectLiteralExpression(source)) {
+          if (findPropertyInit(source, 'code')) hasSourceCode = true;
+          const transform = findPropertyInit(source, 'transform');
+          if (transform) {
+            hasSourceTransform = true;
+            transformNode = transform;
+          }
+          const typeInit = findPropertyInit(source, 'type');
+          if (typeInit && ts.isStringLiteralLike(typeInit) && typeInit.text === 'dynamic') {
+            sourceTypeIsDynamic = true;
+          }
+        }
+      }
+
+      // 1) STORY-DOCS-SOURCE-MISSING-DYNAMIC
+      if (hasSourceTransform && !sourceTypeIsDynamic) {
+        findings.push(
+          finding({
+            severity: 'warning',
+            code: 'STORY-DOCS-SOURCE-MISSING-DYNAMIC',
+            file: fileRel,
+            line: getLineNumber(sourceFile, transformNode),
+            message: `Story "${storyName}" provides docs.source.transform but no \`type: 'dynamic'\`. The global 'code' mode caches the snippet at registration so the transform never re-runs on Controls changes.`,
+            fix: "Add `type: 'dynamic'` to `parameters.docs.source` alongside the transform.",
+          }),
+        );
+      }
+
+      // 2) STORY-DOCS-SOURCE-ARGS-ANY — textual scan of the transform's parameter list
+      if (transformNode) {
+        const txt = sourceText.slice(transformNode.pos, transformNode.end);
+        const paramMatch = txt.match(/^\s*\(([^)]*)\)/);
+        if (paramMatch && /\bany\b/.test(paramMatch[1])) {
+          findings.push(
+            finding({
+              severity: 'warning',
+              code: 'STORY-DOCS-SOURCE-ARGS-ANY',
+              file: fileRel,
+              line: getLineNumber(sourceFile, transformNode),
+              message: `Story "${storyName}" docs.source.transform uses \`any\` in its parameter signature — typed destructure required.`,
+              fix: 'Replace with `({ args }: { args: ComponentArgs })`.',
+            }),
+          );
+        }
+      }
+
+      // 3) STORY-COMPOSITE-NO-CODE-OVERRIDE
+      if (controlsDisabled && !hasSourceCode && !hasSourceTransform && render) {
+        const renderText = sourceText.slice(render.pos, render.end);
+        // Detect a template literal that interpolates JS (helpers, loops, etc.).
+        const tplMatch = renderText.match(/`([\s\S]*)`/);
+        if (tplMatch && /\$\{/.test(tplMatch[1])) {
+          findings.push(
+            finding({
+              severity: 'warning',
+              code: 'STORY-COMPOSITE-NO-CODE-OVERRIDE',
+              file: fileRel,
+              line: getLineNumber(sourceFile, render),
+              message: `Story "${storyName}" disables Controls and uses a helper-laden render but has no \`parameters.docs.source.code\` override. The "Show code" panel will expose demo chrome (wrapper divs, inline styles, \${…} guts) verbatim.`,
+              fix: 'Add a static `parameters.docs.source.code` with one clean `<cor-component …></cor-component>` per variation. See `src/components/cor-logo/cor-logo.stories.ts`.',
+            }),
+          );
+        }
+      }
+    }
+  }
+
+  return findings;
 }
 
 /**
