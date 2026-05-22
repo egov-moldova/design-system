@@ -76,6 +76,12 @@
   block-size: var(--_badge-size);
 }
 
+/* `!important` is load-bearing here: ::slotted styles lose to the slotted
+   element's own :host styles in the cascade, and `<cor-logo>` defaults its
+   :host to `inline-size: max-content` (intrinsic SVG dimensions). Without
+   !important the badge ignores our 24×24 box and renders at the SVG's
+   exported width/height. Refactoring this away requires giving cor-logo
+   a public CSS custom-property contract (--cor-logo-size). */
 ::slotted([slot='badge']) {
   display: block;
   inline-size: var(--_badge-size) !important;

@@ -132,4 +132,117 @@ describe('cor-service-button', () => {
     // detail; behaviour is browser-verified in stories. Smoke test only.
     expect(root?.shadowRoot?.querySelector('button.control')).toBeTruthy();
   });
+
+  it('formDisabledCallback(true): mirrors ancestor <fieldset disabled> without clobbering the consumer prop', async () => {
+    const { root, waitForChanges } = await render(<cor-service-button>Pay</cor-service-button>);
+    await waitForChanges();
+
+    type Instance = { formDisabledCallback: (disabled: boolean) => void };
+    const inst = root as unknown as Instance;
+    inst.formDisabledCallback(true);
+    await waitForChanges();
+
+    const btn = root?.shadowRoot?.querySelector('button.control') as HTMLButtonElement | null;
+    // Native disabled set + aria-disabled wired, but the consumer-set `disabled` prop is untouched
+    expect(btn?.hasAttribute('disabled')).toBe(true);
+    expect(btn?.getAttribute('aria-disabled')).toBe('true');
+    expect(root?.hasAttribute('disabled')).toBe(false);
+  });
+
+  it('formResetCallback: clears the submitter value via setFormValue(null, null)', async () => {
+    const { root, waitForChanges } = await render(<cor-service-button>Pay</cor-service-button>);
+    await waitForChanges();
+
+    type Instance = { formResetCallback: () => void; internals: ElementInternals };
+    const inst = root as unknown as Instance;
+
+    const calls: Array<[unknown, unknown]> = [];
+    const orig = inst.internals.setFormValue.bind(inst.internals);
+    inst.internals.setFormValue = (v: unknown, s: unknown) => {
+      calls.push([v, s]);
+      orig(v as never, s as never);
+    };
+
+    inst.formResetCallback();
+    expect(calls).toEqual([[null, null]]);
+  });
+
+  it('href-mode click: handleClick early-returns so native anchor navigation proceeds', async () => {
+    const { root, waitForChanges } = await render(
+      <cor-service-button href="https://mpay.gov.md">Pay</cor-service-button>,
+    );
+    await waitForChanges();
+
+    type Instance = { handleClick: (ev: MouseEvent) => void };
+    const ev = new MouseEvent('click', { bubbles: true, cancelable: true });
+    (root as unknown as Instance).handleClick(ev);
+    // No preventDefault → browser is free to follow the anchor's href.
+    expect(ev.defaultPrevented).toBe(false);
+  });
+
+  it('type=submit click: requestSubmit() + setFormValue(name,value) + microtask clears submitter', async () => {
+    const { root, waitForChanges } = await render(
+      <cor-service-button type="submit" name="action" value="pay">
+        Pay
+      </cor-service-button>,
+    );
+    await waitForChanges();
+
+    type Instance = { handleClick: (ev: MouseEvent) => void; internals: ElementInternals };
+    const inst = root as unknown as Instance;
+
+    let submitCalls = 0;
+    Object.defineProperty(inst.internals, 'form', {
+      value: {
+        requestSubmit: () => {
+          submitCalls++;
+        },
+      },
+      configurable: true,
+    });
+
+    // Track every setFormValue call so we can verify both the submitter-write and the microtask clear.
+    const setFormValueCalls: Array<[unknown, unknown]> = [];
+    const orig = inst.internals.setFormValue.bind(inst.internals);
+    inst.internals.setFormValue = (v: unknown, s: unknown) => {
+      setFormValueCalls.push([v, s]);
+      orig(v as never, s as never);
+    };
+
+    const ev = new MouseEvent('click', { bubbles: true, cancelable: true });
+    inst.handleClick(ev);
+    // queueMicrotask drains before the next await; await a 0-timeout to flush.
+    await new Promise(r => setTimeout(r, 0));
+
+    expect(ev.defaultPrevented).toBe(true);
+    expect(submitCalls).toBe(1);
+    expect(setFormValueCalls[0]).toEqual(['pay', 'pay']);
+    expect(setFormValueCalls[1]).toEqual([null, null]);
+  });
+
+  it('type=reset click: calls form.reset() via ElementInternals', async () => {
+    const { root, waitForChanges } = await render(<cor-service-button type="reset">Reset</cor-service-button>);
+    await waitForChanges();
+
+    type Instance = { handleClick: (ev: MouseEvent) => void; internals: ElementInternals };
+    const inst = root as unknown as Instance;
+
+    let resetCalls = 0;
+    // Stub the form reference exposed by ElementInternals — avoids needing a real <form> ancestor
+    // in the spec environment (vitest renders into a mock document).
+    Object.defineProperty(inst.internals, 'form', {
+      value: {
+        reset: () => {
+          resetCalls++;
+        },
+      },
+      configurable: true,
+    });
+
+    const ev = new MouseEvent('click', { bubbles: true, cancelable: true });
+    inst.handleClick(ev);
+
+    expect(ev.defaultPrevented).toBe(true);
+    expect(resetCalls).toBe(1);
+  });
 });

@@ -121,6 +121,9 @@ export class CorServiceButton {
   private handleClick = (ev: MouseEvent) => {
     if (this.isInert()) {
       ev.preventDefault();
+      // stopImmediatePropagation (not stopPropagation) is intentional: it also blocks
+      // any sibling listeners attached to the host so consumers can't observe phantom
+      // clicks while disabled/loading. Don't soften without a clear use case.
       ev.stopImmediatePropagation();
       return;
     }
