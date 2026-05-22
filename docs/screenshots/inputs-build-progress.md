@@ -11,7 +11,7 @@ and updates PR https://github.com/corlab-org/age-design/pull/5.
 |---|---|---|---|---|---|
 | 1 | `cor-input` (text-input) | `f035f11544e0883bc29ca99b48309238db82edf8` | ✅ done | `6624b85` | `docs/screenshots/cor-input/` |
 | 2 | `cor-select-input` | `24351877baeb81b99cceea90d885b3455191ac62` | ✅ done | `41171ea` | `docs/screenshots/cor-select-input/` |
-| 3 | `cor-date-input` | `4449e61e554888eb4357b4f2e6e16dacf738fda3` | ✅ done | `d762ec9` | `docs/screenshots/cor-date-input/` |
+| 3 | `cor-date-input` | `4449e61e554888eb4357b4f2e6e16dacf738fda3` | ✅ done | `f503fec` | `docs/screenshots/cor-date-input/` |
 | 4 | `cor-file-input` | `2e8a0a8cc37b76d197dfdd8af2a4cac5ce8aa884` | ⏳ pending | — | — |
 | 5 | `cor-search-input-rectangular` | `a27b4efaed053f6cd4a57411a032d7391174c425` | ⏳ pending | — | — |
 | 6 | `cor-search-input-circular` | `b33c35c72dbe621375862c300c0238c4a4eacc78` | ⏳ pending | — | — |
