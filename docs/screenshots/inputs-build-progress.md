@@ -15,7 +15,7 @@ and updates PR https://github.com/corlab-org/age-design/pull/5.
 | 4 | `cor-file-input` + `cor-file-item` | `2e8a0a8cc37b76d197dfdd8af2a4cac5ce8aa884` / `f7e6d1eed8dd15497025e1a9cad9d355403a68b8` | ✅ done | `299c6a2` | `docs/screenshots/cor-file-input/` |
 | 5 | `cor-search-input-rectangular` | `a27b4efaed053f6cd4a57411a032d7391174c425` | ✅ done | `a625494` | `docs/screenshots/cor-search-input-rectangular/` |
 | 6 | `cor-search-input-circular` | `b33c35c72dbe621375862c300c0238c4a4eacc78` | ✅ done | `1a3c4e6` | `docs/screenshots/cor-search-input-circular/` |
-| 7 | `cor-numeric-input` | `3029a32fe1e2ca1eb6e2bc68571f1965bded9ef6` | ⏳ pending | — | — |
+| 7 | `cor-numeric-input` | `3029a32fe1e2ca1eb6e2bc68571f1965bded9ef6` | ✅ done | _pending push_ | `docs/screenshots/cor-numeric-input/` |
 | 8 | `cor-phone-input` | `f2ba725de62bbecd5bd84870a1e6b7bb1eb5adfe` | ⏳ pending | — | — |
 | 9 | `cor-input-chip` | `3168d84c4883c991b5643e4feab97de2cfe8fb7e` | ⏳ pending | — | — |
 
@@ -48,6 +48,61 @@ Future agent runs: if a Figma node-id for either component_set is rediscovered,
 log it here so pixel-perfect comparison against the original can be re-checked.
 
 ## Last updated
+
+2026-05-23 — `cor-numeric-input` shipped (numeric-entry atom with stacked
+step controls, form-associated). Pattern B: renders its own
+`<input type="text" role="spinbutton" inputmode="decimal">` inside shadow DOM
+plus a trailing vertical stepper stack (`chevron-top` / `chevron-bottom`)
+that increments / decrements by `step`. Reuses the input-family visual
+primitives (border, focus ring, label, helper / error, sizes md/lg, states
+default / hover / focus / filled / disabled / readonly / mandatory) and adds
+a `--numeric-input-stepper-*` token namespace (24px wide on md, 32px on lg;
+chevron icon 16px / 20px; hover/active/disabled backgrounds). Why
+`type="text"` over `type="number"`: native `number` mixes browser parsing,
+locale, and validation in ways that interact poorly with `precision`
+rounding and explicit `min`/`max` clamping. The component owns parsing
+(accepts Romanian decimal-comma `,` and normalises to `.`), clamping
+(`clamp(value, min, max)` on blur), and precision rounding (toFixed) — the
+field stays `inputmode="decimal"` so mobile devices still surface the
+numeric keypad. Keyboard contract: ArrowUp / ArrowDown step by `step`,
+Enter commits, Escape is a no-op (no clear affordance per Figma). Step
+buttons are `tabindex=-1` (citizens reach them via arrow keys, not Tab) and
+auto-disable at the configured bounds. Romanian step labels:
+`aria-label="Crește"` / `"Scade"` (configurable via `increment-label` /
+`decrement-label`). ARIA: `role="spinbutton"` on the native input plus
+`aria-valuenow` / `aria-valuemin` / `aria-valuemax` / `aria-valuetext`.
+Mouse-wheel scrolling intentionally NOT bound (would yank values on
+accidental scroll). 86 new `--numeric-input-*` CSS variables across
+container, control, label, helper, suffix, stepper namespaces. 50 spec
+tests cover render, prop reflection + warn-and-fallback, stepper click
+(up/down), arrow-key contract, Enter commit, min/max clamp on blur,
+precision rounding, out-of-range `corError` emission, Romanian
+decimal-comma normalisation, ARIA wiring, form lifecycle (reset / restore),
+slot detection (icon-start, suffix), seed-from-bounds when stepping from
+empty. Stories: Default / AllVariants / AllSizes / States / WithMinMax /
+WithStep / WithPrecision / WithSuffix / WithCurrencyIcon / WithoutSteppers /
+WithHelperText / WithError / EdgeCases. 0 console errors across every
+story, 0 contrast failures across light + dark.
+
+### 2026-05-23 — `cor-numeric-input` Figma node resolution
+
+Same MCP file scope as the earlier inputs — `doJ7tDY0PlQ0PqMgbpFVIC` only
+exposes 9 top-level pages and no `numeric-input` node was reachable through
+the available `get_metadata` traversal. The known sibling page nodeId
+`403:21765` ("Input: Date") was reachable for screenshot retrieval (date
+input page rendered), confirming the file scope hasn't shifted, but no
+parent reference links from there to the numeric-input page. Derivation
+followed the established pattern (see prior failure-log entries): cor-input
+provides the canonical input-family visual contract; the stacked stepper
+affordance (chevron-up over chevron-bottom inside the right edge of the
+control, each ~50% of the input height) follows the task brief and standard
+spinbutton conventions. Validated against `DESIGN.md`,
+`.impeccable/design.json`, and the on-disk `cor-input` / `cor-select-input`
+(chevron pattern) / `cor-search-input-rectangular` (trailing affordance
+pattern) implementations. If the component_set's node-id becomes reachable
+later, re-run pixel-perfect comparison and log diff results here.
+
+---
 
 2026-05-23 — `cor-search-input-circular` shipped (pill-silhouette search-field
 atom, form-associated). Sibling of `cor-search-input-rectangular` — same
