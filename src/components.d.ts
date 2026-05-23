@@ -7,14 +7,38 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/cor-button/cor-button.types";
 import { ButtonGroupOrientation } from "./components/cor-button-group/cor-button-group.types";
+import { DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/cor-date-input/cor-date-input.types";
+import { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize } from "./components/cor-file-input/cor-file-input.types";
+import { FileItemRemoveDetail, FileItemState } from "./components/cor-file-item/cor-file-item.types";
 import { IconSize } from "./components/cor-icon/cor-icon.types";
+import { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/cor-input/cor-input.types";
+import { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/cor-input-chip/cor-input-chip.types";
+import { LinkSize, LinkUnderline, LinkVariant } from "./components/cor-link/cor-link.types";
 import { LogoName } from "./components/cor-logo/cor-logo.types";
+import { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/cor-numeric-input/cor-numeric-input.types";
+import { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/cor-phone-input/cor-phone-input.types";
+import { RadioChangeDetail, RadioSize } from "./components/cor-radio/cor-radio.types";
+import { SearchInputCircularChangeDetail, SearchInputCircularSearchDetail, SearchInputCircularSize, SearchInputCircularVariant } from "./components/cor-search-input-circular/cor-search-input-circular.types";
+import { SearchInputRectangularChangeDetail, SearchInputRectangularSearchDetail, SearchInputRectangularSize, SearchInputRectangularVariant } from "./components/cor-search-input-rectangular/cor-search-input-rectangular.types";
+import { SelectChangeDetail, SelectInputSize, SelectInputVariant, SelectOption } from "./components/cor-select-input/cor-select-input.types";
 import { ServiceButtonAppearance, ServiceButtonType } from "./components/cor-service-button/cor-service-button.types";
 import { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
 export { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/cor-button/cor-button.types";
 export { ButtonGroupOrientation } from "./components/cor-button-group/cor-button-group.types";
+export { DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/cor-date-input/cor-date-input.types";
+export { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize } from "./components/cor-file-input/cor-file-input.types";
+export { FileItemRemoveDetail, FileItemState } from "./components/cor-file-item/cor-file-item.types";
 export { IconSize } from "./components/cor-icon/cor-icon.types";
+export { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/cor-input/cor-input.types";
+export { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/cor-input-chip/cor-input-chip.types";
+export { LinkSize, LinkUnderline, LinkVariant } from "./components/cor-link/cor-link.types";
 export { LogoName } from "./components/cor-logo/cor-logo.types";
+export { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/cor-numeric-input/cor-numeric-input.types";
+export { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/cor-phone-input/cor-phone-input.types";
+export { RadioChangeDetail, RadioSize } from "./components/cor-radio/cor-radio.types";
+export { SearchInputCircularChangeDetail, SearchInputCircularSearchDetail, SearchInputCircularSize, SearchInputCircularVariant } from "./components/cor-search-input-circular/cor-search-input-circular.types";
+export { SearchInputRectangularChangeDetail, SearchInputRectangularSearchDetail, SearchInputRectangularSize, SearchInputRectangularVariant } from "./components/cor-search-input-rectangular/cor-search-input-rectangular.types";
+export { SelectChangeDetail, SelectInputSize, SelectInputVariant, SelectOption } from "./components/cor-select-input/cor-select-input.types";
 export { ServiceButtonAppearance, ServiceButtonType } from "./components/cor-service-button/cor-service-button.types";
 export { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
 export namespace Components {
@@ -117,6 +141,234 @@ export namespace Components {
         "orientation": ButtonGroupOrientation;
     }
     /**
+     * Date Input — segment-masked date entry molecule.
+     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+     * inside shadow DOM and overlays a ghost format hint that lets the unfilled
+     * `DD/MM/YYYY` segments stay visible while the user types — matching the
+     * "focus: date-populated / month-populated / fully-populated" Figma states.
+     * @element cor-date-input
+     */
+    interface CorDateInput {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
+         */
+        "errorText"?: string;
+        /**
+          * Display format. The component accepts only the digits the format permits and rewrites the value with the separator inline as the user types.
+          * @default 'DD/MM/YYYY'
+         */
+        "format": DateInputFormat;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid": boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Inclusive upper bound in ISO `YYYY-MM-DD`. The validator rejects entries above this date with an `out-of-range` error.
+         */
+        "max"?: string;
+        /**
+          * Inclusive lower bound in ISO `YYYY-MM-DD`. The validator rejects entries below this date with an `out-of-range` error.
+         */
+        "min"?: string;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Placeholder shown when the control is empty. Defaults to the format pattern (`DD/MM/YYYY` / `MM/DD/YYYY` / `YYYY-MM-DD`).
+         */
+        "placeholder"?: string;
+        /**
+          * Renders the field read-only. The control remains focusable and copyable.
+          * @default false
+         */
+        "readonly": boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required": boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size": DateInputSize;
+        /**
+          * Current display value, matching the configured `format` (e.g. `15/04/2025`). Reflects to the host attribute. Internal entry rewrites this prop as the user types — consumers can read it back at any time.
+          * @default ''
+         */
+        "value": string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant": DateInputVariant;
+    }
+    /**
+     * File Input — drag-and-drop / click-to-browse file selection molecule.
+     * Pattern B (molecule, internal DOM, form-associated): the host owns a hidden
+     * native `<input type="file">` for the browse path, manages the drop zone
+     * affordance, validates by `accept` / `maxSize` / `maxFiles`, and renders a
+     * per-file list of `cor-file-item` rows. Citizens get keyboard parity (Tab
+     * to focus, Enter/Space to open the picker) and a `role="status"` live region
+     * that announces add / remove / reject events.
+     * The component owns SELECTION + VALIDATION + DISPLAY. Real upload (progress,
+     * network errors, retries) is consumer-driven via the `corChange` event.
+     * State model (no style axis — Figma is state-only):
+     *   default → hover → focus → active (drag-over) → disabled
+     *   `invalid` is a separate validation flag that recolors the dashed border red
+     *   without introducing a style variant.
+     * @element cor-file-input
+     */
+    interface CorFileInput {
+        /**
+          * Native HTML `accept` attribute — MIME types and/or extensions, comma-separated.
+         */
+        "accept"?: string;
+        /**
+          * Accessible name; mirrors to the drop zone's `aria-label` when no visible label.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Label for the inline "choose files" link. Rendered as an underlined brand-blue button that opens the native file picker.
+          * @default 'Alege fișiere'
+         */
+        "chooseFilesText": string;
+        /**
+          * Lead-in CTA body text inside the drop area at rest. Renders BEFORE the brand-blue inline link. The trailing space is intentional — the link follows on the same line.
+          * @default 'Trage și plasează sau '
+         */
+        "ctaText": string;
+        /**
+          * Disables interactivity — drop zone ignores drops, button is blocked.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Body text shown while a drag is over the drop zone (Figma "Active" state). Replaces the resting body + hides the icon for the duration of the drag.
+          * @default 'Eliberează pentru a încărca'
+         */
+        "dropzoneActiveText": string;
+        /**
+          * Plain-text error message shown below the drop zone when `invalid` is set.
+         */
+        "errorText"?: string;
+        /**
+          * Currently accepted files. Two-way bound: assigning a new array rerenders the list, the citizen interacting fires events that the consumer may use to mutate this array externally.
+          * @default []
+         */
+        "files": File[];
+        /**
+          * Plain-text helper / hint shown below the drop zone.
+         */
+        "helperText"?: string;
+        /**
+          * Renders the red-border error treatment + wires `aria-invalid`.
+          * @default false
+         */
+        "invalid": boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Maximum number of files accepted when `multiple` is set.
+         */
+        "maxFiles"?: number;
+        /**
+          * Maximum per-file size in bytes; files above are rejected with `code='size'`.
+         */
+        "maxSize"?: number;
+        /**
+          * Top-right caption inside the field row, shown below the dropzone. When unset and `maxSize` is provided, this is derived from `maxSize` (bytes) as `Mărime maximă: 100 MB`. Explicit prop wins.
+         */
+        "maxSizeText"?: string;
+        /**
+          * Allow selecting more than one file.
+          * @default false
+         */
+        "multiple": boolean;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Marks the field as mandatory. Adds the red asterisk + `aria-required`.
+          * @default false
+         */
+        "required": boolean;
+        /**
+          * Visual size rung. Drives drop-zone min-height + label / icon scale.
+          * @default 'md'
+         */
+        "size": FileInputSize;
+        /**
+          * Top-left caption inside the field row, shown below the dropzone. When unset and `accept` is provided, this is derived from `accept` as `Formate acceptate: jpg, png, pdf`. Explicit prop wins.
+         */
+        "supportedFormatsText"?: string;
+    }
+    /**
+     * File Item — single-file row inside `cor-file-input` (or any file list surface).
+     * Pattern B (atom, internal DOM): renders filename + meta (size / error message)
+     * + state icon + remove button. The remove button is the only interactive
+     * element; the row itself is not focusable so it cannot trap citizens who tab
+     * past a long list.
+     * @element cor-file-item
+     */
+    interface CorFileItem {
+        /**
+          * Disables the remove button.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Per-item error message. Replaces the size meta line when `state="error"`.
+         */
+        "errorText"?: string;
+        /**
+          * Visible filename.
+          * @default ''
+         */
+        "filename": string;
+        /**
+          * Hide the remove button entirely (e.g. read-only summary lists).
+          * @default false
+         */
+        "noRemove": boolean;
+        /**
+          * Accessible label for the remove button. Provided in Romanian by default to match the institutional voice.
+          * @default 'Elimină fișierul'
+         */
+        "removeLabel": string;
+        /**
+          * Optional file size in bytes — rendered as a human-readable string.
+         */
+        "size"?: number;
+        /**
+          * Lifecycle state. Drives leading icon color and border treatment. Matches Figma's 4-state model: `uploaded` (resting), `uploading`, `success`, `error`.
+          * @default 'uploaded'
+         */
+        "state": FileItemState;
+    }
+    /**
      * Icon — renders an inline SVG fetched on-demand from per-size asset files.
      * Names follow the Material Symbols convention: append `-filled` to the base name
      * to request the filled variant (e.g. `check` outlined vs `check-filled`).
@@ -157,6 +409,261 @@ export namespace Components {
         "size": IconSize;
     }
     /**
+     * Input — single-line text-entry control.
+     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+     * inside shadow DOM. Form participation works via `formAssociated` +
+     * `ElementInternals`. The component is the canonical text-input primitive;
+     * specialised inputs (date, search, phone, etc.) compose around it.
+     * @element cor-input
+     */
+    interface CorInput {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Native `autocomplete` attribute forwarded to the internal control.
+         */
+        "autocomplete"?: string;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
+         */
+        "errorText"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Native `inputmode` hint forwarded to the internal control.
+         */
+        "inputmode"?: string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid": boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Loading state. When true the control becomes uninteractive and a trailing spinner replaces the `icon-end` slot. The host carries `aria-busy="true"` for assistive technologies.
+          * @default false
+         */
+        "loading": boolean;
+        /**
+          * Native `maxlength` constraint.
+         */
+        "maxLength"?: number;
+        /**
+          * Native `minlength` constraint.
+         */
+        "minLength"?: number;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Native `pattern` regex forwarded to the internal control.
+         */
+        "pattern"?: string;
+        /**
+          * Placeholder shown when the control is empty.
+         */
+        "placeholder"?: string;
+        /**
+          * Renders the field read-only. The control remains focusable and copyable.
+          * @default false
+         */
+        "readonly": boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required": boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size": InputSize;
+        /**
+          * Native input `type`.
+          * @default 'text'
+         */
+        "type": InputType;
+        /**
+          * Current value of the control. Reflects to the host attribute.
+          * @default ''
+         */
+        "value": string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant": InputVariant;
+    }
+    /**
+     * Input Chip — multi-value text-entry control where each confirmed value
+     * renders as a removable pill (chip / tag).
+     * Pattern B (molecule, internal DOM, form-associated). The host owns:
+     *   - the chip-list state (`chips` prop, two-way bound),
+     *   - the inline `<input type="text">` for the next value,
+     *   - regex / duplicate / max validation,
+     *   - the keyboard contract that lets the citizen navigate between input
+     *     and chips with arrow keys + delete chips with Backspace / Enter,
+     *   - a `role="status"` live region that announces add / remove / reject.
+     * The form value submitted to the surrounding `<form>` is a JSON-encoded
+     * array of strings (e.g. `["a@b.md","c@d.md"]`) when a `name` is set.
+     * @element cor-input-chip
+     */
+    interface CorInputChip {
+        /**
+          * Accessible name; mirrors to the group's `aria-label` when no visible label.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Confirmed chip values. Two-way bound: assigning a new array rerenders the list. Consumer mutations through events should set this prop.
+          * @default []
+         */
+        "chips": string[];
+        /**
+          * Disables interactivity. Both chip remove-buttons and the text input become inert.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set.
+         */
+        "errorText"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Forces destructive visuals regardless of `variant`.
+          * @default false
+         */
+        "invalid": boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Maximum number of chips accepted. Further additions emit `corError` with `code: 'max'`.
+         */
+        "maxChips"?: number;
+        /**
+          * Form-control `name`. Used during form submission (value: JSON-encoded array).
+         */
+        "name"?: string;
+        /**
+          * Placeholder shown when the inline input is empty and no chips exist.
+         */
+        "placeholder"?: string;
+        /**
+          * Renders the field read-only. The control remains focusable.
+          * @default false
+         */
+        "readonly": boolean;
+        /**
+          * Marks the field as mandatory. Adds the red asterisk + `aria-required`.
+          * @default false
+         */
+        "required": boolean;
+        /**
+          * Characters that confirm a chip in addition to Enter. Default is a comma.
+          * @default ','
+         */
+        "separators": string;
+        /**
+          * Visual size rung. Drives container min-height + chip pill scale.
+          * @default 'md'
+         */
+        "size": InputChipSize;
+        /**
+          * Optional regex (string form). Values that don't match are rejected with `code: 'pattern'`.
+         */
+        "validatePattern"?: string;
+        /**
+          * The not-yet-confirmed text currently typed into the inline input.
+          * @default ''
+         */
+        "value": string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant": InputChipVariant;
+    }
+    /**
+     * Link — interactive navigational atom.
+     * Pattern B (atom-interactive): renders its own `<a>` (or `<button>` when no
+     * `href` is set) inside shadow DOM.
+     * The component honors the **DESIGN.md "Visited Magenta Rule"** — `:visited`
+     * anchors flip to `#aa18ce` (`color.text.brand.visited`). When `target="_blank"`
+     * is set, `rel="noopener noreferrer"` is auto-applied and a small external-link
+     * indicator is rendered after the label unless the consumer explicitly opts out
+     * via `external="false"`.
+     * @element cor-link
+     */
+    interface CorLink {
+        /**
+          * Forwarded to the internal element as `aria-label`. Required when the default slot contains only an icon with no text label.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Disables interactivity. The link becomes inert: no navigation, no hover, no focus ring. `aria-disabled="true"` is set on the internal element and `pointer-events: none` is applied via CSS.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Anchor `download`. When present (any value including empty string), triggers a download instead of navigation.
+         */
+        "download"?: string;
+        /**
+          * When `true` (default) and `target="_blank"`, renders an external-link icon indicator after the label. Set to `false` to suppress the indicator (e.g. when the consumer wants to control the icon themselves via slot=icon-end).
+          * @default true
+         */
+        "external": boolean;
+        /**
+          * Anchor `href`. When absent, the link renders as a `<button>` for keyboard semantics (rare case for callback-driven "links").
+         */
+        "href"?: string;
+        /**
+          * Anchor `rel`. Explicitly setting this prop overrides the auto-applied `noopener noreferrer` when `target="_blank"`.
+         */
+        "rel"?: string;
+        /**
+          * Visual size rung mapped to body type scale (xs=12, sm=14, md=16, lg=18).
+          * @default 'md'
+         */
+        "size": LinkSize;
+        /**
+          * When `true`, the link expands to fill the inline-size of its container and receives a larger touch target. Designed for navigation lists, "View more" affordances, and standalone CTAs that are not embedded in prose.
+          * @default false
+         */
+        "standalone": boolean;
+        /**
+          * Anchor `target` (e.g. `_blank`). When set to `_blank`, the component auto-applies `rel="noopener noreferrer"` (unless `rel` is explicitly set) and renders an external-link indicator after the label.
+         */
+        "target"?: string;
+        /**
+          * Underline treatment. - `always` (default) — underline visible at rest, hover, focus, visited - `hover` — underline appears only on hover/focus - `none` — never underlined (use sparingly; accessibility risk)
+          * @default 'always'
+         */
+        "underline": LinkUnderline;
+        /**
+          * Color treatment. - `primary` (default) — institutional blue, the default link color - `strict` — ink (black) for high-emphasis inline links inside dense copy - `white` — for use on dark backgrounds (does not flip on hover beyond             slight opacity; visited still flips to magenta per the rule)
+          * @default 'primary'
+         */
+        "variant": LinkVariant;
+    }
+    /**
      * Brand logo for Moldovan M-products.
      * Each `name` resolves to a single self-contained SVG asset under `./assets/`.
      * The component fetches and renders that SVG into shadow DOM; the host's
@@ -179,6 +686,619 @@ export namespace Components {
           * @default 'mpay-logo-logomark-only'
          */
         "name": LogoName;
+    }
+    /**
+     * Numeric Input — numeric-entry control with stacked step buttons.
+     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+     * inside shadow DOM and pairs it with a trailing stepper stack (chevron-up
+     * over chevron-bottom). Shares the visual primitives of `cor-input` (border,
+     * focus ring, label, helper / error, sizes, states) and adds a
+     * `--numeric-input-stepper-*` token namespace for the increment / decrement
+     * affordance.
+     * Why `<input type="text" inputmode="decimal">` instead of
+     * `<input type="number">`: native `type="number"` mixes parsing, locale, and
+     * UI affordances in ways that interact poorly with `precision` rounding and
+     * `min`/`max` clamping. The component delegates parsing + clamping to its own
+     * logic and exposes `inputmode="decimal"` so mobile devices still surface the
+     * numeric keypad.
+     * @element cor-numeric-input
+     */
+    interface CorNumericInput {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Human-readable value announcement for screen readers (e.g. `"5 lei"`). Maps to the native `aria-valuetext` on the spinbutton.
+         */
+        "ariaValuetext"?: string;
+        /**
+          * Accessible label for the decrement button. Defaults to Romanian "Scade".
+          * @default 'Scade'
+         */
+        "decrementLabel": string;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute. Stepper buttons are also disabled.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
+         */
+        "errorText"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Accessible label for the increment button. Defaults to Romanian "Crește" per the institutional voice.
+          * @default 'Crește'
+         */
+        "incrementLabel": string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid": boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Loading state. When true the control becomes uninteractive and a brand `cor-spinner` replaces the trailing stepper stack. The host carries `aria-busy="true"` for assistive technologies.
+          * @default false
+         */
+        "loading": boolean;
+        /**
+          * Inclusive upper bound. Stepper-up disables at this value; manual entries above clamp on blur.
+         */
+        "max"?: number;
+        /**
+          * Inclusive lower bound. Stepper-down disables at this value; manual entries below clamp on blur.
+         */
+        "min"?: number;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Placeholder shown when the control is empty.
+         */
+        "placeholder"?: string;
+        /**
+          * Decimal precision applied on blur (number of decimal places). When unset the value is preserved as typed (subject to clamping).
+         */
+        "precision"?: number;
+        /**
+          * Renders the field read-only. The control remains focusable; steppers are suppressed.
+          * @default false
+         */
+        "readonly": boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required": boolean;
+        /**
+          * Show the trailing stacked stepper (chevron-up / chevron-bottom) buttons. Set to `false` for displays where steppers would clutter (e.g. compact filter chips).
+          * @default true
+         */
+        "showSteppers": boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size": NumericInputSize;
+        /**
+          * Increment / decrement amount applied by the stepper buttons and arrow keys.
+          * @default 1
+         */
+        "step": number;
+        /**
+          * Current numeric value. `undefined` represents an empty field. Reflects to the host attribute when set.
+         */
+        "value"?: number;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set. Numeric inputs ship 3 styles per Figma (no Warning) — invalid numeric values are typically out-of-range (Destructive) or confirmed-valid (Success); there is no in-between state worth a Warning tone.
+          * @default 'default'
+         */
+        "variant": NumericInputVariant;
+    }
+    /**
+     * Phone Input — phone-number entry molecule with country-code prefix and
+     * format mask. The most Moldova-specific input in the family: it ships a
+     * default `+373` country, a curated diaspora-relevant country list with
+     * inline-SVG flag glyphs, and Romanian-voice placeholder + error copy.
+     * Pattern B (molecule, form-associated): renders its own `<input type="tel">`
+     * inside shadow DOM alongside an inline country trigger that either
+     * displays a static flag+dial-code pill (`type="local"`, Moldova-first
+     * default) or a combobox that opens a country listbox (`type="international"`).
+     * Form participation works via `formAssociated` + `ElementInternals`; the
+     * form value is the canonical E.164 string (`+37362123456`).
+     * @element cor-phone-input
+     */
+    interface CorPhoneInput {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Optional whitelist of ISO codes to surface in the dropdown. Defaults to the curated 15-country Moldova-diaspora list when omitted.
+         */
+        "countries"?: string[];
+        /**
+          * Initial country selection (ISO 3166-1 alpha-2). Defaults to Moldova because the system serves citizens calling government services.
+          * @default 'MD'
+         */
+        "defaultCountry": string;
+        /**
+          * Disables interactivity. Trigger and input receive `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon. Defaults to the Romanian message `"Numărul de telefon este incomplet"` when `invalid` is set without a custom message.
+         */
+        "errorText"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid": boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Loading state. When true the control becomes uninteractive and an inline `cor-spinner` renders inside the input row. The host carries `aria-busy="true"` for assistive technologies.
+          * @default false
+         */
+        "loading": boolean;
+        /**
+          * Form-control `name`. Used during form submission with the E.164 value.
+         */
+        "name"?: string;
+        /**
+          * Reflects the open state of the country listbox. Mutate via `corOpen` / `corClose` events, not by writing to the attribute. Only meaningful when `type="international"` — Local mode never opens a listbox.
+          * @default false
+         */
+        "open": boolean;
+        /**
+          * Placeholder shown when the local segment is empty. Defaults to the country's mask.
+         */
+        "placeholder"?: string;
+        /**
+          * Renders the field read-only. The input remains focusable and copyable; the country trigger renders inert. Background steps into the soft-gray surface to telegraph "visible but not editable", matching the rest of the input family.
+          * @default false
+         */
+        "readonly": boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required": boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size": PhoneInputSize;
+        /**
+          * Phone entry mode. - `local` (default — Moldova-first): country trigger renders as a   static flag+dial-code pill (no chevron, no listbox). Assumes the   `defaultCountry` implicitly and only accepts its national format. - `international`: country trigger renders as a combobox (flag + dial   code + chevron); clicking opens a listbox of all eligible   countries. Use when the caller can't guarantee the citizen is   filing from inside the home market.
+          * @default 'local'
+         */
+        "type": PhoneInputType;
+        /**
+          * Current value — canonical E.164 (`+37362123456`). Reflects to the host attribute. Empty string represents an unfilled field.
+          * @default ''
+         */
+        "value": string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant": PhoneInputVariant;
+    }
+    /**
+     * Radio — single-select form input atom.
+     * Pattern B (atom-interactive, form-associated): renders its own
+     * `<input type="radio">` inside shadow DOM and paints the visual circle
+     * with CSS. Form participation works via `formAssociated` +
+     * `ElementInternals.setFormValue`. The component is the standalone radio
+     * primitive; a future `cor-radio-group` molecule will manage roving focus
+     * and `name`-based exclusivity across siblings.
+     * @element cor-radio
+     */
+    interface CorRadio {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * ID of the element labelling the radio. Used when label content lives outside the component.
+         */
+        "ariaLabelledby"?: string;
+        /**
+          * Whether the radio is currently selected.
+          * @default false
+         */
+        "checked": boolean;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Maps to Figma's "Error" state — border and selected dot turn red. Sets `aria-invalid` on the internal control.
+          * @default false
+         */
+        "invalid": boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Form-control `name`. Used during form submission and for grouping radios.
+         */
+        "name"?: string;
+        /**
+          * Renders the control read-only. It remains focusable but cannot be toggled.
+          * @default false
+         */
+        "readonly": boolean;
+        /**
+          * Marks the field as mandatory. Sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required": boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size": RadioSize;
+        /**
+          * Plain-text supporting text shown below the label. Use the `supporting-text` slot for richer content.
+         */
+        "supportingText"?: string;
+        /**
+          * Value submitted with the form when this radio is checked.
+         */
+        "value"?: string;
+    }
+    /**
+     * Search Input (circular) — single-line search-entry control with a fully
+     * rounded (pill) silhouette.
+     * Pattern B (atom-interactive, form-associated): renders its own
+     * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
+     * icon and an optional trailing clear `×` button that appears whenever the
+     * control carries a value. Behavior, props, slots, events, keyboard contract,
+     * and ARIA wiring are IDENTICAL to `cor-search-input-rectangular` — the only
+     * visual difference is the silhouette: corners flip to `borderRadius.full`
+     * (9999px) and horizontal padding grows one step (md +4px, lg +4px) to balance
+     * the rounded ends. The trailing submit button (when `with-button` is set)
+     * inherits the pill silhouette via `borderRadius.full`, rendering as a perfect
+     * circle that hugs the pill end per Figma master `933:29721`.
+     * The Republic of Moldova Unified Design System library catalogues circular
+     * and rectangular search fields as separate component_sets, so we ship them
+     * as distinct atoms with parallel token namespaces (`--search-input-circular-*`
+     * vs `--search-input-rectangular-*`).
+     * Optional axes per Figma master `933:29721`:
+     * - `loading` — async query is in flight; a trailing spinner appears next to
+     *   the value/placeholder and the control is announced as `aria-busy`.
+     * - `with-button` — adds a trailing brand-blue circular submit button that
+     *   fires `corSearch` on click. Coexists with the clear button and the
+     *   loading spinner.
+     * @element cor-search-input-circular
+     */
+    interface CorSearchInputCircular {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Native `autocomplete` attribute forwarded to the internal control.
+         */
+        "autocomplete"?: string;
+        /**
+          * Accessible label for the trailing clear button. Defaults to Romanian "Șterge" per the institutional voice.
+          * @default 'Șterge'
+         */
+        "clearLabel": string;
+        /**
+          * Shows the trailing clear `×` button when a value is present. Set to `false` to suppress the affordance entirely (useful for read-only or always-on filters).
+          * @default true
+         */
+        "clearable": boolean;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
+         */
+        "errorText"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Icon name for the leading icon (rendered via the local SVG library). Override by providing an element to the `icon-start` slot.
+          * @default 'search'
+         */
+        "iconName": string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid": boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Indicates an in-flight query. Replaces the leading magnifying-glass icon with a brand-coloured `cor-spinner` and exposes `aria-busy` on the internal control. The field stays focusable; emitting `corSearch` while loading is the consumer's responsibility (typically debounced).
+          * @default false
+         */
+        "loading": boolean;
+        /**
+          * Native `maxlength` constraint.
+         */
+        "maxLength"?: number;
+        /**
+          * Native `minlength` constraint.
+         */
+        "minLength"?: number;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Placeholder shown when the control is empty.
+         */
+        "placeholder"?: string;
+        /**
+          * Renders the field read-only. The control remains focusable; the clear affordance is suppressed.
+          * @default false
+         */
+        "readonly": boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required": boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size": SearchInputCircularSize;
+        /**
+          * Accessible label for the trailing submit button. Defaults to Romanian "Caută" per the institutional voice.
+          * @default 'Caută'
+         */
+        "submitLabel": string;
+        /**
+          * Current value of the control. Reflects to the host attribute.
+          * @default ''
+         */
+        "value": string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant": SearchInputCircularVariant;
+        /**
+          * Renders a trailing brand-blue circular submit button (the Figma "Button=True" axis on master `933:29721`). Clicking the button — or pressing Enter inside the input — dispatches `corSearch` with the current value. When the field is empty or disabled, the button enters a disabled visual state and does not fire the event.
+          * @default false
+         */
+        "withButton": boolean;
+    }
+    /**
+     * Search Input (rectangular) — single-line search-entry control.
+     * Pattern B (atom-interactive, form-associated): renders its own
+     * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
+     * icon and an optional trailing clear `×` button that appears whenever the
+     * control carries a value. Visual primitives (border, focus ring, label,
+     * helper / error, sizes, states) are shared with `cor-input`; specific
+     * affordances (icon-start, icon-end-clear, submit-button) live in the
+     * `--search-input-rectangular-*` token namespace.
+     * Rectangular shape is the default sibling of `cor-search-input-circular`
+     * (pill). The two ship as distinct components per the Figma component-set
+     * separation in the Republic of Moldova Unified Design System library.
+     * Optional axes per Figma master `933:29099`:
+     * - `loading` — async query is in flight; a trailing spinner appears next to
+     *   the value/placeholder and the control is announced as `aria-busy`.
+     * - `with-button` — adds a trailing brand-blue submit button that fires
+     *   `corSearch` on click. Coexists with the clear button and the loading
+     *   spinner.
+     * @element cor-search-input-rectangular
+     */
+    interface CorSearchInputRectangular {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Native `autocomplete` attribute forwarded to the internal control.
+         */
+        "autocomplete"?: string;
+        /**
+          * Accessible label for the trailing clear button. Defaults to Romanian "Șterge" per the institutional voice.
+          * @default 'Șterge'
+         */
+        "clearLabel": string;
+        /**
+          * Shows the trailing clear `×` button when a value is present. Set to `false` to suppress the affordance entirely (useful for read-only or always-on filters).
+          * @default true
+         */
+        "clearable": boolean;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
+         */
+        "errorText"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Icon name for the leading icon (rendered via the local SVG library). Override by providing an element to the `icon-start` slot.
+          * @default 'search'
+         */
+        "iconName": string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid": boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Indicates an in-flight query. Replaces the leading magnifying-glass icon with a brand-coloured `cor-spinner` and exposes `aria-busy` on the internal control. The field stays focusable; emitting `corSearch` while loading is the consumer's responsibility (typically debounced).
+          * @default false
+         */
+        "loading": boolean;
+        /**
+          * Native `maxlength` constraint.
+         */
+        "maxLength"?: number;
+        /**
+          * Native `minlength` constraint.
+         */
+        "minLength"?: number;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Placeholder shown when the control is empty.
+         */
+        "placeholder"?: string;
+        /**
+          * Renders the field read-only. The control remains focusable; the clear affordance is suppressed.
+          * @default false
+         */
+        "readonly": boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required": boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size": SearchInputRectangularSize;
+        /**
+          * Accessible label for the trailing submit button. Defaults to Romanian "Caută" per the institutional voice.
+          * @default 'Caută'
+         */
+        "submitLabel": string;
+        /**
+          * Current value of the control. Reflects to the host attribute.
+          * @default ''
+         */
+        "value": string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant": SearchInputRectangularVariant;
+        /**
+          * Renders a trailing brand-blue submit button (the Figma "Button=True" axis). Clicking the button — or pressing Enter inside the input — dispatches `corSearch` with the current value. When the field is empty or disabled, the button enters a disabled visual state and does not fire the event.
+          * @default false
+         */
+        "withButton": boolean;
+    }
+    /**
+     * Select Input — single-select dropdown atom.
+     * Pattern B (atom-interactive, form-associated): renders a custom-styled
+     * trigger button and a listbox popover inside shadow DOM. Form participation
+     * works via `formAssociated` + `ElementInternals`. Shares the visual primitives
+     * of `cor-input` (border, focus ring, label, helper / error text, sizes,
+     * states) and adds a trailing chevron icon, listbox menu, and keyboard
+     * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
+     * pattern.
+     * @element cor-select-input
+     */
+    interface CorSelectInput {
+        /**
+          * Accessible name. Mirrors to the trigger's `aria-label` when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Disables interactivity. The trigger receives `aria-disabled` and the hidden native `<select>` receives the `disabled` attribute.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
+         */
+        "errorText"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid": boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Reflects the open state of the listbox popover. Read-only externally — use `corOpen` / `corClose` to react to changes.
+          * @default false
+         */
+        "open": boolean;
+        /**
+          * Declarative option list. When omitted the component falls back to its default slot, allowing `<option>` children for HTML-native composition.
+         */
+        "options"?: SelectOption[];
+        /**
+          * Placeholder shown when no option is selected.
+         */
+        "placeholder"?: string;
+        /**
+          * Renders the field read-only. The trigger remains focusable but the listbox cannot be opened.
+          * @default false
+         */
+        "readonly": boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the trigger.
+          * @default false
+         */
+        "required": boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size": SelectInputSize;
+        /**
+          * Selected value. Reflects to the host attribute. Set to empty string when no option is selected.
+          * @default ''
+         */
+        "value": string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant": SelectInputVariant;
     }
     /**
      * Service Button — interactive control for Moldovan M-products (mpay, mpass,
@@ -266,9 +1386,53 @@ export namespace Components {
         "variant": SpinnerVariant;
     }
 }
+export interface CorDateInputCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorDateInputElement;
+}
+export interface CorFileInputCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorFileInputElement;
+}
+export interface CorFileItemCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorFileItemElement;
+}
+export interface CorInputCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorInputElement;
+}
+export interface CorInputChipCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorInputChipElement;
+}
 export interface CorLogoCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLCorLogoElement;
+}
+export interface CorNumericInputCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorNumericInputElement;
+}
+export interface CorPhoneInputCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorPhoneInputElement;
+}
+export interface CorRadioCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorRadioElement;
+}
+export interface CorSearchInputCircularCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorSearchInputCircularElement;
+}
+export interface CorSearchInputRectangularCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorSearchInputRectangularElement;
+}
+export interface CorSelectInputCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorSelectInputElement;
 }
 declare global {
     /**
@@ -299,6 +1463,97 @@ declare global {
         prototype: HTMLCorButtonGroupElement;
         new (): HTMLCorButtonGroupElement;
     };
+    interface HTMLCorDateInputElementEventMap {
+        "corInput": DateInputTypingDetail;
+        "corChange": DateInputChangeDetail;
+        "corFocus": FocusEvent;
+        "corBlur": FocusEvent;
+    }
+    /**
+     * Date Input — segment-masked date entry molecule.
+     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+     * inside shadow DOM and overlays a ghost format hint that lets the unfilled
+     * `DD/MM/YYYY` segments stay visible while the user types — matching the
+     * "focus: date-populated / month-populated / fully-populated" Figma states.
+     * @element cor-date-input
+     */
+    interface HTMLCorDateInputElement extends Components.CorDateInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorDateInputElementEventMap>(type: K, listener: (this: HTMLCorDateInputElement, ev: CorDateInputCustomEvent<HTMLCorDateInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorDateInputElementEventMap>(type: K, listener: (this: HTMLCorDateInputElement, ev: CorDateInputCustomEvent<HTMLCorDateInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorDateInputElement: {
+        prototype: HTMLCorDateInputElement;
+        new (): HTMLCorDateInputElement;
+    };
+    interface HTMLCorFileInputElementEventMap {
+        "corChange": FileInputChangeDetail;
+        "corDragEnter": DragEvent;
+        "corDragLeave": DragEvent;
+        "corDrop": FileInputDropDetail;
+        "corRemove": FileInputRemoveDetail;
+        "corError": FileInputErrorDetail;
+    }
+    /**
+     * File Input — drag-and-drop / click-to-browse file selection molecule.
+     * Pattern B (molecule, internal DOM, form-associated): the host owns a hidden
+     * native `<input type="file">` for the browse path, manages the drop zone
+     * affordance, validates by `accept` / `maxSize` / `maxFiles`, and renders a
+     * per-file list of `cor-file-item` rows. Citizens get keyboard parity (Tab
+     * to focus, Enter/Space to open the picker) and a `role="status"` live region
+     * that announces add / remove / reject events.
+     * The component owns SELECTION + VALIDATION + DISPLAY. Real upload (progress,
+     * network errors, retries) is consumer-driven via the `corChange` event.
+     * State model (no style axis — Figma is state-only):
+     *   default → hover → focus → active (drag-over) → disabled
+     *   `invalid` is a separate validation flag that recolors the dashed border red
+     *   without introducing a style variant.
+     * @element cor-file-input
+     */
+    interface HTMLCorFileInputElement extends Components.CorFileInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorFileInputElementEventMap>(type: K, listener: (this: HTMLCorFileInputElement, ev: CorFileInputCustomEvent<HTMLCorFileInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorFileInputElementEventMap>(type: K, listener: (this: HTMLCorFileInputElement, ev: CorFileInputCustomEvent<HTMLCorFileInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorFileInputElement: {
+        prototype: HTMLCorFileInputElement;
+        new (): HTMLCorFileInputElement;
+    };
+    interface HTMLCorFileItemElementEventMap {
+        "corRemove": FileItemRemoveDetail;
+    }
+    /**
+     * File Item — single-file row inside `cor-file-input` (or any file list surface).
+     * Pattern B (atom, internal DOM): renders filename + meta (size / error message)
+     * + state icon + remove button. The remove button is the only interactive
+     * element; the row itself is not focusable so it cannot trap citizens who tab
+     * past a long list.
+     * @element cor-file-item
+     */
+    interface HTMLCorFileItemElement extends Components.CorFileItem, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorFileItemElementEventMap>(type: K, listener: (this: HTMLCorFileItemElement, ev: CorFileItemCustomEvent<HTMLCorFileItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorFileItemElementEventMap>(type: K, listener: (this: HTMLCorFileItemElement, ev: CorFileItemCustomEvent<HTMLCorFileItemElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorFileItemElement: {
+        prototype: HTMLCorFileItemElement;
+        new (): HTMLCorFileItemElement;
+    };
     /**
      * Icon — renders an inline SVG fetched on-demand from per-size asset files.
      * Names follow the Material Symbols convention: append `-filled` to the base name
@@ -313,6 +1568,87 @@ declare global {
     var HTMLCorIconElement: {
         prototype: HTMLCorIconElement;
         new (): HTMLCorIconElement;
+    };
+    interface HTMLCorInputElementEventMap {
+        "corInput": InputChangeDetail;
+        "corChange": InputChangeDetail;
+        "corFocus": FocusEvent;
+        "corBlur": FocusEvent;
+    }
+    /**
+     * Input — single-line text-entry control.
+     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+     * inside shadow DOM. Form participation works via `formAssociated` +
+     * `ElementInternals`. The component is the canonical text-input primitive;
+     * specialised inputs (date, search, phone, etc.) compose around it.
+     * @element cor-input
+     */
+    interface HTMLCorInputElement extends Components.CorInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorInputElementEventMap>(type: K, listener: (this: HTMLCorInputElement, ev: CorInputCustomEvent<HTMLCorInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorInputElementEventMap>(type: K, listener: (this: HTMLCorInputElement, ev: CorInputCustomEvent<HTMLCorInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorInputElement: {
+        prototype: HTMLCorInputElement;
+        new (): HTMLCorInputElement;
+    };
+    interface HTMLCorInputChipElementEventMap {
+        "corChange": InputChipChangeDetail;
+        "corChipAdd": InputChipAddDetail;
+        "corChipRemove": InputChipRemoveDetail;
+        "corError": InputChipErrorDetail;
+        "corFocus": FocusEvent;
+        "corBlur": FocusEvent;
+    }
+    /**
+     * Input Chip — multi-value text-entry control where each confirmed value
+     * renders as a removable pill (chip / tag).
+     * Pattern B (molecule, internal DOM, form-associated). The host owns:
+     *   - the chip-list state (`chips` prop, two-way bound),
+     *   - the inline `<input type="text">` for the next value,
+     *   - regex / duplicate / max validation,
+     *   - the keyboard contract that lets the citizen navigate between input
+     *     and chips with arrow keys + delete chips with Backspace / Enter,
+     *   - a `role="status"` live region that announces add / remove / reject.
+     * The form value submitted to the surrounding `<form>` is a JSON-encoded
+     * array of strings (e.g. `["a@b.md","c@d.md"]`) when a `name` is set.
+     * @element cor-input-chip
+     */
+    interface HTMLCorInputChipElement extends Components.CorInputChip, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorInputChipElementEventMap>(type: K, listener: (this: HTMLCorInputChipElement, ev: CorInputChipCustomEvent<HTMLCorInputChipElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorInputChipElementEventMap>(type: K, listener: (this: HTMLCorInputChipElement, ev: CorInputChipCustomEvent<HTMLCorInputChipElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorInputChipElement: {
+        prototype: HTMLCorInputChipElement;
+        new (): HTMLCorInputChipElement;
+    };
+    /**
+     * Link — interactive navigational atom.
+     * Pattern B (atom-interactive): renders its own `<a>` (or `<button>` when no
+     * `href` is set) inside shadow DOM.
+     * The component honors the **DESIGN.md "Visited Magenta Rule"** — `:visited`
+     * anchors flip to `#aa18ce` (`color.text.brand.visited`). When `target="_blank"`
+     * is set, `rel="noopener noreferrer"` is auto-applied and a small external-link
+     * indicator is rendered after the label unless the consumer explicitly opts out
+     * via `external="false"`.
+     * @element cor-link
+     */
+    interface HTMLCorLinkElement extends Components.CorLink, HTMLStencilElement {
+    }
+    var HTMLCorLinkElement: {
+        prototype: HTMLCorLinkElement;
+        new (): HTMLCorLinkElement;
     };
     interface HTMLCorLogoElementEventMap {
         "corLogoError": { name: string; reason: 'unknown' | 'fetch-failed' };
@@ -343,6 +1679,230 @@ declare global {
     var HTMLCorLogoElement: {
         prototype: HTMLCorLogoElement;
         new (): HTMLCorLogoElement;
+    };
+    interface HTMLCorNumericInputElementEventMap {
+        "corInput": NumericInputChangeDetail;
+        "corChange": NumericInputChangeDetail;
+        "corStep": NumericInputStepDetail;
+        "corError": NumericInputErrorDetail;
+        "corFocus": FocusEvent;
+        "corBlur": FocusEvent;
+    }
+    /**
+     * Numeric Input — numeric-entry control with stacked step buttons.
+     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+     * inside shadow DOM and pairs it with a trailing stepper stack (chevron-up
+     * over chevron-bottom). Shares the visual primitives of `cor-input` (border,
+     * focus ring, label, helper / error, sizes, states) and adds a
+     * `--numeric-input-stepper-*` token namespace for the increment / decrement
+     * affordance.
+     * Why `<input type="text" inputmode="decimal">` instead of
+     * `<input type="number">`: native `type="number"` mixes parsing, locale, and
+     * UI affordances in ways that interact poorly with `precision` rounding and
+     * `min`/`max` clamping. The component delegates parsing + clamping to its own
+     * logic and exposes `inputmode="decimal"` so mobile devices still surface the
+     * numeric keypad.
+     * @element cor-numeric-input
+     */
+    interface HTMLCorNumericInputElement extends Components.CorNumericInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorNumericInputElementEventMap>(type: K, listener: (this: HTMLCorNumericInputElement, ev: CorNumericInputCustomEvent<HTMLCorNumericInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorNumericInputElementEventMap>(type: K, listener: (this: HTMLCorNumericInputElement, ev: CorNumericInputCustomEvent<HTMLCorNumericInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorNumericInputElement: {
+        prototype: HTMLCorNumericInputElement;
+        new (): HTMLCorNumericInputElement;
+    };
+    interface HTMLCorPhoneInputElementEventMap {
+        "corInput": PhoneInputInputDetail;
+        "corChange": PhoneInputChangeDetail;
+        "corCountryChange": PhoneInputCountryChangeDetail;
+        "corOpen": void;
+        "corClose": void;
+        "corFocus": FocusEvent;
+        "corBlur": FocusEvent;
+    }
+    /**
+     * Phone Input — phone-number entry molecule with country-code prefix and
+     * format mask. The most Moldova-specific input in the family: it ships a
+     * default `+373` country, a curated diaspora-relevant country list with
+     * inline-SVG flag glyphs, and Romanian-voice placeholder + error copy.
+     * Pattern B (molecule, form-associated): renders its own `<input type="tel">`
+     * inside shadow DOM alongside an inline country trigger that either
+     * displays a static flag+dial-code pill (`type="local"`, Moldova-first
+     * default) or a combobox that opens a country listbox (`type="international"`).
+     * Form participation works via `formAssociated` + `ElementInternals`; the
+     * form value is the canonical E.164 string (`+37362123456`).
+     * @element cor-phone-input
+     */
+    interface HTMLCorPhoneInputElement extends Components.CorPhoneInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorPhoneInputElementEventMap>(type: K, listener: (this: HTMLCorPhoneInputElement, ev: CorPhoneInputCustomEvent<HTMLCorPhoneInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorPhoneInputElementEventMap>(type: K, listener: (this: HTMLCorPhoneInputElement, ev: CorPhoneInputCustomEvent<HTMLCorPhoneInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorPhoneInputElement: {
+        prototype: HTMLCorPhoneInputElement;
+        new (): HTMLCorPhoneInputElement;
+    };
+    interface HTMLCorRadioElementEventMap {
+        "corChange": RadioChangeDetail;
+        "corFocus": FocusEvent;
+        "corBlur": FocusEvent;
+    }
+    /**
+     * Radio — single-select form input atom.
+     * Pattern B (atom-interactive, form-associated): renders its own
+     * `<input type="radio">` inside shadow DOM and paints the visual circle
+     * with CSS. Form participation works via `formAssociated` +
+     * `ElementInternals.setFormValue`. The component is the standalone radio
+     * primitive; a future `cor-radio-group` molecule will manage roving focus
+     * and `name`-based exclusivity across siblings.
+     * @element cor-radio
+     */
+    interface HTMLCorRadioElement extends Components.CorRadio, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorRadioElementEventMap>(type: K, listener: (this: HTMLCorRadioElement, ev: CorRadioCustomEvent<HTMLCorRadioElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorRadioElementEventMap>(type: K, listener: (this: HTMLCorRadioElement, ev: CorRadioCustomEvent<HTMLCorRadioElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorRadioElement: {
+        prototype: HTMLCorRadioElement;
+        new (): HTMLCorRadioElement;
+    };
+    interface HTMLCorSearchInputCircularElementEventMap {
+        "corInput": SearchInputCircularChangeDetail;
+        "corChange": SearchInputCircularChangeDetail;
+        "corSearch": SearchInputCircularSearchDetail;
+        "corClear": void;
+        "corFocus": FocusEvent;
+        "corBlur": FocusEvent;
+    }
+    /**
+     * Search Input (circular) — single-line search-entry control with a fully
+     * rounded (pill) silhouette.
+     * Pattern B (atom-interactive, form-associated): renders its own
+     * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
+     * icon and an optional trailing clear `×` button that appears whenever the
+     * control carries a value. Behavior, props, slots, events, keyboard contract,
+     * and ARIA wiring are IDENTICAL to `cor-search-input-rectangular` — the only
+     * visual difference is the silhouette: corners flip to `borderRadius.full`
+     * (9999px) and horizontal padding grows one step (md +4px, lg +4px) to balance
+     * the rounded ends. The trailing submit button (when `with-button` is set)
+     * inherits the pill silhouette via `borderRadius.full`, rendering as a perfect
+     * circle that hugs the pill end per Figma master `933:29721`.
+     * The Republic of Moldova Unified Design System library catalogues circular
+     * and rectangular search fields as separate component_sets, so we ship them
+     * as distinct atoms with parallel token namespaces (`--search-input-circular-*`
+     * vs `--search-input-rectangular-*`).
+     * Optional axes per Figma master `933:29721`:
+     * - `loading` — async query is in flight; a trailing spinner appears next to
+     *   the value/placeholder and the control is announced as `aria-busy`.
+     * - `with-button` — adds a trailing brand-blue circular submit button that
+     *   fires `corSearch` on click. Coexists with the clear button and the
+     *   loading spinner.
+     * @element cor-search-input-circular
+     */
+    interface HTMLCorSearchInputCircularElement extends Components.CorSearchInputCircular, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorSearchInputCircularElementEventMap>(type: K, listener: (this: HTMLCorSearchInputCircularElement, ev: CorSearchInputCircularCustomEvent<HTMLCorSearchInputCircularElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorSearchInputCircularElementEventMap>(type: K, listener: (this: HTMLCorSearchInputCircularElement, ev: CorSearchInputCircularCustomEvent<HTMLCorSearchInputCircularElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorSearchInputCircularElement: {
+        prototype: HTMLCorSearchInputCircularElement;
+        new (): HTMLCorSearchInputCircularElement;
+    };
+    interface HTMLCorSearchInputRectangularElementEventMap {
+        "corInput": SearchInputRectangularChangeDetail;
+        "corChange": SearchInputRectangularChangeDetail;
+        "corSearch": SearchInputRectangularSearchDetail;
+        "corClear": void;
+        "corFocus": FocusEvent;
+        "corBlur": FocusEvent;
+    }
+    /**
+     * Search Input (rectangular) — single-line search-entry control.
+     * Pattern B (atom-interactive, form-associated): renders its own
+     * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
+     * icon and an optional trailing clear `×` button that appears whenever the
+     * control carries a value. Visual primitives (border, focus ring, label,
+     * helper / error, sizes, states) are shared with `cor-input`; specific
+     * affordances (icon-start, icon-end-clear, submit-button) live in the
+     * `--search-input-rectangular-*` token namespace.
+     * Rectangular shape is the default sibling of `cor-search-input-circular`
+     * (pill). The two ship as distinct components per the Figma component-set
+     * separation in the Republic of Moldova Unified Design System library.
+     * Optional axes per Figma master `933:29099`:
+     * - `loading` — async query is in flight; a trailing spinner appears next to
+     *   the value/placeholder and the control is announced as `aria-busy`.
+     * - `with-button` — adds a trailing brand-blue submit button that fires
+     *   `corSearch` on click. Coexists with the clear button and the loading
+     *   spinner.
+     * @element cor-search-input-rectangular
+     */
+    interface HTMLCorSearchInputRectangularElement extends Components.CorSearchInputRectangular, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorSearchInputRectangularElementEventMap>(type: K, listener: (this: HTMLCorSearchInputRectangularElement, ev: CorSearchInputRectangularCustomEvent<HTMLCorSearchInputRectangularElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorSearchInputRectangularElementEventMap>(type: K, listener: (this: HTMLCorSearchInputRectangularElement, ev: CorSearchInputRectangularCustomEvent<HTMLCorSearchInputRectangularElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorSearchInputRectangularElement: {
+        prototype: HTMLCorSearchInputRectangularElement;
+        new (): HTMLCorSearchInputRectangularElement;
+    };
+    interface HTMLCorSelectInputElementEventMap {
+        "corChange": SelectChangeDetail;
+        "corOpen": void;
+        "corClose": void;
+        "corFocus": FocusEvent;
+        "corBlur": FocusEvent;
+    }
+    /**
+     * Select Input — single-select dropdown atom.
+     * Pattern B (atom-interactive, form-associated): renders a custom-styled
+     * trigger button and a listbox popover inside shadow DOM. Form participation
+     * works via `formAssociated` + `ElementInternals`. Shares the visual primitives
+     * of `cor-input` (border, focus ring, label, helper / error text, sizes,
+     * states) and adds a trailing chevron icon, listbox menu, and keyboard
+     * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
+     * pattern.
+     * @element cor-select-input
+     */
+    interface HTMLCorSelectInputElement extends Components.CorSelectInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorSelectInputElementEventMap>(type: K, listener: (this: HTMLCorSelectInputElement, ev: CorSelectInputCustomEvent<HTMLCorSelectInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorSelectInputElementEventMap>(type: K, listener: (this: HTMLCorSelectInputElement, ev: CorSelectInputCustomEvent<HTMLCorSelectInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorSelectInputElement: {
+        prototype: HTMLCorSelectInputElement;
+        new (): HTMLCorSelectInputElement;
     };
     /**
      * Service Button — interactive control for Moldovan M-products (mpay, mpass,
@@ -376,8 +1936,20 @@ declare global {
     interface HTMLElementTagNameMap {
         "cor-button": HTMLCorButtonElement;
         "cor-button-group": HTMLCorButtonGroupElement;
+        "cor-date-input": HTMLCorDateInputElement;
+        "cor-file-input": HTMLCorFileInputElement;
+        "cor-file-item": HTMLCorFileItemElement;
         "cor-icon": HTMLCorIconElement;
+        "cor-input": HTMLCorInputElement;
+        "cor-input-chip": HTMLCorInputChipElement;
+        "cor-link": HTMLCorLinkElement;
         "cor-logo": HTMLCorLogoElement;
+        "cor-numeric-input": HTMLCorNumericInputElement;
+        "cor-phone-input": HTMLCorPhoneInputElement;
+        "cor-radio": HTMLCorRadioElement;
+        "cor-search-input-circular": HTMLCorSearchInputCircularElement;
+        "cor-search-input-rectangular": HTMLCorSearchInputRectangularElement;
+        "cor-select-input": HTMLCorSelectInputElement;
         "cor-service-button": HTMLCorServiceButtonElement;
         "cor-spinner": HTMLCorSpinnerElement;
     }
@@ -486,6 +2058,286 @@ declare namespace LocalJSX {
         "orientation"?: ButtonGroupOrientation;
     }
     /**
+     * Date Input — segment-masked date entry molecule.
+     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+     * inside shadow DOM and overlays a ghost format hint that lets the unfilled
+     * `DD/MM/YYYY` segments stay visible while the user types — matching the
+     * "focus: date-populated / month-populated / fully-populated" Figma states.
+     * @element cor-date-input
+     */
+    interface CorDateInput {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
+         */
+        "errorText"?: string;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Display format. The component accepts only the digits the format permits and rewrites the value with the separator inline as the user types.
+          * @default 'DD/MM/YYYY'
+         */
+        "format"?: DateInputFormat;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid"?: boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Inclusive upper bound in ISO `YYYY-MM-DD`. The validator rejects entries above this date with an `out-of-range` error.
+         */
+        "max"?: string;
+        /**
+          * Inclusive lower bound in ISO `YYYY-MM-DD`. The validator rejects entries below this date with an `out-of-range` error.
+         */
+        "min"?: string;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Fires when the internal control loses focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onCorBlur"?: (event: CorDateInputCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires when the value is committed (typically on `blur` or `Enter`). `detail.value` is the committed display value; `detail.isoValue` is the ISO `YYYY-MM-DD` when fully populated and valid, otherwise `null`.
+         */
+        "onCorChange"?: (event: CorDateInputCustomEvent<DateInputChangeDetail>) => void;
+        /**
+          * Fires when the internal control gains focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onCorFocus"?: (event: CorDateInputCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires on every keystroke. `detail.value` is the current display value; `detail.isoValue` is the ISO `YYYY-MM-DD` when fully populated and valid, otherwise `null`. `detail.segment` is the segment under the caret.
+         */
+        "onCorInput"?: (event: CorDateInputCustomEvent<DateInputTypingDetail>) => void;
+        /**
+          * Placeholder shown when the control is empty. Defaults to the format pattern (`DD/MM/YYYY` / `MM/DD/YYYY` / `YYYY-MM-DD`).
+         */
+        "placeholder"?: string;
+        /**
+          * Renders the field read-only. The control remains focusable and copyable.
+          * @default false
+         */
+        "readonly"?: boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required"?: boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size"?: DateInputSize;
+        /**
+          * Current display value, matching the configured `format` (e.g. `15/04/2025`). Reflects to the host attribute. Internal entry rewrites this prop as the user types — consumers can read it back at any time.
+          * @default ''
+         */
+        "value"?: string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant"?: DateInputVariant;
+    }
+    /**
+     * File Input — drag-and-drop / click-to-browse file selection molecule.
+     * Pattern B (molecule, internal DOM, form-associated): the host owns a hidden
+     * native `<input type="file">` for the browse path, manages the drop zone
+     * affordance, validates by `accept` / `maxSize` / `maxFiles`, and renders a
+     * per-file list of `cor-file-item` rows. Citizens get keyboard parity (Tab
+     * to focus, Enter/Space to open the picker) and a `role="status"` live region
+     * that announces add / remove / reject events.
+     * The component owns SELECTION + VALIDATION + DISPLAY. Real upload (progress,
+     * network errors, retries) is consumer-driven via the `corChange` event.
+     * State model (no style axis — Figma is state-only):
+     *   default → hover → focus → active (drag-over) → disabled
+     *   `invalid` is a separate validation flag that recolors the dashed border red
+     *   without introducing a style variant.
+     * @element cor-file-input
+     */
+    interface CorFileInput {
+        /**
+          * Native HTML `accept` attribute — MIME types and/or extensions, comma-separated.
+         */
+        "accept"?: string;
+        /**
+          * Accessible name; mirrors to the drop zone's `aria-label` when no visible label.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Label for the inline "choose files" link. Rendered as an underlined brand-blue button that opens the native file picker.
+          * @default 'Alege fișiere'
+         */
+        "chooseFilesText"?: string;
+        /**
+          * Lead-in CTA body text inside the drop area at rest. Renders BEFORE the brand-blue inline link. The trailing space is intentional — the link follows on the same line.
+          * @default 'Trage și plasează sau '
+         */
+        "ctaText"?: string;
+        /**
+          * Disables interactivity — drop zone ignores drops, button is blocked.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Body text shown while a drag is over the drop zone (Figma "Active" state). Replaces the resting body + hides the icon for the duration of the drag.
+          * @default 'Eliberează pentru a încărca'
+         */
+        "dropzoneActiveText"?: string;
+        /**
+          * Plain-text error message shown below the drop zone when `invalid` is set.
+         */
+        "errorText"?: string;
+        /**
+          * Currently accepted files. Two-way bound: assigning a new array rerenders the list, the citizen interacting fires events that the consumer may use to mutate this array externally.
+          * @default []
+         */
+        "files"?: File[];
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Plain-text helper / hint shown below the drop zone.
+         */
+        "helperText"?: string;
+        /**
+          * Renders the red-border error treatment + wires `aria-invalid`.
+          * @default false
+         */
+        "invalid"?: boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Maximum number of files accepted when `multiple` is set.
+         */
+        "maxFiles"?: number;
+        /**
+          * Maximum per-file size in bytes; files above are rejected with `code='size'`.
+         */
+        "maxSize"?: number;
+        /**
+          * Top-right caption inside the field row, shown below the dropzone. When unset and `maxSize` is provided, this is derived from `maxSize` (bytes) as `Mărime maximă: 100 MB`. Explicit prop wins.
+         */
+        "maxSizeText"?: string;
+        /**
+          * Allow selecting more than one file.
+          * @default false
+         */
+        "multiple"?: boolean;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Fires when the accepted file list changes (browse OR drop OR remove).
+         */
+        "onCorChange"?: (event: CorFileInputCustomEvent<FileInputChangeDetail>) => void;
+        /**
+          * Fires when a drag enters the drop zone.
+         */
+        "onCorDragEnter"?: (event: CorFileInputCustomEvent<DragEvent>) => void;
+        /**
+          * Fires when the drag leaves the drop zone.
+         */
+        "onCorDragLeave"?: (event: CorFileInputCustomEvent<DragEvent>) => void;
+        /**
+          * Fires after a drop, with the accepted / rejected split + the first rejection reason.
+         */
+        "onCorDrop"?: (event: CorFileInputCustomEvent<FileInputDropDetail>) => void;
+        /**
+          * Fires for every rejected file (size / type / count). One event per file.
+         */
+        "onCorError"?: (event: CorFileInputCustomEvent<FileInputErrorDetail>) => void;
+        /**
+          * Fires when a file is removed from the inline list.
+         */
+        "onCorRemove"?: (event: CorFileInputCustomEvent<FileInputRemoveDetail>) => void;
+        /**
+          * Marks the field as mandatory. Adds the red asterisk + `aria-required`.
+          * @default false
+         */
+        "required"?: boolean;
+        /**
+          * Visual size rung. Drives drop-zone min-height + label / icon scale.
+          * @default 'md'
+         */
+        "size"?: FileInputSize;
+        /**
+          * Top-left caption inside the field row, shown below the dropzone. When unset and `accept` is provided, this is derived from `accept` as `Formate acceptate: jpg, png, pdf`. Explicit prop wins.
+         */
+        "supportedFormatsText"?: string;
+    }
+    /**
+     * File Item — single-file row inside `cor-file-input` (or any file list surface).
+     * Pattern B (atom, internal DOM): renders filename + meta (size / error message)
+     * + state icon + remove button. The remove button is the only interactive
+     * element; the row itself is not focusable so it cannot trap citizens who tab
+     * past a long list.
+     * @element cor-file-item
+     */
+    interface CorFileItem {
+        /**
+          * Disables the remove button.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Per-item error message. Replaces the size meta line when `state="error"`.
+         */
+        "errorText"?: string;
+        /**
+          * Visible filename.
+          * @default ''
+         */
+        "filename"?: string;
+        /**
+          * Hide the remove button entirely (e.g. read-only summary lists).
+          * @default false
+         */
+        "noRemove"?: boolean;
+        /**
+          * Fires when the citizen presses the remove control. The host is responsible for splicing the file out of its list.
+         */
+        "onCorRemove"?: (event: CorFileItemCustomEvent<FileItemRemoveDetail>) => void;
+        /**
+          * Accessible label for the remove button. Provided in Romanian by default to match the institutional voice.
+          * @default 'Elimină fișierul'
+         */
+        "removeLabel"?: string;
+        /**
+          * Optional file size in bytes — rendered as a human-readable string.
+         */
+        "size"?: number;
+        /**
+          * Lifecycle state. Drives leading icon color and border treatment. Matches Figma's 4-state model: `uploaded` (resting), `uploading`, `success`, `error`.
+          * @default 'uploaded'
+         */
+        "state"?: FileItemState;
+    }
+    /**
      * Icon — renders an inline SVG fetched on-demand from per-size asset files.
      * Names follow the Material Symbols convention: append `-filled` to the base name
      * to request the filled variant (e.g. `check` outlined vs `check-filled`).
@@ -526,6 +2378,309 @@ declare namespace LocalJSX {
         "size"?: IconSize;
     }
     /**
+     * Input — single-line text-entry control.
+     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+     * inside shadow DOM. Form participation works via `formAssociated` +
+     * `ElementInternals`. The component is the canonical text-input primitive;
+     * specialised inputs (date, search, phone, etc.) compose around it.
+     * @element cor-input
+     */
+    interface CorInput {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Native `autocomplete` attribute forwarded to the internal control.
+         */
+        "autocomplete"?: string;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
+         */
+        "errorText"?: string;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Native `inputmode` hint forwarded to the internal control.
+         */
+        "inputmode"?: string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid"?: boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Loading state. When true the control becomes uninteractive and a trailing spinner replaces the `icon-end` slot. The host carries `aria-busy="true"` for assistive technologies.
+          * @default false
+         */
+        "loading"?: boolean;
+        /**
+          * Native `maxlength` constraint.
+         */
+        "maxLength"?: number;
+        /**
+          * Native `minlength` constraint.
+         */
+        "minLength"?: number;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Fires when the internal control loses focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onCorBlur"?: (event: CorInputCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires when the value is committed (typically on `blur` or `Enter`). `detail.value` is the committed value.
+         */
+        "onCorChange"?: (event: CorInputCustomEvent<InputChangeDetail>) => void;
+        /**
+          * Fires when the internal control gains focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onCorFocus"?: (event: CorInputCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires on every keystroke. `detail.value` is the current control value.
+         */
+        "onCorInput"?: (event: CorInputCustomEvent<InputChangeDetail>) => void;
+        /**
+          * Native `pattern` regex forwarded to the internal control.
+         */
+        "pattern"?: string;
+        /**
+          * Placeholder shown when the control is empty.
+         */
+        "placeholder"?: string;
+        /**
+          * Renders the field read-only. The control remains focusable and copyable.
+          * @default false
+         */
+        "readonly"?: boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required"?: boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size"?: InputSize;
+        /**
+          * Native input `type`.
+          * @default 'text'
+         */
+        "type"?: InputType;
+        /**
+          * Current value of the control. Reflects to the host attribute.
+          * @default ''
+         */
+        "value"?: string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant"?: InputVariant;
+    }
+    /**
+     * Input Chip — multi-value text-entry control where each confirmed value
+     * renders as a removable pill (chip / tag).
+     * Pattern B (molecule, internal DOM, form-associated). The host owns:
+     *   - the chip-list state (`chips` prop, two-way bound),
+     *   - the inline `<input type="text">` for the next value,
+     *   - regex / duplicate / max validation,
+     *   - the keyboard contract that lets the citizen navigate between input
+     *     and chips with arrow keys + delete chips with Backspace / Enter,
+     *   - a `role="status"` live region that announces add / remove / reject.
+     * The form value submitted to the surrounding `<form>` is a JSON-encoded
+     * array of strings (e.g. `["a@b.md","c@d.md"]`) when a `name` is set.
+     * @element cor-input-chip
+     */
+    interface CorInputChip {
+        /**
+          * Accessible name; mirrors to the group's `aria-label` when no visible label.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Confirmed chip values. Two-way bound: assigning a new array rerenders the list. Consumer mutations through events should set this prop.
+          * @default []
+         */
+        "chips"?: string[];
+        /**
+          * Disables interactivity. Both chip remove-buttons and the text input become inert.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set.
+         */
+        "errorText"?: string;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Forces destructive visuals regardless of `variant`.
+          * @default false
+         */
+        "invalid"?: boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Maximum number of chips accepted. Further additions emit `corError` with `code: 'max'`.
+         */
+        "maxChips"?: number;
+        /**
+          * Form-control `name`. Used during form submission (value: JSON-encoded array).
+         */
+        "name"?: string;
+        /**
+          * Fires when the inline input loses focus.
+         */
+        "onCorBlur"?: (event: CorInputChipCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires whenever the chip array changes (add or remove).
+         */
+        "onCorChange"?: (event: CorInputChipCustomEvent<InputChipChangeDetail>) => void;
+        /**
+          * Fires when a chip is successfully added.
+         */
+        "onCorChipAdd"?: (event: CorInputChipCustomEvent<InputChipAddDetail>) => void;
+        /**
+          * Fires when a chip is removed from the list.
+         */
+        "onCorChipRemove"?: (event: CorInputChipCustomEvent<InputChipRemoveDetail>) => void;
+        /**
+          * Fires for every rejected chip (pattern / duplicate / max).
+         */
+        "onCorError"?: (event: CorInputChipCustomEvent<InputChipErrorDetail>) => void;
+        /**
+          * Fires when the inline input gains focus.
+         */
+        "onCorFocus"?: (event: CorInputChipCustomEvent<FocusEvent>) => void;
+        /**
+          * Placeholder shown when the inline input is empty and no chips exist.
+         */
+        "placeholder"?: string;
+        /**
+          * Renders the field read-only. The control remains focusable.
+          * @default false
+         */
+        "readonly"?: boolean;
+        /**
+          * Marks the field as mandatory. Adds the red asterisk + `aria-required`.
+          * @default false
+         */
+        "required"?: boolean;
+        /**
+          * Characters that confirm a chip in addition to Enter. Default is a comma.
+          * @default ','
+         */
+        "separators"?: string;
+        /**
+          * Visual size rung. Drives container min-height + chip pill scale.
+          * @default 'md'
+         */
+        "size"?: InputChipSize;
+        /**
+          * Optional regex (string form). Values that don't match are rejected with `code: 'pattern'`.
+         */
+        "validatePattern"?: string;
+        /**
+          * The not-yet-confirmed text currently typed into the inline input.
+          * @default ''
+         */
+        "value"?: string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant"?: InputChipVariant;
+    }
+    /**
+     * Link — interactive navigational atom.
+     * Pattern B (atom-interactive): renders its own `<a>` (or `<button>` when no
+     * `href` is set) inside shadow DOM.
+     * The component honors the **DESIGN.md "Visited Magenta Rule"** — `:visited`
+     * anchors flip to `#aa18ce` (`color.text.brand.visited`). When `target="_blank"`
+     * is set, `rel="noopener noreferrer"` is auto-applied and a small external-link
+     * indicator is rendered after the label unless the consumer explicitly opts out
+     * via `external="false"`.
+     * @element cor-link
+     */
+    interface CorLink {
+        /**
+          * Forwarded to the internal element as `aria-label`. Required when the default slot contains only an icon with no text label.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Disables interactivity. The link becomes inert: no navigation, no hover, no focus ring. `aria-disabled="true"` is set on the internal element and `pointer-events: none` is applied via CSS.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Anchor `download`. When present (any value including empty string), triggers a download instead of navigation.
+         */
+        "download"?: string;
+        /**
+          * When `true` (default) and `target="_blank"`, renders an external-link icon indicator after the label. Set to `false` to suppress the indicator (e.g. when the consumer wants to control the icon themselves via slot=icon-end).
+          * @default true
+         */
+        "external"?: boolean;
+        /**
+          * Anchor `href`. When absent, the link renders as a `<button>` for keyboard semantics (rare case for callback-driven "links").
+         */
+        "href"?: string;
+        /**
+          * Anchor `rel`. Explicitly setting this prop overrides the auto-applied `noopener noreferrer` when `target="_blank"`.
+         */
+        "rel"?: string;
+        /**
+          * Visual size rung mapped to body type scale (xs=12, sm=14, md=16, lg=18).
+          * @default 'md'
+         */
+        "size"?: LinkSize;
+        /**
+          * When `true`, the link expands to fill the inline-size of its container and receives a larger touch target. Designed for navigation lists, "View more" affordances, and standalone CTAs that are not embedded in prose.
+          * @default false
+         */
+        "standalone"?: boolean;
+        /**
+          * Anchor `target` (e.g. `_blank`). When set to `_blank`, the component auto-applies `rel="noopener noreferrer"` (unless `rel` is explicitly set) and renders an external-link indicator after the label.
+         */
+        "target"?: string;
+        /**
+          * Underline treatment. - `always` (default) — underline visible at rest, hover, focus, visited - `hover` — underline appears only on hover/focus - `none` — never underlined (use sparingly; accessibility risk)
+          * @default 'always'
+         */
+        "underline"?: LinkUnderline;
+        /**
+          * Color treatment. - `primary` (default) — institutional blue, the default link color - `strict` — ink (black) for high-emphasis inline links inside dense copy - `white` — for use on dark backgrounds (does not flip on hover beyond             slight opacity; visited still flips to magenta per the rule)
+          * @default 'primary'
+         */
+        "variant"?: LinkVariant;
+    }
+    /**
      * Brand logo for Moldovan M-products.
      * Each `name` resolves to a single self-contained SVG asset under `./assets/`.
      * The component fetches and renders that SVG into shadow DOM; the host's
@@ -552,6 +2707,775 @@ declare namespace LocalJSX {
           * Emitted when an asset fails to load — either because the `name` is not in the manifest (`'unknown'`) or because the SVG fetch failed (`'fetch-failed'`). Lets consumers react in production where `console.warn` is invisible (telemetry, fallback UI, etc.).  Note: events emitted during `componentWillLoad` (initial mount) fire before consumer listeners can attach to a freshly-inserted host. Attach the listener BEFORE setting the `name` prop, or rely on the warning for mount-time failures.
          */
         "onCorLogoError"?: (event: CorLogoCustomEvent<{ name: string; reason: 'unknown' | 'fetch-failed' }>) => void;
+    }
+    /**
+     * Numeric Input — numeric-entry control with stacked step buttons.
+     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+     * inside shadow DOM and pairs it with a trailing stepper stack (chevron-up
+     * over chevron-bottom). Shares the visual primitives of `cor-input` (border,
+     * focus ring, label, helper / error, sizes, states) and adds a
+     * `--numeric-input-stepper-*` token namespace for the increment / decrement
+     * affordance.
+     * Why `<input type="text" inputmode="decimal">` instead of
+     * `<input type="number">`: native `type="number"` mixes parsing, locale, and
+     * UI affordances in ways that interact poorly with `precision` rounding and
+     * `min`/`max` clamping. The component delegates parsing + clamping to its own
+     * logic and exposes `inputmode="decimal"` so mobile devices still surface the
+     * numeric keypad.
+     * @element cor-numeric-input
+     */
+    interface CorNumericInput {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Human-readable value announcement for screen readers (e.g. `"5 lei"`). Maps to the native `aria-valuetext` on the spinbutton.
+         */
+        "ariaValuetext"?: string;
+        /**
+          * Accessible label for the decrement button. Defaults to Romanian "Scade".
+          * @default 'Scade'
+         */
+        "decrementLabel"?: string;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute. Stepper buttons are also disabled.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
+         */
+        "errorText"?: string;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Accessible label for the increment button. Defaults to Romanian "Crește" per the institutional voice.
+          * @default 'Crește'
+         */
+        "incrementLabel"?: string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid"?: boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Loading state. When true the control becomes uninteractive and a brand `cor-spinner` replaces the trailing stepper stack. The host carries `aria-busy="true"` for assistive technologies.
+          * @default false
+         */
+        "loading"?: boolean;
+        /**
+          * Inclusive upper bound. Stepper-up disables at this value; manual entries above clamp on blur.
+         */
+        "max"?: number;
+        /**
+          * Inclusive lower bound. Stepper-down disables at this value; manual entries below clamp on blur.
+         */
+        "min"?: number;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Fires when the internal control loses focus.
+         */
+        "onCorBlur"?: (event: CorNumericInputCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires when the value is committed (blur / Enter / stepper). `detail.value` is the clamped, precision-rounded value or `null`.
+         */
+        "onCorChange"?: (event: CorNumericInputCustomEvent<NumericInputChangeDetail>) => void;
+        /**
+          * Fires when validation rejects the current input (out-of-range, NaN).
+         */
+        "onCorError"?: (event: CorNumericInputCustomEvent<NumericInputErrorDetail>) => void;
+        /**
+          * Fires when the internal control gains focus.
+         */
+        "onCorFocus"?: (event: CorNumericInputCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires on every keystroke. `detail.value` is the parsed current value or `null`.
+         */
+        "onCorInput"?: (event: CorNumericInputCustomEvent<NumericInputChangeDetail>) => void;
+        /**
+          * Fires when a stepper button (or arrow key) bumps the value.
+         */
+        "onCorStep"?: (event: CorNumericInputCustomEvent<NumericInputStepDetail>) => void;
+        /**
+          * Placeholder shown when the control is empty.
+         */
+        "placeholder"?: string;
+        /**
+          * Decimal precision applied on blur (number of decimal places). When unset the value is preserved as typed (subject to clamping).
+         */
+        "precision"?: number;
+        /**
+          * Renders the field read-only. The control remains focusable; steppers are suppressed.
+          * @default false
+         */
+        "readonly"?: boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required"?: boolean;
+        /**
+          * Show the trailing stacked stepper (chevron-up / chevron-bottom) buttons. Set to `false` for displays where steppers would clutter (e.g. compact filter chips).
+          * @default true
+         */
+        "showSteppers"?: boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size"?: NumericInputSize;
+        /**
+          * Increment / decrement amount applied by the stepper buttons and arrow keys.
+          * @default 1
+         */
+        "step"?: number;
+        /**
+          * Current numeric value. `undefined` represents an empty field. Reflects to the host attribute when set.
+         */
+        "value"?: number;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set. Numeric inputs ship 3 styles per Figma (no Warning) — invalid numeric values are typically out-of-range (Destructive) or confirmed-valid (Success); there is no in-between state worth a Warning tone.
+          * @default 'default'
+         */
+        "variant"?: NumericInputVariant;
+    }
+    /**
+     * Phone Input — phone-number entry molecule with country-code prefix and
+     * format mask. The most Moldova-specific input in the family: it ships a
+     * default `+373` country, a curated diaspora-relevant country list with
+     * inline-SVG flag glyphs, and Romanian-voice placeholder + error copy.
+     * Pattern B (molecule, form-associated): renders its own `<input type="tel">`
+     * inside shadow DOM alongside an inline country trigger that either
+     * displays a static flag+dial-code pill (`type="local"`, Moldova-first
+     * default) or a combobox that opens a country listbox (`type="international"`).
+     * Form participation works via `formAssociated` + `ElementInternals`; the
+     * form value is the canonical E.164 string (`+37362123456`).
+     * @element cor-phone-input
+     */
+    interface CorPhoneInput {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Optional whitelist of ISO codes to surface in the dropdown. Defaults to the curated 15-country Moldova-diaspora list when omitted.
+         */
+        "countries"?: string[];
+        /**
+          * Initial country selection (ISO 3166-1 alpha-2). Defaults to Moldova because the system serves citizens calling government services.
+          * @default 'MD'
+         */
+        "defaultCountry"?: string;
+        /**
+          * Disables interactivity. Trigger and input receive `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon. Defaults to the Romanian message `"Numărul de telefon este incomplet"` when `invalid` is set without a custom message.
+         */
+        "errorText"?: string;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid"?: boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Loading state. When true the control becomes uninteractive and an inline `cor-spinner` renders inside the input row. The host carries `aria-busy="true"` for assistive technologies.
+          * @default false
+         */
+        "loading"?: boolean;
+        /**
+          * Form-control `name`. Used during form submission with the E.164 value.
+         */
+        "name"?: string;
+        /**
+          * Fires when the internal input loses focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onCorBlur"?: (event: CorPhoneInputCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires when the value is committed (typically on `blur` or `Enter`). `detail.isValid` reflects whether the local-segment length sits in the active country's window.
+         */
+        "onCorChange"?: (event: CorPhoneInputCustomEvent<PhoneInputChangeDetail>) => void;
+        /**
+          * Fires when the country listbox closes.
+         */
+        "onCorClose"?: (event: CorPhoneInputCustomEvent<void>) => void;
+        /**
+          * Fires when the user picks a different country from the dropdown.
+         */
+        "onCorCountryChange"?: (event: CorPhoneInputCustomEvent<PhoneInputCountryChangeDetail>) => void;
+        /**
+          * Fires when the internal input gains focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onCorFocus"?: (event: CorPhoneInputCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires on every keystroke. `detail.value` is the current canonical E.164 string; `detail.countryCode` is the active ISO 3166-1 alpha-2.
+         */
+        "onCorInput"?: (event: CorPhoneInputCustomEvent<PhoneInputInputDetail>) => void;
+        /**
+          * Fires when the country listbox opens.
+         */
+        "onCorOpen"?: (event: CorPhoneInputCustomEvent<void>) => void;
+        /**
+          * Reflects the open state of the country listbox. Mutate via `corOpen` / `corClose` events, not by writing to the attribute. Only meaningful when `type="international"` — Local mode never opens a listbox.
+          * @default false
+         */
+        "open"?: boolean;
+        /**
+          * Placeholder shown when the local segment is empty. Defaults to the country's mask.
+         */
+        "placeholder"?: string;
+        /**
+          * Renders the field read-only. The input remains focusable and copyable; the country trigger renders inert. Background steps into the soft-gray surface to telegraph "visible but not editable", matching the rest of the input family.
+          * @default false
+         */
+        "readonly"?: boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required"?: boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size"?: PhoneInputSize;
+        /**
+          * Phone entry mode. - `local` (default — Moldova-first): country trigger renders as a   static flag+dial-code pill (no chevron, no listbox). Assumes the   `defaultCountry` implicitly and only accepts its national format. - `international`: country trigger renders as a combobox (flag + dial   code + chevron); clicking opens a listbox of all eligible   countries. Use when the caller can't guarantee the citizen is   filing from inside the home market.
+          * @default 'local'
+         */
+        "type"?: PhoneInputType;
+        /**
+          * Current value — canonical E.164 (`+37362123456`). Reflects to the host attribute. Empty string represents an unfilled field.
+          * @default ''
+         */
+        "value"?: string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant"?: PhoneInputVariant;
+    }
+    /**
+     * Radio — single-select form input atom.
+     * Pattern B (atom-interactive, form-associated): renders its own
+     * `<input type="radio">` inside shadow DOM and paints the visual circle
+     * with CSS. Form participation works via `formAssociated` +
+     * `ElementInternals.setFormValue`. The component is the standalone radio
+     * primitive; a future `cor-radio-group` molecule will manage roving focus
+     * and `name`-based exclusivity across siblings.
+     * @element cor-radio
+     */
+    interface CorRadio {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * ID of the element labelling the radio. Used when label content lives outside the component.
+         */
+        "ariaLabelledby"?: string;
+        /**
+          * Whether the radio is currently selected.
+          * @default false
+         */
+        "checked"?: boolean;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Maps to Figma's "Error" state — border and selected dot turn red. Sets `aria-invalid` on the internal control.
+          * @default false
+         */
+        "invalid"?: boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Form-control `name`. Used during form submission and for grouping radios.
+         */
+        "name"?: string;
+        /**
+          * Fires when the internal control loses focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onCorBlur"?: (event: CorRadioCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires whenever the checked state changes. `detail.checked` is the new state.
+         */
+        "onCorChange"?: (event: CorRadioCustomEvent<RadioChangeDetail>) => void;
+        /**
+          * Fires when the internal control gains focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onCorFocus"?: (event: CorRadioCustomEvent<FocusEvent>) => void;
+        /**
+          * Renders the control read-only. It remains focusable but cannot be toggled.
+          * @default false
+         */
+        "readonly"?: boolean;
+        /**
+          * Marks the field as mandatory. Sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required"?: boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size"?: RadioSize;
+        /**
+          * Plain-text supporting text shown below the label. Use the `supporting-text` slot for richer content.
+         */
+        "supportingText"?: string;
+        /**
+          * Value submitted with the form when this radio is checked.
+         */
+        "value"?: string;
+    }
+    /**
+     * Search Input (circular) — single-line search-entry control with a fully
+     * rounded (pill) silhouette.
+     * Pattern B (atom-interactive, form-associated): renders its own
+     * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
+     * icon and an optional trailing clear `×` button that appears whenever the
+     * control carries a value. Behavior, props, slots, events, keyboard contract,
+     * and ARIA wiring are IDENTICAL to `cor-search-input-rectangular` — the only
+     * visual difference is the silhouette: corners flip to `borderRadius.full`
+     * (9999px) and horizontal padding grows one step (md +4px, lg +4px) to balance
+     * the rounded ends. The trailing submit button (when `with-button` is set)
+     * inherits the pill silhouette via `borderRadius.full`, rendering as a perfect
+     * circle that hugs the pill end per Figma master `933:29721`.
+     * The Republic of Moldova Unified Design System library catalogues circular
+     * and rectangular search fields as separate component_sets, so we ship them
+     * as distinct atoms with parallel token namespaces (`--search-input-circular-*`
+     * vs `--search-input-rectangular-*`).
+     * Optional axes per Figma master `933:29721`:
+     * - `loading` — async query is in flight; a trailing spinner appears next to
+     *   the value/placeholder and the control is announced as `aria-busy`.
+     * - `with-button` — adds a trailing brand-blue circular submit button that
+     *   fires `corSearch` on click. Coexists with the clear button and the
+     *   loading spinner.
+     * @element cor-search-input-circular
+     */
+    interface CorSearchInputCircular {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Native `autocomplete` attribute forwarded to the internal control.
+         */
+        "autocomplete"?: string;
+        /**
+          * Accessible label for the trailing clear button. Defaults to Romanian "Șterge" per the institutional voice.
+          * @default 'Șterge'
+         */
+        "clearLabel"?: string;
+        /**
+          * Shows the trailing clear `×` button when a value is present. Set to `false` to suppress the affordance entirely (useful for read-only or always-on filters).
+          * @default true
+         */
+        "clearable"?: boolean;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
+         */
+        "errorText"?: string;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Icon name for the leading icon (rendered via the local SVG library). Override by providing an element to the `icon-start` slot.
+          * @default 'search'
+         */
+        "iconName"?: string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid"?: boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Indicates an in-flight query. Replaces the leading magnifying-glass icon with a brand-coloured `cor-spinner` and exposes `aria-busy` on the internal control. The field stays focusable; emitting `corSearch` while loading is the consumer's responsibility (typically debounced).
+          * @default false
+         */
+        "loading"?: boolean;
+        /**
+          * Native `maxlength` constraint.
+         */
+        "maxLength"?: number;
+        /**
+          * Native `minlength` constraint.
+         */
+        "minLength"?: number;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Fires when the internal control loses focus.
+         */
+        "onCorBlur"?: (event: CorSearchInputCircularCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires when the value is committed (typically on `blur`). `detail.value` is the committed value.
+         */
+        "onCorChange"?: (event: CorSearchInputCircularCustomEvent<SearchInputCircularChangeDetail>) => void;
+        /**
+          * Fires when the value is cleared by the user (clear button or Escape key).
+         */
+        "onCorClear"?: (event: CorSearchInputCircularCustomEvent<void>) => void;
+        /**
+          * Fires when the internal control gains focus.
+         */
+        "onCorFocus"?: (event: CorSearchInputCircularCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires on every keystroke. `detail.value` is the current control value.
+         */
+        "onCorInput"?: (event: CorSearchInputCircularCustomEvent<SearchInputCircularChangeDetail>) => void;
+        /**
+          * Fires when the user submits the query (Enter key). `detail.value` is the submitted query.
+         */
+        "onCorSearch"?: (event: CorSearchInputCircularCustomEvent<SearchInputCircularSearchDetail>) => void;
+        /**
+          * Placeholder shown when the control is empty.
+         */
+        "placeholder"?: string;
+        /**
+          * Renders the field read-only. The control remains focusable; the clear affordance is suppressed.
+          * @default false
+         */
+        "readonly"?: boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required"?: boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size"?: SearchInputCircularSize;
+        /**
+          * Accessible label for the trailing submit button. Defaults to Romanian "Caută" per the institutional voice.
+          * @default 'Caută'
+         */
+        "submitLabel"?: string;
+        /**
+          * Current value of the control. Reflects to the host attribute.
+          * @default ''
+         */
+        "value"?: string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant"?: SearchInputCircularVariant;
+        /**
+          * Renders a trailing brand-blue circular submit button (the Figma "Button=True" axis on master `933:29721`). Clicking the button — or pressing Enter inside the input — dispatches `corSearch` with the current value. When the field is empty or disabled, the button enters a disabled visual state and does not fire the event.
+          * @default false
+         */
+        "withButton"?: boolean;
+    }
+    /**
+     * Search Input (rectangular) — single-line search-entry control.
+     * Pattern B (atom-interactive, form-associated): renders its own
+     * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
+     * icon and an optional trailing clear `×` button that appears whenever the
+     * control carries a value. Visual primitives (border, focus ring, label,
+     * helper / error, sizes, states) are shared with `cor-input`; specific
+     * affordances (icon-start, icon-end-clear, submit-button) live in the
+     * `--search-input-rectangular-*` token namespace.
+     * Rectangular shape is the default sibling of `cor-search-input-circular`
+     * (pill). The two ship as distinct components per the Figma component-set
+     * separation in the Republic of Moldova Unified Design System library.
+     * Optional axes per Figma master `933:29099`:
+     * - `loading` — async query is in flight; a trailing spinner appears next to
+     *   the value/placeholder and the control is announced as `aria-busy`.
+     * - `with-button` — adds a trailing brand-blue submit button that fires
+     *   `corSearch` on click. Coexists with the clear button and the loading
+     *   spinner.
+     * @element cor-search-input-rectangular
+     */
+    interface CorSearchInputRectangular {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Native `autocomplete` attribute forwarded to the internal control.
+         */
+        "autocomplete"?: string;
+        /**
+          * Accessible label for the trailing clear button. Defaults to Romanian "Șterge" per the institutional voice.
+          * @default 'Șterge'
+         */
+        "clearLabel"?: string;
+        /**
+          * Shows the trailing clear `×` button when a value is present. Set to `false` to suppress the affordance entirely (useful for read-only or always-on filters).
+          * @default true
+         */
+        "clearable"?: boolean;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
+         */
+        "errorText"?: string;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Icon name for the leading icon (rendered via the local SVG library). Override by providing an element to the `icon-start` slot.
+          * @default 'search'
+         */
+        "iconName"?: string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid"?: boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Indicates an in-flight query. Replaces the leading magnifying-glass icon with a brand-coloured `cor-spinner` and exposes `aria-busy` on the internal control. The field stays focusable; emitting `corSearch` while loading is the consumer's responsibility (typically debounced).
+          * @default false
+         */
+        "loading"?: boolean;
+        /**
+          * Native `maxlength` constraint.
+         */
+        "maxLength"?: number;
+        /**
+          * Native `minlength` constraint.
+         */
+        "minLength"?: number;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Fires when the internal control loses focus.
+         */
+        "onCorBlur"?: (event: CorSearchInputRectangularCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires when the value is committed (typically on `blur`). `detail.value` is the committed value.
+         */
+        "onCorChange"?: (event: CorSearchInputRectangularCustomEvent<SearchInputRectangularChangeDetail>) => void;
+        /**
+          * Fires when the value is cleared by the user (clear button or Escape key).
+         */
+        "onCorClear"?: (event: CorSearchInputRectangularCustomEvent<void>) => void;
+        /**
+          * Fires when the internal control gains focus.
+         */
+        "onCorFocus"?: (event: CorSearchInputRectangularCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires on every keystroke. `detail.value` is the current control value.
+         */
+        "onCorInput"?: (event: CorSearchInputRectangularCustomEvent<SearchInputRectangularChangeDetail>) => void;
+        /**
+          * Fires when the user submits the query (Enter key). `detail.value` is the submitted query.
+         */
+        "onCorSearch"?: (event: CorSearchInputRectangularCustomEvent<SearchInputRectangularSearchDetail>) => void;
+        /**
+          * Placeholder shown when the control is empty.
+         */
+        "placeholder"?: string;
+        /**
+          * Renders the field read-only. The control remains focusable; the clear affordance is suppressed.
+          * @default false
+         */
+        "readonly"?: boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required"?: boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size"?: SearchInputRectangularSize;
+        /**
+          * Accessible label for the trailing submit button. Defaults to Romanian "Caută" per the institutional voice.
+          * @default 'Caută'
+         */
+        "submitLabel"?: string;
+        /**
+          * Current value of the control. Reflects to the host attribute.
+          * @default ''
+         */
+        "value"?: string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant"?: SearchInputRectangularVariant;
+        /**
+          * Renders a trailing brand-blue submit button (the Figma "Button=True" axis). Clicking the button — or pressing Enter inside the input — dispatches `corSearch` with the current value. When the field is empty or disabled, the button enters a disabled visual state and does not fire the event.
+          * @default false
+         */
+        "withButton"?: boolean;
+    }
+    /**
+     * Select Input — single-select dropdown atom.
+     * Pattern B (atom-interactive, form-associated): renders a custom-styled
+     * trigger button and a listbox popover inside shadow DOM. Form participation
+     * works via `formAssociated` + `ElementInternals`. Shares the visual primitives
+     * of `cor-input` (border, focus ring, label, helper / error text, sizes,
+     * states) and adds a trailing chevron icon, listbox menu, and keyboard
+     * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
+     * pattern.
+     * @element cor-select-input
+     */
+    interface CorSelectInput {
+        /**
+          * Accessible name. Mirrors to the trigger's `aria-label` when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Disables interactivity. The trigger receives `aria-disabled` and the hidden native `<select>` receives the `disabled` attribute.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
+         */
+        "errorText"?: string;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid"?: boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Fires when the trigger loses focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onCorBlur"?: (event: CorSelectInputCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires when the selected value changes. `detail.value` is the new value.
+         */
+        "onCorChange"?: (event: CorSelectInputCustomEvent<SelectChangeDetail>) => void;
+        /**
+          * Fires when the listbox closes.
+         */
+        "onCorClose"?: (event: CorSelectInputCustomEvent<void>) => void;
+        /**
+          * Fires when the trigger gains focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onCorFocus"?: (event: CorSelectInputCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires when the listbox opens.
+         */
+        "onCorOpen"?: (event: CorSelectInputCustomEvent<void>) => void;
+        /**
+          * Reflects the open state of the listbox popover. Read-only externally — use `corOpen` / `corClose` to react to changes.
+          * @default false
+         */
+        "open"?: boolean;
+        /**
+          * Declarative option list. When omitted the component falls back to its default slot, allowing `<option>` children for HTML-native composition.
+         */
+        "options"?: SelectOption[];
+        /**
+          * Placeholder shown when no option is selected.
+         */
+        "placeholder"?: string;
+        /**
+          * Renders the field read-only. The trigger remains focusable but the listbox cannot be opened.
+          * @default false
+         */
+        "readonly"?: boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the trigger.
+          * @default false
+         */
+        "required"?: boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size"?: SelectInputSize;
+        /**
+          * Selected value. Reflects to the host attribute. Set to empty string when no option is selected.
+          * @default ''
+         */
+        "value"?: string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant"?: SelectInputVariant;
     }
     /**
      * Service Button — interactive control for Moldovan M-products (mpay, mpass,
@@ -664,6 +3588,53 @@ declare namespace LocalJSX {
         "orientation": ButtonGroupOrientation;
         "label": string;
     }
+    interface CorDateInputAttributes {
+        "variant": DateInputVariant;
+        "size": DateInputSize;
+        "format": DateInputFormat;
+        "disabled": boolean;
+        "required": boolean;
+        "readonly": boolean;
+        "invalid": boolean;
+        "value": string;
+        "name": string;
+        "min": string;
+        "max": string;
+        "label": string;
+        "helperText": string;
+        "errorText": string;
+        "placeholder": string;
+        "ariaLabel": string;
+    }
+    interface CorFileInputAttributes {
+        "size": FileInputSize;
+        "disabled": boolean;
+        "required": boolean;
+        "invalid": boolean;
+        "multiple": boolean;
+        "accept": string;
+        "maxSize": number;
+        "maxFiles": number;
+        "name": string;
+        "label": string;
+        "helperText": string;
+        "errorText": string;
+        "ctaText": string;
+        "chooseFilesText": string;
+        "dropzoneActiveText": string;
+        "supportedFormatsText": string;
+        "maxSizeText": string;
+        "ariaLabel": string;
+    }
+    interface CorFileItemAttributes {
+        "state": FileItemState;
+        "filename": string;
+        "size": number;
+        "errorText": string;
+        "disabled": boolean;
+        "noRemove": boolean;
+        "removeLabel": string;
+    }
     interface CorIconAttributes {
         "name": string;
         "size": IconSize;
@@ -672,8 +3643,182 @@ declare namespace LocalJSX {
         "disabled": boolean;
         "ariaLabel": string;
     }
+    interface CorInputAttributes {
+        "variant": InputVariant;
+        "loading": boolean;
+        "size": InputSize;
+        "type": InputType;
+        "disabled": boolean;
+        "required": boolean;
+        "readonly": boolean;
+        "invalid": boolean;
+        "value": string;
+        "name": string;
+        "placeholder": string;
+        "label": string;
+        "helperText": string;
+        "errorText": string;
+        "autocomplete": string;
+        "maxLength": number;
+        "minLength": number;
+        "inputmode": string;
+        "pattern": string;
+        "ariaLabel": string;
+    }
+    interface CorInputChipAttributes {
+        "variant": InputChipVariant;
+        "size": InputChipSize;
+        "disabled": boolean;
+        "required": boolean;
+        "readonly": boolean;
+        "invalid": boolean;
+        "value": string;
+        "name": string;
+        "placeholder": string;
+        "label": string;
+        "helperText": string;
+        "errorText": string;
+        "maxChips": number;
+        "validatePattern": string;
+        "separators": string;
+        "ariaLabel": string;
+    }
+    interface CorLinkAttributes {
+        "size": LinkSize;
+        "variant": LinkVariant;
+        "underline": LinkUnderline;
+        "standalone": boolean;
+        "disabled": boolean;
+        "href": string;
+        "target": string;
+        "rel": string;
+        "download": string;
+        "ariaLabel": string;
+        "external": boolean;
+    }
     interface CorLogoAttributes {
         "name": LogoName;
+        "ariaLabel": string;
+    }
+    interface CorNumericInputAttributes {
+        "variant": NumericInputVariant;
+        "loading": boolean;
+        "size": NumericInputSize;
+        "disabled": boolean;
+        "required": boolean;
+        "readonly": boolean;
+        "invalid": boolean;
+        "showSteppers": boolean;
+        "value": number;
+        "min": number;
+        "max": number;
+        "step": number;
+        "precision": number;
+        "name": string;
+        "placeholder": string;
+        "label": string;
+        "helperText": string;
+        "errorText": string;
+        "incrementLabel": string;
+        "decrementLabel": string;
+        "ariaLabel": string;
+        "ariaValuetext": string;
+    }
+    interface CorPhoneInputAttributes {
+        "variant": PhoneInputVariant;
+        "size": PhoneInputSize;
+        "type": PhoneInputType;
+        "loading": boolean;
+        "disabled": boolean;
+        "required": boolean;
+        "readonly": boolean;
+        "invalid": boolean;
+        "open": boolean;
+        "value": string;
+        "defaultCountry": string;
+        "name": string;
+        "label": string;
+        "helperText": string;
+        "errorText": string;
+        "placeholder": string;
+        "ariaLabel": string;
+    }
+    interface CorRadioAttributes {
+        "size": RadioSize;
+        "checked": boolean;
+        "disabled": boolean;
+        "invalid": boolean;
+        "required": boolean;
+        "readonly": boolean;
+        "name": string;
+        "value": string;
+        "label": string;
+        "supportingText": string;
+        "ariaLabel": string;
+        "ariaLabelledby": string;
+    }
+    interface CorSearchInputCircularAttributes {
+        "variant": SearchInputCircularVariant;
+        "size": SearchInputCircularSize;
+        "disabled": boolean;
+        "required": boolean;
+        "readonly": boolean;
+        "invalid": boolean;
+        "clearable": boolean;
+        "loading": boolean;
+        "withButton": boolean;
+        "submitLabel": string;
+        "value": string;
+        "name": string;
+        "placeholder": string;
+        "label": string;
+        "helperText": string;
+        "errorText": string;
+        "iconName": string;
+        "clearLabel": string;
+        "autocomplete": string;
+        "maxLength": number;
+        "minLength": number;
+        "ariaLabel": string;
+    }
+    interface CorSearchInputRectangularAttributes {
+        "variant": SearchInputRectangularVariant;
+        "size": SearchInputRectangularSize;
+        "disabled": boolean;
+        "required": boolean;
+        "readonly": boolean;
+        "invalid": boolean;
+        "clearable": boolean;
+        "loading": boolean;
+        "withButton": boolean;
+        "submitLabel": string;
+        "value": string;
+        "name": string;
+        "placeholder": string;
+        "label": string;
+        "helperText": string;
+        "errorText": string;
+        "iconName": string;
+        "clearLabel": string;
+        "autocomplete": string;
+        "maxLength": number;
+        "minLength": number;
+        "ariaLabel": string;
+    }
+    interface CorSelectInputAttributes {
+        "variant": SelectInputVariant;
+        "size": SelectInputSize;
+        "disabled": boolean;
+        "required": boolean;
+        "readonly": boolean;
+        "invalid": boolean;
+        "open": boolean;
+        "value": string;
+        "name": string;
+        "placeholder": string;
+        "label": string;
+        "helperText": string;
+        "errorText": string;
         "ariaLabel": string;
     }
     interface CorServiceButtonAttributes {
@@ -698,8 +3843,20 @@ declare namespace LocalJSX {
     interface IntrinsicElements {
         "cor-button": Omit<CorButton, keyof CorButtonAttributes> & { [K in keyof CorButton & keyof CorButtonAttributes]?: CorButton[K] } & { [K in keyof CorButton & keyof CorButtonAttributes as `attr:${K}`]?: CorButtonAttributes[K] } & { [K in keyof CorButton & keyof CorButtonAttributes as `prop:${K}`]?: CorButton[K] };
         "cor-button-group": Omit<CorButtonGroup, keyof CorButtonGroupAttributes> & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes]?: CorButtonGroup[K] } & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes as `attr:${K}`]?: CorButtonGroupAttributes[K] } & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes as `prop:${K}`]?: CorButtonGroup[K] };
+        "cor-date-input": Omit<CorDateInput, keyof CorDateInputAttributes> & { [K in keyof CorDateInput & keyof CorDateInputAttributes]?: CorDateInput[K] } & { [K in keyof CorDateInput & keyof CorDateInputAttributes as `attr:${K}`]?: CorDateInputAttributes[K] } & { [K in keyof CorDateInput & keyof CorDateInputAttributes as `prop:${K}`]?: CorDateInput[K] };
+        "cor-file-input": Omit<CorFileInput, keyof CorFileInputAttributes> & { [K in keyof CorFileInput & keyof CorFileInputAttributes]?: CorFileInput[K] } & { [K in keyof CorFileInput & keyof CorFileInputAttributes as `attr:${K}`]?: CorFileInputAttributes[K] } & { [K in keyof CorFileInput & keyof CorFileInputAttributes as `prop:${K}`]?: CorFileInput[K] };
+        "cor-file-item": Omit<CorFileItem, keyof CorFileItemAttributes> & { [K in keyof CorFileItem & keyof CorFileItemAttributes]?: CorFileItem[K] } & { [K in keyof CorFileItem & keyof CorFileItemAttributes as `attr:${K}`]?: CorFileItemAttributes[K] } & { [K in keyof CorFileItem & keyof CorFileItemAttributes as `prop:${K}`]?: CorFileItem[K] };
         "cor-icon": Omit<CorIcon, keyof CorIconAttributes> & { [K in keyof CorIcon & keyof CorIconAttributes]?: CorIcon[K] } & { [K in keyof CorIcon & keyof CorIconAttributes as `attr:${K}`]?: CorIconAttributes[K] } & { [K in keyof CorIcon & keyof CorIconAttributes as `prop:${K}`]?: CorIcon[K] };
+        "cor-input": Omit<CorInput, keyof CorInputAttributes> & { [K in keyof CorInput & keyof CorInputAttributes]?: CorInput[K] } & { [K in keyof CorInput & keyof CorInputAttributes as `attr:${K}`]?: CorInputAttributes[K] } & { [K in keyof CorInput & keyof CorInputAttributes as `prop:${K}`]?: CorInput[K] };
+        "cor-input-chip": Omit<CorInputChip, keyof CorInputChipAttributes> & { [K in keyof CorInputChip & keyof CorInputChipAttributes]?: CorInputChip[K] } & { [K in keyof CorInputChip & keyof CorInputChipAttributes as `attr:${K}`]?: CorInputChipAttributes[K] } & { [K in keyof CorInputChip & keyof CorInputChipAttributes as `prop:${K}`]?: CorInputChip[K] };
+        "cor-link": Omit<CorLink, keyof CorLinkAttributes> & { [K in keyof CorLink & keyof CorLinkAttributes]?: CorLink[K] } & { [K in keyof CorLink & keyof CorLinkAttributes as `attr:${K}`]?: CorLinkAttributes[K] } & { [K in keyof CorLink & keyof CorLinkAttributes as `prop:${K}`]?: CorLink[K] };
         "cor-logo": Omit<CorLogo, keyof CorLogoAttributes> & { [K in keyof CorLogo & keyof CorLogoAttributes]?: CorLogo[K] } & { [K in keyof CorLogo & keyof CorLogoAttributes as `attr:${K}`]?: CorLogoAttributes[K] } & { [K in keyof CorLogo & keyof CorLogoAttributes as `prop:${K}`]?: CorLogo[K] };
+        "cor-numeric-input": Omit<CorNumericInput, keyof CorNumericInputAttributes> & { [K in keyof CorNumericInput & keyof CorNumericInputAttributes]?: CorNumericInput[K] } & { [K in keyof CorNumericInput & keyof CorNumericInputAttributes as `attr:${K}`]?: CorNumericInputAttributes[K] } & { [K in keyof CorNumericInput & keyof CorNumericInputAttributes as `prop:${K}`]?: CorNumericInput[K] };
+        "cor-phone-input": Omit<CorPhoneInput, keyof CorPhoneInputAttributes> & { [K in keyof CorPhoneInput & keyof CorPhoneInputAttributes]?: CorPhoneInput[K] } & { [K in keyof CorPhoneInput & keyof CorPhoneInputAttributes as `attr:${K}`]?: CorPhoneInputAttributes[K] } & { [K in keyof CorPhoneInput & keyof CorPhoneInputAttributes as `prop:${K}`]?: CorPhoneInput[K] };
+        "cor-radio": Omit<CorRadio, keyof CorRadioAttributes> & { [K in keyof CorRadio & keyof CorRadioAttributes]?: CorRadio[K] } & { [K in keyof CorRadio & keyof CorRadioAttributes as `attr:${K}`]?: CorRadioAttributes[K] } & { [K in keyof CorRadio & keyof CorRadioAttributes as `prop:${K}`]?: CorRadio[K] };
+        "cor-search-input-circular": Omit<CorSearchInputCircular, keyof CorSearchInputCircularAttributes> & { [K in keyof CorSearchInputCircular & keyof CorSearchInputCircularAttributes]?: CorSearchInputCircular[K] } & { [K in keyof CorSearchInputCircular & keyof CorSearchInputCircularAttributes as `attr:${K}`]?: CorSearchInputCircularAttributes[K] } & { [K in keyof CorSearchInputCircular & keyof CorSearchInputCircularAttributes as `prop:${K}`]?: CorSearchInputCircular[K] };
+        "cor-search-input-rectangular": Omit<CorSearchInputRectangular, keyof CorSearchInputRectangularAttributes> & { [K in keyof CorSearchInputRectangular & keyof CorSearchInputRectangularAttributes]?: CorSearchInputRectangular[K] } & { [K in keyof CorSearchInputRectangular & keyof CorSearchInputRectangularAttributes as `attr:${K}`]?: CorSearchInputRectangularAttributes[K] } & { [K in keyof CorSearchInputRectangular & keyof CorSearchInputRectangularAttributes as `prop:${K}`]?: CorSearchInputRectangular[K] };
+        "cor-select-input": Omit<CorSelectInput, keyof CorSelectInputAttributes> & { [K in keyof CorSelectInput & keyof CorSelectInputAttributes]?: CorSelectInput[K] } & { [K in keyof CorSelectInput & keyof CorSelectInputAttributes as `attr:${K}`]?: CorSelectInputAttributes[K] } & { [K in keyof CorSelectInput & keyof CorSelectInputAttributes as `prop:${K}`]?: CorSelectInput[K] };
         "cor-service-button": Omit<CorServiceButton, keyof CorServiceButtonAttributes> & { [K in keyof CorServiceButton & keyof CorServiceButtonAttributes]?: CorServiceButton[K] } & { [K in keyof CorServiceButton & keyof CorServiceButtonAttributes as `attr:${K}`]?: CorServiceButtonAttributes[K] } & { [K in keyof CorServiceButton & keyof CorServiceButtonAttributes as `prop:${K}`]?: CorServiceButton[K] };
         "cor-spinner": Omit<CorSpinner, keyof CorSpinnerAttributes> & { [K in keyof CorSpinner & keyof CorSpinnerAttributes]?: CorSpinner[K] } & { [K in keyof CorSpinner & keyof CorSpinnerAttributes as `attr:${K}`]?: CorSpinnerAttributes[K] } & { [K in keyof CorSpinner & keyof CorSpinnerAttributes as `prop:${K}`]?: CorSpinner[K] };
     }
@@ -727,6 +3884,41 @@ declare module "@stencil/core" {
              */
             "cor-button-group": LocalJSX.IntrinsicElements["cor-button-group"] & JSXBase.HTMLAttributes<HTMLCorButtonGroupElement>;
             /**
+             * Date Input — segment-masked date entry molecule.
+             * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+             * inside shadow DOM and overlays a ghost format hint that lets the unfilled
+             * `DD/MM/YYYY` segments stay visible while the user types — matching the
+             * "focus: date-populated / month-populated / fully-populated" Figma states.
+             * @element cor-date-input
+             */
+            "cor-date-input": LocalJSX.IntrinsicElements["cor-date-input"] & JSXBase.HTMLAttributes<HTMLCorDateInputElement>;
+            /**
+             * File Input — drag-and-drop / click-to-browse file selection molecule.
+             * Pattern B (molecule, internal DOM, form-associated): the host owns a hidden
+             * native `<input type="file">` for the browse path, manages the drop zone
+             * affordance, validates by `accept` / `maxSize` / `maxFiles`, and renders a
+             * per-file list of `cor-file-item` rows. Citizens get keyboard parity (Tab
+             * to focus, Enter/Space to open the picker) and a `role="status"` live region
+             * that announces add / remove / reject events.
+             * The component owns SELECTION + VALIDATION + DISPLAY. Real upload (progress,
+             * network errors, retries) is consumer-driven via the `corChange` event.
+             * State model (no style axis — Figma is state-only):
+             *   default → hover → focus → active (drag-over) → disabled
+             *   `invalid` is a separate validation flag that recolors the dashed border red
+             *   without introducing a style variant.
+             * @element cor-file-input
+             */
+            "cor-file-input": LocalJSX.IntrinsicElements["cor-file-input"] & JSXBase.HTMLAttributes<HTMLCorFileInputElement>;
+            /**
+             * File Item — single-file row inside `cor-file-input` (or any file list surface).
+             * Pattern B (atom, internal DOM): renders filename + meta (size / error message)
+             * + state icon + remove button. The remove button is the only interactive
+             * element; the row itself is not focusable so it cannot trap citizens who tab
+             * past a long list.
+             * @element cor-file-item
+             */
+            "cor-file-item": LocalJSX.IntrinsicElements["cor-file-item"] & JSXBase.HTMLAttributes<HTMLCorFileItemElement>;
+            /**
              * Icon — renders an inline SVG fetched on-demand from per-size asset files.
              * Names follow the Material Symbols convention: append `-filled` to the base name
              * to request the filled variant (e.g. `check` outlined vs `check-filled`).
@@ -736,6 +3928,42 @@ declare module "@stencil/core" {
              * @element cor-icon
              */
             "cor-icon": LocalJSX.IntrinsicElements["cor-icon"] & JSXBase.HTMLAttributes<HTMLCorIconElement>;
+            /**
+             * Input — single-line text-entry control.
+             * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+             * inside shadow DOM. Form participation works via `formAssociated` +
+             * `ElementInternals`. The component is the canonical text-input primitive;
+             * specialised inputs (date, search, phone, etc.) compose around it.
+             * @element cor-input
+             */
+            "cor-input": LocalJSX.IntrinsicElements["cor-input"] & JSXBase.HTMLAttributes<HTMLCorInputElement>;
+            /**
+             * Input Chip — multi-value text-entry control where each confirmed value
+             * renders as a removable pill (chip / tag).
+             * Pattern B (molecule, internal DOM, form-associated). The host owns:
+             *   - the chip-list state (`chips` prop, two-way bound),
+             *   - the inline `<input type="text">` for the next value,
+             *   - regex / duplicate / max validation,
+             *   - the keyboard contract that lets the citizen navigate between input
+             *     and chips with arrow keys + delete chips with Backspace / Enter,
+             *   - a `role="status"` live region that announces add / remove / reject.
+             * The form value submitted to the surrounding `<form>` is a JSON-encoded
+             * array of strings (e.g. `["a@b.md","c@d.md"]`) when a `name` is set.
+             * @element cor-input-chip
+             */
+            "cor-input-chip": LocalJSX.IntrinsicElements["cor-input-chip"] & JSXBase.HTMLAttributes<HTMLCorInputChipElement>;
+            /**
+             * Link — interactive navigational atom.
+             * Pattern B (atom-interactive): renders its own `<a>` (or `<button>` when no
+             * `href` is set) inside shadow DOM.
+             * The component honors the **DESIGN.md "Visited Magenta Rule"** — `:visited`
+             * anchors flip to `#aa18ce` (`color.text.brand.visited`). When `target="_blank"`
+             * is set, `rel="noopener noreferrer"` is auto-applied and a small external-link
+             * indicator is rendered after the label unless the consumer explicitly opts out
+             * via `external="false"`.
+             * @element cor-link
+             */
+            "cor-link": LocalJSX.IntrinsicElements["cor-link"] & JSXBase.HTMLAttributes<HTMLCorLinkElement>;
             /**
              * Brand logo for Moldovan M-products.
              * Each `name` resolves to a single self-contained SVG asset under `./assets/`.
@@ -750,6 +3978,107 @@ declare module "@stencil/core" {
              * @element cor-logo
              */
             "cor-logo": LocalJSX.IntrinsicElements["cor-logo"] & JSXBase.HTMLAttributes<HTMLCorLogoElement>;
+            /**
+             * Numeric Input — numeric-entry control with stacked step buttons.
+             * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+             * inside shadow DOM and pairs it with a trailing stepper stack (chevron-up
+             * over chevron-bottom). Shares the visual primitives of `cor-input` (border,
+             * focus ring, label, helper / error, sizes, states) and adds a
+             * `--numeric-input-stepper-*` token namespace for the increment / decrement
+             * affordance.
+             * Why `<input type="text" inputmode="decimal">` instead of
+             * `<input type="number">`: native `type="number"` mixes parsing, locale, and
+             * UI affordances in ways that interact poorly with `precision` rounding and
+             * `min`/`max` clamping. The component delegates parsing + clamping to its own
+             * logic and exposes `inputmode="decimal"` so mobile devices still surface the
+             * numeric keypad.
+             * @element cor-numeric-input
+             */
+            "cor-numeric-input": LocalJSX.IntrinsicElements["cor-numeric-input"] & JSXBase.HTMLAttributes<HTMLCorNumericInputElement>;
+            /**
+             * Phone Input — phone-number entry molecule with country-code prefix and
+             * format mask. The most Moldova-specific input in the family: it ships a
+             * default `+373` country, a curated diaspora-relevant country list with
+             * inline-SVG flag glyphs, and Romanian-voice placeholder + error copy.
+             * Pattern B (molecule, form-associated): renders its own `<input type="tel">`
+             * inside shadow DOM alongside an inline country trigger that either
+             * displays a static flag+dial-code pill (`type="local"`, Moldova-first
+             * default) or a combobox that opens a country listbox (`type="international"`).
+             * Form participation works via `formAssociated` + `ElementInternals`; the
+             * form value is the canonical E.164 string (`+37362123456`).
+             * @element cor-phone-input
+             */
+            "cor-phone-input": LocalJSX.IntrinsicElements["cor-phone-input"] & JSXBase.HTMLAttributes<HTMLCorPhoneInputElement>;
+            /**
+             * Radio — single-select form input atom.
+             * Pattern B (atom-interactive, form-associated): renders its own
+             * `<input type="radio">` inside shadow DOM and paints the visual circle
+             * with CSS. Form participation works via `formAssociated` +
+             * `ElementInternals.setFormValue`. The component is the standalone radio
+             * primitive; a future `cor-radio-group` molecule will manage roving focus
+             * and `name`-based exclusivity across siblings.
+             * @element cor-radio
+             */
+            "cor-radio": LocalJSX.IntrinsicElements["cor-radio"] & JSXBase.HTMLAttributes<HTMLCorRadioElement>;
+            /**
+             * Search Input (circular) — single-line search-entry control with a fully
+             * rounded (pill) silhouette.
+             * Pattern B (atom-interactive, form-associated): renders its own
+             * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
+             * icon and an optional trailing clear `×` button that appears whenever the
+             * control carries a value. Behavior, props, slots, events, keyboard contract,
+             * and ARIA wiring are IDENTICAL to `cor-search-input-rectangular` — the only
+             * visual difference is the silhouette: corners flip to `borderRadius.full`
+             * (9999px) and horizontal padding grows one step (md +4px, lg +4px) to balance
+             * the rounded ends. The trailing submit button (when `with-button` is set)
+             * inherits the pill silhouette via `borderRadius.full`, rendering as a perfect
+             * circle that hugs the pill end per Figma master `933:29721`.
+             * The Republic of Moldova Unified Design System library catalogues circular
+             * and rectangular search fields as separate component_sets, so we ship them
+             * as distinct atoms with parallel token namespaces (`--search-input-circular-*`
+             * vs `--search-input-rectangular-*`).
+             * Optional axes per Figma master `933:29721`:
+             * - `loading` — async query is in flight; a trailing spinner appears next to
+             *   the value/placeholder and the control is announced as `aria-busy`.
+             * - `with-button` — adds a trailing brand-blue circular submit button that
+             *   fires `corSearch` on click. Coexists with the clear button and the
+             *   loading spinner.
+             * @element cor-search-input-circular
+             */
+            "cor-search-input-circular": LocalJSX.IntrinsicElements["cor-search-input-circular"] & JSXBase.HTMLAttributes<HTMLCorSearchInputCircularElement>;
+            /**
+             * Search Input (rectangular) — single-line search-entry control.
+             * Pattern B (atom-interactive, form-associated): renders its own
+             * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
+             * icon and an optional trailing clear `×` button that appears whenever the
+             * control carries a value. Visual primitives (border, focus ring, label,
+             * helper / error, sizes, states) are shared with `cor-input`; specific
+             * affordances (icon-start, icon-end-clear, submit-button) live in the
+             * `--search-input-rectangular-*` token namespace.
+             * Rectangular shape is the default sibling of `cor-search-input-circular`
+             * (pill). The two ship as distinct components per the Figma component-set
+             * separation in the Republic of Moldova Unified Design System library.
+             * Optional axes per Figma master `933:29099`:
+             * - `loading` — async query is in flight; a trailing spinner appears next to
+             *   the value/placeholder and the control is announced as `aria-busy`.
+             * - `with-button` — adds a trailing brand-blue submit button that fires
+             *   `corSearch` on click. Coexists with the clear button and the loading
+             *   spinner.
+             * @element cor-search-input-rectangular
+             */
+            "cor-search-input-rectangular": LocalJSX.IntrinsicElements["cor-search-input-rectangular"] & JSXBase.HTMLAttributes<HTMLCorSearchInputRectangularElement>;
+            /**
+             * Select Input — single-select dropdown atom.
+             * Pattern B (atom-interactive, form-associated): renders a custom-styled
+             * trigger button and a listbox popover inside shadow DOM. Form participation
+             * works via `formAssociated` + `ElementInternals`. Shares the visual primitives
+             * of `cor-input` (border, focus ring, label, helper / error text, sizes,
+             * states) and adds a trailing chevron icon, listbox menu, and keyboard
+             * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
+             * pattern.
+             * @element cor-select-input
+             */
+            "cor-select-input": LocalJSX.IntrinsicElements["cor-select-input"] & JSXBase.HTMLAttributes<HTMLCorSelectInputElement>;
             /**
              * Service Button — interactive control for Moldovan M-products (mpay, mpass,
              * msign, mpower, mdelivery).

@@ -1,0 +1,250 @@
+/* ---------- Host (default = md / primary / always-underline / inline) ---------- */
+
+:host {
+  /* Size axis */
+  --_font-size: var(--link-label-font-size-md);
+  --_line-height: var(--link-label-line-height-md);
+  --_icon-size: var(--link-icon-size-md);
+  --_gap: var(--link-container-gap-md);
+
+  /* Variant axis */
+  --_label: var(--link-primary-label-default);
+  --_label-hover: var(--link-primary-label-hover);
+  --_label-active: var(--link-primary-label-active);
+  --_label-visited: var(--link-primary-label-visited);
+
+  /* Underline axis */
+  --_underline-default: underline;
+  --_underline-hover: underline;
+  --_underline-offset: var(--link-label-underline-offset);
+  --_underline-thickness: var(--link-label-underline-thickness);
+
+  display: inline-flex;
+  vertical-align: baseline;
+  max-inline-size: 100%;
+}
+
+/* ---------- Size axis ---------- */
+
+:host([size='xs']) {
+  --_font-size: var(--link-label-font-size-xs);
+  --_line-height: var(--link-label-line-height-xs);
+  --_icon-size: var(--link-icon-size-xs);
+  --_gap: var(--link-container-gap-xs);
+}
+
+:host([size='sm']) {
+  --_font-size: var(--link-label-font-size-sm);
+  --_line-height: var(--link-label-line-height-sm);
+  --_icon-size: var(--link-icon-size-sm);
+  --_gap: var(--link-container-gap-sm);
+}
+
+:host([size='md']) {
+  --_font-size: var(--link-label-font-size-md);
+  --_line-height: var(--link-label-line-height-md);
+  --_icon-size: var(--link-icon-size-md);
+  --_gap: var(--link-container-gap-md);
+}
+
+:host([size='lg']) {
+  --_font-size: var(--link-label-font-size-lg);
+  --_line-height: var(--link-label-line-height-lg);
+  --_icon-size: var(--link-icon-size-lg);
+  --_gap: var(--link-container-gap-lg);
+}
+
+/* ---------- Variant axis ---------- */
+
+:host([variant='primary']) {
+  --_label: var(--link-primary-label-default);
+  --_label-hover: var(--link-primary-label-hover);
+  --_label-active: var(--link-primary-label-active);
+  --_label-visited: var(--link-primary-label-visited);
+}
+
+:host([variant='strict']) {
+  --_label: var(--link-strict-label-default);
+  --_label-hover: var(--link-strict-label-hover);
+  --_label-active: var(--link-strict-label-active);
+  --_label-visited: var(--link-strict-label-visited);
+}
+
+:host([variant='white']) {
+  --_label: var(--link-white-label-default);
+  --_label-hover: var(--link-white-label-hover);
+  --_label-active: var(--link-white-label-active);
+  --_label-visited: var(--link-white-label-visited);
+}
+
+/* ---------- Underline axis ---------- */
+
+:host([underline='always']) {
+  --_underline-default: underline;
+  --_underline-hover: underline;
+}
+
+:host([underline='hover']) {
+  --_underline-default: none;
+  --_underline-hover: underline;
+}
+
+:host([underline='none']) {
+  --_underline-default: none;
+  --_underline-hover: none;
+}
+
+/* ---------- Standalone (block-level) ---------- */
+
+:host([standalone]) {
+  display: inline-flex;
+}
+
+:host([standalone]) .control {
+  min-block-size: var(--link-container-min-height-pointer);
+  padding-block: 4px;
+}
+
+/* Touch device: bigger target */
+@media (pointer: coarse) {
+  :host([standalone]) .control {
+    min-block-size: var(--link-container-min-height-touch);
+  }
+}
+
+/* ---------- Disabled ---------- */
+
+:host([disabled]) {
+  --_label: var(--link-disabled-label);
+  --_label-hover: var(--link-disabled-label);
+  --_label-active: var(--link-disabled-label);
+  --_label-visited: var(--link-disabled-label);
+
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+/* ---------- Internal control (anchor or button) ---------- */
+
+.control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--_gap);
+
+  padding-inline: var(--link-container-padding-inline);
+  padding-block: var(--link-container-padding-block);
+  border-radius: var(--link-container-border-radius);
+  background-color: transparent;
+  border: 0;
+  margin: 0;
+
+  font-family: var(--link-label-font-family);
+  font-size: var(--_font-size);
+  line-height: var(--_line-height);
+  font-weight: var(--link-label-font-weight);
+  color: var(--_label);
+  text-align: inherit;
+
+  text-decoration-line: var(--_underline-default);
+  text-decoration-thickness: var(--_underline-thickness);
+  text-underline-offset: var(--_underline-offset);
+  text-decoration-color: currentColor;
+  text-decoration-skip-ink: auto;
+
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+
+  transition:
+    color var(--link-container-transition-duration) var(--link-container-transition-timing-function),
+    text-decoration-color var(--link-container-transition-duration) var(--link-container-transition-timing-function),
+    box-shadow var(--link-container-transition-duration) var(--link-container-transition-timing-function);
+}
+
+/* Label — wraps inline text so icons stay aligned */
+.label {
+  display: inline;
+  min-inline-size: 0;
+}
+
+.label:empty {
+  display: none;
+}
+
+/* ---------- Hover / Active (only when interactive) ---------- */
+
+:host(:not([disabled])) .control:hover {
+  color: var(--_label-hover);
+  text-decoration-line: var(--_underline-hover);
+}
+
+:host(:not([disabled])) .control:active {
+  color: var(--_label-active);
+}
+
+/* ---------- Visited (links only, per DESIGN.md "Visited Magenta Rule") ---------- */
+
+:host(:not([disabled])) .control:visited {
+  color: var(--_label-visited);
+}
+
+/* Anchor children also need the visited color */
+:host(:not([disabled])) .control:visited .label,
+:host(:not([disabled])) .control:visited .external-indicator {
+  color: var(--_label-visited);
+}
+
+/* ---------- Focus ring (dual halo, 3px brand + 1px white spread per Figma) ---------- */
+
+.control:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--link-focus-ring-offset) var(--link-focus-ring-offset-color),
+    0 0 0 calc(var(--link-focus-ring-offset) + var(--link-focus-ring-ring-width)) var(--link-focus-ring-ring-color);
+}
+
+/* On dark/white variant, invert the inner halo so the focus ring still reads */
+:host([variant='white']) .control:focus-visible {
+  box-shadow:
+    0 0 0 var(--link-focus-ring-offset) var(--color-background-base-inverse-default, #1e1e1e),
+    0 0 0 calc(var(--link-focus-ring-offset) + var(--link-focus-ring-ring-width)) var(--link-focus-ring-ring-color);
+}
+
+/* ---------- External-link indicator ---------- */
+
+.external-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--_icon-size);
+  line-height: 1;
+  color: inherit;
+  flex-shrink: 0;
+}
+
+.external-icon {
+  width: 1em;
+  height: 1em;
+  display: block;
+}
+
+/* ---------- Slotted icon sizing — slotted `cor-icon` inherits size + color ---------- */
+
+::slotted([slot='icon-start']),
+::slotted([slot='icon-end']) {
+  flex-shrink: 0;
+  inline-size: var(--_icon-size);
+  block-size: var(--_icon-size);
+  color: inherit;
+}
+
+/* ---------- Reduced motion — respect global preference ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .control {
+    transition: none;
+  }
+}

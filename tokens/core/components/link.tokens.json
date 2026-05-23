@@ -1,0 +1,126 @@
+{
+  "link": {
+    "container": {
+      "paddingInline": {
+        "$value": "{spacing.0}",
+        "$type": "dimension"
+      },
+      "paddingBlock": {
+        "$value": "{spacing.0}",
+        "$type": "dimension"
+      },
+      "gap": {
+        "xs": { "$value": "{spacing.2}", "$type": "dimension" },
+        "sm": { "$value": "{spacing.4}", "$type": "dimension" },
+        "md": { "$value": "{spacing.4}", "$type": "dimension" },
+        "lg": { "$value": "{spacing.6}", "$type": "dimension" }
+      },
+      "minHeightTouch": {
+        "$value": "{spacing.40}",
+        "$type": "dimension"
+      },
+      "minHeightPointer": {
+        "$value": "{spacing.32}",
+        "$type": "dimension"
+      },
+      "borderRadius": {
+        "$value": "{borderRadius.4}",
+        "$type": "dimension"
+      },
+      "transitionDuration": {
+        "$value": "150ms",
+        "$type": "duration"
+      },
+      "transitionTimingFunction": {
+        "$value": "ease-out",
+        "$type": "cubicBezier"
+      }
+    },
+    "label": {
+      "fontFamily": {
+        "$value": "{fontFamily.primary}",
+        "$type": "fontFamily"
+      },
+      "fontWeight": {
+        "$value": "{fontWeight.regular}",
+        "$type": "fontWeight"
+      },
+      "fontSize": {
+        "xs": { "$value": "{fontSize.12}", "$type": "dimension" },
+        "sm": { "$value": "{fontSize.14}", "$type": "dimension" },
+        "md": { "$value": "{fontSize.16}", "$type": "dimension" },
+        "lg": { "$value": "{fontSize.18}", "$type": "dimension" }
+      },
+      "lineHeight": {
+        "xs": { "$value": "{lineHeight.16}", "$type": "dimension" },
+        "sm": { "$value": "{lineHeight.20}", "$type": "dimension" },
+        "md": { "$value": "{lineHeight.24}", "$type": "dimension" },
+        "lg": { "$value": "{lineHeight.28}", "$type": "dimension" }
+      },
+      "underlineThickness": {
+        "$value": "1px",
+        "$type": "dimension"
+      },
+      "underlineOffset": {
+        "$value": "2px",
+        "$type": "dimension"
+      }
+    },
+    "icon": {
+      "size": {
+        "xs": { "$value": "{spacing.12}", "$type": "dimension" },
+        "sm": { "$value": "{spacing.16}", "$type": "dimension" },
+        "md": { "$value": "{spacing.20}", "$type": "dimension" },
+        "lg": { "$value": "{spacing.20}", "$type": "dimension" }
+      }
+    },
+    "primary": {
+      "label": {
+        "default": { "$value": "{color.text.brand.default}", "$type": "color" },
+        "hover": { "$value": "{color.background.brand.default-hover}", "$type": "color" },
+        "active": { "$value": "{color.background.brand.default-active}", "$type": "color" },
+        "visited": { "$value": "{color.text.brand.visited}", "$type": "color" }
+      }
+    },
+    "strict": {
+      "label": {
+        "default": { "$value": "{color.text.base.default}", "$type": "color" },
+        "hover": { "$value": "{color.text.base.secondary}", "$type": "color" },
+        "active": { "$value": "{color.text.base.default}", "$type": "color" },
+        "visited": { "$value": "{color.text.brand.visited}", "$type": "color" }
+      }
+    },
+    "white": {
+      "label": {
+        "default": { "$value": "{color.text.base-inverse.default}", "$type": "color" },
+        "hover": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" },
+        "active": { "$value": "{color.text.base-inverse.default}", "$type": "color" },
+        "visited": { "$value": "{color.text.brand.visited}", "$type": "color" }
+      }
+    },
+    "disabled": {
+      "label": {
+        "$value": "{color.text.disabled.default}",
+        "$type": "color"
+      }
+    },
+    "focus": {
+      "ringColor": {
+        "$value": "{color.background.brand.focus-ring}",
+        "$type": "color"
+      },
+      "ringWidth": {
+        "$value": "{borderWidth.3}",
+        "$type": "dimension"
+      },
+      "ringOffset": {
+        "$value": "{borderWidth.1}",
+        "$type": "dimension"
+      },
+      "ringOffsetColor": {
+        "$value": "{color.background.base.default}",
+        "$type": "color"
+      }
+    }
+  }
+}
