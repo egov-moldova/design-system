@@ -1,0 +1,79 @@
+{
+  "table": {
+    "container": {
+      "background": { "$value": "{color.background.base.default}", "$type": "color" },
+      "borderRadius": { "$value": "{borderRadius.0}", "$type": "dimension" },
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" }
+    },
+    "header": {
+      "minHeight": { "$value": "{spacing.48}", "$type": "dimension" },
+      "paddingInline": { "$value": "{spacing.24}", "$type": "dimension" },
+      "paddingBlock": { "$value": "{spacing.8}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.6}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "default": {
+        "background": { "$value": "{color.background.base.tertiary}", "$type": "color" },
+        "color": { "$value": "{color.text.base.default}", "$type": "color" },
+        "borderBottom": { "$value": "{color.border.base.default}", "$type": "color" }
+      },
+      "inverted": {
+        "background": { "$value": "{color.background.base-inverse.default}", "$type": "color" },
+        "color": { "$value": "{color.text.base-inverse.default}", "$type": "color" },
+        "borderBottom": { "$value": "{color.background.base-inverse.default}", "$type": "color" }
+      }
+    },
+    "cell": {
+      "minHeight": { "$value": "{spacing.48}", "$type": "dimension" },
+      "paddingInline": { "$value": "{spacing.24}", "$type": "dimension" },
+      "paddingBlock": { "$value": "{spacing.8}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.6}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
+      "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "color": { "$value": "{color.text.base.secondary}", "$type": "color" },
+      "borderBottom": { "$value": "{color.border.base.default}", "$type": "color" }
+    },
+    "row": {
+      "background": {
+        "default": { "$value": "{color.background.base.default}", "$type": "color" },
+        "zebra": { "$value": "{color.background.base.secondary}", "$type": "color" },
+        "hover": { "$value": "{color.background.base.secondary}", "$type": "color" },
+        "selected": { "$value": "{color.background.brand.secondary}", "$type": "color" },
+        "selectedHover": { "$value": "{color.background.brand.secondary-hover}", "$type": "color" }
+      },
+      "transitionDuration": { "$value": "120ms", "$type": "duration" },
+      "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" }
+    },
+    "sortIcon": {
+      "size": { "$value": "{spacing.16}", "$type": "dimension" },
+      "color": {
+        "inactive": { "$value": "{color.icon.base.tertiary}", "$type": "color" },
+        "active": { "$value": "{color.icon.base.default}", "$type": "color" },
+        "inverted": { "$value": "{color.text.base-inverse.default}", "$type": "color" }
+      }
+    },
+    "focusRing": {
+      "width": { "$value": "{borderWidth.3}", "$type": "dimension" },
+      "offset": { "$value": "{borderWidth.1}", "$type": "dimension" },
+      "color": { "$value": "{color.background.brand.focus-ring}", "$type": "color" }
+    },
+    "mobile": {
+      "card": {
+        "background": { "$value": "{color.background.base.default}", "$type": "color" },
+        "borderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" },
+        "borderColor": { "$value": "{color.border.base.default}", "$type": "color" },
+        "padding": { "$value": "{spacing.16}", "$type": "dimension" },
+        "gap": { "$value": "{spacing.8}", "$type": "dimension" }
+      },
+      "labelColor": { "$value": "{color.text.base.tertiary}", "$type": "color" },
+      "labelFontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" }
+    },
+    "empty": {
+      "padding": { "$value": "{spacing.48}", "$type": "dimension" },
+      "color": { "$value": "{color.text.base.tertiary}", "$type": "color" },
+      "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" }
+    }
+  }
+}
