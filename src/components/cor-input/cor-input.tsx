@@ -34,6 +34,14 @@ export class CorInput {
   @Prop({ reflect: true }) variant: InputVariant = 'default';
 
   /**
+   * Loading state. When true the control becomes uninteractive and a
+   * trailing spinner replaces the `icon-end` slot. The host carries
+   * `aria-busy="true"` for assistive technologies.
+   * @default false
+   */
+  @Prop({ reflect: true }) loading: boolean = false;
+
+  /**
    * Visual size rung.
    * @default 'md'
    */
@@ -283,6 +291,7 @@ export class CorInput {
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
       'is-readonly': this.readonly,
+      'is-loading': this.loading,
       'is-invalid': this.invalid,
       'is-focused': this.isFocused && !effectivelyDisabled,
       'has-label': this.hasVisibleLabel(),
@@ -292,7 +301,7 @@ export class CorInput {
     };
 
     return (
-      <Host class={hostClasses}>
+      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null}>
         <label class="label" htmlFor={`input-${this.instanceId}`} id={this.labelId} part="label">
           <span class="label-text">
             <slot name="label" onSlotchange={this.onLabelSlotChange}>
@@ -334,6 +343,7 @@ export class CorInput {
             aria-describedby={this.describedBy()}
             aria-invalid={this.invalid ? 'true' : null}
             aria-required={this.required ? 'true' : null}
+            aria-readonly={this.readonly ? 'true' : null}
             aria-disabled={effectivelyDisabled ? 'true' : null}
             onInput={this.handleInput}
             onChange={this.handleChange}
@@ -344,6 +354,12 @@ export class CorInput {
           <span class="control-icon control-icon-end" aria-hidden={this.hasIconEnd ? null : 'true'}>
             <slot name="icon-end" onSlotchange={this.onIconEndSlotChange} />
           </span>
+
+          {this.loading ? (
+            <span class="control-spinner" part="spinner" aria-hidden="true">
+              <cor-spinner size={this.size === 'lg' ? 'sm' : 'xs'} variant="brand" label="" />
+            </span>
+          ) : null}
         </div>
 
         {this.hasErrorMessage() ? (

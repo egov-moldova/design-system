@@ -30,7 +30,13 @@ describe('cor-input', () => {
       expect(root?.getAttribute('disabled')).toBeNull();
       expect(root?.getAttribute('required')).toBeNull();
       expect(root?.getAttribute('readonly')).toBeNull();
+      expect(root?.getAttribute('loading')).toBeNull();
       expect(root?.getAttribute('invalid')).toBeNull();
+      expect(root?.getAttribute('aria-busy')).toBeNull();
+    });
+
+    it('exposes all four supported variants', () => {
+      expect(INPUT_VARIANTS).toEqual(['default', 'warning', 'destructive', 'success']);
     });
 
     it.each(INPUT_VARIANTS)('reflects variant="%s" to host', async variant => {
@@ -178,6 +184,16 @@ describe('cor-input', () => {
       const { root } = await render(<cor-input label="x" readonly value="x"></cor-input>);
       const native = queryNative(root);
       expect(native?.readOnly).toBe(true);
+      expect(native?.getAttribute('aria-readonly')).toBe('true');
+    });
+
+    it('readonly is distinct from disabled — input stays focusable and not aria-disabled', async () => {
+      const { root } = await render(<cor-input label="x" readonly value="x"></cor-input>);
+      const native = queryNative(root);
+      expect(native?.disabled).toBe(false);
+      expect(native?.getAttribute('aria-disabled')).toBeNull();
+      expect(root?.classList.contains('is-readonly')).toBe(true);
+      expect(root?.classList.contains('is-disabled')).toBe(false);
     });
 
     it('responds to fieldset disabled via formDisabledCallback', async () => {
@@ -254,5 +270,47 @@ describe('cor-input', () => {
       const slotted = root?.querySelector('[slot="icon-end"]');
       expect(slotted?.tagName.toLowerCase()).toBe('cor-icon');
     });
+  });
+
+  describe('loading state', () => {
+    it('reflects loading to host and sets aria-busy', async () => {
+      const { root } = await render(<cor-input label="x" loading></cor-input>);
+      expect(root?.getAttribute('loading')).toBe('');
+      expect(root?.getAttribute('aria-busy')).toBe('true');
+      expect(root?.classList.contains('is-loading')).toBe(true);
+    });
+
+    it('renders a cor-spinner inside the control when loading', async () => {
+      const { root } = await render(<cor-input label="x" loading></cor-input>);
+      const spinner = root?.shadowRoot?.querySelector('.control-spinner cor-spinner');
+      expect(spinner).toBeTruthy();
+    });
+
+    it('omits the spinner when not loading', async () => {
+      const { root } = await render(<cor-input label="x"></cor-input>);
+      const spinner = root?.shadowRoot?.querySelector('.control-spinner');
+      expect(spinner).toBeNull();
+      expect(root?.getAttribute('aria-busy')).toBeNull();
+    });
+
+    it('scales the spinner from xs (md) to sm (lg)', async () => {
+      const { root: rootMd } = await render(<cor-input label="x" loading size="md"></cor-input>);
+      const { root: rootLg } = await render(<cor-input label="x" loading size="lg"></cor-input>);
+      expect(rootMd?.shadowRoot?.querySelector('cor-spinner')?.getAttribute('size')).toBe('xs');
+      expect(rootLg?.shadowRoot?.querySelector('cor-spinner')?.getAttribute('size')).toBe('sm');
+    });
+  });
+
+  describe('variant matrix', () => {
+    it.each(['default', 'warning', 'destructive', 'success'] as const)(
+      'reflects variant="%s" to host without warning',
+      async variant => {
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+        const { root } = await render(<cor-input label="x" variant={variant}></cor-input>);
+        expect(root?.getAttribute('variant')).toBe(variant);
+        expect(warn).not.toHaveBeenCalled();
+        warn.mockRestore();
+      },
+    );
   });
 });

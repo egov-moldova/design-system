@@ -337,3 +337,97 @@ ARIA: drop zone is `role="button"` + `aria-label`/`aria-labelledby` +
 Spec coverage: 56 tests total (38 file-input + 18 file-item) — render,
 prop reflection + warn-and-fallback, drag/drop, validation, ARIA wiring,
 form association.
+
+---
+
+## Figma drift fixes
+
+2026-05-23 — `cor-input` aligned with Figma source-of-truth (docs page
+`107:1034`, master component-set `132:3419`). Previous implementation
+shipped 2 styles × 6 visible states; Figma carries **4 styles × 7 states
+× 2 sizes = 56 variants**. Additive change — no breaking API delta.
+
+**Tokens** (`tokens/core/components/input.tokens.json`): added per-style
+namespaces `input.warning.*`, `input.success.*` (background-default,
+border-default/hover/focus, focus-ring) mirroring the existing
+`input.destructive.*` shape. Added `input.default.background.readOnly`,
+`input.default.border.readOnly`, `input.default.text.readOnly` for the
+new read-only state; `input.control.loadingOpacity` and
+`input.icon.color.loading` for the loading state;
+`input.assistive.color.warning` + `input.assistive.color.success` so
+helper text follows the variant tone. Tokens resolve to:
+default `#d9d9d9` border (`color.border.base.default`),
+warning `#dc6803` (`color.border.warning.default`),
+destructive `#d92d20` (`color.border.danger.default`),
+success `#027948` (`color.border.positive.default`) — 0-pixel deltas vs
+Figma confirmed by `getComputedStyle` over the rendered shadow DOM. Focus
+rings: blue-sky/200 / apricot/200 / red/200 / green/200 per variant —
+exact match to the four Figma "Focus Ring/Large/{Default,Warning,Error,
+Success}" effect tokens. Label `fontWeight` corrected to `medium` (500)
+per the DESIGN.md "Medium-Weight Label Rule" — was inheriting `regular`.
+
+**TSX** (`cor-input.tsx`): `variant` enum expanded to
+`'default' | 'warning' | 'destructive' | 'success'`. New `loading: boolean`
+`@Prop({ reflect: true })` — when true the host carries `aria-busy="true"`
+and a `cor-spinner` (xs for md size, sm for lg) renders in the trailing
+slot, replacing the `icon-end` slot for the duration of the load. Native
+input gets `pointer-events: none` + `opacity: 0.6`. Existing `readonly`
+prop now also sets `aria-readonly="true"` on the native input — required
+to distinguish read-only from disabled at the assistive-tech layer.
+
+**CSS** (`cor-input.css`): added `:host(.variant-warning)`,
+`:host(.variant-success)` blocks that remap the local
+`--_border-color`, `--_border-color-hover`, `--_border-color-focus`,
+`--_focus-ring-color`, `--_assistive-color` to the variant token bundle.
+Hover and focus rules now exclude `.is-readonly` so the read-only
+treatment is stable across pointer states. Added `:host(.is-loading)`
+that hides `.control-icon-end`, surfaces `.control-spinner`, and dims
+the native input; added `:host(.is-readonly)` with `gray-100` background,
+default border, full-contrast label, `cursor: default` (vs disabled's
+`not-allowed`). Read-only label stays at `--input-label-color-default`
+unlike disabled which dims to `--input-label-color-disabled` — matches
+Figma's "visible but not editable" semantic.
+
+**Stories** (`cor-input.stories.ts`): added `Loading` (4 cells: lg / md
+/ warning+loading / success+loading), `ReadOnly` (3 cells: lg / md /
+disabled-for-comparison), `WithWarning` (Romanian helper "Această
+valoare ar putea cauza probleme"), `WithSuccess` (Romanian helper
+"Verificat"). `AllVariants` re-rendered as 4-column grid (was 2).
+`States` story refreshed to show the 7 first-class states explicitly
+including loading + read-only. Existing `WithIcons`, `WithError`,
+`EdgeCases`, `AllSizes`, `WithHelperText`, `Default` preserved
+unchanged.
+
+**Spec** (`cor-input.spec.tsx`): added `loading state` describe block
+(reflects `loading` to host, sets `aria-busy="true"`, renders
+`cor-spinner`, scales md→xs / lg→sm), `variant matrix` describe block
+(asserts all 4 variants reflect without `console.warn`), added
+`readonly is distinct from disabled` test (aria-readonly=true,
+aria-disabled=null, is-readonly class only) and `aria-readonly` to the
+existing readonly forwarding test. 478 specs pass.
+
+**Gates**: `yarn tokens.build`, `yarn dx:stencil:once`, `yarn lint`,
+`yarn typecheck`, `yarn test.dev` (478 pass), `yarn test.storybook`
+(116 pass), `yarn sp.build`, `yarn audit:contrast` (all obligatory pairs
+pass WCAG 2.1 AA in light + dark, including new
+`border.warning.default` and `border.positive.default` against
+`background.base.default`).
+
+Screenshots: `docs/screenshots/cor-input/v2/{all-variants,states,
+with-warning,with-success,with-destructive,loading,read-only}.png`.
+Figma canonical reference at `/tmp/figma-input-text-canonical.png` and
+master component-set at `/tmp/figma-input-text-master.png`.
+
+### Figma node resolution
+
+The component-set master (`132:3419`) was reachable via
+`mcp__figma__get_metadata` and confirmed 56 variants (4 styles × 7
+states × 2 sizes). `get_variable_defs` on the master returned the
+exact CSS-var-named tokens (e.g. `--color-border-warning-default`,
+`--color-border-positive-default`) that the project's semantic layer
+already exports — token mapping was 1-to-1 with no derivation needed.
+The four focus-ring effect tokens (`Focus Ring/Large/{Default,Warning,
+Error,Success}`) map to `blue-sky/200`, `apricot/200`, `red/200`,
+`green/200` palette shades — all already present in
+`tokens/core/palette.tokens.json`.
+

@@ -20,6 +20,7 @@
   --_border-color-hover: var(--input-default-border-hover);
   --_border-color-focus: var(--input-default-border-focus);
   --_focus-ring-color: var(--input-default-focus-ring);
+  --_assistive-color: var(--input-assistive-color-default);
 
   display: flex;
   flex-direction: column;
@@ -38,11 +39,34 @@
   --_icon-size: var(--input-icon-size-lg);
 }
 
+/* ---------- Variant token overrides ---------- */
+/*
+ * Each named variant remaps the local custom properties to its token bundle.
+ * Borders for warning/destructive/success use the same semantic color across
+ * default / hover / focus per Figma (var-color shift would over-signal state).
+ */
+:host(.variant-warning) {
+  --_border-color: var(--input-warning-border-default);
+  --_border-color-hover: var(--input-warning-border-hover);
+  --_border-color-focus: var(--input-warning-border-focus);
+  --_focus-ring-color: var(--input-warning-focus-ring);
+  --_assistive-color: var(--input-assistive-color-warning);
+}
+
 :host(.variant-destructive) {
   --_border-color: var(--input-destructive-border-default);
   --_border-color-hover: var(--input-destructive-border-hover);
   --_border-color-focus: var(--input-destructive-border-focus);
   --_focus-ring-color: var(--input-destructive-focus-ring);
+  --_assistive-color: var(--input-assistive-color-error);
+}
+
+:host(.variant-success) {
+  --_border-color: var(--input-success-border-default);
+  --_border-color-hover: var(--input-success-border-hover);
+  --_border-color-focus: var(--input-success-border-focus);
+  --_focus-ring-color: var(--input-success-focus-ring);
+  --_assistive-color: var(--input-assistive-color-success);
 }
 
 /* ---------- Label ---------- */
@@ -87,6 +111,11 @@
   color: var(--input-label-color-disabled);
 }
 
+/*
+ * Read-only is "visible but not editable" — label stays full-contrast
+ * (unlike disabled which dims the label too).
+ */
+
 /* Hide the label row entirely when no text and no slotted content is present. */
 :host(:not(.has-label)) .label {
   display: none;
@@ -95,6 +124,7 @@
 /* ---------- Control row ---------- */
 
 .control {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--_gap);
@@ -109,24 +139,55 @@
     background-color var(--_transition-duration) var(--_transition-easing);
 }
 
-:host(:not(.is-disabled):not(.is-focused):hover) .control {
+:host(:not(.is-disabled):not(.is-readonly):not(.is-focused):hover) .control {
   border-color: var(--_border-color-hover);
   /* Inset shadow simulates Figma's 2px border thickening on hover without shifting content. */
   box-shadow: inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default))
     var(--_border-color-hover);
 }
 
-:host(.is-focused:not(.is-disabled)) .control {
+:host(.is-focused:not(.is-disabled):not(.is-readonly)) .control {
   border-color: var(--_border-color-focus);
   box-shadow:
     inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default)) var(--_border-color-focus),
     0 0 0 var(--spacing-4) var(--_focus-ring-color);
 }
 
+:host(.is-readonly) .control {
+  background-color: var(--input-default-background-read-only);
+  border-color: var(--input-default-border-read-only);
+  cursor: default;
+}
+
 :host(.is-disabled) .control {
   background-color: var(--input-default-background-disabled);
   border-color: var(--input-default-border-disabled);
   cursor: not-allowed;
+}
+
+/* ---------- Loading state ----------
+ * Loading composes on top of the variant + focus tokens — when active,
+ * the trailing slot icon is replaced by an inline spinner and the input
+ * itself becomes uninteractive without losing its visual identity.
+ */
+:host(.is-loading) .native {
+  pointer-events: none;
+  opacity: var(--input-control-loading-opacity);
+}
+
+:host(.is-loading) .control-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--_icon-size);
+  block-size: var(--_icon-size);
+  color: var(--input-icon-color-loading);
+}
+
+/* Hide the trailing icon slot while loading — spinner takes its place. */
+:host(.is-loading) .control-icon-end {
+  display: none;
 }
 
 /* ---------- Icon slots ---------- */
@@ -141,12 +202,16 @@
   color: var(--input-icon-color-default);
 }
 
+.control-spinner {
+  display: none;
+}
+
 :host(.is-disabled) .control-icon {
   color: var(--input-icon-color-disabled);
 }
 
 :host(:not(.has-icon-start)) .control-icon-start,
-:host(:not(.has-icon-end)) .control-icon-end {
+:host(:not(.has-icon-end):not(.is-loading)) .control-icon-end {
   display: none;
 }
 
@@ -221,7 +286,7 @@
   font-size: var(--input-assistive-font-size);
   line-height: var(--input-assistive-line-height);
   font-weight: var(--input-assistive-font-weight);
-  color: var(--input-assistive-color-default);
+  color: var(--_assistive-color);
   inline-size: 100%;
   min-inline-size: 0;
 }

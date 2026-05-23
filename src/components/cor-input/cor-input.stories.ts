@@ -15,6 +15,7 @@ type InputArgs = {
   required: boolean;
   disabled: boolean;
   readonly: boolean;
+  loading: boolean;
   invalid: boolean;
 };
 
@@ -33,6 +34,7 @@ const renderInput = (args: InputArgs) => /*html*/ `
     ${args.required ? 'required' : ''}
     ${args.disabled ? 'disabled' : ''}
     ${args.readonly ? 'readonly' : ''}
+    ${args.loading ? 'loading' : ''}
     ${args.invalid ? 'invalid' : ''}
   ></cor-input>
 `;
@@ -50,6 +52,7 @@ const docsSourceDefault = (args: InputArgs) => {
     args.required ? 'required' : '',
     args.disabled ? 'disabled' : '',
     args.readonly ? 'readonly' : '',
+    args.loading ? 'loading' : '',
     args.invalid ? 'invalid' : '',
   ]
     .filter(Boolean)
@@ -87,6 +90,7 @@ const meta: Meta<InputArgs> = {
     required: { control: 'boolean' },
     disabled: { control: 'boolean' },
     readonly: { control: 'boolean' },
+    loading: { control: 'boolean' },
     invalid: { control: 'boolean' },
   },
 };
@@ -104,11 +108,12 @@ export const Default: Story = {
     label: 'Label',
     placeholder: 'DD/MM/YYYY',
     value: '',
-    helperText: 'qd',
+    helperText: '',
     errorText: '',
     required: false,
     disabled: false,
     readonly: false,
+    loading: false,
     invalid: false,
   },
   parameters: {
@@ -127,6 +132,12 @@ const wrap = (children: string) => /*html*/ `
   </div>
 `;
 
+const wrapWide = (children: string) => /*html*/ `
+  <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 220px)); gap: var(--spacing-32) var(--spacing-24); padding: var(--spacing-24); max-width: 1040px;">
+    ${children}
+  </div>
+`;
+
 const cell = (caption: string, body: string) => /*html*/ `
   <div style="display: flex; flex-direction: column; gap: var(--spacing-8);">
     <span style="${cellLabelStyle}">${caption}</span>
@@ -137,7 +148,7 @@ const cell = (caption: string, body: string) => /*html*/ `
 export const AllVariants: Story = {
   name: 'All Variants',
   render: () =>
-    wrap(
+    wrapWide(
       INPUT_VARIANTS.map(variant =>
         cell(
           variant,
@@ -182,24 +193,14 @@ export const States: Story = {
   render: () =>
     wrap(
       [
-        cell('default: default', /*html*/ `<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY"></cor-input>`),
-        cell('default: filled', /*html*/ `<cor-input size="lg" label="Label" value="15/04/2025"></cor-input>`),
-        cell(
-          'default: disabled',
-          /*html*/ `<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY" disabled></cor-input>`,
-        ),
-        cell(
-          'default: readonly',
-          /*html*/ `<cor-input size="lg" label="Label" value="15/04/2025" readonly></cor-input>`,
-        ),
-        cell(
-          'default: mandatory',
-          /*html*/ `<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY" required></cor-input>`,
-        ),
-        cell(
-          'destructive: default',
-          /*html*/ `<cor-input variant="destructive" size="lg" label="Label" placeholder="DD/MM/YYYY"></cor-input>`,
-        ),
+        cell('default', /*html*/ `<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY"></cor-input>`),
+        cell('hover (use mouse)', /*html*/ `<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY"></cor-input>`),
+        cell('focus (use Tab)', /*html*/ `<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY"></cor-input>`),
+        cell('loading', /*html*/ `<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY" loading></cor-input>`),
+        cell('filled', /*html*/ `<cor-input size="lg" label="Label" value="15/04/2025"></cor-input>`),
+        cell('read-only', /*html*/ `<cor-input size="lg" label="Label" value="15/04/2025" readonly></cor-input>`),
+        cell('disabled', /*html*/ `<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY" disabled></cor-input>`),
+        cell('mandatory', /*html*/ `<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY" required></cor-input>`),
       ].join(''),
     ),
   parameters: {
@@ -208,11 +209,67 @@ export const States: Story = {
       source: {
         code: [
           '<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY"></cor-input>',
+          '<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY" loading></cor-input>',
           '<cor-input size="lg" label="Label" value="15/04/2025"></cor-input>',
-          '<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY" disabled></cor-input>',
           '<cor-input size="lg" label="Label" value="15/04/2025" readonly></cor-input>',
+          '<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY" disabled></cor-input>',
           '<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY" required></cor-input>',
-          '<cor-input variant="destructive" size="lg" label="Label" placeholder="DD/MM/YYYY"></cor-input>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const WithWarning: Story = {
+  name: 'With Warning',
+  render: () =>
+    wrap(
+      [
+        cell(
+          'warning',
+          /*html*/ `<cor-input variant="warning" size="lg" label="Sumă" value="9 500" helper-text="Această valoare ar putea cauza probleme"></cor-input>`,
+        ),
+        cell(
+          'warning + placeholder',
+          /*html*/ `<cor-input variant="warning" size="lg" label="Sumă" placeholder="0,00 MDL" helper-text="Verifică suma înainte de a continua"></cor-input>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          '<cor-input variant="warning" size="lg" label="Sumă" value="9 500" helper-text="Această valoare ar putea cauza probleme"></cor-input>',
+          '<cor-input variant="warning" size="lg" label="Sumă" placeholder="0,00 MDL" helper-text="Verifică suma înainte de a continua"></cor-input>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const WithSuccess: Story = {
+  name: 'With Success',
+  render: () =>
+    wrap(
+      [
+        cell(
+          'success',
+          /*html*/ `<cor-input variant="success" size="lg" label="IDNP" value="2002004123456" helper-text="Verificat"></cor-input>`,
+        ),
+        cell(
+          'success + placeholder',
+          /*html*/ `<cor-input variant="success" size="lg" label="IDNP" placeholder="0000000000000" helper-text="Validat de Registrul de stat"></cor-input>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          '<cor-input variant="success" size="lg" label="IDNP" value="2002004123456" helper-text="Verificat"></cor-input>',
+          '<cor-input variant="success" size="lg" label="IDNP" placeholder="0000000000000" helper-text="Validat de Registrul de stat"></cor-input>',
         ].join('\n'),
       },
     },
@@ -254,11 +311,11 @@ export const WithError: Story = {
       [
         cell(
           'invalid + error message',
-          /*html*/ `<cor-input size="lg" label="Label" value="45/MM/YYYY" invalid error-text="Day must be between 01 and 31"></cor-input>`,
+          /*html*/ `<cor-input size="lg" label="Dată naștere" value="45/MM/YYYY" invalid error-text="Ziua trebuie să fie între 01 și 31"></cor-input>`,
         ),
         cell(
           'explicit destructive',
-          /*html*/ `<cor-input size="lg" variant="destructive" label="Label" placeholder="DD/MM/YYYY" error-text="Error message displayed here" invalid></cor-input>`,
+          /*html*/ `<cor-input size="lg" variant="destructive" label="Label" placeholder="DD/MM/YYYY" error-text="Câmpul este obligatoriu" invalid></cor-input>`,
         ),
       ].join(''),
     ),
@@ -267,8 +324,79 @@ export const WithError: Story = {
     docs: {
       source: {
         code: [
-          '<cor-input size="lg" label="Label" value="45/MM/YYYY" invalid error-text="Day must be between 01 and 31"></cor-input>',
-          '<cor-input size="lg" variant="destructive" label="Label" placeholder="DD/MM/YYYY" error-text="Error message displayed here" invalid></cor-input>',
+          '<cor-input size="lg" label="Dată naștere" value="45/MM/YYYY" invalid error-text="Ziua trebuie să fie între 01 și 31"></cor-input>',
+          '<cor-input size="lg" variant="destructive" label="Label" placeholder="DD/MM/YYYY" error-text="Câmpul este obligatoriu" invalid></cor-input>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const Loading: Story = {
+  name: 'Loading',
+  render: () =>
+    wrap(
+      [
+        cell(
+          'default (lg)',
+          /*html*/ `<cor-input size="lg" label="IDNP" value="2002004123456" loading helper-text="Se validează…"></cor-input>`,
+        ),
+        cell(
+          'default (md)',
+          /*html*/ `<cor-input size="md" label="IDNP" value="2002004123456" loading helper-text="Se validează…"></cor-input>`,
+        ),
+        cell(
+          'warning + loading',
+          /*html*/ `<cor-input variant="warning" size="lg" label="Sumă" value="9 500" loading helper-text="Se verifică…"></cor-input>`,
+        ),
+        cell(
+          'success + loading',
+          /*html*/ `<cor-input variant="success" size="lg" label="Cod" value="MD-12345" loading helper-text="Se confirmă…"></cor-input>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          '<cor-input size="lg" label="IDNP" value="2002004123456" loading helper-text="Se validează…"></cor-input>',
+          '<cor-input size="md" label="IDNP" value="2002004123456" loading helper-text="Se validează…"></cor-input>',
+          '<cor-input variant="warning" size="lg" label="Sumă" value="9 500" loading helper-text="Se verifică…"></cor-input>',
+          '<cor-input variant="success" size="lg" label="Cod" value="MD-12345" loading helper-text="Se confirmă…"></cor-input>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const ReadOnly: Story = {
+  name: 'Read-Only',
+  render: () =>
+    wrap(
+      [
+        cell(
+          'read-only (lg)',
+          /*html*/ `<cor-input size="lg" label="IDNP" value="2002004123456" readonly helper-text="Câmp doar pentru citire"></cor-input>`,
+        ),
+        cell(
+          'read-only (md)',
+          /*html*/ `<cor-input size="md" label="IDNP" value="2002004123456" readonly></cor-input>`,
+        ),
+        cell(
+          'disabled (for comparison)',
+          /*html*/ `<cor-input size="lg" label="IDNP" value="2002004123456" disabled helper-text="Câmp dezactivat"></cor-input>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          '<cor-input size="lg" label="IDNP" value="2002004123456" readonly helper-text="Câmp doar pentru citire"></cor-input>',
+          '<cor-input size="md" label="IDNP" value="2002004123456" readonly></cor-input>',
+          '<cor-input size="lg" label="IDNP" value="2002004123456" disabled helper-text="Câmp dezactivat"></cor-input>',
         ].join('\n'),
       },
     },
