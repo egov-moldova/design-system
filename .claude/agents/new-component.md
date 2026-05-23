@@ -177,11 +177,11 @@ For story writing conventions and reference patterns, see `src/components/_agent
 mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=..." })
 mcp__playwright__browser_wait_for({ time: 2 })
 mcp__playwright__browser_console_messages({ level: "error" })   // fix errors BEFORE screenshotting
-mcp__playwright__browser_take_screenshot({ type: "png", filename: "storybook-component.png" })
+mcp__playwright__browser_take_screenshot({ type: "png", filename: ".playwright-mcp/storybook-component.png" })
 mcp__image-compare__compare_images({
-  image1_path: "figma-ref.png",
-  image2_path: "storybook-component.png",
-  diff_output_path: "diff.png",
+  image1_path: ".playwright-mcp/figma-ref.png",
+  image2_path: ".playwright-mcp/storybook-component.png",
+  diff_output_path: ".playwright-mcp/diff.png",
   threshold: 0.1
 })
 ```

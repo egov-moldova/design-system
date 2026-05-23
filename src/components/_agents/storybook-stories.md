@@ -197,7 +197,29 @@ parameters: {
 
 **Type the destructure**: `{ args }: { args: ComponentArgs }` — never `{ args }: any` or untyped. The transform is the most common spot for `any` to creep back in.
 
-For static snippets that don't need to react to controls (e.g., the grid stories above), simply omit the `parameters.docs.source` block — the global `'code'` mode handles it.
+### Composite stories (grids, `controls: { disable: true }`)
+
+For composite stories that use template-string helpers, `.map(...)` loops, or local style constants in their `render` (e.g. `cellStyle`, `${SERVICES.flatMap(...)}`), the global `'code'` mode captures the **render-function output verbatim** — including the demo chrome (wrapper divs, label spans, inline styles, helper interpolations). That's terrible UX in the "Show code" panel: a consumer who copies it gets the demo, not a usable example.
+
+Override with a static `parameters.docs.source.code` containing the **minimal consumer-ready markup** — one element per line, no wrapper divs, no inline styles:
+
+```ts
+const docsSourceAllVariants = VARIANTS.map(
+  v => /*html*/ `<cor-component variant="${v}"></cor-component>`,
+).join('\n');
+
+export const AllVariants: Story = {
+  parameters: {
+    controls: { disable: true },
+    docs: { source: { code: docsSourceAllVariants } },
+  },
+  render: () => /*html*/ `<div style="${cellStyle}">…demo grid with labels…</div>`,
+};
+```
+
+Reference: `src/components/cor-logo/cor-logo.stories.ts` (all 3 stories) and `src/components/cor-service-button/cor-service-button.stories.ts`.
+
+**When you CAN omit `docs.source`**: the render function is already a single clean `<cor-component …></cor-component>` line with no helpers or demo wrappers. In practice this happens only for `Default` — and even Default usually benefits from a `transform` so the snippet reflects live Controls changes.
 
 ---
 
@@ -222,4 +244,5 @@ For static snippets that don't need to react to controls (e.g., the grid stories
 | Inline `background: var(--palette-gray-900)` | `background: var(--color-background-base-inverse-default)` | Palette tokens are mode-locked; semantic tokens adapt |
 | `parameters.docs.source.transform` without `type: 'dynamic'` | Add `type: 'dynamic'` | Otherwise the global `type: 'code'` caches the snippet at registration |
 | `({ args }: any) =>` in transform | `({ args }: { args: ComponentArgs }) =>` | Type the destructure |
+| Grid/composite story with helper-laden render and no `docs.source.code` override | Add `parameters.docs.source.code = <curated multi-line consumer markup>` | Otherwise the "Show code" panel exposes wrapper divs, inline styles, and `${SERVICES.flatMap(…)}` template guts — useless to consumers |
 | Missing grid stories | Always: Default, AllVariants, AllSizes (+ States if interactive) | audit-component's `05-story-exports` enforces presence |

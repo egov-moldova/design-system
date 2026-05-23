@@ -314,6 +314,89 @@ export const FILE_CHECKS = [
       return findings;
     },
   },
+  // ─── Asset-loader patterns (lessons from cor-logo audit, 2026-05) ──────────
+  {
+    // A component that participates in the ARIA tree (declares `ariaLabel`)
+    // must keep its host attribute set even when the render bails — otherwise
+    // screen readers traverse a nameless generic element. Use
+    // `<Host aria-hidden="true" />` as the decorative fallback instead of
+    // `return null;`.
+    code: 'ANTIPATTERN-RENDER-NULL-NO-FALLBACK-ARIA',
+    severity: 'warning',
+    scope: 'tsx',
+    check: (content, ctx) => {
+      // Gate: component must declare an `ariaLabel` prop (signals ARIA participation).
+      if (!/@Prop\([^)]*\)\s+ariaLabel\b/.test(content)) return [];
+
+      const lines = content.split('\n');
+
+      // Find `return null;` lines that sit inside what looks like a render() method.
+      // Cheap heuristic: any `return null;` at all in a file that declares ariaLabel
+      // AND a render() method. If the file contains a `<Host[^>]*aria-hidden` somewhere
+      // (the recommended fallback shape), we accept that as the decorative branch.
+      const hasReturnNull = /^\s*return\s+null\s*;\s*$/m.test(content);
+      if (!hasReturnNull) return [];
+
+      const hasRenderFn = /\brender\s*\(\s*\)\s*\{/.test(content);
+      if (!hasRenderFn) return [];
+
+      const hasHostHiddenFallback = /<Host[^>]*aria-hidden/.test(content);
+      if (hasHostHiddenFallback) return [];
+
+      const lineIdx = lines.findIndex(l => /^\s*return\s+null\s*;\s*$/.test(l));
+      return [
+        finding({
+          severity: 'warning',
+          code: 'ANTIPATTERN-RENDER-NULL-NO-FALLBACK-ARIA',
+          file: ctx.fileRel,
+          line: lineIdx >= 0 ? lineIdx + 1 : undefined,
+          message:
+            '`return null` in a component that declares `ariaLabel` strips the host from the a11y tree. Screen readers will traverse a nameless generic element.',
+          snippet: lineIdx >= 0 ? lines[lineIdx].trim().slice(0, 120) : undefined,
+          fix: 'Return `<Host aria-hidden="true" />` instead of `null` so the host stays explicitly decorative for assistive tech.',
+        }),
+      ];
+    },
+  },
+  {
+    // A Map used to cache fetch promises must evict null results, otherwise a
+    // transient failure (404 during deploy, network blip) permanently locks
+    // future consumers out of retrying the same URL.
+    code: 'ANTIPATTERN-FETCH-CACHE-NO-EVICTION',
+    severity: 'warning',
+    scope: 'providers',
+    check: (content, ctx) => {
+      // Gate: file must actually do fetch-based caching.
+      if (!/\bfetch\s*\(/.test(content)) return [];
+
+      const findings = [];
+      const cacheDecls = [...content.matchAll(/\bconst\s+(\w*[Cc]ache\w*)\s*=\s*new\s+Map\b/g)];
+      if (cacheDecls.length === 0) return findings;
+
+      const lines = content.split('\n');
+      for (const decl of cacheDecls) {
+        const name = decl[1];
+        const setRe = new RegExp(`\\b${name}\\.set\\s*\\(`);
+        const deleteRe = new RegExp(`\\b${name}\\.delete\\s*\\(`);
+        if (!setRe.test(content)) continue;
+        if (deleteRe.test(content)) continue;
+
+        const setLine = lines.findIndex(l => setRe.test(l));
+        findings.push(
+          finding({
+            severity: 'warning',
+            code: 'ANTIPATTERN-FETCH-CACHE-NO-EVICTION',
+            file: ctx.fileRel,
+            line: setLine >= 0 ? setLine + 1 : undefined,
+            message: `Cache "${name}" stores fetch promises but never deletes failed results — a transient null/404 locks future consumers out of retrying.`,
+            snippet: setLine >= 0 ? lines[setLine].trim().slice(0, 120) : undefined,
+            fix: `After ${name}.set(url, p), add: p.then(r => { if (r === null) ${name}.delete(url); });`,
+          }),
+        );
+      }
+      return findings;
+    },
+  },
 ];
 
 async function main() {
@@ -383,6 +466,7 @@ export async function analyzeComponent(target) {
   const filesToScan = [];
   if (target.exists.tsx) filesToScan.push({ kind: 'tsx', path: target.paths.tsx });
   if (target.exists.css) filesToScan.push({ kind: 'css', path: target.paths.css });
+  if (target.exists.providers) filesToScan.push({ kind: 'providers', path: target.paths.providers });
 
   if (filesToScan.length === 0) {
     return { findings: [], filesScanned: 0, componentName: target.name };
@@ -406,12 +490,25 @@ export async function analyzeComponent(target) {
 }
 
 /**
+ * Replace every character inside CSS block comments with a space, preserving
+ * newlines (and therefore line numbers) so downstream regex matching skips
+ * the comment text without disturbing the file's line layout.
+ */
+export function stripCssBlockComments(content) {
+  return content.replace(/\/\*[\s\S]*?\*\//g, match => match.replace(/[^\n]/g, ' '));
+}
+
+/**
  * Apply all patterns + file checks to one file's content. Exported for tests
  * so we can pass synthetic content without touching disk.
  */
 export function scanFile(file, componentName) {
   const findings = [];
-  const lines = file.content.split('\n');
+  // For CSS, blank out block-comment bodies so multi-line comments don't
+  // trip patterns like RAW-PIXELS / RAW-HEX. Line numbers stay intact because
+  // we only replace non-newline characters with spaces.
+  const scanContent = file.kind === 'css' ? stripCssBlockComments(file.content) : file.content;
+  const lines = scanContent.split('\n');
 
   for (const pattern of PATTERNS) {
     if (pattern.scope !== file.kind) continue;
@@ -420,9 +517,9 @@ export function scanFile(file, componentName) {
     if (isMultilinePattern) {
       const multiRe = new RegExp(pattern.regex.source, 'g');
       let m;
-      while ((m = multiRe.exec(file.content)) !== null) {
+      while ((m = multiRe.exec(scanContent)) !== null) {
         if (pattern.filter && !pattern.filter({ match: m, line: m[0], componentName })) continue;
-        const lineNum = file.content.slice(0, m.index).split('\n').length;
+        const lineNum = scanContent.slice(0, m.index).split('\n').length;
         findings.push(
           finding({
             severity: pattern.severity,

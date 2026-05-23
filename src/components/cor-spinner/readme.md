@@ -21,6 +21,21 @@ No slots, no events, no interactivity.
 | `variant` | `variant` | Color treatment.                     | `"brand" \| "dark" \| "light" \| "light-on-color"` | `'brand'`   |
 
 
+## Dependencies
+
+### Used by
+
+ - [cor-button](../cor-button)
+ - [cor-service-button](../cor-service-button)
+
+### Graph
+```mermaid
+graph TD;
+  cor-button --> cor-spinner
+  cor-service-button --> cor-spinner
+  style cor-spinner fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

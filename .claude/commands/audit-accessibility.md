@@ -64,7 +64,7 @@ Analyze the tree:
 ```text
 mcp__playwright__browser_press_key({ key: "Tab" })
 mcp__playwright__browser_snapshot()
-mcp__playwright__browser_take_screenshot({ type: "png", filename: "focus-1.png" })
+mcp__playwright__browser_take_screenshot({ type: "png", filename: ".playwright-mcp/focus-1.png" })
 ```
 
 - Component is reachable via Tab
@@ -184,7 +184,7 @@ For each interactive variant, Tab to the element and screenshot:
 
 ```text
 mcp__playwright__browser_press_key({ key: "Tab" })
-mcp__playwright__browser_take_screenshot({ type: "png", filename: "focus-variant-X.png" })
+mcp__playwright__browser_take_screenshot({ type: "png", filename: ".playwright-mcp/focus-variant-X.png" })
 ```
 
 Verify:

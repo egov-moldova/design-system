@@ -20,10 +20,10 @@ Capture baseline screenshots of all states **before any changes**:
 ```text
 mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=...--default" })
 mcp__playwright__browser_wait_for({ time: 2 })
-mcp__playwright__browser_take_screenshot({ type: "png", filename: "pre-refactor-default.png" })
+mcp__playwright__browser_take_screenshot({ type: "png", filename: ".playwright-mcp/pre-refactor-default.png" })
 
 // Repeat for each state: hover, disabled, invalid, etc.
-mcp__playwright__browser_take_screenshot({ type: "png", filename: "pre-refactor-{state}.png" })
+mcp__playwright__browser_take_screenshot({ type: "png", filename: ".playwright-mcp/pre-refactor-{state}.png" })
 ```
 
 These screenshots are the regression baseline for Step 6.
@@ -124,7 +124,7 @@ After each group (tokens, CSS, TSX, stories):
 ```text
 mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=..." })
 mcp__playwright__browser_wait_for({ time: 2 })
-mcp__playwright__browser_take_screenshot({ type: "png", filename: "refactor-step-{N}.png" })
+mcp__playwright__browser_take_screenshot({ type: "png", filename: ".playwright-mcp/refactor-step-{N}.png" })
 ```
 
 Compare against previous screenshot to catch visual regressions immediately.
@@ -135,9 +135,9 @@ For each state captured in Step 1.5, diff before vs after:
 
 ```text
 mcp__image-compare__compare_images({
-  image1_path: "pre-refactor-{state}.png",
-  image2_path: "post-refactor-{state}.png",
-  diff_output_path: "regression-{state}.png"
+  image1_path: ".playwright-mcp/pre-refactor-{state}.png",
+  image2_path: ".playwright-mcp/post-refactor-{state}.png",
+  diff_output_path: ".playwright-mcp/regression-{state}.png"
 })
 ```
 

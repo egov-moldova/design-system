@@ -2,6 +2,7 @@
   "permissions": {
     "allow": [
       "Bash(node scripts/tokens-lint.mjs --root tokens/core --limit 3)",
+      "Bash(node scripts/cleanup-agents.mjs:*)",
       "Bash(git worktree list)",
       "Bash(git worktree list:*)",
       "Bash(git worktree prune)",
@@ -22,13 +23,43 @@
     "PreToolUse": [
       {
         "matcher": "Edit|Write|MultiEdit",
-        "hooks": [{ "type": "command", "command": "node .claude/hooks/pre-edit-guard.mjs" }]
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/pre-edit-guard.mjs"
+          }
+        ]
       }
     ],
     "PostToolUse": [
       {
         "matcher": "Edit|Write|MultiEdit",
-        "hooks": [{ "type": "command", "command": "node .claude/hooks/post-edit-format.mjs" }]
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/hooks/post-edit-format.mjs"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/cleanup-agents.mjs --orphans-only --quiet"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node scripts/cleanup-agents.mjs --orphans-only --quiet"
+          }
+        ]
       }
     ]
   }

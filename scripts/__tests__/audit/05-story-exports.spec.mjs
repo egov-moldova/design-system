@@ -213,6 +213,150 @@ describe('05-story-exports: end-to-end on synthetic stories', () => {
   });
 });
 
+describe('05-story-exports: docs.source contract', () => {
+  it('fires STORY-DOCS-SOURCE-MISSING-DYNAMIC when transform has no type:dynamic', () => {
+    const p = tempStoriesFile(
+      'missing-dynamic',
+      `
+      export default { title: 'Atoms/X', component: 'cor-x' };
+      export const Default = {
+        render: (args) => \`<cor-x />\`,
+        parameters: {
+          docs: {
+            source: {
+              transform: (_code, { args }) => \`<cor-x />\`,
+            },
+          },
+        },
+      };
+    `,
+    );
+    const { findings } = analyzeStoriesFile(p, 'cor-x');
+    const hit = findings.find(f => f.code === 'STORY-DOCS-SOURCE-MISSING-DYNAMIC');
+    assert.ok(hit, `expected STORY-DOCS-SOURCE-MISSING-DYNAMIC, got: ${findings.map(f => f.code).join(', ')}`);
+    assert.equal(hit.severity, 'warning');
+  });
+
+  it('does NOT fire MISSING-DYNAMIC when type:dynamic is present', () => {
+    const p = tempStoriesFile(
+      'with-dynamic',
+      `
+      export default { title: 'Atoms/X', component: 'cor-x' };
+      export const Default = {
+        render: (args) => \`<cor-x />\`,
+        parameters: {
+          docs: {
+            source: {
+              type: 'dynamic',
+              transform: (_code, { args }) => \`<cor-x />\`,
+            },
+          },
+        },
+      };
+    `,
+    );
+    const { findings } = analyzeStoriesFile(p, 'cor-x');
+    assert.equal(findings.filter(f => f.code === 'STORY-DOCS-SOURCE-MISSING-DYNAMIC').length, 0);
+  });
+
+  it('fires STORY-DOCS-SOURCE-ARGS-ANY on `{ args }: any` transform', () => {
+    const p = tempStoriesFile(
+      'args-any',
+      `
+      export default { title: 'Atoms/X', component: 'cor-x' };
+      export const Default = {
+        parameters: {
+          docs: {
+            source: {
+              type: 'dynamic',
+              transform: (_code, { args }: any) => \`<cor-x />\`,
+            },
+          },
+        },
+      };
+    `,
+    );
+    const { findings } = analyzeStoriesFile(p, 'cor-x');
+    const hit = findings.find(f => f.code === 'STORY-DOCS-SOURCE-ARGS-ANY');
+    assert.ok(hit, `expected STORY-DOCS-SOURCE-ARGS-ANY, got: ${findings.map(f => f.code).join(', ')}`);
+    assert.equal(hit.severity, 'warning');
+  });
+
+  it('does NOT fire ARGS-ANY when destructure is properly typed', () => {
+    const p = tempStoriesFile(
+      'args-typed',
+      `
+      export default { title: 'Atoms/X', component: 'cor-x' };
+      export const Default = {
+        parameters: {
+          docs: {
+            source: {
+              type: 'dynamic',
+              transform: (_code, { args }: { args: { foo: string } }) => \`<cor-x />\`,
+            },
+          },
+        },
+      };
+    `,
+    );
+    const { findings } = analyzeStoriesFile(p, 'cor-x');
+    assert.equal(findings.filter(f => f.code === 'STORY-DOCS-SOURCE-ARGS-ANY').length, 0);
+  });
+
+  it('fires STORY-COMPOSITE-NO-CODE-OVERRIDE on controls.disable + helper render + no code', () => {
+    const p = tempStoriesFile(
+      'composite-no-code',
+      `
+      const VARIANTS = ['a', 'b'];
+      export default { title: 'Atoms/X', component: 'cor-x' };
+      export const AllVariants = {
+        parameters: { controls: { disable: true } },
+        render: () => \`<div>\${VARIANTS.map(v => \`<cor-x variant="\${v}"></cor-x>\`).join('')}</div>\`,
+      };
+    `,
+    );
+    const { findings } = analyzeStoriesFile(p, 'cor-x');
+    const hit = findings.find(f => f.code === 'STORY-COMPOSITE-NO-CODE-OVERRIDE');
+    assert.ok(hit, `expected STORY-COMPOSITE-NO-CODE-OVERRIDE, got: ${findings.map(f => f.code).join(', ')}`);
+    assert.equal(hit.severity, 'warning');
+  });
+
+  it('does NOT fire COMPOSITE when docs.source.code is provided', () => {
+    const p = tempStoriesFile(
+      'composite-with-code',
+      `
+      const VARIANTS = ['a', 'b'];
+      const docsSource = VARIANTS.map(v => \`<cor-x variant="\${v}"></cor-x>\`).join('\\n');
+      export default { title: 'Atoms/X', component: 'cor-x' };
+      export const AllVariants = {
+        parameters: {
+          controls: { disable: true },
+          docs: { source: { code: docsSource } },
+        },
+        render: () => \`<div>\${VARIANTS.map(v => \`<cor-x variant="\${v}"></cor-x>\`).join('')}</div>\`,
+      };
+    `,
+    );
+    const { findings } = analyzeStoriesFile(p, 'cor-x');
+    assert.equal(findings.filter(f => f.code === 'STORY-COMPOSITE-NO-CODE-OVERRIDE').length, 0);
+  });
+
+  it('does NOT fire COMPOSITE on a single-element render with no helpers', () => {
+    const p = tempStoriesFile(
+      'composite-clean-render',
+      `
+      export default { title: 'Atoms/X', component: 'cor-x' };
+      export const Plain = {
+        parameters: { controls: { disable: true } },
+        render: () => \`<cor-x></cor-x>\`,
+      };
+    `,
+    );
+    const { findings } = analyzeStoriesFile(p, 'cor-x');
+    assert.equal(findings.filter(f => f.code === 'STORY-COMPOSITE-NO-CODE-OVERRIDE').length, 0);
+  });
+});
+
 describe('05-story-exports: baseline regression', () => {
   it('cor-input has Default + 0 errors', async () => {
     const target = resolveComponentPaths('cor-input');

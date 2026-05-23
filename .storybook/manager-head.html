@@ -11,4 +11,39 @@
     font-style: normal;
     font-display: swap;
   }
+
+  /* Storybook core (template.ejs) inlines 4 @font-face rules for "Nunito Sans"
+     above this <%- head %> block. We re-declare each rule with identical
+     identifying descriptors (family + style + weight) so the last-declared
+     wins per CSS Fonts spec — every "Nunito Sans" lookup is silently served
+     by Onest. Keeps Storybook internals (.sb-wrapper, error display, loader)
+     on our design-system font without chasing internal selectors. */
+  @font-face {
+    font-family: 'Nunito Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('./assets/font/Onest/Onest-VariableFont_wght.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'Nunito Sans';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url('./assets/font/Onest/Onest-VariableFont_wght.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'Nunito Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('./assets/font/Onest/Onest-VariableFont_wght.ttf') format('truetype');
+  }
+  @font-face {
+    font-family: 'Nunito Sans';
+    font-style: italic;
+    font-weight: 700;
+    font-display: swap;
+    src: url('./assets/font/Onest/Onest-VariableFont_wght.ttf') format('truetype');
+  }
 </style>

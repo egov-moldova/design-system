@@ -181,7 +181,23 @@ parameters: {
 
 The global `parameters.docs.source.type: 'code'` from `.storybook/preview.js` caches the rendered snippet at story registration time and ignores Controls panel changes. `type: 'dynamic'` per-story overrides this so the transform re-runs on each args change. The `{ args }` destructure must be typed (`{ args }: { args: ComponentArgs }`), never `any`. Reference: `src/components/cor-spinner/cor-spinner.stories.ts:59-70`.
 
-For static stories (grid comparisons, no Controls), omit `parameters.docs.source` entirely — the global `'code'` mode is correct for those.
+For **composite / grid stories** with `controls: { disable: true }` whose `render` uses template-string helpers (`cellStyle`, `${LAYOUTS.flatMap(...)}`, etc.), DO NOT omit `parameters.docs.source`. The global `'code'` mode captures the render function output verbatim — including wrapper divs, demo chrome, and helper interpolations — which is unusable to consumers. Provide a static `code` containing one clean `<cor-component …></cor-component>` per variation:
+
+```ts
+const docsSourceAllVariants = VARIANTS.map(
+  v => /*html*/ `<cor-component variant="${v}"></cor-component>`,
+).join('\n');
+
+export const AllVariants: Story = {
+  parameters: {
+    controls: { disable: true },
+    docs: { source: { code: docsSourceAllVariants } },
+  },
+  render: () => /*html*/ `<div style="${cellStyle}">…demo grid…</div>`,
+};
+```
+
+Reference: `src/components/cor-logo/cor-logo.stories.ts` (all 3 stories) and `src/components/cor-service-button/cor-service-button.stories.ts`. Omit `docs.source` only when the render function is already a single clean `<cor-component …></cor-component>` line with no helpers.
 
 ### Step 6 — Write or draft
 

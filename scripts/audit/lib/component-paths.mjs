@@ -105,6 +105,7 @@ export function resolveComponentPaths(componentName) {
     types: path.join(root, `${name}.types.ts`),
     enums: path.join(root, `${name}.enums.ts`),
     constants: path.join(root, `${name}.constants.ts`),
+    providers: path.join(root, `${name}.providers.ts`),
     spec: path.join(root, 'test', `${name}.spec.tsx`),
     e2e: path.join(root, 'test', `${name}.e2e.ts`),
     readme: path.join(root, 'readme.md'),
