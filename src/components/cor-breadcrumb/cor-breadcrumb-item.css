@@ -1,0 +1,89 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--breadcrumb-font-family);
+  font-size: var(--breadcrumb-font-size);
+  line-height: var(--breadcrumb-line-height);
+  font-weight: var(--breadcrumb-font-weight-default);
+  color: var(--breadcrumb-item-text-default);
+}
+
+/* Active = current page. Medium weight, ink-default color. */
+:host([active]) {
+  font-weight: var(--breadcrumb-font-weight-active);
+  color: var(--breadcrumb-item-text-active);
+}
+
+:host([visited]) {
+  color: var(--breadcrumb-item-text-visited);
+}
+
+:host([disabled]) {
+  color: var(--breadcrumb-item-text-disabled);
+  cursor: not-allowed;
+}
+
+:host([loading]) {
+  cursor: progress;
+}
+
+.crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--breadcrumb-gap-item);
+  padding-inline: var(--breadcrumb-item-padding-inline);
+  padding-block: var(--breadcrumb-item-padding-block);
+  border-radius: var(--breadcrumb-item-border-radius);
+  color: inherit;
+  font: inherit;
+  background-color: transparent;
+  text-decoration: none;
+  transition:
+    color 150ms ease-out,
+    text-decoration-color 150ms ease-out,
+    background-color 150ms ease-out;
+}
+
+/* Anchor — interactive crumb */
+.crumb--link {
+  cursor: pointer;
+}
+
+.crumb--link:hover {
+  color: var(--breadcrumb-item-text-hover);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+
+.crumb--link:active {
+  color: var(--breadcrumb-item-text-active);
+}
+
+/* Dual halo focus ring — matches button + input across the system */
+.crumb--link:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
+    0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
+}
+
+/* Active crumb — text only, no underline ever */
+.crumb--active {
+  cursor: default;
+}
+
+.crumb--disabled {
+  cursor: not-allowed;
+}
+
+.crumb--loading {
+  cursor: progress;
+}
+
+/* Respect reduced motion at the component level too. */
+@media (prefers-reduced-motion: reduce) {
+  .crumb {
+    transition: none;
+  }
+}
