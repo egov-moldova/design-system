@@ -70,7 +70,7 @@ const docsSourceDefault = (args: NumericInputArgs) => {
 };
 
 const meta: Meta<NumericInputArgs> = {
-  title: 'Atoms/Numeric Input',
+  title: 'Atoms/Input/Numeric',
   component: 'cor-numeric-input',
   argTypes: {
     variant: {

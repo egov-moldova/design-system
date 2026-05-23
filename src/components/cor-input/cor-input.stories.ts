@@ -58,7 +58,7 @@ const docsSourceDefault = (args: InputArgs) => {
 };
 
 const meta: Meta<InputArgs> = {
-  title: 'Atoms/Input',
+  title: 'Atoms/Input/Text',
   component: 'cor-input',
   argTypes: {
     variant: {

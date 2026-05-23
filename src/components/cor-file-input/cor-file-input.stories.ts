@@ -66,7 +66,7 @@ const docsSourceDefault = (args: FileInputArgs) => {
 };
 
 const meta: Meta<FileInputArgs> = {
-  title: 'Molecules/File Input',
+  title: 'Atoms/Input/File',
   component: 'cor-file-input',
   argTypes: {
     variant: {

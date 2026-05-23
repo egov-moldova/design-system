@@ -61,7 +61,7 @@ const docsSourceDefault = (args: SearchArgs) => {
 };
 
 const meta: Meta<SearchArgs> = {
-  title: 'Atoms/Search Input/Rectangular',
+  title: 'Atoms/Input/Search/Rectangular',
   component: 'cor-search-input-rectangular',
   argTypes: {
     variant: {

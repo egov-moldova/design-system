@@ -44,7 +44,7 @@ const docsSourceDefault = (args: InputChipArgs) => {
 };
 
 const meta: Meta<InputChipArgs> = {
-  title: 'Molecules/Input Chip',
+  title: 'Atoms/Input/Chip',
   component: 'cor-input-chip',
   argTypes: {
     variant: {

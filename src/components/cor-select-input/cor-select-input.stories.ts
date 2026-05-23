@@ -69,7 +69,7 @@ const docsSourceDefault = (args: SelectInputArgs) => {
 };
 
 const meta: Meta<SelectInputArgs> = {
-  title: 'Atoms/Select Input',
+  title: 'Atoms/Input/Select',
   component: 'cor-select-input',
   argTypes: {
     variant: {

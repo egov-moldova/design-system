@@ -58,7 +58,7 @@ const docsSourceDefault = (args: DateInputArgs) => {
 };
 
 const meta: Meta<DateInputArgs> = {
-  title: 'Molecules/Date Input',
+  title: 'Atoms/Input/Date',
   component: 'cor-date-input',
   argTypes: {
     variant: {

@@ -58,7 +58,7 @@ const docsSourceDefault = (args: SearchArgs) => {
 };
 
 const meta: Meta<SearchArgs> = {
-  title: 'Atoms/Search Input/Circular',
+  title: 'Atoms/Input/Search/Circular',
   component: 'cor-search-input-circular',
   argTypes: {
     variant: {

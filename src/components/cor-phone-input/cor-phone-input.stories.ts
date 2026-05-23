@@ -58,7 +58,7 @@ const docsSourceDefault = (args: PhoneInputArgs) => {
 };
 
 const meta: Meta<PhoneInputArgs> = {
-  title: 'Molecules/Phone Input',
+  title: 'Atoms/Input/Phone',
   component: 'cor-phone-input',
   argTypes: {
     variant: {
