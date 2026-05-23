@@ -34,7 +34,8 @@ let fileInputInstanceCounter = 0;
  *
  * @slot label - Rich label content, replaces the `label` prop when present.
  * @slot helper - Rich helper / hint content, replaces the `helper-text` prop.
- * @slot icon - Override the leading drop-zone icon. Defaults to `cloud-upload`.
+ * @slot icon - Override the centre drop-zone icon-glyph inside the circle.
+ *              Defaults to `cor-icon name="cloud-upload"`.
  */
 @Component({
   tag: 'cor-file-input',
@@ -83,10 +84,19 @@ export class CorFileInput {
   @Prop({ attribute: 'error-text' }) errorText?: string;
 
   /**
-   * Body text inside the drop area at rest.
-   * @default 'Trage fișierele aici sau apasă pentru a căuta'
+   * Lead-in CTA body text inside the drop area at rest. Renders BEFORE the
+   * brand-blue inline link. The trailing space is intentional — the link
+   * follows on the same line.
+   * @default 'Trage și plasează sau '
    */
-  @Prop({ attribute: 'dropzone-text' }) dropzoneText: string = 'Trage fișierele aici sau apasă pentru a căuta';
+  @Prop({ attribute: 'cta-text' }) ctaText: string = 'Trage și plasează sau ';
+
+  /**
+   * Label for the inline "choose files" link. Rendered as an underlined
+   * brand-blue button that opens the native file picker.
+   * @default 'Alege fișiere'
+   */
+  @Prop({ attribute: 'choose-files-text' }) chooseFilesText: string = 'Alege fișiere';
 
   /**
    * Body text shown while a drag is over the drop zone (Figma "Active" state).
@@ -96,10 +106,18 @@ export class CorFileInput {
   @Prop({ attribute: 'dropzone-active-text' }) dropzoneActiveText: string = 'Eliberează pentru a încărca';
 
   /**
-   * Secondary text under the dropzone body (e.g. file type hints).
-   * Empty by default — consumers populate it to communicate `accept` + `maxSize`.
+   * Top-left caption inside the field row, shown below the dropzone. When
+   * unset and `accept` is provided, this is derived from `accept` as
+   * `Formate acceptate: jpg, png, pdf`. Explicit prop wins.
    */
-  @Prop({ attribute: 'dropzone-hint' }) dropzoneHint?: string;
+  @Prop({ attribute: 'supported-formats-text' }) supportedFormatsText?: string;
+
+  /**
+   * Top-right caption inside the field row, shown below the dropzone. When
+   * unset and `maxSize` is provided, this is derived from `maxSize` (bytes)
+   * as `Mărime maximă: 100 MB`. Explicit prop wins.
+   */
+  @Prop({ attribute: 'max-size-text' }) maxSizeText?: string;
 
   /**
    * Currently accepted files. Two-way bound: assigning a new array rerenders
@@ -403,6 +421,91 @@ export class CorFileInput {
     this.isFocused = false;
   };
 
+  /**
+   * Click handler for the inline "choose files" link. Opens the native file
+   * picker. Calls `stopPropagation` so the dropzone wrapper does not also
+   * fire its own click handler (which would open the picker a second time).
+   */
+  private handleChooseFilesClick = (ev: MouseEvent) => {
+    if (this.isInert()) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    this.nativeInput?.click();
+  };
+
+  /**
+   * Best-effort MIME / extension → short human extension list.
+   * `image/jpeg,image/png,application/pdf` → `jpg, png, pdf`.
+   * `.pdf,.docx` → `pdf, docx`.
+   * Result is lowercase, comma-space separated, de-duplicated.
+   */
+  private formatsFromAccept(accept: string): string {
+    const mimeMap: Record<string, string> = {
+      'image/jpeg': 'jpg',
+      'image/jpg': 'jpg',
+      'image/png': 'png',
+      'image/gif': 'gif',
+      'image/webp': 'webp',
+      'image/svg+xml': 'svg',
+      'image/heic': 'heic',
+      'application/pdf': 'pdf',
+      'application/msword': 'doc',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+      'application/vnd.ms-excel': 'xls',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+      'application/zip': 'zip',
+      'text/plain': 'txt',
+      'text/csv': 'csv',
+    };
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const raw of accept.split(',')) {
+      const token = raw.trim().toLowerCase();
+      if (!token) continue;
+      let ext: string | null = null;
+      if (token.startsWith('.')) ext = token.slice(1);
+      else if (token.endsWith('/*'))
+        ext = token.slice(0, -2); // image/* → image
+      else if (token in mimeMap) ext = mimeMap[token];
+      else if (token.includes('/')) ext = token.split('/').pop() ?? null;
+      if (ext && !seen.has(ext)) {
+        seen.add(ext);
+        out.push(ext);
+      }
+    }
+    return out.join(', ');
+  }
+
+  /**
+   * Format bytes as a human-readable size string with one decimal at most.
+   * 5_242_880 → `5 MB`, 1500 → `1.5 KB`, 1_000_000_000 → `1 GB`.
+   */
+  private formatBytes(bytes: number): string {
+    if (!Number.isFinite(bytes) || bytes <= 0) return '0 B';
+    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    let value = bytes;
+    let unit = 0;
+    while (value >= 1024 && unit < units.length - 1) {
+      value /= 1024;
+      unit += 1;
+    }
+    const rounded = value >= 100 || Number.isInteger(value) ? Math.round(value) : Math.round(value * 10) / 10;
+    return `${rounded} ${units[unit]}`;
+  }
+
+  private resolvedSupportedFormatsText(): string | undefined {
+    if (this.supportedFormatsText !== undefined) return this.supportedFormatsText;
+    if (!this.accept) return undefined;
+    const formats = this.formatsFromAccept(this.accept);
+    return formats ? `Formate acceptate: ${formats}` : undefined;
+  }
+
+  private resolvedMaxSizeText(): string | undefined {
+    if (this.maxSizeText !== undefined) return this.maxSizeText;
+    if (this.maxSize === undefined) return undefined;
+    return `Mărime maximă: ${this.formatBytes(this.maxSize)}`;
+  }
+
   private handleRemove = (index: number) => (ev: CustomEvent<{ filename: string }>) => {
     ev.stopPropagation();
     const target = this.files[index];
@@ -421,7 +524,9 @@ export class CorFileInput {
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.ariaLabel : undefined;
     const isActiveNow = this.isActive && !effectivelyDisabled;
-    const bodyText = isActiveNow ? this.dropzoneActiveText : this.dropzoneText;
+    const supportedFormats = this.resolvedSupportedFormatsText();
+    const maxSizeCaption = this.resolvedMaxSizeText();
+    const hasCaptions = Boolean(supportedFormats) || Boolean(maxSizeCaption);
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -470,21 +575,44 @@ export class CorFileInput {
           {!isActiveNow ? (
             <span class="dropzone-icon" part="dropzone-icon" aria-hidden="true">
               <slot name="icon">
-                <cor-icon name="cloud-upload" size={24} color="currentColor" />
+                <cor-icon name="cloud-upload" size={24} color="icon-base-default" />
               </slot>
             </span>
           ) : null}
           <span class="dropzone-body" part="dropzone-body">
-            <span class="dropzone-text" part="dropzone-text">
-              {bodyText}
-            </span>
-            {!isActiveNow && this.dropzoneHint ? (
-              <span class="dropzone-hint" part="dropzone-hint">
-                {this.dropzoneHint}
+            {isActiveNow ? (
+              <span class="dropzone-text" part="dropzone-text">
+                {this.dropzoneActiveText}
               </span>
-            ) : null}
+            ) : (
+              <span class="dropzone-cta" part="dropzone-cta">
+                <span class="dropzone-cta__body">{this.ctaText}</span>
+                <button
+                  type="button"
+                  class="dropzone-cta__link"
+                  part="choose-files-link"
+                  tabIndex={effectivelyDisabled ? -1 : 0}
+                  disabled={effectivelyDisabled}
+                  aria-disabled={effectivelyDisabled ? 'true' : null}
+                  onClick={this.handleChooseFilesClick}
+                >
+                  {this.chooseFilesText}
+                </button>
+              </span>
+            )}
           </span>
         </div>
+
+        {!isActiveNow && hasCaptions ? (
+          <div class="captions" part="captions">
+            <span class="captions__formats" part="captions-formats">
+              {supportedFormats}
+            </span>
+            <span class="captions__max-size" part="captions-max-size">
+              {maxSizeCaption}
+            </span>
+          </div>
+        ) : null}
 
         <input
           ref={el => (this.nativeInput = el as HTMLInputElement)}

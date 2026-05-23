@@ -8,9 +8,11 @@ type FileInputArgs = {
   label: string;
   helperText: string;
   errorText: string;
-  dropzoneText: string;
+  ctaText: string;
+  chooseFilesText: string;
   dropzoneActiveText: string;
-  dropzoneHint: string;
+  supportedFormatsText: string;
+  maxSizeText: string;
   multiple: boolean;
   required: boolean;
   disabled: boolean;
@@ -28,9 +30,11 @@ const renderFileInput = (args: FileInputArgs) => /*html*/ `
     label="${args.label}"
     helper-text="${args.helperText}"
     error-text="${args.errorText}"
-    dropzone-text="${args.dropzoneText}"
+    cta-text="${args.ctaText}"
+    choose-files-text="${args.chooseFilesText}"
     dropzone-active-text="${args.dropzoneActiveText}"
-    dropzone-hint="${args.dropzoneHint}"
+    supported-formats-text="${args.supportedFormatsText}"
+    max-size-text="${args.maxSizeText}"
     accept="${args.accept}"
     max-size="${args.maxSize || ''}"
     max-files="${args.maxFiles || ''}"
@@ -47,13 +51,15 @@ const docsSourceDefault = (args: FileInputArgs) => {
     args.label ? `label="${args.label}"` : '',
     args.helperText ? `helper-text="${args.helperText}"` : '',
     args.errorText ? `error-text="${args.errorText}"` : '',
-    args.dropzoneText && args.dropzoneText !== 'Trage fișierele aici sau apasă pentru a căuta'
-      ? `dropzone-text="${args.dropzoneText}"`
+    args.ctaText && args.ctaText !== 'Trage și plasează sau ' ? `cta-text="${args.ctaText}"` : '',
+    args.chooseFilesText && args.chooseFilesText !== 'Alege fișiere'
+      ? `choose-files-text="${args.chooseFilesText}"`
       : '',
     args.dropzoneActiveText && args.dropzoneActiveText !== 'Eliberează pentru a încărca'
       ? `dropzone-active-text="${args.dropzoneActiveText}"`
       : '',
-    args.dropzoneHint ? `dropzone-hint="${args.dropzoneHint}"` : '',
+    args.supportedFormatsText ? `supported-formats-text="${args.supportedFormatsText}"` : '',
+    args.maxSizeText ? `max-size-text="${args.maxSizeText}"` : '',
     args.accept ? `accept="${args.accept}"` : '',
     args.maxSize ? `max-size="${args.maxSize}"` : '',
     args.maxFiles ? `max-files="${args.maxFiles}"` : '',
@@ -80,9 +86,17 @@ const meta: Meta<FileInputArgs> = {
     label: { control: 'text' },
     helperText: { control: 'text' },
     errorText: { control: 'text' },
-    dropzoneText: { control: 'text' },
+    ctaText: { control: 'text', description: 'Lead-in CTA text before the inline link.' },
+    chooseFilesText: { control: 'text', description: 'Label for the inline brand-blue "choose files" link.' },
     dropzoneActiveText: { control: 'text', description: 'Body text shown while a drag is over the drop zone.' },
-    dropzoneHint: { control: 'text' },
+    supportedFormatsText: {
+      control: 'text',
+      description: 'Top-left caption below the dropzone. Auto-derived from `accept` if unset.',
+    },
+    maxSizeText: {
+      control: 'text',
+      description: 'Top-right caption below the dropzone. Auto-derived from `max-size` (bytes) if unset.',
+    },
     accept: { control: 'text', description: 'MIME / extension allow-list (`.pdf,image/*`).' },
     maxSize: { control: 'number', description: 'Max per-file size in bytes.' },
     maxFiles: { control: 'number', description: 'Max accepted file count (multiple only).' },
@@ -101,12 +115,14 @@ export const Default: Story = {
   render: renderFileInput,
   args: {
     size: 'lg',
-    label: 'Atașează documente',
-    helperText: 'PDF sau JPG, maximum 5 MB per fișier.',
+    label: '',
+    helperText: '',
     errorText: '',
-    dropzoneText: 'Trage fișierele aici sau apasă pentru a căuta',
+    ctaText: 'Trage și plasează sau ',
+    chooseFilesText: 'Alege fișiere',
     dropzoneActiveText: 'Eliberează pentru a încărca',
-    dropzoneHint: 'PDF, JPG • max 5 MB',
+    supportedFormatsText: 'Formate acceptate: jpg, png, pdf',
+    maxSizeText: 'Mărime maximă: 100 MB',
     accept: '',
     maxSize: 0,
     maxFiles: 0,
@@ -150,27 +166,27 @@ export const AllStates: Story = {
       [
         cell(
           'default',
-          /*html*/ `<cor-file-input size="lg" label="Documente" dropzone-hint="PDF • max 5 MB"></cor-file-input>`,
+          /*html*/ `<cor-file-input size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></cor-file-input>`,
         ),
         cell(
           'hover — point at the dropzone',
-          /*html*/ `<cor-file-input size="lg" label="Documente" dropzone-hint="PDF • max 5 MB"></cor-file-input>`,
+          /*html*/ `<cor-file-input size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></cor-file-input>`,
         ),
         cell(
           'focus — Tab onto the dropzone',
-          /*html*/ `<cor-file-input size="lg" label="Documente" dropzone-hint="PDF • max 5 MB"></cor-file-input>`,
+          /*html*/ `<cor-file-input size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></cor-file-input>`,
         ),
         cell(
           'active — see the `Active` story for the live drag-over render',
-          /*html*/ `<cor-file-input size="lg" label="Documente" dropzone-hint="PDF • max 5 MB"></cor-file-input>`,
+          /*html*/ `<cor-file-input size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></cor-file-input>`,
         ),
         cell(
           'disabled',
-          /*html*/ `<cor-file-input size="lg" label="Documente" disabled dropzone-hint="PDF • max 5 MB"></cor-file-input>`,
+          /*html*/ `<cor-file-input size="lg" disabled supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></cor-file-input>`,
         ),
         cell(
           'invalid + error',
-          /*html*/ `<cor-file-input size="lg" label="Documente" invalid error-text="Trebuie să atașați cel puțin un document"></cor-file-input>`,
+          /*html*/ `<cor-file-input size="lg" invalid error-text="Trebuie să atașați cel puțin un document" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></cor-file-input>`,
         ),
       ].join(''),
     ),
@@ -179,12 +195,12 @@ export const AllStates: Story = {
     docs: {
       source: {
         code: [
-          '<cor-file-input size="lg" label="Documente" dropzone-hint="PDF • max 5 MB"></cor-file-input>',
+          '<cor-file-input size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></cor-file-input>',
           '<!-- hover: pointer over dropzone -->',
           '<!-- focus: Tab onto dropzone -->',
           '<!-- active: drag a file over the dropzone — see the dedicated Active story -->',
-          '<cor-file-input size="lg" label="Documente" disabled dropzone-hint="PDF • max 5 MB"></cor-file-input>',
-          '<cor-file-input size="lg" label="Documente" invalid error-text="…"></cor-file-input>',
+          '<cor-file-input size="lg" disabled supported-formats-text="…" max-size-text="…"></cor-file-input>',
+          '<cor-file-input size="lg" invalid error-text="…"></cor-file-input>',
         ].join('\n'),
       },
     },
@@ -198,7 +214,7 @@ export const AllSizes: Story = {
       FILE_INPUT_SIZES.map(size =>
         cell(
           size,
-          /*html*/ `<cor-file-input size="${size}" label="Documente" dropzone-hint="PDF • max 5 MB"></cor-file-input>`,
+          /*html*/ `<cor-file-input size="${size}" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></cor-file-input>`,
         ),
       ).join(''),
     ),
@@ -207,7 +223,8 @@ export const AllSizes: Story = {
     docs: {
       source: {
         code: FILE_INPUT_SIZES.map(
-          s => `<cor-file-input size="${s}" label="Documente" dropzone-hint="PDF • max 5 MB"></cor-file-input>`,
+          s =>
+            `<cor-file-input size="${s}" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></cor-file-input>`,
         ).join('\n'),
       },
     },
@@ -222,8 +239,8 @@ export const Active: Story = {
     <div style="padding: var(--spacing-24); max-width: 600px;">
       <cor-file-input
         size="lg"
-        label="Documente"
-        dropzone-hint="PDF • max 5 MB"
+        supported-formats-text="Formate acceptate: jpg, png, pdf"
+        max-size-text="Mărime maximă: 100 MB"
       ></cor-file-input>
     </div>
   `,
@@ -242,10 +259,73 @@ export const Active: Story = {
     docs: {
       description: {
         story:
-          'Drag-over presentation. When a file is being dragged into the drop zone, the dashed border switches to a solid brand-blue stroke, the background takes a brand-tint fill, the icon disappears, and the body text swaps to `dropzone-active-text`.',
+          'Drag-over presentation. When a file is being dragged into the drop zone, the dashed border switches to a solid brand-blue stroke, the background takes a brand-tint fill, the icon-circle and CTA collapse to a single line of `dropzone-active-text`, and the caption row hides.',
       },
       source: {
-        code: '<cor-file-input size="lg" label="Documente" dropzone-hint="PDF • max 5 MB"></cor-file-input>\n<!-- visible state after drag-over: see Figma Active -->',
+        code: '<cor-file-input size="lg"></cor-file-input>\n<!-- visible state after drag-over: see Figma Active -->',
+      },
+    },
+  },
+};
+
+// Auto-derived captions from `accept` + `max-size`. Showcases the prop-derivation
+// short-circuit — explicit prop wins, otherwise the component computes the
+// caption from the underlying validation contract.
+export const WithAcceptedTypes: Story = {
+  name: 'With Accepted Types (auto-derived captions)',
+  render: () =>
+    wrap(
+      [
+        cell(
+          'accept=".jpg,.png,.pdf" + max-size=5 MB',
+          /*html*/ `<cor-file-input size="lg" accept=".jpg,.png,.pdf" max-size="5242880"></cor-file-input>`,
+        ),
+        cell(
+          'accept="image/*" + max-size=10 MB',
+          /*html*/ `<cor-file-input size="lg" accept="image/*" max-size="10485760"></cor-file-input>`,
+        ),
+        cell(
+          'accept="application/pdf,image/jpeg,image/png"',
+          /*html*/ `<cor-file-input size="lg" accept="application/pdf,image/jpeg,image/png" max-size="104857600"></cor-file-input>`,
+        ),
+        cell('no derivation (no accept / max-size)', /*html*/ `<cor-file-input size="lg"></cor-file-input>`),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'When `supported-formats-text` / `max-size-text` are unset, the component derives them from `accept` (MIME-type / extension list) and `max-size` (bytes). Explicit text props always win.',
+      },
+      source: {
+        code: '<cor-file-input size="lg" accept=".jpg,.png,.pdf" max-size="5242880"></cor-file-input>',
+      },
+    },
+  },
+};
+
+// Override the Romanian defaults with English copy for international consumers.
+export const WithCustomCopy: Story = {
+  name: 'With Custom Copy (English)',
+  render: () => /*html*/ `
+    <div style="padding: var(--spacing-24); max-width: 600px;">
+      <cor-file-input
+        size="lg"
+        cta-text="Drag and drop or "
+        choose-files-text="choose files"
+        dropzone-active-text="Release to upload"
+        supported-formats-text="Supported formats: jpg, png, pdf"
+        max-size-text="Maximum size: 100 MB"
+      ></cor-file-input>
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'All copy is overridable. The Romanian defaults serve `.gov.md` consumers; international consumers (or partner agencies) pass localized strings via `cta-text`, `choose-files-text`, `supported-formats-text`, `max-size-text`, and `dropzone-active-text`.',
       },
     },
   },
@@ -285,7 +365,7 @@ export const SingleFile: Story = {
       [
         cell(
           'idle (single mode)',
-          /*html*/ `<cor-file-input size="lg" label="Buletin de identitate" dropzone-hint="PDF • max 5 MB" max-size="5242880" accept=".pdf"></cor-file-input>`,
+          /*html*/ `<cor-file-input size="lg" label="Buletin de identitate" max-size="5242880" accept=".pdf"></cor-file-input>`,
         ),
         preloadedHtml('after upload', 'max-size="5242880" accept=".pdf"', [
           { name: 'buletin-identitate.pdf', size: 245320, state: 'success' },
@@ -309,7 +389,7 @@ export const MultipleFiles: Story = {
       [
         cell(
           'idle (multiple)',
-          /*html*/ `<cor-file-input size="lg" label="Documente" multiple max-files="5" dropzone-hint="Până la 5 fișiere"></cor-file-input>`,
+          /*html*/ `<cor-file-input size="lg" label="Documente" multiple max-files="5" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></cor-file-input>`,
         ),
         preloadedHtml('after upload (3 files)', 'max-files="5"', [
           { name: 'declaratie-impozit-2025.pdf', size: 245320, state: 'success' },
@@ -334,8 +414,8 @@ export const WithMaxSize: Story = {
     wrap(
       [
         cell(
-          '5 MB limit',
-          /*html*/ `<cor-file-input size="lg" label="Documente" max-size="5242880" dropzone-hint="Maximum 5 MB"></cor-file-input>`,
+          '5 MB limit (auto-derived caption)',
+          /*html*/ `<cor-file-input size="lg" label="Documente" max-size="5242880"></cor-file-input>`,
         ),
         preloadedHtml('rejected oversize', 'max-size="5242880"', [
           {
@@ -355,14 +435,8 @@ export const WithAcceptFilter: Story = {
   render: () =>
     wrap(
       [
-        cell(
-          'PDF only',
-          /*html*/ `<cor-file-input size="lg" label="Documente" accept=".pdf" dropzone-hint="Doar fișiere PDF"></cor-file-input>`,
-        ),
-        cell(
-          'images only',
-          /*html*/ `<cor-file-input size="lg" label="Fotografii" accept="image/*" dropzone-hint="Doar imagini"></cor-file-input>`,
-        ),
+        cell('PDF only', /*html*/ `<cor-file-input size="lg" label="Documente" accept=".pdf"></cor-file-input>`),
+        cell('images only', /*html*/ `<cor-file-input size="lg" label="Fotografii" accept="image/*"></cor-file-input>`),
       ].join(''),
     ),
   parameters: { controls: { disable: true } },
@@ -375,7 +449,7 @@ export const WithMaxCount: Story = {
       [
         cell(
           '3 files limit',
-          /*html*/ `<cor-file-input size="lg" label="Documente" multiple max-files="3" dropzone-hint="Maximum 3 fișiere"></cor-file-input>`,
+          /*html*/ `<cor-file-input size="lg" label="Documente" multiple max-files="3" supported-formats-text="Maximum 3 fișiere"></cor-file-input>`,
         ),
       ].join(''),
     ),
@@ -422,7 +496,7 @@ export const EdgeCases: Story = {
       [
         cell(
           'long label truncation',
-          /*html*/ `<cor-file-input size="lg" label="Moldova's digital evolution requires that you upload the complete identification documentation in a single submission" dropzone-hint="PDF • max 5 MB"></cor-file-input>`,
+          /*html*/ `<cor-file-input size="lg" label="Moldova's digital evolution requires that you upload the complete identification documentation in a single submission"></cor-file-input>`,
         ),
         cell(
           'long helper truncation (two lines)',

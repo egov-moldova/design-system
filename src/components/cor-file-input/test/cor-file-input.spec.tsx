@@ -28,6 +28,21 @@ const queryDropzoneIcon = (root: Element | null | undefined): HTMLElement | null
 const queryDropzoneText = (root: Element | null | undefined): HTMLElement | null =>
   (root?.shadowRoot?.querySelector('.dropzone-text') ?? null) as HTMLElement | null;
 
+const queryCenterIcon = (root: Element | null | undefined): HTMLElement | null =>
+  (root?.shadowRoot?.querySelector('.dropzone-icon cor-icon') ?? null) as HTMLElement | null;
+
+const queryChooseFilesLink = (root: Element | null | undefined): HTMLButtonElement | null =>
+  (root?.shadowRoot?.querySelector('.dropzone-cta__link') ?? null) as HTMLButtonElement | null;
+
+const queryCaptions = (root: Element | null | undefined): HTMLElement | null =>
+  (root?.shadowRoot?.querySelector('.captions') ?? null) as HTMLElement | null;
+
+const queryCaptionFormats = (root: Element | null | undefined): HTMLElement | null =>
+  (root?.shadowRoot?.querySelector('.captions__formats') ?? null) as HTMLElement | null;
+
+const queryCaptionMaxSize = (root: Element | null | undefined): HTMLElement | null =>
+  (root?.shadowRoot?.querySelector('.captions__max-size') ?? null) as HTMLElement | null;
+
 const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
 
 const makeFile = (name: string, size: number, type: string = 'application/pdf'): File => {
@@ -90,16 +105,95 @@ describe('cor-file-input', () => {
       expect(queryLabel(root)?.textContent).toContain('Atașează');
     });
 
-    it('renders the dropzone text', async () => {
-      const { root } = await render(<cor-file-input label="x" dropzone-text="Drop here"></cor-file-input>);
+    it('renders the lead-in cta-text and choose-files link', async () => {
+      const { root } = await render(
+        <cor-file-input label="x" cta-text="Drag and drop or " choose-files-text="choose files"></cor-file-input>,
+      );
       const dropzone = queryDropzone(root);
-      expect(dropzone?.textContent).toContain('Drop here');
+      expect(dropzone?.textContent).toContain('Drag and drop or');
+      expect(dropzone?.textContent).toContain('choose files');
     });
 
-    it('renders the dropzone hint when set', async () => {
-      const { root } = await render(<cor-file-input label="x" dropzone-hint="PDF only"></cor-file-input>);
-      const dropzone = queryDropzone(root);
-      expect(dropzone?.textContent).toContain('PDF only');
+    it('renders the cloud-upload center icon by default', async () => {
+      const { root } = await render(<cor-file-input label="x"></cor-file-input>);
+      const icon = queryCenterIcon(root);
+      expect(icon).toBeTruthy();
+      expect(icon?.getAttribute('name')).toBe('cloud-upload');
+    });
+
+    it('renders the center icon-circle wrapper', async () => {
+      const { root } = await render(<cor-file-input label="x"></cor-file-input>);
+      expect(queryDropzoneIcon(root)).toBeTruthy();
+    });
+
+    it('renders the choose-files link as a real <button> (keyboard-reachable)', async () => {
+      const { root } = await render(<cor-file-input label="x"></cor-file-input>);
+      const link = queryChooseFilesLink(root);
+      expect(link).toBeTruthy();
+      expect(link?.tagName).toBe('BUTTON');
+      expect(link?.getAttribute('type')).toBe('button');
+      expect(link?.getAttribute('tabindex')).toBe('0');
+    });
+
+    it('clicking the choose-files link opens the native file picker', async () => {
+      const { root } = await render(<cor-file-input label="x"></cor-file-input>);
+      const native = queryNative(root)!;
+      const link = queryChooseFilesLink(root)!;
+      const clickSpy = vi.spyOn(native, 'click');
+      link.click();
+      await flush();
+      expect(clickSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('clicking the choose-files link does not double-fire the dropzone click', async () => {
+      const { root } = await render(<cor-file-input label="x"></cor-file-input>);
+      const native = queryNative(root)!;
+      const link = queryChooseFilesLink(root)!;
+      const clickSpy = vi.spyOn(native, 'click');
+      // Real <button> click bubbles to the dropzone wrapper; the link handler
+      // calls stopPropagation, so the dropzone's onClick must NOT also fire.
+      link.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+      await flush();
+      expect(clickSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('renders the captions row when supported-formats-text is set', async () => {
+      const { root } = await render(
+        <cor-file-input label="x" supported-formats-text="Formate acceptate: jpg, png"></cor-file-input>,
+      );
+      const captions = queryCaptions(root);
+      expect(captions).toBeTruthy();
+      expect(queryCaptionFormats(root)?.textContent).toContain('Formate acceptate: jpg, png');
+    });
+
+    it('renders the captions row when max-size-text is set', async () => {
+      const { root } = await render(<cor-file-input label="x" max-size-text="Mărime maximă: 100 MB"></cor-file-input>);
+      const captions = queryCaptions(root);
+      expect(captions).toBeTruthy();
+      expect(queryCaptionMaxSize(root)?.textContent).toContain('Mărime maximă: 100 MB');
+    });
+
+    it('auto-derives supported-formats-text from accept when explicit prop is unset', async () => {
+      const { root } = await render(<cor-file-input label="x" accept=".jpg,.png,.pdf"></cor-file-input>);
+      expect(queryCaptionFormats(root)?.textContent).toContain('Formate acceptate: jpg, png, pdf');
+    });
+
+    it('auto-derives max-size-text from max-size bytes when explicit prop is unset', async () => {
+      const { root } = await render(<cor-file-input label="x" max-size={5242880}></cor-file-input>);
+      expect(queryCaptionMaxSize(root)?.textContent).toContain('Mărime maximă: 5 MB');
+    });
+
+    it('explicit supported-formats-text wins over accept-derivation', async () => {
+      const { root } = await render(
+        <cor-file-input label="x" accept=".pdf" supported-formats-text="Custom override"></cor-file-input>,
+      );
+      expect(queryCaptionFormats(root)?.textContent).toContain('Custom override');
+      expect(queryCaptionFormats(root)?.textContent).not.toContain('pdf');
+    });
+
+    it('hides the captions row when neither accept nor max-size nor explicit captions are set', async () => {
+      const { root } = await render(<cor-file-input label="x"></cor-file-input>);
+      expect(queryCaptions(root)).toBeNull();
     });
 
     it('adds a required mark when `required` is set', async () => {
@@ -313,17 +407,36 @@ describe('cor-file-input', () => {
       expect(onLeave).toHaveBeenCalledTimes(1);
     });
 
-    it('swaps body text to dropzone-active-text and hides the icon when active', async () => {
+    it('swaps the CTA row for dropzone-active-text and hides the icon-circle when active', async () => {
       const { root } = await render(
-        <cor-file-input label="x" dropzone-text="Drag here" dropzone-active-text="Release to upload"></cor-file-input>,
+        <cor-file-input
+          label="x"
+          cta-text="Drag and drop or "
+          choose-files-text="choose files"
+          dropzone-active-text="Release to upload"
+        ></cor-file-input>,
       );
-      expect(queryDropzoneText(root)?.textContent).toContain('Drag here');
+      // Resting: CTA row visible, icon-circle visible, active text absent.
+      expect(queryChooseFilesLink(root)).toBeTruthy();
       expect(queryDropzoneIcon(root)).toBeTruthy();
+      expect(queryDropzoneText(root)).toBeNull();
 
       drag(root, 'enter');
       await flush();
+      // Active: single line of `dropzone-active-text`, no icon, no CTA link.
       expect(queryDropzoneText(root)?.textContent).toContain('Release to upload');
       expect(queryDropzoneIcon(root)).toBeNull();
+      expect(queryChooseFilesLink(root)).toBeNull();
+    });
+
+    it('hides the captions row while active (drag-over)', async () => {
+      const { root } = await render(
+        <cor-file-input label="x" supported-formats-text="Formate acceptate: jpg, png"></cor-file-input>,
+      );
+      expect(queryCaptions(root)).toBeTruthy();
+      drag(root, 'enter');
+      await flush();
+      expect(queryCaptions(root)).toBeNull();
     });
 
     it('ignores drag events when disabled', async () => {

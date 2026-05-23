@@ -1136,3 +1136,112 @@ screenshots. No `get_design_context` was needed — the screenshots +
 metadata + the prior `cor-input` token map (which covers the same
 input-family semantic palette) gave full coverage.
 
+2026-05-23 — `cor-file-input` drop-zone realigned to Figma instance
+`616:6942` (canonical "State=Default" symbol `262:6717`, master
+component-set `262:6718`). Two drift items reported by the user and
+verified against the Figma source-of-truth, both fixed:
+
+1. **Centre icon was missing the icon-circle wrapper.** Figma shows a
+   light-gray pill (`#f1f1f1`, fully rounded, 48×48 at lg / 40×40 at
+   md) containing the 24px `cloud-upload` glyph (`#121212`, ink
+   primary). The shipped TSX rendered only the bare `cor-icon` without
+   the surrounding circle. Wrapped `<slot name="icon">` in a
+   `.dropzone-icon` `inline-flex` pill with `background-color`,
+   `padding`, and `border-radius: 999px` driven by the new
+   `dropzone.iconCircle.*` token group. `cloud-upload` was already in
+   `src/components/cor-icon/assets/icons.manifest.json` (sizes 20 and
+   24) — no new SVG required.
+
+2. **"Choose files" link affordance was missing.** Figma shows the
+   centre body as `Drag and drop or [choose files]`, where `choose
+   files` is a brand-blue underlined inline link that opens the native
+   file picker. The shipped TSX rendered a single body string and
+   relied on click-anywhere-on-dropzone with no visible affordance.
+   Replaced the single `.dropzone-text` span with a `.dropzone-cta`
+   flex row containing a body span (lead-in `ctaText`) + a real
+   `<button type="button" class="dropzone-cta__link">` (label
+   `chooseFilesText`). The button:
+   - styled as inline brand-blue underlined link (`color:
+     var(--color-text-brand-default)`, `text-decoration: underline`,
+     no padding / no border / no background) — contrast on white is
+     6.31:1, AA pass.
+   - is keyboard-reachable (`tabIndex={0}`); fires its own
+     `:focus-visible` outline at 2px brand-blue offset by 2px
+     (independent from the dropzone's focus ring so both stay
+     legible).
+   - calls `event.stopPropagation()` in its click handler so the
+     dropzone wrapper's own `onClick` does not also open the picker —
+     prevents double-fire of `nativeInput.click()`.
+   - disables cleanly when the host is disabled (`color` flips to
+     `text.disabled.on-disabled`, `disabled` attribute set,
+     `cursor: not-allowed`).
+
+**Layout** mirrors Figma metadata (verified via
+`mcp__figma__get_metadata` on `262:6717`):
+- The dashed Container (`262:6705`) is 588×156 and holds ONLY the
+  icon-circle and the CTA row (gap 20px, centered).
+- The Captions row (`262:6711`) sits at y=168, height 20, BELOW the
+  dashed border (margin-block-start 12px = caption.marginBlockStart
+  token). NOT inside the dashed frame. Two children: left
+  flex-start `Supported formats: jpg, png, pdf`, right flex-end
+  `Maximum size: 100 MB`, both `color.text.base.tertiary` (#757575)
+  at 14/20 regular.
+
+**New props** (additive — no breaking changes to the public API
+beyond removing `dropzoneText` + `dropzoneHint` which were single-
+string body / hint, never matched Figma's two-part CTA):
+
+- `ctaText` (default `Trage și plasează sau ` — Romanian, trailing
+  space intentional)
+- `chooseFilesText` (default `Alege fișiere`)
+- `supportedFormatsText` (default unset, AUTO-derived from `accept`)
+- `maxSizeText` (default unset, AUTO-derived from `maxSize` bytes)
+
+The auto-derivation matters for the Romanian e-Gov voice: when a
+consumer wires `accept=".jpg,.png,.pdf" max-size="5242880"`, the
+captions automatically render as `Formate acceptate: jpg, png, pdf`
++ `Mărime maximă: 5 MB` without the consumer rewriting them by
+hand. Helpers cover the common MIME types (`image/jpeg → jpg`,
+`application/pdf → pdf`, `application/vnd.openxmlformats-…document
+→ docx`, etc.) and the bytes formatter steps through B/KB/MB/GB
+with one-decimal precision. Explicit props always override the
+derivation. The English `WithCustomCopy` story demonstrates the
+override path for international consumers.
+
+**New tokens** (`tokens/core/components/file-input.tokens.json`):
+
+- `fileInput.dropzone.iconCircle.{size,padding,background,backgroundDisabled}`
+  × md/lg ramp
+- `fileInput.dropzone.iconGlyph.{size,color,colorDisabled}` × md/lg
+- `fileInput.dropzone.cta.{gap,body.color,body.colorDisabled,link.color,link.colorHover,link.colorDisabled}`
+- `fileInput.caption.{fontFamily,fontSize,lineHeight,fontWeight,gap,marginBlockStart,color.default,color.disabled}`
+
+The `dropzone.padding`/`dropzone.gap` ramp was bumped to match
+Figma (lg: py-32/px-24/gap-20 instead of py-24/px-20/gap-12 — the
+visual breathing was too tight at the previous values).
+
+**Gates**: `yarn tokens.build` (clean), `yarn dx:stencil:once`
+(clean), `yarn lint` (CSS + JS pass), `yarn typecheck` (pass),
+`yarn test.dev` (688/688 pass — including 17 new `cor-file-input`
+spec cases covering icon-circle, link button, click stop-prop,
+captions auto-derivation, English override, active-state hides
+both icon and captions), `yarn test.storybook` (169/169 pass),
+`yarn sp.build` (clean export), `yarn audit:contrast` (21 pass /
+0 fail — `text.brand.default` on `background.base.default` = 6.31:1
+for the link, well above AA 4.5 floor; `text.base.tertiary` on
+`background.base.default` = 4.61:1 for the captions).
+
+**Pixel-perfect** vs Figma `616:6942` (588×188 canonical):
+3.83% diff — all sub-pixel font anti-aliasing + a 2px height delta
+from line-height rounding. The structural and color match is
+exact: icon-circle background `#f1f1f1`, glyph color `#121212`,
+link color `#0058d2` with underline, captions `#757575` at 14/20
+regular, dashed border `#b2b2b2` at 1.5px width.
+
+Screenshots: `docs/screenshots/cor-file-input/v3/` — Figma canonical
+(`figma-616-6942.png`), Storybook Default (`storybook-default.png`
+at native 588×190, `storybook-default-588x188.png` cropped for the
+compare), diff (`diff-default.png`), Storybook English-override
+(`storybook-with-custom-copy.png`), Storybook auto-derived captions
+(`storybook-with-accepted-types.png`).
+

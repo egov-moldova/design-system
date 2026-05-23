@@ -9,7 +9,23 @@
   --_focus-ring-width: var(--file-input-dropzone-focus-ring-width);
   --_dropzone-transition-duration: var(--file-input-dropzone-transition-duration);
   --_dropzone-transition-easing: var(--file-input-dropzone-transition-timing-function);
-  --_dropzone-icon-size: var(--file-input-dropzone-icon-size-md);
+
+  /* Icon-circle (background pill behind the cloud-upload glyph). */
+  --_icon-circle-size: var(--file-input-dropzone-icon-circle-size-md);
+  --_icon-circle-padding: var(--file-input-dropzone-icon-circle-padding-md);
+  --_icon-circle-bg: var(--file-input-dropzone-icon-circle-background);
+  --_icon-circle-bg-disabled: var(--file-input-dropzone-icon-circle-background-disabled);
+  --_icon-glyph-size: var(--file-input-dropzone-icon-glyph-size-md);
+  --_icon-glyph-color: var(--file-input-dropzone-icon-glyph-color);
+  --_icon-glyph-color-disabled: var(--file-input-dropzone-icon-glyph-color-disabled);
+
+  /* CTA row: lead-in body + inline brand-blue link. */
+  --_cta-gap: var(--file-input-dropzone-cta-gap);
+  --_cta-body-color: var(--file-input-dropzone-cta-body-color);
+  --_cta-body-color-disabled: var(--file-input-dropzone-cta-body-color-disabled);
+  --_cta-link-color: var(--file-input-dropzone-cta-link-color);
+  --_cta-link-color-hover: var(--file-input-dropzone-cta-link-color-hover);
+  --_cta-link-color-disabled: var(--file-input-dropzone-cta-link-color-disabled);
 
   --_primary-font-size: var(--file-input-primary-text-font-size-md);
   --_primary-line-height: var(--file-input-primary-text-line-height-md);
@@ -18,8 +34,6 @@
   --_bg-active: var(--file-input-background-active);
   --_text-primary: var(--file-input-text-primary);
   --_text-secondary: var(--file-input-text-secondary);
-  --_icon-color: var(--file-input-icon-default);
-  --_icon-color-accent: var(--file-input-icon-accent);
   --_border-color: var(--file-input-border-default);
   --_border-color-hover: var(--file-input-border-hover);
   --_border-color-focus: var(--file-input-border-focus);
@@ -39,7 +53,9 @@
   --_dropzone-padding-block: var(--file-input-dropzone-padding-block-lg);
   --_dropzone-padding-inline: var(--file-input-dropzone-padding-inline-lg);
   --_dropzone-gap: var(--file-input-dropzone-gap-lg);
-  --_dropzone-icon-size: var(--file-input-dropzone-icon-size-lg);
+  --_icon-circle-size: var(--file-input-dropzone-icon-circle-size-lg);
+  --_icon-circle-padding: var(--file-input-dropzone-icon-circle-padding-lg);
+  --_icon-glyph-size: var(--file-input-dropzone-icon-glyph-size-lg);
   --_primary-font-size: var(--file-input-primary-text-font-size-lg);
   --_primary-line-height: var(--file-input-primary-text-line-height-lg);
 }
@@ -148,18 +164,30 @@
   cursor: not-allowed;
 }
 
+/* ---------- Centre icon circle (Figma: 48×48 pill at lg, 40×40 at md) ---------- */
+
 .dropzone-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  inline-size: var(--_dropzone-icon-size);
-  block-size: var(--_dropzone-icon-size);
-  color: var(--_icon-color-accent);
+  inline-size: var(--_icon-circle-size);
+  block-size: var(--_icon-circle-size);
+  padding: var(--_icon-circle-padding);
+  background-color: var(--_icon-circle-bg);
+  border-radius: 999px;
+  color: var(--_icon-glyph-color);
+  box-sizing: border-box;
+}
+
+.dropzone-icon cor-icon {
+  inline-size: var(--_icon-glyph-size);
+  block-size: var(--_icon-glyph-size);
 }
 
 :host(.is-disabled) .dropzone-icon {
-  color: var(--file-input-icon-disabled);
+  background-color: var(--_icon-circle-bg-disabled);
+  color: var(--_icon-glyph-color-disabled);
 }
 
 /* Slotted custom icon inherits the themed color. */
@@ -192,16 +220,92 @@
   color: var(--file-input-text-disabled);
 }
 
-.dropzone-hint {
-  display: block;
-  font-size: var(--file-input-secondary-text-font-size);
-  line-height: var(--file-input-secondary-text-line-height);
-  font-weight: var(--file-input-secondary-text-font-weight);
-  color: var(--_text-secondary);
+/* ---------- CTA row: "Drag and drop or [choose files]" ---------- */
+
+.dropzone-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--_cta-gap);
+  font-size: var(--_primary-font-size);
+  line-height: var(--_primary-line-height);
+  font-weight: var(--file-input-primary-text-font-weight);
 }
 
-:host(.is-disabled) .dropzone-hint {
-  color: var(--file-input-text-disabled);
+.dropzone-cta__body {
+  color: var(--_cta-body-color);
+}
+
+:host(.is-disabled) .dropzone-cta__body {
+  color: var(--_cta-body-color-disabled);
+}
+
+/* Inline link affordance — a real <button> for keyboard + a11y, styled as a
+ * brand-blue underlined link. Padding-free so it inlines with the body text. */
+.dropzone-cta__link {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: var(--_cta-link-color);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.dropzone-cta__link:hover {
+  color: var(--_cta-link-color-hover);
+}
+
+.dropzone-cta__link:focus-visible {
+  outline: var(--border-width-2) solid var(--_cta-link-color);
+  outline-offset: var(--spacing-2);
+}
+
+:host(.is-disabled) .dropzone-cta__link,
+.dropzone-cta__link:disabled {
+  color: var(--_cta-link-color-disabled);
+  cursor: not-allowed;
+  text-decoration-color: var(--_cta-link-color-disabled);
+}
+
+/* ---------- Captions row (outside the dashed border, below the dropzone) ---------- */
+
+.captions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--file-input-caption-gap);
+  margin-block-start: var(--file-input-caption-margin-block-start);
+  font-family: var(--file-input-caption-font-family);
+  font-size: var(--file-input-caption-font-size);
+  line-height: var(--file-input-caption-line-height);
+  font-weight: var(--file-input-caption-font-weight);
+  color: var(--file-input-caption-color-default);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.captions__formats {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  text-align: start;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.captions__max-size {
+  flex-shrink: 0;
+  text-align: end;
+  white-space: nowrap;
+}
+
+:host(.is-disabled) .captions {
+  color: var(--file-input-caption-color-disabled);
 }
 
 /* ---------- Native hidden input ---------- */
