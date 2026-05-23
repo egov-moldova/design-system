@@ -1,0 +1,54 @@
+{
+  "switch": {
+    "track": {
+      "width": { "$value": "{spacing.48}", "$type": "dimension" },
+      "height": { "$value": "28px", "$type": "dimension" },
+      "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" },
+      "padding": { "$value": "{spacing.2}", "$type": "dimension" },
+      "transitionDuration": { "$value": "150ms", "$type": "duration" },
+      "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" }
+    },
+    "thumb": {
+      "size": { "$value": "{spacing.24}", "$type": "dimension" },
+      "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" },
+      "color": {
+        "default": { "$value": "{color.background.base.default}", "$type": "color" },
+        "disabled": { "$value": "{color.background.base.default}", "$type": "color" }
+      },
+      "shadow": {
+        "$value": "0 0 0.5px 0 rgba(0, 0, 0, 0.3), 0 1px 3px 0 rgba(0, 0, 0, 0.16)",
+        "$type": "shadow"
+      }
+    },
+    "background": {
+      "off": { "$value": "{color.background.base.tertiary-active}", "$type": "color" },
+      "on": { "$value": "{color.background.brand.default}", "$type": "color" },
+      "offHover": { "$value": "{color.background.base.tertiary-active}", "$type": "color" },
+      "onHover": { "$value": "{color.background.brand.default-hover}", "$type": "color" },
+      "disabled": { "$value": "{color.background.disabled.default}", "$type": "color" }
+    },
+    "focusRing": {
+      "innerWidth": { "$value": "{borderWidth.1}", "$type": "dimension" },
+      "outerWidth": { "$value": "{focusRing.width.outer}", "$type": "dimension" },
+      "innerColor": { "$value": "{focusRing.color.inner}", "$type": "color" },
+      "outerColor": { "$value": "{focusRing.color.outer}", "$type": "color" }
+    },
+    "touchTarget": {
+      "pointer": { "$value": "{spacing.32}", "$type": "dimension" },
+      "touch": { "$value": "{spacing.40}", "$type": "dimension" }
+    },
+    "label": {
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "color": {
+        "default": { "$value": "{color.text.base.default}", "$type": "color" },
+        "disabled": { "$value": "{color.text.disabled.default}", "$type": "color" }
+      }
+    },
+    "gap": {
+      "switchLabel": { "$value": "{spacing.12}", "$type": "dimension" }
+    }
+  }
+}
