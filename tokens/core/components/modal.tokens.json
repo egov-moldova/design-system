@@ -1,0 +1,79 @@
+{
+  "modal": {
+    "backdrop": {
+      "background": { "$value": "{color.background.alpha.overlay-dark}", "$type": "color" },
+      "blur": { "$value": "0px", "$type": "dimension" },
+      "transitionDuration": { "$value": "150ms", "$type": "duration" },
+      "transitionTimingFunction": { "$value": "cubic-bezier(0, 0, 0.2, 1)", "$type": "cubicBezier" }
+    },
+    "container": {
+      "background": { "$value": "{color.background.base.default}", "$type": "color" },
+      "borderRadius": { "$value": "{borderRadius.16}", "$type": "dimension" },
+      "boxShadow": { "$value": "{dropShadow.500}", "$type": "string" },
+      "minWidth": { "$value": "280px", "$type": "dimension" },
+      "maxWidthSm": { "$value": "480px", "$type": "dimension" },
+      "maxWidthMd": { "$value": "588px", "$type": "dimension" },
+      "maxWidthLg": { "$value": "720px", "$type": "dimension" },
+      "maxHeight": { "$value": "calc(100dvh - 64px)", "$type": "dimension" },
+      "maxHeightMobile": { "$value": "calc(100dvh - 32px)", "$type": "dimension" },
+      "marginInline": { "$value": "{spacing.16}", "$type": "dimension" },
+      "transitionDuration": { "$value": "200ms", "$type": "duration" },
+      "transitionTimingFunction": { "$value": "cubic-bezier(0, 0, 0.2, 1)", "$type": "cubicBezier" }
+    },
+    "header": {
+      "paddingBlockStart": { "$value": "{spacing.24}", "$type": "dimension" },
+      "paddingInlineStart": { "$value": "{spacing.32}", "$type": "dimension" },
+      "paddingInlineEnd": { "$value": "{spacing.20}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.12}", "$type": "dimension" },
+      "imageHeight": { "$value": "280px", "$type": "dimension" },
+      "imageHeightSm": { "$value": "180px", "$type": "dimension" }
+    },
+    "title": {
+      "color": { "$value": "{color.text.base.default}", "$type": "color" },
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSizeMd": { "$value": "{fontSize.24}", "$type": "dimension" },
+      "fontSizeSm": { "$value": "{fontSize.20}", "$type": "dimension" },
+      "lineHeightMd": { "$value": "{lineHeight.32}", "$type": "dimension" },
+      "lineHeightSm": { "$value": "{lineHeight.28}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.semibold}", "$type": "fontWeight" },
+      "letterSpacingMd": { "$value": "-0.24px", "$type": "dimension" },
+      "letterSpacingSm": { "$value": "-0.2px", "$type": "dimension" }
+    },
+    "body": {
+      "color": { "$value": "{color.text.base.secondary}", "$type": "color" },
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSizeMd": { "$value": "{fontSize.16}", "$type": "dimension" },
+      "fontSizeSm": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "lineHeightMd": { "$value": "{lineHeight.24}", "$type": "dimension" },
+      "lineHeightSm": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
+      "paddingBlockStartMd": { "$value": "{spacing.24}", "$type": "dimension" },
+      "paddingBlockStartSm": { "$value": "{spacing.16}", "$type": "dimension" },
+      "paddingBlockEndMd": { "$value": "{spacing.40}", "$type": "dimension" },
+      "paddingBlockEndSm": { "$value": "{spacing.20}", "$type": "dimension" },
+      "paddingInline": { "$value": "{spacing.32}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.16}", "$type": "dimension" }
+    },
+    "icon": {
+      "size": { "$value": "{spacing.48}", "$type": "dimension" },
+      "color": { "$value": "{color.icon.base.default}", "$type": "color" }
+    },
+    "footer": {
+      "paddingBlockStart": { "$value": "{spacing.12}", "$type": "dimension" },
+      "paddingBlockEndMd": { "$value": "{spacing.24}", "$type": "dimension" },
+      "paddingBlockEndSm": { "$value": "{spacing.20}", "$type": "dimension" },
+      "paddingInline": { "$value": "{spacing.20}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.8}", "$type": "dimension" }
+    },
+    "close": {
+      "size": { "$value": "{spacing.32}", "$type": "dimension" },
+      "iconSize": { "$value": "{spacing.16}", "$type": "dimension" },
+      "padding": { "$value": "{spacing.8}", "$type": "dimension" },
+      "background": { "$value": "{color.background.base.tertiary}", "$type": "color" },
+      "backgroundHover": { "$value": "{color.background.base.tertiary-hover}", "$type": "color" },
+      "backgroundOnImage": { "$value": "{color.background.base.tertiary}", "$type": "color" },
+      "iconColor": { "$value": "{color.icon.base.secondary}", "$type": "color" },
+      "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" }
+    }
+  }
+}
