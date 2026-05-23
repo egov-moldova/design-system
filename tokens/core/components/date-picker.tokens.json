@@ -1,0 +1,117 @@
+{
+  "datePicker": {
+    "container": {
+      "width": {
+        "desktop": { "$value": "320px", "$type": "dimension" },
+        "mobile": { "$value": "100%", "$type": "dimension" },
+        "docked": { "$value": "320px", "$type": "dimension" }
+      },
+      "padding": {
+        "desktop": { "$value": "{spacing.12}", "$type": "dimension" },
+        "mobile": { "$value": "{spacing.16}", "$type": "dimension" },
+        "docked": { "$value": "{spacing.8}", "$type": "dimension" }
+      },
+      "gap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "background": { "$value": "{color.background.base.default}", "$type": "color" },
+      "borderRadius": { "$value": "{borderRadius.12}", "$type": "dimension" },
+      "borderWidth": { "$value": "{borderWidth.1}", "$type": "dimension" },
+      "borderColor": { "$value": "{color.border.base.default}", "$type": "color" },
+      "shadow": { "$value": "{dropShadow.300}", "$type": "string" },
+      "transitionDuration": { "$value": "150ms", "$type": "duration" },
+      "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" }
+    },
+    "header": {
+      "height": { "$value": "{spacing.40}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "title": {
+        "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+        "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+        "fontSize": { "$value": "{fontSize.16}", "$type": "dimension" },
+        "lineHeight": { "$value": "{lineHeight.24}", "$type": "dimension" },
+        "color": { "$value": "{color.text.base.default}", "$type": "color" }
+      },
+      "navButton": {
+        "size": { "$value": "{spacing.40}", "$type": "dimension" },
+        "borderRadius": { "$value": "{borderRadius.6}", "$type": "dimension" },
+        "background": {
+          "default": { "$value": "{color.background.base.tertiary}", "$type": "color" },
+          "hover": { "$value": "{color.background.base.tertiary-hover}", "$type": "color" },
+          "active": { "$value": "{color.background.base.tertiary-active}", "$type": "color" }
+        },
+        "iconSize": { "$value": "{spacing.20}", "$type": "dimension" },
+        "iconColor": {
+          "default": { "$value": "{color.icon.base.default}", "$type": "color" },
+          "disabled": { "$value": "{color.icon.disabled.on-disabled}", "$type": "color" }
+        }
+      }
+    },
+    "dayLabel": {
+      "height": { "$value": "{spacing.32}", "$type": "dimension" },
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "color": { "$value": "{color.text.base.tertiary}", "$type": "color" }
+    },
+    "dayCell": {
+      "height": { "$value": "{spacing.40}", "$type": "dimension" },
+      "borderRadius": { "$value": "{borderRadius.6}", "$type": "dimension" },
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "borderWidth": { "$value": "{borderWidth.1-5}", "$type": "dimension" },
+      "focusRingWidth": { "$value": "{borderWidth.2}", "$type": "dimension" },
+      "default": {
+        "color": { "$value": "{color.text.base.default}", "$type": "color" }
+      },
+      "hover": {
+        "background": { "$value": "{color.background.base.tertiary}", "$type": "color" },
+        "color": { "$value": "{color.text.base.default}", "$type": "color" }
+      },
+      "selected": {
+        "background": { "$value": "{color.background.brand.default}", "$type": "color" },
+        "color": { "$value": "{color.text.base.default-on-color}", "$type": "color" }
+      },
+      "selectedHover": {
+        "background": { "$value": "{color.background.brand.default-hover}", "$type": "color" },
+        "color": { "$value": "{color.text.base.default-on-color}", "$type": "color" }
+      },
+      "today": {
+        "color": { "$value": "{color.text.brand.default}", "$type": "color" },
+        "borderColor": { "$value": "{color.border.brand.default}", "$type": "color" }
+      },
+      "todayHover": {
+        "background": { "$value": "{color.background.brand.secondary}", "$type": "color" },
+        "color": { "$value": "{color.text.brand.default}", "$type": "color" }
+      },
+      "inRange": {
+        "background": { "$value": "{color.background.brand.secondary}", "$type": "color" },
+        "color": { "$value": "{color.text.brand.default}", "$type": "color" }
+      },
+      "outsideMonth": {
+        "color": { "$value": "{color.text.disabled.default}", "$type": "color" }
+      },
+      "disabled": {
+        "color": { "$value": "{color.text.disabled.default}", "$type": "color" }
+      },
+      "focusRing": { "$value": "{palette.blue-sky.200}", "$type": "color" }
+    },
+    "yearGrid": {
+      "rowGap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "cellHeight": { "$value": "{spacing.40}", "$type": "dimension" },
+      "cellBorderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" }
+    },
+    "monthGrid": {
+      "rowGap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "cellHeight": { "$value": "{spacing.40}", "$type": "dimension" },
+      "cellBorderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" }
+    },
+    "dragHandle": {
+      "width": { "$value": "{spacing.48}", "$type": "dimension" },
+      "height": { "$value": "{spacing.4}", "$type": "dimension" },
+      "background": { "$value": "{color.background.base.tertiary}", "$type": "color" },
+      "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" }
+    }
+  }
+}
