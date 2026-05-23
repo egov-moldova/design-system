@@ -1,0 +1,122 @@
+{
+  "badge": {
+    "size": {
+      "sm": {
+        "$value": "{spacing.12}",
+        "$type": "dimension"
+      },
+      "md": {
+        "$value": "{spacing.16}",
+        "$type": "dimension"
+      }
+    },
+    "minWidth": {
+      "sm": {
+        "$value": "{spacing.12}",
+        "$type": "dimension"
+      },
+      "md": {
+        "$value": "{spacing.16}",
+        "$type": "dimension"
+      }
+    },
+    "padding": {
+      "inline": {
+        "sm": {
+          "$value": "{spacing.2}",
+          "$type": "dimension"
+        },
+        "md": {
+          "$value": "{spacing.4}",
+          "$type": "dimension"
+        }
+      }
+    },
+    "borderRadius": {
+      "$value": "{borderRadius.full}",
+      "$type": "dimension"
+    },
+    "fontSize": {
+      "sm": {
+        "$value": "{fontSize.10}",
+        "$type": "dimension"
+      },
+      "md": {
+        "$value": "{fontSize.12}",
+        "$type": "dimension"
+      }
+    },
+    "lineHeight": {
+      "sm": {
+        "$value": "{lineHeight.12}",
+        "$type": "dimension"
+      },
+      "md": {
+        "$value": "{lineHeight.16}",
+        "$type": "dimension"
+      }
+    },
+    "fontWeight": {
+      "$value": "{fontWeight.medium}",
+      "$type": "fontWeight"
+    },
+    "fontFamily": {
+      "$value": "{fontFamily.primary}",
+      "$type": "fontFamily"
+    },
+    "background": {
+      "default": {
+        "$value": "{color.background.base-inverse.default}",
+        "$type": "color"
+      },
+      "brand": {
+        "$value": "{color.background.brand.default}",
+        "$type": "color"
+      },
+      "positive": {
+        "$value": "{color.background.positive.default}",
+        "$type": "color"
+      },
+      "warning": {
+        "$value": "{color.background.warning.default}",
+        "$type": "color"
+      },
+      "danger": {
+        "$value": "{color.background.danger.default}",
+        "$type": "color"
+      }
+    },
+    "text": {
+      "default": {
+        "$value": "{color.text.base-inverse.default}",
+        "$type": "color"
+      },
+      "brand": {
+        "$value": "{color.text.base-inverse.on-color}",
+        "$type": "color"
+      },
+      "positive": {
+        "$value": "{color.text.base-inverse.on-color}",
+        "$type": "color"
+      },
+      "warning": {
+        "$value": "{color.text.base-inverse.on-color}",
+        "$type": "color"
+      },
+      "danger": {
+        "$value": "{color.text.base-inverse.on-color}",
+        "$type": "color"
+      }
+    },
+    "offset": {
+      "top": {
+        "$value": "0px",
+        "$type": "dimension"
+      },
+      "right": {
+        "$value": "0px",
+        "$type": "dimension"
+      }
+    }
+  }
+}
