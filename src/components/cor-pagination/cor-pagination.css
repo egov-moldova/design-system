@@ -1,0 +1,241 @@
+/* ============================================================================
+   cor-pagination — molecule
+   ----------------------------------------------------------------------------
+   Renders a navigation landmark with prev / next buttons surrounding a list
+   of numbered page buttons. Sizes (sm / md) follow the Figma breakpoint axis.
+   ============================================================================ */
+
+:host {
+  --_gap: var(--pagination-container-gap-md);
+  --_inner-gap: var(--pagination-container-inner-gap-md);
+  --_item-size: var(--pagination-item-size-md);
+  --_ellipsis-size: var(--pagination-ellipsis-size-md);
+  --_nav-height: var(--pagination-nav-height-md);
+  --_nav-min-width: var(--pagination-nav-min-width-md);
+  --_nav-pad-start: var(--pagination-nav-padding-inline-start-md);
+  --_nav-pad-end: var(--pagination-nav-padding-inline-end-md);
+  --_nav-icon-size: var(--pagination-nav-icon-size-md);
+  --_show-nav-label: inline-flex;
+
+  display: inline-flex;
+  vertical-align: middle;
+  font-family: var(--pagination-item-font-family);
+  font-size: var(--pagination-item-font-size);
+  line-height: var(--pagination-item-line-height);
+  font-weight: var(--pagination-item-font-weight);
+}
+
+:host([size='sm']) {
+  --_gap: var(--pagination-container-gap-sm);
+  --_inner-gap: var(--pagination-container-inner-gap-sm);
+  --_item-size: var(--pagination-item-size-sm);
+  --_ellipsis-size: var(--pagination-ellipsis-size-sm);
+  --_nav-height: var(--pagination-nav-height-sm);
+  --_nav-min-width: var(--pagination-nav-min-width-sm);
+  --_nav-pad-start: var(--pagination-nav-padding-inline-start-sm);
+  --_nav-pad-end: var(--pagination-nav-padding-inline-end-sm);
+  --_nav-icon-size: var(--pagination-nav-icon-size-sm);
+  --_show-nav-label: none;
+}
+
+/* ---------- Layout ---------- */
+
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--_gap);
+  padding: 0;
+}
+
+.pages {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--_inner-gap);
+}
+
+.item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- Page buttons ---------- */
+
+.page-button {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--_item-size);
+  block-size: var(--_item-size);
+  padding: 0;
+  margin: 0;
+
+  border: var(--pagination-item-border-width-default) solid var(--pagination-item-unselected-border-default);
+  border-radius: var(--pagination-item-border-radius);
+  background-color: var(--pagination-item-unselected-background-default);
+  color: var(--pagination-item-unselected-label-default);
+
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+
+  transition:
+    background-color var(--pagination-container-transition-duration)
+      var(--pagination-container-transition-timing-function),
+    color var(--pagination-container-transition-duration) var(--pagination-container-transition-timing-function),
+    box-shadow var(--pagination-container-transition-duration) var(--pagination-container-transition-timing-function),
+    border-color var(--pagination-container-transition-duration) var(--pagination-container-transition-timing-function);
+}
+
+.page-button:hover {
+  background-color: var(--pagination-item-unselected-background-hover);
+  color: var(--pagination-item-unselected-label-hover);
+}
+
+.page-button:active {
+  background-color: var(--pagination-item-unselected-background-active);
+  color: var(--pagination-item-unselected-label-active);
+}
+
+.page-button:focus-visible {
+  outline: none;
+  border-width: var(--pagination-item-border-width-focus);
+  border-color: var(--pagination-item-unselected-border-focus);
+  background-color: var(--pagination-item-unselected-background-default);
+}
+
+.page-button.is-selected {
+  background-color: var(--pagination-item-selected-background-default);
+  color: var(--pagination-item-selected-label-default);
+}
+
+.page-button.is-selected:hover {
+  background-color: var(--pagination-item-selected-background-hover);
+  color: var(--pagination-item-selected-label-hover);
+}
+
+.page-button.is-selected:active {
+  background-color: var(--pagination-item-selected-background-active);
+  color: var(--pagination-item-selected-label-active);
+}
+
+.page-button.is-selected:focus-visible {
+  background-color: var(--pagination-item-selected-background-default);
+  color: var(--pagination-item-selected-label-default);
+}
+
+/* ---------- Ellipsis ---------- */
+
+.ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--_ellipsis-size);
+  block-size: var(--_ellipsis-size);
+  color: var(--pagination-ellipsis-label);
+  user-select: none;
+  font: inherit;
+}
+
+/* ---------- Prev / Next buttons ---------- */
+
+.nav-button {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--pagination-nav-gap);
+
+  block-size: var(--_nav-height);
+  min-inline-size: var(--_nav-min-width);
+  padding-block: 0;
+  padding-inline-start: var(--_nav-pad-start);
+  padding-inline-end: var(--_nav-pad-end);
+
+  margin: 0;
+  border: var(--pagination-item-border-width-default) solid var(--pagination-nav-border-default);
+  border-radius: var(--pagination-nav-border-radius);
+  background-color: var(--pagination-nav-background-default);
+  color: var(--pagination-nav-label-default);
+
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  overflow: clip;
+
+  transition:
+    background-color var(--pagination-container-transition-duration)
+      var(--pagination-container-transition-timing-function),
+    color var(--pagination-container-transition-duration) var(--pagination-container-transition-timing-function),
+    box-shadow var(--pagination-container-transition-duration) var(--pagination-container-transition-timing-function),
+    border-color var(--pagination-container-transition-duration) var(--pagination-container-transition-timing-function);
+}
+
+.nav-button:hover {
+  background-color: var(--pagination-nav-background-hover);
+}
+
+.nav-button:active {
+  background-color: var(--pagination-nav-background-active);
+}
+
+.nav-button:focus-visible {
+  outline: none;
+  border-width: var(--pagination-item-border-width-focus);
+  border-color: var(--pagination-nav-border-focus);
+}
+
+.nav-button[disabled],
+.nav-button.is-disabled {
+  cursor: not-allowed;
+  color: var(--pagination-nav-label-disabled);
+  background-color: var(--pagination-nav-background-default);
+}
+
+.nav-button[disabled] .nav-icon,
+.nav-button.is-disabled .nav-icon {
+  color: var(--pagination-nav-icon-disabled);
+}
+
+.nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--_nav-icon-size);
+  block-size: var(--_nav-icon-size);
+  color: var(--pagination-nav-icon-default);
+  flex: 0 0 auto;
+}
+
+.nav-icon ::slotted(*) {
+  display: inline-flex;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
+.nav-label {
+  display: var(--_show-nav-label);
+  align-items: center;
+  white-space: nowrap;
+  color: inherit;
+}
+
+/* Hide internal icon when consumer provided a custom one — Stencil leaves
+   the slot empty until @State updates; the fallback render handles the rest. */
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .page-button,
+  .nav-button {
+    transition: none;
+  }
+}
