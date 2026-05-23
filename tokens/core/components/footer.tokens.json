@@ -1,0 +1,135 @@
+{
+  "footer": {
+    "container": {
+      "background": { "$value": "{color.background.base.default}", "$type": "color" },
+      "color": { "$value": "{color.text.base.default}", "$type": "color" },
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "paddingInlineDesktop": { "$value": "{spacing.80}", "$type": "dimension" },
+      "paddingInlineTablet": { "$value": "{spacing.48}", "$type": "dimension" },
+      "paddingInlineMobile": { "$value": "{spacing.16}", "$type": "dimension" },
+      "paddingBlockStartDesktop": { "$value": "{spacing.64}", "$type": "dimension" },
+      "paddingBlockStartMobile": { "$value": "{spacing.40}", "$type": "dimension" },
+      "paddingBlockEndDesktop": { "$value": "{spacing.40}", "$type": "dimension" },
+      "paddingBlockEndMobile": { "$value": "{spacing.24}", "$type": "dimension" },
+      "maxWidth": { "$value": "1920px", "$type": "dimension" }
+    },
+    "primary": {
+      "gapDesktop": { "$value": "{spacing.48}", "$type": "dimension" },
+      "gapMobile": { "$value": "{spacing.32}", "$type": "dimension" },
+      "paddingBlockEnd": { "$value": "{spacing.48}", "$type": "dimension" }
+    },
+    "branding": {
+      "gap": { "$value": "{spacing.20}", "$type": "dimension" },
+      "maxWidth": { "$value": "420px", "$type": "dimension" },
+      "headlineFontSize": { "$value": "{fontSize.32}", "$type": "dimension" },
+      "headlineLineHeight": { "$value": "{lineHeight.40}", "$type": "dimension" },
+      "headlineFontWeight": { "$value": "{fontWeight.semibold}", "$type": "fontWeight" },
+      "headlineLetterSpacing": { "$value": "-1px", "$type": "dimension" },
+      "headlineColor": { "$value": "{color.text.base.default}", "$type": "color" },
+      "taglineFontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "taglineLineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "taglineFontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
+      "taglineColor": { "$value": "{color.text.base.secondary}", "$type": "color" }
+    },
+    "divider": {
+      "color": { "$value": "{color.border.base.default}", "$type": "color" },
+      "width": { "$value": "{borderWidth.1}", "$type": "dimension" },
+      "marginBlock": { "$value": "{spacing.32}", "$type": "dimension" }
+    },
+    "columns": {
+      "gapDesktop": { "$value": "{spacing.48}", "$type": "dimension" },
+      "gapTablet": { "$value": "{spacing.32}", "$type": "dimension" },
+      "gapMobile": { "$value": "{spacing.16}", "$type": "dimension" },
+      "minWidth": { "$value": "180px", "$type": "dimension" }
+    },
+    "column": {
+      "gap": { "$value": "{spacing.16}", "$type": "dimension" },
+      "titleFontSize": { "$value": "{fontSize.16}", "$type": "dimension" },
+      "titleLineHeight": { "$value": "{lineHeight.24}", "$type": "dimension" },
+      "titleFontWeight": { "$value": "{fontWeight.semibold}", "$type": "fontWeight" },
+      "titleColor": { "$value": "{color.text.base.default}", "$type": "color" },
+      "linkGap": { "$value": "{spacing.12}", "$type": "dimension" }
+    },
+    "contact": {
+      "gap": { "$value": "{spacing.16}", "$type": "dimension" },
+      "rowGap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "iconSize": { "$value": "20px", "$type": "dimension" },
+      "iconColor": { "$value": "{color.icon.base.secondary}", "$type": "color" },
+      "labelFontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "labelLineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "labelColor": { "$value": "{color.text.base.secondary}", "$type": "color" },
+      "addressMaxWidth": { "$value": "260px", "$type": "dimension" }
+    },
+    "social": {
+      "gap": { "$value": "{spacing.12}", "$type": "dimension" },
+      "groupGap": { "$value": "{spacing.16}", "$type": "dimension" },
+      "iconSize": { "$value": "20px", "$type": "dimension" },
+      "labelFontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "labelLineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "labelColor": { "$value": "{color.text.base.tertiary}", "$type": "color" },
+      "buttonSize": { "$value": "40px", "$type": "dimension" },
+      "buttonBackground": { "$value": "{color.background.base.secondary}", "$type": "color" },
+      "buttonBackgroundHover": { "$value": "{color.background.base.tertiary}", "$type": "color" },
+      "buttonBorderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" },
+      "buttonColor": { "$value": "{color.icon.base.default}", "$type": "color" },
+      "focusRing": { "$value": "{color.background.brand.focus-ring}", "$type": "color" }
+    },
+    "partners": {
+      "gap": { "$value": "{spacing.32}", "$type": "dimension" },
+      "rowGap": { "$value": "{spacing.16}", "$type": "dimension" },
+      "logoMaxHeight": { "$value": "40px", "$type": "dimension" },
+      "labelFontSize": { "$value": "{fontSize.10}", "$type": "dimension" },
+      "labelLineHeight": { "$value": "{lineHeight.12}", "$type": "dimension" },
+      "labelColor": { "$value": "{color.text.base.tertiary}", "$type": "color" }
+    },
+    "accessibility": {
+      "marginBlockStart": { "$value": "{spacing.32}", "$type": "dimension" },
+      "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "color": { "$value": "{color.text.base.tertiary}", "$type": "color" }
+    },
+    "legal": {
+      "background": { "$value": "{color.background.base-inverse.default}", "$type": "color" },
+      "color": { "$value": "{color.text.base-inverse.default}", "$type": "color" },
+      "paddingInlineDesktop": { "$value": "{spacing.80}", "$type": "dimension" },
+      "paddingInlineMobile": { "$value": "{spacing.16}", "$type": "dimension" },
+      "paddingBlockDesktop": { "$value": "{spacing.16}", "$type": "dimension" },
+      "paddingBlockMobile": { "$value": "{spacing.20}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.24}", "$type": "dimension" },
+      "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" }
+    },
+    "locale": {
+      "background": { "$value": "transparent", "$type": "color" },
+      "backgroundHover": { "$value": "{color.background.base.secondary}", "$type": "color" },
+      "color": { "$value": "{color.text.base.default}", "$type": "color" },
+      "borderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" },
+      "paddingInline": { "$value": "{spacing.12}", "$type": "dimension" },
+      "paddingBlock": { "$value": "{spacing.8}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "iconSize": { "$value": "16px", "$type": "dimension" },
+      "menuBackground": { "$value": "{color.background.base.default}", "$type": "color" },
+      "menuBorder": { "$value": "{color.border.base.default}", "$type": "color" },
+      "menuBorderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" },
+      "menuShadow": {
+        "$value": "0 0 0.5px 0 rgba(0, 0, 0, 0.15), 0 1px 3px 0 rgba(0, 0, 0, 0.08), 0 5px 12px 0 rgba(0, 0, 0, 0.08)",
+        "$type": "shadow"
+      },
+      "menuMinWidth": { "$value": "140px", "$type": "dimension" },
+      "menuItemPaddingBlock": { "$value": "{spacing.8}", "$type": "dimension" },
+      "menuItemPaddingInline": { "$value": "{spacing.12}", "$type": "dimension" },
+      "menuItemBackgroundHover": { "$value": "{color.background.base.secondary}", "$type": "color" },
+      "menuItemActiveBackground": { "$value": "{color.background.brand.secondary}", "$type": "color" },
+      "menuItemActiveColor": { "$value": "{color.text.brand.default}", "$type": "color" }
+    },
+    "focusRing": {
+      "color": { "$value": "{color.background.brand.focus-ring}", "$type": "color" },
+      "width": { "$value": "{borderWidth.2}", "$type": "dimension" },
+      "offset": { "$value": "{spacing.2}", "$type": "dimension" }
+    }
+  }
+}
