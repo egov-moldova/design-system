@@ -21,12 +21,21 @@ let searchInputInstanceCounter = 0;
  * and ARIA wiring are IDENTICAL to `cor-search-input-rectangular` — the only
  * visual difference is the silhouette: corners flip to `borderRadius.full`
  * (9999px) and horizontal padding grows one step (md +4px, lg +4px) to balance
- * the rounded ends.
+ * the rounded ends. The trailing submit button (when `with-button` is set)
+ * inherits the pill silhouette via `borderRadius.full`, rendering as a perfect
+ * circle that hugs the pill end per Figma master `933:29721`.
  *
  * The Republic of Moldova Unified Design System library catalogues circular
  * and rectangular search fields as separate component_sets, so we ship them
  * as distinct atoms with parallel token namespaces (`--search-input-circular-*`
  * vs `--search-input-rectangular-*`).
+ *
+ * Optional axes per Figma master `933:29721`:
+ * - `loading` — async query is in flight; a trailing spinner appears next to
+ *   the value/placeholder and the control is announced as `aria-busy`.
+ * - `with-button` — adds a trailing brand-blue circular submit button that
+ *   fires `corSearch` on click. Coexists with the clear button and the
+ *   loading spinner.
  *
  * @element cor-search-input-circular
  *
@@ -89,6 +98,32 @@ export class CorSearchInputCircular {
    * @default true
    */
   @Prop({ reflect: true }) clearable: boolean = true;
+
+  /**
+   * Indicates an in-flight query. Replaces the leading magnifying-glass icon
+   * with a brand-coloured `cor-spinner` and exposes `aria-busy` on the
+   * internal control. The field stays focusable; emitting `corSearch` while
+   * loading is the consumer's responsibility (typically debounced).
+   * @default false
+   */
+  @Prop({ reflect: true }) loading: boolean = false;
+
+  /**
+   * Renders a trailing brand-blue circular submit button (the Figma
+   * "Button=True" axis on master `933:29721`). Clicking the button — or
+   * pressing Enter inside the input — dispatches `corSearch` with the
+   * current value. When the field is empty or disabled, the button enters
+   * a disabled visual state and does not fire the event.
+   * @default false
+   */
+  @Prop({ reflect: true, attribute: 'with-button' }) withButton: boolean = false;
+
+  /**
+   * Accessible label for the trailing submit button. Defaults to Romanian
+   * "Caută" per the institutional voice.
+   * @default 'Caută'
+   */
+  @Prop({ attribute: 'submit-label' }) submitLabel: string = 'Caută';
 
   /**
    * Current value of the control. Reflects to the host attribute.
@@ -287,6 +322,13 @@ export class CorSearchInputCircular {
     this.clearValue({ refocus: true });
   };
 
+  private handleSubmitClick = (ev: MouseEvent) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    if (this.isInert() || this.readonly) return;
+    this.corSearch.emit({ value: this.value });
+  };
+
   private clearValue(options: { refocus: boolean }) {
     if (this.value === '') return;
     this.value = '';
@@ -329,6 +371,11 @@ export class CorSearchInputCircular {
   }
 
   private showClearButton(): boolean {
+    // Figma master 933:29721: the clear `×` is suppressed during loading —
+    // the spinner owns the trailing affordance space and committing a clear
+    // while the previous query is in flight would race the consumer's
+    // debounced search handler. Mirrors the rectangular sibling's contract.
+    if (this.loading) return false;
     return this.clearable && !this.isInert() && !this.readonly && this.value !== '' && !this.hasIconEndSlot;
   }
 
@@ -340,11 +387,15 @@ export class CorSearchInputCircular {
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.ariaLabel : undefined;
     const iconSize = this.size === 'lg' ? 24 : 20;
+    const submitIconSize: 16 | 20 = this.size === 'lg' ? 20 : 16;
+    const spinnerSize = this.size === 'lg' ? 'md' : 'sm';
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
       'is-readonly': this.readonly,
       'is-invalid': this.invalid,
+      'is-loading': this.loading,
+      'has-submit-button': this.withButton,
       'is-focused': this.isFocused && !effectivelyDisabled,
       'has-label': this.hasVisibleLabel(),
       'has-value': this.value !== '',
@@ -352,6 +403,7 @@ export class CorSearchInputCircular {
     };
 
     const showClear = this.showClearButton();
+    const submitDisabled = effectivelyDisabled || this.readonly || this.value === '';
 
     return (
       <Host class={hostClasses}>
@@ -397,12 +449,19 @@ export class CorSearchInputCircular {
             aria-invalid={this.invalid ? 'true' : null}
             aria-required={this.required ? 'true' : null}
             aria-disabled={effectivelyDisabled ? 'true' : null}
+            aria-busy={this.loading ? 'true' : null}
             onInput={this.handleInput}
             onChange={this.handleChange}
             onFocus={this.handleFocus}
             onBlur={this.handleBlur}
             onKeyDown={this.handleKeyDown}
           />
+
+          {this.loading ? (
+            <span class="control-spinner" part="spinner" aria-hidden="true">
+              <cor-spinner size={spinnerSize} variant={effectivelyDisabled ? 'dark' : 'brand'} />
+            </span>
+          ) : null}
 
           <span class="control-icon control-icon-end" aria-hidden={this.hasIconEndSlot ? null : 'true'}>
             <slot name="icon-end" onSlotchange={this.onIconEndSlotChange} />
@@ -419,6 +478,21 @@ export class CorSearchInputCircular {
               onClick={this.handleClearClick}
             >
               <cor-icon name="cross-small" size={iconSize} color="currentColor" />
+            </button>
+          ) : null}
+
+          {this.withButton ? (
+            <button
+              type="button"
+              class="submit-button"
+              part="submit-button"
+              aria-label={this.submitLabel}
+              disabled={submitDisabled}
+              aria-disabled={submitDisabled ? 'true' : null}
+              onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
+              onClick={this.handleSubmitClick}
+            >
+              <cor-icon name="arrow-right" size={submitIconSize} color="currentColor" />
             </button>
           ) : null}
         </div>

@@ -23,6 +23,83 @@ and updates PR https://github.com/corlab-org/age-design/pull/5.
 
 ## Drift fix log
 
+### 2026-05-23 — `cor-search-input-circular` realigned to Figma (mirror of rectangular)
+
+Mirrored the rectangular sibling's Figma realignment (commit `2eff62c`) onto
+the circular pill variant. Figma master `933:29721` exposes the same two
+axes the shipped circular component was missing:
+
+- **`loading` prop** — renders a brand `cor-spinner` next to the value /
+  placeholder (`md` on `size="lg"`, `sm` on `size="md"`), sets
+  `aria-busy="true"` on the internal control, and suppresses the trailing
+  clear `×` button while in flight per the Figma loading variant on master
+  `933:29721`. Leading magnifying-glass icon stays as the role indicator.
+  Spinner colour switches to disabled gray when the host is disabled.
+- **`withButton` prop** (`with-button` attribute) — renders a trailing
+  brand-blue submit button (`color.background.brand.default`) with an
+  `arrow-right` icon. Size is square: 40px on `size="lg"` (matches input
+  height 48 minus 2×4 padding), 32px on `size="md"`. Unlike the rectangular
+  sibling whose submit button uses `borderRadius.6`, the circular variant's
+  submit button uses `borderRadius.full` — so it renders as a perfect
+  circle hugging the pill end, exactly matching the Figma master. Container
+  `padding-inline-end` collapses to `spacing.4` when the button is on.
+  Hover / active transitions through `color.background.brand.default-hover`
+  and `default-active`. The button is disabled (gray fill, gray icon) when
+  the value is empty, the host is disabled, or the host is readonly. Click
+  emits `corSearch` with the current value — same payload as the Enter-key
+  path.
+
+Added a `submitLabel` prop (default `'Caută'` per Romanian institutional
+voice) for the submit button's accessible name. Co-exists with `clearLabel`.
+
+**Token additions** — 17 new CSS variables under the
+`search-input-circular.submitButton.*` and
+`search-input-circular.loadingSpinner.*` blocks:
+`--search-input-circular-submit-button-{size,icon-size}-{md,lg}`,
+`--search-input-circular-submit-button-border-radius` (resolved to
+`{borderRadius.full}` per the circular silhouette delta),
+`--search-input-circular-submit-button-background-{default,hover,active,disabled}`,
+`--search-input-circular-submit-button-icon-{default,disabled}`,
+`--search-input-circular-submit-button-focus-ring-offset`,
+`--search-input-circular-submit-button-container-padding-inline-end`,
+`--search-input-circular-loading-spinner-size-{md,lg}`,
+`--search-input-circular-loading-spinner-color-{default,disabled}`.
+
+No breaking changes — both new props default to `false`. Existing API
+surface (variant, size, clearable, value, events) untouched. The
+rectangular and circular siblings are now feature-pared at parity.
+
+Stories: added `LoadingNoButton`, `WithSubmitButton`,
+`WithSubmitButtonLoading` (mirroring the rectangular set); the existing
+`States` story now includes `loading`.
+
+Spec: 20 new tests covering `loading` reflection, `aria-busy`, spinner
+presence + size, leading icon preserved during loading, clear suppression
+while loading, `withButton` reflection, submit button rendering, disabled
+states (empty / disabled / readonly), `corSearch` emission on submit click,
+guard against synthetic dispatch in readonly state, and coexistence with
+the clear button + loading spinner. Total spec count: **498 → 518**.
+
+Pixel-perfect: Storybook screenshots visually match Figma master `933:29721`
+1:1 for the WithSubmitButton, LoadingNoButton, WithSubmitButtonLoading
+panels — the trailing submit button renders as a perfect circle (vs the
+rectangular's rounded square) per the silhouette philosophy.
+
+Screenshots: `docs/screenshots/cor-search-input-circular/v2/` —
+`storybook-with-submit-button-{light,dark}.png`,
+`storybook-loading-no-button-{light,dark}.png`,
+`storybook-with-submit-button-loading-{light,dark}.png`,
+`storybook-states-{light,dark}.png` (now includes Loading),
+`storybook-default-light.png`, `storybook-all-sizes-light.png`,
+plus Figma reference crops `figma-master.png` (node `933:29721`) and
+`figma-docs-page.png` (node `456:24886`).
+
+Gates: `yarn tokens.build && yarn dx:stencil:once && yarn lint && yarn
+typecheck && yarn test && yarn sp.build && yarn audit:contrast` — all
+green. 518 spec tests pass (was 498 after the rectangular fix; +20 for
+circular parity), 0 console errors across every story, 0 contrast
+failures in light or dark (21 pass / 0 fail).
+
 ### 2026-05-23 — `cor-search-input-rectangular` realigned to Figma (Loading visual + Button axis)
 
 Added the two axes Figma master `933:29099` exposes that the shipped
@@ -175,6 +252,16 @@ Future agent runs: if a Figma node-id for either component_set is rediscovered,
 log it here so pixel-perfect comparison against the original can be re-checked.
 
 ## Last updated
+
+2026-05-23 — `cor-search-input-circular` realigned to Figma — mirror of the
+rectangular sibling's `2eff62c` fix. Added the `loading` visual state
+(spinner + `aria-busy`, clear button suppressed in-flight) and the
+`withButton` axis (trailing brand-blue circular submit button that fires
+`corSearch`). 17 new tokens under `submitButton.*` (border-radius is
+`{borderRadius.full}` so the button renders as a perfect circle on the
+pill silhouette) and `loadingSpinner.*`. 20 new spec tests (498 → 518).
+No breaking changes. Rectangular and circular siblings are now feature
+pared at parity. See "Drift fix log" above for the full delta.
 
 2026-05-23 — `cor-search-input-rectangular` realigned to Figma — added the
 `loading` visual state (spinner + `aria-busy`, clear button suppressed

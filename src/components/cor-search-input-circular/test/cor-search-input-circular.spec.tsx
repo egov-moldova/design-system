@@ -21,6 +21,12 @@ const queryAssistive = (root: Element | null | undefined): HTMLElement | null =>
 const queryClearButton = (root: Element | null | undefined): HTMLButtonElement | null =>
   (root?.shadowRoot?.querySelector('button.clear-button') ?? null) as HTMLButtonElement | null;
 
+const querySubmitButton = (root: Element | null | undefined): HTMLButtonElement | null =>
+  (root?.shadowRoot?.querySelector('button.submit-button') ?? null) as HTMLButtonElement | null;
+
+const querySpinner = (root: Element | null | undefined): Element | null =>
+  root?.shadowRoot?.querySelector('.control-spinner cor-spinner') ?? null;
+
 const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
 
 describe('cor-search-input-circular', () => {
@@ -402,6 +408,155 @@ describe('cor-search-input-circular', () => {
       (root as unknown as Instance).hasIconEndSlot = true;
       await flush();
       expect(queryClearButton(root)).toBeNull();
+    });
+  });
+
+  describe('loading state', () => {
+    it('reflects loading to the host attribute', async () => {
+      const { root } = await render(<cor-search-input-circular loading></cor-search-input-circular>);
+      expect(root?.hasAttribute('loading')).toBe(true);
+    });
+
+    it('does not render the spinner by default', async () => {
+      const { root } = await render(<cor-search-input-circular></cor-search-input-circular>);
+      expect(querySpinner(root)).toBeNull();
+    });
+
+    it('renders the spinner element when loading', async () => {
+      const { root } = await render(<cor-search-input-circular loading></cor-search-input-circular>);
+      const spinner = querySpinner(root);
+      expect(spinner).toBeTruthy();
+      expect(spinner?.tagName.toLowerCase()).toBe('cor-spinner');
+    });
+
+    it('exposes aria-busy="true" on the native input when loading', async () => {
+      const { root } = await render(<cor-search-input-circular loading></cor-search-input-circular>);
+      expect(queryNative(root)?.getAttribute('aria-busy')).toBe('true');
+    });
+
+    it('does not expose aria-busy when not loading', async () => {
+      const { root } = await render(<cor-search-input-circular></cor-search-input-circular>);
+      expect(queryNative(root)?.getAttribute('aria-busy')).toBeNull();
+    });
+
+    it('preserves the leading search icon while loading (the spinner is additive)', async () => {
+      const { root } = await render(<cor-search-input-circular loading></cor-search-input-circular>);
+      const leadingIcon = root?.shadowRoot?.querySelector('.control-icon-start cor-icon');
+      expect(leadingIcon?.getAttribute('name')).toBe('search');
+      expect(querySpinner(root)).toBeTruthy();
+    });
+
+    it('uses spinner size "md" on size="lg" and "sm" on size="md"', async () => {
+      const { root: lg } = await render(<cor-search-input-circular size="lg" loading></cor-search-input-circular>);
+      expect(querySpinner(lg)?.getAttribute('size')).toBe('md');
+      const { root: md } = await render(<cor-search-input-circular size="md" loading></cor-search-input-circular>);
+      expect(querySpinner(md)?.getAttribute('size')).toBe('sm');
+    });
+
+    it('suppresses the clear button while loading (Figma master 933:29721)', async () => {
+      const { root } = await render(<cor-search-input-circular value="hello" loading></cor-search-input-circular>);
+      expect(queryClearButton(root)).toBeNull();
+    });
+  });
+
+  describe('with-button (submit affordance)', () => {
+    it('reflects withButton via the `with-button` attribute', async () => {
+      const { root } = await render(<cor-search-input-circular with-button></cor-search-input-circular>);
+      expect(root?.hasAttribute('with-button')).toBe(true);
+    });
+
+    it('does not render the submit button by default', async () => {
+      const { root } = await render(<cor-search-input-circular></cor-search-input-circular>);
+      expect(querySubmitButton(root)).toBeNull();
+    });
+
+    it('renders the submit button when with-button is set', async () => {
+      const { root } = await render(<cor-search-input-circular with-button></cor-search-input-circular>);
+      const button = querySubmitButton(root);
+      expect(button).toBeTruthy();
+      expect(button?.getAttribute('aria-label')).toBe('Caută');
+      expect(button?.querySelector('cor-icon')?.getAttribute('name')).toBe('arrow-right');
+    });
+
+    it('uses the custom submitLabel for aria-label', async () => {
+      const { root } = await render(
+        <cor-search-input-circular with-button submit-label="Search"></cor-search-input-circular>,
+      );
+      expect(querySubmitButton(root)?.getAttribute('aria-label')).toBe('Search');
+    });
+
+    it('the submit button is disabled when the value is empty', async () => {
+      const { root } = await render(<cor-search-input-circular with-button></cor-search-input-circular>);
+      const button = querySubmitButton(root)!;
+      expect(button.hasAttribute('disabled')).toBe(true);
+      expect(button.getAttribute('aria-disabled')).toBe('true');
+    });
+
+    it('the submit button is enabled when the value is non-empty', async () => {
+      const { root } = await render(<cor-search-input-circular with-button value="hello"></cor-search-input-circular>);
+      const button = querySubmitButton(root)!;
+      expect(button.hasAttribute('disabled')).toBe(false);
+      expect(button.getAttribute('aria-disabled')).toBeNull();
+    });
+
+    it('the submit button is disabled when the host is disabled', async () => {
+      const { root } = await render(
+        <cor-search-input-circular with-button value="hello" disabled></cor-search-input-circular>,
+      );
+      expect(querySubmitButton(root)?.hasAttribute('disabled')).toBe(true);
+    });
+
+    it('the submit button is disabled when the host is readonly', async () => {
+      const { root } = await render(
+        <cor-search-input-circular with-button value="hello" readonly></cor-search-input-circular>,
+      );
+      expect(querySubmitButton(root)?.hasAttribute('disabled')).toBe(true);
+    });
+
+    it('emits corSearch on submit-button click with the current value', async () => {
+      const onSearch = vi.fn();
+      const { root } = await render(
+        <cor-search-input-circular with-button value="hello" onCorSearch={onSearch}></cor-search-input-circular>,
+      );
+      querySubmitButton(root)!.click();
+      await flush();
+      expect(onSearch).toHaveBeenCalledTimes(1);
+      expect(onSearch.mock.calls[0][0].detail).toEqual({ value: 'hello' });
+    });
+
+    it('does not emit corSearch when the submit-button click target is disabled', async () => {
+      // The native click is suppressed by the disabled attribute. We still
+      // route a programmatic call through the handler to confirm the guard
+      // rejects an inert/readonly state — defence in depth against
+      // synthetic dispatch.
+      const onSearch = vi.fn();
+      const { root } = await render(
+        <cor-search-input-circular
+          with-button
+          value="hello"
+          readonly
+          onCorSearch={onSearch}
+        ></cor-search-input-circular>,
+      );
+      type Instance = { handleSubmitClick: (ev: MouseEvent) => void };
+      const ev = new MouseEvent('click', { bubbles: true, cancelable: true });
+      (root as unknown as Instance).handleSubmitClick.call(root as unknown as Instance, ev);
+      await flush();
+      expect(onSearch).not.toHaveBeenCalled();
+    });
+
+    it('coexists with the clear button when value is present', async () => {
+      const { root } = await render(<cor-search-input-circular with-button value="hello"></cor-search-input-circular>);
+      expect(queryClearButton(root)).toBeTruthy();
+      expect(querySubmitButton(root)).toBeTruthy();
+    });
+
+    it('coexists with the loading spinner when both are set', async () => {
+      const { root } = await render(
+        <cor-search-input-circular with-button value="hello" loading></cor-search-input-circular>,
+      );
+      expect(querySpinner(root)).toBeTruthy();
+      expect(querySubmitButton(root)).toBeTruthy();
     });
   });
 });
