@@ -1,0 +1,104 @@
+{
+  "checkbox": {
+    "container": {
+      "size": {
+        "sm": { "$value": "{spacing.20}", "$type": "dimension" },
+        "md": { "$value": "{spacing.24}", "$type": "dimension" }
+      },
+      "touchTarget": {
+        "sm": { "$value": "{spacing.32}", "$type": "dimension" },
+        "md": { "$value": "{spacing.32}", "$type": "dimension" }
+      },
+      "borderRadius": {
+        "sm": { "$value": "{borderRadius.4}", "$type": "dimension" },
+        "md": { "$value": "{borderRadius.6}", "$type": "dimension" }
+      },
+      "borderWidth": { "$value": "{borderWidth.2}", "$type": "dimension" },
+      "focusRingWidth": { "$value": "{borderWidth.3}", "$type": "dimension" },
+      "focusRingOffset": { "$value": "{borderWidth.1}", "$type": "dimension" },
+      "gap": {
+        "sm": { "$value": "{spacing.6}", "$type": "dimension" },
+        "md": { "$value": "{spacing.12}", "$type": "dimension" }
+      },
+      "transitionDuration": { "$value": "150ms", "$type": "duration" },
+      "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" }
+    },
+    "icon": {
+      "size": {
+        "sm": { "$value": "{spacing.12}", "$type": "dimension" },
+        "md": { "$value": "{spacing.16}", "$type": "dimension" }
+      },
+      "color": {
+        "default": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" },
+        "disabled": { "$value": "{color.icon.disabled.on-disabled}", "$type": "color" }
+      }
+    },
+    "label": {
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "fontSize": {
+        "sm": { "$value": "{fontSize.14}", "$type": "dimension" },
+        "md": { "$value": "{fontSize.16}", "$type": "dimension" }
+      },
+      "lineHeight": {
+        "sm": { "$value": "{lineHeight.20}", "$type": "dimension" },
+        "md": { "$value": "{lineHeight.24}", "$type": "dimension" }
+      },
+      "color": {
+        "default": { "$value": "{color.text.base.default}", "$type": "color" },
+        "disabled": { "$value": "{color.text.disabled.on-disabled}", "$type": "color" }
+      },
+      "gapSupporting": { "$value": "{spacing.2}", "$type": "dimension" }
+    },
+    "supporting": {
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
+      "fontSize": {
+        "sm": { "$value": "{fontSize.12}", "$type": "dimension" },
+        "md": { "$value": "{fontSize.14}", "$type": "dimension" }
+      },
+      "lineHeight": {
+        "sm": { "$value": "{lineHeight.16}", "$type": "dimension" },
+        "md": { "$value": "{lineHeight.20}", "$type": "dimension" }
+      },
+      "color": {
+        "default": { "$value": "{color.text.base.tertiary}", "$type": "color" },
+        "disabled": { "$value": "{color.text.disabled.on-disabled}", "$type": "color" }
+      }
+    },
+    "default": {
+      "background": {
+        "unchecked": { "$value": "{color.background.base.default}", "$type": "color" },
+        "checked": { "$value": "{color.background.brand.default}", "$type": "color" }
+      },
+      "border": {
+        "unchecked": { "$value": "{color.border.base.secondary}", "$type": "color" },
+        "checked": { "$value": "{color.background.brand.default}", "$type": "color" }
+      },
+      "focusRing": { "$value": "{color.background.brand.focus-ring}", "$type": "color" }
+    },
+    "destructive": {
+      "background": {
+        "unchecked": { "$value": "{color.background.base.default}", "$type": "color" },
+        "checked": { "$value": "{color.border.danger.default}", "$type": "color" }
+      },
+      "border": {
+        "unchecked": { "$value": "{color.border.danger.default}", "$type": "color" },
+        "checked": { "$value": "{color.border.danger.default}", "$type": "color" }
+      },
+      "focusRing": { "$value": "{color.background.brand.focus-ring}", "$type": "color" },
+      "label": { "$value": "{color.text.danger.default}", "$type": "color" },
+      "supporting": { "$value": "{color.text.danger.default}", "$type": "color" }
+    },
+    "disabled": {
+      "background": {
+        "unchecked": { "$value": "{color.background.disabled.default}", "$type": "color" },
+        "checked": { "$value": "{color.background.disabled.default}", "$type": "color" }
+      },
+      "border": {
+        "unchecked": { "$value": "{color.border.disabled.default}", "$type": "color" },
+        "checked": { "$value": "{color.border.disabled.default}", "$type": "color" }
+      }
+    }
+  }
+}

@@ -1,0 +1,236 @@
+/* ---------- Host token bundle (md default) ---------- */
+
+:host {
+  --_box-size: var(--checkbox-container-size-md);
+  --_touch-target: var(--checkbox-container-touch-target-md);
+  --_box-radius: var(--checkbox-container-border-radius-md);
+  --_box-border-width: var(--checkbox-container-border-width);
+  --_focus-ring-width: var(--checkbox-container-focus-ring-width);
+  --_focus-ring-offset: var(--checkbox-container-focus-ring-offset);
+  --_gap: var(--checkbox-container-gap-md);
+  --_transition-duration: var(--checkbox-container-transition-duration);
+  --_transition-easing: var(--checkbox-container-transition-timing-function);
+
+  --_icon-size: var(--checkbox-icon-size-md);
+  --_icon-color: var(--checkbox-icon-color-default);
+
+  --_label-font-size: var(--checkbox-label-font-size-md);
+  --_label-line-height: var(--checkbox-label-line-height-md);
+  --_label-color: var(--checkbox-label-color-default);
+
+  --_supporting-font-size: var(--checkbox-supporting-font-size-md);
+  --_supporting-line-height: var(--checkbox-supporting-line-height-md);
+  --_supporting-color: var(--checkbox-supporting-color-default);
+
+  --_bg: var(--checkbox-default-background-unchecked);
+  --_border-color: var(--checkbox-default-border-unchecked);
+  --_focus-ring-color: var(--checkbox-default-focus-ring);
+
+  display: inline-flex;
+  font-family: var(--checkbox-label-font-family);
+  color: var(--_label-color);
+  vertical-align: top;
+}
+
+:host([size='sm']) {
+  --_box-size: var(--checkbox-container-size-sm);
+  --_touch-target: var(--checkbox-container-touch-target-sm);
+  --_box-radius: var(--checkbox-container-border-radius-sm);
+  --_gap: var(--checkbox-container-gap-sm);
+  --_icon-size: var(--checkbox-icon-size-sm);
+  --_label-font-size: var(--checkbox-label-font-size-sm);
+  --_label-line-height: var(--checkbox-label-line-height-sm);
+  --_supporting-font-size: var(--checkbox-supporting-font-size-sm);
+  --_supporting-line-height: var(--checkbox-supporting-line-height-sm);
+}
+
+/* ---------- Mode + variant token overrides ---------- */
+
+:host(.is-checked),
+:host(.is-indeterminate) {
+  --_bg: var(--checkbox-default-background-checked);
+  --_border-color: var(--checkbox-default-border-checked);
+}
+
+:host(.is-invalid) {
+  --_bg: var(--checkbox-destructive-background-unchecked);
+  --_border-color: var(--checkbox-destructive-border-unchecked);
+  --_label-color: var(--checkbox-destructive-label);
+  --_supporting-color: var(--checkbox-destructive-supporting);
+}
+
+:host(.is-invalid.is-checked),
+:host(.is-invalid.is-indeterminate) {
+  --_bg: var(--checkbox-destructive-background-checked);
+  --_border-color: var(--checkbox-destructive-border-checked);
+}
+
+:host(.is-disabled) {
+  --_bg: var(--checkbox-disabled-background-unchecked);
+  --_border-color: var(--checkbox-disabled-border-unchecked);
+  --_label-color: var(--checkbox-label-color-disabled);
+  --_supporting-color: var(--checkbox-supporting-color-disabled);
+  --_icon-color: var(--checkbox-icon-color-disabled);
+}
+
+:host(.is-disabled.is-checked),
+:host(.is-disabled.is-indeterminate) {
+  --_bg: var(--checkbox-disabled-background-checked);
+  --_border-color: var(--checkbox-disabled-border-checked);
+}
+
+/* ---------- Root layout ---------- */
+
+.root {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--_gap);
+  cursor: pointer;
+  user-select: none;
+  /* Min-height keeps the touch target intact even when text wraps. */
+  min-block-size: var(--_box-size);
+}
+
+:host(.is-disabled) .root {
+  cursor: not-allowed;
+}
+
+:host(.is-readonly) .root {
+  cursor: default;
+}
+
+/* ---------- Control (box + native input) ---------- */
+
+.control {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--_box-size);
+  block-size: var(--_box-size);
+}
+
+/* Touch-target expansion: per Figma "Touch Devices" guidance, the hit area
+   extends 6–8px around the visible box on coarse pointers. Implemented via a
+   pseudo-element so the visible box dimensions remain pixel-perfect. */
+@media (pointer: coarse) {
+  .control::before {
+    content: '';
+    position: absolute;
+    inset: calc((var(--_box-size) - var(--_touch-target)) / 2);
+  }
+}
+
+.box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 100%;
+  block-size: 100%;
+  background-color: var(--_bg);
+  border: var(--_box-border-width) solid var(--_border-color);
+  border-radius: var(--_box-radius);
+  color: var(--_icon-color);
+  transition:
+    background-color var(--_transition-duration) var(--_transition-easing),
+    border-color var(--_transition-duration) var(--_transition-easing),
+    box-shadow var(--_transition-duration) var(--_transition-easing);
+}
+
+/* Focus ring — drawn outside the box without shifting layout. Matches Figma's
+   "Focus Ring/Small" effect: 3px blue-sky spread + 1px white inner halo. */
+:host(.is-focused) .box {
+  box-shadow:
+    0 0 0 var(--_focus-ring-offset) var(--checkbox-default-background-unchecked),
+    0 0 0 calc(var(--_focus-ring-offset) + var(--_focus-ring-width)) var(--_focus-ring-color);
+}
+
+/* ---------- Glyph (check / dash) ---------- */
+
+.glyph {
+  display: block;
+  inline-size: var(--_icon-size);
+  block-size: var(--_icon-size);
+  color: var(--_icon-color);
+  pointer-events: none;
+}
+
+/* Hide checkmark when unchecked + not indeterminate. */
+:host(:not(.is-checked):not(.is-indeterminate)) .glyph-check {
+  display: none;
+}
+
+/* ---------- Native input — visually hidden but interactive ---------- */
+
+.native {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: inherit;
+  opacity: 0;
+  appearance: none;
+  -webkit-appearance: none;
+  /* Native input handles keyboard + AT semantics; visual focus ring is on .box. */
+}
+
+.native:focus,
+.native:focus-visible {
+  outline: none;
+}
+
+/* ---------- Text block (label + supporting) ---------- */
+
+.text {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--checkbox-label-gap-supporting);
+  min-inline-size: 0;
+  /* Vertical alignment trick: align the first line of label with the center
+     of the checkbox box, mirroring Figma. */
+  padding-block-start: calc((var(--_box-size) - var(--_label-line-height)) / 2);
+}
+
+:host(:not(.has-label):not(.has-supporting)) .text {
+  display: none;
+}
+
+.label {
+  font-family: var(--checkbox-label-font-family);
+  font-weight: var(--checkbox-label-font-weight);
+  font-size: var(--_label-font-size);
+  line-height: var(--_label-line-height);
+  color: var(--_label-color);
+  /* Allow long labels to wrap naturally. */
+  overflow-wrap: anywhere;
+}
+
+:host(:not(.has-label)) .label {
+  display: none;
+}
+
+.supporting {
+  font-family: var(--checkbox-supporting-font-family);
+  font-weight: var(--checkbox-supporting-font-weight);
+  font-size: var(--_supporting-font-size);
+  line-height: var(--_supporting-line-height);
+  color: var(--_supporting-color);
+  overflow-wrap: anywhere;
+}
+
+:host(:not(.has-supporting)) .supporting {
+  display: none;
+}
+
+/* ---------- prefers-reduced-motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .box {
+    transition: none;
+  }
+}
