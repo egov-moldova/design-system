@@ -1,0 +1,66 @@
+{
+  "segmented-control": {
+    "container": {
+      "background": { "$value": "{color.background.base.tertiary}", "$type": "color" },
+      "background-disabled": { "$value": "{color.background.disabled.default}", "$type": "color" },
+      "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" },
+      "padding": { "$value": "{spacing.6}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.6}", "$type": "dimension" },
+      "transitionDuration": { "$value": "150ms", "$type": "duration" },
+      "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" }
+    },
+    "segment": {
+      "height": {
+        "md": { "$value": "{spacing.40}", "$type": "dimension" },
+        "sm": { "$value": "{spacing.32}", "$type": "dimension" }
+      },
+      "minWidth": { "$value": "68px", "$type": "dimension" },
+      "paddingInline": {
+        "md": { "$value": "{spacing.16}", "$type": "dimension" },
+        "sm": { "$value": "{spacing.12}", "$type": "dimension" }
+      },
+      "gap": { "$value": "{spacing.6}", "$type": "dimension" },
+      "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" }
+    },
+    "label": {
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSize": {
+        "md": { "$value": "{fontSize.14}", "$type": "dimension" },
+        "sm": { "$value": "{fontSize.14}", "$type": "dimension" }
+      },
+      "lineHeight": {
+        "md": { "$value": "{lineHeight.20}", "$type": "dimension" },
+        "sm": { "$value": "{lineHeight.20}", "$type": "dimension" }
+      },
+      "fontWeightSelected": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "fontWeightUnselected": { "$value": "{fontWeight.regular}", "$type": "fontWeight" }
+    },
+    "selected": {
+      "background": { "$value": "{color.background.base-inverse.default}", "$type": "color" },
+      "backgroundHover": { "$value": "{color.background.base-inverse.default-hover}", "$type": "color" },
+      "color": { "$value": "{color.text.base-inverse.default}", "$type": "color" },
+      "shadow": { "$value": "0px 0px 0.25px rgba(0, 0, 0, 0.30), 0px 1px 1.5px rgba(0, 0, 0, 0.16)", "$type": "string" }
+    },
+    "unselected": {
+      "background": { "$value": "{color.background.base.tertiary}", "$type": "color" },
+      "backgroundHover": { "$value": "{color.background.base.tertiary-hover}", "$type": "color" },
+      "color": { "$value": "{color.text.base.secondary}", "$type": "color" },
+      "colorHover": { "$value": "{color.text.base.default}", "$type": "color" }
+    },
+    "disabled": {
+      "background": { "$value": "{color.background.disabled.default}", "$type": "color" },
+      "color": { "$value": "{color.text.disabled.default}", "$type": "color" }
+    },
+    "separator": {
+      "color": { "$value": "{color.border.base.default}", "$type": "color" },
+      "width": { "$value": "{borderWidth.1}", "$type": "dimension" },
+      "height": { "$value": "{spacing.16}", "$type": "dimension" }
+    },
+    "focusRing": {
+      "innerWidth": { "$value": "{focusRing.width.inner}", "$type": "dimension" },
+      "outerWidth": { "$value": "{focusRing.width.outer}", "$type": "dimension" },
+      "innerColor": { "$value": "{focusRing.color.inner}", "$type": "color" },
+      "outerColor": { "$value": "{focusRing.color.outer}", "$type": "color" }
+    }
+  }
+}
