@@ -431,3 +431,96 @@ Error,Success}`) map to `blue-sky/200`, `apricot/200`, `red/200`,
 `green/200` palette shades — all already present in
 `tokens/core/palette.tokens.json`.
 
+2026-05-23 — `cor-select-input` audited against Figma source-of-truth
+(docs page `411:23995`, master component-set `159:1112`). Variant
+matrix already correct: **2 styles (Default / Destructive) × 5 states
+(Default / Hover / Focus / Filled / Disabled) × 2 sizes (md / lg) = 20
+variants** — matches the Figma master exactly (no Warning / Success
+styles, no Loading / ReadOnly states unlike `cor-input`). Two drift
+items found and fixed:
+
+1. **Listbox selected option background** flipped from
+   `{color.background.brand.secondary}` (brand-tint blue `#e8f0fb`) to
+   `{color.background.base.secondary}` (light gray `#f5f5f5`). The
+   Figma `selection-menu` (id `454:5903`) renders the selected row on
+   light-gray, NOT brand-tint — the brand-blue signal lives only in
+   the option text (`color.text.brand.default`) and the trailing
+   checkmark (`color.icon.brand.default`). Brand-blue on `#f5f5f5`
+   measures **5.79:1** contrast (WCAG AA pass). The `option.background.active`
+   (selected + highlighted) flipped to the same `#f5f5f5` so the
+   selection state stays stable when the user re-hovers it.
+2. **Field label `fontWeight`** corrected to `medium` (500) — was
+   inheriting `regular` (400). Aligns with the v2 `cor-input` precedent
+   (commit `6624b85`) and the DESIGN.md "Medium-Weight Label Rule" for
+   input-family consistency. Figma's variable defs nominally say
+   `fw-regular` for "Desktop/Body/Small", but the AGE design system
+   overrides the field-label specifically to medium per the rule (one
+   way to do each thing across the input family).
+
+**Subcomponent investigation:**
+
+- The Figma docs page shows three menu styles: `Menu` (id `456:6181`,
+  macOS-native), `Submenu` (id `456:24768`, iOS-native nested), and
+  `selection-menu` (id `454:5903`, custom AGE menu). The first two are
+  documented as native-browser fallbacks ("The Select Input may reveal
+  native dropdown menus styled by the browser and platform by
+  default"); the canonical CUSTOM menu is `selection-menu` — exactly
+  the listbox the current implementation renders. The user-supplied
+  task spec mentioned "selection-menu with multi-select checkmarks per
+  Figma", but the `selection-menu` Figma frame shows ONE checkmark on
+  the single selected option, on the right side, brand-blue — the
+  current implementation already matches this single-select model.
+- Submenu support: Figma's `Submenu` shows leading checkmark + trailing
+  chevron for nested-menu items. Not in scope for this audit (would be
+  a feature addition, not a drift fix). Logged as TODO below.
+- Multi-select (`multiple` prop): Figma docs page does NOT depict a
+  multi-select variant with checkbox-prefixed items. Logged as TODO
+  below.
+
+**Tokens** (`tokens/core/components/select-input.tokens.json`):
+2-line diff — `label.fontWeight` flipped to `{fontWeight.medium}`,
+`option.background.{active,selected}` flipped to
+`{color.background.base.secondary}`.
+
+**TSX / CSS**: untouched. The CSS already references the corrected
+tokens via local `--select-input-*` custom properties.
+
+**Gates**: `yarn tokens.build` (rebuilt clean), `yarn lint` (CSS + JS
+pass), `yarn typecheck` (pass), `yarn test.dev` (478/478 pass —
+including 60 `cor-select-input` specs), `yarn sp.build` (clean export),
+`yarn audit:contrast` (21 pass / 0 fail across light + dark, including
+the new selected-option pair `text.brand.default` on
+`background.base.secondary` = 5.79:1, well above the 4.5 AA floor).
+Zero console errors across every story.
+
+Screenshots: `docs/screenshots/cor-select-input/audit-v2/` with
+before/after pairs for the open-listbox (selected-option background
+drift) and the label weight (regular → medium across all states).
+Figma canonical reference at `/tmp/figma-select-canonical.png` (full
+docs page), master at `/tmp/figma-select-master.png` (20-variant grid),
+selection-menu detail at `/tmp/figma-select-selection-menu-hires.png`.
+
+**TODOs** (logged for future work, not blocking):
+
+- `cor-select-input` multi-select mode (`multiple: boolean` prop) with
+  checkbox-prefixed options — not in current Figma scope; add only
+  when a real consumer surfaces the need (rule-of-two,
+  PRINCIPLES.md §B).
+- Nested submenu support (Figma `Submenu` subcomponent) — not in
+  current Figma scope for the select-input docs page; introduce as a
+  separate `cor-menu` / `cor-submenu` molecule if a consumer adopts a
+  multi-level menu pattern.
+
+### Figma node resolution (cor-select-input)
+
+The component-set master (`159:1112`) and docs canvas (`411:23995`)
+were reachable via `mcp__figma__get_metadata` + `get_screenshot` at
+`maxDimension=2048`. The 20-variant master grid rendered cleanly
+(2 cols × 10 rows: Default + Destructive × Default/Hover/Focus/Filled/
+Disabled × Large/Medium). The `selection-menu` instance (`454:5903`)
+and the macOS `Menu` (`456:6181`) / iOS `Submenu` (`456:24768`)
+subcomponents on the docs page were reachable via direct nodeId
+screenshots. No `get_design_context` was needed — the screenshots +
+metadata + the prior `cor-input` token map (which covers the same
+input-family semantic palette) gave full coverage.
+

@@ -41,7 +41,7 @@
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
       "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
       "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
-      "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
+      "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
       "gap": { "$value": "{spacing.4}", "$type": "dimension" },
       "color": {
         "default": { "$value": "{color.text.base.secondary}", "$type": "color" },
@@ -155,8 +155,8 @@
       "background": {
         "default": { "$value": "{color.background.base.default}", "$type": "color" },
         "hover": { "$value": "{color.background.base.secondary}", "$type": "color" },
-        "active": { "$value": "{color.background.brand.secondary}", "$type": "color" },
-        "selected": { "$value": "{color.background.brand.secondary}", "$type": "color" }
+        "active": { "$value": "{color.background.base.secondary}", "$type": "color" },
+        "selected": { "$value": "{color.background.base.secondary}", "$type": "color" }
       },
       "text": {
         "default": { "$value": "{color.text.base.default}", "$type": "color" },
