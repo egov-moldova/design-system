@@ -1,0 +1,224 @@
+:host {
+  --_padding-block: var(--accordion-item-padding-block-desktop);
+  --_padding-inline: 0;
+  --_gap: var(--accordion-item-gap);
+  --_bg: var(--accordion-item-container-background-default);
+  --_heading-color: var(--accordion-item-heading-color-default);
+  --_supporting-color: var(--accordion-item-supporting-color-default);
+  --_trigger-color: var(--accordion-item-trigger-color-default);
+  --_panel-color: var(--accordion-item-panel-color-default);
+  --_heading-font-size: var(--accordion-item-heading-font-size-desktop);
+  --_heading-line-height: var(--accordion-item-heading-line-height-desktop);
+
+  display: block;
+  position: relative;
+  border-block-start: var(--accordion-item-border-width) solid var(--accordion-item-border-color-default);
+  background-color: var(--_bg);
+  transition:
+    background-color var(--accordion-item-transition-duration) var(--accordion-item-transition-timing-function),
+    color var(--accordion-item-transition-duration) var(--accordion-item-transition-timing-function);
+}
+
+/* When the item sits inside a hover/trail-sites tinted state, the header pads
+   the inline sides so the tint reaches the row edges without crowding text. */
+:host([breakpoint='mobile']) {
+  --_padding-block: var(--accordion-item-padding-block-mobile);
+  --_heading-font-size: var(--accordion-item-heading-font-size-mobile);
+  --_heading-line-height: var(--accordion-item-heading-line-height-mobile);
+}
+
+:host([open]) {
+  --_heading-color: var(--accordion-item-heading-color-open);
+  --_trigger-color: var(--accordion-item-trigger-color-open);
+}
+
+:host([appearance='trail-sites'][open]) {
+  --_bg: var(--accordion-item-container-background-trail-sites);
+  --_padding-inline: var(--accordion-item-padding-inline-tinted);
+  --_heading-color: var(--accordion-item-trail-sites-heading-color);
+  --_supporting-color: var(--accordion-item-trail-sites-supporting-color);
+  --_trigger-color: var(--accordion-item-trail-sites-trigger-color);
+  --_panel-color: var(--accordion-item-panel-color-trail-sites);
+}
+
+:host([disabled]) {
+  --_heading-color: var(--accordion-item-heading-color-disabled);
+  --_supporting-color: var(--accordion-item-supporting-color-disabled);
+  --_trigger-color: var(--accordion-item-trigger-color-disabled);
+}
+
+/* ---------- Header (the clickable row) ---------- */
+
+.header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--_gap);
+  inline-size: 100%;
+  margin: 0;
+  padding-block: var(--_padding-block);
+  padding-inline: var(--_padding-inline);
+
+  background: transparent;
+  border: 0;
+  text-align: start;
+  color: inherit;
+  font-family: inherit;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+
+  transition: padding var(--accordion-item-transition-duration) var(--accordion-item-transition-timing-function);
+}
+
+:host(:not([disabled]):not([open])) .header:hover {
+  background-color: var(--accordion-item-container-background-hover);
+  padding-inline: var(--accordion-item-padding-inline-tinted);
+}
+
+.header:focus {
+  outline: none;
+}
+
+.header:focus-visible {
+  outline: none;
+  box-shadow:
+    inset 0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
+    inset 0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
+  border-radius: var(--border-radius-4);
+}
+
+:host([disabled]) .header {
+  cursor: not-allowed;
+}
+
+/* ---------- Icon-start (optional) ---------- */
+
+.icon-start {
+  display: none;
+  flex-shrink: 0;
+  align-items: center;
+  color: var(--_trigger-color);
+}
+
+.icon-start.has-content {
+  display: inline-flex;
+}
+
+::slotted([slot='icon-start']) {
+  --icon-color: currentcolor;
+}
+
+/* ---------- Text group ---------- */
+
+.text-group {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  gap: var(--accordion-item-heading-gap);
+}
+
+.heading {
+  display: block;
+  inline-size: 100%;
+  color: var(--_heading-color);
+  font-family: var(--accordion-item-heading-font-family);
+  font-size: var(--_heading-font-size);
+  font-weight: var(--accordion-item-heading-font-weight);
+  line-height: var(--_heading-line-height);
+  letter-spacing: var(--accordion-item-heading-letter-spacing);
+  overflow-wrap: anywhere;
+}
+
+.supporting {
+  display: none;
+  inline-size: 100%;
+  color: var(--_supporting-color);
+  font-family: var(--accordion-item-supporting-font-family);
+  font-size: var(--accordion-item-supporting-font-size);
+  font-weight: var(--accordion-item-supporting-font-weight);
+  line-height: var(--accordion-item-supporting-line-height);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.supporting.has-content {
+  display: block;
+}
+
+/* ---------- Trailing slot (badge / button / label) ---------- */
+
+.trailing {
+  display: none;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.trailing.has-content {
+  display: inline-flex;
+}
+
+/* ---------- Trigger (open/close affordance, +/-) ---------- */
+
+.trigger {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--accordion-item-trigger-size);
+  block-size: var(--accordion-item-trigger-size);
+  border-radius: var(--accordion-item-trigger-border-radius);
+  color: var(--_trigger-color);
+  transition: color var(--accordion-item-transition-duration) var(--accordion-item-transition-timing-function);
+}
+
+.trigger-icon {
+  inline-size: var(--accordion-item-trigger-icon-size);
+  block-size: var(--accordion-item-trigger-icon-size);
+}
+
+.trigger-icon-vertical {
+  transform-origin: 10px 10px;
+  transition: transform var(--accordion-item-transition-duration) var(--accordion-item-transition-timing-function);
+}
+
+:host([open]) .trigger-icon-vertical {
+  transform: scaleY(0);
+}
+
+/* ---------- Panel ---------- */
+
+.panel[hidden] {
+  display: none;
+}
+
+.panel {
+  color: var(--_panel-color);
+  font-family: var(--accordion-item-panel-font-family);
+  font-size: var(--accordion-item-panel-font-size);
+  font-weight: var(--accordion-item-panel-font-weight);
+  line-height: var(--accordion-item-panel-line-height);
+}
+
+.panel-inner {
+  padding-block-end: var(--accordion-item-panel-padding-block-end);
+  padding-inline-start: var(--_padding-inline);
+  padding-inline-end: var(--accordion-item-panel-padding-inline-end);
+}
+
+::slotted(*) {
+  margin-block: 0;
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  :host,
+  .header,
+  .trigger,
+  .trigger-icon-vertical {
+    transition: none;
+  }
+}
