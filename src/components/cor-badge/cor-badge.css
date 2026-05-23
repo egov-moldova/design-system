@@ -1,0 +1,90 @@
+:host {
+  --_size: var(--badge-size-md);
+  --_min-width: var(--badge-min-width-md);
+  --_padding-inline: var(--badge-padding-inline-md);
+  --_font-size: var(--badge-font-size-md);
+  --_line-height: var(--badge-line-height-md);
+  --_background: var(--badge-background-danger);
+  --_color: var(--badge-text-danger);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  block-size: var(--_size);
+  min-inline-size: var(--_min-width);
+  padding-inline: var(--_padding-inline);
+  background: var(--_background);
+  color: var(--_color);
+  font-family: var(--badge-font-family);
+  font-size: var(--_font-size);
+  font-weight: var(--badge-font-weight);
+  line-height: var(--_line-height);
+  text-align: center;
+  white-space: nowrap;
+  border-radius: var(--badge-border-radius);
+  overflow: hidden;
+  user-select: none;
+  pointer-events: none;
+  vertical-align: middle;
+}
+
+/* Sizes */
+:host([size='sm']) {
+  --_size: var(--badge-size-sm);
+  --_min-width: var(--badge-min-width-sm);
+  --_padding-inline: var(--badge-padding-inline-sm);
+  --_font-size: var(--badge-font-size-sm);
+  --_line-height: var(--badge-line-height-sm);
+}
+
+:host([size='md']) {
+  --_size: var(--badge-size-md);
+  --_min-width: var(--badge-min-width-md);
+  --_padding-inline: var(--badge-padding-inline-md);
+  --_font-size: var(--badge-font-size-md);
+  --_line-height: var(--badge-line-height-md);
+}
+
+/* Variants */
+:host([variant='default']) {
+  --_background: var(--badge-background-default);
+  --_color: var(--badge-text-default);
+}
+
+:host([variant='brand']) {
+  --_background: var(--badge-background-brand);
+  --_color: var(--badge-text-brand);
+}
+
+:host([variant='positive']) {
+  --_background: var(--badge-background-positive);
+  --_color: var(--badge-text-positive);
+}
+
+:host([variant='warning']) {
+  --_background: var(--badge-background-warning);
+  --_color: var(--badge-text-warning);
+}
+
+:host([variant='danger']) {
+  --_background: var(--badge-background-danger);
+  --_color: var(--badge-text-danger);
+}
+
+/* Dot variant: no inner content, padding collapses, width matches height. */
+:host([type='dot']) {
+  padding-inline: 0;
+  min-inline-size: var(--_size);
+  inline-size: var(--_size);
+}
+
+.badge-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  color: inherit;
+}
