@@ -1,0 +1,167 @@
+{
+  "accordion": {
+    "item": {
+      "borderColor": {
+        "default": { "$value": "{color.border.base.default}", "$type": "color" }
+      },
+      "borderWidth": {
+        "$value": "{borderWidth.1}",
+        "$type": "dimension"
+      },
+      "transitionDuration": {
+        "$value": "150ms",
+        "$type": "duration"
+      },
+      "transitionTimingFunction": {
+        "$value": "ease-out",
+        "$type": "cubicBezier"
+      },
+      "paddingBlock": {
+        "desktop": { "$value": "{spacing.32}", "$type": "dimension" },
+        "mobile": { "$value": "{spacing.24}", "$type": "dimension" }
+      },
+      "paddingInline": {
+        "tinted": { "$value": "{spacing.20}", "$type": "dimension" }
+      },
+      "gap": {
+        "$value": "{spacing.12}",
+        "$type": "dimension"
+      },
+      "container": {
+        "background": {
+          "default": { "$value": "{color.background.base.default}", "$type": "color" },
+          "hover": { "$value": "{color.background.base.secondary}", "$type": "color" },
+          "trailSites": { "$value": "{color.background.brand.secondary}", "$type": "color" }
+        }
+      },
+      "heading": {
+        "fontFamily": {
+          "$value": "{fontFamily.primary}",
+          "$type": "fontFamily"
+        },
+        "fontWeight": {
+          "$value": "{fontWeight.semibold}",
+          "$type": "fontWeight"
+        },
+        "fontSize": {
+          "desktop": { "$value": "{fontSize.24}", "$type": "dimension" },
+          "mobile": { "$value": "{fontSize.22}", "$type": "dimension" }
+        },
+        "lineHeight": {
+          "desktop": { "$value": "{lineHeight.32}", "$type": "dimension" },
+          "mobile": { "$value": "{lineHeight.30}", "$type": "dimension" }
+        },
+        "letterSpacing": {
+          "$value": "-0.01em",
+          "$type": "dimension"
+        },
+        "color": {
+          "default": { "$value": "{color.text.base.default}", "$type": "color" },
+          "open": { "$value": "{color.text.brand.default}", "$type": "color" },
+          "disabled": { "$value": "{color.text.disabled.default}", "$type": "color" }
+        },
+        "gap": {
+          "$value": "{spacing.8}",
+          "$type": "dimension"
+        }
+      },
+      "supporting": {
+        "fontFamily": {
+          "$value": "{fontFamily.primary}",
+          "$type": "fontFamily"
+        },
+        "fontSize": {
+          "$value": "{fontSize.16}",
+          "$type": "dimension"
+        },
+        "lineHeight": {
+          "$value": "{lineHeight.24}",
+          "$type": "dimension"
+        },
+        "fontWeight": {
+          "$value": "{fontWeight.regular}",
+          "$type": "fontWeight"
+        },
+        "color": {
+          "default": { "$value": "{color.text.base.tertiary}", "$type": "color" },
+          "disabled": { "$value": "{color.text.disabled.default}", "$type": "color" }
+        }
+      },
+      "trigger": {
+        "size": {
+          "$value": "{spacing.48}",
+          "$type": "dimension"
+        },
+        "iconSize": {
+          "$value": "{spacing.20}",
+          "$type": "dimension"
+        },
+        "borderRadius": {
+          "$value": "{borderRadius.full}",
+          "$type": "dimension"
+        },
+        "color": {
+          "default": { "$value": "{color.icon.base.default}", "$type": "color" },
+          "open": { "$value": "{color.icon.brand.default}", "$type": "color" },
+          "disabled": { "$value": "{color.icon.disabled.default}", "$type": "color" }
+        }
+      },
+      "panel": {
+        "paddingBlockEnd": {
+          "$value": "{spacing.32}",
+          "$type": "dimension"
+        },
+        "paddingInlineEnd": {
+          "$value": "{spacing.48}",
+          "$type": "dimension"
+        },
+        "fontFamily": {
+          "$value": "{fontFamily.primary}",
+          "$type": "fontFamily"
+        },
+        "fontSize": {
+          "$value": "{fontSize.16}",
+          "$type": "dimension"
+        },
+        "lineHeight": {
+          "$value": "{lineHeight.24}",
+          "$type": "dimension"
+        },
+        "fontWeight": {
+          "$value": "{fontWeight.regular}",
+          "$type": "fontWeight"
+        },
+        "color": {
+          "default": {
+            "$value": "{color.text.base.secondary}",
+            "$type": "color"
+          },
+          "trailSites": {
+            "$value": "{color.text.base.default-on-color}",
+            "$type": "color"
+          }
+        }
+      },
+      "trailSites": {
+        "heading": {
+          "color": {
+            "$value": "{color.text.brand.on-secondary}",
+            "$type": "color"
+          }
+        },
+        "supporting": {
+          "color": {
+            "$value": "{color.text.base.secondary-on-color}",
+            "$type": "color"
+          }
+        },
+        "trigger": {
+          "color": {
+            "$value": "{color.icon.brand.on-secondary}",
+            "$type": "color"
+          }
+        }
+      }
+    }
+  }
+}
