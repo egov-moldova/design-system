@@ -1,0 +1,242 @@
+:host {
+  /* Color slots — overridden per [variant][notification-style] below. */
+  --_bg: var(--notification-info-subtle-background);
+  --_text: var(--notification-info-subtle-text);
+  --_icon: var(--notification-info-subtle-icon);
+  --_close-icon: var(--notification-info-subtle-close-icon);
+  --_close-bg-hover: var(--notification-close-background-hover);
+
+  display: flex;
+  align-items: flex-start;
+  gap: var(--notification-container-gap);
+  min-block-size: var(--notification-container-min-height);
+  inline-size: 100%;
+  box-sizing: border-box;
+  padding-block: var(--notification-container-padding-block);
+  padding-inline: var(--notification-container-padding-inline);
+  border-radius: var(--notification-container-border-radius);
+
+  background-color: var(--_bg);
+  color: var(--_text);
+
+  font-family: var(--notification-body-font-family);
+  font-size: var(--notification-body-font-size);
+  line-height: var(--notification-body-line-height);
+  font-weight: var(--notification-body-font-weight);
+}
+
+/* ---------- variant × style matrix ---------- */
+
+:host([variant='info'][notification-style='subtle']) {
+  --_bg: var(--notification-info-subtle-background);
+  --_text: var(--notification-info-subtle-text);
+  --_icon: var(--notification-info-subtle-icon);
+  --_close-icon: var(--notification-info-subtle-close-icon);
+  --_close-bg-hover: var(--notification-close-background-hover);
+}
+:host([variant='info'][notification-style='strong']) {
+  --_bg: var(--notification-info-strong-background);
+  --_text: var(--notification-info-strong-text);
+  --_icon: var(--notification-info-strong-icon);
+  --_close-icon: var(--notification-info-strong-close-icon);
+  --_close-bg-hover: var(--notification-close-background-hover-on-color);
+}
+
+:host([variant='positive'][notification-style='subtle']) {
+  --_bg: var(--notification-positive-subtle-background);
+  --_text: var(--notification-positive-subtle-text);
+  --_icon: var(--notification-positive-subtle-icon);
+  --_close-icon: var(--notification-positive-subtle-close-icon);
+  --_close-bg-hover: var(--notification-close-background-hover);
+}
+:host([variant='positive'][notification-style='strong']) {
+  --_bg: var(--notification-positive-strong-background);
+  --_text: var(--notification-positive-strong-text);
+  --_icon: var(--notification-positive-strong-icon);
+  --_close-icon: var(--notification-positive-strong-close-icon);
+  --_close-bg-hover: var(--notification-close-background-hover-on-color);
+}
+
+:host([variant='warning'][notification-style='subtle']) {
+  --_bg: var(--notification-warning-subtle-background);
+  --_text: var(--notification-warning-subtle-text);
+  --_icon: var(--notification-warning-subtle-icon);
+  --_close-icon: var(--notification-warning-subtle-close-icon);
+  --_close-bg-hover: var(--notification-close-background-hover);
+}
+:host([variant='warning'][notification-style='strong']) {
+  --_bg: var(--notification-warning-strong-background);
+  --_text: var(--notification-warning-strong-text);
+  --_icon: var(--notification-warning-strong-icon);
+  --_close-icon: var(--notification-warning-strong-close-icon);
+  --_close-bg-hover: var(--notification-close-background-hover);
+}
+
+:host([variant='danger'][notification-style='subtle']) {
+  --_bg: var(--notification-danger-subtle-background);
+  --_text: var(--notification-danger-subtle-text);
+  --_icon: var(--notification-danger-subtle-icon);
+  --_close-icon: var(--notification-danger-subtle-close-icon);
+  --_close-bg-hover: var(--notification-close-background-hover);
+}
+:host([variant='danger'][notification-style='strong']) {
+  --_bg: var(--notification-danger-strong-background);
+  --_text: var(--notification-danger-strong-text);
+  --_icon: var(--notification-danger-strong-icon);
+  --_close-icon: var(--notification-danger-strong-close-icon);
+  --_close-bg-hover: var(--notification-close-background-hover-on-color);
+}
+
+:host([variant='neutral'][notification-style='subtle']) {
+  --_bg: var(--notification-neutral-subtle-background);
+  --_text: var(--notification-neutral-subtle-text);
+  --_icon: var(--notification-neutral-subtle-icon);
+  --_close-icon: var(--notification-neutral-subtle-close-icon);
+  --_close-bg-hover: var(--notification-close-background-hover);
+}
+:host([variant='neutral'][notification-style='strong']) {
+  --_bg: var(--notification-neutral-strong-background);
+  --_text: var(--notification-neutral-strong-text);
+  --_icon: var(--notification-neutral-strong-icon);
+  --_close-icon: var(--notification-neutral-strong-close-icon);
+  --_close-bg-hover: var(--notification-close-background-hover-on-color);
+}
+
+/* ---------- leading icon ---------- */
+
+.icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--notification-icon-size);
+  block-size: var(--notification-icon-size);
+  color: var(--_icon);
+}
+
+::slotted([slot='icon-start']) {
+  display: inline-flex;
+  inline-size: var(--notification-icon-size);
+  block-size: var(--notification-icon-size);
+  color: var(--_icon);
+}
+
+::slotted(cor-icon[slot='icon-start']) {
+  --icon-color: currentcolor;
+}
+
+/* The default-content cor-icon inherits the slot color via currentColor. */
+.icon cor-icon {
+  --icon-color: currentcolor;
+}
+
+/* ---------- content stack ---------- */
+
+.content {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2, 2px);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--notification-title-font-family);
+  font-size: var(--notification-title-font-size);
+  line-height: var(--notification-title-line-height);
+  font-weight: var(--notification-title-font-weight);
+  color: inherit;
+}
+
+.body {
+  margin: 0;
+  font-family: var(--notification-body-font-family);
+  font-size: var(--notification-body-font-size);
+  line-height: var(--notification-body-line-height);
+  font-weight: var(--notification-body-font-weight);
+  color: inherit;
+  /* Body wraps naturally; overflow-wrap prevents overflow from very long tokens. */
+  overflow-wrap: anywhere;
+}
+
+/* ---------- actions ---------- */
+
+.actions {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-8);
+}
+
+:host(:not(.has-actions)) .actions {
+  display: none;
+}
+
+::slotted([slot='actions']) {
+  color: inherit;
+}
+
+/* ---------- close button ---------- */
+
+.close {
+  flex-shrink: 0;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--notification-close-size);
+  block-size: var(--notification-close-size);
+  margin-block-start: calc((var(--notification-body-line-height) - var(--notification-close-size)) / 2);
+  padding: 0;
+
+  border: 0;
+  border-radius: var(--notification-close-border-radius);
+  background-color: transparent;
+  color: var(--_close-icon);
+
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+
+  transition:
+    background-color var(--notification-container-transition-duration)
+      var(--notification-container-transition-timing-function),
+    color var(--notification-container-transition-duration) var(--notification-container-transition-timing-function);
+}
+
+.close:hover {
+  background-color: var(--_close-bg-hover);
+}
+
+.close:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
+    0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
+  position: relative;
+  z-index: 1;
+}
+
+.close-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--notification-close-icon-size);
+  block-size: var(--notification-close-icon-size);
+}
+
+.close-icon svg {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  pointer-events: none;
+}
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .close {
+    transition: none;
+  }
+}

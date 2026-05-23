@@ -30,3 +30,7 @@ export type {
   ServiceButtonAppearance,
   ServiceButtonType,
 } from './components/cor-service-button/cor-service-button.types';
+
+export { CorNotification } from './components/cor-notification/cor-notification';
+export { NOTIFICATION_VARIANTS, NOTIFICATION_STYLES } from './components/cor-notification/cor-notification.types';
+export type { NotificationVariant, NotificationStyle } from './components/cor-notification/cor-notification.types';
