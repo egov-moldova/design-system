@@ -1,0 +1,163 @@
+:host {
+  /* ---- Size axis (default = md) ---- */
+  --_size: var(--avatar-container-size-md);
+  --_font-size: var(--avatar-initials-font-size-md);
+  --_line-height: var(--avatar-initials-line-height-md);
+  --_icon-size: var(--avatar-icon-size-md);
+  --_stack-overlap: var(--avatar-stack-overlap-md);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+
+  /* Box itself */
+  position: relative;
+  box-sizing: border-box;
+  inline-size: var(--_size);
+  block-size: var(--_size);
+
+  /* Background + radius (so the focus outline draws against a solid edge) */
+  background: var(--avatar-container-background);
+  border-radius: var(--avatar-container-border-radius);
+
+  /* Tokens shared by all visual modes */
+  color: var(--avatar-icon-color);
+  font-family: var(--avatar-initials-font-family);
+  font-weight: var(--avatar-initials-font-weight);
+  font-size: var(--_font-size);
+  line-height: var(--_line-height);
+  text-align: center;
+
+  -webkit-user-select: none;
+  user-select: none;
+
+  /* Smooth ring fade on focus */
+  transition-property: box-shadow;
+  transition-duration: var(--avatar-container-transition-duration);
+  transition-timing-function: var(--avatar-container-transition-timing-function);
+}
+
+/* ---- Size axis ---- */
+:host([size='xs']) {
+  --_size: var(--avatar-container-size-xs);
+  --_font-size: var(--avatar-initials-font-size-xs);
+  --_line-height: var(--avatar-initials-line-height-xs);
+  --_icon-size: var(--avatar-icon-size-xs);
+  --_stack-overlap: var(--avatar-stack-overlap-xs);
+}
+
+:host([size='sm']) {
+  --_size: var(--avatar-container-size-sm);
+  --_font-size: var(--avatar-initials-font-size-sm);
+  --_line-height: var(--avatar-initials-line-height-sm);
+  --_icon-size: var(--avatar-icon-size-sm);
+  --_stack-overlap: var(--avatar-stack-overlap-sm);
+}
+
+:host([size='md']) {
+  --_size: var(--avatar-container-size-md);
+  --_font-size: var(--avatar-initials-font-size-md);
+  --_line-height: var(--avatar-initials-line-height-md);
+  --_icon-size: var(--avatar-icon-size-md);
+  --_stack-overlap: var(--avatar-stack-overlap-md);
+}
+
+:host([size='lg']) {
+  --_size: var(--avatar-container-size-lg);
+  --_font-size: var(--avatar-initials-font-size-lg);
+  --_line-height: var(--avatar-initials-line-height-lg);
+  --_icon-size: var(--avatar-icon-size-lg);
+  --_stack-overlap: var(--avatar-stack-overlap-lg);
+}
+
+:host([size='xl']) {
+  --_size: var(--avatar-container-size-xl);
+  --_font-size: var(--avatar-initials-font-size-xl);
+  --_line-height: var(--avatar-initials-line-height-xl);
+  --_icon-size: var(--avatar-icon-size-xl);
+  --_stack-overlap: var(--avatar-stack-overlap-xl);
+}
+
+/* For `type='photo'` we hide the background tint — the image fills the circle. */
+:host([type='photo']) {
+  background: transparent;
+}
+
+.inner {
+  display: inline-flex;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+  inline-size: 100%;
+  block-size: 100%;
+  overflow: hidden; /* clip the photo to the circle */
+  border-radius: inherit;
+}
+
+/* ---- Photo ---- */
+.photo {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  border-radius: inherit;
+
+  /* Prevent the user from dragging a personally-identifying portrait */
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+/* ---- Initials ---- */
+.initials {
+  display: inline-block;
+  color: var(--avatar-initials-color);
+  font-size: var(--_font-size);
+  line-height: var(--_line-height);
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+/* ---- Icon ---- */
+.icon {
+  color: var(--avatar-icon-color);
+  pointer-events: none;
+}
+
+/*
+ * Badge slot — pinned to the top-right corner. Sized to match the Figma
+ * spec (~40% of the container) so consumers don't have to position
+ * absolutely. `:empty` keeps the wrapper out of the layout tree so an
+ * unused slot doesn't add a touch target.
+ */
+.badge-slot {
+  position: absolute;
+  inset-block-start: calc(var(--_size) * -0.06);
+  inset-inline-end: calc(var(--_size) * -0.06);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  z-index: 1;
+}
+
+.badge-slot:empty {
+  display: none;
+}
+
+/* ---- Focus ring (host-level, mirrors Figma's double-ring effect) ---- */
+:host(:focus-visible),
+:host(.is-focus-demo) {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--avatar-focus-ring-inner-width) var(--avatar-focus-ring-inner-color),
+    0 0 0 calc(var(--avatar-focus-ring-inner-width) + var(--avatar-focus-ring-outer-width))
+      var(--avatar-focus-ring-outer-color);
+}
+
+/* Honor user motion preference. */
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    transition: none;
+  }
+}
