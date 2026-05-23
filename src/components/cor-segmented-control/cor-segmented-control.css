@@ -1,0 +1,220 @@
+/*
+ * cor-segmented-control — Pattern B (atom-interactive, form-associated).
+ *
+ * The host is a `role="radiogroup"`. Inside the shadow DOM, a `.track`
+ * <div> carries the rounded, padded container; each `.segment` is a
+ * `<button role="radio">`. The selected segment switches background to
+ * the dark inverse fill from Figma 659:8188 and lifts via a soft ambient
+ * shadow; siblings stay flat with the container background.
+ *
+ * State changes drive a small set of local custom properties; the
+ * structure is identical across sizes and segment counts.
+ */
+
+:host {
+  --_segment-height: var(--segmented-control-segment-height-md);
+  --_segment-padding: var(--segmented-control-segment-padding-inline-md);
+  --_label-font-size: var(--segmented-control-label-font-size-md);
+  --_label-line-height: var(--segmented-control-label-line-height-md);
+
+  --_container-bg: var(--segmented-control-container-background);
+  --_container-radius: var(--segmented-control-container-border-radius);
+  --_container-padding: var(--segmented-control-container-padding);
+  --_container-gap: var(--segmented-control-container-gap);
+
+  --_segment-radius: var(--segmented-control-segment-border-radius);
+  --_segment-min-width: var(--segmented-control-segment-min-width);
+  --_segment-gap: var(--segmented-control-segment-gap);
+
+  --_selected-bg: var(--segmented-control-selected-background);
+  --_selected-bg-hover: var(--segmented-control-selected-background-hover);
+  --_selected-color: var(--segmented-control-selected-color);
+  --_selected-shadow: var(--segmented-control-selected-shadow);
+
+  --_unselected-bg: var(--segmented-control-unselected-background);
+  --_unselected-bg-hover: var(--segmented-control-unselected-background-hover);
+  --_unselected-color: var(--segmented-control-unselected-color);
+  --_unselected-color-hover: var(--segmented-control-unselected-color-hover);
+
+  --_disabled-bg: var(--segmented-control-disabled-background);
+  --_disabled-color: var(--segmented-control-disabled-color);
+
+  --_separator-color: var(--segmented-control-separator-color);
+  --_separator-width: var(--segmented-control-separator-width);
+  --_separator-height: var(--segmented-control-separator-height);
+
+  --_transition-duration: var(--segmented-control-container-transition-duration);
+  --_transition-easing: var(--segmented-control-container-transition-timing-function);
+
+  display: inline-flex;
+  max-inline-size: 100%;
+  font-family: var(--segmented-control-label-font-family);
+}
+
+:host([size='sm']) {
+  --_segment-height: var(--segmented-control-segment-height-sm);
+  --_segment-padding: var(--segmented-control-segment-padding-inline-sm);
+  --_label-font-size: var(--segmented-control-label-font-size-sm);
+  --_label-line-height: var(--segmented-control-label-line-height-sm);
+}
+
+:host([disabled]),
+:host(.is-disabled) {
+  --_container-bg: var(--_disabled-bg);
+  cursor: not-allowed;
+}
+
+/* ---------- Track (container) ---------- */
+
+.track {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--_container-gap);
+  padding: var(--_container-padding);
+  background-color: var(--_container-bg);
+  border-radius: var(--_container-radius);
+  /* Keep the track from clipping the segment focus ring. */
+  overflow: visible;
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+/* ---------- Segment (radio button) ---------- */
+
+.segment {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--_segment-gap);
+  block-size: var(--_segment-height);
+  min-inline-size: var(--_segment-min-width);
+  padding-inline: var(--_segment-padding);
+  padding-block: 0;
+  margin: 0;
+  border: 0;
+  background-color: var(--_unselected-bg);
+  color: var(--_unselected-color);
+  border-radius: var(--_segment-radius);
+  font-family: inherit;
+  font-size: var(--_label-font-size);
+  line-height: var(--_label-line-height);
+  font-weight: var(--segmented-control-label-font-weight-unselected);
+  cursor: pointer;
+  transition:
+    background-color var(--_transition-duration) var(--_transition-easing),
+    color var(--_transition-duration) var(--_transition-easing),
+    box-shadow var(--_transition-duration) var(--_transition-easing);
+  /* Hide the default UA focus ring; we paint our own on :focus-visible. */
+  outline: none;
+  /* Each segment owns its label space; the track distributes them equally
+     by virtue of the inline flex layout. */
+}
+
+.segment:hover:not(.segment--selected):not(.segment--disabled) {
+  background-color: var(--_unselected-bg-hover);
+  color: var(--_unselected-color-hover);
+}
+
+.segment--selected {
+  background-color: var(--_selected-bg);
+  color: var(--_selected-color);
+  font-weight: var(--segmented-control-label-font-weight-selected);
+  box-shadow: var(--_selected-shadow);
+}
+
+.segment--selected:hover {
+  background-color: var(--_selected-bg-hover);
+}
+
+.segment--disabled {
+  cursor: not-allowed;
+  color: var(--_disabled-color);
+  background-color: transparent;
+}
+
+.segment--selected.segment--disabled {
+  background-color: var(--_disabled-bg);
+  color: var(--_disabled-color);
+  box-shadow: none;
+}
+
+/* Focus ring — only on keyboard focus. */
+.segment:focus-visible {
+  box-shadow:
+    0 0 0 var(--segmented-control-focus-ring-inner-width) var(--segmented-control-focus-ring-inner-color),
+    0 0 0 calc(var(--segmented-control-focus-ring-inner-width) + var(--segmented-control-focus-ring-outer-width))
+      var(--segmented-control-focus-ring-outer-color);
+  z-index: 1;
+}
+
+.segment--selected:focus-visible {
+  box-shadow:
+    var(--_selected-shadow),
+    0 0 0 var(--segmented-control-focus-ring-inner-width) var(--segmented-control-focus-ring-inner-color),
+    0 0 0 calc(var(--segmented-control-focus-ring-inner-width) + var(--segmented-control-focus-ring-outer-width))
+      var(--segmented-control-focus-ring-outer-color);
+}
+
+/* ---------- Separator between consecutive unselected segments ---------- */
+
+.segment--with-separator::after {
+  content: '';
+  position: absolute;
+  inset-inline-end: calc(var(--_container-gap) / -2);
+  inset-block-start: 50%;
+  inline-size: var(--_separator-width);
+  block-size: var(--_separator-height);
+  background-color: var(--_separator-color);
+  transform: translateY(-50%);
+  pointer-events: none;
+  border-radius: var(--_separator-width);
+}
+
+/* The selected segment lifts above its neighbours so its shadow is not
+   visually clipped by the next segment's background. */
+.segment--selected {
+  z-index: 1;
+}
+
+/* Icon inside a segment inherits text color via `currentColor`. */
+.segment__icon {
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.segment__label {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-inline-size: 0;
+}
+
+/* ---------- Disabled state cascade ---------- */
+
+:host(.is-disabled) .segment,
+:host([disabled]) .segment {
+  cursor: not-allowed;
+  color: var(--_disabled-color);
+}
+
+:host(.is-disabled) .segment--selected,
+:host([disabled]) .segment--selected {
+  background-color: var(--_selected-bg);
+  color: var(--_disabled-color);
+  box-shadow: none;
+}
+
+:host(.is-disabled) .segment--with-separator::after,
+:host([disabled]) .segment--with-separator::after {
+  opacity: 0.5;
+}
+
+/* ---------- prefers-reduced-motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .segment {
+    transition: none;
+  }
+}

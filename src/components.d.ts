@@ -5,8 +5,12 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { AvatarSize, AvatarType } from "./components/cor-avatar/cor-avatar.types";
+import { BadgeSize, BadgeType, BadgeVariant } from "./components/cor-badge/cor-badge.types";
+import { BreadcrumbItem, BreadcrumbSelectDetail } from "./components/cor-breadcrumb/cor-breadcrumb.types";
 import { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/cor-button/cor-button.types";
 import { ButtonGroupOrientation } from "./components/cor-button-group/cor-button-group.types";
+import { CheckboxChangeDetail, CheckboxSize } from "./components/cor-checkbox/cor-checkbox.types";
 import { DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/cor-date-input/cor-date-input.types";
 import { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize } from "./components/cor-file-input/cor-file-input.types";
 import { FileItemRemoveDetail, FileItemState } from "./components/cor-file-item/cor-file-item.types";
@@ -16,15 +20,22 @@ import { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputC
 import { LinkSize, LinkUnderline, LinkVariant } from "./components/cor-link/cor-link.types";
 import { LogoName } from "./components/cor-logo/cor-logo.types";
 import { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/cor-numeric-input/cor-numeric-input.types";
+import { PaginationChangeDetail, PaginationSize } from "./components/cor-pagination/cor-pagination.types";
 import { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/cor-phone-input/cor-phone-input.types";
 import { RadioChangeDetail, RadioSize } from "./components/cor-radio/cor-radio.types";
 import { SearchInputCircularChangeDetail, SearchInputCircularSearchDetail, SearchInputCircularSize, SearchInputCircularVariant } from "./components/cor-search-input-circular/cor-search-input-circular.types";
 import { SearchInputRectangularChangeDetail, SearchInputRectangularSearchDetail, SearchInputRectangularSize, SearchInputRectangularVariant } from "./components/cor-search-input-rectangular/cor-search-input-rectangular.types";
+import { SegmentedControlChangeDetail, SegmentedControlSegment, SegmentedControlSize } from "./components/cor-segmented-control/cor-segmented-control.types";
 import { SelectChangeDetail, SelectInputSize, SelectInputVariant, SelectOption } from "./components/cor-select-input/cor-select-input.types";
+import { SeparatorOrientation, SeparatorSize, SeparatorVariant } from "./components/cor-separator/cor-separator.types";
 import { ServiceButtonAppearance, ServiceButtonType } from "./components/cor-service-button/cor-service-button.types";
 import { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
+export { AvatarSize, AvatarType } from "./components/cor-avatar/cor-avatar.types";
+export { BadgeSize, BadgeType, BadgeVariant } from "./components/cor-badge/cor-badge.types";
+export { BreadcrumbItem, BreadcrumbSelectDetail } from "./components/cor-breadcrumb/cor-breadcrumb.types";
 export { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/cor-button/cor-button.types";
 export { ButtonGroupOrientation } from "./components/cor-button-group/cor-button-group.types";
+export { CheckboxChangeDetail, CheckboxSize } from "./components/cor-checkbox/cor-checkbox.types";
 export { DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/cor-date-input/cor-date-input.types";
 export { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize } from "./components/cor-file-input/cor-file-input.types";
 export { FileItemRemoveDetail, FileItemState } from "./components/cor-file-item/cor-file-item.types";
@@ -34,14 +45,184 @@ export { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputC
 export { LinkSize, LinkUnderline, LinkVariant } from "./components/cor-link/cor-link.types";
 export { LogoName } from "./components/cor-logo/cor-logo.types";
 export { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/cor-numeric-input/cor-numeric-input.types";
+export { PaginationChangeDetail, PaginationSize } from "./components/cor-pagination/cor-pagination.types";
 export { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/cor-phone-input/cor-phone-input.types";
 export { RadioChangeDetail, RadioSize } from "./components/cor-radio/cor-radio.types";
 export { SearchInputCircularChangeDetail, SearchInputCircularSearchDetail, SearchInputCircularSize, SearchInputCircularVariant } from "./components/cor-search-input-circular/cor-search-input-circular.types";
 export { SearchInputRectangularChangeDetail, SearchInputRectangularSearchDetail, SearchInputRectangularSize, SearchInputRectangularVariant } from "./components/cor-search-input-rectangular/cor-search-input-rectangular.types";
+export { SegmentedControlChangeDetail, SegmentedControlSegment, SegmentedControlSize } from "./components/cor-segmented-control/cor-segmented-control.types";
 export { SelectChangeDetail, SelectInputSize, SelectInputVariant, SelectOption } from "./components/cor-select-input/cor-select-input.types";
+export { SeparatorOrientation, SeparatorSize, SeparatorVariant } from "./components/cor-separator/cor-separator.types";
 export { ServiceButtonAppearance, ServiceButtonType } from "./components/cor-service-button/cor-service-button.types";
 export { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
 export namespace Components {
+    /**
+     * Avatar — represents a user via a photo, initials, or a generic person icon.
+     * Pattern A (atom-display): wraps a single piece of slottable content (an
+     * optional notification badge) and otherwise renders its own internal DOM.
+     * The component picks its visual mode from the `type` prop:
+     * - `photo` — renders `<img>` from `src`; if the image fails to load, falls
+     *   back to initials (when `name`/`initials` is set) or the person icon.
+     * - `initials` — renders 1–2 uppercase letters derived from `initials` or
+     *   `name`. If neither is set, the icon fallback kicks in.
+     * - `icon` — renders a `cor-icon` (default `person`).
+     * @element cor-avatar
+     */
+    interface CorAvatar {
+        /**
+          * Alt text for the underlying `<img>` when `type="photo"`. Falls back to `name` so screen readers always get a description; pass an empty string to mark the photo as purely decorative.
+         */
+        "alt"?: string;
+        /**
+          * Accessible label override. When set, becomes the host's `aria-label` and the avatar is exposed to AT as a single labelled element. When omitted the component picks a sensible default (the name, the initials, or "User avatar").
+         */
+        "ariaLabel"?: string;
+        /**
+          * Icon glyph for `type="icon"`. Defaults to the generic `person` symbol.
+          * @default 'person'
+         */
+        "iconName": string;
+        /**
+          * Pre-computed initials. When omitted, `name` is used to derive them. Trimmed to two characters and uppercased before rendering.
+         */
+        "initials"?: string;
+        /**
+          * Full name of the represented person. Used to (a) derive `initials` when none are provided and (b) seed `alt` for the photo so the avatar is always announced.
+         */
+        "name"?: string;
+        /**
+          * Visual size rung. Matches the Figma scale (xs=24, sm=32, md=40, lg=48, xl=72).
+          * @default 'md'
+         */
+        "size": AvatarSize;
+        /**
+          * Source URL for `type="photo"`. Ignored otherwise.
+         */
+        "src"?: string;
+        /**
+          * Visual mode. `photo` renders `src`, `initials` renders 1–2 letters, `icon` renders the person glyph.
+          * @default 'initials'
+         */
+        "type": AvatarType;
+    }
+    /**
+     * Badge — small, non-interactive status / count indicator.
+     * Two visual forms:
+     *  - `numbered` (default): shows a numeric counter inside a rounded pill.
+     *  - `dot`: a tiny solid circle used for "unread" presence indication.
+     * Five color variants map to the project's semantic token roles.
+     * Designed to overlay parent elements (avatars, icon buttons, list items)
+     * via consumer-controlled positioning — the badge itself just paints.
+     * Position offsets are exposed as CSS variables (`--badge-offset-top`,
+     * `--badge-offset-right`) so consumers can compose without overrides.
+     * Pattern B (atom-visual): internal DOM only, no slots, no events.
+     * @element cor-badge
+     */
+    interface CorBadge {
+        /**
+          * Override the accessible name. When omitted, `numbered` uses the visible count text and `dot` falls back to "Notification" (so screen readers announce something meaningful for empty dots).
+         */
+        "ariaLabel"?: string;
+        /**
+          * Numeric count to display when `type='numbered'`. Ignored for `dot`. Values greater than `max` render as `"{max}+"`.
+         */
+        "count"?: number;
+        /**
+          * Upper bound for the visible count. Counts above this render as `"{max}+"`.
+          * @default 99
+         */
+        "max": number;
+        /**
+          * Size rung — `sm` (12 px) for tight overlays, `md` (16 px) for default.
+          * @default 'md'
+         */
+        "size": BadgeSize;
+        /**
+          * Visual form — `numbered` shows the count, `dot` is a presence indicator.
+          * @default 'numbered'
+         */
+        "type": BadgeType;
+        /**
+          * Semantic color variant.
+          * @default 'danger'
+         */
+        "variant": BadgeVariant;
+    }
+    /**
+     * Breadcrumb — navigational trail showing the user's location in the site hierarchy.
+     * Two equivalent authoring modes:
+     * 1. **Prop-driven** (preferred for dynamic data): pass `items` as a typed array.
+     * 2. **Slot-driven** (preferred for static markup): nest `<cor-breadcrumb-item>` children.
+     * When both are present, the `items` prop wins.
+     * On desktop the full trail renders horizontally. When `maxVisible` is exceeded,
+     * intermediate crumbs collapse into an overflow "…" menu. On mobile (≤640px) with
+     * `responsive=true`, the trail collapses to a single "‹ Back to {parent}" link
+     * per the WAI-ARIA breadcrumb pattern and Figma 69:408.
+     * @element cor-breadcrumb
+     */
+    interface CorBreadcrumb {
+        /**
+          * Accessible name for the navigation landmark. Defaults to "Breadcrumb".
+         */
+        "ariaLabel"?: string;
+        /**
+          * Declarative crumb list. Each item renders as a `cor-breadcrumb-item`. When omitted, the component falls back to its default slot.
+         */
+        "items"?: BreadcrumbItem[];
+        /**
+          * Maximum number of crumbs shown before collapsing the middle into an overflow menu. Best practice (per Figma): 4–5. The first and last 2 are always visible.
+          * @default 5
+         */
+        "maxVisible": number;
+        /**
+          * When true, the component collapses to a single "back" link on viewports ≤640px. Disable for surfaces that need the full trail at every size (rare).
+          * @default true
+         */
+        "responsive": boolean;
+        /**
+          * Separator character or short string rendered between crumbs. Ignored when the `separator` slot is filled.
+          * @default '/'
+         */
+        "separator": string;
+    }
+    /**
+     * A single crumb inside `cor-breadcrumb`. Renders an anchor when `href` is set,
+     * otherwise plain text. The active crumb renders as text with `aria-current="page"`,
+     * regardless of `href`.
+     * Use this directly when the markup variant of the breadcrumb is preferred over
+     * the `items` prop on `cor-breadcrumb`. Both APIs are equivalent in behavior.
+     * @element cor-breadcrumb-item
+     */
+    interface CorBreadcrumbItem {
+        /**
+          * Marks this crumb as the current page. Adds `aria-current="page"`, switches to medium font weight, and disables navigation (renders as text).
+          * @default false
+         */
+        "active": boolean;
+        /**
+          * Disables interaction and applies the disabled text color.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Optional navigation target. Renders as `<a>` when set, otherwise as `<span>`. Ignored when `active` is true (active crumb is always rendered as text).
+         */
+        "href"?: string;
+        /**
+          * Accessible name override — required when the default slot is empty.
+         */
+        "label"?: string;
+        /**
+          * Replaces the label with a spinner while keeping the crumb width. Used for async navigation where the parent page hasn't loaded yet.
+          * @default false
+         */
+        "loading": boolean;
+        /**
+          * Visited link styling — text turns magenta (`--color-text-brand-visited`). Maps to the CSS pseudo-state for declarative use cases.
+          * @default false
+         */
+        "visited": boolean;
+    }
     /**
      * Button — interactive control.
      * Pattern B (atom-interactive): renders its own `<button>` (or `<a>` when `href`
@@ -139,6 +320,79 @@ export namespace Components {
           * @default 'horizontal'
          */
         "orientation": ButtonGroupOrientation;
+    }
+    /**
+     * Checkbox — boolean / tri-state form control.
+     * Pattern B (atom-interactive, form-associated): renders its own visual box
+     * inside shadow DOM plus a screen-reader-friendly `<input type="checkbox">`.
+     * Form participation works via `formAssociated` + `ElementInternals`.
+     * Visual states mirror Figma `Mode × State × Size`:
+     *   Mode  = Unchecked | Checked | Indeterminate
+     *   State = Default | Focus | Error (`invalid`) | Disabled
+     *   Size  = Medium (24px) | Small (20px)
+     * Indeterminate is a visual-only third state — `checked` semantics are unchanged.
+     * @element cor-checkbox
+     */
+    interface CorCheckbox {
+        /**
+          * Accessible name override. Used when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Accessible name id reference. Forwarded to the internal control.
+         */
+        "ariaLabelledby"?: string;
+        /**
+          * Checked state. Mutable — toggled by user interaction and reflected as the `checked` host attribute. Read in `change` listeners via `event.target.checked`.
+          * @default false
+         */
+        "checked": boolean;
+        /**
+          * Disables interactivity. Sets `aria-disabled` and the native `disabled`.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Tri-state visual marker. When `true`, the box renders a dash glyph regardless of `checked`. Indeterminate is a purely visual hint — the submitted form value still follows `checked`.
+          * @default false
+         */
+        "indeterminate": boolean;
+        /**
+          * Forces destructive visuals (red border, red fill on checked). Sets `aria-invalid="true"`.
+          * @default false
+         */
+        "invalid": boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Renders read-only — checkbox keeps focus but ignores toggles.
+          * @default false
+         */
+        "readonly": boolean;
+        /**
+          * Marks the field as mandatory for form validation. Adds `aria-required="true"`.
+          * @default false
+         */
+        "required": boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size": CheckboxSize;
+        /**
+          * Plain-text supporting text shown below the label. Use the `supporting-text` slot for richer content.
+         */
+        "supportingText"?: string;
+        /**
+          * Form value submitted when `checked`. Defaults to `'on'` like native checkboxes.
+         */
+        "value"?: string;
     }
     /**
      * Date Input — segment-masked date entry molecule.
@@ -805,6 +1059,81 @@ export namespace Components {
         "variant": NumericInputVariant;
     }
     /**
+     * Pagination — navigation control for paged content.
+     * Renders a list of page-number buttons flanked by Previous / Next controls.
+     * The visible page list is computed from `currentPage`, `totalPages`,
+     * `siblingCount`, and `boundaryCount`. When the total exceeds the visible
+     * window, ellipses (`...`) appear at the start and/or end of the range.
+     * The component is internally controlled but exposes a `corChange` event so
+     * the host can drive the active page. Updating `current-page` from outside
+     * is also honoured (e.g. when the URL changes via routing).
+     * @element cor-pagination
+     * @event corChange - Fires when the user activates a different page.
+     *             Detail: `{ page, previousPage }`.
+     */
+    interface CorPagination {
+        /**
+          * Accessible name for the outer `<nav>` landmark.
+          * @default 'Navigare pagini'
+         */
+        "ariaLabel": string;
+        /**
+          * Number of page buttons shown at the start and end of the range (before / after the leading / trailing ellipsis).
+          * @default 1
+         */
+        "boundaryCount": number;
+        /**
+          * The active page (1-indexed). Mutable so consumers can two-way bind.
+          * @default 1
+         */
+        "currentPage": number;
+        /**
+          * Accessible label template for the Next button. The `{page}` token is replaced with the target page number.
+          * @default 'Pagina următoare, mergi la pagina {page}'
+         */
+        "nextAriaLabel": string;
+        /**
+          * Visible label for the Next button (desktop only — hidden on `sm`).
+          * @default 'Următor'
+         */
+        "nextLabel": string;
+        /**
+          * Accessible label template for an individual page button. Tokens `{page}` and `{total}` are substituted with the page number and total page count.
+          * @default 'Pagina {page} din {total}'
+         */
+        "pageAriaLabel": string;
+        /**
+          * Accessible label template for the Previous button. The `{page}` token is replaced with the target page number.
+          * @default 'Pagina anterioară, mergi la pagina {page}'
+         */
+        "prevAriaLabel": string;
+        /**
+          * Visible label for the Previous button (desktop only — hidden on `sm`).
+          * @default 'Anterior'
+         */
+        "prevLabel": string;
+        /**
+          * Whether to render the Previous / Next navigation buttons.
+          * @default true
+         */
+        "showPrevNext": boolean;
+        /**
+          * Number of page buttons shown on each side of the active page.
+          * @default 1
+         */
+        "siblingCount": number;
+        /**
+          * Visual size rung. Mobile breakpoints typically use `sm` (32px) and desktop uses `md` (40px).
+          * @default 'md'
+         */
+        "size": PaginationSize;
+        /**
+          * Total number of pages. When `<= 1` the component renders nothing.
+          * @default 1
+         */
+        "totalPages": number;
+    }
+    /**
      * Phone Input — phone-number entry molecule with country-code prefix and
      * format mask. The most Moldova-specific input in the family: it ships a
      * default `+373` country, a curated diaspora-relevant country list with
@@ -1220,6 +1549,52 @@ export namespace Components {
         "withButton": boolean;
     }
     /**
+     * Segmented control — single-select horizontal switcher.
+     * Pattern B (atom-interactive, form-associated): renders an internal
+     * `role="radiogroup"` of `role="radio"` buttons inside the shadow DOM with
+     * a roving `tabindex`. Selected segment gets the dark inverse fill from
+     * Figma 659:8188; unselected segments inherit the light tertiary container
+     * background and only carry their label.
+     * Keyboard contract (WAI-ARIA Authoring Practices, radiogroup pattern):
+     * - `Tab` enters and exits the group (single stop)
+     * - `ArrowLeft` / `ArrowRight` move selection between segments
+     * - `Home` / `End` jump to first / last segment
+     * - `Enter` / `Space` reaffirm selection on the focused segment
+     * @element cor-segmented-control
+     */
+    interface CorSegmentedControl {
+        /**
+          * Accessible name for the group. Forwarded to the host's `aria-label`. Required when no surrounding `<label>` references the control.
+         */
+        "ariaLabel"?: string;
+        /**
+          * ID of an element labelling the group (when an external label is used).
+         */
+        "ariaLabelledby"?: string;
+        /**
+          * Disables every segment. The container receives `aria-disabled`.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Segment configuration. Order in the array maps left-to-right. When omitted the control renders nothing.
+         */
+        "segments"?: SegmentedControlSegment[];
+        /**
+          * Visual size rung. `md` is 40 px tall; `sm` is 32 px tall.
+          * @default 'md'
+         */
+        "size": SegmentedControlSize;
+        /**
+          * Value of the currently selected segment. Mutable so two-way binding via `@Watch('value')` keeps the host attribute in sync.
+         */
+        "value"?: string;
+    }
+    /**
      * Select Input — single-select dropdown atom.
      * Pattern B (atom-interactive, form-associated): renders a custom-styled
      * trigger button and a listbox popover inside shadow DOM. Form participation
@@ -1299,6 +1674,42 @@ export namespace Components {
           * @default 'default'
          */
         "variant": SelectInputVariant;
+    }
+    /**
+     * Separator — visual divider between groups of content or UI components.
+     * Pattern B (atom-visual): renders a 1D rule, optionally with an inline label.
+     * No events, no interactivity. ARIA `separator` semantics.
+     * @element cor-separator
+     */
+    interface CorSeparator {
+        /**
+          * Accessible label for screen readers. Most separators are decorative and do not need this; provide it only when the separator conveys a discrete semantic boundary that benefits from an announcement.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Adds outer spacing on the cross axis. Typical when the separator sits between items in a list or menu.
+          * @default false
+         */
+        "inset": boolean;
+        /**
+          * Optional plain-text label rendered inline at the center of the separator. For richer label content (e.g. an icon plus text), use the default slot instead.
+         */
+        "label"?: string;
+        /**
+          * Layout orientation of the separator.
+          * @default 'horizontal'
+         */
+        "orientation": SeparatorOrientation;
+        /**
+          * Visual thickness of the rule.
+          * @default 'thin'
+         */
+        "size": SeparatorSize;
+        /**
+          * Color treatment / emphasis.
+          * @default 'subtle'
+         */
+        "variant": SeparatorVariant;
     }
     /**
      * Service Button — interactive control for Moldovan M-products (mpay, mpass,
@@ -1386,6 +1797,18 @@ export namespace Components {
         "variant": SpinnerVariant;
     }
 }
+export interface CorBreadcrumbCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorBreadcrumbElement;
+}
+export interface CorBreadcrumbItemCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorBreadcrumbItemElement;
+}
+export interface CorCheckboxCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorCheckboxElement;
+}
 export interface CorDateInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLCorDateInputElement;
@@ -1414,6 +1837,10 @@ export interface CorNumericInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLCorNumericInputElement;
 }
+export interface CorPaginationCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorPaginationElement;
+}
 export interface CorPhoneInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLCorPhoneInputElement;
@@ -1430,11 +1857,106 @@ export interface CorSearchInputRectangularCustomEvent<T> extends CustomEvent<T> 
     detail: T;
     target: HTMLCorSearchInputRectangularElement;
 }
+export interface CorSegmentedControlCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorSegmentedControlElement;
+}
 export interface CorSelectInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLCorSelectInputElement;
 }
 declare global {
+    /**
+     * Avatar — represents a user via a photo, initials, or a generic person icon.
+     * Pattern A (atom-display): wraps a single piece of slottable content (an
+     * optional notification badge) and otherwise renders its own internal DOM.
+     * The component picks its visual mode from the `type` prop:
+     * - `photo` — renders `<img>` from `src`; if the image fails to load, falls
+     *   back to initials (when `name`/`initials` is set) or the person icon.
+     * - `initials` — renders 1–2 uppercase letters derived from `initials` or
+     *   `name`. If neither is set, the icon fallback kicks in.
+     * - `icon` — renders a `cor-icon` (default `person`).
+     * @element cor-avatar
+     */
+    interface HTMLCorAvatarElement extends Components.CorAvatar, HTMLStencilElement {
+    }
+    var HTMLCorAvatarElement: {
+        prototype: HTMLCorAvatarElement;
+        new (): HTMLCorAvatarElement;
+    };
+    /**
+     * Badge — small, non-interactive status / count indicator.
+     * Two visual forms:
+     *  - `numbered` (default): shows a numeric counter inside a rounded pill.
+     *  - `dot`: a tiny solid circle used for "unread" presence indication.
+     * Five color variants map to the project's semantic token roles.
+     * Designed to overlay parent elements (avatars, icon buttons, list items)
+     * via consumer-controlled positioning — the badge itself just paints.
+     * Position offsets are exposed as CSS variables (`--badge-offset-top`,
+     * `--badge-offset-right`) so consumers can compose without overrides.
+     * Pattern B (atom-visual): internal DOM only, no slots, no events.
+     * @element cor-badge
+     */
+    interface HTMLCorBadgeElement extends Components.CorBadge, HTMLStencilElement {
+    }
+    var HTMLCorBadgeElement: {
+        prototype: HTMLCorBadgeElement;
+        new (): HTMLCorBadgeElement;
+    };
+    interface HTMLCorBreadcrumbElementEventMap {
+        "corSelect": BreadcrumbSelectDetail;
+    }
+    /**
+     * Breadcrumb — navigational trail showing the user's location in the site hierarchy.
+     * Two equivalent authoring modes:
+     * 1. **Prop-driven** (preferred for dynamic data): pass `items` as a typed array.
+     * 2. **Slot-driven** (preferred for static markup): nest `<cor-breadcrumb-item>` children.
+     * When both are present, the `items` prop wins.
+     * On desktop the full trail renders horizontally. When `maxVisible` is exceeded,
+     * intermediate crumbs collapse into an overflow "…" menu. On mobile (≤640px) with
+     * `responsive=true`, the trail collapses to a single "‹ Back to {parent}" link
+     * per the WAI-ARIA breadcrumb pattern and Figma 69:408.
+     * @element cor-breadcrumb
+     */
+    interface HTMLCorBreadcrumbElement extends Components.CorBreadcrumb, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorBreadcrumbElementEventMap>(type: K, listener: (this: HTMLCorBreadcrumbElement, ev: CorBreadcrumbCustomEvent<HTMLCorBreadcrumbElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorBreadcrumbElementEventMap>(type: K, listener: (this: HTMLCorBreadcrumbElement, ev: CorBreadcrumbCustomEvent<HTMLCorBreadcrumbElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorBreadcrumbElement: {
+        prototype: HTMLCorBreadcrumbElement;
+        new (): HTMLCorBreadcrumbElement;
+    };
+    interface HTMLCorBreadcrumbItemElementEventMap {
+        "corSelect": { label: string; href?: string };
+    }
+    /**
+     * A single crumb inside `cor-breadcrumb`. Renders an anchor when `href` is set,
+     * otherwise plain text. The active crumb renders as text with `aria-current="page"`,
+     * regardless of `href`.
+     * Use this directly when the markup variant of the breadcrumb is preferred over
+     * the `items` prop on `cor-breadcrumb`. Both APIs are equivalent in behavior.
+     * @element cor-breadcrumb-item
+     */
+    interface HTMLCorBreadcrumbItemElement extends Components.CorBreadcrumbItem, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorBreadcrumbItemElementEventMap>(type: K, listener: (this: HTMLCorBreadcrumbItemElement, ev: CorBreadcrumbItemCustomEvent<HTMLCorBreadcrumbItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorBreadcrumbItemElementEventMap>(type: K, listener: (this: HTMLCorBreadcrumbItemElement, ev: CorBreadcrumbItemCustomEvent<HTMLCorBreadcrumbItemElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorBreadcrumbItemElement: {
+        prototype: HTMLCorBreadcrumbItemElement;
+        new (): HTMLCorBreadcrumbItemElement;
+    };
     /**
      * Button — interactive control.
      * Pattern B (atom-interactive): renders its own `<button>` (or `<a>` when `href`
@@ -1462,6 +1984,37 @@ declare global {
     var HTMLCorButtonGroupElement: {
         prototype: HTMLCorButtonGroupElement;
         new (): HTMLCorButtonGroupElement;
+    };
+    interface HTMLCorCheckboxElementEventMap {
+        "corChange": CheckboxChangeDetail;
+        "corFocus": FocusEvent;
+        "corBlur": FocusEvent;
+    }
+    /**
+     * Checkbox — boolean / tri-state form control.
+     * Pattern B (atom-interactive, form-associated): renders its own visual box
+     * inside shadow DOM plus a screen-reader-friendly `<input type="checkbox">`.
+     * Form participation works via `formAssociated` + `ElementInternals`.
+     * Visual states mirror Figma `Mode × State × Size`:
+     *   Mode  = Unchecked | Checked | Indeterminate
+     *   State = Default | Focus | Error (`invalid`) | Disabled
+     *   Size  = Medium (24px) | Small (20px)
+     * Indeterminate is a visual-only third state — `checked` semantics are unchanged.
+     * @element cor-checkbox
+     */
+    interface HTMLCorCheckboxElement extends Components.CorCheckbox, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorCheckboxElementEventMap>(type: K, listener: (this: HTMLCorCheckboxElement, ev: CorCheckboxCustomEvent<HTMLCorCheckboxElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorCheckboxElementEventMap>(type: K, listener: (this: HTMLCorCheckboxElement, ev: CorCheckboxCustomEvent<HTMLCorCheckboxElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorCheckboxElement: {
+        prototype: HTMLCorCheckboxElement;
+        new (): HTMLCorCheckboxElement;
     };
     interface HTMLCorDateInputElementEventMap {
         "corInput": DateInputTypingDetail;
@@ -1718,6 +2271,36 @@ declare global {
         prototype: HTMLCorNumericInputElement;
         new (): HTMLCorNumericInputElement;
     };
+    interface HTMLCorPaginationElementEventMap {
+        "corChange": PaginationChangeDetail;
+    }
+    /**
+     * Pagination — navigation control for paged content.
+     * Renders a list of page-number buttons flanked by Previous / Next controls.
+     * The visible page list is computed from `currentPage`, `totalPages`,
+     * `siblingCount`, and `boundaryCount`. When the total exceeds the visible
+     * window, ellipses (`...`) appear at the start and/or end of the range.
+     * The component is internally controlled but exposes a `corChange` event so
+     * the host can drive the active page. Updating `current-page` from outside
+     * is also honoured (e.g. when the URL changes via routing).
+     * @element cor-pagination
+     * @event corChange - Fires when the user activates a different page.
+     *             Detail: `{ page, previousPage }`.
+     */
+    interface HTMLCorPaginationElement extends Components.CorPagination, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorPaginationElementEventMap>(type: K, listener: (this: HTMLCorPaginationElement, ev: CorPaginationCustomEvent<HTMLCorPaginationElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorPaginationElementEventMap>(type: K, listener: (this: HTMLCorPaginationElement, ev: CorPaginationCustomEvent<HTMLCorPaginationElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorPaginationElement: {
+        prototype: HTMLCorPaginationElement;
+        new (): HTMLCorPaginationElement;
+    };
     interface HTMLCorPhoneInputElementEventMap {
         "corInput": PhoneInputInputDetail;
         "corChange": PhoneInputChangeDetail;
@@ -1872,6 +2455,37 @@ declare global {
         prototype: HTMLCorSearchInputRectangularElement;
         new (): HTMLCorSearchInputRectangularElement;
     };
+    interface HTMLCorSegmentedControlElementEventMap {
+        "corChange": SegmentedControlChangeDetail;
+    }
+    /**
+     * Segmented control — single-select horizontal switcher.
+     * Pattern B (atom-interactive, form-associated): renders an internal
+     * `role="radiogroup"` of `role="radio"` buttons inside the shadow DOM with
+     * a roving `tabindex`. Selected segment gets the dark inverse fill from
+     * Figma 659:8188; unselected segments inherit the light tertiary container
+     * background and only carry their label.
+     * Keyboard contract (WAI-ARIA Authoring Practices, radiogroup pattern):
+     * - `Tab` enters and exits the group (single stop)
+     * - `ArrowLeft` / `ArrowRight` move selection between segments
+     * - `Home` / `End` jump to first / last segment
+     * - `Enter` / `Space` reaffirm selection on the focused segment
+     * @element cor-segmented-control
+     */
+    interface HTMLCorSegmentedControlElement extends Components.CorSegmentedControl, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorSegmentedControlElementEventMap>(type: K, listener: (this: HTMLCorSegmentedControlElement, ev: CorSegmentedControlCustomEvent<HTMLCorSegmentedControlElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorSegmentedControlElementEventMap>(type: K, listener: (this: HTMLCorSegmentedControlElement, ev: CorSegmentedControlCustomEvent<HTMLCorSegmentedControlElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorSegmentedControlElement: {
+        prototype: HTMLCorSegmentedControlElement;
+        new (): HTMLCorSegmentedControlElement;
+    };
     interface HTMLCorSelectInputElementEventMap {
         "corChange": SelectChangeDetail;
         "corOpen": void;
@@ -1905,6 +2519,18 @@ declare global {
         new (): HTMLCorSelectInputElement;
     };
     /**
+     * Separator — visual divider between groups of content or UI components.
+     * Pattern B (atom-visual): renders a 1D rule, optionally with an inline label.
+     * No events, no interactivity. ARIA `separator` semantics.
+     * @element cor-separator
+     */
+    interface HTMLCorSeparatorElement extends Components.CorSeparator, HTMLStencilElement {
+    }
+    var HTMLCorSeparatorElement: {
+        prototype: HTMLCorSeparatorElement;
+        new (): HTMLCorSeparatorElement;
+    };
+    /**
      * Service Button — interactive control for Moldovan M-products (mpay, mpass,
      * msign, mpower, mdelivery).
      * A specialised filled button with a logo badge embedded on the inline-start
@@ -1934,8 +2560,13 @@ declare global {
         new (): HTMLCorSpinnerElement;
     };
     interface HTMLElementTagNameMap {
+        "cor-avatar": HTMLCorAvatarElement;
+        "cor-badge": HTMLCorBadgeElement;
+        "cor-breadcrumb": HTMLCorBreadcrumbElement;
+        "cor-breadcrumb-item": HTMLCorBreadcrumbItemElement;
         "cor-button": HTMLCorButtonElement;
         "cor-button-group": HTMLCorButtonGroupElement;
+        "cor-checkbox": HTMLCorCheckboxElement;
         "cor-date-input": HTMLCorDateInputElement;
         "cor-file-input": HTMLCorFileInputElement;
         "cor-file-item": HTMLCorFileItemElement;
@@ -1945,16 +2576,194 @@ declare global {
         "cor-link": HTMLCorLinkElement;
         "cor-logo": HTMLCorLogoElement;
         "cor-numeric-input": HTMLCorNumericInputElement;
+        "cor-pagination": HTMLCorPaginationElement;
         "cor-phone-input": HTMLCorPhoneInputElement;
         "cor-radio": HTMLCorRadioElement;
         "cor-search-input-circular": HTMLCorSearchInputCircularElement;
         "cor-search-input-rectangular": HTMLCorSearchInputRectangularElement;
+        "cor-segmented-control": HTMLCorSegmentedControlElement;
         "cor-select-input": HTMLCorSelectInputElement;
+        "cor-separator": HTMLCorSeparatorElement;
         "cor-service-button": HTMLCorServiceButtonElement;
         "cor-spinner": HTMLCorSpinnerElement;
     }
 }
 declare namespace LocalJSX {
+    /**
+     * Avatar — represents a user via a photo, initials, or a generic person icon.
+     * Pattern A (atom-display): wraps a single piece of slottable content (an
+     * optional notification badge) and otherwise renders its own internal DOM.
+     * The component picks its visual mode from the `type` prop:
+     * - `photo` — renders `<img>` from `src`; if the image fails to load, falls
+     *   back to initials (when `name`/`initials` is set) or the person icon.
+     * - `initials` — renders 1–2 uppercase letters derived from `initials` or
+     *   `name`. If neither is set, the icon fallback kicks in.
+     * - `icon` — renders a `cor-icon` (default `person`).
+     * @element cor-avatar
+     */
+    interface CorAvatar {
+        /**
+          * Alt text for the underlying `<img>` when `type="photo"`. Falls back to `name` so screen readers always get a description; pass an empty string to mark the photo as purely decorative.
+         */
+        "alt"?: string;
+        /**
+          * Accessible label override. When set, becomes the host's `aria-label` and the avatar is exposed to AT as a single labelled element. When omitted the component picks a sensible default (the name, the initials, or "User avatar").
+         */
+        "ariaLabel"?: string;
+        /**
+          * Icon glyph for `type="icon"`. Defaults to the generic `person` symbol.
+          * @default 'person'
+         */
+        "iconName"?: string;
+        /**
+          * Pre-computed initials. When omitted, `name` is used to derive them. Trimmed to two characters and uppercased before rendering.
+         */
+        "initials"?: string;
+        /**
+          * Full name of the represented person. Used to (a) derive `initials` when none are provided and (b) seed `alt` for the photo so the avatar is always announced.
+         */
+        "name"?: string;
+        /**
+          * Visual size rung. Matches the Figma scale (xs=24, sm=32, md=40, lg=48, xl=72).
+          * @default 'md'
+         */
+        "size"?: AvatarSize;
+        /**
+          * Source URL for `type="photo"`. Ignored otherwise.
+         */
+        "src"?: string;
+        /**
+          * Visual mode. `photo` renders `src`, `initials` renders 1–2 letters, `icon` renders the person glyph.
+          * @default 'initials'
+         */
+        "type"?: AvatarType;
+    }
+    /**
+     * Badge — small, non-interactive status / count indicator.
+     * Two visual forms:
+     *  - `numbered` (default): shows a numeric counter inside a rounded pill.
+     *  - `dot`: a tiny solid circle used for "unread" presence indication.
+     * Five color variants map to the project's semantic token roles.
+     * Designed to overlay parent elements (avatars, icon buttons, list items)
+     * via consumer-controlled positioning — the badge itself just paints.
+     * Position offsets are exposed as CSS variables (`--badge-offset-top`,
+     * `--badge-offset-right`) so consumers can compose without overrides.
+     * Pattern B (atom-visual): internal DOM only, no slots, no events.
+     * @element cor-badge
+     */
+    interface CorBadge {
+        /**
+          * Override the accessible name. When omitted, `numbered` uses the visible count text and `dot` falls back to "Notification" (so screen readers announce something meaningful for empty dots).
+         */
+        "ariaLabel"?: string;
+        /**
+          * Numeric count to display when `type='numbered'`. Ignored for `dot`. Values greater than `max` render as `"{max}+"`.
+         */
+        "count"?: number;
+        /**
+          * Upper bound for the visible count. Counts above this render as `"{max}+"`.
+          * @default 99
+         */
+        "max"?: number;
+        /**
+          * Size rung — `sm` (12 px) for tight overlays, `md` (16 px) for default.
+          * @default 'md'
+         */
+        "size"?: BadgeSize;
+        /**
+          * Visual form — `numbered` shows the count, `dot` is a presence indicator.
+          * @default 'numbered'
+         */
+        "type"?: BadgeType;
+        /**
+          * Semantic color variant.
+          * @default 'danger'
+         */
+        "variant"?: BadgeVariant;
+    }
+    /**
+     * Breadcrumb — navigational trail showing the user's location in the site hierarchy.
+     * Two equivalent authoring modes:
+     * 1. **Prop-driven** (preferred for dynamic data): pass `items` as a typed array.
+     * 2. **Slot-driven** (preferred for static markup): nest `<cor-breadcrumb-item>` children.
+     * When both are present, the `items` prop wins.
+     * On desktop the full trail renders horizontally. When `maxVisible` is exceeded,
+     * intermediate crumbs collapse into an overflow "…" menu. On mobile (≤640px) with
+     * `responsive=true`, the trail collapses to a single "‹ Back to {parent}" link
+     * per the WAI-ARIA breadcrumb pattern and Figma 69:408.
+     * @element cor-breadcrumb
+     */
+    interface CorBreadcrumb {
+        /**
+          * Accessible name for the navigation landmark. Defaults to "Breadcrumb".
+         */
+        "ariaLabel"?: string;
+        /**
+          * Declarative crumb list. Each item renders as a `cor-breadcrumb-item`. When omitted, the component falls back to its default slot.
+         */
+        "items"?: BreadcrumbItem[];
+        /**
+          * Maximum number of crumbs shown before collapsing the middle into an overflow menu. Best practice (per Figma): 4–5. The first and last 2 are always visible.
+          * @default 5
+         */
+        "maxVisible"?: number;
+        /**
+          * Emits when any crumb is activated (click or keyboard).
+         */
+        "onCorSelect"?: (event: CorBreadcrumbCustomEvent<BreadcrumbSelectDetail>) => void;
+        /**
+          * When true, the component collapses to a single "back" link on viewports ≤640px. Disable for surfaces that need the full trail at every size (rare).
+          * @default true
+         */
+        "responsive"?: boolean;
+        /**
+          * Separator character or short string rendered between crumbs. Ignored when the `separator` slot is filled.
+          * @default '/'
+         */
+        "separator"?: string;
+    }
+    /**
+     * A single crumb inside `cor-breadcrumb`. Renders an anchor when `href` is set,
+     * otherwise plain text. The active crumb renders as text with `aria-current="page"`,
+     * regardless of `href`.
+     * Use this directly when the markup variant of the breadcrumb is preferred over
+     * the `items` prop on `cor-breadcrumb`. Both APIs are equivalent in behavior.
+     * @element cor-breadcrumb-item
+     */
+    interface CorBreadcrumbItem {
+        /**
+          * Marks this crumb as the current page. Adds `aria-current="page"`, switches to medium font weight, and disables navigation (renders as text).
+          * @default false
+         */
+        "active"?: boolean;
+        /**
+          * Disables interaction and applies the disabled text color.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Optional navigation target. Renders as `<a>` when set, otherwise as `<span>`. Ignored when `active` is true (active crumb is always rendered as text).
+         */
+        "href"?: string;
+        /**
+          * Accessible name override — required when the default slot is empty.
+         */
+        "label"?: string;
+        /**
+          * Replaces the label with a spinner while keeping the crumb width. Used for async navigation where the parent page hasn't loaded yet.
+          * @default false
+         */
+        "loading"?: boolean;
+        /**
+          * Fired when the crumb is activated (click or Enter/Space on a non-link crumb). Cancelable — `preventDefault()` lets the consumer handle navigation.
+         */
+        "onCorSelect"?: (event: CorBreadcrumbItemCustomEvent<{ label: string; href?: string }>) => void;
+        /**
+          * Visited link styling — text turns magenta (`--color-text-brand-visited`). Maps to the CSS pseudo-state for declarative use cases.
+          * @default false
+         */
+        "visited"?: boolean;
+    }
     /**
      * Button — interactive control.
      * Pattern B (atom-interactive): renders its own `<button>` (or `<a>` when `href`
@@ -2056,6 +2865,95 @@ declare namespace LocalJSX {
           * @default 'horizontal'
          */
         "orientation"?: ButtonGroupOrientation;
+    }
+    /**
+     * Checkbox — boolean / tri-state form control.
+     * Pattern B (atom-interactive, form-associated): renders its own visual box
+     * inside shadow DOM plus a screen-reader-friendly `<input type="checkbox">`.
+     * Form participation works via `formAssociated` + `ElementInternals`.
+     * Visual states mirror Figma `Mode × State × Size`:
+     *   Mode  = Unchecked | Checked | Indeterminate
+     *   State = Default | Focus | Error (`invalid`) | Disabled
+     *   Size  = Medium (24px) | Small (20px)
+     * Indeterminate is a visual-only third state — `checked` semantics are unchanged.
+     * @element cor-checkbox
+     */
+    interface CorCheckbox {
+        /**
+          * Accessible name override. Used when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Accessible name id reference. Forwarded to the internal control.
+         */
+        "ariaLabelledby"?: string;
+        /**
+          * Checked state. Mutable — toggled by user interaction and reflected as the `checked` host attribute. Read in `change` listeners via `event.target.checked`.
+          * @default false
+         */
+        "checked"?: boolean;
+        /**
+          * Disables interactivity. Sets `aria-disabled` and the native `disabled`.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Tri-state visual marker. When `true`, the box renders a dash glyph regardless of `checked`. Indeterminate is a purely visual hint — the submitted form value still follows `checked`.
+          * @default false
+         */
+        "indeterminate"?: boolean;
+        /**
+          * Forces destructive visuals (red border, red fill on checked). Sets `aria-invalid="true"`.
+          * @default false
+         */
+        "invalid"?: boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Fires when the control loses focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onCorBlur"?: (event: CorCheckboxCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires when `checked` (or `indeterminate`) changes from a user action.
+         */
+        "onCorChange"?: (event: CorCheckboxCustomEvent<CheckboxChangeDetail>) => void;
+        /**
+          * Fires when the control gains focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onCorFocus"?: (event: CorCheckboxCustomEvent<FocusEvent>) => void;
+        /**
+          * Renders read-only — checkbox keeps focus but ignores toggles.
+          * @default false
+         */
+        "readonly"?: boolean;
+        /**
+          * Marks the field as mandatory for form validation. Adds `aria-required="true"`.
+          * @default false
+         */
+        "required"?: boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size"?: CheckboxSize;
+        /**
+          * Plain-text supporting text shown below the label. Use the `supporting-text` slot for richer content.
+         */
+        "supportingText"?: string;
+        /**
+          * Form value submitted when `checked`. Defaults to `'on'` like native checkboxes.
+         */
+        "value"?: string;
     }
     /**
      * Date Input — segment-masked date entry molecule.
@@ -2854,6 +3752,82 @@ declare namespace LocalJSX {
         "variant"?: NumericInputVariant;
     }
     /**
+     * Pagination — navigation control for paged content.
+     * Renders a list of page-number buttons flanked by Previous / Next controls.
+     * The visible page list is computed from `currentPage`, `totalPages`,
+     * `siblingCount`, and `boundaryCount`. When the total exceeds the visible
+     * window, ellipses (`...`) appear at the start and/or end of the range.
+     * The component is internally controlled but exposes a `corChange` event so
+     * the host can drive the active page. Updating `current-page` from outside
+     * is also honoured (e.g. when the URL changes via routing).
+     * @element cor-pagination
+     * @event corChange - Fires when the user activates a different page.
+     *             Detail: `{ page, previousPage }`.
+     */
+    interface CorPagination {
+        /**
+          * Accessible name for the outer `<nav>` landmark.
+          * @default 'Navigare pagini'
+         */
+        "ariaLabel"?: string;
+        /**
+          * Number of page buttons shown at the start and end of the range (before / after the leading / trailing ellipsis).
+          * @default 1
+         */
+        "boundaryCount"?: number;
+        /**
+          * The active page (1-indexed). Mutable so consumers can two-way bind.
+          * @default 1
+         */
+        "currentPage"?: number;
+        /**
+          * Accessible label template for the Next button. The `{page}` token is replaced with the target page number.
+          * @default 'Pagina următoare, mergi la pagina {page}'
+         */
+        "nextAriaLabel"?: string;
+        /**
+          * Visible label for the Next button (desktop only — hidden on `sm`).
+          * @default 'Următor'
+         */
+        "nextLabel"?: string;
+        "onCorChange"?: (event: CorPaginationCustomEvent<PaginationChangeDetail>) => void;
+        /**
+          * Accessible label template for an individual page button. Tokens `{page}` and `{total}` are substituted with the page number and total page count.
+          * @default 'Pagina {page} din {total}'
+         */
+        "pageAriaLabel"?: string;
+        /**
+          * Accessible label template for the Previous button. The `{page}` token is replaced with the target page number.
+          * @default 'Pagina anterioară, mergi la pagina {page}'
+         */
+        "prevAriaLabel"?: string;
+        /**
+          * Visible label for the Previous button (desktop only — hidden on `sm`).
+          * @default 'Anterior'
+         */
+        "prevLabel"?: string;
+        /**
+          * Whether to render the Previous / Next navigation buttons.
+          * @default true
+         */
+        "showPrevNext"?: boolean;
+        /**
+          * Number of page buttons shown on each side of the active page.
+          * @default 1
+         */
+        "siblingCount"?: number;
+        /**
+          * Visual size rung. Mobile breakpoints typically use `sm` (32px) and desktop uses `md` (40px).
+          * @default 'md'
+         */
+        "size"?: PaginationSize;
+        /**
+          * Total number of pages. When `<= 1` the component renders nothing.
+          * @default 1
+         */
+        "totalPages"?: number;
+    }
+    /**
      * Phone Input — phone-number entry molecule with country-code prefix and
      * format mask. The most Moldova-specific input in the family: it ships a
      * default `+373` country, a curated diaspora-relevant country list with
@@ -3373,6 +4347,60 @@ declare namespace LocalJSX {
         "withButton"?: boolean;
     }
     /**
+     * Segmented control — single-select horizontal switcher.
+     * Pattern B (atom-interactive, form-associated): renders an internal
+     * `role="radiogroup"` of `role="radio"` buttons inside the shadow DOM with
+     * a roving `tabindex`. Selected segment gets the dark inverse fill from
+     * Figma 659:8188; unselected segments inherit the light tertiary container
+     * background and only carry their label.
+     * Keyboard contract (WAI-ARIA Authoring Practices, radiogroup pattern):
+     * - `Tab` enters and exits the group (single stop)
+     * - `ArrowLeft` / `ArrowRight` move selection between segments
+     * - `Home` / `End` jump to first / last segment
+     * - `Enter` / `Space` reaffirm selection on the focused segment
+     * @element cor-segmented-control
+     */
+    interface CorSegmentedControl {
+        /**
+          * Accessible name for the group. Forwarded to the host's `aria-label`. Required when no surrounding `<label>` references the control.
+         */
+        "ariaLabel"?: string;
+        /**
+          * ID of an element labelling the group (when an external label is used).
+         */
+        "ariaLabelledby"?: string;
+        /**
+          * Disables every segment. The container receives `aria-disabled`.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Fires when the selected segment changes. `detail.value` is the new selection.
+         */
+        "onCorChange"?: (event: CorSegmentedControlCustomEvent<SegmentedControlChangeDetail>) => void;
+        /**
+          * Segment configuration. Order in the array maps left-to-right. When omitted the control renders nothing.
+         */
+        "segments"?: SegmentedControlSegment[];
+        /**
+          * Visual size rung. `md` is 40 px tall; `sm` is 32 px tall.
+          * @default 'md'
+         */
+        "size"?: SegmentedControlSize;
+        /**
+          * Value of the currently selected segment. Mutable so two-way binding via `@Watch('value')` keeps the host attribute in sync.
+         */
+        "value"?: string;
+    }
+    /**
      * Select Input — single-select dropdown atom.
      * Pattern B (atom-interactive, form-associated): renders a custom-styled
      * trigger button and a listbox popover inside shadow DOM. Form participation
@@ -3478,6 +4506,42 @@ declare namespace LocalJSX {
         "variant"?: SelectInputVariant;
     }
     /**
+     * Separator — visual divider between groups of content or UI components.
+     * Pattern B (atom-visual): renders a 1D rule, optionally with an inline label.
+     * No events, no interactivity. ARIA `separator` semantics.
+     * @element cor-separator
+     */
+    interface CorSeparator {
+        /**
+          * Accessible label for screen readers. Most separators are decorative and do not need this; provide it only when the separator conveys a discrete semantic boundary that benefits from an announcement.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Adds outer spacing on the cross axis. Typical when the separator sits between items in a list or menu.
+          * @default false
+         */
+        "inset"?: boolean;
+        /**
+          * Optional plain-text label rendered inline at the center of the separator. For richer label content (e.g. an icon plus text), use the default slot instead.
+         */
+        "label"?: string;
+        /**
+          * Layout orientation of the separator.
+          * @default 'horizontal'
+         */
+        "orientation"?: SeparatorOrientation;
+        /**
+          * Visual thickness of the rule.
+          * @default 'thin'
+         */
+        "size"?: SeparatorSize;
+        /**
+          * Color treatment / emphasis.
+          * @default 'subtle'
+         */
+        "variant"?: SeparatorVariant;
+    }
+    /**
      * Service Button — interactive control for Moldovan M-products (mpay, mpass,
      * msign, mpower, mdelivery).
      * A specialised filled button with a logo badge embedded on the inline-start
@@ -3567,6 +4631,38 @@ declare namespace LocalJSX {
         "variant"?: SpinnerVariant;
     }
 
+    interface CorAvatarAttributes {
+        "type": AvatarType;
+        "size": AvatarSize;
+        "src": string;
+        "alt": string;
+        "initials": string;
+        "name": string;
+        "iconName": string;
+        "ariaLabel": string;
+    }
+    interface CorBadgeAttributes {
+        "type": BadgeType;
+        "variant": BadgeVariant;
+        "size": BadgeSize;
+        "count": number;
+        "max": number;
+        "ariaLabel": string;
+    }
+    interface CorBreadcrumbAttributes {
+        "maxVisible": number;
+        "separator": string;
+        "responsive": boolean;
+        "ariaLabel": string;
+    }
+    interface CorBreadcrumbItemAttributes {
+        "href": string;
+        "active": boolean;
+        "visited": boolean;
+        "disabled": boolean;
+        "loading": boolean;
+        "label": string;
+    }
     interface CorButtonAttributes {
         "variant": ButtonVariant;
         "appearance": ButtonAppearance;
@@ -3587,6 +4683,21 @@ declare namespace LocalJSX {
     interface CorButtonGroupAttributes {
         "orientation": ButtonGroupOrientation;
         "label": string;
+    }
+    interface CorCheckboxAttributes {
+        "size": CheckboxSize;
+        "checked": boolean;
+        "indeterminate": boolean;
+        "disabled": boolean;
+        "invalid": boolean;
+        "required": boolean;
+        "readonly": boolean;
+        "name": string;
+        "value": string;
+        "label": string;
+        "supportingText": string;
+        "ariaLabel": string;
+        "ariaLabelledby": string;
     }
     interface CorDateInputAttributes {
         "variant": DateInputVariant;
@@ -3724,6 +4835,20 @@ declare namespace LocalJSX {
         "ariaLabel": string;
         "ariaValuetext": string;
     }
+    interface CorPaginationAttributes {
+        "size": PaginationSize;
+        "currentPage": number;
+        "totalPages": number;
+        "siblingCount": number;
+        "boundaryCount": number;
+        "showPrevNext": boolean;
+        "prevLabel": string;
+        "nextLabel": string;
+        "ariaLabel": string;
+        "prevAriaLabel": string;
+        "nextAriaLabel": string;
+        "pageAriaLabel": string;
+    }
     interface CorPhoneInputAttributes {
         "variant": PhoneInputVariant;
         "size": PhoneInputSize;
@@ -3805,6 +4930,14 @@ declare namespace LocalJSX {
         "minLength": number;
         "ariaLabel": string;
     }
+    interface CorSegmentedControlAttributes {
+        "size": SegmentedControlSize;
+        "disabled": boolean;
+        "value": string;
+        "name": string;
+        "ariaLabel": string;
+        "ariaLabelledby": string;
+    }
     interface CorSelectInputAttributes {
         "variant": SelectInputVariant;
         "size": SelectInputSize;
@@ -3819,6 +4952,14 @@ declare namespace LocalJSX {
         "label": string;
         "helperText": string;
         "errorText": string;
+        "ariaLabel": string;
+    }
+    interface CorSeparatorAttributes {
+        "orientation": SeparatorOrientation;
+        "size": SeparatorSize;
+        "variant": SeparatorVariant;
+        "inset": boolean;
+        "label": string;
         "ariaLabel": string;
     }
     interface CorServiceButtonAttributes {
@@ -3841,8 +4982,13 @@ declare namespace LocalJSX {
     }
 
     interface IntrinsicElements {
+        "cor-avatar": Omit<CorAvatar, keyof CorAvatarAttributes> & { [K in keyof CorAvatar & keyof CorAvatarAttributes]?: CorAvatar[K] } & { [K in keyof CorAvatar & keyof CorAvatarAttributes as `attr:${K}`]?: CorAvatarAttributes[K] } & { [K in keyof CorAvatar & keyof CorAvatarAttributes as `prop:${K}`]?: CorAvatar[K] };
+        "cor-badge": Omit<CorBadge, keyof CorBadgeAttributes> & { [K in keyof CorBadge & keyof CorBadgeAttributes]?: CorBadge[K] } & { [K in keyof CorBadge & keyof CorBadgeAttributes as `attr:${K}`]?: CorBadgeAttributes[K] } & { [K in keyof CorBadge & keyof CorBadgeAttributes as `prop:${K}`]?: CorBadge[K] };
+        "cor-breadcrumb": Omit<CorBreadcrumb, keyof CorBreadcrumbAttributes> & { [K in keyof CorBreadcrumb & keyof CorBreadcrumbAttributes]?: CorBreadcrumb[K] } & { [K in keyof CorBreadcrumb & keyof CorBreadcrumbAttributes as `attr:${K}`]?: CorBreadcrumbAttributes[K] } & { [K in keyof CorBreadcrumb & keyof CorBreadcrumbAttributes as `prop:${K}`]?: CorBreadcrumb[K] };
+        "cor-breadcrumb-item": Omit<CorBreadcrumbItem, keyof CorBreadcrumbItemAttributes> & { [K in keyof CorBreadcrumbItem & keyof CorBreadcrumbItemAttributes]?: CorBreadcrumbItem[K] } & { [K in keyof CorBreadcrumbItem & keyof CorBreadcrumbItemAttributes as `attr:${K}`]?: CorBreadcrumbItemAttributes[K] } & { [K in keyof CorBreadcrumbItem & keyof CorBreadcrumbItemAttributes as `prop:${K}`]?: CorBreadcrumbItem[K] };
         "cor-button": Omit<CorButton, keyof CorButtonAttributes> & { [K in keyof CorButton & keyof CorButtonAttributes]?: CorButton[K] } & { [K in keyof CorButton & keyof CorButtonAttributes as `attr:${K}`]?: CorButtonAttributes[K] } & { [K in keyof CorButton & keyof CorButtonAttributes as `prop:${K}`]?: CorButton[K] };
         "cor-button-group": Omit<CorButtonGroup, keyof CorButtonGroupAttributes> & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes]?: CorButtonGroup[K] } & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes as `attr:${K}`]?: CorButtonGroupAttributes[K] } & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes as `prop:${K}`]?: CorButtonGroup[K] };
+        "cor-checkbox": Omit<CorCheckbox, keyof CorCheckboxAttributes> & { [K in keyof CorCheckbox & keyof CorCheckboxAttributes]?: CorCheckbox[K] } & { [K in keyof CorCheckbox & keyof CorCheckboxAttributes as `attr:${K}`]?: CorCheckboxAttributes[K] } & { [K in keyof CorCheckbox & keyof CorCheckboxAttributes as `prop:${K}`]?: CorCheckbox[K] };
         "cor-date-input": Omit<CorDateInput, keyof CorDateInputAttributes> & { [K in keyof CorDateInput & keyof CorDateInputAttributes]?: CorDateInput[K] } & { [K in keyof CorDateInput & keyof CorDateInputAttributes as `attr:${K}`]?: CorDateInputAttributes[K] } & { [K in keyof CorDateInput & keyof CorDateInputAttributes as `prop:${K}`]?: CorDateInput[K] };
         "cor-file-input": Omit<CorFileInput, keyof CorFileInputAttributes> & { [K in keyof CorFileInput & keyof CorFileInputAttributes]?: CorFileInput[K] } & { [K in keyof CorFileInput & keyof CorFileInputAttributes as `attr:${K}`]?: CorFileInputAttributes[K] } & { [K in keyof CorFileInput & keyof CorFileInputAttributes as `prop:${K}`]?: CorFileInput[K] };
         "cor-file-item": Omit<CorFileItem, keyof CorFileItemAttributes> & { [K in keyof CorFileItem & keyof CorFileItemAttributes]?: CorFileItem[K] } & { [K in keyof CorFileItem & keyof CorFileItemAttributes as `attr:${K}`]?: CorFileItemAttributes[K] } & { [K in keyof CorFileItem & keyof CorFileItemAttributes as `prop:${K}`]?: CorFileItem[K] };
@@ -3852,11 +4998,14 @@ declare namespace LocalJSX {
         "cor-link": Omit<CorLink, keyof CorLinkAttributes> & { [K in keyof CorLink & keyof CorLinkAttributes]?: CorLink[K] } & { [K in keyof CorLink & keyof CorLinkAttributes as `attr:${K}`]?: CorLinkAttributes[K] } & { [K in keyof CorLink & keyof CorLinkAttributes as `prop:${K}`]?: CorLink[K] };
         "cor-logo": Omit<CorLogo, keyof CorLogoAttributes> & { [K in keyof CorLogo & keyof CorLogoAttributes]?: CorLogo[K] } & { [K in keyof CorLogo & keyof CorLogoAttributes as `attr:${K}`]?: CorLogoAttributes[K] } & { [K in keyof CorLogo & keyof CorLogoAttributes as `prop:${K}`]?: CorLogo[K] };
         "cor-numeric-input": Omit<CorNumericInput, keyof CorNumericInputAttributes> & { [K in keyof CorNumericInput & keyof CorNumericInputAttributes]?: CorNumericInput[K] } & { [K in keyof CorNumericInput & keyof CorNumericInputAttributes as `attr:${K}`]?: CorNumericInputAttributes[K] } & { [K in keyof CorNumericInput & keyof CorNumericInputAttributes as `prop:${K}`]?: CorNumericInput[K] };
+        "cor-pagination": Omit<CorPagination, keyof CorPaginationAttributes> & { [K in keyof CorPagination & keyof CorPaginationAttributes]?: CorPagination[K] } & { [K in keyof CorPagination & keyof CorPaginationAttributes as `attr:${K}`]?: CorPaginationAttributes[K] } & { [K in keyof CorPagination & keyof CorPaginationAttributes as `prop:${K}`]?: CorPagination[K] };
         "cor-phone-input": Omit<CorPhoneInput, keyof CorPhoneInputAttributes> & { [K in keyof CorPhoneInput & keyof CorPhoneInputAttributes]?: CorPhoneInput[K] } & { [K in keyof CorPhoneInput & keyof CorPhoneInputAttributes as `attr:${K}`]?: CorPhoneInputAttributes[K] } & { [K in keyof CorPhoneInput & keyof CorPhoneInputAttributes as `prop:${K}`]?: CorPhoneInput[K] };
         "cor-radio": Omit<CorRadio, keyof CorRadioAttributes> & { [K in keyof CorRadio & keyof CorRadioAttributes]?: CorRadio[K] } & { [K in keyof CorRadio & keyof CorRadioAttributes as `attr:${K}`]?: CorRadioAttributes[K] } & { [K in keyof CorRadio & keyof CorRadioAttributes as `prop:${K}`]?: CorRadio[K] };
         "cor-search-input-circular": Omit<CorSearchInputCircular, keyof CorSearchInputCircularAttributes> & { [K in keyof CorSearchInputCircular & keyof CorSearchInputCircularAttributes]?: CorSearchInputCircular[K] } & { [K in keyof CorSearchInputCircular & keyof CorSearchInputCircularAttributes as `attr:${K}`]?: CorSearchInputCircularAttributes[K] } & { [K in keyof CorSearchInputCircular & keyof CorSearchInputCircularAttributes as `prop:${K}`]?: CorSearchInputCircular[K] };
         "cor-search-input-rectangular": Omit<CorSearchInputRectangular, keyof CorSearchInputRectangularAttributes> & { [K in keyof CorSearchInputRectangular & keyof CorSearchInputRectangularAttributes]?: CorSearchInputRectangular[K] } & { [K in keyof CorSearchInputRectangular & keyof CorSearchInputRectangularAttributes as `attr:${K}`]?: CorSearchInputRectangularAttributes[K] } & { [K in keyof CorSearchInputRectangular & keyof CorSearchInputRectangularAttributes as `prop:${K}`]?: CorSearchInputRectangular[K] };
+        "cor-segmented-control": Omit<CorSegmentedControl, keyof CorSegmentedControlAttributes> & { [K in keyof CorSegmentedControl & keyof CorSegmentedControlAttributes]?: CorSegmentedControl[K] } & { [K in keyof CorSegmentedControl & keyof CorSegmentedControlAttributes as `attr:${K}`]?: CorSegmentedControlAttributes[K] } & { [K in keyof CorSegmentedControl & keyof CorSegmentedControlAttributes as `prop:${K}`]?: CorSegmentedControl[K] };
         "cor-select-input": Omit<CorSelectInput, keyof CorSelectInputAttributes> & { [K in keyof CorSelectInput & keyof CorSelectInputAttributes]?: CorSelectInput[K] } & { [K in keyof CorSelectInput & keyof CorSelectInputAttributes as `attr:${K}`]?: CorSelectInputAttributes[K] } & { [K in keyof CorSelectInput & keyof CorSelectInputAttributes as `prop:${K}`]?: CorSelectInput[K] };
+        "cor-separator": Omit<CorSeparator, keyof CorSeparatorAttributes> & { [K in keyof CorSeparator & keyof CorSeparatorAttributes]?: CorSeparator[K] } & { [K in keyof CorSeparator & keyof CorSeparatorAttributes as `attr:${K}`]?: CorSeparatorAttributes[K] } & { [K in keyof CorSeparator & keyof CorSeparatorAttributes as `prop:${K}`]?: CorSeparator[K] };
         "cor-service-button": Omit<CorServiceButton, keyof CorServiceButtonAttributes> & { [K in keyof CorServiceButton & keyof CorServiceButtonAttributes]?: CorServiceButton[K] } & { [K in keyof CorServiceButton & keyof CorServiceButtonAttributes as `attr:${K}`]?: CorServiceButtonAttributes[K] } & { [K in keyof CorServiceButton & keyof CorServiceButtonAttributes as `prop:${K}`]?: CorServiceButton[K] };
         "cor-spinner": Omit<CorSpinner, keyof CorSpinnerAttributes> & { [K in keyof CorSpinner & keyof CorSpinnerAttributes]?: CorSpinner[K] } & { [K in keyof CorSpinner & keyof CorSpinnerAttributes as `attr:${K}`]?: CorSpinnerAttributes[K] } & { [K in keyof CorSpinner & keyof CorSpinnerAttributes as `prop:${K}`]?: CorSpinner[K] };
     }
@@ -3865,6 +5014,55 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            /**
+             * Avatar — represents a user via a photo, initials, or a generic person icon.
+             * Pattern A (atom-display): wraps a single piece of slottable content (an
+             * optional notification badge) and otherwise renders its own internal DOM.
+             * The component picks its visual mode from the `type` prop:
+             * - `photo` — renders `<img>` from `src`; if the image fails to load, falls
+             *   back to initials (when `name`/`initials` is set) or the person icon.
+             * - `initials` — renders 1–2 uppercase letters derived from `initials` or
+             *   `name`. If neither is set, the icon fallback kicks in.
+             * - `icon` — renders a `cor-icon` (default `person`).
+             * @element cor-avatar
+             */
+            "cor-avatar": LocalJSX.IntrinsicElements["cor-avatar"] & JSXBase.HTMLAttributes<HTMLCorAvatarElement>;
+            /**
+             * Badge — small, non-interactive status / count indicator.
+             * Two visual forms:
+             *  - `numbered` (default): shows a numeric counter inside a rounded pill.
+             *  - `dot`: a tiny solid circle used for "unread" presence indication.
+             * Five color variants map to the project's semantic token roles.
+             * Designed to overlay parent elements (avatars, icon buttons, list items)
+             * via consumer-controlled positioning — the badge itself just paints.
+             * Position offsets are exposed as CSS variables (`--badge-offset-top`,
+             * `--badge-offset-right`) so consumers can compose without overrides.
+             * Pattern B (atom-visual): internal DOM only, no slots, no events.
+             * @element cor-badge
+             */
+            "cor-badge": LocalJSX.IntrinsicElements["cor-badge"] & JSXBase.HTMLAttributes<HTMLCorBadgeElement>;
+            /**
+             * Breadcrumb — navigational trail showing the user's location in the site hierarchy.
+             * Two equivalent authoring modes:
+             * 1. **Prop-driven** (preferred for dynamic data): pass `items` as a typed array.
+             * 2. **Slot-driven** (preferred for static markup): nest `<cor-breadcrumb-item>` children.
+             * When both are present, the `items` prop wins.
+             * On desktop the full trail renders horizontally. When `maxVisible` is exceeded,
+             * intermediate crumbs collapse into an overflow "…" menu. On mobile (≤640px) with
+             * `responsive=true`, the trail collapses to a single "‹ Back to {parent}" link
+             * per the WAI-ARIA breadcrumb pattern and Figma 69:408.
+             * @element cor-breadcrumb
+             */
+            "cor-breadcrumb": LocalJSX.IntrinsicElements["cor-breadcrumb"] & JSXBase.HTMLAttributes<HTMLCorBreadcrumbElement>;
+            /**
+             * A single crumb inside `cor-breadcrumb`. Renders an anchor when `href` is set,
+             * otherwise plain text. The active crumb renders as text with `aria-current="page"`,
+             * regardless of `href`.
+             * Use this directly when the markup variant of the breadcrumb is preferred over
+             * the `items` prop on `cor-breadcrumb`. Both APIs are equivalent in behavior.
+             * @element cor-breadcrumb-item
+             */
+            "cor-breadcrumb-item": LocalJSX.IntrinsicElements["cor-breadcrumb-item"] & JSXBase.HTMLAttributes<HTMLCorBreadcrumbItemElement>;
             /**
              * Button — interactive control.
              * Pattern B (atom-interactive): renders its own `<button>` (or `<a>` when `href`
@@ -3883,6 +5081,19 @@ declare module "@stencil/core" {
              * @element cor-button-group
              */
             "cor-button-group": LocalJSX.IntrinsicElements["cor-button-group"] & JSXBase.HTMLAttributes<HTMLCorButtonGroupElement>;
+            /**
+             * Checkbox — boolean / tri-state form control.
+             * Pattern B (atom-interactive, form-associated): renders its own visual box
+             * inside shadow DOM plus a screen-reader-friendly `<input type="checkbox">`.
+             * Form participation works via `formAssociated` + `ElementInternals`.
+             * Visual states mirror Figma `Mode × State × Size`:
+             *   Mode  = Unchecked | Checked | Indeterminate
+             *   State = Default | Focus | Error (`invalid`) | Disabled
+             *   Size  = Medium (24px) | Small (20px)
+             * Indeterminate is a visual-only third state — `checked` semantics are unchanged.
+             * @element cor-checkbox
+             */
+            "cor-checkbox": LocalJSX.IntrinsicElements["cor-checkbox"] & JSXBase.HTMLAttributes<HTMLCorCheckboxElement>;
             /**
              * Date Input — segment-masked date entry molecule.
              * Pattern B (atom-interactive, form-associated): renders its own `<input>`
@@ -3996,6 +5207,20 @@ declare module "@stencil/core" {
              */
             "cor-numeric-input": LocalJSX.IntrinsicElements["cor-numeric-input"] & JSXBase.HTMLAttributes<HTMLCorNumericInputElement>;
             /**
+             * Pagination — navigation control for paged content.
+             * Renders a list of page-number buttons flanked by Previous / Next controls.
+             * The visible page list is computed from `currentPage`, `totalPages`,
+             * `siblingCount`, and `boundaryCount`. When the total exceeds the visible
+             * window, ellipses (`...`) appear at the start and/or end of the range.
+             * The component is internally controlled but exposes a `corChange` event so
+             * the host can drive the active page. Updating `current-page` from outside
+             * is also honoured (e.g. when the URL changes via routing).
+             * @element cor-pagination
+             * @event corChange - Fires when the user activates a different page.
+             *             Detail: `{ page, previousPage }`.
+             */
+            "cor-pagination": LocalJSX.IntrinsicElements["cor-pagination"] & JSXBase.HTMLAttributes<HTMLCorPaginationElement>;
+            /**
              * Phone Input — phone-number entry molecule with country-code prefix and
              * format mask. The most Moldova-specific input in the family: it ships a
              * default `+373` country, a curated diaspora-relevant country list with
@@ -4068,6 +5293,21 @@ declare module "@stencil/core" {
              */
             "cor-search-input-rectangular": LocalJSX.IntrinsicElements["cor-search-input-rectangular"] & JSXBase.HTMLAttributes<HTMLCorSearchInputRectangularElement>;
             /**
+             * Segmented control — single-select horizontal switcher.
+             * Pattern B (atom-interactive, form-associated): renders an internal
+             * `role="radiogroup"` of `role="radio"` buttons inside the shadow DOM with
+             * a roving `tabindex`. Selected segment gets the dark inverse fill from
+             * Figma 659:8188; unselected segments inherit the light tertiary container
+             * background and only carry their label.
+             * Keyboard contract (WAI-ARIA Authoring Practices, radiogroup pattern):
+             * - `Tab` enters and exits the group (single stop)
+             * - `ArrowLeft` / `ArrowRight` move selection between segments
+             * - `Home` / `End` jump to first / last segment
+             * - `Enter` / `Space` reaffirm selection on the focused segment
+             * @element cor-segmented-control
+             */
+            "cor-segmented-control": LocalJSX.IntrinsicElements["cor-segmented-control"] & JSXBase.HTMLAttributes<HTMLCorSegmentedControlElement>;
+            /**
              * Select Input — single-select dropdown atom.
              * Pattern B (atom-interactive, form-associated): renders a custom-styled
              * trigger button and a listbox popover inside shadow DOM. Form participation
@@ -4079,6 +5319,13 @@ declare module "@stencil/core" {
              * @element cor-select-input
              */
             "cor-select-input": LocalJSX.IntrinsicElements["cor-select-input"] & JSXBase.HTMLAttributes<HTMLCorSelectInputElement>;
+            /**
+             * Separator — visual divider between groups of content or UI components.
+             * Pattern B (atom-visual): renders a 1D rule, optionally with an inline label.
+             * No events, no interactivity. ARIA `separator` semantics.
+             * @element cor-separator
+             */
+            "cor-separator": LocalJSX.IntrinsicElements["cor-separator"] & JSXBase.HTMLAttributes<HTMLCorSeparatorElement>;
             /**
              * Service Button — interactive control for Moldovan M-products (mpay, mpass,
              * msign, mpower, mdelivery).
