@@ -65,7 +65,7 @@
     "test.dev": "stencil-test --project spec",
     "test.watch": "stencil-test --project spec --watch",
     "test.storybook": "vitest --project storybook --run",
-    "test.storybook.watch": "vitest --project storybook",
+    "test.storybook.watch": "wireit",
     "check": "yarn format && yarn typecheck && yarn lint && yarn test",
     "check.ci": "yarn typecheck && yarn lint && yarn test",
     "typecheck": "wireit",
@@ -255,8 +255,16 @@
         "dx:prepare",
         "tokens.watch",
         "dx:stencil",
-        "dx:storybook"
+        "dx:storybook",
+        "test.storybook.watch"
       ]
+    },
+    "test.storybook.watch": {
+      "command": "vitest --project storybook",
+      "dependencies": [
+        "dx:prepare"
+      ],
+      "service": true
     },
     "dx:stencil": {
       "command": "stencil build --dev --watch --serve=false",
