@@ -11,6 +11,7 @@ import { BreadcrumbItem, BreadcrumbSelectDetail } from "./components/cor-breadcr
 import { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/cor-button/cor-button.types";
 import { ButtonGroupOrientation } from "./components/cor-button-group/cor-button-group.types";
 import { CheckboxChangeDetail, CheckboxSize } from "./components/cor-checkbox/cor-checkbox.types";
+import { ChipSelectEventDetail, ChipSize, ChipType } from "./components/cor-chip/cor-chip.types";
 import { DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/cor-date-input/cor-date-input.types";
 import { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize } from "./components/cor-file-input/cor-file-input.types";
 import { FileItemRemoveDetail, FileItemState } from "./components/cor-file-item/cor-file-item.types";
@@ -19,6 +20,7 @@ import { InputChangeDetail, InputSize, InputType, InputVariant } from "./compone
 import { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/cor-input-chip/cor-input-chip.types";
 import { LinkSize, LinkUnderline, LinkVariant } from "./components/cor-link/cor-link.types";
 import { LogoName } from "./components/cor-logo/cor-logo.types";
+import { NotificationStyle, NotificationVariant } from "./components/cor-notification/cor-notification.types";
 import { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/cor-numeric-input/cor-numeric-input.types";
 import { PaginationChangeDetail, PaginationSize } from "./components/cor-pagination/cor-pagination.types";
 import { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/cor-phone-input/cor-phone-input.types";
@@ -30,12 +32,17 @@ import { SelectChangeDetail, SelectInputSize, SelectInputVariant, SelectOption }
 import { SeparatorOrientation, SeparatorSize, SeparatorVariant } from "./components/cor-separator/cor-separator.types";
 import { ServiceButtonAppearance, ServiceButtonType } from "./components/cor-service-button/cor-service-button.types";
 import { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
+import { SwitchChangeDetail } from "./components/cor-switch/cor-switch.types";
+import { TagSemantic, TagSize, TagType, TagVariant } from "./components/cor-tag/cor-tag.types";
+import { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from "./components/cor-textarea/cor-textarea.types";
+import { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, TooltipVariant } from "./components/cor-tooltip/cor-tooltip.types";
 export { AvatarSize, AvatarType } from "./components/cor-avatar/cor-avatar.types";
 export { BadgeSize, BadgeType, BadgeVariant } from "./components/cor-badge/cor-badge.types";
 export { BreadcrumbItem, BreadcrumbSelectDetail } from "./components/cor-breadcrumb/cor-breadcrumb.types";
 export { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/cor-button/cor-button.types";
 export { ButtonGroupOrientation } from "./components/cor-button-group/cor-button-group.types";
 export { CheckboxChangeDetail, CheckboxSize } from "./components/cor-checkbox/cor-checkbox.types";
+export { ChipSelectEventDetail, ChipSize, ChipType } from "./components/cor-chip/cor-chip.types";
 export { DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/cor-date-input/cor-date-input.types";
 export { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize } from "./components/cor-file-input/cor-file-input.types";
 export { FileItemRemoveDetail, FileItemState } from "./components/cor-file-item/cor-file-item.types";
@@ -44,6 +51,7 @@ export { InputChangeDetail, InputSize, InputType, InputVariant } from "./compone
 export { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/cor-input-chip/cor-input-chip.types";
 export { LinkSize, LinkUnderline, LinkVariant } from "./components/cor-link/cor-link.types";
 export { LogoName } from "./components/cor-logo/cor-logo.types";
+export { NotificationStyle, NotificationVariant } from "./components/cor-notification/cor-notification.types";
 export { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/cor-numeric-input/cor-numeric-input.types";
 export { PaginationChangeDetail, PaginationSize } from "./components/cor-pagination/cor-pagination.types";
 export { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/cor-phone-input/cor-phone-input.types";
@@ -55,6 +63,10 @@ export { SelectChangeDetail, SelectInputSize, SelectInputVariant, SelectOption }
 export { SeparatorOrientation, SeparatorSize, SeparatorVariant } from "./components/cor-separator/cor-separator.types";
 export { ServiceButtonAppearance, ServiceButtonType } from "./components/cor-service-button/cor-service-button.types";
 export { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
+export { SwitchChangeDetail } from "./components/cor-switch/cor-switch.types";
+export { TagSemantic, TagSize, TagType, TagVariant } from "./components/cor-tag/cor-tag.types";
+export { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from "./components/cor-textarea/cor-textarea.types";
+export { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, TooltipVariant } from "./components/cor-tooltip/cor-tooltip.types";
 export namespace Components {
     /**
      * Avatar — represents a user via a photo, initials, or a generic person icon.
@@ -393,6 +405,50 @@ export namespace Components {
           * Form value submitted when `checked`. Defaults to `'on'` like native checkboxes.
          */
         "value"?: string;
+    }
+    /**
+     * Chip — compact, pill-shaped control for filter selection or token display.
+     * Pattern B (atom-interactive): renders its own `<button>` inside shadow DOM
+     * so it participates in tab order and exposes a real accessible role.
+     * Two modes:
+     * - `type="filter"` (default) — toggleable filter chip. Click flips `selected`
+     *   and emits `corSelect`. Best used inside a chip group for mono- or
+     *   multi-selection filtering.
+     * - `type="input"` — a discrete value entered by a user (e.g. a tag inside
+     *   a search field). When `removable`, a trailing close button is rendered;
+     *   activating it emits `corRemove`.
+     * @element cor-chip
+     */
+    interface CorChip {
+        /**
+          * Disables interactivity. Reflects `aria-disabled` and removes the chip from pointer/keyboard activation paths.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Fallback label rendered when the default slot is empty. Plain text only.
+         */
+        "label"?: string;
+        /**
+          * When `type="input"`, renders a trailing close button that emits `corRemove` on activation. Ignored when `type="filter"`.
+          * @default false
+         */
+        "removable": boolean;
+        /**
+          * Selected state for `type="filter"`. Ignored when `type="input"`.
+          * @default false
+         */
+        "selected": boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size": ChipSize;
+        /**
+          * Behavioral mode. - `filter` — toggle on click, emits `corSelect` - `input` — represents a user-entered value; combine with `removable` for a trailing × button
+          * @default 'filter'
+         */
+        "type": ChipType;
     }
     /**
      * Date Input — segment-masked date entry molecule.
@@ -940,6 +996,56 @@ export namespace Components {
           * @default 'mpay-logo-logomark-only'
          */
         "name": LogoName;
+    }
+    /**
+     * Notification — semantic messaging banner.
+     * Renders an optional leading icon, an optional bold title, the message body
+     * (default slot), an optional inline action group (`actions` slot) and an
+     * optional trailing close button.
+     * Pattern B (atom-display + interactive close): the close affordance lives
+     * inside shadow DOM so it participates in tab order with a real
+     * `button` role. The body itself is not interactive.
+     * `variant` selects the semantic color family (info / positive / warning /
+     * danger / neutral). `notificationStyle` toggles between the soft tinted
+     * background (`subtle`) and the filled high-emphasis treatment (`strong`).
+     * Live-region routing:
+     * - `info` / `positive` / `neutral` → `role="status"` + `aria-live="polite"`
+     * - `warning` / `danger` → `role="alert"` + `aria-live="assertive"`
+     * @element cor-notification
+     */
+    interface CorNotification {
+        /**
+          * Forwarded to the host as `aria-label`. Use this to give the entire notification an explicit accessible name when the body content alone is not descriptive enough.
+         */
+        "ariaLabel"?: string;
+        /**
+          * When `true`, renders a trailing close button. Activating it emits `corClose`; the consumer is responsible for removing the notification from the DOM.
+          * @default false
+         */
+        "closable": boolean;
+        /**
+          * Close-button accessible label. Defaults to the Romanian "Închide". Provide an alternative for non-Romanian locales.
+          * @default 'Închide'
+         */
+        "closeLabel": string;
+        /**
+          * Override the default `cor-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
+         */
+        "iconName"?: string;
+        /**
+          * Visual intensity. `subtle` renders a tinted background with high-contrast dark text; `strong` renders a filled semantic background with on-color text. The attribute is reflected as `notification-style` to avoid colliding with the global `style` attribute on every HTML element.
+          * @default 'subtle'
+         */
+        "notificationStyle": NotificationStyle;
+        /**
+          * Optional bold title rendered above the body.
+         */
+        "titleText"?: string;
+        /**
+          * Semantic color family.
+          * @default 'info'
+         */
+        "variant": NotificationVariant;
     }
     /**
      * Numeric Input — numeric-entry control with stacked step buttons.
@@ -1796,6 +1902,264 @@ export namespace Components {
          */
         "variant": SpinnerVariant;
     }
+    /**
+     * Switch — binary on/off toggle atom (form-associated).
+     * Pattern B (atom-interactive, form-associated): renders its own
+     * `<input type="checkbox" role="switch">` inside shadow DOM and paints the
+     * visual track + thumb with CSS. Implements the WAI-ARIA switch pattern, not
+     * the checkbox pattern — `role="switch"` with `aria-checked="true|false"`.
+     * Space toggles per native checkbox semantics; the role swap does not break
+     * keyboard activation.
+     * The visible track is 48 × 28px; the hit area expands to 32px on
+     * pointer-devices and 40px on touch-devices (via `pointer: coarse`) per the
+     * Figma "Target Sizes" spec, achieved with a `::before` pseudo-element so the
+     * visual footprint stays untouched.
+     * @element cor-switch
+     */
+    interface CorSwitch {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * ID of the element labelling the switch. Used when label content lives outside the component.
+         */
+        "ariaLabelledby"?: string;
+        /**
+          * Whether the switch is currently on.
+          * @default false
+         */
+        "checked": boolean;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Marks the field as mandatory. Sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required": boolean;
+        /**
+          * Value submitted with the form when this switch is on.
+          * @default 'on'
+         */
+        "value"?: string;
+    }
+    /**
+     * Tag — compact, non-interactive label used to mark state, category,
+     * or supplementary metadata.
+     * Pattern B (atom-visual): the host paints; consumers compose icons
+     * through named slots. Two visual scales coexist behind the same
+     * element:
+     * - `variant="status"` (default) — the standard Status Tag used for
+     *   state ("Activ", "În așteptare", "Refuzat"). Medium-weight label,
+     *   three surface treatments (`subtle`, `strong`, `outlined`) across
+     *   seven semantic colors.
+     * - `variant="info"` — a lighter inline tag for metadata embedded in
+     *   body text. Regular-weight label, tighter padding. Honors the same
+     *   `type` and `semantic` axes.
+     * Tags are decorative by default. When a tag conveys a dynamic state
+     * to assistive tech ("Procesare în curs"), set `aria-label` and the
+     * host will adopt `role="status"` automatically — otherwise the host
+     * stays silent so visual-only tags don't pollute the a11y tree.
+     * For horizontally stacked groups (8 px gutter, wrap on overflow),
+     * compose multiple tags inside a `cor-tag-group` slot wrapper —
+     * available as a CSS utility on this element via the `group` data
+     * attribute on the parent.
+     * @element cor-tag
+     */
+    interface CorTag {
+        /**
+          * Overrides the accessible name. When set, the host also adopts `role="status"` so screen readers announce the tag as a live status region (e.g. "Procesare în curs").
+         */
+        "ariaLabel"?: string;
+        /**
+          * Fallback label text rendered when the default slot is empty. Plain text only.
+         */
+        "label"?: string;
+        /**
+          * Semantic color role.
+          * @default 'neutral'
+         */
+        "semantic": TagSemantic;
+        /**
+          * Size rung — affects height, padding, icon size, and typography. `md` = 24 px, `sm` = 20 px.
+          * @default 'md'
+         */
+        "size": TagSize;
+        /**
+          * Surface treatment. - `subtle` — tinted background, semantic foreground (default). - `strong` — saturated background, on-color foreground. - `outlined` — transparent fill, semantic 1 px border.
+          * @default 'subtle'
+         */
+        "type": TagType;
+        /**
+          * Visual scale. `status` is the standard Status Tag (medium label, three types). `info` is the lighter inline tag for metadata.
+          * @default 'status'
+         */
+        "variant": TagVariant;
+    }
+    /**
+     * Text Area — multi-line text-entry control.
+     * Pattern B (atom-interactive, form-associated): renders its own `<textarea>`
+     * inside shadow DOM. Form participation works via `formAssociated` +
+     * `ElementInternals`. Mirrors the `cor-input` contract for label, helper,
+     * error and variant treatment, and adds a vertical resize handle plus an
+     * optional character counter.
+     * @element cor-textarea
+     */
+    interface CorTextarea {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
+         */
+        "errorText"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid": boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Maximum character length. When set, a character counter renders in the bottom-right corner unless `showCounter` is explicitly `false`.
+         */
+        "maxLength"?: number;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Placeholder shown when the control is empty.
+         */
+        "placeholder"?: string;
+        /**
+          * Renders the field read-only. The control remains focusable and copyable.
+          * @default false
+         */
+        "readonly": boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required": boolean;
+        /**
+          * User resize affordance. `'vertical'` lets the user drag the bottom-right grip to grow the control downward; `'none'` locks the height to `rows`.
+          * @default 'vertical'
+         */
+        "resize": TextareaResize;
+        /**
+          * Minimum visible rows for the native control. Drives the initial height floor before the user resizes vertically.
+          * @default 4
+         */
+        "rows": number;
+        /**
+          * Force the character counter to show or hide. When `maxLength` is set the counter auto-shows; pass `false` to suppress it. Without `maxLength` the counter is hidden regardless.
+          * @default true
+         */
+        "showCounter": boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size": TextareaSize;
+        /**
+          * Current value of the control. Reflects to the host attribute.
+          * @default ''
+         */
+        "value": string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant": TextareaVariant;
+    }
+    /**
+     * Tooltip — transient label or coach mark anchored to a trigger element.
+     * Pattern B (internal DOM). The host wraps a `trigger` slot (the element being
+     * described) and renders the bubble + arrow inside shadow DOM. Position is
+     * computed in JS against the trigger's bounding rect so the tooltip can flip
+     * when it would overflow the viewport. ARIA wiring sets `aria-describedby` on
+     * the slotted trigger element so screen readers announce the bubble copy
+     * alongside the control.
+     * Two variants:
+     * - `default` — opens on `hover` (after `delay`) or `focus` (immediate); closes
+     *   on `mouseleave` / `blur` / `Esc`.
+     * - `coach` — instructional overlay. Stays open until the user dismisses it via
+     *   the trailing close button, `Esc`, or a click outside the bubble. Includes
+     *   the localized hint "Apasă Esc pentru a închide".
+     * @element cor-tooltip
+     * @event corOpen   - Fired when the tooltip becomes visible.
+     * @event corClose  - Fired when the tooltip is hidden. `detail.reason` records the
+     *             cause (`blur` | `escape` | `close-button` | `click-outside`).
+     */
+    interface CorTooltip {
+        /**
+          * Accessible name applied to the rendered bubble. When omitted the visible tooltip text doubles as the accessible name via `aria-describedby`.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Convenience: tooltip body text. Used only when the default slot is empty.
+         */
+        "content"?: string;
+        /**
+          * Show-delay in milliseconds before the bubble appears on hover. Focus and manual triggers ignore this value.
+          * @default 0
+         */
+        "delay": number;
+        /**
+          * Hard cap on the bubble width in pixels. Long content wraps below this width. Defaults to 200 (Figma specification).
+          * @default 200
+         */
+        "maxWidth": number;
+        /**
+          * Whether the tooltip is currently visible. Mutable so the component can close itself in response to mouseleave / blur / Esc and so consumers can drive visibility imperatively (`trigger="manual"`).
+          * @default false
+         */
+        "open": boolean;
+        /**
+          * Preferred position relative to the trigger. `auto` (default) prefers `top` and flips to the opposite side when the tooltip would overflow.
+          * @default 'auto'
+         */
+        "position": TooltipPosition;
+        /**
+          * Visual size rung. `sm` matches a 4px radius / 8px–12px padding bubble; `lg` matches a 6px radius / 12px–16px padding bubble.
+          * @default 'sm'
+         */
+        "size": TooltipSize;
+        /**
+          * How the tooltip is activated. - `hover`  — mouseenter (after `delay`) → open, mouseleave → close. - `focus`  — focus (immediate) → open, blur or Esc → close. - `manual` — visibility is driven by `open`; ignores pointer/keyboard events.
+          * @default 'hover'
+         */
+        "trigger": TooltipTrigger;
+        /**
+          * Visual variant. `default` is a transient hover/focus tip; `coach` is a persistent instructional overlay with a close button.
+          * @default 'default'
+         */
+        "variant": TooltipVariant;
+    }
 }
 export interface CorBreadcrumbCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1808,6 +2172,10 @@ export interface CorBreadcrumbItemCustomEvent<T> extends CustomEvent<T> {
 export interface CorCheckboxCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLCorCheckboxElement;
+}
+export interface CorChipCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorChipElement;
 }
 export interface CorDateInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1832,6 +2200,10 @@ export interface CorInputChipCustomEvent<T> extends CustomEvent<T> {
 export interface CorLogoCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLCorLogoElement;
+}
+export interface CorNotificationCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorNotificationElement;
 }
 export interface CorNumericInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -1864,6 +2236,18 @@ export interface CorSegmentedControlCustomEvent<T> extends CustomEvent<T> {
 export interface CorSelectInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLCorSelectInputElement;
+}
+export interface CorSwitchCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorSwitchElement;
+}
+export interface CorTextareaCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorTextareaElement;
+}
+export interface CorTooltipCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorTooltipElement;
 }
 declare global {
     /**
@@ -2015,6 +2399,37 @@ declare global {
     var HTMLCorCheckboxElement: {
         prototype: HTMLCorCheckboxElement;
         new (): HTMLCorCheckboxElement;
+    };
+    interface HTMLCorChipElementEventMap {
+        "corSelect": ChipSelectEventDetail;
+        "corRemove": void;
+    }
+    /**
+     * Chip — compact, pill-shaped control for filter selection or token display.
+     * Pattern B (atom-interactive): renders its own `<button>` inside shadow DOM
+     * so it participates in tab order and exposes a real accessible role.
+     * Two modes:
+     * - `type="filter"` (default) — toggleable filter chip. Click flips `selected`
+     *   and emits `corSelect`. Best used inside a chip group for mono- or
+     *   multi-selection filtering.
+     * - `type="input"` — a discrete value entered by a user (e.g. a tag inside
+     *   a search field). When `removable`, a trailing close button is rendered;
+     *   activating it emits `corRemove`.
+     * @element cor-chip
+     */
+    interface HTMLCorChipElement extends Components.CorChip, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorChipElementEventMap>(type: K, listener: (this: HTMLCorChipElement, ev: CorChipCustomEvent<HTMLCorChipElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorChipElementEventMap>(type: K, listener: (this: HTMLCorChipElement, ev: CorChipCustomEvent<HTMLCorChipElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorChipElement: {
+        prototype: HTMLCorChipElement;
+        new (): HTMLCorChipElement;
     };
     interface HTMLCorDateInputElementEventMap {
         "corInput": DateInputTypingDetail;
@@ -2232,6 +2647,39 @@ declare global {
     var HTMLCorLogoElement: {
         prototype: HTMLCorLogoElement;
         new (): HTMLCorLogoElement;
+    };
+    interface HTMLCorNotificationElementEventMap {
+        "corClose": void;
+    }
+    /**
+     * Notification — semantic messaging banner.
+     * Renders an optional leading icon, an optional bold title, the message body
+     * (default slot), an optional inline action group (`actions` slot) and an
+     * optional trailing close button.
+     * Pattern B (atom-display + interactive close): the close affordance lives
+     * inside shadow DOM so it participates in tab order with a real
+     * `button` role. The body itself is not interactive.
+     * `variant` selects the semantic color family (info / positive / warning /
+     * danger / neutral). `notificationStyle` toggles between the soft tinted
+     * background (`subtle`) and the filled high-emphasis treatment (`strong`).
+     * Live-region routing:
+     * - `info` / `positive` / `neutral` → `role="status"` + `aria-live="polite"`
+     * - `warning` / `danger` → `role="alert"` + `aria-live="assertive"`
+     * @element cor-notification
+     */
+    interface HTMLCorNotificationElement extends Components.CorNotification, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorNotificationElementEventMap>(type: K, listener: (this: HTMLCorNotificationElement, ev: CorNotificationCustomEvent<HTMLCorNotificationElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorNotificationElementEventMap>(type: K, listener: (this: HTMLCorNotificationElement, ev: CorNotificationCustomEvent<HTMLCorNotificationElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorNotificationElement: {
+        prototype: HTMLCorNotificationElement;
+        new (): HTMLCorNotificationElement;
     };
     interface HTMLCorNumericInputElementEventMap {
         "corInput": NumericInputChangeDetail;
@@ -2559,6 +3007,134 @@ declare global {
         prototype: HTMLCorSpinnerElement;
         new (): HTMLCorSpinnerElement;
     };
+    interface HTMLCorSwitchElementEventMap {
+        "corChange": SwitchChangeDetail;
+        "corFocus": FocusEvent;
+        "corBlur": FocusEvent;
+    }
+    /**
+     * Switch — binary on/off toggle atom (form-associated).
+     * Pattern B (atom-interactive, form-associated): renders its own
+     * `<input type="checkbox" role="switch">` inside shadow DOM and paints the
+     * visual track + thumb with CSS. Implements the WAI-ARIA switch pattern, not
+     * the checkbox pattern — `role="switch"` with `aria-checked="true|false"`.
+     * Space toggles per native checkbox semantics; the role swap does not break
+     * keyboard activation.
+     * The visible track is 48 × 28px; the hit area expands to 32px on
+     * pointer-devices and 40px on touch-devices (via `pointer: coarse`) per the
+     * Figma "Target Sizes" spec, achieved with a `::before` pseudo-element so the
+     * visual footprint stays untouched.
+     * @element cor-switch
+     */
+    interface HTMLCorSwitchElement extends Components.CorSwitch, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorSwitchElementEventMap>(type: K, listener: (this: HTMLCorSwitchElement, ev: CorSwitchCustomEvent<HTMLCorSwitchElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorSwitchElementEventMap>(type: K, listener: (this: HTMLCorSwitchElement, ev: CorSwitchCustomEvent<HTMLCorSwitchElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorSwitchElement: {
+        prototype: HTMLCorSwitchElement;
+        new (): HTMLCorSwitchElement;
+    };
+    /**
+     * Tag — compact, non-interactive label used to mark state, category,
+     * or supplementary metadata.
+     * Pattern B (atom-visual): the host paints; consumers compose icons
+     * through named slots. Two visual scales coexist behind the same
+     * element:
+     * - `variant="status"` (default) — the standard Status Tag used for
+     *   state ("Activ", "În așteptare", "Refuzat"). Medium-weight label,
+     *   three surface treatments (`subtle`, `strong`, `outlined`) across
+     *   seven semantic colors.
+     * - `variant="info"` — a lighter inline tag for metadata embedded in
+     *   body text. Regular-weight label, tighter padding. Honors the same
+     *   `type` and `semantic` axes.
+     * Tags are decorative by default. When a tag conveys a dynamic state
+     * to assistive tech ("Procesare în curs"), set `aria-label` and the
+     * host will adopt `role="status"` automatically — otherwise the host
+     * stays silent so visual-only tags don't pollute the a11y tree.
+     * For horizontally stacked groups (8 px gutter, wrap on overflow),
+     * compose multiple tags inside a `cor-tag-group` slot wrapper —
+     * available as a CSS utility on this element via the `group` data
+     * attribute on the parent.
+     * @element cor-tag
+     */
+    interface HTMLCorTagElement extends Components.CorTag, HTMLStencilElement {
+    }
+    var HTMLCorTagElement: {
+        prototype: HTMLCorTagElement;
+        new (): HTMLCorTagElement;
+    };
+    interface HTMLCorTextareaElementEventMap {
+        "corInput": TextareaChangeDetail;
+        "corChange": TextareaChangeDetail;
+        "corFocus": FocusEvent;
+        "corBlur": FocusEvent;
+    }
+    /**
+     * Text Area — multi-line text-entry control.
+     * Pattern B (atom-interactive, form-associated): renders its own `<textarea>`
+     * inside shadow DOM. Form participation works via `formAssociated` +
+     * `ElementInternals`. Mirrors the `cor-input` contract for label, helper,
+     * error and variant treatment, and adds a vertical resize handle plus an
+     * optional character counter.
+     * @element cor-textarea
+     */
+    interface HTMLCorTextareaElement extends Components.CorTextarea, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorTextareaElementEventMap>(type: K, listener: (this: HTMLCorTextareaElement, ev: CorTextareaCustomEvent<HTMLCorTextareaElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorTextareaElementEventMap>(type: K, listener: (this: HTMLCorTextareaElement, ev: CorTextareaCustomEvent<HTMLCorTextareaElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorTextareaElement: {
+        prototype: HTMLCorTextareaElement;
+        new (): HTMLCorTextareaElement;
+    };
+    interface HTMLCorTooltipElementEventMap {
+        "corOpen": void;
+        "corClose": TooltipCloseEventDetail;
+    }
+    /**
+     * Tooltip — transient label or coach mark anchored to a trigger element.
+     * Pattern B (internal DOM). The host wraps a `trigger` slot (the element being
+     * described) and renders the bubble + arrow inside shadow DOM. Position is
+     * computed in JS against the trigger's bounding rect so the tooltip can flip
+     * when it would overflow the viewport. ARIA wiring sets `aria-describedby` on
+     * the slotted trigger element so screen readers announce the bubble copy
+     * alongside the control.
+     * Two variants:
+     * - `default` — opens on `hover` (after `delay`) or `focus` (immediate); closes
+     *   on `mouseleave` / `blur` / `Esc`.
+     * - `coach` — instructional overlay. Stays open until the user dismisses it via
+     *   the trailing close button, `Esc`, or a click outside the bubble. Includes
+     *   the localized hint "Apasă Esc pentru a închide".
+     * @element cor-tooltip
+     * @event corOpen   - Fired when the tooltip becomes visible.
+     * @event corClose  - Fired when the tooltip is hidden. `detail.reason` records the
+     *             cause (`blur` | `escape` | `close-button` | `click-outside`).
+     */
+    interface HTMLCorTooltipElement extends Components.CorTooltip, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorTooltipElementEventMap>(type: K, listener: (this: HTMLCorTooltipElement, ev: CorTooltipCustomEvent<HTMLCorTooltipElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorTooltipElementEventMap>(type: K, listener: (this: HTMLCorTooltipElement, ev: CorTooltipCustomEvent<HTMLCorTooltipElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorTooltipElement: {
+        prototype: HTMLCorTooltipElement;
+        new (): HTMLCorTooltipElement;
+    };
     interface HTMLElementTagNameMap {
         "cor-avatar": HTMLCorAvatarElement;
         "cor-badge": HTMLCorBadgeElement;
@@ -2567,6 +3143,7 @@ declare global {
         "cor-button": HTMLCorButtonElement;
         "cor-button-group": HTMLCorButtonGroupElement;
         "cor-checkbox": HTMLCorCheckboxElement;
+        "cor-chip": HTMLCorChipElement;
         "cor-date-input": HTMLCorDateInputElement;
         "cor-file-input": HTMLCorFileInputElement;
         "cor-file-item": HTMLCorFileItemElement;
@@ -2575,6 +3152,7 @@ declare global {
         "cor-input-chip": HTMLCorInputChipElement;
         "cor-link": HTMLCorLinkElement;
         "cor-logo": HTMLCorLogoElement;
+        "cor-notification": HTMLCorNotificationElement;
         "cor-numeric-input": HTMLCorNumericInputElement;
         "cor-pagination": HTMLCorPaginationElement;
         "cor-phone-input": HTMLCorPhoneInputElement;
@@ -2586,6 +3164,10 @@ declare global {
         "cor-separator": HTMLCorSeparatorElement;
         "cor-service-button": HTMLCorServiceButtonElement;
         "cor-spinner": HTMLCorSpinnerElement;
+        "cor-switch": HTMLCorSwitchElement;
+        "cor-tag": HTMLCorTagElement;
+        "cor-textarea": HTMLCorTextareaElement;
+        "cor-tooltip": HTMLCorTooltipElement;
     }
 }
 declare namespace LocalJSX {
@@ -2954,6 +3536,58 @@ declare namespace LocalJSX {
           * Form value submitted when `checked`. Defaults to `'on'` like native checkboxes.
          */
         "value"?: string;
+    }
+    /**
+     * Chip — compact, pill-shaped control for filter selection or token display.
+     * Pattern B (atom-interactive): renders its own `<button>` inside shadow DOM
+     * so it participates in tab order and exposes a real accessible role.
+     * Two modes:
+     * - `type="filter"` (default) — toggleable filter chip. Click flips `selected`
+     *   and emits `corSelect`. Best used inside a chip group for mono- or
+     *   multi-selection filtering.
+     * - `type="input"` — a discrete value entered by a user (e.g. a tag inside
+     *   a search field). When `removable`, a trailing close button is rendered;
+     *   activating it emits `corRemove`.
+     * @element cor-chip
+     */
+    interface CorChip {
+        /**
+          * Disables interactivity. Reflects `aria-disabled` and removes the chip from pointer/keyboard activation paths.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Fallback label rendered when the default slot is empty. Plain text only.
+         */
+        "label"?: string;
+        /**
+          * Fires when the user activates the remove button on a `type="input"` chip.
+         */
+        "onCorRemove"?: (event: CorChipCustomEvent<void>) => void;
+        /**
+          * Fires when `type="filter"` is toggled. Payload reports the new selected state.
+         */
+        "onCorSelect"?: (event: CorChipCustomEvent<ChipSelectEventDetail>) => void;
+        /**
+          * When `type="input"`, renders a trailing close button that emits `corRemove` on activation. Ignored when `type="filter"`.
+          * @default false
+         */
+        "removable"?: boolean;
+        /**
+          * Selected state for `type="filter"`. Ignored when `type="input"`.
+          * @default false
+         */
+        "selected"?: boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size"?: ChipSize;
+        /**
+          * Behavioral mode. - `filter` — toggle on click, emits `corSelect` - `input` — represents a user-entered value; combine with `removable` for a trailing × button
+          * @default 'filter'
+         */
+        "type"?: ChipType;
     }
     /**
      * Date Input — segment-masked date entry molecule.
@@ -3605,6 +4239,60 @@ declare namespace LocalJSX {
           * Emitted when an asset fails to load — either because the `name` is not in the manifest (`'unknown'`) or because the SVG fetch failed (`'fetch-failed'`). Lets consumers react in production where `console.warn` is invisible (telemetry, fallback UI, etc.).  Note: events emitted during `componentWillLoad` (initial mount) fire before consumer listeners can attach to a freshly-inserted host. Attach the listener BEFORE setting the `name` prop, or rely on the warning for mount-time failures.
          */
         "onCorLogoError"?: (event: CorLogoCustomEvent<{ name: string; reason: 'unknown' | 'fetch-failed' }>) => void;
+    }
+    /**
+     * Notification — semantic messaging banner.
+     * Renders an optional leading icon, an optional bold title, the message body
+     * (default slot), an optional inline action group (`actions` slot) and an
+     * optional trailing close button.
+     * Pattern B (atom-display + interactive close): the close affordance lives
+     * inside shadow DOM so it participates in tab order with a real
+     * `button` role. The body itself is not interactive.
+     * `variant` selects the semantic color family (info / positive / warning /
+     * danger / neutral). `notificationStyle` toggles between the soft tinted
+     * background (`subtle`) and the filled high-emphasis treatment (`strong`).
+     * Live-region routing:
+     * - `info` / `positive` / `neutral` → `role="status"` + `aria-live="polite"`
+     * - `warning` / `danger` → `role="alert"` + `aria-live="assertive"`
+     * @element cor-notification
+     */
+    interface CorNotification {
+        /**
+          * Forwarded to the host as `aria-label`. Use this to give the entire notification an explicit accessible name when the body content alone is not descriptive enough.
+         */
+        "ariaLabel"?: string;
+        /**
+          * When `true`, renders a trailing close button. Activating it emits `corClose`; the consumer is responsible for removing the notification from the DOM.
+          * @default false
+         */
+        "closable"?: boolean;
+        /**
+          * Close-button accessible label. Defaults to the Romanian "Închide". Provide an alternative for non-Romanian locales.
+          * @default 'Închide'
+         */
+        "closeLabel"?: string;
+        /**
+          * Override the default `cor-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
+         */
+        "iconName"?: string;
+        /**
+          * Visual intensity. `subtle` renders a tinted background with high-contrast dark text; `strong` renders a filled semantic background with on-color text. The attribute is reflected as `notification-style` to avoid colliding with the global `style` attribute on every HTML element.
+          * @default 'subtle'
+         */
+        "notificationStyle"?: NotificationStyle;
+        /**
+          * Fires when the user activates the close button. Payload is `void` — the consumer is responsible for the dismiss animation / DOM removal.
+         */
+        "onCorClose"?: (event: CorNotificationCustomEvent<void>) => void;
+        /**
+          * Optional bold title rendered above the body.
+         */
+        "titleText"?: string;
+        /**
+          * Semantic color family.
+          * @default 'info'
+         */
+        "variant"?: NotificationVariant;
     }
     /**
      * Numeric Input — numeric-entry control with stacked step buttons.
@@ -4630,6 +5318,302 @@ declare namespace LocalJSX {
          */
         "variant"?: SpinnerVariant;
     }
+    /**
+     * Switch — binary on/off toggle atom (form-associated).
+     * Pattern B (atom-interactive, form-associated): renders its own
+     * `<input type="checkbox" role="switch">` inside shadow DOM and paints the
+     * visual track + thumb with CSS. Implements the WAI-ARIA switch pattern, not
+     * the checkbox pattern — `role="switch"` with `aria-checked="true|false"`.
+     * Space toggles per native checkbox semantics; the role swap does not break
+     * keyboard activation.
+     * The visible track is 48 × 28px; the hit area expands to 32px on
+     * pointer-devices and 40px on touch-devices (via `pointer: coarse`) per the
+     * Figma "Target Sizes" spec, achieved with a `::before` pseudo-element so the
+     * visual footprint stays untouched.
+     * @element cor-switch
+     */
+    interface CorSwitch {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * ID of the element labelling the switch. Used when label content lives outside the component.
+         */
+        "ariaLabelledby"?: string;
+        /**
+          * Whether the switch is currently on.
+          * @default false
+         */
+        "checked"?: boolean;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Fires when the internal control loses focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onCorBlur"?: (event: CorSwitchCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires whenever the checked state changes. `detail.checked` is the new state.
+         */
+        "onCorChange"?: (event: CorSwitchCustomEvent<SwitchChangeDetail>) => void;
+        /**
+          * Fires when the internal control gains focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onCorFocus"?: (event: CorSwitchCustomEvent<FocusEvent>) => void;
+        /**
+          * Marks the field as mandatory. Sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required"?: boolean;
+        /**
+          * Value submitted with the form when this switch is on.
+          * @default 'on'
+         */
+        "value"?: string;
+    }
+    /**
+     * Tag — compact, non-interactive label used to mark state, category,
+     * or supplementary metadata.
+     * Pattern B (atom-visual): the host paints; consumers compose icons
+     * through named slots. Two visual scales coexist behind the same
+     * element:
+     * - `variant="status"` (default) — the standard Status Tag used for
+     *   state ("Activ", "În așteptare", "Refuzat"). Medium-weight label,
+     *   three surface treatments (`subtle`, `strong`, `outlined`) across
+     *   seven semantic colors.
+     * - `variant="info"` — a lighter inline tag for metadata embedded in
+     *   body text. Regular-weight label, tighter padding. Honors the same
+     *   `type` and `semantic` axes.
+     * Tags are decorative by default. When a tag conveys a dynamic state
+     * to assistive tech ("Procesare în curs"), set `aria-label` and the
+     * host will adopt `role="status"` automatically — otherwise the host
+     * stays silent so visual-only tags don't pollute the a11y tree.
+     * For horizontally stacked groups (8 px gutter, wrap on overflow),
+     * compose multiple tags inside a `cor-tag-group` slot wrapper —
+     * available as a CSS utility on this element via the `group` data
+     * attribute on the parent.
+     * @element cor-tag
+     */
+    interface CorTag {
+        /**
+          * Overrides the accessible name. When set, the host also adopts `role="status"` so screen readers announce the tag as a live status region (e.g. "Procesare în curs").
+         */
+        "ariaLabel"?: string;
+        /**
+          * Fallback label text rendered when the default slot is empty. Plain text only.
+         */
+        "label"?: string;
+        /**
+          * Semantic color role.
+          * @default 'neutral'
+         */
+        "semantic"?: TagSemantic;
+        /**
+          * Size rung — affects height, padding, icon size, and typography. `md` = 24 px, `sm` = 20 px.
+          * @default 'md'
+         */
+        "size"?: TagSize;
+        /**
+          * Surface treatment. - `subtle` — tinted background, semantic foreground (default). - `strong` — saturated background, on-color foreground. - `outlined` — transparent fill, semantic 1 px border.
+          * @default 'subtle'
+         */
+        "type"?: TagType;
+        /**
+          * Visual scale. `status` is the standard Status Tag (medium label, three types). `info` is the lighter inline tag for metadata.
+          * @default 'status'
+         */
+        "variant"?: TagVariant;
+    }
+    /**
+     * Text Area — multi-line text-entry control.
+     * Pattern B (atom-interactive, form-associated): renders its own `<textarea>`
+     * inside shadow DOM. Form participation works via `formAssociated` +
+     * `ElementInternals`. Mirrors the `cor-input` contract for label, helper,
+     * error and variant treatment, and adds a vertical resize handle plus an
+     * optional character counter.
+     * @element cor-textarea
+     */
+    interface CorTextarea {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
+         */
+        "errorText"?: string;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid"?: boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Maximum character length. When set, a character counter renders in the bottom-right corner unless `showCounter` is explicitly `false`.
+         */
+        "maxLength"?: number;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Fires when the internal control loses focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onCorBlur"?: (event: CorTextareaCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires when the value is committed (typically on `blur`). `detail.value` is the committed value.
+         */
+        "onCorChange"?: (event: CorTextareaCustomEvent<TextareaChangeDetail>) => void;
+        /**
+          * Fires when the internal control gains focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onCorFocus"?: (event: CorTextareaCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires on every keystroke. `detail.value` is the current control value.
+         */
+        "onCorInput"?: (event: CorTextareaCustomEvent<TextareaChangeDetail>) => void;
+        /**
+          * Placeholder shown when the control is empty.
+         */
+        "placeholder"?: string;
+        /**
+          * Renders the field read-only. The control remains focusable and copyable.
+          * @default false
+         */
+        "readonly"?: boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required"?: boolean;
+        /**
+          * User resize affordance. `'vertical'` lets the user drag the bottom-right grip to grow the control downward; `'none'` locks the height to `rows`.
+          * @default 'vertical'
+         */
+        "resize"?: TextareaResize;
+        /**
+          * Minimum visible rows for the native control. Drives the initial height floor before the user resizes vertically.
+          * @default 4
+         */
+        "rows"?: number;
+        /**
+          * Force the character counter to show or hide. When `maxLength` is set the counter auto-shows; pass `false` to suppress it. Without `maxLength` the counter is hidden regardless.
+          * @default true
+         */
+        "showCounter"?: boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size"?: TextareaSize;
+        /**
+          * Current value of the control. Reflects to the host attribute.
+          * @default ''
+         */
+        "value"?: string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant"?: TextareaVariant;
+    }
+    /**
+     * Tooltip — transient label or coach mark anchored to a trigger element.
+     * Pattern B (internal DOM). The host wraps a `trigger` slot (the element being
+     * described) and renders the bubble + arrow inside shadow DOM. Position is
+     * computed in JS against the trigger's bounding rect so the tooltip can flip
+     * when it would overflow the viewport. ARIA wiring sets `aria-describedby` on
+     * the slotted trigger element so screen readers announce the bubble copy
+     * alongside the control.
+     * Two variants:
+     * - `default` — opens on `hover` (after `delay`) or `focus` (immediate); closes
+     *   on `mouseleave` / `blur` / `Esc`.
+     * - `coach` — instructional overlay. Stays open until the user dismisses it via
+     *   the trailing close button, `Esc`, or a click outside the bubble. Includes
+     *   the localized hint "Apasă Esc pentru a închide".
+     * @element cor-tooltip
+     * @event corOpen   - Fired when the tooltip becomes visible.
+     * @event corClose  - Fired when the tooltip is hidden. `detail.reason` records the
+     *             cause (`blur` | `escape` | `close-button` | `click-outside`).
+     */
+    interface CorTooltip {
+        /**
+          * Accessible name applied to the rendered bubble. When omitted the visible tooltip text doubles as the accessible name via `aria-describedby`.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Convenience: tooltip body text. Used only when the default slot is empty.
+         */
+        "content"?: string;
+        /**
+          * Show-delay in milliseconds before the bubble appears on hover. Focus and manual triggers ignore this value.
+          * @default 0
+         */
+        "delay"?: number;
+        /**
+          * Hard cap on the bubble width in pixels. Long content wraps below this width. Defaults to 200 (Figma specification).
+          * @default 200
+         */
+        "maxWidth"?: number;
+        "onCorClose"?: (event: CorTooltipCustomEvent<TooltipCloseEventDetail>) => void;
+        "onCorOpen"?: (event: CorTooltipCustomEvent<void>) => void;
+        /**
+          * Whether the tooltip is currently visible. Mutable so the component can close itself in response to mouseleave / blur / Esc and so consumers can drive visibility imperatively (`trigger="manual"`).
+          * @default false
+         */
+        "open"?: boolean;
+        /**
+          * Preferred position relative to the trigger. `auto` (default) prefers `top` and flips to the opposite side when the tooltip would overflow.
+          * @default 'auto'
+         */
+        "position"?: TooltipPosition;
+        /**
+          * Visual size rung. `sm` matches a 4px radius / 8px–12px padding bubble; `lg` matches a 6px radius / 12px–16px padding bubble.
+          * @default 'sm'
+         */
+        "size"?: TooltipSize;
+        /**
+          * How the tooltip is activated. - `hover`  — mouseenter (after `delay`) → open, mouseleave → close. - `focus`  — focus (immediate) → open, blur or Esc → close. - `manual` — visibility is driven by `open`; ignores pointer/keyboard events.
+          * @default 'hover'
+         */
+        "trigger"?: TooltipTrigger;
+        /**
+          * Visual variant. `default` is a transient hover/focus tip; `coach` is a persistent instructional overlay with a close button.
+          * @default 'default'
+         */
+        "variant"?: TooltipVariant;
+    }
 
     interface CorAvatarAttributes {
         "type": AvatarType;
@@ -4698,6 +5682,14 @@ declare namespace LocalJSX {
         "supportingText": string;
         "ariaLabel": string;
         "ariaLabelledby": string;
+    }
+    interface CorChipAttributes {
+        "type": ChipType;
+        "size": ChipSize;
+        "selected": boolean;
+        "disabled": boolean;
+        "label": string;
+        "removable": boolean;
     }
     interface CorDateInputAttributes {
         "variant": DateInputVariant;
@@ -4810,6 +5802,15 @@ declare namespace LocalJSX {
     interface CorLogoAttributes {
         "name": LogoName;
         "ariaLabel": string;
+    }
+    interface CorNotificationAttributes {
+        "variant": NotificationVariant;
+        "notificationStyle": NotificationStyle;
+        "closable": boolean;
+        "titleText": string;
+        "iconName": string;
+        "ariaLabel": string;
+        "closeLabel": string;
     }
     interface CorNumericInputAttributes {
         "variant": NumericInputVariant;
@@ -4980,6 +5981,54 @@ declare namespace LocalJSX {
         "variant": SpinnerVariant;
         "label": string;
     }
+    interface CorSwitchAttributes {
+        "checked": boolean;
+        "disabled": boolean;
+        "required": boolean;
+        "name": string;
+        "value": string;
+        "label": string;
+        "ariaLabel": string;
+        "ariaLabelledby": string;
+    }
+    interface CorTagAttributes {
+        "variant": TagVariant;
+        "size": TagSize;
+        "type": TagType;
+        "semantic": TagSemantic;
+        "label": string;
+        "ariaLabel": string;
+    }
+    interface CorTextareaAttributes {
+        "variant": TextareaVariant;
+        "size": TextareaSize;
+        "disabled": boolean;
+        "required": boolean;
+        "readonly": boolean;
+        "invalid": boolean;
+        "resize": TextareaResize;
+        "value": string;
+        "name": string;
+        "placeholder": string;
+        "label": string;
+        "helperText": string;
+        "errorText": string;
+        "rows": number;
+        "maxLength": number;
+        "showCounter": boolean;
+        "ariaLabel": string;
+    }
+    interface CorTooltipAttributes {
+        "size": TooltipSize;
+        "position": TooltipPosition;
+        "variant": TooltipVariant;
+        "open": boolean;
+        "trigger": TooltipTrigger;
+        "content": string;
+        "maxWidth": number;
+        "delay": number;
+        "ariaLabel": string;
+    }
 
     interface IntrinsicElements {
         "cor-avatar": Omit<CorAvatar, keyof CorAvatarAttributes> & { [K in keyof CorAvatar & keyof CorAvatarAttributes]?: CorAvatar[K] } & { [K in keyof CorAvatar & keyof CorAvatarAttributes as `attr:${K}`]?: CorAvatarAttributes[K] } & { [K in keyof CorAvatar & keyof CorAvatarAttributes as `prop:${K}`]?: CorAvatar[K] };
@@ -4989,6 +6038,7 @@ declare namespace LocalJSX {
         "cor-button": Omit<CorButton, keyof CorButtonAttributes> & { [K in keyof CorButton & keyof CorButtonAttributes]?: CorButton[K] } & { [K in keyof CorButton & keyof CorButtonAttributes as `attr:${K}`]?: CorButtonAttributes[K] } & { [K in keyof CorButton & keyof CorButtonAttributes as `prop:${K}`]?: CorButton[K] };
         "cor-button-group": Omit<CorButtonGroup, keyof CorButtonGroupAttributes> & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes]?: CorButtonGroup[K] } & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes as `attr:${K}`]?: CorButtonGroupAttributes[K] } & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes as `prop:${K}`]?: CorButtonGroup[K] };
         "cor-checkbox": Omit<CorCheckbox, keyof CorCheckboxAttributes> & { [K in keyof CorCheckbox & keyof CorCheckboxAttributes]?: CorCheckbox[K] } & { [K in keyof CorCheckbox & keyof CorCheckboxAttributes as `attr:${K}`]?: CorCheckboxAttributes[K] } & { [K in keyof CorCheckbox & keyof CorCheckboxAttributes as `prop:${K}`]?: CorCheckbox[K] };
+        "cor-chip": Omit<CorChip, keyof CorChipAttributes> & { [K in keyof CorChip & keyof CorChipAttributes]?: CorChip[K] } & { [K in keyof CorChip & keyof CorChipAttributes as `attr:${K}`]?: CorChipAttributes[K] } & { [K in keyof CorChip & keyof CorChipAttributes as `prop:${K}`]?: CorChip[K] };
         "cor-date-input": Omit<CorDateInput, keyof CorDateInputAttributes> & { [K in keyof CorDateInput & keyof CorDateInputAttributes]?: CorDateInput[K] } & { [K in keyof CorDateInput & keyof CorDateInputAttributes as `attr:${K}`]?: CorDateInputAttributes[K] } & { [K in keyof CorDateInput & keyof CorDateInputAttributes as `prop:${K}`]?: CorDateInput[K] };
         "cor-file-input": Omit<CorFileInput, keyof CorFileInputAttributes> & { [K in keyof CorFileInput & keyof CorFileInputAttributes]?: CorFileInput[K] } & { [K in keyof CorFileInput & keyof CorFileInputAttributes as `attr:${K}`]?: CorFileInputAttributes[K] } & { [K in keyof CorFileInput & keyof CorFileInputAttributes as `prop:${K}`]?: CorFileInput[K] };
         "cor-file-item": Omit<CorFileItem, keyof CorFileItemAttributes> & { [K in keyof CorFileItem & keyof CorFileItemAttributes]?: CorFileItem[K] } & { [K in keyof CorFileItem & keyof CorFileItemAttributes as `attr:${K}`]?: CorFileItemAttributes[K] } & { [K in keyof CorFileItem & keyof CorFileItemAttributes as `prop:${K}`]?: CorFileItem[K] };
@@ -4997,6 +6047,7 @@ declare namespace LocalJSX {
         "cor-input-chip": Omit<CorInputChip, keyof CorInputChipAttributes> & { [K in keyof CorInputChip & keyof CorInputChipAttributes]?: CorInputChip[K] } & { [K in keyof CorInputChip & keyof CorInputChipAttributes as `attr:${K}`]?: CorInputChipAttributes[K] } & { [K in keyof CorInputChip & keyof CorInputChipAttributes as `prop:${K}`]?: CorInputChip[K] };
         "cor-link": Omit<CorLink, keyof CorLinkAttributes> & { [K in keyof CorLink & keyof CorLinkAttributes]?: CorLink[K] } & { [K in keyof CorLink & keyof CorLinkAttributes as `attr:${K}`]?: CorLinkAttributes[K] } & { [K in keyof CorLink & keyof CorLinkAttributes as `prop:${K}`]?: CorLink[K] };
         "cor-logo": Omit<CorLogo, keyof CorLogoAttributes> & { [K in keyof CorLogo & keyof CorLogoAttributes]?: CorLogo[K] } & { [K in keyof CorLogo & keyof CorLogoAttributes as `attr:${K}`]?: CorLogoAttributes[K] } & { [K in keyof CorLogo & keyof CorLogoAttributes as `prop:${K}`]?: CorLogo[K] };
+        "cor-notification": Omit<CorNotification, keyof CorNotificationAttributes> & { [K in keyof CorNotification & keyof CorNotificationAttributes]?: CorNotification[K] } & { [K in keyof CorNotification & keyof CorNotificationAttributes as `attr:${K}`]?: CorNotificationAttributes[K] } & { [K in keyof CorNotification & keyof CorNotificationAttributes as `prop:${K}`]?: CorNotification[K] };
         "cor-numeric-input": Omit<CorNumericInput, keyof CorNumericInputAttributes> & { [K in keyof CorNumericInput & keyof CorNumericInputAttributes]?: CorNumericInput[K] } & { [K in keyof CorNumericInput & keyof CorNumericInputAttributes as `attr:${K}`]?: CorNumericInputAttributes[K] } & { [K in keyof CorNumericInput & keyof CorNumericInputAttributes as `prop:${K}`]?: CorNumericInput[K] };
         "cor-pagination": Omit<CorPagination, keyof CorPaginationAttributes> & { [K in keyof CorPagination & keyof CorPaginationAttributes]?: CorPagination[K] } & { [K in keyof CorPagination & keyof CorPaginationAttributes as `attr:${K}`]?: CorPaginationAttributes[K] } & { [K in keyof CorPagination & keyof CorPaginationAttributes as `prop:${K}`]?: CorPagination[K] };
         "cor-phone-input": Omit<CorPhoneInput, keyof CorPhoneInputAttributes> & { [K in keyof CorPhoneInput & keyof CorPhoneInputAttributes]?: CorPhoneInput[K] } & { [K in keyof CorPhoneInput & keyof CorPhoneInputAttributes as `attr:${K}`]?: CorPhoneInputAttributes[K] } & { [K in keyof CorPhoneInput & keyof CorPhoneInputAttributes as `prop:${K}`]?: CorPhoneInput[K] };
@@ -5008,6 +6059,10 @@ declare namespace LocalJSX {
         "cor-separator": Omit<CorSeparator, keyof CorSeparatorAttributes> & { [K in keyof CorSeparator & keyof CorSeparatorAttributes]?: CorSeparator[K] } & { [K in keyof CorSeparator & keyof CorSeparatorAttributes as `attr:${K}`]?: CorSeparatorAttributes[K] } & { [K in keyof CorSeparator & keyof CorSeparatorAttributes as `prop:${K}`]?: CorSeparator[K] };
         "cor-service-button": Omit<CorServiceButton, keyof CorServiceButtonAttributes> & { [K in keyof CorServiceButton & keyof CorServiceButtonAttributes]?: CorServiceButton[K] } & { [K in keyof CorServiceButton & keyof CorServiceButtonAttributes as `attr:${K}`]?: CorServiceButtonAttributes[K] } & { [K in keyof CorServiceButton & keyof CorServiceButtonAttributes as `prop:${K}`]?: CorServiceButton[K] };
         "cor-spinner": Omit<CorSpinner, keyof CorSpinnerAttributes> & { [K in keyof CorSpinner & keyof CorSpinnerAttributes]?: CorSpinner[K] } & { [K in keyof CorSpinner & keyof CorSpinnerAttributes as `attr:${K}`]?: CorSpinnerAttributes[K] } & { [K in keyof CorSpinner & keyof CorSpinnerAttributes as `prop:${K}`]?: CorSpinner[K] };
+        "cor-switch": Omit<CorSwitch, keyof CorSwitchAttributes> & { [K in keyof CorSwitch & keyof CorSwitchAttributes]?: CorSwitch[K] } & { [K in keyof CorSwitch & keyof CorSwitchAttributes as `attr:${K}`]?: CorSwitchAttributes[K] } & { [K in keyof CorSwitch & keyof CorSwitchAttributes as `prop:${K}`]?: CorSwitch[K] };
+        "cor-tag": Omit<CorTag, keyof CorTagAttributes> & { [K in keyof CorTag & keyof CorTagAttributes]?: CorTag[K] } & { [K in keyof CorTag & keyof CorTagAttributes as `attr:${K}`]?: CorTagAttributes[K] } & { [K in keyof CorTag & keyof CorTagAttributes as `prop:${K}`]?: CorTag[K] };
+        "cor-textarea": Omit<CorTextarea, keyof CorTextareaAttributes> & { [K in keyof CorTextarea & keyof CorTextareaAttributes]?: CorTextarea[K] } & { [K in keyof CorTextarea & keyof CorTextareaAttributes as `attr:${K}`]?: CorTextareaAttributes[K] } & { [K in keyof CorTextarea & keyof CorTextareaAttributes as `prop:${K}`]?: CorTextarea[K] };
+        "cor-tooltip": Omit<CorTooltip, keyof CorTooltipAttributes> & { [K in keyof CorTooltip & keyof CorTooltipAttributes]?: CorTooltip[K] } & { [K in keyof CorTooltip & keyof CorTooltipAttributes as `attr:${K}`]?: CorTooltipAttributes[K] } & { [K in keyof CorTooltip & keyof CorTooltipAttributes as `prop:${K}`]?: CorTooltip[K] };
     }
 }
 export { LocalJSX as JSX };
@@ -5094,6 +6149,20 @@ declare module "@stencil/core" {
              * @element cor-checkbox
              */
             "cor-checkbox": LocalJSX.IntrinsicElements["cor-checkbox"] & JSXBase.HTMLAttributes<HTMLCorCheckboxElement>;
+            /**
+             * Chip — compact, pill-shaped control for filter selection or token display.
+             * Pattern B (atom-interactive): renders its own `<button>` inside shadow DOM
+             * so it participates in tab order and exposes a real accessible role.
+             * Two modes:
+             * - `type="filter"` (default) — toggleable filter chip. Click flips `selected`
+             *   and emits `corSelect`. Best used inside a chip group for mono- or
+             *   multi-selection filtering.
+             * - `type="input"` — a discrete value entered by a user (e.g. a tag inside
+             *   a search field). When `removable`, a trailing close button is rendered;
+             *   activating it emits `corRemove`.
+             * @element cor-chip
+             */
+            "cor-chip": LocalJSX.IntrinsicElements["cor-chip"] & JSXBase.HTMLAttributes<HTMLCorChipElement>;
             /**
              * Date Input — segment-masked date entry molecule.
              * Pattern B (atom-interactive, form-associated): renders its own `<input>`
@@ -5189,6 +6258,23 @@ declare module "@stencil/core" {
              * @element cor-logo
              */
             "cor-logo": LocalJSX.IntrinsicElements["cor-logo"] & JSXBase.HTMLAttributes<HTMLCorLogoElement>;
+            /**
+             * Notification — semantic messaging banner.
+             * Renders an optional leading icon, an optional bold title, the message body
+             * (default slot), an optional inline action group (`actions` slot) and an
+             * optional trailing close button.
+             * Pattern B (atom-display + interactive close): the close affordance lives
+             * inside shadow DOM so it participates in tab order with a real
+             * `button` role. The body itself is not interactive.
+             * `variant` selects the semantic color family (info / positive / warning /
+             * danger / neutral). `notificationStyle` toggles between the soft tinted
+             * background (`subtle`) and the filled high-emphasis treatment (`strong`).
+             * Live-region routing:
+             * - `info` / `positive` / `neutral` → `role="status"` + `aria-live="polite"`
+             * - `warning` / `danger` → `role="alert"` + `aria-live="assertive"`
+             * @element cor-notification
+             */
+            "cor-notification": LocalJSX.IntrinsicElements["cor-notification"] & JSXBase.HTMLAttributes<HTMLCorNotificationElement>;
             /**
              * Numeric Input — numeric-entry control with stacked step buttons.
              * Pattern B (atom-interactive, form-associated): renders its own `<input>`
@@ -5345,6 +6431,75 @@ declare module "@stencil/core" {
              * @element cor-spinner
              */
             "cor-spinner": LocalJSX.IntrinsicElements["cor-spinner"] & JSXBase.HTMLAttributes<HTMLCorSpinnerElement>;
+            /**
+             * Switch — binary on/off toggle atom (form-associated).
+             * Pattern B (atom-interactive, form-associated): renders its own
+             * `<input type="checkbox" role="switch">` inside shadow DOM and paints the
+             * visual track + thumb with CSS. Implements the WAI-ARIA switch pattern, not
+             * the checkbox pattern — `role="switch"` with `aria-checked="true|false"`.
+             * Space toggles per native checkbox semantics; the role swap does not break
+             * keyboard activation.
+             * The visible track is 48 × 28px; the hit area expands to 32px on
+             * pointer-devices and 40px on touch-devices (via `pointer: coarse`) per the
+             * Figma "Target Sizes" spec, achieved with a `::before` pseudo-element so the
+             * visual footprint stays untouched.
+             * @element cor-switch
+             */
+            "cor-switch": LocalJSX.IntrinsicElements["cor-switch"] & JSXBase.HTMLAttributes<HTMLCorSwitchElement>;
+            /**
+             * Tag — compact, non-interactive label used to mark state, category,
+             * or supplementary metadata.
+             * Pattern B (atom-visual): the host paints; consumers compose icons
+             * through named slots. Two visual scales coexist behind the same
+             * element:
+             * - `variant="status"` (default) — the standard Status Tag used for
+             *   state ("Activ", "În așteptare", "Refuzat"). Medium-weight label,
+             *   three surface treatments (`subtle`, `strong`, `outlined`) across
+             *   seven semantic colors.
+             * - `variant="info"` — a lighter inline tag for metadata embedded in
+             *   body text. Regular-weight label, tighter padding. Honors the same
+             *   `type` and `semantic` axes.
+             * Tags are decorative by default. When a tag conveys a dynamic state
+             * to assistive tech ("Procesare în curs"), set `aria-label` and the
+             * host will adopt `role="status"` automatically — otherwise the host
+             * stays silent so visual-only tags don't pollute the a11y tree.
+             * For horizontally stacked groups (8 px gutter, wrap on overflow),
+             * compose multiple tags inside a `cor-tag-group` slot wrapper —
+             * available as a CSS utility on this element via the `group` data
+             * attribute on the parent.
+             * @element cor-tag
+             */
+            "cor-tag": LocalJSX.IntrinsicElements["cor-tag"] & JSXBase.HTMLAttributes<HTMLCorTagElement>;
+            /**
+             * Text Area — multi-line text-entry control.
+             * Pattern B (atom-interactive, form-associated): renders its own `<textarea>`
+             * inside shadow DOM. Form participation works via `formAssociated` +
+             * `ElementInternals`. Mirrors the `cor-input` contract for label, helper,
+             * error and variant treatment, and adds a vertical resize handle plus an
+             * optional character counter.
+             * @element cor-textarea
+             */
+            "cor-textarea": LocalJSX.IntrinsicElements["cor-textarea"] & JSXBase.HTMLAttributes<HTMLCorTextareaElement>;
+            /**
+             * Tooltip — transient label or coach mark anchored to a trigger element.
+             * Pattern B (internal DOM). The host wraps a `trigger` slot (the element being
+             * described) and renders the bubble + arrow inside shadow DOM. Position is
+             * computed in JS against the trigger's bounding rect so the tooltip can flip
+             * when it would overflow the viewport. ARIA wiring sets `aria-describedby` on
+             * the slotted trigger element so screen readers announce the bubble copy
+             * alongside the control.
+             * Two variants:
+             * - `default` — opens on `hover` (after `delay`) or `focus` (immediate); closes
+             *   on `mouseleave` / `blur` / `Esc`.
+             * - `coach` — instructional overlay. Stays open until the user dismisses it via
+             *   the trailing close button, `Esc`, or a click outside the bubble. Includes
+             *   the localized hint "Apasă Esc pentru a închide".
+             * @element cor-tooltip
+             * @event corOpen   - Fired when the tooltip becomes visible.
+             * @event corClose  - Fired when the tooltip is hidden. `detail.reason` records the
+             *             cause (`blur` | `escape` | `close-button` | `click-outside`).
+             */
+            "cor-tooltip": LocalJSX.IntrinsicElements["cor-tooltip"] & JSXBase.HTMLAttributes<HTMLCorTooltipElement>;
         }
     }
 }

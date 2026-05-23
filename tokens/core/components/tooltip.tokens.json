@@ -1,0 +1,80 @@
+{
+  "tooltip": {
+    "container": {
+      "borderRadius": {
+        "sm": { "$value": "{borderRadius.4}", "$type": "dimension" },
+        "lg": { "$value": "{borderRadius.6}", "$type": "dimension" }
+      },
+      "paddingBlock": {
+        "sm": { "$value": "{spacing.8}", "$type": "dimension" },
+        "lg": { "$value": "{spacing.12}", "$type": "dimension" }
+      },
+      "paddingInline": {
+        "sm": { "$value": "{spacing.12}", "$type": "dimension" },
+        "lg": { "$value": "{spacing.16}", "$type": "dimension" }
+      },
+      "paddingInlineEnd": {
+        "lg": { "$value": "{spacing.12}", "$type": "dimension" }
+      },
+      "gap": {
+        "sm": { "$value": "{spacing.8}", "$type": "dimension" },
+        "lg": { "$value": "{spacing.12}", "$type": "dimension" }
+      },
+      "maxWidth": { "$value": "200px", "$type": "dimension" },
+      "shadow": { "$value": "{dropShadow.200}", "$type": "string" },
+      "transitionDuration": { "$value": "150ms", "$type": "duration" },
+      "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" },
+      "background": {
+        "default": { "$value": "{color.background.base-inverse.default}", "$type": "color" }
+      },
+      "zIndex": { "$value": "9999", "$type": "number" }
+    },
+    "label": {
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
+      "color": {
+        "default": { "$value": "{color.text.base-inverse.default}", "$type": "color" }
+      }
+    },
+    "hint": {
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSize": { "$value": "{fontSize.12}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.16}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
+      "color": {
+        "default": { "$value": "{color.text.base-inverse.default}", "$type": "color" }
+      },
+      "opacity": { "$value": "0.72", "$type": "number" },
+      "marginTop": { "$value": "{spacing.6}", "$type": "dimension" }
+    },
+    "arrow": {
+      "size": {
+        "sm": { "$value": "8px", "$type": "dimension" },
+        "lg": { "$value": "12px", "$type": "dimension" }
+      },
+      "width": {
+        "sm": { "$value": "16px", "$type": "dimension" },
+        "lg": { "$value": "24px", "$type": "dimension" }
+      },
+      "edgeMargin": { "$value": "{spacing.12}", "$type": "dimension" }
+    },
+    "close": {
+      "size": { "$value": "{spacing.16}", "$type": "dimension" },
+      "color": {
+        "default": { "$value": "{color.icon.base-inverse.default}", "$type": "color" },
+        "hover": { "$value": "{color.icon.base-inverse.default}", "$type": "color" }
+      },
+      "background": {
+        "default": { "$value": "transparent", "$type": "color" },
+        "hover": { "$value": "{color.background.base-inverse.default-hover}", "$type": "color" }
+      },
+      "borderRadius": { "$value": "{borderRadius.4}", "$type": "dimension" },
+      "touchTarget": { "$value": "{spacing.24}", "$type": "dimension" }
+    },
+    "offset": {
+      "trigger": { "$value": "{spacing.4}", "$type": "dimension" }
+    }
+  }
+}
