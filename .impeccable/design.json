@@ -1,0 +1,283 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-22T00:00:00.000Z",
+  "title": "Design System: AGE Design System",
+  "extensions": {
+    "colorMeta": {
+      "primary-brand": {
+        "role": "primary",
+        "displayName": "Institutional Blue",
+        "canonical": "#0058d2",
+        "tonalRamp": [
+          "#00295a",
+          "#00357e",
+          "#0046a8",
+          "#0058d2",
+          "#3379db",
+          "#669be4",
+          "#99bced",
+          "#ccdef6",
+          "#d6e5f8",
+          "#e8f0fb"
+        ]
+      },
+      "visited-magenta": {
+        "role": "secondary",
+        "displayName": "Visited Magenta",
+        "canonical": "#aa18ce",
+        "tonalRamp": ["#4a095a", "#660e7c", "#8813a5", "#aa18ce", "#bb46d8", "#cc74e2", "#dda3eb", "#eed1f5", "#f7eafa"]
+      },
+      "positive": {
+        "role": "tertiary",
+        "displayName": "Civic Green",
+        "canonical": "#039855",
+        "tonalRamp": ["#054f31", "#05603a", "#027948", "#039855", "#35ad77", "#68c199", "#9ad6bb", "#cdeadd", "#e6f5ee"]
+      },
+      "warning": {
+        "role": "tertiary",
+        "displayName": "Civic Apricot",
+        "canonical": "#fdb022",
+        "tonalRamp": ["#792e0d", "#93370d", "#b54708", "#dc6803", "#f79009", "#fdb022", "#fec84b", "#fedf89", "#feefc6"]
+      },
+      "danger": {
+        "role": "tertiary",
+        "displayName": "Civic Red",
+        "canonical": "#d92d20",
+        "tonalRamp": ["#7a271a", "#912018", "#b32318", "#d92d20", "#f04438", "#f97066", "#fda19b", "#fecdc9", "#fee4e2"]
+      },
+      "ink-primary": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#121212",
+        "tonalRamp": [
+          "#121212",
+          "#1e1e1e",
+          "#2c2c2c",
+          "#383838",
+          "#444444",
+          "#616161",
+          "#757575",
+          "#8a8a8a",
+          "#b2b2b2",
+          "#d9d9d9"
+        ]
+      },
+      "surface-canvas": {
+        "role": "neutral",
+        "displayName": "Surface Canvas",
+        "canonical": "#ffffff",
+        "tonalRamp": ["#ffffff", "#f7f7f7", "#f5f5f5", "#f1f1f1", "#d9d9d9", "#b2b2b2"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headings on service-entry pages. One per page."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section headers, modal titles."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card titles, form-section labels, table column headers."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Reading copy. Cap at 65–75ch."
+      },
+      "body-sm": {
+        "displayName": "Body Small",
+        "purpose": "Supporting copy, dense table rows, helper text."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Control labels, button text, field labels. Medium weight is the contract."
+      }
+    },
+    "shadows": [
+      {
+        "name": "elevation-100",
+        "value": "0px 2px 8px 0px rgba(19,22,29,0.06), 0px 4px 8px 1px rgba(19,22,29,0.04)",
+        "purpose": "Hover lift on resting cards."
+      },
+      {
+        "name": "elevation-200",
+        "value": "0px 4px 8px 2px rgba(40,46,55,0.06), 0px 2px 4px 0px rgba(40,46,55,0.04)",
+        "purpose": "Dropdowns, popovers, tooltips."
+      },
+      {
+        "name": "elevation-300",
+        "value": "0px 8px 12px 4px rgba(40,46,55,0.06), 0px 2px 4px 0px rgba(40,46,55,0.06)",
+        "purpose": "Floating actions, sticky toolbars."
+      },
+      {
+        "name": "elevation-400",
+        "value": "0px 12px 16px 6px rgba(40,46,55,0.06), 0px 4px 6px 0px rgba(40,46,55,0.06)",
+        "purpose": "Modal cards, side sheets."
+      },
+      {
+        "name": "elevation-500",
+        "value": "0px 16px 20px 6px rgba(40,46,55,0.06), 0px 4px 8px 0px rgba(40,46,55,0.06)",
+        "purpose": "Full-screen overlays, command palettes."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-standard",
+        "value": "cubic-bezier(0, 0, 0.2, 1)",
+        "purpose": "Default ease-out for all interactive transitions."
+      },
+      {
+        "name": "duration-fast",
+        "value": "150ms",
+        "purpose": "Button hover/active/focus transitions. The canonical interaction duration."
+      },
+      { "name": "duration-medium", "value": "200ms", "purpose": "Popover and dropdown reveal." }
+    ],
+    "breakpoints": [
+      { "name": "mobile", "value": "360px" },
+      { "name": "tablet", "value": "768px" },
+      { "name": "laptop", "value": "1280px" },
+      { "name": "desktop", "value": "1440px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button (filled, md)",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Default CTA. Institutional blue fill, white label, 40px height, 6px radius.",
+      "html": "<button class=\"ds-btn-primary\">Confirmă</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; height: 40px; min-width: 56px; padding: 0 16px; background: #0058d2; color: #ffffff; font-family: Onest, system-ui, sans-serif; font-size: 14px; font-weight: 500; line-height: 20px; border: 0; border-radius: 6px; cursor: pointer; transition: background 150ms ease-out; } .ds-btn-primary:hover { background: #0046a8; } .ds-btn-primary:active { background: #00357e; } .ds-btn-primary:focus-visible { outline: 1.5px solid #0058d2; outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button (filled, md)",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Neutral emphasis. Light gray fill, ink label.",
+      "html": "<button class=\"ds-btn-secondary\">Anulează</button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; height: 40px; min-width: 56px; padding: 0 16px; background: #f5f5f5; color: #121212; font-family: Onest, system-ui, sans-serif; font-size: 14px; font-weight: 500; line-height: 20px; border: 0; border-radius: 6px; cursor: pointer; transition: background 150ms ease-out; } .ds-btn-secondary:hover { background: #f1f1f1; } .ds-btn-secondary:active { background: #d9d9d9; } .ds-btn-secondary:focus-visible { outline: 1.5px solid #0058d2; outline-offset: 2px; }"
+    },
+    {
+      "name": "Strict Button (filled, md)",
+      "kind": "button",
+      "refersTo": "button-strict",
+      "description": "Strong emphasis on black. Used when blue would compete with the page accent.",
+      "html": "<button class=\"ds-btn-strict\">Continuă</button>",
+      "css": ".ds-btn-strict { display: inline-flex; align-items: center; justify-content: center; height: 40px; min-width: 56px; padding: 0 16px; background: #121212; color: #ffffff; font-family: Onest, system-ui, sans-serif; font-size: 14px; font-weight: 500; line-height: 20px; border: 0; border-radius: 6px; cursor: pointer; transition: background 150ms ease-out; } .ds-btn-strict:hover { background: #2c2c2c; } .ds-btn-strict:active { background: #444444; }"
+    },
+    {
+      "name": "Destructive Button (filled, md)",
+      "kind": "button",
+      "refersTo": "button-destructive",
+      "description": "Irreversible or dangerous action. Civic red fill.",
+      "html": "<button class=\"ds-btn-destructive\">Șterge</button>",
+      "css": ".ds-btn-destructive { display: inline-flex; align-items: center; justify-content: center; height: 40px; min-width: 56px; padding: 0 16px; background: #d92d20; color: #ffffff; font-family: Onest, system-ui, sans-serif; font-size: 14px; font-weight: 500; line-height: 20px; border: 0; border-radius: 6px; cursor: pointer; transition: background 150ms ease-out; } .ds-btn-destructive:hover { background: #b32318; } .ds-btn-destructive:active { background: #912018; }"
+    },
+    {
+      "name": "Outlined Button (primary, md)",
+      "kind": "button",
+      "refersTo": "button-outlined-primary",
+      "description": "1.5px brand-blue border, transparent fill, brand-blue label. Hover/active converge to filled.",
+      "html": "<button class=\"ds-btn-outlined\">Detalii</button>",
+      "css": ".ds-btn-outlined { display: inline-flex; align-items: center; justify-content: center; height: 40px; min-width: 56px; padding: 0 16px; background: transparent; color: #0058d2; font-family: Onest, system-ui, sans-serif; font-size: 14px; font-weight: 500; line-height: 20px; border: 1.5px solid #0058d2; border-radius: 6px; cursor: pointer; transition: background 150ms ease-out, color 150ms ease-out, border-color 150ms ease-out; } .ds-btn-outlined:hover { background: #0046a8; color: #ffffff; border-color: transparent; } .ds-btn-outlined:active { background: #00357e; color: #ffffff; border-color: transparent; }"
+    },
+    {
+      "name": "Text Button (primary, md)",
+      "kind": "button",
+      "refersTo": "button-text-primary",
+      "description": "No border, transparent fill. Inline-text affordance with tinted hover.",
+      "html": "<button class=\"ds-btn-text\">Mai multe</button>",
+      "css": ".ds-btn-text { display: inline-flex; align-items: center; justify-content: center; height: 40px; padding: 0 16px; background: transparent; color: #0058d2; font-family: Onest, system-ui, sans-serif; font-size: 14px; font-weight: 500; line-height: 20px; border: 0; border-radius: 6px; cursor: pointer; transition: background 150ms ease-out; } .ds-btn-text:hover { background: #e8f0fb; } .ds-btn-text:active { background: #ccdef6; }"
+    },
+    {
+      "name": "Service Button (mpay tile)",
+      "kind": "custom",
+      "refersTo": "service-button",
+      "description": "Entry-point tile for one of the e-Gov services. Logo + verb + description on tinted-brand surface.",
+      "html": "<a class=\"ds-service-btn\" href=\"#\"><svg class=\"ds-service-btn__mark\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\" fill=\"#0058d2\"/></svg><span class=\"ds-service-btn__verb\">plătește</span><span class=\"ds-service-btn__desc\">serviciul guvernamental de plăți electronice</span></a>",
+      "css": ".ds-service-btn { display: flex; flex-direction: column; gap: 8px; padding: 20px; background: #e8f0fb; color: #0058d2; border-radius: 12px; text-decoration: none; transition: background 150ms ease-out; min-width: 240px; } .ds-service-btn:hover { background: #ccdef6; } .ds-service-btn__mark { width: 32px; height: 32px; } .ds-service-btn__verb { font-family: Onest, system-ui, sans-serif; font-size: 20px; font-weight: 600; line-height: 28px; } .ds-service-btn__desc { font-family: Onest, system-ui, sans-serif; font-size: 14px; font-weight: 400; line-height: 20px; color: #383838; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Civic Counter",
+    "overview": "The system is the digital equivalent of a calm, well-lit counter in a modern public service office. Every surface is recognisable. Every label is in its expected place. Every interaction tells you exactly what just happened and what comes next. The institution is present in the page, not as a flag or a seal, but as a felt sense of order and restraint. This is service software, not marketing. The visual language is deliberate and small: one font (Onest), one institutional blue used sparingly as primary CTA weight, a single 8pt rhythm, soft ambient shadows, and motion that exists only to confirm state changes.",
+    "keyCharacteristics": [
+      "Restrained color: one brand blue, used on ≤10% of any screen.",
+      "Single typeface (Onest) across the entire system; hierarchy through weight and size, never through font swap.",
+      "Generous spacing on an 8pt rhythm with 4pt and 6pt micro-steps for inline composition.",
+      "Soft ambient elevation (low-alpha shadows under rgba(40,46,55,0.04–0.06)); never directional, never dark.",
+      "Romanian-first voice with multilingual headroom (±20% string growth, full diacritic support).",
+      "WCAG 2.1 AA is the floor, enforced by the audit pipeline."
+    ],
+    "rules": [
+      {
+        "name": "The One Brand Blue Rule",
+        "body": "Only #0058d2 carries primary CTA weight. Secondary buttons take gray; strict emphasis takes black; destructive takes red. Brand blue is never used decoratively. Coverage on any screen stays at ≤10%.",
+        "section": "colors"
+      },
+      {
+        "name": "The Visited Magenta Rule",
+        "body": "Visited links and visited brand-icon states flip to #aa18ce. Magenta is not a CTA, accent, or decoration anywhere else.",
+        "section": "colors"
+      },
+      {
+        "name": "The No Pure Black or White Surface Rule",
+        "body": "Body text is #121212, not #000. Backgrounds are #ffffff in the canvas role only; all other surfaces step into the warm-gray ramp.",
+        "section": "colors"
+      },
+      {
+        "name": "The Single Onest Rule",
+        "body": "Onest is the only font face in the system. Hierarchy is created with the four weights (400/500/600/700) and the type scale.",
+        "section": "typography"
+      },
+      {
+        "name": "The Medium-Weight Label Rule",
+        "body": "All interactive controls render their text label in fontWeight 500. Bold is reserved for emphasis inside body copy.",
+        "section": "typography"
+      },
+      {
+        "name": "The 65–75ch Body Rule",
+        "body": "Long-form body text is capped at 65–75 characters per line.",
+        "section": "typography"
+      },
+      {
+        "name": "The Ambient Shadow Rule",
+        "body": "Every shadow uses low-alpha values between 0.04 and 0.06 against blue-tinged dark base colors. Shadows never reach 0.10 or higher.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Surfaces at rest are flat. Elevation is a state response, never a default style.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do use Institutional Blue #0058d2 only as primary CTA, brand icon fill, or focus indicator; cap its coverage at ≤10% of any screen.",
+      "Do render all control labels in Onest at fontWeight 500 (medium).",
+      "Do keep buttons on the three-size scale (32 / 40 / 48px). Do not invent a 36px or 44px button to fit a layout.",
+      "Do use 1.5px borders for outlined buttons; never 1px (fragile) or 2px (heavy).",
+      "Do use the 150ms ease-out transition for every interactive state change.",
+      "Do keep shadows ambient: low-alpha (0.04–0.06) and non-directional. Use them only on transient lifted layers.",
+      "Do write copy in Romanian first, second-person formal, verbs over nouns, no exclamation marks.",
+      "Do plan for ±20% string growth and full Romanian diacritics (ă â î ș ț).",
+      "Do validate every new color pair with yarn audit:contrast against WCAG 2.1 AA, in both light and dark themes."
+    ],
+    "donts": [
+      "Don't use brand blue decoratively — no blue heros, no blue accent stripes, no blue icons for fun.",
+      "Don't introduce a second font. Onest is the only typeface.",
+      "Don't use #000 for text or #fff against #000. The ink is #121212.",
+      "Don't ship SaaS-landing aesthetics: gradient heros, glassmorphism cards, hero-metric templates.",
+      "Don't ship admin-template aesthetics: Bootstrap-default forms, hardcoded sidebars.",
+      "Don't mimic Material You, iOS, or Liquid Glass language.",
+      "Don't use directional shadows, bevels, or decorative depth.",
+      "Don't use border-left or border-right greater than 1px as a colored side stripe.",
+      "Don't use background-clip: text gradient text.",
+      "Don't animate layout properties. Transform and opacity only.",
+      "Don't add a button variant that looks different without behaving different.",
+      "Don't put a shadow on a resting card.",
+      "Don't use em dashes in UI copy."
+    ]
+  }
+}

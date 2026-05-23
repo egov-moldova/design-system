@@ -1,0 +1,401 @@
+:host {
+  --_dropzone-min-height: var(--file-input-dropzone-min-height-md);
+  --_dropzone-padding-block: var(--file-input-dropzone-padding-block-md);
+  --_dropzone-padding-inline: var(--file-input-dropzone-padding-inline-md);
+  --_dropzone-gap: var(--file-input-dropzone-gap-md);
+  --_dropzone-radius: var(--file-input-dropzone-border-radius);
+  --_dropzone-border-width: var(--file-input-dropzone-border-width-default);
+  --_dropzone-border-width-emphasized: var(--file-input-dropzone-border-width-emphasized);
+  --_focus-ring-width: var(--file-input-dropzone-focus-ring-width);
+  --_dropzone-transition-duration: var(--file-input-dropzone-transition-duration);
+  --_dropzone-transition-easing: var(--file-input-dropzone-transition-timing-function);
+
+  /* Icon-circle (background pill behind the cloud-upload glyph). */
+  --_icon-circle-size: var(--file-input-dropzone-icon-circle-size-md);
+  --_icon-circle-padding: var(--file-input-dropzone-icon-circle-padding-md);
+  --_icon-circle-bg: var(--file-input-dropzone-icon-circle-background);
+  --_icon-circle-bg-disabled: var(--file-input-dropzone-icon-circle-background-disabled);
+  --_icon-glyph-size: var(--file-input-dropzone-icon-glyph-size-md);
+  --_icon-glyph-color: var(--file-input-dropzone-icon-glyph-color);
+  --_icon-glyph-color-disabled: var(--file-input-dropzone-icon-glyph-color-disabled);
+
+  /* CTA row: lead-in body + inline brand-blue link. */
+  --_cta-gap: var(--file-input-dropzone-cta-gap);
+  --_cta-body-color: var(--file-input-dropzone-cta-body-color);
+  --_cta-body-color-disabled: var(--file-input-dropzone-cta-body-color-disabled);
+  --_cta-link-color: var(--file-input-dropzone-cta-link-color);
+  --_cta-link-color-hover: var(--file-input-dropzone-cta-link-color-hover);
+  --_cta-link-color-disabled: var(--file-input-dropzone-cta-link-color-disabled);
+
+  --_primary-font-size: var(--file-input-primary-text-font-size-md);
+  --_primary-line-height: var(--file-input-primary-text-line-height-md);
+
+  --_bg: var(--file-input-background-default);
+  --_bg-active: var(--file-input-background-active);
+  --_text-primary: var(--file-input-text-primary);
+  --_text-secondary: var(--file-input-text-secondary);
+  --_border-color: var(--file-input-border-default);
+  --_border-color-hover: var(--file-input-border-hover);
+  --_border-color-focus: var(--file-input-border-focus);
+  --_border-color-active: var(--file-input-border-active);
+  --_focus-ring-color: var(--file-input-focus-ring-default);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--file-input-field-gap);
+  inline-size: 100%;
+  font-family: var(--file-input-primary-text-font-family);
+  color: var(--_text-primary);
+}
+
+:host([size='lg']) {
+  --_dropzone-min-height: var(--file-input-dropzone-min-height-lg);
+  --_dropzone-padding-block: var(--file-input-dropzone-padding-block-lg);
+  --_dropzone-padding-inline: var(--file-input-dropzone-padding-inline-lg);
+  --_dropzone-gap: var(--file-input-dropzone-gap-lg);
+  --_icon-circle-size: var(--file-input-dropzone-icon-circle-size-lg);
+  --_icon-circle-padding: var(--file-input-dropzone-icon-circle-padding-lg);
+  --_icon-glyph-size: var(--file-input-dropzone-icon-glyph-size-lg);
+  --_primary-font-size: var(--file-input-primary-text-font-size-lg);
+  --_primary-line-height: var(--file-input-primary-text-line-height-lg);
+}
+
+/* Invalid validation flag — recolors the dashed border to danger, swaps focus ring.
+ * Not a style variant per Figma; a state-level recolor. */
+:host([invalid]) {
+  --_border-color: var(--file-input-border-invalid);
+  --_border-color-hover: var(--file-input-border-invalid);
+  --_border-color-focus: var(--file-input-border-invalid);
+  --_focus-ring-color: var(--file-input-focus-ring-invalid);
+}
+
+/* ---------- Label ---------- */
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: var(--file-input-label-gap);
+  font-family: var(--file-input-label-font-family);
+  font-size: var(--file-input-label-font-size);
+  line-height: var(--file-input-label-line-height);
+  font-weight: var(--file-input-label-font-weight);
+  color: var(--file-input-label-color-default);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.label-text {
+  display: block;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.required-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--file-input-label-required-mark-size);
+  block-size: var(--file-input-label-required-mark-size);
+  color: var(--file-input-label-required-mark-color);
+  line-height: 1;
+}
+
+:host(.is-disabled) .label,
+:host(.is-disabled) .required-mark {
+  color: var(--file-input-label-color-disabled);
+}
+
+:host(:not(.has-label)) .label {
+  display: none;
+}
+
+/* ---------- Drop zone ---------- */
+
+.dropzone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: var(--_dropzone-gap);
+  min-block-size: var(--_dropzone-min-height);
+  padding-block: var(--_dropzone-padding-block);
+  padding-inline: var(--_dropzone-padding-inline);
+  background-color: var(--_bg);
+  /* Dashed border per Figma drop-zone affordance — pulled to the token contract. */
+  border: var(--_dropzone-border-width) dashed var(--_border-color);
+  border-radius: var(--_dropzone-radius);
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    border-color var(--_dropzone-transition-duration) var(--_dropzone-transition-easing),
+    background-color var(--_dropzone-transition-duration) var(--_dropzone-transition-easing),
+    box-shadow var(--_dropzone-transition-duration) var(--_dropzone-transition-easing);
+}
+
+:host(:not(.is-disabled):not(.is-focused):not(.is-active):hover) .dropzone {
+  border-color: var(--_border-color-hover);
+}
+
+:host(.is-focused:not(.is-disabled)) .dropzone {
+  outline: none;
+  border-style: solid;
+  border-color: var(--_border-color-focus);
+  box-shadow:
+    inset 0 0 0 calc(var(--_dropzone-border-width-emphasized) - var(--_dropzone-border-width))
+      var(--_border-color-focus),
+    0 0 0 var(--spacing-4) var(--_focus-ring-color);
+}
+
+/* Figma "Active" state — drag-over. Solid emphasized brand-blue border + tinted bg. */
+:host(.is-active:not(.is-disabled)) .dropzone {
+  border-style: solid;
+  border-color: var(--_border-color-active);
+  background-color: var(--_bg-active);
+  box-shadow: inset 0 0 0 calc(var(--_dropzone-border-width-emphasized) - var(--_dropzone-border-width))
+    var(--_border-color-active);
+}
+
+:host(.is-disabled) .dropzone {
+  background-color: var(--file-input-background-disabled);
+  border-color: var(--file-input-border-disabled);
+  cursor: not-allowed;
+}
+
+/* ---------- Centre icon circle (Figma: 48×48 pill at lg, 40×40 at md) ---------- */
+
+.dropzone-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--_icon-circle-size);
+  block-size: var(--_icon-circle-size);
+  padding: var(--_icon-circle-padding);
+  background-color: var(--_icon-circle-bg);
+  border-radius: 999px;
+  color: var(--_icon-glyph-color);
+  box-sizing: border-box;
+}
+
+.dropzone-icon cor-icon {
+  inline-size: var(--_icon-glyph-size);
+  block-size: var(--_icon-glyph-size);
+}
+
+:host(.is-disabled) .dropzone-icon {
+  background-color: var(--_icon-circle-bg-disabled);
+  color: var(--_icon-glyph-color-disabled);
+}
+
+/* Slotted custom icon inherits the themed color. */
+::slotted([slot='icon']) {
+  color: inherit;
+}
+
+.dropzone-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-4);
+  min-inline-size: 0;
+}
+
+.dropzone-text {
+  display: block;
+  font-size: var(--_primary-font-size);
+  line-height: var(--_primary-line-height);
+  font-weight: var(--file-input-primary-text-font-weight);
+  color: var(--_text-primary);
+}
+
+/* Figma Active: body text stays at ink primary (no accent recolor). */
+:host(.is-active:not(.is-disabled)) .dropzone-text {
+  color: var(--_text-primary);
+}
+
+:host(.is-disabled) .dropzone-text {
+  color: var(--file-input-text-disabled);
+}
+
+/* ---------- CTA row: "Drag and drop or [choose files]" ---------- */
+
+.dropzone-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--_cta-gap);
+  font-size: var(--_primary-font-size);
+  line-height: var(--_primary-line-height);
+  font-weight: var(--file-input-primary-text-font-weight);
+}
+
+.dropzone-cta__body {
+  color: var(--_cta-body-color);
+}
+
+:host(.is-disabled) .dropzone-cta__body {
+  color: var(--_cta-body-color-disabled);
+}
+
+/* Inline link affordance — a real <button> for keyboard + a11y, styled as a
+ * brand-blue underlined link. Padding-free so it inlines with the body text. */
+.dropzone-cta__link {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: var(--_cta-link-color);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.dropzone-cta__link:hover {
+  color: var(--_cta-link-color-hover);
+}
+
+.dropzone-cta__link:focus-visible {
+  outline: var(--border-width-2) solid var(--_cta-link-color);
+  outline-offset: var(--spacing-2);
+}
+
+:host(.is-disabled) .dropzone-cta__link,
+.dropzone-cta__link:disabled {
+  color: var(--_cta-link-color-disabled);
+  cursor: not-allowed;
+  text-decoration-color: var(--_cta-link-color-disabled);
+}
+
+/* ---------- Captions row (outside the dashed border, below the dropzone) ---------- */
+
+.captions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--file-input-caption-gap);
+  margin-block-start: var(--file-input-caption-margin-block-start);
+  font-family: var(--file-input-caption-font-family);
+  font-size: var(--file-input-caption-font-size);
+  line-height: var(--file-input-caption-line-height);
+  font-weight: var(--file-input-caption-font-weight);
+  color: var(--file-input-caption-color-default);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.captions__formats {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  text-align: start;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.captions__max-size {
+  flex-shrink: 0;
+  text-align: end;
+  white-space: nowrap;
+}
+
+:host(.is-disabled) .captions {
+  color: var(--file-input-caption-color-disabled);
+}
+
+/* ---------- Native hidden input ---------- */
+
+.native {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+  pointer-events: none;
+}
+
+/* ---------- File list ---------- */
+
+.file-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--file-input-list-gap);
+  margin: 0;
+  margin-block-start: var(--file-input-list-margin-block-start);
+  padding: 0;
+  list-style: none;
+  inline-size: 100%;
+}
+
+.file-list-item {
+  display: block;
+}
+
+/* ---------- Assistive (helper / error) ---------- */
+
+.assistive {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--file-input-assistive-gap-default);
+  font-family: var(--file-input-assistive-font-family);
+  font-size: var(--file-input-assistive-font-size);
+  line-height: var(--file-input-assistive-line-height);
+  font-weight: var(--file-input-assistive-font-weight);
+  color: var(--file-input-assistive-color-default);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.assistive-error {
+  gap: var(--file-input-assistive-gap-error);
+  color: var(--file-input-assistive-color-error);
+}
+
+.assistive-icon {
+  flex-shrink: 0;
+  inline-size: var(--file-input-assistive-icon-size);
+  block-size: var(--file-input-assistive-icon-size);
+  margin-block-start: 0;
+}
+
+.assistive-text {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Live region ---------- */
+
+.visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- prefers-reduced-motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .dropzone {
+    transition: none;
+  }
+}

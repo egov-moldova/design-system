@@ -1,0 +1,323 @@
+:host {
+  --_container-min-height: var(--input-chip-container-min-height-md);
+  --_container-padding-block: var(--input-chip-container-padding-block-md);
+  --_container-padding-inline: var(--input-chip-container-padding-inline-md);
+  --_container-gap: var(--input-chip-container-gap-md);
+  --_radius: var(--input-chip-container-border-radius);
+  --_border-width-default: var(--input-chip-container-border-width-default);
+  --_border-width-emphasized: var(--input-chip-container-border-width-emphasized);
+  --_focus-ring-width: var(--input-chip-container-focus-ring-width);
+  --_transition-duration: var(--input-chip-container-transition-duration);
+  --_transition-easing: var(--input-chip-container-transition-timing-function);
+
+  --_control-font-size: var(--input-chip-control-font-size-md);
+  --_control-line-height: var(--input-chip-control-line-height-md);
+
+  --_chip-height: var(--input-chip-chip-height-md);
+  --_chip-padding-block: var(--input-chip-chip-padding-block-md);
+  --_chip-padding-inline-start: var(--input-chip-chip-padding-inline-start-md);
+  --_chip-padding-inline-end: var(--input-chip-chip-padding-inline-end-md);
+  --_chip-gap: var(--input-chip-chip-gap-md);
+  --_chip-remove-size: var(--input-chip-chip-remove-size-md);
+  --_chip-remove-icon-size: var(--input-chip-chip-remove-icon-size-md);
+
+  --_bg: var(--input-chip-default-background-default);
+  --_text: var(--input-chip-default-text-default);
+  --_text-placeholder: var(--input-chip-default-text-placeholder);
+  --_border-color: var(--input-chip-default-border-default);
+  --_border-color-hover: var(--input-chip-default-border-hover);
+  --_border-color-focus: var(--input-chip-default-border-focus);
+  --_focus-ring-color: var(--input-chip-default-focus-ring);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--input-chip-field-gap);
+  inline-size: 100%;
+  font-family: var(--input-chip-control-font-family);
+  color: var(--_text);
+}
+
+:host([size='lg']) {
+  --_container-min-height: var(--input-chip-container-min-height-lg);
+  --_container-padding-block: var(--input-chip-container-padding-block-lg);
+  --_container-padding-inline: var(--input-chip-container-padding-inline-lg);
+  --_container-gap: var(--input-chip-container-gap-lg);
+  --_control-font-size: var(--input-chip-control-font-size-lg);
+  --_control-line-height: var(--input-chip-control-line-height-lg);
+  --_chip-height: var(--input-chip-chip-height-lg);
+  --_chip-padding-block: var(--input-chip-chip-padding-block-lg);
+  --_chip-padding-inline-start: var(--input-chip-chip-padding-inline-start-lg);
+  --_chip-padding-inline-end: var(--input-chip-chip-padding-inline-end-lg);
+  --_chip-gap: var(--input-chip-chip-gap-lg);
+  --_chip-remove-size: var(--input-chip-chip-remove-size-lg);
+  --_chip-remove-icon-size: var(--input-chip-chip-remove-icon-size-lg);
+}
+
+:host(.variant-destructive) {
+  --_border-color: var(--input-chip-destructive-border-default);
+  --_border-color-hover: var(--input-chip-destructive-border-hover);
+  --_border-color-focus: var(--input-chip-destructive-border-focus);
+  --_focus-ring-color: var(--input-chip-destructive-focus-ring);
+}
+
+/* ---------- Label ---------- */
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: var(--input-chip-label-gap);
+  font-family: var(--input-chip-label-font-family);
+  font-size: var(--input-chip-label-font-size);
+  line-height: var(--input-chip-label-line-height);
+  font-weight: var(--input-chip-label-font-weight);
+  color: var(--input-chip-label-color-default);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.label-text {
+  display: block;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.required-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--input-chip-label-required-mark-size);
+  block-size: var(--input-chip-label-required-mark-size);
+  color: var(--input-chip-label-required-mark-color);
+  font-weight: var(--input-chip-control-font-weight);
+  line-height: 1;
+}
+
+:host(.is-disabled) .label,
+:host(.is-disabled) .required-mark {
+  color: var(--input-chip-label-color-disabled);
+}
+
+:host(:not(.has-label)) .label {
+  display: none;
+}
+
+/* ---------- Control container ---------- */
+
+.control {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--_container-gap);
+  min-block-size: var(--_container-min-height);
+  padding-block: var(--_container-padding-block);
+  padding-inline: var(--_container-padding-inline);
+  background-color: var(--_bg);
+  border: var(--_border-width-default) solid var(--_border-color);
+  border-radius: var(--_radius);
+  cursor: text;
+  transition:
+    border-color var(--_transition-duration) var(--_transition-easing),
+    box-shadow var(--_transition-duration) var(--_transition-easing),
+    background-color var(--_transition-duration) var(--_transition-easing);
+}
+
+:host(:not(.is-disabled):not(.is-focused):hover) .control {
+  border-color: var(--_border-color-hover);
+  /* Inset shadow simulates Figma's 2px border thickening on hover without shifting content. */
+  box-shadow: inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default))
+    var(--_border-color-hover);
+}
+
+:host(.is-focused:not(.is-disabled)) .control {
+  border-color: var(--_border-color-focus);
+  box-shadow:
+    inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default)) var(--_border-color-focus),
+    0 0 0 var(--spacing-4) var(--_focus-ring-color);
+}
+
+:host(.is-disabled) .control {
+  background-color: var(--input-chip-default-background-disabled);
+  border-color: var(--input-chip-default-border-disabled);
+  cursor: not-allowed;
+}
+
+/* ---------- Chip pill ---------- */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--_chip-gap);
+  block-size: var(--_chip-height);
+  padding-block: var(--_chip-padding-block);
+  padding-inline-start: var(--_chip-padding-inline-start);
+  padding-inline-end: var(--_chip-padding-inline-end);
+  background-color: var(--input-chip-chip-background-default);
+  color: var(--input-chip-chip-label-default);
+  border-radius: var(--input-chip-chip-border-radius);
+  font-family: var(--input-chip-chip-font-family);
+  font-size: var(--input-chip-chip-font-size);
+  line-height: var(--input-chip-chip-line-height);
+  font-weight: var(--input-chip-chip-font-weight);
+  max-inline-size: var(--input-chip-chip-max-inline-size);
+  transition: background-color var(--_transition-duration) var(--_transition-easing);
+}
+
+:host(:not(.is-disabled)) .chip:hover {
+  background-color: var(--input-chip-chip-background-hover);
+}
+
+:host(.is-disabled) .chip {
+  background-color: var(--input-chip-chip-background-disabled);
+  color: var(--input-chip-chip-label-disabled);
+}
+
+.chip-label {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--_chip-remove-size);
+  block-size: var(--_chip-remove-size);
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  border-radius: var(--input-chip-chip-remove-border-radius);
+  color: var(--input-chip-chip-remove-color-default);
+  cursor: pointer;
+  transition:
+    background-color var(--_transition-duration) var(--_transition-easing),
+    color var(--_transition-duration) var(--_transition-easing);
+}
+
+.chip-remove:hover {
+  background-color: var(--input-chip-chip-remove-background-hover);
+  color: var(--input-chip-chip-remove-color-hover);
+}
+
+.chip-remove:focus-visible {
+  outline: none;
+  background-color: var(--input-chip-chip-remove-background-focus);
+  box-shadow: 0 0 0 var(--spacing-2) var(--input-chip-chip-focus-ring-color);
+}
+
+.chip-remove:disabled,
+:host(.is-disabled) .chip-remove {
+  color: var(--input-chip-chip-remove-color-disabled);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.chip-remove-icon {
+  inline-size: var(--_chip-remove-icon-size);
+  block-size: var(--_chip-remove-icon-size);
+  display: block;
+}
+
+/* ---------- Native text input ---------- */
+
+.native {
+  flex: 1 1 var(--input-chip-control-min-width);
+  min-inline-size: var(--input-chip-control-min-width);
+  block-size: var(--_chip-height);
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: var(--_control-font-size);
+  line-height: var(--_control-line-height);
+  font-weight: var(--input-chip-control-font-weight);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.native::placeholder {
+  color: var(--_text-placeholder);
+  opacity: 1;
+}
+
+.native:disabled {
+  color: var(--input-chip-default-text-disabled);
+  cursor: not-allowed;
+  -webkit-text-fill-color: var(--input-chip-default-text-disabled);
+}
+
+.native:focus,
+.native:focus-visible {
+  outline: none;
+}
+
+/* ---------- Assistive (helper / error) ---------- */
+
+.assistive {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--input-chip-assistive-gap-default);
+  font-family: var(--input-chip-assistive-font-family);
+  font-size: var(--input-chip-assistive-font-size);
+  line-height: var(--input-chip-assistive-line-height);
+  font-weight: var(--input-chip-assistive-font-weight);
+  color: var(--input-chip-assistive-color-default);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.assistive-error {
+  gap: var(--input-chip-assistive-gap-error);
+  color: var(--input-chip-assistive-color-error);
+}
+
+.assistive-icon {
+  flex-shrink: 0;
+  inline-size: var(--input-chip-assistive-icon-size);
+  block-size: var(--input-chip-assistive-icon-size);
+  margin-block-start: 0;
+}
+
+.assistive-text {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Live region ---------- */
+
+.visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- prefers-reduced-motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .control,
+  .chip,
+  .chip-remove {
+    transition: none;
+  }
+}

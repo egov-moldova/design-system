@@ -1,0 +1,71 @@
+{
+  "fileItem": {
+    "container": {
+      "minHeight": { "$value": "{spacing.48}", "$type": "dimension" },
+      "paddingBlock": { "$value": "{spacing.8}", "$type": "dimension" },
+      "paddingInline": { "$value": "{spacing.12}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.12}", "$type": "dimension" },
+      "borderRadius": { "$value": "{borderRadius.6}", "$type": "dimension" },
+      "borderWidth": { "$value": "{borderWidth.1}", "$type": "dimension" },
+      "transitionDuration": { "$value": "150ms", "$type": "duration" },
+      "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" }
+    },
+    "icon": {
+      "size": { "$value": "{spacing.24}", "$type": "dimension" },
+      "color": {
+        "uploaded": { "$value": "{color.icon.base.secondary}", "$type": "color" },
+        "uploading": { "$value": "{color.icon.brand.default}", "$type": "color" },
+        "success": { "$value": "{color.icon.positive.default}", "$type": "color" },
+        "error": { "$value": "{color.icon.danger.default}", "$type": "color" },
+        "disabled": { "$value": "{color.icon.disabled.on-disabled}", "$type": "color" }
+      }
+    },
+    "text": {
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "filename": {
+        "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+        "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+        "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+        "color": {
+          "default": { "$value": "{color.text.base.default}", "$type": "color" },
+          "disabled": { "$value": "{color.text.disabled.on-disabled}", "$type": "color" }
+        }
+      },
+      "meta": {
+        "fontSize": { "$value": "{fontSize.12}", "$type": "dimension" },
+        "lineHeight": { "$value": "{lineHeight.16}", "$type": "dimension" },
+        "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
+        "color": {
+          "default": { "$value": "{color.text.base.tertiary}", "$type": "color" },
+          "error": { "$value": "{color.text.danger.default}", "$type": "color" },
+          "disabled": { "$value": "{color.text.disabled.on-disabled}", "$type": "color" }
+        }
+      }
+    },
+    "remove": {
+      "size": { "$value": "{spacing.32}", "$type": "dimension" },
+      "iconSize": { "$value": "{spacing.20}", "$type": "dimension" },
+      "borderRadius": { "$value": "{borderRadius.6}", "$type": "dimension" },
+      "color": {
+        "default": { "$value": "{color.icon.base.secondary}", "$type": "color" },
+        "hover": { "$value": "{color.icon.danger.default}", "$type": "color" },
+        "disabled": { "$value": "{color.icon.disabled.on-disabled}", "$type": "color" }
+      },
+      "background": {
+        "hover": { "$value": "{color.background.danger.secondary}", "$type": "color" }
+      },
+      "focusRing": { "$value": "{palette.blue-sky.200}", "$type": "color" }
+    },
+    "background": {
+      "default": { "$value": "{color.background.base.default}", "$type": "color" },
+      "disabled": { "$value": "{color.background.disabled.default}", "$type": "color" }
+    },
+    "border": {
+      "uploaded": { "$value": "{color.border.base.default}", "$type": "color" },
+      "uploading": { "$value": "{color.border.brand.default}", "$type": "color" },
+      "success": { "$value": "{color.border.positive.default}", "$type": "color" },
+      "error": { "$value": "{color.border.danger.default}", "$type": "color" },
+      "disabled": { "$value": "{color.border.disabled.default}", "$type": "color" }
+    }
+  }
+}
