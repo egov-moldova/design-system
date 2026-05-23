@@ -23,6 +23,78 @@ and updates PR https://github.com/corlab-org/age-design/pull/5.
 
 ## Drift fix log
 
+### 2026-05-23 — `cor-search-input-rectangular` realigned to Figma (Loading visual + Button axis)
+
+Added the two axes Figma master `933:29099` exposes that the shipped
+component was missing:
+
+- **`loading` prop** — renders a `cor-spinner` next to the value/placeholder
+  (sized `md` on `size="lg"`, `sm` on `size="md"` to match Figma's spinner
+  tokens), exposes `aria-busy="true"` on the internal control, and suppresses
+  the trailing clear `×` button while in flight (per Figma Loading variants
+  `933:29133` + `5238:17968` — the clear affordance never coexists with a
+  loading indicator). The leading magnifying-glass icon stays as the role
+  indicator. Spinner colour switches to disabled gray when the host is
+  disabled.
+- **`withButton` prop** (`with-button` attribute) — renders a trailing
+  brand-blue submit button (`color.background.brand.default`) with an
+  `arrow-right` icon. Size is square: 40px on `size="lg"` (matches input
+  height 48 minus 2×4 padding), 32px on `size="md"`. Container
+  `padding-inline-end` collapses to `spacing.4` when the button is on so the
+  button hugs the input edge per Figma. Hover/active transitions through
+  `color.background.brand.default-hover` and `default-active`. The button
+  is disabled (gray fill, gray icon) when the value is empty, the host is
+  disabled, or the host is readonly. Click emits `corSearch` with the
+  current value — same payload as the Enter-key path.
+
+Added a `submitLabel` prop (default `'Caută'` per Romanian institutional
+voice) for the submit button's accessible name. Co-exists with `clearLabel`.
+
+**Token additions** — 17 new CSS variables under the
+`search-input-rectangular.submitButton.*` and
+`search-input-rectangular.loadingSpinner.*` blocks:
+`--search-input-rectangular-submit-button-{size,icon-size}-{md,lg}`,
+`--search-input-rectangular-submit-button-border-radius`,
+`--search-input-rectangular-submit-button-background-{default,hover,active,disabled}`,
+`--search-input-rectangular-submit-button-icon-{default,disabled}`,
+`--search-input-rectangular-submit-button-focus-ring-offset`,
+`--search-input-rectangular-submit-button-container-padding-inline-end`,
+`--search-input-rectangular-loading-spinner-size-{md,lg}`,
+`--search-input-rectangular-loading-spinner-color-{default,disabled}`.
+
+No breaking changes — both new props default to `false`. Existing API
+surface (variant, size, clearable, value, events) untouched.
+
+Stories: added `LoadingNoButton`, `WithSubmitButton`,
+`WithSubmitButtonLoading`; the existing `States` story now includes
+`loading`.
+
+Spec: 20 new tests covering `loading` reflection, `aria-busy`, spinner
+presence + size, leading icon preserved during loading, clear suppression
+while loading, `withButton` reflection, submit button rendering, disabled
+states (empty / disabled / readonly), `corSearch` emission on submit click,
+guard against synthetic dispatch in readonly state, and coexistence with
+the clear button + loading spinner. Total spec count: **478 → 498**.
+
+Pixel-perfect: Storybook screenshots visually match Figma master `933:29099`
+1:1 for the WithSubmitButton, LoadingNoButton, WithSubmitButtonLoading
+panels (the only Figma variants that were previously unreachable). The
+previously shipped Default/Filled/Disabled/ReadOnly/Destructive/Hover/Focus
+panels are unchanged.
+
+Screenshots: `docs/screenshots/cor-search-input-rectangular/v2/` —
+`storybook-with-submit-button-{light,dark}.png`,
+`storybook-loading-no-button-{light,dark}.png`,
+`storybook-with-submit-button-loading-{light,dark}.png`,
+`storybook-states-{light,dark}.png` (now includes Loading),
+`storybook-default-light.png`, `storybook-all-sizes-light.png`,
+plus Figma reference crops `figma-master.png` and `figma-docs-page.png`.
+
+Gates: `yarn tokens.build && yarn dx:stencil:once && yarn lint && yarn
+typecheck && yarn test && yarn sp.build && yarn audit:contrast` — all
+green. 498 spec tests pass, 0 console errors across every story, 0
+contrast failures in light or dark.
+
 ### 2026-05-23 — `cor-file-input` realigned to Figma (state-only model)
 
 Removed the shipped `variant: 'default' | 'destructive'` axis (drift — Figma's
@@ -103,6 +175,13 @@ Future agent runs: if a Figma node-id for either component_set is rediscovered,
 log it here so pixel-perfect comparison against the original can be re-checked.
 
 ## Last updated
+
+2026-05-23 — `cor-search-input-rectangular` realigned to Figma — added the
+`loading` visual state (spinner + `aria-busy`, clear button suppressed
+in-flight) and the `withButton` axis (trailing brand-blue submit button
+that fires `corSearch`). 17 new tokens under `submitButton.*` and
+`loadingSpinner.*`. 20 new spec tests (478 → 498). No breaking changes.
+See "Drift fix log" above for the full delta.
 
 2026-05-23 — `cor-file-input` realigned to Figma (state-only model) — removed
 the `variant` axis, added the `Active` state, renamed `cor-file-item` resting

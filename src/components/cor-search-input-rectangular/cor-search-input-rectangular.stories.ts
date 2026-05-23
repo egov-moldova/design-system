@@ -19,6 +19,8 @@ type SearchArgs = {
   readonly: boolean;
   invalid: boolean;
   clearable: boolean;
+  loading: boolean;
+  withButton: boolean;
 };
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary);';
@@ -37,6 +39,8 @@ const renderSearch = (args: SearchArgs) => /*html*/ `
     ${args.readonly ? 'readonly' : ''}
     ${args.invalid ? 'invalid' : ''}
     ${args.clearable ? '' : 'clearable="false"'}
+    ${args.loading ? 'loading' : ''}
+    ${args.withButton ? 'with-button' : ''}
   ></cor-search-input-rectangular>
 `;
 
@@ -54,6 +58,8 @@ const docsSourceDefault = (args: SearchArgs) => {
     args.readonly ? 'readonly' : '',
     args.invalid ? 'invalid' : '',
     args.clearable ? '' : 'clearable="false"',
+    args.loading ? 'loading' : '',
+    args.withButton ? 'with-button' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -86,6 +92,11 @@ const meta: Meta<SearchArgs> = {
     readonly: { control: 'boolean' },
     invalid: { control: 'boolean' },
     clearable: { control: 'boolean' },
+    loading: { control: 'boolean', description: 'Shows a trailing spinner; sets `aria-busy`.' },
+    withButton: {
+      control: 'boolean',
+      description: 'Renders a trailing brand-blue submit button (Figma `Button=True`).',
+    },
   },
 };
 
@@ -108,6 +119,8 @@ export const Default: Story = {
     readonly: false,
     invalid: false,
     clearable: true,
+    loading: false,
+    withButton: false,
   },
   parameters: {
     docs: {
@@ -169,6 +182,10 @@ export const States: Story = {
           /*html*/ `<cor-search-input-rectangular size="lg" value="permis de conducere"></cor-search-input-rectangular>`,
         ),
         cell(
+          'loading',
+          /*html*/ `<cor-search-input-rectangular size="lg" value="permis de conducere" loading></cor-search-input-rectangular>`,
+        ),
+        cell(
           'disabled',
           /*html*/ `<cor-search-input-rectangular size="lg" placeholder="Caută…" disabled></cor-search-input-rectangular>`,
         ),
@@ -193,10 +210,124 @@ export const States: Story = {
         code: [
           '<cor-search-input-rectangular size="lg" placeholder="Caută…"></cor-search-input-rectangular>',
           '<cor-search-input-rectangular size="lg" value="permis de conducere"></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular size="lg" value="permis de conducere" loading></cor-search-input-rectangular>',
           '<cor-search-input-rectangular size="lg" placeholder="Caută…" disabled></cor-search-input-rectangular>',
           '<cor-search-input-rectangular size="lg" value="permis de conducere" readonly></cor-search-input-rectangular>',
           '<cor-search-input-rectangular size="lg" variant="destructive" placeholder="Caută…"></cor-search-input-rectangular>',
           '<cor-search-input-rectangular size="lg" label="Căutare" placeholder="Caută…" required></cor-search-input-rectangular>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const LoadingNoButton: Story = {
+  name: 'Loading (no button)',
+  render: () =>
+    wrap(
+      [
+        cell(
+          'lg — loading + value',
+          /*html*/ `<cor-search-input-rectangular size="lg" value="permis de conducere" loading></cor-search-input-rectangular>`,
+        ),
+        cell(
+          'md — loading + value',
+          /*html*/ `<cor-search-input-rectangular size="md" value="permis de conducere" loading></cor-search-input-rectangular>`,
+        ),
+        cell(
+          'lg — loading + placeholder',
+          /*html*/ `<cor-search-input-rectangular size="lg" placeholder="Caută…" loading></cor-search-input-rectangular>`,
+        ),
+        cell(
+          'lg — loading + disabled',
+          /*html*/ `<cor-search-input-rectangular size="lg" value="permis de conducere" loading disabled></cor-search-input-rectangular>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          '<cor-search-input-rectangular size="lg" value="permis de conducere" loading></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular size="md" value="permis de conducere" loading></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular size="lg" placeholder="Caută…" loading></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular size="lg" value="permis de conducere" loading disabled></cor-search-input-rectangular>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const WithSubmitButton: Story = {
+  name: 'With Submit Button',
+  render: () =>
+    wrap(
+      [
+        cell(
+          'lg — empty (button disabled)',
+          /*html*/ `<cor-search-input-rectangular size="lg" placeholder="Caută…" with-button></cor-search-input-rectangular>`,
+        ),
+        cell(
+          'lg — filled (button active)',
+          /*html*/ `<cor-search-input-rectangular size="lg" value="permis de conducere" with-button></cor-search-input-rectangular>`,
+        ),
+        cell(
+          'md — empty (button disabled)',
+          /*html*/ `<cor-search-input-rectangular size="md" placeholder="Caută…" with-button></cor-search-input-rectangular>`,
+        ),
+        cell(
+          'md — filled (button active)',
+          /*html*/ `<cor-search-input-rectangular size="md" value="cazier judiciar" with-button></cor-search-input-rectangular>`,
+        ),
+        cell(
+          'lg — disabled',
+          /*html*/ `<cor-search-input-rectangular size="lg" value="permis de conducere" with-button disabled></cor-search-input-rectangular>`,
+        ),
+        cell(
+          'lg — labeled + helper',
+          /*html*/ `<cor-search-input-rectangular size="lg" label="Căutare" placeholder="Caută…" helper-text="Apasă pe buton sau Enter pentru a căuta." with-button></cor-search-input-rectangular>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          '<cor-search-input-rectangular size="lg" placeholder="Caută…" with-button></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular size="lg" value="permis de conducere" with-button></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular size="md" placeholder="Caută…" with-button></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular size="md" value="cazier judiciar" with-button></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular size="lg" value="permis de conducere" with-button disabled></cor-search-input-rectangular>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const WithSubmitButtonLoading: Story = {
+  name: 'With Submit Button (Loading)',
+  render: () =>
+    wrap(
+      [
+        cell(
+          'lg — loading + filled',
+          /*html*/ `<cor-search-input-rectangular size="lg" value="permis de conducere" loading with-button></cor-search-input-rectangular>`,
+        ),
+        cell(
+          'md — loading + filled',
+          /*html*/ `<cor-search-input-rectangular size="md" value="cazier judiciar" loading with-button></cor-search-input-rectangular>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          '<cor-search-input-rectangular size="lg" value="permis de conducere" loading with-button></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular size="md" value="cazier judiciar" loading with-button></cor-search-input-rectangular>',
         ].join('\n'),
       },
     },

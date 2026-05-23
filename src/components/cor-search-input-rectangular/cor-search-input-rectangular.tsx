@@ -21,12 +21,19 @@ let searchInputInstanceCounter = 0;
  * icon and an optional trailing clear `×` button that appears whenever the
  * control carries a value. Visual primitives (border, focus ring, label,
  * helper / error, sizes, states) are shared with `cor-input`; specific
- * affordances (icon-start, icon-end-clear) live in the
+ * affordances (icon-start, icon-end-clear, submit-button) live in the
  * `--search-input-rectangular-*` token namespace.
  *
  * Rectangular shape is the default sibling of `cor-search-input-circular`
  * (pill). The two ship as distinct components per the Figma component-set
  * separation in the Republic of Moldova Unified Design System library.
+ *
+ * Optional axes per Figma master `933:29099`:
+ * - `loading` — async query is in flight; a trailing spinner appears next to
+ *   the value/placeholder and the control is announced as `aria-busy`.
+ * - `with-button` — adds a trailing brand-blue submit button that fires
+ *   `corSearch` on click. Coexists with the clear button and the loading
+ *   spinner.
  *
  * @element cor-search-input-rectangular
  *
@@ -89,6 +96,32 @@ export class CorSearchInputRectangular {
    * @default true
    */
   @Prop({ reflect: true }) clearable: boolean = true;
+
+  /**
+   * Indicates an in-flight query. Replaces the leading magnifying-glass icon
+   * with a brand-coloured `cor-spinner` and exposes `aria-busy` on the
+   * internal control. The field stays focusable; emitting `corSearch` while
+   * loading is the consumer's responsibility (typically debounced).
+   * @default false
+   */
+  @Prop({ reflect: true }) loading: boolean = false;
+
+  /**
+   * Renders a trailing brand-blue submit button (the Figma "Button=True"
+   * axis). Clicking the button — or pressing Enter inside the input —
+   * dispatches `corSearch` with the current value. When the field is empty
+   * or disabled, the button enters a disabled visual state and does not
+   * fire the event.
+   * @default false
+   */
+  @Prop({ reflect: true, attribute: 'with-button' }) withButton: boolean = false;
+
+  /**
+   * Accessible label for the trailing submit button. Defaults to Romanian
+   * "Caută" per the institutional voice.
+   * @default 'Caută'
+   */
+  @Prop({ attribute: 'submit-label' }) submitLabel: string = 'Caută';
 
   /**
    * Current value of the control. Reflects to the host attribute.
@@ -287,6 +320,13 @@ export class CorSearchInputRectangular {
     this.clearValue({ refocus: true });
   };
 
+  private handleSubmitClick = (ev: MouseEvent) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    if (this.isInert() || this.readonly) return;
+    this.corSearch.emit({ value: this.value });
+  };
+
   private clearValue(options: { refocus: boolean }) {
     if (this.value === '') return;
     this.value = '';
@@ -329,6 +369,11 @@ export class CorSearchInputRectangular {
   }
 
   private showClearButton(): boolean {
+    // Figma master 933:29133 / 5238:17968: the clear `×` is suppressed
+    // during loading — the spinner owns the trailing affordance space and
+    // committing a clear while the previous query is in flight would race
+    // the consumer's debounced search handler.
+    if (this.loading) return false;
     return this.clearable && !this.isInert() && !this.readonly && this.value !== '' && !this.hasIconEndSlot;
   }
 
@@ -340,11 +385,15 @@ export class CorSearchInputRectangular {
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.ariaLabel : undefined;
     const iconSize = this.size === 'lg' ? 24 : 20;
+    const submitIconSize: 16 | 20 = this.size === 'lg' ? 20 : 16;
+    const spinnerSize = this.size === 'lg' ? 'md' : 'sm';
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
       'is-readonly': this.readonly,
       'is-invalid': this.invalid,
+      'is-loading': this.loading,
+      'has-submit-button': this.withButton,
       'is-focused': this.isFocused && !effectivelyDisabled,
       'has-label': this.hasVisibleLabel(),
       'has-value': this.value !== '',
@@ -352,6 +401,7 @@ export class CorSearchInputRectangular {
     };
 
     const showClear = this.showClearButton();
+    const submitDisabled = effectivelyDisabled || this.readonly || this.value === '';
 
     return (
       <Host class={hostClasses}>
@@ -397,12 +447,19 @@ export class CorSearchInputRectangular {
             aria-invalid={this.invalid ? 'true' : null}
             aria-required={this.required ? 'true' : null}
             aria-disabled={effectivelyDisabled ? 'true' : null}
+            aria-busy={this.loading ? 'true' : null}
             onInput={this.handleInput}
             onChange={this.handleChange}
             onFocus={this.handleFocus}
             onBlur={this.handleBlur}
             onKeyDown={this.handleKeyDown}
           />
+
+          {this.loading ? (
+            <span class="control-spinner" part="spinner" aria-hidden="true">
+              <cor-spinner size={spinnerSize} variant={effectivelyDisabled ? 'dark' : 'brand'} />
+            </span>
+          ) : null}
 
           <span class="control-icon control-icon-end" aria-hidden={this.hasIconEndSlot ? null : 'true'}>
             <slot name="icon-end" onSlotchange={this.onIconEndSlotChange} />
@@ -419,6 +476,21 @@ export class CorSearchInputRectangular {
               onClick={this.handleClearClick}
             >
               <cor-icon name="cross-small" size={iconSize} color="currentColor" />
+            </button>
+          ) : null}
+
+          {this.withButton ? (
+            <button
+              type="button"
+              class="submit-button"
+              part="submit-button"
+              aria-label={this.submitLabel}
+              disabled={submitDisabled}
+              aria-disabled={submitDisabled ? 'true' : null}
+              onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
+              onClick={this.handleSubmitClick}
+            >
+              <cor-icon name="arrow-right" size={submitIconSize} color="currentColor" />
             </button>
           ) : null}
         </div>

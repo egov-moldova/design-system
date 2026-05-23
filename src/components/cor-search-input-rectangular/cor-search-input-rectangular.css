@@ -168,6 +168,29 @@
   color: inherit;
 }
 
+/* ---------- Loading spinner (replaces the leading icon visual semantics
+   per Figma master 933:29133 — spinner sits next to the value, leading
+   magnifying-glass remains as the role indicator). ---------- */
+
+.control-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--search-input-rectangular-loading-spinner-size-md);
+  block-size: var(--search-input-rectangular-loading-spinner-size-md);
+  color: var(--search-input-rectangular-loading-spinner-color-default);
+}
+
+:host([size='lg']) .control-spinner {
+  inline-size: var(--search-input-rectangular-loading-spinner-size-lg);
+  block-size: var(--search-input-rectangular-loading-spinner-size-lg);
+}
+
+:host(.is-disabled) .control-spinner {
+  color: var(--search-input-rectangular-loading-spinner-color-disabled);
+}
+
 /* ---------- Clear button ---------- */
 
 .clear-button {
@@ -202,6 +225,57 @@
 .clear-button:focus-visible {
   outline: var(--border-width-2) solid var(--color-border-brand-default);
   outline-offset: var(--spacing-2);
+}
+
+/* ---------- Submit button (Figma "Button=True" axis) ---------- */
+
+/* Tighten the right padding so the brand-blue submit button hugs the input
+   edge per Figma master 933:29099. Left padding is preserved. */
+:host(.has-submit-button) .control {
+  padding-inline-end: var(--search-input-rectangular-submit-button-container-padding-inline-end);
+}
+
+.submit-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--search-input-rectangular-submit-button-size-md);
+  block-size: var(--search-input-rectangular-submit-button-size-md);
+  padding: 0;
+  margin: 0;
+  background-color: var(--search-input-rectangular-submit-button-background-default);
+  color: var(--search-input-rectangular-submit-button-icon-default);
+  border: 0;
+  border-radius: var(--search-input-rectangular-submit-button-border-radius);
+  cursor: pointer;
+  transition:
+    background-color var(--_transition-duration) var(--_transition-easing),
+    color var(--_transition-duration) var(--_transition-easing);
+}
+
+:host([size='lg']) .submit-button {
+  inline-size: var(--search-input-rectangular-submit-button-size-lg);
+  block-size: var(--search-input-rectangular-submit-button-size-lg);
+}
+
+.submit-button:hover:not(:disabled) {
+  background-color: var(--search-input-rectangular-submit-button-background-hover);
+}
+
+.submit-button:active:not(:disabled) {
+  background-color: var(--search-input-rectangular-submit-button-background-active);
+}
+
+.submit-button:focus-visible {
+  outline: var(--border-width-2) solid var(--color-border-brand-default);
+  outline-offset: var(--search-input-rectangular-submit-button-focus-ring-offset);
+}
+
+.submit-button:disabled {
+  background-color: var(--search-input-rectangular-submit-button-background-disabled);
+  color: var(--search-input-rectangular-submit-button-icon-disabled);
+  cursor: not-allowed;
 }
 
 /* ---------- Native input ---------- */
@@ -310,7 +384,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .control,
-  .clear-button {
+  .clear-button,
+  .submit-button {
     transition: none;
   }
 }
