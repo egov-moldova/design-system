@@ -1,0 +1,138 @@
+:host {
+  --_color: var(--separator-color-subtle);
+  --_size: var(--separator-size-thin);
+  --_inset: 0px;
+
+  display: block;
+  box-sizing: border-box;
+  inline-size: 100%;
+  /* Horizontal: take only the height of the rule itself (+inset on cross axis). */
+  block-size: auto;
+  padding-block: var(--_inset);
+  color: var(--separator-label-color);
+}
+
+/* -- Variant (color) ----------------------------------------------------- */
+
+:host([variant='subtle']) {
+  --_color: var(--separator-color-subtle);
+}
+
+:host([variant='mild']) {
+  --_color: var(--separator-color-mild);
+}
+
+:host([variant='strong']) {
+  --_color: var(--separator-color-strong);
+}
+
+/* -- Size (thickness) ---------------------------------------------------- */
+
+:host([size='extra-thin']) {
+  --_size: var(--separator-size-extra-thin);
+}
+
+:host([size='thin']) {
+  --_size: var(--separator-size-thin);
+}
+
+:host([size='medium']) {
+  --_size: var(--separator-size-medium);
+}
+
+:host([size='thick']) {
+  --_size: var(--separator-size-thick);
+}
+
+/* -- Inset --------------------------------------------------------------- */
+
+:host([inset]) {
+  --_inset: var(--separator-inset-spacing);
+}
+
+/* -- Orientation: vertical ---------------------------------------------- */
+
+:host([orientation='vertical']) {
+  display: inline-block;
+  inline-size: auto;
+  block-size: 100%;
+  /* Inset on a vertical separator runs on the inline (cross) axis. */
+  padding-block: 0;
+  padding-inline: var(--_inset);
+}
+
+/* -- Plain rule (no label) ---------------------------------------------- */
+
+.line {
+  display: block;
+  background-color: var(--_color);
+  border: 0;
+}
+
+:host(:not([orientation='vertical'])) .line {
+  inline-size: 100%;
+  block-size: var(--_size);
+}
+
+:host([orientation='vertical']) .line {
+  inline-size: var(--_size);
+  block-size: 100%;
+  min-block-size: 1em;
+}
+
+/* -- Labeled separator -------------------------------------------------- */
+
+.layout {
+  display: flex;
+  align-items: center;
+  gap: var(--separator-label-gap);
+  inline-size: 100%;
+}
+
+:host([orientation='vertical']) .layout {
+  flex-direction: column;
+  block-size: 100%;
+  inline-size: auto;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--separator-label-gap);
+  flex: 0 0 auto;
+  padding-inline: var(--separator-label-padding-inline);
+  font-family: var(--font-family-primary);
+  font-size: var(--separator-label-font-size);
+  font-weight: var(--separator-label-font-weight);
+  line-height: var(--separator-label-line-height);
+  color: var(--separator-label-color);
+  white-space: nowrap;
+}
+
+:host([orientation='vertical']) .label {
+  padding-inline: 0;
+  padding-block: var(--separator-label-padding-inline);
+  writing-mode: vertical-rl;
+  white-space: nowrap;
+}
+
+.layout .line {
+  flex: 1 1 auto;
+}
+
+:host(:not([orientation='vertical'])) .layout .line {
+  block-size: var(--_size);
+  inline-size: auto;
+}
+
+:host([orientation='vertical']) .layout .line {
+  inline-size: var(--_size);
+  block-size: auto;
+}
+
+/* -- Slotted label content fall-through --------------------------------- */
+
+::slotted(*) {
+  color: var(--separator-label-color);
+  font: inherit;
+}

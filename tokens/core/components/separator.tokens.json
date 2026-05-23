@@ -1,0 +1,68 @@
+{
+  "separator": {
+    "color": {
+      "subtle": {
+        "$value": "{color.border.base.default}",
+        "$type": "color"
+      },
+      "mild": {
+        "$value": "{color.border.base.secondary}",
+        "$type": "color"
+      },
+      "strong": {
+        "$value": "{color.border.base.tertiary}",
+        "$type": "color"
+      }
+    },
+    "size": {
+      "extra-thin": {
+        "$value": "{borderWidth.0-5}",
+        "$type": "dimension"
+      },
+      "thin": {
+        "$value": "{borderWidth.1}",
+        "$type": "dimension"
+      },
+      "medium": {
+        "$value": "{borderWidth.1-5}",
+        "$type": "dimension"
+      },
+      "thick": {
+        "$value": "{borderWidth.2}",
+        "$type": "dimension"
+      }
+    },
+    "label": {
+      "gap": {
+        "$value": "{spacing.8}",
+        "$type": "dimension"
+      },
+      "color": {
+        "$value": "{color.text.base.tertiary}",
+        "$type": "color"
+      },
+      "fontSize": {
+        "$value": "{fontSize.14}",
+        "$type": "dimension"
+      },
+      "fontWeight": {
+        "$value": 400,
+        "$type": "fontWeight"
+      },
+      "lineHeight": {
+        "$value": "{lineHeight.20}",
+        "$type": "dimension"
+      },
+      "padding-inline": {
+        "$value": "{spacing.8}",
+        "$type": "dimension"
+      }
+    },
+    "inset": {
+      "spacing": {
+        "$value": "{spacing.8}",
+        "$type": "dimension"
+      }
+    }
+  }
+}
