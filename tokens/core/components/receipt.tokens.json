@@ -1,0 +1,87 @@
+{
+  "receipt": {
+    "container": {
+      "background": { "$value": "{color.background.base.default}", "$type": "color" },
+      "border": { "$value": "{color.border.base.tertiary}", "$type": "color" },
+      "borderWidth": { "$value": "{borderWidth.1}", "$type": "dimension" },
+      "borderRadius": { "$value": "{borderRadius.12}", "$type": "dimension" },
+      "shadow": { "$value": "{dropShadow.100}", "$type": "string" },
+      "padding": { "$value": "{spacing.32}", "$type": "dimension" },
+      "paddingMobile": { "$value": "{spacing.20}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.24}", "$type": "dimension" },
+      "maxWidth": { "$value": "640px", "$type": "dimension" }
+    },
+    "divider": {
+      "color": { "$value": "{color.border.base.tertiary}", "$type": "color" },
+      "width": { "$value": "{borderWidth.1}", "$type": "dimension" }
+    },
+    "header": {
+      "gap": { "$value": "{spacing.16}", "$type": "dimension" },
+      "logoSize": { "$value": "{spacing.32}", "$type": "dimension" }
+    },
+    "title": {
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSize": { "$value": "{fontSize.20}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.28}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.semibold}", "$type": "fontWeight" },
+      "color": { "$value": "{color.text.base.default}", "$type": "color" }
+    },
+    "amount": {
+      "background": { "$value": "{color.background.base.secondary}", "$type": "color" },
+      "padding": { "$value": "{spacing.20}", "$type": "dimension" },
+      "borderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.4}", "$type": "dimension" },
+      "labelFontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "labelFontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "labelLineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "labelFontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "labelColor": { "$value": "{color.text.base.secondary}", "$type": "color" },
+      "valueFontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "valueFontSize": { "$value": "{fontSize.28}", "$type": "dimension" },
+      "valueLineHeight": { "$value": "{lineHeight.36}", "$type": "dimension" },
+      "valueFontWeight": { "$value": "{fontWeight.semibold}", "$type": "fontWeight" },
+      "valueColor": { "$value": "{color.text.base.default}", "$type": "color" },
+      "currencyFontSize": { "$value": "{fontSize.18}", "$type": "dimension" },
+      "currencyFontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "currencyColor": { "$value": "{color.text.base.secondary}", "$type": "color" }
+    },
+    "row": {
+      "gap": { "$value": "{spacing.16}", "$type": "dimension" },
+      "paddingBlock": { "$value": "{spacing.8}", "$type": "dimension" },
+      "labelFontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "labelFontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "labelLineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "labelFontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
+      "labelColor": { "$value": "{color.text.base.secondary}", "$type": "color" },
+      "valueFontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "valueFontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "valueLineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "valueFontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "valueColor": { "$value": "{color.text.base.default}", "$type": "color" }
+    },
+    "qr": {
+      "size": { "$value": "128px", "$type": "dimension" },
+      "_comment": "QR background + module color must be theme-locked (light surface, dark modules) for reliable scanning by phone cameras — even when the surrounding receipt is in dark mode. We anchor to palette primitives intentionally so semantic theme overrides cannot invert them.",
+      "background": { "$value": "{palette.white.1000}", "$type": "color" },
+      "moduleColor": { "$value": "{palette.black.1000}", "$type": "color" },
+      "padding": { "$value": "{spacing.12}", "$type": "dimension" },
+      "borderColor": { "$value": "{color.border.base.tertiary}", "$type": "color" },
+      "borderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" },
+      "captionFontSize": { "$value": "{fontSize.12}", "$type": "dimension" },
+      "captionLineHeight": { "$value": "{lineHeight.16}", "$type": "dimension" },
+      "captionFontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
+      "captionColor": { "$value": "{color.text.base.tertiary}", "$type": "color" }
+    },
+    "actions": {
+      "gap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "paddingTop": { "$value": "{spacing.20}", "$type": "dimension" }
+    },
+    "transactionId": {
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSize": { "$value": "{fontSize.12}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.16}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
+      "color": { "$value": "{color.text.base.tertiary}", "$type": "color" }
+    }
+  }
+}
