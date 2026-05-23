@@ -12,13 +12,15 @@ import {
   h,
 } from '@stencil/core';
 
-import { PHONE_INPUT_SIZES, PHONE_INPUT_VARIANTS } from './cor-phone-input.types';
+import { PHONE_FLAGS } from './cor-phone-input.flags';
+import { PHONE_INPUT_SIZES, PHONE_INPUT_TYPES, PHONE_INPUT_VARIANTS } from './cor-phone-input.types';
 import type {
   PhoneCountry,
   PhoneInputChangeDetail,
   PhoneInputCountryChangeDetail,
   PhoneInputInputDetail,
   PhoneInputSize,
+  PhoneInputType,
   PhoneInputVariant,
 } from './cor-phone-input.types';
 
@@ -33,13 +35,50 @@ let phoneInputInstanceCounter = 0;
  * The map is hand-rolled — `libphonenumber-js` would pull in ~140KB to
  * cover countries we don't serve. The `mask` uses `X` for required digits
  * and literal spaces as visual separators; the formatter respects each
- * country's local-segment length window (`minLen` / `maxLen`).
+ * country's local-segment length window (`minLen` / `maxLen`). Each row
+ * carries an inline SVG `flag` glyph from `cor-phone-input.flags.ts`.
  */
 const COUNTRIES: Record<string, PhoneCountry> = {
-  MD: { iso: 'MD', code: '+373', name: 'Moldova', nameRo: 'Moldova', mask: 'XXX XX XXX', minLen: 8, maxLen: 8 },
-  RO: { iso: 'RO', code: '+40', name: 'Romania', nameRo: 'România', mask: 'XXX XXX XXX', minLen: 9, maxLen: 9 },
-  RU: { iso: 'RU', code: '+7', name: 'Russia', nameRo: 'Rusia', mask: 'XXX XXX XX XX', minLen: 10, maxLen: 10 },
-  UA: { iso: 'UA', code: '+380', name: 'Ukraine', nameRo: 'Ucraina', mask: 'XX XXX XX XX', minLen: 9, maxLen: 9 },
+  MD: {
+    iso: 'MD',
+    code: '+373',
+    name: 'Moldova',
+    nameRo: 'Moldova',
+    mask: 'XXX XX XXX',
+    minLen: 8,
+    maxLen: 8,
+    flag: PHONE_FLAGS.MD,
+  },
+  RO: {
+    iso: 'RO',
+    code: '+40',
+    name: 'Romania',
+    nameRo: 'România',
+    mask: 'XXX XXX XXX',
+    minLen: 9,
+    maxLen: 9,
+    flag: PHONE_FLAGS.RO,
+  },
+  RU: {
+    iso: 'RU',
+    code: '+7',
+    name: 'Russia',
+    nameRo: 'Rusia',
+    mask: 'XXX XXX XX XX',
+    minLen: 10,
+    maxLen: 10,
+    flag: PHONE_FLAGS.RU,
+  },
+  UA: {
+    iso: 'UA',
+    code: '+380',
+    name: 'Ukraine',
+    nameRo: 'Ucraina',
+    mask: 'XX XXX XX XX',
+    minLen: 9,
+    maxLen: 9,
+    flag: PHONE_FLAGS.UA,
+  },
   US: {
     iso: 'US',
     code: '+1',
@@ -48,6 +87,7 @@ const COUNTRIES: Record<string, PhoneCountry> = {
     mask: 'XXX XXX XXXX',
     minLen: 10,
     maxLen: 10,
+    flag: PHONE_FLAGS.US,
   },
   GB: {
     iso: 'GB',
@@ -57,16 +97,98 @@ const COUNTRIES: Record<string, PhoneCountry> = {
     mask: 'XXXX XXX XXX',
     minLen: 10,
     maxLen: 10,
+    flag: PHONE_FLAGS.GB,
   },
-  DE: { iso: 'DE', code: '+49', name: 'Germany', nameRo: 'Germania', mask: 'XXX XXXX XXXX', minLen: 10, maxLen: 11 },
-  FR: { iso: 'FR', code: '+33', name: 'France', nameRo: 'Franța', mask: 'X XX XX XX XX', minLen: 9, maxLen: 9 },
-  IT: { iso: 'IT', code: '+39', name: 'Italy', nameRo: 'Italia', mask: 'XXX XXX XXXX', minLen: 9, maxLen: 10 },
-  ES: { iso: 'ES', code: '+34', name: 'Spain', nameRo: 'Spania', mask: 'XXX XXX XXX', minLen: 9, maxLen: 9 },
-  PT: { iso: 'PT', code: '+351', name: 'Portugal', nameRo: 'Portugalia', mask: 'XXX XXX XXX', minLen: 9, maxLen: 9 },
-  IL: { iso: 'IL', code: '+972', name: 'Israel', nameRo: 'Israel', mask: 'XX XXX XXXX', minLen: 9, maxLen: 9 },
-  TR: { iso: 'TR', code: '+90', name: 'Turkey', nameRo: 'Turcia', mask: 'XXX XXX XX XX', minLen: 10, maxLen: 10 },
-  BG: { iso: 'BG', code: '+359', name: 'Bulgaria', nameRo: 'Bulgaria', mask: 'XX XXX XXXX', minLen: 8, maxLen: 9 },
-  GR: { iso: 'GR', code: '+30', name: 'Greece', nameRo: 'Grecia', mask: 'XXX XXX XXXX', minLen: 10, maxLen: 10 },
+  DE: {
+    iso: 'DE',
+    code: '+49',
+    name: 'Germany',
+    nameRo: 'Germania',
+    mask: 'XXX XXXX XXXX',
+    minLen: 10,
+    maxLen: 11,
+    flag: PHONE_FLAGS.DE,
+  },
+  FR: {
+    iso: 'FR',
+    code: '+33',
+    name: 'France',
+    nameRo: 'Franța',
+    mask: 'X XX XX XX XX',
+    minLen: 9,
+    maxLen: 9,
+    flag: PHONE_FLAGS.FR,
+  },
+  IT: {
+    iso: 'IT',
+    code: '+39',
+    name: 'Italy',
+    nameRo: 'Italia',
+    mask: 'XXX XXX XXXX',
+    minLen: 9,
+    maxLen: 10,
+    flag: PHONE_FLAGS.IT,
+  },
+  ES: {
+    iso: 'ES',
+    code: '+34',
+    name: 'Spain',
+    nameRo: 'Spania',
+    mask: 'XXX XXX XXX',
+    minLen: 9,
+    maxLen: 9,
+    flag: PHONE_FLAGS.ES,
+  },
+  PT: {
+    iso: 'PT',
+    code: '+351',
+    name: 'Portugal',
+    nameRo: 'Portugalia',
+    mask: 'XXX XXX XXX',
+    minLen: 9,
+    maxLen: 9,
+    flag: PHONE_FLAGS.PT,
+  },
+  IL: {
+    iso: 'IL',
+    code: '+972',
+    name: 'Israel',
+    nameRo: 'Israel',
+    mask: 'XX XXX XXXX',
+    minLen: 9,
+    maxLen: 9,
+    flag: PHONE_FLAGS.IL,
+  },
+  TR: {
+    iso: 'TR',
+    code: '+90',
+    name: 'Turkey',
+    nameRo: 'Turcia',
+    mask: 'XXX XXX XX XX',
+    minLen: 10,
+    maxLen: 10,
+    flag: PHONE_FLAGS.TR,
+  },
+  BG: {
+    iso: 'BG',
+    code: '+359',
+    name: 'Bulgaria',
+    nameRo: 'Bulgaria',
+    mask: 'XX XXX XXXX',
+    minLen: 8,
+    maxLen: 9,
+    flag: PHONE_FLAGS.BG,
+  },
+  GR: {
+    iso: 'GR',
+    code: '+30',
+    name: 'Greece',
+    nameRo: 'Grecia',
+    mask: 'XXX XXX XXXX',
+    minLen: 10,
+    maxLen: 10,
+    flag: PHONE_FLAGS.GR,
+  },
 };
 
 const DEFAULT_COUNTRY_ORDER = Object.keys(COUNTRIES);
@@ -74,16 +196,15 @@ const DEFAULT_COUNTRY_ORDER = Object.keys(COUNTRIES);
 /**
  * Phone Input — phone-number entry molecule with country-code prefix and
  * format mask. The most Moldova-specific input in the family: it ships a
- * default `+373` country, a curated diaspora-relevant country list, and
- * Romanian-voice placeholder + error copy.
+ * default `+373` country, a curated diaspora-relevant country list with
+ * inline-SVG flag glyphs, and Romanian-voice placeholder + error copy.
  *
  * Pattern B (molecule, form-associated): renders its own `<input type="tel">`
- * inside shadow DOM alongside a combobox trigger that opens a country
- * listbox. The trigger and the input share one continuous border /
- * focus-ring contract — they look like a single field, divided by a
- * vertical rule. Form participation works via `formAssociated` +
- * `ElementInternals`; the form value is the canonical E.164 string
- * (`+37362123456`).
+ * inside shadow DOM alongside an inline country trigger that either
+ * displays a static flag+dial-code pill (`type="local"`, Moldova-first
+ * default) or a combobox that opens a country listbox (`type="international"`).
+ * Form participation works via `formAssociated` + `ElementInternals`; the
+ * form value is the canonical E.164 string (`+37362123456`).
  *
  * @element cor-phone-input
  *
@@ -110,6 +231,27 @@ export class CorPhoneInput {
   @Prop({ reflect: true }) size: PhoneInputSize = 'md';
 
   /**
+   * Phone entry mode.
+   * - `local` (default — Moldova-first): country trigger renders as a
+   *   static flag+dial-code pill (no chevron, no listbox). Assumes the
+   *   `defaultCountry` implicitly and only accepts its national format.
+   * - `international`: country trigger renders as a combobox (flag + dial
+   *   code + chevron); clicking opens a listbox of all eligible
+   *   countries. Use when the caller can't guarantee the citizen is
+   *   filing from inside the home market.
+   * @default 'local'
+   */
+  @Prop({ reflect: true }) type: PhoneInputType = 'local';
+
+  /**
+   * Loading state. When true the control becomes uninteractive and an
+   * inline `cor-spinner` renders inside the input row. The host carries
+   * `aria-busy="true"` for assistive technologies.
+   * @default false
+   */
+  @Prop({ reflect: true }) loading: boolean = false;
+
+  /**
    * Disables interactivity. Trigger and input receive `aria-disabled` and
    * the native `disabled` attribute.
    * @default false
@@ -125,7 +267,9 @@ export class CorPhoneInput {
 
   /**
    * Renders the field read-only. The input remains focusable and copyable;
-   * the country dropdown cannot be opened.
+   * the country trigger renders inert. Background steps into the soft-gray
+   * surface to telegraph "visible but not editable", matching the rest of
+   * the input family.
    * @default false
    */
   @Prop({ reflect: true }) readonly: boolean = false;
@@ -140,6 +284,8 @@ export class CorPhoneInput {
   /**
    * Reflects the open state of the country listbox. Mutate via
    * `corOpen` / `corClose` events, not by writing to the attribute.
+   * Only meaningful when `type="international"` — Local mode never opens
+   * a listbox.
    * @default false
    */
   @Prop({ mutable: true, reflect: true }) open: boolean = false;
@@ -250,7 +396,7 @@ export class CorPhoneInput {
     this.initialCountry = this.countryIso;
     this.initialValue = this.value;
     this.internals.setFormValue(this.value, this.value);
-    if (this.open) this.primeHighlight();
+    if (this.open && this.type === 'international') this.primeHighlight();
   }
 
   @Watch('variant')
@@ -277,10 +423,26 @@ export class CorPhoneInput {
     }
   }
 
+  @Watch('type')
+  validateType(next: PhoneInputType) {
+    if (!PHONE_INPUT_TYPES.includes(next)) {
+      console.warn(
+        `[cor-phone-input] type="${String(next)}" is not supported. Supported: ${PHONE_INPUT_TYPES.join(
+          ', ',
+        )}. Falling back to "local".`,
+      );
+      this.type = 'local';
+      return;
+    }
+    // Local mode can't keep the listbox open — close it silently if the
+    // caller switches modes mid-flight.
+    if (next === 'local' && this.open) {
+      this.open = false;
+    }
+  }
+
   @Watch('defaultCountry')
   validateDefaultCountry(next: string) {
-    // Allow consumer-driven country switches while the component is mounted —
-    // mirrors the date-input format watcher contract.
     if (!COUNTRIES[next]) {
       console.warn(
         `[cor-phone-input] defaultCountry="${String(next)}" is not in the country map. Falling back to "MD".`,
@@ -343,11 +505,8 @@ export class CorPhoneInput {
   }
 
   private resolveInitialCountry(): string {
-    // 1) If the consumer passed `value` (E.164), prefer the country we can
-    //    detect from it — keeps a server-rendered form consistent.
     const detected = this.detectCountryFromValue(this.value);
     if (detected) return detected;
-    // 2) Else honour `defaultCountry` when it's in the map.
     if (this.defaultCountry && COUNTRIES[this.defaultCountry]) return this.defaultCountry;
     return 'MD';
   }
@@ -367,21 +526,14 @@ export class CorPhoneInput {
     this.highlightedIndex = idx >= 0 ? idx : 0;
   }
 
-  /**
-   * Extract the local digits from an E.164 string for the active country.
-   * Strips the dial code prefix and any non-digit padding the consumer
-   * might have left behind.
-   */
   private localDigits(e164: string): string {
     const country = this.currentCountry();
     const digitsOnly = (e164 ?? '').replace(/\D/g, '');
-    // Strip the country dial code (without `+`) when the value starts with it.
     const codeDigits = country.code.replace(/\D/g, '');
     if (digitsOnly.startsWith(codeDigits)) return digitsOnly.slice(codeDigits.length);
     return digitsOnly;
   }
 
-  /** Combine a country's dial code with the local digit run into E.164. */
   private toE164(digits: string, iso: string): string {
     const country = COUNTRIES[iso] ?? COUNTRIES.MD;
     const trimmed = digits.replace(/\D/g, '').slice(0, country.maxLen);
@@ -389,11 +541,6 @@ export class CorPhoneInput {
     return `${country.code}${trimmed}`;
   }
 
-  /**
-   * Format raw digits per the active country's mask. The mask uses `X`
-   * for each required digit slot and any other character (typically space)
-   * as a literal separator.
-   */
   private formatMasked(raw: string): string {
     const country = this.currentCountry();
     const digits = (raw ?? '').replace(/\D/g, '').slice(0, country.maxLen);
@@ -411,13 +558,9 @@ export class CorPhoneInput {
     return out;
   }
 
-  /** Try to identify the country from a pasted / hydrated E.164 prefix. */
   private detectCountryFromValue(value: string): string | null {
     if (!value || !value.startsWith('+')) return null;
     const digitsOnly = value.replace(/\D/g, '');
-    // Sort by code length so `+380` wins over `+38`-style ambiguities (none
-    // exist in the curated list today but the algorithm should be stable
-    // when the list grows).
     const sorted = [...this.activeCountries()].sort((a, b) => b.code.length - a.code.length);
     for (const country of sorted) {
       const codeDigits = country.code.replace(/\D/g, '');
@@ -478,13 +621,14 @@ export class CorPhoneInput {
   private handlePaste = (ev: ClipboardEvent) => {
     const text = ev.clipboardData?.getData('text') ?? '';
     if (!text) return;
-    // Only intercept when the pasted text looks like an E.164 string — let
-    // bare local segments fall through to the native input handler.
     const trimmed = text.trim();
     if (!trimmed.startsWith('+')) return;
     ev.preventDefault();
     const detected = this.detectCountryFromValue(trimmed);
-    if (detected && detected !== this.countryIso) {
+    // Only auto-switch country in International mode — Local mode is
+    // locked to its `defaultCountry` and silently rejects cross-border
+    // paste attempts (still strips the prefix).
+    if (detected && detected !== this.countryIso && this.type === 'international') {
       this.changeCountry(detected, { silentLive: true });
     }
     const country = this.currentCountry();
@@ -511,7 +655,8 @@ export class CorPhoneInput {
   }
 
   private openListbox = () => {
-    if (this.isInert() || this.readonly) return;
+    if (this.isInert() || this.readonly || this.loading) return;
+    if (this.type !== 'international') return;
     if (!this.open) this.open = true;
   };
 
@@ -524,7 +669,8 @@ export class CorPhoneInput {
 
   private toggleListbox = (ev?: MouseEvent) => {
     ev?.stopPropagation();
-    if (this.isInert() || this.readonly) return;
+    if (this.isInert() || this.readonly || this.loading) return;
+    if (this.type !== 'international') return;
     if (this.open) this.closeListbox();
     else this.openListbox();
   };
@@ -534,7 +680,6 @@ export class CorPhoneInput {
     if (!country) return;
     const previousDigits = this.localDigits(this.value);
     this.countryIso = nextIso;
-    // Re-clamp existing digits to the new country's max length.
     const trimmed = previousDigits.slice(0, country.maxLen);
     this.value = this.toE164(trimmed, nextIso);
     if (this.nativeEl) {
@@ -547,7 +692,8 @@ export class CorPhoneInput {
   }
 
   private handleTriggerKeyDown = (ev: KeyboardEvent) => {
-    if (this.isInert() || this.readonly) return;
+    if (this.isInert() || this.readonly || this.loading) return;
+    if (this.type !== 'international') return;
     const key = ev.key;
     const opts = this.activeCountries();
 
@@ -656,11 +802,22 @@ export class CorPhoneInput {
   }
 
   private resolvedPlaceholder(): string {
-    // Empty string from a template binding (`placeholder=""`) should still
-    // fall through to the country-mask default — only an explicitly non-empty
-    // consumer value wins.
     if (this.placeholder && this.placeholder.length > 0) return this.placeholder;
     return this.currentCountry().mask.replace(/X/g, '0');
+  }
+
+  private renderFlag(country: PhoneCountry) {
+    return (
+      <span
+        class="flag"
+        part="flag"
+        aria-hidden="true"
+        // Inline SVG glyph — see cor-phone-input.flags.ts for the
+        // hand-drawn 20×16 set. innerHTML is safe here because the
+        // strings are author-controlled constants, not user input.
+        innerHTML={country.flag}
+      />
+    );
   }
 
   render() {
@@ -674,22 +831,35 @@ export class CorPhoneInput {
     const opts = this.activeCountries();
     const placeholder = this.resolvedPlaceholder();
     const localDisplay = this.formatMasked(this.localDigits(this.value));
+    const isInternational = this.type === 'international';
+    const isOpen = this.open && isInternational && !effectivelyDisabled && !this.readonly && !this.loading;
     const activeDescendantId =
-      this.open && this.highlightedIndex >= 0 ? `${this.listboxId}-opt-${this.highlightedIndex}` : undefined;
+      isOpen && this.highlightedIndex >= 0 ? `${this.listboxId}-opt-${this.highlightedIndex}` : undefined;
+    const spinnerSize = this.size === 'lg' ? 'sm' : 'xs';
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
       'is-readonly': this.readonly,
+      'is-loading': this.loading,
       'is-invalid': this.invalid,
-      'is-focused': this.isFocused && !effectivelyDisabled,
-      'is-open': this.open && !effectivelyDisabled,
+      'is-focused': this.isFocused && !effectivelyDisabled && !this.readonly,
+      'is-open': isOpen,
       'is-populated': this.localDigits(this.value).length > 0,
       'has-label': this.hasVisibleLabel(),
+      'is-international': isInternational,
+      'is-local': !isInternational,
       [`variant-${variant}`]: true,
     };
 
+    const triggerCommon = {
+      class: 'country-trigger',
+      part: 'country-trigger',
+      id: this.triggerId,
+    };
+    const triggerAriaLabel = `${country.nameRo}, ${country.code}`;
+
     return (
-      <Host class={hostClasses}>
+      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null}>
         <label class="label" htmlFor={this.inputId} id={this.labelId} part="label">
           <span class="label-text">
             <slot name="label" onSlotchange={this.onLabelSlotChange}>
@@ -705,31 +875,37 @@ export class CorPhoneInput {
 
         <div class="control-wrapper">
           <div class="control" part="control">
-            <button
-              ref={el => (this.triggerEl = el)}
-              id={this.triggerId}
-              class="country-trigger"
-              part="country-trigger"
-              type="button"
-              role="combobox"
-              aria-haspopup="listbox"
-              aria-expanded={this.open ? 'true' : 'false'}
-              aria-controls={this.listboxId}
-              aria-activedescendant={activeDescendantId}
-              aria-label={`${country.nameRo}, ${country.code}`}
-              aria-disabled={effectivelyDisabled ? 'true' : null}
-              aria-readonly={this.readonly ? 'true' : null}
-              disabled={effectivelyDisabled}
-              onClick={this.toggleListbox}
-              onKeyDown={this.handleTriggerKeyDown}
-            >
-              <span class="country-trigger-code" part="country-trigger-code">
-                {country.code}
+            {isInternational ? (
+              <button
+                ref={el => (this.triggerEl = el)}
+                {...triggerCommon}
+                type="button"
+                role="combobox"
+                aria-haspopup="listbox"
+                aria-expanded={isOpen ? 'true' : 'false'}
+                aria-controls={this.listboxId}
+                aria-activedescendant={activeDescendantId}
+                aria-label={triggerAriaLabel}
+                aria-disabled={effectivelyDisabled ? 'true' : null}
+                aria-readonly={this.readonly ? 'true' : null}
+                disabled={effectivelyDisabled}
+                onClick={this.toggleListbox}
+                onKeyDown={this.handleTriggerKeyDown}
+              >
+                {this.renderFlag(country)}
+                <span class="country-trigger-code" part="country-trigger-code">
+                  {country.code}
+                </span>
+                <cor-icon class="country-trigger-chevron" name="chevron-bottom" size={16} color="currentColor" />
+              </button>
+            ) : (
+              <span {...triggerCommon} aria-label={triggerAriaLabel} role="img">
+                {this.renderFlag(country)}
+                <span class="country-trigger-code" part="country-trigger-code">
+                  {country.code}
+                </span>
               </span>
-              <cor-icon class="country-trigger-chevron" name="chevron-bottom" size={16} color="currentColor" />
-            </button>
-
-            <span class="divider" aria-hidden="true" part="divider" />
+            )}
 
             <input
               ref={el => (this.nativeEl = el)}
@@ -740,7 +916,7 @@ export class CorPhoneInput {
               name={this.name}
               value={localDisplay}
               placeholder={placeholder}
-              disabled={effectivelyDisabled}
+              disabled={effectivelyDisabled || this.loading}
               readonly={this.readonly}
               required={this.required}
               autocomplete="tel-national"
@@ -753,57 +929,78 @@ export class CorPhoneInput {
               aria-invalid={this.invalid ? 'true' : null}
               aria-required={this.required ? 'true' : null}
               aria-disabled={effectivelyDisabled ? 'true' : null}
+              aria-readonly={this.readonly ? 'true' : null}
+              aria-busy={this.loading ? 'true' : null}
               onInput={this.handleInput}
               onChange={this.handleChange}
               onFocus={this.handleFocus}
               onBlur={this.handleBlur}
               onPaste={this.handlePaste}
             />
+
+            {this.loading ? (
+              <span class="control-spinner" part="spinner" aria-hidden="true">
+                <cor-spinner size={spinnerSize} variant="brand" label="" />
+              </span>
+            ) : null}
+
+            {this.readonly && this.isLengthValid() && !this.invalid ? (
+              <cor-icon
+                class="valid-icon"
+                part="valid-icon"
+                name="checkmark-circle-filled"
+                size={20}
+                color="icon-positive-default"
+              />
+            ) : null}
           </div>
 
-          <div
-            ref={el => (this.listboxEl = el)}
-            id={this.listboxId}
-            class="listbox"
-            part="listbox"
-            role="listbox"
-            aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
-            aria-label={!this.hasVisibleLabel() ? (this.ariaLabel ?? 'Țară') : undefined}
-            hidden={!this.open}
-          >
-            {opts.length === 0 ? (
-              <div class="listbox-empty" role="presentation">
-                Nu există țări disponibile
-              </div>
-            ) : (
-              opts.map((opt, index) => {
-                const isSelected = opt.iso === this.countryIso;
-                const isHighlighted = index === this.highlightedIndex;
-                return (
-                  <div
-                    id={`${this.listboxId}-opt-${index}`}
-                    class={{
-                      'option': true,
-                      'is-selected': isSelected,
-                      'is-highlighted': isHighlighted,
-                    }}
-                    role="option"
-                    aria-selected={isSelected ? 'true' : 'false'}
-                    data-option-index={index}
-                    data-iso={opt.iso}
-                    onClick={this.handleOptionClick(index)}
-                    onMouseEnter={this.handleOptionPointerEnter(index)}
-                  >
-                    <span class="option-name">{opt.nameRo}</span>
-                    <span class="option-code">{opt.code}</span>
-                    {isSelected ? (
-                      <cor-icon class="option-check" name="checkmark-small" size={16} color="currentColor" />
-                    ) : null}
-                  </div>
-                );
-              })
-            )}
-          </div>
+          {isInternational ? (
+            <div
+              ref={el => (this.listboxEl = el)}
+              id={this.listboxId}
+              class="listbox"
+              part="listbox"
+              role="listbox"
+              aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
+              aria-label={!this.hasVisibleLabel() ? (this.ariaLabel ?? 'Țară') : undefined}
+              hidden={!isOpen}
+            >
+              {opts.length === 0 ? (
+                <div class="listbox-empty" role="presentation">
+                  Nu există țări disponibile
+                </div>
+              ) : (
+                opts.map((opt, index) => {
+                  const isSelected = opt.iso === this.countryIso;
+                  const isHighlighted = index === this.highlightedIndex;
+                  return (
+                    <div
+                      id={`${this.listboxId}-opt-${index}`}
+                      class={{
+                        'option': true,
+                        'is-selected': isSelected,
+                        'is-highlighted': isHighlighted,
+                      }}
+                      role="option"
+                      aria-selected={isSelected ? 'true' : 'false'}
+                      data-option-index={index}
+                      data-iso={opt.iso}
+                      onClick={this.handleOptionClick(index)}
+                      onMouseEnter={this.handleOptionPointerEnter(index)}
+                    >
+                      <span class="option-flag" aria-hidden="true" innerHTML={opt.flag} />
+                      <span class="option-name">{opt.nameRo}</span>
+                      <span class="option-code">{opt.code}</span>
+                      {isSelected ? (
+                        <cor-icon class="option-check" name="checkmark-small" size={16} color="currentColor" />
+                      ) : null}
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          ) : null}
         </div>
 
         {this.hasErrorMessage() ? (

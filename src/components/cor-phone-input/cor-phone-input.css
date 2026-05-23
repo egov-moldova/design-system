@@ -12,10 +12,14 @@
   --_control-font-size: var(--phone-input-control-font-size-md);
   --_control-line-height: var(--phone-input-control-line-height-md);
   --_icon-size: var(--phone-input-icon-size-md);
+  --_spinner-size: var(--phone-input-loading-spinner-size-md);
 
   --_trigger-font-size: var(--phone-input-country-trigger-font-size-md);
   --_trigger-line-height: var(--phone-input-country-trigger-line-height-md);
   --_trigger-chevron-size: var(--phone-input-country-trigger-chevron-size-md);
+
+  --_flag-width: var(--phone-input-flag-width-md);
+  --_flag-height: var(--phone-input-flag-height-md);
 
   --_option-min-block-size: var(--phone-input-option-min-block-size-md);
   --_option-font-size: var(--phone-input-option-font-size-md);
@@ -29,6 +33,7 @@
   --_border-color-hover: var(--phone-input-default-border-hover);
   --_border-color-focus: var(--phone-input-default-border-focus);
   --_focus-ring-color: var(--phone-input-default-focus-ring);
+  --_assistive-color: var(--phone-input-assistive-color-default);
 
   display: flex;
   flex-direction: column;
@@ -45,13 +50,30 @@
   --_control-font-size: var(--phone-input-control-font-size-lg);
   --_control-line-height: var(--phone-input-control-line-height-lg);
   --_icon-size: var(--phone-input-icon-size-lg);
+  --_spinner-size: var(--phone-input-loading-spinner-size-lg);
   --_trigger-font-size: var(--phone-input-country-trigger-font-size-lg);
   --_trigger-line-height: var(--phone-input-country-trigger-line-height-lg);
   --_trigger-chevron-size: var(--phone-input-country-trigger-chevron-size-lg);
+  --_flag-width: var(--phone-input-flag-width-lg);
+  --_flag-height: var(--phone-input-flag-height-lg);
   --_option-min-block-size: var(--phone-input-option-min-block-size-lg);
   --_option-font-size: var(--phone-input-option-font-size-lg);
   --_option-line-height: var(--phone-input-option-line-height-lg);
   --_option-icon-size: var(--phone-input-option-icon-size-lg);
+}
+
+/* ---------- Variant token overrides ----------
+ * Each named variant remaps the local custom properties to its token
+ * bundle. Borders for warning/destructive/success use the same semantic
+ * color across default / hover / focus per Figma (var-color shift would
+ * over-signal state).
+ */
+:host(.variant-warning) {
+  --_border-color: var(--phone-input-warning-border-default);
+  --_border-color-hover: var(--phone-input-warning-border-hover);
+  --_border-color-focus: var(--phone-input-warning-border-focus);
+  --_focus-ring-color: var(--phone-input-warning-focus-ring);
+  --_assistive-color: var(--phone-input-assistive-color-warning);
 }
 
 :host(.variant-destructive) {
@@ -59,6 +81,15 @@
   --_border-color-hover: var(--phone-input-destructive-border-hover);
   --_border-color-focus: var(--phone-input-destructive-border-focus);
   --_focus-ring-color: var(--phone-input-destructive-focus-ring);
+  --_assistive-color: var(--phone-input-assistive-color-error);
+}
+
+:host(.variant-success) {
+  --_border-color: var(--phone-input-success-border-default);
+  --_border-color-hover: var(--phone-input-success-border-hover);
+  --_border-color-focus: var(--phone-input-success-border-focus);
+  --_focus-ring-color: var(--phone-input-success-focus-ring);
+  --_assistive-color: var(--phone-input-assistive-color-success);
 }
 
 /* ---------- Label ---------- */
@@ -116,7 +147,8 @@
 
 .control {
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  gap: var(--_gap);
   block-size: var(--_height);
   padding-inline: var(--_padding-inline);
   background-color: var(--_bg);
@@ -128,19 +160,24 @@
     background-color var(--_transition-duration) var(--_transition-easing);
 }
 
-:host(:not(.is-disabled):not(.is-focused):not(.is-open):hover) .control {
+:host(:not(.is-disabled):not(.is-readonly):not(.is-focused):not(.is-open):hover) .control {
   border-color: var(--_border-color-hover);
-  /* Inset shadow mimics the 2px border thickening on hover without shifting layout. */
   box-shadow: inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default))
     var(--_border-color-hover);
 }
 
-:host(.is-focused:not(.is-disabled)) .control,
-:host(.is-open:not(.is-disabled)) .control {
+:host(.is-focused:not(.is-disabled):not(.is-readonly)) .control,
+:host(.is-open:not(.is-disabled):not(.is-readonly)) .control {
   border-color: var(--_border-color-focus);
   box-shadow:
     inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default)) var(--_border-color-focus),
     0 0 0 var(--spacing-4) var(--_focus-ring-color);
+}
+
+:host(.is-readonly) .control {
+  background-color: var(--phone-input-default-background-read-only);
+  border-color: var(--phone-input-default-border-read-only);
+  cursor: default;
 }
 
 :host(.is-disabled) .control {
@@ -155,30 +192,42 @@
   display: inline-flex;
   align-items: center;
   gap: var(--phone-input-country-trigger-gap);
-  padding: 0;
-  padding-inline-end: var(--phone-input-country-trigger-padding-inline-end);
   margin: 0;
   border: 0;
-  background: transparent;
+  padding-inline: var(--phone-input-country-trigger-padding-inline);
+  padding-block: var(--phone-input-country-trigger-padding-block);
+  background-color: var(--phone-input-country-trigger-background-default);
+  border-radius: var(--phone-input-country-trigger-border-radius);
   font-family: var(--phone-input-country-trigger-font-family);
   font-weight: var(--phone-input-country-trigger-font-weight);
   font-size: var(--_trigger-font-size);
   line-height: var(--_trigger-line-height);
   color: var(--phone-input-country-trigger-color-default);
-  cursor: pointer;
   appearance: none;
   -webkit-appearance: none;
   flex-shrink: 0;
+  cursor: default;
+  transition: background-color var(--_transition-duration) var(--_transition-easing);
 }
 
-.country-trigger:focus,
-.country-trigger:focus-visible {
+/* International mode — clickable combobox. */
+:host(.is-international:not(.is-disabled):not(.is-readonly):not(.is-loading)) button.country-trigger {
+  cursor: pointer;
+}
+
+:host(.is-international:not(.is-disabled):not(.is-readonly):not(.is-loading)) button.country-trigger:hover {
+  background-color: var(--phone-input-country-trigger-background-hover);
+}
+
+button.country-trigger:focus,
+button.country-trigger:focus-visible {
   outline: none;
 }
 
-.country-trigger:disabled {
+button.country-trigger:disabled {
   cursor: not-allowed;
   color: var(--phone-input-country-trigger-color-disabled);
+  background-color: var(--phone-input-country-trigger-background-disabled);
   -webkit-text-fill-color: var(--phone-input-country-trigger-color-disabled);
 }
 
@@ -188,7 +237,6 @@
 
 .country-trigger-code {
   white-space: nowrap;
-  /* Tabular numerics keep dial codes (+1, +373, +380) optically aligned. */
   font-variant-numeric: tabular-nums;
 }
 
@@ -209,21 +257,29 @@
   color: var(--phone-input-country-trigger-chevron-color-disabled);
 }
 
-/* ---------- Divider between trigger and input ---------- */
-
-.divider {
-  display: block;
-  flex-shrink: 0;
-  inline-size: var(--phone-input-divider-width);
-  /* Block-size ratio renders a centered hairline (60% of the control height). */
-  block-size: var(--phone-input-divider-block-size-ratio);
-  align-self: center;
-  margin-inline: var(--phone-input-divider-margin-inline);
-  background-color: var(--phone-input-divider-color-default);
+/* In Local mode the chevron is suppressed entirely — country is fixed. */
+:host(.is-local) .country-trigger-chevron {
+  display: none;
 }
 
-:host(.is-disabled) .divider {
-  background-color: var(--phone-input-divider-color-disabled);
+/* ---------- Inline flag glyph ---------- */
+
+.flag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--_flag-width);
+  block-size: var(--_flag-height);
+  overflow: hidden;
+  border: var(--phone-input-flag-border-width) solid var(--phone-input-flag-border-color);
+  border-radius: var(--phone-input-flag-border-radius);
+}
+
+.flag svg {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
 }
 
 /* ---------- Native input ---------- */
@@ -269,6 +325,11 @@
   cursor: default;
 }
 
+:host(.is-readonly) .native {
+  color: var(--phone-input-default-text-read-only);
+  -webkit-text-fill-color: var(--phone-input-default-text-read-only);
+}
+
 .native:focus,
 .native:focus-visible {
   outline: none;
@@ -277,6 +338,50 @@
 .native:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 var(--spacing-120) var(--_bg) inset;
   -webkit-text-fill-color: var(--_text);
+}
+
+/* ---------- Loading state ----------
+ * Loading dims the native input and reveals an inline spinner. The
+ * trigger and the value stay legible; the field is just frozen.
+ */
+:host(.is-loading) .native {
+  opacity: var(--phone-input-control-loading-opacity);
+  pointer-events: none;
+}
+
+:host(.is-loading) .country-trigger {
+  pointer-events: none;
+}
+
+.control-spinner {
+  display: none;
+}
+
+:host(.is-loading) .control-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--_spinner-size);
+  block-size: var(--_spinner-size);
+  color: var(--phone-input-icon-color-loading);
+}
+
+/* ---------- Read-only valid-state checkmark ----------
+ * When a populated value is rendered read-only, surface a small green
+ * checkmark per Figma "State=Read Only" — telegraphs "this value was
+ * confirmed" without using the success border style.
+ */
+.valid-icon {
+  flex-shrink: 0;
+  inline-size: var(--phone-input-valid-icon-size-md);
+  block-size: var(--phone-input-valid-icon-size-md);
+  color: var(--phone-input-valid-icon-color);
+}
+
+:host([size='lg']) .valid-icon {
+  inline-size: var(--phone-input-valid-icon-size-lg);
+  block-size: var(--phone-input-valid-icon-size-lg);
 }
 
 /* ---------- Listbox popover ---------- */
@@ -346,6 +451,24 @@
   background-color: var(--phone-input-option-background-active);
 }
 
+.option-flag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--_flag-width);
+  block-size: var(--_flag-height);
+  overflow: hidden;
+  border: var(--phone-input-flag-border-width) solid var(--phone-input-flag-border-color);
+  border-radius: var(--phone-input-flag-border-radius);
+}
+
+.option-flag svg {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+}
+
 .option-name {
   flex: 1 1 auto;
   min-inline-size: 0;
@@ -383,7 +506,7 @@
   font-size: var(--phone-input-assistive-font-size);
   line-height: var(--phone-input-assistive-line-height);
   font-weight: var(--phone-input-assistive-font-weight);
-  color: var(--phone-input-assistive-color-default);
+  color: var(--_assistive-color);
   inline-size: 100%;
   min-inline-size: 0;
 }
@@ -430,6 +553,7 @@
 @media (prefers-reduced-motion: reduce) {
   .control,
   .option,
+  .country-trigger,
   .country-trigger-chevron {
     transition: none;
   }

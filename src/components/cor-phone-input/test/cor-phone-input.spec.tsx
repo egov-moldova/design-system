@@ -2,13 +2,16 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../cor-phone-input';
 
-import { PHONE_INPUT_SIZES, PHONE_INPUT_VARIANTS } from '../cor-phone-input.types';
+import { PHONE_INPUT_SIZES, PHONE_INPUT_TYPES, PHONE_INPUT_VARIANTS } from '../cor-phone-input.types';
 
 const queryNative = (root: Element | null | undefined): HTMLInputElement | null =>
   (root?.shadowRoot?.querySelector('input.native') ?? null) as HTMLInputElement | null;
 
-const queryTrigger = (root: Element | null | undefined): HTMLButtonElement | null =>
+const queryTriggerButton = (root: Element | null | undefined): HTMLButtonElement | null =>
   (root?.shadowRoot?.querySelector('button.country-trigger') ?? null) as HTMLButtonElement | null;
+
+const queryTrigger = (root: Element | null | undefined): HTMLElement | null =>
+  (root?.shadowRoot?.querySelector('.country-trigger') ?? null) as HTMLElement | null;
 
 const queryListbox = (root: Element | null | undefined): HTMLElement | null =>
   (root?.shadowRoot?.querySelector('.listbox') ?? null) as HTMLElement | null;
@@ -22,11 +25,17 @@ const queryLabel = (root: Element | null | undefined): HTMLElement | null =>
 const queryAssistive = (root: Element | null | undefined): HTMLElement | null =>
   (root?.shadowRoot?.querySelector('.assistive') ?? null) as HTMLElement | null;
 
-const queryDivider = (root: Element | null | undefined): HTMLElement | null =>
-  (root?.shadowRoot?.querySelector('.divider') ?? null) as HTMLElement | null;
-
 const queryLive = (root: Element | null | undefined): HTMLElement | null =>
   (root?.shadowRoot?.querySelector('.live-region') ?? null) as HTMLElement | null;
+
+const queryFlag = (root: Element | null | undefined): HTMLElement | null =>
+  (root?.shadowRoot?.querySelector('.country-trigger .flag') ?? null) as HTMLElement | null;
+
+const querySpinner = (root: Element | null | undefined): HTMLElement | null =>
+  (root?.shadowRoot?.querySelector('.control-spinner') ?? null) as HTMLElement | null;
+
+const queryValidIcon = (root: Element | null | undefined): HTMLElement | null =>
+  (root?.shadowRoot?.querySelector('.valid-icon') ?? null) as HTMLElement | null;
 
 const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
 
@@ -69,11 +78,13 @@ describe('cor-phone-input', () => {
       const { root } = await render(<cor-phone-input label="Telefon"></cor-phone-input>);
       expect(root?.getAttribute('variant')).toBe('default');
       expect(root?.getAttribute('size')).toBe('md');
+      expect(root?.getAttribute('type')).toBe('local');
       expect(root?.getAttribute('default-country')).toBe('MD');
       expect(root?.getAttribute('disabled')).toBeNull();
       expect(root?.getAttribute('required')).toBeNull();
       expect(root?.getAttribute('readonly')).toBeNull();
       expect(root?.getAttribute('invalid')).toBeNull();
+      expect(root?.getAttribute('loading')).toBeNull();
       expect(root?.getAttribute('open')).toBeNull();
     });
 
@@ -85,6 +96,19 @@ describe('cor-phone-input', () => {
     it.each(PHONE_INPUT_SIZES)('reflects size="%s" to host', async size => {
       const { root } = await render(<cor-phone-input size={size} label="x"></cor-phone-input>);
       expect(root?.getAttribute('size')).toBe(size);
+    });
+
+    it.each(PHONE_INPUT_TYPES)('reflects type="%s" to host', async type => {
+      const { root } = await render(<cor-phone-input type={type} label="x"></cor-phone-input>);
+      expect(root?.getAttribute('type')).toBe(type);
+    });
+
+    it('ships exactly 4 variants per Figma — default, warning, destructive, success', () => {
+      expect(PHONE_INPUT_VARIANTS).toEqual(['default', 'warning', 'destructive', 'success']);
+    });
+
+    it('ships exactly 2 types per Figma — local, international', () => {
+      expect(PHONE_INPUT_TYPES).toEqual(['local', 'international']);
     });
 
     it('warns and falls back when variant is invalid', async () => {
@@ -104,6 +128,16 @@ describe('cor-phone-input', () => {
       await flush();
       expect(warn).toHaveBeenCalledWith(expect.stringContaining('size="huge"'));
       expect(root?.getAttribute('size')).toBe('md');
+      warn.mockRestore();
+    });
+
+    it('warns and falls back when type is invalid', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const { root } = await render(<cor-phone-input label="x"></cor-phone-input>);
+      (root as unknown as { type: string }).type = 'bogus';
+      await flush();
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('type="bogus"'));
+      expect(root?.getAttribute('type')).toBe('local');
       warn.mockRestore();
     });
 
@@ -127,20 +161,57 @@ describe('cor-phone-input', () => {
       expect(native?.getAttribute('autocomplete')).toBe('tel-national');
     });
 
-    it('renders a country trigger button with role="combobox"', async () => {
-      const { root } = await render(<cor-phone-input label="x"></cor-phone-input>);
+    it('renders a country trigger SPAN (not button) in local mode', async () => {
+      const { root } = await render(<cor-phone-input label="x" type="local"></cor-phone-input>);
       const trigger = queryTrigger(root);
+      expect(trigger?.tagName).toBe('SPAN');
+      expect(queryTriggerButton(root)).toBeNull();
+    });
+
+    it('renders a country trigger BUTTON with role="combobox" in international mode', async () => {
+      const { root } = await render(<cor-phone-input label="x" type="international"></cor-phone-input>);
+      const trigger = queryTriggerButton(root);
       expect(trigger).toBeTruthy();
+      expect(trigger?.tagName).toBe('BUTTON');
       expect(trigger?.getAttribute('role')).toBe('combobox');
       expect(trigger?.getAttribute('aria-haspopup')).toBe('listbox');
       expect(trigger?.getAttribute('aria-expanded')).toBe('false');
     });
 
-    it('renders a vertical divider between trigger and input', async () => {
-      const { root } = await render(<cor-phone-input label="x"></cor-phone-input>);
-      const divider = queryDivider(root);
-      expect(divider).toBeTruthy();
-      expect(divider?.getAttribute('aria-hidden')).toBe('true');
+    it('renders an inline SVG flag glyph for the current country (local mode)', async () => {
+      const { root } = await render(<cor-phone-input label="x" type="local"></cor-phone-input>);
+      const flag = queryFlag(root);
+      expect(flag).toBeTruthy();
+      expect(flag?.querySelector('svg')).toBeTruthy();
+    });
+
+    it('renders an inline SVG flag glyph for the current country (international mode)', async () => {
+      const { root } = await render(<cor-phone-input label="x" type="international"></cor-phone-input>);
+      const flag = queryFlag(root);
+      expect(flag).toBeTruthy();
+      expect(flag?.querySelector('svg')).toBeTruthy();
+    });
+
+    it.each([
+      ['MD', '+373'],
+      ['RO', '+40'],
+      ['UA', '+380'],
+      ['US', '+1'],
+      ['DE', '+49'],
+    ])('renders the flag + dial code (%s → %s) on the trigger', async (iso, dial) => {
+      const { root } = await render(
+        <cor-phone-input label="x" type="international" default-country={iso}></cor-phone-input>,
+      );
+      const trigger = queryTrigger(root);
+      expect(trigger?.textContent).toContain(dial);
+      expect(trigger?.querySelector('.flag svg')).toBeTruthy();
+    });
+
+    it('renders chevron icon ONLY in international mode', async () => {
+      const { root: intl } = await render(<cor-phone-input label="x" type="international"></cor-phone-input>);
+      const { root: local } = await render(<cor-phone-input label="x" type="local"></cor-phone-input>);
+      expect(intl?.shadowRoot?.querySelector('.country-trigger-chevron')).toBeTruthy();
+      expect(local?.shadowRoot?.querySelector('.country-trigger-chevron')).toBeNull();
     });
 
     it('default country MD surfaces +373 on the trigger', async () => {
@@ -202,7 +273,6 @@ describe('cor-phone-input', () => {
     it('uses XXX XX XXX format for Moldova (+373)', async () => {
       const { root } = await render(<cor-phone-input label="x" value="+37362123456"></cor-phone-input>);
       const native = queryNative(root);
-      // Local digits: 62123456 → masked: 621 23 456
       expect(native?.value).toBe('621 23 456');
     });
 
@@ -211,7 +281,6 @@ describe('cor-phone-input', () => {
         <cor-phone-input label="x" default-country="RO" value="+40721987654"></cor-phone-input>,
       );
       const native = queryNative(root);
-      // Local digits: 721987654 → masked: 721 987 654
       expect(native?.value).toBe('721 987 654');
     });
 
@@ -221,7 +290,6 @@ describe('cor-phone-input', () => {
       native.value = 'ab62cd1';
       native.dispatchEvent(new Event('input', { bubbles: true }));
       await flush();
-      // Only `621` should remain; mask cuts off at first slot.
       expect(native.value).toBe('621');
     });
 
@@ -239,7 +307,6 @@ describe('cor-phone-input', () => {
     it('placeholder defaults to the country mask (digits replaced with 0)', async () => {
       const { root } = await render(<cor-phone-input label="x"></cor-phone-input>);
       const native = queryNative(root);
-      // MD mask is XXX XX XXX → placeholder 000 00 000
       expect(native?.getAttribute('placeholder')).toBe('000 00 000');
     });
 
@@ -250,11 +317,24 @@ describe('cor-phone-input', () => {
     });
   });
 
-  describe('country dropdown', () => {
-    it('opens the listbox on trigger click', async () => {
+  describe('country dropdown (international mode)', () => {
+    it('does NOT open in local mode', async () => {
+      const { root } = await render(<cor-phone-input label="x" type="local"></cor-phone-input>);
+      // Trigger is a SPAN — clicking it does nothing.
+      const trigger = queryTrigger(root);
+      (trigger as HTMLElement)?.click();
+      await flush();
+      expect(root?.hasAttribute('open')).toBe(false);
+      // listbox is never rendered in local mode.
+      expect(queryListbox(root)).toBeNull();
+    });
+
+    it('opens the listbox on trigger click (international)', async () => {
       const onOpen = vi.fn();
-      const { root } = await render(<cor-phone-input label="x" onCorOpen={onOpen}></cor-phone-input>);
-      const trigger = queryTrigger(root)!;
+      const { root } = await render(
+        <cor-phone-input label="x" type="international" onCorOpen={onOpen}></cor-phone-input>,
+      );
+      const trigger = queryTriggerButton(root)!;
       trigger.click();
       await flush();
       expect(root?.getAttribute('open')).toBe('');
@@ -263,16 +343,25 @@ describe('cor-phone-input', () => {
       expect(listbox?.hasAttribute('hidden')).toBe(false);
     });
 
-    it('renders the curated diaspora list when no countries prop is set', async () => {
-      const { root } = await render(<cor-phone-input label="x" open></cor-phone-input>);
+    it('renders the curated diaspora list (15 entries) when no countries prop is set', async () => {
+      const { root } = await render(<cor-phone-input label="x" type="international" open></cor-phone-input>);
       const options = queryOptions(root);
-      // Curated list has 15 entries.
       expect(options.length).toBe(15);
       expect(options[0].getAttribute('data-iso')).toBe('MD');
     });
 
+    it('each option carries an inline SVG flag glyph', async () => {
+      const { root } = await render(<cor-phone-input label="x" type="international" open></cor-phone-input>);
+      const options = queryOptions(root);
+      for (const opt of options) {
+        expect(opt.querySelector('.option-flag svg')).toBeTruthy();
+      }
+    });
+
     it('honors a custom `countries` whitelist', async () => {
-      const { root } = await render(<cor-phone-input label="x" open countries={['RO', 'MD', 'UA']}></cor-phone-input>);
+      const { root } = await render(
+        <cor-phone-input label="x" type="international" open countries={['RO', 'MD', 'UA']}></cor-phone-input>,
+      );
       const options = queryOptions(root);
       expect(options.map(o => o.getAttribute('data-iso'))).toEqual(['RO', 'MD', 'UA']);
     });
@@ -280,10 +369,9 @@ describe('cor-phone-input', () => {
     it('selects a country when an option is clicked, emits corCountryChange', async () => {
       const onCountryChange = vi.fn();
       const { root } = await render(
-        <cor-phone-input label="x" open onCorCountryChange={onCountryChange}></cor-phone-input>,
+        <cor-phone-input label="x" type="international" open onCorCountryChange={onCountryChange}></cor-phone-input>,
       );
       const options = queryOptions(root);
-      // RO is the second entry (after MD).
       options[1].click();
       await flush();
       expect(onCountryChange).toHaveBeenCalledTimes(1);
@@ -292,18 +380,18 @@ describe('cor-phone-input', () => {
     });
 
     it('re-formats existing digits when the country changes', async () => {
-      const { root } = await render(<cor-phone-input label="x" open value="+37362123456"></cor-phone-input>);
+      const { root } = await render(
+        <cor-phone-input label="x" type="international" open value="+37362123456"></cor-phone-input>,
+      );
       const options = queryOptions(root);
-      // Switch to RO. Existing 8 digits should fit (RO maxLen 9).
       options[1].click();
       await flush();
       const native = queryNative(root);
-      // Digits "62123456" reformatted in RO mask `XXX XXX XXX` (truncates at 9).
       expect(native?.value).toBe('621 234 56');
     });
 
     it('navigates options with ArrowDown/ArrowUp', async () => {
-      const { root } = await render(<cor-phone-input label="x" open></cor-phone-input>);
+      const { root } = await render(<cor-phone-input label="x" type="international" open></cor-phone-input>);
       pressKey(root, 'ArrowDown');
       await flush();
       const options = queryOptions(root);
@@ -316,7 +404,7 @@ describe('cor-phone-input', () => {
     it('selects highlighted option on Enter', async () => {
       const onCountryChange = vi.fn();
       const { root } = await render(
-        <cor-phone-input label="x" open onCorCountryChange={onCountryChange}></cor-phone-input>,
+        <cor-phone-input label="x" type="international" open onCorCountryChange={onCountryChange}></cor-phone-input>,
       );
       pressKey(root, 'ArrowDown');
       await flush();
@@ -328,7 +416,9 @@ describe('cor-phone-input', () => {
 
     it('closes the listbox on Escape and emits corClose', async () => {
       const onClose = vi.fn();
-      const { root } = await render(<cor-phone-input label="x" open onCorClose={onClose}></cor-phone-input>);
+      const { root } = await render(
+        <cor-phone-input label="x" type="international" open onCorClose={onClose}></cor-phone-input>,
+      );
       pressKey(root, 'Escape');
       await flush();
       expect(root?.hasAttribute('open')).toBe(false);
@@ -336,14 +426,16 @@ describe('cor-phone-input', () => {
     });
 
     it('marks the currently selected country with aria-selected="true"', async () => {
-      const { root } = await render(<cor-phone-input label="x" default-country="UA" open></cor-phone-input>);
+      const { root } = await render(
+        <cor-phone-input label="x" type="international" default-country="UA" open></cor-phone-input>,
+      );
       const options = queryOptions(root);
       const ua = options.find(o => o.getAttribute('data-iso') === 'UA');
       expect(ua?.getAttribute('aria-selected')).toBe('true');
     });
 
     it('emits a live-region announcement when the country changes', async () => {
-      const { root } = await render(<cor-phone-input label="x" open></cor-phone-input>);
+      const { root } = await render(<cor-phone-input label="x" type="international" open></cor-phone-input>);
       const options = queryOptions(root);
       options[1].click();
       await flush();
@@ -351,16 +443,24 @@ describe('cor-phone-input', () => {
       expect(live?.textContent).toContain('România');
       expect(live?.textContent).toContain('+40');
     });
+
+    it('switching from international to local while open closes the listbox', async () => {
+      const { root } = await render(<cor-phone-input label="x" type="international" open></cor-phone-input>);
+      expect(root?.hasAttribute('open')).toBe(true);
+      (root as unknown as { type: 'local' | 'international' }).type = 'local';
+      await flush();
+      expect(root?.hasAttribute('open')).toBe(false);
+    });
   });
 
   describe('paste detection', () => {
-    it('auto-detects country from a pasted E.164 prefix', async () => {
+    it('auto-detects country from a pasted E.164 prefix (international)', async () => {
       const onCountryChange = vi.fn();
-      const { root } = await render(<cor-phone-input label="x" onCorCountryChange={onCountryChange}></cor-phone-input>);
+      const { root } = await render(
+        <cor-phone-input label="x" type="international" onCorCountryChange={onCountryChange}></cor-phone-input>,
+      );
       const stub = firePaste(root, '+447911123456');
       await flush();
-      // Paste-driven switch still emits corCountryChange so consumers can react;
-      // only the screen-reader live region stays silent (verified via the live span).
       expect(onCountryChange).toHaveBeenCalledTimes(1);
       expect(onCountryChange.mock.calls[0][0].detail.countryCode).toBe('GB');
       expect(stub.preventDefaultCalled).toBe(true);
@@ -368,8 +468,20 @@ describe('cor-phone-input', () => {
       expect(queryLive(root)?.textContent ?? '').toBe('');
     });
 
+    it('local mode does NOT auto-switch country on E.164 paste — strips prefix only', async () => {
+      const onCountryChange = vi.fn();
+      const { root } = await render(
+        <cor-phone-input label="x" type="local" onCorCountryChange={onCountryChange}></cor-phone-input>,
+      );
+      firePaste(root, '+447911123456');
+      await flush();
+      expect(onCountryChange).not.toHaveBeenCalled();
+      // Country stays MD, +373 still on trigger.
+      expect(queryTrigger(root)?.textContent).toContain('+373');
+    });
+
     it('falls through for paste without `+` prefix (native input handles it)', async () => {
-      const { root } = await render(<cor-phone-input label="x"></cor-phone-input>);
+      const { root } = await render(<cor-phone-input label="x" type="international"></cor-phone-input>);
       const stub = firePaste(root, '0791112345');
       await flush();
       expect(stub.preventDefaultCalled).toBe(false);
@@ -435,28 +547,47 @@ describe('cor-phone-input', () => {
 
   describe('disabled + readonly', () => {
     it('passes disabled through to the native input and trigger', async () => {
-      const { root } = await render(<cor-phone-input label="x" disabled></cor-phone-input>);
+      const { root } = await render(<cor-phone-input label="x" type="international" disabled></cor-phone-input>);
       const native = queryNative(root);
-      const trigger = queryTrigger(root);
+      const trigger = queryTriggerButton(root);
       expect(native?.disabled).toBe(true);
       expect(native?.getAttribute('aria-disabled')).toBe('true');
       expect(trigger?.hasAttribute('disabled')).toBe(true);
     });
 
     it('disabled blocks listbox open', async () => {
-      const { root } = await render(<cor-phone-input label="x" disabled></cor-phone-input>);
-      queryTrigger(root)?.click();
+      const { root } = await render(<cor-phone-input label="x" type="international" disabled></cor-phone-input>);
+      queryTriggerButton(root)?.click();
       await flush();
       expect(root?.getAttribute('open')).toBeNull();
     });
 
     it('readonly blocks listbox open but keeps the input focusable', async () => {
-      const { root } = await render(<cor-phone-input label="x" readonly></cor-phone-input>);
-      queryTrigger(root)?.click();
+      const { root } = await render(<cor-phone-input label="x" type="international" readonly></cor-phone-input>);
+      queryTriggerButton(root)?.click();
       await flush();
       expect(root?.getAttribute('open')).toBeNull();
       const native = queryNative(root);
       expect(native?.readOnly).toBe(true);
+    });
+
+    it('readonly is distinct from disabled — input has aria-readonly, NOT aria-disabled', async () => {
+      const { root } = await render(<cor-phone-input label="x" readonly></cor-phone-input>);
+      const native = queryNative(root);
+      expect(native?.getAttribute('aria-readonly')).toBe('true');
+      expect(native?.getAttribute('aria-disabled')).toBeNull();
+      expect(root?.classList.contains('is-readonly')).toBe(true);
+      expect(root?.classList.contains('is-disabled')).toBe(false);
+    });
+
+    it('readonly + valid value surfaces a green checkmark icon', async () => {
+      const { root } = await render(<cor-phone-input label="x" readonly value="+37362123456"></cor-phone-input>);
+      expect(queryValidIcon(root)).toBeTruthy();
+    });
+
+    it('readonly with invalid value does NOT surface the checkmark', async () => {
+      const { root } = await render(<cor-phone-input label="x" readonly value="+37362" invalid></cor-phone-input>);
+      expect(queryValidIcon(root)).toBeNull();
     });
 
     it('responds to fieldset disabled via formDisabledCallback', async () => {
@@ -465,6 +596,65 @@ describe('cor-phone-input', () => {
       (root as unknown as { formDisabledCallback: (d: boolean) => void }).formDisabledCallback(true);
       await flush();
       expect(queryNative(root)?.disabled).toBe(true);
+    });
+  });
+
+  describe('loading state', () => {
+    it('reflects `loading` to the host', async () => {
+      const { root } = await render(<cor-phone-input label="x" loading></cor-phone-input>);
+      expect(root?.getAttribute('loading')).toBe('');
+      expect(root?.classList.contains('is-loading')).toBe(true);
+    });
+
+    it('sets aria-busy="true" on the host when loading', async () => {
+      const { root } = await render(<cor-phone-input label="x" loading></cor-phone-input>);
+      expect(root?.getAttribute('aria-busy')).toBe('true');
+    });
+
+    it('renders cor-spinner inside the input row when loading', async () => {
+      const { root } = await render(<cor-phone-input label="x" loading></cor-phone-input>);
+      const spinner = querySpinner(root);
+      expect(spinner).toBeTruthy();
+      expect(spinner?.querySelector('cor-spinner')).toBeTruthy();
+    });
+
+    it('uses xs spinner on md size, sm spinner on lg size', async () => {
+      const { root: md } = await render(<cor-phone-input label="x" size="md" loading></cor-phone-input>);
+      const { root: lg } = await render(<cor-phone-input label="x" size="lg" loading></cor-phone-input>);
+      expect(querySpinner(md)?.querySelector('cor-spinner')?.getAttribute('size')).toBe('xs');
+      expect(querySpinner(lg)?.querySelector('cor-spinner')?.getAttribute('size')).toBe('sm');
+    });
+
+    it('loading disables the native input', async () => {
+      const { root } = await render(<cor-phone-input label="x" loading></cor-phone-input>);
+      const native = queryNative(root);
+      expect(native?.disabled).toBe(true);
+      expect(native?.getAttribute('aria-busy')).toBe('true');
+    });
+
+    it('loading blocks listbox open (international)', async () => {
+      const { root } = await render(<cor-phone-input label="x" type="international" loading></cor-phone-input>);
+      queryTriggerButton(root)?.click();
+      await flush();
+      expect(root?.getAttribute('open')).toBeNull();
+    });
+
+    it('non-loading state does NOT render the spinner', async () => {
+      const { root } = await render(<cor-phone-input label="x"></cor-phone-input>);
+      const spinner = querySpinner(root);
+      // Element exists but is display:none — content should be absent.
+      expect(spinner?.querySelector('cor-spinner')).toBeFalsy();
+    });
+  });
+
+  describe('variant matrix', () => {
+    it.each(PHONE_INPUT_VARIANTS)('renders variant="%s" without console.warn', async variant => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const { root } = await render(<cor-phone-input variant={variant} label="x"></cor-phone-input>);
+      expect(root?.getAttribute('variant')).toBe(variant);
+      expect(root?.classList.contains(`variant-${variant}`)).toBe(true);
+      expect(warn).not.toHaveBeenCalled();
+      warn.mockRestore();
     });
   });
 
@@ -511,33 +701,43 @@ describe('cor-phone-input', () => {
       expect(native?.getAttribute('aria-labelledby')).toBeNull();
     });
 
-    it('trigger announces country via aria-label', async () => {
-      const { root } = await render(<cor-phone-input label="x" default-country="MD"></cor-phone-input>);
+    it('trigger announces country via aria-label (local)', async () => {
+      const { root } = await render(<cor-phone-input label="x" type="local" default-country="MD"></cor-phone-input>);
       const trigger = queryTrigger(root);
       const ariaLabel = trigger?.getAttribute('aria-label') ?? '';
       expect(ariaLabel).toContain('Moldova');
       expect(ariaLabel).toContain('+373');
     });
 
-    it('listbox carries role="listbox" and aria-controls wiring', async () => {
-      const { root } = await render(<cor-phone-input label="x" open></cor-phone-input>);
+    it('trigger announces country via aria-label (international)', async () => {
+      const { root } = await render(
+        <cor-phone-input label="x" type="international" default-country="MD"></cor-phone-input>,
+      );
+      const trigger = queryTriggerButton(root);
+      const ariaLabel = trigger?.getAttribute('aria-label') ?? '';
+      expect(ariaLabel).toContain('Moldova');
+      expect(ariaLabel).toContain('+373');
+    });
+
+    it('listbox carries role="listbox" and aria-controls wiring (international)', async () => {
+      const { root } = await render(<cor-phone-input label="x" type="international" open></cor-phone-input>);
       const listbox = queryListbox(root);
-      const trigger = queryTrigger(root);
+      const trigger = queryTriggerButton(root);
       expect(listbox?.getAttribute('role')).toBe('listbox');
       expect(trigger?.getAttribute('aria-controls')).toBe(listbox?.id);
     });
 
     it('listbox option carries role="option" + data-iso + aria-selected', async () => {
-      const { root } = await render(<cor-phone-input label="x" open></cor-phone-input>);
+      const { root } = await render(<cor-phone-input label="x" type="international" open></cor-phone-input>);
       const options = queryOptions(root);
       expect(options[0].getAttribute('role')).toBe('option');
       expect(options[0].getAttribute('data-iso')).toBe('MD');
       expect(options[0].getAttribute('aria-selected')).toBe('true');
     });
 
-    it('trigger aria-activedescendant points at the highlighted option when open', async () => {
-      const { root } = await render(<cor-phone-input label="x" open></cor-phone-input>);
-      const trigger = queryTrigger(root);
+    it('trigger aria-activedescendant points at the highlighted option when open (international)', async () => {
+      const { root } = await render(<cor-phone-input label="x" type="international" open></cor-phone-input>);
+      const trigger = queryTriggerButton(root);
       const opts = queryOptions(root);
       expect(trigger?.getAttribute('aria-activedescendant')).toBe(opts[0].id);
     });
@@ -558,7 +758,6 @@ describe('cor-phone-input', () => {
       const { root } = await render(<cor-phone-input label="x"></cor-phone-input>);
       (root as unknown as { formStateRestoreCallback: (s: string) => void }).formStateRestoreCallback('+447911123456');
       await flush();
-      // Country should now be GB.
       expect(queryTrigger(root)?.textContent).toContain('+44');
     });
   });

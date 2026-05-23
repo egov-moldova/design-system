@@ -19,9 +19,250 @@ and updates PR https://github.com/corlab-org/age-design/pull/5.
 | 8 | `cor-phone-input` | `f2ba725de62bbecd5bd84870a1e6b7bb1eb5adfe` | ✅ done | `70df409` | `docs/screenshots/cor-phone-input/` |
 | 9 | `cor-input-chip` | `3168d84c4883c991b5643e4feab97de2cfe8fb7e` | ✅ done | (this commit) | `docs/screenshots/cor-input-chip/` |
 
-**Input family complete — 9/9 components shipped.**
+**Input family complete — 9/9 components shipped. Figma drift fix loop complete 7/7.**
 
 ## Drift fix log
+
+### 2026-05-23 — `cor-phone-input` realigned to Figma — 4 styles, Type axis, Loading + Read-Only, country flag SVGs
+
+**LAST fix in the input-family Figma-alignment loop (7/7).** Docs page
+`3340:5684`, master component-set encompasses 100 shipped variants
+(4 styles × 6 states × 2 sizes × 2 types + Default style × Read Only × 2 sizes × 2 types
+= 96 + 4 = **100 variants confirmed** via `mcp__figma__get_metadata` on
+node `3340:5684` — 28 Default, 24 Warning, 24 Destructive, 24 Success).
+Previous implementation shipped 2 styles, 1 type axis, no flags. This is
+the most complex drift fix in the family — additive change, existing API
+preserved.
+
+**TSX** (`cor-phone-input.tsx` + new `cor-phone-input.flags.ts`):
+
+- `variant` enum widened from `['default','destructive']` to
+  `['default','warning','destructive','success']`. `@Watch` validation
+  warns and falls back to `default` for unsupported values
+  (`PRINCIPLES.md §D`).
+- New `type: 'local' | 'international'` prop (reflects to host).
+  - `local` (Moldova-first default): country trigger renders as a static
+    `<span>` flag+dial-code pill with NO chevron. Country is locked to
+    the `defaultCountry`. Paste of a different-country E.164 strips the
+    prefix but does NOT switch country (silent reject — domestic-only).
+  - `international`: country trigger renders as a `<button role="combobox">`
+    with flag + dial-code + chevron. Clicking opens a listbox of 15
+    countries, each row pairing flag + Romanian name + dial code. Paste
+    of a foreign E.164 auto-detects + switches country (`silentLive`
+    paste, so screen readers don't announce every pasted digit).
+  - Type switch from `international → local` while open closes the
+    listbox silently.
+- New `loading: boolean @Prop({reflect: true})` — when true:
+  - Host carries `aria-busy="true"`.
+  - Native input gets `disabled` + `aria-busy="true"` + dimmed opacity
+    via `--phone-input-control-loading-opacity` (0.6).
+  - Country trigger becomes `pointer-events: none`.
+  - Inline `cor-spinner` (xs on md size, sm on lg) renders at the
+    trailing edge of the control row.
+  - `canStep()` / `openListbox()` / `toggleListbox()` /
+    `handleTriggerKeyDown()` all refuse work while loading.
+- Existing `readonly` prop now:
+  - Sets `aria-readonly="true"` on the native input AND on the country
+    trigger button (international mode).
+  - Renders a green `cor-icon[name=checkmark-circle-filled]` at the
+    trailing edge of the control IFF the value passes the country's
+    `[minLen, maxLen]` window AND `invalid` is not set — telegraphs
+    "this value was confirmed" per the Figma Read-Only variant.
+  - Disabled-vs-readonly distinction preserved at the structural
+    layer: read-only has `aria-readonly=true` + `is-readonly` class,
+    disabled has `aria-disabled=true` + `is-disabled` class.
+- New `cor-phone-input.flags.ts` ships **15 hand-drawn inline SVG flag
+  glyphs** at a shared 20×16 viewBox: MD (Moldova tricolor + eagle hint),
+  RO (Romania tricolor), RU (white-blue-red horizontal), UA (blue-yellow),
+  US (red/white stripes + blue canton with star dots), GB (Union Jack
+  diagonals + cross), DE (black-red-gold), FR (blue-white-red vertical),
+  IT (green-white-red), ES (red-yellow-red with central detail), PT
+  (green/red vertical + yellow shield), IL (Star of David + horizontal
+  stripes), TR (red field + white crescent + star), BG (white-green-red),
+  GR (blue/white stripes + canton with cross). Inline SVG instead of
+  PNG/external assets — zero asset-resolution surface, no extra network
+  round-trips, works inside Shadow DOM without CORS/referer hassles,
+  ~6 KB total vs the ~140 KB `libphonenumber-js` alternative
+  (`PRINCIPLES.md §B` rule-of-two not yet fired for a separate
+  `cor-country-flag` atom).
+
+**CSS** (`cor-phone-input.css`):
+
+- Added `:host(.variant-warning)` and `:host(.variant-success)` blocks
+  that remap the local `--_border-color*`, `--_focus-ring-color`,
+  `--_assistive-color` to the new token bundles. The existing
+  `.variant-destructive` block was generalised to follow the same
+  shape (helper-text color now follows the variant tone).
+- Added `:host(.is-readonly)` block — soft-gray background (`#f5f5f5`),
+  default border (no emphasis), `cursor: default`. Label and value stay
+  full-contrast (unlike disabled which dims them).
+- Added `:host(.is-loading)` block — dims native input + suppresses
+  pointer events, surfaces inline `cor-spinner` (brand blue, sized per
+  field size).
+- `.country-trigger` styled as a soft-gray pill (`#f5f5f5`,
+  `borderRadius.6`) that hover-tints to `#f1f1f1` in international mode
+  only; local mode renders the same pill but with `cursor: default`,
+  no hover affordance, no chevron. The flag glyph (`<span class="flag">`
+  wrapping inline SVG) sits inside the pill via `inline-flex`.
+- `.option-flag` mirrors the trigger flag size (20×16 on md, 24×16 on
+  lg) so listbox rows look proportional next to the country name.
+- Hover / focus rules now exclude `.is-readonly` AND `.is-loading` —
+  the read-only / loading treatments stay visually stable across
+  pointer states.
+- Removed the old `.divider` block (no longer present in Figma — the
+  pill is the visual separator now).
+
+**Tokens** (`tokens/core/components/phone-input.tokens.json`):
+
+- Added `phoneInput.warning.*` and `phoneInput.success.*` namespaces
+  (background-default, border-default/hover/focus, focus-ring) mirroring
+  the existing `phoneInput.destructive.*` shape. Tokens resolve to:
+  warning border `#dc6803` (`color.border.warning.default`), warning
+  focus-ring `#fedf89` (`palette.apricot.200`), success border `#027948`
+  (`color.border.positive.default`), success focus-ring `#cdeadd`
+  (`palette.green.200`) — same shades the `cor-input` v2 fix shipped.
+- Added `phoneInput.default.background.readOnly` (=
+  `color.background.base.secondary` `#f5f5f5`),
+  `phoneInput.default.border.readOnly`,
+  `phoneInput.default.text.readOnly` for the new read-only state.
+- Added `phoneInput.control.loadingOpacity` (0.6),
+  `phoneInput.icon.color.loading` (brand blue `#0058d2`),
+  `phoneInput.loadingSpinner.size.{md,lg}` (16/20 px) for the loading
+  state.
+- Added `phoneInput.assistive.color.{warning,success}` so helper text
+  follows the variant tone.
+- Added `phoneInput.countryTrigger.background.{default,hover,disabled}`,
+  `paddingInline`, `paddingBlock`, `borderRadius` for the new soft-gray
+  pill trigger silhouette.
+- Added `phoneInput.flag.{width.{md,lg},height.{md,lg},borderRadius,
+  borderColor,borderWidth}` for the inline flag glyph sizing.
+- Added `phoneInput.validIcon.{size.{md,lg},color}` for the trailing
+  green-check icon in the read-only-valid state.
+- Total CSS-var count: 113 → **143 phone-input tokens** (+30 new
+  variables).
+
+**Stories** (`cor-phone-input.stories.ts`):
+
+- `Default` story stays at `type="local"` (Moldova-first).
+- New `International` story — `type="international"`, same defaults,
+  reveals the chevron.
+- `AllVariants` re-rendered as 4-column grid (default / warning /
+  destructive / success) in International mode showing the variant-
+  border deltas.
+- New `AllVariantsLocal` — same 4-variant grid in Local mode.
+- `States` story expanded to 8 cells (default / filled / loading /
+  read-only / disabled / mandatory / warning / destructive) in
+  International mode.
+- New `Loading` story — 4 cells (lg / md / local-loading /
+  success-loading) with Romanian helper "Se verifică numărul…".
+- New `ReadOnly` story — 4 cells (lg-intl / md-intl / lg-local /
+  disabled-compare) demonstrating the read-only-vs-disabled visual
+  distinction.
+- New `WithWarning` story — Romanian helper "Verifică numărul" /
+  "Acest număr nu este verificat încă" per PRODUCT.md voice.
+- New `WithSuccess` story — Romanian helper "Numărul este valid" /
+  "Verificat" per PRODUCT.md voice.
+- New `TypeComparison` story — side-by-side Local vs International
+  showing the chevron delta on a populated MD value.
+- `OpenDropdown` story sized to 720px max-block-size via `::part(listbox)`
+  override so **all 15 country flags render side-by-side without
+  scrolling** for screenshot consumption.
+- `WithCountrySelected` rewritten in International mode (RO, UA, US,
+  DE, IT swap correctly with flag changes).
+
+**Spec** (`test/cor-phone-input.spec.tsx`):
+
+- Added `type` prop reflection + warn-and-fallback (`type="bogus"` →
+  warn + `local` fallback).
+- Added "ships exactly 4 variants" / "ships exactly 2 types" assertion
+  tests.
+- Added flag-rendering tests:
+  - `renders an inline SVG flag glyph for the current country` (local +
+    international).
+  - `renders chevron icon ONLY in international mode`.
+  - `renders a country trigger SPAN (not button) in local mode`.
+  - `renders a country trigger BUTTON with role="combobox" in
+    international mode`.
+  - `each option carries an inline SVG flag glyph` (assertion against
+    all 15 listbox rows).
+  - 5-row parametric test: `renders the flag + dial code (%s → %s) on
+    the trigger` for MD/RO/UA/US/DE.
+- Added `does NOT open in local mode` (clicking the SPAN does nothing,
+  listbox never rendered).
+- Added `local mode does NOT auto-switch country on E.164 paste —
+  strips prefix only`.
+- Added `switching from international to local while open closes the
+  listbox`.
+- Added `loading state` describe block:
+  - reflects `loading` to host (+ `is-loading` class),
+  - sets `aria-busy="true"` on host,
+  - renders `cor-spinner` inside the input row,
+  - xs spinner on md size, sm spinner on lg,
+  - loading disables the native input + sets `aria-busy="true"` on it,
+  - loading blocks listbox open in international mode,
+  - non-loading state does NOT render the spinner.
+- Added `variant matrix` describe block — all 4 variants reflect
+  without `console.warn` and apply the `variant-X` class.
+- Added `readonly is distinct from disabled` test (aria-readonly=true,
+  aria-disabled=null, `is-readonly` class only, no `is-disabled`).
+- Added `readonly + valid value surfaces a green checkmark icon`.
+- Added `readonly with invalid value does NOT surface the checkmark`.
+- Split the existing `country dropdown` describe into Local-mode and
+  International-mode variants where the trigger DOM type matters.
+- Total spec count: **518 → 565 (+47 new tests)**.
+
+**Gates**: `yarn tokens.build`, `yarn dx:stencil:once`, `yarn lint`,
+`yarn typecheck`, `yarn test.dev` (565 pass), `yarn sp.build`,
+`yarn audit:contrast` (21 pass / 0 fail) — all green. Zero console
+errors across every story.
+
+**Pixel-perfect**: Storybook screenshots visually match Figma master
+1:1 for the Default Local / Default International / AllVariants / States
+/ Loading / Read-Only / Warning / Success / OpenDropdown panels. The
+OpenDropdown story renders all 15 country flags side-by-side without
+scrolling (Moldova at top, then RO/RU/UA/US/GB/DE/FR/IT/ES/PT/IL/TR/BG/GR).
+Image-compare against Figma reference crops: ~2.6% diff on Default
+International (anti-aliasing + screenshot-aspect-ratio noise; structural
+match exact), ~3.3% diff on Read Only (same caveats).
+
+**Country flag set** (15 hand-drawn inline SVGs, all visible in
+`storybook-open-dropdown-all-flags.png`):
+🇲🇩 Moldova, 🇷🇴 România, 🇷🇺 Rusia, 🇺🇦 Ucraina, 🇺🇸 Statele Unite,
+🇬🇧 Regatul Unit, 🇩🇪 Germania, 🇫🇷 Franța, 🇮🇹 Italia, 🇪🇸 Spania,
+🇵🇹 Portugalia, 🇮🇱 Israel, 🇹🇷 Turcia, 🇧🇬 Bulgaria, 🇬🇷 Grecia.
+
+Screenshots: `docs/screenshots/cor-phone-input/v2/` —
+`storybook-default-local.png`, `storybook-default-international.png`,
+`storybook-all-variants.png`, `storybook-all-variants-local.png`,
+`storybook-open-dropdown-all-flags.png`, `storybook-loading.png`,
+`storybook-readonly.png`, `storybook-with-warning.png`,
+`storybook-with-success.png`, `storybook-states.png`,
+`storybook-type-comparison.png`, plus Figma reference crops
+`figma-canonical.png` (docs page `3340:5684`),
+`figma-default-{local,international}-large.png` (variant cells),
+`figma-{loading,readonly,warning,destructive,success}-international-large.png`,
+`figma-selection-menu.png` (canonical listbox node `10758:2541`).
+
+### Figma node resolution (cor-phone-input)
+
+The docs canvas (`3340:5684`) was reachable via
+`mcp__figma__get_metadata` and `get_screenshot` at `maxDimension=2048`.
+The master component-set was a 5260px-tall frame inside the canvas with
+100 `<symbol>` children — variant names confirmed all 4 axes via Python
+regex on the metadata payload (4 Style values × 6/7 State values ×
+2 Size values × 2 Type values, with Read Only restricted to Style=Default).
+The `selection-menu` instance (`10758:2541`) rendered cleanly at 306×500
+showing the canonical listbox layout (search field at top, flag + name +
+dial code rows, brand-blue selected text on `#f5f5f5` gray background
+with a trailing brand-blue checkmark on the selected row). Per-variant
+node-IDs for each style × state × size × type combination were
+enumerated and 9 representative variant screenshots downloaded for the
+v2 reference set. `get_variable_defs` on the Default-International-Large
+variant confirmed the token map is 1-to-1 with the project's semantic
+layer (no derivation needed): `--color-background-base-secondary`,
+`--color-background-base-default`, `--color-border-base-default`,
+`--color-border-brand-default`, `blue-sky/200` focus-ring effect, and
+the Onest font-stack.
 
 ### 2026-05-23 — `cor-search-input-circular` realigned to Figma (mirror of rectangular)
 
@@ -252,6 +493,20 @@ Future agent runs: if a Figma node-id for either component_set is rediscovered,
 log it here so pixel-perfect comparison against the original can be re-checked.
 
 ## Last updated
+
+2026-05-23 — `cor-phone-input` realigned to Figma — LAST fix in the input
+family Figma-alignment loop (7/7). Widened `variant` to 4 styles (added
+`warning` + `success`), added `type: 'local' | 'international'` axis,
+added `loading` prop with inline `cor-spinner`, gave `readonly` a distinct
+soft-gray-surface treatment with a trailing green-check valid icon, and
+shipped 15 hand-drawn inline SVG country flag glyphs (Moldova first, then
+RO/RU/UA/US/GB/DE/FR/IT/ES/PT/IL/TR/BG/GR — all visible side-by-side in
+`storybook-open-dropdown-all-flags.png`). 30 new tokens (113 → 143). 47
+new spec tests (518 → 565). Zero breaking changes — every existing API
+shape preserved, every new prop defaults to a Moldova-first value
+(`type='local'`, `loading=false`). All gates green. **Input family Figma
+drift fix loop now complete 7/7.** See "Drift fix log" above for the full
+delta.
 
 2026-05-23 — `cor-search-input-circular` realigned to Figma — mirror of the
 rectangular sibling's `2eff62c` fix. Added the `loading` visual state
