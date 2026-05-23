@@ -40,13 +40,14 @@
         "md": { "$value": "{lineHeight.20}", "$type": "dimension" },
         "lg": { "$value": "{lineHeight.24}", "$type": "dimension" }
       },
-      "textAlign": { "$value": "start", "$type": "string" }
+      "textAlign": { "$value": "start", "$type": "string" },
+      "loadingOpacity": { "$value": "0.6", "$type": "number" }
     },
     "label": {
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
       "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
       "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
-      "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
+      "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
       "gap": { "$value": "{spacing.4}", "$type": "dimension" },
       "color": {
         "default": { "$value": "{color.text.base.secondary}", "$type": "color" },
@@ -69,7 +70,8 @@
       "iconSize": { "$value": "{spacing.20}", "$type": "dimension" },
       "color": {
         "default": { "$value": "{color.text.base.secondary}", "$type": "color" },
-        "error": { "$value": "{color.text.danger.default}", "$type": "color" }
+        "error": { "$value": "{color.text.danger.default}", "$type": "color" },
+        "success": { "$value": "{color.text.positive.default}", "$type": "color" }
       }
     },
     "icon": {
@@ -79,6 +81,7 @@
       },
       "color": {
         "default": { "$value": "{color.icon.base.secondary}", "$type": "color" },
+        "loading": { "$value": "{color.icon.brand.default}", "$type": "color" },
         "disabled": { "$value": "{color.icon.disabled.on-disabled}", "$type": "color" }
       }
     },
@@ -132,31 +135,56 @@
       "transitionDuration": { "$value": "150ms", "$type": "duration" },
       "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" }
     },
+    "loadingSpinner": {
+      "size": {
+        "md": { "$value": "{spacing.16}", "$type": "dimension" },
+        "lg": { "$value": "{spacing.20}", "$type": "dimension" }
+      }
+    },
     "default": {
       "background": {
         "default": { "$value": "{color.background.base.default}", "$type": "color" },
+        "readOnly": { "$value": "{color.background.base.secondary}", "$type": "color" },
         "disabled": { "$value": "{color.background.disabled.default}", "$type": "color" }
       },
       "border": {
         "default": { "$value": "{color.border.base.default}", "$type": "color" },
         "hover": { "$value": "{color.border.base.tertiary}", "$type": "color" },
         "focus": { "$value": "{color.border.brand.default}", "$type": "color" },
+        "readOnly": { "$value": "{color.border.base.default}", "$type": "color" },
         "disabled": { "$value": "{color.border.disabled.default}", "$type": "color" }
       },
       "text": {
         "default": { "$value": "{color.text.base.default}", "$type": "color" },
         "placeholder": { "$value": "{color.text.base.tertiary}", "$type": "color" },
+        "readOnly": { "$value": "{color.text.base.default}", "$type": "color" },
         "disabled": { "$value": "{color.text.disabled.on-disabled}", "$type": "color" }
       },
       "focusRing": { "$value": "{palette.blue-sky.200}", "$type": "color" }
     },
     "destructive": {
+      "background": {
+        "default": { "$value": "{color.background.base.default}", "$type": "color" },
+        "filled": { "$value": "{color.background.danger.secondary}", "$type": "color" }
+      },
       "border": {
         "default": { "$value": "{color.border.danger.default}", "$type": "color" },
         "hover": { "$value": "{color.border.danger.default}", "$type": "color" },
         "focus": { "$value": "{color.border.danger.default}", "$type": "color" }
       },
       "focusRing": { "$value": "{palette.red.200}", "$type": "color" }
+    },
+    "success": {
+      "background": {
+        "default": { "$value": "{color.background.base.default}", "$type": "color" },
+        "filled": { "$value": "{color.background.positive.secondary}", "$type": "color" }
+      },
+      "border": {
+        "default": { "$value": "{color.border.positive.default}", "$type": "color" },
+        "hover": { "$value": "{color.border.positive.default}", "$type": "color" },
+        "focus": { "$value": "{color.border.positive.default}", "$type": "color" }
+      },
+      "focusRing": { "$value": "{palette.green.200}", "$type": "color" }
     }
   }
 }

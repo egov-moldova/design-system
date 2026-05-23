@@ -45,9 +45,20 @@ let numericInputInstanceCounter = 0;
 export class CorNumericInput {
   /**
    * Color treatment. `destructive` is forced when `invalid` is set.
+   * Numeric inputs ship 3 styles per Figma (no Warning) — invalid numeric
+   * values are typically out-of-range (Destructive) or confirmed-valid
+   * (Success); there is no in-between state worth a Warning tone.
    * @default 'default'
    */
   @Prop({ reflect: true }) variant: NumericInputVariant = 'default';
+
+  /**
+   * Loading state. When true the control becomes uninteractive and a
+   * brand `cor-spinner` replaces the trailing stepper stack. The host
+   * carries `aria-busy="true"` for assistive technologies.
+   * @default false
+   */
+  @Prop({ reflect: true }) loading: boolean = false;
 
   /**
    * Visual size rung.
@@ -308,7 +319,7 @@ export class CorNumericInput {
   }
 
   private canStep(direction: NumericInputStepDirection): boolean {
-    if (this.isInert() || this.readonly) return false;
+    if (this.isInert() || this.readonly || this.loading) return false;
     const current = this.value ?? 0;
     const next = direction === 'up' ? current + this.step : current - this.step;
     if (direction === 'up' && this.max !== undefined && current >= this.max) return false;
@@ -428,7 +439,7 @@ export class CorNumericInput {
   }
 
   private handleKeyDown = (ev: KeyboardEvent) => {
-    if (this.isInert() || this.readonly) return;
+    if (this.isInert() || this.readonly || this.loading) return;
     if (ev.key === 'ArrowUp') {
       ev.preventDefault();
       this.performStep('up');
@@ -483,7 +494,7 @@ export class CorNumericInput {
   }
 
   private showSteppersStack(): boolean {
-    return this.showSteppers && !this.isInert() && !this.readonly;
+    return this.showSteppers && !this.isInert() && !this.readonly && !this.loading;
   }
 
   render() {
@@ -502,8 +513,9 @@ export class CorNumericInput {
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
       'is-readonly': this.readonly,
+      'is-loading': this.loading,
       'is-invalid': this.invalid,
-      'is-focused': this.isFocused && !effectivelyDisabled,
+      'is-focused': this.isFocused && !effectivelyDisabled && !this.readonly,
       'has-label': this.hasVisibleLabel(),
       'has-icon-start': this.hasIconStart,
       'has-suffix': this.hasSuffix,
@@ -514,7 +526,7 @@ export class CorNumericInput {
     const ariaValueNow = this.value !== undefined && Number.isFinite(this.value) ? String(this.value) : undefined;
 
     return (
-      <Host class={hostClasses}>
+      <Host class={hostClasses} aria-busy={this.loading ? 'true' : null}>
         <label class="label" htmlFor={`numeric-input-${this.instanceId}`} id={this.labelId} part="label">
           <span class="label-text">
             <slot name="label" onSlotchange={this.onLabelSlotChange}>
@@ -554,6 +566,7 @@ export class CorNumericInput {
             aria-describedby={this.describedBy()}
             aria-invalid={this.invalid ? 'true' : null}
             aria-required={this.required ? 'true' : null}
+            aria-readonly={this.readonly ? 'true' : null}
             aria-disabled={effectivelyDisabled ? 'true' : null}
             aria-valuenow={ariaValueNow}
             aria-valuemin={this.min !== undefined ? String(this.min) : undefined}
@@ -597,6 +610,12 @@ export class CorNumericInput {
                 <cor-icon name="chevron-bottom" size={stepperIconSize} color="currentColor" />
               </button>
             </div>
+          ) : null}
+
+          {this.loading ? (
+            <span class="control-spinner" part="spinner" aria-hidden="true">
+              <cor-spinner size={this.size === 'lg' ? 'sm' : 'xs'} variant="brand" label="" />
+            </span>
           ) : null}
         </div>
 

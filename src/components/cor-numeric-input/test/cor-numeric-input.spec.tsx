@@ -36,8 +36,13 @@ describe('cor-numeric-input', () => {
       expect(root?.getAttribute('required')).toBeNull();
       expect(root?.getAttribute('readonly')).toBeNull();
       expect(root?.getAttribute('invalid')).toBeNull();
+      expect(root?.getAttribute('loading')).toBeNull();
       // Stencil reflects `boolean` true as the empty-string attribute presence.
       expect(root?.hasAttribute('show-steppers')).toBe(true);
+    });
+
+    it('ships exactly 3 variants per Figma — default, destructive, success (no warning)', () => {
+      expect(NUMERIC_INPUT_VARIANTS).toEqual(['default', 'destructive', 'success']);
     });
 
     it.each(NUMERIC_INPUT_VARIANTS)('reflects variant="%s" to host', async variant => {
@@ -401,6 +406,16 @@ describe('cor-numeric-input', () => {
       expect(queryNative(root)?.readOnly).toBe(true);
     });
 
+    it('readonly is distinct from disabled — input stays focusable and not aria-disabled', async () => {
+      const { root } = await render(<cor-numeric-input label="x" readonly value={5}></cor-numeric-input>);
+      const native = queryNative(root);
+      expect(native?.disabled).toBe(false);
+      expect(native?.getAttribute('aria-disabled')).toBeNull();
+      expect(native?.getAttribute('aria-readonly')).toBe('true');
+      expect(root?.classList.contains('is-readonly')).toBe(true);
+      expect(root?.classList.contains('is-disabled')).toBe(false);
+    });
+
     it('responds to fieldset disabled via formDisabledCallback', async () => {
       const { root } = await render(<cor-numeric-input label="x"></cor-numeric-input>);
       expect(queryNative(root)?.disabled).toBe(false);
@@ -506,6 +521,75 @@ describe('cor-numeric-input', () => {
       (root as unknown as { formStateRestoreCallback: (state: string) => void }).formStateRestoreCallback('42');
       await flush();
       expect((root as unknown as { value: number | undefined }).value).toBe(42);
+    });
+  });
+
+  describe('loading state', () => {
+    it('reflects loading to host and sets aria-busy', async () => {
+      const { root } = await render(<cor-numeric-input label="x" loading></cor-numeric-input>);
+      expect(root?.getAttribute('loading')).toBe('');
+      expect(root?.getAttribute('aria-busy')).toBe('true');
+      expect(root?.classList.contains('is-loading')).toBe(true);
+    });
+
+    it('renders a cor-spinner inside the control when loading', async () => {
+      const { root } = await render(<cor-numeric-input label="x" loading></cor-numeric-input>);
+      const spinner = root?.shadowRoot?.querySelector('.control-spinner cor-spinner');
+      expect(spinner).toBeTruthy();
+    });
+
+    it('omits the spinner when not loading', async () => {
+      const { root } = await render(<cor-numeric-input label="x"></cor-numeric-input>);
+      const spinner = root?.shadowRoot?.querySelector('.control-spinner');
+      expect(spinner).toBeNull();
+      expect(root?.getAttribute('aria-busy')).toBeNull();
+    });
+
+    it('scales the spinner from xs (md) to sm (lg)', async () => {
+      const { root: rootMd } = await render(<cor-numeric-input label="x" loading size="md"></cor-numeric-input>);
+      const { root: rootLg } = await render(<cor-numeric-input label="x" loading size="lg"></cor-numeric-input>);
+      expect(rootMd?.shadowRoot?.querySelector('cor-spinner')?.getAttribute('size')).toBe('xs');
+      expect(rootLg?.shadowRoot?.querySelector('cor-spinner')?.getAttribute('size')).toBe('sm');
+    });
+
+    it('hides the stepper stack when loading', async () => {
+      const { root } = await render(<cor-numeric-input label="x" loading></cor-numeric-input>);
+      expect(queryStepperUp(root)).toBeNull();
+      expect(queryStepperDown(root)).toBeNull();
+    });
+
+    it('ignores ArrowUp/Down when loading', async () => {
+      // mirror the keyboard-contract helper from the suite above
+      type KeyHandlerInstance = { handleKeyDown: (ev: KeyboardEvent) => void };
+      const onChange = vi.fn();
+      const { root } = await render(
+        <cor-numeric-input label="x" value={5} loading onCorChange={onChange}></cor-numeric-input>,
+      );
+      const instance = root as unknown as KeyHandlerInstance;
+      const ev = new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true, cancelable: true });
+      instance.handleKeyDown.call(instance, ev);
+      await flush();
+      expect(onChange).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('variant matrix', () => {
+    it.each(NUMERIC_INPUT_VARIANTS)('reflects variant="%s" to host without warning', async variant => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const { root } = await render(<cor-numeric-input label="x" variant={variant}></cor-numeric-input>);
+      expect(root?.getAttribute('variant')).toBe(variant);
+      expect(warn).not.toHaveBeenCalled();
+      warn.mockRestore();
+    });
+
+    it('does NOT accept "warning" — per Figma master numeric-input has only 3 styles', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const { root } = await render(<cor-numeric-input label="x"></cor-numeric-input>);
+      (root as unknown as { variant: string }).variant = 'warning';
+      await flush();
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('variant="warning"'));
+      expect(root?.getAttribute('variant')).toBe('default');
+      warn.mockRestore();
     });
   });
 });

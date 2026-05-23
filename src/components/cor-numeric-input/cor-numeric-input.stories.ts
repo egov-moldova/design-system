@@ -19,6 +19,7 @@ type NumericInputArgs = {
   disabled: boolean;
   readonly: boolean;
   invalid: boolean;
+  loading: boolean;
   showSteppers: boolean;
 };
 
@@ -41,6 +42,7 @@ const renderNumericInput = (args: NumericInputArgs) => /*html*/ `
     ${args.disabled ? 'disabled' : ''}
     ${args.readonly ? 'readonly' : ''}
     ${args.invalid ? 'invalid' : ''}
+    ${args.loading ? 'loading' : ''}
     ${args.showSteppers ? '' : 'show-steppers="false"'}
   ></cor-numeric-input>
 `;
@@ -62,6 +64,7 @@ const docsSourceDefault = (args: NumericInputArgs) => {
     args.disabled ? 'disabled' : '',
     args.readonly ? 'readonly' : '',
     args.invalid ? 'invalid' : '',
+    args.loading ? 'loading' : '',
     args.showSteppers ? '' : 'show-steppers="false"',
   ]
     .filter(Boolean)
@@ -76,7 +79,8 @@ const meta: Meta<NumericInputArgs> = {
     variant: {
       control: 'select',
       options: NUMERIC_INPUT_VARIANTS,
-      description: 'Color treatment. `destructive` is forced when `invalid` is set.',
+      description:
+        'Color treatment — 3 styles per Figma (default / destructive / success). `destructive` is forced when `invalid` is set.',
       table: { defaultValue: { summary: 'default' } },
     },
     size: {
@@ -98,6 +102,7 @@ const meta: Meta<NumericInputArgs> = {
     disabled: { control: 'boolean' },
     readonly: { control: 'boolean' },
     invalid: { control: 'boolean' },
+    loading: { control: 'boolean', description: 'Renders a brand spinner in place of the stepper stack.' },
     showSteppers: { control: 'boolean', description: 'Render the stacked stepper buttons.' },
   },
 };
@@ -124,6 +129,7 @@ export const Default: Story = {
     disabled: false,
     readonly: false,
     invalid: false,
+    loading: false,
     showSteppers: true,
   },
   parameters: {
@@ -137,6 +143,12 @@ export const Default: Story = {
 };
 
 const wrap = (children: string) => /*html*/ `
+  <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 240px)); gap: var(--spacing-32) var(--spacing-32); padding: var(--spacing-24); max-width: 880px;">
+    ${children}
+  </div>
+`;
+
+const wrap2col = (children: string) => /*html*/ `
   <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 282px)); gap: var(--spacing-32) var(--spacing-48); padding: var(--spacing-24); max-width: 720px;">
     ${children}
   </div>
@@ -156,7 +168,9 @@ export const AllVariants: Story = {
       NUMERIC_INPUT_VARIANTS.map(variant =>
         cell(
           variant,
-          /*html*/ `<cor-numeric-input variant="${variant}" size="lg" label="Cantitate" placeholder="0"></cor-numeric-input>`,
+          /*html*/ `<cor-numeric-input variant="${variant}" size="lg" label="Cantitate" value="12345">
+            <span slot="suffix">lei</span>
+          </cor-numeric-input>`,
         ),
       ).join(''),
     ),
@@ -165,7 +179,8 @@ export const AllVariants: Story = {
     docs: {
       source: {
         code: NUMERIC_INPUT_VARIANTS.map(
-          v => `<cor-numeric-input variant="${v}" size="lg" label="Cantitate" placeholder="0"></cor-numeric-input>`,
+          v =>
+            `<cor-numeric-input variant="${v}" size="lg" label="Cantitate" value="12345"><span slot="suffix">lei</span></cor-numeric-input>`,
         ).join('\n'),
       },
     },
@@ -175,7 +190,7 @@ export const AllVariants: Story = {
 export const AllSizes: Story = {
   name: 'All Sizes',
   render: () =>
-    wrap(
+    wrap2col(
       NUMERIC_INPUT_SIZES.map(size =>
         cell(size, /*html*/ `<cor-numeric-input size="${size}" label="Cantitate" placeholder="0"></cor-numeric-input>`),
       ).join(''),
@@ -195,7 +210,7 @@ export const AllSizes: Story = {
 export const States: Story = {
   name: 'States',
   render: () =>
-    wrap(
+    wrap2col(
       [
         cell(
           'default: empty',
@@ -206,12 +221,16 @@ export const States: Story = {
           /*html*/ `<cor-numeric-input size="lg" label="Cantitate" value="42"></cor-numeric-input>`,
         ),
         cell(
-          'default: disabled',
-          /*html*/ `<cor-numeric-input size="lg" label="Cantitate" value="42" disabled></cor-numeric-input>`,
+          'default: loading',
+          /*html*/ `<cor-numeric-input size="lg" label="Cantitate" value="42" loading></cor-numeric-input>`,
         ),
         cell(
-          'default: readonly',
+          'default: read-only',
           /*html*/ `<cor-numeric-input size="lg" label="Cantitate" value="42" readonly></cor-numeric-input>`,
+        ),
+        cell(
+          'default: disabled',
+          /*html*/ `<cor-numeric-input size="lg" label="Cantitate" value="42" disabled></cor-numeric-input>`,
         ),
         cell(
           'default: mandatory',
@@ -219,7 +238,11 @@ export const States: Story = {
         ),
         cell(
           'destructive: default',
-          /*html*/ `<cor-numeric-input variant="destructive" size="lg" label="Cantitate" placeholder="0"></cor-numeric-input>`,
+          /*html*/ `<cor-numeric-input variant="destructive" size="lg" label="Cantitate" value="42"></cor-numeric-input>`,
+        ),
+        cell(
+          'success: default',
+          /*html*/ `<cor-numeric-input variant="success" size="lg" label="Cantitate" value="42"></cor-numeric-input>`,
         ),
       ].join(''),
     ),
@@ -230,10 +253,120 @@ export const States: Story = {
         code: [
           '<cor-numeric-input size="lg" label="Cantitate" placeholder="0"></cor-numeric-input>',
           '<cor-numeric-input size="lg" label="Cantitate" value="42"></cor-numeric-input>',
-          '<cor-numeric-input size="lg" label="Cantitate" value="42" disabled></cor-numeric-input>',
+          '<cor-numeric-input size="lg" label="Cantitate" value="42" loading></cor-numeric-input>',
           '<cor-numeric-input size="lg" label="Cantitate" value="42" readonly></cor-numeric-input>',
+          '<cor-numeric-input size="lg" label="Cantitate" value="42" disabled></cor-numeric-input>',
           '<cor-numeric-input size="lg" label="Cantitate" placeholder="0" required></cor-numeric-input>',
-          '<cor-numeric-input variant="destructive" size="lg" label="Cantitate" placeholder="0"></cor-numeric-input>',
+          '<cor-numeric-input variant="destructive" size="lg" label="Cantitate" value="42"></cor-numeric-input>',
+          '<cor-numeric-input variant="success" size="lg" label="Cantitate" value="42"></cor-numeric-input>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const Loading: Story = {
+  name: 'Loading',
+  render: () =>
+    wrap2col(
+      [
+        cell(
+          'lg + default',
+          /*html*/ `<cor-numeric-input size="lg" label="Cantitate" value="42" loading helper-text="Se verifică..."></cor-numeric-input>`,
+        ),
+        cell(
+          'md + default',
+          /*html*/ `<cor-numeric-input size="md" label="Cantitate" value="42" loading helper-text="Se verifică..."></cor-numeric-input>`,
+        ),
+        cell(
+          'lg + destructive',
+          /*html*/ `<cor-numeric-input variant="destructive" size="lg" label="Cantitate" value="999" loading helper-text="Se verifică..."></cor-numeric-input>`,
+        ),
+        cell(
+          'lg + success',
+          /*html*/ `<cor-numeric-input variant="success" size="lg" label="Cantitate" value="42" loading helper-text="Se verifică..."></cor-numeric-input>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          '<cor-numeric-input size="lg" label="Cantitate" value="42" loading></cor-numeric-input>',
+          '<cor-numeric-input size="md" label="Cantitate" value="42" loading></cor-numeric-input>',
+          '<cor-numeric-input variant="destructive" size="lg" label="Cantitate" value="999" loading></cor-numeric-input>',
+          '<cor-numeric-input variant="success" size="lg" label="Cantitate" value="42" loading></cor-numeric-input>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const ReadOnly: Story = {
+  name: 'Read-Only',
+  render: () =>
+    wrap2col(
+      [
+        cell(
+          'lg + populated',
+          /*html*/ `<cor-numeric-input size="lg" label="Cantitate" value="42" readonly></cor-numeric-input>`,
+        ),
+        cell(
+          'md + populated',
+          /*html*/ `<cor-numeric-input size="md" label="Cantitate" value="42" readonly></cor-numeric-input>`,
+        ),
+        cell(
+          'lg + suffix',
+          /*html*/ `<cor-numeric-input size="lg" label="Sumă" value="1250" precision="2" readonly>
+            <span slot="suffix">lei</span>
+          </cor-numeric-input>`,
+        ),
+        cell(
+          'lg + disabled (for comparison)',
+          /*html*/ `<cor-numeric-input size="lg" label="Cantitate" value="42" disabled></cor-numeric-input>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          '<cor-numeric-input size="lg" label="Cantitate" value="42" readonly></cor-numeric-input>',
+          '<cor-numeric-input size="md" label="Cantitate" value="42" readonly></cor-numeric-input>',
+          '<cor-numeric-input size="lg" label="Sumă" value="1250" precision="2" readonly><span slot="suffix">lei</span></cor-numeric-input>',
+          '<cor-numeric-input size="lg" label="Cantitate" value="42" disabled></cor-numeric-input>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const WithSuccess: Story = {
+  name: 'With Success',
+  render: () =>
+    wrap2col(
+      [
+        cell(
+          'success + helper',
+          /*html*/ `<cor-numeric-input variant="success" size="lg" label="Cantitate" value="42" helper-text="Verificat"></cor-numeric-input>`,
+        ),
+        cell(
+          'success + suffix',
+          /*html*/ `<cor-numeric-input variant="success" size="lg" label="Sumă" value="1250" precision="2" helper-text="Verificat">
+            <span slot="suffix">lei</span>
+          </cor-numeric-input>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          '<cor-numeric-input variant="success" size="lg" label="Cantitate" value="42" helper-text="Verificat"></cor-numeric-input>',
+          '<cor-numeric-input variant="success" size="lg" label="Sumă" value="1250" precision="2" helper-text="Verificat"><span slot="suffix">lei</span></cor-numeric-input>',
         ].join('\n'),
       },
     },
@@ -243,7 +376,7 @@ export const States: Story = {
 export const WithMinMax: Story = {
   name: 'With Min / Max',
   render: () =>
-    wrap(
+    wrap2col(
       [
         cell(
           'range 0–10, at floor',
@@ -281,7 +414,7 @@ export const WithMinMax: Story = {
 export const WithStep: Story = {
   name: 'With Custom Step',
   render: () =>
-    wrap(
+    wrap2col(
       [
         cell('step=1 (default)', /*html*/ `<cor-numeric-input size="lg" label="Pași" value="5"></cor-numeric-input>`),
         cell(
@@ -316,7 +449,7 @@ export const WithStep: Story = {
 export const WithPrecision: Story = {
   name: 'With Precision',
   render: () =>
-    wrap(
+    wrap2col(
       [
         cell(
           'precision=2 (currency)',
@@ -349,12 +482,18 @@ export const WithPrecision: Story = {
 export const WithSuffix: Story = {
   name: 'With Suffix',
   render: () =>
-    wrap(
+    wrap2col(
       [
         cell(
-          'lei',
+          'lei (MDL — Moldovan Leu)',
           /*html*/ `<cor-numeric-input size="lg" label="Sumă" value="250" step="10" precision="2">
             <span slot="suffix">lei</span>
+          </cor-numeric-input>`,
+        ),
+        cell(
+          '€ (Euro)',
+          /*html*/ `<cor-numeric-input size="lg" label="Sumă" value="50" step="1" precision="2">
+            <span slot="suffix">€</span>
           </cor-numeric-input>`,
         ),
         cell(
@@ -369,12 +508,6 @@ export const WithSuffix: Story = {
             <span slot="suffix">%</span>
           </cor-numeric-input>`,
         ),
-        cell(
-          '°C',
-          /*html*/ `<cor-numeric-input size="lg" label="Temperatură" value="22" step="0.5" precision="1">
-            <span slot="suffix">°C</span>
-          </cor-numeric-input>`,
-        ),
       ].join(''),
     ),
   parameters: {
@@ -383,9 +516,9 @@ export const WithSuffix: Story = {
       source: {
         code: [
           '<cor-numeric-input size="lg" label="Sumă" value="250" step="10" precision="2"><span slot="suffix">lei</span></cor-numeric-input>',
+          '<cor-numeric-input size="lg" label="Sumă" value="50" step="1" precision="2"><span slot="suffix">€</span></cor-numeric-input>',
           '<cor-numeric-input size="lg" label="Masă" value="1.5" step="0.1" precision="2"><span slot="suffix">kg</span></cor-numeric-input>',
           '<cor-numeric-input size="lg" label="Reducere" value="15" min="0" max="100" step="5"><span slot="suffix">%</span></cor-numeric-input>',
-          '<cor-numeric-input size="lg" label="Temperatură" value="22" step="0.5" precision="1"><span slot="suffix">°C</span></cor-numeric-input>',
         ].join('\n'),
       },
     },
@@ -395,7 +528,7 @@ export const WithSuffix: Story = {
 export const WithCurrencyIcon: Story = {
   name: 'With Currency Icon',
   render: () =>
-    wrap(
+    wrap2col(
       [
         cell(
           'icon-start + suffix',
@@ -428,7 +561,7 @@ export const WithCurrencyIcon: Story = {
 export const WithoutSteppers: Story = {
   name: 'Without Steppers',
   render: () =>
-    wrap(
+    wrap2col(
       [
         cell(
           'compact filter (no steppers)',
@@ -456,7 +589,7 @@ export const WithoutSteppers: Story = {
 export const WithHelperText: Story = {
   name: 'With Helper Text',
   render: () =>
-    wrap(
+    wrap2col(
       [
         cell(
           'default',
@@ -484,7 +617,7 @@ export const WithHelperText: Story = {
 export const WithError: Story = {
   name: 'With Error',
   render: () =>
-    wrap(
+    wrap2col(
       [
         cell(
           'invalid + error message',
@@ -512,7 +645,7 @@ export const WithError: Story = {
 export const EdgeCases: Story = {
   name: 'Edge Cases',
   render: () =>
-    wrap(
+    wrap2col(
       [
         cell(
           'very large number',

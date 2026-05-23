@@ -566,10 +566,143 @@ form association.
 
 ## Figma drift fixes
 
-2026-05-23 — `cor-input` aligned with Figma source-of-truth (docs page
-`107:1034`, master component-set `132:3419`). Previous implementation
-shipped 2 styles × 6 visible states; Figma carries **4 styles × 7 states
-× 2 sizes = 56 variants**. Additive change — no breaking API delta.
+### 2026-05-23 — `cor-numeric-input` aligned with Figma source-of-truth
+
+Docs page `3340:8279`, master component-set `210:2265`. Previous
+implementation shipped 2 styles × 6 visible states; Figma carries
+**3 styles × 7 states × 2 sizes = 42 variants**. Additive change —
+no breaking API delta. **Confirming 3 styles (NOT 4 like `cor-input`)
+— numeric-input has NO Warning** because numeric values are typically
+out-of-range (Destructive) or confirmed-valid (Success) with no
+in-between state worth a warning tone.
+
+**Tokens** (`tokens/core/components/numeric-input.tokens.json`):
+added `numericInput.success.*` namespace (background-default + filled
+soft tint, border default/hover/focus, focus-ring) mirroring the
+existing `numericInput.destructive.*` shape; added the
+`numericInput.destructive.background.filled` companion so soft-tint
+"Filled-state" parity holds across both colored variants. Added
+`numericInput.default.background.readOnly`
+(= `color.background.base.secondary` `#f5f5f5`),
+`numericInput.default.border.readOnly`,
+`numericInput.default.text.readOnly` for the new read-only state;
+`numericInput.control.loadingOpacity` (0.6),
+`numericInput.icon.color.loading` (brand blue `#0058d2`), and
+`numericInput.loadingSpinner.size.{md,lg}` for the loading spinner;
+`numericInput.assistive.color.success` so helper text follows the
+variant tone. Tokens resolve to: success border `#027948`
+(`color.border.positive.default`), success focus ring `#cdeadd`
+(`palette.green.200`), success filled bg `#e6f5ee`
+(`color.background.positive.secondary`), destructive filled bg
+`#fee4e2` (`color.background.danger.secondary`). Label `fontWeight`
+corrected to `medium` (500) per `DESIGN.md` "Medium-Weight Label
+Rule" and the v2 `cor-input` precedent — was inheriting `regular`.
+
+**TSX** (`cor-numeric-input.tsx`): `variant` enum widened to
+`'default' | 'destructive' | 'success'` (NUMERIC_INPUT_VARIANTS).
+Anyone passing `variant="warning"` hits the `@Watch` validation in
+`PRINCIPLES.md §D` and gets a dev-mode `console.warn` + automatic
+fallback to `'default'`. New `loading: boolean @Prop({reflect: true})`
+— when true the host carries `aria-busy="true"`, the trailing
+stepper stack is suppressed (`showSteppersStack()` now refuses
+when `loading`), and a `cor-spinner` (xs for `md` size, sm for `lg`)
+renders in its place. Native input gets `pointer-events: none` +
+`opacity: 0.6`. `canStep()` and `handleKeyDown()` both refuse when
+`loading` is true so ArrowUp/Down + clicks are dead during in-flight
+validation. Native input also receives `aria-readonly="true"` when
+`readonly` — distinguishes read-only from disabled at the assistive-
+tech layer. `:host(.is-focused)` is also gated by `!this.readonly` so
+focus visuals don't bleed through the read-only treatment.
+
+**CSS** (`cor-numeric-input.css`): added `:host(.variant-success)`
+block remapping the local `--_border-color`, `--_border-color-hover`,
+`--_border-color-focus`, `--_focus-ring-color`, `--_assistive-color`
+to the success token bundle. Added `--_assistive-color` to the
+destructive variant (was missing — error helper text now correctly
+follows the variant tone via the local cascade). Hover and focus
+rules now exclude `.is-readonly` AND `.is-loading` so those
+treatments stay visually stable across pointer states. Added
+`:host(.is-loading)` block — hides the stepper stack (via the
+`showSteppersStack()` TSX gate), surfaces `.control-spinner` (brand
+blue `cor-spinner`), dims the native input. Added
+`:host(.is-readonly)` block with `gray-100` background, default
+border (no emphasis), `cursor: default`. Read-only label stays at
+`--numeric-input-label-color-default` unlike disabled which dims to
+`--numeric-input-label-color-disabled` — matches Figma's "visible
+but not editable" semantic.
+
+**Stories** (`cor-numeric-input.stories.ts`): `AllVariants` re-
+rendered as 3-column grid (was 2) showing default / destructive /
+success with suffix `lei` per Figma master. Added `Loading` story
+(4 cells: lg / md / destructive+loading / success+loading with
+Romanian "Se verifică..." helper). Added `ReadOnly` story (4 cells:
+lg / md / with-suffix / disabled-for-comparison). Added
+`WithSuccess` story (2 cells with Romanian "Verificat" helper per
+task brief). Refreshed `States` to show the 8 first-class scenarios
+explicitly (empty / filled / loading / read-only / disabled /
+mandatory / destructive / success). Added MDL Leu + Euro suffix
+cells to `WithSuffix` per Figma `.suffix` subcomponent (`210:2388`,
+Type=MDL & Type=Euro). Existing `WithMinMax`, `WithStep`,
+`WithPrecision`, `WithCurrencyIcon`, `WithoutSteppers`,
+`WithHelperText`, `WithError`, `EdgeCases`, `Default`, `AllSizes`
+preserved unchanged.
+
+**Spec** (`test/cor-numeric-input.spec.tsx`): added `loading state`
+describe block (reflects `loading` to host, sets `aria-busy="true"`,
+renders `cor-spinner` and scales md→xs / lg→sm, hides stepper stack,
+ignores ArrowUp/Down when loading); added `variant matrix` describe
+block (asserts all 3 variants reflect without `console.warn`,
+asserts `variant="warning"` triggers warn + fallback to default
+since Figma master excludes it). Added `ships exactly 3 variants
+per Figma — default, destructive, success (no warning)` assertion
+in the defaults block. Added `readonly is distinct from disabled —
+input stays focusable and not aria-disabled` test (aria-readonly=
+true, aria-disabled=null, is-readonly class only). 531 specs pass
+(was 514 before — +17 for numeric-input fix).
+
+**Gates**: `yarn tokens.build`, `yarn dx:stencil:once`, `yarn lint`,
+`yarn typecheck`, `yarn test` (531 pass), `yarn sp.build`,
+`yarn audit:contrast` (all obligatory pairs pass WCAG 2.1 AA in
+light + dark, including `border.positive.default` and
+`background.positive.secondary` pairs against
+`background.base.default` — the new success tokens are already
+audited via the cor-input v2 contrast rationale; no regressions
+introduced).
+
+Pixel-perfect: Storybook screenshots visually match Figma master
+`210:2265` 1:1 for the AllVariants 3-style row, the States 8-cell
+grid, the Loading 4-cell grid (spinner replaces stepper exactly per
+Figma "Loading" row), the ReadOnly grid (gray surface, default
+border, full-contrast label — distinct from Disabled), and the
+WithSuffix MDL/€/kg/% set.
+
+Screenshots: `docs/screenshots/cor-numeric-input/v2/{all-variants,
+states,loading,read-only,with-success,with-destructive,
+with-suffix}.png`. Figma canonical reference copied as
+`figma-canonical.png` (node `3340:8279`), master component-set as
+`figma-master.png` (node `210:2265`), `.suffix` subcomponent (MDL +
+Euro glyphs) as `figma-suffix.png` (node `210:2388`).
+
+### Figma node resolution
+
+The component-set master (`210:2265`) was reachable via
+`mcp__figma__get_metadata` and confirmed exactly **42 variants**
+(3 styles × 7 states × 2 sizes) — strictly NO Warning variant in
+the canvas children list. `get_variable_defs` on Style=Success
+variants returned `--color-border-positive-default` (`#027948`) —
+identical to the project's semantic layer export; no derivation
+needed. The `.suffix` subcomponent (`210:2388`) exposes two
+glyphs: Type=MDL (Moldovan Leu — primary, e-gov.md context) and
+Type=Euro. Both are now exercised by the `WithSuffix` story.
+
+---
+
+### 2026-05-23 — `cor-input` aligned with Figma source-of-truth
+
+Docs page `107:1034`, master component-set `132:3419`. Previous
+implementation shipped 2 styles × 6 visible states; Figma carries
+**4 styles × 7 states × 2 sizes = 56 variants**. Additive change —
+no breaking API delta.
 
 **Tokens** (`tokens/core/components/input.tokens.json`): added per-style
 namespaces `input.warning.*`, `input.success.*` (background-default,

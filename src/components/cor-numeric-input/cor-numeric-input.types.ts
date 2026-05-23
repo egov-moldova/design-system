@@ -1,5 +1,5 @@
 export const NUMERIC_INPUT_SIZES = ['md', 'lg'] as const;
-export const NUMERIC_INPUT_VARIANTS = ['default', 'destructive'] as const;
+export const NUMERIC_INPUT_VARIANTS = ['default', 'destructive', 'success'] as const;
 
 export type NumericInputSize = (typeof NUMERIC_INPUT_SIZES)[number];
 export type NumericInputVariant = (typeof NUMERIC_INPUT_VARIANTS)[number];
