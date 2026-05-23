@@ -19,7 +19,7 @@ describe('cor-file-item', () => {
   describe('defaults + prop reflection', () => {
     it('renders with default props reflected on host', async () => {
       const { root } = await render(<cor-file-item filename="x.pdf"></cor-file-item>);
-      expect(root?.getAttribute('state')).toBe('idle');
+      expect(root?.getAttribute('state')).toBe('uploaded');
       expect(root?.getAttribute('disabled')).toBeNull();
       expect(root?.getAttribute('no-remove')).toBeNull();
     });
@@ -35,7 +35,7 @@ describe('cor-file-item', () => {
       (root as unknown as { state: string }).state = 'bogus';
       await flush();
       expect(warn).toHaveBeenCalledWith(expect.stringContaining('state="bogus"'));
-      expect(root?.getAttribute('state')).toBe('idle');
+      expect(root?.getAttribute('state')).toBe('uploaded');
       warn.mockRestore();
     });
   });

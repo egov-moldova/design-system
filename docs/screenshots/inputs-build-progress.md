@@ -21,6 +21,59 @@ and updates PR https://github.com/corlab-org/age-design/pull/5.
 
 **Input family complete — 9/9 components shipped.**
 
+## Drift fix log
+
+### 2026-05-23 — `cor-file-input` realigned to Figma (state-only model)
+
+Removed the shipped `variant: 'default' | 'destructive'` axis (drift — Figma's
+master component-set `262:6718` exposes only 5 state-only symbols: `Default`,
+`Hover`, `Focus`, `Active`, `Disabled`; no style axis). `invalid` is now a
+state-level recolor flag (red dashed border + red focus ring via
+`:host([invalid])`), not a variant. Added the missing `Active` (drag-over)
+state per Figma: solid brand-blue border, brand-tint background, icon hidden,
+body text swapped to `dropzoneActiveText` (default `Eliberează pentru a
+încărca`). Renamed internal `isDragOver` → `isActive` and the host class
+`.is-drag-over` → `.is-active` to match the Figma vocabulary; the underlying
+drag events still drive the state.
+
+Companion atom `cor-file-item` renamed the resting state `idle` → `uploaded`
+to match Figma's master component-set `262:6744` (4 states: `Uploaded`,
+`Uploading`, `Success`, `Error`).
+
+**Token namespace cleanup**: the `fileInput.destructive.*` block was deleted
+(no longer reachable). `fileInput.default.*` was hoisted to root namespace
+(`fileInput.background.*`, `fileInput.border.*`, `fileInput.text.*`,
+`fileInput.icon.*`, `fileInput.focusRing.{default,invalid}`). `fileItem`
+followed the same flattening; the `idle` border / icon entries renamed to
+`uploaded`. `text.accent` removed (no consumer after the Active text colour
+was corrected to ink primary per pixel-sampled Figma).
+
+**Breaking changes** — none of which are in downstream production consumers
+yet (the component is freshly shipped on this branch):
+- `cor-file-input` `variant` prop removed; consumers using
+  `variant="destructive"` migrate to `invalid` (which now drives the red
+  dashed-border treatment).
+- `cor-file-input` `FILE_INPUT_VARIANTS` and `FileInputVariant` types removed.
+- `cor-file-item` state name `idle` → `uploaded`.
+- `--file-input-default-*`, `--file-input-destructive-*` CSS variables
+  removed → use `--file-input-background-*`, `--file-input-border-*`,
+  `--file-input-text-*`, `--file-input-icon-*`, `--file-input-focus-ring-{default,invalid}`.
+- `--file-item-default-background-*`, `--file-item-default-border-*` →
+  `--file-item-background-*`, `--file-item-border-{uploaded,uploading,success,error,disabled}`.
+- `--file-item-icon-color-idle` → `--file-item-icon-color-uploaded`.
+
+Pixel-perfect diff against Figma Active panel crop: **5.81%** (anti-aliasing
+and font-rendering noise; structural and colour match exact — colour-sampled
+the Figma PNG to confirm ink-primary body text in Active, not brand blue).
+
+Screenshots: `docs/screenshots/cor-file-input/v2/`,
+`docs/screenshots/cor-file-item/v2/`.
+
+Gates: `yarn tokens.build && yarn dx:stencil:once && yarn lint && yarn
+typecheck && yarn test && yarn sp.build && yarn audit:contrast` — all green.
+478 spec tests pass, 0 console errors across every story, 0 contrast
+failures in light or dark.
+
 ## Failure / restart log
 
 ### 2026-05-22 — `cor-file-input` Figma node resolution
@@ -50,6 +103,11 @@ Future agent runs: if a Figma node-id for either component_set is rediscovered,
 log it here so pixel-perfect comparison against the original can be re-checked.
 
 ## Last updated
+
+2026-05-23 — `cor-file-input` realigned to Figma (state-only model) — removed
+the `variant` axis, added the `Active` state, renamed `cor-file-item` resting
+state `idle` → `uploaded`, flattened the token namespace. See "Drift fix log"
+above for the full delta.
 
 2026-05-23 — `cor-input-chip` shipped (multi-value chip-input molecule with
 form association). LAST input variant — input family is now complete (9/9).

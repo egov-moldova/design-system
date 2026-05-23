@@ -13,7 +13,7 @@
     "icon": {
       "size": { "$value": "{spacing.24}", "$type": "dimension" },
       "color": {
-        "default": { "$value": "{color.icon.base.secondary}", "$type": "color" },
+        "uploaded": { "$value": "{color.icon.base.secondary}", "$type": "color" },
         "uploading": { "$value": "{color.icon.brand.default}", "$type": "color" },
         "success": { "$value": "{color.icon.positive.default}", "$type": "color" },
         "error": { "$value": "{color.icon.danger.default}", "$type": "color" },
@@ -56,18 +56,16 @@
       },
       "focusRing": { "$value": "{palette.blue-sky.200}", "$type": "color" }
     },
-    "default": {
-      "background": {
-        "default": { "$value": "{color.background.base.default}", "$type": "color" },
-        "disabled": { "$value": "{color.background.disabled.default}", "$type": "color" }
-      },
-      "border": {
-        "default": { "$value": "{color.border.base.default}", "$type": "color" },
-        "uploading": { "$value": "{color.border.brand.default}", "$type": "color" },
-        "success": { "$value": "{color.border.positive.default}", "$type": "color" },
-        "error": { "$value": "{color.border.danger.default}", "$type": "color" },
-        "disabled": { "$value": "{color.border.disabled.default}", "$type": "color" }
-      }
+    "background": {
+      "default": { "$value": "{color.background.base.default}", "$type": "color" },
+      "disabled": { "$value": "{color.background.disabled.default}", "$type": "color" }
+    },
+    "border": {
+      "uploaded": { "$value": "{color.border.base.default}", "$type": "color" },
+      "uploading": { "$value": "{color.border.brand.default}", "$type": "color" },
+      "success": { "$value": "{color.border.positive.default}", "$type": "color" },
+      "error": { "$value": "{color.border.danger.default}", "$type": "color" },
+      "disabled": { "$value": "{color.border.disabled.default}", "$type": "color" }
     }
   }
 }

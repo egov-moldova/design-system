@@ -29,7 +29,7 @@ const renderFileItem = (args: FileItemArgs) => /*html*/ `
 
 const docsSourceDefault = (args: FileItemArgs) => {
   const attrs = [
-    args.state !== 'idle' ? `state="${args.state}"` : '',
+    args.state !== 'uploaded' ? `state="${args.state}"` : '',
     args.filename ? `filename="${args.filename}"` : '',
     args.size ? `size="${args.size}"` : '',
     args.errorText ? `error-text="${args.errorText}"` : '',
@@ -50,7 +50,7 @@ const meta: Meta<FileItemArgs> = {
       control: 'select',
       options: FILE_ITEM_STATES,
       description: 'Lifecycle state — drives leading icon color and border treatment.',
-      table: { defaultValue: { summary: 'idle' } },
+      table: { defaultValue: { summary: 'uploaded' } },
     },
     filename: { control: 'text' },
     size: { control: 'number', description: 'File size in bytes; rendered as KB/MB.' },
@@ -68,7 +68,7 @@ type Story = StoryObj<FileItemArgs>;
 export const Default: Story = {
   render: renderFileItem,
   args: {
-    state: 'idle',
+    state: 'uploaded',
     filename: 'declaratie-impozit-2025.pdf',
     size: 245_320,
     errorText: '',
@@ -104,7 +104,10 @@ export const States: Story = {
   render: () =>
     wrap(
       [
-        cell('idle', /*html*/ `<cor-file-item filename="declaratie-impozit-2025.pdf" size="245320"></cor-file-item>`),
+        cell(
+          'uploaded',
+          /*html*/ `<cor-file-item filename="declaratie-impozit-2025.pdf" size="245320"></cor-file-item>`,
+        ),
         cell(
           'uploading',
           /*html*/ `<cor-file-item state="uploading" filename="contract-utilitati.pdf" size="1840320"></cor-file-item>`,

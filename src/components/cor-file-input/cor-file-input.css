@@ -14,18 +14,17 @@
   --_primary-font-size: var(--file-input-primary-text-font-size-md);
   --_primary-line-height: var(--file-input-primary-text-line-height-md);
 
-  --_bg: var(--file-input-default-background-default);
-  --_bg-drag: var(--file-input-default-background-drag-over);
-  --_text-primary: var(--file-input-default-text-primary);
-  --_text-secondary: var(--file-input-default-text-secondary);
-  --_text-accent: var(--file-input-default-text-accent);
-  --_icon-color: var(--file-input-default-icon-default);
-  --_icon-color-accent: var(--file-input-default-icon-accent);
-  --_border-color: var(--file-input-default-border-default);
-  --_border-color-hover: var(--file-input-default-border-hover);
-  --_border-color-focus: var(--file-input-default-border-focus);
-  --_border-color-drag: var(--file-input-default-border-drag-over);
-  --_focus-ring-color: var(--file-input-default-focus-ring);
+  --_bg: var(--file-input-background-default);
+  --_bg-active: var(--file-input-background-active);
+  --_text-primary: var(--file-input-text-primary);
+  --_text-secondary: var(--file-input-text-secondary);
+  --_icon-color: var(--file-input-icon-default);
+  --_icon-color-accent: var(--file-input-icon-accent);
+  --_border-color: var(--file-input-border-default);
+  --_border-color-hover: var(--file-input-border-hover);
+  --_border-color-focus: var(--file-input-border-focus);
+  --_border-color-active: var(--file-input-border-active);
+  --_focus-ring-color: var(--file-input-focus-ring-default);
 
   display: flex;
   flex-direction: column;
@@ -45,15 +44,13 @@
   --_primary-line-height: var(--file-input-primary-text-line-height-lg);
 }
 
-:host(.variant-destructive) {
-  --_border-color: var(--file-input-destructive-border-default);
-  --_border-color-hover: var(--file-input-destructive-border-hover);
-  --_border-color-focus: var(--file-input-destructive-border-focus);
-  --_border-color-drag: var(--file-input-destructive-border-drag-over);
-  --_bg-drag: var(--file-input-destructive-background-drag-over);
-  --_icon-color-accent: var(--file-input-destructive-icon-default);
-  --_text-accent: var(--file-input-destructive-text-accent);
-  --_focus-ring-color: var(--file-input-destructive-focus-ring);
+/* Invalid validation flag — recolors the dashed border to danger, swaps focus ring.
+ * Not a style variant per Figma; a state-level recolor. */
+:host([invalid]) {
+  --_border-color: var(--file-input-border-invalid);
+  --_border-color-hover: var(--file-input-border-invalid);
+  --_border-color-focus: var(--file-input-border-invalid);
+  --_focus-ring-color: var(--file-input-focus-ring-invalid);
 }
 
 /* ---------- Label ---------- */
@@ -122,7 +119,7 @@
     box-shadow var(--_dropzone-transition-duration) var(--_dropzone-transition-easing);
 }
 
-:host(:not(.is-disabled):not(.is-focused):not(.is-drag-over):hover) .dropzone {
+:host(:not(.is-disabled):not(.is-focused):not(.is-active):hover) .dropzone {
   border-color: var(--_border-color-hover);
 }
 
@@ -136,17 +133,18 @@
     0 0 0 var(--spacing-4) var(--_focus-ring-color);
 }
 
-:host(.is-drag-over:not(.is-disabled)) .dropzone {
+/* Figma "Active" state — drag-over. Solid emphasized brand-blue border + tinted bg. */
+:host(.is-active:not(.is-disabled)) .dropzone {
   border-style: solid;
-  border-color: var(--_border-color-drag);
-  background-color: var(--_bg-drag);
+  border-color: var(--_border-color-active);
+  background-color: var(--_bg-active);
   box-shadow: inset 0 0 0 calc(var(--_dropzone-border-width-emphasized) - var(--_dropzone-border-width))
-    var(--_border-color-drag);
+    var(--_border-color-active);
 }
 
 :host(.is-disabled) .dropzone {
-  background-color: var(--file-input-default-background-disabled);
-  border-color: var(--file-input-default-border-disabled);
+  background-color: var(--file-input-background-disabled);
+  border-color: var(--file-input-border-disabled);
   cursor: not-allowed;
 }
 
@@ -161,7 +159,7 @@
 }
 
 :host(.is-disabled) .dropzone-icon {
-  color: var(--file-input-default-icon-disabled);
+  color: var(--file-input-icon-disabled);
 }
 
 /* Slotted custom icon inherits the themed color. */
@@ -185,12 +183,13 @@
   color: var(--_text-primary);
 }
 
-:host(.is-drag-over:not(.is-disabled)) .dropzone-text {
-  color: var(--_text-accent);
+/* Figma Active: body text stays at ink primary (no accent recolor). */
+:host(.is-active:not(.is-disabled)) .dropzone-text {
+  color: var(--_text-primary);
 }
 
 :host(.is-disabled) .dropzone-text {
-  color: var(--file-input-default-text-disabled);
+  color: var(--file-input-text-disabled);
 }
 
 .dropzone-hint {
@@ -202,7 +201,7 @@
 }
 
 :host(.is-disabled) .dropzone-hint {
-  color: var(--file-input-default-text-disabled);
+  color: var(--file-input-text-disabled);
 }
 
 /* ---------- Native hidden input ---------- */

@@ -1,8 +1,6 @@
 export const FILE_INPUT_SIZES = ['md', 'lg'] as const;
-export const FILE_INPUT_VARIANTS = ['default', 'destructive'] as const;
 
 export type FileInputSize = (typeof FILE_INPUT_SIZES)[number];
-export type FileInputVariant = (typeof FILE_INPUT_VARIANTS)[number];
 
 export type FileInputRejectionReason = 'size' | 'type' | 'count';
 

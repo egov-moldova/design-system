@@ -1,6 +1,6 @@
 import { AttachInternals, Component, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
 
-import { FILE_INPUT_SIZES, FILE_INPUT_VARIANTS } from './cor-file-input.types';
+import { FILE_INPUT_SIZES } from './cor-file-input.types';
 import type {
   FileInputChangeDetail,
   FileInputDropDetail,
@@ -8,7 +8,6 @@ import type {
   FileInputRejectionReason,
   FileInputRemoveDetail,
   FileInputSize,
-  FileInputVariant,
 } from './cor-file-input.types';
 
 let fileInputInstanceCounter = 0;
@@ -26,6 +25,11 @@ let fileInputInstanceCounter = 0;
  * The component owns SELECTION + VALIDATION + DISPLAY. Real upload (progress,
  * network errors, retries) is consumer-driven via the `corChange` event.
  *
+ * State model (no style axis — Figma is state-only):
+ *   default → hover → focus → active (drag-over) → disabled
+ *   `invalid` is a separate validation flag that recolors the dashed border red
+ *   without introducing a style variant.
+ *
  * @element cor-file-input
  *
  * @slot label - Rich label content, replaces the `label` prop when present.
@@ -40,12 +44,6 @@ let fileInputInstanceCounter = 0;
 })
 export class CorFileInput {
   /**
-   * Color treatment. `destructive` is forced when `invalid` is set.
-   * @default 'default'
-   */
-  @Prop({ reflect: true }) variant: FileInputVariant = 'default';
-
-  /**
    * Visual size rung. Drives drop-zone min-height + label / icon scale.
    * @default 'md'
    */
@@ -57,7 +55,7 @@ export class CorFileInput {
   /** Marks the field as mandatory. Adds the red asterisk + `aria-required`. */
   @Prop({ reflect: true }) required: boolean = false;
 
-  /** Forces destructive visuals regardless of `variant`. */
+  /** Renders the red-border error treatment + wires `aria-invalid`. */
   @Prop({ reflect: true }) invalid: boolean = false;
 
   /** Allow selecting more than one file. */
@@ -85,10 +83,17 @@ export class CorFileInput {
   @Prop({ attribute: 'error-text' }) errorText?: string;
 
   /**
-   * Body text inside the drop area.
+   * Body text inside the drop area at rest.
    * @default 'Trage fișierele aici sau apasă pentru a căuta'
    */
   @Prop({ attribute: 'dropzone-text' }) dropzoneText: string = 'Trage fișierele aici sau apasă pentru a căuta';
+
+  /**
+   * Body text shown while a drag is over the drop zone (Figma "Active" state).
+   * Replaces the resting body + hides the icon for the duration of the drag.
+   * @default 'Eliberează pentru a încărca'
+   */
+  @Prop({ attribute: 'dropzone-active-text' }) dropzoneActiveText: string = 'Eliberează pentru a încărca';
 
   /**
    * Secondary text under the dropzone body (e.g. file type hints).
@@ -108,7 +113,8 @@ export class CorFileInput {
 
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
-  @State() private isDragOver: boolean = false;
+  /** Tracks drag-over. Maps to Figma's "Active" state visually. */
+  @State() private isActive: boolean = false;
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
   @State() private announcement: string = '';
@@ -142,23 +148,11 @@ export class CorFileInput {
   private readonly dropzoneId = `cor-file-input-dropzone-${this.instanceId}`;
   private readonly liveId = `cor-file-input-live-${this.instanceId}`;
   private nativeInput?: HTMLInputElement;
-  /** Drag enters/leaves fire for child elements too; counter-tracking keeps `isDragOver` stable. */
+  /** Drag enters/leaves fire for child elements too; counter-tracking keeps `isActive` stable. */
   private dragDepth: number = 0;
 
   componentWillLoad() {
     this.syncFormValue(this.files);
-  }
-
-  @Watch('variant')
-  validateVariant(next: FileInputVariant) {
-    if (!FILE_INPUT_VARIANTS.includes(next)) {
-      console.warn(
-        `[cor-file-input] variant="${String(next)}" is not supported. Supported: ${FILE_INPUT_VARIANTS.join(
-          ', ',
-        )}. Falling back to "default".`,
-      );
-      this.variant = 'default';
-    }
   }
 
   @Watch('size')
@@ -233,10 +227,6 @@ export class CorFileInput {
 
   private isInert(): boolean {
     return this.disabled || this.fieldsetDisabled;
-  }
-
-  private resolvedVariant(): FileInputVariant {
-    return this.invalid ? 'destructive' : this.variant;
   }
 
   private hasVisibleLabel(): boolean {
@@ -374,8 +364,8 @@ export class CorFileInput {
     if (this.isInert()) return;
     ev.preventDefault();
     this.dragDepth += 1;
-    if (!this.isDragOver) {
-      this.isDragOver = true;
+    if (!this.isActive) {
+      this.isActive = true;
       this.corDragEnter.emit(ev);
     }
   };
@@ -390,8 +380,8 @@ export class CorFileInput {
   private handleDragLeave = (ev: DragEvent) => {
     if (this.isInert()) return;
     this.dragDepth = Math.max(0, this.dragDepth - 1);
-    if (this.dragDepth === 0 && this.isDragOver) {
-      this.isDragOver = false;
+    if (this.dragDepth === 0 && this.isActive) {
+      this.isActive = false;
       this.corDragLeave.emit(ev);
     }
   };
@@ -400,7 +390,7 @@ export class CorFileInput {
     if (this.isInert()) return;
     ev.preventDefault();
     this.dragDepth = 0;
-    this.isDragOver = false;
+    this.isActive = false;
     const list = ev.dataTransfer?.files ? Array.from(ev.dataTransfer.files) : [];
     if (list.length > 0) this.intakeFiles(list, 'drop');
   };
@@ -426,20 +416,19 @@ export class CorFileInput {
 
   render() {
     const effectivelyDisabled = this.isInert();
-    const variant = this.resolvedVariant();
     const labelText = this.label?.trim();
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.ariaLabel : undefined;
+    const isActiveNow = this.isActive && !effectivelyDisabled;
+    const bodyText = isActiveNow ? this.dropzoneActiveText : this.dropzoneText;
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
-      'is-invalid': this.invalid,
-      'is-drag-over': this.isDragOver && !effectivelyDisabled,
+      'is-active': isActiveNow,
       'is-focused': this.isFocused && !effectivelyDisabled,
       'has-label': this.hasVisibleLabel(),
       'has-files': this.files.length > 0,
-      [`variant-${variant}`]: true,
     };
 
     return (
@@ -478,16 +467,18 @@ export class CorFileInput {
           onFocus={this.handleFocus}
           onBlur={this.handleBlur}
         >
-          <span class="dropzone-icon" part="dropzone-icon" aria-hidden="true">
-            <slot name="icon">
-              <cor-icon name="cloud-upload" size={24} color="currentColor" />
-            </slot>
-          </span>
+          {!isActiveNow ? (
+            <span class="dropzone-icon" part="dropzone-icon" aria-hidden="true">
+              <slot name="icon">
+                <cor-icon name="cloud-upload" size={24} color="currentColor" />
+              </slot>
+            </span>
+          ) : null}
           <span class="dropzone-body" part="dropzone-body">
             <span class="dropzone-text" part="dropzone-text">
-              {this.dropzoneText}
+              {bodyText}
             </span>
-            {this.dropzoneHint ? (
+            {!isActiveNow && this.dropzoneHint ? (
               <span class="dropzone-hint" part="dropzone-hint">
                 {this.dropzoneHint}
               </span>

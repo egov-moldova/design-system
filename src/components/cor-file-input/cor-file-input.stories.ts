@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
-import { FILE_INPUT_SIZES, FILE_INPUT_VARIANTS } from './cor-file-input.types';
-import type { FileInputSize, FileInputVariant } from './cor-file-input.types';
+import { FILE_INPUT_SIZES } from './cor-file-input.types';
+import type { FileInputSize } from './cor-file-input.types';
 
 type FileInputArgs = {
-  variant: FileInputVariant;
   size: FileInputSize;
   label: string;
   helperText: string;
   errorText: string;
   dropzoneText: string;
+  dropzoneActiveText: string;
   dropzoneHint: string;
   multiple: boolean;
   required: boolean;
@@ -24,12 +24,12 @@ const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-
 
 const renderFileInput = (args: FileInputArgs) => /*html*/ `
   <cor-file-input
-    variant="${args.variant}"
     size="${args.size}"
     label="${args.label}"
     helper-text="${args.helperText}"
     error-text="${args.errorText}"
     dropzone-text="${args.dropzoneText}"
+    dropzone-active-text="${args.dropzoneActiveText}"
     dropzone-hint="${args.dropzoneHint}"
     accept="${args.accept}"
     max-size="${args.maxSize || ''}"
@@ -43,13 +43,15 @@ const renderFileInput = (args: FileInputArgs) => /*html*/ `
 
 const docsSourceDefault = (args: FileInputArgs) => {
   const attrs = [
-    args.variant !== 'default' ? `variant="${args.variant}"` : '',
     args.size !== 'md' ? `size="${args.size}"` : '',
     args.label ? `label="${args.label}"` : '',
     args.helperText ? `helper-text="${args.helperText}"` : '',
     args.errorText ? `error-text="${args.errorText}"` : '',
     args.dropzoneText && args.dropzoneText !== 'Trage fișierele aici sau apasă pentru a căuta'
       ? `dropzone-text="${args.dropzoneText}"`
+      : '',
+    args.dropzoneActiveText && args.dropzoneActiveText !== 'Eliberează pentru a încărca'
+      ? `dropzone-active-text="${args.dropzoneActiveText}"`
       : '',
     args.dropzoneHint ? `dropzone-hint="${args.dropzoneHint}"` : '',
     args.accept ? `accept="${args.accept}"` : '',
@@ -69,12 +71,6 @@ const meta: Meta<FileInputArgs> = {
   title: 'Atoms/Input/File',
   component: 'cor-file-input',
   argTypes: {
-    variant: {
-      control: 'select',
-      options: FILE_INPUT_VARIANTS,
-      description: 'Color treatment. `destructive` is forced when `invalid` is set.',
-      table: { defaultValue: { summary: 'default' } },
-    },
     size: {
       control: 'select',
       options: FILE_INPUT_SIZES,
@@ -85,6 +81,7 @@ const meta: Meta<FileInputArgs> = {
     helperText: { control: 'text' },
     errorText: { control: 'text' },
     dropzoneText: { control: 'text' },
+    dropzoneActiveText: { control: 'text', description: 'Body text shown while a drag is over the drop zone.' },
     dropzoneHint: { control: 'text' },
     accept: { control: 'text', description: 'MIME / extension allow-list (`.pdf,image/*`).' },
     maxSize: { control: 'number', description: 'Max per-file size in bytes.' },
@@ -103,12 +100,12 @@ type Story = StoryObj<FileInputArgs>;
 export const Default: Story = {
   render: renderFileInput,
   args: {
-    variant: 'default',
     size: 'lg',
     label: 'Atașează documente',
     helperText: 'PDF sau JPG, maximum 5 MB per fișier.',
     errorText: '',
     dropzoneText: 'Trage fișierele aici sau apasă pentru a căuta',
+    dropzoneActiveText: 'Eliberează pentru a încărca',
     dropzoneHint: 'PDF, JPG • max 5 MB',
     accept: '',
     maxSize: 0,
@@ -141,25 +138,54 @@ const cell = (caption: string, body: string) => /*html*/ `
   </div>
 `;
 
-export const AllVariants: Story = {
-  name: 'All Variants',
+// Figma model: 5 state-only symbols (default, hover, focus, active, disabled)
+// + invalid as a recolor flag. No style axis.
+// Hover/focus/active each need a real pointer/keyboard/drag interaction to be
+// captured live — see the dedicated `Active` story and the `:focus-visible` /
+// `:hover` browser interactions for the other two.
+export const AllStates: Story = {
+  name: 'All States',
   render: () =>
     wrap(
-      FILE_INPUT_VARIANTS.map(variant =>
+      [
         cell(
-          variant,
-          /*html*/ `<cor-file-input variant="${variant}" size="lg" label="Documente" dropzone-hint="PDF • max 5 MB"></cor-file-input>`,
+          'default',
+          /*html*/ `<cor-file-input size="lg" label="Documente" dropzone-hint="PDF • max 5 MB"></cor-file-input>`,
         ),
-      ).join(''),
+        cell(
+          'hover — point at the dropzone',
+          /*html*/ `<cor-file-input size="lg" label="Documente" dropzone-hint="PDF • max 5 MB"></cor-file-input>`,
+        ),
+        cell(
+          'focus — Tab onto the dropzone',
+          /*html*/ `<cor-file-input size="lg" label="Documente" dropzone-hint="PDF • max 5 MB"></cor-file-input>`,
+        ),
+        cell(
+          'active — see the `Active` story for the live drag-over render',
+          /*html*/ `<cor-file-input size="lg" label="Documente" dropzone-hint="PDF • max 5 MB"></cor-file-input>`,
+        ),
+        cell(
+          'disabled',
+          /*html*/ `<cor-file-input size="lg" label="Documente" disabled dropzone-hint="PDF • max 5 MB"></cor-file-input>`,
+        ),
+        cell(
+          'invalid + error',
+          /*html*/ `<cor-file-input size="lg" label="Documente" invalid error-text="Trebuie să atașați cel puțin un document"></cor-file-input>`,
+        ),
+      ].join(''),
     ),
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
-        code: FILE_INPUT_VARIANTS.map(
-          v =>
-            `<cor-file-input variant="${v}" size="lg" label="Documente" dropzone-hint="PDF • max 5 MB"></cor-file-input>`,
-        ).join('\n'),
+        code: [
+          '<cor-file-input size="lg" label="Documente" dropzone-hint="PDF • max 5 MB"></cor-file-input>',
+          '<!-- hover: pointer over dropzone -->',
+          '<!-- focus: Tab onto dropzone -->',
+          '<!-- active: drag a file over the dropzone — see the dedicated Active story -->',
+          '<cor-file-input size="lg" label="Documente" disabled dropzone-hint="PDF • max 5 MB"></cor-file-input>',
+          '<cor-file-input size="lg" label="Documente" invalid error-text="…"></cor-file-input>',
+        ].join('\n'),
       },
     },
   },
@@ -188,49 +214,38 @@ export const AllSizes: Story = {
   },
 };
 
-export const States: Story = {
-  name: 'States',
-  render: () =>
-    wrap(
-      [
-        cell(
-          'idle',
-          /*html*/ `<cor-file-input size="lg" label="Documente" dropzone-hint="PDF • max 5 MB"></cor-file-input>`,
-        ),
-        cell(
-          'mandatory',
-          /*html*/ `<cor-file-input size="lg" label="Documente" required dropzone-hint="Câmp obligatoriu"></cor-file-input>`,
-        ),
-        cell(
-          'disabled',
-          /*html*/ `<cor-file-input size="lg" label="Documente" disabled dropzone-hint="PDF • max 5 MB"></cor-file-input>`,
-        ),
-        cell(
-          'destructive',
-          /*html*/ `<cor-file-input variant="destructive" size="lg" label="Documente" dropzone-hint="PDF • max 5 MB"></cor-file-input>`,
-        ),
-        cell(
-          'invalid + error',
-          /*html*/ `<cor-file-input size="lg" label="Documente" invalid error-text="Trebuie să atașați cel puțin un document"></cor-file-input>`,
-        ),
-        cell(
-          'with helper',
-          /*html*/ `<cor-file-input size="lg" label="Documente" helper-text="Acceptăm fișiere PDF sau JPG"></cor-file-input>`,
-        ),
-      ].join(''),
-    ),
+// Dedicated Active state story — drives the drag-over handler post-mount so the
+// Figma "Active" presentation renders without requiring an interactive drag.
+export const Active: Story = {
+  name: 'Active (drag-over)',
+  render: () => /*html*/ `
+    <div style="padding: var(--spacing-24); max-width: 600px;">
+      <cor-file-input
+        size="lg"
+        label="Documente"
+        dropzone-hint="PDF • max 5 MB"
+      ></cor-file-input>
+    </div>
+  `,
+  play: async ({ canvasElement }) => {
+    // canvasElement is a real DOM node — Storybook lets us drive a real
+    // dragenter against the dropzone, which sets the @State and triggers a
+    // re-render. We wait one microtask for hydration, then dispatch.
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    const host = canvasElement.querySelector('cor-file-input') as HTMLElement | null;
+    const dropzone = host?.shadowRoot?.querySelector('.dropzone') as HTMLElement | null;
+    if (!dropzone) return;
+    dropzone.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true }));
+  },
   parameters: {
     controls: { disable: true },
     docs: {
+      description: {
+        story:
+          'Drag-over presentation. When a file is being dragged into the drop zone, the dashed border switches to a solid brand-blue stroke, the background takes a brand-tint fill, the icon disappears, and the body text swaps to `dropzone-active-text`.',
+      },
       source: {
-        code: [
-          '<cor-file-input size="lg" label="Documente" dropzone-hint="PDF • max 5 MB"></cor-file-input>',
-          '<cor-file-input size="lg" label="Documente" required dropzone-hint="Câmp obligatoriu"></cor-file-input>',
-          '<cor-file-input size="lg" label="Documente" disabled dropzone-hint="PDF • max 5 MB"></cor-file-input>',
-          '<cor-file-input variant="destructive" size="lg" label="Documente" dropzone-hint="PDF • max 5 MB"></cor-file-input>',
-          '<cor-file-input size="lg" label="Documente" invalid error-text="…"></cor-file-input>',
-          '<cor-file-input size="lg" label="Documente" helper-text="…"></cor-file-input>',
-        ].join('\n'),
+        code: '<cor-file-input size="lg" label="Documente" dropzone-hint="PDF • max 5 MB"></cor-file-input>\n<!-- visible state after drag-over: see Figma Active -->',
       },
     },
   },
@@ -390,13 +405,10 @@ export const WithError: Story = {
   render: () =>
     wrap(
       [
+        cell('invalid (no message)', /*html*/ `<cor-file-input size="lg" label="Documente" invalid></cor-file-input>`),
         cell(
-          'invalid + error',
+          'invalid + error message',
           /*html*/ `<cor-file-input size="lg" label="Documente" invalid error-text="Trebuie să atașați cel puțin un document"></cor-file-input>`,
-        ),
-        cell(
-          'destructive variant',
-          /*html*/ `<cor-file-input variant="destructive" size="lg" label="Documente" invalid error-text="Formatul nu este acceptat"></cor-file-input>`,
         ),
       ].join(''),
     ),

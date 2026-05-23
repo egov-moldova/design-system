@@ -5,8 +5,8 @@
   min-block-size: var(--file-item-container-min-height);
   padding-block: var(--file-item-container-padding-block);
   padding-inline: var(--file-item-container-padding-inline);
-  background-color: var(--file-item-default-background-default);
-  border: var(--file-item-container-border-width) solid var(--file-item-default-border-default);
+  background-color: var(--file-item-background-default);
+  border: var(--file-item-container-border-width) solid var(--file-item-border-uploaded);
   border-radius: var(--file-item-container-border-radius);
   inline-size: 100%;
   color: var(--file-item-text-filename-color-default);
@@ -18,20 +18,20 @@
 }
 
 :host(.state-uploading) {
-  border-color: var(--file-item-default-border-uploading);
+  border-color: var(--file-item-border-uploading);
 }
 
 :host(.state-success) {
-  border-color: var(--file-item-default-border-success);
+  border-color: var(--file-item-border-success);
 }
 
 :host(.state-error) {
-  border-color: var(--file-item-default-border-error);
+  border-color: var(--file-item-border-error);
 }
 
 :host(.is-disabled) {
-  background-color: var(--file-item-default-background-disabled);
-  border-color: var(--file-item-default-border-disabled);
+  background-color: var(--file-item-background-disabled);
+  border-color: var(--file-item-border-disabled);
   color: var(--file-item-text-filename-color-disabled);
   cursor: not-allowed;
 }
@@ -45,7 +45,7 @@
   flex-shrink: 0;
   inline-size: var(--file-item-icon-size);
   block-size: var(--file-item-icon-size);
-  color: var(--file-item-icon-color-default);
+  color: var(--file-item-icon-color-uploaded);
 }
 
 :host(.state-uploading) .leading-icon {

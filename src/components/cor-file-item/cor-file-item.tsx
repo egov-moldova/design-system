@@ -23,9 +23,11 @@ import type { FileItemRemoveDetail, FileItemState } from './cor-file-item.types'
 export class CorFileItem {
   /**
    * Lifecycle state. Drives leading icon color and border treatment.
-   * @default 'idle'
+   * Matches Figma's 4-state model: `uploaded` (resting), `uploading`,
+   * `success`, `error`.
+   * @default 'uploaded'
    */
-  @Prop({ reflect: true }) state: FileItemState = 'idle';
+  @Prop({ reflect: true }) state: FileItemState = 'uploaded';
 
   /** Visible filename. */
   @Prop() filename: string = '';
@@ -62,9 +64,9 @@ export class CorFileItem {
       console.warn(
         `[cor-file-item] state="${String(next)}" is not supported. Supported: ${FILE_ITEM_STATES.join(
           ', ',
-        )}. Falling back to "idle".`,
+        )}. Falling back to "uploaded".`,
       );
-      this.state = 'idle';
+      this.state = 'uploaded';
     }
   }
 

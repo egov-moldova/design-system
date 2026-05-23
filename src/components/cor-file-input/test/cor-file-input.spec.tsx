@@ -2,7 +2,7 @@ import { describe, expect, h, it, render, vi } from '@stencil/vitest';
 
 import '../cor-file-input';
 
-import { FILE_INPUT_SIZES, FILE_INPUT_VARIANTS } from '../cor-file-input.types';
+import { FILE_INPUT_SIZES } from '../cor-file-input.types';
 
 const queryDropzone = (root: Element | null | undefined): HTMLElement | null =>
   (root?.shadowRoot?.querySelector('.dropzone') ?? null) as HTMLElement | null;
@@ -22,6 +22,12 @@ const queryFileItems = (root: Element | null | undefined): NodeListOf<HTMLElemen
 const queryLiveRegion = (root: Element | null | undefined): HTMLElement | null =>
   (root?.shadowRoot?.querySelector('[role="status"]') ?? null) as HTMLElement | null;
 
+const queryDropzoneIcon = (root: Element | null | undefined): HTMLElement | null =>
+  (root?.shadowRoot?.querySelector('.dropzone-icon') ?? null) as HTMLElement | null;
+
+const queryDropzoneText = (root: Element | null | undefined): HTMLElement | null =>
+  (root?.shadowRoot?.querySelector('.dropzone-text') ?? null) as HTMLElement | null;
+
 const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
 
 const makeFile = (name: string, size: number, type: string = 'application/pdf'): File => {
@@ -35,7 +41,6 @@ describe('cor-file-input', () => {
   describe('defaults + prop reflection', () => {
     it('renders with default props reflected on host', async () => {
       const { root } = await render(<cor-file-input label="Docs"></cor-file-input>);
-      expect(root?.getAttribute('variant')).toBe('default');
       expect(root?.getAttribute('size')).toBe('md');
       expect(root?.getAttribute('disabled')).toBeNull();
       expect(root?.getAttribute('required')).toBeNull();
@@ -43,9 +48,12 @@ describe('cor-file-input', () => {
       expect(root?.getAttribute('invalid')).toBeNull();
     });
 
-    it.each(FILE_INPUT_VARIANTS)('reflects variant="%s" to host', async variant => {
-      const { root } = await render(<cor-file-input variant={variant} label="x"></cor-file-input>);
-      expect(root?.getAttribute('variant')).toBe(variant);
+    it('does NOT expose a variant prop (Figma is state-only — no style axis)', async () => {
+      const { root } = await render(<cor-file-input label="x"></cor-file-input>);
+      // Setting an unknown prop must not surface on the host.
+      (root as unknown as Record<string, string>).variant = 'destructive';
+      await flush();
+      expect(root?.getAttribute('variant')).toBeNull();
     });
 
     it.each(FILE_INPUT_SIZES)('reflects size="%s" to host', async size => {
@@ -53,14 +61,9 @@ describe('cor-file-input', () => {
       expect(root?.getAttribute('size')).toBe(size);
     });
 
-    it('warns and falls back when variant is invalid', async () => {
-      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-      const { root } = await render(<cor-file-input label="x"></cor-file-input>);
-      (root as unknown as { variant: string }).variant = 'bogus';
-      await flush();
-      expect(warn).toHaveBeenCalledWith(expect.stringContaining('variant="bogus"'));
-      expect(root?.getAttribute('variant')).toBe('default');
-      warn.mockRestore();
+    it('reflects invalid attribute to host', async () => {
+      const { root } = await render(<cor-file-input label="x" invalid></cor-file-input>);
+      expect(root?.hasAttribute('invalid')).toBe(true);
     });
 
     it('warns and falls back when size is invalid', async () => {
@@ -279,7 +282,7 @@ describe('cor-file-input', () => {
     });
   });
 
-  describe('drag interactions', () => {
+  describe('Active state (drag-over)', () => {
     // Mock-doc's shadow trigger does not surface JSX-bound on{Drag*} handlers
     // via dispatchEvent. Drive the registered handlers directly off the
     // component instance — the contract is identical at runtime.
@@ -294,7 +297,7 @@ describe('cor-file-input', () => {
       else instance.handleDragLeave.call(instance, ev);
     };
 
-    it('adds is-drag-over on dragenter and removes on dragleave', async () => {
+    it('adds is-active on dragenter and removes on dragleave', async () => {
       const onEnter = vi.fn();
       const onLeave = vi.fn();
       const { root } = await render(
@@ -302,12 +305,25 @@ describe('cor-file-input', () => {
       );
       drag(root, 'enter');
       await flush();
-      expect(root?.classList.contains('is-drag-over')).toBe(true);
+      expect(root?.classList.contains('is-active')).toBe(true);
       expect(onEnter).toHaveBeenCalledTimes(1);
       drag(root, 'leave');
       await flush();
-      expect(root?.classList.contains('is-drag-over')).toBe(false);
+      expect(root?.classList.contains('is-active')).toBe(false);
       expect(onLeave).toHaveBeenCalledTimes(1);
+    });
+
+    it('swaps body text to dropzone-active-text and hides the icon when active', async () => {
+      const { root } = await render(
+        <cor-file-input label="x" dropzone-text="Drag here" dropzone-active-text="Release to upload"></cor-file-input>,
+      );
+      expect(queryDropzoneText(root)?.textContent).toContain('Drag here');
+      expect(queryDropzoneIcon(root)).toBeTruthy();
+
+      drag(root, 'enter');
+      await flush();
+      expect(queryDropzoneText(root)?.textContent).toContain('Release to upload');
+      expect(queryDropzoneIcon(root)).toBeNull();
     });
 
     it('ignores drag events when disabled', async () => {
@@ -315,7 +331,7 @@ describe('cor-file-input', () => {
       const { root } = await render(<cor-file-input label="x" disabled onCorDragEnter={onEnter}></cor-file-input>);
       drag(root, 'enter');
       await flush();
-      expect(root?.classList.contains('is-drag-over')).toBe(false);
+      expect(root?.classList.contains('is-active')).toBe(false);
       expect(onEnter).not.toHaveBeenCalled();
     });
   });
