@@ -1,0 +1,213 @@
+:host {
+  /* Size axis defaults (md) */
+  --_height: var(--tag-container-height-md);
+  --_min-width: var(--tag-container-min-width-md);
+  --_padding-inline: var(--tag-container-padding-inline-md);
+  --_padding-inline-icon: var(--tag-container-padding-inline-icon-md);
+  --_gap: var(--tag-container-gap-md);
+  --_font-size: var(--tag-label-font-size-md);
+  --_line-height: var(--tag-label-line-height-md);
+  --_icon-size: var(--tag-icon-size-md);
+
+  /* Type × semantic defaults (subtle · neutral) */
+  --_bg: var(--tag-subtle-background-neutral);
+  --_label-color: var(--tag-subtle-label-neutral);
+  --_border-color: transparent;
+  --_border-width: 0;
+
+  /* Status vs Info weight */
+  --_font-weight: var(--tag-label-font-weight-status);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  block-size: var(--_height);
+  min-inline-size: var(--_min-width);
+  padding-block: 0;
+  padding-inline: var(--_padding-inline);
+  gap: var(--_gap);
+
+  background-color: var(--_bg);
+  color: var(--_label-color);
+  border: var(--_border-width) solid var(--_border-color);
+  border-radius: var(--tag-container-border-radius);
+
+  font-family: var(--tag-label-font-family);
+  font-size: var(--_font-size);
+  line-height: var(--_line-height);
+  font-weight: var(--_font-weight);
+  text-align: center;
+  white-space: nowrap;
+  user-select: none;
+  vertical-align: middle;
+  overflow: hidden;
+}
+
+/* ---------- Size axis ---------- */
+
+:host([size='sm']) {
+  --_height: var(--tag-container-height-sm);
+  --_min-width: var(--tag-container-min-width-sm);
+  --_padding-inline: var(--tag-container-padding-inline-sm);
+  --_padding-inline-icon: var(--tag-container-padding-inline-icon-sm);
+  --_gap: var(--tag-container-gap-sm);
+  --_font-size: var(--tag-label-font-size-sm);
+  --_line-height: var(--tag-label-line-height-sm);
+  --_icon-size: var(--tag-icon-size-sm);
+}
+
+/* ---------- Variant: info uses regular weight + tighter padding ---------- */
+
+:host([variant='info']) {
+  --_font-weight: var(--tag-label-font-weight-info);
+  --_padding-inline: var(--tag-container-padding-inline-sm);
+}
+
+/* ---------- Type × semantic: subtle ---------- */
+
+:host([type='subtle']) {
+  --_border-width: 0;
+}
+
+:host([type='subtle'][semantic='neutral']) {
+  --_bg: var(--tag-subtle-background-neutral);
+  --_label-color: var(--tag-subtle-label-neutral);
+}
+:host([type='subtle'][semantic='info']) {
+  --_bg: var(--tag-subtle-background-info);
+  --_label-color: var(--tag-subtle-label-info);
+}
+:host([type='subtle'][semantic='accent']) {
+  --_bg: var(--tag-subtle-background-accent);
+  --_label-color: var(--tag-subtle-label-accent);
+}
+:host([type='subtle'][semantic='success']) {
+  --_bg: var(--tag-subtle-background-success);
+  --_label-color: var(--tag-subtle-label-success);
+}
+:host([type='subtle'][semantic='warning']) {
+  --_bg: var(--tag-subtle-background-warning);
+  --_label-color: var(--tag-subtle-label-warning);
+}
+:host([type='subtle'][semantic='brand']) {
+  --_bg: var(--tag-subtle-background-brand);
+  --_label-color: var(--tag-subtle-label-brand);
+}
+:host([type='subtle'][semantic='danger']) {
+  --_bg: var(--tag-subtle-background-danger);
+  --_label-color: var(--tag-subtle-label-danger);
+}
+
+/* ---------- Type × semantic: strong ---------- */
+
+:host([type='strong']) {
+  --_border-width: 0;
+}
+
+:host([type='strong'][semantic='neutral']) {
+  --_bg: var(--tag-strong-background-neutral);
+  --_label-color: var(--tag-strong-label-neutral);
+}
+:host([type='strong'][semantic='info']) {
+  --_bg: var(--tag-strong-background-info);
+  --_label-color: var(--tag-strong-label-info);
+}
+:host([type='strong'][semantic='accent']) {
+  --_bg: var(--tag-strong-background-accent);
+  --_label-color: var(--tag-strong-label-accent);
+}
+:host([type='strong'][semantic='success']) {
+  --_bg: var(--tag-strong-background-success);
+  --_label-color: var(--tag-strong-label-success);
+}
+:host([type='strong'][semantic='warning']) {
+  --_bg: var(--tag-strong-background-warning);
+  --_label-color: var(--tag-strong-label-warning);
+}
+:host([type='strong'][semantic='brand']) {
+  --_bg: var(--tag-strong-background-brand);
+  --_label-color: var(--tag-strong-label-brand);
+}
+:host([type='strong'][semantic='danger']) {
+  --_bg: var(--tag-strong-background-danger);
+  --_label-color: var(--tag-strong-label-danger);
+}
+
+/* ---------- Type: outlined (transparent fill, semantic border) ---------- */
+
+:host([type='outlined']) {
+  --_bg: var(--tag-outlined-background);
+  --_border-width: var(--tag-container-border-width);
+}
+
+:host([type='outlined'][semantic='neutral']) {
+  --_label-color: var(--tag-outlined-label-neutral);
+  --_border-color: var(--tag-outlined-border-neutral);
+}
+:host([type='outlined'][semantic='info']) {
+  --_label-color: var(--tag-outlined-label-info);
+  --_border-color: var(--tag-outlined-border-info);
+}
+:host([type='outlined'][semantic='accent']) {
+  --_label-color: var(--tag-outlined-label-accent);
+  --_border-color: var(--tag-outlined-border-accent);
+}
+:host([type='outlined'][semantic='success']) {
+  --_label-color: var(--tag-outlined-label-success);
+  --_border-color: var(--tag-outlined-border-success);
+}
+:host([type='outlined'][semantic='warning']) {
+  --_label-color: var(--tag-outlined-label-warning);
+  --_border-color: var(--tag-outlined-border-warning);
+}
+:host([type='outlined'][semantic='brand']) {
+  --_label-color: var(--tag-outlined-label-brand);
+  --_border-color: var(--tag-outlined-border-brand);
+}
+:host([type='outlined'][semantic='danger']) {
+  --_label-color: var(--tag-outlined-label-danger);
+  --_border-color: var(--tag-outlined-border-danger);
+}
+
+/* ---------- Asymmetric padding when icons present ---------- */
+
+/* Leading icon → pull leading edge tighter so glyph hugs the surface. */
+:host(.has-icon-start) {
+  padding-inline-start: var(--_padding-inline-icon);
+}
+
+/* Trailing icon → mirror on the trailing edge. */
+:host(.has-icon-end) {
+  padding-inline-end: var(--_padding-inline-icon);
+}
+
+/* ---------- Label ---------- */
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.label:empty {
+  display: none;
+}
+
+/* ---------- Slotted icons ---------- */
+
+::slotted([slot='icon-start']),
+::slotted([slot='icon-end']) {
+  flex-shrink: 0;
+  display: inline-flex;
+  inline-size: var(--_icon-size);
+  block-size: var(--_icon-size);
+  color: currentcolor;
+}
+
+::slotted(cor-icon[slot='icon-start']),
+::slotted(cor-icon[slot='icon-end']) {
+  --icon-color: currentcolor;
+}

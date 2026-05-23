@@ -1,0 +1,109 @@
+{
+  "tag": {
+    "container": {
+      "height": {
+        "md": { "$value": "{spacing.24}", "$type": "dimension" },
+        "sm": { "$value": "{spacing.20}", "$type": "dimension" }
+      },
+      "minWidth": {
+        "md": { "$value": "{spacing.32}", "$type": "dimension" },
+        "sm": { "$value": "{spacing.32}", "$type": "dimension" }
+      },
+      "paddingInline": {
+        "md": { "$value": "{spacing.8}", "$type": "dimension" },
+        "sm": { "$value": "{spacing.6}", "$type": "dimension" }
+      },
+      "paddingInlineIcon": {
+        "md": { "$value": "{spacing.6}", "$type": "dimension" },
+        "sm": { "$value": "{spacing.4}", "$type": "dimension" }
+      },
+      "gap": {
+        "md": { "$value": "{spacing.4}", "$type": "dimension" },
+        "sm": { "$value": "{spacing.4}", "$type": "dimension" }
+      },
+      "borderRadius": { "$value": "{borderRadius.4}", "$type": "dimension" },
+      "borderWidth": { "$value": "1px", "$type": "dimension" },
+      "groupGap": { "$value": "{spacing.8}", "$type": "dimension" }
+    },
+    "label": {
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSize": {
+        "md": { "$value": "{fontSize.14}", "$type": "dimension" },
+        "sm": { "$value": "{fontSize.12}", "$type": "dimension" }
+      },
+      "lineHeight": {
+        "md": { "$value": "{lineHeight.20}", "$type": "dimension" },
+        "sm": { "$value": "{lineHeight.16}", "$type": "dimension" }
+      },
+      "fontWeightStatus": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "fontWeightInfo": { "$value": "{fontWeight.regular}", "$type": "fontWeight" }
+    },
+    "icon": {
+      "size": {
+        "md": { "$value": "{spacing.16}", "$type": "dimension" },
+        "sm": { "$value": "{spacing.12}", "$type": "dimension" }
+      }
+    },
+    "subtle": {
+      "background": {
+        "neutral": { "$value": "{color.background.base.tertiary}", "$type": "color" },
+        "info": { "$value": "{color.background.base.default}", "$type": "color" },
+        "accent": { "$value": "{color.background.warning.secondary}", "$type": "color" },
+        "success": { "$value": "{color.background.positive.secondary}", "$type": "color" },
+        "warning": { "$value": "{color.background.warning.secondary-active}", "$type": "color" },
+        "brand": { "$value": "{color.background.brand.secondary}", "$type": "color" },
+        "danger": { "$value": "{color.background.danger.secondary}", "$type": "color" }
+      },
+      "label": {
+        "neutral": { "$value": "{color.text.base.default}", "$type": "color" },
+        "info": { "$value": "{color.text.base.secondary}", "$type": "color" },
+        "accent": { "$value": "{color.text.warning.on-secondary}", "$type": "color" },
+        "success": { "$value": "{color.text.positive.on-secondary}", "$type": "color" },
+        "warning": { "$value": "{color.text.warning.on-secondary}", "$type": "color" },
+        "brand": { "$value": "{color.text.brand.on-secondary}", "$type": "color" },
+        "danger": { "$value": "{color.text.danger.on-secondary}", "$type": "color" }
+      }
+    },
+    "strong": {
+      "background": {
+        "neutral": { "$value": "{color.background.base-inverse.default}", "$type": "color" },
+        "info": { "$value": "{color.background.base-inverse.default-active}", "$type": "color" },
+        "accent": { "$value": "{color.background.warning.accent}", "$type": "color" },
+        "success": { "$value": "{color.background.positive.default}", "$type": "color" },
+        "warning": { "$value": "{color.background.warning.default}", "$type": "color" },
+        "brand": { "$value": "{color.background.brand.default}", "$type": "color" },
+        "danger": { "$value": "{color.background.danger.default}", "$type": "color" }
+      },
+      "label": {
+        "neutral": { "$value": "{color.text.base-inverse.default}", "$type": "color" },
+        "info": { "$value": "{color.text.base-inverse.default}", "$type": "color" },
+        "accent": { "$value": "{color.text.base.default-on-color}", "$type": "color" },
+        "success": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" },
+        "warning": { "$value": "{color.text.base.default-on-color}", "$type": "color" },
+        "brand": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" },
+        "danger": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" }
+      }
+    },
+    "outlined": {
+      "background": { "$value": "transparent", "$type": "color" },
+      "border": {
+        "neutral": { "$value": "{color.border.base.default}", "$type": "color" },
+        "info": { "$value": "{color.border.base.default}", "$type": "color" },
+        "accent": { "$value": "{color.border.warning.default}", "$type": "color" },
+        "success": { "$value": "{color.border.positive.default}", "$type": "color" },
+        "warning": { "$value": "{color.border.warning.default}", "$type": "color" },
+        "brand": { "$value": "{color.border.brand.default}", "$type": "color" },
+        "danger": { "$value": "{color.border.danger.default}", "$type": "color" }
+      },
+      "label": {
+        "neutral": { "$value": "{color.text.base.default}", "$type": "color" },
+        "info": { "$value": "{color.text.base.secondary}", "$type": "color" },
+        "accent": { "$value": "{color.text.warning.on-secondary}", "$type": "color" },
+        "success": { "$value": "{color.text.positive.on-secondary}", "$type": "color" },
+        "warning": { "$value": "{color.text.warning.on-secondary}", "$type": "color" },
+        "brand": { "$value": "{color.text.brand.on-secondary}", "$type": "color" },
+        "danger": { "$value": "{color.text.danger.on-secondary}", "$type": "color" }
+      }
+    }
+  }
+}
