@@ -266,9 +266,10 @@
       ]
     },
     "test.storybook.watch": {
-      "command": "vitest --project storybook",
+      "command": "wait-on --interval 200 --timeout 60000 dist/design-system/design-system.esm.js dist/design-system/design-system.css tokens/generated/core.tokens.css http-get://localhost:6007/iframe.html && vitest --watch --project storybook",
       "dependencies": [
-        "dx:prepare"
+        "dx:prepare",
+        "dx:storybook"
       ],
       "service": true
     },
