@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-accordion · @age/web-components</title>
+  </head>
+  <body data-component="cor-accordion">
+    <main class="demo-main">
+      <section id="cor-accordion" class="component-section">
+        <h2>&lt;cor-accordion&gt;</h2>
+
+        <div class="subsection">
+          <h3>Data-driven (<code>items</code> prop, mode="multiple")</h3>
+          <div style="width: 100%; max-width: 640px">
+            <cor-accordion
+              id="demo-accordion-data"
+              mode="multiple"
+              appearance="default"
+              label="Întrebări frecvente"
+            ></cor-accordion>
+          </div>
+          <span class="label">items set as a JS property (arrays cannot be set via attribute)</span>
+        </div>
+
+        <div class="subsection">
+          <h3>Single mode + trail-sites appearance (<code>items</code> prop)</h3>
+          <div style="width: 100%; max-width: 640px">
+            <cor-accordion
+              id="demo-accordion-single"
+              mode="single"
+              appearance="trail-sites"
+              label="Servicii"
+            ></cor-accordion>
+          </div>
+          <span class="label">mode="single" — opening one collapses the others</span>
+        </div>
+
+        <div class="subsection">
+          <h3>Slotted children (<code>&lt;cor-accordion-item&gt;</code>) with slots</h3>
+          <div style="width: 100%; max-width: 640px">
+            <cor-accordion mode="multiple" appearance="default" label="Setări cont">
+              <cor-accordion-item heading="Date personale" supporting-text="Nume, prenume, IDNP" open="">
+                <cor-icon slot="icon-start" name="person" size="20"></cor-icon>
+                <cor-tag slot="trailing">Verificat</cor-tag>
+                <p style="margin: 0">Modificați datele din profilul dvs. de utilizator MCabinet.</p>
+              </cor-accordion-item>
+              <cor-accordion-item heading="Notificări" supporting-text="Email și SMS">
+                <cor-icon slot="icon-start" name="notification" size="20"></cor-icon>
+                <p style="margin: 0">Gestionați canalele prin care primiți notificări de la stat.</p>
+              </cor-accordion-item>
+              <cor-accordion-item
+                heading="Confidențialitate (dezactivat)"
+                supporting-text="Indisponibil momentan"
+                disabled=""
+              >
+                <cor-icon slot="icon-start" name="lock" size="20"></cor-icon>
+                <p style="margin: 0">Această secțiune nu este disponibilă.</p>
+              </cor-accordion-item>
+            </cor-accordion>
+          </div>
+          <span class="label">one open, one disabled, icon-start + trailing slots</span>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div style="width: 100%; max-width: 640px">
+            <cor-accordion mode="multiple" label="Edge cases">
+              <cor-accordion-item
+                heading="Heading foarte lung fără spații: Supercalifragilisticexpialidocious_AAAAAAAAAAAAAAAAAAAAAAAAAA"
+                supporting-text="Text suport lung pentru a verifica trunchierea — ăâîșțĂÂÎȘȚ și emoji 🎉 plus simboluri &amp; < > &quot; '"
+                open=""
+              >
+                <p style="margin: 0">
+                  Corp foarte lung pentru a verifica scroll/wrap. Lorem ipsum dolor sit amet, consectetur adipiscing
+                  elit, sed do eiusmod tempor incididunt ut labore. Diacritice: ăâîșțĂÂÎȘȚ. RTL: مرحبا بكم. Special:
+                  &amp; &lt; &gt; " '.
+                </p>
+              </cor-accordion-item>
+              <cor-accordion-item heading="Empty body (no panel content)"></cor-accordion-item>
+            </cor-accordion>
+          </div>
+          <span class="label">long no-space heading, diacritics, RTL, empty body</span>
+        </div>
+
+        <script type="module">
+          customElements.whenDefined('cor-accordion').then(() => {
+            const data = document.getElementById('demo-accordion-data');
+            if (data) {
+              data.items = [
+                {
+                  id: 'a1',
+                  heading: 'Cum îmi creez un cont?',
+                  supportingText: 'Autentificare MPass',
+                  content: 'Accesați portalul și autentificați-vă cu MPass.',
+                  open: true,
+                },
+                {
+                  id: 'a2',
+                  heading: 'Cum recuperez parola?',
+                  content: 'Folosiți opțiunea de recuperare prin email sau SMS.',
+                },
+                {
+                  id: 'a3',
+                  heading: 'Cum contactez suportul?',
+                  supportingText: 'Linia 1234',
+                  content: 'Apelați linia verde sau scrieți pe email.',
+                },
+              ];
+            }
+            const single = document.getElementById('demo-accordion-single');
+            if (single) {
+              single.items = [
+                {
+                  id: 's1',
+                  heading: 'Buletin de identitate',
+                  content: 'Programare pentru eliberarea actelor.',
+                  open: true,
+                },
+                { id: 's2', heading: 'Pașaport biometric', content: 'Depunere cerere online.' },
+                { id: 's3', heading: 'Permis de conducere', content: 'Reînnoire și schimbare.' },
+              ];
+            }
+          });
+        </script>
+      </section>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-modal · @age/web-components</title>
+  </head>
+  <body data-component="cor-modal">
+    <main class="demo-main">
+      <section id="cor-modal" class="component-section">
+        <h2>&lt;cor-modal&gt;</h2>
+
+        <div class="subsection">
+          <h3>Variants × sizes (click to open)</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-button id="open-modal-default" variant="primary">Default (md)</cor-button>
+              <span class="label">variant=default, size=md</span>
+            </div>
+            <div class="cell">
+              <cor-button id="open-modal-icon" variant="secondary">With-icon (sm)</cor-button>
+              <span class="label">variant=with-icon, size=sm</span>
+            </div>
+            <div class="cell">
+              <cor-button id="open-modal-image" variant="secondary">With-image (lg)</cor-button>
+              <span class="label">variant=with-image, size=lg</span>
+            </div>
+            <div class="cell">
+              <cor-button id="open-modal-destructive" variant="secondary">Destructive</cor-button>
+              <span class="label">destructive + closeOnBackdrop=false</span>
+            </div>
+            <div class="cell">
+              <cor-button id="open-modal-long" variant="secondary">Long body (scroll)</cor-button>
+              <span class="label">edge case: overflowing body</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal: default -->
+        <cor-modal id="modal-default" size="md" variant="default" title-text="Confirmați acțiunea">
+          <p style="margin: 0">
+            Sunteți pe cale să trimiteți cererea către instituție. Verificați datele înainte de confirmare. Diacritice:
+            ăâîșțĂÂÎȘȚ.
+          </p>
+          <cor-button slot="actions" variant="secondary" data-close="">Anulează</cor-button>
+          <cor-button slot="actions" variant="primary" data-close="">Confirmă</cor-button>
+        </cor-modal>
+
+        <!-- Modal: with-icon -->
+        <cor-modal id="modal-icon" size="sm" variant="with-icon" title-text="Cerere trimisă">
+          <cor-icon slot="icon" name="circle-info" size="48" color="icon-brand-default"></cor-icon>
+          <p style="margin: 0">Cererea dvs. a fost înregistrată cu numărul 2024-00123.</p>
+          <cor-button slot="actions" variant="primary" data-close="">Am înțeles</cor-button>
+        </cor-modal>
+
+        <!-- Modal: with-image -->
+        <cor-modal id="modal-image" size="lg" variant="with-image" title-text="Serviciu nou disponibil">
+          <div
+            slot="image"
+            style="
+              width: 100%;
+              height: 180px;
+              background: linear-gradient(
+                135deg,
+                var(--color-background-brand-default),
+                var(--color-background-base-secondary)
+              );
+            "
+            role="img"
+            aria-label="Imagine reprezentativă serviciu"
+          ></div>
+          <p style="margin: 0">
+            Acum puteți depune cereri online pentru certificate de stare civilă. Procesul durează sub 5 minute.
+          </p>
+          <cor-button slot="actions" variant="secondary" data-close="">Mai târziu</cor-button>
+          <cor-button slot="actions" variant="primary" data-close="">Începe</cor-button>
+        </cor-modal>
+
+        <!-- Modal: destructive -->
+        <cor-modal
+          id="modal-destructive"
+          size="sm"
+          variant="with-icon"
+          destructive=""
+          title-text="Ștergeți contul?"
+          close-on-backdrop="false"
+        >
+          <cor-icon slot="icon" name="delete" size="48" color="icon-status-error-default"></cor-icon>
+          <p style="margin: 0">Această acțiune este ireversibilă. Toate datele asociate vor fi șterse definitiv.</p>
+          <cor-button slot="actions" variant="secondary" data-close="">Renunță</cor-button>
+          <cor-button slot="actions" variant="primary" data-close="">Șterge definitiv</cor-button>
+        </cor-modal>
+
+        <!-- Modal: long body -->
+        <cor-modal id="modal-long" size="md" variant="default" title-text="Termeni și condiții">
+          <div>
+            <p style="margin: 0 0 var(--spacing-12)">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Diacritice: ăâîșțĂÂÎȘȚ. RTL: مرحبا بكم. Special:
+              &amp; &lt; &gt; " '.
+            </p>
+            <p style="margin: 0 0 var(--spacing-12)">
+              Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.
+            </p>
+            <p style="margin: 0 0 var(--spacing-12)">
+              Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+            </p>
+            <p style="margin: 0 0 var(--spacing-12)">
+              Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore.
+            </p>
+            <p style="margin: 0 0 var(--spacing-12)">
+              Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt.
+            </p>
+            <p style="margin: 0 0 var(--spacing-12)">
+              Mollit anim id est laborum. Sectiune lunga pentru a verifica scroll-ul intern al modalului.
+            </p>
+            <p style="margin: 0 0 var(--spacing-12)">
+              Repetare pentru depasire inaltime: paragraf 7, 8, 9 cu text suplimentar.
+            </p>
+            <p style="margin: 0">Final paragraf pentru a forta scroll-ul vertical in corpul modalului.</p>
+          </div>
+          <cor-button slot="actions" variant="secondary" data-close="">Refuz</cor-button>
+          <cor-button slot="actions" variant="primary" data-close="">Accept</cor-button>
+        </cor-modal>
+
+        <script type="module">
+          customElements.whenDefined('cor-modal').then(() => {
+            const wire = (btnId, modalId) => {
+              const btn = document.getElementById(btnId);
+              const modal = document.getElementById(modalId);
+              if (!btn || !modal) return;
+              btn.addEventListener('click', () => {
+                // Public imperative API; equivalent to setting the `open` prop.
+                if (typeof modal.openModal === 'function') modal.openModal();
+                else modal.open = true;
+              });
+              // Footer action buttons close their own modal.
+              modal.querySelectorAll('[data-close]').forEach(action => {
+                action.addEventListener('click', () => {
+                  if (typeof modal.closeModal === 'function') modal.closeModal('action');
+                  else modal.open = false;
+                });
+              });
+            };
+            wire('open-modal-default', 'modal-default');
+            wire('open-modal-icon', 'modal-icon');
+            wire('open-modal-image', 'modal-image');
+            wire('open-modal-destructive', 'modal-destructive');
+            wire('open-modal-long', 'modal-long');
+          });
+        </script>
+      </section>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

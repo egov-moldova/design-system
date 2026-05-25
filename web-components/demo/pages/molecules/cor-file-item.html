@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-file-item · @age/web-components</title>
+  </head>
+  <body data-component="cor-file-item">
+    <main class="demo-main">
+      <section id="cor-file-item" class="component-section">
+        <h2>&lt;cor-file-item&gt;</h2>
+
+        <div class="subsection">
+          <h3>States</h3>
+          <div style="display: flex; flex-direction: column; gap: var(--spacing-12); width: 100%; max-width: 420px">
+            <cor-file-item state="uploaded" filename="buletin-identitate.pdf" size="248320"></cor-file-item>
+            <cor-file-item state="uploading" filename="cerere-completata.docx" size="1048576"></cor-file-item>
+            <cor-file-item state="success" filename="contract-semnat.pdf" size="524288"></cor-file-item>
+            <cor-file-item
+              state="error"
+              filename="poza-prea-mare.png"
+              error-text="Fișierul depășește limita de 5 MB."
+            ></cor-file-item>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Slots &amp; flags</h3>
+          <div style="display: flex; flex-direction: column; gap: var(--spacing-12); width: 100%; max-width: 420px">
+            <cor-file-item state="uploaded" filename="custom-icon.pdf" size="65536">
+              <cor-icon slot="icon" name="bookmark" size="24" color="currentColor"></cor-icon>
+            </cor-file-item>
+            <cor-file-item state="success" filename="read-only-summary.pdf" size="131072" no-remove=""></cor-file-item>
+            <cor-file-item state="uploaded" filename="disabled-remove.pdf" size="40960" disabled=""></cor-file-item>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div style="display: flex; flex-direction: column; gap: var(--spacing-12); width: 100%; max-width: 420px">
+            <cor-file-item
+              state="uploaded"
+              filename="acesta-este-un-nume-de-fisier-extrem-de-lung-fara-spatii-care-ar-trebui-trunchiat-elegant-in-loc-sa-strice-layoutul.pdf"
+              size="9437184"
+            ></cor-file-item>
+            <span class="label">very long filename (truncation)</span>
+            <cor-file-item state="uploaded" filename="" size="0"></cor-file-item>
+            <span class="label">empty filename + zero size</span>
+            <cor-file-item
+              state="error"
+              filename="formate-nepermise &amp; <test>.exe"
+              error-text="Formatul fișierului nu este acceptat."
+            ></cor-file-item>
+            <span class="label">error state + special chars</span>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Mid-progress upload</h3>
+          <div style="display: flex; flex-direction: column; gap: var(--spacing-12); width: 100%; max-width: 420px">
+            <cor-file-item state="uploading" filename="incarcare-in-curs.zip" size="20971520"></cor-file-item>
+            <span class="label">
+              uploading state — note: there is no <code>progress</code> prop; the row shows an "uploading" icon
+              (attachment) + size, not a percentage bar (see anomaly note).
+            </span>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

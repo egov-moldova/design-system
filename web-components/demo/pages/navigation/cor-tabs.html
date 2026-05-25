@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-tabs · @age/web-components</title>
+  </head>
+  <body data-component="cor-tabs">
+    <main class="demo-main">
+      <section id="cor-tabs" class="component-section">
+        <h2>&lt;cor-tabs&gt;</h2>
+
+        <div class="subsection">
+          <h3>Data-driven (<code>tabs</code> prop, size md) + panel slots</h3>
+          <div style="width: 100%; max-width: 720px">
+            <cor-tabs id="demo-tabs-data" size="md" value="profil" aria-label="Cont utilizator">
+              <div slot="panel-profil">
+                <p style="margin: 0">Conținut panou: <strong>Profil</strong> (date personale).</p>
+              </div>
+              <div slot="panel-documente">
+                <p style="margin: 0">Conținut panou: <strong>Documente</strong> (acte încărcate).</p>
+              </div>
+              <div slot="panel-notificari">
+                <p style="margin: 0">Conținut panou: <strong>Notificări</strong>.</p>
+              </div>
+              <div slot="panel-arhiva">
+                <p style="margin: 0">Conținut panou: <strong>Arhivă</strong> (dezactivat în tablist).</p>
+              </div>
+            </cor-tabs>
+          </div>
+          <span class="label">tabs set as JS property; selected=profil; one disabled; icon + badge</span>
+        </div>
+
+        <div class="subsection">
+          <h3>Slotted children (<code>&lt;cor-tab&gt;</code>, size sm)</h3>
+          <div style="width: 100%; max-width: 720px">
+            <cor-tabs size="sm" value="toate" aria-label="Filtre cereri">
+              <cor-tab value="toate" label="Toate" icon-name="filter"></cor-tab>
+              <cor-tab value="active" label="Active"></cor-tab>
+              <cor-tab value="finalizate">
+                Finalizate
+                <span slot="badge">7</span>
+              </cor-tab>
+              <cor-tab value="anulate" label="Anulate" disabled=""></cor-tab>
+              <div slot="panel-toate"><p style="margin: 0">Toate cererile.</p></div>
+              <div slot="panel-active"><p style="margin: 0">Cereri active.</p></div>
+              <div slot="panel-finalizate"><p style="margin: 0">Cereri finalizate.</p></div>
+              <div slot="panel-anulate"><p style="margin: 0">Cereri anulate.</p></div>
+            </cor-tabs>
+          </div>
+          <span class="label">iconName prop, badge slot, disabled tab</span>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div style="width: 100%; max-width: 720px">
+            <cor-tabs id="demo-tabs-overflow" size="md" value="t1" aria-label="Many tabs"></cor-tabs>
+          </div>
+          <span class="label">10 tabs in a constrained width → overflow chevrons; one very long label</span>
+        </div>
+
+        <script type="module">
+          customElements.whenDefined('cor-tabs').then(() => {
+            const data = document.getElementById('demo-tabs-data');
+            if (data) {
+              data.tabs = [
+                { value: 'profil', label: 'Profil', iconName: 'person' },
+                { value: 'documente', label: 'Documente', iconName: 'download', badgeCount: 3 },
+                { value: 'notificari', label: 'Notificări', badgeCount: 0 },
+                { value: 'arhiva', label: 'Arhivă', disabled: true },
+              ];
+            }
+            const overflow = document.getElementById('demo-tabs-overflow');
+            if (overflow) {
+              overflow.tabs = [
+                { value: 't1', label: 'Prezentare generală cu titlu foarte lung pentru overflow' },
+                { value: 't2', label: 'Servicii' },
+                { value: 't3', label: 'Documente' },
+                { value: 't4', label: 'Plăți' },
+                { value: 't5', label: 'Notificări' },
+                { value: 't6', label: 'Programări' },
+                { value: 't7', label: 'Istoric' },
+                { value: 't8', label: 'Setări' },
+                { value: 't9', label: 'Asistență' },
+                { value: 't10', label: 'Despre' },
+              ];
+            }
+          });
+        </script>
+      </section>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

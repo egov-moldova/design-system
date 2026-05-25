@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-receipt · @age/web-components</title>
+  </head>
+  <body data-component="cor-receipt">
+    <main class="demo-main">
+      <section id="cor-receipt" class="component-section">
+        <h2>&lt;cor-receipt&gt;</h2>
+
+        <div class="subsection">
+          <h3>Service × status pairings</h3>
+          <div class="row" style="align-items: flex-start; gap: var(--spacing-32)">
+            <div class="cell" style="align-items: stretch">
+              <div style="width: 100%; max-width: 420px">
+                <cor-receipt
+                  id="receipt-mpay"
+                  service="mpay"
+                  status="paid"
+                  amount="1 250,00"
+                  currency="MDL"
+                  date="2026-05-22T14:32:00Z"
+                  transaction-id="MPAY-2026-0058871-AB"
+                  description="Achitare taxă de stat — eliberare pașaport"
+                ></cor-receipt>
+              </div>
+              <span class="label">mpay · paid · amount + QR + parties</span>
+            </div>
+
+            <div class="cell" style="align-items: stretch">
+              <div style="width: 100%; max-width: 420px">
+                <cor-receipt
+                  id="receipt-mpass"
+                  service="mpass"
+                  status="confirmed"
+                  date="2026-05-22T09:05:00Z"
+                  transaction-id="MPASS-7731-2026"
+                  description="Autentificare în portalul guvernamental"
+                ></cor-receipt>
+              </div>
+              <span class="label">mpass · confirmed · no amount</span>
+            </div>
+
+            <div class="cell" style="align-items: stretch">
+              <div style="width: 100%; max-width: 420px">
+                <cor-receipt
+                  id="receipt-msign"
+                  service="msign"
+                  status="pending"
+                  date="2026-05-22T16:48:00Z"
+                  transaction-id="MSIGN-AA01-PEND"
+                  description="Semnare electronică — contract de prestări servicii"
+                ></cor-receipt>
+              </div>
+              <span class="label">msign · pending</span>
+            </div>
+
+            <div class="cell" style="align-items: stretch">
+              <div style="width: 100%; max-width: 420px">
+                <cor-receipt
+                  id="receipt-mdelivery"
+                  service="mdelivery"
+                  status="failed"
+                  date="2026-05-22T11:20:00Z"
+                  transaction-id="MDLV-9920-FAIL"
+                  description="Livrare document oficial la adresă"
+                ></cor-receipt>
+              </div>
+              <span class="label">mdelivery · failed</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Slots (qr override + custom actions + extra rows)</h3>
+          <div style="width: 100%; max-width: 420px">
+            <cor-receipt service="mpay" status="paid" amount="430,00" date="2026-05-20T10:00:00Z">
+              <div slot="qr" style="font-size: 64px; line-height: 1">🔳</div>
+              <div slot="extra" class="receipt-row" data-row="custom">
+                <dt style="font-weight: 600">Cod de bare</dt>
+                <dd>0123-4567-8901</dd>
+              </div>
+              <cor-button slot="actions" variant="primary" size="md">Vezi în istoric</cor-button>
+            </cor-receipt>
+          </div>
+          <span class="label">qr slot replaces generated QR; actions slot replaces default 4-button footer</span>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div class="row" style="align-items: flex-start; gap: var(--spacing-32)">
+            <div class="cell" style="align-items: stretch">
+              <div style="width: 100%; max-width: 420px">
+                <cor-receipt id="receipt-min" service="mpay"></cor-receipt>
+              </div>
+              <span class="label">Bare minimum: no status, no amount, no date, no parties, no QR</span>
+            </div>
+
+            <div class="cell" style="align-items: stretch">
+              <div style="width: 100%; max-width: 420px">
+                <cor-receipt
+                  id="receipt-long"
+                  service="mpay"
+                  status="paid"
+                  amount="9 999 999 999,99"
+                  currency="MDL"
+                  date="2026-12-31T23:59:00Z"
+                  transaction-id="MPAY-VERY-LONG-TRANSACTION-IDENTIFIER-0000-9999-ABCDEF"
+                ></cor-receipt>
+              </div>
+              <span class="label">Long names, IDNP masking, huge amount, long transaction id</span>
+            </div>
+
+            <div class="cell" style="align-items: stretch">
+              <div style="width: 100%; max-width: 420px">
+                <cor-receipt
+                  service="mpay"
+                  status="paid"
+                  amount="0,00"
+                  date="not-a-real-date"
+                  title-text="Bon &amp; Confirmare «specială» 🧾"
+                  show-actions="false"
+                  transaction-id="TX-0"
+                ></cor-receipt>
+              </div>
+              <span class="label">Invalid date (raw passthrough), special chars in title-text, show-actions=false</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <script type="module">
+        customElements.whenDefined('cor-receipt').then(() => {
+          const parties = {
+            mpay: {
+              sender: { name: 'Ion Vasile Creangă', idnp: '2002003456789' },
+              recipient: { name: 'Serviciul Fiscal de Stat', idnp: '1003600000000' },
+            },
+          };
+          const mpay = document.getElementById('receipt-mpay');
+          if (mpay) {
+            mpay.sender = parties.mpay.sender;
+            mpay.recipient = parties.mpay.recipient;
+            mpay.qrData = 'https://verify.egov.md/r/MPAY-2026-0058871-AB';
+          }
+          const mpass = document.getElementById('receipt-mpass');
+          if (mpass) {
+            mpass.sender = { name: 'Ângela Mârza', idnp: '2002004012345' };
+            mpass.qrData = 'https://verify.egov.md/r/MPASS-7731-2026';
+          }
+          const msign = document.getElementById('receipt-msign');
+          if (msign) {
+            msign.sender = { name: 'Răzvan Țîbuleac', idnp: '2003005123456' };
+            msign.recipient = { name: 'Notar Public „Ștefan cel Mare"', idnp: '1004700000001' };
+          }
+          const mdelivery = document.getElementById('receipt-mdelivery');
+          if (mdelivery) {
+            mdelivery.recipient = {
+              name: 'Întreprinderea de Stat „Poșta Moldovei" — filiala Chișinău Centru',
+              idnp: '1005800000002',
+            };
+          }
+          // Edge: long names + IDNP that is exactly 13 digits (masks) and one that is not (passthrough)
+          const long = document.getElementById('receipt-long');
+          if (long) {
+            long.sender = {
+              name: 'Constantin-Alexandru Întreprinzătorul-Dumitrescu von Habsburg-Lothringen al III-lea',
+              idnp: '2002003456789',
+            };
+            long.recipient = { name: 'X', idnp: 'NU-ESTE-IDNP' };
+          }
+        });
+      </script>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

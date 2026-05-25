@@ -1,8 +1,18 @@
 import { defineConfig, type Plugin } from 'vite';
 import { resolve } from 'node:path';
-import { createReadStream, existsSync, statSync } from 'node:fs';
+import { createReadStream, existsSync, statSync, globSync } from 'node:fs';
 
 const DESIGN_SYSTEM_DIST = resolve(__dirname, '../../dist/design-system');
+
+// Multi-page build: the table of contents (index.html) + one page per component under
+// pages/<category>/<tag>.html. Dev server serves any .html by path already;
+// this only matters for `vite build`.
+const htmlInputs = Object.fromEntries(
+  ['index.html', ...globSync('pages/**/*.html', { cwd: __dirname })].map(rel => {
+    const norm = rel.replace(/\\/g, '/');
+    return [norm.replace(/\.html$/, ''), resolve(__dirname, norm)];
+  }),
+);
 
 const MIME_TYPES: Record<string, string> = {
   '.svg': 'image/svg+xml',
@@ -62,6 +72,9 @@ export default defineConfig({
   build: {
     outDir: 'dist-demo',
     emptyOutDir: true,
+    rollupOptions: {
+      input: htmlInputs,
+    },
   },
   // Stencil's lazy bundle uses `import.meta.url` to resolve asset paths.
   // Pre-bundling would rewrite the URL into Vite's optimized-deps cache, which

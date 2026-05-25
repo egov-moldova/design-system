@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-cookie-banner · @age/web-components</title>
+  </head>
+  <body data-component="cor-cookie-banner">
+    <main class="demo-main">
+      <section id="cor-cookie-banner" class="component-section">
+        <h2>&lt;cor-cookie-banner&gt;</h2>
+
+        <div class="subsection">
+          <h3>Variant: simple (position bottom)</h3>
+          <p class="label">
+            Rendered inside a bounded relatively-positioned box. The element is in-flow by default
+            (<code>display:block</code>, no <code>position:fixed</code>) — consumers opt into viewport docking.
+          </p>
+          <div
+            style="
+              position: relative;
+              min-height: 340px;
+              border: 1px solid var(--color-border-base-default);
+              border-radius: 8px;
+              overflow: hidden;
+              padding: var(--spacing-16);
+              display: flex;
+              align-items: flex-end;
+            "
+          >
+            <cor-cookie-banner variant="simple" position="bottom" privacy-href="#"></cor-cookie-banner>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Variant: detailed (position top, pre-expanded)</h3>
+          <p class="label">
+            <code>expanded</code> set so the category list (necessary / analytics / marketing defaults) renders without
+            a click. Anchored to the top of the box.
+          </p>
+          <div
+            style="
+              position: relative;
+              min-height: 520px;
+              border: 1px solid var(--color-border-base-default);
+              border-radius: 8px;
+              overflow: auto;
+              padding: var(--spacing-16);
+              display: flex;
+              align-items: flex-start;
+            "
+          >
+            <cor-cookie-banner variant="detailed" position="top" expanded="" privacy-href="#"></cor-cookie-banner>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Custom category catalogue (JS property)</h3>
+          <p class="label">
+            <code>categories</code> is an array prop — it can't be set via HTML attribute; it must be assigned as a JS
+            property after the element upgrades. Demonstrates the real consumer pattern.
+          </p>
+          <div
+            style="
+              position: relative;
+              min-height: 560px;
+              border: 1px solid var(--color-border-base-default);
+              border-radius: 8px;
+              overflow: auto;
+              padding: var(--spacing-16);
+              display: flex;
+              align-items: flex-start;
+            "
+          >
+            <cor-cookie-banner
+              id="demo-cookie-custom"
+              variant="detailed"
+              position="bottom"
+              expanded=""
+              privacy-href="#"
+            ></cor-cookie-banner>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <p class="label">
+            Overridden labels + long custom body (diacritics) to probe wrapping. Triggerable expand via the
+            "Personalizează" button inside the banner.
+          </p>
+          <div
+            style="
+              position: relative;
+              min-height: 340px;
+              border: 1px solid var(--color-border-base-default);
+              border-radius: 8px;
+              overflow: hidden;
+              padding: var(--spacing-16);
+              display: flex;
+              align-items: flex-end;
+            "
+          >
+            <cor-cookie-banner
+              variant="simple"
+              position="bottom"
+              title-text="Confidențialitatea ta contează — ăâîșțĂÂÎȘȚ"
+              accept-label="Accept tot"
+              reject-label="Refuz"
+              manage-label="Setări detaliate"
+            >
+              <span slot="body">
+                Folosim cookie-uri esențiale și opționale pentru analize și conținut personalizat. Poți afla mai multe
+                în politica noastră de confidențialitate și îți poți retrage consimțământul oricând din setările
+                contului. Caractere speciale de testare: &amp; &lt; &gt; " ' 🍪
+              </span>
+            </cor-cookie-banner>
+          </div>
+        </div>
+      </section>
+      <script type="module">
+        customElements.whenDefined('cor-cookie-banner').then(() => {
+          const el = document.getElementById('demo-cookie-custom');
+          if (!el) return;
+          el.categories = [
+            {
+              id: 'essential',
+              label: 'Strict necesare',
+              description: 'Necesare pentru autentificare și securitate. Nu pot fi dezactivate.',
+              required: true,
+              enabled: true,
+            },
+            {
+              id: 'performance',
+              label: 'Performanță',
+              description: 'Măsoară timpii de încărcare pentru a optimiza serviciul.',
+              enabled: true,
+            },
+            {
+              id: 'personalization',
+              label: 'Personalizare',
+              description: 'Rețin preferințele de limbă și afișare între sesiuni.',
+              enabled: false,
+            },
+            {
+              id: 'ads',
+              label: 'Publicitate',
+              description: 'Folosite pentru reclame relevante pe alte site-uri.',
+              enabled: false,
+            },
+          ];
+        });
+      </script>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

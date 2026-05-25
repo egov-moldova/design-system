@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-separator · @age/web-components</title>
+  </head>
+  <body data-component="cor-separator">
+    <main class="demo-main">
+      <section id="cor-separator" class="component-section">
+        <h2>&lt;cor-separator&gt;</h2>
+
+        <div class="subsection">
+          <h3>Horizontal — sizes (variant subtle)</h3>
+          <div class="row" style="flex-direction: column; align-items: stretch; width: 100%; max-width: 480px">
+            <cor-separator size="extra-thin"></cor-separator>
+            <span class="label">extra-thin</span>
+            <cor-separator size="thin"></cor-separator>
+            <span class="label">thin (default)</span>
+            <cor-separator size="medium"></cor-separator>
+            <span class="label">medium</span>
+            <cor-separator size="thick"></cor-separator>
+            <span class="label">thick</span>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Horizontal — variants (size medium)</h3>
+          <div class="row" style="flex-direction: column; align-items: stretch; width: 100%; max-width: 480px">
+            <cor-separator size="medium" variant="subtle"></cor-separator>
+            <span class="label">subtle</span>
+            <cor-separator size="medium" variant="mild"></cor-separator>
+            <span class="label">mild</span>
+            <cor-separator size="medium" variant="strong"></cor-separator>
+            <span class="label">strong</span>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Horizontal — with label</h3>
+          <div class="row" style="flex-direction: column; align-items: stretch; width: 100%; max-width: 480px">
+            <cor-separator label="SAU"></cor-separator>
+            <span class="label">label prop</span>
+            <cor-separator variant="strong">
+              <cor-icon name="lock" size="16"></cor-icon>
+              Secțiune securizată
+            </cor-separator>
+            <span class="label">slotted rich label (icon + text)</span>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Vertical (fixed-height flex container)</h3>
+          <div style="display: flex; height: 48px; gap: 16px; align-items: center">
+            <span>Acasă</span>
+            <cor-separator orientation="vertical" size="thin"></cor-separator>
+            <span>Servicii</span>
+            <cor-separator orientation="vertical" size="medium" variant="mild"></cor-separator>
+            <span>Cont</span>
+            <cor-separator orientation="vertical" size="thick" variant="strong"></cor-separator>
+            <span>Ieșire</span>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div class="row" style="flex-direction: column; align-items: stretch; width: 100%; max-width: 480px">
+            <cor-separator inset="" label="Cu inset"></cor-separator>
+            <span class="label">inset = true</span>
+            <cor-separator
+              label="Etichetă foarte lungă care testează comportamentul de încadrare în spațiul disponibil"
+            ></cor-separator>
+            <span class="label">long label</span>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

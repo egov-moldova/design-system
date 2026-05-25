@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-radio · @age/web-components</title>
+  </head>
+  <body data-component="cor-radio">
+    <main class="demo-main">
+      <section id="cor-radio" class="component-section">
+        <h2>&lt;cor-radio&gt;</h2>
+
+        <div class="subsection">
+          <h3>Radio group (3 sharing one name)</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: var(--spacing-12)">
+                <cor-radio name="livrare" value="ghiseu" checked="" label="Ridicare de la ghișeu"></cor-radio>
+                <cor-radio name="livrare" value="posta" label="Poștă recomandată"></cor-radio>
+                <cor-radio name="livrare" value="curier" label="Curier rapid"></cor-radio>
+              </div>
+              <span class="label">name="livrare" (single-select)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Sizes</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-radio size="md" checked="" label="Medium"></cor-radio>
+              </div>
+              <span class="label">md</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-radio size="sm" checked="" label="Small"></cor-radio>
+              </div>
+              <span class="label">sm</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>States</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-radio label="Neselectat"></cor-radio>
+              </div>
+              <span class="label">unchecked</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-radio checked="" label="Selectat"></cor-radio>
+              </div>
+              <span class="label">checked</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-radio disabled="" label="Indisponibil"></cor-radio>
+              </div>
+              <span class="label">disabled</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-radio checked="" disabled="" label="Selectat și blocat"></cor-radio>
+              </div>
+              <span class="label">disabled + checked</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-radio invalid="" checked="" label="Eroare"></cor-radio>
+              </div>
+              <span class="label">invalid</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-radio readonly="" checked="" label="Doar citire"></cor-radio>
+              </div>
+              <span class="label">readonly</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Slots + edge cases</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-radio checked="">
+                  <span slot="label">Persoană fizică</span>
+                  <span slot="supporting-text">Cetățean cu IDNP valid din Republica Moldova.</span>
+                </cor-radio>
+              </div>
+              <span class="label">label + supporting-text slots</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-radio
+                  checked=""
+                  label="Doresc să fiu contactat telefonic în intervalul orar de program al instituției pentru clarificări suplimentare privind dosarul depus"
+                ></cor-radio>
+              </div>
+              <span class="label">long wrapping label</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-radio label="Diacritice ăâîșțĂÂÎȘȚ &amp; <tag>"></cor-radio>
+              </div>
+              <span class="label">diacritics + special chars</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px" dir="rtl">
+                <cor-radio checked="" label="مرحبا بكم"></cor-radio>
+              </div>
+              <span class="label">RTL label</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-phone-input · @age/web-components</title>
+  </head>
+  <body data-component="cor-phone-input">
+    <main class="demo-main">
+      <section id="cor-phone-input" class="component-section">
+        <h2>&lt;cor-phone-input&gt;</h2>
+
+        <div class="subsection">
+          <h3>Types</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-phone-input
+                  type="local"
+                  default-country="MD"
+                  value="+37362123456"
+                  label="Telefon"
+                ></cor-phone-input>
+              </div>
+              <span class="label">local (MD pill)</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-phone-input
+                  type="international"
+                  default-country="MD"
+                  value="+37362123456"
+                  label="Telefon"
+                ></cor-phone-input>
+              </div>
+              <span class="label">international (combobox)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Sizes &amp; variants</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-phone-input size="md" value="+37362123456" label="Telefon"></cor-phone-input>
+              </div>
+              <span class="label">md</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-phone-input size="lg" value="+37362123456" label="Telefon"></cor-phone-input>
+              </div>
+              <span class="label">lg</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-phone-input variant="success" readonly="" value="+37362123456" label="Telefon"></cor-phone-input>
+              </div>
+              <span class="label">variant=success (readonly valid)</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-phone-input variant="warning" value="+37362123456" label="Telefon"></cor-phone-input>
+              </div>
+              <span class="label">variant=warning</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-phone-input variant="destructive" value="+37362123456" label="Telefon"></cor-phone-input>
+              </div>
+              <span class="label">variant=destructive</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Default country &amp; states</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-phone-input
+                  type="international"
+                  default-country="RO"
+                  value="+40712345678"
+                  label="Telefon (RO)"
+                ></cor-phone-input>
+              </div>
+              <span class="label">default-country=RO</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-phone-input
+                  label="Telefon"
+                  helper-text="Vom folosi numărul doar pentru notificări SMS"
+                ></cor-phone-input>
+              </div>
+              <span class="label">helper-text + placeholder</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-phone-input disabled="" value="+37362123456" label="Telefon"></cor-phone-input>
+              </div>
+              <span class="label">disabled</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-phone-input loading="" value="+37362123456" label="Telefon"></cor-phone-input>
+              </div>
+              <span class="label">loading (spinner)</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-phone-input required="" label="Telefon"></cor-phone-input>
+              </div>
+              <span class="label">required (asterisk)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-phone-input value="+3736212" invalid="" label="Telefon"></cor-phone-input>
+              </div>
+              <span class="label">invalid length (default RO error copy)</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-phone-input
+                  invalid=""
+                  value="+3736212"
+                  label="Telefon"
+                  error-text="Numărul trebuie să conțină 8 cifre"
+                ></cor-phone-input>
+              </div>
+              <span class="label">invalid + custom error</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-phone-input readonly="" value="+37362123456" label="Telefon"></cor-phone-input>
+              </div>
+              <span class="label">readonly valid MD (check icon)</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-phone-input
+                  default-country="ZZ"
+                  value="+37362123456"
+                  label="Telefon (țară invalidă)"
+                ></cor-phone-input>
+              </div>
+              <span class="label">invalid default-country → fallback MD</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-phone-input
+                  id="phone-custom"
+                  type="international"
+                  label="Telefon (listă custom)"
+                ></cor-phone-input>
+              </div>
+              <span class="label">custom countries array (MD, RO, UA)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <script type="module">
+        customElements.whenDefined('cor-phone-input').then(() => {
+          const el = document.getElementById('phone-custom');
+          if (el) el.countries = ['MD', 'RO', 'UA'];
+        });
+      </script>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

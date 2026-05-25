@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-checkbox · @age/web-components</title>
+  </head>
+  <body data-component="cor-checkbox">
+    <main class="demo-main">
+      <section id="cor-checkbox" class="component-section">
+        <h2>&lt;cor-checkbox&gt;</h2>
+
+        <div class="subsection">
+          <h3>Sizes</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-checkbox size="md" checked="" label="Medium (24px)"></cor-checkbox>
+              </div>
+              <span class="label">md</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-checkbox size="sm" checked="" label="Small (20px)"></cor-checkbox>
+              </div>
+              <span class="label">sm</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>States</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-checkbox label="Sunt de acord"></cor-checkbox>
+              </div>
+              <span class="label">unchecked</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-checkbox checked="" label="Sunt de acord"></cor-checkbox>
+              </div>
+              <span class="label">checked</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-checkbox indeterminate="" label="Selectează tot"></cor-checkbox>
+              </div>
+              <span class="label">indeterminate</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-checkbox disabled="" label="Indisponibil"></cor-checkbox>
+              </div>
+              <span class="label">disabled</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-checkbox checked="" disabled="" label="Bifat și blocat"></cor-checkbox>
+              </div>
+              <span class="label">disabled + checked</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-checkbox indeterminate="" disabled="" label="Parțial și blocat"></cor-checkbox>
+              </div>
+              <span class="label">disabled + indeterminate</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-checkbox readonly="" checked="" label="Doar citire"></cor-checkbox>
+              </div>
+              <span class="label">readonly</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-checkbox invalid="" required="" label="Trebuie acceptat"></cor-checkbox>
+              </div>
+              <span class="label">invalid + required</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Slots (label + supporting-text)</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-checkbox checked="">
+                  <span slot="label">Notificări prin e-mail</span>
+                  <span slot="supporting-text">Vei primi un rezumat săptămânal al cererilor tale.</span>
+                </cor-checkbox>
+              </div>
+              <span class="label">prop + supporting slot</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-checkbox label="Date personale" supporting-text="Acord pentru prelucrarea datelor."></cor-checkbox>
+              </div>
+              <span class="label">supporting-text prop</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-checkbox
+                  checked=""
+                  label="Confirm că am citit și am înțeles toți termenii și condițiile de utilizare, inclusiv politica de confidențialitate și prelucrarea datelor cu caracter personal conform GDPR"
+                ></cor-checkbox>
+              </div>
+              <span class="label">long wrapping label</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-checkbox label="Diacritice: ăâîșțĂÂÎȘȚ — escape &amp; < > &quot; ' 🎉"></cor-checkbox>
+              </div>
+              <span class="label">diacritics + special chars</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px" dir="rtl">
+                <cor-checkbox checked="" label="مرحبا بكم في الخدمة"></cor-checkbox>
+              </div>
+              <span class="label">RTL label</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-checkbox checked="" aria-label="Checkbox without visible label"></cor-checkbox>
+              </div>
+              <span class="label">no label (aria-label only)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

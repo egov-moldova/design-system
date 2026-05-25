@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-logo · @age/web-components</title>
+  </head>
+  <body data-component="cor-logo">
+    <main class="demo-main">
+      <section id="cor-logo" class="component-section">
+        <h2>&lt;cor-logo&gt;</h2>
+
+        <div class="subsection">
+          <h3>Layouts (service: mpay)</h3>
+          <p class="label">
+            <code>name</code> is a fixed union of <code>{service}-logo-{layout}</code> asset ids — there is no
+            <code>size</code> / width prop; the host follows each SVG's intrinsic dimensions.
+          </p>
+          <div class="row">
+            <div class="cell">
+              <cor-logo name="mpay-logo-logomark-only" aria-label="MPay"></cor-logo>
+              <span class="label">logomark-only</span>
+            </div>
+            <div class="cell">
+              <cor-logo name="mpay-logo-with-name" aria-label="MPay"></cor-logo>
+              <span class="label">with-name</span>
+            </div>
+            <div class="cell">
+              <cor-logo name="mpay-logo-with-verb" aria-label="MPay"></cor-logo>
+              <span class="label">with-verb</span>
+            </div>
+            <div class="cell">
+              <cor-logo name="mpay-logo-with-long-name-medium" aria-label="MPay"></cor-logo>
+              <span class="label">with-long-name-medium</span>
+            </div>
+            <div class="cell">
+              <cor-logo name="mpay-logo-with-long-name-large" aria-label="MPay"></cor-logo>
+              <span class="label">with-long-name-large</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Logomark gallery (all services)</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-logo name="mpay-logo-logomark-only" aria-label="MPay"></cor-logo>
+              <span class="label">mpay</span>
+            </div>
+            <div class="cell">
+              <cor-logo name="mpass-logo-logomark-only" aria-label="MPass"></cor-logo>
+              <span class="label">mpass</span>
+            </div>
+            <div class="cell">
+              <cor-logo name="msign-logo-logomark-only" aria-label="MSign"></cor-logo>
+              <span class="label">msign</span>
+            </div>
+            <div class="cell">
+              <cor-logo name="mconnect-logo-logomark-only" aria-label="MConnect"></cor-logo>
+              <span class="label">mconnect</span>
+            </div>
+            <div class="cell">
+              <cor-logo name="mcloud-logo-logomark-only" aria-label="MCloud"></cor-logo>
+              <span class="label">mcloud</span>
+            </div>
+            <div class="cell">
+              <cor-logo name="mdelivery-logo-logomark-only" aria-label="MDelivery"></cor-logo>
+              <span class="label">mdelivery</span>
+            </div>
+            <div class="cell">
+              <cor-logo name="mdocs-logo-logomark-only" aria-label="MDocs"></cor-logo>
+              <span class="label">mdocs</span>
+            </div>
+            <div class="cell">
+              <cor-logo name="mlearn-logo-logomark-only" aria-label="MLearn"></cor-logo>
+              <span class="label">mlearn</span>
+            </div>
+            <div class="cell">
+              <cor-logo name="mlog-logo-logomark-only" aria-label="MLog"></cor-logo>
+              <span class="label">mlog</span>
+            </div>
+            <div class="cell">
+              <cor-logo name="mnotify-logo-logomark-only" aria-label="MNotify"></cor-logo>
+              <span class="label">mnotify</span>
+            </div>
+            <div class="cell">
+              <cor-logo name="mpower-logo-logomark-only" aria-label="MPower"></cor-logo>
+              <span class="label">mpower</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Accessibility</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-logo name="mpass-logo-logomark-only" aria-label="MPass — autentificare"></cor-logo>
+              <span class="label">aria-label set (role=img)</span>
+            </div>
+            <div class="cell">
+              <cor-logo name="mpass-logo-logomark-only"></cor-logo>
+              <span class="label">no aria-label (decorative / aria-hidden)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div class="row">
+            <div class="cell">
+              <!-- Invalid name: asset missing → console.warn + corLogoError(reason='unknown'); host renders empty + aria-hidden -->
+              <cor-logo name="mfake-logo-logomark-only"></cor-logo>
+              <span class="label">invalid name (renders nothing, warns)</span>
+            </div>
+            <div class="cell">
+              <!-- No name attribute at all → falls back to the default 'mpay-logo-logomark-only' -->
+              <cor-logo></cor-logo>
+              <span class="label">no name → default (mpay logomark)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

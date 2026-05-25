@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-table · @age/web-components</title>
+  </head>
+  <body data-component="cor-table">
+    <main class="demo-main">
+      <section id="cor-table" class="component-section">
+        <h2>&lt;cor-table&gt;</h2>
+
+        <div class="subsection">
+          <h3>Zebra rows, sortable columns, custom status cell (slot)</h3>
+          <p class="label">
+            <code>columns</code> + <code>rows</code> set via JS property. The <code>cell-status</code> slot is matched
+            per-row as <code>cell-status-{index}</code> so each row gets its own <code>cor-tag</code>.
+          </p>
+          <div style="width: 100%; max-width: 760px; overflow: auto">
+            <cor-table id="demo-table-zebra" row-style="zebra" hoverable="" aria-label="Cereri depuse">
+              <cor-tag slot="cell-status-0" variant="status" type="subtle" semantic="success">Aprobat</cor-tag>
+              <cor-tag slot="cell-status-1" variant="status" type="subtle" semantic="warning">În curs</cor-tag>
+              <cor-tag slot="cell-status-2" variant="status" type="subtle" semantic="danger">Refuzat</cor-tag>
+              <cor-tag slot="cell-status-3" variant="status" type="subtle" semantic="brand">Confirmat</cor-tag>
+            </cor-table>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Header styles &amp; row styles</h3>
+          <div class="row" style="align-items: flex-start; gap: var(--spacing-32)">
+            <div class="cell" style="align-items: stretch; min-width: 280px">
+              <cor-table id="demo-table-inverted" header-style="inverted" row-style="divided"></cor-table>
+              <span class="label">header-style=inverted · row-style=divided</span>
+            </div>
+            <div class="cell" style="align-items: stretch; min-width: 280px">
+              <cor-table id="demo-table-borderless" header-style="default" row-style="borderless"></cor-table>
+              <span class="label">header-style=default · row-style=borderless</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Selectable rows (preselected via selectedRows prop)</h3>
+          <div style="width: 100%; max-width: 760px; overflow: auto">
+            <cor-table id="demo-table-select" selectable="" row-style="zebra" aria-label="Documente"></cor-table>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Slots (header-cell-{key} + empty)</h3>
+          <div style="width: 100%; max-width: 760px; overflow: auto">
+            <cor-table id="demo-table-slots" row-style="divided">
+              <span slot="header-cell-amount" style="font-weight: 700">Sumă (MDL) ⤓</span>
+              <span slot="empty" style="display: block; padding: var(--spacing-24); text-align: center">
+                Nu există tranzacții în această perioadă. <a href="#new">Creează una</a>.
+              </span>
+            </cor-table>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+
+          <p class="label">Empty table (<code>rows = []</code>) — built-in default empty state.</p>
+          <div style="width: 100%; max-width: 760px; overflow: auto">
+            <cor-table id="demo-table-empty" row-style="zebra"></cor-table>
+          </div>
+
+          <p class="label" style="margin-top: var(--spacing-16)">
+            No columns / no rows at all (both props unset) — renders an empty shell with only the default empty row.
+          </p>
+          <div style="width: 100%; max-width: 760px; overflow: auto">
+            <cor-table aria-label="Tabel gol"></cor-table>
+          </div>
+
+          <p class="label" style="margin-top: var(--spacing-16)">
+            20+ rows, a very long unbroken cell value, a right-aligned numeric column, diacritics + special chars (<code
+              >&amp; &lt; &gt; " '</code
+            >) and an emoji. Scroll horizontally and vertically.
+          </p>
+          <div style="width: 100%; max-width: 760px; max-height: 360px; overflow: auto">
+            <cor-table
+              id="demo-table-stress"
+              row-style="zebra"
+              hoverable=""
+              sort-column="amount"
+              sort-direction="desc"
+            ></cor-table>
+          </div>
+        </div>
+      </section>
+      <script type="module">
+        customElements.whenDefined('cor-table').then(() => {
+          // 1) Zebra + sortable + custom status slot
+          const zebra = document.getElementById('demo-table-zebra');
+          if (zebra) {
+            zebra.columns = [
+              { key: 'service', label: 'Serviciu', sortable: true },
+              { key: 'applicant', label: 'Solicitant', sortable: true },
+              { key: 'date', label: 'Data', sortable: true, align: 'start' },
+              { key: 'status', label: 'Stare' },
+            ];
+            zebra.rows = [
+              { id: 1, service: 'Cazier judiciar', applicant: 'Ion Creangă', date: '12 mai 2026' },
+              { id: 2, service: 'Certificat de naștere', applicant: 'Ștefan Țurcanu', date: '14 mai 2026' },
+              { id: 3, service: 'Permis de conducere', applicant: 'Ângela Mârza', date: '16 mai 2026' },
+              { id: 4, service: 'Extras cadastral', applicant: 'Răzvan Î. Șușnea', date: '18 mai 2026' },
+            ];
+          }
+
+          // 2a) Inverted header / divided
+          const inverted = document.getElementById('demo-table-inverted');
+          const sampleCols = [
+            { key: 'name', label: 'Nume' },
+            { key: 'role', label: 'Rol' },
+          ];
+          const sampleRows = [
+            { id: 'a', name: 'Maria Popescu', role: 'Administrator' },
+            { id: 'b', name: 'Andrei Rusu', role: 'Operator' },
+            { id: 'c', name: 'Elena Cojocaru', role: 'Vizitator' },
+          ];
+          if (inverted) {
+            inverted.columns = sampleCols;
+            inverted.rows = sampleRows;
+          }
+          const borderless = document.getElementById('demo-table-borderless');
+          if (borderless) {
+            borderless.columns = sampleCols;
+            borderless.rows = sampleRows;
+          }
+
+          // 3) Selectable + preselected
+          const select = document.getElementById('demo-table-select');
+          if (select) {
+            select.columns = [
+              { key: 'doc', label: 'Document' },
+              { key: 'type', label: 'Tip' },
+              { key: 'size', label: 'Mărime', align: 'end', width: '120px' },
+            ];
+            select.rows = [
+              { id: 'd1', doc: 'Contract de muncă', type: 'PDF', size: '240 KB' },
+              { id: 'd2', doc: 'Declarație de venit', type: 'PDF', size: '1,2 MB' },
+              { id: 'd3', doc: 'Adeverință', type: 'DOCX', size: '88 KB' },
+              { id: 'd4', doc: 'Procură', type: 'PDF', size: '512 KB' },
+            ];
+            // controlled selection — preselect two rows
+            select.selectedRows = ['d1', 'd3'];
+          }
+
+          // 4) Slots demo (header-cell + empty fallback shown because rows empty)
+          const slots = document.getElementById('demo-table-slots');
+          if (slots) {
+            slots.columns = [
+              { key: 'ref', label: 'Referință' },
+              { key: 'amount', label: 'Sumă', align: 'end' },
+            ];
+            slots.rows = [];
+          }
+
+          // 5a) Edge: explicit empty array
+          const empty = document.getElementById('demo-table-empty');
+          if (empty) {
+            empty.columns = [
+              { key: 'a', label: 'Coloană A' },
+              { key: 'b', label: 'Coloană B' },
+            ];
+            empty.rows = [];
+          }
+
+          // 5b) Edge: 20+ rows, overflow, numeric right-align, special chars
+          const stress = document.getElementById('demo-table-stress');
+          if (stress) {
+            stress.columns = [
+              { key: 'id', label: '#', align: 'end', width: '64px' },
+              { key: 'label', label: 'Denumire tranzacție' },
+              { key: 'note', label: 'Notă', sortable: true },
+              { key: 'amount', label: 'Sumă (MDL)', align: 'end', sortable: true, width: '140px' },
+            ];
+            const longWord =
+              'SupercalifragilisticexpialidociousIdentificatorTranzactieFoarteFoarteLungFaraSpatii1234567890';
+            const rows = [];
+            for (let i = 1; i <= 24; i++) {
+              rows.push({
+                id: i,
+                label: i === 3 ? longWord : `Plată serviciu ${i} — diacritice ăâîșț & <tag> "ghilimele" 🧾`,
+                note: i % 4 === 0 ? 'Recurentă' : 'Unică',
+                amount: (i * 137.5).toLocaleString('ro-RO', { minimumFractionDigits: 2 }),
+              });
+            }
+            stress.rows = rows;
+          }
+        });
+      </script>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>
