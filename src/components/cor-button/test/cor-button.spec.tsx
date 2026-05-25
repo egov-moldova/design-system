@@ -24,12 +24,18 @@ describe('cor-button', () => {
 
   describe('icon-only prop', () => {
     it('reflects icon-only attribute when set', async () => {
+      // Stencil's mock-doc doesn't fire `slotchange` before componentDidLoad,
+      // so `hasIcon` stays false and the icon-only contract logs a warning even
+      // though the test renders a real `<cor-icon slot="icon">`. Silence the
+      // environment artifact — this test asserts attribute reflection only.
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { root } = await render(
         <cor-button iconOnly label="Confirm">
           <cor-icon slot="icon" name="arrow-right" size={20}></cor-icon>
         </cor-button>,
       );
       expect(root?.hasAttribute('icon-only')).toBe(true);
+      warn.mockRestore();
     });
 
     it('does not reflect icon-only attribute when prop is false', async () => {
@@ -590,6 +596,8 @@ describe('cor-button', () => {
     });
 
     it('accepts an icon-only configuration with a labelled `slot="icon"`', async () => {
+      // Mock-doc slot timing — see note on the icon-only attribute test.
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { root } = await render(
         <cor-button iconOnly label="Navigate forward">
           <cor-icon slot="icon" name="arrow-right" size={20}></cor-icon>
@@ -597,6 +605,7 @@ describe('cor-button', () => {
       );
       const control = queryControl(root);
       expect(control?.getAttribute('aria-label')).toBe('Navigate forward');
+      warn.mockRestore();
     });
   });
 
