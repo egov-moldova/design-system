@@ -533,14 +533,14 @@ export const WithCurrencyIcon: Story = {
         cell(
           'icon-start + suffix',
           /*html*/ `<cor-numeric-input size="lg" label="Plată" value="1250" step="10" precision="2">
-            <cor-icon slot="icon-start" name="wallet" size="24" color="currentColor"></cor-icon>
+            <cor-icon slot="icon-start" name="wallet" size="24"></cor-icon>
             <span slot="suffix">lei</span>
           </cor-numeric-input>`,
         ),
         cell(
           'icon-start only',
           /*html*/ `<cor-numeric-input size="lg" label="Cantitate" value="3">
-            <cor-icon slot="icon-start" name="group" size="24" color="currentColor"></cor-icon>
+            <cor-icon slot="icon-start" name="group" size="24"></cor-icon>
           </cor-numeric-input>`,
         ),
       ].join(''),

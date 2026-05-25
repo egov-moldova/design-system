@@ -595,7 +595,7 @@ export class CorNumericInput {
                 onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
                 onClick={this.handleStepClick('up')}
               >
-                <cor-icon name="chevron-top" size={stepperIconSize} color="currentColor" />
+                <cor-icon name="chevron-top" size={stepperIconSize} />
               </button>
               <button
                 type="button"
@@ -607,7 +607,7 @@ export class CorNumericInput {
                 onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
                 onClick={this.handleStepClick('down')}
               >
-                <cor-icon name="chevron-bottom" size={stepperIconSize} color="currentColor" />
+                <cor-icon name="chevron-bottom" size={stepperIconSize} />
               </button>
             </div>
           ) : null}

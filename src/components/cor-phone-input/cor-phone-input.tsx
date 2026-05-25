@@ -896,7 +896,7 @@ export class CorPhoneInput {
                 <span class="country-trigger-code" part="country-trigger-code">
                   {country.code}
                 </span>
-                <cor-icon class="country-trigger-chevron" name="chevron-bottom" size={16} color="currentColor" />
+                <cor-icon class="country-trigger-chevron" name="chevron-bottom" size={16} />
               </button>
             ) : (
               <span {...triggerCommon} aria-label={triggerAriaLabel} role="img">
@@ -992,9 +992,7 @@ export class CorPhoneInput {
                       <span class="option-flag" aria-hidden="true" innerHTML={opt.flag} />
                       <span class="option-name">{opt.nameRo}</span>
                       <span class="option-code">{opt.code}</span>
-                      {isSelected ? (
-                        <cor-icon class="option-check" name="checkmark-small" size={16} color="currentColor" />
-                      ) : null}
+                      {isSelected ? <cor-icon class="option-check" name="checkmark-small" size={16} /> : null}
                     </div>
                   );
                 })

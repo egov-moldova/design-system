@@ -143,9 +143,7 @@ export class CorAvatar {
               {this.resolvedInitials}
             </span>
           )}
-          {mode === 'icon' && (
-            <cor-icon class="icon" name={this.iconName} size={iconSize} color="currentColor" exportparts="svg-icon" />
-          )}
+          {mode === 'icon' && <cor-icon class="icon" name={this.iconName} size={iconSize} exportparts="svg-icon" />}
         </span>
         <span class="badge-slot" part="badge">
           <slot name="badge" />

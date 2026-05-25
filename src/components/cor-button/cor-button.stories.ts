@@ -63,7 +63,7 @@ const docsSourceAllSizes = BUTTON_SIZES.map(s => /*html*/ `<cor-button size="${s
 const docsSourceAllShapes = /*html*/ `<cor-button shape="rectangular">Rectangular</cor-button>
 <cor-button shape="circular">Circular pill</cor-button>
 <cor-button shape="circular" icon-only label="Navigate forward">
-  <cor-icon slot="icon" name="arrow-right" size="20" color="currentColor"></cor-icon>
+  <cor-icon slot="icon" name="arrow-right" size="20"></cor-icon>
 </cor-button>`;
 
 const docsSourceSlotVariations = /*html*/ /*html*/ `<!-- text-only -->
@@ -71,26 +71,26 @@ const docsSourceSlotVariations = /*html*/ /*html*/ `<!-- text-only -->
 
 <!-- icon-start -->
 <cor-button>
-  <cor-icon slot="icon-start" name="arrow-left" size="20" color="currentColor"></cor-icon>
+  <cor-icon slot="icon-start" name="arrow-left" size="20"></cor-icon>
   Leading icon
 </cor-button>
 
 <!-- icon-end -->
 <cor-button>
   Trailing icon
-  <cor-icon slot="icon-end" name="arrow-right" size="20" color="currentColor"></cor-icon>
+  <cor-icon slot="icon-end" name="arrow-right" size="20"></cor-icon>
 </cor-button>
 
 <!-- icon-start + icon-end -->
 <cor-button>
   Leading + Trailing icon
-  <cor-icon slot="icon-start" name="arrow-left" size="20" color="currentColor"></cor-icon>
-  <cor-icon slot="icon-end" name="arrow-right" size="20" color="currentColor"></cor-icon>
+  <cor-icon slot="icon-start" name="arrow-left" size="20"></cor-icon>
+  <cor-icon slot="icon-end" name="arrow-right" size="20"></cor-icon>
 </cor-button>
 
 <!-- icon-only (requires \`label\` for screen readers) -->
 <cor-button icon-only label="Navigate forward">
-  <cor-icon slot="icon" name="arrow-right" size="20" color="currentColor"></cor-icon>
+  <cor-icon slot="icon" name="arrow-right" size="20"></cor-icon>
 </cor-button>`;
 
 const docsSourceLoading = BUTTON_VARIANTS.map(v => `<cor-button variant="${v}" loading>${v}</cor-button>`).join('\n');
@@ -159,7 +159,7 @@ const renderAllShapes = () => /*html*/ `
     </div>
     <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-4);">
       <cor-button variant="primary" size="md" shape="circular" icon-only label="Navigate forward">
-        <cor-icon slot="icon" name="arrow-right" size="20" color="currentColor"></cor-icon>
+        <cor-icon slot="icon" name="arrow-right" size="20"></cor-icon>
       </cor-button>
       <span style="${cellLabelStyle}">circular (icon-only)</span>
     </div>
@@ -318,7 +318,7 @@ const renderSlotVariations = () => /*html*/ `
     </div>
     <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-4);">
       <cor-button variant="primary" size="md">
-        <cor-icon slot="icon-start" name="arrow-left" size="20" color="currentColor"></cor-icon>
+        <cor-icon slot="icon-start" name="arrow-left" size="20"></cor-icon>
         Leading icon
       </cor-button>
       <span style="${cellLabelStyle}">icon-start</span>
@@ -326,21 +326,21 @@ const renderSlotVariations = () => /*html*/ `
     <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-4);">
       <cor-button variant="primary" size="md">
         Trailing icon
-        <cor-icon slot="icon-end" name="arrow-right" size="20" color="currentColor"></cor-icon>
+        <cor-icon slot="icon-end" name="arrow-right" size="20"></cor-icon>
       </cor-button>
       <span style="${cellLabelStyle}">icon-end</span>
     </div>
     <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-4);">
       <cor-button variant="primary" size="md">
         Leading + Trailing icon
-        <cor-icon slot="icon-start" name="arrow-left" size="20" color="currentColor"></cor-icon>
-        <cor-icon slot="icon-end" name="arrow-right" size="20" color="currentColor"></cor-icon>
+        <cor-icon slot="icon-start" name="arrow-left" size="20"></cor-icon>
+        <cor-icon slot="icon-end" name="arrow-right" size="20"></cor-icon>
       </cor-button>
       <span style="${cellLabelStyle}">icon-start + icon-end</span>
     </div>
     <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-4);">
       <cor-button variant="primary" size="md" icon-only label="Navigate forward">
-        <cor-icon slot="icon" name="arrow-right" size="20" color="currentColor"></cor-icon>
+        <cor-icon slot="icon" name="arrow-right" size="20"></cor-icon>
       </cor-button>
       <span style="${cellLabelStyle}">icon-only</span>
     </div>
@@ -385,17 +385,17 @@ const renderWidthBoundaries = () => {
       <p style="${sectionLabelStyle}">Truncation preserves icons — only the label clips; icon-start / icon-end stay intact.</p>
       <div style="display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-8);">
         <cor-button variant="primary" size="md">
-          <cor-icon slot="icon-start" name="arrow-left" size="20" color="currentColor"></cor-icon>
+          <cor-icon slot="icon-start" name="arrow-left" size="20"></cor-icon>
           ${longLabel}
         </cor-button>
         <cor-button variant="primary" size="md">
           ${longLabel}
-          <cor-icon slot="icon-end" name="arrow-right" size="20" color="currentColor"></cor-icon>
+          <cor-icon slot="icon-end" name="arrow-right" size="20"></cor-icon>
         </cor-button>
         <cor-button variant="primary" size="md">
-          <cor-icon slot="icon-start" name="arrow-left" size="20" color="currentColor"></cor-icon>
+          <cor-icon slot="icon-start" name="arrow-left" size="20"></cor-icon>
           ${longLabel}
-          <cor-icon slot="icon-end" name="arrow-right" size="20" color="currentColor"></cor-icon>
+          <cor-icon slot="icon-end" name="arrow-right" size="20"></cor-icon>
         </cor-button>
       </div>
     </div>
@@ -414,9 +414,9 @@ const docsSourceWidthBoundaries = /*html*/ `<!-- Min-width — short labels held
 
 <!-- Truncation preserves icons -->
 <cor-button>
-  <cor-icon slot="icon-start" name="arrow-left" size="20" color="currentColor"></cor-icon>
+  <cor-icon slot="icon-start" name="arrow-left" size="20"></cor-icon>
   Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore
-  <cor-icon slot="icon-end" name="arrow-right" size="20" color="currentColor"></cor-icon>
+  <cor-icon slot="icon-end" name="arrow-right" size="20"></cor-icon>
 </cor-button>`;
 
 const renderTouchTarget = () => {
@@ -474,7 +474,7 @@ const renderTouchTarget = () => {
         <div class="touch-cell">
           <span class="touch-wrap" data-shape="icon-only" style="--btn-h: 32px; --btn-t: 40px;">
             <cor-button size="sm" shape="circular" icon-only label="Navigate forward">
-              <cor-icon slot="icon" name="arrow-right" size="16" color="currentColor"></cor-icon>
+              <cor-icon slot="icon" name="arrow-right" size="16"></cor-icon>
             </cor-button>
           </span>
           <span style="${cellLabelStyle}">sm — 32 → 40 (both axes)</span>
@@ -482,14 +482,14 @@ const renderTouchTarget = () => {
         <div class="touch-cell">
           <span class="touch-wrap" data-shape="icon-only" style="--btn-h: 40px; --btn-t: 48px;">
             <cor-button size="md" shape="circular" icon-only label="Navigate forward">
-              <cor-icon slot="icon" name="arrow-right" size="20" color="currentColor"></cor-icon>
+              <cor-icon slot="icon" name="arrow-right" size="20"></cor-icon>
             </cor-button>
           </span>
           <span style="${cellLabelStyle}">md — 40 → 48 (both axes)</span>
         </div>
         <div class="touch-cell">
           <cor-button size="lg" shape="circular" icon-only label="Navigate forward">
-            <cor-icon slot="icon" name="arrow-right" size="20" color="currentColor"></cor-icon>
+            <cor-icon slot="icon" name="arrow-right" size="20"></cor-icon>
           </cor-button>
           <span style="${cellLabelStyle}">lg — 48 / 48 (no expansion)</span>
         </div>
@@ -515,10 +515,10 @@ const docsSourceTouchTarget = /*html*/ `<!-- Touch-target expansion is driven by
 
 <!-- Icon-only -->
 <cor-button size="sm" shape="circular" icon-only label="Navigate forward">
-  <cor-icon slot="icon" name="arrow-right" size="16" color="currentColor"></cor-icon>
+  <cor-icon slot="icon" name="arrow-right" size="16"></cor-icon>
 </cor-button>
 <cor-button size="md" shape="circular" icon-only label="Navigate forward">
-  <cor-icon slot="icon" name="arrow-right" size="20" color="currentColor"></cor-icon>
+  <cor-icon slot="icon" name="arrow-right" size="20"></cor-icon>
 </cor-button>`;
 
 const renderLoadingPlayground = () => /*html*/ `
@@ -901,7 +901,7 @@ const renderFullWidth = () => /*html*/ `
     </div>
     <div style="width: 320px;">
       <cor-button variant="secondary" full-width>
-        <cor-icon slot="icon-start" name="arrow-left" size="20" color="currentColor"></cor-icon>
+        <cor-icon slot="icon-start" name="arrow-left" size="20"></cor-icon>
         Back to dashboard
       </cor-button>
     </div>
@@ -915,7 +915,7 @@ const docsSourceFullWidth = /*html*/ `<!-- Add the \`full-width\` attribute to e
 
 <div style="width: 320px;">
   <cor-button variant="secondary" full-width>
-    <cor-icon slot="icon-start" name="arrow-left" size="20" color="currentColor"></cor-icon>
+    <cor-icon slot="icon-start" name="arrow-left" size="20"></cor-icon>
     Back to dashboard
   </cor-button>
 </div>`;

@@ -37,9 +37,9 @@ export class CorIcon {
 
   /**
    * Color token suffix (mapped to `--color-{value}`), or `currentColor` to inherit text color.
-   * @default 'icon-base-secondary'
+   * @default 'currentColor'
    */
-  @Prop({ reflect: true }) color: string = 'icon-base-secondary';
+  @Prop({ reflect: true }) color: string = 'currentColor';
 
   /**
    * Enables interactive treatment (cursor, hover, focus ring, keyboard activation).

@@ -97,7 +97,7 @@ type ComponentArgs = {
 const renderComponent = (args: ComponentArgs) => {
   const disabled = args.disabled ? 'disabled' : '';  // ✅ '' not 'false'
   const leftIcon = args.leftIconName
-    ? /*html*/ `<cor-icon slot="icon-left" name="${args.leftIconName}" color="currentColor"></cor-icon>`
+    ? /*html*/ `<cor-icon slot="icon-left" name="${args.leftIconName}"></cor-icon>`
     : '';
 
   return /*html*/ `

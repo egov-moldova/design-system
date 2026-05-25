@@ -525,7 +525,7 @@ export class CorSelectInput {
             </button>
 
             <span class="control-icon control-icon-end" aria-hidden="true">
-              <cor-icon class="chevron" name="chevron-bottom" size={20} color="currentColor" />
+              <cor-icon class="chevron" name="chevron-bottom" size={20} />
             </span>
           </div>
 
@@ -565,9 +565,7 @@ export class CorSelectInput {
                     onMouseEnter={opt.disabled ? undefined : this.handleOptionPointerEnter(index)}
                   >
                     <span class="option-label">{opt.label}</span>
-                    {isSelected ? (
-                      <cor-icon class="option-check" name="checkmark-small" size={20} color="currentColor" />
-                    ) : null}
+                    {isSelected ? <cor-icon class="option-check" name="checkmark-small" size={20} /> : null}
                   </div>
                 );
               })

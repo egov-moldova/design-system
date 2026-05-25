@@ -421,7 +421,7 @@ export class CorSearchInputRectangular {
         <div class="control" part="control">
           <span class="control-icon control-icon-start" aria-hidden="true">
             <slot name="icon-start">
-              <cor-icon name={this.iconName} size={iconSize} color="currentColor" />
+              <cor-icon name={this.iconName} size={iconSize} />
             </slot>
           </span>
 
@@ -475,7 +475,7 @@ export class CorSearchInputRectangular {
               onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
               onClick={this.handleClearClick}
             >
-              <cor-icon name="cross-small" size={iconSize} color="currentColor" />
+              <cor-icon name="cross-small" size={iconSize} />
             </button>
           ) : null}
 
@@ -490,7 +490,7 @@ export class CorSearchInputRectangular {
               onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
               onClick={this.handleSubmitClick}
             >
-              <cor-icon name="arrow-right" size={submitIconSize} color="currentColor" />
+              <cor-icon name="arrow-right" size={submitIconSize} />
             </button>
           ) : null}
         </div>

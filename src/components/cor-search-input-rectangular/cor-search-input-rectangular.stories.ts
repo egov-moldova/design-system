@@ -370,7 +370,7 @@ export const WithCustomIcon: Story = {
         cell(
           'icon-start slot override',
           /*html*/ `<cor-search-input-rectangular size="lg" placeholder="Filtrează…">
-            <cor-icon slot="icon-start" name="filter" size="24" color="currentColor"></cor-icon>
+            <cor-icon slot="icon-start" name="filter" size="24"></cor-icon>
           </cor-search-input-rectangular>`,
         ),
         cell(
@@ -384,7 +384,7 @@ export const WithCustomIcon: Story = {
     docs: {
       source: {
         code: [
-          '<cor-search-input-rectangular size="lg" placeholder="Filtrează…"><cor-icon slot="icon-start" name="filter" size="24" color="currentColor"></cor-icon></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular size="lg" placeholder="Filtrează…"><cor-icon slot="icon-start" name="filter" size="24"></cor-icon></cor-search-input-rectangular>',
           '<cor-search-input-rectangular size="lg" icon-name="document" placeholder="Caută în documente"></cor-search-input-rectangular>',
         ].join('\n'),
       },

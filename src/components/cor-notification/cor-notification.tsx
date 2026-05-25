@@ -172,7 +172,7 @@ export class CorNotification {
       <Host class={hostClasses} role={role} aria-live={ariaLive} aria-atomic="true">
         <span class="icon" aria-hidden="true">
           <slot name="icon-start" onSlotchange={this.onIconSlotChange}>
-            <cor-icon name={iconName} size={24} color="currentColor"></cor-icon>
+            <cor-icon name={iconName} size={24} />
           </slot>
         </span>
 

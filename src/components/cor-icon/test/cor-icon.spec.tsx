@@ -48,7 +48,7 @@ describe('cor-icon', () => {
     await waitForChanges();
 
     expect(root?.getAttribute('size')).toBe('16');
-    expect(root?.getAttribute('color')).toBe('icon-base-secondary');
+    expect(root?.getAttribute('color')).toBe('currentColor');
     expect(root?.shadowRoot?.querySelector('.svg-icon')).toBeTruthy();
   });
 
