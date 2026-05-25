@@ -30,28 +30,39 @@ function collectPages() {
 const auditScript = () => {
   const rows = [];
   const seen = new Set();
-  for (const row of document.querySelectorAll('.demo-main .row, .demo-main .row--auto-fit, .demo-main .stack, .demo-main .grid')) {
+  for (const row of document.querySelectorAll(
+    '.demo-main .row, .demo-main .row--auto-fit, .demo-main .stack, .demo-main .grid',
+  )) {
     if (seen.has(row)) continue;
     seen.add(row);
-    const h3 = row.closest('.subsection')?.querySelector('h3')?.textContent?.trim()
-            || row.closest('.component-section')?.querySelector('h2')?.textContent?.trim()
-            || '(no heading)';
+    const h3 =
+      row.closest('.subsection')?.querySelector('h3')?.textContent?.trim() ||
+      row.closest('.component-section')?.querySelector('h2')?.textContent?.trim() ||
+      '(no heading)';
     const rRect = row.getBoundingClientRect();
     const childRects = [...row.children].map(c => ({ el: c, r: c.getBoundingClientRect() }));
     const issues = [];
 
     // Child overflow vs row
     childRects.forEach(({ el, r }, i) => {
-      if (r.right > rRect.right + 1) issues.push({ type: 'child-overflow-right', child: i, by: Math.round(r.right - rRect.right) });
-      if (r.left < rRect.left - 1)   issues.push({ type: 'child-overflow-left',  child: i, by: Math.round(rRect.left - r.left) });
+      if (r.right > rRect.right + 1)
+        issues.push({ type: 'child-overflow-right', child: i, by: Math.round(r.right - rRect.right) });
+      if (r.left < rRect.left - 1)
+        issues.push({ type: 'child-overflow-left', child: i, by: Math.round(rRect.left - r.left) });
     });
 
     // Sibling overlap (same top y, x ranges intersect)
     for (let i = 0; i < childRects.length; i++) {
       for (let j = i + 1; j < childRects.length; j++) {
-        const a = childRects[i].r, b = childRects[j].r;
+        const a = childRects[i].r,
+          b = childRects[j].r;
         if (Math.round(a.top) === Math.round(b.top) && a.left < b.right - 1 && a.right > b.left + 1) {
-          issues.push({ type: 'sibling-overlap', a: i, b: j, overlap: Math.round(Math.min(a.right, b.right) - Math.max(a.left, b.left)) });
+          issues.push({
+            type: 'sibling-overlap',
+            a: i,
+            b: j,
+            overlap: Math.round(Math.min(a.right, b.right) - Math.max(a.left, b.left)),
+          });
         }
       }
     }
@@ -82,9 +93,10 @@ const auditScript = () => {
   }
 
   const main = document.querySelector('.demo-main');
-  const mainOverflow = main && main.scrollWidth > main.clientWidth + 1
-    ? { type: 'horizontal-scroll', by: main.scrollWidth - main.clientWidth }
-    : null;
+  const mainOverflow =
+    main && main.scrollWidth > main.clientWidth + 1
+      ? { type: 'horizontal-scroll', by: main.scrollWidth - main.clientWidth }
+      : null;
 
   return { rows, mainOverflow, totalRows: document.querySelectorAll('.demo-main .row').length };
 };
@@ -120,7 +132,10 @@ const auditScript = () => {
   } else {
     for (const r of report) {
       console.log(`\n📄 ${r.url} @ ${r.viewport}`);
-      if (r.error) { console.log(`  ERROR: ${r.error}`); continue; }
+      if (r.error) {
+        console.log(`  ERROR: ${r.error}`);
+        continue;
+      }
       if (r.mainOverflow) console.log(`  ⚠️  main scrollWidth overflow: +${r.mainOverflow.by}px`);
       for (const row of r.rows) {
         console.log(`  • [${row.container}] "${row.heading}" (${row.childCount} children)`);
@@ -131,4 +146,7 @@ const auditScript = () => {
     }
   }
   console.log(`\n${report.length} pages with violations / ${pages.length} total`);
-})().catch(e => { console.error(e); process.exit(1); });
+})().catch(e => {
+  console.error(e);
+  process.exit(1);
+});
