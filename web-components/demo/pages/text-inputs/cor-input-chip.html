@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-input-chip · @age/web-components</title>
+  </head>
+  <body data-component="cor-input-chip">
+    <main class="demo-main">
+      <section id="cor-input-chip" class="component-section">
+        <h2>&lt;cor-input-chip&gt;</h2>
+        <p style="margin: 0; max-width: 640px">
+          <code>chips</code> is a <code>string[]</code> prop — Stencil only deserializes string/number/boolean
+          attributes, so it MUST be set as a JS property after the element is defined (see co-located scripts).
+        </p>
+
+        <div class="subsection">
+          <h3>Variants &amp; prefilled chips (prop-driven)</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-input-chip
+                  id="chip-default"
+                  variant="default"
+                  label="Destinatari"
+                  placeholder="Adăugați email…"
+                ></cor-input-chip>
+              </div>
+              <span class="label">default + prefilled</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-input-chip
+                  id="chip-destructive"
+                  variant="destructive"
+                  invalid=""
+                  label="Etichete"
+                  error-text="Cel puțin o etichetă este nevalidă."
+                ></cor-input-chip>
+              </div>
+              <span class="label">destructive + invalid + error-text</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Sizes</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-input-chip id="chip-md" size="md" label="md"></cor-input-chip>
+              </div>
+              <span class="label">md</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-input-chip id="chip-lg" size="lg" label="lg"></cor-input-chip>
+              </div>
+              <span class="label">lg</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Validation &amp; limits</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-input-chip
+                  id="chip-max"
+                  max-chips="3"
+                  label="Max 3 etichete"
+                  helper-text="Adăugarea peste 3 este respinsă"
+                ></cor-input-chip>
+              </div>
+              <span class="label">max-chips=3 (input disabled at limit)</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-input-chip
+                  id="chip-pattern"
+                  label="Doar email-uri"
+                  validate-pattern="^[^@\s]+@[^@\s]+\.[^@\s]+$"
+                  placeholder="nume@domeniu.md"
+                  helper-text="Pattern: must match an email"
+                ></cor-input-chip>
+              </div>
+              <span class="label">validate-pattern (email)</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-input-chip
+                  id="chip-sep"
+                  label="Separator ';'"
+                  separators=";"
+                  placeholder="a; b; c"
+                  helper-text="Type ; or Enter to confirm"
+                ></cor-input-chip>
+              </div>
+              <span class="label">custom separators</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>States</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-input-chip id="chip-disabled" disabled="" label="Dezactivat"></cor-input-chip>
+              </div>
+              <span class="label">disabled</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-input-chip id="chip-readonly" readonly="" label="Doar citire"></cor-input-chip>
+              </div>
+              <span class="label">readonly</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-input-chip
+                  id="chip-required"
+                  required=""
+                  label="Obligatoriu"
+                  placeholder="Adăugați cel puțin una"
+                ></cor-input-chip>
+              </div>
+              <span class="label">required + empty</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-input-chip id="chip-many" label="Multe etichete (15+ wrapping)"></cor-input-chip>
+              </div>
+              <span class="label">15+ chips wrapping</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-input-chip id="chip-long" label="O etichetă foarte lungă"></cor-input-chip>
+              </div>
+              <span class="label">single very long chip</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-input-chip id="chip-special" label="Diacritice, special chars &amp; emoji"></cor-input-chip>
+              </div>
+              <span class="label">diacritics + special + emoji + RTL</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-input-chip id="chip-empty" label="Empty array []" placeholder="Niciun chip încă"></cor-input-chip>
+              </div>
+              <span class="label">empty array</span>
+            </div>
+          </div>
+        </div>
+
+        <script type="module">
+          customElements.whenDefined('cor-input-chip').then(() => {
+            const set = (id, chips) => {
+              const el = document.getElementById(id);
+              if (el) el.chips = chips;
+            };
+            set('chip-default', ['ion@gov.md', 'maria@gov.md']);
+            set('chip-destructive', ['valid@gov.md', 'gresit']);
+            set('chip-md', ['Acasă', 'Servicii']);
+            set('chip-lg', ['Pașaport', 'Buletin', 'Permis']);
+            set('chip-max', ['unu', 'doi', 'trei']); // at the max-chips=3 limit
+            set('chip-pattern', ['ion@gov.md']);
+            set('chip-sep', ['alfa', 'beta']);
+            set('chip-disabled', ['blocat', 'inactiv']);
+            set('chip-readonly', ['citire', 'fixă']);
+            set('chip-many', [
+              'Acasă',
+              'Servicii',
+              'Pașaport',
+              'Buletin',
+              'Permis',
+              'Adeverință',
+              'Certificat',
+              'Cerere',
+              'Dosar',
+              'Hotărâre',
+              'Decizie',
+              'Notă',
+              'Factură',
+              'Chitanță',
+              'Aviz',
+              'Contract',
+              'Anexă',
+              'Raport',
+            ]);
+            set('chip-long', ['supercalifragilisticexpialidocious-aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']);
+            set('chip-special', ['Chișinău ăâîșțĂÂÎȘȚ', '& < > " \'', '🎉 emoji', 'مرحبا']);
+            // chip-empty / chip-required deliberately left as [] (default).
+          });
+        </script>
+      </section>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

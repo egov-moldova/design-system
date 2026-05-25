@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-tag · @age/web-components</title>
+  </head>
+  <body data-component="cor-tag">
+    <main class="demo-main">
+      <section id="cor-tag" class="component-section">
+        <h2>&lt;cor-tag&gt;</h2>
+
+        <div class="subsection">
+          <h3>Status tag — type × semantic matrix</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-tag variant="status" type="subtle" semantic="neutral" label="Neutru"></cor-tag>
+              <span class="label">subtle · neutral</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="subtle" semantic="info" label="Info"></cor-tag>
+              <span class="label">subtle · info</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="subtle" semantic="accent" label="Accent"></cor-tag>
+              <span class="label">subtle · accent</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="subtle" semantic="success" label="Activ"></cor-tag>
+              <span class="label">subtle · success</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="subtle" semantic="warning" label="În așteptare"></cor-tag>
+              <span class="label">subtle · warning</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="subtle" semantic="brand" label="Brand"></cor-tag>
+              <span class="label">subtle · brand</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="subtle" semantic="danger" label="Refuzat"></cor-tag>
+              <span class="label">subtle · danger</span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="cell">
+              <cor-tag variant="status" type="strong" semantic="neutral" label="Neutru"></cor-tag>
+              <span class="label">strong · neutral</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="strong" semantic="info" label="Info"></cor-tag>
+              <span class="label">strong · info</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="strong" semantic="accent" label="Accent"></cor-tag>
+              <span class="label">strong · accent</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="strong" semantic="success" label="Activ"></cor-tag>
+              <span class="label">strong · success</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="strong" semantic="warning" label="În așteptare"></cor-tag>
+              <span class="label">strong · warning</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="strong" semantic="brand" label="Brand"></cor-tag>
+              <span class="label">strong · brand</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="strong" semantic="danger" label="Refuzat"></cor-tag>
+              <span class="label">strong · danger</span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="cell">
+              <cor-tag variant="status" type="outlined" semantic="neutral" label="Neutru"></cor-tag>
+              <span class="label">outlined · neutral</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="outlined" semantic="info" label="Info"></cor-tag>
+              <span class="label">outlined · info</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="outlined" semantic="accent" label="Accent"></cor-tag>
+              <span class="label">outlined · accent</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="outlined" semantic="success" label="Activ"></cor-tag>
+              <span class="label">outlined · success</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="outlined" semantic="warning" label="În așteptare"></cor-tag>
+              <span class="label">outlined · warning</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="outlined" semantic="brand" label="Brand"></cor-tag>
+              <span class="label">outlined · brand</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="outlined" semantic="danger" label="Refuzat"></cor-tag>
+              <span class="label">outlined · danger</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Info variant + sizes</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-tag variant="info" type="subtle" semantic="info" size="md" label="Metadata"></cor-tag>
+              <span class="label">info · md</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="info" type="subtle" semantic="info" size="sm" label="Metadata"></cor-tag>
+              <span class="label">info · sm</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="strong" semantic="success" size="sm" label="Activ"></cor-tag>
+              <span class="label">status strong · sm</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Slots — icon-start / icon-end</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-tag variant="status" type="subtle" semantic="success">
+                <cor-icon slot="icon-start" name="checkmark-large" size="16"></cor-icon>
+                Verificat
+              </cor-tag>
+              <span class="label">icon-start + slotted label</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="outlined" semantic="info">
+                Detalii
+                <cor-icon slot="icon-end" name="chevron-right" size="16"></cor-icon>
+              </cor-tag>
+              <span class="label">icon-end</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="strong" semantic="brand">
+                <cor-icon slot="icon-start" name="circle-checkmark-filled" size="16"></cor-icon>
+                Salvat
+                <cor-icon slot="icon-end" name="cross-large" size="16"></cor-icon>
+              </cor-tag>
+              <span class="label">both icons</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div class="row">
+            <div class="cell" style="width: 100%; max-width: 260px">
+              <cor-tag
+                variant="status"
+                type="subtle"
+                semantic="info"
+                label="Supercalifragilisticexpialidocious-fără-spații-deloc"
+              ></cor-tag>
+              <span class="label">long unbroken label</span>
+            </div>
+            <div class="cell" style="width: 100%; max-width: 260px">
+              <cor-tag
+                variant="status"
+                type="subtle"
+                semantic="warning"
+                label="Document în curs de procesare și verificare la autoritatea competentă"
+              ></cor-tag>
+              <span class="label">long multi-word label</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="subtle" semantic="neutral"></cor-tag>
+              <span class="label">empty (no label, no slot)</span>
+            </div>
+            <div class="cell">
+              <cor-tag variant="status" type="strong" semantic="danger" label='&amp; < > " emoji 🚨'></cor-tag>
+              <span class="label">special chars + emoji</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

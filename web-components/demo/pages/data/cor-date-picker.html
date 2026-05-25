@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-date-picker · @age/web-components</title>
+  </head>
+  <body data-component="cor-date-picker">
+    <main class="demo-main">
+      <section id="cor-date-picker" class="component-section">
+        <h2>&lt;cor-date-picker&gt;</h2>
+        <p class="label">
+          Renders inline (no trigger/popover). <code>value</code> is a string in <code>single</code> mode and an array
+          in <code>range</code>/<code>multi</code> — array values must be set via JS property.
+        </p>
+
+        <div class="subsection">
+          <h3>Modes</h3>
+          <div class="row" style="align-items: flex-start; gap: var(--spacing-32)">
+            <div class="cell">
+              <cor-date-picker id="dp-single" mode="single" value="2026-05-15" locale="ro-RO"></cor-date-picker>
+              <span class="label">single · value="2026-05-15" (attribute)</span>
+            </div>
+            <div class="cell">
+              <cor-date-picker id="dp-range" mode="range"></cor-date-picker>
+              <span class="label">range · preselected via rangeStart/rangeEnd</span>
+            </div>
+            <div class="cell">
+              <cor-date-picker id="dp-multi" mode="multi"></cor-date-picker>
+              <span class="label">multi · value=[…] via JS property</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Breakpoints</h3>
+          <div class="row" style="align-items: flex-start; gap: var(--spacing-32)">
+            <div class="cell">
+              <cor-date-picker mode="single" breakpoint="desktop" locale="ro-RO"></cor-date-picker>
+              <span class="label">desktop</span>
+            </div>
+            <div class="cell">
+              <cor-date-picker mode="single" breakpoint="docked" locale="ro-RO"></cor-date-picker>
+              <span class="label">docked</span>
+            </div>
+            <div class="cell">
+              <cor-date-picker mode="single" breakpoint="mobile" locale="ro-RO"></cor-date-picker>
+              <span class="label">mobile (drag handle)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Locale (Intl-driven labels)</h3>
+          <div class="row" style="align-items: flex-start; gap: var(--spacing-32)">
+            <div class="cell">
+              <cor-date-picker mode="single" value="2026-05-15" locale="ru-RU"></cor-date-picker>
+              <span class="label">ru-RU</span>
+            </div>
+            <div class="cell">
+              <cor-date-picker mode="single" value="2026-05-15" locale="en-US" first-day-of-week="0"></cor-date-picker>
+              <span class="label">en-US · week starts Sunday</span>
+            </div>
+            <div class="cell">
+              <cor-date-picker mode="single" value="2026-05-15" locale="ar-EG"></cor-date-picker>
+              <span class="label">ar-EG (RTL bidi check)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div class="row" style="align-items: flex-start; gap: var(--spacing-32)">
+            <div class="cell">
+              <cor-date-picker
+                id="dp-constrained"
+                mode="single"
+                value="2026-05-20"
+                min="2026-05-10"
+                max="2026-05-25"
+              ></cor-date-picker>
+              <span class="label">min/max constrain navigation + disable out-of-range days</span>
+            </div>
+            <div class="cell">
+              <cor-date-picker
+                id="dp-future"
+                mode="single"
+                value="2099-12-25"
+                locale="ro-RO"
+                hide-today-shortcut=""
+              ></cor-date-picker>
+              <span class="label">far-future month (2099) · hide-today-shortcut</span>
+            </div>
+            <div class="cell">
+              <cor-date-picker id="dp-disabled" mode="multi" locale="ro-RO"></cor-date-picker>
+              <span class="label">disabledDates (holidays) marked unselectable</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <script type="module">
+        customElements.whenDefined('cor-date-picker').then(() => {
+          // range: preselected via rangeStart/rangeEnd (these drive the visible month too)
+          const range = document.getElementById('dp-range');
+          if (range) {
+            range.rangeStart = '2026-05-08';
+            range.rangeEnd = '2026-05-19';
+            range.value = ['2026-05-08', '2026-05-19'];
+          }
+
+          // multi: array value via property
+          const multi = document.getElementById('dp-multi');
+          if (multi) {
+            multi.value = ['2026-05-05', '2026-05-12', '2026-05-23'];
+          }
+
+          // edge: disabled holiday dates
+          const disabled = document.getElementById('dp-disabled');
+          if (disabled) {
+            disabled.value = ['2026-05-14'];
+            disabled.disabledDates = ['2026-05-01', '2026-05-09', '2026-05-25'];
+          }
+        });
+      </script>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

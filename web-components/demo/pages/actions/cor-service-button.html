@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-service-button · @age/web-components</title>
+  </head>
+  <body data-component="cor-service-button">
+    <main class="demo-main">
+      <section id="cor-service-button" class="component-section">
+        <h2>&lt;cor-service-button&gt;</h2>
+
+        <div class="subsection">
+          <h3>Appearances (with mpay logomark badge)</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-service-button appearance="primary">
+                <cor-logo slot="badge" name="mpay-logo-logomark-only"></cor-logo>
+                Plătește cu mpay
+              </cor-service-button>
+              <span class="label">primary</span>
+            </div>
+            <div class="cell">
+              <cor-service-button appearance="neutral">
+                <cor-logo slot="badge" name="mpay-logo-logomark-only"></cor-logo>
+                Plătește cu mpay
+              </cor-service-button>
+              <span class="label">neutral</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Other M-product logomarks</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-service-button appearance="primary">
+                <cor-logo slot="badge" name="mpass-logo-logomark-only"></cor-logo>
+                Autentifică-te cu mpass
+              </cor-service-button>
+              <span class="label">mpass</span>
+            </div>
+            <div class="cell">
+              <cor-service-button appearance="neutral">
+                <cor-logo slot="badge" name="msign-logo-logomark-only"></cor-logo>
+                Semnează cu msign
+              </cor-service-button>
+              <span class="label">msign</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Without logo badge (badge slot empty)</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-service-button appearance="primary">Continuă fără logo</cor-service-button>
+              <span class="label">primary · no badge</span>
+            </div>
+            <div class="cell">
+              <cor-service-button appearance="neutral">Continuă fără logo</cor-service-button>
+              <span class="label">neutral · no badge</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>States (loading / disabled / link mode / full-width)</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-service-button appearance="primary" loading="">
+                <cor-logo slot="badge" name="mpay-logo-logomark-only"></cor-logo>
+                Plătește cu mpay
+              </cor-service-button>
+              <span class="label">loading</span>
+            </div>
+            <div class="cell">
+              <cor-service-button appearance="primary" disabled="">
+                <cor-logo slot="badge" name="mpay-logo-logomark-only"></cor-logo>
+                Plătește cu mpay
+              </cor-service-button>
+              <span class="label">disabled</span>
+            </div>
+            <div class="cell">
+              <cor-service-button appearance="neutral" href="https://mpay.gov.md" target="_blank" rel="noopener">
+                <cor-logo slot="badge" name="mpay-logo-logomark-only"></cor-logo>
+                Deschide mpay.gov.md
+              </cor-service-button>
+              <span class="label">href → &lt;a&gt;</span>
+            </div>
+            <div class="cell" style="width: 280px">
+              <cor-service-button appearance="primary" full-width="">
+                <cor-logo slot="badge" name="mpay-logo-logomark-only"></cor-logo>
+                Full width
+              </cor-service-button>
+              <span class="label">full-width</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div class="row">
+            <div class="cell" style="width: 200px">
+              <cor-service-button appearance="primary">
+                <cor-logo slot="badge" name="mpay-logo-logomark-only"></cor-logo>
+                Plătește factura la serviciile comunale prin sistemul guvernamental
+              </cor-service-button>
+              <span class="label">long label in 200px</span>
+            </div>
+            <div class="cell">
+              <cor-service-button appearance="neutral"></cor-service-button>
+              <span class="label">empty (no badge, no label)</span>
+            </div>
+            <div class="cell">
+              <cor-service-button appearance="primary">
+                <cor-logo slot="badge" name="mpay-logo-logomark-only"></cor-logo>
+                &amp; &lt; &gt; " ' 🎉
+              </cor-service-button>
+              <span class="label">special chars + emoji</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

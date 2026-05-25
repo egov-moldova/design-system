@@ -117,7 +117,7 @@ export class CorFileItem {
       >
         <span class="leading-icon" part="leading-icon" aria-hidden="true">
           <slot name="icon">
-            <cor-icon name={this.iconForState()} size={24} color="currentColor" />
+            <cor-icon name={this.iconForState()} size={24} />
           </slot>
         </span>
 
@@ -143,7 +143,7 @@ export class CorFileItem {
             onClick={this.handleRemove}
             onKeyDown={this.handleRemoveKey}
           >
-            <cor-icon name="delete" size={20} color="currentColor" />
+            <cor-icon name="delete" size={20} />
           </button>
         ) : null}
       </Host>

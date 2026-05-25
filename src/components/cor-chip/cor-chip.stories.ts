@@ -201,31 +201,31 @@ export const AllSizes: Story = {
 const renderWithIcon = () => /*html*/ `
   <div style="${rowStyle}; padding: var(--spacing-24);">
     <cor-chip>
-      <cor-icon slot="icon-start" name="map-pin" size="20" color="currentColor"></cor-icon>
+      <cor-icon slot="icon-start" name="map-pin" size="20"></cor-icon>
       Apartament
     </cor-chip>
     <cor-chip selected>
-      <cor-icon slot="icon-start" name="checkmark-small" size="20" color="currentColor"></cor-icon>
+      <cor-icon slot="icon-start" name="checkmark-small" size="20"></cor-icon>
       Casă
     </cor-chip>
     <cor-chip type="input" removable>
-      <cor-icon slot="icon-start" name="map-pin" size="20" color="currentColor"></cor-icon>
+      <cor-icon slot="icon-start" name="map-pin" size="20"></cor-icon>
       Chișinău
     </cor-chip>
   </div>
 `;
 const docsSourceWithIcon = /*html*/ `<cor-chip>
-  <cor-icon slot="icon-start" name="map-pin" size="20" color="currentColor"></cor-icon>
+  <cor-icon slot="icon-start" name="map-pin" size="20"></cor-icon>
   Apartament
 </cor-chip>
 
 <cor-chip selected>
-  <cor-icon slot="icon-start" name="checkmark-small" size="20" color="currentColor"></cor-icon>
+  <cor-icon slot="icon-start" name="checkmark-small" size="20"></cor-icon>
   Casă
 </cor-chip>
 
 <cor-chip type="input" removable>
-  <cor-icon slot="icon-start" name="map-pin" size="20" color="currentColor"></cor-icon>
+  <cor-icon slot="icon-start" name="map-pin" size="20"></cor-icon>
   Chișinău
 </cor-chip>`;
 export const WithIcon: Story = {

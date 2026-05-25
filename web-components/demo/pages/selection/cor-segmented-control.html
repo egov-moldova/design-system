@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-segmented-control · @age/web-components</title>
+  </head>
+  <body data-component="cor-segmented-control">
+    <main class="demo-main">
+      <section id="cor-segmented-control" class="component-section">
+        <h2>&lt;cor-segmented-control&gt;</h2>
+
+        <div class="subsection">
+          <h3>Sizes (segments set via JS property)</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-segmented-control
+                  id="seg-md"
+                  size="md"
+                  value="lista"
+                  aria-label="Vizualizare"
+                ></cor-segmented-control>
+              </div>
+              <span class="label">md</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-segmented-control
+                  id="seg-sm"
+                  size="sm"
+                  value="lista"
+                  aria-label="Vizualizare"
+                ></cor-segmented-control>
+              </div>
+              <span class="label">sm</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>States &amp; icons</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-segmented-control id="seg-icons" value="acasa" aria-label="Navigare"></cor-segmented-control>
+              </div>
+              <span class="label">segments with iconName</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-segmented-control id="seg-disabled-seg" value="luna" aria-label="Perioadă"></cor-segmented-control>
+              </div>
+              <span class="label">one disabled segment</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-segmented-control
+                  id="seg-disabled-all"
+                  disabled=""
+                  value="lista"
+                  aria-label="Blocat"
+                ></cor-segmented-control>
+              </div>
+              <span class="label">disabled (whole group)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-segmented-control id="seg-many" value="s1" aria-label="Pași"></cor-segmented-control>
+              </div>
+              <span class="label">5+ segments (overflow)</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-segmented-control id="seg-long" value="t1" aria-label="Filtru"></cor-segmented-control>
+              </div>
+              <span class="label">long labels + diacritics</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <script type="module">
+        customElements.whenDefined('cor-segmented-control').then(() => {
+          const set = (id, segments) => {
+            const el = document.getElementById(id);
+            if (el) el.segments = segments;
+          };
+          const view = [
+            { value: 'lista', label: 'Listă' },
+            { value: 'grid', label: 'Grilă' },
+          ];
+          set('seg-md', view);
+          set('seg-sm', view);
+          set('seg-icons', [
+            { value: 'acasa', label: 'Acasă', iconName: 'home-line' },
+            { value: 'cautare', label: 'Căutare', iconName: 'search' },
+            { value: 'profil', label: 'Profil', iconName: 'person' },
+          ]);
+          set('seg-disabled-seg', [
+            { value: 'zi', label: 'Zi' },
+            { value: 'luna', label: 'Lună' },
+            { value: 'an', label: 'An (indisponibil)', disabled: true },
+          ]);
+          set('seg-disabled-all', view);
+          set('seg-many', [
+            { value: 's1', label: 'Unu' },
+            { value: 's2', label: 'Doi' },
+            { value: 's3', label: 'Trei' },
+            { value: 's4', label: 'Patru' },
+            { value: 's5', label: 'Cinci' },
+            { value: 's6', label: 'Șase' },
+          ]);
+          set('seg-long', [
+            { value: 't1', label: 'Cereri în așteptare' },
+            { value: 't2', label: 'Procesate' },
+            { value: 't3', label: 'Respinse definitiv' },
+          ]);
+        });
+      </script>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

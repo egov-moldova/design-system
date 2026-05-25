@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-icon · @age/web-components</title>
+  </head>
+  <body data-component="cor-icon">
+    <main class="demo-main">
+      <section id="cor-icon" class="component-section">
+        <h2>&lt;cor-icon&gt;</h2>
+
+        <div class="subsection">
+          <h3>Sizes (icon: search)</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-icon name="search" size="12"></cor-icon>
+              <span class="label">12</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="search" size="16"></cor-icon>
+              <span class="label">16</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="search" size="20"></cor-icon>
+              <span class="label">20</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="search" size="24"></cor-icon>
+              <span class="label">24</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Colors (icon: notification, size 24)</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-icon name="notification" size="24" color="icon-brand-default"></cor-icon>
+              <span class="label">icon-brand-default</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="notification" size="24" color="icon-base-secondary"></cor-icon>
+              <span class="label">icon-base-secondary</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="notification" size="24" color="icon-base-tertiary"></cor-icon>
+              <span class="label">icon-base-tertiary</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="notification" size="24" color="icon-brand-default"></cor-icon>
+              <span class="label">icon-brand-default</span>
+            </div>
+            <div class="cell">
+              <div class="swatch on-dark">
+                <cor-icon name="notification" size="24" color="icon-base-inverse-default"></cor-icon>
+              </div>
+              <span class="label">icon-base-inverse-default</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="notification" size="24" color="icon-status-error-default"></cor-icon>
+              <span class="label">icon-status-error-default</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="notification" size="24" color="icon-status-success-default"></cor-icon>
+              <span class="label">icon-status-success-default</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="notification" size="24" color="icon-status-warning-default"></cor-icon>
+              <span class="label">icon-status-warning-default</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>States (icon: edit, size 24)</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-icon name="edit" size="24"></cor-icon>
+              <span class="label">default</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="edit" size="24" interactive=""></cor-icon>
+              <span class="label">interactive</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="edit" size="24" interactive="" disabled=""></cor-icon>
+              <span class="label">disabled</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Outlined vs Filled</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-icon name="circle-info" size="24"></cor-icon>
+              <span class="label">circle-info</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="circle-info-filled" size="24" color="icon-brand-default"></cor-icon>
+              <span class="label">circle-info-filled</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="home-line" size="24"></cor-icon>
+              <span class="label">home-line</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="home-line-filled" size="24" color="icon-brand-default"></cor-icon>
+              <span class="label">home-line-filled</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="person" size="24"></cor-icon>
+              <span class="label">person</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="people" size="24"></cor-icon>
+              <span class="label">people</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="warning" size="24"></cor-icon>
+              <span class="label">warning</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="warning-filled" size="24" color="icon-status-warning-default"></cor-icon>
+              <span class="label">warning-filled</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Icon gallery (size 24)</h3>
+          <div class="row" style="flex-wrap: wrap; gap: var(--spacing-20)">
+            <div class="cell"><cor-icon name="search" size="24"></cor-icon><span class="label">search</span></div>
+            <div class="cell"><cor-icon name="calendar" size="24"></cor-icon><span class="label">calendar</span></div>
+            <div class="cell"><cor-icon name="settings" size="24"></cor-icon><span class="label">settings</span></div>
+            <div class="cell"><cor-icon name="filter" size="24"></cor-icon><span class="label">filter</span></div>
+            <div class="cell"><cor-icon name="download" size="24"></cor-icon><span class="label">download</span></div>
+            <div class="cell"><cor-icon name="upload" size="24"></cor-icon><span class="label">upload</span></div>
+            <div class="cell"><cor-icon name="envelope" size="24"></cor-icon><span class="label">envelope</span></div>
+            <div class="cell"><cor-icon name="lock" size="24"></cor-icon><span class="label">lock</span></div>
+            <div class="cell"><cor-icon name="delete" size="24"></cor-icon><span class="label">delete</span></div>
+            <div class="cell"><cor-icon name="copy" size="24"></cor-icon><span class="label">copy</span></div>
+            <div class="cell"><cor-icon name="share-ios" size="24"></cor-icon><span class="label">share-ios</span></div>
+            <div class="cell">
+              <cor-icon name="arrow-right" size="24"></cor-icon><span class="label">arrow-right</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="chevron-right" size="24"></cor-icon><span class="label">chevron-right</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="checkmark-large" size="24"></cor-icon><span class="label">checkmark-large</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="cross-large" size="24"></cor-icon><span class="label">cross-large</span>
+            </div>
+            <div class="cell"><cor-icon name="menu" size="24"></cor-icon><span class="label">menu</span></div>
+            <div class="cell">
+              <cor-icon name="more-horizontal" size="24"></cor-icon><span class="label">more-horizontal</span>
+            </div>
+            <div class="cell">
+              <cor-icon name="external-link" size="24"></cor-icon><span class="label">external-link</span>
+            </div>
+            <div class="cell"><cor-icon name="history" size="24"></cor-icon><span class="label">history</span></div>
+            <div class="cell">
+              <cor-icon name="sparkles-filled" size="24" color="icon-brand-default"></cor-icon
+              ><span class="label">sparkles-filled</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

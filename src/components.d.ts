@@ -1018,7 +1018,7 @@ export namespace Components {
         "ariaLabel"?: string;
         /**
           * Color token suffix (mapped to `--color-{value}`), or `currentColor` to inherit text color.
-          * @default 'icon-base-secondary'
+          * @default 'currentColor'
          */
         "color": string;
         /**
@@ -5420,7 +5420,7 @@ declare namespace LocalJSX {
         "ariaLabel"?: string;
         /**
           * Color token suffix (mapped to `--color-{value}`), or `currentColor` to inherit text color.
-          * @default 'icon-base-secondary'
+          * @default 'currentColor'
          */
         "color"?: string;
         /**

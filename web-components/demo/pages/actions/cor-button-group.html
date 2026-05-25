@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-button-group · @age/web-components</title>
+  </head>
+  <body data-component="cor-button-group">
+    <main class="demo-main">
+      <section id="cor-button-group" class="component-section">
+        <h2>&lt;cor-button-group&gt;</h2>
+
+        <div class="subsection">
+          <h3>Horizontal (default)</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-button-group label="Acțiuni formular">
+                <cor-button variant="primary">Salvează</cor-button>
+                <cor-button appearance="outlined" variant="strict">Anulează</cor-button>
+                <cor-button variant="destructive">Șterge</cor-button>
+              </cor-button-group>
+              <span class="label">orientation=horizontal</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Vertical (children stretch to group width; pair with full-width)</h3>
+          <div class="row">
+            <div class="cell" style="width: 240px">
+              <cor-button-group orientation="vertical" label="Meniu acțiuni">
+                <cor-button full-width="" variant="primary">Plătește</cor-button>
+                <cor-button full-width="" appearance="outlined" variant="strict">Detalii</cor-button>
+                <cor-button full-width="" appearance="text" variant="strict">Renunță</cor-button>
+              </cor-button-group>
+              <span class="label">orientation=vertical · full-width children</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-button-group></cor-button-group>
+              <span class="label">empty group (no children)</span>
+            </div>
+            <div class="cell" style="width: 320px">
+              <cor-button-group label="Multe acțiuni">
+                <cor-button size="sm" variant="primary">Unu</cor-button>
+                <cor-button size="sm" variant="primary">Doi</cor-button>
+                <cor-button size="sm" variant="primary">Trei</cor-button>
+                <cor-button size="sm" variant="primary">Patru</cor-button>
+                <cor-button size="sm" variant="primary">Cinci</cor-button>
+                <cor-button size="sm" variant="primary">Șase</cor-button>
+              </cor-button-group>
+              <span class="label">overflow wrap in 320px</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

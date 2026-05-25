@@ -288,13 +288,13 @@ export const WithIcons: Story = {
         cell(
           'icon-start',
           /*html*/ `<cor-select-input id="${id1}" size="lg" label="Country" placeholder="Pick a country">
-            <cor-icon slot="icon-start" name="house" size="20" color="currentColor"></cor-icon>
+            <cor-icon slot="icon-start" name="house" size="20"></cor-icon>
           </cor-select-input>${optionsTag(id1)}`,
         ),
         cell(
           'with selected value',
           /*html*/ `<cor-select-input id="${id2}" size="lg" label="Plan" value="opt-1">
-            <cor-icon slot="icon-start" name="search" size="20" color="currentColor"></cor-icon>
+            <cor-icon slot="icon-start" name="search" size="20"></cor-icon>
           </cor-select-input>${optionsTag(id2)}`,
         ),
       ].join(''),
@@ -305,8 +305,8 @@ export const WithIcons: Story = {
     docs: {
       source: {
         code: [
-          '<cor-select-input size="lg" label="Country" placeholder="Pick a country"><cor-icon slot="icon-start" name="house" size="20" color="currentColor"></cor-icon></cor-select-input>',
-          '<cor-select-input size="lg" label="Plan" value="opt-1"><cor-icon slot="icon-start" name="search" size="20" color="currentColor"></cor-icon></cor-select-input>',
+          '<cor-select-input size="lg" label="Country" placeholder="Pick a country"><cor-icon slot="icon-start" name="house" size="20"></cor-icon></cor-select-input>',
+          '<cor-select-input size="lg" label="Plan" value="opt-1"><cor-icon slot="icon-start" name="search" size="20"></cor-icon></cor-select-input>',
         ].join('\n'),
       },
     },

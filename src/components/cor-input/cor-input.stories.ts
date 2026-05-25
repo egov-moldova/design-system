@@ -411,13 +411,13 @@ export const WithIcons: Story = {
         cell(
           'icon-start',
           /*html*/ `<cor-input size="lg" label="Search" placeholder="Search">
-            <cor-icon slot="icon-start" name="search" size="20" color="currentColor"></cor-icon>
+            <cor-icon slot="icon-start" name="search" size="20"></cor-icon>
           </cor-input>`,
         ),
         cell(
           'icon-end',
           /*html*/ `<cor-input size="lg" label="Date" placeholder="DD/MM/YYYY">
-            <cor-icon slot="icon-end" name="calendar" size="24" color="currentColor"></cor-icon>
+            <cor-icon slot="icon-end" name="calendar" size="24"></cor-icon>
           </cor-input>`,
         ),
       ].join(''),
@@ -427,8 +427,8 @@ export const WithIcons: Story = {
     docs: {
       source: {
         code: [
-          '<cor-input size="lg" label="Search" placeholder="Search"><cor-icon slot="icon-start" name="search" size="20" color="currentColor"></cor-icon></cor-input>',
-          '<cor-input size="lg" label="Date" placeholder="DD/MM/YYYY"><cor-icon slot="icon-end" name="calendar" size="24" color="currentColor"></cor-icon></cor-input>',
+          '<cor-input size="lg" label="Search" placeholder="Search"><cor-icon slot="icon-start" name="search" size="20"></cor-icon></cor-input>',
+          '<cor-input size="lg" label="Date" placeholder="DD/MM/YYYY"><cor-icon slot="icon-end" name="calendar" size="24"></cor-icon></cor-input>',
         ].join('\n'),
       },
     },

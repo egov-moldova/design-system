@@ -253,13 +253,7 @@ export class CorTable {
     const isDesc = isActive && this.sortDirection === 'desc';
     const name = !isActive ? 'chevron-grabber' : isDesc ? 'chevron-bottom' : 'chevron-top';
     return (
-      <cor-icon
-        class={{ 'sort-icon': true, 'sort-icon--active': isActive }}
-        name={name}
-        size={16}
-        color="currentColor"
-        aria-hidden="true"
-      />
+      <cor-icon class={{ 'sort-icon': true, 'sort-icon--active': isActive }} name={name} size={16} aria-hidden="true" />
     );
   }
 

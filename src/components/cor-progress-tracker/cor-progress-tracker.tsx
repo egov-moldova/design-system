@@ -129,7 +129,7 @@ export class CorProgressTracker {
   private renderIndicator(step: ProgressTrackerStep, status: ProgressTrackerStepStatus, index: number) {
     const iconName = this.resolveIconName(step, status);
     const display = iconName ? (
-      <cor-icon name={iconName} size={16} color="currentColor"></cor-icon>
+      <cor-icon name={iconName} size={16} />
     ) : (
       <span class="indicator-number">{index + 1}</span>
     );

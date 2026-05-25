@@ -156,9 +156,12 @@ describe('cor-chip', () => {
     });
 
     it('falls back to "chip" in aria-label when no label text is available', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { root } = await render(<cor-chip type="input" removable></cor-chip>);
       const remove = queryRemove(root);
       expect(remove?.getAttribute('aria-label')).toBe('Remove chip');
+      expect(warn.mock.calls.flat().join(' ')).toMatch(/chips require a label/i);
+      warn.mockRestore();
     });
 
     it('emits corRemove on click', async () => {
@@ -233,8 +236,11 @@ describe('cor-chip', () => {
     });
 
     it('does not render a remove button when type="filter" even if removable is set', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { root } = await render(<cor-chip removable>Filter</cor-chip>);
       expect(queryRemove(root)).toBeNull();
+      expect(warn.mock.calls.flat().join(' ')).toMatch(/removable.*no effect when.*filter/i);
+      warn.mockRestore();
     });
   });
 

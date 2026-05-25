@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-switch · @age/web-components</title>
+  </head>
+  <body data-component="cor-switch">
+    <main class="demo-main">
+      <section id="cor-switch" class="component-section">
+        <h2>&lt;cor-switch&gt;</h2>
+
+        <div class="subsection">
+          <h3>States</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-switch label="Notificări push"></cor-switch>
+              </div>
+              <span class="label">off</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-switch checked="" label="Notificări push"></cor-switch>
+              </div>
+              <span class="label">on</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-switch disabled="" label="Indisponibil"></cor-switch>
+              </div>
+              <span class="label">disabled (off)</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-switch checked="" disabled="" label="Pornit și blocat"></cor-switch>
+              </div>
+              <span class="label">disabled (on)</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-switch
+                  checked=""
+                  required=""
+                  name="autosave"
+                  value="enabled"
+                  label="Salvare automată"
+                ></cor-switch>
+              </div>
+              <span class="label">required + value</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Slot + edge cases</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-switch checked="">
+                  <span slot="label">Mod întunecat (dark mode)</span>
+                </cor-switch>
+              </div>
+              <span class="label">label slot</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-switch
+                  checked=""
+                  label="Activează autentificarea în doi pași prin SMS pentru toate sesiunile noi de pe dispozitive necunoscute"
+                ></cor-switch>
+              </div>
+              <span class="label">long wrapping label</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-switch label="Diacritice ăâîșțĂÂÎȘȚ &amp; <b> 🔔"></cor-switch>
+              </div>
+              <span class="label">diacritics + special chars</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px" dir="rtl">
+                <cor-switch checked="" label="مرحبا بكم"></cor-switch>
+              </div>
+              <span class="label">RTL label</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-switch checked="" aria-label="Toggle without visible label"></cor-switch>
+              </div>
+              <span class="label">no label (aria-label only)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

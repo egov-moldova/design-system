@@ -563,7 +563,7 @@ export class CorDateInput {
           </div>
 
           <span class="trailing-icon" part="trailing-icon" aria-hidden="true">
-            <cor-icon name="calendar" size={iconSize} color="currentColor" />
+            <cor-icon name="calendar" size={iconSize} />
           </span>
         </div>
 

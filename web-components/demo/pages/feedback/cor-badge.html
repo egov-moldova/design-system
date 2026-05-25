@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-badge · @age/web-components</title>
+  </head>
+  <body data-component="cor-badge">
+    <main class="demo-main">
+      <section id="cor-badge" class="component-section">
+        <h2>&lt;cor-badge&gt;</h2>
+
+        <div class="subsection">
+          <h3>Variants (numbered, size md)</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-badge variant="default" count="5"></cor-badge>
+              <span class="label">default</span>
+            </div>
+            <div class="cell">
+              <cor-badge variant="brand" count="5"></cor-badge>
+              <span class="label">brand</span>
+            </div>
+            <div class="cell">
+              <cor-badge variant="positive" count="5"></cor-badge>
+              <span class="label">positive</span>
+            </div>
+            <div class="cell">
+              <cor-badge variant="warning" count="5"></cor-badge>
+              <span class="label">warning</span>
+            </div>
+            <div class="cell">
+              <cor-badge variant="danger" count="5"></cor-badge>
+              <span class="label">danger (default)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Dot variants</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-badge type="dot" variant="default"></cor-badge>
+              <span class="label">default</span>
+            </div>
+            <div class="cell">
+              <cor-badge type="dot" variant="brand"></cor-badge>
+              <span class="label">brand</span>
+            </div>
+            <div class="cell">
+              <cor-badge type="dot" variant="positive"></cor-badge>
+              <span class="label">positive</span>
+            </div>
+            <div class="cell">
+              <cor-badge type="dot" variant="warning"></cor-badge>
+              <span class="label">warning</span>
+            </div>
+            <div class="cell">
+              <cor-badge type="dot" variant="danger"></cor-badge>
+              <span class="label">danger</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Sizes</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-badge variant="danger" size="sm" count="8"></cor-badge>
+              <span class="label">numbered sm</span>
+            </div>
+            <div class="cell">
+              <cor-badge variant="danger" size="md" count="8"></cor-badge>
+              <span class="label">numbered md</span>
+            </div>
+            <div class="cell">
+              <cor-badge type="dot" variant="danger" size="sm"></cor-badge>
+              <span class="label">dot sm</span>
+            </div>
+            <div class="cell">
+              <cor-badge type="dot" variant="danger" size="md"></cor-badge>
+              <span class="label">dot md</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-badge variant="danger" count="0"></cor-badge>
+              <span class="label">count = 0</span>
+            </div>
+            <div class="cell">
+              <cor-badge variant="danger" count="99"></cor-badge>
+              <span class="label">count = 99 (at max)</span>
+            </div>
+            <div class="cell">
+              <cor-badge variant="danger" count="100"></cor-badge>
+              <span class="label">count = 100 → 99+</span>
+            </div>
+            <div class="cell">
+              <cor-badge variant="danger" count="5280"></cor-badge>
+              <span class="label">count = 5280 → 99+</span>
+            </div>
+            <div class="cell">
+              <cor-badge variant="brand" count="7" max="5"></cor-badge>
+              <span class="label">count 7, max 5 → 5+</span>
+            </div>
+            <div class="cell">
+              <cor-badge variant="danger"></cor-badge>
+              <span class="label">numbered, no count (empty)</span>
+            </div>
+            <div class="cell">
+              <cor-badge variant="warning" count="-3"></cor-badge>
+              <span class="label">negative count</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

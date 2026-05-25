@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-link · @age/web-components</title>
+  </head>
+  <body data-component="cor-link">
+    <main class="demo-main">
+      <section id="cor-link" class="component-section">
+        <h2>&lt;cor-link&gt;</h2>
+
+        <div class="subsection">
+          <h3>Variants</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-link href="#" variant="primary">Link primary</cor-link>
+              <span class="label">primary</span>
+            </div>
+            <div class="cell">
+              <cor-link href="#" variant="strict">Link strict</cor-link>
+              <span class="label">strict</span>
+            </div>
+            <div class="cell">
+              <div class="swatch on-dark">
+                <cor-link href="#" variant="white">Link white</cor-link>
+              </div>
+              <span class="label">white (on-dark)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Sizes (variant primary)</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-link href="#" size="xs">Extra small</cor-link>
+              <span class="label">xs</span>
+            </div>
+            <div class="cell">
+              <cor-link href="#" size="sm">Small</cor-link>
+              <span class="label">sm</span>
+            </div>
+            <div class="cell">
+              <cor-link href="#" size="md">Medium</cor-link>
+              <span class="label">md</span>
+            </div>
+            <div class="cell">
+              <cor-link href="#" size="lg">Large</cor-link>
+              <span class="label">lg</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Underline modes</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-link href="#" underline="always">Always underlined</cor-link>
+              <span class="label">always</span>
+            </div>
+            <div class="cell">
+              <cor-link href="#" underline="hover">Underline on hover</cor-link>
+              <span class="label">hover</span>
+            </div>
+            <div class="cell">
+              <cor-link href="#" underline="none">Never underlined</cor-link>
+              <span class="label">none</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Icon slots &amp; external auto-indicator</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-link href="#">
+                <cor-icon slot="icon-start" name="download"></cor-icon>
+                Descarcă fișierul
+              </cor-link>
+              <span class="label">icon-start</span>
+            </div>
+            <div class="cell">
+              <cor-link href="#">
+                Vezi mai mult
+                <cor-icon slot="icon-end" name="arrow-right"></cor-icon>
+              </cor-link>
+              <span class="label">icon-end</span>
+            </div>
+            <div class="cell">
+              <cor-link href="https://gov.md" target="_blank">Site extern</cor-link>
+              <span class="label">target=_blank → auto external icon + rel</span>
+            </div>
+            <div class="cell">
+              <cor-link href="https://gov.md" target="_blank" external="false">Extern fără icon</cor-link>
+              <span class="label">external=false suppresses indicator</span>
+            </div>
+            <div class="cell">
+              <cor-link href="/raport.pdf" download="raport.pdf">Descarcă raport</cor-link>
+              <span class="label">download attribute</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>States (standalone / disabled / button mode)</h3>
+          <div class="row">
+            <div class="cell" style="width: 240px">
+              <cor-link href="#" standalone="">
+                <cor-icon slot="icon-start" name="home-line"></cor-icon>
+                Pagina principală
+              </cor-link>
+              <span class="label">standalone</span>
+            </div>
+            <div class="cell">
+              <cor-link href="#" disabled="">Link dezactivat</cor-link>
+              <span class="label">disabled</span>
+            </div>
+            <div class="cell">
+              <cor-link aria-label="Acțiune fără navigare">Buton-link (fără href)</cor-link>
+              <span class="label">no href → &lt;button&gt;</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div class="row">
+            <div class="cell" style="width: 200px">
+              <cor-link href="#">
+                Politica de confidențialitate și termenii de utilizare a serviciilor electronice guvernamentale
+              </cor-link>
+              <span class="label">long wrapping link in 200px</span>
+            </div>
+            <div class="cell" style="width: 200px">
+              <cor-link href="#">https://servicii.gov.md/foarte/lung/fara/spatii/care/nu/se/rupe</cor-link>
+              <span class="label">long unbroken URL in 200px</span>
+            </div>
+            <div class="cell">
+              <cor-link href="#">&amp; &lt; &gt; " ' 🎉</cor-link>
+              <span class="label">special chars + emoji</span>
+            </div>
+            <div class="cell">
+              <cor-link href="#" variant="strict">مرحبا بكم</cor-link>
+              <span class="label">RTL (Arabic)</span>
+            </div>
+            <div class="cell">
+              <cor-link href="#"></cor-link>
+              <span class="label">empty label → AT warn</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

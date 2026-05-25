@@ -358,7 +358,7 @@ export class CorTextarea {
 
           {this.resize !== 'none' ? (
             <span class="resize-grip" part="resize-grip" aria-hidden="true">
-              <cor-icon name="resize" size={24} color="currentColor" />
+              <cor-icon name="resize" size={24} />
             </span>
           ) : null}
         </div>

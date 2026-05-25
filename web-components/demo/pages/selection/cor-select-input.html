@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-select-input · @age/web-components</title>
+  </head>
+  <body data-component="cor-select-input">
+    <main class="demo-main">
+      <section id="cor-select-input" class="component-section">
+        <h2>&lt;cor-select-input&gt;</h2>
+
+        <div class="subsection">
+          <h3>Sizes (options set via JS property)</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-select-input
+                  id="sel-size-md"
+                  size="md"
+                  label="Raion"
+                  placeholder="Alege raionul"
+                ></cor-select-input>
+              </div>
+              <span class="label">md</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-select-input
+                  id="sel-size-lg"
+                  size="lg"
+                  label="Raion"
+                  placeholder="Alege raionul"
+                ></cor-select-input>
+              </div>
+              <span class="label">lg</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Variants &amp; states</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-select-input id="sel-default" label="Tip document" placeholder="Selectează"></cor-select-input>
+              </div>
+              <span class="label">default + placeholder</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-select-input id="sel-prefilled" label="Tip document" value="buletin"></cor-select-input>
+              </div>
+              <span class="label">prefilled value</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-select-input
+                  id="sel-destructive"
+                  variant="destructive"
+                  label="Tip document"
+                  placeholder="Selectează"
+                ></cor-select-input>
+              </div>
+              <span class="label">variant=destructive</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-select-input
+                  id="sel-error"
+                  invalid=""
+                  required=""
+                  label="Tip document"
+                  placeholder="Selectează"
+                  error-text="Acest câmp este obligatoriu"
+                ></cor-select-input>
+              </div>
+              <span class="label">invalid + error-text + required</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-select-input
+                  id="sel-helper"
+                  label="Tip document"
+                  placeholder="Selectează"
+                  helper-text="Documentul scanat trebuie să fie lizibil"
+                ></cor-select-input>
+              </div>
+              <span class="label">helper-text</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-select-input id="sel-disabled" disabled="" label="Tip document" value="buletin"></cor-select-input>
+              </div>
+              <span class="label">disabled</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-select-input id="sel-readonly" readonly="" label="Tip document" value="buletin"></cor-select-input>
+              </div>
+              <span class="label">readonly</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Slots (icon-start) &amp; disabled option</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-select-input id="sel-icon" label="Caută serviciu" placeholder="Selectează un serviciu">
+                  <cor-icon slot="icon-start" name="search" size="20"></cor-icon>
+                </cor-select-input>
+              </div>
+              <span class="label">icon-start slot</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-select-input
+                  id="sel-disabled-opt"
+                  label="Plan abonament"
+                  placeholder="Alege planul"
+                ></cor-select-input>
+              </div>
+              <span class="label">contains a disabled option</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-select-input id="sel-many" label="Țară (25+ opțiuni)" placeholder="Alege țara"></cor-select-input>
+              </div>
+              <span class="label">25+ options (scroll)</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-select-input id="sel-long" label="Categorie" placeholder="Alege"></cor-select-input>
+              </div>
+              <span class="label">very long option labels</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <cor-select-input id="sel-empty" label="Fără opțiuni" placeholder="Nimic disponibil"></cor-select-input>
+              </div>
+              <span class="label">empty options array</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <script type="module">
+        customElements.whenDefined('cor-select-input').then(() => {
+          const set = (id, options) => {
+            const el = document.getElementById(id);
+            if (el) el.options = options;
+          };
+          const docTypes = [
+            { value: 'buletin', label: 'Buletin de identitate' },
+            { value: 'pasaport', label: 'Pașaport' },
+            { value: 'permis', label: 'Permis de conducere' },
+          ];
+          const raioane = [
+            { value: 'chisinau', label: 'Chișinău' },
+            { value: 'balti', label: 'Bălți' },
+            { value: 'cahul', label: 'Cahul' },
+            { value: 'ungheni', label: 'Ungheni' },
+            { value: 'soroca', label: 'Soroca' },
+          ];
+          set('sel-size-md', raioane);
+          set('sel-size-lg', raioane);
+          set('sel-default', docTypes);
+          set('sel-prefilled', docTypes);
+          set('sel-destructive', docTypes);
+          set('sel-error', docTypes);
+          set('sel-helper', docTypes);
+          set('sel-disabled', docTypes);
+          set('sel-readonly', docTypes);
+          set('sel-icon', [
+            { value: 'idnp', label: 'Verificare IDNP' },
+            { value: 'cazier', label: 'Cazier judiciar' },
+            { value: 'apostila', label: 'Apostilă' },
+          ]);
+          set('sel-disabled-opt', [
+            { value: 'free', label: 'Gratuit' },
+            { value: 'standard', label: 'Standard' },
+            { value: 'premium', label: 'Premium (indisponibil)', disabled: true },
+          ]);
+          set('sel-long', [
+            {
+              value: 'a',
+              label: 'Înregistrarea actelor de stare civilă și eliberarea certificatelor pentru cetățenii rezidenți',
+            },
+            { value: 'b', label: 'Categorie scurtă' },
+          ]);
+          set('sel-empty', []);
+          // 30 generated options to stress the listbox.
+          const many = [];
+          const countries = [
+            'Moldova',
+            'România',
+            'Ucraina',
+            'Rusia',
+            'Statele Unite',
+            'Regatul Unit',
+            'Germania',
+            'Franța',
+            'Italia',
+            'Spania',
+            'Portugalia',
+            'Israel',
+            'Turcia',
+            'Bulgaria',
+            'Grecia',
+            'Polonia',
+            'Cehia',
+            'Slovacia',
+            'Ungaria',
+            'Austria',
+            'Elveția',
+            'Belgia',
+            'Olanda',
+            'Suedia',
+            'Norvegia',
+            'Danemarca',
+            'Finlanda',
+            'Irlanda',
+            'Canada',
+            'Australia',
+          ];
+          countries.forEach((name, i) => many.push({ value: 'c' + i, label: name }));
+          set('sel-many', many);
+        });
+      </script>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

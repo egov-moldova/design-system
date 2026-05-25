@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-chip · @age/web-components</title>
+  </head>
+  <body data-component="cor-chip">
+    <main class="demo-main">
+      <section id="cor-chip" class="component-section">
+        <h2>&lt;cor-chip&gt;</h2>
+
+        <div class="subsection">
+          <h3>Types</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-chip type="filter">Filtru</cor-chip>
+              <span class="label">filter (toggle on click)</span>
+            </div>
+            <div class="cell">
+              <cor-chip type="filter" selected="">Selectat</cor-chip>
+              <span class="label">filter · selected</span>
+            </div>
+            <div class="cell">
+              <cor-chip type="input">Etichetă</cor-chip>
+              <span class="label">input</span>
+            </div>
+            <div class="cell">
+              <cor-chip type="input" removable="">Eliminabil</cor-chip>
+              <span class="label">input · removable</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Sizes</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-chip type="filter" size="sm">Mic</cor-chip>
+              <span class="label">sm</span>
+            </div>
+            <div class="cell">
+              <cor-chip type="filter" size="md">Mediu</cor-chip>
+              <span class="label">md</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Icon-start slot</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-chip type="filter">
+                <cor-icon slot="icon-start" name="filter"></cor-icon>
+                Cu pictogramă
+              </cor-chip>
+              <span class="label">filter · icon-start</span>
+            </div>
+            <div class="cell">
+              <cor-chip type="filter" selected="">
+                <cor-icon slot="icon-start" name="checkmark-large"></cor-icon>
+                Selectat
+              </cor-chip>
+              <span class="label">selected · icon-start</span>
+            </div>
+            <div class="cell">
+              <cor-chip type="input" removable="">
+                <cor-icon slot="icon-start" name="person"></cor-icon>
+                Ion Creangă
+              </cor-chip>
+              <span class="label">input · icon-start · removable</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>States (disabled)</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-chip type="filter" disabled="">Filtru</cor-chip>
+              <span class="label">filter · disabled</span>
+            </div>
+            <div class="cell">
+              <cor-chip type="filter" selected="" disabled="">Selectat</cor-chip>
+              <span class="label">filter · selected · disabled</span>
+            </div>
+            <div class="cell">
+              <cor-chip type="input" removable="" disabled="">Etichetă</cor-chip>
+              <span class="label">input · removable · disabled</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Label-prop fallback &amp; live filter group (emits corSelect / corRemove)</h3>
+          <div class="row">
+            <div class="cell">
+              <cor-chip type="filter" label="Din prop"></cor-chip>
+              <span class="label">label prop, empty slot</span>
+            </div>
+          </div>
+          <div class="row" id="demo-chip-group">
+            <cor-chip type="filter">Toate</cor-chip>
+            <cor-chip type="filter">Active</cor-chip>
+            <cor-chip type="filter" selected="">Finalizate</cor-chip>
+            <cor-chip type="input" removable="">Buget: &lt; 1000 MDL</cor-chip>
+          </div>
+          <output id="demo-chip-out" class="label" style="min-height: 1em"></output>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div class="row">
+            <div class="cell" style="width: 200px">
+              <cor-chip type="input" removable="">
+                Cerere de eliberare a certificatului de naștere depusă online prin portal
+              </cor-chip>
+              <span class="label">long label in 200px</span>
+            </div>
+            <div class="cell" style="width: 200px">
+              <cor-chip type="filter">Antreprenoriatuldigitalizat</cor-chip>
+              <span class="label">long unbroken word in 200px</span>
+            </div>
+            <div class="cell">
+              <cor-chip type="filter" removable="">Filter + removable</cor-chip>
+              <span class="label">removable on filter → no-op + warn</span>
+            </div>
+            <div class="cell">
+              <cor-chip type="input" removable="">&amp; &lt; &gt; " ' 🎉</cor-chip>
+              <span class="label">special chars + emoji</span>
+            </div>
+            <div class="cell">
+              <cor-chip type="filter">مرحبا بكم</cor-chip>
+              <span class="label">RTL (Arabic)</span>
+            </div>
+            <div class="cell">
+              <cor-chip type="filter"></cor-chip>
+              <span class="label">empty, no label → AT warn</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <script type="module">
+        customElements.whenDefined('cor-chip').then(() => {
+          const group = document.getElementById('demo-chip-group');
+          const out = document.getElementById('demo-chip-out');
+          if (!group || !out) return;
+          group.addEventListener('corSelect', ev => {
+            const label = ev.target.textContent.trim();
+            out.textContent = `corSelect → "${label}" selected=${ev.detail.selected}`;
+          });
+          group.addEventListener('corRemove', ev => {
+            const label = ev.target.textContent.trim();
+            out.textContent = `corRemove → "${label}"`;
+            ev.target.remove();
+          });
+        });
+      </script>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

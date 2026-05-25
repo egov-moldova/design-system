@@ -9,12 +9,17 @@ const __dirname = path.dirname(__filename);
 const isDev = process.env.NODE_ENV !== 'production';
 
 // In order of appearance in the UI (toolbar, addons panel, then docs)
-const devAddons = [
-  '@storybook/addon-docs',
-  '@whitespace/storybook-addon-html',
-  '@storybook/addon-vitest',
-  '@storybook/addon-a11y',
-];
+//
+// `@storybook/addon-vitest@10.4.0` is intentionally omitted: its "Run component
+// tests" UI panel calls the deprecated `vitest.init()` API and re-optimizes
+// Vite's deps mid-session, which crashes `dx:storybook` and tears down the
+// whole `yarn dev` graph. Tests remain runnable from the CLI:
+//   yarn test                  — spec (mock-doc, fast, 1485 assertions)
+//   yarn test.storybook        — storybook one-shot (CI / pre-commit gate)
+//   yarn test.storybook.watch  — storybook watch mode (manual second terminal)
+// The `storybookTest` plugin is imported directly in `vitest.config.mts`, so
+// removing the UI addon does not affect CLI test execution.
+const devAddons = ['@storybook/addon-docs', '@whitespace/storybook-addon-html', '@storybook/addon-a11y'];
 
 const prodAddons = ['@storybook/addon-docs', '@storybook/addon-links', '@storybook/addon-a11y'];
 

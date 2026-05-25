@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>cor-breadcrumb · @age/web-components</title>
+  </head>
+  <body data-component="cor-breadcrumb">
+    <main class="demo-main">
+      <section id="cor-breadcrumb" class="component-section">
+        <h2>&lt;cor-breadcrumb&gt;</h2>
+
+        <div class="subsection">
+          <h3>Data-driven (<code>items</code> prop — states)</h3>
+          <div style="width: 100%; max-width: 640px">
+            <cor-breadcrumb id="demo-breadcrumb-states"></cor-breadcrumb>
+          </div>
+          <span class="label">items set as a JS property: link, visited, loading, disabled, active</span>
+        </div>
+
+        <div class="subsection">
+          <h3>Slotted children (<code>&lt;cor-breadcrumb-item&gt;</code>)</h3>
+          <div style="width: 100%; max-width: 640px">
+            <cor-breadcrumb>
+              <cor-breadcrumb-item href="#/acasa">Acasă</cor-breadcrumb-item>
+              <cor-breadcrumb-item href="#/servicii" visited="">Servicii</cor-breadcrumb-item>
+              <cor-breadcrumb-item href="#/servicii/acte" disabled="">Acte (indisponibil)</cor-breadcrumb-item>
+              <cor-breadcrumb-item active="">Buletin de identitate</cor-breadcrumb-item>
+            </cor-breadcrumb>
+          </div>
+          <span class="label">href links, visited, disabled, active crumb</span>
+        </div>
+
+        <div class="subsection">
+          <h3>Custom separator slot</h3>
+          <div style="width: 100%; max-width: 640px">
+            <cor-breadcrumb>
+              <span slot="separator">›</span>
+              <cor-breadcrumb-item href="#/a">Acasă</cor-breadcrumb-item>
+              <cor-breadcrumb-item href="#/b">Documente</cor-breadcrumb-item>
+              <cor-breadcrumb-item active="">Detalii</cor-breadcrumb-item>
+            </cor-breadcrumb>
+          </div>
+          <span class="label">separator slot overrides the default chevron</span>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div style="width: 100%; max-width: 640px">
+            <cor-breadcrumb id="demo-breadcrumb-overflow"></cor-breadcrumb>
+          </div>
+          <span class="label">8+ crumbs → middle collapses to "…" overflow menu (maxVisible=5)</span>
+          <div style="width: 100%; max-width: 640px">
+            <cor-breadcrumb id="demo-breadcrumb-long"></cor-breadcrumb>
+          </div>
+          <span class="label">single very long label, no spaces</span>
+        </div>
+
+        <script type="module">
+          customElements.whenDefined('cor-breadcrumb').then(() => {
+            const states = document.getElementById('demo-breadcrumb-states');
+            if (states) {
+              states.items = [
+                { label: 'Acasă', href: '#/acasa' },
+                { label: 'Servicii', href: '#/servicii', visited: true },
+                { label: 'Se încarcă…', loading: true },
+                { label: 'Arhivat', disabled: true },
+                { label: 'Cerere curentă', active: true },
+              ];
+            }
+            const overflow = document.getElementById('demo-breadcrumb-overflow');
+            if (overflow) {
+              overflow.items = [
+                { label: 'Acasă', href: '#/1' },
+                { label: 'Servicii', href: '#/2' },
+                { label: 'Cetățenie', href: '#/3' },
+                { label: 'Acte', href: '#/4' },
+                { label: 'Identitate', href: '#/5' },
+                { label: 'Buletin', href: '#/6' },
+                { label: 'Programare', href: '#/7' },
+                { label: 'Confirmare', active: true },
+              ];
+            }
+            const long = document.getElementById('demo-breadcrumb-long');
+            if (long) {
+              long.items = [
+                { label: 'Acasă', href: '#/acasa' },
+                { label: 'Supercalifragilisticexpialidocious_AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', active: true },
+              ];
+            }
+          });
+        </script>
+      </section>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

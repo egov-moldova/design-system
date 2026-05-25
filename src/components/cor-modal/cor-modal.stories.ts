@@ -277,7 +277,7 @@ const renderWithIcon = () => /*html*/ `
       variant="with-icon"
       title-text="Sesiunea a expirat"
     >
-      <cor-icon slot="icon" name="circle-info-filled" size="48" color="currentColor"></cor-icon>
+      <cor-icon slot="icon" name="circle-info-filled" size="48"></cor-icon>
       Reconectați-vă pentru a continua. Modificările nesalvate au fost pierdute.
       <div slot="actions" style="display: inline-flex; gap: var(--spacing-8);">
         <cor-button variant="primary" shape="circular" data-modal-close>Reconectare</cor-button>

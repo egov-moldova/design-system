@@ -1,3 +1,19 @@
+<!-- Suppress Lit dev-build console noise BEFORE lit-html loads.
+     Lit's dev build prints "Lit is in dev mode." (code: dev-mode) and
+     "Multiple versions of Lit loaded." (code: multiple-versions) once per
+     iframe load. Storybook's web-components renderer + our compiled
+     components both pull in lit-html, which trips both warnings in dev. The
+     dev mode itself is intentional; the duplicate-instance message reflects
+     Storybook's bundled lit vs. our top-level lit (same version on disk, two
+     module instances at runtime).
+     Lit checks `globalThis.litIssuedWarnings` before logging — pre-populating
+     it with the two codes silences each permanently without altering behavior.
+     See node_modules/lit-html/development/lit-html.js:35-48. -->
+<script>
+  (globalThis.litIssuedWarnings ??= new Set()).add('dev-mode');
+  globalThis.litIssuedWarnings.add('multiple-versions');
+</script>
+
 <!-- Favicon -->
 <link rel="icon" type="image/svg+xml" href="./sb-common-assets/favicon.svg" />
 

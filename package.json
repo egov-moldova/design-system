@@ -68,6 +68,7 @@
     "test.watch": "stencil-test --project spec --watch",
     "test.storybook": "vitest --project storybook --run",
     "test.storybook.watch": "wireit",
+    "test:scripts": "node --test \"scripts/__tests__/**/*.spec.mjs\"",
     "check": "wireit",
     "check.ci": "wireit",
     "check.verify": "wireit",
@@ -88,7 +89,6 @@
     "svg:icons": "yarn svg:remove-size && yarn svg:remove-fill && yarn format && node scripts/process-svg.js -i assets/icons -s src/components/cor-icon/assets/local-icons.json",
     "sync:tokens": "node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --output tokens/figma-export",
     "sync:tokens:apply": "node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --apply",
-    "test:scripts": "node --test \"scripts/__tests__/**/*.spec.mjs\"",
     "audit:structure": "node scripts/audit/01-component-structure.mjs",
     "audit:antipatterns": "node scripts/audit/02-stencil-antipatterns.mjs",
     "audit:git-hygiene": "node scripts/audit/03-git-hygiene.mjs",
@@ -261,12 +261,11 @@
         "dx:prepare",
         "tokens.watch",
         "dx:stencil",
-        "dx:storybook",
-        "test.storybook.watch"
+        "dx:storybook"
       ]
     },
     "test.storybook.watch": {
-      "command": "vitest --project storybook",
+      "command": "wait-on --interval 200 --timeout 60000 dist/design-system/design-system.esm.js dist/design-system/design-system.css tokens/generated/core.tokens.css && vitest --watch --project storybook",
       "dependencies": [
         "dx:prepare"
       ],
@@ -389,7 +388,7 @@
       ]
     },
     "test": {
-      "command": "stencil-test --project spec",
+      "command": "node scripts/check-test-stderr.mjs --project spec",
       "files": [
         "src/**/*.ts",
         "src/**/*.tsx",
@@ -397,7 +396,8 @@
         "stencil.config.ts",
         "tsconfig.json",
         "vitest.config.mts",
-        "vitest-setup.ts"
+        "vitest-setup.ts",
+        "scripts/check-test-stderr.mjs"
       ],
       "output": [],
       "packageLocks": [

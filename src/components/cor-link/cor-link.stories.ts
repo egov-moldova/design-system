@@ -180,33 +180,33 @@ const docsSourceStates = /*html*/ `<cor-link href="#">Default</cor-link>
 const renderStandalone = () => /*html*/ `
   <div style="display: flex; flex-direction: column; gap: var(--spacing-12); padding: var(--spacing-24); align-items: flex-start; font-family: var(--font-family-primary);">
     <cor-link standalone href="/servicii/mpay">
-      <cor-icon slot="icon-start" name="arrow-right" size="20" color="currentColor"></cor-icon>
+      <cor-icon slot="icon-start" name="arrow-right" size="20"></cor-icon>
       Continuă către MPay
     </cor-link>
     <cor-link standalone variant="strict" href="/profil">
-      <cor-icon slot="icon-start" name="arrow-left" size="20" color="currentColor"></cor-icon>
+      <cor-icon slot="icon-start" name="arrow-left" size="20"></cor-icon>
       Înapoi la profil
     </cor-link>
     <cor-link standalone size="lg" href="/raport">
       Vezi raportul complet
-      <cor-icon slot="icon-end" name="arrow-up-right" size="20" color="currentColor"></cor-icon>
+      <cor-icon slot="icon-end" name="arrow-up-right" size="20"></cor-icon>
     </cor-link>
   </div>
 `;
 
 const docsSourceStandalone = /*html*/ `<cor-link standalone href="/servicii/mpay">
-  <cor-icon slot="icon-start" name="arrow-right" size="20" color="currentColor"></cor-icon>
+  <cor-icon slot="icon-start" name="arrow-right" size="20"></cor-icon>
   Continuă către MPay
 </cor-link>
 
 <cor-link standalone variant="strict" href="/profil">
-  <cor-icon slot="icon-start" name="arrow-left" size="20" color="currentColor"></cor-icon>
+  <cor-icon slot="icon-start" name="arrow-left" size="20"></cor-icon>
   Înapoi la profil
 </cor-link>
 
 <cor-link standalone size="lg" href="/raport">
   Vezi raportul complet
-  <cor-icon slot="icon-end" name="arrow-up-right" size="20" color="currentColor"></cor-icon>
+  <cor-icon slot="icon-end" name="arrow-up-right" size="20"></cor-icon>
 </cor-link>`;
 
 // ---------------------------------------------------------------------------
@@ -243,18 +243,18 @@ const docsSourceExternalLink = /*html*/ `<cor-link href="https://moldova.md" tar
 const renderWithDownload = () => /*html*/ `
   <div style="display: flex; flex-direction: column; gap: var(--spacing-12); padding: var(--spacing-24); align-items: flex-start; font-family: var(--font-family-primary);">
     <cor-link href="/files/cerere-mpay.pdf" download="cerere-mpay.pdf">
-      <cor-icon slot="icon-start" name="download" size="20" color="currentColor"></cor-icon>
+      <cor-icon slot="icon-start" name="download" size="20"></cor-icon>
       Descarcă cererea (PDF)
     </cor-link>
     <cor-link href="/files/raport-anual.xlsx" download standalone>
-      <cor-icon slot="icon-start" name="file-download" size="20" color="currentColor"></cor-icon>
+      <cor-icon slot="icon-start" name="file-download" size="20"></cor-icon>
       Raport anual 2025 (XLSX)
     </cor-link>
   </div>
 `;
 
 const docsSourceWithDownload = /*html*/ `<cor-link href="/files/cerere-mpay.pdf" download="cerere-mpay.pdf">
-  <cor-icon slot="icon-start" name="download" size="20" color="currentColor"></cor-icon>
+  <cor-icon slot="icon-start" name="download" size="20"></cor-icon>
   Descarcă cererea (PDF)
 </cor-link>`;
 
@@ -329,7 +329,7 @@ const renderEdgeCases = () => /*html*/ `
     <div>
       <p style="${cellLabelStyle}; margin: 0 0 var(--spacing-8);">Standalone with a very long label — wraps without breaking layout.</p>
       <cor-link standalone href="/raport-trimestrial">
-        <cor-icon slot="icon-start" name="arrow-right" size="20" color="currentColor"></cor-icon>
+        <cor-icon slot="icon-start" name="arrow-right" size="20"></cor-icon>
         Vezi raportul trimestrial complet cu toate metricile, comparațiile și anexele
       </cor-link>
     </div>

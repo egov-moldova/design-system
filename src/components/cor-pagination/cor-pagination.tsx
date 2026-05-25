@@ -269,9 +269,7 @@ export class CorPagination {
       >
         <span class="nav-icon">
           <slot name="prev-icon" onSlotchange={this.onPrevIconSlotChange} />
-          {!this.hasPrevIcon ? (
-            <cor-icon name="chevron-left" size={this.size === 'sm' ? 16 : 20} color="currentColor" />
-          ) : null}
+          {!this.hasPrevIcon ? <cor-icon name="chevron-left" size={this.size === 'sm' ? 16 : 20} /> : null}
         </span>
         <span class="nav-label">{this.prevLabel}</span>
       </button>
@@ -295,9 +293,7 @@ export class CorPagination {
         <span class="nav-label">{this.nextLabel}</span>
         <span class="nav-icon">
           <slot name="next-icon" onSlotchange={this.onNextIconSlotChange} />
-          {!this.hasNextIcon ? (
-            <cor-icon name="chevron-right" size={this.size === 'sm' ? 16 : 20} color="currentColor" />
-          ) : null}
+          {!this.hasNextIcon ? <cor-icon name="chevron-right" size={this.size === 'sm' ? 16 : 20} /> : null}
         </span>
       </button>
     );
