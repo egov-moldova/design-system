@@ -12,9 +12,9 @@
 
         <div class="subsection">
           <h3>Service × status pairings</h3>
-          <div class="row" style="align-items: flex-start; gap: var(--spacing-32)">
+          <div class="row--auto-fit" style="--auto-fit-min: 600px; gap: var(--spacing-32)">
             <div class="cell" style="align-items: stretch">
-              <div style="width: 100%; max-width: 420px">
+              <div style="width: 100%; max-width: 600px">
                 <cor-receipt
                   id="receipt-mpay"
                   service="mpay"
@@ -30,7 +30,7 @@
             </div>
 
             <div class="cell" style="align-items: stretch">
-              <div style="width: 100%; max-width: 420px">
+              <div style="width: 100%; max-width: 1200px">
                 <cor-receipt
                   id="receipt-mpass"
                   service="mpass"
@@ -44,7 +44,7 @@
             </div>
 
             <div class="cell" style="align-items: stretch">
-              <div style="width: 100%; max-width: 420px">
+              <div style="width: 100%; max-width: 1200px">
                 <cor-receipt
                   id="receipt-msign"
                   service="msign"
@@ -58,7 +58,7 @@
             </div>
 
             <div class="cell" style="align-items: stretch">
-              <div style="width: 100%; max-width: 420px">
+              <div style="width: 100%; max-width: 1200px">
                 <cor-receipt
                   id="receipt-mdelivery"
                   service="mdelivery"
@@ -75,7 +75,7 @@
 
         <div class="subsection">
           <h3>Slots (qr override + custom actions + extra rows)</h3>
-          <div style="width: 100%; max-width: 420px">
+          <div style="width: 100%; max-width: 1200px">
             <cor-receipt service="mpay" status="paid" amount="430,00" date="2026-05-20T10:00:00Z">
               <div slot="qr" style="font-size: 64px; line-height: 1">🔳</div>
               <div slot="extra" class="receipt-row" data-row="custom">
@@ -90,16 +90,16 @@
 
         <div class="subsection">
           <h3>Edge cases</h3>
-          <div class="row" style="align-items: flex-start; gap: var(--spacing-32)">
+          <div class="row--auto-fit" style="--auto-fit-min: 380px; gap: var(--spacing-32)">
             <div class="cell" style="align-items: stretch">
-              <div style="width: 100%; max-width: 420px">
+              <div style="width: 100%; max-width: 1200px">
                 <cor-receipt id="receipt-min" service="mpay"></cor-receipt>
               </div>
               <span class="label">Bare minimum: no status, no amount, no date, no parties, no QR</span>
             </div>
 
             <div class="cell" style="align-items: stretch">
-              <div style="width: 100%; max-width: 420px">
+              <div style="width: 100%; max-width: 1200px">
                 <cor-receipt
                   id="receipt-long"
                   service="mpay"
@@ -114,7 +114,7 @@
             </div>
 
             <div class="cell" style="align-items: stretch">
-              <div style="width: 100%; max-width: 420px">
+              <div style="width: 100%; max-width: 1200px">
                 <cor-receipt
                   service="mpay"
                   status="paid"

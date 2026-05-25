@@ -79,15 +79,11 @@ function renderComponentChrome(tag: string) {
   const prev = flatIndex > 0 ? FLAT[flatIndex - 1] : undefined;
   const next = flatIndex >= 0 && flatIndex < FLAT.length - 1 ? FLAT[flatIndex + 1] : undefined;
 
-  const lead = el(
-    'div',
-    { class: 'demo-header__lead' },
-    el('a', { class: 'demo-header__back', href: '/index.html' }, '← Table of contents'),
-    el('h1', {}, `<${tag}>`),
-  );
+  const lead = el('div', { class: 'demo-header__lead' }, el('h1', {}, `<${tag}>`));
   if (found) lead.append(el('span', { class: 'label' }, found.category.title));
 
   const nav = el('div', { class: 'demo-header__nav' });
+  nav.append(el('a', { class: 'demo-header__back', href: '/index.html' }, 'Table of contents'));
   nav.append(
     prev
       ? el('a', { href: pagePath(prev.slug, prev.entry.tag), title: 'Previous component' }, `← ${prev.entry.tag}`)

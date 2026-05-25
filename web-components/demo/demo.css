@@ -67,6 +67,7 @@ code {
   text-decoration: none;
   font-size: var(--font-size-14);
   white-space: nowrap;
+  margin-right: var(--spacing-48);
 }
 .demo-header__back:hover {
   text-decoration: underline;
@@ -74,7 +75,7 @@ code {
 .demo-header__nav {
   display: flex;
   align-items: center;
-  gap: var(--spacing-8);
+  gap: var(--spacing-24);
 }
 .demo-header__nav a,
 .demo-header__nav span {
@@ -142,11 +143,40 @@ code {
   flex-wrap: wrap;
   align-items: center;
 }
+/* Grid alternative to .row: 1+ items per row, each ≥ --auto-fit-min, never squeezed below it.
+   Override the min per-section with inline style="--auto-fit-min: 420px". */
+.row--auto-fit {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--auto-fit-min, 280px), 1fr));
+  gap: var(--spacing-24);
+  align-items: start;
+}
+/* Vertical stack for sections that should always show one wide component per row. */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-24);
+  align-items: stretch;
+}
+.stack > .cell {
+  align-items: stretch;
+}
 .cell {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--spacing-8);
+  min-width: 0;
+  max-width: 100%;
+  /* Break long unbroken strings (URLs, slugs) at the cell boundary instead of
+     letting them spill into sibling cells. Applies to text content of inline
+     children like cor-link where max-width on the child itself has no effect. */
+  overflow-wrap: anywhere;
+}
+/* Containment guard: a child of .cell never visually overflows its cell, so wide
+   intrinsic content (long buttons, unbroken words) cannot spill into siblings. */
+.cell > * {
+  max-width: 100%;
 }
 .swatch {
   display: inline-flex;
