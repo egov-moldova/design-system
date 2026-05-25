@@ -261,15 +261,13 @@
         "dx:prepare",
         "tokens.watch",
         "dx:stencil",
-        "dx:storybook",
-        "test.storybook.watch"
+        "dx:storybook"
       ]
     },
     "test.storybook.watch": {
-      "command": "wait-on --interval 200 --timeout 60000 dist/design-system/design-system.esm.js dist/design-system/design-system.css tokens/generated/core.tokens.css http-get://localhost:6007/iframe.html && vitest --watch --project storybook",
+      "command": "wait-on --interval 200 --timeout 60000 dist/design-system/design-system.esm.js dist/design-system/design-system.css tokens/generated/core.tokens.css && vitest --watch --project storybook",
       "dependencies": [
-        "dx:prepare",
-        "dx:storybook"
+        "dx:prepare"
       ],
       "service": true
     },
@@ -390,7 +388,7 @@
       ]
     },
     "test": {
-      "command": "stencil-test --project spec",
+      "command": "node scripts/check-test-stderr.mjs --project spec",
       "files": [
         "src/**/*.ts",
         "src/**/*.tsx",
@@ -398,7 +396,8 @@
         "stencil.config.ts",
         "tsconfig.json",
         "vitest.config.mts",
-        "vitest-setup.ts"
+        "vitest-setup.ts",
+        "scripts/check-test-stderr.mjs"
       ],
       "output": [],
       "packageLocks": [
