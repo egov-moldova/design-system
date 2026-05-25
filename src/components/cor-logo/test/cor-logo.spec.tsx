@@ -156,7 +156,11 @@ describe('cor-logo', () => {
     // First call: 404 → null result → cache must evict
     fetchSpy.mockRestore();
     fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValueOnce(new Response('', { status: 404 }));
-    const url = resolveLogoAssetUrl('mpay-logo-logomark-only');
+    // `resolveLogoAssetUrl` is `string | null` to absorb getAssetPath URL
+    // parse errors in non-lazy-bundle hosts (e.g. vitest browser-mode). The
+    // mock-doc spec env always returns a string, so the non-null assertion
+    // is safe here.
+    const url = resolveLogoAssetUrl('mpay-logo-logomark-only')!;
     const first = await fetchLogoSvg(url);
     expect(first).toBeNull();
     // Drain microtask so the cache-eviction `.then` runs.
@@ -187,7 +191,10 @@ describe('cor-logo', () => {
 
   it('every LOGO_NAMES entry resolves to a valid asset URL', () => {
     for (const name of LOGO_NAMES) {
+      // `resolveLogoAssetUrl` is `string | null` in non-lazy-bundle hosts; in
+      // the mock-doc spec env it always returns a string — assert that.
       const url = resolveLogoAssetUrl(name);
+      expect(url).not.toBeNull();
       expect(url).toContain(`${name}.svg`);
     }
   });

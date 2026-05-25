@@ -9,6 +9,21 @@ type ResolveResult = {
   resolvedSize: IconSize;
 };
 
+// Stencil's `getAssetPath` throws `TypeError: Failed to construct 'URL'` when
+// invoked from a context where the component's base URL hasn't been registered
+// — e.g. vitest browser-mode with `stencilVitestPlugin` (customelement compile)
+// or any host that loads components outside the lazy bundle. The sync throw
+// escapes `resolveIconAsset`, bubbles up through `loadSvg` /
+// `componentWillLoad`, and Stencil's lifecycle reporter prints it to stderr.
+// Catch it here so the icon degrades to "asset unresolved" without noise.
+function tryAssetPath(relativePath: string): string | null {
+  try {
+    return getAssetPath(relativePath);
+  } catch {
+    return null;
+  }
+}
+
 export function resolveIconAsset(
   name: string,
   size: IconSize,
@@ -19,22 +34,25 @@ export function resolveIconAsset(
 
   const sizes = entry.sizes as readonly IconSize[];
 
+  const pick = (resolved: IconSize): ResolveResult | undefined => {
+    const url = tryAssetPath(`./assets/${resolved}/${name}.svg`);
+    return url ? { url, resolvedSize: resolved } : undefined;
+  };
+
   if (sizes.includes(size)) {
-    return { url: getAssetPath(`./assets/${size}/${name}.svg`), resolvedSize: size };
+    return pick(size);
   }
 
   // Prefer a larger size (scaling down stays sharp).
   const larger = ICON_SIZES.filter(s => s > size && sizes.includes(s)).sort((a, b) => a - b);
   if (larger.length) {
-    const resolved = larger[0];
-    return { url: getAssetPath(`./assets/${resolved}/${name}.svg`), resolvedSize: resolved };
+    return pick(larger[0]);
   }
 
   // Fall back to the largest available smaller size.
   const smaller = ICON_SIZES.filter(s => s < size && sizes.includes(s)).sort((a, b) => b - a);
   if (smaller.length) {
-    const resolved = smaller[0];
-    return { url: getAssetPath(`./assets/${resolved}/${name}.svg`), resolvedSize: resolved };
+    return pick(smaller[0]);
   }
 
   return undefined;

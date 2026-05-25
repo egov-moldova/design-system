@@ -3,8 +3,17 @@ import { getAssetPath } from '@stencil/core';
 import { sanitizeSvgToElement } from '../../utils/svg-sanitizer';
 import type { LogoName } from './cor-logo.types';
 
-export function resolveLogoAssetUrl(name: LogoName): string {
-  return getAssetPath(`./assets/${name}.svg`);
+// `getAssetPath` throws `TypeError: Failed to construct 'URL'` when the
+// component's base URL isn't registered — vitest browser-mode and any
+// non-lazy-bundle host trip this. Catch it so the logo falls through to its
+// existing "failed to load" error path silently. See cor-icon.providers.ts for
+// the full diagnosis.
+export function resolveLogoAssetUrl(name: LogoName): string | null {
+  try {
+    return getAssetPath(`./assets/${name}.svg`);
+  } catch {
+    return null;
+  }
 }
 
 const svgCache = new Map<string, Promise<Element | null>>();

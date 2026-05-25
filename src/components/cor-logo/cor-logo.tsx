@@ -99,6 +99,16 @@ export class CorLogo {
     if (this.svgCacheKey === requestedName) return;
 
     const url = resolveLogoAssetUrl(requestedName);
+    if (!url) {
+      // `resolveLogoAssetUrl` returns null when Stencil's getAssetPath cannot
+      // construct a URL (e.g. vitest browser-mode without a registered base).
+      // Treat it as a fetch failure — same downstream effect as the existing
+      // null-element path below.
+      this.corLogoError.emit({ name: requestedName, reason: 'fetch-failed' });
+      this.svgCacheKey = '';
+      this.svgElement = null;
+      return;
+    }
     const element = await fetchLogoSvg(url);
 
     // Guard: prop changed during async fetch

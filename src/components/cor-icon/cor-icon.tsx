@@ -117,7 +117,13 @@ export class CorIcon {
 
     const result = resolveIconAsset(requestedName, requestedSize, manifest);
     if (!result) {
-      console.warn(`[cor-icon] Icon not found: name="${requestedName}" size=${requestedSize}`);
+      // Reached this branch even though the manifest entry exists. In
+      // production this can only happen if `entry.sizes` is empty AND no
+      // fallback (larger / smaller) is available — extremely unlikely given
+      // the manifest schema. In vitest browser-mode it's the common case: the
+      // entry exists, but `getAssetPath` cannot construct a URL outside the
+      // lazy-bundle host. Falling through silently — the host still renders
+      // as aria-hidden (see render()), no per-render console noise.
       this.svgCacheKey = '';
       this.svgElement = null;
       return;
