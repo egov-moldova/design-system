@@ -69,6 +69,19 @@ Indeterminate is a visual-only third state — `checked` semantics are unchanged
 | `"text"`       |             |
 
 
+## Dependencies
+
+### Used by
+
+ - [cor-table](../cor-table)
+
+### Graph
+```mermaid
+graph TD;
+  cor-table --> cor-checkbox
+  style cor-checkbox fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

@@ -53,6 +53,21 @@ attribute on the parent.
 | `"icon-start"` | Optional leading 16 × 16 visual (`cor-icon`).              Inherits text color via `currentColor`. |
 
 
+## Dependencies
+
+### Used by
+
+ - [cor-cookie-banner](../cor-cookie-banner)
+ - [cor-receipt](../cor-receipt)
+
+### Graph
+```mermaid
+graph TD;
+  cor-cookie-banner --> cor-tag
+  cor-receipt --> cor-tag
+  style cor-tag fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

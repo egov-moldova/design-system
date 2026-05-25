@@ -46,6 +46,11 @@ is set) inside shadow DOM. Form participation works via `formAssociated` +
 
 ## Dependencies
 
+### Used by
+
+ - [cor-cookie-banner](../cor-cookie-banner)
+ - [cor-receipt](../cor-receipt)
+
 ### Depends on
 
 - [cor-spinner](../cor-spinner)
@@ -54,6 +59,8 @@ is set) inside shadow DOM. Form participation works via `formAssociated` +
 ```mermaid
 graph TD;
   cor-button --> cor-spinner
+  cor-cookie-banner --> cor-button
+  cor-receipt --> cor-button
   style cor-button fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

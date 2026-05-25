@@ -5,6 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
+import { AccordionAppearance, AccordionChangeDetail, AccordionItemDescriptor, AccordionMode } from "./components/cor-accordion/cor-accordion.types";
 import { AvatarSize, AvatarType } from "./components/cor-avatar/cor-avatar.types";
 import { BadgeSize, BadgeType, BadgeVariant } from "./components/cor-badge/cor-badge.types";
 import { BreadcrumbItem, BreadcrumbSelectDetail } from "./components/cor-breadcrumb/cor-breadcrumb.types";
@@ -12,19 +13,25 @@ import { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } 
 import { ButtonGroupOrientation } from "./components/cor-button-group/cor-button-group.types";
 import { CheckboxChangeDetail, CheckboxSize } from "./components/cor-checkbox/cor-checkbox.types";
 import { ChipSelectEventDetail, ChipSize, ChipType } from "./components/cor-chip/cor-chip.types";
+import { CookieBannerPosition, CookieBannerVariant, CookieCategory, CookieConsentDetail } from "./components/cor-cookie-banner/cor-cookie-banner.types";
 import { DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/cor-date-input/cor-date-input.types";
+import { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerMode, DatePickerMonthChangeDetail } from "./components/cor-date-picker/cor-date-picker.types";
 import { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize } from "./components/cor-file-input/cor-file-input.types";
 import { FileItemRemoveDetail, FileItemState } from "./components/cor-file-item/cor-file-item.types";
+import { FooterContact, FooterLocale, FooterLocaleChangeDetail, FooterPartner, FooterSection, FooterSocial, FooterVariant } from "./components/cor-footer/cor-footer.types";
 import { IconSize } from "./components/cor-icon/cor-icon.types";
 import { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/cor-input/cor-input.types";
 import { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/cor-input-chip/cor-input-chip.types";
 import { LinkSize, LinkUnderline, LinkVariant } from "./components/cor-link/cor-link.types";
 import { LogoName } from "./components/cor-logo/cor-logo.types";
+import { ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/cor-modal/cor-modal.types";
 import { NotificationStyle, NotificationVariant } from "./components/cor-notification/cor-notification.types";
 import { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/cor-numeric-input/cor-numeric-input.types";
 import { PaginationChangeDetail, PaginationSize } from "./components/cor-pagination/cor-pagination.types";
 import { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/cor-phone-input/cor-phone-input.types";
+import { ProgressTrackerOrientation, ProgressTrackerStep, ProgressTrackerStepClickDetail } from "./components/cor-progress-tracker/cor-progress-tracker.types";
 import { RadioChangeDetail, RadioSize } from "./components/cor-radio/cor-radio.types";
+import { ReceiptActionDetail, ReceiptParty, ReceiptService, ReceiptStatus } from "./components/cor-receipt/cor-receipt.types";
 import { SearchInputCircularChangeDetail, SearchInputCircularSearchDetail, SearchInputCircularSize, SearchInputCircularVariant } from "./components/cor-search-input-circular/cor-search-input-circular.types";
 import { SearchInputRectangularChangeDetail, SearchInputRectangularSearchDetail, SearchInputRectangularSize, SearchInputRectangularVariant } from "./components/cor-search-input-rectangular/cor-search-input-rectangular.types";
 import { SegmentedControlChangeDetail, SegmentedControlSegment, SegmentedControlSize } from "./components/cor-segmented-control/cor-segmented-control.types";
@@ -33,9 +40,12 @@ import { SeparatorOrientation, SeparatorSize, SeparatorVariant } from "./compone
 import { ServiceButtonAppearance, ServiceButtonType } from "./components/cor-service-button/cor-service-button.types";
 import { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
 import { SwitchChangeDetail } from "./components/cor-switch/cor-switch.types";
+import { TableColumn, TableHeaderStyle, TableRowClickDetail, TableRowData, TableRowStyle, TableSelectionChangeDetail, TableSortChangeDetail, TableSortDirection } from "./components/cor-table/cor-table.types";
+import { TabDescriptor, TabsChangeDetail, TabsSize } from "./components/cor-tabs/cor-tabs.types";
 import { TagSemantic, TagSize, TagType, TagVariant } from "./components/cor-tag/cor-tag.types";
 import { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from "./components/cor-textarea/cor-textarea.types";
 import { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, TooltipVariant } from "./components/cor-tooltip/cor-tooltip.types";
+export { AccordionAppearance, AccordionChangeDetail, AccordionItemDescriptor, AccordionMode } from "./components/cor-accordion/cor-accordion.types";
 export { AvatarSize, AvatarType } from "./components/cor-avatar/cor-avatar.types";
 export { BadgeSize, BadgeType, BadgeVariant } from "./components/cor-badge/cor-badge.types";
 export { BreadcrumbItem, BreadcrumbSelectDetail } from "./components/cor-breadcrumb/cor-breadcrumb.types";
@@ -43,19 +53,25 @@ export { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } 
 export { ButtonGroupOrientation } from "./components/cor-button-group/cor-button-group.types";
 export { CheckboxChangeDetail, CheckboxSize } from "./components/cor-checkbox/cor-checkbox.types";
 export { ChipSelectEventDetail, ChipSize, ChipType } from "./components/cor-chip/cor-chip.types";
+export { CookieBannerPosition, CookieBannerVariant, CookieCategory, CookieConsentDetail } from "./components/cor-cookie-banner/cor-cookie-banner.types";
 export { DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/cor-date-input/cor-date-input.types";
+export { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerMode, DatePickerMonthChangeDetail } from "./components/cor-date-picker/cor-date-picker.types";
 export { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize } from "./components/cor-file-input/cor-file-input.types";
 export { FileItemRemoveDetail, FileItemState } from "./components/cor-file-item/cor-file-item.types";
+export { FooterContact, FooterLocale, FooterLocaleChangeDetail, FooterPartner, FooterSection, FooterSocial, FooterVariant } from "./components/cor-footer/cor-footer.types";
 export { IconSize } from "./components/cor-icon/cor-icon.types";
 export { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/cor-input/cor-input.types";
 export { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/cor-input-chip/cor-input-chip.types";
 export { LinkSize, LinkUnderline, LinkVariant } from "./components/cor-link/cor-link.types";
 export { LogoName } from "./components/cor-logo/cor-logo.types";
+export { ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/cor-modal/cor-modal.types";
 export { NotificationStyle, NotificationVariant } from "./components/cor-notification/cor-notification.types";
 export { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/cor-numeric-input/cor-numeric-input.types";
 export { PaginationChangeDetail, PaginationSize } from "./components/cor-pagination/cor-pagination.types";
 export { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/cor-phone-input/cor-phone-input.types";
+export { ProgressTrackerOrientation, ProgressTrackerStep, ProgressTrackerStepClickDetail } from "./components/cor-progress-tracker/cor-progress-tracker.types";
 export { RadioChangeDetail, RadioSize } from "./components/cor-radio/cor-radio.types";
+export { ReceiptActionDetail, ReceiptParty, ReceiptService, ReceiptStatus } from "./components/cor-receipt/cor-receipt.types";
 export { SearchInputCircularChangeDetail, SearchInputCircularSearchDetail, SearchInputCircularSize, SearchInputCircularVariant } from "./components/cor-search-input-circular/cor-search-input-circular.types";
 export { SearchInputRectangularChangeDetail, SearchInputRectangularSearchDetail, SearchInputRectangularSize, SearchInputRectangularVariant } from "./components/cor-search-input-rectangular/cor-search-input-rectangular.types";
 export { SegmentedControlChangeDetail, SegmentedControlSegment, SegmentedControlSize } from "./components/cor-segmented-control/cor-segmented-control.types";
@@ -64,10 +80,101 @@ export { SeparatorOrientation, SeparatorSize, SeparatorVariant } from "./compone
 export { ServiceButtonAppearance, ServiceButtonType } from "./components/cor-service-button/cor-service-button.types";
 export { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
 export { SwitchChangeDetail } from "./components/cor-switch/cor-switch.types";
+export { TableColumn, TableHeaderStyle, TableRowClickDetail, TableRowData, TableRowStyle, TableSelectionChangeDetail, TableSortChangeDetail, TableSortDirection } from "./components/cor-table/cor-table.types";
+export { TabDescriptor, TabsChangeDetail, TabsSize } from "./components/cor-tabs/cor-tabs.types";
 export { TagSemantic, TagSize, TagType, TagVariant } from "./components/cor-tag/cor-tag.types";
 export { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from "./components/cor-textarea/cor-textarea.types";
 export { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, TooltipVariant } from "./components/cor-tooltip/cor-tooltip.types";
 export namespace Components {
+    /**
+     * Accordion — vertical stack of collapsible regions per WAI-ARIA Accordion Pattern.
+     * Pattern A (slot container): coordinates child `cor-accordion-item` elements,
+     * enforces `mode="single"` exclusivity, manages keyboard traversal across
+     * headers (Arrow Up/Down, Home, End), and dispatches `corChange` whenever the
+     * active set changes.
+     * Consumers may either:
+     *   1. Slot `<cor-accordion-item>` children directly (declarative, recommended), or
+     *   2. Pass an `items` array (data-driven; the accordion renders the items for you).
+     * @element cor-accordion
+     * @fires corChange - Emitted on every open/close. `detail.openIds` lists every
+     *              item currently open (single entry in `mode="single"`).
+     */
+    interface CorAccordion {
+        /**
+          * Visual treatment forwarded to every child item.
+          * @default 'default'
+         */
+        "appearance": AccordionAppearance;
+        /**
+          * Layout breakpoint forwarded to every child item. Controls heading type size and vertical padding. Omit to let the responsive `@media` rule in the host CSS drive the value (768px breakpoint).
+         */
+        "breakpoint"?: 'desktop' | 'mobile';
+        /**
+          * Declarative data source. When set, the accordion renders the items for you; the default slot is ignored. Items can still be slotted for advanced use cases — choose one approach per instance.
+         */
+        "items"?: AccordionItemDescriptor[];
+        /**
+          * Accessible name forwarded to `aria-label` on the host (paired with `role="group"`). Use when the surrounding heading is not adjacent.
+         */
+        "label"?: string;
+        /**
+          * Coordination mode. - `multiple` (default) — items expand/collapse independently - `single` — opening one item collapses the others
+          * @default 'multiple'
+         */
+        "mode": AccordionMode;
+    }
+    /**
+     * Accordion item — a single collapsible row inside `cor-accordion`.
+     * Pattern B (atom-interactive): renders its own header `<button>` and a
+     * `<div role="region">` panel inside shadow DOM. The container manages
+     * exclusivity in `mode="single"`; the item owns its visual state.
+     * @element cor-accordion-item
+     * @fires corToggle - Fired when the user activates the header. The container
+     *             listens for this and decides whether to honour it
+     *             (single-mode collapsing of siblings).
+     */
+    interface CorAccordionItem {
+        /**
+          * Visual treatment. - `default` — flat header, neutral background - `trail-sites` — open header gets a brand-tint background per Figma "Trail Sites"  Set by the parent `cor-accordion` via attribute; consumers should set `appearance` on the parent, not on individual items.
+          * @default 'default'
+         */
+        "appearance": 'default' | 'trail-sites';
+        /**
+          * Layout breakpoint. Set by the parent based on the resolved size (desktop ≥ 768px, mobile below). May also be set explicitly by consumers who need a fixed render at narrow widths.
+          * @default 'desktop'
+         */
+        "breakpoint": 'desktop' | 'mobile';
+        /**
+          * Marks the item non-interactive. Header receives `aria-disabled`.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Returns the focusable header element so the parent can implement the Arrow/Home/End traversal contract from WAI-ARIA Accordion Pattern.
+         */
+        "focusHeader": () => Promise<void>;
+        /**
+          * Header text. Overridden by the `heading` slot when provided.
+         */
+        "heading"?: string;
+        /**
+          * Stable identifier used by the parent `cor-accordion` when emitting `corChange`. Auto-generated if omitted.
+         */
+        "itemId"?: string;
+        /**
+          * Whether the item is currently expanded.
+          * @default false
+         */
+        "open": boolean;
+        /**
+          * Programmatically toggle the item. Bypasses the click pipeline so the parent `cor-accordion` does not receive a `corToggle` event — used by the parent itself to coordinate `mode="single"` exclusivity.
+         */
+        "setOpen": (open: boolean) => Promise<void>;
+        /**
+          * Secondary text shown beneath the heading. Overridden by the `supporting` slot.
+         */
+        "supportingText"?: string;
+    }
     /**
      * Avatar — represents a user via a photo, initials, or a generic person icon.
      * Pattern A (atom-display): wraps a single piece of slottable content (an
@@ -451,6 +558,86 @@ export namespace Components {
         "type": ChipType;
     }
     /**
+     * Cookie banner — GDPR consent surface (molecule).
+     * Pattern B (composed molecule): renders its own header / body / categories /
+     * footer in shadow DOM. Composes `cor-button`, `cor-switch`, `cor-icon`,
+     * `cor-tag` and `cor-separator` for the interactive pieces. The host is a
+     * non-modal dialog (`role="dialog" aria-modal="false"`) anchored to the bottom
+     * or top edge of the viewport — it does NOT trap focus so the page underneath
+     * stays operable.
+     * Two variants share one element:
+     * - `variant="simple"` (default) — three CTAs (`Personalizează` / `Refuză toate`
+     *   / `Accept toate`). The "Personalizează" button switches the banner to
+     *   expanded mode.
+     * - `variant="detailed"` — same collapsed footprint, but expanding reveals a
+     *   category list (necessary / analytics / marketing by default) with per-row
+     *   `cor-switch`. Required categories render a fixed check-mark instead.
+     * Romanian voice ships as defaults; every label is overridable via the public
+     * `@Prop` surface for localisation.
+     * @element cor-cookie-banner
+     */
+    interface CorCookieBanner {
+        /**
+          * "Accept all" button label.
+         */
+        "acceptLabel"?: string;
+        /**
+          * Forwarded to the host as `aria-label`. Use this when the visible title is not descriptive enough for screen-reader users.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Plain-text body. Defaults to Romanian disclosure copy. Override via `body` slot for rich content.
+         */
+        "body"?: string;
+        /**
+          * Category catalogue rendered in detailed/expanded mode. Falls back to a three-bucket Romanian default (necessary / analytics / marketing) when omitted. Ignored when the `categories` slot is populated.
+         */
+        "categories"?: ReadonlyArray<CookieCategory>;
+        /**
+          * Close button accessible label. Defaults to Romanian "Închide".
+         */
+        "closeLabel"?: string;
+        /**
+          * Whether the banner is currently expanded (preferences view).
+          * @default false
+         */
+        "expanded": boolean;
+        /**
+          * "Customise / Manage cookies" button label.
+         */
+        "manageLabel"?: string;
+        /**
+          * Edge the banner is anchored to.
+          * @default 'bottom'
+         */
+        "position": CookieBannerPosition;
+        /**
+          * Optional href for the inline privacy-policy link.
+         */
+        "privacyHref"?: string;
+        /**
+          * Privacy-policy link label. Defaults to Romanian "Politica de confidențialitate".
+         */
+        "privacyLabel"?: string;
+        /**
+          * "Reject all" button label.
+         */
+        "rejectLabel"?: string;
+        /**
+          * "Save preferences" button label (shown only in detailed/expanded).
+         */
+        "saveLabel"?: string;
+        /**
+          * Plain-text title. Defaults to Romanian "Folosim cookie-uri".
+         */
+        "titleText"?: string;
+        /**
+          * Layout flavour. - `simple` (default) — three footer buttons, no category list on expand. - `detailed` — adds a category list with per-row toggles in the expanded   state and a single "Salvează preferințele" footer CTA.
+          * @default 'simple'
+         */
+        "variant": CookieBannerVariant;
+    }
+    /**
      * Date Input — segment-masked date entry molecule.
      * Pattern B (atom-interactive, form-associated): renders its own `<input>`
      * inside shadow DOM and overlays a ghost format hint that lets the unfilled
@@ -531,6 +718,82 @@ export namespace Components {
           * @default 'default'
          */
         "variant": DateInputVariant;
+    }
+    /**
+     * Romanian date picker — locale-aware calendar molecule.
+     * Three modes:
+     * - `single` — pick exactly one date. `value` is `string` (ISO YYYY-MM-DD) or empty.
+     * - `range` — pick a start + end. Click once to set `rangeStart`, click again to set `rangeEnd`;
+     *   click outside the range to start a new range.
+     * - `multi` — toggle individual dates. `value` is `string[]`.
+     * Three breakpoints (visual modes):
+     * - `desktop` — 320px elevated card with shadow.
+     * - `mobile` — full-width bottom-sheet style with drag handle.
+     * - `docked` — compact (no shadow) intended to attach beneath a `cor-date-input`.
+     * All weekday + month labels come from `Intl.DateTimeFormat` so the locale prop drives the language —
+     * no hard-coded strings. Romanian (`ro-RO`) is the default.
+     * Keyboard:
+     * - Arrow keys move focus by day
+     * - PageUp/PageDown change month
+     * - Shift+PageUp/PageDown change year
+     * - Home/End jump to the start/end of the visible week
+     * - Enter/Space selects the focused day
+     * @element cor-date-picker
+     */
+    interface CorDatePicker {
+        /**
+          * Accessible label for the entire picker. Defaults to a localized fallback.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Visual breakpoint / placement.
+          * @default 'desktop'
+         */
+        "breakpoint": DatePickerBreakpoint;
+        /**
+          * ISO `YYYY-MM-DD` strings that should be marked disabled (e.g. holidays).
+         */
+        "disabledDates"?: string[];
+        /**
+          * Week starts on this day of the week (0 = Sunday, 1 = Monday). Defaults to 1 (Monday) which matches the Romanian + most European convention.
+          * @default 1
+         */
+        "firstDayOfWeek": number;
+        /**
+          * Hide the "Today" quick-jump shortcut. Default keeps it visible.
+          * @default false
+         */
+        "hideTodayShortcut": boolean;
+        /**
+          * BCP-47 locale tag for weekday/month rendering. Defaults to Romanian.
+          * @default 'ro-RO'
+         */
+        "locale": string;
+        /**
+          * Inclusive upper bound (ISO `YYYY-MM-DD`). Dates after this are disabled.
+         */
+        "max"?: string;
+        /**
+          * Inclusive lower bound (ISO `YYYY-MM-DD`). Dates before this are disabled.
+         */
+        "min"?: string;
+        /**
+          * Selection mode.
+          * @default 'single'
+         */
+        "mode": DatePickerMode;
+        /**
+          * Range mode: end date (ISO `YYYY-MM-DD`). Set together with `rangeStart`.
+         */
+        "rangeEnd"?: string;
+        /**
+          * Range mode: start date (ISO `YYYY-MM-DD`). Set together with `rangeEnd`.
+         */
+        "rangeStart"?: string;
+        /**
+          * Selected value: - `single` → ISO `YYYY-MM-DD` string (or empty) - `range` → ISO array `[start, end]` (use `rangeStart`/`rangeEnd` for explicit access) - `multi` → array of ISO strings
+         */
+        "value"?: string | string[];
     }
     /**
      * File Input — drag-and-drop / click-to-browse file selection molecule.
@@ -677,6 +940,67 @@ export namespace Components {
           * @default 'uploaded'
          */
         "state": FileItemState;
+    }
+    /**
+     * Page footer — civic, multi-section organism for AGE / EVO platforms.
+     * Pattern B (composed organism): renders all sections inside shadow DOM and
+     * composes `cor-link`, `cor-logo`, and `cor-icon` for atomic pieces. The host
+     * carries `role="contentinfo"` so screen readers announce it as the page
+     * footer landmark.
+     * Two variants share one element:
+     * - `variant="evo"` (default) — full EVO platform footer: branding headline,
+     *   link columns (Servicii guvernamentale / Despre / Asistență / Legal),
+     *   contact info, social rows, partner logos, accessibility statement, and a
+     *   black legal bar with copyright + license link.
+     * - `variant="simple"` — slim variant: only the black legal bar with the
+     *   copyright text and license/terms links. Used inside scoped flows
+     *   (modals, embedded apps) where the full footer is too tall.
+     * Romanian voice ships as defaults; every visible string is overridable via
+     * the public `@Prop` surface or the `branding` / `sections` slots.
+     * @element cor-footer
+     */
+    interface CorFooter {
+        /**
+          * Optional href for the accessibility statement link in the legal bar.
+         */
+        "accessibilityHref"?: string;
+        /**
+          * Forwarded to the host as `aria-label`. Defaults to Romanian "Subsol pagină".
+         */
+        "ariaLabel"?: string;
+        /**
+          * Contact block (email / phone / address). When undefined, the section is hidden. Pass an empty object to opt out of the Romanian defaults.
+         */
+        "contact"?: FooterContact;
+        /**
+          * Plain-text copyright line shown in the legal bar. Defaults to Romanian.
+         */
+        "copyrightText"?: string;
+        /**
+          * Optional href for the privacy/license link in the legal bar.
+         */
+        "licenseHref"?: string;
+        /**
+          * Currently-selected locale for the language switcher. When undefined, the locale switcher is hidden.
+         */
+        "locale"?: FooterLocale;
+        /**
+          * Partner logo list. Each entry renders as a text badge (or anchor when `href` is set). Use the `branding` slot for custom logo SVGs.
+         */
+        "partnerLogos"?: ReadonlyArray<FooterPartner>;
+        /**
+          * Declarative link columns. Each entry renders as a titled `<nav>` with a vertical link list. Ignored when the `sections` slot is populated. Defaults to the Romanian four-column catalogue.
+         */
+        "sections"?: ReadonlyArray<FooterSection>;
+        /**
+          * Social link list. Each entry renders as a circular icon button. When undefined, the section is hidden.
+         */
+        "social"?: ReadonlyArray<FooterSocial>;
+        /**
+          * Layout flavour. - `evo` (default) — full EVO platform footer with branding, columns, contact, social, partners, legal bar. - `simple` — slim variant with only the legal bar (copyright + license links).
+          * @default 'evo'
+         */
+        "variant": FooterVariant;
     }
     /**
      * Icon — renders an inline SVG fetched on-demand from per-size asset files.
@@ -996,6 +1320,87 @@ export namespace Components {
           * @default 'mpay-logo-logomark-only'
          */
         "name": LogoName;
+    }
+    /**
+     * Modal — overlay dialog molecule.
+     * Renders a centered dialog card on top of a dimmed backdrop using the native
+     * `<dialog>` element internally. The native element provides the focus trap,
+     * ESC handling, and top-layer rendering required for WCAG 2.1 AA Modal
+     * conformance (SC 2.1.2 No Keyboard Trap reversed: focus IS trapped inside an
+     * active dialog and returned on close).
+     * Pattern B (internal DOM): the dialog, backdrop, header, body and footer all
+     * live inside shadow DOM. Consumers project content through five slots
+     * (`title`, `icon`, `image`, default body, `actions`) and toggle visibility
+     * via the `open` prop or the imperative `openModal()` / `closeModal()`
+     * methods.
+     * Variants control the header treatment:
+     * - `default` — title + close button (text-only header)
+     * - `with-image` — full-bleed hero image at top with overlaid close button
+     * - `with-icon` — leading 48px icon above the body content (no top header bar)
+     * Dismiss reasons routed through `corClose<{reason}>`:
+     * - `backdrop` — click on backdrop (suppressed by `closeOnBackdrop=false`)
+     * - `escape` — ESC keypress (suppressed by `closeOnEscape=false`)
+     * - `close-button` — trailing × button activated
+     * - `action` — programmatic via `closeModal('action')`, used by footer buttons
+     * @element cor-modal
+     */
+    interface CorModal {
+        /**
+          * Accessible name forwarded to the host as `aria-label`. Required when no title is provided.
+         */
+        "ariaLabel"?: string;
+        /**
+          * When `true`, renders a trailing × close button in the header. Activating it emits `corClose` with `reason: 'close-button'`. Hide it for required confirmation flows by setting `closable=false`.
+          * @default true
+         */
+        "closable": boolean;
+        /**
+          * Accessible label for the close × button. Defaults to the Romanian "Închide".
+          * @default 'Închide'
+         */
+        "closeLabel": string;
+        /**
+          * Imperatively close the dialog. Emits `corClose` with the supplied reason (defaults to `'action'`, intended for footer button handlers).
+         */
+        "closeModal": (reason?: ModalCloseReason) => Promise<void>;
+        /**
+          * Whether a click on the backdrop dismisses the modal. Disable for flows that demand an explicit decision (e.g. unsaved-changes confirmation).
+          * @default true
+         */
+        "closeOnBackdrop": boolean;
+        /**
+          * Whether pressing ESC dismisses the modal. Disable to enforce a deliberate confirmation; pair with `closable=false` and footer actions for the strictest dialog contract.
+          * @default true
+         */
+        "closeOnEscape": boolean;
+        /**
+          * Styles the dialog frame and footer for an irreversible action (e.g. delete account). Adds a red top border accent and is intended to be paired with a destructive primary `cor-button` in the actions slot.
+          * @default false
+         */
+        "destructive": boolean;
+        /**
+          * Whether the modal is currently shown. Reflected so consumers can target `cor-modal[open]` in selectors. Mutable so the component can flip it back to `false` on internal dismiss (backdrop / escape / close button).
+          * @default false
+         */
+        "open": boolean;
+        /**
+          * Imperatively open the dialog. Equivalent to setting `open=true`. Emits `corOpen` once the dialog is visible.
+         */
+        "openModal": () => Promise<void>;
+        /**
+          * Visual size rung. Drives the dialog max-width and the typography scale of title and body copy.
+          * @default 'md'
+         */
+        "size": ModalSize;
+        /**
+          * Title text rendered in the header. The named `title` slot, when filled, overrides this prop to allow rich content.
+         */
+        "titleText"?: string;
+        /**
+          * Header treatment. - `default` — title bar + close button - `with-image` — hero image as header (close button overlaid) - `with-icon` — leading 48px icon, no top bar
+          * @default 'default'
+         */
+        "variant": ModalVariant;
     }
     /**
      * Notification — semantic messaging banner.
@@ -1338,6 +1743,48 @@ export namespace Components {
         "variant": PhoneInputVariant;
     }
     /**
+     * Progress Tracker (Stepper) — visualises a user's position in a multi-step process.
+     * Two flavours:
+     * - **Display tracker** (`interactive=false`, default) — read-only. Each step is a
+     *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
+     *   submissions where the parent app drives navigation.
+     * - **Interactive tracker** (`interactive=true`) — each completed (and the current)
+     *   step renders as a `<button>` and emits `corStepClick`. Pending steps remain
+     *   non-actionable per the WAI-ARIA stepper pattern.
+     * State legend (Figma node 267:6905):
+     *   - `pending`    — neutral grey ring + faded number
+     *   - `current`    — brand ring + brand number, label in default text colour
+     *   - `completed`  — brand filled circle + white checkmark
+     *   - `error`      — danger ring + danger cross
+     * The component renders an ordered list with `role="list"` for AT compatibility
+     * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
+     * @element cor-progress-tracker
+     */
+    interface CorProgressTracker {
+        /**
+          * Accessible name for the surrounding list landmark. Falls back to `'Progress tracker'` (English) — Romanian consumers can pass `'Pași'`.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Optional zero-based index of the current step. When set, it overrides the `status: 'current'` value in `steps`. Mostly useful for parent-driven flows that mutate a single number rather than the whole array.
+         */
+        "currentStep"?: number;
+        /**
+          * When true, completed and current steps render as `<button>` elements and emit `corStepClick`. Pending and error steps remain non-actionable in this mode.
+          * @default false
+         */
+        "interactive": boolean;
+        /**
+          * Layout orientation.   - `horizontal` (default): steps flow left to right; labels render under indicators.   - `vertical`: steps stack top to bottom; labels render to the right of indicators.
+          * @default 'horizontal'
+         */
+        "orientation": ProgressTrackerOrientation;
+        /**
+          * Declarative step list. Each item: `{ id?, label, supportingText?, status, iconName?, disabled? }`. `status` drives the visual state and ARIA semantics — see {@link ProgressTrackerStepStatus}.
+         */
+        "steps"?: ProgressTrackerStep[];
+    }
+    /**
      * Radio — single-select form input atom.
      * Pattern B (atom-interactive, form-associated): renders its own
      * `<input type="radio">` inside shadow DOM and paints the visual circle
@@ -1402,6 +1849,143 @@ export namespace Components {
           * Value submitted with the form when this radio is checked.
          */
         "value"?: string;
+    }
+    /**
+     * Receipt — confirmation surface for a finished Moldovan e-Gov transaction
+     * (molecule).
+     * Pattern B (composed molecule): renders its own header / amount block /
+     * details list / QR / footer in shadow DOM. Composes `cor-logo`, `cor-tag`,
+     * and `cor-button` for the interactive pieces.
+     * Four sibling variants share one element via the `service` attribute —
+     * each maps to one of the e-Gov properties:
+     * - `service="mpay"` (default) — payment receipt
+     * - `service="mpass"` — authentication session log
+     * - `service="msign"` — signature receipt
+     * - `service="mdelivery"` — delivery confirmation
+     * The receipt is a presentational artifact. It does not fetch, validate,
+     * or persist; callers pass already-formatted values. The QR (default slot
+     * `qr` overrides) is generated client-side from the `qrData` prop via a
+     * vendored byte-mode QR encoder — no runtime dependency, no network.
+     * Print: the host carries `@media print` rules to hide action buttons,
+     * drop shadows, and force ink-primary text so a citizen can print the
+     * receipt without the surrounding UI bleeding through.
+     * Romanian voice ships as defaults; every label is overridable via the
+     * public `@Prop` surface for localisation.
+     * @element cor-receipt
+     */
+    interface CorReceipt {
+        /**
+          * Pre-formatted amount string (e.g. `"150,00"`). The receipt does NOT format numbers — locale-aware grouping and decimal style belong to the caller. Omit to hide the amount panel entirely (used by mpass / msign receipts that carry no monetary value).
+         */
+        "amount"?: string;
+        /**
+          * "Suma" label preceding the amount value.
+         */
+        "amountLabel"?: string;
+        /**
+          * Override for the receipt's accessible name. Defaults to the resolved title plus status (e.g. "Bon de plată — Plătit").
+         */
+        "ariaLabel"?: string;
+        /**
+          * Currency code rendered next to the amount.
+          * @default 'MDL'
+         */
+        "currency": string;
+        /**
+          * Date in ISO-8601 form (`"2026-05-22T14:32:00Z"`). Rendered via `Intl.DateTimeFormat(this.locale, …)`. Falls back to the raw string on a parse failure.
+         */
+        "date"?: string;
+        /**
+          * "Data" label preceding the date.
+         */
+        "dateLabel"?: string;
+        /**
+          * Free-text description rendered as its own row.
+         */
+        "description"?: string;
+        /**
+          * "Descriere" label preceding the free text.
+         */
+        "descriptionLabel"?: string;
+        /**
+          * "Descarcă PDF" button label.
+         */
+        "downloadLabel"?: string;
+        /**
+          * "Trimite email" button label.
+         */
+        "emailLabel"?: string;
+        /**
+          * BCP-47 locale used by the built-in date formatter. Override for non-Romanian surfaces.
+          * @default 'ro-RO'
+         */
+        "locale": string;
+        /**
+          * "Imprimă" button label.
+         */
+        "printLabel"?: string;
+        /**
+          * "Cod QR pentru verificare" accessible label on the QR figure.
+         */
+        "qrAriaLabel"?: string;
+        /**
+          * "Scanează pentru verificare" caption under the QR.
+         */
+        "qrCaption"?: string;
+        /**
+          * Payload encoded into the QR. When empty AND no `qr` slot is provided, the QR panel is hidden entirely.
+         */
+        "qrData"?: string;
+        /**
+          * Recipient party. `idnp` is auto-masked.
+         */
+        "recipient"?: ReceiptParty;
+        /**
+          * "Beneficiar" label preceding the recipient.
+         */
+        "recipientLabel"?: string;
+        /**
+          * Sender party. `idnp` is auto-masked (`2002******789`).
+         */
+        "sender"?: ReceiptParty;
+        /**
+          * "Plătitor" label preceding the sender.
+         */
+        "senderLabel"?: string;
+        /**
+          * Which e-Gov property this receipt belongs to. Drives the rendered logo, the default title, and the `service` attribute carried in event detail.
+          * @default 'mpay'
+         */
+        "service": ReceiptService;
+        /**
+          * "Distribuie" button label.
+         */
+        "shareLabel"?: string;
+        /**
+          * Whether the built-in action footer renders. Disable for read-only archival views.
+          * @default true
+         */
+        "showActions": boolean;
+        /**
+          * Transaction lifecycle state. Drives the status tag color + label.
+         */
+        "status"?: ReceiptStatus;
+        /**
+          * "Status:" inline label preceding the tag.
+         */
+        "statusLabel"?: string;
+        /**
+          * Plain-text receipt title. Defaults to a Romanian per-service string (`Bon de plată`, `Confirmare autentificare`, `Confirmare semnătură`, `Confirmare livrare`).  Attribute name is `title-text` to avoid collision with the built-in HTML `title` global attribute (Stencil warns and the global wins at runtime). Prop name remains `titleText` for ergonomic JS access.
+         */
+        "titleText"?: string;
+        /**
+          * Opaque transaction identifier rendered in the footer caption.
+         */
+        "transactionId"?: string;
+        /**
+          * "Cod tranzacție" label preceding the transaction ID.
+         */
+        "transactionIdLabel"?: string;
     }
     /**
      * Search Input (circular) — single-line search-entry control with a fully
@@ -1955,6 +2539,165 @@ export namespace Components {
         "value"?: string;
     }
     /**
+     * `cor-tab` — single tab item inside a `cor-tabs` tablist.
+     * Pattern A child: rendered as a slotted child of `cor-tabs`. Owns its own
+     * `role="tab"` host with `aria-selected`, an optional leading icon, the
+     * label, and an optional trailing numbered badge.
+     * The component is intentionally light: selection, focus management and
+     * `aria-controls` wiring are all driven by the parent `cor-tabs` via
+     * reflected attributes and DOM ids.
+     * @element cor-tab
+     */
+    interface CorTab {
+        /**
+          * Optional numbered badge displayed after the label.
+         */
+        "badgeCount"?: number;
+        /**
+          * Disables the tab. Suppresses click + keyboard activation.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Optional leading icon name resolved against the `cor-icon` registry.
+         */
+        "iconName"?: string;
+        /**
+          * Optional plain-text label when no default slot content is provided.
+         */
+        "label"?: string;
+        /**
+          * Id of the panel this tab controls. Set by the parent `cor-tabs`.
+         */
+        "panelId"?: string;
+        /**
+          * Whether this tab is the active one. Mirrors `aria-selected` and the indicator.
+          * @default false
+         */
+        "selected": boolean;
+        /**
+          * Size rung. Reflected so styles cascade independently.
+          * @default 'md'
+         */
+        "size": 'md' | 'sm';
+        /**
+          * Identity of the tab. Used by the parent `cor-tabs` to track selection.
+         */
+        "value": string;
+    }
+    /**
+     * Table — data table molecule for tabular content with optional sorting,
+     * selection, and responsive mobile collapse.
+     * Pattern B (molecule, internal DOM): renders a native `<table>` inside
+     * shadow DOM for full a11y semantics (`role="table"`, `role="columnheader"`,
+     * `aria-sort`, `aria-selected`). Composes existing primitives — `cor-checkbox`
+     * for the selection column, `cor-icon` for sort chevrons. Status badges and
+     * row actions are projected via named slots so consumers can drop in
+     * `cor-tag`, `cor-button`, or any custom content per cell.
+     * Below the `--breakpoint-mobile` (≤640 px) container query, every row
+     * collapses to a vertical key:value card stack — each `<td>` becomes a
+     * labelled line with the column title rendered inline before its value.
+     * @element cor-table
+     */
+    interface CorTable {
+        /**
+          * Accessible label propagated to the rendered `<table>` element.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Column definitions. Each entry maps a row field (`key`) to a header `label`, an optional `sortable` flag, alignment, and width.
+         */
+        "columns"?: TableColumn[];
+        /**
+          * Header treatment. `default` is the subtle gray header used on light surfaces; `inverted` is the strong dark-on-light header for emphasis.
+          * @default 'default'
+         */
+        "headerStyle": TableHeaderStyle;
+        /**
+          * Enables hover highlight on rows. Independent of selection.
+          * @default false
+         */
+        "hoverable": boolean;
+        /**
+          * Field used to uniquely identify a row. Used for selection state and stable React-like keys.
+          * @default 'id'
+         */
+        "rowIdField": string;
+        /**
+          * Row treatment. - `divided` (default) — horizontal divider line below every row. - `zebra` — alternating row backgrounds (no dividers). - `borderless` — flat rows, no dividers, no zebra.
+          * @default 'divided'
+         */
+        "rowStyle": TableRowStyle;
+        /**
+          * Row data. Each row is keyed by the field declared in `rowIdField` (defaults to `id`). Missing IDs fall back to row index.
+         */
+        "rows"?: TableRowData[];
+        /**
+          * Renders a leading checkbox column for multi-row selection.
+          * @default false
+         */
+        "selectable": boolean;
+        /**
+          * Selected row IDs (controlled). Each entry must correspond to a row's `rowIdField` value (stringified). Toggling rows or the master checkbox emits `corSelectionChange` — the consumer reflects the new array back via this prop.
+         */
+        "selectedRows"?: string[];
+        /**
+          * Currently sorted column key (controlled). When unset no sort glyph is highlighted.
+         */
+        "sortColumn"?: string;
+        /**
+          * Sort direction for `sortColumn`. Ignored when `sortColumn` is unset.
+         */
+        "sortDirection"?: TableSortDirection;
+    }
+    /**
+     * `cor-tabs` — horizontal tablist that switches the currently visible panel.
+     * Two composition modes:
+     *  1. **Declarative** (recommended for static menus): slot `<cor-tab>` children
+     *     into the default slot and matching `<div slot="panel-{value}">` blocks
+     *     into the panel slots.
+     *  2. **Data-driven**: pass a `tabs` array. The component renders each entry
+     *     as a child `cor-tab` and exposes panels via `<div slot="panel-{value}">`
+     *     elements supplied by the consumer.
+     * Pattern A (molecule, slot-based). The host carries `role="tablist"`; the
+     * tabs are rendered children with `role="tab"`; the panels are slotted into
+     * named `panel-{value}` slots and receive `role="tabpanel"` + the matching
+     * `aria-labelledby`.
+     * Keyboard contract (WAI-ARIA Authoring Practices, automatic activation):
+     * - `Tab` focuses the currently selected tab (single tab stop into the group)
+     * - `ArrowLeft` / `ArrowRight` move selection between enabled tabs (wraps)
+     * - `Home` / `End` jump to the first / last enabled tab
+     * - `Enter` / `Space` activate the focused tab (no-op for selected/disabled)
+     * Overflow: when the rendered tabs are wider than the host, the component
+     * exposes leading + trailing chevron buttons that scroll the strip. Both
+     * chevrons are mouse-only; their `aria-hidden="true"` keeps them out of the
+     * keyboard order (arrow keys already move selection without overflow help).
+     * @element cor-tabs
+     */
+    interface CorTabs {
+        /**
+          * Accessible name for the tablist. Forwarded to the host's `aria-label`.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Id of an external labelling element (overrides `aria-label`).
+         */
+        "ariaLabelledby"?: string;
+        /**
+          * Size rung. `md` is 48 px tall; `sm` is 40 px tall (mobile + dense layouts).
+          * @default 'md'
+         */
+        "size": TabsSize;
+        /**
+          * Data-driven tab list. When supplied, the component renders one `<cor-tab>` per entry. Mutually compatible with slotted children — the slotted variant takes precedence when both are present.
+         */
+        "tabs"?: TabDescriptor[];
+        /**
+          * Value of the currently selected tab. Mutable so that uncontrolled usage (click + keyboard) keeps the host attribute in sync.
+         */
+        "value"?: string;
+    }
+    /**
      * Tag — compact, non-interactive label used to mark state, category,
      * or supplementary metadata.
      * Pattern B (atom-visual): the host paints; consumers compose icons
@@ -2161,6 +2904,14 @@ export namespace Components {
         "variant": TooltipVariant;
     }
 }
+export interface CorAccordionCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorAccordionElement;
+}
+export interface CorAccordionItemCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorAccordionItemElement;
+}
 export interface CorBreadcrumbCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLCorBreadcrumbElement;
@@ -2177,9 +2928,17 @@ export interface CorChipCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLCorChipElement;
 }
+export interface CorCookieBannerCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorCookieBannerElement;
+}
 export interface CorDateInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLCorDateInputElement;
+}
+export interface CorDatePickerCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorDatePickerElement;
 }
 export interface CorFileInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -2188,6 +2947,10 @@ export interface CorFileInputCustomEvent<T> extends CustomEvent<T> {
 export interface CorFileItemCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLCorFileItemElement;
+}
+export interface CorFooterCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorFooterElement;
 }
 export interface CorInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -2200,6 +2963,10 @@ export interface CorInputChipCustomEvent<T> extends CustomEvent<T> {
 export interface CorLogoCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLCorLogoElement;
+}
+export interface CorModalCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorModalElement;
 }
 export interface CorNotificationCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -2217,9 +2984,17 @@ export interface CorPhoneInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLCorPhoneInputElement;
 }
+export interface CorProgressTrackerCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorProgressTrackerElement;
+}
 export interface CorRadioCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLCorRadioElement;
+}
+export interface CorReceiptCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorReceiptElement;
 }
 export interface CorSearchInputCircularCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -2241,6 +3016,18 @@ export interface CorSwitchCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLCorSwitchElement;
 }
+export interface CorTabCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorTabElement;
+}
+export interface CorTableCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorTableElement;
+}
+export interface CorTabsCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLCorTabsElement;
+}
 export interface CorTextareaCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLCorTextareaElement;
@@ -2250,6 +3037,66 @@ export interface CorTooltipCustomEvent<T> extends CustomEvent<T> {
     target: HTMLCorTooltipElement;
 }
 declare global {
+    interface HTMLCorAccordionElementEventMap {
+        "corChange": AccordionChangeDetail;
+    }
+    /**
+     * Accordion — vertical stack of collapsible regions per WAI-ARIA Accordion Pattern.
+     * Pattern A (slot container): coordinates child `cor-accordion-item` elements,
+     * enforces `mode="single"` exclusivity, manages keyboard traversal across
+     * headers (Arrow Up/Down, Home, End), and dispatches `corChange` whenever the
+     * active set changes.
+     * Consumers may either:
+     *   1. Slot `<cor-accordion-item>` children directly (declarative, recommended), or
+     *   2. Pass an `items` array (data-driven; the accordion renders the items for you).
+     * @element cor-accordion
+     * @fires corChange - Emitted on every open/close. `detail.openIds` lists every
+     *              item currently open (single entry in `mode="single"`).
+     */
+    interface HTMLCorAccordionElement extends Components.CorAccordion, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorAccordionElementEventMap>(type: K, listener: (this: HTMLCorAccordionElement, ev: CorAccordionCustomEvent<HTMLCorAccordionElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorAccordionElementEventMap>(type: K, listener: (this: HTMLCorAccordionElement, ev: CorAccordionCustomEvent<HTMLCorAccordionElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorAccordionElement: {
+        prototype: HTMLCorAccordionElement;
+        new (): HTMLCorAccordionElement;
+    };
+    interface HTMLCorAccordionItemElementEventMap {
+        "corToggle": {
+    open: boolean;
+    itemId: string;
+  };
+    }
+    /**
+     * Accordion item — a single collapsible row inside `cor-accordion`.
+     * Pattern B (atom-interactive): renders its own header `<button>` and a
+     * `<div role="region">` panel inside shadow DOM. The container manages
+     * exclusivity in `mode="single"`; the item owns its visual state.
+     * @element cor-accordion-item
+     * @fires corToggle - Fired when the user activates the header. The container
+     *             listens for this and decides whether to honour it
+     *             (single-mode collapsing of siblings).
+     */
+    interface HTMLCorAccordionItemElement extends Components.CorAccordionItem, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorAccordionItemElementEventMap>(type: K, listener: (this: HTMLCorAccordionItemElement, ev: CorAccordionItemCustomEvent<HTMLCorAccordionItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorAccordionItemElementEventMap>(type: K, listener: (this: HTMLCorAccordionItemElement, ev: CorAccordionItemCustomEvent<HTMLCorAccordionItemElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorAccordionItemElement: {
+        prototype: HTMLCorAccordionItemElement;
+        new (): HTMLCorAccordionItemElement;
+    };
     /**
      * Avatar — represents a user via a photo, initials, or a generic person icon.
      * Pattern A (atom-display): wraps a single piece of slottable content (an
@@ -2431,6 +3278,46 @@ declare global {
         prototype: HTMLCorChipElement;
         new (): HTMLCorChipElement;
     };
+    interface HTMLCorCookieBannerElementEventMap {
+        "corAccept": CookieConsentDetail;
+        "corReject": CookieConsentDetail;
+        "corSavePreferences": CookieConsentDetail;
+        "corExpand": void;
+        "corDismiss": void;
+    }
+    /**
+     * Cookie banner — GDPR consent surface (molecule).
+     * Pattern B (composed molecule): renders its own header / body / categories /
+     * footer in shadow DOM. Composes `cor-button`, `cor-switch`, `cor-icon`,
+     * `cor-tag` and `cor-separator` for the interactive pieces. The host is a
+     * non-modal dialog (`role="dialog" aria-modal="false"`) anchored to the bottom
+     * or top edge of the viewport — it does NOT trap focus so the page underneath
+     * stays operable.
+     * Two variants share one element:
+     * - `variant="simple"` (default) — three CTAs (`Personalizează` / `Refuză toate`
+     *   / `Accept toate`). The "Personalizează" button switches the banner to
+     *   expanded mode.
+     * - `variant="detailed"` — same collapsed footprint, but expanding reveals a
+     *   category list (necessary / analytics / marketing by default) with per-row
+     *   `cor-switch`. Required categories render a fixed check-mark instead.
+     * Romanian voice ships as defaults; every label is overridable via the public
+     * `@Prop` surface for localisation.
+     * @element cor-cookie-banner
+     */
+    interface HTMLCorCookieBannerElement extends Components.CorCookieBanner, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorCookieBannerElementEventMap>(type: K, listener: (this: HTMLCorCookieBannerElement, ev: CorCookieBannerCustomEvent<HTMLCorCookieBannerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorCookieBannerElementEventMap>(type: K, listener: (this: HTMLCorCookieBannerElement, ev: CorCookieBannerCustomEvent<HTMLCorCookieBannerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorCookieBannerElement: {
+        prototype: HTMLCorCookieBannerElement;
+        new (): HTMLCorCookieBannerElement;
+    };
     interface HTMLCorDateInputElementEventMap {
         "corInput": DateInputTypingDetail;
         "corChange": DateInputChangeDetail;
@@ -2458,6 +3345,45 @@ declare global {
     var HTMLCorDateInputElement: {
         prototype: HTMLCorDateInputElement;
         new (): HTMLCorDateInputElement;
+    };
+    interface HTMLCorDatePickerElementEventMap {
+        "corChange": DatePickerChangeDetail;
+        "corMonthChange": DatePickerMonthChangeDetail;
+    }
+    /**
+     * Romanian date picker — locale-aware calendar molecule.
+     * Three modes:
+     * - `single` — pick exactly one date. `value` is `string` (ISO YYYY-MM-DD) or empty.
+     * - `range` — pick a start + end. Click once to set `rangeStart`, click again to set `rangeEnd`;
+     *   click outside the range to start a new range.
+     * - `multi` — toggle individual dates. `value` is `string[]`.
+     * Three breakpoints (visual modes):
+     * - `desktop` — 320px elevated card with shadow.
+     * - `mobile` — full-width bottom-sheet style with drag handle.
+     * - `docked` — compact (no shadow) intended to attach beneath a `cor-date-input`.
+     * All weekday + month labels come from `Intl.DateTimeFormat` so the locale prop drives the language —
+     * no hard-coded strings. Romanian (`ro-RO`) is the default.
+     * Keyboard:
+     * - Arrow keys move focus by day
+     * - PageUp/PageDown change month
+     * - Shift+PageUp/PageDown change year
+     * - Home/End jump to the start/end of the visible week
+     * - Enter/Space selects the focused day
+     * @element cor-date-picker
+     */
+    interface HTMLCorDatePickerElement extends Components.CorDatePicker, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorDatePickerElementEventMap>(type: K, listener: (this: HTMLCorDatePickerElement, ev: CorDatePickerCustomEvent<HTMLCorDatePickerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorDatePickerElementEventMap>(type: K, listener: (this: HTMLCorDatePickerElement, ev: CorDatePickerCustomEvent<HTMLCorDatePickerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorDatePickerElement: {
+        prototype: HTMLCorDatePickerElement;
+        new (): HTMLCorDatePickerElement;
     };
     interface HTMLCorFileInputElementEventMap {
         "corChange": FileInputChangeDetail;
@@ -2521,6 +3447,41 @@ declare global {
     var HTMLCorFileItemElement: {
         prototype: HTMLCorFileItemElement;
         new (): HTMLCorFileItemElement;
+    };
+    interface HTMLCorFooterElementEventMap {
+        "corLocaleChange": FooterLocaleChangeDetail;
+    }
+    /**
+     * Page footer — civic, multi-section organism for AGE / EVO platforms.
+     * Pattern B (composed organism): renders all sections inside shadow DOM and
+     * composes `cor-link`, `cor-logo`, and `cor-icon` for atomic pieces. The host
+     * carries `role="contentinfo"` so screen readers announce it as the page
+     * footer landmark.
+     * Two variants share one element:
+     * - `variant="evo"` (default) — full EVO platform footer: branding headline,
+     *   link columns (Servicii guvernamentale / Despre / Asistență / Legal),
+     *   contact info, social rows, partner logos, accessibility statement, and a
+     *   black legal bar with copyright + license link.
+     * - `variant="simple"` — slim variant: only the black legal bar with the
+     *   copyright text and license/terms links. Used inside scoped flows
+     *   (modals, embedded apps) where the full footer is too tall.
+     * Romanian voice ships as defaults; every visible string is overridable via
+     * the public `@Prop` surface or the `branding` / `sections` slots.
+     * @element cor-footer
+     */
+    interface HTMLCorFooterElement extends Components.CorFooter, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorFooterElementEventMap>(type: K, listener: (this: HTMLCorFooterElement, ev: CorFooterCustomEvent<HTMLCorFooterElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorFooterElementEventMap>(type: K, listener: (this: HTMLCorFooterElement, ev: CorFooterCustomEvent<HTMLCorFooterElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorFooterElement: {
+        prototype: HTMLCorFooterElement;
+        new (): HTMLCorFooterElement;
     };
     /**
      * Icon — renders an inline SVG fetched on-demand from per-size asset files.
@@ -2647,6 +3608,47 @@ declare global {
     var HTMLCorLogoElement: {
         prototype: HTMLCorLogoElement;
         new (): HTMLCorLogoElement;
+    };
+    interface HTMLCorModalElementEventMap {
+        "corOpen": void;
+        "corClose": ModalCloseEvent;
+    }
+    /**
+     * Modal — overlay dialog molecule.
+     * Renders a centered dialog card on top of a dimmed backdrop using the native
+     * `<dialog>` element internally. The native element provides the focus trap,
+     * ESC handling, and top-layer rendering required for WCAG 2.1 AA Modal
+     * conformance (SC 2.1.2 No Keyboard Trap reversed: focus IS trapped inside an
+     * active dialog and returned on close).
+     * Pattern B (internal DOM): the dialog, backdrop, header, body and footer all
+     * live inside shadow DOM. Consumers project content through five slots
+     * (`title`, `icon`, `image`, default body, `actions`) and toggle visibility
+     * via the `open` prop or the imperative `openModal()` / `closeModal()`
+     * methods.
+     * Variants control the header treatment:
+     * - `default` — title + close button (text-only header)
+     * - `with-image` — full-bleed hero image at top with overlaid close button
+     * - `with-icon` — leading 48px icon above the body content (no top header bar)
+     * Dismiss reasons routed through `corClose<{reason}>`:
+     * - `backdrop` — click on backdrop (suppressed by `closeOnBackdrop=false`)
+     * - `escape` — ESC keypress (suppressed by `closeOnEscape=false`)
+     * - `close-button` — trailing × button activated
+     * - `action` — programmatic via `closeModal('action')`, used by footer buttons
+     * @element cor-modal
+     */
+    interface HTMLCorModalElement extends Components.CorModal, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorModalElementEventMap>(type: K, listener: (this: HTMLCorModalElement, ev: CorModalCustomEvent<HTMLCorModalElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorModalElementEventMap>(type: K, listener: (this: HTMLCorModalElement, ev: CorModalCustomEvent<HTMLCorModalElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorModalElement: {
+        prototype: HTMLCorModalElement;
+        new (): HTMLCorModalElement;
     };
     interface HTMLCorNotificationElementEventMap {
         "corClose": void;
@@ -2785,6 +3787,41 @@ declare global {
         prototype: HTMLCorPhoneInputElement;
         new (): HTMLCorPhoneInputElement;
     };
+    interface HTMLCorProgressTrackerElementEventMap {
+        "corStepClick": ProgressTrackerStepClickDetail;
+    }
+    /**
+     * Progress Tracker (Stepper) — visualises a user's position in a multi-step process.
+     * Two flavours:
+     * - **Display tracker** (`interactive=false`, default) — read-only. Each step is a
+     *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
+     *   submissions where the parent app drives navigation.
+     * - **Interactive tracker** (`interactive=true`) — each completed (and the current)
+     *   step renders as a `<button>` and emits `corStepClick`. Pending steps remain
+     *   non-actionable per the WAI-ARIA stepper pattern.
+     * State legend (Figma node 267:6905):
+     *   - `pending`    — neutral grey ring + faded number
+     *   - `current`    — brand ring + brand number, label in default text colour
+     *   - `completed`  — brand filled circle + white checkmark
+     *   - `error`      — danger ring + danger cross
+     * The component renders an ordered list with `role="list"` for AT compatibility
+     * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
+     * @element cor-progress-tracker
+     */
+    interface HTMLCorProgressTrackerElement extends Components.CorProgressTracker, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorProgressTrackerElementEventMap>(type: K, listener: (this: HTMLCorProgressTrackerElement, ev: CorProgressTrackerCustomEvent<HTMLCorProgressTrackerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorProgressTrackerElementEventMap>(type: K, listener: (this: HTMLCorProgressTrackerElement, ev: CorProgressTrackerCustomEvent<HTMLCorProgressTrackerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorProgressTrackerElement: {
+        prototype: HTMLCorProgressTrackerElement;
+        new (): HTMLCorProgressTrackerElement;
+    };
     interface HTMLCorRadioElementEventMap {
         "corChange": RadioChangeDetail;
         "corFocus": FocusEvent;
@@ -2813,6 +3850,49 @@ declare global {
     var HTMLCorRadioElement: {
         prototype: HTMLCorRadioElement;
         new (): HTMLCorRadioElement;
+    };
+    interface HTMLCorReceiptElementEventMap {
+        "corDownload": ReceiptActionDetail;
+        "corShare": ReceiptActionDetail;
+        "corEmail": ReceiptActionDetail;
+        "corPrint": ReceiptActionDetail;
+    }
+    /**
+     * Receipt — confirmation surface for a finished Moldovan e-Gov transaction
+     * (molecule).
+     * Pattern B (composed molecule): renders its own header / amount block /
+     * details list / QR / footer in shadow DOM. Composes `cor-logo`, `cor-tag`,
+     * and `cor-button` for the interactive pieces.
+     * Four sibling variants share one element via the `service` attribute —
+     * each maps to one of the e-Gov properties:
+     * - `service="mpay"` (default) — payment receipt
+     * - `service="mpass"` — authentication session log
+     * - `service="msign"` — signature receipt
+     * - `service="mdelivery"` — delivery confirmation
+     * The receipt is a presentational artifact. It does not fetch, validate,
+     * or persist; callers pass already-formatted values. The QR (default slot
+     * `qr` overrides) is generated client-side from the `qrData` prop via a
+     * vendored byte-mode QR encoder — no runtime dependency, no network.
+     * Print: the host carries `@media print` rules to hide action buttons,
+     * drop shadows, and force ink-primary text so a citizen can print the
+     * receipt without the surrounding UI bleeding through.
+     * Romanian voice ships as defaults; every label is overridable via the
+     * public `@Prop` surface for localisation.
+     * @element cor-receipt
+     */
+    interface HTMLCorReceiptElement extends Components.CorReceipt, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorReceiptElementEventMap>(type: K, listener: (this: HTMLCorReceiptElement, ev: CorReceiptCustomEvent<HTMLCorReceiptElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorReceiptElementEventMap>(type: K, listener: (this: HTMLCorReceiptElement, ev: CorReceiptCustomEvent<HTMLCorReceiptElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorReceiptElement: {
+        prototype: HTMLCorReceiptElement;
+        new (): HTMLCorReceiptElement;
     };
     interface HTMLCorSearchInputCircularElementEventMap {
         "corInput": SearchInputCircularChangeDetail;
@@ -3040,6 +4120,107 @@ declare global {
         prototype: HTMLCorSwitchElement;
         new (): HTMLCorSwitchElement;
     };
+    interface HTMLCorTabElementEventMap {
+        "corTabActivate": { value: string };
+    }
+    /**
+     * `cor-tab` — single tab item inside a `cor-tabs` tablist.
+     * Pattern A child: rendered as a slotted child of `cor-tabs`. Owns its own
+     * `role="tab"` host with `aria-selected`, an optional leading icon, the
+     * label, and an optional trailing numbered badge.
+     * The component is intentionally light: selection, focus management and
+     * `aria-controls` wiring are all driven by the parent `cor-tabs` via
+     * reflected attributes and DOM ids.
+     * @element cor-tab
+     */
+    interface HTMLCorTabElement extends Components.CorTab, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorTabElementEventMap>(type: K, listener: (this: HTMLCorTabElement, ev: CorTabCustomEvent<HTMLCorTabElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorTabElementEventMap>(type: K, listener: (this: HTMLCorTabElement, ev: CorTabCustomEvent<HTMLCorTabElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorTabElement: {
+        prototype: HTMLCorTabElement;
+        new (): HTMLCorTabElement;
+    };
+    interface HTMLCorTableElementEventMap {
+        "corSort": TableSortChangeDetail;
+        "corRowClick": TableRowClickDetail;
+        "corSelectionChange": TableSelectionChangeDetail;
+    }
+    /**
+     * Table — data table molecule for tabular content with optional sorting,
+     * selection, and responsive mobile collapse.
+     * Pattern B (molecule, internal DOM): renders a native `<table>` inside
+     * shadow DOM for full a11y semantics (`role="table"`, `role="columnheader"`,
+     * `aria-sort`, `aria-selected`). Composes existing primitives — `cor-checkbox`
+     * for the selection column, `cor-icon` for sort chevrons. Status badges and
+     * row actions are projected via named slots so consumers can drop in
+     * `cor-tag`, `cor-button`, or any custom content per cell.
+     * Below the `--breakpoint-mobile` (≤640 px) container query, every row
+     * collapses to a vertical key:value card stack — each `<td>` becomes a
+     * labelled line with the column title rendered inline before its value.
+     * @element cor-table
+     */
+    interface HTMLCorTableElement extends Components.CorTable, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorTableElementEventMap>(type: K, listener: (this: HTMLCorTableElement, ev: CorTableCustomEvent<HTMLCorTableElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorTableElementEventMap>(type: K, listener: (this: HTMLCorTableElement, ev: CorTableCustomEvent<HTMLCorTableElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorTableElement: {
+        prototype: HTMLCorTableElement;
+        new (): HTMLCorTableElement;
+    };
+    interface HTMLCorTabsElementEventMap {
+        "corChange": TabsChangeDetail;
+    }
+    /**
+     * `cor-tabs` — horizontal tablist that switches the currently visible panel.
+     * Two composition modes:
+     *  1. **Declarative** (recommended for static menus): slot `<cor-tab>` children
+     *     into the default slot and matching `<div slot="panel-{value}">` blocks
+     *     into the panel slots.
+     *  2. **Data-driven**: pass a `tabs` array. The component renders each entry
+     *     as a child `cor-tab` and exposes panels via `<div slot="panel-{value}">`
+     *     elements supplied by the consumer.
+     * Pattern A (molecule, slot-based). The host carries `role="tablist"`; the
+     * tabs are rendered children with `role="tab"`; the panels are slotted into
+     * named `panel-{value}` slots and receive `role="tabpanel"` + the matching
+     * `aria-labelledby`.
+     * Keyboard contract (WAI-ARIA Authoring Practices, automatic activation):
+     * - `Tab` focuses the currently selected tab (single tab stop into the group)
+     * - `ArrowLeft` / `ArrowRight` move selection between enabled tabs (wraps)
+     * - `Home` / `End` jump to the first / last enabled tab
+     * - `Enter` / `Space` activate the focused tab (no-op for selected/disabled)
+     * Overflow: when the rendered tabs are wider than the host, the component
+     * exposes leading + trailing chevron buttons that scroll the strip. Both
+     * chevrons are mouse-only; their `aria-hidden="true"` keeps them out of the
+     * keyboard order (arrow keys already move selection without overflow help).
+     * @element cor-tabs
+     */
+    interface HTMLCorTabsElement extends Components.CorTabs, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLCorTabsElementEventMap>(type: K, listener: (this: HTMLCorTabsElement, ev: CorTabsCustomEvent<HTMLCorTabsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLCorTabsElementEventMap>(type: K, listener: (this: HTMLCorTabsElement, ev: CorTabsCustomEvent<HTMLCorTabsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLCorTabsElement: {
+        prototype: HTMLCorTabsElement;
+        new (): HTMLCorTabsElement;
+    };
     /**
      * Tag — compact, non-interactive label used to mark state, category,
      * or supplementary metadata.
@@ -3136,6 +4317,8 @@ declare global {
         new (): HTMLCorTooltipElement;
     };
     interface HTMLElementTagNameMap {
+        "cor-accordion": HTMLCorAccordionElement;
+        "cor-accordion-item": HTMLCorAccordionItemElement;
         "cor-avatar": HTMLCorAvatarElement;
         "cor-badge": HTMLCorBadgeElement;
         "cor-breadcrumb": HTMLCorBreadcrumbElement;
@@ -3144,19 +4327,25 @@ declare global {
         "cor-button-group": HTMLCorButtonGroupElement;
         "cor-checkbox": HTMLCorCheckboxElement;
         "cor-chip": HTMLCorChipElement;
+        "cor-cookie-banner": HTMLCorCookieBannerElement;
         "cor-date-input": HTMLCorDateInputElement;
+        "cor-date-picker": HTMLCorDatePickerElement;
         "cor-file-input": HTMLCorFileInputElement;
         "cor-file-item": HTMLCorFileItemElement;
+        "cor-footer": HTMLCorFooterElement;
         "cor-icon": HTMLCorIconElement;
         "cor-input": HTMLCorInputElement;
         "cor-input-chip": HTMLCorInputChipElement;
         "cor-link": HTMLCorLinkElement;
         "cor-logo": HTMLCorLogoElement;
+        "cor-modal": HTMLCorModalElement;
         "cor-notification": HTMLCorNotificationElement;
         "cor-numeric-input": HTMLCorNumericInputElement;
         "cor-pagination": HTMLCorPaginationElement;
         "cor-phone-input": HTMLCorPhoneInputElement;
+        "cor-progress-tracker": HTMLCorProgressTrackerElement;
         "cor-radio": HTMLCorRadioElement;
+        "cor-receipt": HTMLCorReceiptElement;
         "cor-search-input-circular": HTMLCorSearchInputCircularElement;
         "cor-search-input-rectangular": HTMLCorSearchInputRectangularElement;
         "cor-segmented-control": HTMLCorSegmentedControlElement;
@@ -3165,12 +4354,109 @@ declare global {
         "cor-service-button": HTMLCorServiceButtonElement;
         "cor-spinner": HTMLCorSpinnerElement;
         "cor-switch": HTMLCorSwitchElement;
+        "cor-tab": HTMLCorTabElement;
+        "cor-table": HTMLCorTableElement;
+        "cor-tabs": HTMLCorTabsElement;
         "cor-tag": HTMLCorTagElement;
         "cor-textarea": HTMLCorTextareaElement;
         "cor-tooltip": HTMLCorTooltipElement;
     }
 }
 declare namespace LocalJSX {
+    type OneOf<K extends string, PropT, AttrT = PropT> = { [P in K]: PropT } & { [P in `attr:${K}` | `prop:${K}`]?: never } | { [P in `attr:${K}`]: AttrT } & { [P in K | `prop:${K}`]?: never } | { [P in `prop:${K}`]: PropT } & { [P in K | `attr:${K}`]?: never };
+
+    /**
+     * Accordion — vertical stack of collapsible regions per WAI-ARIA Accordion Pattern.
+     * Pattern A (slot container): coordinates child `cor-accordion-item` elements,
+     * enforces `mode="single"` exclusivity, manages keyboard traversal across
+     * headers (Arrow Up/Down, Home, End), and dispatches `corChange` whenever the
+     * active set changes.
+     * Consumers may either:
+     *   1. Slot `<cor-accordion-item>` children directly (declarative, recommended), or
+     *   2. Pass an `items` array (data-driven; the accordion renders the items for you).
+     * @element cor-accordion
+     * @fires corChange - Emitted on every open/close. `detail.openIds` lists every
+     *              item currently open (single entry in `mode="single"`).
+     */
+    interface CorAccordion {
+        /**
+          * Visual treatment forwarded to every child item.
+          * @default 'default'
+         */
+        "appearance"?: AccordionAppearance;
+        /**
+          * Layout breakpoint forwarded to every child item. Controls heading type size and vertical padding. Omit to let the responsive `@media` rule in the host CSS drive the value (768px breakpoint).
+         */
+        "breakpoint"?: 'desktop' | 'mobile';
+        /**
+          * Declarative data source. When set, the accordion renders the items for you; the default slot is ignored. Items can still be slotted for advanced use cases — choose one approach per instance.
+         */
+        "items"?: AccordionItemDescriptor[];
+        /**
+          * Accessible name forwarded to `aria-label` on the host (paired with `role="group"`). Use when the surrounding heading is not adjacent.
+         */
+        "label"?: string;
+        /**
+          * Coordination mode. - `multiple` (default) — items expand/collapse independently - `single` — opening one item collapses the others
+          * @default 'multiple'
+         */
+        "mode"?: AccordionMode;
+        /**
+          * Emitted whenever the open set changes.
+         */
+        "onCorChange"?: (event: CorAccordionCustomEvent<AccordionChangeDetail>) => void;
+    }
+    /**
+     * Accordion item — a single collapsible row inside `cor-accordion`.
+     * Pattern B (atom-interactive): renders its own header `<button>` and a
+     * `<div role="region">` panel inside shadow DOM. The container manages
+     * exclusivity in `mode="single"`; the item owns its visual state.
+     * @element cor-accordion-item
+     * @fires corToggle - Fired when the user activates the header. The container
+     *             listens for this and decides whether to honour it
+     *             (single-mode collapsing of siblings).
+     */
+    interface CorAccordionItem {
+        /**
+          * Visual treatment. - `default` — flat header, neutral background - `trail-sites` — open header gets a brand-tint background per Figma "Trail Sites"  Set by the parent `cor-accordion` via attribute; consumers should set `appearance` on the parent, not on individual items.
+          * @default 'default'
+         */
+        "appearance"?: 'default' | 'trail-sites';
+        /**
+          * Layout breakpoint. Set by the parent based on the resolved size (desktop ≥ 768px, mobile below). May also be set explicitly by consumers who need a fixed render at narrow widths.
+          * @default 'desktop'
+         */
+        "breakpoint"?: 'desktop' | 'mobile';
+        /**
+          * Marks the item non-interactive. Header receives `aria-disabled`.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Header text. Overridden by the `heading` slot when provided.
+         */
+        "heading"?: string;
+        /**
+          * Stable identifier used by the parent `cor-accordion` when emitting `corChange`. Auto-generated if omitted.
+         */
+        "itemId"?: string;
+        /**
+          * Emitted when the user activates the header (click / Enter / Space). The parent `cor-accordion` may cancel the implicit toggle in `mode="single"` to enforce exclusivity.
+         */
+        "onCorToggle"?: (event: CorAccordionItemCustomEvent<{
+    open: boolean;
+    itemId: string;
+  }>) => void;
+        /**
+          * Whether the item is currently expanded.
+          * @default false
+         */
+        "open"?: boolean;
+        /**
+          * Secondary text shown beneath the heading. Overridden by the `supporting` slot.
+         */
+        "supportingText"?: string;
+    }
     /**
      * Avatar — represents a user via a photo, initials, or a generic person icon.
      * Pattern A (atom-display): wraps a single piece of slottable content (an
@@ -3590,6 +4876,106 @@ declare namespace LocalJSX {
         "type"?: ChipType;
     }
     /**
+     * Cookie banner — GDPR consent surface (molecule).
+     * Pattern B (composed molecule): renders its own header / body / categories /
+     * footer in shadow DOM. Composes `cor-button`, `cor-switch`, `cor-icon`,
+     * `cor-tag` and `cor-separator` for the interactive pieces. The host is a
+     * non-modal dialog (`role="dialog" aria-modal="false"`) anchored to the bottom
+     * or top edge of the viewport — it does NOT trap focus so the page underneath
+     * stays operable.
+     * Two variants share one element:
+     * - `variant="simple"` (default) — three CTAs (`Personalizează` / `Refuză toate`
+     *   / `Accept toate`). The "Personalizează" button switches the banner to
+     *   expanded mode.
+     * - `variant="detailed"` — same collapsed footprint, but expanding reveals a
+     *   category list (necessary / analytics / marketing by default) with per-row
+     *   `cor-switch`. Required categories render a fixed check-mark instead.
+     * Romanian voice ships as defaults; every label is overridable via the public
+     * `@Prop` surface for localisation.
+     * @element cor-cookie-banner
+     */
+    interface CorCookieBanner {
+        /**
+          * "Accept all" button label.
+         */
+        "acceptLabel"?: string;
+        /**
+          * Forwarded to the host as `aria-label`. Use this when the visible title is not descriptive enough for screen-reader users.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Plain-text body. Defaults to Romanian disclosure copy. Override via `body` slot for rich content.
+         */
+        "body"?: string;
+        /**
+          * Category catalogue rendered in detailed/expanded mode. Falls back to a three-bucket Romanian default (necessary / analytics / marketing) when omitted. Ignored when the `categories` slot is populated.
+         */
+        "categories"?: ReadonlyArray<CookieCategory>;
+        /**
+          * Close button accessible label. Defaults to Romanian "Închide".
+         */
+        "closeLabel"?: string;
+        /**
+          * Whether the banner is currently expanded (preferences view).
+          * @default false
+         */
+        "expanded"?: boolean;
+        /**
+          * "Customise / Manage cookies" button label.
+         */
+        "manageLabel"?: string;
+        /**
+          * Fires when the user accepts every (non-required) category.
+         */
+        "onCorAccept"?: (event: CorCookieBannerCustomEvent<CookieConsentDetail>) => void;
+        /**
+          * Fires when the banner transitions from expanded → collapsed (via close / Esc).
+         */
+        "onCorDismiss"?: (event: CorCookieBannerCustomEvent<void>) => void;
+        /**
+          * Fires when the banner transitions from collapsed → expanded.
+         */
+        "onCorExpand"?: (event: CorCookieBannerCustomEvent<void>) => void;
+        /**
+          * Fires when the user rejects every non-required category.
+         */
+        "onCorReject"?: (event: CorCookieBannerCustomEvent<CookieConsentDetail>) => void;
+        /**
+          * Fires when the user saves a custom selection (detailed/expanded only).
+         */
+        "onCorSavePreferences"?: (event: CorCookieBannerCustomEvent<CookieConsentDetail>) => void;
+        /**
+          * Edge the banner is anchored to.
+          * @default 'bottom'
+         */
+        "position"?: CookieBannerPosition;
+        /**
+          * Optional href for the inline privacy-policy link.
+         */
+        "privacyHref"?: string;
+        /**
+          * Privacy-policy link label. Defaults to Romanian "Politica de confidențialitate".
+         */
+        "privacyLabel"?: string;
+        /**
+          * "Reject all" button label.
+         */
+        "rejectLabel"?: string;
+        /**
+          * "Save preferences" button label (shown only in detailed/expanded).
+         */
+        "saveLabel"?: string;
+        /**
+          * Plain-text title. Defaults to Romanian "Folosim cookie-uri".
+         */
+        "titleText"?: string;
+        /**
+          * Layout flavour. - `simple` (default) — three footer buttons, no category list on expand. - `detailed` — adds a category list with per-row toggles in the expanded   state and a single "Salvează preferințele" footer CTA.
+          * @default 'simple'
+         */
+        "variant"?: CookieBannerVariant;
+    }
+    /**
      * Date Input — segment-masked date entry molecule.
      * Pattern B (atom-interactive, form-associated): renders its own `<input>`
      * inside shadow DOM and overlays a ghost format hint that lets the unfilled
@@ -3690,6 +5076,90 @@ declare namespace LocalJSX {
           * @default 'default'
          */
         "variant"?: DateInputVariant;
+    }
+    /**
+     * Romanian date picker — locale-aware calendar molecule.
+     * Three modes:
+     * - `single` — pick exactly one date. `value` is `string` (ISO YYYY-MM-DD) or empty.
+     * - `range` — pick a start + end. Click once to set `rangeStart`, click again to set `rangeEnd`;
+     *   click outside the range to start a new range.
+     * - `multi` — toggle individual dates. `value` is `string[]`.
+     * Three breakpoints (visual modes):
+     * - `desktop` — 320px elevated card with shadow.
+     * - `mobile` — full-width bottom-sheet style with drag handle.
+     * - `docked` — compact (no shadow) intended to attach beneath a `cor-date-input`.
+     * All weekday + month labels come from `Intl.DateTimeFormat` so the locale prop drives the language —
+     * no hard-coded strings. Romanian (`ro-RO`) is the default.
+     * Keyboard:
+     * - Arrow keys move focus by day
+     * - PageUp/PageDown change month
+     * - Shift+PageUp/PageDown change year
+     * - Home/End jump to the start/end of the visible week
+     * - Enter/Space selects the focused day
+     * @element cor-date-picker
+     */
+    interface CorDatePicker {
+        /**
+          * Accessible label for the entire picker. Defaults to a localized fallback.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Visual breakpoint / placement.
+          * @default 'desktop'
+         */
+        "breakpoint"?: DatePickerBreakpoint;
+        /**
+          * ISO `YYYY-MM-DD` strings that should be marked disabled (e.g. holidays).
+         */
+        "disabledDates"?: string[];
+        /**
+          * Week starts on this day of the week (0 = Sunday, 1 = Monday). Defaults to 1 (Monday) which matches the Romanian + most European convention.
+          * @default 1
+         */
+        "firstDayOfWeek"?: number;
+        /**
+          * Hide the "Today" quick-jump shortcut. Default keeps it visible.
+          * @default false
+         */
+        "hideTodayShortcut"?: boolean;
+        /**
+          * BCP-47 locale tag for weekday/month rendering. Defaults to Romanian.
+          * @default 'ro-RO'
+         */
+        "locale"?: string;
+        /**
+          * Inclusive upper bound (ISO `YYYY-MM-DD`). Dates after this are disabled.
+         */
+        "max"?: string;
+        /**
+          * Inclusive lower bound (ISO `YYYY-MM-DD`). Dates before this are disabled.
+         */
+        "min"?: string;
+        /**
+          * Selection mode.
+          * @default 'single'
+         */
+        "mode"?: DatePickerMode;
+        /**
+          * Fires whenever the selection changes. For `range` mode, `detail.rangeStart` / `detail.rangeEnd` carry the canonical ISO strings; for `multi`, `detail.value` is `string[]`.
+         */
+        "onCorChange"?: (event: CorDatePickerCustomEvent<DatePickerChangeDetail>) => void;
+        /**
+          * Fires when the visible month changes (arrows, swipe, keyboard). `month` is 0-indexed.
+         */
+        "onCorMonthChange"?: (event: CorDatePickerCustomEvent<DatePickerMonthChangeDetail>) => void;
+        /**
+          * Range mode: end date (ISO `YYYY-MM-DD`). Set together with `rangeStart`.
+         */
+        "rangeEnd"?: string;
+        /**
+          * Range mode: start date (ISO `YYYY-MM-DD`). Set together with `rangeEnd`.
+         */
+        "rangeStart"?: string;
+        /**
+          * Selected value: - `single` → ISO `YYYY-MM-DD` string (or empty) - `range` → ISO array `[start, end]` (use `rangeStart`/`rangeEnd` for explicit access) - `multi` → array of ISO strings
+         */
+        "value"?: string | string[];
     }
     /**
      * File Input — drag-and-drop / click-to-browse file selection molecule.
@@ -3868,6 +5338,71 @@ declare namespace LocalJSX {
           * @default 'uploaded'
          */
         "state"?: FileItemState;
+    }
+    /**
+     * Page footer — civic, multi-section organism for AGE / EVO platforms.
+     * Pattern B (composed organism): renders all sections inside shadow DOM and
+     * composes `cor-link`, `cor-logo`, and `cor-icon` for atomic pieces. The host
+     * carries `role="contentinfo"` so screen readers announce it as the page
+     * footer landmark.
+     * Two variants share one element:
+     * - `variant="evo"` (default) — full EVO platform footer: branding headline,
+     *   link columns (Servicii guvernamentale / Despre / Asistență / Legal),
+     *   contact info, social rows, partner logos, accessibility statement, and a
+     *   black legal bar with copyright + license link.
+     * - `variant="simple"` — slim variant: only the black legal bar with the
+     *   copyright text and license/terms links. Used inside scoped flows
+     *   (modals, embedded apps) where the full footer is too tall.
+     * Romanian voice ships as defaults; every visible string is overridable via
+     * the public `@Prop` surface or the `branding` / `sections` slots.
+     * @element cor-footer
+     */
+    interface CorFooter {
+        /**
+          * Optional href for the accessibility statement link in the legal bar.
+         */
+        "accessibilityHref"?: string;
+        /**
+          * Forwarded to the host as `aria-label`. Defaults to Romanian "Subsol pagină".
+         */
+        "ariaLabel"?: string;
+        /**
+          * Contact block (email / phone / address). When undefined, the section is hidden. Pass an empty object to opt out of the Romanian defaults.
+         */
+        "contact"?: FooterContact;
+        /**
+          * Plain-text copyright line shown in the legal bar. Defaults to Romanian.
+         */
+        "copyrightText"?: string;
+        /**
+          * Optional href for the privacy/license link in the legal bar.
+         */
+        "licenseHref"?: string;
+        /**
+          * Currently-selected locale for the language switcher. When undefined, the locale switcher is hidden.
+         */
+        "locale"?: FooterLocale;
+        /**
+          * Fires when the user selects a new locale from the language switcher. Consumers update their app-level i18n state in response.
+         */
+        "onCorLocaleChange"?: (event: CorFooterCustomEvent<FooterLocaleChangeDetail>) => void;
+        /**
+          * Partner logo list. Each entry renders as a text badge (or anchor when `href` is set). Use the `branding` slot for custom logo SVGs.
+         */
+        "partnerLogos"?: ReadonlyArray<FooterPartner>;
+        /**
+          * Declarative link columns. Each entry renders as a titled `<nav>` with a vertical link list. Ignored when the `sections` slot is populated. Defaults to the Romanian four-column catalogue.
+         */
+        "sections"?: ReadonlyArray<FooterSection>;
+        /**
+          * Social link list. Each entry renders as a circular icon button. When undefined, the section is hidden.
+         */
+        "social"?: ReadonlyArray<FooterSocial>;
+        /**
+          * Layout flavour. - `evo` (default) — full EVO platform footer with branding, columns, contact, social, partners, legal bar. - `simple` — slim variant with only the legal bar (copyright + license links).
+          * @default 'evo'
+         */
+        "variant"?: FooterVariant;
     }
     /**
      * Icon — renders an inline SVG fetched on-demand from per-size asset files.
@@ -4239,6 +5774,87 @@ declare namespace LocalJSX {
           * Emitted when an asset fails to load — either because the `name` is not in the manifest (`'unknown'`) or because the SVG fetch failed (`'fetch-failed'`). Lets consumers react in production where `console.warn` is invisible (telemetry, fallback UI, etc.).  Note: events emitted during `componentWillLoad` (initial mount) fire before consumer listeners can attach to a freshly-inserted host. Attach the listener BEFORE setting the `name` prop, or rely on the warning for mount-time failures.
          */
         "onCorLogoError"?: (event: CorLogoCustomEvent<{ name: string; reason: 'unknown' | 'fetch-failed' }>) => void;
+    }
+    /**
+     * Modal — overlay dialog molecule.
+     * Renders a centered dialog card on top of a dimmed backdrop using the native
+     * `<dialog>` element internally. The native element provides the focus trap,
+     * ESC handling, and top-layer rendering required for WCAG 2.1 AA Modal
+     * conformance (SC 2.1.2 No Keyboard Trap reversed: focus IS trapped inside an
+     * active dialog and returned on close).
+     * Pattern B (internal DOM): the dialog, backdrop, header, body and footer all
+     * live inside shadow DOM. Consumers project content through five slots
+     * (`title`, `icon`, `image`, default body, `actions`) and toggle visibility
+     * via the `open` prop or the imperative `openModal()` / `closeModal()`
+     * methods.
+     * Variants control the header treatment:
+     * - `default` — title + close button (text-only header)
+     * - `with-image` — full-bleed hero image at top with overlaid close button
+     * - `with-icon` — leading 48px icon above the body content (no top header bar)
+     * Dismiss reasons routed through `corClose<{reason}>`:
+     * - `backdrop` — click on backdrop (suppressed by `closeOnBackdrop=false`)
+     * - `escape` — ESC keypress (suppressed by `closeOnEscape=false`)
+     * - `close-button` — trailing × button activated
+     * - `action` — programmatic via `closeModal('action')`, used by footer buttons
+     * @element cor-modal
+     */
+    interface CorModal {
+        /**
+          * Accessible name forwarded to the host as `aria-label`. Required when no title is provided.
+         */
+        "ariaLabel"?: string;
+        /**
+          * When `true`, renders a trailing × close button in the header. Activating it emits `corClose` with `reason: 'close-button'`. Hide it for required confirmation flows by setting `closable=false`.
+          * @default true
+         */
+        "closable"?: boolean;
+        /**
+          * Accessible label for the close × button. Defaults to the Romanian "Închide".
+          * @default 'Închide'
+         */
+        "closeLabel"?: string;
+        /**
+          * Whether a click on the backdrop dismisses the modal. Disable for flows that demand an explicit decision (e.g. unsaved-changes confirmation).
+          * @default true
+         */
+        "closeOnBackdrop"?: boolean;
+        /**
+          * Whether pressing ESC dismisses the modal. Disable to enforce a deliberate confirmation; pair with `closable=false` and footer actions for the strictest dialog contract.
+          * @default true
+         */
+        "closeOnEscape"?: boolean;
+        /**
+          * Styles the dialog frame and footer for an irreversible action (e.g. delete account). Adds a red top border accent and is intended to be paired with a destructive primary `cor-button` in the actions slot.
+          * @default false
+         */
+        "destructive"?: boolean;
+        /**
+          * Fires after the dialog has been dismissed. Payload carries the `reason` so consumers can distinguish backdrop vs. escape vs. close-button vs. footer-action dismissals.
+         */
+        "onCorClose"?: (event: CorModalCustomEvent<ModalCloseEvent>) => void;
+        /**
+          * Fires after the dialog has been shown.
+         */
+        "onCorOpen"?: (event: CorModalCustomEvent<void>) => void;
+        /**
+          * Whether the modal is currently shown. Reflected so consumers can target `cor-modal[open]` in selectors. Mutable so the component can flip it back to `false` on internal dismiss (backdrop / escape / close button).
+          * @default false
+         */
+        "open"?: boolean;
+        /**
+          * Visual size rung. Drives the dialog max-width and the typography scale of title and body copy.
+          * @default 'md'
+         */
+        "size"?: ModalSize;
+        /**
+          * Title text rendered in the header. The named `title` slot, when filled, overrides this prop to allow rich content.
+         */
+        "titleText"?: string;
+        /**
+          * Header treatment. - `default` — title bar + close button - `with-image` — hero image as header (close button overlaid) - `with-icon` — leading 48px icon, no top bar
+          * @default 'default'
+         */
+        "variant"?: ModalVariant;
     }
     /**
      * Notification — semantic messaging banner.
@@ -4646,6 +6262,52 @@ declare namespace LocalJSX {
         "variant"?: PhoneInputVariant;
     }
     /**
+     * Progress Tracker (Stepper) — visualises a user's position in a multi-step process.
+     * Two flavours:
+     * - **Display tracker** (`interactive=false`, default) — read-only. Each step is a
+     *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
+     *   submissions where the parent app drives navigation.
+     * - **Interactive tracker** (`interactive=true`) — each completed (and the current)
+     *   step renders as a `<button>` and emits `corStepClick`. Pending steps remain
+     *   non-actionable per the WAI-ARIA stepper pattern.
+     * State legend (Figma node 267:6905):
+     *   - `pending`    — neutral grey ring + faded number
+     *   - `current`    — brand ring + brand number, label in default text colour
+     *   - `completed`  — brand filled circle + white checkmark
+     *   - `error`      — danger ring + danger cross
+     * The component renders an ordered list with `role="list"` for AT compatibility
+     * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
+     * @element cor-progress-tracker
+     */
+    interface CorProgressTracker {
+        /**
+          * Accessible name for the surrounding list landmark. Falls back to `'Progress tracker'` (English) — Romanian consumers can pass `'Pași'`.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Optional zero-based index of the current step. When set, it overrides the `status: 'current'` value in `steps`. Mostly useful for parent-driven flows that mutate a single number rather than the whole array.
+         */
+        "currentStep"?: number;
+        /**
+          * When true, completed and current steps render as `<button>` elements and emit `corStepClick`. Pending and error steps remain non-actionable in this mode.
+          * @default false
+         */
+        "interactive"?: boolean;
+        /**
+          * Emitted when an interactive step is activated via mouse, keyboard, or AT. Detail carries the `index` and the full `step` object that was clicked. Only fires when `interactive=true` and the step is not disabled.
+         */
+        "onCorStepClick"?: (event: CorProgressTrackerCustomEvent<ProgressTrackerStepClickDetail>) => void;
+        /**
+          * Layout orientation.   - `horizontal` (default): steps flow left to right; labels render under indicators.   - `vertical`: steps stack top to bottom; labels render to the right of indicators.
+          * @default 'horizontal'
+         */
+        "orientation"?: ProgressTrackerOrientation;
+        /**
+          * Declarative step list. Each item: `{ id?, label, supportingText?, status, iconName?, disabled? }`. `status` drives the visual state and ARIA semantics — see {@link ProgressTrackerStepStatus}.
+         */
+        "steps"?: ProgressTrackerStep[];
+    }
+    /**
      * Radio — single-select form input atom.
      * Pattern B (atom-interactive, form-associated): renders its own
      * `<input type="radio">` inside shadow DOM and paints the visual circle
@@ -4726,6 +6388,159 @@ declare namespace LocalJSX {
           * Value submitted with the form when this radio is checked.
          */
         "value"?: string;
+    }
+    /**
+     * Receipt — confirmation surface for a finished Moldovan e-Gov transaction
+     * (molecule).
+     * Pattern B (composed molecule): renders its own header / amount block /
+     * details list / QR / footer in shadow DOM. Composes `cor-logo`, `cor-tag`,
+     * and `cor-button` for the interactive pieces.
+     * Four sibling variants share one element via the `service` attribute —
+     * each maps to one of the e-Gov properties:
+     * - `service="mpay"` (default) — payment receipt
+     * - `service="mpass"` — authentication session log
+     * - `service="msign"` — signature receipt
+     * - `service="mdelivery"` — delivery confirmation
+     * The receipt is a presentational artifact. It does not fetch, validate,
+     * or persist; callers pass already-formatted values. The QR (default slot
+     * `qr` overrides) is generated client-side from the `qrData` prop via a
+     * vendored byte-mode QR encoder — no runtime dependency, no network.
+     * Print: the host carries `@media print` rules to hide action buttons,
+     * drop shadows, and force ink-primary text so a citizen can print the
+     * receipt without the surrounding UI bleeding through.
+     * Romanian voice ships as defaults; every label is overridable via the
+     * public `@Prop` surface for localisation.
+     * @element cor-receipt
+     */
+    interface CorReceipt {
+        /**
+          * Pre-formatted amount string (e.g. `"150,00"`). The receipt does NOT format numbers — locale-aware grouping and decimal style belong to the caller. Omit to hide the amount panel entirely (used by mpass / msign receipts that carry no monetary value).
+         */
+        "amount"?: string;
+        /**
+          * "Suma" label preceding the amount value.
+         */
+        "amountLabel"?: string;
+        /**
+          * Override for the receipt's accessible name. Defaults to the resolved title plus status (e.g. "Bon de plată — Plătit").
+         */
+        "ariaLabel"?: string;
+        /**
+          * Currency code rendered next to the amount.
+          * @default 'MDL'
+         */
+        "currency"?: string;
+        /**
+          * Date in ISO-8601 form (`"2026-05-22T14:32:00Z"`). Rendered via `Intl.DateTimeFormat(this.locale, …)`. Falls back to the raw string on a parse failure.
+         */
+        "date"?: string;
+        /**
+          * "Data" label preceding the date.
+         */
+        "dateLabel"?: string;
+        /**
+          * Free-text description rendered as its own row.
+         */
+        "description"?: string;
+        /**
+          * "Descriere" label preceding the free text.
+         */
+        "descriptionLabel"?: string;
+        /**
+          * "Descarcă PDF" button label.
+         */
+        "downloadLabel"?: string;
+        /**
+          * "Trimite email" button label.
+         */
+        "emailLabel"?: string;
+        /**
+          * BCP-47 locale used by the built-in date formatter. Override for non-Romanian surfaces.
+          * @default 'ro-RO'
+         */
+        "locale"?: string;
+        /**
+          * Fires when the user activates the "Descarcă PDF" action.
+         */
+        "onCorDownload"?: (event: CorReceiptCustomEvent<ReceiptActionDetail>) => void;
+        /**
+          * Fires when the user activates the "Trimite email" action.
+         */
+        "onCorEmail"?: (event: CorReceiptCustomEvent<ReceiptActionDetail>) => void;
+        /**
+          * Fires when the user activates the "Imprimă" action.
+         */
+        "onCorPrint"?: (event: CorReceiptCustomEvent<ReceiptActionDetail>) => void;
+        /**
+          * Fires when the user activates the "Distribuie" action.
+         */
+        "onCorShare"?: (event: CorReceiptCustomEvent<ReceiptActionDetail>) => void;
+        /**
+          * "Imprimă" button label.
+         */
+        "printLabel"?: string;
+        /**
+          * "Cod QR pentru verificare" accessible label on the QR figure.
+         */
+        "qrAriaLabel"?: string;
+        /**
+          * "Scanează pentru verificare" caption under the QR.
+         */
+        "qrCaption"?: string;
+        /**
+          * Payload encoded into the QR. When empty AND no `qr` slot is provided, the QR panel is hidden entirely.
+         */
+        "qrData"?: string;
+        /**
+          * Recipient party. `idnp` is auto-masked.
+         */
+        "recipient"?: ReceiptParty;
+        /**
+          * "Beneficiar" label preceding the recipient.
+         */
+        "recipientLabel"?: string;
+        /**
+          * Sender party. `idnp` is auto-masked (`2002******789`).
+         */
+        "sender"?: ReceiptParty;
+        /**
+          * "Plătitor" label preceding the sender.
+         */
+        "senderLabel"?: string;
+        /**
+          * Which e-Gov property this receipt belongs to. Drives the rendered logo, the default title, and the `service` attribute carried in event detail.
+          * @default 'mpay'
+         */
+        "service"?: ReceiptService;
+        /**
+          * "Distribuie" button label.
+         */
+        "shareLabel"?: string;
+        /**
+          * Whether the built-in action footer renders. Disable for read-only archival views.
+          * @default true
+         */
+        "showActions"?: boolean;
+        /**
+          * Transaction lifecycle state. Drives the status tag color + label.
+         */
+        "status"?: ReceiptStatus;
+        /**
+          * "Status:" inline label preceding the tag.
+         */
+        "statusLabel"?: string;
+        /**
+          * Plain-text receipt title. Defaults to a Romanian per-service string (`Bon de plată`, `Confirmare autentificare`, `Confirmare semnătură`, `Confirmare livrare`).  Attribute name is `title-text` to avoid collision with the built-in HTML `title` global attribute (Stencil warns and the global wins at runtime). Prop name remains `titleText` for ergonomic JS access.
+         */
+        "titleText"?: string;
+        /**
+          * Opaque transaction identifier rendered in the footer caption.
+         */
+        "transactionId"?: string;
+        /**
+          * "Cod tranzacție" label preceding the transaction ID.
+         */
+        "transactionIdLabel"?: string;
     }
     /**
      * Search Input (circular) — single-line search-entry control with a fully
@@ -5387,6 +7202,185 @@ declare namespace LocalJSX {
         "value"?: string;
     }
     /**
+     * `cor-tab` — single tab item inside a `cor-tabs` tablist.
+     * Pattern A child: rendered as a slotted child of `cor-tabs`. Owns its own
+     * `role="tab"` host with `aria-selected`, an optional leading icon, the
+     * label, and an optional trailing numbered badge.
+     * The component is intentionally light: selection, focus management and
+     * `aria-controls` wiring are all driven by the parent `cor-tabs` via
+     * reflected attributes and DOM ids.
+     * @element cor-tab
+     */
+    interface CorTab {
+        /**
+          * Optional numbered badge displayed after the label.
+         */
+        "badgeCount"?: number;
+        /**
+          * Disables the tab. Suppresses click + keyboard activation.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Optional leading icon name resolved against the `cor-icon` registry.
+         */
+        "iconName"?: string;
+        /**
+          * Optional plain-text label when no default slot content is provided.
+         */
+        "label"?: string;
+        /**
+          * Fires when the user clicks or keyboard-activates the tab. The parent `cor-tabs` listens for this event to drive selection.
+         */
+        "onCorTabActivate"?: (event: CorTabCustomEvent<{ value: string }>) => void;
+        /**
+          * Id of the panel this tab controls. Set by the parent `cor-tabs`.
+         */
+        "panelId"?: string;
+        /**
+          * Whether this tab is the active one. Mirrors `aria-selected` and the indicator.
+          * @default false
+         */
+        "selected"?: boolean;
+        /**
+          * Size rung. Reflected so styles cascade independently.
+          * @default 'md'
+         */
+        "size"?: 'md' | 'sm';
+        /**
+          * Identity of the tab. Used by the parent `cor-tabs` to track selection.
+         */
+        "value": string;
+    }
+    /**
+     * Table — data table molecule for tabular content with optional sorting,
+     * selection, and responsive mobile collapse.
+     * Pattern B (molecule, internal DOM): renders a native `<table>` inside
+     * shadow DOM for full a11y semantics (`role="table"`, `role="columnheader"`,
+     * `aria-sort`, `aria-selected`). Composes existing primitives — `cor-checkbox`
+     * for the selection column, `cor-icon` for sort chevrons. Status badges and
+     * row actions are projected via named slots so consumers can drop in
+     * `cor-tag`, `cor-button`, or any custom content per cell.
+     * Below the `--breakpoint-mobile` (≤640 px) container query, every row
+     * collapses to a vertical key:value card stack — each `<td>` becomes a
+     * labelled line with the column title rendered inline before its value.
+     * @element cor-table
+     */
+    interface CorTable {
+        /**
+          * Accessible label propagated to the rendered `<table>` element.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Column definitions. Each entry maps a row field (`key`) to a header `label`, an optional `sortable` flag, alignment, and width.
+         */
+        "columns"?: TableColumn[];
+        /**
+          * Header treatment. `default` is the subtle gray header used on light surfaces; `inverted` is the strong dark-on-light header for emphasis.
+          * @default 'default'
+         */
+        "headerStyle"?: TableHeaderStyle;
+        /**
+          * Enables hover highlight on rows. Independent of selection.
+          * @default false
+         */
+        "hoverable"?: boolean;
+        /**
+          * Emitted when a row body is clicked (excluding the selection checkbox).
+         */
+        "onCorRowClick"?: (event: CorTableCustomEvent<TableRowClickDetail>) => void;
+        /**
+          * Emitted when the selection set changes.
+         */
+        "onCorSelectionChange"?: (event: CorTableCustomEvent<TableSelectionChangeDetail>) => void;
+        /**
+          * Emitted when the user activates a sortable header.
+         */
+        "onCorSort"?: (event: CorTableCustomEvent<TableSortChangeDetail>) => void;
+        /**
+          * Field used to uniquely identify a row. Used for selection state and stable React-like keys.
+          * @default 'id'
+         */
+        "rowIdField"?: string;
+        /**
+          * Row treatment. - `divided` (default) — horizontal divider line below every row. - `zebra` — alternating row backgrounds (no dividers). - `borderless` — flat rows, no dividers, no zebra.
+          * @default 'divided'
+         */
+        "rowStyle"?: TableRowStyle;
+        /**
+          * Row data. Each row is keyed by the field declared in `rowIdField` (defaults to `id`). Missing IDs fall back to row index.
+         */
+        "rows"?: TableRowData[];
+        /**
+          * Renders a leading checkbox column for multi-row selection.
+          * @default false
+         */
+        "selectable"?: boolean;
+        /**
+          * Selected row IDs (controlled). Each entry must correspond to a row's `rowIdField` value (stringified). Toggling rows or the master checkbox emits `corSelectionChange` — the consumer reflects the new array back via this prop.
+         */
+        "selectedRows"?: string[];
+        /**
+          * Currently sorted column key (controlled). When unset no sort glyph is highlighted.
+         */
+        "sortColumn"?: string;
+        /**
+          * Sort direction for `sortColumn`. Ignored when `sortColumn` is unset.
+         */
+        "sortDirection"?: TableSortDirection;
+    }
+    /**
+     * `cor-tabs` — horizontal tablist that switches the currently visible panel.
+     * Two composition modes:
+     *  1. **Declarative** (recommended for static menus): slot `<cor-tab>` children
+     *     into the default slot and matching `<div slot="panel-{value}">` blocks
+     *     into the panel slots.
+     *  2. **Data-driven**: pass a `tabs` array. The component renders each entry
+     *     as a child `cor-tab` and exposes panels via `<div slot="panel-{value}">`
+     *     elements supplied by the consumer.
+     * Pattern A (molecule, slot-based). The host carries `role="tablist"`; the
+     * tabs are rendered children with `role="tab"`; the panels are slotted into
+     * named `panel-{value}` slots and receive `role="tabpanel"` + the matching
+     * `aria-labelledby`.
+     * Keyboard contract (WAI-ARIA Authoring Practices, automatic activation):
+     * - `Tab` focuses the currently selected tab (single tab stop into the group)
+     * - `ArrowLeft` / `ArrowRight` move selection between enabled tabs (wraps)
+     * - `Home` / `End` jump to the first / last enabled tab
+     * - `Enter` / `Space` activate the focused tab (no-op for selected/disabled)
+     * Overflow: when the rendered tabs are wider than the host, the component
+     * exposes leading + trailing chevron buttons that scroll the strip. Both
+     * chevrons are mouse-only; their `aria-hidden="true"` keeps them out of the
+     * keyboard order (arrow keys already move selection without overflow help).
+     * @element cor-tabs
+     */
+    interface CorTabs {
+        /**
+          * Accessible name for the tablist. Forwarded to the host's `aria-label`.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Id of an external labelling element (overrides `aria-label`).
+         */
+        "ariaLabelledby"?: string;
+        /**
+          * Fires when the selected tab changes. `detail.value` is the new selection.
+         */
+        "onCorChange"?: (event: CorTabsCustomEvent<TabsChangeDetail>) => void;
+        /**
+          * Size rung. `md` is 48 px tall; `sm` is 40 px tall (mobile + dense layouts).
+          * @default 'md'
+         */
+        "size"?: TabsSize;
+        /**
+          * Data-driven tab list. When supplied, the component renders one `<cor-tab>` per entry. Mutually compatible with slotted children — the slotted variant takes precedence when both are present.
+         */
+        "tabs"?: TabDescriptor[];
+        /**
+          * Value of the currently selected tab. Mutable so that uncontrolled usage (click + keyboard) keeps the host attribute in sync.
+         */
+        "value"?: string;
+    }
+    /**
      * Tag — compact, non-interactive label used to mark state, category,
      * or supplementary metadata.
      * Pattern B (atom-visual): the host paints; consumers compose icons
@@ -5615,6 +7609,21 @@ declare namespace LocalJSX {
         "variant"?: TooltipVariant;
     }
 
+    interface CorAccordionAttributes {
+        "mode": AccordionMode;
+        "appearance": AccordionAppearance;
+        "breakpoint": 'desktop' | 'mobile';
+        "label": string;
+    }
+    interface CorAccordionItemAttributes {
+        "open": boolean;
+        "disabled": boolean;
+        "heading": string;
+        "supportingText": string;
+        "itemId": string;
+        "appearance": 'default' | 'trail-sites';
+        "breakpoint": 'desktop' | 'mobile';
+    }
     interface CorAvatarAttributes {
         "type": AvatarType;
         "size": AvatarSize;
@@ -5691,6 +7700,21 @@ declare namespace LocalJSX {
         "label": string;
         "removable": boolean;
     }
+    interface CorCookieBannerAttributes {
+        "variant": CookieBannerVariant;
+        "expanded": boolean;
+        "position": CookieBannerPosition;
+        "titleText": string;
+        "body": string;
+        "acceptLabel": string;
+        "rejectLabel": string;
+        "manageLabel": string;
+        "saveLabel": string;
+        "privacyHref": string;
+        "privacyLabel": string;
+        "closeLabel": string;
+        "ariaLabel": string;
+    }
     interface CorDateInputAttributes {
         "variant": DateInputVariant;
         "size": DateInputSize;
@@ -5708,6 +7732,19 @@ declare namespace LocalJSX {
         "errorText": string;
         "placeholder": string;
         "ariaLabel": string;
+    }
+    interface CorDatePickerAttributes {
+        "mode": DatePickerMode;
+        "breakpoint": DatePickerBreakpoint;
+        "value": string | string[];
+        "rangeStart": string;
+        "rangeEnd": string;
+        "min": string;
+        "max": string;
+        "locale": string;
+        "ariaLabel": string;
+        "firstDayOfWeek": number;
+        "hideTodayShortcut": boolean;
     }
     interface CorFileInputAttributes {
         "size": FileInputSize;
@@ -5737,6 +7774,14 @@ declare namespace LocalJSX {
         "disabled": boolean;
         "noRemove": boolean;
         "removeLabel": string;
+    }
+    interface CorFooterAttributes {
+        "variant": FooterVariant;
+        "copyrightText": string;
+        "accessibilityHref": string;
+        "licenseHref": string;
+        "locale": FooterLocale;
+        "ariaLabel": string;
     }
     interface CorIconAttributes {
         "name": string;
@@ -5802,6 +7847,18 @@ declare namespace LocalJSX {
     interface CorLogoAttributes {
         "name": LogoName;
         "ariaLabel": string;
+    }
+    interface CorModalAttributes {
+        "open": boolean;
+        "size": ModalSize;
+        "variant": ModalVariant;
+        "titleText": string;
+        "closable": boolean;
+        "closeOnBackdrop": boolean;
+        "closeOnEscape": boolean;
+        "destructive": boolean;
+        "ariaLabel": string;
+        "closeLabel": string;
     }
     interface CorNotificationAttributes {
         "variant": NotificationVariant;
@@ -5869,6 +7926,12 @@ declare namespace LocalJSX {
         "placeholder": string;
         "ariaLabel": string;
     }
+    interface CorProgressTrackerAttributes {
+        "orientation": ProgressTrackerOrientation;
+        "interactive": boolean;
+        "currentStep": number;
+        "ariaLabel": string;
+    }
     interface CorRadioAttributes {
         "size": RadioSize;
         "checked": boolean;
@@ -5882,6 +7945,33 @@ declare namespace LocalJSX {
         "supportingText": string;
         "ariaLabel": string;
         "ariaLabelledby": string;
+    }
+    interface CorReceiptAttributes {
+        "service": ReceiptService;
+        "titleText": string;
+        "status": ReceiptStatus;
+        "amount": string;
+        "currency": string;
+        "date": string;
+        "locale": string;
+        "description": string;
+        "transactionId": string;
+        "qrData": string;
+        "showActions": boolean;
+        "ariaLabel": string;
+        "statusLabel": string;
+        "amountLabel": string;
+        "dateLabel": string;
+        "senderLabel": string;
+        "recipientLabel": string;
+        "descriptionLabel": string;
+        "transactionIdLabel": string;
+        "qrCaption": string;
+        "qrAriaLabel": string;
+        "printLabel": string;
+        "downloadLabel": string;
+        "emailLabel": string;
+        "shareLabel": string;
     }
     interface CorSearchInputCircularAttributes {
         "variant": SearchInputCircularVariant;
@@ -5991,6 +8081,32 @@ declare namespace LocalJSX {
         "ariaLabel": string;
         "ariaLabelledby": string;
     }
+    interface CorTabAttributes {
+        "value": string;
+        "selected": boolean;
+        "disabled": boolean;
+        "size": 'md' | 'sm';
+        "label": string;
+        "iconName": string;
+        "badgeCount": number;
+        "panelId": string;
+    }
+    interface CorTableAttributes {
+        "headerStyle": TableHeaderStyle;
+        "rowStyle": TableRowStyle;
+        "hoverable": boolean;
+        "selectable": boolean;
+        "sortColumn": string;
+        "sortDirection": TableSortDirection;
+        "rowIdField": string;
+        "ariaLabel": string;
+    }
+    interface CorTabsAttributes {
+        "size": TabsSize;
+        "value": string;
+        "ariaLabel": string;
+        "ariaLabelledby": string;
+    }
     interface CorTagAttributes {
         "variant": TagVariant;
         "size": TagSize;
@@ -6031,6 +8147,8 @@ declare namespace LocalJSX {
     }
 
     interface IntrinsicElements {
+        "cor-accordion": Omit<CorAccordion, keyof CorAccordionAttributes> & { [K in keyof CorAccordion & keyof CorAccordionAttributes]?: CorAccordion[K] } & { [K in keyof CorAccordion & keyof CorAccordionAttributes as `attr:${K}`]?: CorAccordionAttributes[K] } & { [K in keyof CorAccordion & keyof CorAccordionAttributes as `prop:${K}`]?: CorAccordion[K] };
+        "cor-accordion-item": Omit<CorAccordionItem, keyof CorAccordionItemAttributes> & { [K in keyof CorAccordionItem & keyof CorAccordionItemAttributes]?: CorAccordionItem[K] } & { [K in keyof CorAccordionItem & keyof CorAccordionItemAttributes as `attr:${K}`]?: CorAccordionItemAttributes[K] } & { [K in keyof CorAccordionItem & keyof CorAccordionItemAttributes as `prop:${K}`]?: CorAccordionItem[K] };
         "cor-avatar": Omit<CorAvatar, keyof CorAvatarAttributes> & { [K in keyof CorAvatar & keyof CorAvatarAttributes]?: CorAvatar[K] } & { [K in keyof CorAvatar & keyof CorAvatarAttributes as `attr:${K}`]?: CorAvatarAttributes[K] } & { [K in keyof CorAvatar & keyof CorAvatarAttributes as `prop:${K}`]?: CorAvatar[K] };
         "cor-badge": Omit<CorBadge, keyof CorBadgeAttributes> & { [K in keyof CorBadge & keyof CorBadgeAttributes]?: CorBadge[K] } & { [K in keyof CorBadge & keyof CorBadgeAttributes as `attr:${K}`]?: CorBadgeAttributes[K] } & { [K in keyof CorBadge & keyof CorBadgeAttributes as `prop:${K}`]?: CorBadge[K] };
         "cor-breadcrumb": Omit<CorBreadcrumb, keyof CorBreadcrumbAttributes> & { [K in keyof CorBreadcrumb & keyof CorBreadcrumbAttributes]?: CorBreadcrumb[K] } & { [K in keyof CorBreadcrumb & keyof CorBreadcrumbAttributes as `attr:${K}`]?: CorBreadcrumbAttributes[K] } & { [K in keyof CorBreadcrumb & keyof CorBreadcrumbAttributes as `prop:${K}`]?: CorBreadcrumb[K] };
@@ -6039,19 +8157,25 @@ declare namespace LocalJSX {
         "cor-button-group": Omit<CorButtonGroup, keyof CorButtonGroupAttributes> & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes]?: CorButtonGroup[K] } & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes as `attr:${K}`]?: CorButtonGroupAttributes[K] } & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes as `prop:${K}`]?: CorButtonGroup[K] };
         "cor-checkbox": Omit<CorCheckbox, keyof CorCheckboxAttributes> & { [K in keyof CorCheckbox & keyof CorCheckboxAttributes]?: CorCheckbox[K] } & { [K in keyof CorCheckbox & keyof CorCheckboxAttributes as `attr:${K}`]?: CorCheckboxAttributes[K] } & { [K in keyof CorCheckbox & keyof CorCheckboxAttributes as `prop:${K}`]?: CorCheckbox[K] };
         "cor-chip": Omit<CorChip, keyof CorChipAttributes> & { [K in keyof CorChip & keyof CorChipAttributes]?: CorChip[K] } & { [K in keyof CorChip & keyof CorChipAttributes as `attr:${K}`]?: CorChipAttributes[K] } & { [K in keyof CorChip & keyof CorChipAttributes as `prop:${K}`]?: CorChip[K] };
+        "cor-cookie-banner": Omit<CorCookieBanner, keyof CorCookieBannerAttributes> & { [K in keyof CorCookieBanner & keyof CorCookieBannerAttributes]?: CorCookieBanner[K] } & { [K in keyof CorCookieBanner & keyof CorCookieBannerAttributes as `attr:${K}`]?: CorCookieBannerAttributes[K] } & { [K in keyof CorCookieBanner & keyof CorCookieBannerAttributes as `prop:${K}`]?: CorCookieBanner[K] };
         "cor-date-input": Omit<CorDateInput, keyof CorDateInputAttributes> & { [K in keyof CorDateInput & keyof CorDateInputAttributes]?: CorDateInput[K] } & { [K in keyof CorDateInput & keyof CorDateInputAttributes as `attr:${K}`]?: CorDateInputAttributes[K] } & { [K in keyof CorDateInput & keyof CorDateInputAttributes as `prop:${K}`]?: CorDateInput[K] };
+        "cor-date-picker": Omit<CorDatePicker, keyof CorDatePickerAttributes> & { [K in keyof CorDatePicker & keyof CorDatePickerAttributes]?: CorDatePicker[K] } & { [K in keyof CorDatePicker & keyof CorDatePickerAttributes as `attr:${K}`]?: CorDatePickerAttributes[K] } & { [K in keyof CorDatePicker & keyof CorDatePickerAttributes as `prop:${K}`]?: CorDatePicker[K] };
         "cor-file-input": Omit<CorFileInput, keyof CorFileInputAttributes> & { [K in keyof CorFileInput & keyof CorFileInputAttributes]?: CorFileInput[K] } & { [K in keyof CorFileInput & keyof CorFileInputAttributes as `attr:${K}`]?: CorFileInputAttributes[K] } & { [K in keyof CorFileInput & keyof CorFileInputAttributes as `prop:${K}`]?: CorFileInput[K] };
         "cor-file-item": Omit<CorFileItem, keyof CorFileItemAttributes> & { [K in keyof CorFileItem & keyof CorFileItemAttributes]?: CorFileItem[K] } & { [K in keyof CorFileItem & keyof CorFileItemAttributes as `attr:${K}`]?: CorFileItemAttributes[K] } & { [K in keyof CorFileItem & keyof CorFileItemAttributes as `prop:${K}`]?: CorFileItem[K] };
+        "cor-footer": Omit<CorFooter, keyof CorFooterAttributes> & { [K in keyof CorFooter & keyof CorFooterAttributes]?: CorFooter[K] } & { [K in keyof CorFooter & keyof CorFooterAttributes as `attr:${K}`]?: CorFooterAttributes[K] } & { [K in keyof CorFooter & keyof CorFooterAttributes as `prop:${K}`]?: CorFooter[K] };
         "cor-icon": Omit<CorIcon, keyof CorIconAttributes> & { [K in keyof CorIcon & keyof CorIconAttributes]?: CorIcon[K] } & { [K in keyof CorIcon & keyof CorIconAttributes as `attr:${K}`]?: CorIconAttributes[K] } & { [K in keyof CorIcon & keyof CorIconAttributes as `prop:${K}`]?: CorIcon[K] };
         "cor-input": Omit<CorInput, keyof CorInputAttributes> & { [K in keyof CorInput & keyof CorInputAttributes]?: CorInput[K] } & { [K in keyof CorInput & keyof CorInputAttributes as `attr:${K}`]?: CorInputAttributes[K] } & { [K in keyof CorInput & keyof CorInputAttributes as `prop:${K}`]?: CorInput[K] };
         "cor-input-chip": Omit<CorInputChip, keyof CorInputChipAttributes> & { [K in keyof CorInputChip & keyof CorInputChipAttributes]?: CorInputChip[K] } & { [K in keyof CorInputChip & keyof CorInputChipAttributes as `attr:${K}`]?: CorInputChipAttributes[K] } & { [K in keyof CorInputChip & keyof CorInputChipAttributes as `prop:${K}`]?: CorInputChip[K] };
         "cor-link": Omit<CorLink, keyof CorLinkAttributes> & { [K in keyof CorLink & keyof CorLinkAttributes]?: CorLink[K] } & { [K in keyof CorLink & keyof CorLinkAttributes as `attr:${K}`]?: CorLinkAttributes[K] } & { [K in keyof CorLink & keyof CorLinkAttributes as `prop:${K}`]?: CorLink[K] };
         "cor-logo": Omit<CorLogo, keyof CorLogoAttributes> & { [K in keyof CorLogo & keyof CorLogoAttributes]?: CorLogo[K] } & { [K in keyof CorLogo & keyof CorLogoAttributes as `attr:${K}`]?: CorLogoAttributes[K] } & { [K in keyof CorLogo & keyof CorLogoAttributes as `prop:${K}`]?: CorLogo[K] };
+        "cor-modal": Omit<CorModal, keyof CorModalAttributes> & { [K in keyof CorModal & keyof CorModalAttributes]?: CorModal[K] } & { [K in keyof CorModal & keyof CorModalAttributes as `attr:${K}`]?: CorModalAttributes[K] } & { [K in keyof CorModal & keyof CorModalAttributes as `prop:${K}`]?: CorModal[K] };
         "cor-notification": Omit<CorNotification, keyof CorNotificationAttributes> & { [K in keyof CorNotification & keyof CorNotificationAttributes]?: CorNotification[K] } & { [K in keyof CorNotification & keyof CorNotificationAttributes as `attr:${K}`]?: CorNotificationAttributes[K] } & { [K in keyof CorNotification & keyof CorNotificationAttributes as `prop:${K}`]?: CorNotification[K] };
         "cor-numeric-input": Omit<CorNumericInput, keyof CorNumericInputAttributes> & { [K in keyof CorNumericInput & keyof CorNumericInputAttributes]?: CorNumericInput[K] } & { [K in keyof CorNumericInput & keyof CorNumericInputAttributes as `attr:${K}`]?: CorNumericInputAttributes[K] } & { [K in keyof CorNumericInput & keyof CorNumericInputAttributes as `prop:${K}`]?: CorNumericInput[K] };
         "cor-pagination": Omit<CorPagination, keyof CorPaginationAttributes> & { [K in keyof CorPagination & keyof CorPaginationAttributes]?: CorPagination[K] } & { [K in keyof CorPagination & keyof CorPaginationAttributes as `attr:${K}`]?: CorPaginationAttributes[K] } & { [K in keyof CorPagination & keyof CorPaginationAttributes as `prop:${K}`]?: CorPagination[K] };
         "cor-phone-input": Omit<CorPhoneInput, keyof CorPhoneInputAttributes> & { [K in keyof CorPhoneInput & keyof CorPhoneInputAttributes]?: CorPhoneInput[K] } & { [K in keyof CorPhoneInput & keyof CorPhoneInputAttributes as `attr:${K}`]?: CorPhoneInputAttributes[K] } & { [K in keyof CorPhoneInput & keyof CorPhoneInputAttributes as `prop:${K}`]?: CorPhoneInput[K] };
+        "cor-progress-tracker": Omit<CorProgressTracker, keyof CorProgressTrackerAttributes> & { [K in keyof CorProgressTracker & keyof CorProgressTrackerAttributes]?: CorProgressTracker[K] } & { [K in keyof CorProgressTracker & keyof CorProgressTrackerAttributes as `attr:${K}`]?: CorProgressTrackerAttributes[K] } & { [K in keyof CorProgressTracker & keyof CorProgressTrackerAttributes as `prop:${K}`]?: CorProgressTracker[K] };
         "cor-radio": Omit<CorRadio, keyof CorRadioAttributes> & { [K in keyof CorRadio & keyof CorRadioAttributes]?: CorRadio[K] } & { [K in keyof CorRadio & keyof CorRadioAttributes as `attr:${K}`]?: CorRadioAttributes[K] } & { [K in keyof CorRadio & keyof CorRadioAttributes as `prop:${K}`]?: CorRadio[K] };
+        "cor-receipt": Omit<CorReceipt, keyof CorReceiptAttributes> & { [K in keyof CorReceipt & keyof CorReceiptAttributes]?: CorReceipt[K] } & { [K in keyof CorReceipt & keyof CorReceiptAttributes as `attr:${K}`]?: CorReceiptAttributes[K] } & { [K in keyof CorReceipt & keyof CorReceiptAttributes as `prop:${K}`]?: CorReceipt[K] };
         "cor-search-input-circular": Omit<CorSearchInputCircular, keyof CorSearchInputCircularAttributes> & { [K in keyof CorSearchInputCircular & keyof CorSearchInputCircularAttributes]?: CorSearchInputCircular[K] } & { [K in keyof CorSearchInputCircular & keyof CorSearchInputCircularAttributes as `attr:${K}`]?: CorSearchInputCircularAttributes[K] } & { [K in keyof CorSearchInputCircular & keyof CorSearchInputCircularAttributes as `prop:${K}`]?: CorSearchInputCircular[K] };
         "cor-search-input-rectangular": Omit<CorSearchInputRectangular, keyof CorSearchInputRectangularAttributes> & { [K in keyof CorSearchInputRectangular & keyof CorSearchInputRectangularAttributes]?: CorSearchInputRectangular[K] } & { [K in keyof CorSearchInputRectangular & keyof CorSearchInputRectangularAttributes as `attr:${K}`]?: CorSearchInputRectangularAttributes[K] } & { [K in keyof CorSearchInputRectangular & keyof CorSearchInputRectangularAttributes as `prop:${K}`]?: CorSearchInputRectangular[K] };
         "cor-segmented-control": Omit<CorSegmentedControl, keyof CorSegmentedControlAttributes> & { [K in keyof CorSegmentedControl & keyof CorSegmentedControlAttributes]?: CorSegmentedControl[K] } & { [K in keyof CorSegmentedControl & keyof CorSegmentedControlAttributes as `attr:${K}`]?: CorSegmentedControlAttributes[K] } & { [K in keyof CorSegmentedControl & keyof CorSegmentedControlAttributes as `prop:${K}`]?: CorSegmentedControl[K] };
@@ -6060,6 +8184,9 @@ declare namespace LocalJSX {
         "cor-service-button": Omit<CorServiceButton, keyof CorServiceButtonAttributes> & { [K in keyof CorServiceButton & keyof CorServiceButtonAttributes]?: CorServiceButton[K] } & { [K in keyof CorServiceButton & keyof CorServiceButtonAttributes as `attr:${K}`]?: CorServiceButtonAttributes[K] } & { [K in keyof CorServiceButton & keyof CorServiceButtonAttributes as `prop:${K}`]?: CorServiceButton[K] };
         "cor-spinner": Omit<CorSpinner, keyof CorSpinnerAttributes> & { [K in keyof CorSpinner & keyof CorSpinnerAttributes]?: CorSpinner[K] } & { [K in keyof CorSpinner & keyof CorSpinnerAttributes as `attr:${K}`]?: CorSpinnerAttributes[K] } & { [K in keyof CorSpinner & keyof CorSpinnerAttributes as `prop:${K}`]?: CorSpinner[K] };
         "cor-switch": Omit<CorSwitch, keyof CorSwitchAttributes> & { [K in keyof CorSwitch & keyof CorSwitchAttributes]?: CorSwitch[K] } & { [K in keyof CorSwitch & keyof CorSwitchAttributes as `attr:${K}`]?: CorSwitchAttributes[K] } & { [K in keyof CorSwitch & keyof CorSwitchAttributes as `prop:${K}`]?: CorSwitch[K] };
+        "cor-tab": Omit<CorTab, keyof CorTabAttributes> & { [K in keyof CorTab & keyof CorTabAttributes]?: CorTab[K] } & { [K in keyof CorTab & keyof CorTabAttributes as `attr:${K}`]?: CorTabAttributes[K] } & { [K in keyof CorTab & keyof CorTabAttributes as `prop:${K}`]?: CorTab[K] } & OneOf<"value", CorTab["value"], CorTabAttributes["value"]>;
+        "cor-table": Omit<CorTable, keyof CorTableAttributes> & { [K in keyof CorTable & keyof CorTableAttributes]?: CorTable[K] } & { [K in keyof CorTable & keyof CorTableAttributes as `attr:${K}`]?: CorTableAttributes[K] } & { [K in keyof CorTable & keyof CorTableAttributes as `prop:${K}`]?: CorTable[K] };
+        "cor-tabs": Omit<CorTabs, keyof CorTabsAttributes> & { [K in keyof CorTabs & keyof CorTabsAttributes]?: CorTabs[K] } & { [K in keyof CorTabs & keyof CorTabsAttributes as `attr:${K}`]?: CorTabsAttributes[K] } & { [K in keyof CorTabs & keyof CorTabsAttributes as `prop:${K}`]?: CorTabs[K] };
         "cor-tag": Omit<CorTag, keyof CorTagAttributes> & { [K in keyof CorTag & keyof CorTagAttributes]?: CorTag[K] } & { [K in keyof CorTag & keyof CorTagAttributes as `attr:${K}`]?: CorTagAttributes[K] } & { [K in keyof CorTag & keyof CorTagAttributes as `prop:${K}`]?: CorTag[K] };
         "cor-textarea": Omit<CorTextarea, keyof CorTextareaAttributes> & { [K in keyof CorTextarea & keyof CorTextareaAttributes]?: CorTextarea[K] } & { [K in keyof CorTextarea & keyof CorTextareaAttributes as `attr:${K}`]?: CorTextareaAttributes[K] } & { [K in keyof CorTextarea & keyof CorTextareaAttributes as `prop:${K}`]?: CorTextarea[K] };
         "cor-tooltip": Omit<CorTooltip, keyof CorTooltipAttributes> & { [K in keyof CorTooltip & keyof CorTooltipAttributes]?: CorTooltip[K] } & { [K in keyof CorTooltip & keyof CorTooltipAttributes as `attr:${K}`]?: CorTooltipAttributes[K] } & { [K in keyof CorTooltip & keyof CorTooltipAttributes as `prop:${K}`]?: CorTooltip[K] };
@@ -6069,6 +8196,31 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            /**
+             * Accordion — vertical stack of collapsible regions per WAI-ARIA Accordion Pattern.
+             * Pattern A (slot container): coordinates child `cor-accordion-item` elements,
+             * enforces `mode="single"` exclusivity, manages keyboard traversal across
+             * headers (Arrow Up/Down, Home, End), and dispatches `corChange` whenever the
+             * active set changes.
+             * Consumers may either:
+             *   1. Slot `<cor-accordion-item>` children directly (declarative, recommended), or
+             *   2. Pass an `items` array (data-driven; the accordion renders the items for you).
+             * @element cor-accordion
+             * @fires corChange - Emitted on every open/close. `detail.openIds` lists every
+             *              item currently open (single entry in `mode="single"`).
+             */
+            "cor-accordion": LocalJSX.IntrinsicElements["cor-accordion"] & JSXBase.HTMLAttributes<HTMLCorAccordionElement>;
+            /**
+             * Accordion item — a single collapsible row inside `cor-accordion`.
+             * Pattern B (atom-interactive): renders its own header `<button>` and a
+             * `<div role="region">` panel inside shadow DOM. The container manages
+             * exclusivity in `mode="single"`; the item owns its visual state.
+             * @element cor-accordion-item
+             * @fires corToggle - Fired when the user activates the header. The container
+             *             listens for this and decides whether to honour it
+             *             (single-mode collapsing of siblings).
+             */
+            "cor-accordion-item": LocalJSX.IntrinsicElements["cor-accordion-item"] & JSXBase.HTMLAttributes<HTMLCorAccordionItemElement>;
             /**
              * Avatar — represents a user via a photo, initials, or a generic person icon.
              * Pattern A (atom-display): wraps a single piece of slottable content (an
@@ -6164,6 +8316,26 @@ declare module "@stencil/core" {
              */
             "cor-chip": LocalJSX.IntrinsicElements["cor-chip"] & JSXBase.HTMLAttributes<HTMLCorChipElement>;
             /**
+             * Cookie banner — GDPR consent surface (molecule).
+             * Pattern B (composed molecule): renders its own header / body / categories /
+             * footer in shadow DOM. Composes `cor-button`, `cor-switch`, `cor-icon`,
+             * `cor-tag` and `cor-separator` for the interactive pieces. The host is a
+             * non-modal dialog (`role="dialog" aria-modal="false"`) anchored to the bottom
+             * or top edge of the viewport — it does NOT trap focus so the page underneath
+             * stays operable.
+             * Two variants share one element:
+             * - `variant="simple"` (default) — three CTAs (`Personalizează` / `Refuză toate`
+             *   / `Accept toate`). The "Personalizează" button switches the banner to
+             *   expanded mode.
+             * - `variant="detailed"` — same collapsed footprint, but expanding reveals a
+             *   category list (necessary / analytics / marketing by default) with per-row
+             *   `cor-switch`. Required categories render a fixed check-mark instead.
+             * Romanian voice ships as defaults; every label is overridable via the public
+             * `@Prop` surface for localisation.
+             * @element cor-cookie-banner
+             */
+            "cor-cookie-banner": LocalJSX.IntrinsicElements["cor-cookie-banner"] & JSXBase.HTMLAttributes<HTMLCorCookieBannerElement>;
+            /**
              * Date Input — segment-masked date entry molecule.
              * Pattern B (atom-interactive, form-associated): renders its own `<input>`
              * inside shadow DOM and overlays a ghost format hint that lets the unfilled
@@ -6172,6 +8344,28 @@ declare module "@stencil/core" {
              * @element cor-date-input
              */
             "cor-date-input": LocalJSX.IntrinsicElements["cor-date-input"] & JSXBase.HTMLAttributes<HTMLCorDateInputElement>;
+            /**
+             * Romanian date picker — locale-aware calendar molecule.
+             * Three modes:
+             * - `single` — pick exactly one date. `value` is `string` (ISO YYYY-MM-DD) or empty.
+             * - `range` — pick a start + end. Click once to set `rangeStart`, click again to set `rangeEnd`;
+             *   click outside the range to start a new range.
+             * - `multi` — toggle individual dates. `value` is `string[]`.
+             * Three breakpoints (visual modes):
+             * - `desktop` — 320px elevated card with shadow.
+             * - `mobile` — full-width bottom-sheet style with drag handle.
+             * - `docked` — compact (no shadow) intended to attach beneath a `cor-date-input`.
+             * All weekday + month labels come from `Intl.DateTimeFormat` so the locale prop drives the language —
+             * no hard-coded strings. Romanian (`ro-RO`) is the default.
+             * Keyboard:
+             * - Arrow keys move focus by day
+             * - PageUp/PageDown change month
+             * - Shift+PageUp/PageDown change year
+             * - Home/End jump to the start/end of the visible week
+             * - Enter/Space selects the focused day
+             * @element cor-date-picker
+             */
+            "cor-date-picker": LocalJSX.IntrinsicElements["cor-date-picker"] & JSXBase.HTMLAttributes<HTMLCorDatePickerElement>;
             /**
              * File Input — drag-and-drop / click-to-browse file selection molecule.
              * Pattern B (molecule, internal DOM, form-associated): the host owns a hidden
@@ -6198,6 +8392,25 @@ declare module "@stencil/core" {
              * @element cor-file-item
              */
             "cor-file-item": LocalJSX.IntrinsicElements["cor-file-item"] & JSXBase.HTMLAttributes<HTMLCorFileItemElement>;
+            /**
+             * Page footer — civic, multi-section organism for AGE / EVO platforms.
+             * Pattern B (composed organism): renders all sections inside shadow DOM and
+             * composes `cor-link`, `cor-logo`, and `cor-icon` for atomic pieces. The host
+             * carries `role="contentinfo"` so screen readers announce it as the page
+             * footer landmark.
+             * Two variants share one element:
+             * - `variant="evo"` (default) — full EVO platform footer: branding headline,
+             *   link columns (Servicii guvernamentale / Despre / Asistență / Legal),
+             *   contact info, social rows, partner logos, accessibility statement, and a
+             *   black legal bar with copyright + license link.
+             * - `variant="simple"` — slim variant: only the black legal bar with the
+             *   copyright text and license/terms links. Used inside scoped flows
+             *   (modals, embedded apps) where the full footer is too tall.
+             * Romanian voice ships as defaults; every visible string is overridable via
+             * the public `@Prop` surface or the `branding` / `sections` slots.
+             * @element cor-footer
+             */
+            "cor-footer": LocalJSX.IntrinsicElements["cor-footer"] & JSXBase.HTMLAttributes<HTMLCorFooterElement>;
             /**
              * Icon — renders an inline SVG fetched on-demand from per-size asset files.
              * Names follow the Material Symbols convention: append `-filled` to the base name
@@ -6258,6 +8471,30 @@ declare module "@stencil/core" {
              * @element cor-logo
              */
             "cor-logo": LocalJSX.IntrinsicElements["cor-logo"] & JSXBase.HTMLAttributes<HTMLCorLogoElement>;
+            /**
+             * Modal — overlay dialog molecule.
+             * Renders a centered dialog card on top of a dimmed backdrop using the native
+             * `<dialog>` element internally. The native element provides the focus trap,
+             * ESC handling, and top-layer rendering required for WCAG 2.1 AA Modal
+             * conformance (SC 2.1.2 No Keyboard Trap reversed: focus IS trapped inside an
+             * active dialog and returned on close).
+             * Pattern B (internal DOM): the dialog, backdrop, header, body and footer all
+             * live inside shadow DOM. Consumers project content through five slots
+             * (`title`, `icon`, `image`, default body, `actions`) and toggle visibility
+             * via the `open` prop or the imperative `openModal()` / `closeModal()`
+             * methods.
+             * Variants control the header treatment:
+             * - `default` — title + close button (text-only header)
+             * - `with-image` — full-bleed hero image at top with overlaid close button
+             * - `with-icon` — leading 48px icon above the body content (no top header bar)
+             * Dismiss reasons routed through `corClose<{reason}>`:
+             * - `backdrop` — click on backdrop (suppressed by `closeOnBackdrop=false`)
+             * - `escape` — ESC keypress (suppressed by `closeOnEscape=false`)
+             * - `close-button` — trailing × button activated
+             * - `action` — programmatic via `closeModal('action')`, used by footer buttons
+             * @element cor-modal
+             */
+            "cor-modal": LocalJSX.IntrinsicElements["cor-modal"] & JSXBase.HTMLAttributes<HTMLCorModalElement>;
             /**
              * Notification — semantic messaging banner.
              * Renders an optional leading icon, an optional bold title, the message body
@@ -6321,6 +8558,25 @@ declare module "@stencil/core" {
              */
             "cor-phone-input": LocalJSX.IntrinsicElements["cor-phone-input"] & JSXBase.HTMLAttributes<HTMLCorPhoneInputElement>;
             /**
+             * Progress Tracker (Stepper) — visualises a user's position in a multi-step process.
+             * Two flavours:
+             * - **Display tracker** (`interactive=false`, default) — read-only. Each step is a
+             *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
+             *   submissions where the parent app drives navigation.
+             * - **Interactive tracker** (`interactive=true`) — each completed (and the current)
+             *   step renders as a `<button>` and emits `corStepClick`. Pending steps remain
+             *   non-actionable per the WAI-ARIA stepper pattern.
+             * State legend (Figma node 267:6905):
+             *   - `pending`    — neutral grey ring + faded number
+             *   - `current`    — brand ring + brand number, label in default text colour
+             *   - `completed`  — brand filled circle + white checkmark
+             *   - `error`      — danger ring + danger cross
+             * The component renders an ordered list with `role="list"` for AT compatibility
+             * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
+             * @element cor-progress-tracker
+             */
+            "cor-progress-tracker": LocalJSX.IntrinsicElements["cor-progress-tracker"] & JSXBase.HTMLAttributes<HTMLCorProgressTrackerElement>;
+            /**
              * Radio — single-select form input atom.
              * Pattern B (atom-interactive, form-associated): renders its own
              * `<input type="radio">` inside shadow DOM and paints the visual circle
@@ -6331,6 +8587,30 @@ declare module "@stencil/core" {
              * @element cor-radio
              */
             "cor-radio": LocalJSX.IntrinsicElements["cor-radio"] & JSXBase.HTMLAttributes<HTMLCorRadioElement>;
+            /**
+             * Receipt — confirmation surface for a finished Moldovan e-Gov transaction
+             * (molecule).
+             * Pattern B (composed molecule): renders its own header / amount block /
+             * details list / QR / footer in shadow DOM. Composes `cor-logo`, `cor-tag`,
+             * and `cor-button` for the interactive pieces.
+             * Four sibling variants share one element via the `service` attribute —
+             * each maps to one of the e-Gov properties:
+             * - `service="mpay"` (default) — payment receipt
+             * - `service="mpass"` — authentication session log
+             * - `service="msign"` — signature receipt
+             * - `service="mdelivery"` — delivery confirmation
+             * The receipt is a presentational artifact. It does not fetch, validate,
+             * or persist; callers pass already-formatted values. The QR (default slot
+             * `qr` overrides) is generated client-side from the `qrData` prop via a
+             * vendored byte-mode QR encoder — no runtime dependency, no network.
+             * Print: the host carries `@media print` rules to hide action buttons,
+             * drop shadows, and force ink-primary text so a citizen can print the
+             * receipt without the surrounding UI bleeding through.
+             * Romanian voice ships as defaults; every label is overridable via the
+             * public `@Prop` surface for localisation.
+             * @element cor-receipt
+             */
+            "cor-receipt": LocalJSX.IntrinsicElements["cor-receipt"] & JSXBase.HTMLAttributes<HTMLCorReceiptElement>;
             /**
              * Search Input (circular) — single-line search-entry control with a fully
              * rounded (pill) silhouette.
@@ -6446,6 +8726,57 @@ declare module "@stencil/core" {
              * @element cor-switch
              */
             "cor-switch": LocalJSX.IntrinsicElements["cor-switch"] & JSXBase.HTMLAttributes<HTMLCorSwitchElement>;
+            /**
+             * `cor-tab` — single tab item inside a `cor-tabs` tablist.
+             * Pattern A child: rendered as a slotted child of `cor-tabs`. Owns its own
+             * `role="tab"` host with `aria-selected`, an optional leading icon, the
+             * label, and an optional trailing numbered badge.
+             * The component is intentionally light: selection, focus management and
+             * `aria-controls` wiring are all driven by the parent `cor-tabs` via
+             * reflected attributes and DOM ids.
+             * @element cor-tab
+             */
+            "cor-tab": LocalJSX.IntrinsicElements["cor-tab"] & JSXBase.HTMLAttributes<HTMLCorTabElement>;
+            /**
+             * Table — data table molecule for tabular content with optional sorting,
+             * selection, and responsive mobile collapse.
+             * Pattern B (molecule, internal DOM): renders a native `<table>` inside
+             * shadow DOM for full a11y semantics (`role="table"`, `role="columnheader"`,
+             * `aria-sort`, `aria-selected`). Composes existing primitives — `cor-checkbox`
+             * for the selection column, `cor-icon` for sort chevrons. Status badges and
+             * row actions are projected via named slots so consumers can drop in
+             * `cor-tag`, `cor-button`, or any custom content per cell.
+             * Below the `--breakpoint-mobile` (≤640 px) container query, every row
+             * collapses to a vertical key:value card stack — each `<td>` becomes a
+             * labelled line with the column title rendered inline before its value.
+             * @element cor-table
+             */
+            "cor-table": LocalJSX.IntrinsicElements["cor-table"] & JSXBase.HTMLAttributes<HTMLCorTableElement>;
+            /**
+             * `cor-tabs` — horizontal tablist that switches the currently visible panel.
+             * Two composition modes:
+             *  1. **Declarative** (recommended for static menus): slot `<cor-tab>` children
+             *     into the default slot and matching `<div slot="panel-{value}">` blocks
+             *     into the panel slots.
+             *  2. **Data-driven**: pass a `tabs` array. The component renders each entry
+             *     as a child `cor-tab` and exposes panels via `<div slot="panel-{value}">`
+             *     elements supplied by the consumer.
+             * Pattern A (molecule, slot-based). The host carries `role="tablist"`; the
+             * tabs are rendered children with `role="tab"`; the panels are slotted into
+             * named `panel-{value}` slots and receive `role="tabpanel"` + the matching
+             * `aria-labelledby`.
+             * Keyboard contract (WAI-ARIA Authoring Practices, automatic activation):
+             * - `Tab` focuses the currently selected tab (single tab stop into the group)
+             * - `ArrowLeft` / `ArrowRight` move selection between enabled tabs (wraps)
+             * - `Home` / `End` jump to the first / last enabled tab
+             * - `Enter` / `Space` activate the focused tab (no-op for selected/disabled)
+             * Overflow: when the rendered tabs are wider than the host, the component
+             * exposes leading + trailing chevron buttons that scroll the strip. Both
+             * chevrons are mouse-only; their `aria-hidden="true"` keeps them out of the
+             * keyboard order (arrow keys already move selection without overflow help).
+             * @element cor-tabs
+             */
+            "cor-tabs": LocalJSX.IntrinsicElements["cor-tabs"] & JSXBase.HTMLAttributes<HTMLCorTabsElement>;
             /**
              * Tag — compact, non-interactive label used to mark state, category,
              * or supplementary metadata.

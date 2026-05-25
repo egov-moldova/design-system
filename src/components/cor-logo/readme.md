@@ -35,6 +35,19 @@ logo in a sized container — `cor-service-button` does this for its
 | `corLogoError` | Emitted when an asset fails to load — either because the `name` is not in the manifest (`'unknown'`) or because the SVG fetch failed (`'fetch-failed'`). Lets consumers react in production where `console.warn` is invisible (telemetry, fallback UI, etc.).  Note: events emitted during `componentWillLoad` (initial mount) fire before consumer listeners can attach to a freshly-inserted host. Attach the listener BEFORE setting the `name` prop, or rely on the warning for mount-time failures. | `CustomEvent<{ name: string; reason: "unknown" \| "fetch-failed"; }>` |
 
 
+## Dependencies
+
+### Used by
+
+ - [cor-receipt](../cor-receipt)
+
+### Graph
+```mermaid
+graph TD;
+  cor-receipt --> cor-logo
+  style cor-logo fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

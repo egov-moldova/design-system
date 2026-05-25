@@ -44,6 +44,21 @@ via `external="false"`.
 | `"icon-start"` | Optional leading `cor-icon`.                                                                                                 |
 
 
+## Dependencies
+
+### Used by
+
+ - [cor-cookie-banner](../cor-cookie-banner)
+ - [cor-footer](../cor-footer)
+
+### Graph
+```mermaid
+graph TD;
+  cor-cookie-banner --> cor-link
+  cor-footer --> cor-link
+  style cor-link fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

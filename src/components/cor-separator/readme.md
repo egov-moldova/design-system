@@ -40,6 +40,19 @@ No events, no interactivity. ARIA `separator` semantics.
 | `"line"`   |             |
 
 
+## Dependencies
+
+### Used by
+
+ - [cor-cookie-banner](../cor-cookie-banner)
+
+### Graph
+```mermaid
+graph TD;
+  cor-cookie-banner --> cor-separator
+  style cor-separator fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

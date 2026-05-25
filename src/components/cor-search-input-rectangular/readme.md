@@ -14,36 +14,46 @@ Pattern B (atom-interactive, form-associated): renders its own
 icon and an optional trailing clear `×` button that appears whenever the
 control carries a value. Visual primitives (border, focus ring, label,
 helper / error, sizes, states) are shared with `cor-input`; specific
-affordances (icon-start, icon-end-clear) live in the
+affordances (icon-start, icon-end-clear, submit-button) live in the
 `--search-input-rectangular-*` token namespace.
 
 Rectangular shape is the default sibling of `cor-search-input-circular`
 (pill). The two ship as distinct components per the Figma component-set
 separation in the Republic of Moldova Unified Design System library.
 
+Optional axes per Figma master `933:29099`:
+- `loading` — async query is in flight; a trailing spinner appears next to
+  the value/placeholder and the control is announced as `aria-busy`.
+- `with-button` — adds a trailing brand-blue submit button that fires
+  `corSearch` on click. Coexists with the clear button and the loading
+  spinner.
+
 ## Properties
 
-| Property       | Attribute      | Description                                                                                                                                                  | Type                         | Default     |
-| -------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------- | ----------- |
-| `ariaLabel`    | `aria-label`   | Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.                                                            | `string \| undefined`        | `undefined` |
-| `autocomplete` | `autocomplete` | Native `autocomplete` attribute forwarded to the internal control.                                                                                           | `string \| undefined`        | `undefined` |
-| `clearLabel`   | `clear-label`  | Accessible label for the trailing clear button. Defaults to Romanian "Șterge" per the institutional voice.                                                   | `string`                     | `'Șterge'`  |
-| `clearable`    | `clearable`    | Shows the trailing clear `×` button when a value is present. Set to `false` to suppress the affordance entirely (useful for read-only or always-on filters). | `boolean`                    | `true`      |
-| `disabled`     | `disabled`     | Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.                                                   | `boolean`                    | `false`     |
-| `errorText`    | `error-text`   | Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.                 | `string \| undefined`        | `undefined` |
-| `helperText`   | `helper-text`  | Plain-text helper / hint shown below the control.                                                                                                            | `string \| undefined`        | `undefined` |
-| `iconName`     | `icon-name`    | Icon name for the leading icon (rendered via the local SVG library). Override by providing an element to the `icon-start` slot.                              | `string`                     | `'search'`  |
-| `invalid`      | `invalid`      | Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.                               | `boolean`                    | `false`     |
-| `label`        | `label`        | Plain-text label. Use the `label` slot for richer content.                                                                                                   | `string \| undefined`        | `undefined` |
-| `maxLength`    | `maxlength`    | Native `maxlength` constraint.                                                                                                                               | `number \| undefined`        | `undefined` |
-| `minLength`    | `minlength`    | Native `minlength` constraint.                                                                                                                               | `number \| undefined`        | `undefined` |
-| `name`         | `name`         | Form-control `name`. Used during form submission.                                                                                                            | `string \| undefined`        | `undefined` |
-| `placeholder`  | `placeholder`  | Placeholder shown when the control is empty.                                                                                                                 | `string \| undefined`        | `undefined` |
-| `readonly`     | `readonly`     | Renders the field read-only. The control remains focusable; the clear affordance is suppressed.                                                              | `boolean`                    | `false`     |
-| `required`     | `required`     | Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.                                             | `boolean`                    | `false`     |
-| `size`         | `size`         | Visual size rung.                                                                                                                                            | `"lg" \| "md"`               | `'md'`      |
-| `value`        | `value`        | Current value of the control. Reflects to the host attribute.                                                                                                | `string`                     | `''`        |
-| `variant`      | `variant`      | Color treatment. `destructive` is forced when `invalid` is set.                                                                                              | `"default" \| "destructive"` | `'default'` |
+| Property       | Attribute      | Description                                                                                                                                                                                                                                                                                       | Type                         | Default     |
+| -------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- | ----------- |
+| `ariaLabel`    | `aria-label`   | Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.                                                                                                                                                                                                 | `string \| undefined`        | `undefined` |
+| `autocomplete` | `autocomplete` | Native `autocomplete` attribute forwarded to the internal control.                                                                                                                                                                                                                                | `string \| undefined`        | `undefined` |
+| `clearLabel`   | `clear-label`  | Accessible label for the trailing clear button. Defaults to Romanian "Șterge" per the institutional voice.                                                                                                                                                                                        | `string`                     | `'Șterge'`  |
+| `clearable`    | `clearable`    | Shows the trailing clear `×` button when a value is present. Set to `false` to suppress the affordance entirely (useful for read-only or always-on filters).                                                                                                                                      | `boolean`                    | `true`      |
+| `disabled`     | `disabled`     | Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.                                                                                                                                                                                        | `boolean`                    | `false`     |
+| `errorText`    | `error-text`   | Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.                                                                                                                                                      | `string \| undefined`        | `undefined` |
+| `helperText`   | `helper-text`  | Plain-text helper / hint shown below the control.                                                                                                                                                                                                                                                 | `string \| undefined`        | `undefined` |
+| `iconName`     | `icon-name`    | Icon name for the leading icon (rendered via the local SVG library). Override by providing an element to the `icon-start` slot.                                                                                                                                                                   | `string`                     | `'search'`  |
+| `invalid`      | `invalid`      | Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.                                                                                                                                                                    | `boolean`                    | `false`     |
+| `label`        | `label`        | Plain-text label. Use the `label` slot for richer content.                                                                                                                                                                                                                                        | `string \| undefined`        | `undefined` |
+| `loading`      | `loading`      | Indicates an in-flight query. Replaces the leading magnifying-glass icon with a brand-coloured `cor-spinner` and exposes `aria-busy` on the internal control. The field stays focusable; emitting `corSearch` while loading is the consumer's responsibility (typically debounced).               | `boolean`                    | `false`     |
+| `maxLength`    | `maxlength`    | Native `maxlength` constraint.                                                                                                                                                                                                                                                                    | `number \| undefined`        | `undefined` |
+| `minLength`    | `minlength`    | Native `minlength` constraint.                                                                                                                                                                                                                                                                    | `number \| undefined`        | `undefined` |
+| `name`         | `name`         | Form-control `name`. Used during form submission.                                                                                                                                                                                                                                                 | `string \| undefined`        | `undefined` |
+| `placeholder`  | `placeholder`  | Placeholder shown when the control is empty.                                                                                                                                                                                                                                                      | `string \| undefined`        | `undefined` |
+| `readonly`     | `readonly`     | Renders the field read-only. The control remains focusable; the clear affordance is suppressed.                                                                                                                                                                                                   | `boolean`                    | `false`     |
+| `required`     | `required`     | Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.                                                                                                                                                                                  | `boolean`                    | `false`     |
+| `size`         | `size`         | Visual size rung.                                                                                                                                                                                                                                                                                 | `"lg" \| "md"`               | `'md'`      |
+| `submitLabel`  | `submit-label` | Accessible label for the trailing submit button. Defaults to Romanian "Caută" per the institutional voice.                                                                                                                                                                                        | `string`                     | `'Caută'`   |
+| `value`        | `value`        | Current value of the control. Reflects to the host attribute.                                                                                                                                                                                                                                     | `string`                     | `''`        |
+| `variant`      | `variant`      | Color treatment. `destructive` is forced when `invalid` is set.                                                                                                                                                                                                                                   | `"default" \| "destructive"` | `'default'` |
+| `withButton`   | `with-button`  | Renders a trailing brand-blue submit button (the Figma "Button=True" axis). Clicking the button — or pressing Enter inside the input — dispatches `corSearch` with the current value. When the field is empty or disabled, the button enters a disabled visual state and does not fire the event. | `boolean`                    | `false`     |
 
 
 ## Events
@@ -79,6 +89,8 @@ separation in the Republic of Moldova Unified Design System library.
 | `"label"`         |             |
 | `"native"`        |             |
 | `"required-mark"` |             |
+| `"spinner"`       |             |
+| `"submit-button"` |             |
 
 
 ## Dependencies
@@ -86,11 +98,13 @@ separation in the Republic of Moldova Unified Design System library.
 ### Depends on
 
 - [cor-icon](../cor-icon)
+- [cor-spinner](../cor-spinner)
 
 ### Graph
 ```mermaid
 graph TD;
   cor-search-input-rectangular --> cor-icon
+  cor-search-input-rectangular --> cor-spinner
   style cor-search-input-rectangular fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
