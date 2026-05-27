@@ -21,9 +21,10 @@
       }
     },
     "background": {
-      "off": { "$value": "{color.background.base.tertiary-active}", "$type": "color" },
+      "$comment": "off/offHover use palette.gray.400 (#757575, ~4.8:1 on white) because the semantic tier has no background token in the gray.350-500 range that satisfies WCAG 1.4.11 against the page (and against the white thumb). tracked in docs/backlog/2026-05-27-text-brand-hover-active-semantic-gap.md as the broader semantic-tier gap.",
+      "off": { "$value": "{palette.gray.400}", "$type": "color" },
       "on": { "$value": "{color.background.brand.default}", "$type": "color" },
-      "offHover": { "$value": "{color.background.base.tertiary-active}", "$type": "color" },
+      "offHover": { "$value": "{palette.gray.500}", "$type": "color" },
       "onHover": { "$value": "{color.background.brand.default-hover}", "$type": "color" },
       "disabled": { "$value": "{color.background.disabled.default}", "$type": "color" }
     },

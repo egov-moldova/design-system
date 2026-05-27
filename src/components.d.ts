@@ -2502,11 +2502,11 @@ export namespace Components {
      */
     interface CorSwitch {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Consumer-set `aria-label` on the host. The component caches the value (see `resolvedAriaLabel`) and strips the host attribute on mount to avoid the `aria-prohibited-attr` axe rule on the custom-element host.
          */
         "ariaLabel"?: string;
         /**
-          * ID of the element labelling the switch. Used when label content lives outside the component.
+          * Consumer-set `aria-labelledby`. Same strip + cache pattern as `ariaLabel`.
          */
         "ariaLabelledby"?: string;
         /**
@@ -2520,7 +2520,7 @@ export namespace Components {
          */
         "disabled": boolean;
         /**
-          * Plain-text label. Use the `label` slot for richer content.
+          * Accessible-name fallback. Used as `aria-label` on the internal input when no `label` slot is provided. Does NOT render visible text — use the `label` slot for that. Matches the cor-button / cor-checkbox / cor-radio convention.
          */
         "label"?: string;
         /**
@@ -7149,11 +7149,11 @@ declare namespace LocalJSX {
      */
     interface CorSwitch {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Consumer-set `aria-label` on the host. The component caches the value (see `resolvedAriaLabel`) and strips the host attribute on mount to avoid the `aria-prohibited-attr` axe rule on the custom-element host.
          */
         "ariaLabel"?: string;
         /**
-          * ID of the element labelling the switch. Used when label content lives outside the component.
+          * Consumer-set `aria-labelledby`. Same strip + cache pattern as `ariaLabel`.
          */
         "ariaLabelledby"?: string;
         /**
@@ -7171,7 +7171,7 @@ declare namespace LocalJSX {
          */
         "form"?: string;
         /**
-          * Plain-text label. Use the `label` slot for richer content.
+          * Accessible-name fallback. Used as `aria-label` on the internal input when no `label` slot is provided. Does NOT render visible text — use the `label` slot for that. Matches the cor-button / cor-checkbox / cor-radio convention.
          */
         "label"?: string;
         /**

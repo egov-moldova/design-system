@@ -187,7 +187,9 @@
   min-inline-size: 0;
 }
 
-.text[hidden] {
+/* Slot-driven visibility: `.text` always renders so slot projection happens
+   on first paint. The host class drives whether it's visible. */
+:host(:not(.has-label)) .text {
   display: none;
 }
 

@@ -11,30 +11,49 @@ type SwitchArgs = {
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary);';
 
-const renderSwitch = (args: SwitchArgs) => /*html*/ `
-  <cor-switch
-    label="${args.label}"
-    name="${args.name}"
-    value="${args.value}"
-    ${args.checked ? 'checked' : ''}
-    ${args.disabled ? 'disabled' : ''}
-    ${args.required ? 'required' : ''}
-  ></cor-switch>
-`;
+// ---------- Slot-first markup helper ----------
+//
+// `label` prop is ARIA-only (see component JSDoc); visible content lives
+// exclusively in the `label` slot.
 
-const docsSourceDefault = (args: SwitchArgs) => {
+type CbOpts = {
+  label?: string;
+  flags?: string;
+  name?: string;
+  value?: string;
+  ariaLabel?: string;
+  /** Extra inline class for focus-demo etc. */
+  klass?: string;
+};
+
+const cb = (opts: CbOpts = {}): string => {
   const attrs = [
-    args.label ? `label="${args.label}"` : '',
-    args.name ? `name="${args.name}"` : '',
-    args.value ? `value="${args.value}"` : '',
-    args.checked ? 'checked' : '',
-    args.disabled ? 'disabled' : '',
-    args.required ? 'required' : '',
+    opts.klass ? `class="${opts.klass}"` : '',
+    opts.name ? `name="${opts.name}"` : '',
+    opts.value ? `value="${opts.value}"` : '',
+    opts.ariaLabel ? `aria-label="${opts.ariaLabel}"` : '',
+    opts.flags ?? '',
   ]
     .filter(Boolean)
-    .join(' ');
-  return `<cor-switch ${attrs}></cor-switch>`;
+    .join(' ')
+    .trim();
+  const opener = attrs ? `<cor-switch ${attrs}>` : '<cor-switch>';
+  const slots = opts.label ? `<span slot="label">${opts.label}</span>` : '';
+  return `${opener}${slots}</cor-switch>`;
 };
+
+const renderSwitch = (args: SwitchArgs) =>
+  cb({
+    label: args.label,
+    name: args.name || undefined,
+    value: args.value || undefined,
+    flags: [args.checked && 'checked', args.disabled && 'disabled', args.required && 'required']
+      .filter(Boolean)
+      .join(' '),
+  });
+
+const docsSourceDefault = (args: SwitchArgs) =>
+  renderSwitch(args).replace(/<\/cor-switch>/, '\n</cor-switch>').replace(/<span slot=/g, '\n  <span slot=');
 
 const meta: Meta<SwitchArgs> = {
   title: 'Atoms/Switch',
@@ -55,7 +74,10 @@ const meta: Meta<SwitchArgs> = {
       description: 'Marks the field as mandatory.',
       table: { defaultValue: { summary: 'false' } },
     },
-    label: { control: 'text', description: 'Plain-text label.' },
+    label: {
+      control: 'text',
+      description: 'Slotted visible label (rendered as `<span slot="label">…</span>`).',
+    },
     name: { control: 'text', description: 'Form-control `name`.' },
     value: { control: 'text', description: 'Value submitted with the form when on.' },
   },
@@ -87,19 +109,8 @@ export const Default: Story = {
 
 export const Checked: Story = {
   render: renderSwitch,
-  args: {
-    ...Default.args,
-    checked: true,
-    label: 'Mod întunecat',
-  } as SwitchArgs,
-  parameters: {
-    docs: {
-      source: {
-        type: 'dynamic',
-        transform: (_code: string, { args }: { args: SwitchArgs }) => docsSourceDefault(args),
-      },
-    },
-  },
+  args: { ...Default.args, checked: true, label: 'Mod întunecat' } as SwitchArgs,
+  parameters: Default.parameters,
 };
 
 const cell = (caption: string, body: string) => /*html*/ `
@@ -109,17 +120,19 @@ const cell = (caption: string, body: string) => /*html*/ `
   </div>
 `;
 
+const docsCode = (...lines: string[]) => lines.join('\n');
+
 export const AllStates: Story = {
   name: 'All States',
   render: () => /*html*/ `
       <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 160px)); gap: var(--spacing-32) var(--spacing-48); padding: var(--spacing-24); max-width: 640px;">
         ${[
-          cell('off · default', /*html*/ `<cor-switch></cor-switch>`),
-          cell('off · focus', /*html*/ `<cor-switch class="is-focused-demo"></cor-switch>`),
-          cell('off · disabled', /*html*/ `<cor-switch disabled></cor-switch>`),
-          cell('on · default', /*html*/ `<cor-switch checked></cor-switch>`),
-          cell('on · focus', /*html*/ `<cor-switch checked class="is-focused-demo"></cor-switch>`),
-          cell('on · disabled', /*html*/ `<cor-switch checked disabled></cor-switch>`),
+          cell('off · default', cb({})),
+          cell('off · focus', cb({ klass: 'is-focused-demo' })),
+          cell('off · disabled', cb({ flags: 'disabled' })),
+          cell('on · default', cb({ flags: 'checked' })),
+          cell('on · focus', cb({ flags: 'checked', klass: 'is-focused-demo' })),
+          cell('on · disabled', cb({ flags: 'checked disabled' })),
         ].join('')}
       </div>
       <style>
@@ -139,12 +152,7 @@ export const AllStates: Story = {
           'The full off/on × default/focus/disabled matrix from the Figma "States" frame. The focus row is approximated visually here; in real use the focus ring appears when the control receives keyboard focus.',
       },
       source: {
-        code: [
-          '<cor-switch></cor-switch>',
-          '<cor-switch checked></cor-switch>',
-          '<cor-switch disabled></cor-switch>',
-          '<cor-switch checked disabled></cor-switch>',
-        ].join('\n'),
+        code: docsCode(cb({}), cb({ flags: 'checked' }), cb({ flags: 'disabled' }), cb({ flags: 'checked disabled' })),
       },
     },
   },
@@ -154,22 +162,22 @@ export const WithLabel: Story = {
   name: 'With Label',
   render: () => /*html*/ `
       <div style="display: flex; flex-direction: column; gap: var(--spacing-16); padding: var(--spacing-24); max-width: 360px;">
-        <cor-switch label="Notificări push"></cor-switch>
-        <cor-switch label="Mod întunecat" checked></cor-switch>
-        <cor-switch label="Sincronizare automată" checked></cor-switch>
-        <cor-switch label="Anunțuri de marketing" disabled></cor-switch>
+        ${cb({ label: 'Notificări push' })}
+        ${cb({ label: 'Mod întunecat', flags: 'checked' })}
+        ${cb({ label: 'Sincronizare automată', flags: 'checked' })}
+        ${cb({ label: 'Anunțuri de marketing', flags: 'disabled' })}
       </div>
     `,
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
-        code: [
-          '<cor-switch label="Notificări push"></cor-switch>',
-          '<cor-switch label="Mod întunecat" checked></cor-switch>',
-          '<cor-switch label="Sincronizare automată" checked></cor-switch>',
-          '<cor-switch label="Anunțuri de marketing" disabled></cor-switch>',
-        ].join('\n'),
+        code: docsCode(
+          cb({ label: 'Notificări push' }),
+          cb({ label: 'Mod întunecat', flags: 'checked' }),
+          cb({ label: 'Sincronizare automată', flags: 'checked' }),
+          cb({ label: 'Anunțuri de marketing', flags: 'disabled' }),
+        ),
       },
     },
   },
@@ -180,8 +188,8 @@ export const Disabled: Story = {
   render: () => /*html*/ `
       <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 220px)); gap: var(--spacing-24) var(--spacing-48); padding: var(--spacing-24); max-width: 560px;">
         ${[
-          cell('off · disabled', /*html*/ `<cor-switch label="Notificări push" disabled></cor-switch>`),
-          cell('on · disabled', /*html*/ `<cor-switch label="Mod întunecat" checked disabled></cor-switch>`),
+          cell('off · disabled', cb({ label: 'Notificări push', flags: 'disabled' })),
+          cell('on · disabled', cb({ label: 'Mod întunecat', flags: 'checked disabled' })),
         ].join('')}
       </div>
     `,
@@ -189,10 +197,10 @@ export const Disabled: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: [
-          '<cor-switch label="Notificări push" disabled></cor-switch>',
-          '<cor-switch label="Mod întunecat" checked disabled></cor-switch>',
-        ].join('\n'),
+        code: docsCode(
+          cb({ label: 'Notificări push', flags: 'disabled' }),
+          cb({ label: 'Mod întunecat', flags: 'checked disabled' }),
+        ),
       },
     },
   },
@@ -209,10 +217,10 @@ export const InForm: Story = {
         <legend style="font-family: var(--font-family-primary); font-size: var(--font-size-14); font-weight: var(--font-weight-medium); color: var(--color-text-base-default); margin: 0;">
           Preferințe notificări
         </legend>
-        <cor-switch name="push" value="da" label="Notificări push" checked></cor-switch>
-        <cor-switch name="email" value="da" label="Notificări prin e-mail"></cor-switch>
-        <cor-switch name="sms" value="da" label="Notificări prin SMS"></cor-switch>
-        <cor-switch name="marketing" value="da" label="Mesaje de marketing"></cor-switch>
+        ${cb({ name: 'push', value: 'da', label: 'Notificări push', flags: 'checked' })}
+        ${cb({ name: 'email', value: 'da', label: 'Notificări prin e-mail' })}
+        ${cb({ name: 'sms', value: 'da', label: 'Notificări prin SMS' })}
+        ${cb({ name: 'marketing', value: 'da', label: 'Mesaje de marketing' })}
         <div style="display: flex; gap: var(--spacing-12); margin-top: var(--spacing-8);">
           <cor-button variant="primary" size="md" type="submit">Salvează</cor-button>
           <cor-button variant="secondary" size="md" type="reset">Resetează</cor-button>
@@ -228,13 +236,13 @@ export const InForm: Story = {
           'Submit the form to see which switches contribute values. Off switches are excluded from the FormData, mirroring native checkbox semantics.',
       },
       source: {
-        code: [
+        code: docsCode(
           '<form>',
-          '  <cor-switch name="push" value="da" label="Notificări push" checked></cor-switch>',
-          '  <cor-switch name="email" value="da" label="Notificări prin e-mail"></cor-switch>',
+          `  ${cb({ name: 'push', value: 'da', label: 'Notificări push', flags: 'checked' })}`,
+          `  ${cb({ name: 'email', value: 'da', label: 'Notificări prin e-mail' })}`,
           '  <cor-button variant="primary" type="submit">Salvează</cor-button>',
           '</form>',
-        ].join('\n'),
+        ),
       },
     },
   },

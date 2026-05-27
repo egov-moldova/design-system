@@ -139,16 +139,43 @@ describe('cor-switch', () => {
     });
   });
 
-  describe('label rendering', () => {
-    it('renders the label text via `label` prop', async () => {
+  describe('label rendering (slot-first)', () => {
+    // mock-doc doesn't dispatch slotchange on initial render; invoke the
+    // private handler directly with a synthesized event whose
+    // assignedNodes() returns the would-be projected children.
+    const fakeSlotEvent = (textOrEl: 'text' | 'el', content: string): Event =>
+      ({
+        target: {
+          assignedNodes: () =>
+            textOrEl === 'text'
+              ? [{ nodeType: Node.TEXT_NODE, textContent: content }]
+              : [{ nodeType: Node.ELEMENT_NODE, textContent: content }],
+        },
+      }) as unknown as Event;
+
+    it('uses the label prop as input aria-label when no slot content', async () => {
       const { root } = await render(<cor-switch label="Notificări push"></cor-switch>);
-      expect(queryLabelEl(root)?.textContent).toContain('Notificări push');
-      expect(root?.classList.contains('has-label')).toBe(true);
+      // `.label-text` exists (always rendered) but is empty + hidden via host class.
+      expect((queryLabelEl(root)?.textContent ?? '').trim()).toBe('');
+      expect(root?.classList.contains('has-label')).toBe(false);
+      // Prop falls back to the input's aria-label.
+      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Notificări push');
     });
 
-    it('omits the visible label slot when no label is provided', async () => {
+    it('flips has-label class + mirrors slot text onto input aria-label', async () => {
+      const { root } = await render(<cor-switch></cor-switch>);
+      (root as unknown as { onLabelSlotChange: (ev: Event) => void }).onLabelSlotChange(
+        fakeSlotEvent('el', 'Slotted label'),
+      );
+      await flush();
+      expect(root?.classList.contains('has-label')).toBe(true);
+      expect(queryNative(root)?.getAttribute('aria-labelledby')).toBeTruthy();
+      // Belt-and-suspenders: slotted text mirrored onto aria-label.
+      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Slotted label');
+    });
+
+    it('omits the visible label when no slot is provided', async () => {
       const { root } = await render(<cor-switch aria-label="Toggle"></cor-switch>);
-      expect(queryLabelEl(root)).toBeNull();
       expect(root?.classList.contains('has-label')).toBe(false);
     });
   });
@@ -185,8 +212,13 @@ describe('cor-switch', () => {
       expect(queryNative(root)?.getAttribute('aria-checked')).toBe('true');
     });
 
-    it('links the label via aria-labelledby', async () => {
-      const { root } = await render(<cor-switch label="Notificări push"></cor-switch>);
+    it('links the slotted label via aria-labelledby', async () => {
+      const { root } = await render(<cor-switch></cor-switch>);
+      // Force has-label state (mock-doc doesn't fire slotchange on initial render).
+      (root as unknown as { onLabelSlotChange: (ev: Event) => void }).onLabelSlotChange({
+        target: { assignedNodes: () => [{ nodeType: Node.ELEMENT_NODE, textContent: 'Notificări push' }] },
+      } as unknown as Event);
+      await flush();
       const native = queryNative(root);
       const labelEl = queryLabelEl(root);
       const id = native?.getAttribute('aria-labelledby');
@@ -194,11 +226,23 @@ describe('cor-switch', () => {
       expect(labelEl?.id).toBe(id);
     });
 
-    it('uses aria-label when no visible label is present', async () => {
+    it('uses explicit aria-label when no slot is present', async () => {
       const { root } = await render(<cor-switch aria-label="Notificări"></cor-switch>);
       const native = queryNative(root);
       expect(native?.getAttribute('aria-label')).toBe('Notificări');
       expect(native?.getAttribute('aria-labelledby')).toBeNull();
+    });
+
+    it('falls back to the label prop as input aria-label', async () => {
+      const { root } = await render(<cor-switch label="Etichetă din prop"></cor-switch>);
+      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Etichetă din prop');
+    });
+
+    it('strips consumer-set aria-label from the host (axe: aria-prohibited-attr)', async () => {
+      const { root } = await render(<cor-switch aria-label="Notificări"></cor-switch>);
+      // Host attribute removed after ingest; value preserved on the internal input.
+      expect(root?.getAttribute('aria-label')).toBeNull();
+      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Notificări');
     });
 
     it('exposes aria-required when required', async () => {

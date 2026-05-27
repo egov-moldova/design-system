@@ -58,21 +58,37 @@ export class CorSwitch {
    */
   @Prop() value?: string;
 
-  /** Plain-text label. Use the `label` slot for richer content. */
+  /**
+   * Accessible-name fallback. Used as `aria-label` on the internal input when
+   * no `label` slot is provided. Does NOT render visible text — use the
+   * `label` slot for that. Matches the cor-button / cor-checkbox / cor-radio
+   * convention.
+   */
   @Prop() label?: string;
 
   /**
-   * Accessible name. Mirrors to the internal control's `aria-label` when no
-   * visible label is present.
+   * Consumer-set `aria-label` on the host. The component caches the value
+   * (see `resolvedAriaLabel`) and strips the host attribute on mount to
+   * avoid the `aria-prohibited-attr` axe rule on the custom-element host.
    */
   @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
 
-  /** ID of the element labelling the switch. Used when label content lives outside the component. */
+  /** Consumer-set `aria-labelledby`. Same strip + cache pattern as `ariaLabel`. */
   @Prop({ attribute: 'aria-labelledby' }) ariaLabelledby?: string;
 
   @State() private hasLabelSlot: boolean = false;
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
+  // See cor-radio.tsx for the rationale on these three pieces of cached
+  // state. Summary: axe `aria-prohibited-attr` flags `aria-label` /
+  // `aria-labelledby` on a custom-element host (implicit `generic` role);
+  // axe `label` cannot walk slots to find the projected label's text. We
+  // cache the consumer's ARIA attrs and mirror the flattened slot text
+  // onto the internal input's `aria-label` so AT and axe both see a
+  // discoverable accessible name on the actual radio control.
+  @State() private resolvedAriaLabel?: string;
+  @State() private resolvedAriaLabelledby?: string;
+  @State() private slottedLabelText: string = '';
 
   @Element() host!: HTMLCorSwitchElement;
 
@@ -92,11 +108,6 @@ export class CorSwitch {
   private readonly labelId = `cor-switch-label-${this.instanceId}`;
   private initialChecked: boolean = false;
 
-  componentWillLoad() {
-    this.initialChecked = this.checked;
-    this.syncFormValue();
-  }
-
   @Watch('checked')
   handleCheckedChange() {
     this.syncFormValue();
@@ -105,6 +116,31 @@ export class CorSwitch {
   @Watch('value')
   handleValueChange() {
     this.syncFormValue();
+  }
+
+  // Cache + strip consumer-set aria attributes — see @State JSDoc above.
+  @Watch('ariaLabel')
+  syncAriaLabel(next?: string) {
+    if (next && next.length > 0) {
+      this.resolvedAriaLabel = next;
+      if (this.host.hasAttribute('aria-label')) this.host.removeAttribute('aria-label');
+    }
+  }
+
+  @Watch('ariaLabelledby')
+  syncAriaLabelledby(next?: string) {
+    if (next && next.length > 0) {
+      this.resolvedAriaLabelledby = next;
+      if (this.host.hasAttribute('aria-labelledby')) this.host.removeAttribute('aria-labelledby');
+    }
+  }
+
+  componentWillLoad() {
+    this.initialChecked = this.checked;
+    this.syncFormValue();
+    // Initial strip — @Watch only fires on subsequent prop changes.
+    this.syncAriaLabel(this.ariaLabel);
+    this.syncAriaLabelledby(this.ariaLabelledby);
   }
 
   /** Mirrors `disabled` from an ancestor `<fieldset disabled>` without clobbering the consumer-set prop. */
@@ -138,16 +174,20 @@ export class CorSwitch {
   }
 
   private onLabelSlotChange = (ev: Event) => {
-    this.hasLabelSlot = this.slotHasContent(ev);
-  };
-
-  private slotHasContent(ev: Event): boolean {
     const slot = ev.target as HTMLSlotElement;
-    return slot.assignedNodes({ flatten: true }).some(node => {
+    const assignedNodes = slot.assignedNodes({ flatten: true });
+    this.hasLabelSlot = assignedNodes.some(node => {
       if (node.nodeType === Node.TEXT_NODE) return (node.textContent ?? '').trim().length > 0;
       return true;
     });
-  }
+    // Mirror slotted text onto the input's aria-label so axe / NVDA see a
+    // discoverable name (their accessible-name calc doesn't walk slots).
+    this.slottedLabelText = assignedNodes
+      .map(node => node.textContent ?? '')
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim();
+  };
 
   private handleChange = (ev: Event) => {
     if (this.isInert()) {
@@ -173,16 +213,23 @@ export class CorSwitch {
     return this.disabled || this.fieldsetDisabled;
   }
 
-  private hasVisibleLabel(): boolean {
-    return Boolean(this.label && this.label.trim().length > 0) || this.hasLabelSlot;
-  }
-
   render() {
     const effectivelyDisabled = this.isInert();
-    const labelText = this.label?.trim() ?? '';
-    const hasLabel = this.hasVisibleLabel();
-    const ariaLabelAttr = !hasLabel ? this.ariaLabel : undefined;
-    const ariaLabelledbyAttr = hasLabel ? this.labelId : this.ariaLabelledby;
+    // Slot-first content: `label` / consumer-set aria-label are ARIA-only
+    // fallbacks; the slot is the sole source of visible text.
+    const hasLabel = this.hasLabelSlot;
+    // aria-label priority:
+    //   1. explicit consumer aria-label (resolvedAriaLabel)
+    //   2. flattened slotted text (so axe + AT that can't walk slots still
+    //      see an accessible name on the actual control)
+    //   3. label prop fallback
+    //   4. undefined
+    const ariaLabelAttr =
+      this.resolvedAriaLabel ??
+      (hasLabel ? this.slottedLabelText || undefined : undefined) ??
+      this.label?.trim() ??
+      undefined;
+    const ariaLabelledbyAttr = hasLabel ? this.labelId : this.resolvedAriaLabelledby;
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -220,19 +267,17 @@ export class CorSwitch {
             />
           </span>
 
-          {hasLabel ? (
-            <span class="text" part="text">
-              <span class="label-text" id={this.labelId} part="label">
-                <slot name="label" onSlotchange={this.onLabelSlotChange}>
-                  {labelText}
-                </slot>
-              </span>
-            </span>
-          ) : (
-            <span class="text" hidden>
+          {/*
+            `.text` always renders so the slot receives its assignment on
+            first paint. Visibility is driven by the `has-label` host class
+            via CSS (`:host(:not(.has-label)) .text { display: none }`).
+            Without this, `slotchange` may not fire reliably across browsers.
+          */}
+          <span class="text" part="text">
+            <span class="label-text" id={this.labelId} part="label">
               <slot name="label" onSlotchange={this.onLabelSlotChange} />
             </span>
-          )}
+          </span>
         </label>
       </Host>
     );
