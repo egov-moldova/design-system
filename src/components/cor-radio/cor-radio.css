@@ -212,7 +212,12 @@
    */
 }
 
-.text[hidden] {
+/*
+ * Slot-driven visibility: the `.text` block always renders so slot projection
+ * happens on first paint, then host classes drive what's actually visible.
+ * Mirrors cor-checkbox's `.label:empty` / class-driven pattern.
+ */
+:host(:not(.has-label):not(.has-supporting-text)) .text {
   display: none;
 }
 
@@ -224,6 +229,10 @@
   overflow-wrap: anywhere;
 }
 
+:host(:not(.has-label)) .label-text {
+  display: none;
+}
+
 .supporting-text {
   font-size: var(--_supporting-font-size);
   line-height: var(--_supporting-line-height);
@@ -232,9 +241,7 @@
   overflow-wrap: anywhere;
 }
 
-/* Probe-only slot used to detect content when the visible slot is absent.
-   Hidden via [hidden] above and reinforced here. */
-.supporting-text--probe {
+:host(:not(.has-supporting-text)) .supporting-text {
   display: none;
 }
 

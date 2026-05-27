@@ -22,7 +22,7 @@
       }
     },
     "border": {
-      "default": { "$value": "{color.border.base.secondary}", "$type": "color" },
+      "default": { "$value": "{color.border.base.tertiary}", "$type": "color" },
       "hover": { "$value": "{color.border.base.tertiary}", "$type": "color" },
       "checked": { "$value": "{color.border.brand.default}", "$type": "color" },
       "error": { "$value": "{color.border.danger.default}", "$type": "color" },

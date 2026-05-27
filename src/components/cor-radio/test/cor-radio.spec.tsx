@@ -14,7 +14,7 @@ const queryLabelEl = (root: Element | null | undefined): HTMLElement | null =>
   (root?.shadowRoot?.querySelector('.label-text') ?? null) as HTMLElement | null;
 
 const querySupportingEl = (root: Element | null | undefined): HTMLElement | null =>
-  (root?.shadowRoot?.querySelector('.supporting-text:not(.supporting-text--probe)') ?? null) as HTMLElement | null;
+  (root?.shadowRoot?.querySelector('.supporting-text') ?? null) as HTMLElement | null;
 
 const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
 
@@ -130,22 +130,66 @@ describe('cor-radio', () => {
     });
   });
 
-  describe('label + supporting-text rendering', () => {
-    it('renders the label text via `label` prop', async () => {
+  describe('label + supporting-text rendering (slot-first)', () => {
+    // mock-doc doesn't dispatch `slotchange` on initial render, so we
+    // invoke the private handlers directly with a synthesized event whose
+    // assignedNodes() returns the would-be projected children. This is the
+    // same workaround used in cor-checkbox / cor-chip specs.
+    const fakeSlotEvent = (textOrEl: 'text' | 'el', content: string): Event =>
+      ({
+        target: {
+          assignedNodes: () =>
+            textOrEl === 'text'
+              ? [{ nodeType: Node.TEXT_NODE, textContent: content }]
+              : [{ nodeType: Node.ELEMENT_NODE, textContent: content }],
+        },
+      }) as unknown as Event;
+
+    it('uses the label prop as input aria-label when no slot content', async () => {
       const { root } = await render(<cor-radio label="Acord termeni"></cor-radio>);
-      expect(queryLabelEl(root)?.textContent).toContain('Acord termeni');
+      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Acord termeni');
+      // Label container exists (always rendered for slot projection) but is empty
+      // and hidden via `:host(:not(.has-label)) .label-text { display: none }`.
+      expect((queryLabelEl(root)?.textContent ?? '').trim()).toBe('');
+      expect(root?.classList.contains('has-label')).toBe(false);
     });
 
-    it('renders supporting text via `supporting-text` prop', async () => {
-      const { root } = await render(<cor-radio label="x" supporting-text="Helpful detail"></cor-radio>);
-      expect(querySupportingEl(root)?.textContent).toContain('Helpful detail');
+    it('flips has-label class via the onLabelSlotChange handler', async () => {
+      const { root } = await render(<cor-radio aria-label="x"></cor-radio>);
+      (root as unknown as { onLabelSlotChange: (ev: Event) => void }).onLabelSlotChange(
+        fakeSlotEvent('el', 'Slotted label'),
+      );
+      await flush();
+      expect(root?.classList.contains('has-label')).toBe(true);
+      // With label slot, the aria-labelledby path takes over and aria-label is omitted.
+      expect(queryNative(root)?.getAttribute('aria-label')).toBeNull();
+      expect(queryNative(root)?.getAttribute('aria-labelledby')).toBeTruthy();
+    });
+
+    it('flips has-supporting-text class via the onSupportingTextSlotChange handler', async () => {
+      const { root } = await render(<cor-radio aria-label="x"></cor-radio>);
+      (root as unknown as { onSupportingTextSlotChange: (ev: Event) => void }).onSupportingTextSlotChange(
+        fakeSlotEvent('el', 'Helpful detail'),
+      );
+      await flush();
       expect(root?.classList.contains('has-supporting-text')).toBe(true);
     });
 
-    it('omits the supporting text node when neither slot nor prop is present', async () => {
-      const { root } = await render(<cor-radio label="x"></cor-radio>);
-      expect(querySupportingEl(root)).toBeNull();
+    it('omits the visible supporting text when no slot is set (even if prop is set)', async () => {
+      // Slot-first contract: prop alone does NOT toggle the visible supporting text or has-supporting-text class.
+      const { root } = await render(<cor-radio aria-label="x" supporting-text="not-rendered"></cor-radio>);
+      // Element exists (always rendered) but empty + host class absent.
+      expect((querySupportingEl(root)?.textContent ?? '').trim()).toBe('');
       expect(root?.classList.contains('has-supporting-text')).toBe(false);
+    });
+
+    it('whitespace-only slot text does NOT trigger has-label', async () => {
+      const { root } = await render(<cor-radio aria-label="x"></cor-radio>);
+      (root as unknown as { onLabelSlotChange: (ev: Event) => void }).onLabelSlotChange(
+        fakeSlotEvent('text', '   '),
+      );
+      await flush();
+      expect(root?.classList.contains('has-label')).toBe(false);
     });
   });
 
@@ -158,11 +202,16 @@ describe('cor-radio', () => {
       expect(root?.classList.contains('is-disabled')).toBe(true);
     });
 
-    it('reflects aria-readonly when readonly is set, but stays focusable', async () => {
+    it('folds readonly into aria-disabled (aria-readonly is invalid on role=radio)', async () => {
+      // Per WAI-ARIA, aria-readonly is not allowed on role="radio". The
+      // component routes the readonly state into aria-disabled on the
+      // internal <input> while preserving native focusability + the
+      // is-readonly host class for styling.
       const { root } = await render(<cor-radio label="x" readonly></cor-radio>);
       const native = queryNative(root);
       expect(native?.disabled).toBe(false);
-      expect(native?.getAttribute('aria-readonly')).toBe('true');
+      expect(native?.getAttribute('aria-readonly')).toBeNull();
+      expect(native?.getAttribute('aria-disabled')).toBe('true');
       expect(root?.classList.contains('is-readonly')).toBe(true);
       expect(root?.classList.contains('is-disabled')).toBe(false);
     });
@@ -178,8 +227,13 @@ describe('cor-radio', () => {
   });
 
   describe('ARIA contract', () => {
-    it('links the label via aria-labelledby', async () => {
-      const { root } = await render(<cor-radio label="Acord"></cor-radio>);
+    it('links the slotted label via aria-labelledby', async () => {
+      const { root } = await render(<cor-radio aria-label="x"></cor-radio>);
+      // Force has-label state (mock-doc doesn't fire slotchange on initial render).
+      (root as unknown as { onLabelSlotChange: (ev: Event) => void }).onLabelSlotChange({
+        target: { assignedNodes: () => [{ nodeType: Node.ELEMENT_NODE }] },
+      } as unknown as Event);
+      await flush();
       const native = queryNative(root);
       const labelEl = queryLabelEl(root);
       const id = native?.getAttribute('aria-labelledby');
@@ -187,11 +241,21 @@ describe('cor-radio', () => {
       expect(labelEl?.id).toBe(id);
     });
 
-    it('uses aria-label when no visible label is present', async () => {
+    it('uses aria-label when no slot or label prop is present', async () => {
       const { root } = await render(<cor-radio aria-label="Opțiunea A"></cor-radio>);
       const native = queryNative(root);
       expect(native?.getAttribute('aria-label')).toBe('Opțiunea A');
       expect(native?.getAttribute('aria-labelledby')).toBeNull();
+    });
+
+    it('falls back to the label prop as input aria-label when neither slot nor aria-label is set', async () => {
+      const { root } = await render(<cor-radio label="Etichetă din prop"></cor-radio>);
+      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Etichetă din prop');
+    });
+
+    it('explicit aria-label wins over the label prop', async () => {
+      const { root } = await render(<cor-radio label="ignored" aria-label="winning"></cor-radio>);
+      expect(queryNative(root)?.getAttribute('aria-label')).toBe('winning');
     });
 
     it('exposes aria-required when required', async () => {
@@ -204,8 +268,14 @@ describe('cor-radio', () => {
       expect(queryNative(root)?.getAttribute('aria-invalid')).toBe('true');
     });
 
-    it('wires aria-describedby to the supporting-text id when present', async () => {
-      const { root } = await render(<cor-radio label="x" supporting-text="hint"></cor-radio>);
+    it('wires aria-describedby to the supporting-text id when the slot has content', async () => {
+      const { root } = await render(<cor-radio aria-label="x"></cor-radio>);
+      // Force the supporting-text slot to "have content" so the visible
+      // supporting span renders and aria-describedby resolves.
+      (root as unknown as { onSupportingTextSlotChange: (ev: Event) => void }).onSupportingTextSlotChange({
+        target: { assignedNodes: () => [{ nodeType: Node.ELEMENT_NODE }] },
+      } as unknown as Event);
+      await flush();
       const describedBy = queryNative(root)?.getAttribute('aria-describedby');
       const supporting = querySupportingEl(root);
       expect(describedBy).toBeTruthy();

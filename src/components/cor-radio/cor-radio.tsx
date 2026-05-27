@@ -71,10 +71,18 @@ export class CorRadio {
   /** Value submitted with the form when this radio is checked. */
   @Prop() value?: string;
 
-  /** Plain-text label. Use the `label` slot for richer content. */
+  /**
+   * Accessible-name fallback. Used as `aria-label` on the internal input when
+   * no `label` slot is provided. Does NOT render visible text — use the
+   * `label` slot for that. Matches the `cor-button` / `cor-checkbox` convention.
+   */
   @Prop() label?: string;
 
-  /** Plain-text supporting text shown below the label. Use the `supporting-text` slot for richer content. */
+  /**
+   * Accessible-description fallback. Reserved for future use as
+   * `aria-describedby` source when no `supporting-text` slot is provided.
+   * Does NOT render visible text — use the `supporting-text` slot for that.
+   */
   @Prop({ attribute: 'supporting-text' }) supportingText?: string;
 
   /**
@@ -90,6 +98,11 @@ export class CorRadio {
   @State() private hasSupportingTextSlot: boolean = false;
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
+  // Local mirror for the consumer-set aria-label / aria-labelledby. We strip
+  // those from the host on mount (axe: aria-prohibited-attr), which clears the
+  // Stencil prop via its attribute observer — so we keep the value here.
+  @State() private resolvedAriaLabel?: string;
+  @State() private resolvedAriaLabelledby?: string;
 
   @Element() host!: HTMLCorRadioElement;
 
@@ -110,11 +123,6 @@ export class CorRadio {
   private readonly supportingId = `cor-radio-supporting-${this.instanceId}`;
   private initialChecked: boolean = false;
 
-  componentWillLoad() {
-    this.initialChecked = this.checked;
-    this.syncFormValue();
-  }
-
   // Validation lives at the @Prop boundary (PRINCIPLES.md §D). Bad enum values
   // warn in dev and fall back to the default instead of throwing.
   @Watch('size')
@@ -130,13 +138,52 @@ export class CorRadio {
   }
 
   @Watch('checked')
-  handleCheckedChange() {
+  handleCheckedChange(next: boolean) {
     this.syncFormValue();
+    // Cross-instance exclusivity: a native <input type="radio"> is grouped by
+    // `name` within its form (or document), but cor-radio lives in its own
+    // shadow root, so the browser cannot see sibling inputs as members of
+    // the same group. When THIS instance becomes checked, walk siblings
+    // sharing the same `name` and clear their `checked` prop. Sibling
+    // @Watch fires with `next=false`, which only calls syncFormValue — no
+    // recursive uncheck, no corChange re-emit.
+    if (next) this.uncheckSiblings();
   }
 
   @Watch('value')
   handleValueChange() {
     this.syncFormValue();
+  }
+
+  // The consumer-set `<cor-radio aria-label="…">` / `aria-labelledby="…">`
+  // attributes get mirrored to the internal <input> via render(). They must
+  // NOT remain on the host because the custom element has the implicit
+  // "generic" role, on which aria-label / aria-labelledby are prohibited
+  // (axe rule: aria-prohibited-attr). We cache the values in @State BEFORE
+  // stripping so the Stencil prop observer's subsequent "attribute removed"
+  // event can't clear them.
+  @Watch('ariaLabel')
+  syncAriaLabel(next?: string) {
+    if (next && next.length > 0) {
+      this.resolvedAriaLabel = next;
+      if (this.host.hasAttribute('aria-label')) this.host.removeAttribute('aria-label');
+    }
+  }
+
+  @Watch('ariaLabelledby')
+  syncAriaLabelledby(next?: string) {
+    if (next && next.length > 0) {
+      this.resolvedAriaLabelledby = next;
+      if (this.host.hasAttribute('aria-labelledby')) this.host.removeAttribute('aria-labelledby');
+    }
+  }
+
+  componentWillLoad() {
+    this.initialChecked = this.checked;
+    this.syncFormValue();
+    // Initial pass — @Watch only fires on subsequent prop changes.
+    this.syncAriaLabel(this.ariaLabel);
+    this.syncAriaLabelledby(this.ariaLabelledby);
   }
 
   /** Mirrors `disabled` from an ancestor `<fieldset disabled>` without clobbering the consumer-set prop. */
@@ -167,6 +214,21 @@ export class CorRadio {
       this.internals.setFormValue(submittedValue, submittedValue);
     } else {
       this.internals.setFormValue(null, null);
+    }
+  }
+
+  private uncheckSiblings() {
+    if (!this.name) return;
+    // Native browser grouping: radios are grouped by `name` within the
+    // associated form, or by `name` within the document when no form is
+    // present. Mirror that scope.
+    const scope: ParentNode = this.internals.form ?? document;
+    const selector = `cor-radio[name="${CSS.escape(this.name)}"]`;
+    const siblings = scope.querySelectorAll(selector);
+    for (let i = 0; i < siblings.length; i += 1) {
+      const sib = siblings[i] as HTMLCorRadioElement | null;
+      if (!sib || sib === this.host) continue;
+      if (sib.checked) sib.checked = false;
     }
   }
 
@@ -217,22 +279,20 @@ export class CorRadio {
     return this.disabled || this.fieldsetDisabled;
   }
 
-  private hasVisibleLabel(): boolean {
-    return Boolean(this.label && this.label.trim().length > 0) || this.hasLabelSlot;
-  }
-
-  private hasVisibleSupportingText(): boolean {
-    return Boolean(this.supportingText && this.supportingText.trim().length > 0) || this.hasSupportingTextSlot;
-  }
-
   render() {
     const effectivelyDisabled = this.isInert();
-    const labelText = this.label?.trim() ?? '';
-    const supportingText = this.supportingText?.trim() ?? '';
-    const hasLabel = this.hasVisibleLabel();
-    const hasSupporting = this.hasVisibleSupportingText();
-    const ariaLabelAttr = !hasLabel ? this.ariaLabel : undefined;
-    const ariaLabelledbyAttr = hasLabel ? this.labelId : this.ariaLabelledby;
+    // Slot-first content: visible label / supporting text live ONLY in their
+    // respective slots. `label` / `supportingText` props are accessible-name
+    // fallbacks for AT (matches cor-button / cor-checkbox).
+    const hasLabel = this.hasLabelSlot;
+    const hasSupporting = this.hasSupportingTextSlot;
+    // aria-label priority: slot present → omit (labelledby points at slot);
+    // explicit ariaLabel (cached as resolvedAriaLabel) → use it;
+    // label prop fallback → label.
+    const ariaLabelAttr = hasLabel
+      ? undefined
+      : (this.resolvedAriaLabel ?? this.label?.trim() ?? undefined);
+    const ariaLabelledbyAttr = hasLabel ? this.labelId : this.resolvedAriaLabelledby;
 
     const describedByIds: string[] = [];
     if (hasSupporting) describedByIds.push(this.supportingId);
@@ -271,8 +331,14 @@ export class CorRadio {
               aria-describedby={ariaDescribedBy}
               aria-invalid={this.invalid ? 'true' : null}
               aria-required={this.required ? 'true' : null}
-              aria-readonly={this.readonly ? 'true' : null}
-              aria-disabled={effectivelyDisabled ? 'true' : null}
+              // NOTE: `aria-readonly` is intentionally NOT set on this input.
+              // Per WAI-ARIA, `aria-readonly` is not allowed on `role="radio"`
+              // (axe rule: aria-allowed-attr). Native <input type="radio"> also
+              // does not support a `readonly` attribute — readonly is a
+              // group-level concept. The `readonly` prop still drives the
+              // host class + click-blocking behavior, and we fold the state
+              // into `aria-disabled` so AT learns the control cannot change.
+              aria-disabled={effectivelyDisabled || this.readonly ? 'true' : null}
               onChange={this.handleChange}
               onClick={this.handleClick}
               onFocus={this.handleFocus}
@@ -280,31 +346,22 @@ export class CorRadio {
             />
           </span>
 
-          {hasLabel || hasSupporting ? (
-            <span class="text" part="text">
-              <span class="label-text" id={this.labelId} part="label">
-                <slot name="label" onSlotchange={this.onLabelSlotChange}>
-                  {labelText}
-                </slot>
-              </span>
-              {hasSupporting ? (
-                <span class="supporting-text" id={this.supportingId} part="supporting-text">
-                  <slot name="supporting-text" onSlotchange={this.onSupportingTextSlotChange}>
-                    {supportingText}
-                  </slot>
-                </span>
-              ) : (
-                <span class="supporting-text supporting-text--probe" hidden>
-                  <slot name="supporting-text" onSlotchange={this.onSupportingTextSlotChange} />
-                </span>
-              )}
-            </span>
-          ) : (
-            <span class="text" hidden>
+          {/*
+            `.text` always renders so the slots receive their assignments on
+            first paint. Visibility is driven by the `has-label` /
+            `has-supporting-text` host classes via CSS (`:host(:not(.has-label))
+            .label-text { display: none }` etc.), mirroring cor-checkbox.
+            Without this, the wrapper would be `hidden` on first render and
+            `slotchange` wouldn't fire reliably in all browsers.
+          */}
+          <span class="text" part="text">
+            <span class="label-text" id={this.labelId} part="label">
               <slot name="label" onSlotchange={this.onLabelSlotChange} />
+            </span>
+            <span class="supporting-text" id={this.supportingId} part="supporting-text">
               <slot name="supporting-text" onSlotchange={this.onSupportingTextSlotChange} />
             </span>
-          )}
+          </span>
         </label>
       </Host>
     );

@@ -18,38 +18,68 @@ type RadioArgs = {
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary);';
 
-const renderRadio = (args: RadioArgs) => /*html*/ `
-  <cor-radio
-    size="${args.size}"
-    label="${args.label}"
-    supporting-text="${args.supportingText}"
-    name="${args.name}"
-    value="${args.value}"
-    ${args.checked ? 'checked' : ''}
-    ${args.disabled ? 'disabled' : ''}
-    ${args.invalid ? 'invalid' : ''}
-    ${args.required ? 'required' : ''}
-    ${args.readonly ? 'readonly' : ''}
-  ></cor-radio>
-`;
+// ---------- Slot-first markup helper ----------
+//
+// `label` / `supportingText` props are ARIA-only fallbacks (see component
+// JSDoc); visible content lives exclusively in the `label` / `supporting-text`
+// slots. This helper composes the consumer-ready markup so stories stay
+// readable.
 
-const docsSourceDefault = (args: RadioArgs) => {
+type CbOpts = {
+  size?: RadioSize;
+  label?: string;
+  supporting?: string;
+  /** Space-separated boolean attribute list. */
+  flags?: string;
+  /** Form-control name (used by the Group story). */
+  name?: string;
+  /** Submitted value when this radio is checked. */
+  value?: string;
+  /** Aria-label override — wins over the `label` prop for AT only. */
+  ariaLabel?: string;
+};
+
+const cb = (opts: CbOpts = {}): string => {
   const attrs = [
-    args.size !== 'md' ? `size="${args.size}"` : '',
-    args.label ? `label="${args.label}"` : '',
-    args.supportingText ? `supporting-text="${args.supportingText}"` : '',
-    args.name ? `name="${args.name}"` : '',
-    args.value ? `value="${args.value}"` : '',
-    args.checked ? 'checked' : '',
-    args.disabled ? 'disabled' : '',
-    args.invalid ? 'invalid' : '',
-    args.required ? 'required' : '',
-    args.readonly ? 'readonly' : '',
+    opts.size && opts.size !== 'md' ? `size="${opts.size}"` : '',
+    opts.name ? `name="${opts.name}"` : '',
+    opts.value ? `value="${opts.value}"` : '',
+    opts.ariaLabel ? `aria-label="${opts.ariaLabel}"` : '',
+    opts.flags ?? '',
   ]
     .filter(Boolean)
-    .join(' ');
-  return `<cor-radio ${attrs}></cor-radio>`;
+    .join(' ')
+    .trim();
+  const opener = attrs ? `<cor-radio ${attrs}>` : '<cor-radio>';
+  const slots = [
+    opts.label ? `<span slot="label">${opts.label}</span>` : '',
+    opts.supporting ? `<span slot="supporting-text">${opts.supporting}</span>` : '',
+  ]
+    .filter(Boolean)
+    .join('');
+  return `${opener}${slots}</cor-radio>`;
 };
+
+const renderRadio = (args: RadioArgs) =>
+  cb({
+    size: args.size,
+    label: args.label,
+    supporting: args.supportingText,
+    name: args.name || undefined,
+    value: args.value || undefined,
+    flags: [
+      args.checked && 'checked',
+      args.disabled && 'disabled',
+      args.invalid && 'invalid',
+      args.required && 'required',
+      args.readonly && 'readonly',
+    ]
+      .filter(Boolean)
+      .join(' '),
+  });
+
+const docsSourceDefault = (args: RadioArgs) =>
+  renderRadio(args).replace(/<\/cor-radio>/, '\n</cor-radio>').replace(/<span slot=/g, '\n  <span slot=');
 
 const meta: Meta<RadioArgs> = {
   title: 'Atoms/Radio',
@@ -61,33 +91,19 @@ const meta: Meta<RadioArgs> = {
       description: 'Visual size rung.',
       table: { defaultValue: { summary: 'md' } },
     },
-    checked: {
-      control: 'boolean',
-      description: 'Whether the radio is currently selected.',
-      table: { defaultValue: { summary: 'false' } },
+    checked: { control: 'boolean', description: 'Whether the radio is currently selected.' },
+    disabled: { control: 'boolean', description: 'Disables interactivity.' },
+    invalid: { control: 'boolean', description: 'Maps to Figma "Error" state — border + dot turn red.' },
+    required: { control: 'boolean', description: 'Marks the field as mandatory.' },
+    readonly: { control: 'boolean', description: 'Renders the control read-only.' },
+    label: {
+      control: 'text',
+      description: 'Slotted visible label (rendered as `<span slot="label">…</span>`).',
     },
-    disabled: {
-      control: 'boolean',
-      description: 'Disables interactivity.',
-      table: { defaultValue: { summary: 'false' } },
+    supportingText: {
+      control: 'text',
+      description: 'Slotted supporting text (rendered as `<span slot="supporting-text">…</span>`).',
     },
-    invalid: {
-      control: 'boolean',
-      description: 'Maps to Figma "Error" state — border + dot turn red.',
-      table: { defaultValue: { summary: 'false' } },
-    },
-    required: {
-      control: 'boolean',
-      description: 'Marks the field as mandatory.',
-      table: { defaultValue: { summary: 'false' } },
-    },
-    readonly: {
-      control: 'boolean',
-      description: 'Renders the control read-only.',
-      table: { defaultValue: { summary: 'false' } },
-    },
-    label: { control: 'text', description: 'Plain-text label.' },
-    supportingText: { control: 'text', description: 'Plain-text supporting text below the label.' },
     name: { control: 'text', description: 'Form-control `name`.' },
     value: { control: 'text', description: 'Value submitted with the form when checked.' },
   },
@@ -123,19 +139,8 @@ export const Default: Story = {
 
 export const Selected: Story = {
   render: renderRadio,
-  args: {
-    ...Default.args,
-    checked: true,
-    label: 'Acord',
-  } as RadioArgs,
-  parameters: {
-    docs: {
-      source: {
-        type: 'dynamic',
-        transform: (_code: string, { args }: { args: RadioArgs }) => docsSourceDefault(args),
-      },
-    },
-  },
+  args: { ...Default.args, checked: true, label: 'Acord' } as RadioArgs,
+  parameters: Default.parameters,
 };
 
 const wrap = (children: string) => /*html*/ `
@@ -151,19 +156,21 @@ const cell = (caption: string, body: string) => /*html*/ `
   </div>
 `;
 
+const docsCode = (...lines: string[]) => lines.join('\n');
+
 export const AllStates: Story = {
   name: 'All States',
   render: () => /*html*/ `
       <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 220px)); gap: var(--spacing-32) var(--spacing-48); padding: var(--spacing-24); max-width: 560px;">
         ${[
-          cell('default', /*html*/ `<cor-radio label="Acord"></cor-radio>`),
-          cell('selected', /*html*/ `<cor-radio label="Acord" checked></cor-radio>`),
-          cell('disabled', /*html*/ `<cor-radio label="Acord" disabled></cor-radio>`),
-          cell('selected + disabled', /*html*/ `<cor-radio label="Acord" checked disabled></cor-radio>`),
-          cell('error', /*html*/ `<cor-radio label="Acord" invalid></cor-radio>`),
-          cell('selected + error', /*html*/ `<cor-radio label="Acord" checked invalid></cor-radio>`),
-          cell('focus (use Tab)', /*html*/ `<cor-radio label="Acord"></cor-radio>`),
-          cell('readonly', /*html*/ `<cor-radio label="Acord" checked readonly></cor-radio>`),
+          cell('default', cb({ label: 'Acord' })),
+          cell('selected', cb({ label: 'Acord', flags: 'checked' })),
+          cell('disabled', cb({ label: 'Acord', flags: 'disabled' })),
+          cell('selected + disabled', cb({ label: 'Acord', flags: 'checked disabled' })),
+          cell('error', cb({ label: 'Acord', flags: 'invalid' })),
+          cell('selected + error', cb({ label: 'Acord', flags: 'checked invalid' })),
+          cell('focus (use Tab)', cb({ label: 'Acord' })),
+          cell('readonly', cb({ label: 'Acord', flags: 'checked readonly' })),
         ].join('')}
       </div>
     `,
@@ -171,15 +178,15 @@ export const AllStates: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: [
-          '<cor-radio label="Acord"></cor-radio>',
-          '<cor-radio label="Acord" checked></cor-radio>',
-          '<cor-radio label="Acord" disabled></cor-radio>',
-          '<cor-radio label="Acord" checked disabled></cor-radio>',
-          '<cor-radio label="Acord" invalid></cor-radio>',
-          '<cor-radio label="Acord" checked invalid></cor-radio>',
-          '<cor-radio label="Acord" checked readonly></cor-radio>',
-        ].join('\n'),
+        code: docsCode(
+          cb({ label: 'Acord' }),
+          cb({ label: 'Acord', flags: 'checked' }),
+          cb({ label: 'Acord', flags: 'disabled' }),
+          cb({ label: 'Acord', flags: 'checked disabled' }),
+          cb({ label: 'Acord', flags: 'invalid' }),
+          cb({ label: 'Acord', flags: 'checked invalid' }),
+          cb({ label: 'Acord', flags: 'checked readonly' }),
+        ),
       },
     },
   },
@@ -194,8 +201,8 @@ export const AllSizes: Story = {
           size,
           /*html*/ `
             <div style="display: flex; flex-direction: column; gap: var(--spacing-12);">
-              <cor-radio size="${size}" label="Acord"></cor-radio>
-              <cor-radio size="${size}" label="Acord" checked></cor-radio>
+              ${cb({ size, label: 'Acord' })}
+              ${cb({ size, label: 'Acord', flags: 'checked' })}
             </div>
           `,
         ),
@@ -205,12 +212,12 @@ export const AllSizes: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: RADIO_SIZES.map(s =>
-          [
-            `<cor-radio size="${s}" label="Acord"></cor-radio>`,
-            `<cor-radio size="${s}" label="Acord" checked></cor-radio>`,
-          ].join('\n'),
-        ).join('\n'),
+        code: docsCode(
+          ...RADIO_SIZES.flatMap(s => [
+            cb({ size: s, label: 'Acord' }),
+            cb({ size: s, label: 'Acord', flags: 'checked' }),
+          ]),
+        ),
       },
     },
   },
@@ -221,18 +228,18 @@ export const WithLabel: Story = {
   render: () =>
     wrap(
       [
-        cell('default', /*html*/ `<cor-radio label="Doresc să primesc actualizări"></cor-radio>`),
-        cell('selected', /*html*/ `<cor-radio label="Doresc să primesc actualizări" checked></cor-radio>`),
+        cell('default', cb({ label: 'Doresc să primesc actualizări' })),
+        cell('selected', cb({ label: 'Doresc să primesc actualizări', flags: 'checked' })),
       ].join(''),
     ),
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
-        code: [
-          '<cor-radio label="Doresc să primesc actualizări"></cor-radio>',
-          '<cor-radio label="Doresc să primesc actualizări" checked></cor-radio>',
-        ].join('\n'),
+        code: docsCode(
+          cb({ label: 'Doresc să primesc actualizări' }),
+          cb({ label: 'Doresc să primesc actualizări', flags: 'checked' }),
+        ),
       },
     },
   },
@@ -245,19 +252,32 @@ export const WithSupportingText: Story = {
         ${[
           cell(
             'default (md)',
-            /*html*/ `<cor-radio label="Acord" supporting-text="Sunt de acord cu termenii și condițiile serviciului."></cor-radio>`,
+            cb({ label: 'Acord', supporting: 'Sunt de acord cu termenii și condițiile serviciului.' }),
           ),
           cell(
             'selected (md)',
-            /*html*/ `<cor-radio label="Acord" supporting-text="Sunt de acord cu termenii și condițiile serviciului." checked></cor-radio>`,
+            cb({
+              label: 'Acord',
+              supporting: 'Sunt de acord cu termenii și condițiile serviciului.',
+              flags: 'checked',
+            }),
           ),
           cell(
             'default (sm)',
-            /*html*/ `<cor-radio size="sm" label="Acord" supporting-text="Sunt de acord cu termenii și condițiile serviciului."></cor-radio>`,
+            cb({
+              size: 'sm',
+              label: 'Acord',
+              supporting: 'Sunt de acord cu termenii și condițiile serviciului.',
+            }),
           ),
           cell(
             'selected (sm)',
-            /*html*/ `<cor-radio size="sm" label="Acord" supporting-text="Sunt de acord cu termenii și condițiile serviciului." checked></cor-radio>`,
+            cb({
+              size: 'sm',
+              label: 'Acord',
+              supporting: 'Sunt de acord cu termenii și condițiile serviciului.',
+              flags: 'checked',
+            }),
           ),
         ].join('')}
       </div>
@@ -266,10 +286,14 @@ export const WithSupportingText: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: [
-          '<cor-radio label="Acord" supporting-text="Sunt de acord cu termenii și condițiile serviciului."></cor-radio>',
-          '<cor-radio label="Acord" supporting-text="Sunt de acord cu termenii și condițiile serviciului." checked></cor-radio>',
-        ].join('\n'),
+        code: docsCode(
+          cb({ label: 'Acord', supporting: 'Sunt de acord cu termenii și condițiile serviciului.' }),
+          cb({
+            label: 'Acord',
+            supporting: 'Sunt de acord cu termenii și condițiile serviciului.',
+            flags: 'checked',
+          }),
+        ),
       },
     },
   },
@@ -280,13 +304,13 @@ export const Error: Story = {
   render: () => /*html*/ `
       <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 320px)); gap: var(--spacing-24) var(--spacing-48); padding: var(--spacing-24); max-width: 760px;">
         ${[
-          cell('error (unselected)', /*html*/ `<cor-radio label="Refuz" invalid></cor-radio>`),
-          cell('error (selected)', /*html*/ `<cor-radio label="Refuz" invalid checked></cor-radio>`),
+          cell('error (unselected)', cb({ label: 'Refuz', flags: 'invalid' })),
+          cell('error (selected)', cb({ label: 'Refuz', flags: 'invalid checked' })),
           cell(
             'error + supporting',
-            /*html*/ `<cor-radio label="Refuz" supporting-text="Această opțiune blochează cererea." invalid></cor-radio>`,
+            cb({ label: 'Refuz', supporting: 'Această opțiune blochează cererea.', flags: 'invalid' }),
           ),
-          cell('error (sm)', /*html*/ `<cor-radio size="sm" label="Refuz" invalid checked></cor-radio>`),
+          cell('error (sm)', cb({ size: 'sm', label: 'Refuz', flags: 'invalid checked' })),
         ].join('')}
       </div>
     `,
@@ -294,11 +318,11 @@ export const Error: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: [
-          '<cor-radio label="Refuz" invalid></cor-radio>',
-          '<cor-radio label="Refuz" invalid checked></cor-radio>',
-          '<cor-radio label="Refuz" supporting-text="Această opțiune blochează cererea." invalid></cor-radio>',
-        ].join('\n'),
+        code: docsCode(
+          cb({ label: 'Refuz', flags: 'invalid' }),
+          cb({ label: 'Refuz', flags: 'invalid checked' }),
+          cb({ label: 'Refuz', supporting: 'Această opțiune blochează cererea.', flags: 'invalid' }),
+        ),
       },
     },
   },
@@ -309,24 +333,24 @@ export const Disabled: Story = {
   render: () =>
     wrap(
       [
-        cell('disabled (unselected)', /*html*/ `<cor-radio label="Acord" disabled></cor-radio>`),
-        cell('disabled (selected)', /*html*/ `<cor-radio label="Acord" disabled checked></cor-radio>`),
+        cell('disabled (unselected)', cb({ label: 'Acord', flags: 'disabled' })),
+        cell('disabled (selected)', cb({ label: 'Acord', flags: 'disabled checked' })),
         cell(
           'disabled + supporting',
-          /*html*/ `<cor-radio label="Acord" supporting-text="Această opțiune nu poate fi modificată." disabled></cor-radio>`,
+          cb({ label: 'Acord', supporting: 'Această opțiune nu poate fi modificată.', flags: 'disabled' }),
         ),
-        cell('disabled (sm)', /*html*/ `<cor-radio size="sm" label="Acord" disabled checked></cor-radio>`),
+        cell('disabled (sm)', cb({ size: 'sm', label: 'Acord', flags: 'disabled checked' })),
       ].join(''),
     ),
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
-        code: [
-          '<cor-radio label="Acord" disabled></cor-radio>',
-          '<cor-radio label="Acord" disabled checked></cor-radio>',
-          '<cor-radio label="Acord" supporting-text="…" disabled></cor-radio>',
-        ].join('\n'),
+        code: docsCode(
+          cb({ label: 'Acord', flags: 'disabled' }),
+          cb({ label: 'Acord', flags: 'disabled checked' }),
+          cb({ label: 'Acord', supporting: 'Această opțiune nu poate fi modificată.', flags: 'disabled' }),
+        ),
       },
     },
   },
@@ -337,9 +361,9 @@ export const Group: Story = {
   render: () => /*html*/ `
       <fieldset style="display: flex; flex-direction: column; gap: var(--spacing-12); padding: var(--spacing-16); border: 1px solid var(--color-border-base-default); border-radius: var(--border-radius-8); max-width: 360px;">
         <legend style="font-family: var(--font-family-primary); font-size: var(--font-size-14); font-weight: var(--font-weight-medium); color: var(--color-text-base-default); padding: 0 var(--spacing-4);">Selectează o opțiune</legend>
-        <cor-radio name="consimtamant" value="acord" label="Acord" checked></cor-radio>
-        <cor-radio name="consimtamant" value="refuz" label="Refuz"></cor-radio>
-        <cor-radio name="consimtamant" value="indecis" label="Doresc să decid mai târziu"></cor-radio>
+        ${cb({ name: 'consimtamant', value: 'acord', label: 'Acord', flags: 'checked' })}
+        ${cb({ name: 'consimtamant', value: 'refuz', label: 'Refuz' })}
+        ${cb({ name: 'consimtamant', value: 'indecis', label: 'Doresc să decid mai târziu' })}
       </fieldset>
     `,
   parameters: {
@@ -350,11 +374,11 @@ export const Group: Story = {
           'Multiple `cor-radio` siblings sharing a `name` form an implicit group. A dedicated `cor-radio-group` molecule that adds roving-focus and arrow-key navigation will land in a follow-up PR.',
       },
       source: {
-        code: [
-          '<cor-radio name="consimtamant" value="acord" label="Acord" checked></cor-radio>',
-          '<cor-radio name="consimtamant" value="refuz" label="Refuz"></cor-radio>',
-          '<cor-radio name="consimtamant" value="indecis" label="Doresc să decid mai târziu"></cor-radio>',
-        ].join('\n'),
+        code: docsCode(
+          cb({ name: 'consimtamant', value: 'acord', label: 'Acord', flags: 'checked' }),
+          cb({ name: 'consimtamant', value: 'refuz', label: 'Refuz' }),
+          cb({ name: 'consimtamant', value: 'indecis', label: 'Doresc să decid mai târziu' }),
+        ),
       },
     },
   },
@@ -367,17 +391,29 @@ export const EdgeCases: Story = {
         ${[
           cell(
             'long label wraps',
-            /*html*/ `<cor-radio label="Sunt de acord ca datele mele cu caracter personal să fie prelucrate de Agenția de Guvernare Electronică pentru a primi serviciile selectate."></cor-radio>`,
+            cb({
+              label:
+                'Sunt de acord ca datele mele cu caracter personal să fie prelucrate de Agenția de Guvernare Electronică pentru a primi serviciile selectate.',
+            }),
           ),
           cell(
             'long supporting text wraps',
-            /*html*/ `<cor-radio label="Acord" supporting-text="Datele dumneavoastră vor fi prelucrate în conformitate cu Legea nr. 133 privind protecția datelor cu caracter personal și vor fi păstrate pentru maximum 36 de luni."></cor-radio>`,
+            cb({
+              label: 'Acord',
+              supporting:
+                'Datele dumneavoastră vor fi prelucrate în conformitate cu Legea nr. 133 privind protecția datelor cu caracter personal și vor fi păstrate pentru maximum 36 de luni.',
+            }),
           ),
           cell(
             'long label + long supporting',
-            /*html*/ `<cor-radio label="Sunt de acord cu termenii completi ai serviciului electronic" supporting-text="Aceasta include termenii de utilizare, politica de confidențialitate și acordul privind cookie-urile pentru toate subdomeniile .gov.md." checked></cor-radio>`,
+            cb({
+              label: 'Sunt de acord cu termenii completi ai serviciului electronic',
+              supporting:
+                'Aceasta include termenii de utilizare, politica de confidențialitate și acordul privind cookie-urile pentru toate subdomeniile .gov.md.',
+              flags: 'checked',
+            }),
           ),
-          cell('no label (aria-label only)', /*html*/ `<cor-radio aria-label="Opțiunea A"></cor-radio>`),
+          cell('no label (aria-label only)', cb({ ariaLabel: 'Opțiunea A' })),
         ].join('')}
       </div>
     `,
@@ -385,11 +421,11 @@ export const EdgeCases: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: [
-          '<cor-radio label="…long Romanian label…"></cor-radio>',
-          '<cor-radio label="Acord" supporting-text="…long supporting text…"></cor-radio>',
-          '<cor-radio aria-label="Opțiunea A"></cor-radio>',
-        ].join('\n'),
+        code: docsCode(
+          cb({ label: '…long Romanian label…' }),
+          cb({ label: 'Acord', supporting: '…long supporting text…' }),
+          cb({ ariaLabel: 'Opțiunea A' }),
+        ),
       },
     },
   },
