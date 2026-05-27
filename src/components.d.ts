@@ -533,7 +533,7 @@ export namespace Components {
          */
         "disabled": boolean;
         /**
-          * Fallback label rendered when the default slot is empty. Plain text only.
+          * Accessible-name fallback. Used as `aria-label` on the internal `<button>` when the default slot is empty (and no explicit `aria-label` is set). Does NOT render visible text — use the default slot for that. Matches the `cor-button` convention.
          */
         "label"?: string;
         /**
@@ -4843,7 +4843,7 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
-          * Fallback label rendered when the default slot is empty. Plain text only.
+          * Accessible-name fallback. Used as `aria-label` on the internal `<button>` when the default slot is empty (and no explicit `aria-label` is set). Does NOT render visible text — use the default slot for that. Matches the `cor-button` convention.
          */
         "label"?: string;
         /**

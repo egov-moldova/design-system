@@ -411,8 +411,8 @@ export const FILE_CHECKS = [
     scope: 'tsx',
     check: (content, ctx) => {
       const findings = [];
-      // Match opening <slot ...> (skip self-closing <slot ... />, which the
-      // regex naturally excludes because it requires `>` not preceded by `/`).
+
+      // Variant A — fallback INSIDE the slot:  <slot ...>{expr}</slot>
       const openRe = /<slot\b[^>]*[^/]>/g;
       let m;
       while ((m = openRe.exec(content)) !== null) {
@@ -421,8 +421,6 @@ export const FILE_CHECKS = [
         if (closeIdx === -1) continue;
         const inner = content.slice(openEnd, closeIdx);
         if (!/\S/.test(inner)) continue;
-        // Flag only when the fallback contains a JSX expression `{...}`,
-        // which is the signal of a prop-derived value.
         const exprMatch = inner.match(/\{[^}]+\}/);
         if (!exprMatch) continue;
         const lineIdx = content.slice(0, m.index).split('\n').length;
@@ -439,6 +437,53 @@ export const FILE_CHECKS = [
           }),
         );
       }
+
+      // Variant B — sibling fallback after a self-closing or empty slot:
+      //   <slot ... />     OR  <slot ...></slot>
+      //   {!this.hasSlot && this.label ? ... : null}
+      //
+      // Heuristic: the next non-whitespace content after the slot opens a JSX
+      // `{...}` block, AND the expression references either `this.<prop>` or a
+      // `has*Slot` boolean guard (the marker for a "if slot is empty then fall
+      // back to prop" pattern). Static-element siblings (`<slot /><span>…</span>`)
+      // are NOT flagged because they're not JSX expressions.
+      const siblingSlotRe = /<slot\b[^>]*(?:\/>|>\s*<\/slot>)/g;
+      let s;
+      while ((s = siblingSlotRe.exec(content)) !== null) {
+        const after = content.slice(siblingSlotRe.lastIndex, siblingSlotRe.lastIndex + 240);
+        const trimmed = after.replace(/^\s+/, '');
+        if (!trimmed.startsWith('{')) continue;
+        let depth = 0;
+        let end = -1;
+        for (let i = 0; i < trimmed.length; i++) {
+          if (trimmed[i] === '{') depth++;
+          else if (trimmed[i] === '}') {
+            depth--;
+            if (depth === 0) {
+              end = i;
+              break;
+            }
+          }
+        }
+        if (end === -1) continue;
+        const expr = trimmed.slice(0, end + 1);
+        const isPropFallback = /this\.\w+/.test(expr) || /\bhas\w*Slot\b/.test(expr);
+        if (!isPropFallback) continue;
+        const lineIdx = content.slice(0, s.index).split('\n').length;
+        findings.push(
+          finding({
+            severity: 'warning',
+            code: 'ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK',
+            file: ctx.fileRel,
+            line: lineIdx,
+            message:
+              'Slot sibling renders a prop-derived JSX expression as a fallback (visible-text-when-slot-empty pattern). Same two-ways-to-set-content problem as the in-slot fallback variant; route consumers through the slot or convert the prop to an ARIA-only fallback.',
+            snippet: `${s[0]} ${expr.slice(0, 80)}…`.slice(0, 160),
+            fix: 'Drop the sibling JSX expression. If the prop is ARIA-only, set aria-label on the host/internal control instead of rendering text.',
+          }),
+        );
+      }
+
       return findings;
     },
   },

@@ -244,25 +244,23 @@ describe('cor-chip', () => {
     });
   });
 
-  describe('label rendering', () => {
-    it('renders the label prop when no slot content is provided', async () => {
+  describe('label rendering (slot-first)', () => {
+    it('uses the label prop as aria-label on the internal button when no slot content', async () => {
       const { root } = await render(<cor-chip label="Apartament din prop"></cor-chip>);
+      expect(queryControl(root)?.getAttribute('aria-label')).toBe('Apartament din prop');
+      // .label span is empty when there is no slot content
       const labelSpan = root?.shadowRoot?.querySelector('.label');
-      expect(labelSpan?.textContent).toContain('Apartament din prop');
+      expect((labelSpan?.textContent ?? '').trim()).toBe('');
     });
 
-    it('prefers default-slot content over the label prop', async () => {
+    it('omits button aria-label when the slot provides visible content', async () => {
       const { root } = await render(<cor-chip label="ignored">Apartament</cor-chip>);
-      // The light DOM holds the slotted text; the `label` prop fallback only
-      // renders when the slot is empty.
+      // Light DOM holds the slotted text; AT reads the slotted content via the button's accessible name from its children.
       expect((root?.textContent ?? '').trim()).toBe('Apartament');
-      const labelSpan = root?.shadowRoot?.querySelector('.label');
-      // In a real browser the slotted text is projected through the slot; in
-      // jsdom we verify the fallback path is suppressed.
-      expect(labelSpan?.textContent ?? '').not.toContain('ignored');
+      expect(queryControl(root)?.getAttribute('aria-label')).toBeNull();
     });
 
-    it('supports Romanian diacritics in the label', async () => {
+    it('supports Romanian diacritics in slotted content', async () => {
       const { root } = await render(<cor-chip>Înălțime mărită</cor-chip>);
       expect((root?.textContent ?? '').trim()).toBe('Înălțime mărită');
     });
@@ -317,6 +315,51 @@ describe('cor-chip', () => {
     it('does not have has-icon-start class when slot is empty', async () => {
       const { root } = await render(<cor-chip>Apartament</cor-chip>);
       expect(root?.classList.contains('has-icon-start')).toBe(false);
+    });
+  });
+
+  describe('accessible-name resolution (uncovered branches)', () => {
+    // hasAccessibleName() + resolveLabelText() have several branches that the
+    // prop / slot tests above do not exercise:
+    //   - host aria-label fallback when no label prop + no slot
+    //   - host aria-labelledby satisfies the warning check
+    //   - host textContent fallback when slotchange never fires
+
+    it('does not warn when only aria-label is set on the host', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      await render(<cor-chip aria-label="Apartament accesibil"></cor-chip>);
+      // Warning should NOT fire — aria-label satisfies the accessible-name check.
+      expect(warn).not.toHaveBeenCalled();
+      warn.mockRestore();
+    });
+
+    it('uses host aria-label as the button accessible name when no label prop or slot', async () => {
+      const { root } = await render(<cor-chip aria-label="Apartament accesibil"></cor-chip>);
+      // resolveLabelText() falls back to host getAttribute('aria-label'); the
+      // refactored render() sets button[aria-label] = labelText when hasLabelSlot is false.
+      expect(queryControl(root)?.getAttribute('aria-label')).toBe('Apartament accesibil');
+    });
+
+    it('does not warn when only aria-labelledby is set on the host', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      await render(<cor-chip aria-labelledby="external-label"></cor-chip>);
+      // aria-labelledby branch in hasAccessibleName() — warning suppressed.
+      expect(warn).not.toHaveBeenCalled();
+      warn.mockRestore();
+    });
+
+    it('falls back to host textContent when slotchange has not fired but text is attached', async () => {
+      // Simulates the path where componentWillLoad's detectSlots() saw the
+      // text via light-DOM walk; the final-safety-net branch of
+      // hasAccessibleName() that reads host.textContent is also exercised.
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const { root } = await render(<cor-chip>Casă</cor-chip>);
+      expect(warn).not.toHaveBeenCalled();
+      // Reload resolveLabelText() to ensure it returns textContent when both
+      // label prop and aria-label are absent.
+      const text = (root as unknown as { resolveLabelText: () => string }).resolveLabelText();
+      expect(text).toBe('Casă');
+      warn.mockRestore();
     });
   });
 });
