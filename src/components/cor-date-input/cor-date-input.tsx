@@ -555,11 +555,16 @@ export class CorDateInput {
               onKeyDown={this.handleKeyDown}
             />
             {/* Ghost overlay: keeps the unfilled segments of the format pattern visible
-                under the caret as the user types. Empty when the field is fully populated. */}
-            <span class="ghost" aria-hidden="true" part="ghost">
-              <span class="ghost-typed">{ghost.typed}</span>
-              <span class="ghost-remaining">{ghost.remaining}</span>
-            </span>
+                under the caret as the user types. Only rendered when the user has typed
+                a partial value — the empty case is fully handled by the native input's
+                `placeholder` attribute (avoids redundant overlay text + clears axe's
+                `color-contrast.bgOverlap` Incomplete on an otherwise-fine placeholder). */}
+            {this.value.length > 0 && ghost.remaining ? (
+              <span class="ghost" aria-hidden="true" part="ghost">
+                <span class="ghost-typed">{ghost.typed}</span>
+                <span class="ghost-remaining">{ghost.remaining}</span>
+              </span>
+            ) : null}
           </div>
 
           <span class="trailing-icon" part="trailing-icon" aria-hidden="true">

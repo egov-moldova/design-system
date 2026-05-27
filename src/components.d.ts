@@ -762,10 +762,6 @@ export namespace Components {
      */
     interface CorDatePicker {
         /**
-          * Accessible label for the entire picker. Defaults to a localized fallback.
-         */
-        "ariaLabel"?: string;
-        /**
           * Visual breakpoint / placement.
           * @default 'desktop'
          */
@@ -784,6 +780,10 @@ export namespace Components {
           * @default false
          */
         "hideTodayShortcut": boolean;
+        /**
+          * Accessible label for the entire picker. Set the `aria-label` attribute on the host (or use this prop) and the component captures it on connect into `resolvedAriaLabel`, then strips the host attribute to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb).
+         */
+        "label"?: string;
         /**
           * BCP-47 locale tag for weekday/month rendering. Defaults to Romanian.
           * @default 'ro-RO'
@@ -5167,10 +5167,6 @@ declare namespace LocalJSX {
      */
     interface CorDatePicker {
         /**
-          * Accessible label for the entire picker. Defaults to a localized fallback.
-         */
-        "ariaLabel"?: string;
-        /**
           * Visual breakpoint / placement.
           * @default 'desktop'
          */
@@ -5189,6 +5185,10 @@ declare namespace LocalJSX {
           * @default false
          */
         "hideTodayShortcut"?: boolean;
+        /**
+          * Accessible label for the entire picker. Set the `aria-label` attribute on the host (or use this prop) and the component captures it on connect into `resolvedAriaLabel`, then strips the host attribute to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb).
+         */
+        "label"?: string;
         /**
           * BCP-47 locale tag for weekday/month rendering. Defaults to Romanian.
           * @default 'ro-RO'
@@ -7845,7 +7845,7 @@ declare namespace LocalJSX {
         "min": string;
         "max": string;
         "locale": string;
-        "ariaLabel": string;
+        "label": string;
         "firstDayOfWeek": number;
         "hideTodayShortcut": boolean;
     }

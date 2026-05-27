@@ -151,10 +151,14 @@ describe('cor-date-input', () => {
       expect(assistive?.textContent).not.toContain('Hint');
     });
 
-    it('renders the ghost remaining hint matching the format pattern when empty', async () => {
+    it('omits the ghost overlay when the value is empty (native placeholder takes over)', async () => {
       const { root } = await render(<cor-date-input label="x"></cor-date-input>);
       const ghost = queryGhostRemaining(root);
-      expect(ghost?.textContent).toBe('DD/MM/YYYY');
+      expect(ghost).toBe(null);
+      // The native input still exposes the same hint via its placeholder attribute,
+      // so the visual cue is preserved without an overlapping ghost element.
+      const input = root?.shadowRoot?.querySelector('input');
+      expect(input?.getAttribute('placeholder')).toBe('DD/MM/YYYY');
     });
 
     it('reduces the ghost remaining hint as the value fills', async () => {
@@ -164,10 +168,10 @@ describe('cor-date-input', () => {
       expect(ghost?.textContent).toBe('YYYY');
     });
 
-    it('hides the ghost remaining hint when the value is fully populated', async () => {
+    it('omits the ghost overlay when the value is fully populated', async () => {
       const { root } = await render(<cor-date-input label="x" value="15/04/2025"></cor-date-input>);
       const ghost = queryGhostRemaining(root);
-      expect(ghost?.textContent).toBe('');
+      expect(ghost).toBe(null);
     });
   });
 

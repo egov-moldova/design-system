@@ -213,7 +213,12 @@
 }
 
 .ghost-typed {
-  color: transparent;
+  /* The typed-portion span exists only to reserve horizontal space so
+     `.ghost-remaining` stays anchored under the caret. Use `visibility: hidden`
+     rather than `color: transparent` — the former still reserves layout while
+     also excluding the box from axe's color-contrast checks (transparent text
+     keeps tripping the `bgOverlap` heuristic via the native input above). */
+  visibility: hidden;
 }
 
 .ghost-remaining {
