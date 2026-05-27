@@ -103,6 +103,11 @@ export class CorRadio {
   // Stencil prop via its attribute observer — so we keep the value here.
   @State() private resolvedAriaLabel?: string;
   @State() private resolvedAriaLabelledby?: string;
+  // Flattened slotted-label text. axe's `label` rule cannot walk into a
+  // `<slot>` when computing the accessible name of an `aria-labelledby`
+  // target, so we mirror the slotted text onto the input's `aria-label`
+  // as a belt-and-suspenders.
+  @State() private slottedLabelText: string = '';
 
   @Element() host!: HTMLCorRadioElement;
 
@@ -233,7 +238,19 @@ export class CorRadio {
   }
 
   private onLabelSlotChange = (ev: Event) => {
-    this.hasLabelSlot = this.slotHasContent(ev);
+    const slot = ev.target as HTMLSlotElement;
+    const assignedNodes = slot.assignedNodes({ flatten: true });
+    this.hasLabelSlot = assignedNodes.some(node => {
+      if (node.nodeType === Node.TEXT_NODE) return (node.textContent ?? '').trim().length > 0;
+      return true;
+    });
+    // Flatten the projected text so we can mirror it onto the input's
+    // aria-label — see `slottedLabelText` JSDoc above.
+    this.slottedLabelText = assignedNodes
+      .map(node => node.textContent ?? '')
+      .join(' ')
+      .replace(/\s+/g, ' ')
+      .trim();
   };
 
   private onSupportingTextSlotChange = (ev: Event) => {
@@ -286,12 +303,19 @@ export class CorRadio {
     // fallbacks for AT (matches cor-button / cor-checkbox).
     const hasLabel = this.hasLabelSlot;
     const hasSupporting = this.hasSupportingTextSlot;
-    // aria-label priority: slot present → omit (labelledby points at slot);
-    // explicit ariaLabel (cached as resolvedAriaLabel) → use it;
-    // label prop fallback → label.
-    const ariaLabelAttr = hasLabel
-      ? undefined
-      : (this.resolvedAriaLabel ?? this.label?.trim() ?? undefined);
+    // aria-label resolution. Priority:
+    //   1. explicit `resolvedAriaLabel` (consumer-set aria-label on host)
+    //   2. flattened slotted label text (so axe / NVDA stop seeing an
+    //      "empty" labelledby target — see slottedLabelText JSDoc)
+    //   3. `label` prop fallback (ARIA-only contract)
+    //   4. undefined
+    //
+    // aria-labelledby is still emitted alongside when a slot is present, so
+    // browsers that DO walk slots get the live label element + its
+    // text content for free; the duplicate aria-label is the
+    // belt-and-suspenders for tools that don't.
+    const ariaLabelAttr =
+      this.resolvedAriaLabel ?? (hasLabel ? this.slottedLabelText || undefined : undefined) ?? this.label?.trim() ?? undefined;
     const ariaLabelledbyAttr = hasLabel ? this.labelId : this.resolvedAriaLabelledby;
 
     const describedByIds: string[] = [];

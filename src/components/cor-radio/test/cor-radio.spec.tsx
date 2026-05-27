@@ -155,15 +155,19 @@ describe('cor-radio', () => {
     });
 
     it('flips has-label class via the onLabelSlotChange handler', async () => {
-      const { root } = await render(<cor-radio aria-label="x"></cor-radio>);
+      // Use a label-less render so the explicit aria-label override doesn't shadow
+      // the slot-derived aria-label we want to verify is being emitted.
+      const { root } = await render(<cor-radio></cor-radio>);
       (root as unknown as { onLabelSlotChange: (ev: Event) => void }).onLabelSlotChange(
         fakeSlotEvent('el', 'Slotted label'),
       );
       await flush();
       expect(root?.classList.contains('has-label')).toBe(true);
-      // With label slot, the aria-labelledby path takes over and aria-label is omitted.
-      expect(queryNative(root)?.getAttribute('aria-label')).toBeNull();
+      // aria-labelledby points at the (slot-projected) label container, and
+      // aria-label mirrors the flattened slot text so axe/AT that can't walk
+      // slots still see the accessible name (belt-and-suspenders).
       expect(queryNative(root)?.getAttribute('aria-labelledby')).toBeTruthy();
+      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Slotted label');
     });
 
     it('flips has-supporting-text class via the onSupportingTextSlotChange handler', async () => {
