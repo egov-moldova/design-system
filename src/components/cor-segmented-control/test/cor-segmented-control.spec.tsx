@@ -261,4 +261,110 @@ describe('cor-segmented-control', () => {
       expect(buttons[2]!.getAttribute('aria-disabled')).toBeNull();
     });
   });
+
+  describe('form-associated callbacks (branch coverage)', () => {
+    it('formResetCallback restores the initial value snapshot', async () => {
+      const { root } = await render(<cor-segmented-control aria-label="Filtru" value="active"></cor-segmented-control>);
+      await setSegments(root, sampleSegments);
+      // Mutate value away from initial
+      (root as HostWithSegments).value = 'inactive';
+      await flush();
+      (root as unknown as { formResetCallback: () => void }).formResetCallback();
+      await flush();
+      expect((root as HostWithSegments).value).toBe('active');
+    });
+
+    it('formStateRestoreCallback restores from a non-empty string', async () => {
+      const { root } = await render(<cor-segmented-control aria-label="Filtru"></cor-segmented-control>);
+      await setSegments(root, sampleSegments);
+      (root as unknown as { formStateRestoreCallback: (s: string) => void }).formStateRestoreCallback('inactive');
+      await flush();
+      expect((root as HostWithSegments).value).toBe('inactive');
+    });
+
+    it('formStateRestoreCallback ignores non-string state (null branch)', async () => {
+      const { root } = await render(<cor-segmented-control aria-label="Filtru" value="active"></cor-segmented-control>);
+      await setSegments(root, sampleSegments);
+      (root as unknown as { formStateRestoreCallback: (s: unknown) => void }).formStateRestoreCallback(null);
+      await flush();
+      // value unchanged
+      expect((root as HostWithSegments).value).toBe('active');
+    });
+
+    it('formStateRestoreCallback ignores empty string (length === 0 branch)', async () => {
+      const { root } = await render(<cor-segmented-control aria-label="Filtru" value="active"></cor-segmented-control>);
+      await setSegments(root, sampleSegments);
+      (root as unknown as { formStateRestoreCallback: (s: string) => void }).formStateRestoreCallback('');
+      await flush();
+      expect((root as HostWithSegments).value).toBe('active');
+    });
+
+    it('formDisabledCallback toggles the fieldsetDisabled state', async () => {
+      const { root } = await render(<cor-segmented-control aria-label="Filtru"></cor-segmented-control>);
+      await setSegments(root, sampleSegments);
+      (root as unknown as { formDisabledCallback: (d: boolean) => void }).formDisabledCallback(true);
+      await flush();
+      expect(root?.classList.contains('is-disabled')).toBe(true);
+      (root as unknown as { formDisabledCallback: (d: boolean) => void }).formDisabledCallback(false);
+      await flush();
+      expect(root?.classList.contains('is-disabled')).toBe(false);
+    });
+  });
+
+  describe('edge-case branch coverage', () => {
+    it('renders correctly when value is unset (getSelectedIndex -1 branch)', async () => {
+      const { root } = await render(<cor-segmented-control aria-label="Filtru"></cor-segmented-control>);
+      await setSegments(root, sampleSegments);
+      const buttons = queryButtons(root);
+      // No selection → first enabled becomes the roving tab stop
+      expect(buttons.map(b => b.getAttribute('aria-checked'))).toEqual(['false', 'false', 'false']);
+      expect(buttons.map(b => b.tabIndex)).toEqual([0, -1, -1]);
+    });
+
+    it('Enter on a focused unselected segment also selects it (keyboard + onFocus path)', async () => {
+      const onChange = vi.fn();
+      const { root } = await render(
+        <cor-segmented-control aria-label="Filtru" onCorChange={onChange}></cor-segmented-control>,
+      );
+      await setSegments(root, sampleSegments);
+      // Force focus onto the segment so the focusedIndex internal state is set
+      queryButtons(root)[2]!.focus();
+      // Then dispatch Enter via keydown
+      queryButtons(root)[2]!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, composed: true }));
+      await flush();
+      expect((root as HostWithSegments).value).toBe('inactive');
+      expect(onChange).toHaveBeenCalledTimes(1);
+    });
+
+    it('arrow keys on an all-disabled segment list are a no-op', async () => {
+      const onChange = vi.fn();
+      const { root } = await render(
+        <cor-segmented-control aria-label="Filtru" onCorChange={onChange}></cor-segmented-control>,
+      );
+      await setSegments(root, [
+        { value: 'a', label: 'A', disabled: true },
+        { value: 'b', label: 'B', disabled: true },
+      ]);
+      queryButtons(root)[0]!.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, composed: true }),
+      );
+      await flush();
+      expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it('handleKeyDown ignores keys outside the radiogroup contract (default case)', async () => {
+      const onChange = vi.fn();
+      const { root } = await render(
+        <cor-segmented-control aria-label="Filtru" value="toate" onCorChange={onChange}></cor-segmented-control>,
+      );
+      await setSegments(root, sampleSegments);
+      queryButtons(root)[0]!.dispatchEvent(new KeyboardEvent('keydown', { key: 'a', bubbles: true, composed: true }));
+      queryButtons(root)[0]!.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, composed: true }),
+      );
+      await flush();
+      expect(onChange).not.toHaveBeenCalled();
+      expect((root as HostWithSegments).value).toBe('toate');
+    });
+  });
 });

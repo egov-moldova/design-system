@@ -268,6 +268,23 @@ export const AllSizes: Story = {
     ),
   parameters: {
     controls: { disable: true },
+    docs: {
+      source: {
+        code: `<!-- The segments are assigned imperatively after upgrade (data prop). -->
+<cor-segmented-control aria-label="Interval" value="zi" size="md"></cor-segmented-control>
+<cor-segmented-control aria-label="Interval" value="zi" size="sm"></cor-segmented-control>
+
+<script>
+  for (const el of document.querySelectorAll('cor-segmented-control')) {
+    el.segments = [
+      { value: 'zi',         label: 'Zi' },
+      { value: 'saptamana',  label: 'Săptămână' },
+      { value: 'luna',       label: 'Lună' },
+    ];
+  }
+</script>`,
+      },
+    },
   },
 };
 
@@ -448,5 +465,29 @@ export const EdgeCases: Story = {
     ),
   parameters: {
     controls: { disable: true },
+    docs: {
+      source: {
+        code: `<!-- Long labels truncate with ellipsis. -->
+<cor-segmented-control aria-label="Truncare" value="a"></cor-segmented-control>
+
+<!-- No initial selection — first enabled segment becomes the roving tab stop. -->
+<cor-segmented-control aria-label="Fără selecție"></cor-segmented-control>
+
+<!-- Mobile-width container (343px). -->
+<div style="inline-size: 343px;">
+  <cor-segmented-control aria-label="Filtru" value="toate"></cor-segmented-control>
+</div>
+
+<script>
+  for (const el of document.querySelectorAll('cor-segmented-control')) {
+    el.segments = [
+      { value: 'a', label: 'Solicitări recente' },
+      { value: 'b', label: 'Solicitări finalizate' },
+      { value: 'c', label: 'Solicitări în așteptare îndelungată' },
+    ];
+  }
+</script>`,
+      },
+    },
   },
 };

@@ -100,11 +100,6 @@ export class CorSegmentedControl {
   private initialValue?: string;
   private segmentRefs: HTMLButtonElement[] = [];
 
-  componentWillLoad() {
-    this.initialValue = this.value;
-    this.syncFormValue();
-  }
-
   @Watch('size')
   validateSize(next: SegmentedControlSize) {
     if (!SEGMENTED_CONTROL_SIZES.includes(next)) {
@@ -119,6 +114,11 @@ export class CorSegmentedControl {
 
   @Watch('value')
   handleValueChange() {
+    this.syncFormValue();
+  }
+
+  componentWillLoad() {
+    this.initialValue = this.value;
     this.syncFormValue();
   }
 
