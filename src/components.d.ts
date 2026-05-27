@@ -2840,65 +2840,91 @@ export namespace Components {
         "variant": TextareaVariant;
     }
     /**
-     * Tooltip — transient label or coach mark anchored to a trigger element.
-     * Pattern B (internal DOM). The host wraps a `trigger` slot (the element being
-     * described) and renders the bubble + arrow inside shadow DOM. Position is
-     * computed in JS against the trigger's bounding rect so the tooltip can flip
-     * when it would overflow the viewport. ARIA wiring sets `aria-describedby` on
-     * the slotted trigger element so screen readers announce the bubble copy
-     * alongside the control.
-     * Two variants:
-     * - `default` — opens on `hover` (after `delay`) or `focus` (immediate); closes
-     *   on `mouseleave` / `blur` / `Esc`.
-     * - `coach` — instructional overlay. Stays open until the user dismisses it via
-     *   the trailing close button, `Esc`, or a click outside the bubble. Includes
-     *   the localized hint "Apasă Esc pentru a închide".
+     * Tooltip — transient label, structured popover, or coach mark anchored to a
+     * trigger element.
+     * Pattern B (internal DOM). The host wraps a `trigger` slot and renders the
+     * bubble + arrow inside shadow DOM. Position is computed in JS against the
+     * trigger's bounding rect with viewport-aware flip + clamp + corner-aligned
+     * placements; the result is pushed to the host as CSS custom properties.
+     * Variants:
+     * - `default` — transient label. Hover (after `showDelay`) / focus / click /
+     *   manual trigger; closes on `mouseleave` (after `hideDelay`), `blur`,
+     *   second click, `Esc`, or outside click.
+     * - `coach` — persistent instructional overlay with a close button + localized
+     *   hint. Dismissed only by Esc, the close button, or an outside click.
      * @element cor-tooltip
-     * @event corOpen   - Fired when the tooltip becomes visible.
-     * @event corClose  - Fired when the tooltip is hidden. `detail.reason` records the
-     *             cause (`blur` | `escape` | `close-button` | `click-outside`).
      */
     interface CorTooltip {
         /**
-          * Accessible name applied to the rendered bubble. When omitted the visible tooltip text doubles as the accessible name via `aria-describedby`.
+          * Accessible name applied to the rendered bubble. Stripped from the host after ingestion; the value is forwarded to the bubble's `aria-label`.
          */
         "ariaLabel"?: string;
         /**
-          * Convenience: tooltip body text. Used only when the default slot is empty.
+          * Convenience: tooltip body text. Used only when the default slot is empty AND no `title` / `description` slots are present.
          */
         "content"?: string;
         /**
-          * Show-delay in milliseconds before the bubble appears on hover. Focus and manual triggers ignore this value.
-          * @default 0
+          * When `true`, the tooltip will not open via any trigger and force-closes if currently visible.
+          * @default false
          */
-        "delay": number;
+        "disabled": boolean;
         /**
-          * Hard cap on the bubble width in pixels. Long content wraps below this width. Defaults to 200 (Figma specification).
-          * @default 200
+          * Auto-flip to the opposite placement when the preferred side would overflow the viewport. Always honored for `position="auto"`.
+          * @default true
+         */
+        "flipFallback": boolean;
+        /**
+          * Hide-delay (ms) before the bubble disappears on mouseleave. Lets the pointer cross a small gap (or land on the bubble in `interactive` mode) without dismissing.
+          * @default 150
+         */
+        "hideDelay": number;
+        /**
+          * Keep the tooltip open when the pointer hovers over the bubble itself. Useful when the body contains links / buttons / scrollable content.
+          * @default false
+         */
+        "interactive": boolean;
+        /**
+          * Hard cap on the bubble width in pixels.
+          * @default 280
          */
         "maxWidth": number;
         /**
-          * Whether the tooltip is currently visible. Mutable so the component can close itself in response to mouseleave / blur / Esc and so consumers can drive visibility imperatively (`trigger="manual"`).
+          * Pixel gap between the trigger and the bubble (in addition to the arrow size). Overrides `--tooltip-offset-trigger`.
+          * @default 4
+         */
+        "offset": number;
+        /**
+          * Whether the tooltip is currently visible. Mutable so the component can close itself in response to mouseleave / blur / Esc / outside-click, and so consumers can drive visibility imperatively (`trigger="manual"`).
           * @default false
          */
         "open": boolean;
         /**
-          * Preferred position relative to the trigger. `auto` (default) prefers `top` and flips to the opposite side when the tooltip would overflow.
-          * @default 'auto'
+          * Preferred placement relative to the trigger. Accepts all 12 base+align combinations (e.g. `top-left`, `right-bottom`) plus `auto` which prefers `top` and always flips to the opposite side when overflowing.
+          * @default 'top'
          */
         "position": TooltipPosition;
+        /**
+          * Show the CSS arrow pointing back at the trigger.
+          * @default true
+         */
+        "showArrow": boolean;
+        /**
+          * Show-delay (ms) before the bubble appears on hover. Focus / click / manual triggers ignore this value.
+          * @default 200
+         */
+        "showDelay": number;
         /**
           * Visual size rung. `sm` matches a 4px radius / 8px–12px padding bubble; `lg` matches a 6px radius / 12px–16px padding bubble.
           * @default 'sm'
          */
         "size": TooltipSize;
         /**
-          * How the tooltip is activated. - `hover`  — mouseenter (after `delay`) → open, mouseleave → close. - `focus`  — focus (immediate) → open, blur or Esc → close. - `manual` — visibility is driven by `open`; ignores pointer/keyboard events.
+          * How the tooltip is activated. - `hover`  — mouseenter (after `showDelay`) → open, mouseleave (after `hideDelay`) → close. - `click`  — click toggles open/closed. Outside click and Esc dismiss. - `focus`  — focus (immediate) → open, blur → close. - `manual` — visibility is driven by `open`; ignores pointer/keyboard events.
           * @default 'hover'
          */
         "trigger": TooltipTrigger;
         /**
-          * Visual variant. `default` is a transient hover/focus tip; `coach` is a persistent instructional overlay with a close button.
+          * Visual variant.
           * @default 'default'
          */
         "variant": TooltipVariant;
@@ -4284,23 +4310,19 @@ declare global {
         "corClose": TooltipCloseEventDetail;
     }
     /**
-     * Tooltip — transient label or coach mark anchored to a trigger element.
-     * Pattern B (internal DOM). The host wraps a `trigger` slot (the element being
-     * described) and renders the bubble + arrow inside shadow DOM. Position is
-     * computed in JS against the trigger's bounding rect so the tooltip can flip
-     * when it would overflow the viewport. ARIA wiring sets `aria-describedby` on
-     * the slotted trigger element so screen readers announce the bubble copy
-     * alongside the control.
-     * Two variants:
-     * - `default` — opens on `hover` (after `delay`) or `focus` (immediate); closes
-     *   on `mouseleave` / `blur` / `Esc`.
-     * - `coach` — instructional overlay. Stays open until the user dismisses it via
-     *   the trailing close button, `Esc`, or a click outside the bubble. Includes
-     *   the localized hint "Apasă Esc pentru a închide".
+     * Tooltip — transient label, structured popover, or coach mark anchored to a
+     * trigger element.
+     * Pattern B (internal DOM). The host wraps a `trigger` slot and renders the
+     * bubble + arrow inside shadow DOM. Position is computed in JS against the
+     * trigger's bounding rect with viewport-aware flip + clamp + corner-aligned
+     * placements; the result is pushed to the host as CSS custom properties.
+     * Variants:
+     * - `default` — transient label. Hover (after `showDelay`) / focus / click /
+     *   manual trigger; closes on `mouseleave` (after `hideDelay`), `blur`,
+     *   second click, `Esc`, or outside click.
+     * - `coach` — persistent instructional overlay with a close button + localized
+     *   hint. Dismissed only by Esc, the close button, or an outside click.
      * @element cor-tooltip
-     * @event corOpen   - Fired when the tooltip becomes visible.
-     * @event corClose  - Fired when the tooltip is hidden. `detail.reason` records the
-     *             cause (`blur` | `escape` | `close-button` | `click-outside`).
      */
     interface HTMLCorTooltipElement extends Components.CorTooltip, HTMLStencilElement {
         addEventListener<K extends keyof HTMLCorTooltipElementEventMap>(type: K, listener: (this: HTMLCorTooltipElement, ev: CorTooltipCustomEvent<HTMLCorTooltipElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -7543,67 +7565,99 @@ declare namespace LocalJSX {
         "variant"?: TextareaVariant;
     }
     /**
-     * Tooltip — transient label or coach mark anchored to a trigger element.
-     * Pattern B (internal DOM). The host wraps a `trigger` slot (the element being
-     * described) and renders the bubble + arrow inside shadow DOM. Position is
-     * computed in JS against the trigger's bounding rect so the tooltip can flip
-     * when it would overflow the viewport. ARIA wiring sets `aria-describedby` on
-     * the slotted trigger element so screen readers announce the bubble copy
-     * alongside the control.
-     * Two variants:
-     * - `default` — opens on `hover` (after `delay`) or `focus` (immediate); closes
-     *   on `mouseleave` / `blur` / `Esc`.
-     * - `coach` — instructional overlay. Stays open until the user dismisses it via
-     *   the trailing close button, `Esc`, or a click outside the bubble. Includes
-     *   the localized hint "Apasă Esc pentru a închide".
+     * Tooltip — transient label, structured popover, or coach mark anchored to a
+     * trigger element.
+     * Pattern B (internal DOM). The host wraps a `trigger` slot and renders the
+     * bubble + arrow inside shadow DOM. Position is computed in JS against the
+     * trigger's bounding rect with viewport-aware flip + clamp + corner-aligned
+     * placements; the result is pushed to the host as CSS custom properties.
+     * Variants:
+     * - `default` — transient label. Hover (after `showDelay`) / focus / click /
+     *   manual trigger; closes on `mouseleave` (after `hideDelay`), `blur`,
+     *   second click, `Esc`, or outside click.
+     * - `coach` — persistent instructional overlay with a close button + localized
+     *   hint. Dismissed only by Esc, the close button, or an outside click.
      * @element cor-tooltip
-     * @event corOpen   - Fired when the tooltip becomes visible.
-     * @event corClose  - Fired when the tooltip is hidden. `detail.reason` records the
-     *             cause (`blur` | `escape` | `close-button` | `click-outside`).
      */
     interface CorTooltip {
         /**
-          * Accessible name applied to the rendered bubble. When omitted the visible tooltip text doubles as the accessible name via `aria-describedby`.
+          * Accessible name applied to the rendered bubble. Stripped from the host after ingestion; the value is forwarded to the bubble's `aria-label`.
          */
         "ariaLabel"?: string;
         /**
-          * Convenience: tooltip body text. Used only when the default slot is empty.
+          * Convenience: tooltip body text. Used only when the default slot is empty AND no `title` / `description` slots are present.
          */
         "content"?: string;
         /**
-          * Show-delay in milliseconds before the bubble appears on hover. Focus and manual triggers ignore this value.
-          * @default 0
+          * When `true`, the tooltip will not open via any trigger and force-closes if currently visible.
+          * @default false
          */
-        "delay"?: number;
+        "disabled"?: boolean;
         /**
-          * Hard cap on the bubble width in pixels. Long content wraps below this width. Defaults to 200 (Figma specification).
-          * @default 200
+          * Auto-flip to the opposite placement when the preferred side would overflow the viewport. Always honored for `position="auto"`.
+          * @default true
+         */
+        "flipFallback"?: boolean;
+        /**
+          * Hide-delay (ms) before the bubble disappears on mouseleave. Lets the pointer cross a small gap (or land on the bubble in `interactive` mode) without dismissing.
+          * @default 150
+         */
+        "hideDelay"?: number;
+        /**
+          * Keep the tooltip open when the pointer hovers over the bubble itself. Useful when the body contains links / buttons / scrollable content.
+          * @default false
+         */
+        "interactive"?: boolean;
+        /**
+          * Hard cap on the bubble width in pixels.
+          * @default 280
          */
         "maxWidth"?: number;
+        /**
+          * Pixel gap between the trigger and the bubble (in addition to the arrow size). Overrides `--tooltip-offset-trigger`.
+          * @default 4
+         */
+        "offset"?: number;
+        /**
+          * Fired when the tooltip is hidden. `detail.reason` records the cause: `'blur'` (mouseleave / focusout), `'escape'` (Esc), `'close-button'` (coach variant close), `'click-outside'` (outside click), or `'click-trigger'` (second click on the trigger when `trigger="click"`).
+         */
         "onCorClose"?: (event: CorTooltipCustomEvent<TooltipCloseEventDetail>) => void;
+        /**
+          * Fired when the tooltip becomes visible (after `showDelay` for hover triggers).
+         */
         "onCorOpen"?: (event: CorTooltipCustomEvent<void>) => void;
         /**
-          * Whether the tooltip is currently visible. Mutable so the component can close itself in response to mouseleave / blur / Esc and so consumers can drive visibility imperatively (`trigger="manual"`).
+          * Whether the tooltip is currently visible. Mutable so the component can close itself in response to mouseleave / blur / Esc / outside-click, and so consumers can drive visibility imperatively (`trigger="manual"`).
           * @default false
          */
         "open"?: boolean;
         /**
-          * Preferred position relative to the trigger. `auto` (default) prefers `top` and flips to the opposite side when the tooltip would overflow.
-          * @default 'auto'
+          * Preferred placement relative to the trigger. Accepts all 12 base+align combinations (e.g. `top-left`, `right-bottom`) plus `auto` which prefers `top` and always flips to the opposite side when overflowing.
+          * @default 'top'
          */
         "position"?: TooltipPosition;
+        /**
+          * Show the CSS arrow pointing back at the trigger.
+          * @default true
+         */
+        "showArrow"?: boolean;
+        /**
+          * Show-delay (ms) before the bubble appears on hover. Focus / click / manual triggers ignore this value.
+          * @default 200
+         */
+        "showDelay"?: number;
         /**
           * Visual size rung. `sm` matches a 4px radius / 8px–12px padding bubble; `lg` matches a 6px radius / 12px–16px padding bubble.
           * @default 'sm'
          */
         "size"?: TooltipSize;
         /**
-          * How the tooltip is activated. - `hover`  — mouseenter (after `delay`) → open, mouseleave → close. - `focus`  — focus (immediate) → open, blur or Esc → close. - `manual` — visibility is driven by `open`; ignores pointer/keyboard events.
+          * How the tooltip is activated. - `hover`  — mouseenter (after `showDelay`) → open, mouseleave (after `hideDelay`) → close. - `click`  — click toggles open/closed. Outside click and Esc dismiss. - `focus`  — focus (immediate) → open, blur → close. - `manual` — visibility is driven by `open`; ignores pointer/keyboard events.
           * @default 'hover'
          */
         "trigger"?: TooltipTrigger;
         /**
-          * Visual variant. `default` is a transient hover/focus tip; `coach` is a persistent instructional overlay with a close button.
+          * Visual variant.
           * @default 'default'
          */
         "variant"?: TooltipVariant;
@@ -8142,7 +8196,13 @@ declare namespace LocalJSX {
         "trigger": TooltipTrigger;
         "content": string;
         "maxWidth": number;
-        "delay": number;
+        "showDelay": number;
+        "hideDelay": number;
+        "interactive": boolean;
+        "disabled": boolean;
+        "flipFallback": boolean;
+        "offset": number;
+        "showArrow": boolean;
         "ariaLabel": string;
     }
 
@@ -8812,23 +8872,19 @@ declare module "@stencil/core" {
              */
             "cor-textarea": LocalJSX.IntrinsicElements["cor-textarea"] & JSXBase.HTMLAttributes<HTMLCorTextareaElement>;
             /**
-             * Tooltip — transient label or coach mark anchored to a trigger element.
-             * Pattern B (internal DOM). The host wraps a `trigger` slot (the element being
-             * described) and renders the bubble + arrow inside shadow DOM. Position is
-             * computed in JS against the trigger's bounding rect so the tooltip can flip
-             * when it would overflow the viewport. ARIA wiring sets `aria-describedby` on
-             * the slotted trigger element so screen readers announce the bubble copy
-             * alongside the control.
-             * Two variants:
-             * - `default` — opens on `hover` (after `delay`) or `focus` (immediate); closes
-             *   on `mouseleave` / `blur` / `Esc`.
-             * - `coach` — instructional overlay. Stays open until the user dismisses it via
-             *   the trailing close button, `Esc`, or a click outside the bubble. Includes
-             *   the localized hint "Apasă Esc pentru a închide".
+             * Tooltip — transient label, structured popover, or coach mark anchored to a
+             * trigger element.
+             * Pattern B (internal DOM). The host wraps a `trigger` slot and renders the
+             * bubble + arrow inside shadow DOM. Position is computed in JS against the
+             * trigger's bounding rect with viewport-aware flip + clamp + corner-aligned
+             * placements; the result is pushed to the host as CSS custom properties.
+             * Variants:
+             * - `default` — transient label. Hover (after `showDelay`) / focus / click /
+             *   manual trigger; closes on `mouseleave` (after `hideDelay`), `blur`,
+             *   second click, `Esc`, or outside click.
+             * - `coach` — persistent instructional overlay with a close button + localized
+             *   hint. Dismissed only by Esc, the close button, or an outside click.
              * @element cor-tooltip
-             * @event corOpen   - Fired when the tooltip becomes visible.
-             * @event corClose  - Fired when the tooltip is hidden. `detail.reason` records the
-             *             cause (`blur` | `escape` | `close-button` | `click-outside`).
              */
             "cor-tooltip": LocalJSX.IntrinsicElements["cor-tooltip"] & JSXBase.HTMLAttributes<HTMLCorTooltipElement>;
         }

@@ -31,7 +31,8 @@ describe('cor-tooltip', () => {
       );
 
       expect(root?.getAttribute('size')).toBe('sm');
-      expect(root?.getAttribute('position')).toBe('auto');
+      // Default placement is 'top' (with flipFallback on) to match legacy behavior.
+      expect(root?.getAttribute('position')).toBe('top');
       expect(root?.getAttribute('variant')).toBe('default');
       expect(root?.hasAttribute('open')).toBe(false);
     });
@@ -224,8 +225,10 @@ describe('cor-tooltip', () => {
     it('opens on mouseenter and closes on mouseleave', async () => {
       const onOpen = vi.fn();
       const onClose = vi.fn();
+      // Zero delays to keep this assertion synchronous; the delayed flow has its
+      // own test below.
       const { root } = await render(
-        <cor-tooltip onCorOpen={onOpen} onCorClose={onClose}>
+        <cor-tooltip showDelay={0} hideDelay={0} onCorOpen={onOpen} onCorClose={onClose}>
           <button slot="trigger" type="button">
             T
           </button>
@@ -247,7 +250,7 @@ describe('cor-tooltip', () => {
 
     it('respects show-delay before opening', async () => {
       const { root } = await render(
-        <cor-tooltip delay={40}>
+        <cor-tooltip showDelay={40}>
           <button slot="trigger" type="button">
             T
           </button>
@@ -387,9 +390,9 @@ describe('cor-tooltip', () => {
   });
 
   describe('maxWidth prop', () => {
-    it('applies the maxWidth as an inline style on the bubble', async () => {
+    it('pushes maxWidth onto the host as `--_bubble-max-width` (CSP-friendly, no inline JSX styles)', async () => {
       const { root } = await render(
-        <cor-tooltip maxWidth={320}>
+        <cor-tooltip maxWidth={320} open>
           <button slot="trigger" type="button">
             T
           </button>
@@ -397,8 +400,13 @@ describe('cor-tooltip', () => {
         </cor-tooltip>,
       );
 
+      // Bubble is never given inline styles; runtime geometry rides the host as CSS vars.
       const bubble = queryBubble(root)!;
-      expect(bubble.style.maxWidth).toBe('320px');
+      expect(bubble.style.maxWidth).toBe('');
+      // Open + componentDidLoad triggers updateGeometry → host style is set.
+      // Force an immediate geometry pass for the spec env.
+      (root as unknown as { updateGeometry: () => void }).updateGeometry?.();
+      expect((root as unknown as HTMLElement).style.getPropertyValue('--_bubble-max-width')).toBe('320px');
     });
   });
 
