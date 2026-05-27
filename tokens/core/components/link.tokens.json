@@ -58,11 +58,11 @@
         "lg": { "$value": "{lineHeight.28}", "$type": "dimension" }
       },
       "underlineThickness": {
-        "$value": "1px",
+        "$value": "{borderWidth.1}",
         "$type": "dimension"
       },
       "underlineOffset": {
-        "$value": "2px",
+        "$value": "{spacing.2}",
         "$type": "dimension"
       }
     },
@@ -77,6 +77,7 @@
     "primary": {
       "label": {
         "default": { "$value": "{color.text.brand.default}", "$type": "color" },
+        "$comment": "hover/active reference background.brand.* because color.text.brand.* lacks a proper default-active and the existing default-hover duplicates default. Resolved values (blue-sky.700/800) are visually correct; semantic-tier fix tracked in docs/backlog.",
         "hover": { "$value": "{color.background.brand.default-hover}", "$type": "color" },
         "active": { "$value": "{color.background.brand.default-active}", "$type": "color" },
         "visited": { "$value": "{color.text.brand.visited}", "$type": "color" }

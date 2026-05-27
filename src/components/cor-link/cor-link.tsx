@@ -177,6 +177,13 @@ export class CorLink {
       </span>,
       <slot name="icon-end" onSlotchange={this.onIconEndSlotChange} />,
       showExternal ? (
+        // Intentional inline icon markup (suppresses ANTIPATTERN-021-RAW-SVG):
+        // the indicator scales with `1em` (font-size) so it matches the link's
+        // own text size — 12/16/20/20px across xs/sm/md/lg. Both
+        // `external-link` and `arrow-up-right` icons ship only at 20/24,
+        // which would visibly enlarge the indicator on xs/sm by 30–60%
+        // and break alignment with surrounding type. Same rationale as the
+        // intrinsic glyphs in cor-checkbox and cor-chip.
         <span class="external-indicator" aria-hidden="true">
           <svg
             class="external-icon"

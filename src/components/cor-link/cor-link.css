@@ -102,7 +102,7 @@
 
 :host([standalone]) .control {
   min-block-size: var(--link-container-min-height-pointer);
-  padding-block: 4px;
+  padding-block: var(--spacing-4);
 }
 
 /* Touch device: bigger target */
@@ -203,14 +203,14 @@
   outline: none;
   box-shadow:
     0 0 0 var(--link-focus-ring-offset) var(--link-focus-ring-offset-color),
-    0 0 0 calc(var(--link-focus-ring-offset) + var(--link-focus-ring-ring-width)) var(--link-focus-ring-ring-color);
+    0 0 0 calc(var(--link-focus-ring-offset) + var(--link-focus-ring-width)) var(--link-focus-ring-color);
 }
 
 /* On dark/white variant, invert the inner halo so the focus ring still reads */
 :host([variant='white']) .control:focus-visible {
   box-shadow:
-    0 0 0 var(--link-focus-ring-offset) var(--color-background-base-inverse-default, #1e1e1e),
-    0 0 0 calc(var(--link-focus-ring-offset) + var(--link-focus-ring-ring-width)) var(--link-focus-ring-ring-color);
+    0 0 0 var(--link-focus-ring-offset) var(--color-background-base-inverse-default),
+    0 0 0 calc(var(--link-focus-ring-offset) + var(--link-focus-ring-width)) var(--link-focus-ring-color);
 }
 
 /* ---------- External-link indicator ---------- */

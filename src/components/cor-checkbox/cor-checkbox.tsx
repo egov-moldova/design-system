@@ -332,7 +332,7 @@ export class CorCheckbox {
   }
 
   private renderGlyph() {
-    // Intentional raw <svg> (suppresses ANTIPATTERN-021-RAW-SVG): the check
+    // Intentional inline icon markup (suppresses ANTIPATTERN-021-RAW-SVG): the check
     // and dash strokes are intrinsic to the checkbox's visual identity, must
     // paint synchronously on first frame, and are sub-100-byte path data.
     // Routing them through <cor-icon> would introduce an async manifest

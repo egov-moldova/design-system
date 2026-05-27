@@ -237,7 +237,7 @@ export class CorChip {
             onKeyDown={this.handleRemoveKeyDown}
           >
             {/*
-              Intentional raw <svg> (suppresses ANTIPATTERN-021-RAW-SVG): the
+              Intentional inline icon markup (suppresses ANTIPATTERN-021-RAW-SVG): the
               chip's × glyph renders at 8–10px (half the `--_remove-icon-size`
               token). `cor-icon` ships `cross-small` only at 16/20/24, so
               substituting it would enlarge the glyph by 60–100% and break

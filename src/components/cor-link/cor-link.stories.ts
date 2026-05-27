@@ -100,9 +100,9 @@ const renderAllVariants = () => /*html*/ `
       <cor-link variant="strict" href="#">Citește acordul</cor-link>
       <span style="${cellLabelStyle}">strict</span>
     </div>
-    <div style="display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-4); padding: var(--spacing-16); background: var(--color-background-base-inverse-default, #1e1e1e); border-radius: var(--border-radius-6); min-width: 160px;">
+    <div style="display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-4); padding: var(--spacing-16); background: var(--color-background-base-inverse-default); border-radius: var(--border-radius-6); min-width: 160px;">
       <cor-link variant="white" href="#">Citește acordul</cor-link>
-      <span style="${cellLabelStyle}; color: var(--color-text-base-inverse-on-color, #fff);">white (on dark)</span>
+      <span style="${cellLabelStyle}; color: var(--color-text-base-inverse-on-color);">white (on dark)</span>
     </div>
   </div>
 `;
