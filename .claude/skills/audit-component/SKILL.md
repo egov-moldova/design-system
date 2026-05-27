@@ -215,7 +215,8 @@ Pattern codes consumed from `findingsByTool.antipatterns`:
 `004-EVENTEMITTER-UNTYPED`, `005-ARRAY-MUTATION`, `007-LIFECYCLE-LEAK`,
 `010-SETFORMVALUE-1ARG`, `013-FORCEUPDATE`, `014-SHOULDUPDATE`, `018-TRANSITION-ALL`,
 `019-RAW-HEX`, `020-PALETTE-IN-CSS`, `021-RAW-SVG`, `023-CLASSNAME`,
-`025-EVENT-PREFIX`, `IMPORTANT`, `RAW-PIXELS`, `SECURITY-INNERHTML`, `TS-ANY`, `TS-IGNORE`.
+`025-EVENT-PREFIX`, `026-PROP-CONTENT-SLOT-FALLBACK`, `IMPORTANT`, `RAW-PIXELS`,
+`SECURITY-INNERHTML`, `TS-ANY`, `TS-IGNORE`.
 
 ### Bash (parallel)
 
@@ -389,6 +390,14 @@ For components with `<slot>`:
 - `::slotted(*)` CSS rules for slot content styling (Pattern A)
 - Story demonstrates slot usage with realistic content
 - JSDoc documents expected slot content
+- **Slot-first content rule** — slot fallback children must NOT be a JSX
+  expression that mirrors a `@Prop()` value. If the component declares a
+  string `@Prop()` (e.g. `label`) AND renders it inside a slot
+  (`<slot>{this.label}</slot>` or `<slot>{labelText}</slot>`), the prop and
+  the slot are two ways to set the same content — flag as
+  **MEDIUM**. Reference components: `cor-button`, `cor-service-button` keep
+  `label` ARIA-only; visible content lives exclusively in the slot.
+  Detected automatically as `ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK`.
 
 Cross-reference `src/components/_agents/slot-patterns.md`.
 

@@ -397,6 +397,51 @@ export const FILE_CHECKS = [
       return findings;
     },
   },
+  {
+    // Slot-first content rule (see src/components/_agents/slot-patterns.md).
+    // Visible content must come from the slot — not from a parallel `@Prop()`
+    // rendered as the slot's fallback child. Reference: cor-button keeps
+    // `label` as ARIA-only; the visible label lives in the default <slot>.
+    //
+    // Detection: any <slot ...>...</slot> whose inner contains a JSX
+    // expression `{...}`. Static-element fallbacks (e.g. `<slot name="icon">
+    // <cor-icon name="default" /></slot>`) are allowed and pass through.
+    code: 'ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK',
+    severity: 'warning',
+    scope: 'tsx',
+    check: (content, ctx) => {
+      const findings = [];
+      // Match opening <slot ...> (skip self-closing <slot ... />, which the
+      // regex naturally excludes because it requires `>` not preceded by `/`).
+      const openRe = /<slot\b[^>]*[^/]>/g;
+      let m;
+      while ((m = openRe.exec(content)) !== null) {
+        const openEnd = openRe.lastIndex;
+        const closeIdx = content.indexOf('</slot>', openEnd);
+        if (closeIdx === -1) continue;
+        const inner = content.slice(openEnd, closeIdx);
+        if (!/\S/.test(inner)) continue;
+        // Flag only when the fallback contains a JSX expression `{...}`,
+        // which is the signal of a prop-derived value.
+        const exprMatch = inner.match(/\{[^}]+\}/);
+        if (!exprMatch) continue;
+        const lineIdx = content.slice(0, m.index).split('\n').length;
+        findings.push(
+          finding({
+            severity: 'warning',
+            code: 'ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK',
+            file: ctx.fileRel,
+            line: lineIdx,
+            message:
+              'Slot has a JSX-expression fallback (likely a prop-derived value). Visible content should come from the slot only; props that mirror slot content create two ways to set the same value and break light-DOM inspection.',
+            snippet: `${m[0]}${inner.trim().slice(0, 60)}…</slot>`.slice(0, 140),
+            fix: 'Remove the prop and rely on the slot. If the prop is ARIA-only, render it as aria-label on the host or internal control — not inside the slot.',
+          }),
+        );
+      }
+      return findings;
+    },
+  },
 ];
 
 async function main() {

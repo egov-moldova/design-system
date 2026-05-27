@@ -9,6 +9,7 @@ Slot validation, shared constants, and the rule against boolean slot-control pro
 - Slot Validation Guards (pattern + example)
 - Shared Constants for Valid Slot Elements
 - No Boolean Props for Slot Visibility (CSS :empty rule)
+- No String Content Props as Slot Fallback (slot-first content rule)
 - Dual Selector Pattern (slot with default content)
 
 ---
@@ -143,3 +144,79 @@ Does layout change based on slot content?
 - [ ] Import `invalidSlottedTag` utility
 - [ ] Use shared constants (not inline arrays)
 - [ ] Test with invalid elements
+
+---
+
+## No String Content Props as Slot Fallback — Slot-First Content Rule
+
+**CRITICAL**: When a slot accepts visible content, **the slot is the only content source**. Do not declare a parallel `@Prop() xxx?: string` that gets rendered as the slot's fallback child.
+
+The reference components (`cor-button`, `cor-service-button`) follow the inverse pattern: visible content comes exclusively from the default `<slot>`; the `label` prop, when it exists, is used only as `aria-label` for icon-only mode.
+
+### ❌ Forbidden — content prop with slot fallback
+
+```typescript
+@Prop() label?: string;
+
+render() {
+  const labelText = this.label?.trim();
+  return (
+    <span class="label">
+      <slot name="label">{labelText}</slot>  {/* ← content-prop-as-fallback */}
+    </span>
+  );
+}
+```
+
+**Problems:**
+- Two ways to set the same content — consumers must learn which wins.
+- Prop value can never live in light DOM, breaking copy/paste, screen-reader inspection, and `querySelector('cor-x [slot=label]')` discovery.
+- Rich content (links, icons, formatted text) requires the slot anyway, so the prop is a half-API.
+- Diverges from `cor-button` / `cor-service-button` where `label` is ARIA-only.
+
+### ✅ Allowed — slot is the sole content source
+
+```typescript
+render() {
+  return (
+    <span class="label">
+      <slot name="label" />
+    </span>
+  );
+}
+```
+
+```html
+<!-- consumer markup -->
+<cor-checkbox>
+  <span slot="label">Acord</span>
+</cor-checkbox>
+```
+
+### ✅ Allowed — prop is ARIA-only, matches reference
+
+```typescript
+/** Accessible name for icon-only / visually-hidden cases. NOT rendered as text. */
+@Prop() label?: string;
+
+render() {
+  return (
+    <Host>
+      <button class="control" aria-label={this.label}>
+        <slot />  {/* visible content lives here */}
+      </button>
+    </Host>
+  );
+}
+```
+
+### When is a string prop OK?
+
+- ARIA-only (`label` for icon-only, `aria-label`, `aria-describedby`).
+- Form metadata (`name`, `value`, `placeholder`).
+- Non-rendered configuration (`href`, `type`, etc.).
+- **Never** as the source of visible text that has a matching `<slot>`.
+
+### Detection
+
+`scripts/audit/02-stencil-antipatterns.mjs` flags pattern `ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK`: any `<slot ...>{...}</slot>` whose fallback expression dereferences a `this.*` prop. Audit verdict downgrades to **Review — partial** when this fires.
