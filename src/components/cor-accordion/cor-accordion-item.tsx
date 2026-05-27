@@ -1,5 +1,7 @@
 import { Component, Element, Event, EventEmitter, Host, Method, Prop, State, Watch, h } from '@stencil/core';
 
+import type { AccordionIconPosition, AccordionSize } from './cor-accordion.types';
+
 let uidSeed = 0;
 
 /**
@@ -78,6 +80,21 @@ export class CorAccordionItem {
    */
   @Prop({ reflect: true }) breakpoint: 'desktop' | 'mobile' = 'desktop';
 
+  /**
+   * Visual size rung — controls header height, font size, icon size, padding.
+   * Set by the parent `cor-accordion` via `size`; consumers should configure
+   * size at the container level.
+   * @default 'md'
+   */
+  @Prop({ reflect: true }) size: AccordionSize = 'md';
+
+  /**
+   * Trigger-icon placement relative to the header content.
+   * Set by the parent `cor-accordion`.
+   * @default 'right'
+   */
+  @Prop({ reflect: true }) iconPosition: AccordionIconPosition = 'right';
+
   @State() private headingId: string = '';
 
   @State() private panelId: string = '';
@@ -102,6 +119,22 @@ export class CorAccordionItem {
     itemId: string;
   }>;
 
+  /**
+   * Emitted on Arrow/Home/End keypress on the header. Consumed by the parent
+   * `cor-accordion` to implement WAI-ARIA Accordion Pattern traversal.
+   * Internal contract — consumers typically don't subscribe directly.
+   */
+  @Event({ eventName: 'corAccordionItemKey', bubbles: true, composed: true })
+  corAccordionItemKey!: EventEmitter<{ key: string; itemId: string }>;
+
+  @Watch('disabled')
+  watchDisabled(next: boolean) {
+    if (next && this.open) {
+      this.open = false;
+    }
+    this.propagateSummaryDisabled(next);
+  }
+
   connectedCallback() {
     if (!this.itemId) {
       uidSeed += 1;
@@ -109,6 +142,10 @@ export class CorAccordionItem {
     }
     this.headingId = `${this.itemId}-header`;
     this.panelId = `${this.itemId}-panel`;
+  }
+
+  componentDidLoad() {
+    this.propagateSummaryDisabled(this.disabled);
   }
 
   /**
@@ -129,13 +166,6 @@ export class CorAccordionItem {
   async focusHeader(): Promise<void> {
     const header = this.host.shadowRoot?.querySelector<HTMLButtonElement>('button.header');
     header?.focus();
-  }
-
-  @Watch('disabled')
-  watchDisabled(next: boolean) {
-    if (next && this.open) {
-      this.open = false;
-    }
   }
 
   private onHeadingSlotChange = (ev: Event) => {
@@ -177,17 +207,83 @@ export class CorAccordionItem {
     // Native <button> handles Enter/Space activation already — we only need to
     // surface arrow-key intent to the parent for cross-item traversal.
     if (ev.key === 'ArrowDown' || ev.key === 'ArrowUp' || ev.key === 'Home' || ev.key === 'End') {
-      const detail = { key: ev.key, itemId: this.itemId ?? '' };
-      this.host.dispatchEvent(new CustomEvent('corAccordionItemKey', { detail, bubbles: true, composed: true }));
+      this.corAccordionItemKey.emit({ key: ev.key, itemId: this.itemId ?? '' });
       ev.preventDefault();
     }
   };
+
+  /**
+   * Mirror the item's `disabled` state onto every element currently slotted
+   * into `heading` / `supporting` / `trailing` slots. Legacy parity — when
+   * the consumer's slotted control (e.g. `cor-button`) supports a `disabled`
+   * attribute, it stays in sync with the accordion's own disabled state.
+   *
+   * NOTE: heavy-handed — walks the assigned subtree on every change. Only
+   * runs in browser env (no-op when shadowRoot / slot APIs are missing).
+   */
+  private propagateSummaryDisabled(disabled: boolean) {
+    const root = this.host.shadowRoot;
+    if (!root) return;
+    const slots = ['heading', 'supporting', 'trailing']
+      .map(name => root.querySelector<HTMLSlotElement>(`slot[name="${name}"]`))
+      .filter((s): s is HTMLSlotElement => !!s);
+    for (const slot of slots) {
+      const assigned = slot.assignedElements({ flatten: true });
+      for (const el of assigned) {
+        const children = [el, ...Array.from(el.querySelectorAll('*'))] as HTMLElement[];
+        for (const child of children) {
+          if (disabled) child.setAttribute('disabled', '');
+          else child.removeAttribute('disabled');
+        }
+      }
+    }
+  }
 
   render() {
     const isDisabled = this.disabled;
     const ariaExpanded = this.open ? 'true' : 'false';
     const ariaDisabled = isDisabled ? 'true' : null;
     const tabIndex = isDisabled ? -1 : 0;
+    const isIconLeft = this.iconPosition === 'left';
+
+    // Intentional inline icon markup (suppresses ANTIPATTERN-021-RAW-SVG):
+    // the +/− glyph is INTRINSIC to the accordion's open/close animation —
+    // CSS targets `.trigger-icon-vertical` to transform/hide the vertical
+    // bar when open. Routing this through `<cor-icon>` would either lose
+    // the animation or require shipping two static icons + crossfade,
+    // both worse than the current 8-line SVG. Same precedent as cor-checkbox /
+    // cor-chip / cor-tooltip.
+    const triggerIcon = (
+      <span class="trigger" aria-hidden="true">
+        <svg
+          class="trigger-icon"
+          viewBox="0 0 20 20"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          focusable="false"
+        >
+          <line
+            x1="4.25"
+            y1="10"
+            x2="15.75"
+            y2="10"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+          <line
+            class="trigger-icon-vertical"
+            x1="10"
+            y1="4.25"
+            x2="10"
+            y2="15.75"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+          />
+        </svg>
+      </span>
+    );
 
     return (
       <Host>
@@ -204,6 +300,7 @@ export class CorAccordionItem {
           onClick={this.handleClick}
           onKeyDown={this.handleKeyDown}
         >
+          {isIconLeft && triggerIcon}
           <span class={{ 'icon-start': true, 'has-content': this.hasIconStart }}>
             <slot name="icon-start" onSlotchange={this.onIconStartSlotChange} />
           </span>
@@ -228,35 +325,7 @@ export class CorAccordionItem {
           <span class={{ 'trailing': true, 'has-content': this.hasTrailing }}>
             <slot name="trailing" onSlotchange={this.onTrailingSlotChange} />
           </span>
-          <span class="trigger" aria-hidden="true">
-            <svg
-              class="trigger-icon"
-              viewBox="0 0 20 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              focusable="false"
-            >
-              <line
-                x1="4.25"
-                y1="10"
-                x2="15.75"
-                y2="10"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-              />
-              <line
-                class="trigger-icon-vertical"
-                x1="10"
-                y1="4.25"
-                x2="10"
-                y2="15.75"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-              />
-            </svg>
-          </span>
+          {!isIconLeft && triggerIcon}
         </button>
         <div
           class="panel"

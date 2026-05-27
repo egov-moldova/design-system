@@ -3,8 +3,10 @@ import { Component, Element, Event, EventEmitter, Host, Listen, Prop, State, Wat
 import type {
   AccordionAppearance,
   AccordionChangeDetail,
+  AccordionIconPosition,
   AccordionItemDescriptor,
   AccordionMode,
+  AccordionSize,
 } from './cor-accordion.types';
 
 /**
@@ -47,6 +49,22 @@ export class CorAccordion {
   @Prop({ reflect: true }) appearance: AccordionAppearance = 'default';
 
   /**
+   * Size rung forwarded to every child item. Independent of `breakpoint`
+   * (responsive); set explicitly when you need a compact accordion
+   * regardless of viewport. Mirrors the legacy `size` prop.
+   * @default 'md'
+   */
+  @Prop({ reflect: true }) size: AccordionSize = 'md';
+
+  /**
+   * Trigger-icon placement forwarded to every child item.
+   * - `right` (default) — FAQ-style
+   * - `left` — sidebar-nav style
+   * @default 'right'
+   */
+  @Prop({ reflect: true }) iconPosition: AccordionIconPosition = 'right';
+
+  /**
    * Layout breakpoint forwarded to every child item. Controls heading type
    * size and vertical padding. Omit to let the responsive `@media` rule in
    * the host CSS drive the value (768px breakpoint).
@@ -78,25 +96,10 @@ export class CorAccordion {
 
   private mediaQuery?: MediaQueryList;
 
-  connectedCallback() {
-    this.evaluateBreakpoint();
-    if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
-      this.mediaQuery = window.matchMedia('(max-width: 767.98px)');
-      this.mediaQuery.addEventListener('change', this.handleMediaChange);
-    }
-  }
-
-  disconnectedCallback() {
-    this.mediaQuery?.removeEventListener('change', this.handleMediaChange);
-    this.mediaQuery = undefined;
-  }
-
-  componentDidLoad() {
-    this.propagateToItems();
-  }
-
   @Watch('appearance')
   @Watch('breakpoint')
+  @Watch('size')
+  @Watch('iconPosition')
   watchPropagatedProps() {
     this.propagateToItems();
   }
@@ -176,7 +179,28 @@ export class CorAccordion {
     for (const item of items) {
       item.appearance = this.appearance;
       item.breakpoint = bp;
+      item.size = this.size;
+      item.iconPosition = this.iconPosition;
     }
+  }
+
+  // ---------- Lifecycle (placed after @Watch / @Listen per AGENTS.md order) ----------
+
+  connectedCallback() {
+    this.evaluateBreakpoint();
+    if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+      this.mediaQuery = window.matchMedia('(max-width: 767.98px)');
+      this.mediaQuery.addEventListener('change', this.handleMediaChange);
+    }
+  }
+
+  disconnectedCallback() {
+    this.mediaQuery?.removeEventListener('change', this.handleMediaChange);
+    this.mediaQuery = undefined;
+  }
+
+  componentDidLoad() {
+    this.propagateToItems();
   }
 
   private emitChange() {
@@ -197,6 +221,8 @@ export class CorAccordion {
         disabled={descriptor.disabled === true}
         appearance={this.appearance}
         breakpoint={this.breakpoint ?? this.resolvedBreakpoint}
+        size={this.size}
+        icon-position={this.iconPosition}
       >
         {descriptor.content}
       </cor-accordion-item>

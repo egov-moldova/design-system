@@ -27,6 +27,29 @@
   --_heading-line-height: var(--accordion-item-heading-line-height-mobile);
 }
 
+/*
+ * Size rung (declarative, independent of `breakpoint`). `sm` compresses the
+ * header padding + type size so the accordion fits inside dense surfaces
+ * (sidebars, modals). Mirrors the legacy `size` prop.
+ */
+:host([size='sm']) {
+  --_padding-block: var(--accordion-item-padding-block-mobile);
+  --_heading-font-size: var(--accordion-item-heading-font-size-mobile);
+  --_heading-line-height: var(--accordion-item-heading-line-height-mobile);
+  --_gap: var(--accordion-item-gap-sm, var(--spacing-8));
+}
+
+/*
+ * Icon position. `right` (default) lays trigger at the trailing edge via
+ * the existing flex order. `left` swaps it to lead the row — chevron-style
+ * sidebar navigation. The render places the trigger first when `iconPosition`
+ * is `left`, so all CSS needs to do is mirror padding nuances.
+ */
+:host([icon-position='left']) .trigger {
+  margin-inline-start: 0;
+  margin-inline-end: var(--accordion-item-gap-icon, var(--spacing-8));
+}
+
 :host([open]) {
   --_heading-color: var(--accordion-item-heading-color-open);
   --_trigger-color: var(--accordion-item-trigger-color-open);
@@ -195,6 +218,13 @@
 }
 
 .panel {
+  /* Paint the same surface the host paints. The host already renders --_bg
+     behind the panel, so this is a no-op visually — but axe's color-contrast
+     rule walks the shadow DOM and bails out as "Incomplete" when the panel's
+     direct ancestors are all transparent (it can't decide whether the sibling
+     header button "obscures" the panel inside the host's bounding box).
+     Giving the panel a determinate opaque background resolves the heuristic. */
+  background-color: var(--_bg);
   color: var(--_panel-color);
   font-family: var(--accordion-item-panel-font-family);
   font-size: var(--accordion-item-panel-font-size);

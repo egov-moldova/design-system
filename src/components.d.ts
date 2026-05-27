@@ -5,7 +5,7 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { AccordionAppearance, AccordionChangeDetail, AccordionItemDescriptor, AccordionMode } from "./components/cor-accordion/cor-accordion.types";
+import { AccordionAppearance, AccordionChangeDetail, AccordionIconPosition, AccordionItemDescriptor, AccordionMode, AccordionSize } from "./components/cor-accordion/cor-accordion.types";
 import { AvatarSize, AvatarType } from "./components/cor-avatar/cor-avatar.types";
 import { BadgeSize, BadgeType, BadgeVariant } from "./components/cor-badge/cor-badge.types";
 import { BreadcrumbItem, BreadcrumbSelectDetail } from "./components/cor-breadcrumb/cor-breadcrumb.types";
@@ -45,7 +45,7 @@ import { TabDescriptor, TabsChangeDetail, TabsSize } from "./components/cor-tabs
 import { TagSemantic, TagSize, TagType, TagVariant } from "./components/cor-tag/cor-tag.types";
 import { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from "./components/cor-textarea/cor-textarea.types";
 import { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, TooltipVariant } from "./components/cor-tooltip/cor-tooltip.types";
-export { AccordionAppearance, AccordionChangeDetail, AccordionItemDescriptor, AccordionMode } from "./components/cor-accordion/cor-accordion.types";
+export { AccordionAppearance, AccordionChangeDetail, AccordionIconPosition, AccordionItemDescriptor, AccordionMode, AccordionSize } from "./components/cor-accordion/cor-accordion.types";
 export { AvatarSize, AvatarType } from "./components/cor-avatar/cor-avatar.types";
 export { BadgeSize, BadgeType, BadgeVariant } from "./components/cor-badge/cor-badge.types";
 export { BreadcrumbItem, BreadcrumbSelectDetail } from "./components/cor-breadcrumb/cor-breadcrumb.types";
@@ -110,6 +110,11 @@ export namespace Components {
          */
         "breakpoint"?: 'desktop' | 'mobile';
         /**
+          * Trigger-icon placement forwarded to every child item. - `right` (default) — FAQ-style - `left` — sidebar-nav style
+          * @default 'right'
+         */
+        "iconPosition": AccordionIconPosition;
+        /**
           * Declarative data source. When set, the accordion renders the items for you; the default slot is ignored. Items can still be slotted for advanced use cases — choose one approach per instance.
          */
         "items"?: AccordionItemDescriptor[];
@@ -122,6 +127,11 @@ export namespace Components {
           * @default 'multiple'
          */
         "mode": AccordionMode;
+        /**
+          * Size rung forwarded to every child item. Independent of `breakpoint` (responsive); set explicitly when you need a compact accordion regardless of viewport. Mirrors the legacy `size` prop.
+          * @default 'md'
+         */
+        "size": AccordionSize;
     }
     /**
      * Accordion item — a single collapsible row inside `cor-accordion`.
@@ -158,6 +168,11 @@ export namespace Components {
          */
         "heading"?: string;
         /**
+          * Trigger-icon placement relative to the header content. Set by the parent `cor-accordion`.
+          * @default 'right'
+         */
+        "iconPosition": AccordionIconPosition;
+        /**
           * Stable identifier used by the parent `cor-accordion` when emitting `corChange`. Auto-generated if omitted.
          */
         "itemId"?: string;
@@ -170,6 +185,11 @@ export namespace Components {
           * Programmatically toggle the item. Bypasses the click pipeline so the parent `cor-accordion` does not receive a `corToggle` event — used by the parent itself to coordinate `mode="single"` exclusivity.
          */
         "setOpen": (open: boolean) => Promise<void>;
+        /**
+          * Visual size rung — controls header height, font size, icon size, padding. Set by the parent `cor-accordion` via `size`; consumers should configure size at the container level.
+          * @default 'md'
+         */
+        "size": AccordionSize;
         /**
           * Secondary text shown beneath the heading. Overridden by the `supporting` slot.
          */
@@ -3098,6 +3118,7 @@ declare global {
     open: boolean;
     itemId: string;
   };
+        "corAccordionItemKey": { key: string; itemId: string };
     }
     /**
      * Accordion item — a single collapsible row inside `cor-accordion`.
@@ -4411,6 +4432,11 @@ declare namespace LocalJSX {
          */
         "breakpoint"?: 'desktop' | 'mobile';
         /**
+          * Trigger-icon placement forwarded to every child item. - `right` (default) — FAQ-style - `left` — sidebar-nav style
+          * @default 'right'
+         */
+        "iconPosition"?: AccordionIconPosition;
+        /**
           * Declarative data source. When set, the accordion renders the items for you; the default slot is ignored. Items can still be slotted for advanced use cases — choose one approach per instance.
          */
         "items"?: AccordionItemDescriptor[];
@@ -4427,6 +4453,11 @@ declare namespace LocalJSX {
           * Emitted whenever the open set changes.
          */
         "onCorChange"?: (event: CorAccordionCustomEvent<AccordionChangeDetail>) => void;
+        /**
+          * Size rung forwarded to every child item. Independent of `breakpoint` (responsive); set explicitly when you need a compact accordion regardless of viewport. Mirrors the legacy `size` prop.
+          * @default 'md'
+         */
+        "size"?: AccordionSize;
     }
     /**
      * Accordion item — a single collapsible row inside `cor-accordion`.
@@ -4459,9 +4490,18 @@ declare namespace LocalJSX {
          */
         "heading"?: string;
         /**
+          * Trigger-icon placement relative to the header content. Set by the parent `cor-accordion`.
+          * @default 'right'
+         */
+        "iconPosition"?: AccordionIconPosition;
+        /**
           * Stable identifier used by the parent `cor-accordion` when emitting `corChange`. Auto-generated if omitted.
          */
         "itemId"?: string;
+        /**
+          * Emitted on Arrow/Home/End keypress on the header. Consumed by the parent `cor-accordion` to implement WAI-ARIA Accordion Pattern traversal. Internal contract — consumers typically don't subscribe directly.
+         */
+        "onCorAccordionItemKey"?: (event: CorAccordionItemCustomEvent<{ key: string; itemId: string }>) => void;
         /**
           * Emitted when the user activates the header (click / Enter / Space). The parent `cor-accordion` may cancel the implicit toggle in `mode="single"` to enforce exclusivity.
          */
@@ -4474,6 +4514,11 @@ declare namespace LocalJSX {
           * @default false
          */
         "open"?: boolean;
+        /**
+          * Visual size rung — controls header height, font size, icon size, padding. Set by the parent `cor-accordion` via `size`; consumers should configure size at the container level.
+          * @default 'md'
+         */
+        "size"?: AccordionSize;
         /**
           * Secondary text shown beneath the heading. Overridden by the `supporting` slot.
          */
@@ -7666,6 +7711,8 @@ declare namespace LocalJSX {
     interface CorAccordionAttributes {
         "mode": AccordionMode;
         "appearance": AccordionAppearance;
+        "size": AccordionSize;
+        "iconPosition": AccordionIconPosition;
         "breakpoint": 'desktop' | 'mobile';
         "label": string;
     }
@@ -7677,6 +7724,8 @@ declare namespace LocalJSX {
         "itemId": string;
         "appearance": 'default' | 'trail-sites';
         "breakpoint": 'desktop' | 'mobile';
+        "size": AccordionSize;
+        "iconPosition": AccordionIconPosition;
     }
     interface CorAvatarAttributes {
         "type": AvatarType;

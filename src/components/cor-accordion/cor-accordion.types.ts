@@ -15,6 +15,23 @@ export const ACCORDION_APPEARANCES = ['default', 'trail-sites'] as const;
 export type AccordionAppearance = (typeof ACCORDION_APPEARANCES)[number];
 
 /**
+ * Item size rung — controls header height, font size, icon size, padding.
+ * Independent of `breakpoint` (which is media-query driven). Use `size` when
+ * you need a compact accordion regardless of viewport — sidebars, dense
+ * panels, modal-embedded disclosures.
+ */
+export const ACCORDION_SIZES = ['md', 'sm'] as const;
+export type AccordionSize = (typeof ACCORDION_SIZES)[number];
+
+/**
+ * Trigger-icon placement relative to the header content.
+ * - `right` (default) — FAQ-style; trigger sits at the trailing edge
+ * - `left` — sidebar-nav style; chevron leads, content indented
+ */
+export const ACCORDION_ICON_POSITIONS = ['left', 'right'] as const;
+export type AccordionIconPosition = (typeof ACCORDION_ICON_POSITIONS)[number];
+
+/**
  * Declarative shape of a single accordion item, used when consumers pass the
  * `items` prop instead of slotting `<cor-accordion-item>` children.
  */
