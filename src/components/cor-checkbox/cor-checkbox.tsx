@@ -84,10 +84,18 @@ export class CorCheckbox {
   /** Form value submitted when `checked`. Defaults to `'on'` like native checkboxes. */
   @Prop() value?: string;
 
-  /** Plain-text label. Use the `label` slot for richer content. */
+  /**
+   * Accessible-name fallback. Used as `aria-label` on the internal input
+   * when no `label` slot is provided. Does NOT render visible text — use
+   * the `label` slot for that. Matches the `cor-button` convention.
+   */
   @Prop() label?: string;
 
-  /** Plain-text supporting text shown below the label. Use the `supporting-text` slot for richer content. */
+  /**
+   * Accessible-description fallback. Reserved for future use as
+   * `aria-describedby` source when no `supporting-text` slot is provided.
+   * Does NOT render visible text — use the `supporting-text` slot for that.
+   */
   @Prop({ attribute: 'supporting-text' }) supportingText?: string;
 
   /** Accessible name override. Used when no visible label is present. */
@@ -120,19 +128,6 @@ export class CorCheckbox {
   private initialChecked: boolean = false;
   private nativeRef?: HTMLInputElement;
 
-  componentWillLoad() {
-    this.initialChecked = this.checked;
-    this.syncFormValue(this.checked);
-  }
-
-  componentDidLoad() {
-    this.applyIndeterminate();
-  }
-
-  componentDidUpdate() {
-    this.applyIndeterminate();
-  }
-
   // Validation lives at the @Prop boundary — bad enum values warn and fall back.
   @Watch('size')
   validateSize(next: CheckboxSize) {
@@ -149,6 +144,27 @@ export class CorCheckbox {
   @Watch('checked')
   handleCheckedChange(next: boolean) {
     this.syncFormValue(next);
+  }
+
+  // `required` flips the validity surface without changing `checked` — refresh
+  // `setValidity` so an unchecked-required box becomes invalid (and vice versa)
+  // the moment the prop changes, not only on next user toggle.
+  @Watch('required')
+  handleRequiredChange() {
+    this.updateValidity(this.checked);
+  }
+
+  componentWillLoad() {
+    this.initialChecked = this.checked;
+    this.syncFormValue(this.checked);
+  }
+
+  componentDidLoad() {
+    this.applyIndeterminate();
+  }
+
+  componentDidUpdate() {
+    this.applyIndeterminate();
   }
 
   /** Mirrors `disabled` from an ancestor `<fieldset disabled>` without clobbering the consumer-set prop. */
@@ -237,23 +253,21 @@ export class CorCheckbox {
     return this.disabled || this.fieldsetDisabled;
   }
 
-  private hasVisibleLabel(): boolean {
-    return Boolean(this.label && this.label.trim().length > 0) || this.hasLabelSlot;
-  }
-
-  private hasSupporting(): boolean {
-    if (this.supportingText && this.supportingText.trim().length > 0) return true;
-    return this.hasSupportingSlot;
-  }
-
   render() {
     const effectivelyDisabled = this.isInert();
-    const labelText = this.label?.trim();
-    const supportingText = this.supportingText?.trim();
-    const showLabel = this.hasVisibleLabel();
-    const ariaLabelAttr = !showLabel ? this.ariaLabel : undefined;
+    // Slot-first content: the visible label / supporting text live ONLY in
+    // their respective slots. The `label` / `supportingText` props are
+    // accessible-name fallbacks (mirrors cor-button).
+    const showLabel = this.hasLabelSlot;
+    const showSupporting = this.hasSupportingSlot;
+    // aria-label resolution priority:
+    //   slot present                 → omit (aria-labelledby points at slot)
+    //   explicit ariaLabel override → ariaLabel
+    //   label prop fallback         → label
+    //   nothing                      → undefined
+    const ariaLabelAttr = showLabel ? undefined : (this.ariaLabel ?? this.label?.trim() ?? undefined);
     const ariaLabelledbyAttr = showLabel ? this.labelId : this.ariaLabelledby;
-    const ariaDescribedbyAttr = this.hasSupporting() ? this.supportingId : undefined;
+    const ariaDescribedbyAttr = showSupporting ? this.supportingId : undefined;
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -263,13 +277,19 @@ export class CorCheckbox {
       'is-indeterminate': this.indeterminate,
       'is-focused': this.isFocused && !effectivelyDisabled,
       'has-label': showLabel,
-      'has-supporting': this.hasSupporting(),
+      'has-supporting': showSupporting,
     };
 
     return (
       <Host class={hostClasses}>
         <label class="root" htmlFor={`checkbox-${this.instanceId}`} part="root">
-          <span class="control" part="control" aria-hidden="true">
+          {/*
+            No `aria-hidden` on .control: it contains the focusable
+            native <input>, which would violate axe `aria-hidden-focus`
+            (WCAG 4.1.2). The purely-decorative .box + glyphs inside
+            already declare aria-hidden="true" themselves.
+          */}
+          <span class="control" part="control">
             <span class="box" part="box">
               {this.renderGlyph()}
             </span>
@@ -300,14 +320,10 @@ export class CorCheckbox {
 
           <span class="text" part="text">
             <span class="label" id={this.labelId} part="label">
-              <slot name="label" onSlotchange={this.onLabelSlotChange}>
-                {labelText}
-              </slot>
+              <slot name="label" onSlotchange={this.onLabelSlotChange} />
             </span>
             <span class="supporting" id={this.supportingId} part="supporting">
-              <slot name="supporting-text" onSlotchange={this.onSupportingSlotChange}>
-                {supportingText}
-              </slot>
+              <slot name="supporting-text" onSlotchange={this.onSupportingSlotChange} />
             </span>
           </span>
         </label>
@@ -316,15 +332,19 @@ export class CorCheckbox {
   }
 
   private renderGlyph() {
+    // Intentional raw <svg> (suppresses ANTIPATTERN-021-RAW-SVG): the check
+    // and dash strokes are intrinsic to the checkbox's visual identity, must
+    // paint synchronously on first frame, and are sub-100-byte path data.
+    // Routing them through <cor-icon> would introduce an async manifest
+    // fetch on every checkbox upgrade. Same rationale as cor-spinner's
+    // CSS-drawn `.arc`.
     if (this.indeterminate) {
-      // Dash glyph — 12px tall stroke centered horizontally.
       return (
         <svg class="glyph glyph-indeterminate" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
           <path d="M3.5 8h9" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" />
         </svg>
       );
     }
-    // Checkmark glyph — visible only when `checked` (CSS hides when unchecked).
     return (
       <svg class="glyph glyph-check" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
         <path

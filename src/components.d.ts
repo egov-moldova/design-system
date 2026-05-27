@@ -482,7 +482,7 @@ export namespace Components {
          */
         "invalid": boolean;
         /**
-          * Plain-text label. Use the `label` slot for richer content.
+          * Accessible-name fallback. Used as `aria-label` on the internal input when no `label` slot is provided. Does NOT render visible text — use the `label` slot for that. Matches the `cor-button` convention.
          */
         "label"?: string;
         /**
@@ -505,7 +505,7 @@ export namespace Components {
          */
         "size": CheckboxSize;
         /**
-          * Plain-text supporting text shown below the label. Use the `supporting-text` slot for richer content.
+          * Accessible-description fallback. Reserved for future use as `aria-describedby` source when no `supporting-text` slot is provided. Does NOT render visible text — use the `supporting-text` slot for that.
          */
         "supportingText"?: string;
         /**
@@ -4780,7 +4780,7 @@ declare namespace LocalJSX {
          */
         "invalid"?: boolean;
         /**
-          * Plain-text label. Use the `label` slot for richer content.
+          * Accessible-name fallback. Used as `aria-label` on the internal input when no `label` slot is provided. Does NOT render visible text — use the `label` slot for that. Matches the `cor-button` convention.
          */
         "label"?: string;
         /**
@@ -4815,7 +4815,7 @@ declare namespace LocalJSX {
          */
         "size"?: CheckboxSize;
         /**
-          * Plain-text supporting text shown below the label. Use the `supporting-text` slot for richer content.
+          * Accessible-description fallback. Reserved for future use as `aria-describedby` source when no `supporting-text` slot is provided. Does NOT render visible text — use the `supporting-text` slot for that.
          */
         "supportingText"?: string;
         /**

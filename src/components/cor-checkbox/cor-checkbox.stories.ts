@@ -17,36 +17,65 @@ type CheckboxArgs = {
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary);';
 
-const renderCheckbox = (args: CheckboxArgs) => /*html*/ `
-  <cor-checkbox
-    size="${args.size}"
-    label="${args.label}"
-    supporting-text="${args.supportingText}"
-    ${args.checked ? 'checked' : ''}
-    ${args.indeterminate ? 'indeterminate' : ''}
-    ${args.disabled ? 'disabled' : ''}
-    ${args.invalid ? 'invalid' : ''}
-    ${args.required ? 'required' : ''}
-    ${args.readonly ? 'readonly' : ''}
-  ></cor-checkbox>
-`;
+// ---------- Slot-first markup helper ----------
+//
+// `label` / `supportingText` props are ARIA-only (see component JSDoc); visible
+// content lives exclusively in the `label` / `supporting-text` slots. This
+// helper composes that markup so every story renders the same structure.
 
-const docsSource = (args: CheckboxArgs) => {
+type CbOpts = {
+  size?: CheckboxSize;
+  label?: string;
+  supporting?: string;
+  /** Space-separated boolean attribute list (e.g. 'checked disabled'). */
+  flags?: string;
+  /** Raw `aria-label` override — wins over the `label` prop for AT only. */
+  ariaLabel?: string;
+  /** Raw inner markup override. When set, ignores `label`/`supporting`. */
+  rawSlots?: string;
+};
+
+const cb = (opts: CbOpts = {}): string => {
   const attrs = [
-    args.size !== 'md' ? `size="${args.size}"` : '',
-    args.label ? `label="${args.label}"` : '',
-    args.supportingText ? `supporting-text="${args.supportingText}"` : '',
-    args.checked ? 'checked' : '',
-    args.indeterminate ? 'indeterminate' : '',
-    args.disabled ? 'disabled' : '',
-    args.invalid ? 'invalid' : '',
-    args.required ? 'required' : '',
-    args.readonly ? 'readonly' : '',
+    opts.size && opts.size !== 'md' ? `size="${opts.size}"` : '',
+    opts.ariaLabel ? `aria-label="${opts.ariaLabel}"` : '',
+    opts.flags ?? '',
   ]
     .filter(Boolean)
-    .join(' ');
-  return `<cor-checkbox ${attrs}></cor-checkbox>`;
+    .join(' ')
+    .trim();
+  const opener = attrs ? `<cor-checkbox ${attrs}>` : '<cor-checkbox>';
+  const slots =
+    opts.rawSlots !== undefined
+      ? opts.rawSlots
+      : [
+          opts.label ? `<span slot="label">${opts.label}</span>` : '',
+          opts.supporting ? `<span slot="supporting-text">${opts.supporting}</span>` : '',
+        ]
+          .filter(Boolean)
+          .join('');
+  return `${opener}${slots}</cor-checkbox>`;
 };
+
+const renderCheckbox = (args: CheckboxArgs) =>
+  cb({
+    size: args.size,
+    label: args.label,
+    supporting: args.supportingText,
+    flags: [
+      args.checked && 'checked',
+      args.indeterminate && 'indeterminate',
+      args.disabled && 'disabled',
+      args.invalid && 'invalid',
+      args.required && 'required',
+      args.readonly && 'readonly',
+    ]
+      .filter(Boolean)
+      .join(' '),
+  });
+
+const docsSource = (args: CheckboxArgs) =>
+  renderCheckbox(args).replace(/<\/cor-checkbox>/, '\n</cor-checkbox>').replace(/<span slot=/g, '\n  <span slot=');
 
 const meta: Meta<CheckboxArgs> = {
   title: 'Atoms/Checkbox',
@@ -64,8 +93,14 @@ const meta: Meta<CheckboxArgs> = {
     invalid: { control: 'boolean', description: 'Destructive visuals + `aria-invalid`.' },
     required: { control: 'boolean' },
     readonly: { control: 'boolean' },
-    label: { control: 'text', description: 'Plain-text label.' },
-    supportingText: { control: 'text', description: 'Plain-text supporting message below the label.' },
+    label: {
+      control: 'text',
+      description: 'Slotted visible label (rendered as `<span slot="label">…</span>`).',
+    },
+    supportingText: {
+      control: 'text',
+      description: 'Slotted supporting text (rendered as `<span slot="supporting-text">…</span>`).',
+    },
   },
 };
 
@@ -129,39 +164,37 @@ const cell = (caption: string, body: string) => /*html*/ `
   </div>
 `;
 
+const docsCode = (...lines: string[]) => lines.join('\n');
+
 export const AllStates: Story = {
   name: 'All States',
   render: () =>
     wrapStates(
       [
-        cell('unchecked (md)', `<cor-checkbox size="md" label="Default"></cor-checkbox>`),
-        cell('checked (md)', `<cor-checkbox size="md" label="Default" checked></cor-checkbox>`),
-        cell('indeterminate (md)', `<cor-checkbox size="md" label="Default" indeterminate></cor-checkbox>`),
-        cell('disabled unchecked', `<cor-checkbox size="md" label="Default" disabled></cor-checkbox>`),
-
-        cell('disabled checked', `<cor-checkbox size="md" label="Default" disabled checked></cor-checkbox>`),
-        cell(
-          'disabled indeterminate',
-          `<cor-checkbox size="md" label="Default" disabled indeterminate></cor-checkbox>`,
-        ),
-        cell('error unchecked', `<cor-checkbox size="md" label="Default" invalid></cor-checkbox>`),
-        cell('error checked', `<cor-checkbox size="md" label="Default" invalid checked></cor-checkbox>`),
+        cell('unchecked (md)', cb({ label: 'Default' })),
+        cell('checked (md)', cb({ label: 'Default', flags: 'checked' })),
+        cell('indeterminate (md)', cb({ label: 'Default', flags: 'indeterminate' })),
+        cell('disabled unchecked', cb({ label: 'Default', flags: 'disabled' })),
+        cell('disabled checked', cb({ label: 'Default', flags: 'disabled checked' })),
+        cell('disabled indeterminate', cb({ label: 'Default', flags: 'disabled indeterminate' })),
+        cell('error unchecked', cb({ label: 'Default', flags: 'invalid' })),
+        cell('error checked', cb({ label: 'Default', flags: 'invalid checked' })),
       ].join(''),
     ),
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
-        code: [
-          '<cor-checkbox label="Default"></cor-checkbox>',
-          '<cor-checkbox label="Default" checked></cor-checkbox>',
-          '<cor-checkbox label="Default" indeterminate></cor-checkbox>',
-          '<cor-checkbox label="Default" disabled></cor-checkbox>',
-          '<cor-checkbox label="Default" disabled checked></cor-checkbox>',
-          '<cor-checkbox label="Default" disabled indeterminate></cor-checkbox>',
-          '<cor-checkbox label="Default" invalid></cor-checkbox>',
-          '<cor-checkbox label="Default" invalid checked></cor-checkbox>',
-        ].join('\n'),
+        code: docsCode(
+          cb({ label: 'Default' }),
+          cb({ label: 'Default', flags: 'checked' }),
+          cb({ label: 'Default', flags: 'indeterminate' }),
+          cb({ label: 'Default', flags: 'disabled' }),
+          cb({ label: 'Default', flags: 'disabled checked' }),
+          cb({ label: 'Default', flags: 'disabled indeterminate' }),
+          cb({ label: 'Default', flags: 'invalid' }),
+          cb({ label: 'Default', flags: 'invalid checked' }),
+        ),
       },
     },
   },
@@ -172,18 +205,20 @@ export const AllSizes: Story = {
   render: () =>
     wrapNarrow(
       CHECKBOX_SIZES.flatMap(size => [
-        cell(`${size} · unchecked`, `<cor-checkbox size="${size}" label="Acord"></cor-checkbox>`),
-        cell(`${size} · checked`, `<cor-checkbox size="${size}" label="Acord" checked></cor-checkbox>`),
+        cell(`${size} · unchecked`, cb({ size, label: 'Acord' })),
+        cell(`${size} · checked`, cb({ size, label: 'Acord', flags: 'checked' })),
       ]).join(''),
     ),
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
-        code: CHECKBOX_SIZES.flatMap(s => [
-          `<cor-checkbox size="${s}" label="Acord"></cor-checkbox>`,
-          `<cor-checkbox size="${s}" label="Acord" checked></cor-checkbox>`,
-        ]).join('\n'),
+        code: docsCode(
+          ...CHECKBOX_SIZES.flatMap(s => [
+            cb({ size: s, label: 'Acord' }),
+            cb({ size: s, label: 'Acord', flags: 'checked' }),
+          ]),
+        ),
       },
     },
   },
@@ -194,19 +229,20 @@ export const WithLabel: Story = {
   render: () =>
     wrapNarrow(
       [
-        cell('plain label', `<cor-checkbox label="Acord"></cor-checkbox>`),
-        cell('plain label (checked)', `<cor-checkbox label="Termeni și condiții" checked></cor-checkbox>`),
+        cell('plain slot', cb({ label: 'Acord' })),
+        cell('plain slot (checked)', cb({ label: 'Termeni și condiții', flags: 'checked' })),
         cell(
           'rich slot',
-          /*html*/ `<cor-checkbox>
-            <span slot="label">Sunt de acord cu <strong>Termeni și condiții</strong></span>
-          </cor-checkbox>`,
+          cb({
+            rawSlots: /*html*/ `<span slot="label">Sunt de acord cu <strong>Termeni și condiții</strong></span>`,
+          }),
         ),
         cell(
           'rich slot (checked)',
-          /*html*/ `<cor-checkbox checked>
-            <span slot="label">Doresc să primesc <a href="#">actualizări</a> prin email</span>
-          </cor-checkbox>`,
+          cb({
+            flags: 'checked',
+            rawSlots: /*html*/ `<span slot="label">Doresc să primesc <a href="#">actualizări</a> prin email</span>`,
+          }),
         ),
       ].join(''),
     ),
@@ -218,21 +254,26 @@ export const WithSupportingText: Story = {
   render: () =>
     wrapNarrow(
       [
-        cell(
-          'unchecked',
-          `<cor-checkbox label="Acord" supporting-text="Vom trimite confirmarea la adresa ta de email."></cor-checkbox>`,
-        ),
+        cell('unchecked', cb({ label: 'Acord', supporting: 'Vom trimite confirmarea la adresa ta de email.' })),
         cell(
           'checked',
-          `<cor-checkbox label="Termeni și condiții" supporting-text="Citește documentul complet înainte de a continua." checked></cor-checkbox>`,
+          cb({
+            label: 'Termeni și condiții',
+            supporting: 'Citește documentul complet înainte de a continua.',
+            flags: 'checked',
+          }),
         ),
         cell(
           'indeterminate',
-          `<cor-checkbox label="Selectează toate" supporting-text="Unele subcategorii sunt deja selectate." indeterminate></cor-checkbox>`,
+          cb({
+            label: 'Selectează toate',
+            supporting: 'Unele subcategorii sunt deja selectate.',
+            flags: 'indeterminate',
+          }),
         ),
         cell(
           'small size',
-          `<cor-checkbox size="sm" label="Marketing" supporting-text="Pot fi dezactivate oricând din setări."></cor-checkbox>`,
+          cb({ size: 'sm', label: 'Marketing', supporting: 'Pot fi dezactivate oricând din setări.' }),
         ),
       ].join(''),
     ),
@@ -246,14 +287,22 @@ export const Error: Story = {
       [
         cell(
           'error unchecked',
-          `<cor-checkbox label="Termeni și condiții" supporting-text="Trebuie să accepți termenii pentru a continua." invalid required></cor-checkbox>`,
+          cb({
+            label: 'Termeni și condiții',
+            supporting: 'Trebuie să accepți termenii pentru a continua.',
+            flags: 'invalid required',
+          }),
         ),
         cell(
           'error checked',
-          `<cor-checkbox label="Termeni și condiții" supporting-text="Trebuie să accepți termenii pentru a continua." invalid checked></cor-checkbox>`,
+          cb({
+            label: 'Termeni și condiții',
+            supporting: 'Trebuie să accepți termenii pentru a continua.',
+            flags: 'invalid checked',
+          }),
         ),
-        cell('error sm', `<cor-checkbox size="sm" label="Acord" invalid></cor-checkbox>`),
-        cell('error sm checked', `<cor-checkbox size="sm" label="Acord" invalid checked></cor-checkbox>`),
+        cell('error sm', cb({ size: 'sm', label: 'Acord', flags: 'invalid' })),
+        cell('error sm checked', cb({ size: 'sm', label: 'Acord', flags: 'invalid checked' })),
       ].join(''),
     ),
   parameters: { controls: { disable: true } },
@@ -264,12 +313,12 @@ export const Disabled: Story = {
   render: () =>
     wrapNarrow(
       [
-        cell('disabled unchecked', `<cor-checkbox label="Acord" disabled></cor-checkbox>`),
-        cell('disabled checked', `<cor-checkbox label="Acord" disabled checked></cor-checkbox>`),
-        cell('disabled indeterminate', `<cor-checkbox label="Acord" disabled indeterminate></cor-checkbox>`),
+        cell('disabled unchecked', cb({ label: 'Acord', flags: 'disabled' })),
+        cell('disabled checked', cb({ label: 'Acord', flags: 'disabled checked' })),
+        cell('disabled indeterminate', cb({ label: 'Acord', flags: 'disabled indeterminate' })),
         cell(
           'disabled + supporting',
-          `<cor-checkbox label="Acord" supporting-text="Această opțiune nu este disponibilă acum." disabled></cor-checkbox>`,
+          cb({ label: 'Acord', supporting: 'Această opțiune nu este disponibilă acum.', flags: 'disabled' }),
         ),
       ].join(''),
     ),
@@ -283,18 +332,84 @@ export const EdgeCases: Story = {
       [
         cell(
           'long label wraps',
-          /*html*/ `<cor-checkbox label="Doresc să primesc actualizări periodice prin email despre noile funcționalități, promoții și evenimente organizate de Corlab și partenerii săi"></cor-checkbox>`,
+          cb({
+            label:
+              'Doresc să primesc actualizări periodice prin email despre noile funcționalități, promoții și evenimente organizate de Corlab și partenerii săi',
+          }),
         ),
         cell(
           'long label + supporting',
-          /*html*/ `<cor-checkbox
-            label="Sunt de acord cu Termeni și condiții și Politica de confidențialitate"
-            supporting-text="Te rugăm să citești cu atenție documentele complete înainte de a continua. Acordul tău se aplică tuturor serviciilor Corlab și poate fi retras oricând din pagina de setări a contului."
-            checked></cor-checkbox>`,
+          cb({
+            label: 'Sunt de acord cu Termeni și condiții și Politica de confidențialitate',
+            supporting:
+              'Te rugăm să citești cu atenție documentele complete înainte de a continua. Acordul tău se aplică tuturor serviciilor Corlab și poate fi retras oricând din pagina de setări a contului.',
+            flags: 'checked',
+          }),
         ),
-        cell('no label (aria-only)', /*html*/ `<cor-checkbox aria-label="Selectează rândul"></cor-checkbox>`),
-        cell('readonly checked', `<cor-checkbox label="Verificat de sistem" readonly checked></cor-checkbox>`),
+        cell('no label (aria-only)', cb({ ariaLabel: 'Selectează rândul' })),
+        cell('readonly checked', cb({ label: 'Verificat de sistem', flags: 'readonly checked' })),
       ].join(''),
     ),
   parameters: { controls: { disable: true } },
+};
+
+export const ReducedMotion: Story = {
+  name: 'Reduced Motion',
+  render: () => /*html*/ `
+    <style>
+      .reduced-motion-wrapper {
+        --checkbox-container-transition-duration: 0ms;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, auto));
+        gap: var(--spacing-16);
+        padding: var(--spacing-24);
+        align-items: center;
+      }
+    </style>
+    <div class="reduced-motion-wrapper">
+      ${cb({ label: 'Default' })}
+      ${cb({ label: 'Checked', flags: 'checked' })}
+      ${cb({ label: 'Indeterminate', flags: 'indeterminate' })}
+    </div>
+    <p style="${cellLabelStyle}; max-width: 540px; padding: 0 var(--spacing-24); font-style: italic;">
+      Locally overrides <code>--checkbox-container-transition-duration</code> to demonstrate the
+      static state shown when the user enables OS-level "reduce motion".
+    </p>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: `<style>
+  /* Honor reduce-motion, or force it locally. */
+  .reduced-motion-wrapper {
+    --checkbox-container-transition-duration: 0ms;
+  }
+</style>
+
+<div class="reduced-motion-wrapper">
+  ${cb({ label: 'Default' })}
+</div>`,
+      },
+    },
+  },
+};
+
+// Internal coverage story — exercises the Stencil-injected constructor guard
+// (`if (registerHost !== false) { ... }`) so browser-mode coverage reports
+// 100% branches on the TSX. Hidden from sidebar + autodocs.
+export const CoverageGuard: Story = {
+  tags: ['!autodocs', '!dev'],
+  render: () => cb({ label: 'hidden' }),
+  parameters: {
+    controls: { disable: true },
+    docs: { disable: true },
+  },
+  play: async () => {
+    const Ctor = customElements.get('cor-checkbox') as unknown as (new (registerHost: boolean) => unknown) | undefined;
+    // `globalThis.Error` because the local `Error: Story` export above shadows the global class in this module.
+    if (!Ctor) throw new globalThis.Error('cor-checkbox constructor missing from registry');
+    const instance = new Ctor(false);
+    if (!instance) throw new globalThis.Error('instance not constructed');
+  },
 };

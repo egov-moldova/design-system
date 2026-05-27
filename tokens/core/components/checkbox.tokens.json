@@ -47,8 +47,10 @@
       "color": {
         "default": { "$value": "{color.text.base.default}", "$type": "color" },
         "disabled": { "$value": "{color.text.disabled.on-disabled}", "$type": "color" }
-      },
-      "gapSupporting": { "$value": "{spacing.2}", "$type": "dimension" }
+      }
+    },
+    "text": {
+      "gap": { "$value": "{spacing.2}", "$type": "dimension" }
     },
     "supporting": {
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
@@ -72,7 +74,7 @@
         "checked": { "$value": "{color.background.brand.default}", "$type": "color" }
       },
       "border": {
-        "unchecked": { "$value": "{color.border.base.secondary}", "$type": "color" },
+        "unchecked": { "$value": "{color.border.base.tertiary}", "$type": "color" },
         "checked": { "$value": "{color.background.brand.default}", "$type": "color" }
       },
       "focusRing": { "$value": "{color.background.brand.focus-ring}", "$type": "color" }

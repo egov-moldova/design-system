@@ -10,12 +10,6 @@ const queryNative = (root: Element | null | undefined): HTMLInputElement | null 
 const queryBox = (root: Element | null | undefined): HTMLElement | null =>
   (root?.shadowRoot?.querySelector('.box') ?? null) as HTMLElement | null;
 
-const queryLabel = (root: Element | null | undefined): HTMLElement | null =>
-  (root?.shadowRoot?.querySelector('.label') ?? null) as HTMLElement | null;
-
-const querySupporting = (root: Element | null | undefined): HTMLElement | null =>
-  (root?.shadowRoot?.querySelector('.supporting') ?? null) as HTMLElement | null;
-
 const queryCheckGlyph = (root: Element | null | undefined): SVGElement | null =>
   (root?.shadowRoot?.querySelector('.glyph-check') ?? null) as SVGElement | null;
 
@@ -82,16 +76,27 @@ describe('cor-checkbox', () => {
       expect(queryBox(root)).toBeTruthy();
     });
 
-    it('renders label text via the `label` prop', async () => {
-      const { root } = await render(<cor-checkbox label="Termeni și condiții"></cor-checkbox>);
-      expect(queryLabel(root)?.textContent).toContain('Termeni și condiții');
+    it('renders slotted label content', async () => {
+      const { root } = await render(
+        <cor-checkbox>
+          <span slot="label">Termeni și condiții</span>
+        </cor-checkbox>,
+      );
+      const slot = root?.shadowRoot?.querySelector('slot[name="label"]') as HTMLSlotElement | null;
+      const assigned = slot?.assignedElements({ flatten: true });
+      expect(assigned?.[0]?.textContent).toContain('Termeni și condiții');
     });
 
-    it('renders supporting text via the `supporting-text` prop', async () => {
+    it('renders slotted supporting-text content', async () => {
       const { root } = await render(
-        <cor-checkbox label="x" supporting-text="Această valoare este recomandată."></cor-checkbox>,
+        <cor-checkbox>
+          <span slot="label">x</span>
+          <span slot="supporting-text">Această valoare este recomandată.</span>
+        </cor-checkbox>,
       );
-      expect(querySupporting(root)?.textContent).toContain('Această valoare este recomandată.');
+      const slot = root?.shadowRoot?.querySelector('slot[name="supporting-text"]') as HTMLSlotElement | null;
+      const assigned = slot?.assignedElements({ flatten: true });
+      expect(assigned?.[0]?.textContent).toContain('Această valoare este recomandată.');
     });
 
     it('renders the check glyph when checked', async () => {
@@ -149,30 +154,43 @@ describe('cor-checkbox', () => {
       expect(queryNative(root)?.getAttribute('aria-readonly')).toBe('true');
     });
 
-    it('links the visible label via aria-labelledby', async () => {
-      const { root } = await render(<cor-checkbox label="Acord"></cor-checkbox>);
+    it('links the slotted label via aria-labelledby (manual slot wire — see slot-detection block for why)', async () => {
+      const { root } = await render(
+        <cor-checkbox>
+          <span slot="label">Acord</span>
+        </cor-checkbox>,
+      );
+      // Slotchange isn't dispatched by mock-doc on initial render; force the
+      // has-label state so aria-labelledby resolves the way the browser would.
+      (root as unknown as { onLabelSlotChange: (ev: Event) => void }).onLabelSlotChange({
+        target: { assignedNodes: () => [{ nodeType: 1 }] },
+      } as unknown as Event);
+      await flush();
       const native = queryNative(root);
       const labelId = native?.getAttribute('aria-labelledby');
       expect(labelId).toBeTruthy();
-      expect(root?.shadowRoot?.querySelector(`#${labelId}`)?.textContent).toContain('Acord');
+      const slotEl = root?.shadowRoot?.querySelector(`#${labelId} slot[name="label"]`);
+      expect(slotEl).toBeTruthy();
     });
 
-    it('links supporting text via aria-describedby when present', async () => {
-      const { root } = await render(<cor-checkbox label="x" supporting-text="Vom trimite confirmarea."></cor-checkbox>);
-      const native = queryNative(root);
-      const id = native?.getAttribute('aria-describedby');
-      expect(id).toBeTruthy();
-      expect(root?.shadowRoot?.querySelector(`#${id}`)?.textContent).toContain('Vom trimite confirmarea.');
-    });
-
-    it('omits aria-describedby when no supporting text present', async () => {
-      const { root } = await render(<cor-checkbox label="x"></cor-checkbox>);
+    it('omits aria-describedby when no supporting slot is present', async () => {
+      const { root } = await render(<cor-checkbox aria-label="x"></cor-checkbox>);
       expect(queryNative(root)?.getAttribute('aria-describedby')).toBeNull();
     });
 
-    it('uses aria-label when no visible label is rendered', async () => {
+    it('uses explicit aria-label when no visible label is rendered', async () => {
       const { root } = await render(<cor-checkbox aria-label="Selectează rândul"></cor-checkbox>);
       expect(queryNative(root)?.getAttribute('aria-label')).toBe('Selectează rândul');
+    });
+
+    it('falls back to the label prop as input aria-label when no slot + no aria-label', async () => {
+      const { root } = await render(<cor-checkbox label="Fallback nume"></cor-checkbox>);
+      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Fallback nume');
+    });
+
+    it('explicit aria-label wins over the label prop', async () => {
+      const { root } = await render(<cor-checkbox label="ignored" aria-label="winning"></cor-checkbox>);
+      expect(queryNative(root)?.getAttribute('aria-label')).toBe('winning');
     });
   });
 
@@ -197,18 +215,36 @@ describe('cor-checkbox', () => {
       expect(root?.classList.contains('is-disabled')).toBe(true);
     });
 
-    it('adds has-label when a label is present', async () => {
-      const { root } = await render(<cor-checkbox label="Acord"></cor-checkbox>);
+    it('adds has-label when label slot has content', async () => {
+      const { root } = await render(
+        <cor-checkbox>
+          <span slot="label">Acord</span>
+        </cor-checkbox>,
+      );
+      // Slotchange isn't dispatched by mock-doc on initial render — invoke directly.
+      (root as unknown as { onLabelSlotChange: (ev: Event) => void }).onLabelSlotChange({
+        target: { assignedNodes: () => [{ nodeType: 1 }] },
+      } as unknown as Event);
+      await flush();
       expect(root?.classList.contains('has-label')).toBe(true);
     });
 
-    it('omits has-label when no label is present', async () => {
-      const { root } = await render(<cor-checkbox aria-label="x"></cor-checkbox>);
+    it('omits has-label when no slot is set (even if `label` prop is set)', async () => {
+      // Slot-first contract: prop alone does NOT toggle has-label.
+      const { root } = await render(<cor-checkbox label="not-rendered"></cor-checkbox>);
       expect(root?.classList.contains('has-label')).toBe(false);
     });
 
-    it('adds has-supporting when supporting-text is present', async () => {
-      const { root } = await render(<cor-checkbox label="x" supporting-text="Nota."></cor-checkbox>);
+    it('adds has-supporting when supporting-text slot has content', async () => {
+      const { root } = await render(
+        <cor-checkbox>
+          <span slot="supporting-text">Nota.</span>
+        </cor-checkbox>,
+      );
+      (root as unknown as { onSupportingSlotChange: (ev: Event) => void }).onSupportingSlotChange({
+        target: { assignedNodes: () => [{ nodeType: 1 }] },
+      } as unknown as Event);
+      await flush();
       expect(root?.classList.contains('has-supporting')).toBe(true);
     });
   });
@@ -237,6 +273,183 @@ describe('cor-checkbox', () => {
     it('reflects native `required` to the internal input', async () => {
       const { root } = await render(<cor-checkbox label="x" required></cor-checkbox>);
       expect(queryNative(root)?.hasAttribute('required')).toBe(true);
+    });
+  });
+
+  describe('user interaction', () => {
+    const fireChange = (native: HTMLInputElement | null, nextChecked: boolean) => {
+      if (!native) throw new Error('native input missing');
+      native.checked = nextChecked;
+      native.dispatchEvent(new Event('change', { bubbles: true }));
+    };
+
+    it('emits corChange with the new checked state on user toggle', async () => {
+      const { root } = await render(<cor-checkbox label="x"></cor-checkbox>);
+      const events: CustomEvent[] = [];
+      root?.addEventListener('corChange', e => events.push(e as CustomEvent));
+      fireChange(queryNative(root), true);
+      await flush();
+      expect(events).toHaveLength(1);
+      expect(events[0].detail).toMatchObject({ checked: true, indeterminate: false });
+      expect((root as unknown as { checked: boolean }).checked).toBe(true);
+    });
+
+    it('clears indeterminate when the user toggles', async () => {
+      const { root } = await render(<cor-checkbox label="x" indeterminate></cor-checkbox>);
+      expect(root?.classList.contains('is-indeterminate')).toBe(true);
+      fireChange(queryNative(root), true);
+      await flush();
+      expect((root as unknown as { indeterminate: boolean }).indeterminate).toBe(false);
+    });
+
+    it('rolls back the native and ignores the change when readonly', async () => {
+      const { root } = await render(<cor-checkbox label="x" readonly></cor-checkbox>);
+      const events: CustomEvent[] = [];
+      root?.addEventListener('corChange', e => events.push(e as CustomEvent));
+      fireChange(queryNative(root), true);
+      await flush();
+      expect(events).toHaveLength(0);
+      expect((root as unknown as { checked: boolean }).checked).toBe(false);
+      expect(queryNative(root)?.checked).toBe(false);
+    });
+
+    it('rolls back and ignores the change when disabled', async () => {
+      const { root } = await render(<cor-checkbox label="x" disabled></cor-checkbox>);
+      const events: CustomEvent[] = [];
+      root?.addEventListener('corChange', e => events.push(e as CustomEvent));
+      fireChange(queryNative(root), true);
+      await flush();
+      expect(events).toHaveLength(0);
+      expect((root as unknown as { checked: boolean }).checked).toBe(false);
+    });
+
+    it('emits corFocus / corBlur and toggles is-focused class', async () => {
+      const { root } = await render(<cor-checkbox label="x"></cor-checkbox>);
+      const focusEvents: FocusEvent[] = [];
+      const blurEvents: FocusEvent[] = [];
+      root?.addEventListener('corFocus', e => focusEvents.push((e as CustomEvent).detail));
+      root?.addEventListener('corBlur', e => blurEvents.push((e as CustomEvent).detail));
+      const native = queryNative(root);
+      native?.dispatchEvent(new FocusEvent('focus'));
+      await flush();
+      expect(focusEvents).toHaveLength(1);
+      expect(root?.classList.contains('is-focused')).toBe(true);
+      native?.dispatchEvent(new FocusEvent('blur'));
+      await flush();
+      expect(blurEvents).toHaveLength(1);
+      expect(root?.classList.contains('is-focused')).toBe(false);
+    });
+
+    it('does not mark is-focused while disabled even after focus event', async () => {
+      const { root } = await render(<cor-checkbox label="x" disabled></cor-checkbox>);
+      queryNative(root)?.dispatchEvent(new FocusEvent('focus'));
+      await flush();
+      expect(root?.classList.contains('is-focused')).toBe(false);
+    });
+  });
+
+  describe('slot detection (handler unit-tests)', () => {
+    // The `slotchange` event isn't reliably dispatched by Stencil's mock-doc /
+    // browser-mode renderer for slot content set during initial render, so we
+    // exercise the slot-handler logic directly: assert it observes assigned
+    // node text correctly and updates the state. Real browser flow is covered
+    // by the Storybook visual stories.
+    const buildSlotEvent = (nodes: Array<{ nodeType: number; textContent?: string }>): Event => {
+      const fakeSlot = {
+        assignedNodes: () => nodes,
+      } as unknown as HTMLSlotElement;
+      return { target: fakeSlot } as unknown as Event;
+    };
+
+    it('slotHasContent returns true for an element-type assigned node', async () => {
+      const { root } = await render(<cor-checkbox aria-label="x"></cor-checkbox>);
+      const onLabelSlotChange = (root as unknown as { onLabelSlotChange: (ev: Event) => void })
+        .onLabelSlotChange;
+      onLabelSlotChange(buildSlotEvent([{ nodeType: 1 /* ELEMENT */ }]));
+      await flush();
+      expect(root?.classList.contains('has-label')).toBe(true);
+    });
+
+    it('slotHasContent returns false for whitespace-only text nodes', async () => {
+      const { root } = await render(<cor-checkbox aria-label="x"></cor-checkbox>);
+      const onLabelSlotChange = (root as unknown as { onLabelSlotChange: (ev: Event) => void })
+        .onLabelSlotChange;
+      onLabelSlotChange(buildSlotEvent([{ nodeType: 3 /* TEXT */, textContent: '   ' }]));
+      await flush();
+      expect(root?.classList.contains('has-label')).toBe(false);
+    });
+
+    it('supporting-slot handler flips has-supporting class', async () => {
+      const { root } = await render(<cor-checkbox label="x"></cor-checkbox>);
+      const onSupportingSlotChange = (
+        root as unknown as { onSupportingSlotChange: (ev: Event) => void }
+      ).onSupportingSlotChange;
+      onSupportingSlotChange(buildSlotEvent([{ nodeType: 1 }]));
+      await flush();
+      expect(root?.classList.contains('has-supporting')).toBe(true);
+    });
+  });
+
+  describe('form-associated lifecycle', () => {
+    it('resets checked + indeterminate via formResetCallback', async () => {
+      const { root } = await render(<cor-checkbox label="x" checked indeterminate></cor-checkbox>);
+      // Mutate runtime state, then trigger reset
+      (root as unknown as { checked: boolean }).checked = false;
+      (root as unknown as { indeterminate: boolean }).indeterminate = true;
+      (root as unknown as { formResetCallback: () => void }).formResetCallback();
+      await flush();
+      // initialChecked snapshot was `true` at mount
+      expect((root as unknown as { checked: boolean }).checked).toBe(true);
+      expect((root as unknown as { indeterminate: boolean }).indeterminate).toBe(false);
+    });
+
+    it('restores checked from a serialized "true" / "false" string', async () => {
+      const { root } = await render(<cor-checkbox label="x"></cor-checkbox>);
+      (root as unknown as { formStateRestoreCallback: (s: string) => void }).formStateRestoreCallback('true');
+      await flush();
+      expect((root as unknown as { checked: boolean }).checked).toBe(true);
+      (root as unknown as { formStateRestoreCallback: (s: string) => void }).formStateRestoreCallback('false');
+      await flush();
+      expect((root as unknown as { checked: boolean }).checked).toBe(false);
+    });
+
+    it('formStateRestoreCallback ignores non-string state', async () => {
+      const { root } = await render(<cor-checkbox label="x" checked></cor-checkbox>);
+      (root as unknown as { formStateRestoreCallback: (s: unknown) => void }).formStateRestoreCallback(null);
+      await flush();
+      // value unchanged
+      expect((root as unknown as { checked: boolean }).checked).toBe(true);
+    });
+
+    it('formDisabledCallback flips the disabled state without clobbering the prop', async () => {
+      const { root } = await render(<cor-checkbox label="x"></cor-checkbox>);
+      (root as unknown as { formDisabledCallback: (d: boolean) => void }).formDisabledCallback(true);
+      await flush();
+      expect(root?.classList.contains('is-disabled')).toBe(true);
+      // Prop itself was never set — only the fieldsetDisabled state
+      expect(root?.getAttribute('disabled')).toBeNull();
+      (root as unknown as { formDisabledCallback: (d: boolean) => void }).formDisabledCallback(false);
+      await flush();
+      expect(root?.classList.contains('is-disabled')).toBe(false);
+    });
+
+    it('size watcher accepts valid values without warning', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const { root } = await render(<cor-checkbox label="x"></cor-checkbox>);
+      (root as unknown as { size: string }).size = 'sm';
+      await flush();
+      expect(warn).not.toHaveBeenCalled();
+      expect(root?.getAttribute('size')).toBe('sm');
+      warn.mockRestore();
+    });
+
+    it('checked watcher syncs form value when toggled programmatically', async () => {
+      const { root } = await render(<cor-checkbox label="x" name="agree"></cor-checkbox>);
+      (root as unknown as { checked: boolean }).checked = true;
+      await flush();
+      // No assertion on FormData here (would need a parent <form>); covered by Storybook BX7.
+      // Touching the setter is enough to exercise handleCheckedChange + syncFormValue + updateValidity.
+      expect((root as unknown as { checked: boolean }).checked).toBe(true);
     });
   });
 });

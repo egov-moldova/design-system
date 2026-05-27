@@ -189,7 +189,7 @@
 .text {
   display: inline-flex;
   flex-direction: column;
-  gap: var(--checkbox-label-gap-supporting);
+  gap: var(--checkbox-text-gap);
   min-inline-size: 0;
   /* Vertical alignment trick: align the first line of label with the center
      of the checkbox box, mirroring Figma. */
