@@ -1,11 +1,23 @@
 :host {
   display: inline-flex;
   align-items: center;
+  gap: var(--breadcrumb-gap-item);
   font-family: var(--breadcrumb-font-family);
   font-size: var(--breadcrumb-font-size);
   line-height: var(--breadcrumb-line-height);
   font-weight: var(--breadcrumb-font-weight-default);
   color: var(--breadcrumb-item-text-default);
+}
+
+/* Slot-mode chevron separator — when nested inside `<cor-breadcrumb>` (slot
+   mode), the parent doesn't render the chevron `<li>` between siblings, so we
+   paint it from the child's host instead. `:host(:not(:last-child))` keeps the
+   separator off the trailing crumb regardless of parent. */
+:host(:not(:last-child))::after {
+  content: '›';
+  color: var(--breadcrumb-separator-color);
+  pointer-events: none;
+  user-select: none;
 }
 
 /* Active = current page. Medium weight, ink-default color. */
@@ -79,6 +91,49 @@
 
 .crumb--loading {
   cursor: progress;
+}
+
+/* ----- Crumb content layout (icon-start + label) ----- */
+
+.crumb-content {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--breadcrumb-gap-item);
+  min-width: 0;
+  flex: 1 1 auto;
+  max-width: 100%;
+}
+
+/* cor-tooltip wraps the whole <a>/<span> crumb (link sits in slot="trigger"),
+   so the link itself carries the max-width cap and the inner `.crumb-text`
+   truncates naturally without any extra flex propagation rules. */
+:host cor-tooltip {
+  display: inline-flex;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.icon-start {
+  display: none;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.icon-start--visible {
+  display: inline-flex;
+}
+
+::slotted([slot='icon-start']) {
+  --icon-color: currentcolor;
+}
+
+.crumb-text {
+  display: block;
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Respect reduced motion at the component level too. */

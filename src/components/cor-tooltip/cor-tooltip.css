@@ -69,6 +69,14 @@
   font-weight: var(--tooltip-label-font-weight);
   line-height: var(--tooltip-label-line-height);
   text-align: center;
+  /* Reset inheritable text-flow rules — when the tooltip is placed inside a
+     nowrap/ellipsis container (e.g. a breadcrumb trail), `white-space` and
+     friends inherit through the host into the bubble and prevent the long
+     label from wrapping inside the bubble. */
+  white-space: normal;
+  text-overflow: clip;
+  word-break: normal;
+  overflow-wrap: anywhere;
   width: max-content;
   pointer-events: none;
   opacity: 0;

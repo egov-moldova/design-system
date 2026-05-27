@@ -1,6 +1,7 @@
 import { Component, Element, Event, EventEmitter, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
 
 import type { BreadcrumbItem, BreadcrumbSelectDetail } from './cor-breadcrumb.types';
+import { BREADCRUMB_TRUNCATE_AT } from './cor-breadcrumb.types';
 
 /**
  * Breadcrumb — navigational trail showing the user's location in the site hierarchy.
@@ -36,17 +37,19 @@ export class CorBreadcrumb {
 
   /**
    * Maximum number of crumbs shown before collapsing the middle into an overflow menu.
-   * Best practice (per Figma): 4–5. The first and last 2 are always visible.
-   * @default 5
+   * Per Figma "Best Practices": limit visible items to 4. The first and last 2 are
+   * always visible; everything between collapses into the `…` menu.
+   * @default 4
    */
-  @Prop() maxVisible: number = 5;
+  @Prop() maxVisible: number = 4;
 
   /**
-   * Separator character or short string rendered between crumbs.
-   * Ignored when the `separator` slot is filled.
-   * @default '/'
+   * Override the default chevron separator with a literal string (e.g. `"/"`, `"›"`).
+   * When empty (default), the chevron icon is rendered. When `slot="separator"` is
+   * provided, both this prop and the chevron are ignored.
+   * @default ''
    */
-  @Prop() separator: string = '/';
+  @Prop() separator: string = '';
 
   /**
    * When true, the component collapses to a single "back" link on viewports ≤640px.
@@ -56,14 +59,19 @@ export class CorBreadcrumb {
   @Prop() responsive: boolean = true;
 
   /**
-   * Accessible name for the navigation landmark. Defaults to "Breadcrumb".
+   * Accessible name for the navigation landmark when no `aria-label` is set on the
+   * host. Defaults to "Breadcrumb". Setting `aria-label` directly on the host also
+   * works — the consumer-supplied attribute wins.
    */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop() label?: string;
 
-  @Element() host!: HTMLElement;
+  @Element() host!: HTMLCorBreadcrumbElement;
 
   @State() private menuOpen: boolean = false;
-  @State() private customSeparatorHtml: string = '';
+  @State() private focusedMenuIndex: number = -1;
+  @State() private resolvedAriaLabel: string = 'Breadcrumb';
+  /** Cached clone source captured from `slot="separator"` on connect. */
+  private customSeparatorTemplate?: Element;
 
   /** Emits when any crumb is activated (click or keyboard). */
   @Event({ bubbles: true, composed: true }) corSelect!: EventEmitter<BreadcrumbSelectDetail>;
@@ -76,44 +84,110 @@ export class CorBreadcrumb {
     }
   }
 
+  @Watch('label')
+  syncLabel(next?: string): void {
+    if (next && next.length > 0) this.resolvedAriaLabel = next;
+  }
+
   /** Close the overflow menu when a click lands outside it. */
   @Listen('click', { target: 'window' })
   handleOutsideClick(ev: MouseEvent): void {
     if (!this.menuOpen) return;
     const path = ev.composedPath();
-    if (!path.includes(this.host)) this.menuOpen = false;
+    if (!path.includes(this.host)) {
+      this.menuOpen = false;
+      this.focusedMenuIndex = -1;
+    }
   }
 
-  /** Escape closes the overflow menu and returns focus to the trigger. */
+  /** Full WAI-ARIA Menu keyboard support on the overflow trigger + menu. */
   @Listen('keydown')
   handleKeyDown(ev: KeyboardEvent): void {
-    if (!this.menuOpen || ev.key !== 'Escape') return;
-    ev.stopPropagation();
-    this.menuOpen = false;
-    const trigger = this.host.shadowRoot?.querySelector<HTMLButtonElement>('.overflow-trigger');
-    trigger?.focus();
+    if (!this.menuOpen) return;
+    const items = this.getOverflowItems();
+    switch (ev.key) {
+      case 'Escape': {
+        ev.stopPropagation();
+        this.menuOpen = false;
+        this.focusedMenuIndex = -1;
+        const trigger = this.host.shadowRoot?.querySelector<HTMLButtonElement>('.overflow-trigger');
+        trigger?.focus();
+        return;
+      }
+      case 'ArrowDown': {
+        ev.preventDefault();
+        if (items.length === 0) return;
+        this.focusedMenuIndex = (this.focusedMenuIndex + 1) % items.length;
+        return;
+      }
+      case 'ArrowUp': {
+        ev.preventDefault();
+        if (items.length === 0) return;
+        this.focusedMenuIndex = this.focusedMenuIndex <= 0 ? items.length - 1 : this.focusedMenuIndex - 1;
+        return;
+      }
+      case 'Home': {
+        ev.preventDefault();
+        if (items.length > 0) this.focusedMenuIndex = 0;
+        return;
+      }
+      case 'End': {
+        ev.preventDefault();
+        if (items.length > 0) this.focusedMenuIndex = items.length - 1;
+        return;
+      }
+      case 'Tab': {
+        // Close on Tab — focus moves out of the menu
+        this.menuOpen = false;
+        this.focusedMenuIndex = -1;
+        return;
+      }
+      default:
+        return;
+    }
   }
 
   private readonly toggleMenu = (ev?: MouseEvent) => {
     ev?.stopPropagation();
     this.menuOpen = !this.menuOpen;
+    this.focusedMenuIndex = -1;
   };
 
+  private getOverflowItems(): HTMLElement[] {
+    const root = this.host.shadowRoot;
+    if (!root) return [];
+    return Array.from(root.querySelectorAll<HTMLElement>('.overflow-menu-item'));
+  }
+
   /**
-   * Capture the consumer-provided separator slot content once on connect
-   * so we can replicate it between every crumb. The slot element itself
-   * can only project content once, so we serialise to HTML and re-render
-   * via innerHTML per separator. Falls back to the chevron icon when no
-   * separator slot is provided.
+   * Capture consumer-supplied content on connect:
+   *  - `aria-label` attribute → stripped from the host and stored as `resolvedAriaLabel`
+   *    to avoid the Stencil observer/render loop (same pattern as cor-radio / cor-switch /
+   *    cor-tooltip / cor-accordion).
+   *  - First element with `slot="separator"` → cloned and re-used between every crumb,
+   *    instead of the prior `innerHTML` round-trip (SECURITY-INNERHTML).
    */
   componentWillLoad(): void {
+    this.captureAriaLabel();
     this.captureSeparatorSlot();
   }
 
+  private captureAriaLabel(): void {
+    const userLabel = this.host.getAttribute('aria-label');
+    if (userLabel && userLabel.length > 0) {
+      this.resolvedAriaLabel = userLabel;
+      this.host.removeAttribute('aria-label');
+    } else if (this.label && this.label.length > 0) {
+      this.resolvedAriaLabel = this.label;
+    }
+  }
+
   private captureSeparatorSlot(): void {
-    const slotted = Array.from(this.host.children).filter(el => el.getAttribute('slot') === 'separator');
-    if (slotted.length === 0) return;
-    this.customSeparatorHtml = slotted.map(el => el.outerHTML).join('');
+    const slotted = Array.from(this.host.children).find(el => el.getAttribute('slot') === 'separator');
+    if (!slotted) return;
+    const clone = slotted.cloneNode(true) as HTMLElement;
+    clone.removeAttribute('slot');
+    this.customSeparatorTemplate = clone;
   }
 
   private readonly handleCrumbClick = (ev: MouseEvent, item: BreadcrumbItem, index: number, fromOverflow: boolean) => {
@@ -128,21 +202,59 @@ export class CorBreadcrumb {
       fromOverflow,
     });
     if (dispatched.defaultPrevented) ev.preventDefault();
-    if (fromOverflow) this.menuOpen = false;
+    if (fromOverflow) {
+      this.menuOpen = false;
+      this.focusedMenuIndex = -1;
+    }
+  };
+
+  /**
+   * Ref callback that appends a fresh clone of the captured separator template.
+   * Runs once per `<li>` instance because Stencil keys ensure stable nodes.
+   */
+  private readonly attachCustomSeparator = (el?: HTMLLIElement) => {
+    if (!el || !this.customSeparatorTemplate) return;
+    if (el.childNodes.length === 0) {
+      el.appendChild(this.customSeparatorTemplate.cloneNode(true));
+    }
   };
 
   private renderSeparator(key?: string) {
-    if (this.customSeparatorHtml) {
-      return <li class="separator" aria-hidden="true" key={key} innerHTML={this.customSeparatorHtml}></li>;
+    if (this.customSeparatorTemplate) {
+      return <li class="separator" aria-hidden="true" key={key} ref={this.attachCustomSeparator}></li>;
+    }
+    if (this.separator && this.separator.length > 0) {
+      return (
+        <li class="separator separator--text" aria-hidden="true" key={key}>
+          {this.separator}
+        </li>
+      );
     }
     return (
       <li class="separator" aria-hidden="true" key={key}>
-        <cor-icon name="chevron-right-small" size={16} color="icon-base-tertiary"></cor-icon>
+        <cor-icon name="chevron-right-small" size={16}></cor-icon>
       </li>
     );
   }
 
-  private renderCrumb(item: BreadcrumbItem, index: number, fromOverflow: boolean) {
+  /**
+   * Render the crumb label, wrapping it in a tooltip when the label exceeds
+   * `BREADCRUMB_TRUNCATE_AT` characters (per Figma "Best Practices"). The visible
+   * text is truncated via CSS `text-overflow: ellipsis`; the tooltip exposes the
+   * full label on hover/focus.
+   */
+  /** Builds the inner label markup (icon + text) without any tooltip wrap. */
+  private renderLabelBody(item: BreadcrumbItem) {
+    if (item.loading) return <cor-spinner size="xs" variant="dark" label="Loading"></cor-spinner>;
+    return (
+      <span class="crumb-label">
+        {item.iconStart && <cor-icon class="crumb-icon-start" name={item.iconStart} size={16}></cor-icon>}
+        <span class="crumb-text">{item.label}</span>
+      </span>
+    );
+  }
+
+  private renderCrumb(item: BreadcrumbItem, index: number, fromOverflow: boolean, isCurrent: boolean) {
     const isLink = !!item.href && !item.active && !item.disabled && !item.loading;
     const labelClasses = {
       'crumb': true,
@@ -152,23 +264,23 @@ export class CorBreadcrumb {
       'crumb--loading': !!item.loading,
       'crumb--link': isLink,
     };
-    const inner = item.loading ? <cor-spinner size="xs" variant="dark" label="Loading"></cor-spinner> : item.label;
-    if (isLink) {
-      return (
-        <a
-          class={labelClasses}
-          href={item.href}
-          aria-current={item.active ? 'page' : undefined}
-          onClick={ev => this.handleCrumbClick(ev, item, index, fromOverflow)}
-        >
-          {inner}
-        </a>
-      );
-    }
-    return (
-      <span
+    const inner = this.renderLabelBody(item);
+    const needsTooltip = !item.loading && item.label.length > BREADCRUMB_TRUNCATE_AT;
+    const crumbBody = isLink ? (
+      <a
+        slot={needsTooltip ? 'trigger' : undefined}
         class={labelClasses}
-        aria-current={item.active ? 'page' : undefined}
+        href={item.href}
+        aria-current={isCurrent ? 'page' : undefined}
+        onClick={ev => this.handleCrumbClick(ev, item, index, fromOverflow)}
+      >
+        {inner}
+      </a>
+    ) : (
+      <span
+        slot={needsTooltip ? 'trigger' : undefined}
+        class={labelClasses}
+        aria-current={isCurrent ? 'page' : undefined}
         aria-disabled={item.disabled ? 'true' : undefined}
         aria-busy={item.loading ? 'true' : undefined}
         tabindex={item.disabled || item.active ? -1 : 0}
@@ -177,11 +289,32 @@ export class CorBreadcrumb {
         {inner}
       </span>
     );
+    if (!needsTooltip) return crumbBody;
+    return (
+      <cor-tooltip content={item.label} position="top">
+        {crumbBody}
+      </cor-tooltip>
+    );
+  }
+
+  /**
+   * Returns the index that should carry `aria-current="page"`. Honours an explicit
+   * `active:true` flag; otherwise picks the last navigable (non-disabled) crumb so
+   * the trail always has a current-page marker (legacy `cor-breadcrumbs` parity).
+   */
+  private resolveCurrentIndex(items: BreadcrumbItem[]): number {
+    const explicit = items.findIndex(item => item.active === true);
+    if (explicit !== -1) return explicit;
+    for (let i = items.length - 1; i >= 0; i -= 1) {
+      if (!items[i].disabled && !items[i].loading) return i;
+    }
+    return items.length - 1;
   }
 
   private renderDesktop(items: BreadcrumbItem[]) {
     const limit = Math.max(2, this.maxVisible);
     const shouldCollapse = items.length > limit;
+    const currentIndex = this.resolveCurrentIndex(items);
     if (!shouldCollapse) {
       // Linear render
       return (
@@ -189,11 +322,11 @@ export class CorBreadcrumb {
           {items.flatMap((item, index) => {
             const node = (
               <li class="crumb-item" key={`crumb-${String(index)}`}>
-                {this.renderCrumb(item, index, false)}
+                {this.renderCrumb(item, index, false, index === currentIndex)}
               </li>
             );
             const isLast = index === items.length - 1;
-            return isLast ? [node] : [node, this.renderSeparator()];
+            return isLast ? [node] : [node, this.renderSeparator(`sep-${String(index)}`)];
           })}
         </ol>
       );
@@ -202,12 +335,14 @@ export class CorBreadcrumb {
     const first = items[0];
     const lastTwo = items.slice(-2);
     const hiddenItems = items.slice(1, -2);
+    const activeDescId =
+      this.menuOpen && this.focusedMenuIndex >= 0 ? `cor-bc-overflow-${String(this.focusedMenuIndex)}` : undefined;
     return (
       <ol class="trail">
         <li class="crumb-item" key="crumb-first">
-          {this.renderCrumb(first, 0, false)}
+          {this.renderCrumb(first, 0, false, currentIndex === 0)}
         </li>
-        {this.renderSeparator()}
+        {this.renderSeparator('sep-first')}
         <li class="crumb-item crumb-item--overflow">
           <button
             type="button"
@@ -215,6 +350,7 @@ export class CorBreadcrumb {
             aria-label="Show collapsed pages"
             aria-haspopup="menu"
             aria-expanded={this.menuOpen ? 'true' : 'false'}
+            aria-activedescendant={activeDescId}
             onClick={this.toggleMenu}
           >
             …
@@ -223,12 +359,18 @@ export class CorBreadcrumb {
             <ul class="overflow-menu" role="menu">
               {hiddenItems.map((item, hiddenIdx) => {
                 const realIdx = hiddenIdx + 1;
+                const isFocused = hiddenIdx === this.focusedMenuIndex;
+                const itemClasses = {
+                  'overflow-menu-item': true,
+                  'overflow-menu-item--focused': isFocused,
+                };
                 return (
                   <li role="none" key={`overflow-${String(realIdx)}`}>
                     {item.href ? (
                       <a
                         role="menuitem"
-                        class="overflow-menu-item"
+                        id={`cor-bc-overflow-${String(hiddenIdx)}`}
+                        class={itemClasses}
                         href={item.href}
                         onClick={ev => this.handleCrumbClick(ev, item, realIdx, true)}
                       >
@@ -238,7 +380,8 @@ export class CorBreadcrumb {
                       <button
                         type="button"
                         role="menuitem"
-                        class="overflow-menu-item"
+                        id={`cor-bc-overflow-${String(hiddenIdx)}`}
+                        class={itemClasses}
                         onClick={ev => this.handleCrumbClick(ev, item, realIdx, true)}
                       >
                         {item.label}
@@ -250,16 +393,16 @@ export class CorBreadcrumb {
             </ul>
           )}
         </li>
-        {this.renderSeparator()}
+        {this.renderSeparator('sep-mid')}
         {lastTwo.flatMap((item, lastIdx) => {
           const realIdx = items.length - lastTwo.length + lastIdx;
           const node = (
             <li class="crumb-item" key={`crumb-${String(realIdx)}`}>
-              {this.renderCrumb(item, realIdx, false)}
+              {this.renderCrumb(item, realIdx, false, realIdx === currentIndex)}
             </li>
           );
           const isLast = lastIdx === lastTwo.length - 1;
-          return isLast ? [node] : [node, this.renderSeparator()];
+          return isLast ? [node] : [node, this.renderSeparator(`sep-tail-${String(lastIdx)}`)];
         })}
       </ol>
     );
@@ -277,12 +420,12 @@ export class CorBreadcrumb {
         <li class="crumb-item crumb-item--mobile">
           {parent.href ? (
             <a class="back-link" href={parent.href} onClick={handleClick}>
-              <cor-icon name="chevron-left-small" size={20} color="icon-base-tertiary"></cor-icon>
+              <cor-icon name="chevron-left-small" size={20}></cor-icon>
               <span>{parent.label}</span>
             </a>
           ) : (
             <button type="button" class="back-link back-link--button" onClick={handleClick}>
-              <cor-icon name="chevron-left-small" size={20} color="icon-base-tertiary"></cor-icon>
+              <cor-icon name="chevron-left-small" size={20}></cor-icon>
               <span>{parent.label}</span>
             </button>
           )}
@@ -295,7 +438,7 @@ export class CorBreadcrumb {
     const items = this.items;
     const useItems = Array.isArray(items) && items.length > 0;
     return (
-      <Host role="navigation" aria-label={this.ariaLabel ?? 'Breadcrumb'}>
+      <Host role="navigation" aria-label={this.resolvedAriaLabel}>
         {useItems ? (
           <div class="root" data-responsive={this.responsive ? 'true' : 'false'}>
             <div class="desktop">{this.renderDesktop(items!)}</div>

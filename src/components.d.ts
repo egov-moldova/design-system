@@ -301,16 +301,16 @@ export namespace Components {
      */
     interface CorBreadcrumb {
         /**
-          * Accessible name for the navigation landmark. Defaults to "Breadcrumb".
-         */
-        "ariaLabel"?: string;
-        /**
           * Declarative crumb list. Each item renders as a `cor-breadcrumb-item`. When omitted, the component falls back to its default slot.
          */
         "items"?: BreadcrumbItem[];
         /**
-          * Maximum number of crumbs shown before collapsing the middle into an overflow menu. Best practice (per Figma): 4–5. The first and last 2 are always visible.
-          * @default 5
+          * Accessible name for the navigation landmark when no `aria-label` is set on the host. Defaults to "Breadcrumb". Setting `aria-label` directly on the host also works — the consumer-supplied attribute wins.
+         */
+        "label"?: string;
+        /**
+          * Maximum number of crumbs shown before collapsing the middle into an overflow menu. Per Figma "Best Practices": limit visible items to 4. The first and last 2 are always visible; everything between collapses into the `…` menu.
+          * @default 4
          */
         "maxVisible": number;
         /**
@@ -319,8 +319,8 @@ export namespace Components {
          */
         "responsive": boolean;
         /**
-          * Separator character or short string rendered between crumbs. Ignored when the `separator` slot is filled.
-          * @default '/'
+          * Override the default chevron separator with a literal string (e.g. `"/"`, `"›"`). When empty (default), the chevron icon is rendered. When `slot="separator"` is provided, both this prop and the chevron are ignored.
+          * @default ''
          */
         "separator": string;
     }
@@ -348,7 +348,7 @@ export namespace Components {
          */
         "href"?: string;
         /**
-          * Accessible name override — required when the default slot is empty.
+          * Accessible-name fallback when the default slot is empty (e.g. icon-only crumb). If the slot contains visible text, that text is the accessible name — this prop is NOT applied as an `aria-label` override on the rendered element to preserve the slot-first content rule.
          */
         "label"?: string;
         /**
@@ -4630,16 +4630,16 @@ declare namespace LocalJSX {
      */
     interface CorBreadcrumb {
         /**
-          * Accessible name for the navigation landmark. Defaults to "Breadcrumb".
-         */
-        "ariaLabel"?: string;
-        /**
           * Declarative crumb list. Each item renders as a `cor-breadcrumb-item`. When omitted, the component falls back to its default slot.
          */
         "items"?: BreadcrumbItem[];
         /**
-          * Maximum number of crumbs shown before collapsing the middle into an overflow menu. Best practice (per Figma): 4–5. The first and last 2 are always visible.
-          * @default 5
+          * Accessible name for the navigation landmark when no `aria-label` is set on the host. Defaults to "Breadcrumb". Setting `aria-label` directly on the host also works — the consumer-supplied attribute wins.
+         */
+        "label"?: string;
+        /**
+          * Maximum number of crumbs shown before collapsing the middle into an overflow menu. Per Figma "Best Practices": limit visible items to 4. The first and last 2 are always visible; everything between collapses into the `…` menu.
+          * @default 4
          */
         "maxVisible"?: number;
         /**
@@ -4652,8 +4652,8 @@ declare namespace LocalJSX {
          */
         "responsive"?: boolean;
         /**
-          * Separator character or short string rendered between crumbs. Ignored when the `separator` slot is filled.
-          * @default '/'
+          * Override the default chevron separator with a literal string (e.g. `"/"`, `"›"`). When empty (default), the chevron icon is rendered. When `slot="separator"` is provided, both this prop and the chevron are ignored.
+          * @default ''
          */
         "separator"?: string;
     }
@@ -4681,7 +4681,7 @@ declare namespace LocalJSX {
          */
         "href"?: string;
         /**
-          * Accessible name override — required when the default slot is empty.
+          * Accessible-name fallback when the default slot is empty (e.g. icon-only crumb). If the slot contains visible text, that text is the accessible name — this prop is NOT applied as an `aria-label` override on the rendered element to preserve the slot-first content rule.
          */
         "label"?: string;
         /**
@@ -7749,7 +7749,7 @@ declare namespace LocalJSX {
         "maxVisible": number;
         "separator": string;
         "responsive": boolean;
-        "ariaLabel": string;
+        "label": string;
     }
     interface CorBreadcrumbItemAttributes {
         "href": string;

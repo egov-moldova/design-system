@@ -1,4 +1,6 @@
-import { Component, Element, Event, EventEmitter, Host, Prop, h } from '@stencil/core';
+import { Component, Element, Event, EventEmitter, Host, Prop, State, h } from '@stencil/core';
+
+import { BREADCRUMB_TRUNCATE_AT } from './cor-breadcrumb.types';
 
 /**
  * A single crumb inside `cor-breadcrumb`. Renders an anchor when `href` is set,
@@ -11,6 +13,7 @@ import { Component, Element, Event, EventEmitter, Host, Prop, h } from '@stencil
  * @element cor-breadcrumb-item
  *
  * @slot - (default) Label content. Use plain text or inline elements (`<strong>`, `<span>`).
+ * @slot icon-start - Optional leading icon (use `<cor-icon>`).
  */
 @Component({
   tag: 'cor-breadcrumb-item',
@@ -51,10 +54,17 @@ export class CorBreadcrumbItem {
    */
   @Prop({ reflect: true }) loading: boolean = false;
 
-  /** Accessible name override — required when the default slot is empty. */
+  /**
+   * Accessible-name fallback when the default slot is empty (e.g. icon-only crumb).
+   * If the slot contains visible text, that text is the accessible name — this prop
+   * is NOT applied as an `aria-label` override on the rendered element to preserve
+   * the slot-first content rule.
+   */
   @Prop() label?: string;
 
-  @Element() host!: HTMLElement;
+  @State() private hasIconStartSlot: boolean = false;
+
+  @Element() host!: HTMLCorBreadcrumbItemElement;
 
   /**
    * Fired when the crumb is activated (click or Enter/Space on a non-link crumb).
@@ -62,6 +72,11 @@ export class CorBreadcrumbItem {
    */
   @Event({ bubbles: true, composed: true, cancelable: true })
   corSelect!: EventEmitter<{ label: string; href?: string }>;
+
+  private readonly onIconStartSlotChange = (ev: Event) => {
+    const slot = ev.target as HTMLSlotElement;
+    this.hasIconStartSlot = slot.assignedNodes({ flatten: true }).length > 0;
+  };
 
   private readonly handleClick = (ev: MouseEvent) => {
     if (this.disabled || this.loading || this.active) {
@@ -86,10 +101,49 @@ export class CorBreadcrumbItem {
 
   render() {
     const renderAsLink = !!this.href && !this.active && !this.disabled && !this.loading;
-    const inner = this.loading ? (
+    const needsTooltip = !this.loading && !!this.label && this.label.length > BREADCRUMB_TRUNCATE_AT;
+    const iconClasses = {
+      'icon-start': true,
+      'icon-start--visible': this.hasIconStartSlot,
+    };
+    const labelBody = this.loading ? (
       <cor-spinner size="xs" variant="dark" label="Loading"></cor-spinner>
     ) : (
-      <slot>{this.label}</slot>
+      <span class="crumb-content">
+        <span class={iconClasses}>
+          <slot name="icon-start" onSlotchange={this.onIconStartSlotChange} />
+        </span>
+        <span class="crumb-text">
+          <slot>{this.label}</slot>
+        </span>
+      </span>
+    );
+
+    const crumbBody = renderAsLink ? (
+      <a
+        slot={needsTooltip ? 'trigger' : undefined}
+        class="crumb crumb--link"
+        href={this.href}
+        onClick={this.handleClick}
+        onKeyDown={this.handleKeyDown}
+      >
+        {labelBody}
+      </a>
+    ) : (
+      <span
+        slot={needsTooltip ? 'trigger' : undefined}
+        class={{
+          'crumb': true,
+          'crumb--text': true,
+          'crumb--active': this.active,
+          'crumb--disabled': this.disabled,
+          'crumb--loading': this.loading,
+        }}
+        onClick={this.handleClick}
+        onKeyDown={this.handleKeyDown}
+      >
+        {labelBody}
+      </span>
     );
 
     return (
@@ -98,29 +152,12 @@ export class CorBreadcrumbItem {
         aria-disabled={this.disabled ? 'true' : null}
         aria-busy={this.loading ? 'true' : null}
       >
-        {renderAsLink ? (
-          <a
-            class="crumb crumb--link"
-            href={this.href}
-            aria-label={this.label}
-            onClick={this.handleClick}
-            onKeyDown={this.handleKeyDown}
-          >
-            {inner}
-          </a>
+        {needsTooltip ? (
+          <cor-tooltip content={this.label} position="top">
+            {crumbBody}
+          </cor-tooltip>
         ) : (
-          <span
-            class={{
-              'crumb': true,
-              'crumb--text': true,
-              'crumb--active': this.active,
-              'crumb--disabled': this.disabled,
-              'crumb--loading': this.loading,
-            }}
-            aria-label={this.label}
-          >
-            {inner}
-          </span>
+          crumbBody
         )}
       </Host>
     );
