@@ -97,7 +97,7 @@ const cellWrapStyle = 'display: flex; flex-direction: column; align-items: cente
 // Grid renderers
 // ---------------------------------------------------------------------------
 
-const renderAllTypes = () => /*html*/ `
+const renderAllVariants = () => /*html*/ `
   <div style="${wrapStyle}">
     <div style="${cellWrapStyle}">
       <cor-avatar type="photo" size="md" src="${SAMPLE_PHOTO_ION}" name="Ion Popescu"></cor-avatar>
@@ -331,7 +331,7 @@ const docsSourceDefault = (args: AvatarArgs) => {
   return `${open}${renderBadgeChild(args.badge)}</cor-avatar>`;
 };
 
-const docsSourceAllTypes = /*html*/ `<cor-avatar type="photo" src="…" name="Ion Popescu"></cor-avatar>
+const docsSourceAllVariants = /*html*/ `<cor-avatar type="photo" src="…" name="Ion Popescu"></cor-avatar>
 <cor-avatar type="initials" name="Maria Pop"></cor-avatar>
 <cor-avatar type="icon" aria-label="User"></cor-avatar>`;
 
@@ -457,13 +457,13 @@ export const Default: Story = {
 };
 
 // ---------------------------------------------------------------------------
-// AllTypes — photo / initials / icon side by side
+// AllVariants — photo / initials / icon side by side
 // ---------------------------------------------------------------------------
-export const AllTypes: Story = {
-  render: renderAllTypes,
+export const AllVariants: Story = {
+  render: renderAllVariants,
   parameters: {
     controls: { disable: true },
-    docs: { source: { code: docsSourceAllTypes } },
+    docs: { source: { code: docsSourceAllVariants } },
   },
 };
 

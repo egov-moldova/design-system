@@ -77,16 +77,36 @@ export class CorAvatar {
    * the avatar is exposed to AT as a single labelled element. When omitted
    * the component picks a sensible default (the name, the initials, or
    * "User avatar").
+   *
+   * No `attribute: 'aria-label'` mapping — the Host writes `aria-label` on
+   * every render with a derived value, and an explicit attribute observer
+   * would map that write back into this prop mid-render (Stencil warns
+   * "state/prop changed during rendering"). Stencil's implicit kebab→camel
+   * mapping still lets consumers set `aria-label="…"` from HTML.
    */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop() ariaLabel?: string;
 
   @State() private imageFailed: boolean = false;
 
-  @Element() host!: HTMLElement;
+  @Element() host!: HTMLCorAvatarElement;
 
   @Watch('src')
   onSrcChange() {
     this.imageFailed = false;
+  }
+
+  @Watch('name')
+  @Watch('initials')
+  @Watch('ariaLabel')
+  syncAccessibleLabel() {
+    // Write `aria-label` imperatively (outside render) so the Host doesn't
+    // declaratively bind to a prop-mapped attribute — that pattern triggers
+    // Stencil's "state/prop changed during rendering" warning.
+    this.host.setAttribute('aria-label', this.accessibleName);
+  }
+
+  componentWillLoad() {
+    this.syncAccessibleLabel();
   }
 
   private handleImageError = () => {
@@ -123,11 +143,13 @@ export class CorAvatar {
 
   render() {
     const mode = this.resolvedType;
-    const accessibleName = this.accessibleName;
     const iconSize = ICON_SIZE_FOR[this.size];
 
+    // `aria-label` is set imperatively by `syncAccessibleLabel()` so the
+    // attribute is not declared on `<Host>` here.
+
     return (
-      <Host role="img" aria-label={accessibleName}>
+      <Host role="img">
         <span class={{ inner: true, [`type-${mode}`]: true }}>
           {mode === 'photo' && (
             <img
@@ -143,7 +165,7 @@ export class CorAvatar {
               {this.resolvedInitials}
             </span>
           )}
-          {mode === 'icon' && <cor-icon class="icon" name={this.iconName} size={iconSize} exportparts="svg-icon" />}
+          {mode === 'icon' && <cor-icon class="icon" name={this.iconName} size={iconSize} />}
         </span>
         <span class="badge-slot" part="badge">
           <slot name="badge" />

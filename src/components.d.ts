@@ -193,7 +193,7 @@ export namespace Components {
          */
         "alt"?: string;
         /**
-          * Accessible label override. When set, becomes the host's `aria-label` and the avatar is exposed to AT as a single labelled element. When omitted the component picks a sensible default (the name, the initials, or "User avatar").
+          * Accessible label override. When set, becomes the host's `aria-label` and the avatar is exposed to AT as a single labelled element. When omitted the component picks a sensible default (the name, the initials, or "User avatar").  No `attribute: 'aria-label'` mapping — the Host writes `aria-label` on every render with a derived value, and an explicit attribute observer would map that write back into this prop mid-render (Stencil warns "state/prop changed during rendering"). Stencil's implicit kebab→camel mapping still lets consumers set `aria-label="…"` from HTML.
          */
         "ariaLabel"?: string;
         /**
@@ -4475,7 +4475,7 @@ declare namespace LocalJSX {
          */
         "alt"?: string;
         /**
-          * Accessible label override. When set, becomes the host's `aria-label` and the avatar is exposed to AT as a single labelled element. When omitted the component picks a sensible default (the name, the initials, or "User avatar").
+          * Accessible label override. When set, becomes the host's `aria-label` and the avatar is exposed to AT as a single labelled element. When omitted the component picks a sensible default (the name, the initials, or "User avatar").  No `attribute: 'aria-label'` mapping — the Host writes `aria-label` on every render with a derived value, and an explicit attribute observer would map that write back into this prop mid-render (Stencil warns "state/prop changed during rendering"). Stencil's implicit kebab→camel mapping still lets consumers set `aria-label="…"` from HTML.
          */
         "ariaLabel"?: string;
         /**

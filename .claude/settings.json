@@ -16,7 +16,16 @@
       "Bash(./.claude/kanban/worktree-init.sh:*)",
       "Bash(bash ./.claude/kanban/worktree-init.sh:*)",
       "PowerShell(./.claude/kanban/worktree-init.ps1:*)",
-      "PowerShell(.\\.claude\\kanban\\worktree-init.ps1:*)"
+      "PowerShell(.\\.claude\\kanban\\worktree-init.ps1:*)",
+      "mcp__playwright__browser_evaluate",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_wait_for",
+      "mcp__playwright__browser_console_messages",
+      "Read(//Users/vitalie/.nvm/versions/node/**)",
+      "Read(//opt/homebrew/bin/**)",
+      "Bash(npm root *)",
+      "mcp__playwright__browser_resize",
+      "Bash(grep -o '\\\\[\"cor-avatar\"[^]]\\\\{0,500\\\\}' /Users/vitalie/corlab-projects/age-design/dist/design-system/design-system.esm.js)"
     ]
   },
   "hooks": {
