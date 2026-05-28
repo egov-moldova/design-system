@@ -33,7 +33,7 @@ let numericInputInstanceCounter = 0;
  *
  * @slot label - Rich label content, replaces the `label` prop when present.
  * @slot helper - Rich helper / hint content, replaces the `helper-text` prop. Hidden when invalid + error-text is shown.
- * @slot icon-start - Leading icon (e.g. currency `cor-icon`).
+ * @slot icon-start - Leading slot rendered before the value. Accepts a `cor-icon` (icon-leading variant) OR a plain currency/unit text symbol (prefix variant, e.g. `€`, `$`, `MDL`) — Figma master treats these as the same slot.
  * @slot suffix - Trailing unit text rendered after the value (e.g. `lei`, `kg`). Sits before the stepper stack.
  */
 @Component({
@@ -96,11 +96,12 @@ export class CorNumericInput {
 
   /**
    * Show the trailing stacked stepper (chevron-up / chevron-bottom) buttons.
-   * Set to `false` for displays where steppers would clutter (e.g. compact
-   * filter chips).
-   * @default true
+   * Off by default per Figma master, which renders the canonical numeric input
+   * without steppers (suffix-only). Opt in via `show-steppers` for compact
+   * quantity / rating fields where stepper affordance is valuable.
+   * @default false
    */
-  @Prop({ reflect: true, attribute: 'show-steppers' }) showSteppers: boolean = true;
+  @Prop({ reflect: true, attribute: 'show-steppers' }) showSteppers: boolean = false;
 
   /**
    * Current numeric value. `undefined` represents an empty field. Reflects to
@@ -159,15 +160,18 @@ export class CorNumericInput {
 
   /**
    * Accessible name. Mirrors to the internal control's `aria-label` when no
-   * visible label is present.
+   * visible label is present. Setting `aria-label` directly on the host also
+   * works — captured on connect into `resolvedAriaLabel` and stripped to
+   * avoid Stencil's attribute-observer / render-loop antipattern.
    */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop() ariaLabel?: string;
 
   /**
    * Human-readable value announcement for screen readers (e.g. `"5 lei"`).
-   * Maps to the native `aria-valuetext` on the spinbutton.
+   * Maps to the native `aria-valuetext` on the spinbutton. Same capture-and-strip
+   * pattern as `ariaLabel`.
    */
-  @Prop({ attribute: 'aria-valuetext' }) ariaValuetext?: string;
+  @Prop() ariaValuetext?: string;
 
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
@@ -176,6 +180,8 @@ export class CorNumericInput {
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
   @State() private displayValue: string = '';
+  @State() private resolvedAriaLabel?: string;
+  @State() private resolvedAriaValuetext?: string;
 
   @Element() host!: HTMLCorNumericInputElement;
 
@@ -207,9 +213,83 @@ export class CorNumericInput {
   private nativeEl?: HTMLInputElement;
 
   componentWillLoad() {
+    this.captureAriaAttrs();
     this.initialValue = this.value;
     this.displayValue = this.formatForDisplay(this.value);
     this.syncFormValue(this.value);
+    this.syncValidity();
+  }
+
+  private captureAriaAttrs() {
+    const labelAttr = this.host.getAttribute('aria-label');
+    if (labelAttr && labelAttr.length > 0) {
+      this.resolvedAriaLabel = labelAttr;
+      this.host.removeAttribute('aria-label');
+    } else if (this.ariaLabel && this.ariaLabel.length > 0) {
+      this.resolvedAriaLabel = this.ariaLabel;
+    }
+    const valueTextAttr = this.host.getAttribute('aria-valuetext');
+    if (valueTextAttr && valueTextAttr.length > 0) {
+      this.resolvedAriaValuetext = valueTextAttr;
+      this.host.removeAttribute('aria-valuetext');
+    } else if (this.ariaValuetext && this.ariaValuetext.length > 0) {
+      this.resolvedAriaValuetext = this.ariaValuetext;
+    }
+  }
+
+  @Watch('ariaLabel')
+  syncAriaLabelProp(next?: string) {
+    // Only override resolvedAriaLabel when the prop is actually set —
+    // captureAriaAttrs strips the attribute, which would otherwise null this out.
+    if (next && next.length > 0) this.resolvedAriaLabel = next;
+  }
+
+  @Watch('ariaValuetext')
+  syncAriaValuetextProp(next?: string) {
+    if (next && next.length > 0) this.resolvedAriaValuetext = next;
+  }
+
+  @Watch('required')
+  onRequiredChange() {
+    this.syncValidity();
+  }
+
+  @Watch('min')
+  onMinChange() {
+    this.syncValidity();
+  }
+
+  @Watch('max')
+  onMaxChange() {
+    this.syncValidity();
+  }
+
+  private syncValidity() {
+    if (!this.internals) return;
+    const flags: ValidityStateFlags = {};
+    let message: string | undefined;
+    const isEmpty = this.value === undefined || this.value === null || !Number.isFinite(this.value);
+
+    if (this.required && isEmpty) {
+      flags.valueMissing = true;
+      message = this.errorText && this.errorText.length > 0 ? this.errorText : 'Acest câmp este obligatoriu.';
+    } else if (!isEmpty) {
+      const v = this.value as number;
+      if (this.min !== undefined && v < this.min) {
+        flags.rangeUnderflow = true;
+        message = this.errorText && this.errorText.length > 0 ? this.errorText : `Valoarea minimă este ${this.min}.`;
+      } else if (this.max !== undefined && v > this.max) {
+        flags.rangeOverflow = true;
+        message = this.errorText && this.errorText.length > 0 ? this.errorText : `Valoarea maximă este ${this.max}.`;
+      }
+    }
+
+    const anchor = this.nativeEl ?? undefined;
+    if (Object.keys(flags).length > 0) {
+      this.internals.setValidity(flags, message, anchor);
+    } else {
+      this.internals.setValidity({}, undefined, anchor);
+    }
   }
 
   // Validation lives at the @Prop boundary (PRINCIPLES.md §D). Bad enum values
@@ -241,6 +321,7 @@ export class CorNumericInput {
   @Watch('value')
   handleValueChange(next: number | undefined) {
     this.syncFormValue(next);
+    this.syncValidity();
     // Keep the visible field in sync when the prop is changed externally and
     // the user isn't actively editing.
     if (!this.isFocused) {
@@ -256,6 +337,7 @@ export class CorNumericInput {
     this.value = this.initialValue;
     this.displayValue = this.formatForDisplay(this.initialValue);
     this.syncFormValue(this.initialValue);
+    this.syncValidity();
   }
 
   formStateRestoreCallback(state: string | File | FormData | null) {
@@ -264,6 +346,7 @@ export class CorNumericInput {
       this.value = parsed ?? undefined;
       this.displayValue = state;
       this.syncFormValue(this.value);
+      this.syncValidity();
     }
   }
 
@@ -503,7 +586,7 @@ export class CorNumericInput {
     const labelText = this.label?.trim();
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
-    const ariaLabelAttr = !this.hasVisibleLabel() ? this.ariaLabel : undefined;
+    const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
     const iconSize = this.size === 'lg' ? 24 : 20;
     const stepperIconSize = this.size === 'lg' ? 20 : 16;
     const canStepUp = this.canStep('up');
@@ -529,9 +612,8 @@ export class CorNumericInput {
       <Host class={hostClasses} aria-busy={this.loading ? 'true' : null}>
         <label class="label" htmlFor={`numeric-input-${this.instanceId}`} id={this.labelId} part="label">
           <span class="label-text">
-            <slot name="label" onSlotchange={this.onLabelSlotChange}>
-              {labelText}
-            </slot>
+            {this.hasLabelSlot ? null : labelText}
+            <slot name="label" onSlotchange={this.onLabelSlotChange} />
           </span>
           {this.required ? (
             <span class="required-mark" aria-hidden="true" part="required-mark">
@@ -565,13 +647,10 @@ export class CorNumericInput {
             aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
             aria-describedby={this.describedBy()}
             aria-invalid={this.invalid ? 'true' : null}
-            aria-required={this.required ? 'true' : null}
-            aria-readonly={this.readonly ? 'true' : null}
-            aria-disabled={effectivelyDisabled ? 'true' : null}
             aria-valuenow={ariaValueNow}
             aria-valuemin={this.min !== undefined ? String(this.min) : undefined}
             aria-valuemax={this.max !== undefined ? String(this.max) : undefined}
-            aria-valuetext={this.ariaValuetext}
+            aria-valuetext={this.resolvedAriaValuetext}
             onInput={this.handleInput}
             onChange={this.handleChange}
             onFocus={this.handleFocus}
@@ -626,10 +705,17 @@ export class CorNumericInput {
           </div>
         ) : this.hasHelperMessage() ? (
           <div class="assistive assistive-helper" id={this.helperId} part="helper">
+            {variant === 'success' ? (
+              <cor-icon
+                class="assistive-icon"
+                name="circle-checkmark-filled"
+                size={iconSize}
+                color="icon-positive-default"
+              />
+            ) : null}
             <span class="assistive-text">
-              <slot name="helper" onSlotchange={this.onHelperSlotChange}>
-                {helperText}
-              </slot>
+              {this.hasHelperSlot ? null : helperText}
+              <slot name="helper" onSlotchange={this.onHelperSlotChange} />
             </span>
           </div>
         ) : null}

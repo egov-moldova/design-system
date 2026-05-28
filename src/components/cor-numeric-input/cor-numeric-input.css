@@ -305,6 +305,10 @@
   display: none;
 }
 
+:host(.is-readonly) .suffix {
+  color: var(--numeric-input-suffix-color-read-only);
+}
+
 :host(.is-disabled) .suffix {
   color: var(--numeric-input-suffix-color-disabled);
 }

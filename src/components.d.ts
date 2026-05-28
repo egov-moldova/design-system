@@ -1504,11 +1504,11 @@ export namespace Components {
      */
     interface CorNumericInput {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
          */
         "ariaLabel"?: string;
         /**
-          * Human-readable value announcement for screen readers (e.g. `"5 lei"`). Maps to the native `aria-valuetext` on the spinbutton.
+          * Human-readable value announcement for screen readers (e.g. `"5 lei"`). Maps to the native `aria-valuetext` on the spinbutton. Same capture-and-strip pattern as `ariaLabel`.
          */
         "ariaValuetext"?: string;
         /**
@@ -1579,8 +1579,8 @@ export namespace Components {
          */
         "required": boolean;
         /**
-          * Show the trailing stacked stepper (chevron-up / chevron-bottom) buttons. Set to `false` for displays where steppers would clutter (e.g. compact filter chips).
-          * @default true
+          * Show the trailing stacked stepper (chevron-up / chevron-bottom) buttons. Off by default per Figma master, which renders the canonical numeric input without steppers (suffix-only). Opt in via `show-steppers` for compact quantity / rating fields where stepper affordance is valuable.
+          * @default false
          */
         "showSteppers": boolean;
         /**
@@ -6033,11 +6033,11 @@ declare namespace LocalJSX {
      */
     interface CorNumericInput {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
          */
         "ariaLabel"?: string;
         /**
-          * Human-readable value announcement for screen readers (e.g. `"5 lei"`). Maps to the native `aria-valuetext` on the spinbutton.
+          * Human-readable value announcement for screen readers (e.g. `"5 lei"`). Maps to the native `aria-valuetext` on the spinbutton. Same capture-and-strip pattern as `ariaLabel`.
          */
         "ariaValuetext"?: string;
         /**
@@ -6136,8 +6136,8 @@ declare namespace LocalJSX {
          */
         "required"?: boolean;
         /**
-          * Show the trailing stacked stepper (chevron-up / chevron-bottom) buttons. Set to `false` for displays where steppers would clutter (e.g. compact filter chips).
-          * @default true
+          * Show the trailing stacked stepper (chevron-up / chevron-bottom) buttons. Off by default per Figma master, which renders the canonical numeric input without steppers (suffix-only). Opt in via `show-steppers` for compact quantity / rating fields where stepper affordance is valuable.
+          * @default false
          */
         "showSteppers"?: boolean;
         /**
