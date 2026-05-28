@@ -386,7 +386,7 @@ button.country-trigger:disabled {
 
 /* ---------- Listbox popover ---------- */
 
-.listbox {
+.listbox-popover {
   position: absolute;
   inset-inline-start: 0;
   inline-size: max(100%, var(--phone-input-listbox-min-inline-size));
@@ -394,18 +394,114 @@ button.country-trigger:disabled {
   z-index: 50;
   display: flex;
   flex-direction: column;
-  gap: var(--phone-input-listbox-gap);
   padding: var(--phone-input-listbox-padding);
   background-color: var(--phone-input-listbox-background);
   border: var(--phone-input-listbox-border-width) solid var(--phone-input-listbox-border-color);
   border-radius: var(--phone-input-listbox-border-radius);
   box-shadow: var(--phone-input-listbox-shadow);
+}
+
+.listbox-popover[hidden] {
+  display: none;
+}
+
+.listbox {
+  display: flex;
+  flex-direction: column;
+  gap: var(--phone-input-listbox-gap);
   max-block-size: var(--phone-input-listbox-max-block-size);
   overflow-y: auto;
 }
 
-.listbox[hidden] {
-  display: none;
+/* ---------- Listbox search ---------- */
+
+.listbox-search {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8);
+  padding-inline: var(--spacing-12);
+  block-size: var(--spacing-40);
+  border: var(--border-width-1) solid var(--phone-input-listbox-border-color);
+  border-radius: var(--border-radius-8);
+  margin-block-end: var(--spacing-8);
+  background-color: var(--phone-input-listbox-background);
+}
+
+.listbox-search:focus-within {
+  border-color: var(--phone-input-default-border-focus);
+  box-shadow: 0 0 0 var(--spacing-4) var(--phone-input-default-focus-ring);
+}
+
+.listbox-search-icon {
+  flex-shrink: 0;
+  color: var(--_text-placeholder);
+}
+
+.listbox-search-input {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  outline: none;
+  font-family: var(--phone-input-option-font-family);
+  font-size: var(--_option-font-size);
+  line-height: var(--_option-line-height);
+  color: var(--phone-input-option-text-default);
+  padding: 0;
+}
+
+.listbox-search-input::placeholder {
+  color: var(--_text-placeholder);
+  opacity: 1;
+}
+
+.listbox-search-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--spacing-20);
+  block-size: var(--spacing-20);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: var(--border-radius-full);
+  color: var(--_text-placeholder);
+  cursor: pointer;
+  transition:
+    background-color var(--_transition-duration) var(--_transition-easing),
+    color var(--_transition-duration) var(--_transition-easing);
+}
+
+.listbox-search-clear:hover {
+  background-color: var(--phone-input-option-background-hover);
+  color: var(--phone-input-option-text-default);
+}
+
+/* ---------- Clear button (trailing × in the input) ---------- */
+
+.clear-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--spacing-20);
+  block-size: var(--spacing-20);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: var(--border-radius-full);
+  color: var(--_text-placeholder);
+  cursor: pointer;
+  transition:
+    background-color var(--_transition-duration) var(--_transition-easing),
+    color var(--_transition-duration) var(--_transition-easing);
+}
+
+.clear-button:hover {
+  background-color: var(--phone-input-option-background-hover);
+  color: var(--phone-input-option-text-default);
 }
 
 .listbox-empty {

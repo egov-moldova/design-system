@@ -333,9 +333,11 @@ export class CorPhoneInput {
 
   /**
    * Accessible name. Mirrors to the internal control's `aria-label` when
-   * no visible label is present.
+   * no visible label is present. Setting `aria-label` directly on the host
+   * also works — captured on connect into `resolvedAriaLabel` and stripped
+   * to avoid Stencil's attribute-observer / render-loop antipattern.
    */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop() ariaLabel?: string;
 
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
@@ -344,6 +346,8 @@ export class CorPhoneInput {
   @State() private highlightedIndex: number = -1;
   @State() private countryIso: string = 'MD';
   @State() private liveAnnouncement: string = '';
+  @State() private resolvedAriaLabel?: string;
+  @State() private searchQuery: string = '';
 
   @Element() host!: HTMLCorPhoneInputElement;
 
@@ -389,14 +393,64 @@ export class CorPhoneInput {
   private initialCountry: string = 'MD';
   private triggerEl?: HTMLButtonElement;
   private listboxEl?: HTMLElement;
+  private searchInputEl?: HTMLInputElement;
   private nativeEl?: HTMLInputElement;
 
   componentWillLoad() {
+    this.captureAriaLabel();
     this.countryIso = this.resolveInitialCountry();
     this.initialCountry = this.countryIso;
     this.initialValue = this.value;
     this.internals.setFormValue(this.value, this.value);
+    this.syncValidity();
     if (this.open && this.type === 'international') this.primeHighlight();
+  }
+
+  private captureAriaLabel() {
+    const hostAttr = this.host.getAttribute('aria-label');
+    if (hostAttr && hostAttr.length > 0) {
+      this.resolvedAriaLabel = hostAttr;
+      this.host.removeAttribute('aria-label');
+    } else if (this.ariaLabel && this.ariaLabel.length > 0) {
+      this.resolvedAriaLabel = this.ariaLabel;
+    }
+  }
+
+  @Watch('ariaLabel')
+  syncAriaLabelProp(next?: string) {
+    // Only override resolvedAriaLabel when the prop is actually set —
+    // captureAriaLabel strips the attribute, which would otherwise null this out.
+    if (next && next.length > 0) this.resolvedAriaLabel = next;
+  }
+
+  @Watch('required')
+  onRequiredChange() {
+    this.syncValidity();
+  }
+
+  private syncValidity() {
+    if (!this.internals) return;
+    const digits = this.localDigits(this.value).length;
+    const country = this.currentCountry();
+    const flags: ValidityStateFlags = {};
+    let message: string | undefined;
+
+    if (this.required && digits === 0) {
+      flags.valueMissing = true;
+      message = this.errorText && this.errorText.length > 0 ? this.errorText : 'Acest câmp este obligatoriu.';
+    } else if (digits > 0 && (digits < country.minLen || digits > country.maxLen)) {
+      flags.tooShort = digits < country.minLen ? true : undefined;
+      flags.tooLong = digits > country.maxLen ? true : undefined;
+      message = this.errorText && this.errorText.length > 0 ? this.errorText : 'Numărul de telefon este incomplet';
+    }
+
+    const anchor = this.nativeEl ?? undefined;
+    const hasFlag = Object.values(flags).some(v => v === true);
+    if (hasFlag) {
+      this.internals.setValidity(flags, message, anchor);
+    } else {
+      this.internals.setValidity({}, undefined, anchor);
+    }
   }
 
   @Watch('variant')
@@ -437,7 +491,7 @@ export class CorPhoneInput {
     // Local mode can't keep the listbox open — close it silently if the
     // caller switches modes mid-flight.
     if (next === 'local' && this.open) {
-      this.open = false;
+      this.setListboxOpen(false);
     }
   }
 
@@ -460,17 +514,7 @@ export class CorPhoneInput {
   handleValueChange(next: string) {
     const value = next ?? '';
     this.internals.setFormValue(value, value);
-  }
-
-  @Watch('open')
-  handleOpenChange(next: boolean) {
-    if (next) {
-      this.primeHighlight();
-      this.corOpen.emit();
-    } else {
-      this.highlightedIndex = -1;
-      this.corClose.emit();
-    }
+    this.syncValidity();
   }
 
   /** Mirrors `disabled` from an ancestor `<fieldset disabled>`. */
@@ -482,6 +526,7 @@ export class CorPhoneInput {
     this.value = this.initialValue;
     this.countryIso = this.initialCountry;
     this.internals.setFormValue(this.initialValue, this.initialValue);
+    this.syncValidity();
   }
 
   formStateRestoreCallback(state: string | File | FormData | null) {
@@ -490,6 +535,7 @@ export class CorPhoneInput {
       const detected = this.detectCountryFromValue(state);
       if (detected) this.countryIso = detected;
       this.internals.setFormValue(state, state);
+      this.syncValidity();
     }
   }
 
@@ -516,12 +562,27 @@ export class CorPhoneInput {
     return ordered.map(iso => COUNTRIES[iso]).filter((c): c is PhoneCountry => Boolean(c));
   }
 
+  /** Apply the search-query filter on top of the active list. Empty query → full list. */
+  private filteredCountries(): PhoneCountry[] {
+    const all = this.activeCountries();
+    const q = this.searchQuery.trim().toLowerCase();
+    if (q.length === 0) return all;
+    return all.filter(c => {
+      const haystack = `${c.nameRo} ${c.name} ${c.code} ${c.iso}`.toLowerCase();
+      return haystack.includes(q);
+    });
+  }
+
   private currentCountry(): PhoneCountry {
     return COUNTRIES[this.countryIso] ?? COUNTRIES.MD;
   }
 
   private primeHighlight() {
-    const opts = this.activeCountries();
+    const opts = this.filteredCountries();
+    if (opts.length === 0) {
+      this.highlightedIndex = -1;
+      return;
+    }
     const idx = opts.findIndex(c => c.iso === this.countryIso);
     this.highlightedIndex = idx >= 0 ? idx : 0;
   }
@@ -558,15 +619,15 @@ export class CorPhoneInput {
     return out;
   }
 
-  private detectCountryFromValue(value: string): string | null {
-    if (!value || !value.startsWith('+')) return null;
+  private detectCountryFromValue(value: string): string | undefined {
+    if (!value || !value.startsWith('+')) return undefined;
     const digitsOnly = value.replace(/\D/g, '');
     const sorted = [...this.activeCountries()].sort((a, b) => b.code.length - a.code.length);
     for (const country of sorted) {
       const codeDigits = country.code.replace(/\D/g, '');
       if (digitsOnly.startsWith(codeDigits)) return country.iso;
     }
-    return null;
+    return undefined;
   }
 
   private onLabelSlotChange = (ev: Event) => {
@@ -654,17 +715,39 @@ export class CorPhoneInput {
     return digits >= country.minLen && digits <= country.maxLen;
   }
 
+  private hasValidationError(): boolean {
+    const country = this.currentCountry();
+    const digits = this.localDigits(this.value).length;
+    if (this.required && digits === 0) return true;
+    return digits > 0 && (digits < country.minLen || digits > country.maxLen);
+  }
+
+  private setListboxOpen(next: boolean, opts?: { emit?: boolean; focusTrigger?: boolean; focusSearch?: boolean }) {
+    if (this.open === next) return;
+    this.open = next;
+
+    if (next) {
+      this.searchQuery = '';
+      this.primeHighlight();
+      if (opts?.emit) this.corOpen.emit();
+      if (opts?.focusSearch) requestAnimationFrame(() => this.searchInputEl?.focus());
+      return;
+    }
+
+    this.highlightedIndex = -1;
+    this.searchQuery = '';
+    if (opts?.emit) this.corClose.emit();
+    if (opts?.focusTrigger) this.triggerEl?.focus();
+  }
+
   private openListbox = () => {
     if (this.isInert() || this.readonly || this.loading) return;
     if (this.type !== 'international') return;
-    if (!this.open) this.open = true;
+    this.setListboxOpen(true, { emit: true, focusSearch: true });
   };
 
   private closeListbox = () => {
-    if (this.open) {
-      this.open = false;
-      this.triggerEl?.focus();
-    }
+    this.setListboxOpen(false, { emit: true, focusTrigger: true });
   };
 
   private toggleListbox = (ev?: MouseEvent) => {
@@ -695,7 +778,6 @@ export class CorPhoneInput {
     if (this.isInert() || this.readonly || this.loading) return;
     if (this.type !== 'international') return;
     const key = ev.key;
-    const opts = this.activeCountries();
 
     if (!this.open) {
       if (key === 'ArrowDown' || key === 'ArrowUp' || key === 'Enter' || key === ' ') {
@@ -705,29 +787,44 @@ export class CorPhoneInput {
       return;
     }
 
+    this.handleListNavKey(ev);
+  };
+
+  /**
+   * Shared keyboard-navigation routine used by both the trigger button (when
+   * focus is parked on it after a pointer click) and the search input (where
+   * focus moves on open). Operates on `filteredCountries()` so navigation and
+   * selection stay in sync with the active filter.
+   */
+  private handleListNavKey = (ev: KeyboardEvent) => {
+    const opts = this.filteredCountries();
+    const key = ev.key;
     switch (key) {
       case 'ArrowDown':
         ev.preventDefault();
+        if (opts.length === 0) return;
         this.highlightedIndex = (this.highlightedIndex + 1) % opts.length;
         this.scrollHighlightedIntoView();
         break;
       case 'ArrowUp':
         ev.preventDefault();
+        if (opts.length === 0) return;
         this.highlightedIndex = (this.highlightedIndex - 1 + opts.length) % opts.length;
         this.scrollHighlightedIntoView();
         break;
       case 'Home':
         ev.preventDefault();
+        if (opts.length === 0) return;
         this.highlightedIndex = 0;
         this.scrollHighlightedIntoView();
         break;
       case 'End':
         ev.preventDefault();
+        if (opts.length === 0) return;
         this.highlightedIndex = opts.length - 1;
         this.scrollHighlightedIntoView();
         break;
       case 'Enter':
-      case ' ':
         ev.preventDefault();
         if (this.highlightedIndex >= 0 && this.highlightedIndex < opts.length) {
           this.changeCountry(opts[this.highlightedIndex].iso);
@@ -739,9 +836,43 @@ export class CorPhoneInput {
         this.closeListbox();
         break;
       case 'Tab':
-        this.open = false;
+        this.setListboxOpen(false);
         break;
     }
+  };
+
+  private handleSearchInput = (ev: Event) => {
+    const target = ev.target as HTMLInputElement;
+    this.searchQuery = target.value;
+    // Each keystroke can shrink the list; re-anchor the highlight so the next
+    // ArrowDown lands on a visible row.
+    const opts = this.filteredCountries();
+    if (opts.length === 0) {
+      this.highlightedIndex = -1;
+      return;
+    }
+    const stillVisible = opts.findIndex(c => c.iso === this.countryIso);
+    this.highlightedIndex = stillVisible >= 0 ? stillVisible : 0;
+  };
+
+  private clearSearch = () => {
+    this.searchQuery = '';
+    this.primeHighlight();
+    requestAnimationFrame(() => this.searchInputEl?.focus());
+  };
+
+  /** Clear the phone-number value via the trailing × icon. Restores focus to the input. */
+  private clearValue = (ev: MouseEvent) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    if (this.isInert() || this.readonly || this.loading) return;
+    this.value = this.toE164('', this.countryIso);
+    if (this.nativeEl) {
+      this.nativeEl.value = '';
+      requestAnimationFrame(() => this.nativeEl?.focus());
+    }
+    this.corInput.emit({ value: this.value, countryCode: this.countryIso });
+    this.corChange.emit({ value: this.value, countryCode: this.countryIso, isValid: false });
   };
 
   private scrollHighlightedIntoView() {
@@ -760,7 +891,7 @@ export class CorPhoneInput {
   private handleOptionClick = (index: number) => (ev: MouseEvent) => {
     ev.preventDefault();
     ev.stopPropagation();
-    const opts = this.activeCountries();
+    const opts = this.filteredCountries();
     const target = opts[index];
     if (!target) return;
     this.changeCountry(target.iso);
@@ -808,15 +939,9 @@ export class CorPhoneInput {
 
   private renderFlag(country: PhoneCountry) {
     return (
-      <span
-        class="flag"
-        part="flag"
-        aria-hidden="true"
-        // Inline SVG glyph — see cor-phone-input.flags.ts for the
-        // hand-drawn 20×16 set. innerHTML is safe here because the
-        // strings are author-controlled constants, not user input.
-        innerHTML={country.flag}
-      />
+      <span class="flag" part="flag" aria-hidden="true">
+        {country.flag()}
+      </span>
     );
   }
 
@@ -826,13 +951,16 @@ export class CorPhoneInput {
     const labelText = this.label?.trim();
     const helperText = this.helperText?.trim();
     const errorText = this.resolvedErrorText();
-    const ariaLabelAttr = !this.hasVisibleLabel() ? this.ariaLabel : undefined;
+    const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
     const country = this.currentCountry();
-    const opts = this.activeCountries();
+    const opts = this.filteredCountries();
     const placeholder = this.resolvedPlaceholder();
     const localDisplay = this.formatMasked(this.localDigits(this.value));
     const isInternational = this.type === 'international';
     const isOpen = this.open && isInternational && !effectivelyDisabled && !this.readonly && !this.loading;
+    const isPopulated = this.localDigits(this.value).length > 0;
+    const isAriaInvalid = this.invalid || this.hasValidationError();
+    const showClearButton = isPopulated && this.isFocused && !effectivelyDisabled && !this.readonly && !this.loading;
     const activeDescendantId =
       isOpen && this.highlightedIndex >= 0 ? `${this.listboxId}-opt-${this.highlightedIndex}` : undefined;
     const spinnerSize = this.size === 'lg' ? 'sm' : 'xs';
@@ -862,9 +990,8 @@ export class CorPhoneInput {
       <Host class={hostClasses} aria-busy={this.loading ? 'true' : null}>
         <label class="label" htmlFor={this.inputId} id={this.labelId} part="label">
           <span class="label-text">
-            <slot name="label" onSlotchange={this.onLabelSlotChange}>
-              {labelText}
-            </slot>
+            {this.hasLabelSlot ? null : labelText}
+            <slot name="label" onSlotchange={this.onLabelSlotChange} />
           </span>
           {this.required ? (
             <span class="required-mark" aria-hidden="true" part="required-mark">
@@ -886,9 +1013,7 @@ export class CorPhoneInput {
                 aria-controls={this.listboxId}
                 aria-activedescendant={activeDescendantId}
                 aria-label={triggerAriaLabel}
-                aria-disabled={effectivelyDisabled ? 'true' : null}
-                aria-readonly={this.readonly ? 'true' : null}
-                disabled={effectivelyDisabled}
+                disabled={effectivelyDisabled || this.readonly}
                 onClick={this.toggleListbox}
                 onKeyDown={this.handleTriggerKeyDown}
               >
@@ -926,10 +1051,7 @@ export class CorPhoneInput {
               aria-label={ariaLabelAttr}
               aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
               aria-describedby={this.describedBy()}
-              aria-invalid={this.invalid ? 'true' : null}
-              aria-required={this.required ? 'true' : null}
-              aria-disabled={effectivelyDisabled ? 'true' : null}
-              aria-readonly={this.readonly ? 'true' : null}
+              aria-invalid={isAriaInvalid ? 'true' : null}
               aria-busy={this.loading ? 'true' : null}
               onInput={this.handleInput}
               onChange={this.handleChange}
@@ -953,50 +1075,98 @@ export class CorPhoneInput {
                 color="icon-positive-default"
               />
             ) : null}
+
+            {showClearButton ? (
+              <button
+                type="button"
+                class="clear-button"
+                part="clear-button"
+                aria-label="Șterge numărul"
+                // Prevent the input from losing focus on click so the focus
+                // ring + clear visibility don't flicker before the value is
+                // cleared.
+                onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
+                onClick={this.clearValue}
+              >
+                <cor-icon name="cross-small" size={16} />
+              </button>
+            ) : null}
           </div>
 
           {isInternational ? (
-            <div
-              ref={el => (this.listboxEl = el)}
-              id={this.listboxId}
-              class="listbox"
-              part="listbox"
-              role="listbox"
-              aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
-              aria-label={!this.hasVisibleLabel() ? (this.ariaLabel ?? 'Țară') : undefined}
-              hidden={!isOpen}
-            >
-              {opts.length === 0 ? (
-                <div class="listbox-empty" role="presentation">
-                  Nu există țări disponibile
-                </div>
-              ) : (
-                opts.map((opt, index) => {
-                  const isSelected = opt.iso === this.countryIso;
-                  const isHighlighted = index === this.highlightedIndex;
-                  return (
-                    <div
-                      id={`${this.listboxId}-opt-${index}`}
-                      class={{
-                        'option': true,
-                        'is-selected': isSelected,
-                        'is-highlighted': isHighlighted,
-                      }}
-                      role="option"
-                      aria-selected={isSelected ? 'true' : 'false'}
-                      data-option-index={index}
-                      data-iso={opt.iso}
-                      onClick={this.handleOptionClick(index)}
-                      onMouseEnter={this.handleOptionPointerEnter(index)}
-                    >
-                      <span class="option-flag" aria-hidden="true" innerHTML={opt.flag} />
-                      <span class="option-name">{opt.nameRo}</span>
-                      <span class="option-code">{opt.code}</span>
-                      {isSelected ? <cor-icon class="option-check" name="checkmark-small" size={16} /> : null}
-                    </div>
-                  );
-                })
-              )}
+            <div ref={el => (this.listboxEl = el)} class="listbox-popover" part="listbox-popover" hidden={!isOpen}>
+              <div class="listbox-search" part="listbox-search">
+                <cor-icon class="listbox-search-icon" name="search" size={16} />
+                <input
+                  ref={el => (this.searchInputEl = el)}
+                  class="listbox-search-input"
+                  part="listbox-search-input"
+                  type="text"
+                  autocomplete="off"
+                  spellcheck={false}
+                  placeholder="Search country"
+                  aria-label="Search country"
+                  aria-controls={this.listboxId}
+                  aria-activedescendant={activeDescendantId}
+                  value={this.searchQuery}
+                  onInput={this.handleSearchInput}
+                  onKeyDown={this.handleListNavKey}
+                />
+                {this.searchQuery.length > 0 ? (
+                  <button
+                    type="button"
+                    class="listbox-search-clear"
+                    part="listbox-search-clear"
+                    aria-label="Șterge căutarea"
+                    onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
+                    onClick={this.clearSearch}
+                  >
+                    <cor-icon name="cross-small" size={16} />
+                  </button>
+                ) : null}
+              </div>
+              <div
+                id={this.listboxId}
+                class="listbox"
+                part="listbox"
+                role="listbox"
+                aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
+                aria-label={!this.hasVisibleLabel() ? (this.resolvedAriaLabel ?? 'Țară') : undefined}
+              >
+                {opts.length === 0 ? (
+                  <div class="listbox-empty" role="presentation">
+                    Nicio țară găsită
+                  </div>
+                ) : (
+                  opts.map((opt, index) => {
+                    const isSelected = opt.iso === this.countryIso;
+                    const isHighlighted = index === this.highlightedIndex;
+                    return (
+                      <div
+                        id={`${this.listboxId}-opt-${index}`}
+                        class={{
+                          'option': true,
+                          'is-selected': isSelected,
+                          'is-highlighted': isHighlighted,
+                        }}
+                        role="option"
+                        aria-selected={isSelected ? 'true' : 'false'}
+                        data-option-index={index}
+                        data-iso={opt.iso}
+                        onClick={this.handleOptionClick(index)}
+                        onMouseEnter={this.handleOptionPointerEnter(index)}
+                      >
+                        <span class="option-flag" aria-hidden="true">
+                          {opt.flag()}
+                        </span>
+                        <span class="option-name">{opt.nameRo}</span>
+                        <span class="option-code">{opt.code}</span>
+                        {isSelected ? <cor-icon class="option-check" name="checkmark-small" size={16} /> : null}
+                      </div>
+                    );
+                  })
+                )}
+              </div>
             </div>
           ) : null}
         </div>
@@ -1008,10 +1178,14 @@ export class CorPhoneInput {
           </div>
         ) : this.hasHelperMessage() ? (
           <div class="assistive assistive-helper" id={this.helperId} part="helper">
+            {variant === 'warning' ? (
+              <cor-icon class="assistive-icon" name="warning-filled" size={20} color="icon-warning-default" />
+            ) : variant === 'success' ? (
+              <cor-icon class="assistive-icon" name="circle-checkmark-filled" size={20} color="icon-positive-default" />
+            ) : null}
             <span class="assistive-text">
-              <slot name="helper" onSlotchange={this.onHelperSlotChange}>
-                {helperText}
-              </slot>
+              {this.hasHelperSlot ? null : helperText}
+              <slot name="helper" onSlotchange={this.onHelperSlotChange} />
             </span>
           </div>
         ) : null}

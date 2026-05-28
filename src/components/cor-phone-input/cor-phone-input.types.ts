@@ -40,8 +40,8 @@ export interface PhoneCountry {
   minLen: number;
   /** Inclusive maximum digit count of the local segment. */
   maxLen: number;
-  /** Inline SVG string (no outer `<svg>` — innerHTML wrapped at render time). */
-  flag: string;
+  /** Inline SVG renderer for the country flag glyph. */
+  flag: () => ReturnType<typeof import('@stencil/core').h>;
 }
 
 export interface PhoneInputChangeDetail {

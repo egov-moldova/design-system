@@ -23,7 +23,7 @@ form value is the canonical E.164 string (`+37362123456`).
 
 | Property         | Attribute         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Type                                                   | Default     |
 | ---------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------ | ----------- |
-| `ariaLabel`      | `aria-label`      | Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.                                                                                                                                                                                                                                                                                                                                                                  | `string \| undefined`                                  | `undefined` |
+| `ariaLabel`      | `aria-label`      | Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.                                                                                                                                                                                | `string \| undefined`                                  | `undefined` |
 | `countries`      | --                | Optional whitelist of ISO codes to surface in the dropdown. Defaults to the curated 15-country Moldova-diaspora list when omitted.                                                                                                                                                                                                                                                                                                                                 | `string[] \| undefined`                                | `undefined` |
 | `defaultCountry` | `default-country` | Initial country selection (ISO 3166-1 alpha-2). Defaults to Moldova because the system serves citizens calling government services.                                                                                                                                                                                                                                                                                                                                | `string`                                               | `'MD'`      |
 | `disabled`       | `disabled`        | Disables interactivity. Trigger and input receive `aria-disabled` and the native `disabled` attribute.                                                                                                                                                                                                                                                                                                                                                             | `boolean`                                              | `false`     |
@@ -68,6 +68,7 @@ form value is the canonical E.164 string (`+37362123456`).
 
 | Part                     | Description |
 | ------------------------ | ----------- |
+| `"clear-button"`         |             |
 | `"control"`              |             |
 | `"country-trigger-code"` |             |
 | `"error"`                |             |
@@ -75,6 +76,10 @@ form value is the canonical E.164 string (`+37362123456`).
 | `"helper"`               |             |
 | `"label"`                |             |
 | `"listbox"`              |             |
+| `"listbox-popover"`      |             |
+| `"listbox-search"`       |             |
+| `"listbox-search-clear"` |             |
+| `"listbox-search-input"` |             |
 | `"native"`               |             |
 | `"required-mark"`        |             |
 | `"spinner"`              |             |

@@ -1700,7 +1700,7 @@ export namespace Components {
      */
     interface CorPhoneInput {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
          */
         "ariaLabel"?: string;
         /**
@@ -6261,7 +6261,7 @@ declare namespace LocalJSX {
      */
     interface CorPhoneInput {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
          */
         "ariaLabel"?: string;
         /**
