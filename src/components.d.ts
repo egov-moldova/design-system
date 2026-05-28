@@ -2338,7 +2338,7 @@ export namespace Components {
      */
     interface CorSelectInput {
         /**
-          * Accessible name. Mirrors to the trigger's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the trigger's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -7031,7 +7031,7 @@ declare namespace LocalJSX {
      */
     interface CorSelectInput {
         /**
-          * Accessible name. Mirrors to the trigger's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the trigger's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
