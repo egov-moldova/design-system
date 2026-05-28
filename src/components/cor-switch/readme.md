@@ -23,16 +23,16 @@ visual footprint stays untouched.
 
 ## Properties
 
-| Property         | Attribute         | Description                                                                                                | Type                  | Default     |
-| ---------------- | ----------------- | ---------------------------------------------------------------------------------------------------------- | --------------------- | ----------- |
-| `ariaLabel`      | `aria-label`      | Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.          | `string \| undefined` | `undefined` |
-| `ariaLabelledby` | `aria-labelledby` | ID of the element labelling the switch. Used when label content lives outside the component.               | `string \| undefined` | `undefined` |
-| `checked`        | `checked`         | Whether the switch is currently on.                                                                        | `boolean`             | `false`     |
-| `disabled`       | `disabled`        | Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute. | `boolean`             | `false`     |
-| `label`          | `label`           | Plain-text label. Use the `label` slot for richer content.                                                 | `string \| undefined` | `undefined` |
-| `name`           | `name`            | Form-control `name`. Used during form submission.                                                          | `string \| undefined` | `undefined` |
-| `required`       | `required`        | Marks the field as mandatory. Sets `aria-required` on the internal control.                                | `boolean`             | `false`     |
-| `value`          | `value`           | Value submitted with the form when this switch is on.                                                      | `string \| undefined` | `undefined` |
+| Property         | Attribute         | Description                                                                                                                                                                                                                        | Type                  | Default     |
+| ---------------- | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | ----------- |
+| `ariaLabel`      | `aria-label`      | Consumer-set `aria-label` on the host. The component caches the value (see `resolvedAriaLabel`) and strips the host attribute on mount to avoid the `aria-prohibited-attr` axe rule on the custom-element host.                    | `string \| undefined` | `undefined` |
+| `ariaLabelledby` | `aria-labelledby` | Consumer-set `aria-labelledby`. Same strip + cache pattern as `ariaLabel`.                                                                                                                                                         | `string \| undefined` | `undefined` |
+| `checked`        | `checked`         | Whether the switch is currently on.                                                                                                                                                                                                | `boolean`             | `false`     |
+| `disabled`       | `disabled`        | Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.                                                                                                                         | `boolean`             | `false`     |
+| `label`          | `label`           | Accessible-name fallback. Used as `aria-label` on the internal input when no `label` slot is provided. Does NOT render visible text — use the `label` slot for that. Matches the cor-button / cor-checkbox / cor-radio convention. | `string \| undefined` | `undefined` |
+| `name`           | `name`            | Form-control `name`. Used during form submission.                                                                                                                                                                                  | `string \| undefined` | `undefined` |
+| `required`       | `required`        | Marks the field as mandatory. Sets `aria-required` on the internal control.                                                                                                                                                        | `boolean`             | `false`     |
+| `value`          | `value`           | Value submitted with the form when this switch is on.                                                                                                                                                                              | `string \| undefined` | `undefined` |
 
 
 ## Events

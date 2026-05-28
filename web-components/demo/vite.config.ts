@@ -1,6 +1,7 @@
 import { defineConfig, type Plugin } from 'vite';
 import { resolve } from 'node:path';
 import { createReadStream, existsSync, statSync, globSync } from 'node:fs';
+import { cp } from 'node:fs/promises';
 
 const DESIGN_SYSTEM_DIST = resolve(__dirname, '../../dist/design-system');
 
@@ -59,9 +60,41 @@ function serveDesignSystemAssets(): Plugin {
   };
 }
 
+/**
+ * Production-only counterpart of `serveDesignSystemAssets`. Stencil's lazy
+ * loader resolves `getAssetPath('./assets/<size>/<name>.svg')` against
+ * `import.meta.url` of the bundle that contains it. After `vite build`, that
+ * bundle lives in `dist-demo/assets/`, so Stencil looks for the icon/logo SVGs
+ * at `dist-demo/assets/assets/...`. The dev middleware short-circuits this by
+ * intercepting `/node_modules/@age/design-system/...` requests, but in a
+ * deployed build nothing serves those bytes — copy them next to the bundle so
+ * `<cor-icon>`, `<cor-logo>`, etc. work from any host (including file://).
+ */
+function copyDesignSystemAssetsToBuild(): Plugin {
+  const srcAssets = resolve(DESIGN_SYSTEM_DIST, 'assets');
+  return {
+    name: 'copy-age-design-system-assets',
+    apply: 'build',
+    async closeBundle() {
+      if (!existsSync(srcAssets)) {
+        this.warn(
+          `[demo] design-system assets not found at ${srcAssets} — run \`yarn build\` first so cor-icon/cor-logo can resolve their SVGs.`,
+        );
+        return;
+      }
+      const destAssets = resolve(__dirname, 'dist-demo', 'assets', 'assets');
+      await cp(srcAssets, destAssets, { recursive: true });
+    },
+  };
+}
+
 export default defineConfig({
   root: __dirname,
-  plugins: [serveDesignSystemAssets()],
+  // Emit relative asset URLs (./assets/...) so the built bundle works whether
+  // it is served from the domain root, a subpath, or opened directly via
+  // file:// (which is what the user does when sanity-checking the output).
+  base: './',
+  plugins: [serveDesignSystemAssets(), copyDesignSystemAssetsToBuild()],
   server: {
     port: 5174,
     open: '/index.html',

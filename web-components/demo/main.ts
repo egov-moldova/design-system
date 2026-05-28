@@ -7,7 +7,7 @@ import './demo.css';
 // relative to dist/design-system/ (where the SVG assets live) via import.meta.url.
 import '@age/design-system/dist/design-system/design-system.esm.js';
 
-import { CATEGORIES, locate, pagePath, type ComponentEntry } from './manifest';
+import { CATEGORIES, indexPath, locate, pagePath, type ComponentEntry } from './manifest';
 
 type Theme = 'light' | 'dark';
 
@@ -83,7 +83,7 @@ function renderComponentChrome(tag: string) {
   if (found) lead.append(el('span', { class: 'label' }, found.category.title));
 
   const nav = el('div', { class: 'demo-header__nav' });
-  nav.append(el('a', { class: 'demo-header__back', href: '/index.html' }, 'Table of contents'));
+  nav.append(el('a', { class: 'demo-header__back', href: indexPath() }, 'Table of contents'));
   nav.append(
     prev
       ? el('a', { href: pagePath(prev.slug, prev.entry.tag), title: 'Previous component' }, `← ${prev.entry.tag}`)

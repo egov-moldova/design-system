@@ -42,6 +42,7 @@
     "build.age": "yarn cross-env STORYBOOK_BASE_PATH=/age/ yarn sp.build",
     "build.web": "wireit",
     "demo.web": "wireit",
+    "demo.build": "wireit",
     "build.watch": "stencil build --dev --watch",
     "dx:prepare": "wireit",
     "dev": "wireit",
@@ -249,6 +250,22 @@
         "build"
       ],
       "service": true
+    },
+    "demo.build": {
+      "command": "yarn workspace @age/web-components demo.build",
+      "dependencies": [
+        "build"
+      ],
+      "files": [
+        "web-components/demo/**",
+        "web-components/package.json"
+      ],
+      "output": [
+        "web-components/demo/dist-demo/**"
+      ],
+      "packageLocks": [
+        "yarn.lock"
+      ]
     },
     "dx:prepare": {
       "dependencies": [

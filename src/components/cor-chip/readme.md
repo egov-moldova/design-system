@@ -22,14 +22,14 @@ Two modes:
 
 ## Properties
 
-| Property    | Attribute   | Description                                                                                                                                                    | Type                  | Default     |
-| ----------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | ----------- |
-| `disabled`  | `disabled`  | Disables interactivity. Reflects `aria-disabled` and removes the chip from pointer/keyboard activation paths.                                                  | `boolean`             | `false`     |
-| `label`     | `label`     | Fallback label rendered when the default slot is empty. Plain text only.                                                                                       | `string \| undefined` | `undefined` |
-| `removable` | `removable` | When `type="input"`, renders a trailing close button that emits `corRemove` on activation. Ignored when `type="filter"`.                                       | `boolean`             | `false`     |
-| `selected`  | `selected`  | Selected state for `type="filter"`. Ignored when `type="input"`.                                                                                               | `boolean`             | `false`     |
-| `size`      | `size`      | Visual size rung.                                                                                                                                              | `"md" \| "sm"`        | `'md'`      |
-| `type`      | `type`      | Behavioral mode. - `filter` — toggle on click, emits `corSelect` - `input` — represents a user-entered value; combine with `removable` for a trailing × button | `"filter" \| "input"` | `'filter'`  |
+| Property    | Attribute   | Description                                                                                                                                                                                                                                        | Type                  | Default     |
+| ----------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | ----------- |
+| `disabled`  | `disabled`  | Disables interactivity. Reflects `aria-disabled` and removes the chip from pointer/keyboard activation paths.                                                                                                                                      | `boolean`             | `false`     |
+| `label`     | `label`     | Accessible-name fallback. Used as `aria-label` on the internal `<button>` when the default slot is empty (and no explicit `aria-label` is set). Does NOT render visible text — use the default slot for that. Matches the `cor-button` convention. | `string \| undefined` | `undefined` |
+| `removable` | `removable` | When `type="input"`, renders a trailing close button that emits `corRemove` on activation. Ignored when `type="filter"`.                                                                                                                           | `boolean`             | `false`     |
+| `selected`  | `selected`  | Selected state for `type="filter"`. Ignored when `type="input"`.                                                                                                                                                                                   | `boolean`             | `false`     |
+| `size`      | `size`      | Visual size rung.                                                                                                                                                                                                                                  | `"md" \| "sm"`        | `'md'`      |
+| `type`      | `type`      | Behavioral mode. - `filter` — toggle on click, emits `corSelect` - `input` — represents a user-entered value; combine with `removable` for a trailing × button                                                                                     | `"filter" \| "input"` | `'filter'`  |
 
 
 ## Events

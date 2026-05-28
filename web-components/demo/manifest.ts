@@ -110,9 +110,26 @@ export const CATEGORIES: Category[] = [
   },
 ];
 
+/**
+ * Path-prefix back to `dist-demo/` from the currently-rendered page.
+ *
+ * The TOC (`index.html`) is at the root, so it needs `./`. Per-component pages
+ * (`pages/<cat>/<tag>.html`) are two levels deep, so they need `../../`.
+ * Using a relative prefix (rather than an absolute `/…`) lets the same build
+ * work from any base path AND from `file://`.
+ */
+function rootPrefix(): string {
+  return document.body?.dataset?.component ? '../../' : './';
+}
+
 /** Resolve the page URL for a component tag within a category. */
 export function pagePath(categorySlug: string, tag: string): string {
-  return `/pages/${categorySlug}/${tag}.html`;
+  return `${rootPrefix()}pages/${categorySlug}/${tag}.html`;
+}
+
+/** Resolve the URL of the table-of-contents page. */
+export function indexPath(): string {
+  return `${rootPrefix()}index.html`;
 }
 
 /** Flattened lookup: tag → { category, index-in-category }. */
