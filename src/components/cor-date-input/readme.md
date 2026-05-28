@@ -56,16 +56,17 @@ inside shadow DOM and overlays a ghost format hint that lets the unfilled
 
 ## Shadow Parts
 
-| Part              | Description |
-| ----------------- | ----------- |
-| `"control"`       |             |
-| `"error"`         |             |
-| `"ghost"`         |             |
-| `"helper"`        |             |
-| `"label"`         |             |
-| `"native"`        |             |
-| `"required-mark"` |             |
-| `"trailing-icon"` |             |
+| Part               | Description |
+| ------------------ | ----------- |
+| `"control"`        |             |
+| `"error"`          |             |
+| `"ghost"`          |             |
+| `"helper"`         |             |
+| `"label"`          |             |
+| `"native"`         |             |
+| `"picker-popover"` |             |
+| `"required-mark"`  |             |
+| `"trailing-icon"`  |             |
 
 
 ## Dependencies
@@ -73,11 +74,14 @@ inside shadow DOM and overlays a ghost format hint that lets the unfilled
 ### Depends on
 
 - [cor-icon](../cor-icon)
+- [cor-date-picker](../cor-date-picker)
 
 ### Graph
 ```mermaid
 graph TD;
   cor-date-input --> cor-icon
+  cor-date-input --> cor-date-picker
+  cor-date-picker --> cor-icon
   style cor-date-input fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

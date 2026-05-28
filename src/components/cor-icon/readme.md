@@ -36,11 +36,13 @@ largest smaller size before giving up.
  - [cor-breadcrumb](../cor-breadcrumb)
  - [cor-cookie-banner](../cor-cookie-banner)
  - [cor-date-input](../cor-date-input)
+ - [cor-date-picker](../cor-date-picker)
  - [cor-file-input](../cor-file-input)
  - [cor-file-item](../cor-file-item)
  - [cor-footer](../cor-footer)
  - [cor-input](../cor-input)
  - [cor-input-chip](../cor-input-chip)
+ - [cor-modal](../cor-modal)
  - [cor-notification](../cor-notification)
  - [cor-numeric-input](../cor-numeric-input)
  - [cor-pagination](../cor-pagination)
@@ -62,11 +64,13 @@ graph TD;
   cor-breadcrumb --> cor-icon
   cor-cookie-banner --> cor-icon
   cor-date-input --> cor-icon
+  cor-date-picker --> cor-icon
   cor-file-input --> cor-icon
   cor-file-item --> cor-icon
   cor-footer --> cor-icon
   cor-input --> cor-icon
   cor-input-chip --> cor-icon
+  cor-modal --> cor-icon
   cor-notification --> cor-icon
   cor-numeric-input --> cor-icon
   cor-pagination --> cor-icon

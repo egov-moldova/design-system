@@ -106,7 +106,8 @@
       },
       "label": {
         "default": { "$value": "{color.text.base.default}", "$type": "color" },
-        "disabled": { "$value": "{color.text.disabled.on-disabled}", "$type": "color" }
+        "$comment": "Disabled chips remain readable informational text — bumped to base.secondary to meet WCAG 1.4.3 AA (4.5:1) on the disabled chip background. `color.text.disabled.on-disabled` (~#b2b2b2) is 1.87:1 and `text.base.tertiary` (~#757575) is 4.07:1 — both fail.",
+        "disabled": { "$value": "{color.text.base.secondary}", "$type": "color" }
       },
       "remove": {
         "size": {

@@ -105,13 +105,14 @@ export class CorInputChip {
   @Prop() separators: string = ',';
 
   /** Accessible name; mirrors to the group's `aria-label` when no visible label. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop() ariaLabel?: string;
 
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
   @State() private announcement: string = '';
+  @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLCorInputChipElement;
 
@@ -145,8 +146,32 @@ export class CorInputChip {
   private initialChips: string[] = [];
 
   componentWillLoad() {
+    this.captureAriaLabel();
     this.initialChips = [...this.chips];
     this.syncFormValue(this.chips);
+    this.syncValidity(this.chips);
+  }
+
+  private captureAriaLabel() {
+    const hostAttr = this.host.getAttribute('aria-label');
+    if (hostAttr && hostAttr.length > 0) {
+      this.resolvedAriaLabel = hostAttr;
+      this.host.removeAttribute('aria-label');
+    } else if (this.ariaLabel && this.ariaLabel.length > 0) {
+      this.resolvedAriaLabel = this.ariaLabel;
+    }
+  }
+
+  @Watch('ariaLabel')
+  syncAriaLabelProp(next?: string) {
+    // Only override resolvedAriaLabel when the prop is actually set —
+    // captureAriaLabel strips the attribute, which would otherwise null this out.
+    if (next && next.length > 0) this.resolvedAriaLabel = next;
+  }
+
+  @Watch('required')
+  onRequiredChange() {
+    this.syncValidity(this.chips);
   }
 
   // Validation lives at the @Prop boundary (PRINCIPLES.md §D).
@@ -176,7 +201,9 @@ export class CorInputChip {
 
   @Watch('chips')
   handleChipsChange(next: string[]) {
-    this.syncFormValue(next ?? []);
+    const chips = next ?? [];
+    this.syncFormValue(chips);
+    this.syncValidity(chips);
   }
 
   formDisabledCallback(disabled: boolean) {
@@ -188,6 +215,7 @@ export class CorInputChip {
     this.value = '';
     this.announcement = '';
     this.syncFormValue(this.initialChips);
+    this.syncValidity(this.initialChips);
   }
 
   formStateRestoreCallback(state: string | File | FormData | null) {
@@ -197,6 +225,7 @@ export class CorInputChip {
       if (Array.isArray(parsed) && parsed.every(item => typeof item === 'string')) {
         this.chips = parsed;
         this.syncFormValue(parsed);
+        this.syncValidity(parsed);
       }
     } catch {
       // Restore state is best-effort — bad payload simply leaves the
@@ -211,6 +240,18 @@ export class CorInputChip {
     }
     const serialized = JSON.stringify(chips);
     this.internals.setFormValue(serialized, serialized);
+  }
+
+  private syncValidity(chips: string[]) {
+    if (!this.internals) return;
+    const isMissing = this.required && chips.length === 0;
+    const anchor = this.nativeInput ?? undefined;
+    if (isMissing) {
+      const msg = this.errorText && this.errorText.length > 0 ? this.errorText : 'Acest câmp este obligatoriu.';
+      this.internals.setValidity({ valueMissing: true }, msg, anchor);
+    } else {
+      this.internals.setValidity({}, undefined, anchor);
+    }
   }
 
   private onLabelSlotChange = (ev: Event) => {
@@ -472,9 +513,10 @@ export class CorInputChip {
     const labelText = this.label?.trim();
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
-    const ariaLabelAttr = !this.hasVisibleLabel() ? this.ariaLabel : undefined;
+    const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
     const maxReached = this.isMaxReached();
     const placeholder = this.chips.length === 0 ? this.placeholder : undefined;
+    const removeIconSize = this.size === 'lg' ? 16 : 12;
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -491,9 +533,8 @@ export class CorInputChip {
       <Host class={hostClasses}>
         <label class="label" htmlFor={this.inputId} id={this.labelId} part="label">
           <span class="label-text">
-            <slot name="label" onSlotchange={this.onLabelSlotChange}>
-              {labelText}
-            </slot>
+            {this.hasLabelSlot ? null : labelText}
+            <slot name="label" onSlotchange={this.onLabelSlotChange} />
           </span>
           {this.required ? (
             <span class="required-mark" aria-hidden="true" part="required-mark">
@@ -508,10 +549,6 @@ export class CorInputChip {
           role="group"
           aria-label={ariaLabelAttr}
           aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
-          aria-describedby={this.describedBy()}
-          aria-disabled={effectivelyDisabled ? 'true' : null}
-          aria-invalid={this.invalid ? 'true' : null}
-          aria-required={this.required ? 'true' : null}
           onClick={this.handleControlClick}
         >
           {this.chips.map((chip, index) => (
@@ -530,15 +567,7 @@ export class CorInputChip {
                 onClick={this.handleChipRemoveClick(index)}
                 onKeyDown={this.handleChipKeyDown(index)}
               >
-                <svg
-                  class="chip-remove-icon"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M4 4L12 12M12 4L4 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                </svg>
+                <cor-icon class="chip-remove-icon" name="cross-small" size={removeIconSize} />
               </button>
             </span>
           ))}
@@ -553,11 +582,11 @@ export class CorInputChip {
             placeholder={placeholder}
             disabled={effectivelyDisabled || maxReached}
             readonly={this.readonly}
-            aria-label={!this.hasVisibleLabel() ? this.ariaLabel : undefined}
-            aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
+            required={this.required}
+            aria-label={!this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined}
             aria-describedby={this.describedBy()}
             aria-invalid={this.invalid ? 'true' : null}
-            aria-disabled={effectivelyDisabled || maxReached ? 'true' : null}
+            aria-required={this.required ? 'true' : null}
             onInput={this.handleInputInput}
             onKeyDown={this.handleInputKeyDown}
             onPaste={this.handleInputPaste}
@@ -574,9 +603,8 @@ export class CorInputChip {
         ) : this.hasHelperMessage() ? (
           <div class="assistive assistive-helper" id={this.helperId} part="helper">
             <span class="assistive-text">
-              <slot name="helper" onSlotchange={this.onHelperSlotChange}>
-                {helperText}
-              </slot>
+              {this.hasHelperSlot ? null : helperText}
+              <slot name="helper" onSlotchange={this.onHelperSlotChange} />
             </span>
           </div>
         ) : null}

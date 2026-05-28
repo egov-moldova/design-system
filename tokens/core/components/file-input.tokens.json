@@ -70,7 +70,8 @@
       "marginBlockStart": { "$value": "{spacing.12}", "$type": "dimension" },
       "color": {
         "default": { "$value": "{color.text.base.tertiary}", "$type": "color" },
-        "disabled": { "$value": "{color.text.disabled.on-disabled}", "$type": "color" }
+        "$comment": "Disabled captions remain informational text (supported formats, max size) — keep them at the same readable contrast as the default state. The semantic `color.text.disabled.on-disabled` token resolves to ~#b2b2b2 which fails WCAG 1.4.3 AA on white (2.12:1).",
+        "disabled": { "$value": "{color.text.base.tertiary}", "$type": "color" }
       }
     },
     "primaryText": {

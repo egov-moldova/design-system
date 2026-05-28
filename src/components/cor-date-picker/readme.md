@@ -32,20 +32,20 @@ Keyboard:
 
 ## Properties
 
-| Property            | Attribute             | Description                                                                                                                                                                             | Type                                | Default     |
-| ------------------- | --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ----------- |
-| `ariaLabel`         | `aria-label`          | Accessible label for the entire picker. Defaults to a localized fallback.                                                                                                               | `string \| undefined`               | `undefined` |
-| `breakpoint`        | `breakpoint`          | Visual breakpoint / placement.                                                                                                                                                          | `"desktop" \| "docked" \| "mobile"` | `'desktop'` |
-| `disabledDates`     | --                    | ISO `YYYY-MM-DD` strings that should be marked disabled (e.g. holidays).                                                                                                                | `string[] \| undefined`             | `undefined` |
-| `firstDayOfWeek`    | `first-day-of-week`   | Week starts on this day of the week (0 = Sunday, 1 = Monday). Defaults to 1 (Monday) which matches the Romanian + most European convention.                                             | `number`                            | `1`         |
-| `hideTodayShortcut` | `hide-today-shortcut` | Hide the "Today" quick-jump shortcut. Default keeps it visible.                                                                                                                         | `boolean`                           | `false`     |
-| `locale`            | `locale`              | BCP-47 locale tag for weekday/month rendering. Defaults to Romanian.                                                                                                                    | `string`                            | `'ro-RO'`   |
-| `max`               | `max`                 | Inclusive upper bound (ISO `YYYY-MM-DD`). Dates after this are disabled.                                                                                                                | `string \| undefined`               | `undefined` |
-| `min`               | `min`                 | Inclusive lower bound (ISO `YYYY-MM-DD`). Dates before this are disabled.                                                                                                               | `string \| undefined`               | `undefined` |
-| `mode`              | `mode`                | Selection mode.                                                                                                                                                                         | `"multi" \| "range" \| "single"`    | `'single'`  |
-| `rangeEnd`          | `range-end`           | Range mode: end date (ISO `YYYY-MM-DD`). Set together with `rangeStart`.                                                                                                                | `string \| undefined`               | `undefined` |
-| `rangeStart`        | `range-start`         | Range mode: start date (ISO `YYYY-MM-DD`). Set together with `rangeEnd`.                                                                                                                | `string \| undefined`               | `undefined` |
-| `value`             | `value`               | Selected value: - `single` → ISO `YYYY-MM-DD` string (or empty) - `range` → ISO array `[start, end]` (use `rangeStart`/`rangeEnd` for explicit access) - `multi` → array of ISO strings | `string \| string[] \| undefined`   | `undefined` |
+| Property            | Attribute             | Description                                                                                                                                                                                                                                                                                                                                                      | Type                                | Default     |
+| ------------------- | --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ----------- |
+| `breakpoint`        | `breakpoint`          | Visual breakpoint / placement.                                                                                                                                                                                                                                                                                                                                   | `"desktop" \| "docked" \| "mobile"` | `'desktop'` |
+| `disabledDates`     | --                    | ISO `YYYY-MM-DD` strings that should be marked disabled (e.g. holidays).                                                                                                                                                                                                                                                                                         | `string[] \| undefined`             | `undefined` |
+| `firstDayOfWeek`    | `first-day-of-week`   | Week starts on this day of the week (0 = Sunday, 1 = Monday). Defaults to 1 (Monday) which matches the Romanian + most European convention.                                                                                                                                                                                                                      | `number`                            | `1`         |
+| `hideTodayShortcut` | `hide-today-shortcut` | Hide the "Today" quick-jump shortcut. Default keeps it visible.                                                                                                                                                                                                                                                                                                  | `boolean`                           | `false`     |
+| `label`             | `label`               | Accessible label for the entire picker. Set the `aria-label` attribute on the host (or use this prop) and the component captures it on connect into `resolvedAriaLabel`, then strips the host attribute to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb). | `string \| undefined`               | `undefined` |
+| `locale`            | `locale`              | BCP-47 locale tag for weekday/month rendering. Defaults to Romanian.                                                                                                                                                                                                                                                                                             | `string`                            | `'ro-RO'`   |
+| `max`               | `max`                 | Inclusive upper bound (ISO `YYYY-MM-DD`). Dates after this are disabled.                                                                                                                                                                                                                                                                                         | `string \| undefined`               | `undefined` |
+| `min`               | `min`                 | Inclusive lower bound (ISO `YYYY-MM-DD`). Dates before this are disabled.                                                                                                                                                                                                                                                                                        | `string \| undefined`               | `undefined` |
+| `mode`              | `mode`                | Selection mode.                                                                                                                                                                                                                                                                                                                                                  | `"multi" \| "range" \| "single"`    | `'single'`  |
+| `rangeEnd`          | `range-end`           | Range mode: end date (ISO `YYYY-MM-DD`). Set together with `rangeStart`.                                                                                                                                                                                                                                                                                         | `string \| undefined`               | `undefined` |
+| `rangeStart`        | `range-start`         | Range mode: start date (ISO `YYYY-MM-DD`). Set together with `rangeEnd`.                                                                                                                                                                                                                                                                                         | `string \| undefined`               | `undefined` |
+| `value`             | `value`               | Selected value: - `single` → ISO `YYYY-MM-DD` string (or empty) - `range` → ISO array `[start, end]` (use `rangeStart`/`rangeEnd` for explicit access) - `multi` → array of ISO strings                                                                                                                                                                          | `string \| string[] \| undefined`   | `undefined` |
 
 
 ## Events
@@ -75,6 +75,24 @@ Keyboard:
 | `"year-cell"`    |             |
 | `"year-grid"`    |             |
 
+
+## Dependencies
+
+### Used by
+
+ - [cor-date-input](../cor-date-input)
+
+### Depends on
+
+- [cor-icon](../cor-icon)
+
+### Graph
+```mermaid
+graph TD;
+  cor-date-picker --> cor-icon
+  cor-date-input --> cor-date-picker
+  style cor-date-picker fill:#f9f,stroke:#333,stroke-width:4px
+```
 
 ----------------------------------------------
 

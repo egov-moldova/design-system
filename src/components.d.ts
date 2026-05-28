@@ -837,7 +837,7 @@ export namespace Components {
          */
         "accept"?: string;
         /**
-          * Accessible name; mirrors to the drop zone's `aria-label` when no visible label.
+          * Accessible name; mirrors to the drop zone's `aria-label` when no visible label is provided. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker / cor-modal / cor-pagination / cor-receipt).
          */
         "ariaLabel"?: string;
         /**
@@ -5274,7 +5274,7 @@ declare namespace LocalJSX {
          */
         "accept"?: string;
         /**
-          * Accessible name; mirrors to the drop zone's `aria-label` when no visible label.
+          * Accessible name; mirrors to the drop zone's `aria-label` when no visible label is provided. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker / cor-modal / cor-pagination / cor-receipt).
          */
         "ariaLabel"?: string;
         /**
