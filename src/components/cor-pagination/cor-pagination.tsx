@@ -1,7 +1,13 @@
-import { Component, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
+import { Component, Element, Event, EventEmitter, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
 
-import { ELLIPSIS } from './cor-pagination.types';
-import type { PaginationChangeDetail, PaginationSize, PaginationSlot } from './cor-pagination.types';
+import { isOverflow } from './cor-pagination.types';
+import type {
+  OverflowKey,
+  PaginationChangeDetail,
+  PaginationOverflowSlot,
+  PaginationSize,
+  PaginationSlot,
+} from './cor-pagination.types';
 
 /**
  * Pagination — navigation control for paged content.
@@ -9,11 +15,17 @@ import type { PaginationChangeDetail, PaginationSize, PaginationSlot } from './c
  * Renders a list of page-number buttons flanked by Previous / Next controls.
  * The visible page list is computed from `currentPage`, `totalPages`,
  * `siblingCount`, and `boundaryCount`. When the total exceeds the visible
- * window, ellipses (`...`) appear at the start and/or end of the range.
+ * window, an interactive overflow button (`…`) collapses the skipped range
+ * and lets users jump directly to any of those pages via a dropdown menu
+ * (Figma "overflow-active" interaction).
  *
  * The component is internally controlled but exposes a `corChange` event so
  * the host can drive the active page. Updating `current-page` from outside
  * is also honoured (e.g. when the URL changes via routing).
+ *
+ * Previous / Next buttons are hidden at the boundaries (page 1 hides Prev,
+ * the last page hides Next) instead of being rendered in a disabled state —
+ * this matches the Figma "first-page" / "last-page" specification.
  *
  * @element cor-pagination
  *
@@ -21,9 +33,6 @@ import type { PaginationChangeDetail, PaginationSize, PaginationSlot } from './c
  *                   Defaults to a left chevron sized for the current rung.
  * @slot next-icon - Optional icon override for the Next button.
  *                   Defaults to a right chevron.
- *
- * @event corChange - Fires when the user activates a different page.
- *                    Detail: `{ page, previousPage }`.
  */
 @Component({
   tag: 'cor-pagination',
@@ -64,7 +73,9 @@ export class CorPagination {
   @Prop({ attribute: 'boundary-count' }) boundaryCount: number = 1;
 
   /**
-   * Whether to render the Previous / Next navigation buttons.
+   * Whether to render the Previous / Next navigation buttons at all. When
+   * `true` (default) they still hide individually at the corresponding
+   * boundary (page 1 hides Prev, last page hides Next).
    * @default true
    */
   @Prop({ attribute: 'show-prev-next' }) showPrevNext: boolean = true;
@@ -82,10 +93,15 @@ export class CorPagination {
   @Prop({ attribute: 'next-label' }) nextLabel: string = 'Următor';
 
   /**
-   * Accessible name for the outer `<nav>` landmark.
-   * @default 'Navigare pagini'
+   * Accessible name for the navigation landmark when no `aria-label` is set on
+   * the host. Defaults to "Navigare pagini". Setting `aria-label` directly on
+   * the host also works — the consumer-supplied attribute wins and is captured
+   * on connect into `resolvedAriaLabel`, then stripped from the host to avoid
+   * Stencil's attribute-observer / render-loop antipattern (same pattern as
+   * cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb /
+   * cor-date-picker / cor-modal).
    */
-  @Prop({ attribute: 'aria-label' }) ariaLabel: string = 'Navigare pagini';
+  @Prop() label?: string;
 
   /**
    * Accessible label template for the Previous button. The `{page}` token is
@@ -108,12 +124,34 @@ export class CorPagination {
    */
   @Prop({ attribute: 'page-aria-label' }) pageAriaLabel: string = 'Pagina {page} din {total}';
 
+  /**
+   * Accessible label template for the overflow ("…") button. The `{from}`
+   * and `{to}` tokens are replaced with the first and last page in the
+   * collapsed range.
+   * @default 'Arată paginile de la {from} la {to}'
+   */
+  @Prop({ attribute: 'overflow-aria-label' }) overflowAriaLabel: string = 'Arată paginile de la {from} la {to}';
+
   @State() private hasPrevIcon: boolean = false;
   @State() private hasNextIcon: boolean = false;
+  @State() private resolvedAriaLabel: string = 'Navigare pagini';
+  @State() private openOverflow: OverflowKey | null = null;
+  @State() private focusedOverflowIndex: number = -1;
 
   @Element() host!: HTMLCorPaginationElement;
 
+  /**
+   * Fires when the user activates a different page via click on a numbered
+   * button, the Previous / Next controls, or a page in the overflow dropdown.
+   * Carries the new and previous page numbers so consumers can drive routing
+   * or data fetches.
+   */
   @Event() corChange!: EventEmitter<PaginationChangeDetail>;
+
+  @Watch('label')
+  protected syncLabel(next?: string): void {
+    if (next && next.length > 0) this.resolvedAriaLabel = next;
+  }
 
   @Watch('currentPage')
   protected onCurrentPageChange(newValue: number) {
@@ -121,6 +159,7 @@ export class CorPagination {
     if (clamped !== newValue) {
       this.currentPage = clamped;
     }
+    this.closeOverflow();
   }
 
   @Watch('totalPages')
@@ -129,11 +168,88 @@ export class CorPagination {
     if (clamped !== this.currentPage) {
       this.currentPage = clamped;
     }
+    this.closeOverflow();
+  }
+
+  /** Close the overflow dropdown when a click lands outside the component. */
+  @Listen('click', { target: 'window' })
+  handleOutsideClick(ev: MouseEvent): void {
+    if (this.openOverflow === null) return;
+    const path = ev.composedPath();
+    if (!path.includes(this.host)) {
+      this.closeOverflow();
+    }
+  }
+
+  /** Keyboard support on the open overflow dropdown. */
+  @Listen('keydown')
+  handleKeyDown(ev: KeyboardEvent): void {
+    if (this.openOverflow === null) return;
+    const items = this.getOpenOverflowPages();
+    switch (ev.key) {
+      case 'Escape': {
+        ev.stopPropagation();
+        const key = this.openOverflow;
+        this.closeOverflow();
+        this.focusOverflowTrigger(key);
+        return;
+      }
+      case 'ArrowDown': {
+        ev.preventDefault();
+        if (items.length === 0) return;
+        this.focusedOverflowIndex = (this.focusedOverflowIndex + 1) % items.length;
+        return;
+      }
+      case 'ArrowUp': {
+        ev.preventDefault();
+        if (items.length === 0) return;
+        this.focusedOverflowIndex =
+          this.focusedOverflowIndex <= 0 ? items.length - 1 : this.focusedOverflowIndex - 1;
+        return;
+      }
+      case 'Home': {
+        ev.preventDefault();
+        if (items.length > 0) this.focusedOverflowIndex = 0;
+        return;
+      }
+      case 'End': {
+        ev.preventDefault();
+        if (items.length > 0) this.focusedOverflowIndex = items.length - 1;
+        return;
+      }
+      case 'Tab': {
+        // Tabbing out closes the dropdown and lets focus continue naturally.
+        this.closeOverflow();
+        return;
+      }
+      default:
+        return;
+    }
   }
 
   componentWillLoad() {
+    this.captureAriaLabel();
     // Clamp initial values defensively (consumers may pass garbage props).
     this.currentPage = this.clampPage(this.currentPage);
+  }
+
+  componentDidUpdate() {
+    // Reflect the AI-managed focus index onto the actual DOM after each render.
+    if (this.openOverflow === null || this.focusedOverflowIndex < 0) return;
+    const root = this.host.shadowRoot;
+    if (!root) return;
+    const items = root.querySelectorAll<HTMLButtonElement>('.overflow-menu-item');
+    items[this.focusedOverflowIndex]?.focus();
+  }
+
+  private captureAriaLabel(): void {
+    const userLabel = this.host.getAttribute('aria-label');
+    if (userLabel && userLabel.length > 0) {
+      this.resolvedAriaLabel = userLabel;
+      this.host.removeAttribute('aria-label');
+    } else if (this.label && this.label.length > 0) {
+      this.resolvedAriaLabel = this.label;
+    }
   }
 
   private clampPage(page: number): number {
@@ -178,12 +294,43 @@ export class CorPagination {
     return slot.assignedElements({ flatten: true }).length > 0;
   }
 
+  private closeOverflow(): void {
+    if (this.openOverflow === null && this.focusedOverflowIndex === -1) return;
+    this.openOverflow = null;
+    this.focusedOverflowIndex = -1;
+  }
+
+  private toggleOverflow(key: OverflowKey): void {
+    if (this.openOverflow === key) {
+      this.closeOverflow();
+    } else {
+      this.openOverflow = key;
+      this.focusedOverflowIndex = -1;
+    }
+  }
+
+  private focusOverflowTrigger(key: OverflowKey): void {
+    const root = this.host.shadowRoot;
+    if (!root) return;
+    root.querySelector<HTMLButtonElement>(`.overflow-trigger[data-key="${key}"]`)?.focus();
+  }
+
+  private getOpenOverflowPages(): number[] {
+    if (this.openOverflow === null) return [];
+    const slots = this.computeRange();
+    const match = slots.find((s): s is PaginationOverflowSlot => isOverflow(s) && s.key === this.openOverflow);
+    return match?.pages ?? [];
+  }
+
   /**
-   * Compute the visible slot list. Returns up to ~7 slots including ellipses.
+   * Compute the visible slot list. Returns up to ~7 slots including overflow
+   * placeholders. Each overflow slot carries the contiguous list of pages it
+   * collapses so the dropdown can offer them as jump targets.
+   *
    * Mirrors the Figma "Pagination Logic" rules:
    * - Always show first and last page (boundary-count).
    * - Show `siblingCount` pages on each side of `currentPage`.
-   * - Insert `...` when the gap between boundaries and siblings is `>= 2`;
+   * - Insert an overflow when the gap between boundaries and siblings is `>= 2`;
    *   if the gap is exactly `1`, render the actual page number instead.
    */
   private computeRange(): PaginationSlot[] {
@@ -209,16 +356,24 @@ export class CorPagination {
       endPages.length > 0 ? endPages[0] - 2 : total - 1,
     );
 
-    const slots: PaginationSlot[] = [
-      ...startPages,
-      // start ellipsis or the page in between
-      ...(siblingsStart > boundary + 2 ? [ELLIPSIS] : boundary + 1 < total - boundary ? [boundary + 1] : []),
-      ...range(siblingsStart, siblingsEnd),
-      ...(siblingsEnd < total - boundary - 1 ? [ELLIPSIS] : total - boundary > boundary ? [total - boundary] : []),
-      ...endPages,
-    ];
+    const leadingGapPages = range(boundary + 1, siblingsStart - 1);
+    const trailingGapPages = range(siblingsEnd + 1, total - boundary);
 
-    return slots;
+    const leading: PaginationSlot[] =
+      siblingsStart > boundary + 2
+        ? [{ type: 'ellipsis', key: 'leading', pages: leadingGapPages }]
+        : boundary + 1 < total - boundary
+          ? [boundary + 1]
+          : [];
+
+    const trailing: PaginationSlot[] =
+      siblingsEnd < total - boundary - 1
+        ? [{ type: 'ellipsis', key: 'trailing', pages: trailingGapPages }]
+        : total - boundary > boundary
+          ? [total - boundary]
+          : [];
+
+    return [...startPages, ...leading, ...range(siblingsStart, siblingsEnd), ...trailing, ...endPages];
   }
 
   private formatLabel(template: string, values: Record<string, string | number>): string {
@@ -243,28 +398,73 @@ export class CorPagination {
     );
   }
 
-  private renderEllipsis(key: string) {
+  private renderOverflow(slot: PaginationOverflowSlot) {
+    const isOpen = this.openOverflow === slot.key;
+    const from = slot.pages[0] ?? this.currentPage;
+    const to = slot.pages[slot.pages.length - 1] ?? this.currentPage;
+    const triggerLabel = this.formatLabel(this.overflowAriaLabel, { from, to });
     return (
-      <li class="item" key={key}>
-        <span class="ellipsis" aria-hidden="true">
-          …
-        </span>
+      <li class={{ item: true, 'overflow-item': true, 'is-open': isOpen }} key={`overflow-${slot.key}`}>
+        <button
+          type="button"
+          class="overflow-trigger"
+          data-key={slot.key}
+          aria-haspopup="menu"
+          aria-expanded={isOpen ? 'true' : 'false'}
+          aria-label={triggerLabel}
+          onClick={(ev: MouseEvent) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+            this.toggleOverflow(slot.key);
+          }}
+        >
+          <span aria-hidden="true">…</span>
+        </button>
+        {isOpen ? (
+          <ul class="overflow-menu" role="menu">
+            {slot.pages.map((page, index) => {
+              const ariaLabel = this.formatLabel(this.pageAriaLabel, { page, total: this.totalPages });
+              return (
+                <li role="none" key={`overflow-${slot.key}-${page}`}>
+                  <button
+                    type="button"
+                    class="overflow-menu-item"
+                    role="menuitem"
+                    tabIndex={this.focusedOverflowIndex === index ? 0 : -1}
+                    aria-label={ariaLabel}
+                    onClick={(ev: MouseEvent) => {
+                      ev.preventDefault();
+                      ev.stopPropagation();
+                      const key = slot.key;
+                      this.closeOverflow();
+                      this.goToPage(page);
+                      // Restore focus to the closed trigger so keyboard users
+                      // can continue navigating.
+                      requestAnimationFrame(() => this.focusOverflowTrigger(key));
+                    }}
+                  >
+                    {page}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        ) : null}
       </li>
     );
   }
 
   private renderPrev() {
     if (!this.showPrevNext) return null;
-    const disabled = this.currentPage <= 1;
-    const targetPage = Math.max(1, this.currentPage - 1);
+    // Per Figma "first-page" spec: hide rather than disable when on page 1.
+    if (this.currentPage <= 1) return null;
+    const targetPage = this.currentPage - 1;
     const ariaLabel = this.formatLabel(this.prevAriaLabel, { page: targetPage });
     return (
       <button
         type="button"
-        class={{ 'nav-button': true, 'nav-prev': true, 'is-disabled': disabled }}
+        class={{ 'nav-button': true, 'nav-prev': true }}
         aria-label={ariaLabel}
-        aria-disabled={disabled ? 'true' : null}
-        disabled={disabled}
         onClick={this.onPrevClick}
       >
         <span class="nav-icon">
@@ -278,16 +478,15 @@ export class CorPagination {
 
   private renderNext() {
     if (!this.showPrevNext) return null;
-    const disabled = this.currentPage >= this.totalPages;
-    const targetPage = Math.min(this.totalPages, this.currentPage + 1);
+    // Per Figma "last-page" spec: hide rather than disable when on last page.
+    if (this.currentPage >= this.totalPages) return null;
+    const targetPage = this.currentPage + 1;
     const ariaLabel = this.formatLabel(this.nextAriaLabel, { page: targetPage });
     return (
       <button
         type="button"
-        class={{ 'nav-button': true, 'nav-next': true, 'is-disabled': disabled }}
+        class={{ 'nav-button': true, 'nav-next': true }}
         aria-label={ariaLabel}
-        aria-disabled={disabled ? 'true' : null}
-        disabled={disabled}
         onClick={this.onNextClick}
       >
         <span class="nav-label">{this.nextLabel}</span>
@@ -306,20 +505,13 @@ export class CorPagination {
     }
 
     const slots = this.computeRange();
-    let ellipsisCount = 0;
 
     return (
       <Host>
-        <nav class="root" aria-label={this.ariaLabel}>
+        <nav class="root" aria-label={this.resolvedAriaLabel}>
           {this.renderPrev()}
           <ul class="pages" role="list">
-            {slots.map(slot => {
-              if (slot === ELLIPSIS) {
-                ellipsisCount += 1;
-                return this.renderEllipsis(`ellipsis-${ellipsisCount}`);
-              }
-              return this.renderPageItem(slot);
-            })}
+            {slots.map(slot => (isOverflow(slot) ? this.renderOverflow(slot) : this.renderPageItem(slot)))}
           </ul>
           {this.renderNext()}
         </nav>

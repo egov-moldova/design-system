@@ -1608,20 +1608,18 @@ export namespace Components {
      * Renders a list of page-number buttons flanked by Previous / Next controls.
      * The visible page list is computed from `currentPage`, `totalPages`,
      * `siblingCount`, and `boundaryCount`. When the total exceeds the visible
-     * window, ellipses (`...`) appear at the start and/or end of the range.
+     * window, an interactive overflow button (`…`) collapses the skipped range
+     * and lets users jump directly to any of those pages via a dropdown menu
+     * (Figma "overflow-active" interaction).
      * The component is internally controlled but exposes a `corChange` event so
      * the host can drive the active page. Updating `current-page` from outside
      * is also honoured (e.g. when the URL changes via routing).
+     * Previous / Next buttons are hidden at the boundaries (page 1 hides Prev,
+     * the last page hides Next) instead of being rendered in a disabled state —
+     * this matches the Figma "first-page" / "last-page" specification.
      * @element cor-pagination
-     * @event corChange - Fires when the user activates a different page.
-     *             Detail: `{ page, previousPage }`.
      */
     interface CorPagination {
-        /**
-          * Accessible name for the outer `<nav>` landmark.
-          * @default 'Navigare pagini'
-         */
-        "ariaLabel": string;
         /**
           * Number of page buttons shown at the start and end of the range (before / after the leading / trailing ellipsis).
           * @default 1
@@ -1633,6 +1631,10 @@ export namespace Components {
          */
         "currentPage": number;
         /**
+          * Accessible name for the navigation landmark when no `aria-label` is set on the host. Defaults to "Navigare pagini". Setting `aria-label` directly on the host also works — the consumer-supplied attribute wins and is captured on connect into `resolvedAriaLabel`, then stripped from the host to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker / cor-modal).
+         */
+        "label"?: string;
+        /**
           * Accessible label template for the Next button. The `{page}` token is replaced with the target page number.
           * @default 'Pagina următoare, mergi la pagina {page}'
          */
@@ -1642,6 +1644,11 @@ export namespace Components {
           * @default 'Următor'
          */
         "nextLabel": string;
+        /**
+          * Accessible label template for the overflow ("…") button. The `{from}` and `{to}` tokens are replaced with the first and last page in the collapsed range.
+          * @default 'Arată paginile de la {from} la {to}'
+         */
+        "overflowAriaLabel": string;
         /**
           * Accessible label template for an individual page button. Tokens `{page}` and `{total}` are substituted with the page number and total page count.
           * @default 'Pagina {page} din {total}'
@@ -1658,7 +1665,7 @@ export namespace Components {
          */
         "prevLabel": string;
         /**
-          * Whether to render the Previous / Next navigation buttons.
+          * Whether to render the Previous / Next navigation buttons at all. When `true` (default) they still hide individually at the corresponding boundary (page 1 hides Prev, last page hides Next).
           * @default true
          */
         "showPrevNext": boolean;
@@ -3790,13 +3797,16 @@ declare global {
      * Renders a list of page-number buttons flanked by Previous / Next controls.
      * The visible page list is computed from `currentPage`, `totalPages`,
      * `siblingCount`, and `boundaryCount`. When the total exceeds the visible
-     * window, ellipses (`...`) appear at the start and/or end of the range.
+     * window, an interactive overflow button (`…`) collapses the skipped range
+     * and lets users jump directly to any of those pages via a dropdown menu
+     * (Figma "overflow-active" interaction).
      * The component is internally controlled but exposes a `corChange` event so
      * the host can drive the active page. Updating `current-page` from outside
      * is also honoured (e.g. when the URL changes via routing).
+     * Previous / Next buttons are hidden at the boundaries (page 1 hides Prev,
+     * the last page hides Next) instead of being rendered in a disabled state —
+     * this matches the Figma "first-page" / "last-page" specification.
      * @element cor-pagination
-     * @event corChange - Fires when the user activates a different page.
-     *             Detail: `{ page, previousPage }`.
      */
     interface HTMLCorPaginationElement extends Components.CorPagination, HTMLStencilElement {
         addEventListener<K extends keyof HTMLCorPaginationElementEventMap>(type: K, listener: (this: HTMLCorPaginationElement, ev: CorPaginationCustomEvent<HTMLCorPaginationElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -6155,20 +6165,18 @@ declare namespace LocalJSX {
      * Renders a list of page-number buttons flanked by Previous / Next controls.
      * The visible page list is computed from `currentPage`, `totalPages`,
      * `siblingCount`, and `boundaryCount`. When the total exceeds the visible
-     * window, ellipses (`...`) appear at the start and/or end of the range.
+     * window, an interactive overflow button (`…`) collapses the skipped range
+     * and lets users jump directly to any of those pages via a dropdown menu
+     * (Figma "overflow-active" interaction).
      * The component is internally controlled but exposes a `corChange` event so
      * the host can drive the active page. Updating `current-page` from outside
      * is also honoured (e.g. when the URL changes via routing).
+     * Previous / Next buttons are hidden at the boundaries (page 1 hides Prev,
+     * the last page hides Next) instead of being rendered in a disabled state —
+     * this matches the Figma "first-page" / "last-page" specification.
      * @element cor-pagination
-     * @event corChange - Fires when the user activates a different page.
-     *             Detail: `{ page, previousPage }`.
      */
     interface CorPagination {
-        /**
-          * Accessible name for the outer `<nav>` landmark.
-          * @default 'Navigare pagini'
-         */
-        "ariaLabel"?: string;
         /**
           * Number of page buttons shown at the start and end of the range (before / after the leading / trailing ellipsis).
           * @default 1
@@ -6180,6 +6188,10 @@ declare namespace LocalJSX {
          */
         "currentPage"?: number;
         /**
+          * Accessible name for the navigation landmark when no `aria-label` is set on the host. Defaults to "Navigare pagini". Setting `aria-label` directly on the host also works — the consumer-supplied attribute wins and is captured on connect into `resolvedAriaLabel`, then stripped from the host to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker / cor-modal).
+         */
+        "label"?: string;
+        /**
           * Accessible label template for the Next button. The `{page}` token is replaced with the target page number.
           * @default 'Pagina următoare, mergi la pagina {page}'
          */
@@ -6189,7 +6201,15 @@ declare namespace LocalJSX {
           * @default 'Următor'
          */
         "nextLabel"?: string;
+        /**
+          * Fires when the user activates a different page via click on a numbered button, the Previous / Next controls, or a page in the overflow dropdown. Carries the new and previous page numbers so consumers can drive routing or data fetches.
+         */
         "onCorChange"?: (event: CorPaginationCustomEvent<PaginationChangeDetail>) => void;
+        /**
+          * Accessible label template for the overflow ("…") button. The `{from}` and `{to}` tokens are replaced with the first and last page in the collapsed range.
+          * @default 'Arată paginile de la {from} la {to}'
+         */
+        "overflowAriaLabel"?: string;
         /**
           * Accessible label template for an individual page button. Tokens `{page}` and `{total}` are substituted with the page number and total page count.
           * @default 'Pagina {page} din {total}'
@@ -6206,7 +6226,7 @@ declare namespace LocalJSX {
          */
         "prevLabel"?: string;
         /**
-          * Whether to render the Previous / Next navigation buttons.
+          * Whether to render the Previous / Next navigation buttons at all. When `true` (default) they still hide individually at the corresponding boundary (page 1 hides Prev, last page hides Next).
           * @default true
          */
         "showPrevNext"?: boolean;
@@ -8036,10 +8056,11 @@ declare namespace LocalJSX {
         "showPrevNext": boolean;
         "prevLabel": string;
         "nextLabel": string;
-        "ariaLabel": string;
+        "label": string;
         "prevAriaLabel": string;
         "nextAriaLabel": string;
         "pageAriaLabel": string;
+        "overflowAriaLabel": string;
     }
     interface CorPhoneInputAttributes {
         "variant": PhoneInputVariant;
@@ -8674,13 +8695,16 @@ declare module "@stencil/core" {
              * Renders a list of page-number buttons flanked by Previous / Next controls.
              * The visible page list is computed from `currentPage`, `totalPages`,
              * `siblingCount`, and `boundaryCount`. When the total exceeds the visible
-             * window, ellipses (`...`) appear at the start and/or end of the range.
+             * window, an interactive overflow button (`…`) collapses the skipped range
+             * and lets users jump directly to any of those pages via a dropdown menu
+             * (Figma "overflow-active" interaction).
              * The component is internally controlled but exposes a `corChange` event so
              * the host can drive the active page. Updating `current-page` from outside
              * is also honoured (e.g. when the URL changes via routing).
+             * Previous / Next buttons are hidden at the boundaries (page 1 hides Prev,
+             * the last page hides Next) instead of being rendered in a disabled state —
+             * this matches the Figma "first-page" / "last-page" specification.
              * @element cor-pagination
-             * @event corChange - Fires when the user activates a different page.
-             *             Detail: `{ page, previousPage }`.
              */
             "cor-pagination": LocalJSX.IntrinsicElements["cor-pagination"] & JSXBase.HTMLAttributes<HTMLCorPaginationElement>;
             /**
