@@ -23,6 +23,9 @@
 
   display: flex;
   flex-direction: column;
+  /* `relative` so the absolutely-positioned calendar popover anchors below the
+     field instead of escaping to the document body. */
+  position: relative;
   gap: var(--date-input-field-gap);
   inline-size: 100%;
   font-family: var(--date-input-control-font-family);
@@ -223,6 +226,16 @@
 
 .ghost-remaining {
   color: var(--_text-placeholder);
+  /* Known limitation: axe's `color-contrast.bgOverlap` heuristic flags this
+     span as Incomplete on every partial-typed value (e.g. user types "15/" →
+     ghost-remaining shows "MM/YYYY"). The native `<input>` element above has a
+     transparent fill but its bounding box covers the field, and axe gives up
+     when one element overlaps another regardless of whether their paint pixels
+     interfere. The ghost is aria-hidden and the same hint is exposed to AT via
+     `aria-placeholder` on the native input — actual contrast (#757575 on white,
+     ~4.54:1) meets WCAG 1.4.3 AA. Same pattern Material UI / Carbon use; same
+     known false-positive. No CSS or DOM tweak can clear this without removing
+     the ghost-overlay UX. */
 }
 
 :host(.is-disabled) .ghost-remaining {
@@ -242,10 +255,40 @@
   inline-size: var(--_icon-size);
   block-size: var(--_icon-size);
   color: var(--date-input-icon-color-default);
+  /* Reset native button chrome — the icon stands on its own. */
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  border-radius: var(--border-radius-4);
+}
+
+.trailing-icon:disabled {
+  cursor: not-allowed;
+}
+
+.trailing-icon:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
+    0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
 }
 
 :host(.is-disabled) .trailing-icon {
   color: var(--date-input-icon-color-disabled);
+}
+
+/* ---------- Calendar popover (cor-date-picker overlay) ---------- */
+
+.picker-popover {
+  position: absolute;
+  inset-block-start: 100%;
+  inset-inline-start: 0;
+  z-index: 10;
+  margin-block-start: var(--spacing-4);
+  display: block;
 }
 
 /* ---------- Assistive (helper / error) ---------- */

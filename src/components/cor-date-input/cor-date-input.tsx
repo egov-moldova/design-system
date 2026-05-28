@@ -1,4 +1,16 @@
-import { AttachInternals, Component, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
+import {
+  AttachInternals,
+  Component,
+  Element,
+  Event,
+  EventEmitter,
+  Host,
+  Listen,
+  Prop,
+  State,
+  Watch,
+  h,
+} from '@stencil/core';
 
 import { DATE_INPUT_FORMATS, DATE_INPUT_SIZES, DATE_INPUT_VARIANTS } from './cor-date-input.types';
 import type {
@@ -175,6 +187,7 @@ export class CorDateInput {
   @State() private hasHelperSlot: boolean = false;
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
+  @State() private pickerOpen: boolean = false;
 
   @Element() host!: HTMLCorDateInputElement;
 
@@ -269,9 +282,75 @@ export class CorDateInput {
     }
   }
 
+  /**
+   * Close the popover when a click lands outside the input (light DOM or
+   * shadow DOM). The picker itself lives inside the input's shadow, so the
+   * composedPath includes both surfaces.
+   */
+  @Listen('click', { target: 'window' })
+  handleOutsideClick(ev: MouseEvent): void {
+    if (!this.pickerOpen) return;
+    const path = ev.composedPath();
+    if (!path.includes(this.host)) {
+      this.pickerOpen = false;
+    }
+  }
+
+  /** Escape closes the popover and returns focus to the trailing-icon trigger. */
+  @Listen('keydown')
+  handlePopoverKeyDown(ev: KeyboardEvent): void {
+    if (!this.pickerOpen || ev.key !== 'Escape') return;
+    ev.stopPropagation();
+    this.pickerOpen = false;
+    const trigger = this.host.shadowRoot?.querySelector<HTMLButtonElement>('.trailing-icon');
+    trigger?.focus();
+  }
+
   private spec(): FormatSpec {
     return FORMAT_SPECS[this.format];
   }
+
+  /**
+   * Reverse of `toIsoValue`: format an ISO `YYYY-MM-DD` into the configured
+   * display pattern (DD/MM/YYYY, MM/DD/YYYY, etc.). Used when the popover
+   * picker emits a selection and we need to mirror it back into the masked
+   * field.
+   */
+  private fromIsoValue(iso: string): string {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) return '';
+    const [yyyy, mm, dd] = iso.split('-');
+    const spec = this.spec();
+    let display = '';
+    for (let i = 0; i < spec.segments.length; i += 1) {
+      const seg = spec.segments[i];
+      const value = seg.kind === 'YYYY' ? yyyy : seg.kind === 'MM' ? mm : dd;
+      display += value;
+      if (i < spec.segments.length - 1) display += spec.separator;
+    }
+    return display;
+  }
+
+  private readonly togglePicker = (ev: MouseEvent) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    if (this.isInert()) return;
+    this.pickerOpen = !this.pickerOpen;
+  };
+
+  private readonly handlePickerChange = (ev: CustomEvent<{ value: string | string[] }>) => {
+    const next = ev.detail.value;
+    const iso = typeof next === 'string' ? next : Array.isArray(next) ? next[0] : '';
+    if (!iso) return;
+    const display = this.fromIsoValue(iso);
+    if (display === this.value) {
+      this.pickerOpen = false;
+      return;
+    }
+    this.value = display;
+    this.internals.setFormValue(display, display);
+    this.corChange.emit({ value: display, isoValue: this.withinBounds(iso) ? iso : null });
+    this.pickerOpen = false;
+  };
 
   /**
    * Re-format a raw input string into the configured pattern.
@@ -554,12 +633,15 @@ export class CorDateInput {
               onBlur={this.handleBlur}
               onKeyDown={this.handleKeyDown}
             />
-            {/* Ghost overlay: keeps the unfilled segments of the format pattern visible
-                under the caret as the user types. Only rendered when the user has typed
-                a partial value — the empty case is fully handled by the native input's
-                `placeholder` attribute (avoids redundant overlay text + clears axe's
-                `color-contrast.bgOverlap` Incomplete on an otherwise-fine placeholder). */}
-            {this.value.length > 0 && ghost.remaining ? (
+            {/* Ghost overlay: keeps the unfilled segments of the format pattern
+                visible under the caret WHILE the user types. Gated on
+                `isFocused` so partial-typed-blurred values stop showing the
+                hint — that's a transient state and exposing the ghost there
+                trips axe's `color-contrast.bgOverlap` heuristic without
+                adding real value (the input has already lost focus; the user
+                isn't actively being guided). The empty case still relies on
+                the native `placeholder`. */}
+            {this.isFocused && this.value.length > 0 && ghost.remaining ? (
               <span class="ghost" aria-hidden="true" part="ghost">
                 <span class="ghost-typed">{ghost.typed}</span>
                 <span class="ghost-remaining">{ghost.remaining}</span>
@@ -567,10 +649,37 @@ export class CorDateInput {
             ) : null}
           </div>
 
-          <span class="trailing-icon" part="trailing-icon" aria-hidden="true">
+          <button
+            type="button"
+            class="trailing-icon"
+            part="trailing-icon"
+            aria-label="Deschide calendarul"
+            aria-haspopup="dialog"
+            aria-expanded={this.pickerOpen ? 'true' : 'false'}
+            /* `aria-controls` references the popover ID — only emit it while the
+               popover is actually mounted so axe's `aria-valid-attr-value` rule
+               doesn't see a dangling id. */
+            aria-controls={this.pickerOpen ? `date-input-picker-${this.instanceId}` : undefined}
+            disabled={effectivelyDisabled}
+            onClick={this.togglePicker}
+          >
             <cor-icon name="calendar" size={iconSize} />
-          </span>
+          </button>
         </div>
+
+        {this.pickerOpen ? (
+          <div class="picker-popover" part="picker-popover" role="dialog" id={`date-input-picker-${this.instanceId}`}>
+            <cor-date-picker
+              mode="single"
+              breakpoint="desktop"
+              locale="ro-RO"
+              value={this.toIsoValue(this.value) ?? undefined}
+              min={this.min}
+              max={this.max}
+              onCorChange={this.handlePickerChange}
+            ></cor-date-picker>
+          </div>
+        ) : null}
 
         {this.hasErrorMessage() ? (
           <div class="assistive assistive-error" id={this.errorId} part="error">

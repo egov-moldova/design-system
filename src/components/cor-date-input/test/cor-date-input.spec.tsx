@@ -161,11 +161,17 @@ describe('cor-date-input', () => {
       expect(input?.getAttribute('placeholder')).toBe('DD/MM/YYYY');
     });
 
-    it('reduces the ghost remaining hint as the value fills', async () => {
-      const { root } = await render(<cor-date-input label="x" value="15/04/"></cor-date-input>);
-      const ghost = queryGhostRemaining(root);
+    it('shows the ghost remaining hint only while the input is focused (partial value)', async () => {
+      const { root, waitForChanges } = await render(<cor-date-input label="x" value="15/04/"></cor-date-input>);
+      // Unfocused — ghost is suppressed to avoid axe's `bgOverlap` false-positive
+      // on a transient state. The native `placeholder` carries the format to AT.
+      expect(queryGhostRemaining(root)).toBe(null);
+      // Focus the native input to surface the ghost.
+      const native = root?.shadowRoot?.querySelector<HTMLInputElement>('input');
+      native?.dispatchEvent(new FocusEvent('focus'));
+      await waitForChanges();
       // After `15/04/` the remaining hint should only be `YYYY`.
-      expect(ghost?.textContent).toBe('YYYY');
+      expect(queryGhostRemaining(root)?.textContent).toBe('YYYY');
     });
 
     it('omits the ghost overlay when the value is fully populated', async () => {
@@ -416,10 +422,15 @@ describe('cor-date-input', () => {
       expect(queryNative(root)?.getAttribute('aria-placeholder')).toBe('DD/MM/YYYY');
     });
 
-    it('trailing calendar icon is decorative (aria-hidden on its wrapper)', async () => {
+    it('trailing calendar icon is a labeled interactive button that opens the popover picker', async () => {
       const { root } = await render(<cor-date-input label="x"></cor-date-input>);
-      const wrapper = root?.shadowRoot?.querySelector('.trailing-icon');
-      expect(wrapper?.getAttribute('aria-hidden')).toBe('true');
+      const trigger = root?.shadowRoot?.querySelector<HTMLButtonElement>('.trailing-icon');
+      expect(trigger?.tagName.toLowerCase()).toBe('button');
+      // It must NOT be aria-hidden — it's interactive and exposed to AT.
+      expect(trigger?.getAttribute('aria-hidden')).toBe(null);
+      expect(trigger?.getAttribute('aria-label')).toBeTruthy();
+      expect(trigger?.getAttribute('aria-haspopup')).toBe('dialog');
+      expect(trigger?.getAttribute('aria-expanded')).toBe('false');
     });
   });
 });
