@@ -1924,10 +1924,6 @@ export namespace Components {
          */
         "amountLabel"?: string;
         /**
-          * Override for the receipt's accessible name. Defaults to the resolved title plus status (e.g. "Bon de plată — Plătit").
-         */
-        "ariaLabel"?: string;
-        /**
           * Currency code rendered next to the amount.
           * @default 'MDL'
          */
@@ -1956,6 +1952,10 @@ export namespace Components {
           * "Trimite email" button label.
          */
         "emailLabel"?: string;
+        /**
+          * Override for the receipt's accessible name. Defaults to the resolved title plus status (e.g. "Bon de plată — Plătit"). Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker / cor-modal / cor-pagination).
+         */
+        "label"?: string;
         /**
           * BCP-47 locale used by the built-in date formatter. Override for non-Romanian surfaces.
           * @default 'ro-RO'
@@ -6537,10 +6537,6 @@ declare namespace LocalJSX {
          */
         "amountLabel"?: string;
         /**
-          * Override for the receipt's accessible name. Defaults to the resolved title plus status (e.g. "Bon de plată — Plătit").
-         */
-        "ariaLabel"?: string;
-        /**
           * Currency code rendered next to the amount.
           * @default 'MDL'
          */
@@ -6569,6 +6565,10 @@ declare namespace LocalJSX {
           * "Trimite email" button label.
          */
         "emailLabel"?: string;
+        /**
+          * Override for the receipt's accessible name. Defaults to the resolved title plus status (e.g. "Bon de plată — Plătit"). Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker / cor-modal / cor-pagination).
+         */
+        "label"?: string;
         /**
           * BCP-47 locale used by the built-in date formatter. Override for non-Romanian surfaces.
           * @default 'ro-RO'
@@ -8113,7 +8113,7 @@ declare namespace LocalJSX {
         "transactionId": string;
         "qrData": string;
         "showActions": boolean;
-        "ariaLabel": string;
+        "label": string;
         "statusLabel": string;
         "amountLabel": string;
         "dateLabel": string;

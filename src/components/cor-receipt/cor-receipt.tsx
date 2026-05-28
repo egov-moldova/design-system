@@ -1,4 +1,4 @@
-import { Component, Element, Event, Host, Prop, State, h } from '@stencil/core';
+import { Component, Element, Event, Host, Prop, State, Watch, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
 import { encodeQrModules } from './qr/qr-encoder';
@@ -136,9 +136,14 @@ export class CorReceipt {
 
   /**
    * Override for the receipt's accessible name. Defaults to the resolved
-   * title plus status (e.g. "Bon de plată — Plătit").
+   * title plus status (e.g. "Bon de plată — Plătit"). Setting `aria-label`
+   * directly on the host also works — captured on connect into
+   * `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer /
+   * render-loop antipattern (same pattern as cor-radio / cor-switch /
+   * cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker / cor-modal
+   * / cor-pagination).
    */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop() label?: string;
 
   // ---- Per-row label overrides (Romanian defaults) ----
   /** "Status:" inline label preceding the tag. */
@@ -173,6 +178,7 @@ export class CorReceipt {
   @State() private hasQrSlot: boolean = false;
   @State() private hasActionsSlot: boolean = false;
   @State() private hasExtraSlot: boolean = false;
+  @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLCorReceiptElement;
 
@@ -200,7 +206,23 @@ export class CorReceipt {
       );
       this.status = undefined;
     }
+    this.captureAriaLabel();
     this.detectSlots();
+  }
+
+  private captureAriaLabel(): void {
+    const userLabel = this.host.getAttribute('aria-label');
+    if (userLabel && userLabel.length > 0) {
+      this.resolvedAriaLabel = userLabel;
+      this.host.removeAttribute('aria-label');
+    } else if (this.label && this.label.length > 0) {
+      this.resolvedAriaLabel = this.label;
+    }
+  }
+
+  @Watch('label')
+  protected syncLabel(next?: string): void {
+    if (next && next.length > 0) this.resolvedAriaLabel = next;
   }
 
   private detectSlots(): void {
@@ -236,7 +258,7 @@ export class CorReceipt {
   }
 
   private resolveAriaLabel(): string {
-    if (this.ariaLabel && this.ariaLabel.trim().length > 0) return this.ariaLabel.trim();
+    if (this.resolvedAriaLabel && this.resolvedAriaLabel.trim().length > 0) return this.resolvedAriaLabel.trim();
     const t = this.resolveTitle();
     if (this.status) return `${t}, ${STATUS_DEFAULT_LABEL[this.status]}`;
     return t;
@@ -289,6 +311,11 @@ export class CorReceipt {
         segments.push(`M${start} ${r}h${c - start}v1h-${c - start}z`);
       }
     }
+    // Intentional inline vector markup (suppresses ANTIPATTERN-021-RAW-SVG):
+    // the QR matrix is computed at runtime from the consumer's `qrData` prop.
+    // The path is built per-receipt from the encoded modules — there is no
+    // static glyph to ship through `<cor-icon>`. Same precedent as cor-spinner /
+    // cor-checkbox check / cor-accordion trigger.
     return (
       <svg
         class="qr-svg"
@@ -407,8 +434,12 @@ export class CorReceipt {
     return (
       <figure class="receipt-qr" aria-label={ariaLabel} role="figure">
         <div class="receipt-qr-frame">
-          <slot name="qr" onSlotchange={this.onSlotChange('qr')} />
-          {!showSlot ? this.renderQrSvg() : null}
+          {/* Single slot path — when consumers project their own `<slot="qr">`
+              child it wins; otherwise the slot fallback renders the built-in
+              byte-mode QR (slot-first content rule, ANTIPATTERN-026 compliant). */}
+          <slot name="qr" onSlotchange={this.onSlotChange('qr')}>
+            {this.renderQrSvg()}
+          </slot>
         </div>
         <figcaption class="receipt-qr-caption">{caption}</figcaption>
       </figure>
