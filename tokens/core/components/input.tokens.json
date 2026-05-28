@@ -67,7 +67,8 @@
         "default": { "$value": "{color.text.base.secondary}", "$type": "color" },
         "error": { "$value": "{color.text.danger.default}", "$type": "color" },
         "warning": { "$value": "{color.text.warning.default}", "$type": "color" },
-        "success": { "$value": "{color.text.positive.default}", "$type": "color" }
+        "$comment": "Use `text.positive.on-secondary` (palette.green.700, ~5.2:1 on white) — `text.positive.default` (palette.green.600) is only 3.73:1 and fails WCAG 1.4.3 AA as body text.",
+        "success": { "$value": "{color.text.positive.on-secondary}", "$type": "color" }
       }
     },
     "icon": {

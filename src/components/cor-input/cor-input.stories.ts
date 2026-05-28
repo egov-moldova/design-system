@@ -106,7 +106,7 @@ export const Default: Story = {
     size: 'lg',
     type: 'text',
     label: 'Label',
-    placeholder: 'DD/MM/YYYY',
+    placeholder: 'Placeholder',
     value: '',
     helperText: '',
     errorText: '',
@@ -152,7 +152,7 @@ export const AllVariants: Story = {
       INPUT_VARIANTS.map(variant =>
         cell(
           variant,
-          /*html*/ `<cor-input variant="${variant}" size="lg" label="Label" placeholder="DD/MM/YYYY"></cor-input>`,
+          /*html*/ `<cor-input variant="${variant}" size="lg" label="Label" placeholder="Placeholder"></cor-input>`,
         ),
       ).join(''),
     ),
@@ -161,7 +161,7 @@ export const AllVariants: Story = {
     docs: {
       source: {
         code: INPUT_VARIANTS.map(
-          v => `<cor-input variant="${v}" size="lg" label="Label" placeholder="DD/MM/YYYY"></cor-input>`,
+          v => `<cor-input variant="${v}" size="lg" label="Label" placeholder="Placeholder"></cor-input>`,
         ).join('\n'),
       },
     },
@@ -173,14 +173,14 @@ export const AllSizes: Story = {
   render: () =>
     wrap(
       INPUT_SIZES.map(size =>
-        cell(size, /*html*/ `<cor-input size="${size}" label="Label" placeholder="DD/MM/YYYY"></cor-input>`),
+        cell(size, /*html*/ `<cor-input size="${size}" label="Label" placeholder="Placeholder"></cor-input>`),
       ).join(''),
     ),
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
-        code: INPUT_SIZES.map(s => `<cor-input size="${s}" label="Label" placeholder="DD/MM/YYYY"></cor-input>`).join(
+        code: INPUT_SIZES.map(s => `<cor-input size="${s}" label="Label" placeholder="Placeholder"></cor-input>`).join(
           '\n',
         ),
       },
@@ -193,14 +193,14 @@ export const States: Story = {
   render: () =>
     wrap(
       [
-        cell('default', /*html*/ `<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY"></cor-input>`),
-        cell('hover (use mouse)', /*html*/ `<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY"></cor-input>`),
-        cell('focus (use Tab)', /*html*/ `<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY"></cor-input>`),
-        cell('loading', /*html*/ `<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY" loading></cor-input>`),
+        cell('default', /*html*/ `<cor-input size="lg" label="Label" placeholder="Placeholder"></cor-input>`),
+        cell('hover (use mouse)', /*html*/ `<cor-input size="lg" label="Label" placeholder="Placeholder"></cor-input>`),
+        cell('focus (use Tab)', /*html*/ `<cor-input size="lg" label="Label" placeholder="Placeholder"></cor-input>`),
+        cell('loading', /*html*/ `<cor-input size="lg" label="Label" placeholder="Placeholder" loading></cor-input>`),
         cell('filled', /*html*/ `<cor-input size="lg" label="Label" value="15/04/2025"></cor-input>`),
         cell('read-only', /*html*/ `<cor-input size="lg" label="Label" value="15/04/2025" readonly></cor-input>`),
-        cell('disabled', /*html*/ `<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY" disabled></cor-input>`),
-        cell('mandatory', /*html*/ `<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY" required></cor-input>`),
+        cell('disabled', /*html*/ `<cor-input size="lg" label="Label" placeholder="Placeholder" disabled></cor-input>`),
+        cell('mandatory', /*html*/ `<cor-input size="lg" label="Label" placeholder="Placeholder" required></cor-input>`),
       ].join(''),
     ),
   parameters: {
@@ -208,12 +208,12 @@ export const States: Story = {
     docs: {
       source: {
         code: [
-          '<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY"></cor-input>',
-          '<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY" loading></cor-input>',
+          '<cor-input size="lg" label="Label" placeholder="Placeholder"></cor-input>',
+          '<cor-input size="lg" label="Label" placeholder="Placeholder" loading></cor-input>',
           '<cor-input size="lg" label="Label" value="15/04/2025"></cor-input>',
           '<cor-input size="lg" label="Label" value="15/04/2025" readonly></cor-input>',
-          '<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY" disabled></cor-input>',
-          '<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY" required></cor-input>',
+          '<cor-input size="lg" label="Label" placeholder="Placeholder" disabled></cor-input>',
+          '<cor-input size="lg" label="Label" placeholder="Placeholder" required></cor-input>',
         ].join('\n'),
       },
     },
@@ -283,11 +283,11 @@ export const WithHelperText: Story = {
       [
         cell(
           'default',
-          /*html*/ `<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY" helper-text="Helper message displayed here"></cor-input>`,
+          /*html*/ `<cor-input size="lg" label="Label" placeholder="Placeholder" helper-text="Helper message displayed here"></cor-input>`,
         ),
         cell(
           'mandatory',
-          /*html*/ `<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY" helper-text="Required field" required></cor-input>`,
+          /*html*/ `<cor-input size="lg" label="Label" placeholder="Placeholder" helper-text="Required field" required></cor-input>`,
         ),
       ].join(''),
     ),
@@ -296,8 +296,50 @@ export const WithHelperText: Story = {
     docs: {
       source: {
         code: [
-          '<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY" helper-text="Helper message displayed here"></cor-input>',
-          '<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY" helper-text="Required field" required></cor-input>',
+          '<cor-input size="lg" label="Label" placeholder="Placeholder" helper-text="Helper message displayed here"></cor-input>',
+          '<cor-input size="lg" label="Label" placeholder="Placeholder" helper-text="Required field" required></cor-input>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const AssistiveText: Story = {
+  name: 'Assistive Text',
+  render: () =>
+    wrapWide(
+      [
+        cell(
+          'default',
+          /*html*/ `<cor-input size="lg" label="Label" placeholder="Placeholder" helper-text="Helper message displayed here"></cor-input>`,
+        ),
+        cell(
+          'warning',
+          /*html*/ `<cor-input size="lg" variant="warning" label="Label" placeholder="Placeholder" helper-text="Warning message displayed here"></cor-input>`,
+        ),
+        cell(
+          'destructive',
+          /*html*/ `<cor-input size="lg" variant="destructive" label="Label" placeholder="Placeholder" invalid error-text="Error message displayed here"></cor-input>`,
+        ),
+        cell(
+          'success',
+          /*html*/ `<cor-input size="lg" variant="success" label="Label" placeholder="Placeholder" helper-text="Success message displayed here"></cor-input>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'Each variant pairs its assistive text with a matching icon: helper (no icon), warning (triangle), destructive (error circle), success (check circle). Mirrors the Figma "Assistive Text" reference.',
+      },
+      source: {
+        code: [
+          '<cor-input size="lg" label="Label" placeholder="Placeholder" helper-text="Helper message displayed here"></cor-input>',
+          '<cor-input size="lg" variant="warning" label="Label" placeholder="Placeholder" helper-text="Warning message displayed here"></cor-input>',
+          '<cor-input size="lg" variant="destructive" label="Label" placeholder="Placeholder" invalid error-text="Error message displayed here"></cor-input>',
+          '<cor-input size="lg" variant="success" label="Label" placeholder="Placeholder" helper-text="Success message displayed here"></cor-input>',
         ].join('\n'),
       },
     },
@@ -315,7 +357,7 @@ export const WithError: Story = {
         ),
         cell(
           'explicit destructive',
-          /*html*/ `<cor-input size="lg" variant="destructive" label="Label" placeholder="DD/MM/YYYY" error-text="Câmpul este obligatoriu" invalid></cor-input>`,
+          /*html*/ `<cor-input size="lg" variant="destructive" label="Label" placeholder="Placeholder" error-text="Câmpul este obligatoriu" invalid></cor-input>`,
         ),
       ].join(''),
     ),
@@ -325,7 +367,7 @@ export const WithError: Story = {
       source: {
         code: [
           '<cor-input size="lg" label="Dată naștere" value="45/MM/YYYY" invalid error-text="Ziua trebuie să fie între 01 și 31"></cor-input>',
-          '<cor-input size="lg" variant="destructive" label="Label" placeholder="DD/MM/YYYY" error-text="Câmpul este obligatoriu" invalid></cor-input>',
+          '<cor-input size="lg" variant="destructive" label="Label" placeholder="Placeholder" error-text="Câmpul este obligatoriu" invalid></cor-input>',
         ].join('\n'),
       },
     },
@@ -416,7 +458,7 @@ export const WithIcons: Story = {
         ),
         cell(
           'icon-end',
-          /*html*/ `<cor-input size="lg" label="Date" placeholder="DD/MM/YYYY">
+          /*html*/ `<cor-input size="lg" label="Date" placeholder="Placeholder">
             <cor-icon slot="icon-end" name="calendar" size="24"></cor-icon>
           </cor-input>`,
         ),
@@ -428,7 +470,7 @@ export const WithIcons: Story = {
       source: {
         code: [
           '<cor-input size="lg" label="Search" placeholder="Search"><cor-icon slot="icon-start" name="search" size="20"></cor-icon></cor-input>',
-          '<cor-input size="lg" label="Date" placeholder="DD/MM/YYYY"><cor-icon slot="icon-end" name="calendar" size="24"></cor-icon></cor-input>',
+          '<cor-input size="lg" label="Date" placeholder="Placeholder"><cor-icon slot="icon-end" name="calendar" size="24"></cor-icon></cor-input>',
         ].join('\n'),
       },
     },
@@ -442,11 +484,11 @@ export const EdgeCases: Story = {
       [
         cell(
           'label truncation (single line)',
-          /*html*/ `<cor-input size="lg" label="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services" placeholder="DD/MM/YYYY"></cor-input>`,
+          /*html*/ `<cor-input size="lg" label="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services" placeholder="Placeholder"></cor-input>`,
         ),
         cell(
           'helper truncation (two lines)',
-          /*html*/ `<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY" helper-text="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services that respect their time."></cor-input>`,
+          /*html*/ `<cor-input size="lg" label="Label" placeholder="Placeholder" helper-text="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services that respect their time."></cor-input>`,
         ),
       ].join(''),
     ),
@@ -455,8 +497,8 @@ export const EdgeCases: Story = {
     docs: {
       source: {
         code: [
-          '<cor-input size="lg" label="…long label…" placeholder="DD/MM/YYYY"></cor-input>',
-          '<cor-input size="lg" label="Label" placeholder="DD/MM/YYYY" helper-text="…long helper text…"></cor-input>',
+          '<cor-input size="lg" label="…long label…" placeholder="Placeholder"></cor-input>',
+          '<cor-input size="lg" label="Label" placeholder="Placeholder" helper-text="…long helper text…"></cor-input>',
         ].join('\n'),
       },
     },
