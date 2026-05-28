@@ -9,6 +9,8 @@ export type BreadcrumbItem = {
   label: string;
   /** Optional navigation target. When omitted, the crumb renders as plain text. */
   href?: string;
+  /** Optional cor-icon name shown before the label (Figma "w/ leading-icon"). */
+  iconStart?: string;
   /** When true, the crumb shows a spinner in place of the label. */
   loading?: boolean;
   /** When true, the crumb is rendered with the visited (magenta) color. */
@@ -18,6 +20,9 @@ export type BreadcrumbItem = {
   /** When true, marks the crumb as the active page (`aria-current="page"`). */
   active?: boolean;
 };
+
+/** Labels longer than this are truncated and wrapped in a tooltip showing the full text. */
+export const BREADCRUMB_TRUNCATE_AT = 30;
 
 /**
  * Emitted by `cor-breadcrumb` when any crumb is activated via click or keyboard.

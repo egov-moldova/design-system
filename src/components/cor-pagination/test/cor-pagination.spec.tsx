@@ -22,7 +22,13 @@ const queryNext = (root: Element | null | undefined): HTMLButtonElement | null =
   (root?.shadowRoot?.querySelector('button.nav-next') ?? null) as HTMLButtonElement | null;
 
 const queryEllipses = (root: Element | null | undefined): HTMLElement[] =>
-  Array.from(root?.shadowRoot?.querySelectorAll('span.ellipsis') ?? []) as HTMLElement[];
+  Array.from(root?.shadowRoot?.querySelectorAll('button.overflow-trigger') ?? []) as HTMLElement[];
+
+const queryOverflowMenu = (root: Element | null | undefined): HTMLElement | null =>
+  (root?.shadowRoot?.querySelector('.overflow-menu') ?? null) as HTMLElement | null;
+
+const queryOverflowMenuItems = (root: Element | null | undefined): HTMLButtonElement[] =>
+  Array.from(root?.shadowRoot?.querySelectorAll('button.overflow-menu-item') ?? []) as HTMLButtonElement[];
 
 const querySelected = (root: Element | null | undefined): HTMLButtonElement | null =>
   (root?.shadowRoot?.querySelector('button.page-button.is-selected') ?? null) as HTMLButtonElement | null;
@@ -146,34 +152,28 @@ describe('cor-pagination', () => {
       expect(queryNext(root)).toBeNull();
     });
 
-    it('disables Prev at page 1', async () => {
+    it('hides Prev at page 1 (Figma first-page spec)', async () => {
       const { root } = await render(<cor-pagination currentPage={1} totalPages={5}></cor-pagination>);
-      const prev = queryPrev(root);
-      expect(prev?.hasAttribute('disabled')).toBe(true);
-      expect(prev?.getAttribute('aria-disabled')).toBe('true');
-      expect(prev?.classList.contains('is-disabled')).toBe(true);
+      expect(queryPrev(root)).toBeNull();
     });
 
-    it('does NOT disable Prev when currentPage > 1', async () => {
+    it('renders Prev when currentPage > 1', async () => {
       const { root } = await render(<cor-pagination currentPage={2} totalPages={5}></cor-pagination>);
       const prev = queryPrev(root);
+      expect(prev).toBeTruthy();
       expect(prev?.hasAttribute('disabled')).toBe(false);
-      expect(prev?.getAttribute('aria-disabled')).toBeNull();
     });
 
-    it('disables Next at the last page', async () => {
+    it('hides Next at the last page (Figma last-page spec)', async () => {
       const { root } = await render(<cor-pagination currentPage={5} totalPages={5}></cor-pagination>);
-      const next = queryNext(root);
-      expect(next?.hasAttribute('disabled')).toBe(true);
-      expect(next?.getAttribute('aria-disabled')).toBe('true');
-      expect(next?.classList.contains('is-disabled')).toBe(true);
+      expect(queryNext(root)).toBeNull();
     });
 
-    it('does NOT disable Next when currentPage < totalPages', async () => {
+    it('renders Next when currentPage < totalPages', async () => {
       const { root } = await render(<cor-pagination currentPage={2} totalPages={5}></cor-pagination>);
       const next = queryNext(root);
+      expect(next).toBeTruthy();
       expect(next?.hasAttribute('disabled')).toBe(false);
-      expect(next?.getAttribute('aria-disabled')).toBeNull();
     });
 
     it('clicking Prev emits corChange with the previous page', async () => {
@@ -196,21 +196,21 @@ describe('cor-pagination', () => {
       expect(onChange.mock.calls[0][0].detail).toEqual({ page: 4, previousPage: 3 });
     });
 
-    it('clicking Prev at page 1 does NOT emit corChange', async () => {
+    it('Prev is not rendered at page 1 — emits no corChange', async () => {
       const onChange = vi.fn();
       const { root } = await render(
         <cor-pagination currentPage={1} totalPages={5} onCorChange={onChange}></cor-pagination>,
       );
-      queryPrev(root)?.click();
+      expect(queryPrev(root)).toBeNull();
       expect(onChange).not.toHaveBeenCalled();
     });
 
-    it('clicking Next at the last page does NOT emit corChange', async () => {
+    it('Next is not rendered at the last page — emits no corChange', async () => {
       const onChange = vi.fn();
       const { root } = await render(
         <cor-pagination currentPage={5} totalPages={5} onCorChange={onChange}></cor-pagination>,
       );
-      queryNext(root)?.click();
+      expect(queryNext(root)).toBeNull();
       expect(onChange).not.toHaveBeenCalled();
     });
   });
@@ -259,16 +259,108 @@ describe('cor-pagination', () => {
       expect(buttons.at(-1)).toBe('20');
     });
 
-    it('exposes ellipses as aria-hidden so screen-readers skip the visual placeholder', async () => {
+    it('overflow triggers expose an accessible name describing the collapsed range', async () => {
       const { root } = await render(<cor-pagination currentPage={10} totalPages={20}></cor-pagination>);
       for (const node of queryEllipses(root)) {
-        expect(node.getAttribute('aria-hidden')).toBe('true');
+        expect(node.getAttribute('aria-haspopup')).toBe('menu');
+        expect(node.getAttribute('aria-expanded')).toBe('false');
+        expect(node.getAttribute('aria-label')).toMatch(/^Arată paginile de la \d+ la \d+$/);
+      }
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Overflow dropdown — interactive ellipsis
+  // -------------------------------------------------------------------------
+  describe('overflow dropdown', () => {
+    it('does NOT render a dropdown until the trigger is clicked', async () => {
+      const { root } = await render(<cor-pagination currentPage={10} totalPages={20}></cor-pagination>);
+      expect(queryOverflowMenu(root)).toBeNull();
+    });
+
+    it('opens a menu of skipped pages when the leading trigger is clicked', async () => {
+      const { root } = await render(<cor-pagination currentPage={10} totalPages={20}></cor-pagination>);
+      const triggers = queryEllipses(root);
+      // Range: [1, …, 9, 10, 11, …, 20] — leading collapses 2-8, trailing 12-19.
+      const leading = triggers.find(t => t.getAttribute('data-key') === 'leading');
+      leading?.click();
+      await new Promise(r => setTimeout(r, 0));
+      expect(queryOverflowMenu(root)).toBeTruthy();
+      expect(leading?.getAttribute('aria-expanded')).toBe('true');
+      const items = queryOverflowMenuItems(root);
+      expect(items.map(b => b.textContent?.trim())).toEqual(['2', '3', '4', '5', '6', '7', '8']);
+    });
+
+    it('emits corChange with the picked page and closes the dropdown', async () => {
+      const onChange = vi.fn();
+      const { root } = await render(
+        <cor-pagination currentPage={10} totalPages={20} onCorChange={onChange}></cor-pagination>,
+      );
+      const leading = queryEllipses(root).find(t => t.getAttribute('data-key') === 'leading');
+      leading?.click();
+      await new Promise(r => setTimeout(r, 0));
+      const items = queryOverflowMenuItems(root);
+      const target = items.find(b => b.textContent?.trim() === '5');
+      target?.click();
+      await new Promise(r => setTimeout(r, 0));
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange.mock.calls[0][0].detail).toEqual({ page: 5, previousPage: 10 });
+      expect(queryOverflowMenu(root)).toBeNull();
+    });
+
+    it('reflects role=menu on the dropdown and role=menuitem on each option', async () => {
+      const { root } = await render(<cor-pagination currentPage={10} totalPages={20}></cor-pagination>);
+      const leading = queryEllipses(root).find(t => t.getAttribute('data-key') === 'leading');
+      leading?.click();
+      await new Promise(r => setTimeout(r, 0));
+      expect(queryOverflowMenu(root)?.getAttribute('role')).toBe('menu');
+      for (const item of queryOverflowMenuItems(root)) {
+        expect(item.getAttribute('role')).toBe('menuitem');
       }
     });
 
-    it('ELLIPSIS const is the literal "..." sentinel used by the computeRange logic', () => {
-      // Catches any accidental rename of the sentinel — the CSS / template both
-      // depend on the same constant via the imported symbol.
+    it('toggling the same trigger twice closes the dropdown', async () => {
+      const { root } = await render(<cor-pagination currentPage={10} totalPages={20}></cor-pagination>);
+      const leading = queryEllipses(root).find(t => t.getAttribute('data-key') === 'leading');
+      leading?.click();
+      await new Promise(r => setTimeout(r, 0));
+      expect(queryOverflowMenu(root)).toBeTruthy();
+      leading?.click();
+      await new Promise(r => setTimeout(r, 0));
+      expect(queryOverflowMenu(root)).toBeNull();
+    });
+
+    it('opening the trailing trigger closes any open leading dropdown', async () => {
+      const { root } = await render(<cor-pagination currentPage={10} totalPages={20}></cor-pagination>);
+      const triggers = queryEllipses(root);
+      const leading = triggers.find(t => t.getAttribute('data-key') === 'leading');
+      const trailing = triggers.find(t => t.getAttribute('data-key') === 'trailing');
+      leading?.click();
+      await new Promise(r => setTimeout(r, 0));
+      trailing?.click();
+      await new Promise(r => setTimeout(r, 0));
+      expect(leading?.getAttribute('aria-expanded')).toBe('false');
+      expect(trailing?.getAttribute('aria-expanded')).toBe('true');
+    });
+
+    it('honours a custom overflow-aria-label template with {from}/{to} substitution', async () => {
+      const { root } = await render(
+        <cor-pagination
+          currentPage={10}
+          totalPages={20}
+          overflowAriaLabel="Show pages {from} to {to}"
+        ></cor-pagination>,
+      );
+      const leading = queryEllipses(root).find(t => t.getAttribute('data-key') === 'leading');
+      expect(leading?.getAttribute('aria-label')).toBe('Show pages 2 to 8');
+    });
+  });
+
+  describe('module exports', () => {
+    it('ELLIPSIS const is the literal "..." sentinel used by the deprecated API surface', () => {
+      // Kept for backwards compatibility — the new computeRange uses
+      // structured overflow slots, but consumers may still import the
+      // sentinel from the types module.
       expect(ELLIPSIS).toBe('...');
     });
   });
@@ -282,11 +374,20 @@ describe('cor-pagination', () => {
       expect(queryNav(root)?.getAttribute('aria-label')).toBe('Navigare pagini');
     });
 
-    it('forwards a custom aria-label to the nav landmark', async () => {
+    it('forwards a host-level aria-label to the nav landmark and strips it from the host', async () => {
       const { root } = await render(
-        <cor-pagination currentPage={1} totalPages={5} ariaLabel="Pagination — results"></cor-pagination>,
+        <cor-pagination currentPage={1} totalPages={5} aria-label="Pagination — results"></cor-pagination>,
       );
       expect(queryNav(root)?.getAttribute('aria-label')).toBe('Pagination — results');
+      // captureAriaLabel removes the duplicate from the host to avoid double announcement.
+      expect(root?.getAttribute('aria-label')).toBeNull();
+    });
+
+    it('uses the `label` prop as the nav landmark fallback when no aria-label is set on the host', async () => {
+      const { root } = await render(
+        <cor-pagination currentPage={1} totalPages={5} label="Page navigator"></cor-pagination>,
+      );
+      expect(queryNav(root)?.getAttribute('aria-label')).toBe('Page navigator');
     });
 
     it('substitutes the {page} token in the Prev aria-label template', async () => {

@@ -50,6 +50,7 @@
         "radius": { "$value": "{borderRadius.8}", "$type": "dimension" }
       },
       "shadow": { "$value": "{dropShadow.200}", "$type": "string" },
+      "minWidth": { "$value": "160px", "$type": "dimension" },
       "padding": { "$value": "{spacing.8}", "$type": "dimension" },
       "item": {
         "padding": {

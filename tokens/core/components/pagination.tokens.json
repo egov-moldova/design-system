@@ -66,6 +66,53 @@
       },
       "label": { "$value": "{color.text.base.tertiary}", "$type": "color" }
     },
+    "overflow": {
+      "trigger": {
+        "background": {
+          "default": { "$value": "transparent", "$type": "color" },
+          "hover": { "$value": "{color.background.base.tertiary}", "$type": "color" },
+          "active": { "$value": "{color.background.base.tertiary-active}", "$type": "color" },
+          "open": { "$value": "{color.background.base.tertiary}", "$type": "color" }
+        },
+        "label": { "$value": "{color.text.base.tertiary}", "$type": "color" },
+        "border": {
+          "default": { "$value": "transparent", "$type": "color" },
+          "focus": { "$value": "{color.border.brand.default}", "$type": "color" }
+        }
+      },
+      "menu": {
+        "background": { "$value": "{color.background.base.default}", "$type": "color" },
+        "border": {
+          "color": { "$value": "{color.border.base.default}", "$type": "color" },
+          "width": { "$value": "1px", "$type": "dimension" },
+          "radius": { "$value": "{borderRadius.6}", "$type": "dimension" }
+        },
+        "shadow": { "$value": "{dropShadow.200}", "$type": "string" },
+        "padding": {
+          "inline": { "$value": "{spacing.4}", "$type": "dimension" },
+          "block": { "$value": "{spacing.4}", "$type": "dimension" }
+        },
+        "gap": { "$value": "{spacing.2}", "$type": "dimension" },
+        "minWidth": { "$value": "{spacing.56}", "$type": "dimension" },
+        "offset": { "$value": "{spacing.4}", "$type": "dimension" }
+      },
+      "menuItem": {
+        "size": {
+          "sm": { "$value": "{spacing.32}", "$type": "dimension" },
+          "md": { "$value": "{spacing.32}", "$type": "dimension" }
+        },
+        "padding": {
+          "inline": { "$value": "{spacing.12}", "$type": "dimension" }
+        },
+        "borderRadius": { "$value": "{borderRadius.4}", "$type": "dimension" },
+        "background": {
+          "default": { "$value": "transparent", "$type": "color" },
+          "hover": { "$value": "{color.background.base.tertiary}", "$type": "color" },
+          "active": { "$value": "{color.background.base.tertiary-active}", "$type": "color" }
+        },
+        "label": { "$value": "{color.text.base.default}", "$type": "color" }
+      }
+    },
     "nav": {
       "height": {
         "sm": { "$value": "{spacing.32}", "$type": "dimension" },

@@ -70,12 +70,13 @@
         "color": { "$value": "{color.text.base.default}", "$type": "color" }
       },
       "selected": {
+        "$comment": "Selected cell text sits on a saturated brand background — semantic `base.default-on-color` resolves to black which fails contrast (~3:1). Use the inverse text token (white) for WCAG 1.4.3 AA. Matches Figma 470:32032.",
         "background": { "$value": "{color.background.brand.default}", "$type": "color" },
-        "color": { "$value": "{color.text.base.default-on-color}", "$type": "color" }
+        "color": { "$value": "{color.text.base-inverse.default}", "$type": "color" }
       },
       "selectedHover": {
         "background": { "$value": "{color.background.brand.default-hover}", "$type": "color" },
-        "color": { "$value": "{color.text.base.default-on-color}", "$type": "color" }
+        "color": { "$value": "{color.text.base-inverse.default}", "$type": "color" }
       },
       "today": {
         "color": { "$value": "{color.text.brand.default}", "$type": "color" },
@@ -90,7 +91,8 @@
         "color": { "$value": "{color.text.brand.default}", "$type": "color" }
       },
       "outsideMonth": {
-        "color": { "$value": "{color.text.disabled.default}", "$type": "color" }
+        "$comment": "Outside-month cells are still clickable (they navigate to that month), so they must meet WCAG 1.4.3 AA contrast. The disabled token would fail (2.12:1 vs white).",
+        "color": { "$value": "{color.text.base.tertiary}", "$type": "color" }
       },
       "disabled": {
         "color": { "$value": "{color.text.disabled.default}", "$type": "color" }

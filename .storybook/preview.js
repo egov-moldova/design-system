@@ -52,6 +52,33 @@ if (import.meta.hot) {
   import.meta.hot.accept();
 }
 
+// ---------------------------------------------------------------------------
+// Global delegation for stories that wire modal triggers via data attributes.
+// Inline `<script>` tags inside a story's HTML template don't execute when
+// Storybook injects the markup via innerHTML, so we attach the click handler
+// once at document level and read the action off the trigger element's
+// `data-modal-open` / `data-modal-close` attribute. Used by cor-modal stories.
+// ---------------------------------------------------------------------------
+if (typeof document !== 'undefined') {
+  document.addEventListener('click', event => {
+    const path = event.composedPath();
+    for (const el of path) {
+      if (!(el instanceof Element)) continue;
+      const openId = el.getAttribute?.('data-modal-open');
+      if (openId) {
+        const modal = document.getElementById(openId);
+        if (modal) modal.setAttribute('open', '');
+        return;
+      }
+      if (el.hasAttribute?.('data-modal-close')) {
+        const modal = el.closest('cor-modal');
+        if (modal) modal.removeAttribute('open');
+        return;
+      }
+    }
+  });
+}
+
 // Cleanup decorator to remove toast notifications when switching stories
 const cleanupDecorator = (story, context) => {
   // Clean up any existing toast notifications from previous stories

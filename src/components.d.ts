@@ -24,7 +24,7 @@ import { InputChangeDetail, InputSize, InputType, InputVariant } from "./compone
 import { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/cor-input-chip/cor-input-chip.types";
 import { LinkSize, LinkUnderline, LinkVariant } from "./components/cor-link/cor-link.types";
 import { LogoName } from "./components/cor-logo/cor-logo.types";
-import { ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/cor-modal/cor-modal.types";
+import { ModalActionsLayout, ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/cor-modal/cor-modal.types";
 import { NotificationStyle, NotificationVariant } from "./components/cor-notification/cor-notification.types";
 import { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/cor-numeric-input/cor-numeric-input.types";
 import { PaginationChangeDetail, PaginationSize } from "./components/cor-pagination/cor-pagination.types";
@@ -64,7 +64,7 @@ export { InputChangeDetail, InputSize, InputType, InputVariant } from "./compone
 export { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/cor-input-chip/cor-input-chip.types";
 export { LinkSize, LinkUnderline, LinkVariant } from "./components/cor-link/cor-link.types";
 export { LogoName } from "./components/cor-logo/cor-logo.types";
-export { ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/cor-modal/cor-modal.types";
+export { ModalActionsLayout, ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/cor-modal/cor-modal.types";
 export { NotificationStyle, NotificationVariant } from "./components/cor-notification/cor-notification.types";
 export { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/cor-numeric-input/cor-numeric-input.types";
 export { PaginationChangeDetail, PaginationSize } from "./components/cor-pagination/cor-pagination.types";
@@ -301,16 +301,16 @@ export namespace Components {
      */
     interface CorBreadcrumb {
         /**
-          * Accessible name for the navigation landmark. Defaults to "Breadcrumb".
-         */
-        "ariaLabel"?: string;
-        /**
           * Declarative crumb list. Each item renders as a `cor-breadcrumb-item`. When omitted, the component falls back to its default slot.
          */
         "items"?: BreadcrumbItem[];
         /**
-          * Maximum number of crumbs shown before collapsing the middle into an overflow menu. Best practice (per Figma): 4–5. The first and last 2 are always visible.
-          * @default 5
+          * Accessible name for the navigation landmark when no `aria-label` is set on the host. Defaults to "Breadcrumb". Setting `aria-label` directly on the host also works — the consumer-supplied attribute wins.
+         */
+        "label"?: string;
+        /**
+          * Maximum number of crumbs shown before collapsing the middle into an overflow menu. Per Figma "Best Practices": limit visible items to 4. The first and last 2 are always visible; everything between collapses into the `…` menu.
+          * @default 4
          */
         "maxVisible": number;
         /**
@@ -319,8 +319,8 @@ export namespace Components {
          */
         "responsive": boolean;
         /**
-          * Separator character or short string rendered between crumbs. Ignored when the `separator` slot is filled.
-          * @default '/'
+          * Override the default chevron separator with a literal string (e.g. `"/"`, `"›"`). When empty (default), the chevron icon is rendered. When `slot="separator"` is provided, both this prop and the chevron are ignored.
+          * @default ''
          */
         "separator": string;
     }
@@ -348,7 +348,7 @@ export namespace Components {
          */
         "href"?: string;
         /**
-          * Accessible name override — required when the default slot is empty.
+          * Accessible-name fallback when the default slot is empty (e.g. icon-only crumb). If the slot contains visible text, that text is the accessible name — this prop is NOT applied as an `aria-label` override on the rendered element to preserve the slot-first content rule.
          */
         "label"?: string;
         /**
@@ -762,10 +762,6 @@ export namespace Components {
      */
     interface CorDatePicker {
         /**
-          * Accessible label for the entire picker. Defaults to a localized fallback.
-         */
-        "ariaLabel"?: string;
-        /**
           * Visual breakpoint / placement.
           * @default 'desktop'
          */
@@ -784,6 +780,10 @@ export namespace Components {
           * @default false
          */
         "hideTodayShortcut": boolean;
+        /**
+          * Accessible label for the entire picker. Set the `aria-label` attribute on the host (or use this prop) and the component captures it on connect into `resolvedAriaLabel`, then strips the host attribute to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb).
+         */
+        "label"?: string;
         /**
           * BCP-47 locale tag for weekday/month rendering. Defaults to Romanian.
           * @default 'ro-RO'
@@ -1366,9 +1366,10 @@ export namespace Components {
      */
     interface CorModal {
         /**
-          * Accessible name forwarded to the host as `aria-label`. Required when no title is provided.
+          * Footer button arrangement (Figma 358:16247). - `inline` — buttons sit side-by-side, right-aligned (default) - `stacked` — buttons span the full footer width, stacked vertically
+          * @default 'inline'
          */
-        "ariaLabel"?: string;
+        "actionsLayout": ModalActionsLayout;
         /**
           * When `true`, renders a trailing × close button in the header. Activating it emits `corClose` with `reason: 'close-button'`. Hide it for required confirmation flows by setting `closable=false`.
           * @default true
@@ -1398,6 +1399,19 @@ export namespace Components {
           * @default false
          */
         "destructive": boolean;
+        /**
+          * Alt text for the prop-driven hero image. Use an empty string when the image is purely decorative and the title/body already describes the action.
+          * @default ''
+         */
+        "imageAlt": string;
+        /**
+          * Hero image URL for the `with-image` variant. Rendered as the slot fallback — if a consumer projects their own `<img slot="image">` / `<picture>` it wins. Pair with `imageAlt` for accessibility (empty alt is acceptable for decorative images).
+         */
+        "imageSrc"?: string;
+        /**
+          * Accessible name forwarded to the host as `aria-label`. Required when no title is provided. The consumer-supplied `aria-label` attribute is captured on connect into `resolvedAriaLabel` and stripped from the host to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker).
+         */
+        "label"?: string;
         /**
           * Whether the modal is currently shown. Reflected so consumers can target `cor-modal[open]` in selectors. Mutable so the component can flip it back to `false` on internal dismiss (backdrop / escape / close button).
           * @default false
@@ -1594,20 +1608,18 @@ export namespace Components {
      * Renders a list of page-number buttons flanked by Previous / Next controls.
      * The visible page list is computed from `currentPage`, `totalPages`,
      * `siblingCount`, and `boundaryCount`. When the total exceeds the visible
-     * window, ellipses (`...`) appear at the start and/or end of the range.
+     * window, an interactive overflow button (`…`) collapses the skipped range
+     * and lets users jump directly to any of those pages via a dropdown menu
+     * (Figma "overflow-active" interaction).
      * The component is internally controlled but exposes a `corChange` event so
      * the host can drive the active page. Updating `current-page` from outside
      * is also honoured (e.g. when the URL changes via routing).
+     * Previous / Next buttons are hidden at the boundaries (page 1 hides Prev,
+     * the last page hides Next) instead of being rendered in a disabled state —
+     * this matches the Figma "first-page" / "last-page" specification.
      * @element cor-pagination
-     * @event corChange - Fires when the user activates a different page.
-     *             Detail: `{ page, previousPage }`.
      */
     interface CorPagination {
-        /**
-          * Accessible name for the outer `<nav>` landmark.
-          * @default 'Navigare pagini'
-         */
-        "ariaLabel": string;
         /**
           * Number of page buttons shown at the start and end of the range (before / after the leading / trailing ellipsis).
           * @default 1
@@ -1619,6 +1631,10 @@ export namespace Components {
          */
         "currentPage": number;
         /**
+          * Accessible name for the navigation landmark when no `aria-label` is set on the host. Defaults to "Navigare pagini". Setting `aria-label` directly on the host also works — the consumer-supplied attribute wins and is captured on connect into `resolvedAriaLabel`, then stripped from the host to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker / cor-modal).
+         */
+        "label"?: string;
+        /**
           * Accessible label template for the Next button. The `{page}` token is replaced with the target page number.
           * @default 'Pagina următoare, mergi la pagina {page}'
          */
@@ -1628,6 +1644,11 @@ export namespace Components {
           * @default 'Următor'
          */
         "nextLabel": string;
+        /**
+          * Accessible label template for the overflow ("…") button. The `{from}` and `{to}` tokens are replaced with the first and last page in the collapsed range.
+          * @default 'Arată paginile de la {from} la {to}'
+         */
+        "overflowAriaLabel": string;
         /**
           * Accessible label template for an individual page button. Tokens `{page}` and `{total}` are substituted with the page number and total page count.
           * @default 'Pagina {page} din {total}'
@@ -1644,7 +1665,7 @@ export namespace Components {
          */
         "prevLabel": string;
         /**
-          * Whether to render the Previous / Next navigation buttons.
+          * Whether to render the Previous / Next navigation buttons at all. When `true` (default) they still hide individually at the corresponding boundary (page 1 hides Prev, last page hides Next).
           * @default true
          */
         "showPrevNext": boolean;
@@ -1903,10 +1924,6 @@ export namespace Components {
          */
         "amountLabel"?: string;
         /**
-          * Override for the receipt's accessible name. Defaults to the resolved title plus status (e.g. "Bon de plată — Plătit").
-         */
-        "ariaLabel"?: string;
-        /**
           * Currency code rendered next to the amount.
           * @default 'MDL'
          */
@@ -1935,6 +1952,10 @@ export namespace Components {
           * "Trimite email" button label.
          */
         "emailLabel"?: string;
+        /**
+          * Override for the receipt's accessible name. Defaults to the resolved title plus status (e.g. "Bon de plată — Plătit"). Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker / cor-modal / cor-pagination).
+         */
+        "label"?: string;
         /**
           * BCP-47 locale used by the built-in date formatter. Override for non-Romanian surfaces.
           * @default 'ro-RO'
@@ -3776,13 +3797,16 @@ declare global {
      * Renders a list of page-number buttons flanked by Previous / Next controls.
      * The visible page list is computed from `currentPage`, `totalPages`,
      * `siblingCount`, and `boundaryCount`. When the total exceeds the visible
-     * window, ellipses (`...`) appear at the start and/or end of the range.
+     * window, an interactive overflow button (`…`) collapses the skipped range
+     * and lets users jump directly to any of those pages via a dropdown menu
+     * (Figma "overflow-active" interaction).
      * The component is internally controlled but exposes a `corChange` event so
      * the host can drive the active page. Updating `current-page` from outside
      * is also honoured (e.g. when the URL changes via routing).
+     * Previous / Next buttons are hidden at the boundaries (page 1 hides Prev,
+     * the last page hides Next) instead of being rendered in a disabled state —
+     * this matches the Figma "first-page" / "last-page" specification.
      * @element cor-pagination
-     * @event corChange - Fires when the user activates a different page.
-     *             Detail: `{ page, previousPage }`.
      */
     interface HTMLCorPaginationElement extends Components.CorPagination, HTMLStencilElement {
         addEventListener<K extends keyof HTMLCorPaginationElementEventMap>(type: K, listener: (this: HTMLCorPaginationElement, ev: CorPaginationCustomEvent<HTMLCorPaginationElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -4630,16 +4654,16 @@ declare namespace LocalJSX {
      */
     interface CorBreadcrumb {
         /**
-          * Accessible name for the navigation landmark. Defaults to "Breadcrumb".
-         */
-        "ariaLabel"?: string;
-        /**
           * Declarative crumb list. Each item renders as a `cor-breadcrumb-item`. When omitted, the component falls back to its default slot.
          */
         "items"?: BreadcrumbItem[];
         /**
-          * Maximum number of crumbs shown before collapsing the middle into an overflow menu. Best practice (per Figma): 4–5. The first and last 2 are always visible.
-          * @default 5
+          * Accessible name for the navigation landmark when no `aria-label` is set on the host. Defaults to "Breadcrumb". Setting `aria-label` directly on the host also works — the consumer-supplied attribute wins.
+         */
+        "label"?: string;
+        /**
+          * Maximum number of crumbs shown before collapsing the middle into an overflow menu. Per Figma "Best Practices": limit visible items to 4. The first and last 2 are always visible; everything between collapses into the `…` menu.
+          * @default 4
          */
         "maxVisible"?: number;
         /**
@@ -4652,8 +4676,8 @@ declare namespace LocalJSX {
          */
         "responsive"?: boolean;
         /**
-          * Separator character or short string rendered between crumbs. Ignored when the `separator` slot is filled.
-          * @default '/'
+          * Override the default chevron separator with a literal string (e.g. `"/"`, `"›"`). When empty (default), the chevron icon is rendered. When `slot="separator"` is provided, both this prop and the chevron are ignored.
+          * @default ''
          */
         "separator"?: string;
     }
@@ -4681,7 +4705,7 @@ declare namespace LocalJSX {
          */
         "href"?: string;
         /**
-          * Accessible name override — required when the default slot is empty.
+          * Accessible-name fallback when the default slot is empty (e.g. icon-only crumb). If the slot contains visible text, that text is the accessible name — this prop is NOT applied as an `aria-label` override on the rendered element to preserve the slot-first content rule.
          */
         "label"?: string;
         /**
@@ -5167,10 +5191,6 @@ declare namespace LocalJSX {
      */
     interface CorDatePicker {
         /**
-          * Accessible label for the entire picker. Defaults to a localized fallback.
-         */
-        "ariaLabel"?: string;
-        /**
           * Visual breakpoint / placement.
           * @default 'desktop'
          */
@@ -5189,6 +5209,10 @@ declare namespace LocalJSX {
           * @default false
          */
         "hideTodayShortcut"?: boolean;
+        /**
+          * Accessible label for the entire picker. Set the `aria-label` attribute on the host (or use this prop) and the component captures it on connect into `resolvedAriaLabel`, then strips the host attribute to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb).
+         */
+        "label"?: string;
         /**
           * BCP-47 locale tag for weekday/month rendering. Defaults to Romanian.
           * @default 'ro-RO'
@@ -5867,9 +5891,10 @@ declare namespace LocalJSX {
      */
     interface CorModal {
         /**
-          * Accessible name forwarded to the host as `aria-label`. Required when no title is provided.
+          * Footer button arrangement (Figma 358:16247). - `inline` — buttons sit side-by-side, right-aligned (default) - `stacked` — buttons span the full footer width, stacked vertically
+          * @default 'inline'
          */
-        "ariaLabel"?: string;
+        "actionsLayout"?: ModalActionsLayout;
         /**
           * When `true`, renders a trailing × close button in the header. Activating it emits `corClose` with `reason: 'close-button'`. Hide it for required confirmation flows by setting `closable=false`.
           * @default true
@@ -5895,6 +5920,19 @@ declare namespace LocalJSX {
           * @default false
          */
         "destructive"?: boolean;
+        /**
+          * Alt text for the prop-driven hero image. Use an empty string when the image is purely decorative and the title/body already describes the action.
+          * @default ''
+         */
+        "imageAlt"?: string;
+        /**
+          * Hero image URL for the `with-image` variant. Rendered as the slot fallback — if a consumer projects their own `<img slot="image">` / `<picture>` it wins. Pair with `imageAlt` for accessibility (empty alt is acceptable for decorative images).
+         */
+        "imageSrc"?: string;
+        /**
+          * Accessible name forwarded to the host as `aria-label`. Required when no title is provided. The consumer-supplied `aria-label` attribute is captured on connect into `resolvedAriaLabel` and stripped from the host to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker).
+         */
+        "label"?: string;
         /**
           * Fires after the dialog has been dismissed. Payload carries the `reason` so consumers can distinguish backdrop vs. escape vs. close-button vs. footer-action dismissals.
          */
@@ -6127,20 +6165,18 @@ declare namespace LocalJSX {
      * Renders a list of page-number buttons flanked by Previous / Next controls.
      * The visible page list is computed from `currentPage`, `totalPages`,
      * `siblingCount`, and `boundaryCount`. When the total exceeds the visible
-     * window, ellipses (`...`) appear at the start and/or end of the range.
+     * window, an interactive overflow button (`…`) collapses the skipped range
+     * and lets users jump directly to any of those pages via a dropdown menu
+     * (Figma "overflow-active" interaction).
      * The component is internally controlled but exposes a `corChange` event so
      * the host can drive the active page. Updating `current-page` from outside
      * is also honoured (e.g. when the URL changes via routing).
+     * Previous / Next buttons are hidden at the boundaries (page 1 hides Prev,
+     * the last page hides Next) instead of being rendered in a disabled state —
+     * this matches the Figma "first-page" / "last-page" specification.
      * @element cor-pagination
-     * @event corChange - Fires when the user activates a different page.
-     *             Detail: `{ page, previousPage }`.
      */
     interface CorPagination {
-        /**
-          * Accessible name for the outer `<nav>` landmark.
-          * @default 'Navigare pagini'
-         */
-        "ariaLabel"?: string;
         /**
           * Number of page buttons shown at the start and end of the range (before / after the leading / trailing ellipsis).
           * @default 1
@@ -6152,6 +6188,10 @@ declare namespace LocalJSX {
          */
         "currentPage"?: number;
         /**
+          * Accessible name for the navigation landmark when no `aria-label` is set on the host. Defaults to "Navigare pagini". Setting `aria-label` directly on the host also works — the consumer-supplied attribute wins and is captured on connect into `resolvedAriaLabel`, then stripped from the host to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker / cor-modal).
+         */
+        "label"?: string;
+        /**
           * Accessible label template for the Next button. The `{page}` token is replaced with the target page number.
           * @default 'Pagina următoare, mergi la pagina {page}'
          */
@@ -6161,7 +6201,15 @@ declare namespace LocalJSX {
           * @default 'Următor'
          */
         "nextLabel"?: string;
+        /**
+          * Fires when the user activates a different page via click on a numbered button, the Previous / Next controls, or a page in the overflow dropdown. Carries the new and previous page numbers so consumers can drive routing or data fetches.
+         */
         "onCorChange"?: (event: CorPaginationCustomEvent<PaginationChangeDetail>) => void;
+        /**
+          * Accessible label template for the overflow ("…") button. The `{from}` and `{to}` tokens are replaced with the first and last page in the collapsed range.
+          * @default 'Arată paginile de la {from} la {to}'
+         */
+        "overflowAriaLabel"?: string;
         /**
           * Accessible label template for an individual page button. Tokens `{page}` and `{total}` are substituted with the page number and total page count.
           * @default 'Pagina {page} din {total}'
@@ -6178,7 +6226,7 @@ declare namespace LocalJSX {
          */
         "prevLabel"?: string;
         /**
-          * Whether to render the Previous / Next navigation buttons.
+          * Whether to render the Previous / Next navigation buttons at all. When `true` (default) they still hide individually at the corresponding boundary (page 1 hides Prev, last page hides Next).
           * @default true
          */
         "showPrevNext"?: boolean;
@@ -6489,10 +6537,6 @@ declare namespace LocalJSX {
          */
         "amountLabel"?: string;
         /**
-          * Override for the receipt's accessible name. Defaults to the resolved title plus status (e.g. "Bon de plată — Plătit").
-         */
-        "ariaLabel"?: string;
-        /**
           * Currency code rendered next to the amount.
           * @default 'MDL'
          */
@@ -6521,6 +6565,10 @@ declare namespace LocalJSX {
           * "Trimite email" button label.
          */
         "emailLabel"?: string;
+        /**
+          * Override for the receipt's accessible name. Defaults to the resolved title plus status (e.g. "Bon de plată — Plătit"). Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker / cor-modal / cor-pagination).
+         */
+        "label"?: string;
         /**
           * BCP-47 locale used by the built-in date formatter. Override for non-Romanian surfaces.
           * @default 'ro-RO'
@@ -7749,7 +7797,7 @@ declare namespace LocalJSX {
         "maxVisible": number;
         "separator": string;
         "responsive": boolean;
-        "ariaLabel": string;
+        "label": string;
     }
     interface CorBreadcrumbItemAttributes {
         "href": string;
@@ -7845,7 +7893,7 @@ declare namespace LocalJSX {
         "min": string;
         "max": string;
         "locale": string;
-        "ariaLabel": string;
+        "label": string;
         "firstDayOfWeek": number;
         "hideTodayShortcut": boolean;
     }
@@ -7956,11 +8004,14 @@ declare namespace LocalJSX {
         "size": ModalSize;
         "variant": ModalVariant;
         "titleText": string;
+        "imageSrc": string;
+        "imageAlt": string;
         "closable": boolean;
         "closeOnBackdrop": boolean;
         "closeOnEscape": boolean;
         "destructive": boolean;
-        "ariaLabel": string;
+        "actionsLayout": ModalActionsLayout;
+        "label": string;
         "closeLabel": string;
     }
     interface CorNotificationAttributes {
@@ -8005,10 +8056,11 @@ declare namespace LocalJSX {
         "showPrevNext": boolean;
         "prevLabel": string;
         "nextLabel": string;
-        "ariaLabel": string;
+        "label": string;
         "prevAriaLabel": string;
         "nextAriaLabel": string;
         "pageAriaLabel": string;
+        "overflowAriaLabel": string;
     }
     interface CorPhoneInputAttributes {
         "variant": PhoneInputVariant;
@@ -8061,7 +8113,7 @@ declare namespace LocalJSX {
         "transactionId": string;
         "qrData": string;
         "showActions": boolean;
-        "ariaLabel": string;
+        "label": string;
         "statusLabel": string;
         "amountLabel": string;
         "dateLabel": string;
@@ -8643,13 +8695,16 @@ declare module "@stencil/core" {
              * Renders a list of page-number buttons flanked by Previous / Next controls.
              * The visible page list is computed from `currentPage`, `totalPages`,
              * `siblingCount`, and `boundaryCount`. When the total exceeds the visible
-             * window, ellipses (`...`) appear at the start and/or end of the range.
+             * window, an interactive overflow button (`…`) collapses the skipped range
+             * and lets users jump directly to any of those pages via a dropdown menu
+             * (Figma "overflow-active" interaction).
              * The component is internally controlled but exposes a `corChange` event so
              * the host can drive the active page. Updating `current-page` from outside
              * is also honoured (e.g. when the URL changes via routing).
+             * Previous / Next buttons are hidden at the boundaries (page 1 hides Prev,
+             * the last page hides Next) instead of being rendered in a disabled state —
+             * this matches the Figma "first-page" / "last-page" specification.
              * @element cor-pagination
-             * @event corChange - Fires when the user activates a different page.
-             *             Detail: `{ page, previousPage }`.
              */
             "cor-pagination": LocalJSX.IntrinsicElements["cor-pagination"] & JSXBase.HTMLAttributes<HTMLCorPaginationElement>;
             /**

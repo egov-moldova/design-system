@@ -8,6 +8,8 @@ type ModalArgs = {
   size: ModalSize;
   variant: ModalVariant;
   titleText: string;
+  imageSrc: string;
+  imageAlt: string;
   closable: boolean;
   closeOnBackdrop: boolean;
   closeOnEscape: boolean;
@@ -59,6 +61,8 @@ const renderModal = (args: ModalArgs) => /*html*/ `
       size="${args.size}"
       variant="${args.variant}"
       ${args.titleText ? `title-text="${args.titleText}"` : ''}
+      ${args.imageSrc ? `image-src="${args.imageSrc}"` : ''}
+      ${args.imageAlt ? `image-alt="${args.imageAlt}"` : ''}
       ${args.closable ? '' : 'closable="false"'}
       ${args.closeOnBackdrop ? '' : 'close-on-backdrop="false"'}
       ${args.closeOnEscape ? '' : 'close-on-escape="false"'}
@@ -131,6 +135,17 @@ Romanian voice: defaults use **Confirmă** / **Anulează** / **Continuă** /
       control: 'text',
       description: 'Title text rendered in the header. The `title` slot overrides this when filled.',
     },
+    imageSrc: {
+      name: 'image-src',
+      control: 'text',
+      description: 'Hero image URL for `variant="with-image"`. Slot fallback — the `image` slot wins when filled.',
+    },
+    imageAlt: {
+      name: 'image-alt',
+      control: 'text',
+      description: 'Alt text for the prop-driven hero image. Empty for decorative.',
+      table: { defaultValue: { summary: '' } },
+    },
     closable: {
       control: 'boolean',
       description: 'Renders the trailing × button.',
@@ -162,10 +177,12 @@ Romanian voice: defaults use **Confirmă** / **Anulează** / **Continuă** /
     },
   },
   args: {
-    open: true,
+    open: false,
     size: 'md',
     variant: 'default',
     titleText: 'Confirmă acțiunea',
+    imageSrc: '',
+    imageAlt: '',
     closable: true,
     closeOnBackdrop: true,
     closeOnEscape: true,
@@ -207,7 +224,7 @@ const renderAllSizes = () => /*html*/ `
         <cor-button variant="primary" shape="circular" size="sm" data-modal-close>Confirmă</cor-button>
       </div>
     </cor-modal>
-    <cor-modal id="storybook-modal-size-md" open size="md" title-text="Confirmă plata">
+    <cor-modal id="storybook-modal-size-md" size="md" title-text="Confirmă plata">
       Suma de 250,00 MDL va fi debitată de pe cardul terminând în ****4521. Veți primi confirmarea pe email în câteva minute.
       <div slot="actions" style="display: inline-flex; gap: var(--spacing-8);">
         <cor-button variant="strict" appearance="outlined" shape="circular" data-modal-close>Anulează</cor-button>
@@ -239,7 +256,6 @@ const renderWithImage = () => /*html*/ `
     </div>
     <cor-modal
       id="storybook-modal-with-image"
-      open
       size="md"
       variant="with-image"
       title-text="Felicitări"
@@ -272,7 +288,6 @@ const renderWithIcon = () => /*html*/ `
     </div>
     <cor-modal
       id="storybook-modal-with-icon"
-      open
       size="md"
       variant="with-icon"
       title-text="Sesiunea a expirat"
@@ -301,7 +316,6 @@ const renderConfirmation = () => /*html*/ `
     </div>
     <cor-modal
       id="storybook-modal-confirmation"
-      open
       size="md"
       title-text="Salvează modificările"
     >
@@ -329,7 +343,6 @@ const renderDestructive = () => /*html*/ `
     </div>
     <cor-modal
       id="storybook-modal-destructive"
-      open
       size="md"
       destructive
       title-text="Șterge contul definitiv"
@@ -359,7 +372,6 @@ const renderDisableEscape = () => /*html*/ `
     </div>
     <cor-modal
       id="storybook-modal-required"
-      open
       size="md"
       title-text="Acceptați termenii și condițiile"
       close-on-backdrop="false"
@@ -390,7 +402,6 @@ const renderCustomContent = () => /*html*/ `
     </div>
     <cor-modal
       id="storybook-modal-custom"
-      open
       size="md"
       title-text="Editează profilul"
     >
@@ -418,18 +429,19 @@ export const CustomContent: Story = {
 // Mobile — narrow viewport (350px stage simulates mobile)
 // ---------------------------------------------------------------------------
 const renderMobile = () => /*html*/ `
-  <div style="${stageStyle} inline-size: 360px; max-inline-size: 360px; min-block-size: 480px;">
+  <div style="${stageStyle}">
+    <div style="${triggerRowStyle}">
+      <cor-button size="sm" data-modal-open="storybook-modal-mobile">Confirmă plata</cor-button>
+    </div>
     <cor-modal
-      open
+      id="storybook-modal-mobile"
       size="sm"
       title-text="Confirmă plata"
-      style="position: relative;"
+      actions-layout="stacked"
     >
       Suma de 125,00 MDL va fi debitată acum. Confirmați tranzacția?
-      <div slot="actions" style="display: inline-flex; gap: var(--spacing-8);">
-        <cor-button variant="strict" appearance="outlined" shape="circular" size="sm" data-modal-close>Anulează</cor-button>
-        <cor-button variant="primary" shape="circular" size="sm" data-modal-close>Confirmă</cor-button>
-      </div>
+      <cor-button slot="actions" variant="primary" shape="circular" size="sm" full-width data-modal-close>Confirmă</cor-button>
+      <cor-button slot="actions" variant="strict" appearance="outlined" shape="circular" size="sm" full-width data-modal-close>Anulează</cor-button>
     </cor-modal>
   </div>
 `;
@@ -438,6 +450,59 @@ export const Mobile: Story = {
   parameters: {
     controls: { disable: true },
     viewport: { defaultViewport: 'mobile1' },
+    docs: {
+      description: {
+        story:
+          'Mobile flow with `actions-layout="stacked"` and full-width buttons. ' +
+          'Preview via the Storybook **Viewport** toolbar at a mobile width (this story defaults to `mobile1`) — ' +
+          'at ≤ 480px the dialog fills the available inline size minus the container margin, ' +
+          'and the footer buttons stack vertically with the primary button on top.',
+      },
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
+// MobileWithImage — image variant on a mobile viewport
+//
+// Mirrors Figma 358:16247 "image: mobile" — hero image at top, title below the
+// image, stacked full-width buttons. Same actions-layout="stacked" pattern as
+// the plain Mobile story but with variant="with-image".
+// ---------------------------------------------------------------------------
+const renderMobileWithImage = () => /*html*/ `
+  <div style="${stageStyle}">
+    <div style="${triggerRowStyle}">
+      <cor-button size="sm" data-modal-open="storybook-modal-mobile-image">Deschide</cor-button>
+    </div>
+    <cor-modal
+      id="storybook-modal-mobile-image"
+      size="sm"
+      variant="with-image"
+      title-text="Felicitări"
+      actions-layout="stacked"
+      image-src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=1200&auto=format&fit=crop&q=80"
+      image-alt=""
+    >
+      Contul dumneavoastră a fost confirmat. Puteți accesa serviciile electronice ale statului.
+      <cor-button slot="actions" variant="primary" shape="circular" size="sm" full-width data-modal-close>Continuă</cor-button>
+      <cor-button slot="actions" variant="strict" appearance="outlined" shape="circular" size="sm" full-width data-modal-close>Mai târziu</cor-button>
+    </cor-modal>
+  </div>
+`;
+export const MobileWithImage: Story = {
+  render: renderMobileWithImage,
+  parameters: {
+    controls: { disable: true },
+    viewport: { defaultViewport: 'mobile1' },
+    docs: {
+      description: {
+        story:
+          'Image-led mobile flow combining `variant="with-image"` with `actions-layout="stacked"`. ' +
+          'The hero image fills the top of the dialog; the title renders below the image and the ' +
+          'footer buttons stack full-width. Preview via the Storybook **Viewport** toolbar at a ' +
+          'mobile width.',
+      },
+    },
   },
 };
 
@@ -451,7 +516,6 @@ const renderEdgeCases = () => /*html*/ `
     </div>
     <cor-modal
       id="storybook-modal-long"
-      open
       size="md"
       title-text="Termeni și condiții actualizate"
     >

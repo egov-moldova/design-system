@@ -280,17 +280,17 @@ export const Disabled: Story = {
 };
 
 // ---------------------------------------------------------------------------
-// EdgeCases — boundary behavior
+// EdgeCases — boundary behavior (Figma "first-page" / "last-page" spec)
 // ---------------------------------------------------------------------------
 export const EdgeCases: Story = {
   render: () => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24);">
       <div>
-        <p style="${cellLabelStyle}">first page — Previous is disabled</p>
+        <p style="${cellLabelStyle}">first page — Previous button hidden</p>
         <cor-pagination current-page="1" total-pages="7"></cor-pagination>
       </div>
       <div>
-        <p style="${cellLabelStyle}">last page — Next is disabled</p>
+        <p style="${cellLabelStyle}">last page — Next button hidden</p>
         <cor-pagination current-page="7" total-pages="7"></cor-pagination>
       </div>
       <div>
@@ -298,11 +298,11 @@ export const EdgeCases: Story = {
         <cor-pagination current-page="1" total-pages="2"></cor-pagination>
       </div>
       <div>
-        <p style="${cellLabelStyle}">sm size at first page — icon-only prev disabled</p>
+        <p style="${cellLabelStyle}">sm size at first page — icon-only next only</p>
         <cor-pagination size="sm" current-page="1" total-pages="5"></cor-pagination>
       </div>
       <div>
-        <p style="${cellLabelStyle}">sm size at last page — icon-only next disabled</p>
+        <p style="${cellLabelStyle}">sm size at last page — icon-only prev only</p>
         <cor-pagination size="sm" current-page="5" total-pages="5"></cor-pagination>
       </div>
     </div>
@@ -311,10 +311,35 @@ export const EdgeCases: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: /*html*/ `<!-- Edge cases — prev/next disable at boundaries -->
+        code: /*html*/ `<!-- Boundary behavior — prev/next hidden at edges per Figma spec -->
 <cor-pagination current-page="1" total-pages="7"></cor-pagination>
 <cor-pagination current-page="7" total-pages="7"></cor-pagination>
 <cor-pagination size="sm" current-page="1" total-pages="5"></cor-pagination>`,
+      },
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
+// OverflowActive — clickable ellipsis with skipped-pages dropdown
+// ---------------------------------------------------------------------------
+export const OverflowActive: Story = {
+  render: () => /*html*/ `
+    <div style="display: flex; flex-direction: column; gap: var(--spacing-16); padding: var(--spacing-24); max-width: 720px;">
+      <p style="font-size: var(--font-size-14); color: var(--color-text-base-default); margin: 0;">
+        Click either <code>…</code> ellipsis to open a dropdown listing the skipped pages.
+        Picking a page emits <code>corChange</code> just like the numbered buttons.
+        Keyboard: <kbd>Enter</kbd>/<kbd>Space</kbd> to open, <kbd>↑</kbd>/<kbd>↓</kbd> to navigate,
+        <kbd>Esc</kbd> or <kbd>Tab</kbd> to close.
+      </p>
+      <cor-pagination current-page="10" total-pages="20"></cor-pagination>
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: /*html*/ `<cor-pagination current-page="10" total-pages="20"></cor-pagination>`,
       },
     },
   },

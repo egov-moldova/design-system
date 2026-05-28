@@ -50,6 +50,13 @@ const longLabelItems: BreadcrumbItem[] = [
   { label: 'Detalii plată', active: true },
 ];
 
+const leadingIconItems: BreadcrumbItem[] = [
+  { label: 'Acasă', href: '/', iconStart: 'home-line' },
+  { label: 'Servicii', href: '/servicii' },
+  { label: 'MPay', href: '/servicii/mpay' },
+  { label: 'Detalii plată', active: true },
+];
+
 const visitedItems: BreadcrumbItem[] = [
   { label: 'Acasă', href: '/', visited: true },
   { label: 'Servicii', href: '/servicii', visited: true },
@@ -100,8 +107,8 @@ const docsSourceDefault = (args: BreadcrumbArgs) => `<cor-breadcrumb id="my-brea
 const renderAllStates = () => {
   const baseArgs: BreadcrumbArgs = {
     items: defaultItems,
-    maxVisible: 5,
-    separator: '/',
+    maxVisible: 4,
+    separator: '',
     responsive: true,
     ariaLabel: '',
   };
@@ -135,8 +142,8 @@ const renderAllStates = () => {
 const renderOverflow = () => {
   const baseArgs: BreadcrumbArgs = {
     items: overflowItems,
-    maxVisible: 5,
-    separator: '/',
+    maxVisible: 4,
+    separator: '',
     responsive: true,
     ariaLabel: '',
   };
@@ -153,8 +160,8 @@ const renderOverflow = () => {
 const renderLoading = () => {
   const baseArgs: BreadcrumbArgs = {
     items: loadingItems,
-    maxVisible: 5,
-    separator: '/',
+    maxVisible: 4,
+    separator: '',
     responsive: true,
     ariaLabel: '',
   };
@@ -169,8 +176,8 @@ const renderLoading = () => {
 const renderMobile = () => {
   const baseArgs: BreadcrumbArgs = {
     items: defaultItems,
-    maxVisible: 5,
-    separator: '/',
+    maxVisible: 4,
+    separator: '',
     responsive: true,
     ariaLabel: '',
   };
@@ -192,8 +199,8 @@ const renderMobile = () => {
 const renderWithCustomSeparator = () => {
   const baseArgs: BreadcrumbArgs = {
     items: defaultItems,
-    maxVisible: 5,
-    separator: '/',
+    maxVisible: 4,
+    separator: '',
     responsive: true,
     ariaLabel: '',
   };
@@ -223,17 +230,13 @@ const renderWithCustomSeparator = () => {
 const renderEdgeCases = () => {
   const baseArgs: BreadcrumbArgs = {
     items: defaultItems,
-    maxVisible: 5,
-    separator: '/',
+    maxVisible: 4,
+    separator: '',
     responsive: true,
     ariaLabel: '',
   };
   return /*html*/ `
     <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24); background: var(--color-background-base-default);">
-      <p style="${sectionLabelStyle}">Very long labels are truncated at the per-crumb level (max-width: 30ch) with an ellipsis. Container width is 600px to force truncation.</p>
-      <div style="max-width: 600px; border: 1px dashed var(--color-border-base-default); border-radius: 8px; padding: var(--spacing-12);">
-        ${renderBreadcrumb(baseArgs, longLabelItems)}
-      </div>
       <p style="${sectionLabelStyle}">Two items only — single parent link plus active page.</p>
       ${renderBreadcrumb(baseArgs, [
         { label: 'Acasă', href: '/' },
@@ -241,6 +244,63 @@ const renderEdgeCases = () => {
       ])}
       <p style="${sectionLabelStyle}">Single item — only the active page (no separator).</p>
       ${renderBreadcrumb(baseArgs, [{ label: 'Acasă', active: true }])}
+    </div>
+  `;
+};
+
+const renderLongLabels = () => {
+  const baseArgs: BreadcrumbArgs = {
+    items: defaultItems,
+    maxVisible: 4,
+    separator: '',
+    responsive: false, // keep desktop trail at every width so the truncation+tooltip is observable
+    ariaLabel: '',
+  };
+  return /*html*/ `
+    <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24); background: var(--color-background-base-default);">
+      <p style="${sectionLabelStyle}">Labels longer than 30 characters truncate with an ellipsis at the per-crumb level and surface the full text in a <code>cor-tooltip</code> on hover/focus (Figma "Best Practices").</p>
+      <p style="${headingStyle}">Hover the truncated crumb to reveal the tooltip with the full label.</p>
+      ${renderBreadcrumb(baseArgs, longLabelItems)}
+      <p style="${headingStyle}">Labels exactly at the 30-character threshold do NOT get a tooltip — they fit inline.</p>
+      ${renderBreadcrumb(baseArgs, [
+        { label: 'Acasă', href: '/' },
+        { label: 'Exactly thirty characters here', href: '/borderline' },
+        { label: 'Detalii plată', active: true },
+      ])}
+      <p style="${headingStyle}">A very long label in the active position also gets the tooltip treatment.</p>
+      ${renderBreadcrumb(baseArgs, [
+        { label: 'Acasă', href: '/' },
+        { label: 'Servicii', href: '/servicii' },
+        {
+          label: 'Confirmarea identității prin certificat digital MSign avansat',
+          active: true,
+        },
+      ])}
+    </div>
+  `;
+};
+
+const renderWithLeadingIcon = () => {
+  const baseArgs: BreadcrumbArgs = {
+    items: defaultItems,
+    maxVisible: 4,
+    separator: '',
+    responsive: false,
+    ariaLabel: '',
+  };
+  return /*html*/ `
+    <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24); background: var(--color-background-base-default);">
+      <p style="${sectionLabelStyle}">Per Figma "w/ leading-icon" — set <code>iconStart</code> on a crumb (or slot a <code>&lt;cor-icon slot="icon-start"&gt;</code> child in slot mode) to render an inline icon before the label.</p>
+      ${renderBreadcrumb(baseArgs, leadingIconItems)}
+      <p style="${headingStyle}">Slot-mode equivalent — declare the icon as a slotted child.</p>
+      <cor-breadcrumb>
+        <cor-breadcrumb-item href="/">
+          <cor-icon slot="icon-start" name="home-line"></cor-icon>
+          Acasă
+        </cor-breadcrumb-item>
+        <cor-breadcrumb-item href="/servicii">Servicii</cor-breadcrumb-item>
+        <cor-breadcrumb-item active>Detalii plată</cor-breadcrumb-item>
+      </cor-breadcrumb>
     </div>
   `;
 };
@@ -298,8 +358,8 @@ export const Default: Story = {
   render: renderDefault,
   args: {
     items: defaultItems,
-    maxVisible: 5,
-    separator: '/',
+    maxVisible: 4,
+    separator: '',
     responsive: true,
     ariaLabel: '',
   },
@@ -321,8 +381,8 @@ export const AllStates: Story = {
       source: {
         code: docsSourceDefault({
           items: defaultItems,
-          maxVisible: 5,
-          separator: '/',
+          maxVisible: 4,
+          separator: '',
           responsive: true,
           ariaLabel: '',
         }),
@@ -339,8 +399,8 @@ export const Overflow: Story = {
       source: {
         code: docsSourceDefault({
           items: overflowItems,
-          maxVisible: 5,
-          separator: '/',
+          maxVisible: 4,
+          separator: '',
           responsive: true,
           ariaLabel: '',
         }),
@@ -357,8 +417,8 @@ export const Loading: Story = {
       source: {
         code: docsSourceDefault({
           items: loadingItems,
-          maxVisible: 5,
-          separator: '/',
+          maxVisible: 4,
+          separator: '',
           responsive: true,
           ariaLabel: '',
         }),
@@ -375,8 +435,8 @@ export const Mobile: Story = {
       source: {
         code: docsSourceDefault({
           items: defaultItems,
-          maxVisible: 5,
-          separator: '/',
+          maxVisible: 4,
+          separator: '',
           responsive: true,
           ariaLabel: '',
         }),
@@ -400,6 +460,56 @@ export const WithCustomSeparator: Story = {
   },
 };
 
+export const LongLabels: Story = {
+  render: renderLongLabels,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: `<cor-breadcrumb id="long" responsive="false"></cor-breadcrumb>
+<script>
+  document.getElementById('long').items = [
+    { label: 'Acasă', href: '/' },
+    { label: 'Eticheta foarte lungă care depășește treizeci de caractere', href: '/seo-long' },
+    { label: 'Detalii plată', active: true },
+  ];
+</script>`,
+      },
+    },
+  },
+};
+
+export const WithLeadingIcon: Story = {
+  render: renderWithLeadingIcon,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: `<!-- items API -->
+<cor-breadcrumb id="leading" responsive="false"></cor-breadcrumb>
+<script>
+  document.getElementById('leading').items = [
+    { label: 'Acasă', href: '/', iconStart: 'home-line' },
+    { label: 'Servicii', href: '/servicii' },
+    { label: 'MPay', href: '/servicii/mpay' },
+    { label: 'Detalii plată', active: true },
+  ];
+</script>
+
+<!-- slot mode -->
+<cor-breadcrumb>
+  <cor-breadcrumb-item href="/">
+    <cor-icon slot="icon-start" name="home-line"></cor-icon>
+    Acasă
+  </cor-breadcrumb-item>
+  <cor-breadcrumb-item href="/servicii">Servicii</cor-breadcrumb-item>
+  <cor-breadcrumb-item active>Detalii plată</cor-breadcrumb-item>
+</cor-breadcrumb>`,
+      },
+    },
+  },
+};
+
 export const EdgeCases: Story = {
   render: renderEdgeCases,
   parameters: {
@@ -407,9 +517,9 @@ export const EdgeCases: Story = {
     docs: {
       source: {
         code: docsSourceDefault({
-          items: longLabelItems,
-          maxVisible: 5,
-          separator: '/',
+          items: defaultItems,
+          maxVisible: 4,
+          separator: '',
           responsive: true,
           ariaLabel: '',
         }),

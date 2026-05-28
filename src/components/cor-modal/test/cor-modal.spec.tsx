@@ -475,9 +475,20 @@ describe('cor-modal', () => {
   });
 
   describe('aria-label fallback', () => {
-    it('passes the aria-label prop straight onto the host', async () => {
+    it('forwards the consumer aria-label onto the internal <dialog>', async () => {
       const { root } = await render(<cor-modal aria-label="Confirmare plată"></cor-modal>);
-      expect(root?.getAttribute('aria-label')).toBe('Confirmare plată');
+      // Stripped from the host on connect (avoids the Stencil attribute observer
+      // render-loop) and re-emitted on the dialog where the dialog role lives.
+      expect(root?.getAttribute('aria-label')).toBe(null);
+      const dialog = root?.shadowRoot?.querySelector('dialog');
+      expect(dialog?.getAttribute('aria-label')).toBe('Confirmare plată');
+    });
+
+    it('uses aria-labelledby pointing at the title when a title is present', async () => {
+      const { root } = await render(<cor-modal title-text="Detalii"></cor-modal>);
+      const dialog = root?.shadowRoot?.querySelector('dialog');
+      expect(dialog?.getAttribute('aria-labelledby')).toMatch(/^modal-title-\d+$/);
+      expect(dialog?.getAttribute('aria-label')).toBe(null);
     });
   });
 

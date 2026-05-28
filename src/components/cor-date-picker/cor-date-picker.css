@@ -67,6 +67,7 @@
   padding: 0;
   background-color: var(--date-picker-header-nav-button-background-default);
   color: var(--date-picker-header-nav-button-icon-color-default);
+  --icon-color: currentcolor;
   border: 0;
   border-radius: var(--date-picker-header-nav-button-border-radius);
   cursor: pointer;
@@ -85,7 +86,7 @@
 
 .nav-button:focus-visible {
   outline: var(--date-picker-day-cell-focus-ring-width) solid var(--date-picker-day-cell-focus-ring);
-  outline-offset: 2px;
+  outline-offset: var(--spacing-2);
 }
 
 .title {
@@ -111,7 +112,7 @@
 
 .title:focus-visible {
   outline: var(--date-picker-day-cell-focus-ring-width) solid var(--date-picker-day-cell-focus-ring);
-  outline-offset: 2px;
+  outline-offset: var(--spacing-2);
 }
 
 /* ---------- Grid layout ---------- */
@@ -270,7 +271,7 @@
 
 .picker-cell:focus-visible {
   outline: var(--date-picker-day-cell-focus-ring-width) solid var(--date-picker-day-cell-focus-ring);
-  outline-offset: 2px;
+  outline-offset: var(--spacing-2);
 }
 
 /* ---------- Footer ---------- */
@@ -304,7 +305,7 @@
 
 .today-button:focus-visible {
   outline: var(--date-picker-day-cell-focus-ring-width) solid var(--date-picker-day-cell-focus-ring);
-  outline-offset: 2px;
+  outline-offset: var(--spacing-2);
 }
 
 /* ---------- Utility ---------- */

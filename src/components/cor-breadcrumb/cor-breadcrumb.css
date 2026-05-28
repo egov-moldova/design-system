@@ -38,6 +38,19 @@
   height: var(--breadcrumb-separator-size);
 }
 
+/* Drive the cor-icon stroke color through the shared --icon-color custom prop
+   (the cor-icon `color=` attribute API has been retired across the system). */
+.separator cor-icon,
+.back-link cor-icon,
+.crumb-icon-start {
+  --icon-color: currentcolor;
+}
+
+.separator--text {
+  width: auto;
+  height: auto;
+}
+
 /* ----- Crumb leaf (anchor or text) ----- */
 .crumb {
   display: inline-flex;
@@ -55,10 +68,10 @@
   font-weight: var(--breadcrumb-font-weight-default);
   border: none;
   cursor: default;
+  /* Cap each crumb at ~30 visible characters; the TS render wraps longer
+     labels in <cor-tooltip> so the full text is still discoverable. */
   max-width: 30ch;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  min-width: 0;
   transition:
     color 150ms ease-out,
     text-decoration-color 150ms ease-out;
@@ -68,10 +81,48 @@
   cursor: pointer;
 }
 
+.crumb-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--breadcrumb-gap-item);
+  min-width: 0;
+  flex: 1 1 auto;
+  max-width: 100%;
+}
+
+/* When the long-label tooltip is used, the cor-tooltip wraps the whole
+   `<a class="crumb">` (link sits in slot="trigger"). The link itself still
+   carries `max-width: 30ch`, so the inner `.crumb-text` truncates normally —
+   no extra flex propagation needed here. */
+.crumb-item cor-tooltip {
+  display: inline-flex;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.crumb-icon-start {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+.crumb-text {
+  /* `text-overflow: ellipsis` only applies to block / inline-block boxes; the
+     default `<span>` is inline, so we promote it. `min-width: 0` + flex shrink
+     lets the text shrink inside the flex chain so the parent's max-width:30ch
+     cap actually triggers truncation. */
+  display: block;
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .crumb--link:hover {
   color: var(--breadcrumb-item-text-hover);
   text-decoration: underline;
-  text-underline-offset: 2px;
+  text-underline-offset: var(--spacing-2);
   text-decoration-thickness: 1px;
 }
 
@@ -111,8 +162,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 24px;
-  height: 20px;
+  min-width: var(--spacing-24);
+  height: var(--spacing-20);
   padding-inline: var(--breadcrumb-item-padding-inline);
   border: none;
   background: transparent;
@@ -154,7 +205,15 @@
   border: var(--breadcrumb-menu-border-width) solid var(--breadcrumb-menu-border-color);
   border-radius: var(--breadcrumb-menu-border-radius);
   box-shadow: var(--breadcrumb-menu-shadow);
-  min-width: 160px;
+  min-width: var(--breadcrumb-menu-min-width);
+}
+
+/* Roving focus indication driven by `aria-activedescendant` — the menu items
+   never receive real DOM focus (the trigger keeps it), so we visualise the
+   active descendant with a class instead of `:focus-visible`. */
+.overflow-menu-item--focused {
+  background: var(--breadcrumb-menu-item-background-hover);
+  color: var(--breadcrumb-menu-item-text-hover);
 }
 
 .overflow-menu-item {
@@ -264,15 +323,13 @@
 .trail--slot ::slotted(cor-breadcrumb-item) {
   display: inline-flex;
   align-items: center;
+  gap: var(--breadcrumb-gap-item);
 }
 
-/* Hide the consumer's `slot="separator"` element from the light DOM —
- * we capture its outerHTML in componentWillLoad and re-render it inside
- * the shadow root for every separator. The original element stays in the
- * tree (so consumers can update it) but never paints. */
-::slotted([slot='separator']) {
-  display: none !important;
-}
+/* The consumer's `<… slot="separator">` light-DOM child has no matching
+ * named slot in the shadow root (we clone it via componentWillLoad and
+ * re-insert per separator), so the browser doesn't paint it automatically —
+ * no display:none rule needed. */
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {

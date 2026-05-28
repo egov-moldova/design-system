@@ -115,8 +115,14 @@ export class CorDatePicker {
   /** BCP-47 locale tag for weekday/month rendering. Defaults to Romanian. */
   @Prop() locale: string = 'ro-RO';
 
-  /** Accessible label for the entire picker. Defaults to a localized fallback. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  /**
+   * Accessible label for the entire picker. Set the `aria-label` attribute on
+   * the host (or use this prop) and the component captures it on connect into
+   * `resolvedAriaLabel`, then strips the host attribute to avoid Stencil's
+   * attribute-observer / render-loop antipattern (same pattern as cor-radio /
+   * cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb).
+   */
+  @Prop() label?: string;
 
   /**
    * Week starts on this day of the week (0 = Sunday, 1 = Monday). Defaults to 1 (Monday)
@@ -132,6 +138,7 @@ export class CorDatePicker {
   @State() private view: DatePickerView = 'days';
   @State() private focusedIso: string | null = null;
   @State() private hoverIso: string | null = null;
+  @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLCorDatePickerElement;
 
@@ -150,8 +157,24 @@ export class CorDatePicker {
   private todayIso = toIso(new Date());
 
   componentWillLoad() {
+    this.captureAriaLabel();
     this.syncViewFromValue();
     this.todayIso = toIso(new Date());
+  }
+
+  private captureAriaLabel(): void {
+    const userLabel = this.host.getAttribute('aria-label');
+    if (userLabel && userLabel.length > 0) {
+      this.resolvedAriaLabel = userLabel;
+      this.host.removeAttribute('aria-label');
+    } else if (this.label && this.label.length > 0) {
+      this.resolvedAriaLabel = this.label;
+    }
+  }
+
+  @Watch('label')
+  syncLabel(next?: string): void {
+    if (next && next.length > 0) this.resolvedAriaLabel = next;
   }
 
   @Watch('mode')
@@ -449,16 +472,7 @@ export class CorDatePicker {
     return (
       <div class="header" part="header">
         <button type="button" class="nav-button" part="nav-button" aria-label={prevAria} onClick={onPrev}>
-          <svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false">
-            <path
-              d="M12.5 4.5 7 10l5.5 5.5"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
+          <cor-icon name="chevron-left-small" size={20}></cor-icon>
         </button>
         <button
           type="button"
@@ -471,16 +485,7 @@ export class CorDatePicker {
           {monthYear}
         </button>
         <button type="button" class="nav-button" part="nav-button" aria-label={nextAria} onClick={onNext}>
-          <svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true" focusable="false">
-            <path
-              d="M7.5 4.5 13 10l-5.5 5.5"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.5"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
+          <cor-icon name="chevron-right-small" size={20}></cor-icon>
         </button>
       </div>
     );
@@ -642,13 +647,14 @@ export class CorDatePicker {
       [`breakpoint-${this.breakpoint}`]: true,
       [`view-${this.view}`]: true,
     };
+    // Always materialise an aria-label on the host — pointing aria-labelledby at
+    // a shadow-DOM ID is technically valid (screen readers resolve it), but axe
+    // flags it as `aria-valid-attr-value` Incomplete because the rule can't
+    // cross the shadow boundary. Synthesising the label from the visible title
+    // keeps the a11y tree deterministic and clears the inspector warning.
+    const hostLabel = this.resolvedAriaLabel ?? this.capitalize(this.monthLabel(this.viewYear, this.viewMonth));
     return (
-      <Host
-        class={hostClasses}
-        role="application"
-        aria-labelledby={this.ariaLabel ? undefined : this.titleId}
-        id={this.gridLabelId}
-      >
+      <Host class={hostClasses} role="application" aria-label={hostLabel} id={this.gridLabelId}>
         {this.breakpoint === 'mobile' ? <div class="drag-handle" aria-hidden="true" part="drag-handle"></div> : null}
         {this.renderHeader()}
         {this.view === 'days' ? this.renderDayGrid() : null}
