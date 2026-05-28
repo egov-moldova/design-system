@@ -1,7 +1,7 @@
 import { Component, Element, Event, Host, Method, Prop, State, Watch, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
-import type { ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from './cor-modal.types';
+import type { ModalActionsLayout, ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from './cor-modal.types';
 
 let modalIdCounter = 0;
 
@@ -76,6 +76,21 @@ export class CorModal {
   @Prop() titleText?: string;
 
   /**
+   * Hero image URL for the `with-image` variant. Rendered as the slot fallback
+   * — if a consumer projects their own `<img slot="image">` / `<picture>` it
+   * wins. Pair with `imageAlt` for accessibility (empty alt is acceptable for
+   * decorative images).
+   */
+  @Prop() imageSrc?: string;
+
+  /**
+   * Alt text for the prop-driven hero image. Use an empty string when the image
+   * is purely decorative and the title/body already describes the action.
+   * @default ''
+   */
+  @Prop() imageAlt: string = '';
+
+  /**
    * When `true`, renders a trailing × close button in the header. Activating
    * it emits `corClose` with `reason: 'close-button'`. Hide it for required
    * confirmation flows by setting `closable=false`.
@@ -107,10 +122,22 @@ export class CorModal {
   @Prop({ reflect: true }) destructive: boolean = false;
 
   /**
-   * Accessible name forwarded to the host as `aria-label`. Required when no
-   * title is provided.
+   * Footer button arrangement (Figma 358:16247).
+   * - `inline` — buttons sit side-by-side, right-aligned (default)
+   * - `stacked` — buttons span the full footer width, stacked vertically
+   * @default 'inline'
    */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop({ reflect: true }) actionsLayout: ModalActionsLayout = 'inline';
+
+  /**
+   * Accessible name forwarded to the host as `aria-label`. Required when no
+   * title is provided. The consumer-supplied `aria-label` attribute is captured
+   * on connect into `resolvedAriaLabel` and stripped from the host to avoid
+   * Stencil's attribute-observer / render-loop antipattern (same pattern as
+   * cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb /
+   * cor-date-picker).
+   */
+  @Prop() label?: string;
 
   /**
    * Accessible label for the close × button. Defaults to the Romanian
@@ -123,6 +150,7 @@ export class CorModal {
   @State() private hasIconSlot: boolean = false;
   @State() private hasImageSlot: boolean = false;
   @State() private hasActionsSlot: boolean = false;
+  @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLCorModalElement;
 
@@ -145,7 +173,23 @@ export class CorModal {
   private suppressNativeClose: boolean = false;
 
   componentWillLoad(): void {
+    this.captureAriaLabel();
     this.detectSlots();
+  }
+
+  private captureAriaLabel(): void {
+    const userLabel = this.host.getAttribute('aria-label');
+    if (userLabel && userLabel.length > 0) {
+      this.resolvedAriaLabel = userLabel;
+      this.host.removeAttribute('aria-label');
+    } else if (this.label && this.label.length > 0) {
+      this.resolvedAriaLabel = this.label;
+    }
+  }
+
+  @Watch('label')
+  syncLabel(next?: string): void {
+    if (next && next.length > 0) this.resolvedAriaLabel = next;
   }
 
   componentDidLoad(): void {
@@ -320,9 +364,7 @@ export class CorModal {
         onKeyDown={this.handleCloseButtonKeyDown}
       >
         <span class="close-icon" aria-hidden="true">
-          <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" focusable="false">
-            <path d="M3 3 L13 13 M13 3 L3 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-          </svg>
+          <cor-icon name="cross-small" size={16}></cor-icon>
         </span>
       </button>
     );
@@ -330,9 +372,17 @@ export class CorModal {
 
   private renderHeader() {
     if (this.variant === 'with-image') {
+      // The image is the actual header bar; the title (when provided) is rendered
+      // below the image inside renderBody (per Figma 358:16247 — image variants
+      // show the title underneath the hero, not in a separate header bar).
+      // Slot-first content rule: when consumers project their own `<img>` or
+      // `<picture>` it wins; otherwise the `imageSrc` prop renders an `<img>`
+      // as the slot's fallback content.
       return (
         <div class="header header-image">
-          <slot name="image" onSlotchange={this.onImageSlotChange} />
+          <slot name="image" onSlotchange={this.onImageSlotChange}>
+            {this.imageSrc ? <img src={this.imageSrc} alt={this.imageAlt} /> : null}
+          </slot>
           {this.renderCloseButton()}
         </div>
       );
@@ -347,21 +397,27 @@ export class CorModal {
     const showTitle = this.hasTitleSlot || (this.titleText && this.titleText.trim().length > 0);
     return (
       <div class="header">
-        <div class="heading" id={this.titleId}>
-          {this.hasTitleSlot ? (
-            <slot name="title" onSlotchange={this.onTitleSlotChange} />
-          ) : showTitle ? (
-            <h2 class="title">{this.titleText}</h2>
-          ) : (
-            <slot name="title" onSlotchange={this.onTitleSlotChange} />
-          )}
-        </div>
+        {showTitle ? (
+          <div class="heading" id={this.titleId}>
+            {/* Single slot path — when consumers provide a `slot="title"` child it
+                wins; otherwise the slot fallback renders the `titleText` prop as
+                an h2 (slot-first content rule, ANTIPATTERN-026 compliant). */}
+            <slot name="title" onSlotchange={this.onTitleSlotChange}>
+              <h2 class="title">{this.titleText}</h2>
+            </slot>
+          </div>
+        ) : null}
         {this.renderCloseButton()}
       </div>
     );
   }
 
   private renderBody() {
+    const hasTitle = this.hasTitleSlot || !!(this.titleText && this.titleText.trim().length > 0);
+    // The with-icon and with-image variants both render the title INSIDE the
+    // body (not in a separate header bar). For with-icon the title sits below
+    // the icon glyph; for with-image it sits below the hero image (Figma 358:16247).
+    const titleInBody = (this.variant === 'with-icon' || this.variant === 'with-image') && hasTitle;
     return (
       <div class="body" id={this.bodyId}>
         {this.variant === 'with-icon' ? (
@@ -369,13 +425,11 @@ export class CorModal {
             <slot name="icon" onSlotchange={this.onIconSlotChange} />
           </div>
         ) : null}
-        {this.variant === 'with-icon' && (this.hasTitleSlot || (this.titleText && this.titleText.trim().length > 0)) ? (
-          <div class="heading heading-icon" id={this.titleId}>
-            {this.hasTitleSlot ? (
-              <slot name="title" onSlotchange={this.onTitleSlotChange} />
-            ) : (
+        {titleInBody ? (
+          <div class="heading heading-in-body" id={this.titleId}>
+            <slot name="title" onSlotchange={this.onTitleSlotChange}>
               <h2 class="title">{this.titleText}</h2>
-            )}
+            </slot>
           </div>
         ) : null}
         <div class="body-content">
@@ -397,14 +451,18 @@ export class CorModal {
     const hostClasses = {
       'has-title': this.hasTitleSlot || !!(this.titleText && this.titleText.trim().length > 0),
       'has-icon': this.hasIconSlot,
-      'has-image': this.hasImageSlot,
+      'has-image': this.hasImageSlot || !!(this.imageSrc && this.imageSrc.length > 0),
       'has-actions': this.hasActionsSlot,
       'is-closable': this.closable,
       'is-destructive': this.destructive,
     };
 
-    const labelledBy =
-      this.variant === 'with-image' && !this.hasTitleSlot && !this.titleText ? undefined : this.titleId;
+    const hasTitle = this.hasTitleSlot || !!(this.titleText && this.titleText.trim().length > 0);
+    // Prefer the in-shadow title (visible heading) when present; otherwise fall
+    // back to the consumer-supplied accessible name. Avoid `aria-labelledby`
+    // pointing at a non-existent ID — axe flags that as `aria-valid-attr-value`.
+    const labelledBy = hasTitle ? this.titleId : undefined;
+    const ariaLabel = !hasTitle ? this.resolvedAriaLabel : undefined;
 
     return (
       <Host class={hostClasses}>
@@ -413,6 +471,7 @@ export class CorModal {
           class="dialog"
           aria-modal="true"
           aria-labelledby={labelledBy}
+          aria-label={ariaLabel}
           aria-describedby={this.bodyId}
           onClick={this.handleBackdropClick}
           onCancel={this.handleDialogCancel}

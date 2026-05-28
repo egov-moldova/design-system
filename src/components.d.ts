@@ -24,7 +24,7 @@ import { InputChangeDetail, InputSize, InputType, InputVariant } from "./compone
 import { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/cor-input-chip/cor-input-chip.types";
 import { LinkSize, LinkUnderline, LinkVariant } from "./components/cor-link/cor-link.types";
 import { LogoName } from "./components/cor-logo/cor-logo.types";
-import { ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/cor-modal/cor-modal.types";
+import { ModalActionsLayout, ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/cor-modal/cor-modal.types";
 import { NotificationStyle, NotificationVariant } from "./components/cor-notification/cor-notification.types";
 import { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/cor-numeric-input/cor-numeric-input.types";
 import { PaginationChangeDetail, PaginationSize } from "./components/cor-pagination/cor-pagination.types";
@@ -64,7 +64,7 @@ export { InputChangeDetail, InputSize, InputType, InputVariant } from "./compone
 export { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/cor-input-chip/cor-input-chip.types";
 export { LinkSize, LinkUnderline, LinkVariant } from "./components/cor-link/cor-link.types";
 export { LogoName } from "./components/cor-logo/cor-logo.types";
-export { ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/cor-modal/cor-modal.types";
+export { ModalActionsLayout, ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/cor-modal/cor-modal.types";
 export { NotificationStyle, NotificationVariant } from "./components/cor-notification/cor-notification.types";
 export { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/cor-numeric-input/cor-numeric-input.types";
 export { PaginationChangeDetail, PaginationSize } from "./components/cor-pagination/cor-pagination.types";
@@ -1366,9 +1366,10 @@ export namespace Components {
      */
     interface CorModal {
         /**
-          * Accessible name forwarded to the host as `aria-label`. Required when no title is provided.
+          * Footer button arrangement (Figma 358:16247). - `inline` — buttons sit side-by-side, right-aligned (default) - `stacked` — buttons span the full footer width, stacked vertically
+          * @default 'inline'
          */
-        "ariaLabel"?: string;
+        "actionsLayout": ModalActionsLayout;
         /**
           * When `true`, renders a trailing × close button in the header. Activating it emits `corClose` with `reason: 'close-button'`. Hide it for required confirmation flows by setting `closable=false`.
           * @default true
@@ -1398,6 +1399,19 @@ export namespace Components {
           * @default false
          */
         "destructive": boolean;
+        /**
+          * Alt text for the prop-driven hero image. Use an empty string when the image is purely decorative and the title/body already describes the action.
+          * @default ''
+         */
+        "imageAlt": string;
+        /**
+          * Hero image URL for the `with-image` variant. Rendered as the slot fallback — if a consumer projects their own `<img slot="image">` / `<picture>` it wins. Pair with `imageAlt` for accessibility (empty alt is acceptable for decorative images).
+         */
+        "imageSrc"?: string;
+        /**
+          * Accessible name forwarded to the host as `aria-label`. Required when no title is provided. The consumer-supplied `aria-label` attribute is captured on connect into `resolvedAriaLabel` and stripped from the host to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker).
+         */
+        "label"?: string;
         /**
           * Whether the modal is currently shown. Reflected so consumers can target `cor-modal[open]` in selectors. Mutable so the component can flip it back to `false` on internal dismiss (backdrop / escape / close button).
           * @default false
@@ -5867,9 +5881,10 @@ declare namespace LocalJSX {
      */
     interface CorModal {
         /**
-          * Accessible name forwarded to the host as `aria-label`. Required when no title is provided.
+          * Footer button arrangement (Figma 358:16247). - `inline` — buttons sit side-by-side, right-aligned (default) - `stacked` — buttons span the full footer width, stacked vertically
+          * @default 'inline'
          */
-        "ariaLabel"?: string;
+        "actionsLayout"?: ModalActionsLayout;
         /**
           * When `true`, renders a trailing × close button in the header. Activating it emits `corClose` with `reason: 'close-button'`. Hide it for required confirmation flows by setting `closable=false`.
           * @default true
@@ -5895,6 +5910,19 @@ declare namespace LocalJSX {
           * @default false
          */
         "destructive"?: boolean;
+        /**
+          * Alt text for the prop-driven hero image. Use an empty string when the image is purely decorative and the title/body already describes the action.
+          * @default ''
+         */
+        "imageAlt"?: string;
+        /**
+          * Hero image URL for the `with-image` variant. Rendered as the slot fallback — if a consumer projects their own `<img slot="image">` / `<picture>` it wins. Pair with `imageAlt` for accessibility (empty alt is acceptable for decorative images).
+         */
+        "imageSrc"?: string;
+        /**
+          * Accessible name forwarded to the host as `aria-label`. Required when no title is provided. The consumer-supplied `aria-label` attribute is captured on connect into `resolvedAriaLabel` and stripped from the host to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker).
+         */
+        "label"?: string;
         /**
           * Fires after the dialog has been dismissed. Payload carries the `reason` so consumers can distinguish backdrop vs. escape vs. close-button vs. footer-action dismissals.
          */
@@ -7956,11 +7984,14 @@ declare namespace LocalJSX {
         "size": ModalSize;
         "variant": ModalVariant;
         "titleText": string;
+        "imageSrc": string;
+        "imageAlt": string;
         "closable": boolean;
         "closeOnBackdrop": boolean;
         "closeOnEscape": boolean;
         "destructive": boolean;
-        "ariaLabel": string;
+        "actionsLayout": ModalActionsLayout;
+        "label": string;
         "closeLabel": string;
     }
     interface CorNotificationAttributes {
