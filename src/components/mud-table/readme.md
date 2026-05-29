@@ -17,17 +17,19 @@ for the selection column, `mud-icon` for sort chevrons. Status badges and
 row actions are projected via named slots so consumers can drop in
 `mud-tag`, `mud-button`, or any custom content per cell.
 
-Below the `--breakpoint-mobile` (≤640 px) container query, every row
-collapses to a vertical key:value card stack — each `<td>` becomes a
-labelled line with the column title rendered inline before its value.
+At ≤640 px container width the inline padding shrinks from 24 → 16 to
+match Figma's "Mobile" breakpoint specs (table-header `4930:14358`,
+table-cell `649:4296`). The table structure itself is preserved; consumers
+who need a card-stack layout on narrow screens should wrap their own
+presentation around the data.
 
 ## Properties
 
 | Property        | Attribute        | Description                                                                                                                                                                                                                      | Type                                   | Default     |
 | --------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | ----------- |
-| `ariaLabel`     | `aria-label`     | Accessible label propagated to the rendered `<table>` element.                                                                                                                                                                   | `string \| undefined`                  | `undefined` |
+| `ariaLabel`     | `aria-label`     | Accessible label propagated to the rendered `<table>` element. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.                                            | `string \| undefined`                  | `undefined` |
 | `columns`       | --               | Column definitions. Each entry maps a row field (`key`) to a header `label`, an optional `sortable` flag, alignment, and width.                                                                                                  | `TableColumn[] \| undefined`           | `undefined` |
-| `headerStyle`   | `header-style`   | Header treatment. `default` is the subtle gray header used on light surfaces; `inverted` is the strong dark-on-light header for emphasis.                                                                                        | `"default" \| "inverted"`              | `'default'` |
+| `headerStyle`   | `header-style`   | Header treatment. `default` is the subtle gray header used on light surfaces; `inverted` is the strong dark-on-light header for emphasis.                                                                                        | `"default" \| "inverted" \| "white"`   | `'default'` |
 | `hoverable`     | `hoverable`      | Enables hover highlight on rows. Independent of selection.                                                                                                                                                                       | `boolean`                              | `false`     |
 | `rowIdField`    | `row-id-field`   | Field used to uniquely identify a row. Used for selection state and stable React-like keys.                                                                                                                                      | `string`                               | `'id'`      |
 | `rowStyle`      | `row-style`      | Row treatment. - `divided` (default) — horizontal divider line below every row. - `zebra` — alternating row backgrounds (no dividers). - `borderless` — flat rows, no dividers, no zebra.                                        | `"borderless" \| "divided" \| "zebra"` | `'divided'` |

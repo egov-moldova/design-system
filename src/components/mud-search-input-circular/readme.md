@@ -14,12 +14,12 @@ Pattern B (atom-interactive, form-associated): renders its own
 `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
 icon and an optional trailing clear `×` button that appears whenever the
 control carries a value. Behavior, props, slots, events, keyboard contract,
-and ARIA wiring are IDENTICAL to `mud-search-input-rectangular` — the only
-visual difference is the silhouette: corners flip to `borderRadius.full`
-(9999px) and horizontal padding grows one step (md +4px, lg +4px) to balance
-the rounded ends. The trailing submit button (when `with-button` is set)
-inherits the pill silhouette via `borderRadius.full`, rendering as a perfect
-circle that hugs the pill end per Figma master `933:29721`.
+ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
+`mud-search-input-rectangular` — the only visual difference is the
+silhouette: corners flip to `borderRadius.full` (9999px). The trailing
+submit button (when `with-button` is set) inherits the pill silhouette via
+`borderRadius.full`, rendering as a perfect circle that hugs the pill end
+per Figma master `933:29721`.
 
 The Republic of Moldova Unified Design System library catalogues circular
 and rectangular search fields as separate component_sets, so we ship them
@@ -37,7 +37,7 @@ Optional axes per Figma master `933:29721`:
 
 | Property       | Attribute      | Description                                                                                                                                                                                                                                                                                                                      | Type                         | Default     |
 | -------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- | ----------- |
-| `ariaLabel`    | `aria-label`   | Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.                                                                                                                                                                                                                                | `string \| undefined`        | `undefined` |
+| `ariaLabel`    | `aria-label`   | Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.                                                                                                         | `string \| undefined`        | `undefined` |
 | `autocomplete` | `autocomplete` | Native `autocomplete` attribute forwarded to the internal control.                                                                                                                                                                                                                                                               | `string \| undefined`        | `undefined` |
 | `clearLabel`   | `clear-label`  | Accessible label for the trailing clear button. Defaults to Romanian "Șterge" per the institutional voice.                                                                                                                                                                                                                       | `string`                     | `'Șterge'`  |
 | `clearable`    | `clearable`    | Shows the trailing clear `×` button when a value is present. Set to `false` to suppress the affordance entirely (useful for read-only or always-on filters).                                                                                                                                                                     | `boolean`                    | `true`      |
