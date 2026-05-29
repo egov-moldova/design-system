@@ -74,7 +74,7 @@
         "checked": { "$value": "{color.background.brand.default}", "$type": "color" }
       },
       "border": {
-        "unchecked": { "$value": "{color.border.base.tertiary}", "$type": "color" },
+        "unchecked": { "$value": "{color.border.base.secondary}", "$type": "color", "$comment": "#b2b2b2 light-gray unchecked border per Figma 403:21808 (was base.tertiary #444, too dark)." },
         "checked": { "$value": "{color.background.brand.default}", "$type": "color" }
       },
       "focusRing": { "$value": "{color.background.brand.focus-ring}", "$type": "color" }
