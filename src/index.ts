@@ -6,31 +6,31 @@
 //
 // See `src/legacy/index.ts` for a snapshot of the previous export surface.
 
-export { CorSpinner } from './components/cor-spinner/cor-spinner';
-export type { SpinnerSize, SpinnerVariant } from './components/cor-spinner/cor-spinner.types';
+export { MudSpinner } from './components/mud-spinner/mud-spinner';
+export type { SpinnerSize, SpinnerVariant } from './components/mud-spinner/mud-spinner.types';
 
-export { CorButton } from './components/cor-button/cor-button';
-export { BUTTON_SIZES, BUTTON_VARIANTS, BUTTON_SHAPES, BUTTON_TYPES } from './components/cor-button/cor-button.types';
-export type { ButtonSize, ButtonVariant, ButtonShape, ButtonType } from './components/cor-button/cor-button.types';
+export { MudButton } from './components/mud-button/mud-button';
+export { BUTTON_SIZES, BUTTON_VARIANTS, BUTTON_SHAPES, BUTTON_TYPES } from './components/mud-button/mud-button.types';
+export type { ButtonSize, ButtonVariant, ButtonShape, ButtonType } from './components/mud-button/mud-button.types';
 
-export { CorButtonGroup } from './components/cor-button-group/cor-button-group';
-export { BUTTON_GROUP_ORIENTATIONS } from './components/cor-button-group/cor-button-group.types';
-export type { ButtonGroupOrientation } from './components/cor-button-group/cor-button-group.types';
+export { MudButtonGroup } from './components/mud-button-group/mud-button-group';
+export { BUTTON_GROUP_ORIENTATIONS } from './components/mud-button-group/mud-button-group.types';
+export type { ButtonGroupOrientation } from './components/mud-button-group/mud-button-group.types';
 
-export { CorLogo } from './components/cor-logo/cor-logo';
-export { LOGO_NAMES } from './components/cor-logo/cor-logo.types';
-export type { LogoName } from './components/cor-logo/cor-logo.types';
+export { MudLogo } from './components/mud-logo/mud-logo';
+export { LOGO_NAMES } from './components/mud-logo/mud-logo.types';
+export type { LogoName } from './components/mud-logo/mud-logo.types';
 
-export { CorServiceButton } from './components/cor-service-button/cor-service-button';
+export { MudServiceButton } from './components/mud-service-button/mud-service-button';
 export {
   SERVICE_BUTTON_APPEARANCES,
   SERVICE_BUTTON_TYPES,
-} from './components/cor-service-button/cor-service-button.types';
+} from './components/mud-service-button/mud-service-button.types';
 export type {
   ServiceButtonAppearance,
   ServiceButtonType,
-} from './components/cor-service-button/cor-service-button.types';
+} from './components/mud-service-button/mud-service-button.types';
 
-export { CorNotification } from './components/cor-notification/cor-notification';
-export { NOTIFICATION_VARIANTS, NOTIFICATION_STYLES } from './components/cor-notification/cor-notification.types';
-export type { NotificationVariant, NotificationStyle } from './components/cor-notification/cor-notification.types';
+export { MudNotification } from './components/mud-notification/mud-notification';
+export { NOTIFICATION_VARIANTS, NOTIFICATION_STYLES } from './components/mud-notification/mud-notification.types';
+export type { NotificationVariant, NotificationStyle } from './components/mud-notification/mud-notification.types';

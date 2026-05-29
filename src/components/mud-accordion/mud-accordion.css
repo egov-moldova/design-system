@@ -1,0 +1,9 @@
+:host {
+  display: block;
+  inline-size: 100%;
+}
+
+::slotted(mud-accordion-item:last-child),
+mud-accordion-item:last-child {
+  border-block-end: var(--accordion-item-border-width) solid var(--accordion-item-border-color-default);
+}

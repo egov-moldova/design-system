@@ -20,16 +20,16 @@ import {
 } from '../../audit/03-git-hygiene.mjs';
 
 describe('03-git-hygiene: checkBranchName', () => {
-  it('accepts feat/cor-button-add-loading', () => {
-    assert.deepEqual(checkBranchName('feat/cor-button-add-loading'), []);
+  it('accepts feat/mud-button-add-loading', () => {
+    assert.deepEqual(checkBranchName('feat/mud-button-add-loading'), []);
   });
 
-  it('accepts fix/cor-input-validation', () => {
-    assert.deepEqual(checkBranchName('fix/cor-input-validation'), []);
+  it('accepts fix/mud-input-validation', () => {
+    assert.deepEqual(checkBranchName('fix/mud-input-validation'), []);
   });
 
-  it('accepts redesign/cor-banner-notification', () => {
-    assert.deepEqual(checkBranchName('redesign/cor-banner-notification'), []);
+  it('accepts redesign/mud-banner-notification', () => {
+    assert.deepEqual(checkBranchName('redesign/mud-banner-notification'), []);
   });
 
   it('warns on main (protected branch)', () => {
@@ -50,8 +50,8 @@ describe('03-git-hygiene: checkBranchName', () => {
     assert.equal(findings[0].code, 'GIT-BRANCH-UNKNOWN');
   });
 
-  it('rejects unknown type prefix (e.g. fix2/cor-button)', () => {
-    const findings = checkBranchName('fix2/cor-button');
+  it('rejects unknown type prefix (e.g. fix2/mud-button)', () => {
+    const findings = checkBranchName('fix2/mud-button');
     assert.equal(findings[0].code, 'GIT-BRANCH-NAMING');
   });
 
@@ -65,8 +65,8 @@ describe('03-git-hygiene: checkBranchName', () => {
 describe('03-git-hygiene: checkCommits', () => {
   it('accepts conventional commits with scope', () => {
     const commits = [
-      { hash: 'abc1234', subject: 'feat(cor-button): add loading state' },
-      { hash: 'def5678', subject: 'fix(cor-input): handle empty validation' },
+      { hash: 'abc1234', subject: 'feat(mud-button): add loading state' },
+      { hash: 'def5678', subject: 'fix(mud-input): handle empty validation' },
       { hash: 'ghi9012', subject: 'refactor: simplify token pipeline' },
     ];
     assert.deepEqual(checkCommits(commits), []);
@@ -90,8 +90,8 @@ describe('03-git-hygiene: checkCommits', () => {
   it('errors on WIP / fixup! / squash! commits', () => {
     const commits = [
       { hash: 'aaa1', subject: 'wip: experimenting' },
-      { hash: 'bbb2', subject: 'fixup! feat(cor-button): tweak' },
-      { hash: 'ccc3', subject: 'squash! fix(cor-input): handle empty' },
+      { hash: 'bbb2', subject: 'fixup! feat(mud-button): tweak' },
+      { hash: 'ccc3', subject: 'squash! fix(mud-input): handle empty' },
     ];
     const findings = checkCommits(commits);
     const wipFindings = findings.filter(f => f.code === 'GIT-COMMIT-WIP');
@@ -114,7 +114,7 @@ describe('03-git-hygiene: checkCommits', () => {
   it('BRANCH_RE recognizes the documented types', () => {
     const types = ['feat', 'fix', 'refactor', 'redesign', 'test', 'docs', 'chore', 'build', 'ci', 'perf', 'style'];
     for (const t of types) {
-      assert.ok(BRANCH_RE.test(`${t}/cor-button-x`), `${t}/cor-button-x should be valid`);
+      assert.ok(BRANCH_RE.test(`${t}/mud-button-x`), `${t}/mud-button-x should be valid`);
     }
   });
 });
@@ -148,7 +148,7 @@ describe('03-git-hygiene: checkForbiddenPaths', () => {
 
   it('does not flag normal source files', () => {
     const findings = checkForbiddenPaths(
-      ['src/components/cor-button/cor-button.tsx', 'package.json', 'README.md'],
+      ['src/components/mud-button/mud-button.tsx', 'package.json', 'README.md'],
       'staged',
     );
     assert.deepEqual(findings, []);

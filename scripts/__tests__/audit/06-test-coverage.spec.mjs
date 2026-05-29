@@ -45,7 +45,7 @@ describe('06-test-coverage: percentOf', () => {
 
 describe('06-test-coverage: analyzeComponent', () => {
   it('reports passAll=true when all metrics >= threshold', () => {
-    const target = resolveComponentPaths('cor-button');
+    const target = resolveComponentPaths('mud-button');
     const summary = buildSummaryFor(target, { st: 95, br: 90, fn: 95, ln: 95 });
     const { findings, coverage } = analyzeComponent(target, summary, 80);
     assert.equal(coverage.passAll, true);
@@ -53,7 +53,7 @@ describe('06-test-coverage: analyzeComponent', () => {
   });
 
   it('flags COVERAGE-BELOW-THRESHOLD when any metric is under threshold', () => {
-    const target = resolveComponentPaths('cor-button');
+    const target = resolveComponentPaths('mud-button');
     const summary = buildSummaryFor(target, { st: 95, br: 60, fn: 95, ln: 95 });
     const { findings, coverage } = analyzeComponent(target, summary, 80);
     assert.equal(coverage.passAll, false);
@@ -64,9 +64,9 @@ describe('06-test-coverage: analyzeComponent', () => {
   });
 
   it('flags COVERAGE-COMPONENT-MISSING when summary lacks the component', () => {
-    const target = resolveComponentPaths('cor-button');
+    const target = resolveComponentPaths('mud-button');
     const summary = {
-      // No entry for cor-button.tsx
+      // No entry for mud-button.tsx
       '/some/other/file.tsx': {
         statements: fakeMetric(100),
         branches: fakeMetric(100),
@@ -82,7 +82,7 @@ describe('06-test-coverage: analyzeComponent', () => {
   });
 
   it('handles Windows-style backslash paths in summary keys', () => {
-    const target = resolveComponentPaths('cor-button');
+    const target = resolveComponentPaths('mud-button');
     const windowsKey = target.paths.tsx.replace(/\//g, '\\');
     const summary = {
       [windowsKey]: {
@@ -102,7 +102,7 @@ describe('06-test-coverage: analyzeComponent', () => {
   });
 
   it('respects custom threshold (lower bar lets coverage pass)', () => {
-    const target = resolveComponentPaths('cor-button');
+    const target = resolveComponentPaths('mud-button');
     const summary = buildSummaryFor(target, { st: 60, br: 55, fn: 60, ln: 60 });
 
     const strict = analyzeComponent(target, summary, 80);
@@ -113,7 +113,7 @@ describe('06-test-coverage: analyzeComponent', () => {
   });
 
   it('returns STRUCTURE-NOT-FOUND for unknown component', () => {
-    const target = resolveComponentPaths('cor-does-not-exist-xyz');
+    const target = resolveComponentPaths('mud-does-not-exist-xyz');
     const { findings, coverage } = analyzeComponent(target, {}, 80);
     assert.equal(coverage, null);
     assert.ok(findings.find(f => f.code === 'STRUCTURE-NOT-FOUND'));

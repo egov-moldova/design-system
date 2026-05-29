@@ -57,7 +57,7 @@ if (import.meta.hot) {
 // Inline `<script>` tags inside a story's HTML template don't execute when
 // Storybook injects the markup via innerHTML, so we attach the click handler
 // once at document level and read the action off the trigger element's
-// `data-modal-open` / `data-modal-close` attribute. Used by cor-modal stories.
+// `data-modal-open` / `data-modal-close` attribute. Used by mud-modal stories.
 // ---------------------------------------------------------------------------
 if (typeof document !== 'undefined') {
   document.addEventListener('click', event => {
@@ -71,7 +71,7 @@ if (typeof document !== 'undefined') {
         return;
       }
       if (el.hasAttribute?.('data-modal-close')) {
-        const modal = el.closest('cor-modal');
+        const modal = el.closest('mud-modal');
         if (modal) modal.removeAttribute('open');
         return;
       }
@@ -82,7 +82,7 @@ if (typeof document !== 'undefined') {
 // Cleanup decorator to remove toast notifications when switching stories
 const cleanupDecorator = (story, context) => {
   // Clean up any existing toast notifications from previous stories
-  const existingToasts = document.body.querySelectorAll('cor-toast-notification');
+  const existingToasts = document.body.querySelectorAll('mud-toast-notification');
   existingToasts.forEach(toast => toast.remove());
 
   return story();

@@ -20,7 +20,7 @@ Scrollbar Utility
   inherits: true;
 }
 
-.cor-overflow-scrollbar {
+.mud-overflow-scrollbar {
   --_scrollbar-opacity: 0;
   --_scrollbar-track-color: var(--scrollbar-track-background-neutral);
   --_scrollbar-thumb-color: var(--scrollbar-thumb-background-neutral-default);
@@ -61,7 +61,7 @@ Scrollbar Utility
     );
   }
 
-  &.cor-overflow-scrollbar--primary {
+  &.mud-overflow-scrollbar--primary {
     --_scrollbar-track-color: var(--scrollbar-track-background-primary);
     --_scrollbar-thumb-color: var(--scrollbar-thumb-background-primary-default);
   }

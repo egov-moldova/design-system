@@ -23,7 +23,7 @@
  *   - `.claude/commands/modify-component.md` partial (when adding variants)
  *
  * Usage:
- *   node scripts/audit/13-token-diff.mjs cor-button --json
+ *   node scripts/audit/13-token-diff.mjs mud-button --json
  *   node scripts/audit/13-token-diff.mjs --from a.json --to b.json --json
  */
 import { readFileSync, existsSync } from 'node:fs';

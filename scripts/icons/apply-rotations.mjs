@@ -21,7 +21,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-const ASSETS_ROOT = path.join(PROJECT_ROOT, 'src/components/cor-icon/assets');
+const ASSETS_ROOT = path.join(PROJECT_ROOT, 'src/components/mud-icon/assets');
 
 /**
  * Each entry: { size, name, transform } where transform is one of:

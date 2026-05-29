@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Scan src/components/cor-icon/assets/{12,16,20,24}/*.svg and emit:
+ * Scan src/components/mud-icon/assets/{12,16,20,24}/*.svg and emit:
  *   - icons.manifest.json — public surface (API name → sizes available)
  *
  * SVGs are served as individual static assets (lazy-loaded on demand).
@@ -18,7 +18,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-const ASSETS_ROOT = path.join(PROJECT_ROOT, 'src/components/cor-icon/assets');
+const ASSETS_ROOT = path.join(PROJECT_ROOT, 'src/components/mud-icon/assets');
 const MANIFEST_JSON = path.join(ASSETS_ROOT, 'icons.manifest.json');
 
 const SIZES = [12, 16, 20, 24];

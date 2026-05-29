@@ -1,0 +1,366 @@
+:host {
+  display: contents;
+}
+
+/* The native <dialog> handles the overlay layer + top-layer rendering. We
+   restyle its open state and its ::backdrop pseudo for the project's dimmed
+   overlay token. */
+
+.dialog {
+  /* Reset native dialog visuals — we use .surface as the visible card. */
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  inline-size: min(calc(100vw - calc(var(--modal-container-margin-inline) * 2)), var(--modal-container-max-width-md));
+  max-inline-size: calc(100vw - calc(var(--modal-container-margin-inline) * 2));
+  max-block-size: var(--modal-container-max-height);
+
+  font-family: var(--modal-body-font-family);
+}
+
+:host([size='sm']) .dialog {
+  inline-size: min(calc(100vw - calc(var(--modal-container-margin-inline) * 2)), var(--modal-container-max-width-sm));
+}
+
+:host([size='md']) .dialog {
+  inline-size: min(calc(100vw - calc(var(--modal-container-margin-inline) * 2)), var(--modal-container-max-width-md));
+}
+
+:host([size='lg']) .dialog {
+  inline-size: min(calc(100vw - calc(var(--modal-container-margin-inline) * 2)), var(--modal-container-max-width-lg));
+}
+
+.dialog::backdrop {
+  background-color: var(--modal-backdrop-background);
+}
+
+.dialog[open] {
+  display: flex;
+}
+
+.dialog:not([open]) {
+  display: none;
+}
+
+/* ---------- surface (the visible white card) ---------- */
+
+.surface {
+  display: flex;
+  flex-direction: column;
+  inline-size: 100%;
+  min-inline-size: var(--modal-container-min-width);
+  max-block-size: 100%;
+  overflow: hidden;
+  background-color: var(--modal-container-background);
+  border-radius: var(--modal-container-border-radius);
+  box-shadow: var(--modal-container-box-shadow);
+}
+
+/* Destructive variant mirrors Figma 365:16966 — identical chrome to the default
+   style; the destructive signal is communicated exclusively by the red action
+   button in the actions slot (no extra top-border accent). */
+
+/* ---------- header ---------- */
+
+.header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--modal-header-gap);
+  padding-block-start: var(--modal-header-padding-block-start);
+  padding-inline-start: var(--modal-header-padding-inline-start);
+  padding-inline-end: var(--modal-header-padding-inline-end);
+}
+
+.header-image {
+  position: relative;
+  block-size: var(--modal-header-image-height);
+  padding: 0;
+  overflow: hidden;
+}
+
+:host([size='sm']) .header-image {
+  block-size: var(--modal-header-image-height-sm);
+}
+
+.header-image ::slotted([slot='image']) {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.header-image .close {
+  position: absolute;
+  inset-block-start: var(--spacing-24);
+  inset-inline-end: var(--spacing-20);
+}
+
+.heading {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.title {
+  margin: 0;
+  color: var(--modal-title-color);
+  font-family: var(--modal-title-font-family);
+  font-size: var(--modal-title-font-size-md);
+  line-height: var(--modal-title-line-height-md);
+  font-weight: var(--modal-title-font-weight);
+  letter-spacing: var(--modal-title-letter-spacing-md);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  overflow-wrap: anywhere;
+}
+
+:host([size='sm']) .title {
+  font-size: var(--modal-title-font-size-sm);
+  line-height: var(--modal-title-line-height-sm);
+  letter-spacing: var(--modal-title-letter-spacing-sm);
+}
+
+/* Rich title slot — when consumers project their own headline element. */
+::slotted([slot='title']) {
+  display: block;
+  margin: 0;
+  color: var(--modal-title-color);
+  font-family: var(--modal-title-font-family);
+  font-weight: var(--modal-title-font-weight);
+}
+
+/* ---------- with-icon variant ---------- */
+
+.header-icon-close {
+  position: absolute;
+  inset-block-start: var(--spacing-16);
+  inset-inline-end: var(--spacing-16);
+  z-index: 1;
+}
+
+/* Position close above the body when in with-icon variant. */
+:host([variant='with-icon']) .surface {
+  position: relative;
+}
+
+:host([variant='with-icon']) .body {
+  padding-block-start: var(--modal-header-padding-block-start);
+}
+
+.icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--modal-icon-size);
+  block-size: var(--modal-icon-size);
+  color: var(--modal-icon-color);
+  margin-block-end: var(--spacing-8);
+}
+
+::slotted([slot='icon']) {
+  display: inline-flex;
+  inline-size: var(--modal-icon-size);
+  block-size: var(--modal-icon-size);
+  color: var(--modal-icon-color);
+}
+
+::slotted(mud-icon[slot='icon']) {
+  --icon-color: currentcolor;
+}
+
+.heading-in-body .title {
+  font-size: var(--modal-title-font-size-md);
+  line-height: var(--modal-title-line-height-md);
+  letter-spacing: var(--modal-title-letter-spacing-md);
+}
+
+:host([size='sm']) .heading-in-body .title {
+  font-size: var(--modal-title-font-size-sm);
+  line-height: var(--modal-title-line-height-sm);
+  letter-spacing: var(--modal-title-letter-spacing-sm);
+}
+
+/* Figma 358:16247 — the with-icon variant centers the icon, title and body. */
+:host([variant='with-icon']) .body {
+  align-items: center;
+  text-align: center;
+}
+
+:host([variant='with-icon']) .body-content {
+  align-self: center;
+}
+
+:host([variant='with-icon']) .body-content > * {
+  margin-inline: auto;
+}
+
+/* ---------- body ---------- */
+
+.body {
+  flex: 1 1 auto;
+  min-block-size: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--modal-body-gap);
+  padding-block-start: var(--modal-body-padding-block-start-md);
+  padding-block-end: var(--modal-body-padding-block-end-md);
+  padding-inline: var(--modal-body-padding-inline);
+
+  color: var(--modal-body-color);
+  font-family: var(--modal-body-font-family);
+  font-size: var(--modal-body-font-size-md);
+  line-height: var(--modal-body-line-height-md);
+  font-weight: var(--modal-body-font-weight);
+}
+
+:host([size='sm']) .body {
+  padding-block-start: var(--modal-body-padding-block-start-sm);
+  padding-block-end: var(--modal-body-padding-block-end-sm);
+  font-size: var(--modal-body-font-size-sm);
+  line-height: var(--modal-body-line-height-sm);
+}
+
+/* When there's no actions footer, give the body the full bottom padding. */
+:host(:not(.has-actions)) .body {
+  padding-block-end: var(--modal-body-padding-block-end-md);
+}
+
+.body-content {
+  overflow-wrap: anywhere;
+}
+
+/* Constrain narrative line length per design spec. */
+.body-content > * {
+  max-inline-size: 65ch;
+}
+
+/* ---------- footer ---------- */
+
+.footer {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--modal-footer-gap);
+  padding-block-start: var(--modal-footer-padding-block-start);
+  padding-block-end: var(--modal-footer-padding-block-end-md);
+  padding-inline: var(--modal-footer-padding-inline);
+}
+
+:host([size='sm']) .footer {
+  padding-block-end: var(--modal-footer-padding-block-end-sm);
+}
+
+/* Figma 358:16247 — `actions-layout="stacked"` flips the footer to a vertical
+   column with each button spanning the full width. Primary button stays first
+   (top); consumers project the buttons in the desired order. */
+:host([actions-layout='stacked']) .footer {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+:host([actions-layout='stacked']) .footer ::slotted(*) {
+  inline-size: 100%;
+}
+
+/* Centered footer for with-icon variant — Figma centers the action group. */
+:host([variant='with-icon']) .footer {
+  justify-content: center;
+}
+
+:host(:not(.has-actions)) .footer {
+  display: none;
+}
+
+::slotted([slot='actions']) {
+  display: inline-flex;
+}
+
+/* ---------- close button ---------- */
+
+.close {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--modal-close-size);
+  block-size: var(--modal-close-size);
+  padding: var(--modal-close-padding);
+
+  border: 0;
+  border-radius: var(--modal-close-border-radius);
+  background-color: var(--modal-close-background);
+  color: var(--modal-close-icon-color);
+
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+
+  transition:
+    background-color var(--modal-container-transition-duration) var(--modal-container-transition-timing-function),
+    color var(--modal-container-transition-duration) var(--modal-container-transition-timing-function);
+}
+
+.close:hover {
+  background-color: var(--modal-close-background-hover);
+}
+
+.close:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
+    0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
+  position: relative;
+  z-index: 1;
+}
+
+.close-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--modal-close-icon-size);
+  block-size: var(--modal-close-icon-size);
+}
+
+.close-icon svg {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  pointer-events: none;
+}
+
+/* ---------- mobile / narrow viewport ---------- */
+
+@media (max-width: 480px) {
+  .dialog {
+    inline-size: calc(100vw - calc(var(--modal-container-margin-inline) * 2));
+    max-block-size: var(--modal-container-max-height-mobile);
+  }
+
+  .footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  ::slotted([slot='actions']) {
+    inline-size: 100%;
+  }
+}
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .close {
+    transition: none;
+  }
+}

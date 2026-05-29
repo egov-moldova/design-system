@@ -24,9 +24,9 @@
  *
  * Usage:
  *   yarn test.dev --coverage              # generate coverage report (once)
- *   node scripts/audit/06-test-coverage.mjs cor-button --json
+ *   node scripts/audit/06-test-coverage.mjs mud-button --json
  *   node scripts/audit/06-test-coverage.mjs --all --json
- *   node scripts/audit/06-test-coverage.mjs cor-button --run    # force fresh run
+ *   node scripts/audit/06-test-coverage.mjs mud-button --run    # force fresh run
  */
 import { readFileSync, existsSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';

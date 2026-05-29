@@ -2,8 +2,8 @@
 // `<Host aria-hidden="true" />` decorative fallback for the unknown branch.
 import { Component, Host, Prop, h } from '@stencil/core';
 
-@Component({ tag: 'cor-test-with-fallback', shadow: true })
-export class CorTestWithFallback {
+@Component({ tag: 'mud-test-with-fallback', shadow: true })
+export class MudTestWithFallback {
   @Prop() name: string = 'default';
   @Prop() ariaLabel?: string;
 

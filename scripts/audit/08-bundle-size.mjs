@@ -22,7 +22,7 @@
  *
  * Usage:
  *   yarn build
- *   node scripts/audit/08-bundle-size.mjs cor-button --json
+ *   node scripts/audit/08-bundle-size.mjs mud-button --json
  *   node scripts/audit/08-bundle-size.mjs --all --json
  */
 import { readFileSync, statSync, existsSync } from 'node:fs';
@@ -192,7 +192,7 @@ export function computeTotals(chunks) {
 
 /**
  * Best-effort attribution: find chunks whose content contains the component
- * tag (e.g. `"cor-button"`). Sum their sizes. This is an UPPER BOUND because
+ * tag (e.g. `"mud-button"`). Sum their sizes. This is an UPPER BOUND because
  * multiple components may share a chunk.
  *
  * Exported for tests.

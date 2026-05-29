@@ -3,8 +3,8 @@
 // element in the a11y tree.
 import { Component, Host, Prop, h } from '@stencil/core';
 
-@Component({ tag: 'cor-test-missing-fallback', shadow: true })
-export class CorTestMissingFallback {
+@Component({ tag: 'mud-test-missing-fallback', shadow: true })
+export class MudTestMissingFallback {
   @Prop() name: string = 'default';
   @Prop() ariaLabel?: string;
 

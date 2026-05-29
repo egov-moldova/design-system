@@ -25,7 +25,7 @@ import { invalidSlottedTag } from '../../utils/invalid-slotted-tag';
 
 render() {
   const slottedElement = this.host.querySelector('[slot="slot-name"]');
-  const VALID_TAGS = ['span', 'div', 'cor-icon'];
+  const VALID_TAGS = ['span', 'div', 'mud-icon'];
 
   if (slottedElement && !VALID_TAGS.includes(slottedElement.tagName.toLowerCase())) {
     return <Host>{invalidSlottedTag(slottedElement.tagName.toLowerCase(), VALID_TAGS)}</Host>;
@@ -42,13 +42,13 @@ import { VALID_HELPER_TEXT_TAGS, VALID_ICON_SLOT_TAGS } from '../shared.constant
 
 **Available** (from `src/components/shared.constants.ts`):
 - `VALID_HELPER_TEXT_TAGS` — `['span', 'small', 'div', 'p']`
-- `VALID_ICON_SLOT_TAGS` — `['cor-icon']`
+- `VALID_ICON_SLOT_TAGS` — `['mud-icon']`
 
 ### Validation Rules by Slot Type
 
 | Slot Type | Valid Elements | Constant |
 |---|---|---|
-| Icon slots | `cor-icon` only | `VALID_ICON_SLOT_TAGS` |
+| Icon slots | `mud-icon` only | `VALID_ICON_SLOT_TAGS` |
 | Helper text | `span`, `small`, `div`, `p` | `VALID_HELPER_TEXT_TAGS` |
 | Button content | `button`, `a` | Component-level `BUTTON_TAGS` |
 
@@ -132,8 +132,8 @@ private get isIconOnly(): boolean { return !this.hasDefaultSlotContent; }
 
 ```text
 Does layout change based on slot content?
-├─ NO → CSS :empty selector (e.g., cor-input icons)
-└─ YES → Slot detection + conditional rendering (e.g., cor-link icon-only)
+├─ NO → CSS :empty selector (e.g., mud-input icons)
+└─ YES → Slot detection + conditional rendering (e.g., mud-link icon-only)
 ```
 
 ### Checklist for New Components
@@ -151,7 +151,7 @@ Does layout change based on slot content?
 
 **CRITICAL**: When a slot accepts visible content, **the slot is the only content source**. Do not declare a parallel `@Prop() xxx?: string` that gets rendered as the slot's fallback child.
 
-The reference components (`cor-button`, `cor-service-button`) follow the inverse pattern: visible content comes exclusively from the default `<slot>`; the `label` prop, when it exists, is used only as `aria-label` for icon-only mode.
+The reference components (`mud-button`, `mud-service-button`) follow the inverse pattern: visible content comes exclusively from the default `<slot>`; the `label` prop, when it exists, is used only as `aria-label` for icon-only mode.
 
 ### ❌ Forbidden — content prop with slot fallback
 
@@ -170,9 +170,9 @@ render() {
 
 **Problems:**
 - Two ways to set the same content — consumers must learn which wins.
-- Prop value can never live in light DOM, breaking copy/paste, screen-reader inspection, and `querySelector('cor-x [slot=label]')` discovery.
+- Prop value can never live in light DOM, breaking copy/paste, screen-reader inspection, and `querySelector('mud-x [slot=label]')` discovery.
 - Rich content (links, icons, formatted text) requires the slot anyway, so the prop is a half-API.
-- Diverges from `cor-button` / `cor-service-button` where `label` is ARIA-only.
+- Diverges from `mud-button` / `mud-service-button` where `label` is ARIA-only.
 
 ### ✅ Allowed — slot is the sole content source
 
@@ -188,9 +188,9 @@ render() {
 
 ```html
 <!-- consumer markup -->
-<cor-checkbox>
+<mud-checkbox>
   <span slot="label">Acord</span>
-</cor-checkbox>
+</mud-checkbox>
 ```
 
 ### ✅ Allowed — prop is ARIA-only, matches reference

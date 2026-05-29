@@ -4,7 +4,7 @@
 
 Story file conventions, shared render functions, grid comparison stories, design-token usage in story styling, and Storybook-specific gotchas. **Read when writing `.stories.ts` files.**
 
-Reference implementation: [`src/components/cor-spinner/cor-spinner.stories.ts`](../cor-spinner/cor-spinner.stories.ts) — every example in this guide mirrors that file.
+Reference implementation: [`src/components/mud-spinner/mud-spinner.stories.ts`](../mud-spinner/mud-spinner.stories.ts) — every example in this guide mirrors that file.
 
 ---
 
@@ -13,8 +13,8 @@ Reference implementation: [`src/components/cor-spinner/cor-spinner.stories.ts`](
 ```typescript
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
-import { SPINNER_SIZES as SIZES, SPINNER_VARIANTS as VARIANTS } from './cor-spinner.types';
-import type { SpinnerSize, SpinnerVariant } from './cor-spinner.types';
+import { SPINNER_SIZES as SIZES, SPINNER_VARIANTS as VARIANTS } from './mud-spinner.types';
+import type { SpinnerSize, SpinnerVariant } from './mud-spinner.types';
 
 type SpinnerArgs = {
   size: SpinnerSize;
@@ -23,12 +23,12 @@ type SpinnerArgs = {
 };
 
 const renderSpinner = (args: SpinnerArgs) => /*html*/ `
-  <cor-spinner size="${args.size}" variant="${args.variant}" label="${args.label}"></cor-spinner>
+  <mud-spinner size="${args.size}" variant="${args.variant}" label="${args.label}"></mud-spinner>
 `;
 
 const meta: Meta<SpinnerArgs> = {
   title: 'Atoms/Spinner',
-  component: 'cor-spinner',
+  component: 'mud-spinner',
   argTypes: {
     size: {
       control: 'select',
@@ -61,20 +61,20 @@ export const Default: Story = {
 
 ### Story File Rules
 
-- **Title**: `Atoms/CorButton`, `Molecules/CorFormField`, `Organisms/CorNavbar` (Atomic hierarchy)
+- **Title**: `Atoms/MudButton`, `Molecules/MudFormField`, `Organisms/MudNavbar` (Atomic hierarchy)
 - **Sort**: `Introduction → Design Tokens → Atoms → Molecules → Organisms → Templates`
 - **Import**: `@storybook/web-components-vite` — NOT `@storybook/react`, and NOT the bare `@storybook/web-components` renderer (framework-based config is required since Storybook 10)
-- **Component**: string tag `'cor-button'` — NOT JS reference
+- **Component**: string tag `'mud-button'` — NOT JS reference
 - **Render**: always use `render` with HTML template strings (backticks)
 - **HTML highlight**: `/*html*/` prefix for IDE syntax — e.g., `render: (args: ComponentArgs) => /*html*/ \`...\``
-- **Slotted content**: HTML in render — e.g., `<cor-button><button>Label</button></cor-button>`
+- **Slotted content**: HTML in render — e.g., `<mud-button><button>Label</button></mud-button>`
 - **argTypes**: every `@Prop()` MUST have an entry with `control`, `description`, and `table: { defaultValue: { summary: '<TSX default>' } }`. For enum props, also `options: <enum array>`.
 - **Type-safe generics**: `Meta<Args>` and `StoryObj<Args>` MUST have the args generic. Bare `Meta` / `StoryObj` resolves to `Meta<any>` / `StoryObj<any>` and silently disables every type check the pattern is supposed to provide.
 - **No `/* eslint-disable */`** around the Meta/StoryObj import. With the generics in place, the imports are legitimate uses and ESLint stays quiet on its own. If you find yourself needing the wrapper, you forgot the generic.
 - **No `tags: ['autodocs']`** — autodocs is configured globally in `.storybook/main.mjs`. Setting it per-story duplicates the global and can desync.
 - **Type unions**: prefer `as const` arrays + `(typeof X)[number]` so the runtime list and type literal stay in sync — declare once in `*.types.ts`, import in stories AND component:
   ```ts
-  // cor-spinner.types.ts
+  // mud-spinner.types.ts
   export const SPINNER_SIZES = ['xs', 'sm', 'md', 'lg'] as const;
   export type SpinnerSize = (typeof SPINNER_SIZES)[number];
   ```
@@ -97,15 +97,15 @@ type ComponentArgs = {
 const renderComponent = (args: ComponentArgs) => {
   const disabled = args.disabled ? 'disabled' : '';  // ✅ '' not 'false'
   const leftIcon = args.leftIconName
-    ? /*html*/ `<cor-icon slot="icon-left" name="${args.leftIconName}"></cor-icon>`
+    ? /*html*/ `<mud-icon slot="icon-left" name="${args.leftIconName}"></mud-icon>`
     : '';
 
   return /*html*/ `
     <div style="width: 200px;">
-      <cor-component size="${args.size}" ${disabled}>
+      <mud-component size="${args.size}" ${disabled}>
         ${leftIcon}
         <slot-content>...</slot-content>
-      </cor-component>
+      </mud-component>
     </div>
   `;
 };
@@ -156,8 +156,8 @@ export const AllStatesTable: Story = {
       <div style="font-weight: var(--font-weight-semibold);">Filled</div>
 
       <div>Default</div>
-      <div style="width: 200px;"><cor-component ...>...</cor-component></div>
-      <div style="width: 200px;"><cor-component ...>...</cor-component></div>
+      <div style="width: 200px;"><mud-component ...>...</mud-component></div>
+      <div style="width: 200px;"><mud-component ...>...</mud-component></div>
     </div>
   `,
   parameters: { controls: { disable: true } },
@@ -187,7 +187,7 @@ parameters: {
       // re-runs the transform whenever Controls change, so the snippet stays in sync.
       type: 'dynamic',
       transform: (_code: string, { args }: { args: SpinnerArgs }) =>
-        `<cor-spinner size="${args.size}" variant="${args.variant}" label="${args.label}"></cor-spinner>`,
+        `<mud-spinner size="${args.size}" variant="${args.variant}" label="${args.label}"></mud-spinner>`,
     },
   },
 },
@@ -205,7 +205,7 @@ Override with a static `parameters.docs.source.code` containing the **minimal co
 
 ```ts
 const docsSourceAllVariants = VARIANTS.map(
-  v => /*html*/ `<cor-component variant="${v}"></cor-component>`,
+  v => /*html*/ `<mud-component variant="${v}"></mud-component>`,
 ).join('\n');
 
 export const AllVariants: Story = {
@@ -217,9 +217,9 @@ export const AllVariants: Story = {
 };
 ```
 
-Reference: `src/components/cor-logo/cor-logo.stories.ts` (all 3 stories) and `src/components/cor-service-button/cor-service-button.stories.ts`.
+Reference: `src/components/mud-logo/mud-logo.stories.ts` (all 3 stories) and `src/components/mud-service-button/mud-service-button.stories.ts`.
 
-**When you CAN omit `docs.source`**: the render function is already a single clean `<cor-component …></cor-component>` line with no helpers or demo wrappers. In practice this happens only for `Default` — and even Default usually benefits from a `transform` so the snippet reflects live Controls changes.
+**When you CAN omit `docs.source`**: the render function is already a single clean `<mud-component …></mud-component>` line with no helpers or demo wrappers. In practice this happens only for `Default` — and even Default usually benefits from a `transform` so the snippet reflects live Controls changes.
 
 ---
 
@@ -234,11 +234,11 @@ Reference: `src/components/cor-logo/cor-logo.stories.ts` (all 3 stories) and `sr
 | `type Story = StoryObj<typeof meta>` | `type Story = StoryObj<Args>` | Storybook web-components type quirk — `<typeof meta>` nests `Meta<Args>` into the args slot |
 | `render: (args: any) => ...` | `render: (args: ComponentArgs) => ...` | Typed args param is the whole point of the generic |
 | `satisfies Meta<typeof Button>` | `const meta: Meta<Args> = { ... }` | `satisfies` + JS-reference form is React-Storybook idiom; web-components use string tags |
-| `component: Button` (JS ref) | `component: 'cor-button'` (string tag) | Web components register globally; string tag is what Storybook needs |
+| `component: Button` (JS ref) | `component: 'mud-button'` (string tag) | Web components register globally; string tag is what Storybook needs |
 | No `render` function | **Always use `render`** with HTML template strings | Storybook can't auto-render web components from args alone |
 | `tags: ['autodocs']` on a story | Omit it | Autodocs is configured globally in `.storybook/main.mjs` |
 | `argTypes` missing `description` or `table.defaultValue` | Include both | Controls panel needs them; audit-component flags missing entries |
-| `Components/Button` title | `Atoms/CorButton` (Atomic hierarchy) | Project Storybook sort order depends on the atomic prefix |
+| `Components/Button` title | `Atoms/MudButton` (Atomic hierarchy) | Project Storybook sort order depends on the atomic prefix |
 | `<Component {...args} />` JSX spread | `variant="${args.variant}"` (explicit attributes) | Web components consume attribute strings, not React props |
 | Inline `padding: 16px` | `padding: var(--spacing-16)` | See "Story Styling" — semantic tokens preferred |
 | Inline `background: var(--palette-gray-900)` | `background: var(--color-background-base-inverse-default)` | Palette tokens are mode-locked; semantic tokens adapt |

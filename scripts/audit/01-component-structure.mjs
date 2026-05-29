@@ -15,7 +15,7 @@
  *   - `.claude/agents/audit-production.md` Phase 1.1
  *
  * Usage:
- *   node scripts/audit/01-component-structure.mjs cor-button [--json] [--out file]
+ *   node scripts/audit/01-component-structure.mjs mud-button [--json] [--out file]
  *   node scripts/audit/01-component-structure.mjs --all --json
  */
 import { statSync } from 'node:fs';

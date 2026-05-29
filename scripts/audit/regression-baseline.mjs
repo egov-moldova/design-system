@@ -3,7 +3,7 @@
  * regression-baseline.mjs
  *
  * Captures a deterministic snapshot of `run-all.mjs` output for the canonical
- * regression-test components (cor-button, cor-input, cor-tooltip per the
+ * regression-test components (mud-button, mud-input, mud-tooltip per the
  * approved plan) and writes it to `reports/regression-baseline.json`.
  *
  * The snapshot is NORMALIZED: timestamps, durations, and similar non-stable
@@ -14,7 +14,7 @@
  *
  * Usage:
  *   node scripts/audit/regression-baseline.mjs                       # capture default 3 components
- *   node scripts/audit/regression-baseline.mjs --components cor-button,cor-icon
+ *   node scripts/audit/regression-baseline.mjs --components mud-button,mud-icon
  *   node scripts/audit/regression-baseline.mjs --out reports/baseline-v2.json
  *   node scripts/audit/regression-baseline.mjs --include-browser     # also capture Wave C (needs Storybook+Playwright)
  */
@@ -27,7 +27,7 @@ import { REPO_ROOT } from './lib/component-paths.mjs';
 
 const TOOL = 'regression-baseline';
 
-const DEFAULT_COMPONENTS = ['cor-button', 'cor-input', 'cor-tooltip'];
+const DEFAULT_COMPONENTS = ['mud-button', 'mud-input', 'mud-tooltip'];
 const DEFAULT_OUT = 'reports/regression-baseline.json';
 
 const USAGE = `Usage: node scripts/audit/regression-baseline.mjs [options]

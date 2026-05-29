@@ -1,0 +1,270 @@
+:host {
+  /* Per-size geometry resolved at the host level so JS positioning + CSS share one truth. */
+  --tooltip-arrow-size: var(--tooltip-arrow-size-sm);
+  --tooltip-arrow-width: var(--tooltip-arrow-width-sm);
+  --tooltip-padding-block: var(--tooltip-container-padding-block-sm);
+  --tooltip-padding-inline: var(--tooltip-container-padding-inline-sm);
+  --tooltip-padding-inline-end: var(--tooltip-container-padding-inline-sm);
+  --tooltip-border-radius: var(--tooltip-container-border-radius-sm);
+  --tooltip-gap: var(--tooltip-container-gap-sm);
+
+  display: inline-block;
+  position: relative;
+  line-height: 0;
+}
+
+:host([size='lg']) {
+  --tooltip-arrow-size: var(--tooltip-arrow-size-lg);
+  --tooltip-arrow-width: var(--tooltip-arrow-width-lg);
+  --tooltip-padding-block: var(--tooltip-container-padding-block-lg);
+  --tooltip-padding-inline: var(--tooltip-container-padding-inline-lg);
+  --tooltip-padding-inline-end: var(--tooltip-container-padding-inline-lg);
+  --tooltip-border-radius: var(--tooltip-container-border-radius-lg);
+  --tooltip-gap: var(--tooltip-container-gap-lg);
+}
+
+:host([variant='coach'][size='lg']) {
+  /* Coach close-button sits 12px from the right per Figma; reserve room. */
+  --tooltip-padding-inline-end: calc(
+    var(--tooltip-container-padding-inline-end-lg) + var(--tooltip-close-size) + var(--tooltip-container-gap-lg)
+  );
+}
+
+:host([variant='coach'][size='sm']) {
+  --tooltip-padding-inline-end: calc(
+    var(--tooltip-container-padding-inline-sm) + var(--tooltip-close-size) + var(--tooltip-container-gap-sm)
+  );
+}
+
+/* Trigger wrapper — preserves inline layout of the slotted control. */
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  line-height: normal;
+}
+
+/* Bubble — the floating surface. Block element so text laying out inside the
+   `.content` paragraph wraps normally below the inline `max-width` cap. The
+   coach close button is absolutely positioned in the top-right corner; the
+   bubble reserves space for it via the variant-specific `--tooltip-padding-inline-end`. */
+.bubble {
+  position: fixed;
+  /* Runtime geometry is pushed onto the host as `--_bubble-*` custom
+     properties (see updateGeometry in mud-tooltip.tsx). Fallbacks keep
+     the bubble off-screen before the first geometry pass. */
+  top: var(--_bubble-top, 0);
+  left: var(--_bubble-left, 0);
+  max-width: var(--_bubble-max-width, var(--tooltip-container-max-width));
+  z-index: var(--tooltip-container-z-index);
+  box-sizing: border-box;
+  padding-block: var(--tooltip-padding-block);
+  padding-inline-start: var(--tooltip-padding-inline);
+  padding-inline-end: var(--tooltip-padding-inline-end);
+  background-color: var(--tooltip-container-background-default);
+  color: var(--tooltip-label-color-default);
+  border-radius: var(--tooltip-border-radius);
+  box-shadow: var(--tooltip-container-shadow);
+  font-family: var(--tooltip-label-font-family);
+  font-size: var(--tooltip-label-font-size);
+  font-weight: var(--tooltip-label-font-weight);
+  line-height: var(--tooltip-label-line-height);
+  text-align: center;
+  /* Reset inheritable text-flow rules — when the tooltip is placed inside a
+     nowrap/ellipsis container (e.g. a breadcrumb trail), `white-space` and
+     friends inherit through the host into the bubble and prevent the long
+     label from wrapping inside the bubble. */
+  white-space: normal;
+  text-overflow: clip;
+  word-break: normal;
+  overflow-wrap: anywhere;
+  width: max-content;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(var(--spacing-2));
+  transition-property: opacity, transform, visibility;
+  transition-duration: var(--tooltip-container-transition-duration);
+  transition-timing-function: var(--tooltip-container-transition-timing-function);
+}
+
+:host(.is-open) .bubble {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+:host(.variant-coach.is-open) .bubble {
+  pointer-events: auto;
+}
+
+/* Coach variant left-aligns instructional copy. */
+:host(.variant-coach) .bubble {
+  text-align: start;
+}
+
+.content {
+  overflow-wrap: break-word;
+}
+
+.hint {
+  margin: var(--tooltip-hint-margin-top) 0 0 0;
+  font-size: var(--tooltip-hint-font-size);
+  line-height: var(--tooltip-hint-line-height);
+  font-weight: var(--tooltip-hint-font-weight);
+  color: var(--tooltip-hint-color-default);
+  opacity: var(--tooltip-hint-opacity);
+}
+
+/* Close button — coach variant only. Pinned to the bubble's top-right corner. */
+.close {
+  position: absolute;
+  top: var(--tooltip-padding-block);
+  inset-inline-end: var(--tooltip-container-padding-inline-end-lg, var(--spacing-12));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tooltip-close-size);
+  height: var(--tooltip-close-size);
+  padding: 0;
+  margin: 0;
+  background-color: var(--tooltip-close-background-default);
+  color: var(--tooltip-close-color-default);
+  border: none;
+  border-radius: var(--tooltip-close-border-radius);
+  cursor: pointer;
+  transition: background-color var(--tooltip-container-transition-duration)
+    var(--tooltip-container-transition-timing-function);
+}
+
+.close:hover {
+  background-color: var(--tooltip-close-background-hover);
+}
+
+.close:focus-visible {
+  outline: var(--border-width-2) solid var(--color-background-brand-focus-ring, currentColor);
+  outline-offset: var(--spacing-2);
+}
+
+.close-icon {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Arrow — CSS triangle pinned to the bubble edge. */
+.arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/*
+ * Header (title + description). Pure CSS — empty wrappers collapse via :empty
+ * so consumers using only the default slot pay no layout cost.
+ */
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tooltip-header-gap, var(--spacing-2));
+  margin-block-end: var(--tooltip-header-margin-block-end, var(--spacing-4));
+}
+
+.header:empty,
+.header:has(.title:empty):has(.description:empty) {
+  display: none;
+  margin-block-end: 0;
+}
+
+.title {
+  font-family: var(--tooltip-title-font-family, var(--tooltip-label-font-family));
+  font-size: var(--tooltip-title-font-size, var(--tooltip-label-font-size));
+  font-weight: var(--tooltip-title-font-weight, 600);
+  line-height: var(--tooltip-title-line-height, var(--tooltip-label-line-height));
+  color: var(--tooltip-title-color-default, var(--tooltip-label-color-default));
+}
+
+.description {
+  font-family: var(--tooltip-description-font-family, var(--tooltip-label-font-family));
+  font-size: var(--tooltip-description-font-size, var(--tooltip-label-font-size));
+  font-weight: var(--tooltip-description-font-weight, var(--tooltip-label-font-weight));
+  line-height: var(--tooltip-description-line-height, var(--tooltip-label-line-height));
+  color: var(--tooltip-description-color-default, var(--tooltip-label-color-default));
+}
+
+/*
+ * Arrow offset along the cross-axis is set on the host as `--_arrow-offset`
+ * by updateGeometry. The `transform` centres the arrow over that offset
+ * (half its width / height). Combined placements (e.g. `top-left`) share the
+ * same arrow side as their base.
+ */
+
+/* ---- Base: top + alignments ---- */
+:host(.position-top) .arrow,
+:host(.position-top-left) .arrow,
+:host(.position-top-right) .arrow {
+  bottom: calc(var(--tooltip-arrow-size) * -1);
+  left: var(--_arrow-offset, 0);
+  transform: translateX(calc(var(--tooltip-arrow-width) / -2));
+  border-inline-start: calc(var(--tooltip-arrow-width) / 2) solid transparent;
+  border-inline-end: calc(var(--tooltip-arrow-width) / 2) solid transparent;
+  border-top: var(--tooltip-arrow-size) solid var(--tooltip-container-background-default);
+}
+
+/* ---- Base: bottom + alignments ---- */
+:host(.position-bottom) .arrow,
+:host(.position-bottom-left) .arrow,
+:host(.position-bottom-right) .arrow {
+  top: calc(var(--tooltip-arrow-size) * -1);
+  left: var(--_arrow-offset, 0);
+  transform: translateX(calc(var(--tooltip-arrow-width) / -2));
+  border-inline-start: calc(var(--tooltip-arrow-width) / 2) solid transparent;
+  border-inline-end: calc(var(--tooltip-arrow-width) / 2) solid transparent;
+  border-bottom: var(--tooltip-arrow-size) solid var(--tooltip-container-background-default);
+}
+
+/* ---- Base: left + alignments ---- */
+:host(.position-left) .arrow,
+:host(.position-left-top) .arrow,
+:host(.position-left-bottom) .arrow {
+  right: calc(var(--tooltip-arrow-size) * -1);
+  top: var(--_arrow-offset, 0);
+  transform: translateY(calc(var(--tooltip-arrow-width) / -2));
+  border-block-start: calc(var(--tooltip-arrow-width) / 2) solid transparent;
+  border-block-end: calc(var(--tooltip-arrow-width) / 2) solid transparent;
+  border-left: var(--tooltip-arrow-size) solid var(--tooltip-container-background-default);
+}
+
+/* ---- Base: right + alignments ---- */
+:host(.position-right) .arrow,
+:host(.position-right-top) .arrow,
+:host(.position-right-bottom) .arrow {
+  left: calc(var(--tooltip-arrow-size) * -1);
+  top: var(--_arrow-offset, 0);
+  transform: translateY(calc(var(--tooltip-arrow-width) / -2));
+  border-block-start: calc(var(--tooltip-arrow-width) / 2) solid transparent;
+  border-block-end: calc(var(--tooltip-arrow-width) / 2) solid transparent;
+  border-right: var(--tooltip-arrow-size) solid var(--tooltip-container-background-default);
+}
+
+/* ---- Slot validation error indicator (legacy parity) ---- */
+.slot-error {
+  position: absolute;
+  inset: auto 0 100% 0;
+  margin-block-end: var(--spacing-2);
+  padding: var(--spacing-4) var(--spacing-8);
+  background-color: var(--color-background-danger-default);
+  color: var(--color-text-base-inverse-default);
+  font-size: var(--font-size-12);
+  font-family: var(--tooltip-label-font-family);
+  border-radius: var(--border-radius-4);
+  z-index: var(--tooltip-container-z-index);
+}
+
+/* Respect reduced motion globally. */
+@media (prefers-reduced-motion: reduce) {
+  .bubble {
+    transition-duration: 0ms;
+    transform: none;
+  }
+}

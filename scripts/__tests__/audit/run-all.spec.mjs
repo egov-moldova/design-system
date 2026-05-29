@@ -2,7 +2,7 @@
  * Smoke tests for scripts/audit/run-all.mjs
  *
  * The orchestrator's spawning logic is integration-tested by the script
- * itself (run-all is exercised against cor-button manually). Here we unit-test
+ * itself (run-all is exercised against mud-button manually). Here we unit-test
  * the pure aggregator + the script registry shape.
  */
 import assert from 'node:assert/strict';
@@ -62,7 +62,7 @@ describe('run-all: aggregate', () => {
       makeResult({ id: '01', name: 'structure', summary: { errors: 1, warnings: 2, info: 3 } }),
       makeResult({ id: '02', name: 'antipatterns', summary: { errors: 4, warnings: 5, info: 6 } }),
     ];
-    const combined = aggregate({ targetArg: 'cor-button', results, durationMs: 100 });
+    const combined = aggregate({ targetArg: 'mud-button', results, durationMs: 100 });
     assert.equal(combined.summary.errors, 5);
     assert.equal(combined.summary.warnings, 7);
     assert.equal(combined.summary.info, 9);
@@ -70,13 +70,13 @@ describe('run-all: aggregate', () => {
 
   it('ok=false when any error exists', () => {
     const results = [makeResult({ id: '01', name: 'structure', summary: { errors: 1, warnings: 0, info: 0 } })];
-    const combined = aggregate({ targetArg: 'cor-button', results, durationMs: 100 });
+    const combined = aggregate({ targetArg: 'mud-button', results, durationMs: 100 });
     assert.equal(combined.ok, false);
   });
 
   it('ok=true when only warnings + info', () => {
     const results = [makeResult({ id: '01', name: 'structure', summary: { errors: 0, warnings: 5, info: 3 } })];
-    const combined = aggregate({ targetArg: 'cor-button', results, durationMs: 100 });
+    const combined = aggregate({ targetArg: 'mud-button', results, durationMs: 100 });
     assert.equal(combined.ok, true);
   });
 
@@ -84,7 +84,7 @@ describe('run-all: aggregate', () => {
     const results = [
       makeResult({ id: '01', name: 'structure', ok: false, summary: { errors: 0, warnings: 0, info: 0 } }),
     ];
-    const combined = aggregate({ targetArg: 'cor-button', results, durationMs: 100 });
+    const combined = aggregate({ targetArg: 'mud-button', results, durationMs: 100 });
     assert.equal(combined.ok, false);
   });
 
@@ -101,7 +101,7 @@ describe('run-all: aggregate', () => {
         ],
       }),
     ];
-    const combined = aggregate({ targetArg: 'cor-button', results, durationMs: 100 });
+    const combined = aggregate({ targetArg: 'mud-button', results, durationMs: 100 });
     assert.deepEqual(combined.blockers, [
       'antipatterns/ANTIPATTERN-001-INLINE-STYLE',
       'antipatterns/ANTIPATTERN-005-ARRAY-MUTATION',
@@ -121,7 +121,7 @@ describe('run-all: aggregate', () => {
         findings: [{ severity: 'warning', code: 'ANTIPATTERN-IMPORTANT' }],
       }),
     ];
-    const combined = aggregate({ targetArg: 'cor-button', results, durationMs: 100 });
+    const combined = aggregate({ targetArg: 'mud-button', results, durationMs: 100 });
     assert.equal(combined.findingsByTool.structure.length, 1);
     assert.equal(combined.findingsByTool.antipatterns.length, 1);
   });
@@ -132,7 +132,7 @@ describe('run-all: aggregate', () => {
       makeResult({ id: '01', name: 'structure' }),
       makeResult({ id: '14', name: 'component-contract' }),
     ];
-    const combined = aggregate({ targetArg: 'cor-button', results, durationMs: 100 });
+    const combined = aggregate({ targetArg: 'mud-button', results, durationMs: 100 });
     assert.deepEqual(
       combined.results.map(r => r.id),
       ['03', '01', '14'],
@@ -140,7 +140,7 @@ describe('run-all: aggregate', () => {
   });
 
   it('includes schema version and tool metadata', () => {
-    const combined = aggregate({ targetArg: 'cor-button', results: [], durationMs: 42 });
+    const combined = aggregate({ targetArg: 'mud-button', results: [], durationMs: 42 });
     assert.equal(combined.schemaVersion, '1.0.0');
     assert.equal(combined.tool, 'run-all');
     assert.equal(combined.meta.totalDurationMs, 42);
@@ -148,20 +148,20 @@ describe('run-all: aggregate', () => {
   });
 
   it('defaults ciDetected=false and layer2Required=true (interactive local run)', () => {
-    const combined = aggregate({ targetArg: 'cor-button', results: [], durationMs: 1 });
+    const combined = aggregate({ targetArg: 'mud-button', results: [], durationMs: 1 });
     assert.equal(combined.meta.ciDetected, false);
     assert.equal(combined.meta.layer2Required, true);
   });
 
   it('ci=true → ciDetected=true and layer2Required=false', () => {
-    const combined = aggregate({ targetArg: 'cor-button', results: [], durationMs: 1, ci: true });
+    const combined = aggregate({ targetArg: 'mud-button', results: [], durationMs: 1, ci: true });
     assert.equal(combined.meta.ciDetected, true);
     assert.equal(combined.meta.layer2Required, false);
   });
 
   it('noBrowser=true (without ci) → layer2Required=false but ciDetected=false', () => {
     const combined = aggregate({
-      targetArg: 'cor-button',
+      targetArg: 'mud-button',
       results: [],
       durationMs: 1,
       noBrowser: true,
@@ -172,7 +172,7 @@ describe('run-all: aggregate', () => {
 
   it('ci=true wins over noBrowser=false (CI always blocks L2)', () => {
     const combined = aggregate({
-      targetArg: 'cor-button',
+      targetArg: 'mud-button',
       results: [],
       durationMs: 1,
       ci: true,

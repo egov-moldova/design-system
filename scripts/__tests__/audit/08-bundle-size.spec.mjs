@@ -75,22 +75,22 @@ describe('08-bundle-size: computeTotals', () => {
 describe('08-bundle-size: attributeChunksToTag', () => {
   it('finds chunks that mention the component tag in double quotes', () => {
     const dist = tempDistDir();
-    writeChunk(dist, 'p-with.entry.js', 'register("cor-button", x);');
-    writeChunk(dist, 'p-without.entry.js', 'register("cor-input", x);');
+    writeChunk(dist, 'p-with.entry.js', 'register("mud-button", x);');
+    writeChunk(dist, 'p-without.entry.js', 'register("mud-input", x);');
     const chunks = [
       { file: path.join(dist, 'p-with.entry.js'), rel: 'p-with.entry.js', sizeKb: 5 },
       { file: path.join(dist, 'p-without.entry.js'), rel: 'p-without.entry.js', sizeKb: 5 },
     ];
-    const result = attributeChunksToTag('cor-button', chunks);
+    const result = attributeChunksToTag('mud-button', chunks);
     assert.equal(result.chunkCount, 1);
     assert.equal(result.chunks[0].file, 'p-with.entry.js');
   });
 
   it('finds chunks that mention the tag in single quotes too', () => {
     const dist = tempDistDir();
-    writeChunk(dist, 'p-single.entry.js', "register('cor-button', x);");
+    writeChunk(dist, 'p-single.entry.js', "register('mud-button', x);");
     const chunks = [{ file: path.join(dist, 'p-single.entry.js'), rel: 'p-single.entry.js', sizeKb: 3 }];
-    const result = attributeChunksToTag('cor-button', chunks);
+    const result = attributeChunksToTag('mud-button', chunks);
     assert.equal(result.chunkCount, 1);
   });
 
@@ -98,13 +98,13 @@ describe('08-bundle-size: attributeChunksToTag', () => {
     const dist = tempDistDir();
     writeChunk(dist, 'p-other.entry.js', 'no mention here');
     const chunks = [{ file: path.join(dist, 'p-other.entry.js'), rel: 'p-other.entry.js', sizeKb: 1 }];
-    const result = attributeChunksToTag('cor-button', chunks);
+    const result = attributeChunksToTag('mud-button', chunks);
     assert.equal(result.chunkCount, 0);
     assert.equal(result.estimatedKb, 0);
   });
 
   it('includes the upper-bound caveat note', () => {
-    const result = attributeChunksToTag('cor-button', []);
+    const result = attributeChunksToTag('mud-button', []);
     assert.match(result.note, /Upper bound/);
   });
 });

@@ -20,7 +20,7 @@
  *   2. Variable + default reference (`const meta: Meta = { ... }; export default meta;`) — CSF3 idiom
  *
  * Usage:
- *   node scripts/audit/05-story-exports.mjs cor-button --json
+ *   node scripts/audit/05-story-exports.mjs mud-button --json
  *   node scripts/audit/05-story-exports.mjs --all --json
  */
 import { spawnSync } from 'node:child_process';
@@ -155,7 +155,7 @@ export function analyzeStoriesFile(storiesPath, componentName) {
         code: 'STORY-NO-TITLE',
         file: fileRel,
         message: `Could not extract default export's "title" field — story IDs may be wrong.`,
-        fix: `Add { title: 'Atoms/${componentName?.replace(/^cor-/, '')}', component: '${componentName}', ... } to the default export.`,
+        fix: `Add { title: 'Atoms/${componentName?.replace(/^mud-/, '')}', component: '${componentName}', ... } to the default export.`,
       }),
     );
   }
@@ -204,7 +204,7 @@ export function analyzeStoriesFile(storiesPath, componentName) {
     );
   }
 
-  // docs.source contract checks — lessons captured from the cor-logo audit
+  // docs.source contract checks — lessons captured from the mud-logo audit
   // (2026-05): see .claude/skills/audit-component/SKILL.md story-coverage list.
   findings.push(...checkDocsSource(sourceFile, fileRel));
 
@@ -334,7 +334,7 @@ export function checkDocsSource(sourceFile, fileRel) {
               file: fileRel,
               line: getLineNumber(sourceFile, render),
               message: `Story "${storyName}" disables Controls and uses a helper-laden render but has no \`parameters.docs.source.code\` override. The "Show code" panel will expose demo chrome (wrapper divs, inline styles, \${…} guts) verbatim.`,
-              fix: 'Add a static `parameters.docs.source.code` with one clean `<cor-component …></cor-component>` per variation. See `src/components/cor-logo/cor-logo.stories.ts`.',
+              fix: 'Add a static `parameters.docs.source.code` with one clean `<mud-component …></mud-component>` per variation. See `src/components/mud-logo/mud-logo.stories.ts`.',
             }),
           );
         }
@@ -469,7 +469,7 @@ function listChangedComponents() {
   if (res.status !== 0) return [];
   const names = new Set();
   for (const line of (res.stdout ?? '').split('\n')) {
-    const m = line.match(/^src\/(components|hidden)\/(cor-[a-z0-9-]+)\//);
+    const m = line.match(/^src\/(components|hidden)\/(mud-[a-z0-9-]+)\//);
     if (m) names.add(m[2]);
   }
   return [...names].sort();

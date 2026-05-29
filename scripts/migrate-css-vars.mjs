@@ -13,8 +13,8 @@
  *   node scripts/migrate-css-vars.mjs                   # apply to default roots
  *   node scripts/migrate-css-vars.mjs --dry-run         # preview only
  *   node scripts/migrate-css-vars.mjs --report <file>   # JSON manifest of changes
- *   node scripts/migrate-css-vars.mjs --root src/components/cor-button
- *   node scripts/migrate-css-vars.mjs --root .storybook --root src/components/cor-button
+ *   node scripts/migrate-css-vars.mjs --root src/components/mud-button
+ *   node scripts/migrate-css-vars.mjs --root .storybook --root src/components/mud-button
  *
  * The CSS variable match anchors a negative lookahead on the next character so
  * that `--space-md` does not collide with hypothetical `--space-md-extra`.

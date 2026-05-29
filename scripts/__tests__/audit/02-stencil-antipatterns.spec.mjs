@@ -6,7 +6,7 @@
  *     pattern fires (or doesn't) as documented.
  *   - PATTERN registry is asserted to cover the 14+ codes the AI workflow
  *     was relying on, so we can't accidentally drop coverage.
- *   - Sanity-scan cor-button — must remain clean (zero error-level findings).
+ *   - Sanity-scan mud-button — must remain clean (zero error-level findings).
  *
  * Note: some test fixtures use string concatenation (e.g. 'inner' + 'HTML')
  * to avoid triggering the project's security_reminder_hook on the literal
@@ -20,7 +20,7 @@ import { resolveComponentPaths } from '../../audit/lib/component-paths.mjs';
 
 const UNSAFE_HTML_ASSIGN = 'el.' + 'innerHTML = userInput;';
 
-function scan({ content, kind = 'tsx', componentName = 'cor-fake', file = 'fake.tsx' }) {
+function scan({ content, kind = 'tsx', componentName = 'mud-fake', file = 'fake.tsx' }) {
   return scanFile({ content, kind, rel: file }, componentName);
 }
 
@@ -139,25 +139,25 @@ describe('02-stencil-antipatterns: TSX pattern detection', () => {
     assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-TS-IGNORE').length, 2);
   });
 
-  it('flags @Event() with non-cor-prefixed identifier', () => {
+  it('flags @Event() with non-mud-prefixed identifier', () => {
     const tsx = `@Event()\nmyChange: EventEmitter<string>;`;
     const findings = scan({ content: tsx, kind: 'tsx' });
     assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-025-EVENT-PREFIX').length, 1);
   });
 
-  it('does NOT flag @Event() corChange (correct cor prefix)', () => {
-    const tsx = `@Event()\ncorChange: EventEmitter<string>;`;
+  it('does NOT flag @Event() mudChange (correct cor prefix)', () => {
+    const tsx = `@Event()\nmudChange: EventEmitter<string>;`;
     const findings = scan({ content: tsx, kind: 'tsx' });
     assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-025-EVENT-PREFIX').length, 0);
   });
 
-  it('flags <svg> outside cor-icon/cor-illustration', () => {
-    const findings = scan({ content: '<svg width="16"/>', kind: 'tsx', componentName: 'cor-button' });
+  it('flags <svg> outside mud-icon/mud-illustration', () => {
+    const findings = scan({ content: '<svg width="16"/>', kind: 'tsx', componentName: 'mud-button' });
     assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-021-RAW-SVG').length, 1);
   });
 
-  it('does NOT flag <svg> inside cor-icon (legitimate)', () => {
-    const findings = scan({ content: '<svg width="16"/>', kind: 'tsx', componentName: 'cor-icon' });
+  it('does NOT flag <svg> inside mud-icon (legitimate)', () => {
+    const findings = scan({ content: '<svg width="16"/>', kind: 'tsx', componentName: 'mud-icon' });
     assert.equal(findings.filter(f => f.code === 'ANTIPATTERN-021-RAW-SVG').length, 0);
   });
 
@@ -238,8 +238,8 @@ describe('02-stencil-antipatterns: CSS pattern detection', () => {
 describe('02-stencil-antipatterns: file-level checks', () => {
   it('flags lifecycle leak (setInterval without disconnectedCallback)', () => {
     const tsx = `
-      @Component({ tag: 'cor-foo' })
-      export class CorFoo {
+      @Component({ tag: 'mud-foo' })
+      export class MudFoo {
         componentDidLoad() {
           setInterval(() => this.update(), 1000);
         }
@@ -251,8 +251,8 @@ describe('02-stencil-antipatterns: file-level checks', () => {
 
   it('does NOT flag lifecycle leak when disconnectedCallback is present', () => {
     const tsx = `
-      @Component({ tag: 'cor-foo' })
-      export class CorFoo {
+      @Component({ tag: 'mud-foo' })
+      export class MudFoo {
         private interval: any;
         componentDidLoad() { this.interval = setInterval(() => this.update(), 1000); }
         disconnectedCallback() { clearInterval(this.interval); }
@@ -270,18 +270,18 @@ describe('02-stencil-antipatterns: file-level checks', () => {
 });
 
 describe('02-stencil-antipatterns: regression on baseline components', () => {
-  // Quality bar: cor-button must remain clean (zero error-severity findings).
+  // Quality bar: mud-button must remain clean (zero error-severity findings).
   // If this fails, EITHER:
-  //   (a) cor-button regressed — fix it, OR
+  //   (a) mud-button regressed — fix it, OR
   //   (b) a pattern was added that catches a real issue we now want to fix.
-  it('cor-button has zero error-level findings (production baseline)', async () => {
-    const target = resolveComponentPaths('cor-button');
+  it('mud-button has zero error-level findings (production baseline)', async () => {
+    const target = resolveComponentPaths('mud-button');
     const { findings } = await analyzeComponent(target);
     const errors = findings.filter(f => f.severity === 'error');
     assert.deepEqual(
       errors,
       [],
-      `cor-button should be clean; got ${errors.length} error(s):\n${JSON.stringify(errors, null, 2)}`,
+      `mud-button should be clean; got ${errors.length} error(s):\n${JSON.stringify(errors, null, 2)}`,
     );
   });
 });

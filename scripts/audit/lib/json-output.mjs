@@ -5,7 +5,7 @@
  *   {
  *     "schemaVersion": "1.0.0",
  *     "tool": "stencil-antipatterns",
- *     "target": "cor-button",               // component name OR "all" OR a glob
+ *     "target": "mud-button",               // component name OR "all" OR a glob
  *     "ok": true,                            // false iff summary.errors > 0
  *     "summary": { "errors": 0, "warnings": 2, "info": 5 },
  *     "findings": [ { severity, code, file, line, column?, message, snippet?, fix? } ],

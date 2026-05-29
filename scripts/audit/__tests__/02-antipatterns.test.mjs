@@ -58,7 +58,7 @@ function scanFixture(absPath) {
     .relative(path.resolve(FIXTURES_ROOT, '..', '..', '..'), absPath)
     .split(path.sep)
     .join('/');
-  return scanFile({ kind, path: absPath, rel, content }, 'cor-fixture');
+  return scanFile({ kind, path: absPath, rel, content }, 'mud-fixture');
 }
 
 let passed = 0;

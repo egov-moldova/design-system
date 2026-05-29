@@ -107,7 +107,7 @@ tokens/core/components/button.tokens.json    →  Style Dictionary build
     ↓                                              ↓
 {color.background.brand.default}             →  dist/design-system/tokens/core.tokens.css
     ↓                                              ↓
---button-primary-background-default: #hex    →  Used in cor-button.css
+--button-primary-background-default: #hex    →  Used in mud-button.css
 ```
 
 ---

@@ -1,0 +1,158 @@
+/*
+ * mud-tabs — horizontal tablist (molecule, Pattern A).
+ *
+ * Layout:
+ *   .scroller is the overflow-x: auto container that the chevron buttons
+ *   scroll. The bottom border lives on `.scroller` so the indicator on the
+ *   selected tab sits *on top* of the rule rather than next to it.
+ *   The chevron buttons are absolutely positioned over the scroller edges
+ *   with a fading gradient so they read as "more content this way".
+ *
+ * The host uses `display: flex` with the scroller flexing to fill,
+ * which lets the chevrons live as inline siblings on either side without
+ * disturbing the layout.
+ */
+
+:host {
+  --_tab-height: var(--tabs-tab-height-md);
+  --_fade-width: var(--tabs-overflow-fade-width-md);
+  --_chevron-size: var(--tabs-overflow-chevron-size-md);
+  --_chevron-padding-block: var(--tabs-overflow-chevron-padding-block-md);
+  --_chevron-padding-inline: var(--tabs-overflow-chevron-padding-inline-md);
+
+  position: relative;
+  display: grid;
+  /* First row = tablist (chevrons + scroller); second row = panels.
+     `grid-template-columns: auto 1fr auto` puts the start chevron,
+     the scroller (which flexes), and the end chevron on the same row. */
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto auto;
+  inline-size: 100%;
+  font-family: var(--tabs-label-font-family);
+}
+
+:host([size='sm']) {
+  --_tab-height: var(--tabs-tab-height-sm);
+  --_fade-width: var(--tabs-overflow-fade-width-sm);
+  --_chevron-size: var(--tabs-overflow-chevron-size-sm);
+  --_chevron-padding-block: var(--tabs-overflow-chevron-padding-block-sm);
+  --_chevron-padding-inline: var(--tabs-overflow-chevron-padding-inline-sm);
+}
+
+/* ---------- Scroller (overflow container) ---------- */
+
+.scroller {
+  position: relative;
+  /* Sits in the middle column of row 1. */
+  grid-column: 2 / 3;
+  grid-row: 1 / 2;
+  /* Bottom rule under the tabs. */
+  border-block-end: var(--tabs-container-border-width) solid var(--tabs-container-border-color);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-behavior: smooth;
+  /* Hide the system scrollbar across browsers — chevrons replace it. */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  min-inline-size: 0;
+}
+
+.scroller::-webkit-scrollbar {
+  display: none;
+}
+
+/* ---------- Track (flex row of tabs) ---------- */
+
+.track {
+  display: inline-flex;
+  align-items: stretch;
+  gap: var(--tabs-container-gap);
+  /* Track always at least as wide as the scroller so the bottom rule reaches
+     the right edge when there are only a few tabs. */
+  min-inline-size: 100%;
+}
+
+::slotted(mud-tab) {
+  flex-shrink: 0;
+}
+
+/* ---------- Chevron overflow buttons ---------- */
+
+.chevron {
+  grid-row: 1 / 2;
+  block-size: var(--_tab-height);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: var(--_chevron-padding-block);
+  padding-inline: var(--_chevron-padding-inline);
+  background-color: var(--tabs-overflow-chevron-background);
+  color: var(--tabs-overflow-chevron-color);
+  border-inline: 0;
+  border-block-start: 0;
+  border-block-end: var(--tabs-container-border-width) solid var(--tabs-container-border-color);
+  margin: 0;
+  cursor: pointer;
+  outline: none;
+  z-index: 2;
+  /* Soft fade lets the underlying tabs peek through the chevron edge. */
+  transition:
+    color var(--tabs-container-transition-duration) var(--tabs-container-transition-timing-function),
+    opacity var(--tabs-container-transition-duration) var(--tabs-container-transition-timing-function);
+}
+
+.chevron[hidden] {
+  display: none;
+}
+
+.chevron:hover {
+  color: var(--tabs-overflow-chevron-color-hover);
+}
+
+.chevron:focus-visible {
+  outline: var(--tabs-focus-ring-outer-width) solid var(--tabs-focus-ring-outer-color);
+  outline-offset: calc(-1 * var(--tabs-focus-ring-outer-width));
+}
+
+.chevron mud-icon {
+  pointer-events: none;
+  inline-size: var(--_chevron-size);
+  block-size: var(--_chevron-size);
+}
+
+.chevron--start {
+  grid-column: 1 / 2;
+}
+
+.chevron--end {
+  grid-column: 3 / 4;
+}
+
+/* ---------- Panels container ---------- */
+
+.panels {
+  /* Panels render *below* the tablist, spanning all three columns of the
+     grid. The slotted panels themselves carry their own padding via the
+     `::slotted([slot^='panel-'])` rule below. */
+  grid-column: 1 / 4;
+  grid-row: 2 / 3;
+  display: block;
+  min-inline-size: 0;
+}
+
+::slotted([slot^='panel-']) {
+  padding-block: var(--tabs-panel-padding-block);
+  color: var(--tabs-panel-color);
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .scroller {
+    scroll-behavior: auto;
+  }
+
+  .chevron {
+    transition: none;
+  }
+}

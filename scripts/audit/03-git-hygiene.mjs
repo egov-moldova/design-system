@@ -63,7 +63,7 @@ const CONVENTIONAL_TYPES = [
 ];
 const CONVENTIONAL_RE = new RegExp(`^(${CONVENTIONAL_TYPES.join('|')})(\\([^)]+\\))?!?: .+`);
 
-// Branch naming convention. type/cor-name[-desc]  OR  type/desc-without-cor
+// Branch naming convention. type/mud-name[-desc]  OR  type/desc-without-cor
 const BRANCH_RE = /^(feat|fix|refactor|redesign|test|docs|chore|build|ci|perf|style)\/[a-z0-9][a-z0-9-]*$/;
 
 // Paths that MUST NOT appear in the diff or in staged files
@@ -176,7 +176,7 @@ export function checkBranchName(branch) {
         severity: 'warning',
         code: 'GIT-BRANCH-NAMING',
         message: `Branch "${branch}" does not match convention: type/desc (types: feat, fix, refactor, redesign, test, docs, chore, build, ci, perf, style).`,
-        fix: 'Rename to e.g. feat/cor-button-add-loading or fix/cor-input-validation.',
+        fix: 'Rename to e.g. feat/mud-button-add-loading or fix/mud-input-validation.',
       }),
     ];
   }

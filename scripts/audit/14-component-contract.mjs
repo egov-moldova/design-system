@@ -24,7 +24,7 @@
  *   - redesign-component Step 1 (the "read existing implementation" portion)
  *
  * Usage:
- *   node scripts/audit/14-component-contract.mjs cor-button --json
+ *   node scripts/audit/14-component-contract.mjs mud-button --json
  *   node scripts/audit/14-component-contract.mjs --all --out contracts.json
  */
 import { readFileSync } from 'node:fs';

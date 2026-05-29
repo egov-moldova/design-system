@@ -1,0 +1,445 @@
+:host {
+  --_height: var(--numeric-input-container-height-md);
+  --_padding-inline: var(--numeric-input-container-padding-inline-md);
+  --_padding-inline-end-steppers: var(--numeric-input-container-padding-inline-end-with-stepper-md);
+  --_gap: var(--numeric-input-container-gap-md);
+  --_radius: var(--numeric-input-container-border-radius);
+  --_border-width-default: var(--numeric-input-container-border-width-default);
+  --_border-width-emphasized: var(--numeric-input-container-border-width-emphasized);
+  --_focus-ring-width: var(--numeric-input-container-focus-ring-width);
+  --_transition-duration: var(--numeric-input-container-transition-duration);
+  --_transition-easing: var(--numeric-input-container-transition-timing-function);
+
+  --_control-font-size: var(--numeric-input-control-font-size-md);
+  --_control-line-height: var(--numeric-input-control-line-height-md);
+  --_icon-size: var(--numeric-input-icon-size-md);
+  --_loading-spinner-size: var(--numeric-input-loading-spinner-size-md);
+
+  --_suffix-font-size: var(--numeric-input-suffix-font-size-md);
+  --_suffix-line-height: var(--numeric-input-suffix-line-height-md);
+
+  --_stepper-width: var(--numeric-input-stepper-width-md);
+  --_stepper-icon-size: var(--numeric-input-stepper-icon-size-md);
+
+  --_bg: var(--numeric-input-default-background-default);
+  --_text: var(--numeric-input-default-text-default);
+  --_text-placeholder: var(--numeric-input-default-text-placeholder);
+  --_border-color: var(--numeric-input-default-border-default);
+  --_border-color-hover: var(--numeric-input-default-border-hover);
+  --_border-color-focus: var(--numeric-input-default-border-focus);
+  --_focus-ring-color: var(--numeric-input-default-focus-ring);
+  --_assistive-color: var(--numeric-input-assistive-color-default);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--numeric-input-field-gap);
+  inline-size: 100%;
+  font-family: var(--numeric-input-control-font-family);
+  color: var(--_text);
+}
+
+:host([size='lg']) {
+  --_height: var(--numeric-input-container-height-lg);
+  --_padding-inline: var(--numeric-input-container-padding-inline-lg);
+  --_padding-inline-end-steppers: var(--numeric-input-container-padding-inline-end-with-stepper-lg);
+  --_gap: var(--numeric-input-container-gap-lg);
+  --_control-font-size: var(--numeric-input-control-font-size-lg);
+  --_control-line-height: var(--numeric-input-control-line-height-lg);
+  --_icon-size: var(--numeric-input-icon-size-lg);
+  --_loading-spinner-size: var(--numeric-input-loading-spinner-size-lg);
+  --_suffix-font-size: var(--numeric-input-suffix-font-size-lg);
+  --_suffix-line-height: var(--numeric-input-suffix-line-height-lg);
+  --_stepper-width: var(--numeric-input-stepper-width-lg);
+  --_stepper-icon-size: var(--numeric-input-stepper-icon-size-lg);
+}
+
+/* ---------- Variant token overrides ----------
+ * Per Figma master `210:2265`, numeric-input ships 3 styles — no Warning.
+ * Each named variant remaps the local custom properties to its token bundle.
+ * Borders for destructive/success use the same semantic color across
+ * default / hover / focus (var-color shift would over-signal state).
+ */
+:host(.variant-destructive) {
+  --_border-color: var(--numeric-input-destructive-border-default);
+  --_border-color-hover: var(--numeric-input-destructive-border-hover);
+  --_border-color-focus: var(--numeric-input-destructive-border-focus);
+  --_focus-ring-color: var(--numeric-input-destructive-focus-ring);
+  --_assistive-color: var(--numeric-input-assistive-color-error);
+}
+
+:host(.variant-success) {
+  --_border-color: var(--numeric-input-success-border-default);
+  --_border-color-hover: var(--numeric-input-success-border-hover);
+  --_border-color-focus: var(--numeric-input-success-border-focus);
+  --_focus-ring-color: var(--numeric-input-success-focus-ring);
+  --_assistive-color: var(--numeric-input-assistive-color-success);
+}
+
+/* ---------- Label ---------- */
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: var(--numeric-input-label-gap);
+  font-family: var(--numeric-input-label-font-family);
+  font-size: var(--numeric-input-label-font-size);
+  line-height: var(--numeric-input-label-line-height);
+  font-weight: var(--numeric-input-label-font-weight);
+  color: var(--numeric-input-label-color-default);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.label-text {
+  display: block;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.required-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--numeric-input-label-required-mark-size);
+  block-size: var(--numeric-input-label-required-mark-size);
+  color: var(--numeric-input-label-required-mark-color);
+  font-weight: var(--numeric-input-control-font-weight);
+  line-height: 1;
+}
+
+:host(.is-disabled) .label {
+  color: var(--numeric-input-label-color-disabled);
+}
+
+:host(.is-disabled) .required-mark {
+  color: var(--numeric-input-label-color-disabled);
+}
+
+/*
+ * Read-only is "visible but not editable" — label stays full-contrast
+ * (unlike disabled which dims the label too). Matches Figma master semantic.
+ */
+
+/* Hide the label row entirely when no text and no slotted content is present. */
+:host(:not(.has-label)) .label {
+  display: none;
+}
+
+/* ---------- Control row ---------- */
+
+.control {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--_gap);
+  block-size: var(--_height);
+  padding-inline-start: var(--_padding-inline);
+  padding-inline-end: var(--_padding-inline);
+  background-color: var(--_bg);
+  border: var(--_border-width-default) solid var(--_border-color);
+  border-radius: var(--_radius);
+  transition:
+    border-color var(--_transition-duration) var(--_transition-easing),
+    box-shadow var(--_transition-duration) var(--_transition-easing),
+    background-color var(--_transition-duration) var(--_transition-easing);
+}
+
+/* When the stacked stepper is visible, the right padding shrinks so the
+   stepper sits flush against the inner edge of the control. */
+:host(.has-steppers) .control {
+  padding-inline-end: var(--_padding-inline-end-steppers);
+}
+
+/* Hover/focus exclude readonly + loading so those states stay visually stable. */
+:host(:not(.is-disabled):not(.is-readonly):not(.is-loading):not(.is-focused):hover) .control {
+  border-color: var(--_border-color-hover);
+  /* Inset shadow simulates Figma's 2px border thickening on hover without shifting content. */
+  box-shadow: inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default))
+    var(--_border-color-hover);
+}
+
+:host(.is-focused:not(.is-disabled):not(.is-readonly)) .control {
+  border-color: var(--_border-color-focus);
+  box-shadow:
+    inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default)) var(--_border-color-focus),
+    0 0 0 var(--spacing-4) var(--_focus-ring-color);
+}
+
+/* ---------- Read-only state ----------
+ * Per Figma master: gray surface (`color.background.base.secondary`), default
+ * border (no emphasis), full-contrast label/text. Cursor stays `default` —
+ * input is selectable & focusable but not editable. Distinct from disabled.
+ */
+:host(.is-readonly) .control {
+  background-color: var(--numeric-input-default-background-read-only);
+  border-color: var(--numeric-input-default-border-read-only);
+  cursor: default;
+}
+
+:host(.is-disabled) .control {
+  background-color: var(--numeric-input-default-background-disabled);
+  border-color: var(--numeric-input-default-border-disabled);
+  cursor: not-allowed;
+}
+
+/* ---------- Loading state ----------
+ * Loading composes on top of the variant + focus tokens — the trailing
+ * stepper stack is suppressed (see `showSteppersStack()` in TSX) and a
+ * brand spinner takes its place. Native input becomes uninteractive without
+ * losing its visual identity.
+ */
+:host(.is-loading) .native {
+  pointer-events: none;
+  opacity: var(--numeric-input-control-loading-opacity);
+}
+
+:host(.is-loading) .control-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--_loading-spinner-size);
+  block-size: var(--_loading-spinner-size);
+  color: var(--numeric-input-icon-color-loading);
+}
+
+/* ---------- Icon slot ---------- */
+
+.control-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--_icon-size);
+  block-size: var(--_icon-size);
+  color: var(--numeric-input-icon-color-default);
+}
+
+.control-spinner {
+  display: none;
+}
+
+:host(.is-disabled) .control-icon {
+  color: var(--numeric-input-icon-color-disabled);
+}
+
+:host(:not(.has-icon-start)) .control-icon-start {
+  display: none;
+}
+
+::slotted([slot='icon-start']) {
+  color: inherit;
+}
+
+/* ---------- Native input ---------- */
+
+.native {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: var(--_control-font-size);
+  line-height: var(--_control-line-height);
+  font-weight: var(--numeric-input-control-font-weight);
+  text-align: var(--numeric-input-control-text-align);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  text-overflow: ellipsis;
+}
+
+.native::placeholder {
+  color: var(--_text-placeholder);
+  opacity: 1;
+}
+
+.native:disabled {
+  color: var(--numeric-input-default-text-disabled);
+  cursor: not-allowed;
+  -webkit-text-fill-color: var(--numeric-input-default-text-disabled);
+}
+
+.native:disabled::placeholder {
+  color: var(--numeric-input-default-text-disabled);
+  -webkit-text-fill-color: var(--numeric-input-default-text-disabled);
+}
+
+.native[readonly] {
+  cursor: default;
+}
+
+.native:focus,
+.native:focus-visible {
+  outline: none;
+}
+
+.native:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 var(--spacing-120) var(--_bg) inset;
+  -webkit-text-fill-color: var(--_text);
+}
+
+/* ---------- Suffix slot ---------- */
+
+.suffix {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  font-family: var(--numeric-input-suffix-font-family);
+  font-weight: var(--numeric-input-suffix-font-weight);
+  font-size: var(--_suffix-font-size);
+  line-height: var(--_suffix-line-height);
+  color: var(--numeric-input-suffix-color-default);
+  margin-inline-start: var(--numeric-input-suffix-margin-inline-start);
+  white-space: nowrap;
+}
+
+:host(:not(.has-suffix)) .suffix {
+  display: none;
+}
+
+:host(.is-readonly) .suffix {
+  color: var(--numeric-input-suffix-color-read-only);
+}
+
+:host(.is-disabled) .suffix {
+  color: var(--numeric-input-suffix-color-disabled);
+}
+
+::slotted([slot='suffix']) {
+  color: inherit;
+  font: inherit;
+}
+
+/* ---------- Stepper stack ---------- */
+
+.stepper {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  inline-size: var(--_stepper-width);
+  block-size: 100%;
+  margin-inline-start: var(--numeric-input-stepper-gap);
+}
+
+.stepper-button {
+  flex: 1 1 50%;
+  min-block-size: 0;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--numeric-input-stepper-background-default);
+  border: var(--numeric-input-stepper-border-width) solid var(--numeric-input-stepper-border-color);
+  color: var(--numeric-input-stepper-icon-color-default);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition:
+    background-color var(--numeric-input-stepper-transition-duration)
+      var(--numeric-input-stepper-transition-timing-function),
+    color var(--numeric-input-stepper-transition-duration) var(--numeric-input-stepper-transition-timing-function);
+}
+
+.stepper-button mud-icon,
+.stepper-button ::slotted(mud-icon) {
+  inline-size: var(--_stepper-icon-size);
+  block-size: var(--_stepper-icon-size);
+}
+
+.stepper-button-up {
+  border-start-start-radius: var(--numeric-input-stepper-border-radius);
+  border-start-end-radius: var(--numeric-input-stepper-border-radius);
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+  /* Avoid doubled border with the down button. */
+  border-block-end-width: 0;
+}
+
+.stepper-button-down {
+  border-end-start-radius: var(--numeric-input-stepper-border-radius);
+  border-end-end-radius: var(--numeric-input-stepper-border-radius);
+  border-start-start-radius: 0;
+  border-start-end-radius: 0;
+}
+
+.stepper-button:hover:not(:disabled) {
+  background-color: var(--numeric-input-stepper-background-hover);
+  color: var(--numeric-input-stepper-icon-color-hover);
+}
+
+.stepper-button:active:not(:disabled) {
+  background-color: var(--numeric-input-stepper-background-active);
+}
+
+.stepper-button:disabled {
+  background-color: var(--numeric-input-stepper-background-default);
+  color: var(--numeric-input-stepper-icon-color-disabled);
+  cursor: not-allowed;
+}
+
+.stepper-button:focus,
+.stepper-button:focus-visible {
+  outline: none;
+}
+
+:host(.is-disabled) .stepper-button {
+  background-color: var(--numeric-input-stepper-background-disabled);
+  color: var(--numeric-input-stepper-icon-color-disabled);
+  cursor: not-allowed;
+}
+
+/* ---------- Assistive (helper / error) ---------- */
+
+.assistive {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--numeric-input-assistive-gap-default);
+  font-family: var(--numeric-input-assistive-font-family);
+  font-size: var(--numeric-input-assistive-font-size);
+  line-height: var(--numeric-input-assistive-line-height);
+  font-weight: var(--numeric-input-assistive-font-weight);
+  color: var(--_assistive-color);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.assistive-error {
+  gap: var(--numeric-input-assistive-gap-error);
+  color: var(--numeric-input-assistive-color-error);
+}
+
+.assistive-icon {
+  flex-shrink: 0;
+  inline-size: var(--numeric-input-assistive-icon-size);
+  block-size: var(--numeric-input-assistive-icon-size);
+  margin-block-start: 0;
+}
+
+.assistive-text {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  text-overflow: ellipsis;
+}
+
+/* ---------- prefers-reduced-motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .control,
+  .stepper-button {
+    transition: none;
+  }
+}

@@ -28,7 +28,7 @@
  *
  * Usage:
  *   yarn sp.dev.watch
- *   node scripts/audit/11-pixel-diff-states.mjs cor-button --figma-dir ./figma-refs/cor-button --json
+ *   node scripts/audit/11-pixel-diff-states.mjs mud-button --figma-dir ./figma-refs/mud-button --json
  */
 import { fileURLToPath } from 'node:url';
 import { existsSync, mkdirSync } from 'node:fs';

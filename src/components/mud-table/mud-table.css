@@ -1,0 +1,315 @@
+:host {
+  display: block;
+  width: 100%;
+  font-family: var(--table-container-font-family);
+  color: var(--table-cell-color);
+  box-sizing: border-box;
+}
+
+:host *,
+:host *::before,
+:host *::after {
+  box-sizing: border-box;
+}
+
+/* Visually hidden — slotted into mud-checkbox so the selection control has an
+ * accessible name without polluting the host with a prohibited aria-label
+ * attribute (custom elements have no implicit role). */
+.visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--table-container-border-radius);
+  background: var(--table-container-background);
+}
+
+/*
+ * Per WCAG SC 2.1.1 — a scrollable region must be keyboard-focusable so
+ * keyboard users can scroll it with arrow keys. tabindex="0" makes that
+ * possible; focus-visible adds a brand-coloured outline that mirrors the
+ * sortable-header focus treatment.
+ */
+.table-scroll:focus-visible {
+  outline: var(--table-focus-ring-width) solid var(--table-focus-ring-color);
+  outline-offset: var(--table-focus-ring-offset);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  table-layout: auto;
+  background: var(--table-container-background);
+}
+
+/* ---------------------------------------------------------------------------
+ * Header
+ * ------------------------------------------------------------------------- */
+
+.thead {
+  display: table-header-group;
+}
+
+.row--header {
+  background: var(--table-header-default-background);
+}
+
+.table--header-inverted .row--header {
+  background: var(--table-header-inverted-background);
+}
+
+.table--header-white .row--header {
+  background: var(--table-header-white-background);
+}
+
+.th {
+  min-height: var(--table-header-min-height);
+  height: var(--table-header-min-height);
+  padding-inline: var(--table-header-padding-inline-desktop);
+  padding-block: var(--table-header-padding-block);
+  font-size: var(--table-header-font-size);
+  font-weight: var(--table-header-font-weight);
+  line-height: var(--table-header-line-height);
+  color: var(--table-header-default-color);
+  text-align: start;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--table-header-default-border-bottom);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.table--header-inverted .th {
+  color: var(--table-header-inverted-color);
+  border-bottom-color: var(--table-header-inverted-border-bottom);
+}
+
+.th--align-start {
+  text-align: start;
+}
+
+.th--align-center {
+  text-align: center;
+}
+
+.th--align-end {
+  text-align: end;
+}
+
+/*
+ * Consumer-defined per-column widths are flowed in via a `--col-width` custom
+ * property on the .th's inline style (see columnWidthStyle()). The actual
+ * `width` declaration stays in CSS so visual rules remain tokenized.
+ */
+.th {
+  width: var(--col-width, auto);
+}
+
+.th--selection {
+  width: var(--table-selection-column-width);
+  padding-inline: var(--spacing-16);
+  text-align: center;
+}
+
+.th-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--table-header-gap);
+  width: 100%;
+}
+
+.th--align-center .th-inner {
+  justify-content: center;
+}
+
+.th--align-end .th-inner {
+  justify-content: flex-end;
+}
+
+/* Sortable headers behave like buttons. */
+.th--sortable {
+  cursor: pointer;
+}
+
+.th--sortable:hover .sort-icon {
+  color: var(--table-sort-icon-color-active);
+}
+
+.table--header-inverted .th--sortable:hover .sort-icon {
+  color: var(--table-sort-icon-color-inverted);
+}
+
+.th--sortable:focus-visible {
+  outline: var(--table-focus-ring-width) solid var(--table-focus-ring-color);
+  outline-offset: calc(-1 * var(--table-focus-ring-offset));
+  z-index: 1;
+  position: relative;
+}
+
+.header-label {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.th--align-end .header-label {
+  text-align: end;
+}
+
+.th--align-center .header-label {
+  text-align: center;
+}
+
+.sort-icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  width: var(--table-sort-icon-size);
+  height: var(--table-sort-icon-size);
+  color: var(--table-sort-icon-color-inactive);
+  transition: color var(--table-row-transition-duration) var(--table-row-transition-timing-function);
+}
+
+.sort-icon--active {
+  color: var(--table-sort-icon-color-active);
+}
+
+.table--header-inverted .sort-icon {
+  color: var(--table-sort-icon-color-inverted);
+  opacity: 0.7;
+}
+
+.table--header-inverted .sort-icon--active {
+  opacity: 1;
+}
+
+/* ---------------------------------------------------------------------------
+ * Body rows / cells
+ * ------------------------------------------------------------------------- */
+
+.tbody {
+  display: table-row-group;
+}
+
+.row--body {
+  background: var(--table-row-background-default);
+  transition: background-color var(--table-row-transition-duration) var(--table-row-transition-timing-function);
+}
+
+.table--rows-zebra .row--body.row--zebra {
+  background: var(--table-row-background-zebra);
+}
+
+.table--rows-divided .row--body .td {
+  border-bottom: 1px solid var(--table-cell-border-bottom);
+}
+
+.table--rows-borderless .row--body .td {
+  border-bottom: none;
+}
+
+.table--hoverable .row--body {
+  cursor: pointer;
+}
+
+.table--hoverable .row--body:hover {
+  background: var(--table-row-background-hover);
+}
+
+.row--selected,
+.table--hoverable .row--selected:hover {
+  background: var(--table-row-background-selected);
+}
+
+.table--hoverable .row--selected:hover {
+  background: var(--table-row-background-selected-hover);
+}
+
+.td {
+  min-height: var(--table-cell-min-height);
+  height: var(--table-cell-min-height);
+  padding-inline: var(--table-cell-padding-inline-desktop);
+  padding-block: var(--table-cell-padding-block);
+  font-size: var(--table-cell-font-size);
+  font-weight: var(--table-cell-font-weight);
+  line-height: var(--table-cell-line-height);
+  color: var(--table-cell-color);
+  vertical-align: middle;
+  text-align: start;
+}
+
+.td--align-start {
+  text-align: start;
+}
+
+.td--align-center {
+  text-align: center;
+}
+
+.td--align-end {
+  text-align: end;
+}
+
+.td--selection {
+  width: var(--table-selection-column-width);
+  padding-inline: var(--spacing-16);
+  text-align: center;
+}
+
+.cell-text {
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+
+/* ---------------------------------------------------------------------------
+ * Empty state
+ * ------------------------------------------------------------------------- */
+
+.empty-row {
+  background: var(--table-container-background);
+}
+
+.empty-cell {
+  text-align: center;
+  padding: var(--table-empty-padding);
+  color: var(--table-empty-color);
+  font-size: var(--table-empty-font-size);
+}
+
+.empty-text {
+  color: var(--table-empty-color);
+}
+
+/* ---------------------------------------------------------------------------
+ * Mobile breakpoint — tighter inline padding per Figma masters
+ * 4930:14358 (table-header) and 649:4296 (table-cell). Below the container
+ * width threshold the table stays a table (with horizontal scroll provided
+ * by .table-scroll) but the inline padding shrinks from 24 → 16 to match
+ * Figma's Mobile breakpoint specs.
+ * ------------------------------------------------------------------------- */
+
+:host {
+  container-type: inline-size;
+  container-name: mud-table;
+}
+
+@container mud-table (max-width: 640px) {
+  .th {
+    padding-inline: var(--table-header-padding-inline-mobile);
+  }
+
+  .td {
+    padding-inline: var(--table-cell-padding-inline-mobile);
+  }
+}

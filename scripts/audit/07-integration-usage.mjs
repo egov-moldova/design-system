@@ -14,13 +14,13 @@
  *   - web-components workspace   (web-components/**\/*.ts)
  *
  * Also verifies the component's auto-generated CustomEvent type is exported
- * from src/index.ts (Stencil generates `CorXCustomEvent` per component with events).
+ * from src/index.ts (Stencil generates `MudXCustomEvent` per component with events).
  *
  * Replaces AI work in:
  *   - `.claude/agents/integration-checker.md` (all phases)
  *
  * Usage:
- *   node scripts/audit/07-integration-usage.mjs cor-button --json
+ *   node scripts/audit/07-integration-usage.mjs mud-button --json
  *   node scripts/audit/07-integration-usage.mjs --all --json
  */
 import { readFileSync, statSync } from 'node:fs';
@@ -237,13 +237,13 @@ function categorizeFile(rel) {
  * Returns { expectedTypeName, customEventType: bool }.
  */
 export function checkExports(componentName, indexSource) {
-  // cor-banner-notification → CorBannerNotificationCustomEvent
+  // mud-banner-notification → MudBannerNotificationCustomEvent
   const pascal = componentName
-    .replace(/^cor-/, '')
+    .replace(/^mud-/, '')
     .split('-')
     .map(s => s.charAt(0).toUpperCase() + s.slice(1))
     .join('');
-  const expectedTypeName = `Cor${pascal}CustomEvent`;
+  const expectedTypeName = `Mud${pascal}CustomEvent`;
   const customEventType = indexSource ? indexSource.includes(expectedTypeName) : false;
   return { expectedTypeName, customEventType };
 }

@@ -2,14 +2,14 @@
  * Smoke tests for scripts/audit/04-jsdoc-completeness.mjs
  *
  * Strategy:
- *   - Sanity-scan our 3 baseline components (cor-button, cor-input, cor-tooltip) —
+ *   - Sanity-scan our 3 baseline components (mud-button, mud-input, mud-tooltip) —
  *     these are mature and should report 0 errors. Some `info` findings are OK
  *     (e.g. missing @default on a freshly-added optional prop).
  *   - Synthetic TSX fixtures injected via analyzeTsxFile() exercise each
  *     finding code (missing prop JSDoc, missing @default, missing @param, etc.).
  *
  * Quality bar (from the plan):
- *   - 0 error-level findings on cor-button, cor-input, cor-tooltip.
+ *   - 0 error-level findings on mud-button, mud-input, mud-tooltip.
  *   - Warnings may be present but should match real issues; we don't pin counts.
  */
 import assert from 'node:assert/strict';
@@ -38,16 +38,16 @@ afterEach(() => {
 });
 
 describe('04-jsdoc-completeness: baseline regression', () => {
-  it('cor-button has zero error-level findings', async () => {
-    const target = resolveComponentPaths('cor-button');
+  it('mud-button has zero error-level findings', async () => {
+    const target = resolveComponentPaths('mud-button');
     const { findings, api } = await analyzeComponent(target);
     const errors = findings.filter(f => f.severity === 'error');
     assert.deepEqual(errors, [], `unexpected errors:\n${JSON.stringify(errors, null, 2)}`);
-    assert.ok(api.props > 0, 'expected at least one prop on cor-button');
+    assert.ok(api.props > 0, 'expected at least one prop on mud-button');
   });
 
-  it('cor-input and cor-tooltip both produce 0 errors', async () => {
-    for (const name of ['cor-input', 'cor-tooltip']) {
+  it('mud-input and mud-tooltip both produce 0 errors', async () => {
+    for (const name of ['mud-input', 'mud-tooltip']) {
       const target = resolveComponentPaths(name);
       const { findings } = await analyzeComponent(target);
       const errors = findings.filter(f => f.severity === 'error');
@@ -63,13 +63,13 @@ describe('04-jsdoc-completeness: prop checks', () => {
       /**
        * A test component.
        */
-      @Component({ tag: 'cor-test' })
-      export class CorTest {
+      @Component({ tag: 'mud-test' })
+      export class MudTest {
         @Prop({ reflect: true }) variant: string;
       }
     `;
-    const p = tempTsx('cor-test', tsx);
-    const { findings } = analyzeTsxFile(p, 'cor-test');
+    const p = tempTsx('mud-test', tsx);
+    const { findings } = analyzeTsxFile(p, 'mud-test');
     const missing = findings.find(f => f.code === 'JSDOC-PROP-MISSING');
     assert.ok(missing, 'expected JSDOC-PROP-MISSING finding');
     assert.equal(missing.severity, 'warning');
@@ -81,8 +81,8 @@ describe('04-jsdoc-completeness: prop checks', () => {
       /**
        * A test component.
        */
-      @Component({ tag: 'cor-test' })
-      export class CorTest {
+      @Component({ tag: 'mud-test' })
+      export class MudTest {
         /**
          * The button variant.
          * @default primary
@@ -90,8 +90,8 @@ describe('04-jsdoc-completeness: prop checks', () => {
         @Prop({ reflect: true }) variant: string = 'primary';
       }
     `;
-    const p = tempTsx('cor-test', tsx);
-    const { findings } = analyzeTsxFile(p, 'cor-test');
+    const p = tempTsx('mud-test', tsx);
+    const { findings } = analyzeTsxFile(p, 'mud-test');
     const propMissing = findings.find(f => f.code === 'JSDOC-PROP-MISSING');
     const defaultTag = findings.find(f => f.code === 'JSDOC-PROP-DEFAULT-TAG');
     assert.equal(propMissing, undefined);
@@ -104,16 +104,16 @@ describe('04-jsdoc-completeness: prop checks', () => {
       /**
        * A test component.
        */
-      @Component({ tag: 'cor-test' })
-      export class CorTest {
+      @Component({ tag: 'mud-test' })
+      export class MudTest {
         /**
          * The button variant.
          */
         @Prop({ reflect: true }) variant: string = 'primary';
       }
     `;
-    const p = tempTsx('cor-test', tsx);
-    const { findings } = analyzeTsxFile(p, 'cor-test');
+    const p = tempTsx('mud-test', tsx);
+    const { findings } = analyzeTsxFile(p, 'mud-test');
     const defaultTag = findings.find(f => f.code === 'JSDOC-PROP-DEFAULT-TAG');
     assert.ok(defaultTag, 'expected JSDOC-PROP-DEFAULT-TAG finding');
     assert.equal(defaultTag.severity, 'info');
@@ -125,13 +125,13 @@ describe('04-jsdoc-completeness: event checks', () => {
     const tsx = `
       import { Component, Event, EventEmitter } from '@stencil/core';
       /** A test component. */
-      @Component({ tag: 'cor-test' })
-      export class CorTest {
-        @Event() corChange: EventEmitter<string>;
+      @Component({ tag: 'mud-test' })
+      export class MudTest {
+        @Event() mudChange: EventEmitter<string>;
       }
     `;
-    const p = tempTsx('cor-test', tsx);
-    const { findings } = analyzeTsxFile(p, 'cor-test');
+    const p = tempTsx('mud-test', tsx);
+    const { findings } = analyzeTsxFile(p, 'mud-test');
     const missing = findings.find(f => f.code === 'JSDOC-EVENT-MISSING');
     assert.ok(missing, 'expected JSDOC-EVENT-MISSING finding');
   });
@@ -140,14 +140,14 @@ describe('04-jsdoc-completeness: event checks', () => {
     const tsx = `
       import { Component, Event, EventEmitter } from '@stencil/core';
       /** A test component. */
-      @Component({ tag: 'cor-test' })
-      export class CorTest {
+      @Component({ tag: 'mud-test' })
+      export class MudTest {
         /** Fires when the value changes. */
-        @Event() corChange: EventEmitter<string>;
+        @Event() mudChange: EventEmitter<string>;
       }
     `;
-    const p = tempTsx('cor-test', tsx);
-    const { findings } = analyzeTsxFile(p, 'cor-test');
+    const p = tempTsx('mud-test', tsx);
+    const { findings } = analyzeTsxFile(p, 'mud-test');
     assert.equal(
       findings.find(f => f.code === 'JSDOC-EVENT-MISSING'),
       undefined,
@@ -160,13 +160,13 @@ describe('04-jsdoc-completeness: method checks', () => {
     const tsx = `
       import { Component, Method } from '@stencil/core';
       /** A test component. */
-      @Component({ tag: 'cor-test' })
-      export class CorTest {
+      @Component({ tag: 'mud-test' })
+      export class MudTest {
         @Method() async open(): Promise<void> {}
       }
     `;
-    const p = tempTsx('cor-test', tsx);
-    const { findings } = analyzeTsxFile(p, 'cor-test');
+    const p = tempTsx('mud-test', tsx);
+    const { findings } = analyzeTsxFile(p, 'mud-test');
     assert.ok(findings.find(f => f.code === 'JSDOC-METHOD-MISSING'));
   });
 
@@ -174,14 +174,14 @@ describe('04-jsdoc-completeness: method checks', () => {
     const tsx = `
       import { Component, Method } from '@stencil/core';
       /** A test component. */
-      @Component({ tag: 'cor-test' })
-      export class CorTest {
+      @Component({ tag: 'mud-test' })
+      export class MudTest {
         /** Opens the panel. */
         @Method() async open(direction: string): Promise<void> {}
       }
     `;
-    const p = tempTsx('cor-test', tsx);
-    const { findings } = analyzeTsxFile(p, 'cor-test');
+    const p = tempTsx('mud-test', tsx);
+    const { findings } = analyzeTsxFile(p, 'mud-test');
     const paramMissing = findings.find(f => f.code === 'JSDOC-METHOD-PARAM-MISSING');
     assert.ok(paramMissing, 'expected JSDOC-METHOD-PARAM-MISSING finding');
     assert.equal(paramMissing.severity, 'info');
@@ -192,18 +192,18 @@ describe('04-jsdoc-completeness: component-level checks', () => {
   it('warns on missing class JSDoc', () => {
     const tsx = `
       import { Component } from '@stencil/core';
-      @Component({ tag: 'cor-test' })
-      export class CorTest {}
+      @Component({ tag: 'mud-test' })
+      export class MudTest {}
     `;
-    const p = tempTsx('cor-test', tsx);
-    const { findings } = analyzeTsxFile(p, 'cor-test');
+    const p = tempTsx('mud-test', tsx);
+    const { findings } = analyzeTsxFile(p, 'mud-test');
     assert.ok(findings.find(f => f.code === 'JSDOC-COMPONENT-MISSING'));
   });
 
   it('errors when file has no @Component class', () => {
     const tsx = `export const foo = 1;`;
     const p = tempTsx('not-a-component', tsx);
-    const { findings } = analyzeTsxFile(p, 'cor-fake');
+    const { findings } = analyzeTsxFile(p, 'mud-fake');
     assert.ok(findings.find(f => f.code === 'JSDOC-NO-COMPONENT-CLASS'));
   });
 });

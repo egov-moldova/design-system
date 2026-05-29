@@ -88,7 +88,7 @@ watchValue(newValue: string) {
 For state-driven host classes, use the **declarative `getHostClasses()` pattern**:
 
 ```typescript
-export class CorExample {
+export class MudExample {
   @Prop({ reflect: true }) active: boolean = false;
   @Prop({ reflect: true }) disabled: boolean = false;
 
@@ -136,7 +136,7 @@ export class CorExample {
 - ✅ **Declarative**: State → classes mapping is explicit and centralized
 - ✅ **Maintainable**: Single source of truth for all state-to-class logic
 - ✅ **Stencil Best Practices**: Leverages virtual DOM diffing instead of bypassing it
-- ✅ **Consistent**: Matches pattern used in `cor-avatar`, `cor-column-action`
+- ✅ **Consistent**: Matches pattern used in `mud-avatar`, `mud-column-action`
 
 ### Anti-Pattern (FORBIDDEN)
 
@@ -177,5 +177,5 @@ Only for **external events** that don't trigger re-render (rare). For state-driv
 | No token integration | Always use CSS custom properties from tokens |
 | No `::slotted()` patterns | Use `::slotted(*)` for slot-based components |
 | No `:host([attr])` patterns | Use `:host([variant='x'])`, `:host([size='y'])` |
-| Generic `@Event() itemSelected` | Use `cor` prefix: `@Event() corButtonClick` |
+| Generic `@Event() itemSelected` | Use `cor` prefix: `@Event() mudButtonClick` |
 | No slot validation | Use `invalidSlottedTag()` from `src/utils/` |

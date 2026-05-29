@@ -31,23 +31,23 @@ describe('09-a11y-tree: interactive-element catalogues', () => {
 
 describe('09-a11y-tree: pickDefaultStoryId', () => {
   it('picks the Default-named story id when stories file exists', () => {
-    const target = resolveComponentPaths('cor-tooltip');
+    const target = resolveComponentPaths('mud-tooltip');
     const id = pickDefaultStoryId(target);
     assert.match(id ?? '', /tooltip--default/);
   });
 
   it('falls back to the first story when no Default-named export exists', () => {
-    // cor-button is the historical edge case — its only story is named "Button", not "Default"
-    const target = resolveComponentPaths('cor-button');
+    // mud-button is the historical edge case — its only story is named "Button", not "Default"
+    const target = resolveComponentPaths('mud-button');
     const id = pickDefaultStoryId(target);
-    // Should not be null; either matches button--button (current cor-button) or atoms-button--default fallback
+    // Should not be null; either matches button--button (current mud-button) or atoms-button--default fallback
     assert.ok(id, 'expected a fallback story id to be returned');
   });
 
   it('returns an inferred id when stories file is missing', () => {
     const target = {
-      ...resolveComponentPaths('cor-button'),
-      exists: { ...resolveComponentPaths('cor-button').exists, stories: false },
+      ...resolveComponentPaths('mud-button'),
+      exists: { ...resolveComponentPaths('mud-button').exists, stories: false },
       bare: 'button',
     };
     const id = pickDefaultStoryId(target);

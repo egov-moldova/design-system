@@ -12,9 +12,9 @@ import { generateSpecFile } from '../../scaffold/test-scaffold.mjs';
 
 function makeContract(overrides = {}) {
   return {
-    componentName: 'cor-button',
-    tag: 'cor-button',
-    className: 'CorButton',
+    componentName: 'mud-button',
+    tag: 'mud-button',
+    className: 'MudButton',
     shadow: true,
     formAssociated: false,
     classDescription: 'A button component.',
@@ -64,7 +64,7 @@ describe('story-scaffold: generateStoriesFile', () => {
       target,
     });
     assert.match(out, /title: 'Atoms\/Button'/);
-    assert.match(out, /component: 'cor-button'/);
+    assert.match(out, /component: 'mud-button'/);
     assert.match(out, /import type \{ Meta, StoryObj \}/);
     assert.match(out, /export const Default: Story/);
     assert.match(out, /variant: ButtonVariant\.PRIMARY/);
@@ -142,8 +142,8 @@ describe('test-scaffold: generateSpecFile', () => {
   it('produces smoke + props + slots + a11y blocks for a basic component', () => {
     const out = generateSpecFile({ contract: makeContract() });
     assert.match(out, /from '@stencil\/vitest'/);
-    assert.match(out, /import '\.\.\/cor-button';/);
-    assert.match(out, /describe\('cor-button'/);
+    assert.match(out, /import '\.\.\/mud-button';/);
+    assert.match(out, /describe\('mud-button'/);
     assert.match(out, /smoke: renders without crashing/);
     assert.match(out, /describe\('props'/);
     assert.match(out, /describe\('slots'/);
@@ -151,20 +151,20 @@ describe('test-scaffold: generateSpecFile', () => {
     assert.match(out, /exposes the documented WCAG contract/);
     // 100%-branches boilerplate — exercises the Stencil registerHost guard.
     assert.match(out, /registerHost=false/);
-    assert.match(out, /customElements\.get\('cor-button'\)/);
+    assert.match(out, /customElements\.get\('mud-button'\)/);
   });
 
   it('emits event spy stubs per @Event', () => {
     const contract = makeContract({
       events: [
-        { name: 'corChange', eventName: 'corChange', payloadType: 'string' },
-        { name: 'corBlur', eventName: 'corBlur', payloadType: 'FocusEvent' },
+        { name: 'mudChange', eventName: 'mudChange', payloadType: 'string' },
+        { name: 'mudBlur', eventName: 'mudBlur', payloadType: 'FocusEvent' },
       ],
     });
     const out = generateSpecFile({ contract });
     assert.match(out, /describe\('events'/);
-    assert.match(out, /corChange: emits with payload/);
-    assert.match(out, /corBlur: emits with payload/);
+    assert.match(out, /mudChange: emits with payload/);
+    assert.match(out, /mudBlur: emits with payload/);
   });
 
   it('emits method stubs per @Method', () => {

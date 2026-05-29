@@ -13,10 +13,10 @@ When building an **organism** or **template**, create a Section Mapping Table be
 ```markdown
 | # | Figma Section | Sub-Component | Level | Props Needed | Notes |
 |---|---------------|---------------|-------|--------------|-------|
-| 1 | Search bar | cor-search | Atom | placeholder, size="lg" | Has clear button |
-| 2 | Filter row | cor-filter-group | Molecule | filters[], onFilterChange | Horizontal layout |
-| 3 | Data rows | cor-data-row | Molecule | columns, data, sortable | Repeating pattern |
-| 4 | Pagination | cor-pagination | Atom | currentPage, totalPages | Bottom of table |
+| 1 | Search bar | mud-search | Atom | placeholder, size="lg" | Has clear button |
+| 2 | Filter row | mud-filter-group | Molecule | filters[], onFilterChange | Horizontal layout |
+| 3 | Data rows | mud-data-row | Molecule | columns, data, sortable | Repeating pattern |
+| 4 | Pagination | mud-pagination | Atom | currentPage, totalPages | Bottom of table |
 ```
 
 **Workflow:**
@@ -30,10 +30,10 @@ When building an **organism** or **template**, create a Section Mapping Table be
 **Slot-based** (preferred for flexible organisms):
 
 ```html
-<cor-data-table>
-  <cor-search slot="toolbar"></cor-search>
-  <cor-pagination slot="footer"></cor-pagination>
-</cor-data-table>
+<mud-data-table>
+  <mud-search slot="toolbar"></mud-search>
+  <mud-pagination slot="footer"></mud-pagination>
+</mud-data-table>
 ```
 
 **Internal** (when organism owns all markup):
@@ -73,5 +73,5 @@ Every interactive component must implement **all applicable states**.
 - **Keyboard**: All interactive reachable via Tab, activatable via Enter/Space, dismissible via Escape
 - **Focus**: Visible `:focus-visible` ring on keyboard nav, no ring on mouse click
 - **Disabled**: `pointer-events: none` on container, `cursor: not-allowed` on host, reduced opacity via token
-- **Events**: `@Event()` with `cor` prefix (`corInputChange`, `corSelectChange`)
+- **Events**: `@Event()` with `cor` prefix (`mudInputChange`, `mudSelectChange`)
 - **Controlled**: Props drive state, events notify parent — no internal mutation of `@Prop()` values
