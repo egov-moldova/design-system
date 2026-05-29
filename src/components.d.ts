@@ -2719,7 +2719,7 @@ export namespace Components {
      */
     interface CorTabs {
         /**
-          * Accessible name for the tablist. Forwarded to the host's `aria-label`.
+          * Accessible name for the tablist. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -7476,7 +7476,7 @@ declare namespace LocalJSX {
      */
     interface CorTabs {
         /**
-          * Accessible name for the tablist. Forwarded to the host's `aria-label`.
+          * Accessible name for the tablist. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**

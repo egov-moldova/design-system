@@ -110,8 +110,8 @@
 }
 
 .chevron:focus-visible {
-  outline: 2px solid var(--tabs-focus-ring-outer-color);
-  outline-offset: -2px;
+  outline: var(--tabs-focus-ring-outer-width) solid var(--tabs-focus-ring-outer-color);
+  outline-offset: calc(-1 * var(--tabs-focus-ring-outer-width));
 }
 
 .chevron cor-icon {
