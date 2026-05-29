@@ -7,7 +7,10 @@
     },
     "header": {
       "minHeight": { "$value": "{spacing.48}", "$type": "dimension" },
-      "paddingInline": { "$value": "{spacing.24}", "$type": "dimension" },
+      "paddingInline": {
+        "desktop": { "$value": "{spacing.24}", "$type": "dimension", "$comment": "Per Figma table-header master (4930:14358) Desktop breakpoint." },
+        "mobile": { "$value": "{spacing.16}", "$type": "dimension", "$comment": "Per Figma table-header master (4930:14358) Mobile breakpoint." }
+      },
       "paddingBlock": { "$value": "{spacing.8}", "$type": "dimension" },
       "gap": { "$value": "{spacing.6}", "$type": "dimension" },
       "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
@@ -22,11 +25,19 @@
         "background": { "$value": "{color.background.base-inverse.default}", "$type": "color" },
         "color": { "$value": "{color.text.base-inverse.default}", "$type": "color" },
         "borderBottom": { "$value": "{color.background.base-inverse.default}", "$type": "color" }
+      },
+      "white": {
+        "background": { "$value": "{color.background.base.default}", "$type": "color", "$comment": "Per Figma 4946:23845 (Header Styles / white) — header background matches body. The bottom border is the only delimiter." },
+        "color": { "$value": "{color.text.base.default}", "$type": "color" },
+        "borderBottom": { "$value": "{color.border.base.default}", "$type": "color" }
       }
     },
     "cell": {
       "minHeight": { "$value": "{spacing.48}", "$type": "dimension" },
-      "paddingInline": { "$value": "{spacing.24}", "$type": "dimension" },
+      "paddingInline": {
+        "desktop": { "$value": "{spacing.24}", "$type": "dimension", "$comment": "Per Figma table-cell master (649:4296) Desktop breakpoint." },
+        "mobile": { "$value": "{spacing.16}", "$type": "dimension", "$comment": "Per Figma table-cell master (649:4296) Mobile breakpoint." }
+      },
       "paddingBlock": { "$value": "{spacing.8}", "$type": "dimension" },
       "gap": { "$value": "{spacing.6}", "$type": "dimension" },
       "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
@@ -59,16 +70,11 @@
       "offset": { "$value": "{borderWidth.1}", "$type": "dimension" },
       "color": { "$value": "{color.background.brand.focus-ring}", "$type": "color" }
     },
+    "selection": {
+      "columnWidth": { "$value": "{spacing.56}", "$type": "dimension", "$comment": "Fixed width of the leading checkbox column when `selectable` is set. 56px = 16+24+16 (paddingInline + checkbox box + paddingInline)." }
+    },
     "mobile": {
-      "card": {
-        "background": { "$value": "{color.background.base.default}", "$type": "color" },
-        "borderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" },
-        "borderColor": { "$value": "{color.border.base.default}", "$type": "color" },
-        "padding": { "$value": "{spacing.16}", "$type": "dimension" },
-        "gap": { "$value": "{spacing.8}", "$type": "dimension" }
-      },
-      "labelColor": { "$value": "{color.text.base.tertiary}", "$type": "color" },
-      "labelFontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" }
+      "breakpoint": { "$value": "640px", "$type": "dimension", "$comment": "Below this container-query width the table inline padding shrinks per Figma's Mobile breakpoint (24 → 16). Documented as a token for single-source-of-truth; container queries can't read CSS variables, so the literal lives in the CSS file as well." }
     },
     "empty": {
       "padding": { "$value": "{spacing.48}", "$type": "dimension" },

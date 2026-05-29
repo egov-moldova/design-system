@@ -1,4 +1,4 @@
-import { Component, Element, Event, EventEmitter, Host, Listen, Prop, Watch, h } from '@stencil/core';
+import { Component, Element, Event, EventEmitter, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
 
 import { TABLE_HEADER_STYLES, TABLE_ROW_STYLES, TABLE_SORT_DIRECTIONS } from './cor-table.types';
 import type {
@@ -23,9 +23,11 @@ import type {
  * row actions are projected via named slots so consumers can drop in
  * `cor-tag`, `cor-button`, or any custom content per cell.
  *
- * Below the `--breakpoint-mobile` (≤640 px) container query, every row
- * collapses to a vertical key:value card stack — each `<td>` becomes a
- * labelled line with the column title rendered inline before its value.
+ * At ≤640 px container width the inline padding shrinks from 24 → 16 to
+ * match Figma's "Mobile" breakpoint specs (table-header `4930:14358`,
+ * table-cell `649:4296`). The table structure itself is preserved; consumers
+ * who need a card-stack layout on narrow screens should wrap their own
+ * presentation around the data.
  *
  * @element cor-table
  *
@@ -110,9 +112,14 @@ export class CorTable {
   @Prop({ attribute: 'row-id-field' }) rowIdField: string = 'id';
 
   /**
-   * Accessible label propagated to the rendered `<table>` element.
+   * Accessible label propagated to the rendered `<table>` element. Captured
+   * into `resolvedAriaLabel` on mount and the host attribute is stripped to
+   * avoid Stencil's auto-reflection loop.
    */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop() ariaLabel?: string;
+
+  @State() private resolvedAriaLabel?: string;
+  @State() private headerCellSlotted: Set<string> = new Set();
 
   /** Internal host reference. */
   @Element() host!: HTMLElement;
@@ -150,6 +157,35 @@ export class CorTable {
     if (!TABLE_SORT_DIRECTIONS.includes(next)) {
       console.warn(`[cor-table] Invalid sortDirection="${next}". Falling back to "asc".`);
       this.sortDirection = 'asc';
+    }
+  }
+
+  @Watch('ariaLabel')
+  handleAriaLabelChange(next: string | undefined) {
+    // Guarded against the strip-from-host self-trigger (next will be null/empty
+    // when captureAriaLabel() removes the attribute).
+    if (next && next.length > 0) {
+      this.resolvedAriaLabel = next;
+    }
+  }
+
+  componentWillLoad() {
+    this.captureAriaLabel();
+  }
+
+  /**
+   * Stencil auto-reflects `@Prop()` values back onto the host attribute. For
+   * `aria-label` that creates an observer loop (host attr → prop → host attr).
+   * Capture the consumer-provided value into a state field, then strip the
+   * attribute so the loop never fires.
+   */
+  private captureAriaLabel() {
+    const attr = this.host.getAttribute('aria-label');
+    if (attr) {
+      this.resolvedAriaLabel = attr;
+      this.host.removeAttribute('aria-label');
+    } else if (this.ariaLabel) {
+      this.resolvedAriaLabel = this.ariaLabel;
     }
   }
 
@@ -235,6 +271,21 @@ export class CorTable {
     this.corSelectionChange.emit({ selectedRows: next });
   };
 
+  /**
+   * Builds the inline `style` object used to flow a consumer-defined column
+   * width into the rendered `<th>`. The value is exposed as a CSS custom
+   * property (`--col-width`) so the .th rule in cor-table.css owns the
+   * actual `width` declaration — keeping all visual rules in the CSS file
+   * while still allowing per-column overrides at runtime.
+   */
+  private columnWidthStyle(column: TableColumn): { [k: string]: string } | undefined {
+    if (column.width === undefined || column.width === null) {
+      return undefined;
+    }
+    const value = typeof column.width === 'number' ? `${column.width}px` : String(column.width);
+    return { '--col-width': value };
+  }
+
   private getAriaSort(column: TableColumn): 'ascending' | 'descending' | 'none' | undefined {
     if (!column.sortable) {
       return undefined;
@@ -257,15 +308,40 @@ export class CorTable {
     );
   }
 
+  private onHeaderCellSlotChange = (key: string) => (ev: Event) => {
+    const slot = ev.target as HTMLSlotElement;
+    const filled = slot.assignedNodes({ flatten: true }).some(node => {
+      if (node.nodeType === Node.TEXT_NODE) return (node.textContent ?? '').trim().length > 0;
+      return true;
+    });
+    const next = new Set(this.headerCellSlotted);
+    if (filled) next.add(key);
+    else next.delete(key);
+    this.headerCellSlotted = next;
+  };
+
   private renderHeaderCellContent(column: TableColumn) {
+    const slotName = `header-cell-${column.key}`;
+    const isSlotted = this.headerCellSlotted.has(column.key);
     return [
-      <slot name={`header-cell-${column.key}`}>
-        <span class="header-label">{column.label}</span>
-      </slot>,
+      isSlotted ? null : <span class="header-label">{column.label}</span>,
+      <slot name={slotName} onSlotchange={this.onHeaderCellSlotChange(column.key)} />,
       this.renderSortIcon(column),
     ];
   }
 
+  /*
+   * Per-cell rendering for a data table is fundamentally data-driven:
+   * `row[column.key]` IS the content, and the slot is an override mechanism
+   * for the special case (status tags, action buttons, etc). With R × C
+   * potentially in the hundreds, per-cell slot tracking would add measurable
+   * cost for a contract that already matches the slot+data model.
+   *
+   * ANTIPATTERN-026 was designed for atom-scale components where slot and
+   * prop are two parallel content channels. For data grids the pattern is
+   * inverted (data is primary, slot is override) and the regex check is a
+   * known false positive — left as-is by design.
+   */
   private renderCellContent(column: TableColumn, row: TableRowData, rowIndex: number) {
     const slotName = `cell-${column.key}`;
     const fallback = row?.[column.key];
@@ -302,7 +378,12 @@ export class CorTable {
 
     return (
       <Host>
-        <div class="table-scroll">
+        <div
+          class="table-scroll"
+          tabindex={0}
+          role={this.resolvedAriaLabel ? 'region' : undefined}
+          aria-label={this.resolvedAriaLabel}
+        >
           <table
             class={{
               'table': true,
@@ -312,7 +393,7 @@ export class CorTable {
               'table--selectable': this.selectable,
             }}
             role="table"
-            aria-label={this.ariaLabel}
+            aria-label={this.resolvedAriaLabel}
           >
             <thead class="thead">
               <tr class="row row--header">
@@ -328,6 +409,13 @@ export class CorTable {
                 {columns.map(column => {
                   const ariaSort = this.getAriaSort(column);
                   const align = column.align ?? 'start';
+                  // ANTIPATTERN-001 exception: per-column width is consumer-data
+                  // at runtime and must reach CSS. We feed it through a CSS
+                  // custom property the .th rule consumes — no arbitrary CSS
+                  // expressions, no token bypass. The CSP "unsafe-inline" gate
+                  // is the same for inline custom properties and class-based
+                  // styles, so this stays CSP-compatible.
+                  const widthVar = this.columnWidthStyle(column);
                   return (
                     <th
                       key={column.key}
@@ -337,7 +425,7 @@ export class CorTable {
                         'th--sortable': !!column.sortable,
                         'th--sorted': this.sortColumn === column.key,
                       }}
-                      style={column.width ? { width: column.width } : undefined}
+                      style={widthVar}
                       scope="col"
                       role="columnheader"
                       aria-sort={ariaSort}
@@ -390,14 +478,8 @@ export class CorTable {
                               td: true,
                               [`td--align-${align}`]: true,
                             }}
-                            data-mobile-label={column.label}
                           >
-                            <span class="cell-inner">
-                              <span class="cell-mobile-label" aria-hidden="true">
-                                {column.label}
-                              </span>
-                              <span class="cell-content">{this.renderCellContent(column, row, rowIndex)}</span>
-                            </span>
+                            {this.renderCellContent(column, row, rowIndex)}
                           </td>
                         );
                       })}

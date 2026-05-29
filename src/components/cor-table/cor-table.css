@@ -34,6 +34,17 @@
   background: var(--table-container-background);
 }
 
+/*
+ * Per WCAG SC 2.1.1 — a scrollable region must be keyboard-focusable so
+ * keyboard users can scroll it with arrow keys. tabindex="0" makes that
+ * possible; focus-visible adds a brand-coloured outline that mirrors the
+ * sortable-header focus treatment.
+ */
+.table-scroll:focus-visible {
+  outline: var(--table-focus-ring-width) solid var(--table-focus-ring-color);
+  outline-offset: var(--table-focus-ring-offset);
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -58,10 +69,14 @@
   background: var(--table-header-inverted-background);
 }
 
+.table--header-white .row--header {
+  background: var(--table-header-white-background);
+}
+
 .th {
   min-height: var(--table-header-min-height);
   height: var(--table-header-min-height);
-  padding-inline: var(--table-header-padding-inline);
+  padding-inline: var(--table-header-padding-inline-desktop);
   padding-block: var(--table-header-padding-block);
   font-size: var(--table-header-font-size);
   font-weight: var(--table-header-font-weight);
@@ -91,8 +106,17 @@
   text-align: end;
 }
 
+/*
+ * Consumer-defined per-column widths are flowed in via a `--col-width` custom
+ * property on the .th's inline style (see columnWidthStyle()). The actual
+ * `width` declaration stays in CSS so visual rules remain tokenized.
+ */
+.th {
+  width: var(--col-width, auto);
+}
+
 .th--selection {
-  width: 56px;
+  width: var(--table-selection-column-width);
   padding-inline: var(--spacing-16);
   text-align: center;
 }
@@ -212,7 +236,7 @@
 .td {
   min-height: var(--table-cell-min-height);
   height: var(--table-cell-min-height);
-  padding-inline: var(--table-cell-padding-inline);
+  padding-inline: var(--table-cell-padding-inline-desktop);
   padding-block: var(--table-cell-padding-block);
   font-size: var(--table-cell-font-size);
   font-weight: var(--table-cell-font-weight);
@@ -235,44 +259,9 @@
 }
 
 .td--selection {
-  width: 56px;
+  width: var(--table-selection-column-width);
   padding-inline: var(--spacing-16);
   text-align: center;
-}
-
-.cell-inner {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--table-cell-gap);
-  width: 100%;
-  min-width: 0;
-}
-
-.td--align-center .cell-inner {
-  justify-content: center;
-}
-
-.td--align-end .cell-inner {
-  justify-content: flex-end;
-}
-
-.cell-content {
-  flex: 1 1 auto;
-  min-width: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--table-cell-gap);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.td--align-end .cell-content {
-  justify-content: flex-end;
-}
-
-.td--align-center .cell-content {
-  justify-content: center;
 }
 
 .cell-text {
@@ -281,16 +270,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 100%;
-}
-
-.cell-mobile-label {
-  display: none;
-  font-weight: var(--table-mobile-label-font-weight);
-  color: var(--table-mobile-label-color);
-  font-size: var(--table-cell-font-size);
-  line-height: var(--table-cell-line-height);
-  margin-inline-end: var(--spacing-8);
-  flex-shrink: 0;
 }
 
 /* ---------------------------------------------------------------------------
@@ -313,8 +292,11 @@
 }
 
 /* ---------------------------------------------------------------------------
- * Mobile layout — card per row.
- * Uses container queries so a narrow host collapses regardless of viewport.
+ * Mobile breakpoint — tighter inline padding per Figma masters
+ * 4930:14358 (table-header) and 649:4296 (table-cell). Below the container
+ * width threshold the table stays a table (with horizontal scroll provided
+ * by .table-scroll) but the inline padding shrinks from 24 → 16 to match
+ * Figma's Mobile breakpoint specs.
  * ------------------------------------------------------------------------- */
 
 :host {
@@ -323,78 +305,11 @@
 }
 
 @container cor-table (max-width: 640px) {
-  .table,
-  .thead,
-  .tbody,
-  .row,
-  .th,
-  .td {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-
-  .row--header {
-    position: absolute;
-    inset-inline-start: -10000px;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-  }
-
-  .row--body {
-    display: flex;
-    flex-direction: column;
-    gap: var(--table-mobile-card-gap);
-    padding: var(--table-mobile-card-padding);
-    margin-bottom: var(--spacing-12);
-    border-radius: var(--table-mobile-card-border-radius);
-    border: 1px solid var(--table-mobile-card-border-color);
-    background: var(--table-mobile-card-background);
-  }
-
-  .table--rows-divided .row--body .td {
-    border-bottom: none;
+  .th {
+    padding-inline: var(--table-header-padding-inline-mobile);
   }
 
   .td {
-    padding: 0;
-    min-height: 0;
-    height: auto;
-  }
-
-  .td--selection {
-    width: auto;
-    padding: 0;
-    text-align: start;
-  }
-
-  .cell-inner {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    gap: var(--spacing-12);
-  }
-
-  .cell-mobile-label {
-    display: inline-flex;
-    flex-shrink: 0;
-  }
-
-  .cell-content {
-    flex: 1 1 auto;
-    justify-content: flex-end;
-    white-space: normal;
-    text-align: end;
-  }
-
-  .td--align-start .cell-content,
-  .td--align-end .cell-content,
-  .td--align-center .cell-content {
-    justify-content: flex-end;
-  }
-
-  .empty-cell {
-    padding: var(--spacing-24);
+    padding-inline: var(--table-cell-padding-inline-mobile);
   }
 }

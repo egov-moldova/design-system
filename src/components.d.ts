@@ -2635,14 +2635,16 @@ export namespace Components {
      * for the selection column, `cor-icon` for sort chevrons. Status badges and
      * row actions are projected via named slots so consumers can drop in
      * `cor-tag`, `cor-button`, or any custom content per cell.
-     * Below the `--breakpoint-mobile` (≤640 px) container query, every row
-     * collapses to a vertical key:value card stack — each `<td>` becomes a
-     * labelled line with the column title rendered inline before its value.
+     * At ≤640 px container width the inline padding shrinks from 24 → 16 to
+     * match Figma's "Mobile" breakpoint specs (table-header `4930:14358`,
+     * table-cell `649:4296`). The table structure itself is preserved; consumers
+     * who need a card-stack layout on narrow screens should wrap their own
+     * presentation around the data.
      * @element cor-table
      */
     interface CorTable {
         /**
-          * Accessible label propagated to the rendered `<table>` element.
+          * Accessible label propagated to the rendered `<table>` element. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -4232,9 +4234,11 @@ declare global {
      * for the selection column, `cor-icon` for sort chevrons. Status badges and
      * row actions are projected via named slots so consumers can drop in
      * `cor-tag`, `cor-button`, or any custom content per cell.
-     * Below the `--breakpoint-mobile` (≤640 px) container query, every row
-     * collapses to a vertical key:value card stack — each `<td>` becomes a
-     * labelled line with the column title rendered inline before its value.
+     * At ≤640 px container width the inline padding shrinks from 24 → 16 to
+     * match Figma's "Mobile" breakpoint specs (table-header `4930:14358`,
+     * table-cell `649:4296`). The table structure itself is preserved; consumers
+     * who need a card-stack layout on narrow screens should wrap their own
+     * presentation around the data.
      * @element cor-table
      */
     interface HTMLCorTableElement extends Components.CorTable, HTMLStencilElement {
@@ -7376,14 +7380,16 @@ declare namespace LocalJSX {
      * for the selection column, `cor-icon` for sort chevrons. Status badges and
      * row actions are projected via named slots so consumers can drop in
      * `cor-tag`, `cor-button`, or any custom content per cell.
-     * Below the `--breakpoint-mobile` (≤640 px) container query, every row
-     * collapses to a vertical key:value card stack — each `<td>` becomes a
-     * labelled line with the column title rendered inline before its value.
+     * At ≤640 px container width the inline padding shrinks from 24 → 16 to
+     * match Figma's "Mobile" breakpoint specs (table-header `4930:14358`,
+     * table-cell `649:4296`). The table structure itself is preserved; consumers
+     * who need a card-stack layout on narrow screens should wrap their own
+     * presentation around the data.
      * @element cor-table
      */
     interface CorTable {
         /**
-          * Accessible label propagated to the rendered `<table>` element.
+          * Accessible label propagated to the rendered `<table>` element. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -8910,9 +8916,11 @@ declare module "@stencil/core" {
              * for the selection column, `cor-icon` for sort chevrons. Status badges and
              * row actions are projected via named slots so consumers can drop in
              * `cor-tag`, `cor-button`, or any custom content per cell.
-             * Below the `--breakpoint-mobile` (≤640 px) container query, every row
-             * collapses to a vertical key:value card stack — each `<td>` becomes a
-             * labelled line with the column title rendered inline before its value.
+             * At ≤640 px container width the inline padding shrinks from 24 → 16 to
+             * match Figma's "Mobile" breakpoint specs (table-header `4930:14358`,
+             * table-cell `649:4296`). The table structure itself is preserved; consumers
+             * who need a card-stack layout on narrow screens should wrap their own
+             * presentation around the data.
              * @element cor-table
              */
             "cor-table": LocalJSX.IntrinsicElements["cor-table"] & JSXBase.HTMLAttributes<HTMLCorTableElement>;

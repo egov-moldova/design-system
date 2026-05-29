@@ -300,6 +300,47 @@ export const Hoverable: Story = {
     ),
 };
 
+export const AllDataTypes: Story = {
+  name: 'AllDataTypes',
+  render: () => {
+    // Mirrors the 5 cell data types from Figma 653:9544: text, number,
+    // status-tag, checkbox (per-cell), action. All five are consumer
+    // composition patterns over the same <td> primitive — no API change
+    // needed; alignment + slot content do the work.
+    const columns: TableColumn[] = [
+      { key: 'name', label: 'Text' },
+      { key: 'amount', label: 'Number', align: 'end' },
+      { key: 'status', label: 'Status tag' },
+      { key: 'verified', label: 'Checkbox', align: 'center' },
+      { key: 'actions', label: 'Action', align: 'end' },
+    ];
+    const rows: TableRowData[] = [
+      { id: 'r1', name: 'Alexandra Pop', amount: '1.250 MDL', status: 'platit', verified: true },
+      { id: 'r2', name: 'Mihai Ionescu', amount: '480 MDL', status: 'asteptare', verified: false },
+      { id: 'r3', name: 'Diana Cojocaru', amount: '3.120 MDL', status: 'platit', verified: true },
+    ];
+    const slots = rows
+      .map((row, idx) => {
+        const tag = statusTagMap[String(row.status)];
+        return /*html*/ `
+          <cor-tag slot="cell-status-${idx}" semantic="${tag.semantic}" size="md">${tag.label}</cor-tag>
+          <cor-checkbox slot="cell-verified-${idx}" ${row.verified ? 'checked' : ''} aria-label="Confirmat"></cor-checkbox>
+          <cor-button slot="cell-actions-${idx}" appearance="text" size="sm" icon-only label="Editează">
+            <cor-icon name="edit" size="20"></cor-icon>
+          </cor-button>
+        `;
+      })
+      .join('');
+    return wrap(
+      group(
+        'All 5 data types — text, number (right-aligned), status-tag, checkbox, action',
+        renderTable('tbl-datatypes', columns, rows, { rowStyle: 'divided' }, slots),
+        'Mirrors Figma 653:9544 — each data type is a consumer composition pattern over the same <td>. Numbers use `align: "end"`; checkbox + action use `align: "center"` / `"end"` with slot overrides.',
+      ),
+    );
+  },
+};
+
 export const EmptyState: Story = {
   name: 'EmptyState',
   render: () =>
