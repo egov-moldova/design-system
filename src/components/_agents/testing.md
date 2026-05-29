@@ -47,7 +47,7 @@ Coverage v8 only instruments code that goes through Vite's transform pipeline. S
 | Path | Transformed by Vite? | Coverage sees source? |
 |---|---|---|
 | `dist/design-system/design-system.esm.js` (lazy bundle) | ❌ — pre-compiled JS, loaded via `await import()` at runtime | ❌ **0%** for every TSX |
-| Direct TSX import (e.g. `import '../cor-spinner';`) — handled by `stencilVitestPlugin` in `vitest.config.mts` | ✅ — compiled on-the-fly with `componentExport: 'customelement'`; `customElements.define()` is appended automatically | ✅ Real per-file % |
+| Direct TSX import (e.g. `import '../mud-spinner';`) — handled by `stencilVitestPlugin` in `vitest.config.mts` | ✅ — compiled on-the-fly with `componentExport: 'customelement'`; `customElements.define()` is appended automatically | ✅ Real per-file % |
 
 ### The rule
 
@@ -131,7 +131,7 @@ const Component = class extends HTMLElement {
 //   if (!customElements.get(tag)) { customElements.define(tag, Component); }
 ```
 
-The "else" of `registerHost !== false` is only taken if the constructor is called with `false` — which the normal `render(<cor-x />)` path never does.
+The "else" of `registerHost !== false` is only taken if the constructor is called with `false` — which the normal `render(<mud-x />)` path never does.
 
 ### The two coverage paths
 
@@ -199,7 +199,7 @@ When the component reaches 100% across all four metrics, v8's text reporter **hi
 - ❌ `import { newSpecPage } from '@stencil/core/testing';` — Jest harness, retired.
 - ❌ `import { axe, toHaveNoViolations } from 'jest-axe';` — incompatible with mock-doc; use Storybook `addon-a11y` for visual axe.
 - ❌ Forgetting the side-effect source import — silent 0% coverage.
-- ❌ Importing the component class (`import { CorSpinner } from '../cor-spinner';`) — works but bypasses the plugin's `customElements.define()` injection. Use the bare side-effect form.
+- ❌ Importing the component class (`import { MudSpinner } from '../mud-spinner';`) — works but bypasses the plugin's `customElements.define()` injection. Use the bare side-effect form.
 - ❌ String `html` template literal as `render()` arg — only JSX is supported.
 - ❌ `vi.fn()` + manual `addEventListener` when `spyOnEvent` exists.
 

@@ -16,7 +16,7 @@
  * dedicated check functions.
  *
  * Usage:
- *   node scripts/audit/02-stencil-antipatterns.mjs cor-button [--json] [--out file]
+ *   node scripts/audit/02-stencil-antipatterns.mjs mud-button [--json] [--out file]
  *   node scripts/audit/02-stencil-antipatterns.mjs --all --json
  *
  * Output JSON envelope: see scripts/audit/lib/json-output.mjs (schemaVersion 1.0.0).
@@ -136,9 +136,9 @@ export const PATTERNS = [
     severity: 'warning',
     scope: 'tsx',
     regex: /<svg\b/,
-    message: 'Raw `<svg>` in JSX — use <cor-icon> component for consistency and accessibility.',
-    fix: 'Replace with <cor-icon name="..."/> or add a local icon to src/assets/icons/.',
-    filter: ({ componentName }) => componentName !== 'cor-icon' && componentName !== 'cor-illustration',
+    message: 'Raw `<svg>` in JSX — use <mud-icon> component for consistency and accessibility.',
+    fix: 'Replace with <mud-icon name="..."/> or add a local icon to src/assets/icons/.',
+    filter: ({ componentName }) => componentName !== 'mud-icon' && componentName !== 'mud-illustration',
   },
   {
     code: 'ANTIPATTERN-SECURITY-INNERHTML',
@@ -295,16 +295,16 @@ export const FILE_CHECKS = [
           const m = lines[j].match(/^\s*(?:private\s+|public\s+|readonly\s+)?(\w+)\s*[!:]/);
           if (!m) continue;
           const fieldName = m[1];
-          if (!/^cor[A-Z]/.test(fieldName)) {
+          if (!/^mud[A-Z]/.test(fieldName)) {
             findings.push(
               finding({
                 severity: 'error',
                 code: 'ANTIPATTERN-025-EVENT-PREFIX',
                 file: ctx.fileRel,
                 line: j + 1,
-                message: `@Event field "${fieldName}" does not start with cor + PascalCase — project convention.`,
+                message: `@Event field "${fieldName}" does not start with mud + PascalCase — project convention.`,
                 snippet: lines[j].trim().slice(0, 120),
-                fix: 'Rename the @Event field to start with `cor` + PascalCase (e.g., corChange, corClick).',
+                fix: 'Rename the @Event field to start with `mud` + PascalCase (e.g., mudChange, mudClick).',
               }),
             );
           }
@@ -314,7 +314,7 @@ export const FILE_CHECKS = [
       return findings;
     },
   },
-  // ─── Asset-loader patterns (lessons from cor-logo audit, 2026-05) ──────────
+  // ─── Asset-loader patterns (lessons from mud-logo audit, 2026-05) ──────────
   {
     // A component that participates in the ARIA tree (declares `ariaLabel`)
     // must keep its host attribute set even when the render bails — otherwise
@@ -400,12 +400,12 @@ export const FILE_CHECKS = [
   {
     // Slot-first content rule (see src/components/_agents/slot-patterns.md).
     // Visible content must come from the slot — not from a parallel `@Prop()`
-    // rendered as the slot's fallback child. Reference: cor-button keeps
+    // rendered as the slot's fallback child. Reference: mud-button keeps
     // `label` as ARIA-only; the visible label lives in the default <slot>.
     //
     // Detection: any <slot ...>...</slot> whose inner contains a JSX
     // expression `{...}`. Static-element fallbacks (e.g. `<slot name="icon">
-    // <cor-icon name="default" /></slot>`) are allowed and pass through.
+    // <mud-icon name="default" /></slot>`) are allowed and pass through.
     code: 'ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK',
     severity: 'warning',
     scope: 'tsx',

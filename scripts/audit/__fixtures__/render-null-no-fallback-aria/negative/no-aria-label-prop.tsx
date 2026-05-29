@@ -3,8 +3,8 @@
 // legitimate here.
 import { Component, Host, Prop, h } from '@stencil/core';
 
-@Component({ tag: 'cor-test-no-aria-label', shadow: true })
-export class CorTestNoAriaLabel {
+@Component({ tag: 'mud-test-no-aria-label', shadow: true })
+export class MudTestNoAriaLabel {
   @Prop() enabled: boolean = true;
 
   render() {

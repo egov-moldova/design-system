@@ -23,8 +23,8 @@
  *
  * Usage:
  *   yarn sp.dev.watch
- *   node scripts/audit/10-contrast-pairs.mjs cor-button --json
- *   node scripts/audit/10-contrast-pairs.mjs cor-input --story-id atoms-input--default --json
+ *   node scripts/audit/10-contrast-pairs.mjs mud-button --json
+ *   node scripts/audit/10-contrast-pairs.mjs mud-input --story-id atoms-input--default --json
  */
 import { fileURLToPath } from 'node:url';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';

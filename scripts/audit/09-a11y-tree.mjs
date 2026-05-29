@@ -19,8 +19,8 @@
  *
  * Usage:
  *   yarn sp.dev.watch
- *   node scripts/audit/09-a11y-tree.mjs cor-button --json
- *   node scripts/audit/09-a11y-tree.mjs cor-button --story-id atoms-button--default --json
+ *   node scripts/audit/09-a11y-tree.mjs mud-button --json
+ *   node scripts/audit/09-a11y-tree.mjs mud-button --story-id atoms-button--default --json
  */
 import { fileURLToPath } from 'node:url';
 import { parseAuditArgs, defaultUsage } from './lib/cli-args.mjs';

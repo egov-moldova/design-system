@@ -6,7 +6,7 @@ Two CSS patterns for Stencil Shadow DOM components and key CSS rules. **Read whe
 
 ---
 
-## Pattern A: Shadow DOM + Slotted Content (cor-button style)
+## Pattern A: Shadow DOM + Slotted Content (mud-button style)
 
 Use when the component wraps user-provided elements via `<slot />`.
 
@@ -47,7 +47,7 @@ Use when the component wraps user-provided elements via `<slot />`.
 
 ---
 
-## Pattern B: Internal DOM (cor-input style)
+## Pattern B: Internal DOM (mud-input style)
 
 Use when the component renders its own internal markup.
 

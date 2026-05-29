@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
  * Restore `viewBox` on every SVG inside
- * `src/components/cor-icon/assets/{12,16,20,24}/*.svg` based on the SVG's own
+ * `src/components/mud-icon/assets/{12,16,20,24}/*.svg` based on the SVG's own
  * `width` and `height` attributes.
  *
  * Why: SVGO and other optimizers strip `viewBox` aggressively (they assume
- * the consumer sets it). cor-icon depends on `viewBox` to scale the icon
+ * the consumer sets it). mud-icon depends on `viewBox` to scale the icon
  * correctly inside the host element. Run this script after any optimization
  * pass to re-attach the canonical `viewBox`.
  *
@@ -28,7 +28,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-const ASSETS_ROOT = path.join(PROJECT_ROOT, 'src/components/cor-icon/assets');
+const ASSETS_ROOT = path.join(PROJECT_ROOT, 'src/components/mud-icon/assets');
 const SIZES = [12, 16, 20, 24];
 
 const SVG_OPEN_TAG_RE = /<svg\b([^>]*?)(\s*\/?)>/i;

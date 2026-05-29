@@ -5,101 +5,101 @@
  * It contains typing information for all components that exist in this project.
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
-import { AccordionAppearance, AccordionChangeDetail, AccordionIconPosition, AccordionItemDescriptor, AccordionMode, AccordionSize } from "./components/cor-accordion/cor-accordion.types";
-import { AvatarSize, AvatarType } from "./components/cor-avatar/cor-avatar.types";
-import { BadgeSize, BadgeType, BadgeVariant } from "./components/cor-badge/cor-badge.types";
-import { BreadcrumbItem, BreadcrumbSelectDetail } from "./components/cor-breadcrumb/cor-breadcrumb.types";
-import { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/cor-button/cor-button.types";
-import { ButtonGroupOrientation } from "./components/cor-button-group/cor-button-group.types";
-import { CheckboxChangeDetail, CheckboxSize } from "./components/cor-checkbox/cor-checkbox.types";
-import { ChipSelectEventDetail, ChipSize, ChipType } from "./components/cor-chip/cor-chip.types";
-import { CookieBannerPosition, CookieBannerVariant, CookieCategory, CookieConsentDetail } from "./components/cor-cookie-banner/cor-cookie-banner.types";
-import { DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/cor-date-input/cor-date-input.types";
-import { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerMode, DatePickerMonthChangeDetail } from "./components/cor-date-picker/cor-date-picker.types";
-import { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize } from "./components/cor-file-input/cor-file-input.types";
-import { FileItemRemoveDetail, FileItemState } from "./components/cor-file-item/cor-file-item.types";
-import { FooterContact, FooterLocale, FooterLocaleChangeDetail, FooterPartner, FooterSection, FooterSocial, FooterVariant } from "./components/cor-footer/cor-footer.types";
-import { IconSize } from "./components/cor-icon/cor-icon.types";
-import { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/cor-input/cor-input.types";
-import { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/cor-input-chip/cor-input-chip.types";
-import { LinkSize, LinkUnderline, LinkVariant } from "./components/cor-link/cor-link.types";
-import { LogoName } from "./components/cor-logo/cor-logo.types";
-import { ModalActionsLayout, ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/cor-modal/cor-modal.types";
-import { NotificationStyle, NotificationVariant } from "./components/cor-notification/cor-notification.types";
-import { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/cor-numeric-input/cor-numeric-input.types";
-import { PaginationChangeDetail, PaginationSize } from "./components/cor-pagination/cor-pagination.types";
-import { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/cor-phone-input/cor-phone-input.types";
-import { ProgressTrackerOrientation, ProgressTrackerStep, ProgressTrackerStepClickDetail } from "./components/cor-progress-tracker/cor-progress-tracker.types";
-import { RadioChangeDetail, RadioSize } from "./components/cor-radio/cor-radio.types";
-import { ReceiptActionDetail, ReceiptParty, ReceiptService, ReceiptStatus } from "./components/cor-receipt/cor-receipt.types";
-import { SearchInputCircularChangeDetail, SearchInputCircularSearchDetail, SearchInputCircularSize, SearchInputCircularVariant } from "./components/cor-search-input-circular/cor-search-input-circular.types";
-import { SearchInputRectangularChangeDetail, SearchInputRectangularSearchDetail, SearchInputRectangularSize, SearchInputRectangularVariant } from "./components/cor-search-input-rectangular/cor-search-input-rectangular.types";
-import { SegmentedControlChangeDetail, SegmentedControlSegment, SegmentedControlSize } from "./components/cor-segmented-control/cor-segmented-control.types";
-import { SelectChangeDetail, SelectInputSize, SelectInputVariant, SelectOption } from "./components/cor-select-input/cor-select-input.types";
-import { SeparatorOrientation, SeparatorSize, SeparatorVariant } from "./components/cor-separator/cor-separator.types";
-import { ServiceButtonAppearance, ServiceButtonType } from "./components/cor-service-button/cor-service-button.types";
-import { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
-import { SwitchChangeDetail } from "./components/cor-switch/cor-switch.types";
-import { TableColumn, TableHeaderStyle, TableRowClickDetail, TableRowData, TableRowStyle, TableSelectionChangeDetail, TableSortChangeDetail, TableSortDirection } from "./components/cor-table/cor-table.types";
-import { TabDescriptor, TabsChangeDetail, TabsSize } from "./components/cor-tabs/cor-tabs.types";
-import { TagSemantic, TagSize, TagType, TagVariant } from "./components/cor-tag/cor-tag.types";
-import { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from "./components/cor-textarea/cor-textarea.types";
-import { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, TooltipVariant } from "./components/cor-tooltip/cor-tooltip.types";
-export { AccordionAppearance, AccordionChangeDetail, AccordionIconPosition, AccordionItemDescriptor, AccordionMode, AccordionSize } from "./components/cor-accordion/cor-accordion.types";
-export { AvatarSize, AvatarType } from "./components/cor-avatar/cor-avatar.types";
-export { BadgeSize, BadgeType, BadgeVariant } from "./components/cor-badge/cor-badge.types";
-export { BreadcrumbItem, BreadcrumbSelectDetail } from "./components/cor-breadcrumb/cor-breadcrumb.types";
-export { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/cor-button/cor-button.types";
-export { ButtonGroupOrientation } from "./components/cor-button-group/cor-button-group.types";
-export { CheckboxChangeDetail, CheckboxSize } from "./components/cor-checkbox/cor-checkbox.types";
-export { ChipSelectEventDetail, ChipSize, ChipType } from "./components/cor-chip/cor-chip.types";
-export { CookieBannerPosition, CookieBannerVariant, CookieCategory, CookieConsentDetail } from "./components/cor-cookie-banner/cor-cookie-banner.types";
-export { DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/cor-date-input/cor-date-input.types";
-export { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerMode, DatePickerMonthChangeDetail } from "./components/cor-date-picker/cor-date-picker.types";
-export { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize } from "./components/cor-file-input/cor-file-input.types";
-export { FileItemRemoveDetail, FileItemState } from "./components/cor-file-item/cor-file-item.types";
-export { FooterContact, FooterLocale, FooterLocaleChangeDetail, FooterPartner, FooterSection, FooterSocial, FooterVariant } from "./components/cor-footer/cor-footer.types";
-export { IconSize } from "./components/cor-icon/cor-icon.types";
-export { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/cor-input/cor-input.types";
-export { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/cor-input-chip/cor-input-chip.types";
-export { LinkSize, LinkUnderline, LinkVariant } from "./components/cor-link/cor-link.types";
-export { LogoName } from "./components/cor-logo/cor-logo.types";
-export { ModalActionsLayout, ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/cor-modal/cor-modal.types";
-export { NotificationStyle, NotificationVariant } from "./components/cor-notification/cor-notification.types";
-export { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/cor-numeric-input/cor-numeric-input.types";
-export { PaginationChangeDetail, PaginationSize } from "./components/cor-pagination/cor-pagination.types";
-export { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/cor-phone-input/cor-phone-input.types";
-export { ProgressTrackerOrientation, ProgressTrackerStep, ProgressTrackerStepClickDetail } from "./components/cor-progress-tracker/cor-progress-tracker.types";
-export { RadioChangeDetail, RadioSize } from "./components/cor-radio/cor-radio.types";
-export { ReceiptActionDetail, ReceiptParty, ReceiptService, ReceiptStatus } from "./components/cor-receipt/cor-receipt.types";
-export { SearchInputCircularChangeDetail, SearchInputCircularSearchDetail, SearchInputCircularSize, SearchInputCircularVariant } from "./components/cor-search-input-circular/cor-search-input-circular.types";
-export { SearchInputRectangularChangeDetail, SearchInputRectangularSearchDetail, SearchInputRectangularSize, SearchInputRectangularVariant } from "./components/cor-search-input-rectangular/cor-search-input-rectangular.types";
-export { SegmentedControlChangeDetail, SegmentedControlSegment, SegmentedControlSize } from "./components/cor-segmented-control/cor-segmented-control.types";
-export { SelectChangeDetail, SelectInputSize, SelectInputVariant, SelectOption } from "./components/cor-select-input/cor-select-input.types";
-export { SeparatorOrientation, SeparatorSize, SeparatorVariant } from "./components/cor-separator/cor-separator.types";
-export { ServiceButtonAppearance, ServiceButtonType } from "./components/cor-service-button/cor-service-button.types";
-export { SpinnerSize, SpinnerVariant } from "./components/cor-spinner/cor-spinner.types";
-export { SwitchChangeDetail } from "./components/cor-switch/cor-switch.types";
-export { TableColumn, TableHeaderStyle, TableRowClickDetail, TableRowData, TableRowStyle, TableSelectionChangeDetail, TableSortChangeDetail, TableSortDirection } from "./components/cor-table/cor-table.types";
-export { TabDescriptor, TabsChangeDetail, TabsSize } from "./components/cor-tabs/cor-tabs.types";
-export { TagSemantic, TagSize, TagType, TagVariant } from "./components/cor-tag/cor-tag.types";
-export { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from "./components/cor-textarea/cor-textarea.types";
-export { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, TooltipVariant } from "./components/cor-tooltip/cor-tooltip.types";
+import { AccordionAppearance, AccordionChangeDetail, AccordionIconPosition, AccordionItemDescriptor, AccordionMode, AccordionSize } from "./components/mud-accordion/mud-accordion.types";
+import { AvatarSize, AvatarType } from "./components/mud-avatar/mud-avatar.types";
+import { BadgeSize, BadgeType, BadgeVariant } from "./components/mud-badge/mud-badge.types";
+import { BreadcrumbItem, BreadcrumbSelectDetail } from "./components/mud-breadcrumb/mud-breadcrumb.types";
+import { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/mud-button/mud-button.types";
+import { ButtonGroupOrientation } from "./components/mud-button-group/mud-button-group.types";
+import { CheckboxChangeDetail, CheckboxSize } from "./components/mud-checkbox/mud-checkbox.types";
+import { ChipSelectEventDetail, ChipSize, ChipType } from "./components/mud-chip/mud-chip.types";
+import { CookieBannerPosition, CookieBannerVariant, CookieCategory, CookieConsentDetail } from "./components/mud-cookie-banner/mud-cookie-banner.types";
+import { DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
+import { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerMode, DatePickerMonthChangeDetail } from "./components/mud-date-picker/mud-date-picker.types";
+import { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize } from "./components/mud-file-input/mud-file-input.types";
+import { FileItemRemoveDetail, FileItemState } from "./components/mud-file-item/mud-file-item.types";
+import { FooterContact, FooterLocale, FooterLocaleChangeDetail, FooterPartner, FooterSection, FooterSocial, FooterVariant } from "./components/mud-footer/mud-footer.types";
+import { IconSize } from "./components/mud-icon/mud-icon.types";
+import { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/mud-input/mud-input.types";
+import { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/mud-input-chip/mud-input-chip.types";
+import { LinkSize, LinkUnderline, LinkVariant } from "./components/mud-link/mud-link.types";
+import { LogoName } from "./components/mud-logo/mud-logo.types";
+import { ModalActionsLayout, ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/mud-modal/mud-modal.types";
+import { NotificationStyle, NotificationVariant } from "./components/mud-notification/mud-notification.types";
+import { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/mud-numeric-input/mud-numeric-input.types";
+import { PaginationChangeDetail, PaginationSize } from "./components/mud-pagination/mud-pagination.types";
+import { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/mud-phone-input/mud-phone-input.types";
+import { ProgressTrackerOrientation, ProgressTrackerStep, ProgressTrackerStepClickDetail } from "./components/mud-progress-tracker/mud-progress-tracker.types";
+import { RadioChangeDetail, RadioSize } from "./components/mud-radio/mud-radio.types";
+import { ReceiptActionDetail, ReceiptParty, ReceiptService, ReceiptStatus } from "./components/mud-receipt/mud-receipt.types";
+import { SearchInputCircularChangeDetail, SearchInputCircularSearchDetail, SearchInputCircularSize, SearchInputCircularVariant } from "./components/mud-search-input-circular/mud-search-input-circular.types";
+import { SearchInputRectangularChangeDetail, SearchInputRectangularSearchDetail, SearchInputRectangularSize, SearchInputRectangularVariant } from "./components/mud-search-input-rectangular/mud-search-input-rectangular.types";
+import { SegmentedControlChangeDetail, SegmentedControlSegment, SegmentedControlSize } from "./components/mud-segmented-control/mud-segmented-control.types";
+import { SelectChangeDetail, SelectInputSize, SelectInputVariant, SelectOption } from "./components/mud-select-input/mud-select-input.types";
+import { SeparatorOrientation, SeparatorSize, SeparatorVariant } from "./components/mud-separator/mud-separator.types";
+import { ServiceButtonAppearance, ServiceButtonType } from "./components/mud-service-button/mud-service-button.types";
+import { SpinnerSize, SpinnerVariant } from "./components/mud-spinner/mud-spinner.types";
+import { SwitchChangeDetail } from "./components/mud-switch/mud-switch.types";
+import { TableColumn, TableHeaderStyle, TableRowClickDetail, TableRowData, TableRowStyle, TableSelectionChangeDetail, TableSortChangeDetail, TableSortDirection } from "./components/mud-table/mud-table.types";
+import { TabDescriptor, TabsChangeDetail, TabsSize } from "./components/mud-tabs/mud-tabs.types";
+import { TagSemantic, TagSize, TagType, TagVariant } from "./components/mud-tag/mud-tag.types";
+import { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from "./components/mud-textarea/mud-textarea.types";
+import { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, TooltipVariant } from "./components/mud-tooltip/mud-tooltip.types";
+export { AccordionAppearance, AccordionChangeDetail, AccordionIconPosition, AccordionItemDescriptor, AccordionMode, AccordionSize } from "./components/mud-accordion/mud-accordion.types";
+export { AvatarSize, AvatarType } from "./components/mud-avatar/mud-avatar.types";
+export { BadgeSize, BadgeType, BadgeVariant } from "./components/mud-badge/mud-badge.types";
+export { BreadcrumbItem, BreadcrumbSelectDetail } from "./components/mud-breadcrumb/mud-breadcrumb.types";
+export { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/mud-button/mud-button.types";
+export { ButtonGroupOrientation } from "./components/mud-button-group/mud-button-group.types";
+export { CheckboxChangeDetail, CheckboxSize } from "./components/mud-checkbox/mud-checkbox.types";
+export { ChipSelectEventDetail, ChipSize, ChipType } from "./components/mud-chip/mud-chip.types";
+export { CookieBannerPosition, CookieBannerVariant, CookieCategory, CookieConsentDetail } from "./components/mud-cookie-banner/mud-cookie-banner.types";
+export { DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
+export { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerMode, DatePickerMonthChangeDetail } from "./components/mud-date-picker/mud-date-picker.types";
+export { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize } from "./components/mud-file-input/mud-file-input.types";
+export { FileItemRemoveDetail, FileItemState } from "./components/mud-file-item/mud-file-item.types";
+export { FooterContact, FooterLocale, FooterLocaleChangeDetail, FooterPartner, FooterSection, FooterSocial, FooterVariant } from "./components/mud-footer/mud-footer.types";
+export { IconSize } from "./components/mud-icon/mud-icon.types";
+export { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/mud-input/mud-input.types";
+export { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/mud-input-chip/mud-input-chip.types";
+export { LinkSize, LinkUnderline, LinkVariant } from "./components/mud-link/mud-link.types";
+export { LogoName } from "./components/mud-logo/mud-logo.types";
+export { ModalActionsLayout, ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/mud-modal/mud-modal.types";
+export { NotificationStyle, NotificationVariant } from "./components/mud-notification/mud-notification.types";
+export { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/mud-numeric-input/mud-numeric-input.types";
+export { PaginationChangeDetail, PaginationSize } from "./components/mud-pagination/mud-pagination.types";
+export { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/mud-phone-input/mud-phone-input.types";
+export { ProgressTrackerOrientation, ProgressTrackerStep, ProgressTrackerStepClickDetail } from "./components/mud-progress-tracker/mud-progress-tracker.types";
+export { RadioChangeDetail, RadioSize } from "./components/mud-radio/mud-radio.types";
+export { ReceiptActionDetail, ReceiptParty, ReceiptService, ReceiptStatus } from "./components/mud-receipt/mud-receipt.types";
+export { SearchInputCircularChangeDetail, SearchInputCircularSearchDetail, SearchInputCircularSize, SearchInputCircularVariant } from "./components/mud-search-input-circular/mud-search-input-circular.types";
+export { SearchInputRectangularChangeDetail, SearchInputRectangularSearchDetail, SearchInputRectangularSize, SearchInputRectangularVariant } from "./components/mud-search-input-rectangular/mud-search-input-rectangular.types";
+export { SegmentedControlChangeDetail, SegmentedControlSegment, SegmentedControlSize } from "./components/mud-segmented-control/mud-segmented-control.types";
+export { SelectChangeDetail, SelectInputSize, SelectInputVariant, SelectOption } from "./components/mud-select-input/mud-select-input.types";
+export { SeparatorOrientation, SeparatorSize, SeparatorVariant } from "./components/mud-separator/mud-separator.types";
+export { ServiceButtonAppearance, ServiceButtonType } from "./components/mud-service-button/mud-service-button.types";
+export { SpinnerSize, SpinnerVariant } from "./components/mud-spinner/mud-spinner.types";
+export { SwitchChangeDetail } from "./components/mud-switch/mud-switch.types";
+export { TableColumn, TableHeaderStyle, TableRowClickDetail, TableRowData, TableRowStyle, TableSelectionChangeDetail, TableSortChangeDetail, TableSortDirection } from "./components/mud-table/mud-table.types";
+export { TabDescriptor, TabsChangeDetail, TabsSize } from "./components/mud-tabs/mud-tabs.types";
+export { TagSemantic, TagSize, TagType, TagVariant } from "./components/mud-tag/mud-tag.types";
+export { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from "./components/mud-textarea/mud-textarea.types";
+export { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, TooltipVariant } from "./components/mud-tooltip/mud-tooltip.types";
 export namespace Components {
     /**
      * Accordion — vertical stack of collapsible regions per WAI-ARIA Accordion Pattern.
-     * Pattern A (slot container): coordinates child `cor-accordion-item` elements,
+     * Pattern A (slot container): coordinates child `mud-accordion-item` elements,
      * enforces `mode="single"` exclusivity, manages keyboard traversal across
-     * headers (Arrow Up/Down, Home, End), and dispatches `corChange` whenever the
+     * headers (Arrow Up/Down, Home, End), and dispatches `mudChange` whenever the
      * active set changes.
      * Consumers may either:
-     *   1. Slot `<cor-accordion-item>` children directly (declarative, recommended), or
+     *   1. Slot `<mud-accordion-item>` children directly (declarative, recommended), or
      *   2. Pass an `items` array (data-driven; the accordion renders the items for you).
-     * @element cor-accordion
-     * @fires corChange - Emitted on every open/close. `detail.openIds` lists every
+     * @element mud-accordion
+     * @fires mudChange - Emitted on every open/close. `detail.openIds` lists every
      *              item currently open (single entry in `mode="single"`).
      */
-    interface CorAccordion {
+    interface MudAccordion {
         /**
           * Visual treatment forwarded to every child item.
           * @default 'default'
@@ -134,18 +134,18 @@ export namespace Components {
         "size": AccordionSize;
     }
     /**
-     * Accordion item — a single collapsible row inside `cor-accordion`.
+     * Accordion item — a single collapsible row inside `mud-accordion`.
      * Pattern B (atom-interactive): renders its own header `<button>` and a
      * `<div role="region">` panel inside shadow DOM. The container manages
      * exclusivity in `mode="single"`; the item owns its visual state.
-     * @element cor-accordion-item
-     * @fires corToggle - Fired when the user activates the header. The container
+     * @element mud-accordion-item
+     * @fires mudToggle - Fired when the user activates the header. The container
      *             listens for this and decides whether to honour it
      *             (single-mode collapsing of siblings).
      */
-    interface CorAccordionItem {
+    interface MudAccordionItem {
         /**
-          * Visual treatment. - `default` — flat header, neutral background - `trail-sites` — open header gets a brand-tint background per Figma "Trail Sites"  Set by the parent `cor-accordion` via attribute; consumers should set `appearance` on the parent, not on individual items.
+          * Visual treatment. - `default` — flat header, neutral background - `trail-sites` — open header gets a brand-tint background per Figma "Trail Sites"  Set by the parent `mud-accordion` via attribute; consumers should set `appearance` on the parent, not on individual items.
           * @default 'default'
          */
         "appearance": 'default' | 'trail-sites';
@@ -168,12 +168,12 @@ export namespace Components {
          */
         "heading"?: string;
         /**
-          * Trigger-icon placement relative to the header content. Set by the parent `cor-accordion`.
+          * Trigger-icon placement relative to the header content. Set by the parent `mud-accordion`.
           * @default 'right'
          */
         "iconPosition": AccordionIconPosition;
         /**
-          * Stable identifier used by the parent `cor-accordion` when emitting `corChange`. Auto-generated if omitted.
+          * Stable identifier used by the parent `mud-accordion` when emitting `mudChange`. Auto-generated if omitted.
          */
         "itemId"?: string;
         /**
@@ -182,11 +182,11 @@ export namespace Components {
          */
         "open": boolean;
         /**
-          * Programmatically toggle the item. Bypasses the click pipeline so the parent `cor-accordion` does not receive a `corToggle` event — used by the parent itself to coordinate `mode="single"` exclusivity.
+          * Programmatically toggle the item. Bypasses the click pipeline so the parent `mud-accordion` does not receive a `mudToggle` event — used by the parent itself to coordinate `mode="single"` exclusivity.
          */
         "setOpen": (open: boolean) => Promise<void>;
         /**
-          * Visual size rung — controls header height, font size, icon size, padding. Set by the parent `cor-accordion` via `size`; consumers should configure size at the container level.
+          * Visual size rung — controls header height, font size, icon size, padding. Set by the parent `mud-accordion` via `size`; consumers should configure size at the container level.
           * @default 'md'
          */
         "size": AccordionSize;
@@ -204,10 +204,10 @@ export namespace Components {
      *   back to initials (when `name`/`initials` is set) or the person icon.
      * - `initials` — renders 1–2 uppercase letters derived from `initials` or
      *   `name`. If neither is set, the icon fallback kicks in.
-     * - `icon` — renders a `cor-icon` (default `person`).
-     * @element cor-avatar
+     * - `icon` — renders a `mud-icon` (default `person`).
+     * @element mud-avatar
      */
-    interface CorAvatar {
+    interface MudAvatar {
         /**
           * Alt text for the underlying `<img>` when `type="photo"`. Falls back to `name` so screen readers always get a description; pass an empty string to mark the photo as purely decorative.
          */
@@ -255,9 +255,9 @@ export namespace Components {
      * Position offsets are exposed as CSS variables (`--badge-offset-top`,
      * `--badge-offset-right`) so consumers can compose without overrides.
      * Pattern B (atom-visual): internal DOM only, no slots, no events.
-     * @element cor-badge
+     * @element mud-badge
      */
-    interface CorBadge {
+    interface MudBadge {
         /**
           * Override the accessible name. When omitted, `numbered` uses the visible count text and `dot` falls back to "Notification" (so screen readers announce something meaningful for empty dots).
          */
@@ -291,17 +291,17 @@ export namespace Components {
      * Breadcrumb — navigational trail showing the user's location in the site hierarchy.
      * Two equivalent authoring modes:
      * 1. **Prop-driven** (preferred for dynamic data): pass `items` as a typed array.
-     * 2. **Slot-driven** (preferred for static markup): nest `<cor-breadcrumb-item>` children.
+     * 2. **Slot-driven** (preferred for static markup): nest `<mud-breadcrumb-item>` children.
      * When both are present, the `items` prop wins.
      * On desktop the full trail renders horizontally. When `maxVisible` is exceeded,
      * intermediate crumbs collapse into an overflow "…" menu. On mobile (≤640px) with
      * `responsive=true`, the trail collapses to a single "‹ Back to {parent}" link
      * per the WAI-ARIA breadcrumb pattern and Figma 69:408.
-     * @element cor-breadcrumb
+     * @element mud-breadcrumb
      */
-    interface CorBreadcrumb {
+    interface MudBreadcrumb {
         /**
-          * Declarative crumb list. Each item renders as a `cor-breadcrumb-item`. When omitted, the component falls back to its default slot.
+          * Declarative crumb list. Each item renders as a `mud-breadcrumb-item`. When omitted, the component falls back to its default slot.
          */
         "items"?: BreadcrumbItem[];
         /**
@@ -325,14 +325,14 @@ export namespace Components {
         "separator": string;
     }
     /**
-     * A single crumb inside `cor-breadcrumb`. Renders an anchor when `href` is set,
+     * A single crumb inside `mud-breadcrumb`. Renders an anchor when `href` is set,
      * otherwise plain text. The active crumb renders as text with `aria-current="page"`,
      * regardless of `href`.
      * Use this directly when the markup variant of the breadcrumb is preferred over
-     * the `items` prop on `cor-breadcrumb`. Both APIs are equivalent in behavior.
-     * @element cor-breadcrumb-item
+     * the `items` prop on `mud-breadcrumb`. Both APIs are equivalent in behavior.
+     * @element mud-breadcrumb-item
      */
-    interface CorBreadcrumbItem {
+    interface MudBreadcrumbItem {
         /**
           * Marks this crumb as the current page. Adds `aria-current="page"`, switches to medium font weight, and disables navigation (renders as text).
           * @default false
@@ -367,9 +367,9 @@ export namespace Components {
      * Pattern B (atom-interactive): renders its own `<button>` (or `<a>` when `href`
      * is set) inside shadow DOM. Form participation works via `formAssociated` +
      * `ElementInternals`.
-     * @element cor-button
+     * @element mud-button
      */
-    interface CorButton {
+    interface MudButton {
         /**
           * Visual treatment. - `filled` (default) — solid background per variant - `outlined` — 1.5px border with transparent fill in default/focus; hover/active fill solid (matches filled) - `text` — no border, transparent fill, hover/active tint background; designed for inline use  `outlined` and `text` only support `primary`, `strict`, and `destructive` variants. Other variants fall back to `primary` visuals with a dev-time console warning.
           * @default 'filled'
@@ -381,7 +381,7 @@ export namespace Components {
          */
         "disabled": boolean;
         /**
-          * Makes the button expand to fill the inline-size of its container. The host becomes a block-level flex container and the internal control stretches to 100% width — designed for use inside `cor-button-group` (vertical orientation) or in narrow form layouts.
+          * Makes the button expand to fill the inline-size of its container. The host becomes a block-level flex container and the internal control stretches to 100% width — designed for use inside `mud-button-group` (vertical orientation) or in narrow form layouts.
           * @default false
          */
         "fullWidth": boolean;
@@ -441,15 +441,15 @@ export namespace Components {
         "variant": ButtonVariant;
     }
     /**
-     * Button group — layout container for stacking multiple `cor-button` elements
+     * Button group — layout container for stacking multiple `mud-button` elements
      * with consistent spacing (12px gap) per the AGE Design System.
      * Pure layout primitive: does not propagate props to children, does not emit
      * events, does not manage focus order beyond the natural DOM tab sequence.
-     * Each child `cor-button` controls its own size, variant, and full-width
+     * Each child `mud-button` controls its own size, variant, and full-width
      * behavior independently.
-     * @element cor-button-group
+     * @element mud-button-group
      */
-    interface CorButtonGroup {
+    interface MudButtonGroup {
         /**
           * Accessible name for the group. Forwarded to `aria-label` on the host element so assistive technologies announce the buttons as a unit (e.g. "Form actions").
          */
@@ -470,9 +470,9 @@ export namespace Components {
      *   State = Default | Focus | Error (`invalid`) | Disabled
      *   Size  = Medium (24px) | Small (20px)
      * Indeterminate is a visual-only third state — `checked` semantics are unchanged.
-     * @element cor-checkbox
+     * @element mud-checkbox
      */
-    interface CorCheckbox {
+    interface MudCheckbox {
         /**
           * Accessible name override. Used when no visible label is present.
          */
@@ -502,7 +502,7 @@ export namespace Components {
          */
         "invalid": boolean;
         /**
-          * Accessible-name fallback. Used as `aria-label` on the internal input when no `label` slot is provided. Does NOT render visible text — use the `label` slot for that. Matches the `cor-button` convention.
+          * Accessible-name fallback. Used as `aria-label` on the internal input when no `label` slot is provided. Does NOT render visible text — use the `label` slot for that. Matches the `mud-button` convention.
          */
         "label"?: string;
         /**
@@ -539,25 +539,25 @@ export namespace Components {
      * so it participates in tab order and exposes a real accessible role.
      * Two modes:
      * - `type="filter"` (default) — toggleable filter chip. Click flips `selected`
-     *   and emits `corSelect`. Best used inside a chip group for mono- or
+     *   and emits `mudSelect`. Best used inside a chip group for mono- or
      *   multi-selection filtering.
      * - `type="input"` — a discrete value entered by a user (e.g. a tag inside
      *   a search field). When `removable`, a trailing close button is rendered;
-     *   activating it emits `corRemove`.
-     * @element cor-chip
+     *   activating it emits `mudRemove`.
+     * @element mud-chip
      */
-    interface CorChip {
+    interface MudChip {
         /**
           * Disables interactivity. Reflects `aria-disabled` and removes the chip from pointer/keyboard activation paths.
           * @default false
          */
         "disabled": boolean;
         /**
-          * Accessible-name fallback. Used as `aria-label` on the internal `<button>` when the default slot is empty (and no explicit `aria-label` is set). Does NOT render visible text — use the default slot for that. Matches the `cor-button` convention.
+          * Accessible-name fallback. Used as `aria-label` on the internal `<button>` when the default slot is empty (and no explicit `aria-label` is set). Does NOT render visible text — use the default slot for that. Matches the `mud-button` convention.
          */
         "label"?: string;
         /**
-          * When `type="input"`, renders a trailing close button that emits `corRemove` on activation. Ignored when `type="filter"`.
+          * When `type="input"`, renders a trailing close button that emits `mudRemove` on activation. Ignored when `type="filter"`.
           * @default false
          */
         "removable": boolean;
@@ -572,7 +572,7 @@ export namespace Components {
          */
         "size": ChipSize;
         /**
-          * Behavioral mode. - `filter` — toggle on click, emits `corSelect` - `input` — represents a user-entered value; combine with `removable` for a trailing × button
+          * Behavioral mode. - `filter` — toggle on click, emits `mudSelect` - `input` — represents a user-entered value; combine with `removable` for a trailing × button
           * @default 'filter'
          */
         "type": ChipType;
@@ -580,8 +580,8 @@ export namespace Components {
     /**
      * Cookie banner — GDPR consent surface (molecule).
      * Pattern B (composed molecule): renders its own header / body / categories /
-     * footer in shadow DOM. Composes `cor-button`, `cor-switch`, `cor-icon`,
-     * `cor-tag` and `cor-separator` for the interactive pieces. The host is a
+     * footer in shadow DOM. Composes `mud-button`, `mud-switch`, `mud-icon`,
+     * `mud-tag` and `mud-separator` for the interactive pieces. The host is a
      * non-modal dialog (`role="dialog" aria-modal="false"`) anchored to the bottom
      * or top edge of the viewport — it does NOT trap focus so the page underneath
      * stays operable.
@@ -591,12 +591,12 @@ export namespace Components {
      *   expanded mode.
      * - `variant="detailed"` — same collapsed footprint, but expanding reveals a
      *   category list (necessary / analytics / marketing by default) with per-row
-     *   `cor-switch`. Required categories render a fixed check-mark instead.
+     *   `mud-switch`. Required categories render a fixed check-mark instead.
      * Romanian voice ships as defaults; every label is overridable via the public
      * `@Prop` surface for localisation.
-     * @element cor-cookie-banner
+     * @element mud-cookie-banner
      */
-    interface CorCookieBanner {
+    interface MudCookieBanner {
         /**
           * "Accept all" button label.
          */
@@ -663,9 +663,9 @@ export namespace Components {
      * inside shadow DOM and overlays a ghost format hint that lets the unfilled
      * `DD/MM/YYYY` segments stay visible while the user types — matching the
      * "focus: date-populated / month-populated / fully-populated" Figma states.
-     * @element cor-date-input
+     * @element mud-date-input
      */
-    interface CorDateInput {
+    interface MudDateInput {
         /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
          */
@@ -749,7 +749,7 @@ export namespace Components {
      * Three breakpoints (visual modes):
      * - `desktop` — 320px elevated card with shadow.
      * - `mobile` — full-width bottom-sheet style with drag handle.
-     * - `docked` — compact (no shadow) intended to attach beneath a `cor-date-input`.
+     * - `docked` — compact (no shadow) intended to attach beneath a `mud-date-input`.
      * All weekday + month labels come from `Intl.DateTimeFormat` so the locale prop drives the language —
      * no hard-coded strings. Romanian (`ro-RO`) is the default.
      * Keyboard:
@@ -758,9 +758,9 @@ export namespace Components {
      * - Shift+PageUp/PageDown change year
      * - Home/End jump to the start/end of the visible week
      * - Enter/Space selects the focused day
-     * @element cor-date-picker
+     * @element mud-date-picker
      */
-    interface CorDatePicker {
+    interface MudDatePicker {
         /**
           * Visual breakpoint / placement.
           * @default 'desktop'
@@ -781,7 +781,7 @@ export namespace Components {
          */
         "hideTodayShortcut": boolean;
         /**
-          * Accessible label for the entire picker. Set the `aria-label` attribute on the host (or use this prop) and the component captures it on connect into `resolvedAriaLabel`, then strips the host attribute to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb).
+          * Accessible label for the entire picker. Set the `aria-label` attribute on the host (or use this prop) and the component captures it on connect into `resolvedAriaLabel`, then strips the host attribute to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb).
          */
         "label"?: string;
         /**
@@ -820,24 +820,24 @@ export namespace Components {
      * Pattern B (molecule, internal DOM, form-associated): the host owns a hidden
      * native `<input type="file">` for the browse path, manages the drop zone
      * affordance, validates by `accept` / `maxSize` / `maxFiles`, and renders a
-     * per-file list of `cor-file-item` rows. Citizens get keyboard parity (Tab
+     * per-file list of `mud-file-item` rows. Citizens get keyboard parity (Tab
      * to focus, Enter/Space to open the picker) and a `role="status"` live region
      * that announces add / remove / reject events.
      * The component owns SELECTION + VALIDATION + DISPLAY. Real upload (progress,
-     * network errors, retries) is consumer-driven via the `corChange` event.
+     * network errors, retries) is consumer-driven via the `mudChange` event.
      * State model (no style axis — Figma is state-only):
      *   default → hover → focus → active (drag-over) → disabled
      *   `invalid` is a separate validation flag that recolors the dashed border red
      *   without introducing a style variant.
-     * @element cor-file-input
+     * @element mud-file-input
      */
-    interface CorFileInput {
+    interface MudFileInput {
         /**
           * Native HTML `accept` attribute — MIME types and/or extensions, comma-separated.
          */
         "accept"?: string;
         /**
-          * Accessible name; mirrors to the drop zone's `aria-label` when no visible label is provided. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker / cor-modal / cor-pagination / cor-receipt).
+          * Accessible name; mirrors to the drop zone's `aria-label` when no visible label is provided. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb / mud-date-picker / mud-modal / mud-pagination / mud-receipt).
          */
         "ariaLabel"?: string;
         /**
@@ -919,14 +919,14 @@ export namespace Components {
         "supportedFormatsText"?: string;
     }
     /**
-     * File Item — single-file row inside `cor-file-input` (or any file list surface).
+     * File Item — single-file row inside `mud-file-input` (or any file list surface).
      * Pattern B (atom, internal DOM): renders filename + meta (size / error message)
      * + state icon + remove button. The remove button is the only interactive
      * element; the row itself is not focusable so it cannot trap citizens who tab
      * past a long list.
-     * @element cor-file-item
+     * @element mud-file-item
      */
-    interface CorFileItem {
+    interface MudFileItem {
         /**
           * Disables the remove button.
           * @default false
@@ -964,7 +964,7 @@ export namespace Components {
     /**
      * Page footer — civic, multi-section organism for AGE / EVO platforms.
      * Pattern B (composed organism): renders all sections inside shadow DOM and
-     * composes `cor-link`, `cor-logo`, and `cor-icon` for atomic pieces. The host
+     * composes `mud-link`, `mud-logo`, and `mud-icon` for atomic pieces. The host
      * carries `role="contentinfo"` so screen readers announce it as the page
      * footer landmark.
      * Two variants share one element:
@@ -977,9 +977,9 @@ export namespace Components {
      *   (modals, embedded apps) where the full footer is too tall.
      * Romanian voice ships as defaults; every visible string is overridable via
      * the public `@Prop` surface or the `branding` / `sections` slots.
-     * @element cor-footer
+     * @element mud-footer
      */
-    interface CorFooter {
+    interface MudFooter {
         /**
           * Optional href for the accessibility statement link in the legal bar.
          */
@@ -1029,9 +1029,9 @@ export namespace Components {
      * When the exact `size`/`name` combination is missing from the manifest, the
      * provider falls back to the closest larger size (preferred) and then to the
      * largest smaller size before giving up.
-     * @element cor-icon
+     * @element mud-icon
      */
-    interface CorIcon {
+    interface MudIcon {
         /**
           * Accessible label. When provided, the icon is announced; when omitted it is decorative.
          */
@@ -1068,9 +1068,9 @@ export namespace Components {
      * inside shadow DOM. Form participation works via `formAssociated` +
      * `ElementInternals`. The component is the canonical text-input primitive;
      * specialised inputs (date, search, phone, etc.) compose around it.
-     * @element cor-input
+     * @element mud-input
      */
-    interface CorInput {
+    interface MudInput {
         /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
          */
@@ -1173,9 +1173,9 @@ export namespace Components {
      *   - a `role="status"` live region that announces add / remove / reject.
      * The form value submitted to the surrounding `<form>` is a JSON-encoded
      * array of strings (e.g. `["a@b.md","c@d.md"]`) when a `name` is set.
-     * @element cor-input-chip
+     * @element mud-input-chip
      */
-    interface CorInputChip {
+    interface MudInputChip {
         /**
           * Accessible name; mirrors to the group's `aria-label` when no visible label.
          */
@@ -1208,7 +1208,7 @@ export namespace Components {
          */
         "label"?: string;
         /**
-          * Maximum number of chips accepted. Further additions emit `corError` with `code: 'max'`.
+          * Maximum number of chips accepted. Further additions emit `mudError` with `code: 'max'`.
          */
         "maxChips"?: number;
         /**
@@ -1263,9 +1263,9 @@ export namespace Components {
      * is set, `rel="noopener noreferrer"` is auto-applied and a small external-link
      * indicator is rendered after the label unless the consumer explicitly opts out
      * via `external="false"`.
-     * @element cor-link
+     * @element mud-link
      */
-    interface CorLink {
+    interface MudLink {
         /**
           * Forwarded to the internal element as `aria-label`. Required when the default slot contains only an icon with no text label.
          */
@@ -1326,11 +1326,11 @@ export namespace Components {
      * "just works" without a CSS contract change.
      * Consumers that need to reserve layout space before the async fetch
      * resolves (e.g. above-the-fold marketing, dense grids) should wrap the
-     * logo in a sized container — `cor-service-button` does this for its
+     * logo in a sized container — `mud-service-button` does this for its
      * `badge` slot (24 × 24).
-     * @element cor-logo
+     * @element mud-logo
      */
-    interface CorLogo {
+    interface MudLogo {
         /**
           * Accessible label. When provided (and non-whitespace), the logo is announced as an image; when omitted or whitespace-only the logo is decorative (aria-hidden).
          */
@@ -1357,21 +1357,21 @@ export namespace Components {
      * - `default` — title + close button (text-only header)
      * - `with-image` — full-bleed hero image at top with overlaid close button
      * - `with-icon` — leading 48px icon above the body content (no top header bar)
-     * Dismiss reasons routed through `corClose<{reason}>`:
+     * Dismiss reasons routed through `mudClose<{reason}>`:
      * - `backdrop` — click on backdrop (suppressed by `closeOnBackdrop=false`)
      * - `escape` — ESC keypress (suppressed by `closeOnEscape=false`)
      * - `close-button` — trailing × button activated
      * - `action` — programmatic via `closeModal('action')`, used by footer buttons
-     * @element cor-modal
+     * @element mud-modal
      */
-    interface CorModal {
+    interface MudModal {
         /**
           * Footer button arrangement (Figma 358:16247). - `inline` — buttons sit side-by-side, right-aligned (default) - `stacked` — buttons span the full footer width, stacked vertically
           * @default 'inline'
          */
         "actionsLayout": ModalActionsLayout;
         /**
-          * When `true`, renders a trailing × close button in the header. Activating it emits `corClose` with `reason: 'close-button'`. Hide it for required confirmation flows by setting `closable=false`.
+          * When `true`, renders a trailing × close button in the header. Activating it emits `mudClose` with `reason: 'close-button'`. Hide it for required confirmation flows by setting `closable=false`.
           * @default true
          */
         "closable": boolean;
@@ -1381,7 +1381,7 @@ export namespace Components {
          */
         "closeLabel": string;
         /**
-          * Imperatively close the dialog. Emits `corClose` with the supplied reason (defaults to `'action'`, intended for footer button handlers).
+          * Imperatively close the dialog. Emits `mudClose` with the supplied reason (defaults to `'action'`, intended for footer button handlers).
          */
         "closeModal": (reason?: ModalCloseReason) => Promise<void>;
         /**
@@ -1395,7 +1395,7 @@ export namespace Components {
          */
         "closeOnEscape": boolean;
         /**
-          * Styles the dialog frame and footer for an irreversible action (e.g. delete account). Adds a red top border accent and is intended to be paired with a destructive primary `cor-button` in the actions slot.
+          * Styles the dialog frame and footer for an irreversible action (e.g. delete account). Adds a red top border accent and is intended to be paired with a destructive primary `mud-button` in the actions slot.
           * @default false
          */
         "destructive": boolean;
@@ -1409,16 +1409,16 @@ export namespace Components {
          */
         "imageSrc"?: string;
         /**
-          * Accessible name forwarded to the host as `aria-label`. Required when no title is provided. The consumer-supplied `aria-label` attribute is captured on connect into `resolvedAriaLabel` and stripped from the host to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker).
+          * Accessible name forwarded to the host as `aria-label`. Required when no title is provided. The consumer-supplied `aria-label` attribute is captured on connect into `resolvedAriaLabel` and stripped from the host to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb / mud-date-picker).
          */
         "label"?: string;
         /**
-          * Whether the modal is currently shown. Reflected so consumers can target `cor-modal[open]` in selectors. Mutable so the component can flip it back to `false` on internal dismiss (backdrop / escape / close button).
+          * Whether the modal is currently shown. Reflected so consumers can target `mud-modal[open]` in selectors. Mutable so the component can flip it back to `false` on internal dismiss (backdrop / escape / close button).
           * @default false
          */
         "open": boolean;
         /**
-          * Imperatively open the dialog. Equivalent to setting `open=true`. Emits `corOpen` once the dialog is visible.
+          * Imperatively open the dialog. Equivalent to setting `open=true`. Emits `mudOpen` once the dialog is visible.
          */
         "openModal": () => Promise<void>;
         /**
@@ -1450,15 +1450,15 @@ export namespace Components {
      * Live-region routing:
      * - `info` / `positive` / `neutral` → `role="status"` + `aria-live="polite"`
      * - `warning` / `danger` → `role="alert"` + `aria-live="assertive"`
-     * @element cor-notification
+     * @element mud-notification
      */
-    interface CorNotification {
+    interface MudNotification {
         /**
           * Forwarded to the host as `aria-label`. Use this to give the entire notification an explicit accessible name when the body content alone is not descriptive enough.
          */
         "ariaLabel"?: string;
         /**
-          * When `true`, renders a trailing close button. Activating it emits `corClose`; the consumer is responsible for removing the notification from the DOM.
+          * When `true`, renders a trailing close button. Activating it emits `mudClose`; the consumer is responsible for removing the notification from the DOM.
           * @default false
          */
         "closable": boolean;
@@ -1468,7 +1468,7 @@ export namespace Components {
          */
         "closeLabel": string;
         /**
-          * Override the default `cor-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
+          * Override the default `mud-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
          */
         "iconName"?: string;
         /**
@@ -1490,7 +1490,7 @@ export namespace Components {
      * Numeric Input — numeric-entry control with stacked step buttons.
      * Pattern B (atom-interactive, form-associated): renders its own `<input>`
      * inside shadow DOM and pairs it with a trailing stepper stack (chevron-up
-     * over chevron-bottom). Shares the visual primitives of `cor-input` (border,
+     * over chevron-bottom). Shares the visual primitives of `mud-input` (border,
      * focus ring, label, helper / error, sizes, states) and adds a
      * `--numeric-input-stepper-*` token namespace for the increment / decrement
      * affordance.
@@ -1500,9 +1500,9 @@ export namespace Components {
      * `min`/`max` clamping. The component delegates parsing + clamping to its own
      * logic and exposes `inputmode="decimal"` so mobile devices still surface the
      * numeric keypad.
-     * @element cor-numeric-input
+     * @element mud-numeric-input
      */
-    interface CorNumericInput {
+    interface MudNumericInput {
         /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
          */
@@ -1544,7 +1544,7 @@ export namespace Components {
          */
         "label"?: string;
         /**
-          * Loading state. When true the control becomes uninteractive and a brand `cor-spinner` replaces the trailing stepper stack. The host carries `aria-busy="true"` for assistive technologies.
+          * Loading state. When true the control becomes uninteractive and a brand `mud-spinner` replaces the trailing stepper stack. The host carries `aria-busy="true"` for assistive technologies.
           * @default false
          */
         "loading": boolean;
@@ -1611,15 +1611,15 @@ export namespace Components {
      * window, an interactive overflow button (`…`) collapses the skipped range
      * and lets users jump directly to any of those pages via a dropdown menu
      * (Figma "overflow-active" interaction).
-     * The component is internally controlled but exposes a `corChange` event so
+     * The component is internally controlled but exposes a `mudChange` event so
      * the host can drive the active page. Updating `current-page` from outside
      * is also honoured (e.g. when the URL changes via routing).
      * Previous / Next buttons are hidden at the boundaries (page 1 hides Prev,
      * the last page hides Next) instead of being rendered in a disabled state —
      * this matches the Figma "first-page" / "last-page" specification.
-     * @element cor-pagination
+     * @element mud-pagination
      */
-    interface CorPagination {
+    interface MudPagination {
         /**
           * Number of page buttons shown at the start and end of the range (before / after the leading / trailing ellipsis).
           * @default 1
@@ -1631,7 +1631,7 @@ export namespace Components {
          */
         "currentPage": number;
         /**
-          * Accessible name for the navigation landmark when no `aria-label` is set on the host. Defaults to "Navigare pagini". Setting `aria-label` directly on the host also works — the consumer-supplied attribute wins and is captured on connect into `resolvedAriaLabel`, then stripped from the host to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker / cor-modal).
+          * Accessible name for the navigation landmark when no `aria-label` is set on the host. Defaults to "Navigare pagini". Setting `aria-label` directly on the host also works — the consumer-supplied attribute wins and is captured on connect into `resolvedAriaLabel`, then stripped from the host to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb / mud-date-picker / mud-modal).
          */
         "label"?: string;
         /**
@@ -1696,9 +1696,9 @@ export namespace Components {
      * default) or a combobox that opens a country listbox (`type="international"`).
      * Form participation works via `formAssociated` + `ElementInternals`; the
      * form value is the canonical E.164 string (`+37362123456`).
-     * @element cor-phone-input
+     * @element mud-phone-input
      */
-    interface CorPhoneInput {
+    interface MudPhoneInput {
         /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
          */
@@ -1735,7 +1735,7 @@ export namespace Components {
          */
         "label"?: string;
         /**
-          * Loading state. When true the control becomes uninteractive and an inline `cor-spinner` renders inside the input row. The host carries `aria-busy="true"` for assistive technologies.
+          * Loading state. When true the control becomes uninteractive and an inline `mud-spinner` renders inside the input row. The host carries `aria-busy="true"` for assistive technologies.
           * @default false
          */
         "loading": boolean;
@@ -1744,7 +1744,7 @@ export namespace Components {
          */
         "name"?: string;
         /**
-          * Reflects the open state of the country listbox. Mutate via `corOpen` / `corClose` events, not by writing to the attribute. Only meaningful when `type="international"` — Local mode never opens a listbox.
+          * Reflects the open state of the country listbox. Mutate via `mudOpen` / `mudClose` events, not by writing to the attribute. Only meaningful when `type="international"` — Local mode never opens a listbox.
           * @default false
          */
         "open": boolean;
@@ -1790,7 +1790,7 @@ export namespace Components {
      *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
      *   submissions where the parent app drives navigation.
      * - **Interactive tracker** (`interactive=true`) — each completed (and the current)
-     *   step renders as a `<button>` and emits `corStepClick`. Pending steps remain
+     *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
      *   non-actionable per the WAI-ARIA stepper pattern.
      * State legend (Figma node 267:6905):
      *   - `pending`    — neutral grey ring + faded number
@@ -1799,9 +1799,9 @@ export namespace Components {
      *   - `error`      — danger ring + danger cross
      * The component renders an ordered list with `role="list"` for AT compatibility
      * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
-     * @element cor-progress-tracker
+     * @element mud-progress-tracker
      */
-    interface CorProgressTracker {
+    interface MudProgressTracker {
         /**
           * Accessible name for the surrounding list landmark. Falls back to `'Progress tracker'` (English) — Romanian consumers can pass `'Pași'`.
          */
@@ -1811,7 +1811,7 @@ export namespace Components {
          */
         "currentStep"?: number;
         /**
-          * When true, completed and current steps render as `<button>` elements and emit `corStepClick`. Pending and error steps remain non-actionable in this mode.
+          * When true, completed and current steps render as `<button>` elements and emit `mudStepClick`. Pending and error steps remain non-actionable in this mode.
           * @default false
          */
         "interactive": boolean;
@@ -1831,11 +1831,11 @@ export namespace Components {
      * `<input type="radio">` inside shadow DOM and paints the visual circle
      * with CSS. Form participation works via `formAssociated` +
      * `ElementInternals.setFormValue`. The component is the standalone radio
-     * primitive; a future `cor-radio-group` molecule will manage roving focus
+     * primitive; a future `mud-radio-group` molecule will manage roving focus
      * and `name`-based exclusivity across siblings.
-     * @element cor-radio
+     * @element mud-radio
      */
-    interface CorRadio {
+    interface MudRadio {
         /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
          */
@@ -1860,7 +1860,7 @@ export namespace Components {
          */
         "invalid": boolean;
         /**
-          * Accessible-name fallback. Used as `aria-label` on the internal input when no `label` slot is provided. Does NOT render visible text — use the `label` slot for that. Matches the `cor-button` / `cor-checkbox` convention.
+          * Accessible-name fallback. Used as `aria-label` on the internal input when no `label` slot is provided. Does NOT render visible text — use the `label` slot for that. Matches the `mud-button` / `mud-checkbox` convention.
          */
         "label"?: string;
         /**
@@ -1895,8 +1895,8 @@ export namespace Components {
      * Receipt — confirmation surface for a finished Moldovan e-Gov transaction
      * (molecule).
      * Pattern B (composed molecule): renders its own header / amount block /
-     * details list / QR / footer in shadow DOM. Composes `cor-logo`, `cor-tag`,
-     * and `cor-button` for the interactive pieces.
+     * details list / QR / footer in shadow DOM. Composes `mud-logo`, `mud-tag`,
+     * and `mud-button` for the interactive pieces.
      * Four sibling variants share one element via the `service` attribute —
      * each maps to one of the e-Gov properties:
      * - `service="mpay"` (default) — payment receipt
@@ -1912,9 +1912,9 @@ export namespace Components {
      * receipt without the surrounding UI bleeding through.
      * Romanian voice ships as defaults; every label is overridable via the
      * public `@Prop` surface for localisation.
-     * @element cor-receipt
+     * @element mud-receipt
      */
-    interface CorReceipt {
+    interface MudReceipt {
         /**
           * Pre-formatted amount string (e.g. `"150,00"`). The receipt does NOT format numbers — locale-aware grouping and decimal style belong to the caller. Omit to hide the amount panel entirely (used by mpass / msign receipts that carry no monetary value).
          */
@@ -1953,7 +1953,7 @@ export namespace Components {
          */
         "emailLabel"?: string;
         /**
-          * Override for the receipt's accessible name. Defaults to the resolved title plus status (e.g. "Bon de plată — Plătit"). Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker / cor-modal / cor-pagination).
+          * Override for the receipt's accessible name. Defaults to the resolved title plus status (e.g. "Bon de plată — Plătit"). Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb / mud-date-picker / mud-modal / mud-pagination).
          */
         "label"?: string;
         /**
@@ -2036,7 +2036,7 @@ export namespace Components {
      * icon and an optional trailing clear `×` button that appears whenever the
      * control carries a value. Behavior, props, slots, events, keyboard contract,
      * ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
-     * `cor-search-input-rectangular` — the only visual difference is the
+     * `mud-search-input-rectangular` — the only visual difference is the
      * silhouette: corners flip to `borderRadius.full` (9999px). The trailing
      * submit button (when `with-button` is set) inherits the pill silhouette via
      * `borderRadius.full`, rendering as a perfect circle that hugs the pill end
@@ -2049,11 +2049,11 @@ export namespace Components {
      * - `loading` — async query is in flight; a trailing spinner appears next to
      *   the value/placeholder and the control is announced as `aria-busy`.
      * - `with-button` — adds a trailing brand-blue circular submit button that
-     *   fires `corSearch` on click. Coexists with the clear button and the
+     *   fires `mudSearch` on click. Coexists with the clear button and the
      *   loading spinner.
-     * @element cor-search-input-circular
+     * @element mud-search-input-circular
      */
-    interface CorSearchInputCircular {
+    interface MudSearchInputCircular {
         /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
@@ -2100,7 +2100,7 @@ export namespace Components {
          */
         "label"?: string;
         /**
-          * Indicates an in-flight query. Replaces the leading magnifying-glass icon with a brand-coloured `cor-spinner` and exposes `aria-busy` on the internal control. The field stays focusable; emitting `corSearch` while loading is the consumer's responsibility (typically debounced).
+          * Indicates an in-flight query. Replaces the leading magnifying-glass icon with a brand-coloured `mud-spinner` and exposes `aria-busy` on the internal control. The field stays focusable; emitting `mudSearch` while loading is the consumer's responsibility (typically debounced).
           * @default false
          */
         "loading": boolean;
@@ -2151,7 +2151,7 @@ export namespace Components {
          */
         "variant": SearchInputCircularVariant;
         /**
-          * Renders a trailing brand-blue circular submit button (the Figma "Button=True" axis on master `933:29721`). Clicking the button — or pressing Enter inside the input — dispatches `corSearch` with the current value. When the field is empty or disabled, the button enters a disabled visual state and does not fire the event.
+          * Renders a trailing brand-blue circular submit button (the Figma "Button=True" axis on master `933:29721`). Clicking the button — or pressing Enter inside the input — dispatches `mudSearch` with the current value. When the field is empty or disabled, the button enters a disabled visual state and does not fire the event.
           * @default false
          */
         "withButton": boolean;
@@ -2162,21 +2162,21 @@ export namespace Components {
      * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
      * icon and an optional trailing clear `×` button that appears whenever the
      * control carries a value. Visual primitives (border, focus ring, label,
-     * helper / error, sizes, states) are shared with `cor-input`; specific
+     * helper / error, sizes, states) are shared with `mud-input`; specific
      * affordances (icon-start, icon-end-clear, submit-button) live in the
      * `--search-input-rectangular-*` token namespace.
-     * Rectangular shape is the default sibling of `cor-search-input-circular`
+     * Rectangular shape is the default sibling of `mud-search-input-circular`
      * (pill). The two ship as distinct components per the Figma component-set
      * separation in the Republic of Moldova Unified Design System library.
      * Optional axes per Figma master `933:29099`:
      * - `loading` — async query is in flight; a trailing spinner appears next to
      *   the value/placeholder and the control is announced as `aria-busy`.
      * - `with-button` — adds a trailing brand-blue submit button that fires
-     *   `corSearch` on click. Coexists with the clear button and the loading
+     *   `mudSearch` on click. Coexists with the clear button and the loading
      *   spinner.
-     * @element cor-search-input-rectangular
+     * @element mud-search-input-rectangular
      */
-    interface CorSearchInputRectangular {
+    interface MudSearchInputRectangular {
         /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
@@ -2223,7 +2223,7 @@ export namespace Components {
          */
         "label"?: string;
         /**
-          * Indicates an in-flight query. Replaces the leading magnifying-glass icon with a brand-coloured `cor-spinner` and exposes `aria-busy` on the internal control. The field stays focusable; emitting `corSearch` while loading is the consumer's responsibility (typically debounced).
+          * Indicates an in-flight query. Replaces the leading magnifying-glass icon with a brand-coloured `mud-spinner` and exposes `aria-busy` on the internal control. The field stays focusable; emitting `mudSearch` while loading is the consumer's responsibility (typically debounced).
           * @default false
          */
         "loading": boolean;
@@ -2274,7 +2274,7 @@ export namespace Components {
          */
         "variant": SearchInputRectangularVariant;
         /**
-          * Renders a trailing brand-blue submit button (the Figma "Button=True" axis). Clicking the button — or pressing Enter inside the input — dispatches `corSearch` with the current value. When the field is empty or disabled, the button enters a disabled visual state and does not fire the event.
+          * Renders a trailing brand-blue submit button (the Figma "Button=True" axis). Clicking the button — or pressing Enter inside the input — dispatches `mudSearch` with the current value. When the field is empty or disabled, the button enters a disabled visual state and does not fire the event.
           * @default false
          */
         "withButton": boolean;
@@ -2291,9 +2291,9 @@ export namespace Components {
      * - `ArrowLeft` / `ArrowRight` move selection between segments
      * - `Home` / `End` jump to first / last segment
      * - `Enter` / `Space` reaffirm selection on the focused segment
-     * @element cor-segmented-control
+     * @element mud-segmented-control
      */
-    interface CorSegmentedControl {
+    interface MudSegmentedControl {
         /**
           * Accessible name for the group. Forwarded to the host's `aria-label`. Required when no surrounding `<label>` references the control.
          */
@@ -2330,13 +2330,13 @@ export namespace Components {
      * Pattern B (atom-interactive, form-associated): renders a custom-styled
      * trigger button and a listbox popover inside shadow DOM. Form participation
      * works via `formAssociated` + `ElementInternals`. Shares the visual primitives
-     * of `cor-input` (border, focus ring, label, helper / error text, sizes,
+     * of `mud-input` (border, focus ring, label, helper / error text, sizes,
      * states) and adds a trailing chevron icon, listbox menu, and keyboard
      * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
      * pattern.
-     * @element cor-select-input
+     * @element mud-select-input
      */
-    interface CorSelectInput {
+    interface MudSelectInput {
         /**
           * Accessible name. Mirrors to the trigger's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
@@ -2368,7 +2368,7 @@ export namespace Components {
          */
         "name"?: string;
         /**
-          * Reflects the open state of the listbox popover. Read-only externally — use `corOpen` / `corClose` to react to changes.
+          * Reflects the open state of the listbox popover. Read-only externally — use `mudOpen` / `mudClose` to react to changes.
           * @default false
          */
         "open": boolean;
@@ -2410,9 +2410,9 @@ export namespace Components {
      * Separator — visual divider between groups of content or UI components.
      * Pattern B (atom-visual): renders a 1D rule, optionally with an inline label.
      * No events, no interactivity. ARIA `separator` semantics.
-     * @element cor-separator
+     * @element mud-separator
      */
-    interface CorSeparator {
+    interface MudSeparator {
         /**
           * Accessible label for screen readers. Most separators are decorative and do not need this; provide it only when the separator conveys a discrete semantic boundary that benefits from an announcement.
          */
@@ -2448,12 +2448,12 @@ export namespace Components {
      * A specialised filled button with a logo badge embedded on the inline-start
      * edge of the geometry. Fixed 48 px height (= minimum touch target) and
      * asymmetric padding (16 start / 20 end) per Figma spec.
-     * Slot `badge` reserves a 24×24 box for a `<cor-logo>` rendering a
+     * Slot `badge` reserves a 24×24 box for a `<mud-logo>` rendering a
      * `*-logo-logomark-only` asset (or any other element rendered at that size).
      * The default slot carries the label text.
-     * @element cor-service-button
+     * @element mud-service-button
      */
-    interface CorServiceButton {
+    interface MudServiceButton {
         /**
           * Visual treatment. - `primary` — solid brand background, white label - `neutral` — light surface background, dark label
           * @default 'primary'
@@ -2508,9 +2508,9 @@ export namespace Components {
      * Spinner — animated circular loading indicator.
      * Pattern B (atom-visual): renders a CSS-only rotating arc.
      * No slots, no events, no interactivity.
-     * @element cor-spinner
+     * @element mud-spinner
      */
-    interface CorSpinner {
+    interface MudSpinner {
         /**
           * Accessible label for screen readers.
           * @default 'Loading'
@@ -2539,9 +2539,9 @@ export namespace Components {
      * pointer-devices and 40px on touch-devices (via `pointer: coarse`) per the
      * Figma "Target Sizes" spec, achieved with a `::before` pseudo-element so the
      * visual footprint stays untouched.
-     * @element cor-switch
+     * @element mud-switch
      */
-    interface CorSwitch {
+    interface MudSwitch {
         /**
           * Consumer-set `aria-label` on the host. The component caches the value (see `resolvedAriaLabel`) and strips the host attribute on mount to avoid the `aria-prohibited-attr` axe rule on the custom-element host.
          */
@@ -2561,7 +2561,7 @@ export namespace Components {
          */
         "disabled": boolean;
         /**
-          * Accessible-name fallback. Used as `aria-label` on the internal input when no `label` slot is provided. Does NOT render visible text — use the `label` slot for that. Matches the cor-button / cor-checkbox / cor-radio convention.
+          * Accessible-name fallback. Used as `aria-label` on the internal input when no `label` slot is provided. Does NOT render visible text — use the `label` slot for that. Matches the mud-button / mud-checkbox / mud-radio convention.
          */
         "label"?: string;
         /**
@@ -2580,16 +2580,16 @@ export namespace Components {
         "value"?: string;
     }
     /**
-     * `cor-tab` — single tab item inside a `cor-tabs` tablist.
-     * Pattern A child: rendered as a slotted child of `cor-tabs`. Owns its own
+     * `mud-tab` — single tab item inside a `mud-tabs` tablist.
+     * Pattern A child: rendered as a slotted child of `mud-tabs`. Owns its own
      * `role="tab"` host with `aria-selected`, an optional leading icon, the
      * label, and an optional trailing numbered badge.
      * The component is intentionally light: selection, focus management and
-     * `aria-controls` wiring are all driven by the parent `cor-tabs` via
+     * `aria-controls` wiring are all driven by the parent `mud-tabs` via
      * reflected attributes and DOM ids.
-     * @element cor-tab
+     * @element mud-tab
      */
-    interface CorTab {
+    interface MudTab {
         /**
           * Optional numbered badge displayed after the label.
          */
@@ -2600,7 +2600,7 @@ export namespace Components {
          */
         "disabled": boolean;
         /**
-          * Optional leading icon name resolved against the `cor-icon` registry.
+          * Optional leading icon name resolved against the `mud-icon` registry.
          */
         "iconName"?: string;
         /**
@@ -2608,7 +2608,7 @@ export namespace Components {
          */
         "label"?: string;
         /**
-          * Id of the panel this tab controls. Set by the parent `cor-tabs`.
+          * Id of the panel this tab controls. Set by the parent `mud-tabs`.
          */
         "panelId"?: string;
         /**
@@ -2622,7 +2622,7 @@ export namespace Components {
          */
         "size": 'md' | 'sm';
         /**
-          * Identity of the tab. Used by the parent `cor-tabs` to track selection.
+          * Identity of the tab. Used by the parent `mud-tabs` to track selection.
          */
         "value": string;
     }
@@ -2631,18 +2631,18 @@ export namespace Components {
      * selection, and responsive mobile collapse.
      * Pattern B (molecule, internal DOM): renders a native `<table>` inside
      * shadow DOM for full a11y semantics (`role="table"`, `role="columnheader"`,
-     * `aria-sort`, `aria-selected`). Composes existing primitives — `cor-checkbox`
-     * for the selection column, `cor-icon` for sort chevrons. Status badges and
+     * `aria-sort`, `aria-selected`). Composes existing primitives — `mud-checkbox`
+     * for the selection column, `mud-icon` for sort chevrons. Status badges and
      * row actions are projected via named slots so consumers can drop in
-     * `cor-tag`, `cor-button`, or any custom content per cell.
+     * `mud-tag`, `mud-button`, or any custom content per cell.
      * At ≤640 px container width the inline padding shrinks from 24 → 16 to
      * match Figma's "Mobile" breakpoint specs (table-header `4930:14358`,
      * table-cell `649:4296`). The table structure itself is preserved; consumers
      * who need a card-stack layout on narrow screens should wrap their own
      * presentation around the data.
-     * @element cor-table
+     * @element mud-table
      */
-    interface CorTable {
+    interface MudTable {
         /**
           * Accessible label propagated to the rendered `<table>` element. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
@@ -2681,7 +2681,7 @@ export namespace Components {
          */
         "selectable": boolean;
         /**
-          * Selected row IDs (controlled). Each entry must correspond to a row's `rowIdField` value (stringified). Toggling rows or the master checkbox emits `corSelectionChange` — the consumer reflects the new array back via this prop.
+          * Selected row IDs (controlled). Each entry must correspond to a row's `rowIdField` value (stringified). Toggling rows or the master checkbox emits `mudSelectionChange` — the consumer reflects the new array back via this prop.
          */
         "selectedRows"?: string[];
         /**
@@ -2694,13 +2694,13 @@ export namespace Components {
         "sortDirection"?: TableSortDirection;
     }
     /**
-     * `cor-tabs` — horizontal tablist that switches the currently visible panel.
+     * `mud-tabs` — horizontal tablist that switches the currently visible panel.
      * Two composition modes:
-     *  1. **Declarative** (recommended for static menus): slot `<cor-tab>` children
+     *  1. **Declarative** (recommended for static menus): slot `<mud-tab>` children
      *     into the default slot and matching `<div slot="panel-{value}">` blocks
      *     into the panel slots.
      *  2. **Data-driven**: pass a `tabs` array. The component renders each entry
-     *     as a child `cor-tab` and exposes panels via `<div slot="panel-{value}">`
+     *     as a child `mud-tab` and exposes panels via `<div slot="panel-{value}">`
      *     elements supplied by the consumer.
      * Pattern A (molecule, slot-based). The host carries `role="tablist"`; the
      * tabs are rendered children with `role="tab"`; the panels are slotted into
@@ -2715,9 +2715,9 @@ export namespace Components {
      * exposes leading + trailing chevron buttons that scroll the strip. Both
      * chevrons are mouse-only; their `aria-hidden="true"` keeps them out of the
      * keyboard order (arrow keys already move selection without overflow help).
-     * @element cor-tabs
+     * @element mud-tabs
      */
-    interface CorTabs {
+    interface MudTabs {
         /**
           * Accessible name for the tablist. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
@@ -2732,7 +2732,7 @@ export namespace Components {
          */
         "size": TabsSize;
         /**
-          * Data-driven tab list. When supplied, the component renders one `<cor-tab>` per entry. Mutually compatible with slotted children — the slotted variant takes precedence when both are present.
+          * Data-driven tab list. When supplied, the component renders one `<mud-tab>` per entry. Mutually compatible with slotted children — the slotted variant takes precedence when both are present.
          */
         "tabs"?: TabDescriptor[];
         /**
@@ -2758,12 +2758,12 @@ export namespace Components {
      * host will adopt `role="status"` automatically — otherwise the host
      * stays silent so visual-only tags don't pollute the a11y tree.
      * For horizontally stacked groups (8 px gutter, wrap on overflow),
-     * compose multiple tags inside a `cor-tag-group` slot wrapper —
+     * compose multiple tags inside a `mud-tag-group` slot wrapper —
      * available as a CSS utility on this element via the `group` data
      * attribute on the parent.
-     * @element cor-tag
+     * @element mud-tag
      */
-    interface CorTag {
+    interface MudTag {
         /**
           * Overrides the accessible name. When set, the host also adopts `role="status"` so screen readers announce the tag as a live status region (e.g. "Procesare în curs").
          */
@@ -2797,12 +2797,12 @@ export namespace Components {
      * Text Area — multi-line text-entry control.
      * Pattern B (atom-interactive, form-associated): renders its own `<textarea>`
      * inside shadow DOM. Form participation works via `formAssociated` +
-     * `ElementInternals`. Mirrors the `cor-input` contract for label, helper,
+     * `ElementInternals`. Mirrors the `mud-input` contract for label, helper,
      * error and variant treatment, and adds a vertical resize handle plus an
      * optional character counter.
-     * @element cor-textarea
+     * @element mud-textarea
      */
-    interface CorTextarea {
+    interface MudTextarea {
         /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
@@ -2895,9 +2895,9 @@ export namespace Components {
      *   second click, `Esc`, or outside click.
      * - `coach` — persistent instructional overlay with a close button + localized
      *   hint. Dismissed only by Esc, the close button, or an outside click.
-     * @element cor-tooltip
+     * @element mud-tooltip
      */
-    interface CorTooltip {
+    interface MudTooltip {
         /**
           * Accessible name applied to the rendered bubble. Stripped from the host after ingestion; the value is forwarded to the bubble's `aria-label`.
          */
@@ -2973,199 +2973,199 @@ export namespace Components {
         "variant": TooltipVariant;
     }
 }
-export interface CorAccordionCustomEvent<T> extends CustomEvent<T> {
+export interface MudAccordionCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorAccordionElement;
+    target: HTMLMudAccordionElement;
 }
-export interface CorAccordionItemCustomEvent<T> extends CustomEvent<T> {
+export interface MudAccordionItemCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorAccordionItemElement;
+    target: HTMLMudAccordionItemElement;
 }
-export interface CorBreadcrumbCustomEvent<T> extends CustomEvent<T> {
+export interface MudBreadcrumbCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorBreadcrumbElement;
+    target: HTMLMudBreadcrumbElement;
 }
-export interface CorBreadcrumbItemCustomEvent<T> extends CustomEvent<T> {
+export interface MudBreadcrumbItemCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorBreadcrumbItemElement;
+    target: HTMLMudBreadcrumbItemElement;
 }
-export interface CorCheckboxCustomEvent<T> extends CustomEvent<T> {
+export interface MudCheckboxCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorCheckboxElement;
+    target: HTMLMudCheckboxElement;
 }
-export interface CorChipCustomEvent<T> extends CustomEvent<T> {
+export interface MudChipCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorChipElement;
+    target: HTMLMudChipElement;
 }
-export interface CorCookieBannerCustomEvent<T> extends CustomEvent<T> {
+export interface MudCookieBannerCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorCookieBannerElement;
+    target: HTMLMudCookieBannerElement;
 }
-export interface CorDateInputCustomEvent<T> extends CustomEvent<T> {
+export interface MudDateInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorDateInputElement;
+    target: HTMLMudDateInputElement;
 }
-export interface CorDatePickerCustomEvent<T> extends CustomEvent<T> {
+export interface MudDatePickerCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorDatePickerElement;
+    target: HTMLMudDatePickerElement;
 }
-export interface CorFileInputCustomEvent<T> extends CustomEvent<T> {
+export interface MudFileInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorFileInputElement;
+    target: HTMLMudFileInputElement;
 }
-export interface CorFileItemCustomEvent<T> extends CustomEvent<T> {
+export interface MudFileItemCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorFileItemElement;
+    target: HTMLMudFileItemElement;
 }
-export interface CorFooterCustomEvent<T> extends CustomEvent<T> {
+export interface MudFooterCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorFooterElement;
+    target: HTMLMudFooterElement;
 }
-export interface CorInputCustomEvent<T> extends CustomEvent<T> {
+export interface MudInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorInputElement;
+    target: HTMLMudInputElement;
 }
-export interface CorInputChipCustomEvent<T> extends CustomEvent<T> {
+export interface MudInputChipCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorInputChipElement;
+    target: HTMLMudInputChipElement;
 }
-export interface CorLogoCustomEvent<T> extends CustomEvent<T> {
+export interface MudLogoCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorLogoElement;
+    target: HTMLMudLogoElement;
 }
-export interface CorModalCustomEvent<T> extends CustomEvent<T> {
+export interface MudModalCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorModalElement;
+    target: HTMLMudModalElement;
 }
-export interface CorNotificationCustomEvent<T> extends CustomEvent<T> {
+export interface MudNotificationCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorNotificationElement;
+    target: HTMLMudNotificationElement;
 }
-export interface CorNumericInputCustomEvent<T> extends CustomEvent<T> {
+export interface MudNumericInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorNumericInputElement;
+    target: HTMLMudNumericInputElement;
 }
-export interface CorPaginationCustomEvent<T> extends CustomEvent<T> {
+export interface MudPaginationCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorPaginationElement;
+    target: HTMLMudPaginationElement;
 }
-export interface CorPhoneInputCustomEvent<T> extends CustomEvent<T> {
+export interface MudPhoneInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorPhoneInputElement;
+    target: HTMLMudPhoneInputElement;
 }
-export interface CorProgressTrackerCustomEvent<T> extends CustomEvent<T> {
+export interface MudProgressTrackerCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorProgressTrackerElement;
+    target: HTMLMudProgressTrackerElement;
 }
-export interface CorRadioCustomEvent<T> extends CustomEvent<T> {
+export interface MudRadioCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorRadioElement;
+    target: HTMLMudRadioElement;
 }
-export interface CorReceiptCustomEvent<T> extends CustomEvent<T> {
+export interface MudReceiptCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorReceiptElement;
+    target: HTMLMudReceiptElement;
 }
-export interface CorSearchInputCircularCustomEvent<T> extends CustomEvent<T> {
+export interface MudSearchInputCircularCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorSearchInputCircularElement;
+    target: HTMLMudSearchInputCircularElement;
 }
-export interface CorSearchInputRectangularCustomEvent<T> extends CustomEvent<T> {
+export interface MudSearchInputRectangularCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorSearchInputRectangularElement;
+    target: HTMLMudSearchInputRectangularElement;
 }
-export interface CorSegmentedControlCustomEvent<T> extends CustomEvent<T> {
+export interface MudSegmentedControlCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorSegmentedControlElement;
+    target: HTMLMudSegmentedControlElement;
 }
-export interface CorSelectInputCustomEvent<T> extends CustomEvent<T> {
+export interface MudSelectInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorSelectInputElement;
+    target: HTMLMudSelectInputElement;
 }
-export interface CorSwitchCustomEvent<T> extends CustomEvent<T> {
+export interface MudSwitchCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorSwitchElement;
+    target: HTMLMudSwitchElement;
 }
-export interface CorTabCustomEvent<T> extends CustomEvent<T> {
+export interface MudTabCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorTabElement;
+    target: HTMLMudTabElement;
 }
-export interface CorTableCustomEvent<T> extends CustomEvent<T> {
+export interface MudTableCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorTableElement;
+    target: HTMLMudTableElement;
 }
-export interface CorTabsCustomEvent<T> extends CustomEvent<T> {
+export interface MudTabsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorTabsElement;
+    target: HTMLMudTabsElement;
 }
-export interface CorTextareaCustomEvent<T> extends CustomEvent<T> {
+export interface MudTextareaCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorTextareaElement;
+    target: HTMLMudTextareaElement;
 }
-export interface CorTooltipCustomEvent<T> extends CustomEvent<T> {
+export interface MudTooltipCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLCorTooltipElement;
+    target: HTMLMudTooltipElement;
 }
 declare global {
-    interface HTMLCorAccordionElementEventMap {
-        "corChange": AccordionChangeDetail;
+    interface HTMLMudAccordionElementEventMap {
+        "mudChange": AccordionChangeDetail;
     }
     /**
      * Accordion — vertical stack of collapsible regions per WAI-ARIA Accordion Pattern.
-     * Pattern A (slot container): coordinates child `cor-accordion-item` elements,
+     * Pattern A (slot container): coordinates child `mud-accordion-item` elements,
      * enforces `mode="single"` exclusivity, manages keyboard traversal across
-     * headers (Arrow Up/Down, Home, End), and dispatches `corChange` whenever the
+     * headers (Arrow Up/Down, Home, End), and dispatches `mudChange` whenever the
      * active set changes.
      * Consumers may either:
-     *   1. Slot `<cor-accordion-item>` children directly (declarative, recommended), or
+     *   1. Slot `<mud-accordion-item>` children directly (declarative, recommended), or
      *   2. Pass an `items` array (data-driven; the accordion renders the items for you).
-     * @element cor-accordion
-     * @fires corChange - Emitted on every open/close. `detail.openIds` lists every
+     * @element mud-accordion
+     * @fires mudChange - Emitted on every open/close. `detail.openIds` lists every
      *              item currently open (single entry in `mode="single"`).
      */
-    interface HTMLCorAccordionElement extends Components.CorAccordion, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorAccordionElementEventMap>(type: K, listener: (this: HTMLCorAccordionElement, ev: CorAccordionCustomEvent<HTMLCorAccordionElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudAccordionElement extends Components.MudAccordion, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudAccordionElementEventMap>(type: K, listener: (this: HTMLMudAccordionElement, ev: MudAccordionCustomEvent<HTMLMudAccordionElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorAccordionElementEventMap>(type: K, listener: (this: HTMLCorAccordionElement, ev: CorAccordionCustomEvent<HTMLCorAccordionElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudAccordionElementEventMap>(type: K, listener: (this: HTMLMudAccordionElement, ev: MudAccordionCustomEvent<HTMLMudAccordionElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorAccordionElement: {
-        prototype: HTMLCorAccordionElement;
-        new (): HTMLCorAccordionElement;
+    var HTMLMudAccordionElement: {
+        prototype: HTMLMudAccordionElement;
+        new (): HTMLMudAccordionElement;
     };
-    interface HTMLCorAccordionItemElementEventMap {
-        "corToggle": {
+    interface HTMLMudAccordionItemElementEventMap {
+        "mudToggle": {
     open: boolean;
     itemId: string;
   };
-        "corAccordionItemKey": { key: string; itemId: string };
+        "mudAccordionItemKey": { key: string; itemId: string };
     }
     /**
-     * Accordion item — a single collapsible row inside `cor-accordion`.
+     * Accordion item — a single collapsible row inside `mud-accordion`.
      * Pattern B (atom-interactive): renders its own header `<button>` and a
      * `<div role="region">` panel inside shadow DOM. The container manages
      * exclusivity in `mode="single"`; the item owns its visual state.
-     * @element cor-accordion-item
-     * @fires corToggle - Fired when the user activates the header. The container
+     * @element mud-accordion-item
+     * @fires mudToggle - Fired when the user activates the header. The container
      *             listens for this and decides whether to honour it
      *             (single-mode collapsing of siblings).
      */
-    interface HTMLCorAccordionItemElement extends Components.CorAccordionItem, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorAccordionItemElementEventMap>(type: K, listener: (this: HTMLCorAccordionItemElement, ev: CorAccordionItemCustomEvent<HTMLCorAccordionItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudAccordionItemElement extends Components.MudAccordionItem, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudAccordionItemElementEventMap>(type: K, listener: (this: HTMLMudAccordionItemElement, ev: MudAccordionItemCustomEvent<HTMLMudAccordionItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorAccordionItemElementEventMap>(type: K, listener: (this: HTMLCorAccordionItemElement, ev: CorAccordionItemCustomEvent<HTMLCorAccordionItemElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudAccordionItemElementEventMap>(type: K, listener: (this: HTMLMudAccordionItemElement, ev: MudAccordionItemCustomEvent<HTMLMudAccordionItemElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorAccordionItemElement: {
-        prototype: HTMLCorAccordionItemElement;
-        new (): HTMLCorAccordionItemElement;
+    var HTMLMudAccordionItemElement: {
+        prototype: HTMLMudAccordionItemElement;
+        new (): HTMLMudAccordionItemElement;
     };
     /**
      * Avatar — represents a user via a photo, initials, or a generic person icon.
@@ -3176,14 +3176,14 @@ declare global {
      *   back to initials (when `name`/`initials` is set) or the person icon.
      * - `initials` — renders 1–2 uppercase letters derived from `initials` or
      *   `name`. If neither is set, the icon fallback kicks in.
-     * - `icon` — renders a `cor-icon` (default `person`).
-     * @element cor-avatar
+     * - `icon` — renders a `mud-icon` (default `person`).
+     * @element mud-avatar
      */
-    interface HTMLCorAvatarElement extends Components.CorAvatar, HTMLStencilElement {
+    interface HTMLMudAvatarElement extends Components.MudAvatar, HTMLStencilElement {
     }
-    var HTMLCorAvatarElement: {
-        prototype: HTMLCorAvatarElement;
-        new (): HTMLCorAvatarElement;
+    var HTMLMudAvatarElement: {
+        prototype: HTMLMudAvatarElement;
+        new (): HTMLMudAvatarElement;
     };
     /**
      * Badge — small, non-interactive status / count indicator.
@@ -3196,100 +3196,100 @@ declare global {
      * Position offsets are exposed as CSS variables (`--badge-offset-top`,
      * `--badge-offset-right`) so consumers can compose without overrides.
      * Pattern B (atom-visual): internal DOM only, no slots, no events.
-     * @element cor-badge
+     * @element mud-badge
      */
-    interface HTMLCorBadgeElement extends Components.CorBadge, HTMLStencilElement {
+    interface HTMLMudBadgeElement extends Components.MudBadge, HTMLStencilElement {
     }
-    var HTMLCorBadgeElement: {
-        prototype: HTMLCorBadgeElement;
-        new (): HTMLCorBadgeElement;
+    var HTMLMudBadgeElement: {
+        prototype: HTMLMudBadgeElement;
+        new (): HTMLMudBadgeElement;
     };
-    interface HTMLCorBreadcrumbElementEventMap {
-        "corSelect": BreadcrumbSelectDetail;
+    interface HTMLMudBreadcrumbElementEventMap {
+        "mudSelect": BreadcrumbSelectDetail;
     }
     /**
      * Breadcrumb — navigational trail showing the user's location in the site hierarchy.
      * Two equivalent authoring modes:
      * 1. **Prop-driven** (preferred for dynamic data): pass `items` as a typed array.
-     * 2. **Slot-driven** (preferred for static markup): nest `<cor-breadcrumb-item>` children.
+     * 2. **Slot-driven** (preferred for static markup): nest `<mud-breadcrumb-item>` children.
      * When both are present, the `items` prop wins.
      * On desktop the full trail renders horizontally. When `maxVisible` is exceeded,
      * intermediate crumbs collapse into an overflow "…" menu. On mobile (≤640px) with
      * `responsive=true`, the trail collapses to a single "‹ Back to {parent}" link
      * per the WAI-ARIA breadcrumb pattern and Figma 69:408.
-     * @element cor-breadcrumb
+     * @element mud-breadcrumb
      */
-    interface HTMLCorBreadcrumbElement extends Components.CorBreadcrumb, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorBreadcrumbElementEventMap>(type: K, listener: (this: HTMLCorBreadcrumbElement, ev: CorBreadcrumbCustomEvent<HTMLCorBreadcrumbElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudBreadcrumbElement extends Components.MudBreadcrumb, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudBreadcrumbElementEventMap>(type: K, listener: (this: HTMLMudBreadcrumbElement, ev: MudBreadcrumbCustomEvent<HTMLMudBreadcrumbElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorBreadcrumbElementEventMap>(type: K, listener: (this: HTMLCorBreadcrumbElement, ev: CorBreadcrumbCustomEvent<HTMLCorBreadcrumbElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudBreadcrumbElementEventMap>(type: K, listener: (this: HTMLMudBreadcrumbElement, ev: MudBreadcrumbCustomEvent<HTMLMudBreadcrumbElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorBreadcrumbElement: {
-        prototype: HTMLCorBreadcrumbElement;
-        new (): HTMLCorBreadcrumbElement;
+    var HTMLMudBreadcrumbElement: {
+        prototype: HTMLMudBreadcrumbElement;
+        new (): HTMLMudBreadcrumbElement;
     };
-    interface HTMLCorBreadcrumbItemElementEventMap {
-        "corSelect": { label: string; href?: string };
+    interface HTMLMudBreadcrumbItemElementEventMap {
+        "mudSelect": { label: string; href?: string };
     }
     /**
-     * A single crumb inside `cor-breadcrumb`. Renders an anchor when `href` is set,
+     * A single crumb inside `mud-breadcrumb`. Renders an anchor when `href` is set,
      * otherwise plain text. The active crumb renders as text with `aria-current="page"`,
      * regardless of `href`.
      * Use this directly when the markup variant of the breadcrumb is preferred over
-     * the `items` prop on `cor-breadcrumb`. Both APIs are equivalent in behavior.
-     * @element cor-breadcrumb-item
+     * the `items` prop on `mud-breadcrumb`. Both APIs are equivalent in behavior.
+     * @element mud-breadcrumb-item
      */
-    interface HTMLCorBreadcrumbItemElement extends Components.CorBreadcrumbItem, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorBreadcrumbItemElementEventMap>(type: K, listener: (this: HTMLCorBreadcrumbItemElement, ev: CorBreadcrumbItemCustomEvent<HTMLCorBreadcrumbItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudBreadcrumbItemElement extends Components.MudBreadcrumbItem, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudBreadcrumbItemElementEventMap>(type: K, listener: (this: HTMLMudBreadcrumbItemElement, ev: MudBreadcrumbItemCustomEvent<HTMLMudBreadcrumbItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorBreadcrumbItemElementEventMap>(type: K, listener: (this: HTMLCorBreadcrumbItemElement, ev: CorBreadcrumbItemCustomEvent<HTMLCorBreadcrumbItemElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudBreadcrumbItemElementEventMap>(type: K, listener: (this: HTMLMudBreadcrumbItemElement, ev: MudBreadcrumbItemCustomEvent<HTMLMudBreadcrumbItemElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorBreadcrumbItemElement: {
-        prototype: HTMLCorBreadcrumbItemElement;
-        new (): HTMLCorBreadcrumbItemElement;
+    var HTMLMudBreadcrumbItemElement: {
+        prototype: HTMLMudBreadcrumbItemElement;
+        new (): HTMLMudBreadcrumbItemElement;
     };
     /**
      * Button — interactive control.
      * Pattern B (atom-interactive): renders its own `<button>` (or `<a>` when `href`
      * is set) inside shadow DOM. Form participation works via `formAssociated` +
      * `ElementInternals`.
-     * @element cor-button
+     * @element mud-button
      */
-    interface HTMLCorButtonElement extends Components.CorButton, HTMLStencilElement {
+    interface HTMLMudButtonElement extends Components.MudButton, HTMLStencilElement {
     }
-    var HTMLCorButtonElement: {
-        prototype: HTMLCorButtonElement;
-        new (): HTMLCorButtonElement;
+    var HTMLMudButtonElement: {
+        prototype: HTMLMudButtonElement;
+        new (): HTMLMudButtonElement;
     };
     /**
-     * Button group — layout container for stacking multiple `cor-button` elements
+     * Button group — layout container for stacking multiple `mud-button` elements
      * with consistent spacing (12px gap) per the AGE Design System.
      * Pure layout primitive: does not propagate props to children, does not emit
      * events, does not manage focus order beyond the natural DOM tab sequence.
-     * Each child `cor-button` controls its own size, variant, and full-width
+     * Each child `mud-button` controls its own size, variant, and full-width
      * behavior independently.
-     * @element cor-button-group
+     * @element mud-button-group
      */
-    interface HTMLCorButtonGroupElement extends Components.CorButtonGroup, HTMLStencilElement {
+    interface HTMLMudButtonGroupElement extends Components.MudButtonGroup, HTMLStencilElement {
     }
-    var HTMLCorButtonGroupElement: {
-        prototype: HTMLCorButtonGroupElement;
-        new (): HTMLCorButtonGroupElement;
+    var HTMLMudButtonGroupElement: {
+        prototype: HTMLMudButtonGroupElement;
+        new (): HTMLMudButtonGroupElement;
     };
-    interface HTMLCorCheckboxElementEventMap {
-        "corChange": CheckboxChangeDetail;
-        "corFocus": FocusEvent;
-        "corBlur": FocusEvent;
+    interface HTMLMudCheckboxElementEventMap {
+        "mudChange": CheckboxChangeDetail;
+        "mudFocus": FocusEvent;
+        "mudBlur": FocusEvent;
     }
     /**
      * Checkbox — boolean / tri-state form control.
@@ -3301,25 +3301,25 @@ declare global {
      *   State = Default | Focus | Error (`invalid`) | Disabled
      *   Size  = Medium (24px) | Small (20px)
      * Indeterminate is a visual-only third state — `checked` semantics are unchanged.
-     * @element cor-checkbox
+     * @element mud-checkbox
      */
-    interface HTMLCorCheckboxElement extends Components.CorCheckbox, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorCheckboxElementEventMap>(type: K, listener: (this: HTMLCorCheckboxElement, ev: CorCheckboxCustomEvent<HTMLCorCheckboxElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudCheckboxElement extends Components.MudCheckbox, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudCheckboxElementEventMap>(type: K, listener: (this: HTMLMudCheckboxElement, ev: MudCheckboxCustomEvent<HTMLMudCheckboxElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorCheckboxElementEventMap>(type: K, listener: (this: HTMLCorCheckboxElement, ev: CorCheckboxCustomEvent<HTMLCorCheckboxElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudCheckboxElementEventMap>(type: K, listener: (this: HTMLMudCheckboxElement, ev: MudCheckboxCustomEvent<HTMLMudCheckboxElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorCheckboxElement: {
-        prototype: HTMLCorCheckboxElement;
-        new (): HTMLCorCheckboxElement;
+    var HTMLMudCheckboxElement: {
+        prototype: HTMLMudCheckboxElement;
+        new (): HTMLMudCheckboxElement;
     };
-    interface HTMLCorChipElementEventMap {
-        "corSelect": ChipSelectEventDetail;
-        "corRemove": void;
+    interface HTMLMudChipElementEventMap {
+        "mudSelect": ChipSelectEventDetail;
+        "mudRemove": void;
     }
     /**
      * Chip — compact, pill-shaped control for filter selection or token display.
@@ -3327,39 +3327,39 @@ declare global {
      * so it participates in tab order and exposes a real accessible role.
      * Two modes:
      * - `type="filter"` (default) — toggleable filter chip. Click flips `selected`
-     *   and emits `corSelect`. Best used inside a chip group for mono- or
+     *   and emits `mudSelect`. Best used inside a chip group for mono- or
      *   multi-selection filtering.
      * - `type="input"` — a discrete value entered by a user (e.g. a tag inside
      *   a search field). When `removable`, a trailing close button is rendered;
-     *   activating it emits `corRemove`.
-     * @element cor-chip
+     *   activating it emits `mudRemove`.
+     * @element mud-chip
      */
-    interface HTMLCorChipElement extends Components.CorChip, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorChipElementEventMap>(type: K, listener: (this: HTMLCorChipElement, ev: CorChipCustomEvent<HTMLCorChipElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudChipElement extends Components.MudChip, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudChipElementEventMap>(type: K, listener: (this: HTMLMudChipElement, ev: MudChipCustomEvent<HTMLMudChipElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorChipElementEventMap>(type: K, listener: (this: HTMLCorChipElement, ev: CorChipCustomEvent<HTMLCorChipElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudChipElementEventMap>(type: K, listener: (this: HTMLMudChipElement, ev: MudChipCustomEvent<HTMLMudChipElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorChipElement: {
-        prototype: HTMLCorChipElement;
-        new (): HTMLCorChipElement;
+    var HTMLMudChipElement: {
+        prototype: HTMLMudChipElement;
+        new (): HTMLMudChipElement;
     };
-    interface HTMLCorCookieBannerElementEventMap {
-        "corAccept": CookieConsentDetail;
-        "corReject": CookieConsentDetail;
-        "corSavePreferences": CookieConsentDetail;
-        "corExpand": void;
-        "corDismiss": void;
+    interface HTMLMudCookieBannerElementEventMap {
+        "mudAccept": CookieConsentDetail;
+        "mudReject": CookieConsentDetail;
+        "mudSavePreferences": CookieConsentDetail;
+        "mudExpand": void;
+        "mudDismiss": void;
     }
     /**
      * Cookie banner — GDPR consent surface (molecule).
      * Pattern B (composed molecule): renders its own header / body / categories /
-     * footer in shadow DOM. Composes `cor-button`, `cor-switch`, `cor-icon`,
-     * `cor-tag` and `cor-separator` for the interactive pieces. The host is a
+     * footer in shadow DOM. Composes `mud-button`, `mud-switch`, `mud-icon`,
+     * `mud-tag` and `mud-separator` for the interactive pieces. The host is a
      * non-modal dialog (`role="dialog" aria-modal="false"`) anchored to the bottom
      * or top edge of the viewport — it does NOT trap focus so the page underneath
      * stays operable.
@@ -3369,30 +3369,30 @@ declare global {
      *   expanded mode.
      * - `variant="detailed"` — same collapsed footprint, but expanding reveals a
      *   category list (necessary / analytics / marketing by default) with per-row
-     *   `cor-switch`. Required categories render a fixed check-mark instead.
+     *   `mud-switch`. Required categories render a fixed check-mark instead.
      * Romanian voice ships as defaults; every label is overridable via the public
      * `@Prop` surface for localisation.
-     * @element cor-cookie-banner
+     * @element mud-cookie-banner
      */
-    interface HTMLCorCookieBannerElement extends Components.CorCookieBanner, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorCookieBannerElementEventMap>(type: K, listener: (this: HTMLCorCookieBannerElement, ev: CorCookieBannerCustomEvent<HTMLCorCookieBannerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudCookieBannerElement extends Components.MudCookieBanner, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudCookieBannerElementEventMap>(type: K, listener: (this: HTMLMudCookieBannerElement, ev: MudCookieBannerCustomEvent<HTMLMudCookieBannerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorCookieBannerElementEventMap>(type: K, listener: (this: HTMLCorCookieBannerElement, ev: CorCookieBannerCustomEvent<HTMLCorCookieBannerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudCookieBannerElementEventMap>(type: K, listener: (this: HTMLMudCookieBannerElement, ev: MudCookieBannerCustomEvent<HTMLMudCookieBannerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorCookieBannerElement: {
-        prototype: HTMLCorCookieBannerElement;
-        new (): HTMLCorCookieBannerElement;
+    var HTMLMudCookieBannerElement: {
+        prototype: HTMLMudCookieBannerElement;
+        new (): HTMLMudCookieBannerElement;
     };
-    interface HTMLCorDateInputElementEventMap {
-        "corInput": DateInputTypingDetail;
-        "corChange": DateInputChangeDetail;
-        "corFocus": FocusEvent;
-        "corBlur": FocusEvent;
+    interface HTMLMudDateInputElementEventMap {
+        "mudInput": DateInputTypingDetail;
+        "mudChange": DateInputChangeDetail;
+        "mudFocus": FocusEvent;
+        "mudBlur": FocusEvent;
     }
     /**
      * Date Input — segment-masked date entry molecule.
@@ -3400,25 +3400,25 @@ declare global {
      * inside shadow DOM and overlays a ghost format hint that lets the unfilled
      * `DD/MM/YYYY` segments stay visible while the user types — matching the
      * "focus: date-populated / month-populated / fully-populated" Figma states.
-     * @element cor-date-input
+     * @element mud-date-input
      */
-    interface HTMLCorDateInputElement extends Components.CorDateInput, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorDateInputElementEventMap>(type: K, listener: (this: HTMLCorDateInputElement, ev: CorDateInputCustomEvent<HTMLCorDateInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudDateInputElement extends Components.MudDateInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudDateInputElementEventMap>(type: K, listener: (this: HTMLMudDateInputElement, ev: MudDateInputCustomEvent<HTMLMudDateInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorDateInputElementEventMap>(type: K, listener: (this: HTMLCorDateInputElement, ev: CorDateInputCustomEvent<HTMLCorDateInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudDateInputElementEventMap>(type: K, listener: (this: HTMLMudDateInputElement, ev: MudDateInputCustomEvent<HTMLMudDateInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorDateInputElement: {
-        prototype: HTMLCorDateInputElement;
-        new (): HTMLCorDateInputElement;
+    var HTMLMudDateInputElement: {
+        prototype: HTMLMudDateInputElement;
+        new (): HTMLMudDateInputElement;
     };
-    interface HTMLCorDatePickerElementEventMap {
-        "corChange": DatePickerChangeDetail;
-        "corMonthChange": DatePickerMonthChangeDetail;
+    interface HTMLMudDatePickerElementEventMap {
+        "mudChange": DatePickerChangeDetail;
+        "mudMonthChange": DatePickerMonthChangeDetail;
     }
     /**
      * Romanian date picker — locale-aware calendar molecule.
@@ -3430,7 +3430,7 @@ declare global {
      * Three breakpoints (visual modes):
      * - `desktop` — 320px elevated card with shadow.
      * - `mobile` — full-width bottom-sheet style with drag handle.
-     * - `docked` — compact (no shadow) intended to attach beneath a `cor-date-input`.
+     * - `docked` — compact (no shadow) intended to attach beneath a `mud-date-input`.
      * All weekday + month labels come from `Intl.DateTimeFormat` so the locale prop drives the language —
      * no hard-coded strings. Romanian (`ro-RO`) is the default.
      * Keyboard:
@@ -3439,92 +3439,92 @@ declare global {
      * - Shift+PageUp/PageDown change year
      * - Home/End jump to the start/end of the visible week
      * - Enter/Space selects the focused day
-     * @element cor-date-picker
+     * @element mud-date-picker
      */
-    interface HTMLCorDatePickerElement extends Components.CorDatePicker, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorDatePickerElementEventMap>(type: K, listener: (this: HTMLCorDatePickerElement, ev: CorDatePickerCustomEvent<HTMLCorDatePickerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudDatePickerElement extends Components.MudDatePicker, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudDatePickerElementEventMap>(type: K, listener: (this: HTMLMudDatePickerElement, ev: MudDatePickerCustomEvent<HTMLMudDatePickerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorDatePickerElementEventMap>(type: K, listener: (this: HTMLCorDatePickerElement, ev: CorDatePickerCustomEvent<HTMLCorDatePickerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudDatePickerElementEventMap>(type: K, listener: (this: HTMLMudDatePickerElement, ev: MudDatePickerCustomEvent<HTMLMudDatePickerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorDatePickerElement: {
-        prototype: HTMLCorDatePickerElement;
-        new (): HTMLCorDatePickerElement;
+    var HTMLMudDatePickerElement: {
+        prototype: HTMLMudDatePickerElement;
+        new (): HTMLMudDatePickerElement;
     };
-    interface HTMLCorFileInputElementEventMap {
-        "corChange": FileInputChangeDetail;
-        "corDragEnter": DragEvent;
-        "corDragLeave": DragEvent;
-        "corDrop": FileInputDropDetail;
-        "corRemove": FileInputRemoveDetail;
-        "corError": FileInputErrorDetail;
+    interface HTMLMudFileInputElementEventMap {
+        "mudChange": FileInputChangeDetail;
+        "mudDragEnter": DragEvent;
+        "mudDragLeave": DragEvent;
+        "mudDrop": FileInputDropDetail;
+        "mudRemove": FileInputRemoveDetail;
+        "mudError": FileInputErrorDetail;
     }
     /**
      * File Input — drag-and-drop / click-to-browse file selection molecule.
      * Pattern B (molecule, internal DOM, form-associated): the host owns a hidden
      * native `<input type="file">` for the browse path, manages the drop zone
      * affordance, validates by `accept` / `maxSize` / `maxFiles`, and renders a
-     * per-file list of `cor-file-item` rows. Citizens get keyboard parity (Tab
+     * per-file list of `mud-file-item` rows. Citizens get keyboard parity (Tab
      * to focus, Enter/Space to open the picker) and a `role="status"` live region
      * that announces add / remove / reject events.
      * The component owns SELECTION + VALIDATION + DISPLAY. Real upload (progress,
-     * network errors, retries) is consumer-driven via the `corChange` event.
+     * network errors, retries) is consumer-driven via the `mudChange` event.
      * State model (no style axis — Figma is state-only):
      *   default → hover → focus → active (drag-over) → disabled
      *   `invalid` is a separate validation flag that recolors the dashed border red
      *   without introducing a style variant.
-     * @element cor-file-input
+     * @element mud-file-input
      */
-    interface HTMLCorFileInputElement extends Components.CorFileInput, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorFileInputElementEventMap>(type: K, listener: (this: HTMLCorFileInputElement, ev: CorFileInputCustomEvent<HTMLCorFileInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudFileInputElement extends Components.MudFileInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudFileInputElementEventMap>(type: K, listener: (this: HTMLMudFileInputElement, ev: MudFileInputCustomEvent<HTMLMudFileInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorFileInputElementEventMap>(type: K, listener: (this: HTMLCorFileInputElement, ev: CorFileInputCustomEvent<HTMLCorFileInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudFileInputElementEventMap>(type: K, listener: (this: HTMLMudFileInputElement, ev: MudFileInputCustomEvent<HTMLMudFileInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorFileInputElement: {
-        prototype: HTMLCorFileInputElement;
-        new (): HTMLCorFileInputElement;
+    var HTMLMudFileInputElement: {
+        prototype: HTMLMudFileInputElement;
+        new (): HTMLMudFileInputElement;
     };
-    interface HTMLCorFileItemElementEventMap {
-        "corRemove": FileItemRemoveDetail;
+    interface HTMLMudFileItemElementEventMap {
+        "mudRemove": FileItemRemoveDetail;
     }
     /**
-     * File Item — single-file row inside `cor-file-input` (or any file list surface).
+     * File Item — single-file row inside `mud-file-input` (or any file list surface).
      * Pattern B (atom, internal DOM): renders filename + meta (size / error message)
      * + state icon + remove button. The remove button is the only interactive
      * element; the row itself is not focusable so it cannot trap citizens who tab
      * past a long list.
-     * @element cor-file-item
+     * @element mud-file-item
      */
-    interface HTMLCorFileItemElement extends Components.CorFileItem, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorFileItemElementEventMap>(type: K, listener: (this: HTMLCorFileItemElement, ev: CorFileItemCustomEvent<HTMLCorFileItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudFileItemElement extends Components.MudFileItem, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudFileItemElementEventMap>(type: K, listener: (this: HTMLMudFileItemElement, ev: MudFileItemCustomEvent<HTMLMudFileItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorFileItemElementEventMap>(type: K, listener: (this: HTMLCorFileItemElement, ev: CorFileItemCustomEvent<HTMLCorFileItemElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudFileItemElementEventMap>(type: K, listener: (this: HTMLMudFileItemElement, ev: MudFileItemCustomEvent<HTMLMudFileItemElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorFileItemElement: {
-        prototype: HTMLCorFileItemElement;
-        new (): HTMLCorFileItemElement;
+    var HTMLMudFileItemElement: {
+        prototype: HTMLMudFileItemElement;
+        new (): HTMLMudFileItemElement;
     };
-    interface HTMLCorFooterElementEventMap {
-        "corLocaleChange": FooterLocaleChangeDetail;
+    interface HTMLMudFooterElementEventMap {
+        "mudLocaleChange": FooterLocaleChangeDetail;
     }
     /**
      * Page footer — civic, multi-section organism for AGE / EVO platforms.
      * Pattern B (composed organism): renders all sections inside shadow DOM and
-     * composes `cor-link`, `cor-logo`, and `cor-icon` for atomic pieces. The host
+     * composes `mud-link`, `mud-logo`, and `mud-icon` for atomic pieces. The host
      * carries `role="contentinfo"` so screen readers announce it as the page
      * footer landmark.
      * Two variants share one element:
@@ -3537,21 +3537,21 @@ declare global {
      *   (modals, embedded apps) where the full footer is too tall.
      * Romanian voice ships as defaults; every visible string is overridable via
      * the public `@Prop` surface or the `branding` / `sections` slots.
-     * @element cor-footer
+     * @element mud-footer
      */
-    interface HTMLCorFooterElement extends Components.CorFooter, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorFooterElementEventMap>(type: K, listener: (this: HTMLCorFooterElement, ev: CorFooterCustomEvent<HTMLCorFooterElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudFooterElement extends Components.MudFooter, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudFooterElementEventMap>(type: K, listener: (this: HTMLMudFooterElement, ev: MudFooterCustomEvent<HTMLMudFooterElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorFooterElementEventMap>(type: K, listener: (this: HTMLCorFooterElement, ev: CorFooterCustomEvent<HTMLCorFooterElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudFooterElementEventMap>(type: K, listener: (this: HTMLMudFooterElement, ev: MudFooterCustomEvent<HTMLMudFooterElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorFooterElement: {
-        prototype: HTMLCorFooterElement;
-        new (): HTMLCorFooterElement;
+    var HTMLMudFooterElement: {
+        prototype: HTMLMudFooterElement;
+        new (): HTMLMudFooterElement;
     };
     /**
      * Icon — renders an inline SVG fetched on-demand from per-size asset files.
@@ -3560,19 +3560,19 @@ declare global {
      * When the exact `size`/`name` combination is missing from the manifest, the
      * provider falls back to the closest larger size (preferred) and then to the
      * largest smaller size before giving up.
-     * @element cor-icon
+     * @element mud-icon
      */
-    interface HTMLCorIconElement extends Components.CorIcon, HTMLStencilElement {
+    interface HTMLMudIconElement extends Components.MudIcon, HTMLStencilElement {
     }
-    var HTMLCorIconElement: {
-        prototype: HTMLCorIconElement;
-        new (): HTMLCorIconElement;
+    var HTMLMudIconElement: {
+        prototype: HTMLMudIconElement;
+        new (): HTMLMudIconElement;
     };
-    interface HTMLCorInputElementEventMap {
-        "corInput": InputChangeDetail;
-        "corChange": InputChangeDetail;
-        "corFocus": FocusEvent;
-        "corBlur": FocusEvent;
+    interface HTMLMudInputElementEventMap {
+        "mudInput": InputChangeDetail;
+        "mudChange": InputChangeDetail;
+        "mudFocus": FocusEvent;
+        "mudBlur": FocusEvent;
     }
     /**
      * Input — single-line text-entry control.
@@ -3580,29 +3580,29 @@ declare global {
      * inside shadow DOM. Form participation works via `formAssociated` +
      * `ElementInternals`. The component is the canonical text-input primitive;
      * specialised inputs (date, search, phone, etc.) compose around it.
-     * @element cor-input
+     * @element mud-input
      */
-    interface HTMLCorInputElement extends Components.CorInput, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorInputElementEventMap>(type: K, listener: (this: HTMLCorInputElement, ev: CorInputCustomEvent<HTMLCorInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudInputElement extends Components.MudInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudInputElementEventMap>(type: K, listener: (this: HTMLMudInputElement, ev: MudInputCustomEvent<HTMLMudInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorInputElementEventMap>(type: K, listener: (this: HTMLCorInputElement, ev: CorInputCustomEvent<HTMLCorInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudInputElementEventMap>(type: K, listener: (this: HTMLMudInputElement, ev: MudInputCustomEvent<HTMLMudInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorInputElement: {
-        prototype: HTMLCorInputElement;
-        new (): HTMLCorInputElement;
+    var HTMLMudInputElement: {
+        prototype: HTMLMudInputElement;
+        new (): HTMLMudInputElement;
     };
-    interface HTMLCorInputChipElementEventMap {
-        "corChange": InputChipChangeDetail;
-        "corChipAdd": InputChipAddDetail;
-        "corChipRemove": InputChipRemoveDetail;
-        "corError": InputChipErrorDetail;
-        "corFocus": FocusEvent;
-        "corBlur": FocusEvent;
+    interface HTMLMudInputChipElementEventMap {
+        "mudChange": InputChipChangeDetail;
+        "mudChipAdd": InputChipAddDetail;
+        "mudChipRemove": InputChipRemoveDetail;
+        "mudError": InputChipErrorDetail;
+        "mudFocus": FocusEvent;
+        "mudBlur": FocusEvent;
     }
     /**
      * Input Chip — multi-value text-entry control where each confirmed value
@@ -3616,21 +3616,21 @@ declare global {
      *   - a `role="status"` live region that announces add / remove / reject.
      * The form value submitted to the surrounding `<form>` is a JSON-encoded
      * array of strings (e.g. `["a@b.md","c@d.md"]`) when a `name` is set.
-     * @element cor-input-chip
+     * @element mud-input-chip
      */
-    interface HTMLCorInputChipElement extends Components.CorInputChip, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorInputChipElementEventMap>(type: K, listener: (this: HTMLCorInputChipElement, ev: CorInputChipCustomEvent<HTMLCorInputChipElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudInputChipElement extends Components.MudInputChip, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudInputChipElementEventMap>(type: K, listener: (this: HTMLMudInputChipElement, ev: MudInputChipCustomEvent<HTMLMudInputChipElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorInputChipElementEventMap>(type: K, listener: (this: HTMLCorInputChipElement, ev: CorInputChipCustomEvent<HTMLCorInputChipElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudInputChipElementEventMap>(type: K, listener: (this: HTMLMudInputChipElement, ev: MudInputChipCustomEvent<HTMLMudInputChipElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorInputChipElement: {
-        prototype: HTMLCorInputChipElement;
-        new (): HTMLCorInputChipElement;
+    var HTMLMudInputChipElement: {
+        prototype: HTMLMudInputChipElement;
+        new (): HTMLMudInputChipElement;
     };
     /**
      * Link — interactive navigational atom.
@@ -3641,16 +3641,16 @@ declare global {
      * is set, `rel="noopener noreferrer"` is auto-applied and a small external-link
      * indicator is rendered after the label unless the consumer explicitly opts out
      * via `external="false"`.
-     * @element cor-link
+     * @element mud-link
      */
-    interface HTMLCorLinkElement extends Components.CorLink, HTMLStencilElement {
+    interface HTMLMudLinkElement extends Components.MudLink, HTMLStencilElement {
     }
-    var HTMLCorLinkElement: {
-        prototype: HTMLCorLinkElement;
-        new (): HTMLCorLinkElement;
+    var HTMLMudLinkElement: {
+        prototype: HTMLMudLinkElement;
+        new (): HTMLMudLinkElement;
     };
-    interface HTMLCorLogoElementEventMap {
-        "corLogoError": { name: string; reason: 'unknown' | 'fetch-failed' };
+    interface HTMLMudLogoElementEventMap {
+        "mudLogoError": { name: string; reason: 'unknown' | 'fetch-failed' };
     }
     /**
      * Brand logo for Moldovan M-products.
@@ -3661,27 +3661,27 @@ declare global {
      * "just works" without a CSS contract change.
      * Consumers that need to reserve layout space before the async fetch
      * resolves (e.g. above-the-fold marketing, dense grids) should wrap the
-     * logo in a sized container — `cor-service-button` does this for its
+     * logo in a sized container — `mud-service-button` does this for its
      * `badge` slot (24 × 24).
-     * @element cor-logo
+     * @element mud-logo
      */
-    interface HTMLCorLogoElement extends Components.CorLogo, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorLogoElementEventMap>(type: K, listener: (this: HTMLCorLogoElement, ev: CorLogoCustomEvent<HTMLCorLogoElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudLogoElement extends Components.MudLogo, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudLogoElementEventMap>(type: K, listener: (this: HTMLMudLogoElement, ev: MudLogoCustomEvent<HTMLMudLogoElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorLogoElementEventMap>(type: K, listener: (this: HTMLCorLogoElement, ev: CorLogoCustomEvent<HTMLCorLogoElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudLogoElementEventMap>(type: K, listener: (this: HTMLMudLogoElement, ev: MudLogoCustomEvent<HTMLMudLogoElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorLogoElement: {
-        prototype: HTMLCorLogoElement;
-        new (): HTMLCorLogoElement;
+    var HTMLMudLogoElement: {
+        prototype: HTMLMudLogoElement;
+        new (): HTMLMudLogoElement;
     };
-    interface HTMLCorModalElementEventMap {
-        "corOpen": void;
-        "corClose": ModalCloseEvent;
+    interface HTMLMudModalElementEventMap {
+        "mudOpen": void;
+        "mudClose": ModalCloseEvent;
     }
     /**
      * Modal — overlay dialog molecule.
@@ -3699,29 +3699,29 @@ declare global {
      * - `default` — title + close button (text-only header)
      * - `with-image` — full-bleed hero image at top with overlaid close button
      * - `with-icon` — leading 48px icon above the body content (no top header bar)
-     * Dismiss reasons routed through `corClose<{reason}>`:
+     * Dismiss reasons routed through `mudClose<{reason}>`:
      * - `backdrop` — click on backdrop (suppressed by `closeOnBackdrop=false`)
      * - `escape` — ESC keypress (suppressed by `closeOnEscape=false`)
      * - `close-button` — trailing × button activated
      * - `action` — programmatic via `closeModal('action')`, used by footer buttons
-     * @element cor-modal
+     * @element mud-modal
      */
-    interface HTMLCorModalElement extends Components.CorModal, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorModalElementEventMap>(type: K, listener: (this: HTMLCorModalElement, ev: CorModalCustomEvent<HTMLCorModalElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudModalElement extends Components.MudModal, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudModalElementEventMap>(type: K, listener: (this: HTMLMudModalElement, ev: MudModalCustomEvent<HTMLMudModalElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorModalElementEventMap>(type: K, listener: (this: HTMLCorModalElement, ev: CorModalCustomEvent<HTMLCorModalElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudModalElementEventMap>(type: K, listener: (this: HTMLMudModalElement, ev: MudModalCustomEvent<HTMLMudModalElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorModalElement: {
-        prototype: HTMLCorModalElement;
-        new (): HTMLCorModalElement;
+    var HTMLMudModalElement: {
+        prototype: HTMLMudModalElement;
+        new (): HTMLMudModalElement;
     };
-    interface HTMLCorNotificationElementEventMap {
-        "corClose": void;
+    interface HTMLMudNotificationElementEventMap {
+        "mudClose": void;
     }
     /**
      * Notification — semantic messaging banner.
@@ -3737,35 +3737,35 @@ declare global {
      * Live-region routing:
      * - `info` / `positive` / `neutral` → `role="status"` + `aria-live="polite"`
      * - `warning` / `danger` → `role="alert"` + `aria-live="assertive"`
-     * @element cor-notification
+     * @element mud-notification
      */
-    interface HTMLCorNotificationElement extends Components.CorNotification, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorNotificationElementEventMap>(type: K, listener: (this: HTMLCorNotificationElement, ev: CorNotificationCustomEvent<HTMLCorNotificationElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudNotificationElement extends Components.MudNotification, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudNotificationElementEventMap>(type: K, listener: (this: HTMLMudNotificationElement, ev: MudNotificationCustomEvent<HTMLMudNotificationElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorNotificationElementEventMap>(type: K, listener: (this: HTMLCorNotificationElement, ev: CorNotificationCustomEvent<HTMLCorNotificationElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudNotificationElementEventMap>(type: K, listener: (this: HTMLMudNotificationElement, ev: MudNotificationCustomEvent<HTMLMudNotificationElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorNotificationElement: {
-        prototype: HTMLCorNotificationElement;
-        new (): HTMLCorNotificationElement;
+    var HTMLMudNotificationElement: {
+        prototype: HTMLMudNotificationElement;
+        new (): HTMLMudNotificationElement;
     };
-    interface HTMLCorNumericInputElementEventMap {
-        "corInput": NumericInputChangeDetail;
-        "corChange": NumericInputChangeDetail;
-        "corStep": NumericInputStepDetail;
-        "corError": NumericInputErrorDetail;
-        "corFocus": FocusEvent;
-        "corBlur": FocusEvent;
+    interface HTMLMudNumericInputElementEventMap {
+        "mudInput": NumericInputChangeDetail;
+        "mudChange": NumericInputChangeDetail;
+        "mudStep": NumericInputStepDetail;
+        "mudError": NumericInputErrorDetail;
+        "mudFocus": FocusEvent;
+        "mudBlur": FocusEvent;
     }
     /**
      * Numeric Input — numeric-entry control with stacked step buttons.
      * Pattern B (atom-interactive, form-associated): renders its own `<input>`
      * inside shadow DOM and pairs it with a trailing stepper stack (chevron-up
-     * over chevron-bottom). Shares the visual primitives of `cor-input` (border,
+     * over chevron-bottom). Shares the visual primitives of `mud-input` (border,
      * focus ring, label, helper / error, sizes, states) and adds a
      * `--numeric-input-stepper-*` token namespace for the increment / decrement
      * affordance.
@@ -3775,24 +3775,24 @@ declare global {
      * `min`/`max` clamping. The component delegates parsing + clamping to its own
      * logic and exposes `inputmode="decimal"` so mobile devices still surface the
      * numeric keypad.
-     * @element cor-numeric-input
+     * @element mud-numeric-input
      */
-    interface HTMLCorNumericInputElement extends Components.CorNumericInput, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorNumericInputElementEventMap>(type: K, listener: (this: HTMLCorNumericInputElement, ev: CorNumericInputCustomEvent<HTMLCorNumericInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudNumericInputElement extends Components.MudNumericInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudNumericInputElementEventMap>(type: K, listener: (this: HTMLMudNumericInputElement, ev: MudNumericInputCustomEvent<HTMLMudNumericInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorNumericInputElementEventMap>(type: K, listener: (this: HTMLCorNumericInputElement, ev: CorNumericInputCustomEvent<HTMLCorNumericInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudNumericInputElementEventMap>(type: K, listener: (this: HTMLMudNumericInputElement, ev: MudNumericInputCustomEvent<HTMLMudNumericInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorNumericInputElement: {
-        prototype: HTMLCorNumericInputElement;
-        new (): HTMLCorNumericInputElement;
+    var HTMLMudNumericInputElement: {
+        prototype: HTMLMudNumericInputElement;
+        new (): HTMLMudNumericInputElement;
     };
-    interface HTMLCorPaginationElementEventMap {
-        "corChange": PaginationChangeDetail;
+    interface HTMLMudPaginationElementEventMap {
+        "mudChange": PaginationChangeDetail;
     }
     /**
      * Pagination — navigation control for paged content.
@@ -3802,36 +3802,36 @@ declare global {
      * window, an interactive overflow button (`…`) collapses the skipped range
      * and lets users jump directly to any of those pages via a dropdown menu
      * (Figma "overflow-active" interaction).
-     * The component is internally controlled but exposes a `corChange` event so
+     * The component is internally controlled but exposes a `mudChange` event so
      * the host can drive the active page. Updating `current-page` from outside
      * is also honoured (e.g. when the URL changes via routing).
      * Previous / Next buttons are hidden at the boundaries (page 1 hides Prev,
      * the last page hides Next) instead of being rendered in a disabled state —
      * this matches the Figma "first-page" / "last-page" specification.
-     * @element cor-pagination
+     * @element mud-pagination
      */
-    interface HTMLCorPaginationElement extends Components.CorPagination, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorPaginationElementEventMap>(type: K, listener: (this: HTMLCorPaginationElement, ev: CorPaginationCustomEvent<HTMLCorPaginationElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudPaginationElement extends Components.MudPagination, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudPaginationElementEventMap>(type: K, listener: (this: HTMLMudPaginationElement, ev: MudPaginationCustomEvent<HTMLMudPaginationElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorPaginationElementEventMap>(type: K, listener: (this: HTMLCorPaginationElement, ev: CorPaginationCustomEvent<HTMLCorPaginationElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudPaginationElementEventMap>(type: K, listener: (this: HTMLMudPaginationElement, ev: MudPaginationCustomEvent<HTMLMudPaginationElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorPaginationElement: {
-        prototype: HTMLCorPaginationElement;
-        new (): HTMLCorPaginationElement;
+    var HTMLMudPaginationElement: {
+        prototype: HTMLMudPaginationElement;
+        new (): HTMLMudPaginationElement;
     };
-    interface HTMLCorPhoneInputElementEventMap {
-        "corInput": PhoneInputInputDetail;
-        "corChange": PhoneInputChangeDetail;
-        "corCountryChange": PhoneInputCountryChangeDetail;
-        "corOpen": void;
-        "corClose": void;
-        "corFocus": FocusEvent;
-        "corBlur": FocusEvent;
+    interface HTMLMudPhoneInputElementEventMap {
+        "mudInput": PhoneInputInputDetail;
+        "mudChange": PhoneInputChangeDetail;
+        "mudCountryChange": PhoneInputCountryChangeDetail;
+        "mudOpen": void;
+        "mudClose": void;
+        "mudFocus": FocusEvent;
+        "mudBlur": FocusEvent;
     }
     /**
      * Phone Input — phone-number entry molecule with country-code prefix and
@@ -3844,24 +3844,24 @@ declare global {
      * default) or a combobox that opens a country listbox (`type="international"`).
      * Form participation works via `formAssociated` + `ElementInternals`; the
      * form value is the canonical E.164 string (`+37362123456`).
-     * @element cor-phone-input
+     * @element mud-phone-input
      */
-    interface HTMLCorPhoneInputElement extends Components.CorPhoneInput, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorPhoneInputElementEventMap>(type: K, listener: (this: HTMLCorPhoneInputElement, ev: CorPhoneInputCustomEvent<HTMLCorPhoneInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudPhoneInputElement extends Components.MudPhoneInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudPhoneInputElementEventMap>(type: K, listener: (this: HTMLMudPhoneInputElement, ev: MudPhoneInputCustomEvent<HTMLMudPhoneInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorPhoneInputElementEventMap>(type: K, listener: (this: HTMLCorPhoneInputElement, ev: CorPhoneInputCustomEvent<HTMLCorPhoneInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudPhoneInputElementEventMap>(type: K, listener: (this: HTMLMudPhoneInputElement, ev: MudPhoneInputCustomEvent<HTMLMudPhoneInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorPhoneInputElement: {
-        prototype: HTMLCorPhoneInputElement;
-        new (): HTMLCorPhoneInputElement;
+    var HTMLMudPhoneInputElement: {
+        prototype: HTMLMudPhoneInputElement;
+        new (): HTMLMudPhoneInputElement;
     };
-    interface HTMLCorProgressTrackerElementEventMap {
-        "corStepClick": ProgressTrackerStepClickDetail;
+    interface HTMLMudProgressTrackerElementEventMap {
+        "mudStepClick": ProgressTrackerStepClickDetail;
     }
     /**
      * Progress Tracker (Stepper) — visualises a user's position in a multi-step process.
@@ -3870,7 +3870,7 @@ declare global {
      *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
      *   submissions where the parent app drives navigation.
      * - **Interactive tracker** (`interactive=true`) — each completed (and the current)
-     *   step renders as a `<button>` and emits `corStepClick`. Pending steps remain
+     *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
      *   non-actionable per the WAI-ARIA stepper pattern.
      * State legend (Figma node 267:6905):
      *   - `pending`    — neutral grey ring + faded number
@@ -3879,26 +3879,26 @@ declare global {
      *   - `error`      — danger ring + danger cross
      * The component renders an ordered list with `role="list"` for AT compatibility
      * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
-     * @element cor-progress-tracker
+     * @element mud-progress-tracker
      */
-    interface HTMLCorProgressTrackerElement extends Components.CorProgressTracker, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorProgressTrackerElementEventMap>(type: K, listener: (this: HTMLCorProgressTrackerElement, ev: CorProgressTrackerCustomEvent<HTMLCorProgressTrackerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudProgressTrackerElement extends Components.MudProgressTracker, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudProgressTrackerElementEventMap>(type: K, listener: (this: HTMLMudProgressTrackerElement, ev: MudProgressTrackerCustomEvent<HTMLMudProgressTrackerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorProgressTrackerElementEventMap>(type: K, listener: (this: HTMLCorProgressTrackerElement, ev: CorProgressTrackerCustomEvent<HTMLCorProgressTrackerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudProgressTrackerElementEventMap>(type: K, listener: (this: HTMLMudProgressTrackerElement, ev: MudProgressTrackerCustomEvent<HTMLMudProgressTrackerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorProgressTrackerElement: {
-        prototype: HTMLCorProgressTrackerElement;
-        new (): HTMLCorProgressTrackerElement;
+    var HTMLMudProgressTrackerElement: {
+        prototype: HTMLMudProgressTrackerElement;
+        new (): HTMLMudProgressTrackerElement;
     };
-    interface HTMLCorRadioElementEventMap {
-        "corChange": RadioChangeDetail;
-        "corFocus": FocusEvent;
-        "corBlur": FocusEvent;
+    interface HTMLMudRadioElementEventMap {
+        "mudChange": RadioChangeDetail;
+        "mudFocus": FocusEvent;
+        "mudBlur": FocusEvent;
     }
     /**
      * Radio — single-select form input atom.
@@ -3906,36 +3906,36 @@ declare global {
      * `<input type="radio">` inside shadow DOM and paints the visual circle
      * with CSS. Form participation works via `formAssociated` +
      * `ElementInternals.setFormValue`. The component is the standalone radio
-     * primitive; a future `cor-radio-group` molecule will manage roving focus
+     * primitive; a future `mud-radio-group` molecule will manage roving focus
      * and `name`-based exclusivity across siblings.
-     * @element cor-radio
+     * @element mud-radio
      */
-    interface HTMLCorRadioElement extends Components.CorRadio, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorRadioElementEventMap>(type: K, listener: (this: HTMLCorRadioElement, ev: CorRadioCustomEvent<HTMLCorRadioElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudRadioElement extends Components.MudRadio, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudRadioElementEventMap>(type: K, listener: (this: HTMLMudRadioElement, ev: MudRadioCustomEvent<HTMLMudRadioElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorRadioElementEventMap>(type: K, listener: (this: HTMLCorRadioElement, ev: CorRadioCustomEvent<HTMLCorRadioElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudRadioElementEventMap>(type: K, listener: (this: HTMLMudRadioElement, ev: MudRadioCustomEvent<HTMLMudRadioElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorRadioElement: {
-        prototype: HTMLCorRadioElement;
-        new (): HTMLCorRadioElement;
+    var HTMLMudRadioElement: {
+        prototype: HTMLMudRadioElement;
+        new (): HTMLMudRadioElement;
     };
-    interface HTMLCorReceiptElementEventMap {
-        "corDownload": ReceiptActionDetail;
-        "corShare": ReceiptActionDetail;
-        "corEmail": ReceiptActionDetail;
-        "corPrint": ReceiptActionDetail;
+    interface HTMLMudReceiptElementEventMap {
+        "mudDownload": ReceiptActionDetail;
+        "mudShare": ReceiptActionDetail;
+        "mudEmail": ReceiptActionDetail;
+        "mudPrint": ReceiptActionDetail;
     }
     /**
      * Receipt — confirmation surface for a finished Moldovan e-Gov transaction
      * (molecule).
      * Pattern B (composed molecule): renders its own header / amount block /
-     * details list / QR / footer in shadow DOM. Composes `cor-logo`, `cor-tag`,
-     * and `cor-button` for the interactive pieces.
+     * details list / QR / footer in shadow DOM. Composes `mud-logo`, `mud-tag`,
+     * and `mud-button` for the interactive pieces.
      * Four sibling variants share one element via the `service` attribute —
      * each maps to one of the e-Gov properties:
      * - `service="mpay"` (default) — payment receipt
@@ -3951,29 +3951,29 @@ declare global {
      * receipt without the surrounding UI bleeding through.
      * Romanian voice ships as defaults; every label is overridable via the
      * public `@Prop` surface for localisation.
-     * @element cor-receipt
+     * @element mud-receipt
      */
-    interface HTMLCorReceiptElement extends Components.CorReceipt, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorReceiptElementEventMap>(type: K, listener: (this: HTMLCorReceiptElement, ev: CorReceiptCustomEvent<HTMLCorReceiptElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudReceiptElement extends Components.MudReceipt, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudReceiptElementEventMap>(type: K, listener: (this: HTMLMudReceiptElement, ev: MudReceiptCustomEvent<HTMLMudReceiptElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorReceiptElementEventMap>(type: K, listener: (this: HTMLCorReceiptElement, ev: CorReceiptCustomEvent<HTMLCorReceiptElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudReceiptElementEventMap>(type: K, listener: (this: HTMLMudReceiptElement, ev: MudReceiptCustomEvent<HTMLMudReceiptElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorReceiptElement: {
-        prototype: HTMLCorReceiptElement;
-        new (): HTMLCorReceiptElement;
+    var HTMLMudReceiptElement: {
+        prototype: HTMLMudReceiptElement;
+        new (): HTMLMudReceiptElement;
     };
-    interface HTMLCorSearchInputCircularElementEventMap {
-        "corInput": SearchInputCircularChangeDetail;
-        "corChange": SearchInputCircularChangeDetail;
-        "corSearch": SearchInputCircularSearchDetail;
-        "corClear": void;
-        "corFocus": FocusEvent;
-        "corBlur": FocusEvent;
+    interface HTMLMudSearchInputCircularElementEventMap {
+        "mudInput": SearchInputCircularChangeDetail;
+        "mudChange": SearchInputCircularChangeDetail;
+        "mudSearch": SearchInputCircularSearchDetail;
+        "mudClear": void;
+        "mudFocus": FocusEvent;
+        "mudBlur": FocusEvent;
     }
     /**
      * Search Input (circular) — single-line search-entry control with a fully
@@ -3983,7 +3983,7 @@ declare global {
      * icon and an optional trailing clear `×` button that appears whenever the
      * control carries a value. Behavior, props, slots, events, keyboard contract,
      * ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
-     * `cor-search-input-rectangular` — the only visual difference is the
+     * `mud-search-input-rectangular` — the only visual difference is the
      * silhouette: corners flip to `borderRadius.full` (9999px). The trailing
      * submit button (when `with-button` is set) inherits the pill silhouette via
      * `borderRadius.full`, rendering as a perfect circle that hugs the pill end
@@ -3996,31 +3996,31 @@ declare global {
      * - `loading` — async query is in flight; a trailing spinner appears next to
      *   the value/placeholder and the control is announced as `aria-busy`.
      * - `with-button` — adds a trailing brand-blue circular submit button that
-     *   fires `corSearch` on click. Coexists with the clear button and the
+     *   fires `mudSearch` on click. Coexists with the clear button and the
      *   loading spinner.
-     * @element cor-search-input-circular
+     * @element mud-search-input-circular
      */
-    interface HTMLCorSearchInputCircularElement extends Components.CorSearchInputCircular, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorSearchInputCircularElementEventMap>(type: K, listener: (this: HTMLCorSearchInputCircularElement, ev: CorSearchInputCircularCustomEvent<HTMLCorSearchInputCircularElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudSearchInputCircularElement extends Components.MudSearchInputCircular, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudSearchInputCircularElementEventMap>(type: K, listener: (this: HTMLMudSearchInputCircularElement, ev: MudSearchInputCircularCustomEvent<HTMLMudSearchInputCircularElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorSearchInputCircularElementEventMap>(type: K, listener: (this: HTMLCorSearchInputCircularElement, ev: CorSearchInputCircularCustomEvent<HTMLCorSearchInputCircularElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudSearchInputCircularElementEventMap>(type: K, listener: (this: HTMLMudSearchInputCircularElement, ev: MudSearchInputCircularCustomEvent<HTMLMudSearchInputCircularElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorSearchInputCircularElement: {
-        prototype: HTMLCorSearchInputCircularElement;
-        new (): HTMLCorSearchInputCircularElement;
+    var HTMLMudSearchInputCircularElement: {
+        prototype: HTMLMudSearchInputCircularElement;
+        new (): HTMLMudSearchInputCircularElement;
     };
-    interface HTMLCorSearchInputRectangularElementEventMap {
-        "corInput": SearchInputRectangularChangeDetail;
-        "corChange": SearchInputRectangularChangeDetail;
-        "corSearch": SearchInputRectangularSearchDetail;
-        "corClear": void;
-        "corFocus": FocusEvent;
-        "corBlur": FocusEvent;
+    interface HTMLMudSearchInputRectangularElementEventMap {
+        "mudInput": SearchInputRectangularChangeDetail;
+        "mudChange": SearchInputRectangularChangeDetail;
+        "mudSearch": SearchInputRectangularSearchDetail;
+        "mudClear": void;
+        "mudFocus": FocusEvent;
+        "mudBlur": FocusEvent;
     }
     /**
      * Search Input (rectangular) — single-line search-entry control.
@@ -4028,36 +4028,36 @@ declare global {
      * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
      * icon and an optional trailing clear `×` button that appears whenever the
      * control carries a value. Visual primitives (border, focus ring, label,
-     * helper / error, sizes, states) are shared with `cor-input`; specific
+     * helper / error, sizes, states) are shared with `mud-input`; specific
      * affordances (icon-start, icon-end-clear, submit-button) live in the
      * `--search-input-rectangular-*` token namespace.
-     * Rectangular shape is the default sibling of `cor-search-input-circular`
+     * Rectangular shape is the default sibling of `mud-search-input-circular`
      * (pill). The two ship as distinct components per the Figma component-set
      * separation in the Republic of Moldova Unified Design System library.
      * Optional axes per Figma master `933:29099`:
      * - `loading` — async query is in flight; a trailing spinner appears next to
      *   the value/placeholder and the control is announced as `aria-busy`.
      * - `with-button` — adds a trailing brand-blue submit button that fires
-     *   `corSearch` on click. Coexists with the clear button and the loading
+     *   `mudSearch` on click. Coexists with the clear button and the loading
      *   spinner.
-     * @element cor-search-input-rectangular
+     * @element mud-search-input-rectangular
      */
-    interface HTMLCorSearchInputRectangularElement extends Components.CorSearchInputRectangular, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorSearchInputRectangularElementEventMap>(type: K, listener: (this: HTMLCorSearchInputRectangularElement, ev: CorSearchInputRectangularCustomEvent<HTMLCorSearchInputRectangularElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudSearchInputRectangularElement extends Components.MudSearchInputRectangular, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudSearchInputRectangularElementEventMap>(type: K, listener: (this: HTMLMudSearchInputRectangularElement, ev: MudSearchInputRectangularCustomEvent<HTMLMudSearchInputRectangularElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorSearchInputRectangularElementEventMap>(type: K, listener: (this: HTMLCorSearchInputRectangularElement, ev: CorSearchInputRectangularCustomEvent<HTMLCorSearchInputRectangularElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudSearchInputRectangularElementEventMap>(type: K, listener: (this: HTMLMudSearchInputRectangularElement, ev: MudSearchInputRectangularCustomEvent<HTMLMudSearchInputRectangularElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorSearchInputRectangularElement: {
-        prototype: HTMLCorSearchInputRectangularElement;
-        new (): HTMLCorSearchInputRectangularElement;
+    var HTMLMudSearchInputRectangularElement: {
+        prototype: HTMLMudSearchInputRectangularElement;
+        new (): HTMLMudSearchInputRectangularElement;
     };
-    interface HTMLCorSegmentedControlElementEventMap {
-        "corChange": SegmentedControlChangeDetail;
+    interface HTMLMudSegmentedControlElementEventMap {
+        "mudChange": SegmentedControlChangeDetail;
     }
     /**
      * Segmented control — single-select horizontal switcher.
@@ -4071,65 +4071,65 @@ declare global {
      * - `ArrowLeft` / `ArrowRight` move selection between segments
      * - `Home` / `End` jump to first / last segment
      * - `Enter` / `Space` reaffirm selection on the focused segment
-     * @element cor-segmented-control
+     * @element mud-segmented-control
      */
-    interface HTMLCorSegmentedControlElement extends Components.CorSegmentedControl, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorSegmentedControlElementEventMap>(type: K, listener: (this: HTMLCorSegmentedControlElement, ev: CorSegmentedControlCustomEvent<HTMLCorSegmentedControlElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudSegmentedControlElement extends Components.MudSegmentedControl, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudSegmentedControlElementEventMap>(type: K, listener: (this: HTMLMudSegmentedControlElement, ev: MudSegmentedControlCustomEvent<HTMLMudSegmentedControlElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorSegmentedControlElementEventMap>(type: K, listener: (this: HTMLCorSegmentedControlElement, ev: CorSegmentedControlCustomEvent<HTMLCorSegmentedControlElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudSegmentedControlElementEventMap>(type: K, listener: (this: HTMLMudSegmentedControlElement, ev: MudSegmentedControlCustomEvent<HTMLMudSegmentedControlElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorSegmentedControlElement: {
-        prototype: HTMLCorSegmentedControlElement;
-        new (): HTMLCorSegmentedControlElement;
+    var HTMLMudSegmentedControlElement: {
+        prototype: HTMLMudSegmentedControlElement;
+        new (): HTMLMudSegmentedControlElement;
     };
-    interface HTMLCorSelectInputElementEventMap {
-        "corChange": SelectChangeDetail;
-        "corOpen": void;
-        "corClose": void;
-        "corFocus": FocusEvent;
-        "corBlur": FocusEvent;
+    interface HTMLMudSelectInputElementEventMap {
+        "mudChange": SelectChangeDetail;
+        "mudOpen": void;
+        "mudClose": void;
+        "mudFocus": FocusEvent;
+        "mudBlur": FocusEvent;
     }
     /**
      * Select Input — single-select dropdown atom.
      * Pattern B (atom-interactive, form-associated): renders a custom-styled
      * trigger button and a listbox popover inside shadow DOM. Form participation
      * works via `formAssociated` + `ElementInternals`. Shares the visual primitives
-     * of `cor-input` (border, focus ring, label, helper / error text, sizes,
+     * of `mud-input` (border, focus ring, label, helper / error text, sizes,
      * states) and adds a trailing chevron icon, listbox menu, and keyboard
      * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
      * pattern.
-     * @element cor-select-input
+     * @element mud-select-input
      */
-    interface HTMLCorSelectInputElement extends Components.CorSelectInput, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorSelectInputElementEventMap>(type: K, listener: (this: HTMLCorSelectInputElement, ev: CorSelectInputCustomEvent<HTMLCorSelectInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudSelectInputElement extends Components.MudSelectInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudSelectInputElementEventMap>(type: K, listener: (this: HTMLMudSelectInputElement, ev: MudSelectInputCustomEvent<HTMLMudSelectInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorSelectInputElementEventMap>(type: K, listener: (this: HTMLCorSelectInputElement, ev: CorSelectInputCustomEvent<HTMLCorSelectInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudSelectInputElementEventMap>(type: K, listener: (this: HTMLMudSelectInputElement, ev: MudSelectInputCustomEvent<HTMLMudSelectInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorSelectInputElement: {
-        prototype: HTMLCorSelectInputElement;
-        new (): HTMLCorSelectInputElement;
+    var HTMLMudSelectInputElement: {
+        prototype: HTMLMudSelectInputElement;
+        new (): HTMLMudSelectInputElement;
     };
     /**
      * Separator — visual divider between groups of content or UI components.
      * Pattern B (atom-visual): renders a 1D rule, optionally with an inline label.
      * No events, no interactivity. ARIA `separator` semantics.
-     * @element cor-separator
+     * @element mud-separator
      */
-    interface HTMLCorSeparatorElement extends Components.CorSeparator, HTMLStencilElement {
+    interface HTMLMudSeparatorElement extends Components.MudSeparator, HTMLStencilElement {
     }
-    var HTMLCorSeparatorElement: {
-        prototype: HTMLCorSeparatorElement;
-        new (): HTMLCorSeparatorElement;
+    var HTMLMudSeparatorElement: {
+        prototype: HTMLMudSeparatorElement;
+        new (): HTMLMudSeparatorElement;
     };
     /**
      * Service Button — interactive control for Moldovan M-products (mpay, mpass,
@@ -4137,33 +4137,33 @@ declare global {
      * A specialised filled button with a logo badge embedded on the inline-start
      * edge of the geometry. Fixed 48 px height (= minimum touch target) and
      * asymmetric padding (16 start / 20 end) per Figma spec.
-     * Slot `badge` reserves a 24×24 box for a `<cor-logo>` rendering a
+     * Slot `badge` reserves a 24×24 box for a `<mud-logo>` rendering a
      * `*-logo-logomark-only` asset (or any other element rendered at that size).
      * The default slot carries the label text.
-     * @element cor-service-button
+     * @element mud-service-button
      */
-    interface HTMLCorServiceButtonElement extends Components.CorServiceButton, HTMLStencilElement {
+    interface HTMLMudServiceButtonElement extends Components.MudServiceButton, HTMLStencilElement {
     }
-    var HTMLCorServiceButtonElement: {
-        prototype: HTMLCorServiceButtonElement;
-        new (): HTMLCorServiceButtonElement;
+    var HTMLMudServiceButtonElement: {
+        prototype: HTMLMudServiceButtonElement;
+        new (): HTMLMudServiceButtonElement;
     };
     /**
      * Spinner — animated circular loading indicator.
      * Pattern B (atom-visual): renders a CSS-only rotating arc.
      * No slots, no events, no interactivity.
-     * @element cor-spinner
+     * @element mud-spinner
      */
-    interface HTMLCorSpinnerElement extends Components.CorSpinner, HTMLStencilElement {
+    interface HTMLMudSpinnerElement extends Components.MudSpinner, HTMLStencilElement {
     }
-    var HTMLCorSpinnerElement: {
-        prototype: HTMLCorSpinnerElement;
-        new (): HTMLCorSpinnerElement;
+    var HTMLMudSpinnerElement: {
+        prototype: HTMLMudSpinnerElement;
+        new (): HTMLMudSpinnerElement;
     };
-    interface HTMLCorSwitchElementEventMap {
-        "corChange": SwitchChangeDetail;
-        "corFocus": FocusEvent;
-        "corBlur": FocusEvent;
+    interface HTMLMudSwitchElementEventMap {
+        "mudChange": SwitchChangeDetail;
+        "mudFocus": FocusEvent;
+        "mudBlur": FocusEvent;
     }
     /**
      * Switch — binary on/off toggle atom (form-associated).
@@ -4177,95 +4177,95 @@ declare global {
      * pointer-devices and 40px on touch-devices (via `pointer: coarse`) per the
      * Figma "Target Sizes" spec, achieved with a `::before` pseudo-element so the
      * visual footprint stays untouched.
-     * @element cor-switch
+     * @element mud-switch
      */
-    interface HTMLCorSwitchElement extends Components.CorSwitch, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorSwitchElementEventMap>(type: K, listener: (this: HTMLCorSwitchElement, ev: CorSwitchCustomEvent<HTMLCorSwitchElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudSwitchElement extends Components.MudSwitch, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudSwitchElementEventMap>(type: K, listener: (this: HTMLMudSwitchElement, ev: MudSwitchCustomEvent<HTMLMudSwitchElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorSwitchElementEventMap>(type: K, listener: (this: HTMLCorSwitchElement, ev: CorSwitchCustomEvent<HTMLCorSwitchElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudSwitchElementEventMap>(type: K, listener: (this: HTMLMudSwitchElement, ev: MudSwitchCustomEvent<HTMLMudSwitchElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorSwitchElement: {
-        prototype: HTMLCorSwitchElement;
-        new (): HTMLCorSwitchElement;
+    var HTMLMudSwitchElement: {
+        prototype: HTMLMudSwitchElement;
+        new (): HTMLMudSwitchElement;
     };
-    interface HTMLCorTabElementEventMap {
-        "corTabActivate": { value: string };
+    interface HTMLMudTabElementEventMap {
+        "mudTabActivate": { value: string };
     }
     /**
-     * `cor-tab` — single tab item inside a `cor-tabs` tablist.
-     * Pattern A child: rendered as a slotted child of `cor-tabs`. Owns its own
+     * `mud-tab` — single tab item inside a `mud-tabs` tablist.
+     * Pattern A child: rendered as a slotted child of `mud-tabs`. Owns its own
      * `role="tab"` host with `aria-selected`, an optional leading icon, the
      * label, and an optional trailing numbered badge.
      * The component is intentionally light: selection, focus management and
-     * `aria-controls` wiring are all driven by the parent `cor-tabs` via
+     * `aria-controls` wiring are all driven by the parent `mud-tabs` via
      * reflected attributes and DOM ids.
-     * @element cor-tab
+     * @element mud-tab
      */
-    interface HTMLCorTabElement extends Components.CorTab, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorTabElementEventMap>(type: K, listener: (this: HTMLCorTabElement, ev: CorTabCustomEvent<HTMLCorTabElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudTabElement extends Components.MudTab, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudTabElementEventMap>(type: K, listener: (this: HTMLMudTabElement, ev: MudTabCustomEvent<HTMLMudTabElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorTabElementEventMap>(type: K, listener: (this: HTMLCorTabElement, ev: CorTabCustomEvent<HTMLCorTabElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudTabElementEventMap>(type: K, listener: (this: HTMLMudTabElement, ev: MudTabCustomEvent<HTMLMudTabElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorTabElement: {
-        prototype: HTMLCorTabElement;
-        new (): HTMLCorTabElement;
+    var HTMLMudTabElement: {
+        prototype: HTMLMudTabElement;
+        new (): HTMLMudTabElement;
     };
-    interface HTMLCorTableElementEventMap {
-        "corSort": TableSortChangeDetail;
-        "corRowClick": TableRowClickDetail;
-        "corSelectionChange": TableSelectionChangeDetail;
+    interface HTMLMudTableElementEventMap {
+        "mudSort": TableSortChangeDetail;
+        "mudRowClick": TableRowClickDetail;
+        "mudSelectionChange": TableSelectionChangeDetail;
     }
     /**
      * Table — data table molecule for tabular content with optional sorting,
      * selection, and responsive mobile collapse.
      * Pattern B (molecule, internal DOM): renders a native `<table>` inside
      * shadow DOM for full a11y semantics (`role="table"`, `role="columnheader"`,
-     * `aria-sort`, `aria-selected`). Composes existing primitives — `cor-checkbox`
-     * for the selection column, `cor-icon` for sort chevrons. Status badges and
+     * `aria-sort`, `aria-selected`). Composes existing primitives — `mud-checkbox`
+     * for the selection column, `mud-icon` for sort chevrons. Status badges and
      * row actions are projected via named slots so consumers can drop in
-     * `cor-tag`, `cor-button`, or any custom content per cell.
+     * `mud-tag`, `mud-button`, or any custom content per cell.
      * At ≤640 px container width the inline padding shrinks from 24 → 16 to
      * match Figma's "Mobile" breakpoint specs (table-header `4930:14358`,
      * table-cell `649:4296`). The table structure itself is preserved; consumers
      * who need a card-stack layout on narrow screens should wrap their own
      * presentation around the data.
-     * @element cor-table
+     * @element mud-table
      */
-    interface HTMLCorTableElement extends Components.CorTable, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorTableElementEventMap>(type: K, listener: (this: HTMLCorTableElement, ev: CorTableCustomEvent<HTMLCorTableElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudTableElement extends Components.MudTable, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudTableElementEventMap>(type: K, listener: (this: HTMLMudTableElement, ev: MudTableCustomEvent<HTMLMudTableElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorTableElementEventMap>(type: K, listener: (this: HTMLCorTableElement, ev: CorTableCustomEvent<HTMLCorTableElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudTableElementEventMap>(type: K, listener: (this: HTMLMudTableElement, ev: MudTableCustomEvent<HTMLMudTableElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorTableElement: {
-        prototype: HTMLCorTableElement;
-        new (): HTMLCorTableElement;
+    var HTMLMudTableElement: {
+        prototype: HTMLMudTableElement;
+        new (): HTMLMudTableElement;
     };
-    interface HTMLCorTabsElementEventMap {
-        "corChange": TabsChangeDetail;
+    interface HTMLMudTabsElementEventMap {
+        "mudChange": TabsChangeDetail;
     }
     /**
-     * `cor-tabs` — horizontal tablist that switches the currently visible panel.
+     * `mud-tabs` — horizontal tablist that switches the currently visible panel.
      * Two composition modes:
-     *  1. **Declarative** (recommended for static menus): slot `<cor-tab>` children
+     *  1. **Declarative** (recommended for static menus): slot `<mud-tab>` children
      *     into the default slot and matching `<div slot="panel-{value}">` blocks
      *     into the panel slots.
      *  2. **Data-driven**: pass a `tabs` array. The component renders each entry
-     *     as a child `cor-tab` and exposes panels via `<div slot="panel-{value}">`
+     *     as a child `mud-tab` and exposes panels via `<div slot="panel-{value}">`
      *     elements supplied by the consumer.
      * Pattern A (molecule, slot-based). The host carries `role="tablist"`; the
      * tabs are rendered children with `role="tab"`; the panels are slotted into
@@ -4280,21 +4280,21 @@ declare global {
      * exposes leading + trailing chevron buttons that scroll the strip. Both
      * chevrons are mouse-only; their `aria-hidden="true"` keeps them out of the
      * keyboard order (arrow keys already move selection without overflow help).
-     * @element cor-tabs
+     * @element mud-tabs
      */
-    interface HTMLCorTabsElement extends Components.CorTabs, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorTabsElementEventMap>(type: K, listener: (this: HTMLCorTabsElement, ev: CorTabsCustomEvent<HTMLCorTabsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudTabsElement extends Components.MudTabs, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudTabsElementEventMap>(type: K, listener: (this: HTMLMudTabsElement, ev: MudTabsCustomEvent<HTMLMudTabsElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorTabsElementEventMap>(type: K, listener: (this: HTMLCorTabsElement, ev: CorTabsCustomEvent<HTMLCorTabsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudTabsElementEventMap>(type: K, listener: (this: HTMLMudTabsElement, ev: MudTabsCustomEvent<HTMLMudTabsElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorTabsElement: {
-        prototype: HTMLCorTabsElement;
-        new (): HTMLCorTabsElement;
+    var HTMLMudTabsElement: {
+        prototype: HTMLMudTabsElement;
+        new (): HTMLMudTabsElement;
     };
     /**
      * Tag — compact, non-interactive label used to mark state, category,
@@ -4314,49 +4314,49 @@ declare global {
      * host will adopt `role="status"` automatically — otherwise the host
      * stays silent so visual-only tags don't pollute the a11y tree.
      * For horizontally stacked groups (8 px gutter, wrap on overflow),
-     * compose multiple tags inside a `cor-tag-group` slot wrapper —
+     * compose multiple tags inside a `mud-tag-group` slot wrapper —
      * available as a CSS utility on this element via the `group` data
      * attribute on the parent.
-     * @element cor-tag
+     * @element mud-tag
      */
-    interface HTMLCorTagElement extends Components.CorTag, HTMLStencilElement {
+    interface HTMLMudTagElement extends Components.MudTag, HTMLStencilElement {
     }
-    var HTMLCorTagElement: {
-        prototype: HTMLCorTagElement;
-        new (): HTMLCorTagElement;
+    var HTMLMudTagElement: {
+        prototype: HTMLMudTagElement;
+        new (): HTMLMudTagElement;
     };
-    interface HTMLCorTextareaElementEventMap {
-        "corInput": TextareaChangeDetail;
-        "corChange": TextareaChangeDetail;
-        "corFocus": FocusEvent;
-        "corBlur": FocusEvent;
+    interface HTMLMudTextareaElementEventMap {
+        "mudInput": TextareaChangeDetail;
+        "mudChange": TextareaChangeDetail;
+        "mudFocus": FocusEvent;
+        "mudBlur": FocusEvent;
     }
     /**
      * Text Area — multi-line text-entry control.
      * Pattern B (atom-interactive, form-associated): renders its own `<textarea>`
      * inside shadow DOM. Form participation works via `formAssociated` +
-     * `ElementInternals`. Mirrors the `cor-input` contract for label, helper,
+     * `ElementInternals`. Mirrors the `mud-input` contract for label, helper,
      * error and variant treatment, and adds a vertical resize handle plus an
      * optional character counter.
-     * @element cor-textarea
+     * @element mud-textarea
      */
-    interface HTMLCorTextareaElement extends Components.CorTextarea, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorTextareaElementEventMap>(type: K, listener: (this: HTMLCorTextareaElement, ev: CorTextareaCustomEvent<HTMLCorTextareaElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudTextareaElement extends Components.MudTextarea, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudTextareaElementEventMap>(type: K, listener: (this: HTMLMudTextareaElement, ev: MudTextareaCustomEvent<HTMLMudTextareaElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorTextareaElementEventMap>(type: K, listener: (this: HTMLCorTextareaElement, ev: CorTextareaCustomEvent<HTMLCorTextareaElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudTextareaElementEventMap>(type: K, listener: (this: HTMLMudTextareaElement, ev: MudTextareaCustomEvent<HTMLMudTextareaElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorTextareaElement: {
-        prototype: HTMLCorTextareaElement;
-        new (): HTMLCorTextareaElement;
+    var HTMLMudTextareaElement: {
+        prototype: HTMLMudTextareaElement;
+        new (): HTMLMudTextareaElement;
     };
-    interface HTMLCorTooltipElementEventMap {
-        "corOpen": void;
-        "corClose": TooltipCloseEventDetail;
+    interface HTMLMudTooltipElementEventMap {
+        "mudOpen": void;
+        "mudClose": TooltipCloseEventDetail;
     }
     /**
      * Tooltip — transient label, structured popover, or coach mark anchored to a
@@ -4371,66 +4371,66 @@ declare global {
      *   second click, `Esc`, or outside click.
      * - `coach` — persistent instructional overlay with a close button + localized
      *   hint. Dismissed only by Esc, the close button, or an outside click.
-     * @element cor-tooltip
+     * @element mud-tooltip
      */
-    interface HTMLCorTooltipElement extends Components.CorTooltip, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLCorTooltipElementEventMap>(type: K, listener: (this: HTMLCorTooltipElement, ev: CorTooltipCustomEvent<HTMLCorTooltipElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudTooltipElement extends Components.MudTooltip, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudTooltipElementEventMap>(type: K, listener: (this: HTMLMudTooltipElement, ev: MudTooltipCustomEvent<HTMLMudTooltipElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLCorTooltipElementEventMap>(type: K, listener: (this: HTMLCorTooltipElement, ev: CorTooltipCustomEvent<HTMLCorTooltipElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudTooltipElementEventMap>(type: K, listener: (this: HTMLMudTooltipElement, ev: MudTooltipCustomEvent<HTMLMudTooltipElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLCorTooltipElement: {
-        prototype: HTMLCorTooltipElement;
-        new (): HTMLCorTooltipElement;
+    var HTMLMudTooltipElement: {
+        prototype: HTMLMudTooltipElement;
+        new (): HTMLMudTooltipElement;
     };
     interface HTMLElementTagNameMap {
-        "cor-accordion": HTMLCorAccordionElement;
-        "cor-accordion-item": HTMLCorAccordionItemElement;
-        "cor-avatar": HTMLCorAvatarElement;
-        "cor-badge": HTMLCorBadgeElement;
-        "cor-breadcrumb": HTMLCorBreadcrumbElement;
-        "cor-breadcrumb-item": HTMLCorBreadcrumbItemElement;
-        "cor-button": HTMLCorButtonElement;
-        "cor-button-group": HTMLCorButtonGroupElement;
-        "cor-checkbox": HTMLCorCheckboxElement;
-        "cor-chip": HTMLCorChipElement;
-        "cor-cookie-banner": HTMLCorCookieBannerElement;
-        "cor-date-input": HTMLCorDateInputElement;
-        "cor-date-picker": HTMLCorDatePickerElement;
-        "cor-file-input": HTMLCorFileInputElement;
-        "cor-file-item": HTMLCorFileItemElement;
-        "cor-footer": HTMLCorFooterElement;
-        "cor-icon": HTMLCorIconElement;
-        "cor-input": HTMLCorInputElement;
-        "cor-input-chip": HTMLCorInputChipElement;
-        "cor-link": HTMLCorLinkElement;
-        "cor-logo": HTMLCorLogoElement;
-        "cor-modal": HTMLCorModalElement;
-        "cor-notification": HTMLCorNotificationElement;
-        "cor-numeric-input": HTMLCorNumericInputElement;
-        "cor-pagination": HTMLCorPaginationElement;
-        "cor-phone-input": HTMLCorPhoneInputElement;
-        "cor-progress-tracker": HTMLCorProgressTrackerElement;
-        "cor-radio": HTMLCorRadioElement;
-        "cor-receipt": HTMLCorReceiptElement;
-        "cor-search-input-circular": HTMLCorSearchInputCircularElement;
-        "cor-search-input-rectangular": HTMLCorSearchInputRectangularElement;
-        "cor-segmented-control": HTMLCorSegmentedControlElement;
-        "cor-select-input": HTMLCorSelectInputElement;
-        "cor-separator": HTMLCorSeparatorElement;
-        "cor-service-button": HTMLCorServiceButtonElement;
-        "cor-spinner": HTMLCorSpinnerElement;
-        "cor-switch": HTMLCorSwitchElement;
-        "cor-tab": HTMLCorTabElement;
-        "cor-table": HTMLCorTableElement;
-        "cor-tabs": HTMLCorTabsElement;
-        "cor-tag": HTMLCorTagElement;
-        "cor-textarea": HTMLCorTextareaElement;
-        "cor-tooltip": HTMLCorTooltipElement;
+        "mud-accordion": HTMLMudAccordionElement;
+        "mud-accordion-item": HTMLMudAccordionItemElement;
+        "mud-avatar": HTMLMudAvatarElement;
+        "mud-badge": HTMLMudBadgeElement;
+        "mud-breadcrumb": HTMLMudBreadcrumbElement;
+        "mud-breadcrumb-item": HTMLMudBreadcrumbItemElement;
+        "mud-button": HTMLMudButtonElement;
+        "mud-button-group": HTMLMudButtonGroupElement;
+        "mud-checkbox": HTMLMudCheckboxElement;
+        "mud-chip": HTMLMudChipElement;
+        "mud-cookie-banner": HTMLMudCookieBannerElement;
+        "mud-date-input": HTMLMudDateInputElement;
+        "mud-date-picker": HTMLMudDatePickerElement;
+        "mud-file-input": HTMLMudFileInputElement;
+        "mud-file-item": HTMLMudFileItemElement;
+        "mud-footer": HTMLMudFooterElement;
+        "mud-icon": HTMLMudIconElement;
+        "mud-input": HTMLMudInputElement;
+        "mud-input-chip": HTMLMudInputChipElement;
+        "mud-link": HTMLMudLinkElement;
+        "mud-logo": HTMLMudLogoElement;
+        "mud-modal": HTMLMudModalElement;
+        "mud-notification": HTMLMudNotificationElement;
+        "mud-numeric-input": HTMLMudNumericInputElement;
+        "mud-pagination": HTMLMudPaginationElement;
+        "mud-phone-input": HTMLMudPhoneInputElement;
+        "mud-progress-tracker": HTMLMudProgressTrackerElement;
+        "mud-radio": HTMLMudRadioElement;
+        "mud-receipt": HTMLMudReceiptElement;
+        "mud-search-input-circular": HTMLMudSearchInputCircularElement;
+        "mud-search-input-rectangular": HTMLMudSearchInputRectangularElement;
+        "mud-segmented-control": HTMLMudSegmentedControlElement;
+        "mud-select-input": HTMLMudSelectInputElement;
+        "mud-separator": HTMLMudSeparatorElement;
+        "mud-service-button": HTMLMudServiceButtonElement;
+        "mud-spinner": HTMLMudSpinnerElement;
+        "mud-switch": HTMLMudSwitchElement;
+        "mud-tab": HTMLMudTabElement;
+        "mud-table": HTMLMudTableElement;
+        "mud-tabs": HTMLMudTabsElement;
+        "mud-tag": HTMLMudTagElement;
+        "mud-textarea": HTMLMudTextareaElement;
+        "mud-tooltip": HTMLMudTooltipElement;
     }
 }
 declare namespace LocalJSX {
@@ -4438,18 +4438,18 @@ declare namespace LocalJSX {
 
     /**
      * Accordion — vertical stack of collapsible regions per WAI-ARIA Accordion Pattern.
-     * Pattern A (slot container): coordinates child `cor-accordion-item` elements,
+     * Pattern A (slot container): coordinates child `mud-accordion-item` elements,
      * enforces `mode="single"` exclusivity, manages keyboard traversal across
-     * headers (Arrow Up/Down, Home, End), and dispatches `corChange` whenever the
+     * headers (Arrow Up/Down, Home, End), and dispatches `mudChange` whenever the
      * active set changes.
      * Consumers may either:
-     *   1. Slot `<cor-accordion-item>` children directly (declarative, recommended), or
+     *   1. Slot `<mud-accordion-item>` children directly (declarative, recommended), or
      *   2. Pass an `items` array (data-driven; the accordion renders the items for you).
-     * @element cor-accordion
-     * @fires corChange - Emitted on every open/close. `detail.openIds` lists every
+     * @element mud-accordion
+     * @fires mudChange - Emitted on every open/close. `detail.openIds` lists every
      *              item currently open (single entry in `mode="single"`).
      */
-    interface CorAccordion {
+    interface MudAccordion {
         /**
           * Visual treatment forwarded to every child item.
           * @default 'default'
@@ -4480,7 +4480,7 @@ declare namespace LocalJSX {
         /**
           * Emitted whenever the open set changes.
          */
-        "onCorChange"?: (event: CorAccordionCustomEvent<AccordionChangeDetail>) => void;
+        "onMudChange"?: (event: MudAccordionCustomEvent<AccordionChangeDetail>) => void;
         /**
           * Size rung forwarded to every child item. Independent of `breakpoint` (responsive); set explicitly when you need a compact accordion regardless of viewport. Mirrors the legacy `size` prop.
           * @default 'md'
@@ -4488,18 +4488,18 @@ declare namespace LocalJSX {
         "size"?: AccordionSize;
     }
     /**
-     * Accordion item — a single collapsible row inside `cor-accordion`.
+     * Accordion item — a single collapsible row inside `mud-accordion`.
      * Pattern B (atom-interactive): renders its own header `<button>` and a
      * `<div role="region">` panel inside shadow DOM. The container manages
      * exclusivity in `mode="single"`; the item owns its visual state.
-     * @element cor-accordion-item
-     * @fires corToggle - Fired when the user activates the header. The container
+     * @element mud-accordion-item
+     * @fires mudToggle - Fired when the user activates the header. The container
      *             listens for this and decides whether to honour it
      *             (single-mode collapsing of siblings).
      */
-    interface CorAccordionItem {
+    interface MudAccordionItem {
         /**
-          * Visual treatment. - `default` — flat header, neutral background - `trail-sites` — open header gets a brand-tint background per Figma "Trail Sites"  Set by the parent `cor-accordion` via attribute; consumers should set `appearance` on the parent, not on individual items.
+          * Visual treatment. - `default` — flat header, neutral background - `trail-sites` — open header gets a brand-tint background per Figma "Trail Sites"  Set by the parent `mud-accordion` via attribute; consumers should set `appearance` on the parent, not on individual items.
           * @default 'default'
          */
         "appearance"?: 'default' | 'trail-sites';
@@ -4518,22 +4518,22 @@ declare namespace LocalJSX {
          */
         "heading"?: string;
         /**
-          * Trigger-icon placement relative to the header content. Set by the parent `cor-accordion`.
+          * Trigger-icon placement relative to the header content. Set by the parent `mud-accordion`.
           * @default 'right'
          */
         "iconPosition"?: AccordionIconPosition;
         /**
-          * Stable identifier used by the parent `cor-accordion` when emitting `corChange`. Auto-generated if omitted.
+          * Stable identifier used by the parent `mud-accordion` when emitting `mudChange`. Auto-generated if omitted.
          */
         "itemId"?: string;
         /**
-          * Emitted on Arrow/Home/End keypress on the header. Consumed by the parent `cor-accordion` to implement WAI-ARIA Accordion Pattern traversal. Internal contract — consumers typically don't subscribe directly.
+          * Emitted on Arrow/Home/End keypress on the header. Consumed by the parent `mud-accordion` to implement WAI-ARIA Accordion Pattern traversal. Internal contract — consumers typically don't subscribe directly.
          */
-        "onCorAccordionItemKey"?: (event: CorAccordionItemCustomEvent<{ key: string; itemId: string }>) => void;
+        "onMudAccordionItemKey"?: (event: MudAccordionItemCustomEvent<{ key: string; itemId: string }>) => void;
         /**
-          * Emitted when the user activates the header (click / Enter / Space). The parent `cor-accordion` may cancel the implicit toggle in `mode="single"` to enforce exclusivity.
+          * Emitted when the user activates the header (click / Enter / Space). The parent `mud-accordion` may cancel the implicit toggle in `mode="single"` to enforce exclusivity.
          */
-        "onCorToggle"?: (event: CorAccordionItemCustomEvent<{
+        "onMudToggle"?: (event: MudAccordionItemCustomEvent<{
     open: boolean;
     itemId: string;
   }>) => void;
@@ -4543,7 +4543,7 @@ declare namespace LocalJSX {
          */
         "open"?: boolean;
         /**
-          * Visual size rung — controls header height, font size, icon size, padding. Set by the parent `cor-accordion` via `size`; consumers should configure size at the container level.
+          * Visual size rung — controls header height, font size, icon size, padding. Set by the parent `mud-accordion` via `size`; consumers should configure size at the container level.
           * @default 'md'
          */
         "size"?: AccordionSize;
@@ -4561,10 +4561,10 @@ declare namespace LocalJSX {
      *   back to initials (when `name`/`initials` is set) or the person icon.
      * - `initials` — renders 1–2 uppercase letters derived from `initials` or
      *   `name`. If neither is set, the icon fallback kicks in.
-     * - `icon` — renders a `cor-icon` (default `person`).
-     * @element cor-avatar
+     * - `icon` — renders a `mud-icon` (default `person`).
+     * @element mud-avatar
      */
-    interface CorAvatar {
+    interface MudAvatar {
         /**
           * Alt text for the underlying `<img>` when `type="photo"`. Falls back to `name` so screen readers always get a description; pass an empty string to mark the photo as purely decorative.
          */
@@ -4612,9 +4612,9 @@ declare namespace LocalJSX {
      * Position offsets are exposed as CSS variables (`--badge-offset-top`,
      * `--badge-offset-right`) so consumers can compose without overrides.
      * Pattern B (atom-visual): internal DOM only, no slots, no events.
-     * @element cor-badge
+     * @element mud-badge
      */
-    interface CorBadge {
+    interface MudBadge {
         /**
           * Override the accessible name. When omitted, `numbered` uses the visible count text and `dot` falls back to "Notification" (so screen readers announce something meaningful for empty dots).
          */
@@ -4648,17 +4648,17 @@ declare namespace LocalJSX {
      * Breadcrumb — navigational trail showing the user's location in the site hierarchy.
      * Two equivalent authoring modes:
      * 1. **Prop-driven** (preferred for dynamic data): pass `items` as a typed array.
-     * 2. **Slot-driven** (preferred for static markup): nest `<cor-breadcrumb-item>` children.
+     * 2. **Slot-driven** (preferred for static markup): nest `<mud-breadcrumb-item>` children.
      * When both are present, the `items` prop wins.
      * On desktop the full trail renders horizontally. When `maxVisible` is exceeded,
      * intermediate crumbs collapse into an overflow "…" menu. On mobile (≤640px) with
      * `responsive=true`, the trail collapses to a single "‹ Back to {parent}" link
      * per the WAI-ARIA breadcrumb pattern and Figma 69:408.
-     * @element cor-breadcrumb
+     * @element mud-breadcrumb
      */
-    interface CorBreadcrumb {
+    interface MudBreadcrumb {
         /**
-          * Declarative crumb list. Each item renders as a `cor-breadcrumb-item`. When omitted, the component falls back to its default slot.
+          * Declarative crumb list. Each item renders as a `mud-breadcrumb-item`. When omitted, the component falls back to its default slot.
          */
         "items"?: BreadcrumbItem[];
         /**
@@ -4673,7 +4673,7 @@ declare namespace LocalJSX {
         /**
           * Emits when any crumb is activated (click or keyboard).
          */
-        "onCorSelect"?: (event: CorBreadcrumbCustomEvent<BreadcrumbSelectDetail>) => void;
+        "onMudSelect"?: (event: MudBreadcrumbCustomEvent<BreadcrumbSelectDetail>) => void;
         /**
           * When true, the component collapses to a single "back" link on viewports ≤640px. Disable for surfaces that need the full trail at every size (rare).
           * @default true
@@ -4686,14 +4686,14 @@ declare namespace LocalJSX {
         "separator"?: string;
     }
     /**
-     * A single crumb inside `cor-breadcrumb`. Renders an anchor when `href` is set,
+     * A single crumb inside `mud-breadcrumb`. Renders an anchor when `href` is set,
      * otherwise plain text. The active crumb renders as text with `aria-current="page"`,
      * regardless of `href`.
      * Use this directly when the markup variant of the breadcrumb is preferred over
-     * the `items` prop on `cor-breadcrumb`. Both APIs are equivalent in behavior.
-     * @element cor-breadcrumb-item
+     * the `items` prop on `mud-breadcrumb`. Both APIs are equivalent in behavior.
+     * @element mud-breadcrumb-item
      */
-    interface CorBreadcrumbItem {
+    interface MudBreadcrumbItem {
         /**
           * Marks this crumb as the current page. Adds `aria-current="page"`, switches to medium font weight, and disables navigation (renders as text).
           * @default false
@@ -4720,7 +4720,7 @@ declare namespace LocalJSX {
         /**
           * Fired when the crumb is activated (click or Enter/Space on a non-link crumb). Cancelable — `preventDefault()` lets the consumer handle navigation.
          */
-        "onCorSelect"?: (event: CorBreadcrumbItemCustomEvent<{ label: string; href?: string }>) => void;
+        "onMudSelect"?: (event: MudBreadcrumbItemCustomEvent<{ label: string; href?: string }>) => void;
         /**
           * Visited link styling — text turns magenta (`--color-text-brand-visited`). Maps to the CSS pseudo-state for declarative use cases.
           * @default false
@@ -4732,9 +4732,9 @@ declare namespace LocalJSX {
      * Pattern B (atom-interactive): renders its own `<button>` (or `<a>` when `href`
      * is set) inside shadow DOM. Form participation works via `formAssociated` +
      * `ElementInternals`.
-     * @element cor-button
+     * @element mud-button
      */
-    interface CorButton {
+    interface MudButton {
         /**
           * Visual treatment. - `filled` (default) — solid background per variant - `outlined` — 1.5px border with transparent fill in default/focus; hover/active fill solid (matches filled) - `text` — no border, transparent fill, hover/active tint background; designed for inline use  `outlined` and `text` only support `primary`, `strict`, and `destructive` variants. Other variants fall back to `primary` visuals with a dev-time console warning.
           * @default 'filled'
@@ -4750,7 +4750,7 @@ declare namespace LocalJSX {
          */
         "form"?: string;
         /**
-          * Makes the button expand to fill the inline-size of its container. The host becomes a block-level flex container and the internal control stretches to 100% width — designed for use inside `cor-button-group` (vertical orientation) or in narrow form layouts.
+          * Makes the button expand to fill the inline-size of its container. The host becomes a block-level flex container and the internal control stretches to 100% width — designed for use inside `mud-button-group` (vertical orientation) or in narrow form layouts.
           * @default false
          */
         "fullWidth"?: boolean;
@@ -4810,15 +4810,15 @@ declare namespace LocalJSX {
         "variant"?: ButtonVariant;
     }
     /**
-     * Button group — layout container for stacking multiple `cor-button` elements
+     * Button group — layout container for stacking multiple `mud-button` elements
      * with consistent spacing (12px gap) per the AGE Design System.
      * Pure layout primitive: does not propagate props to children, does not emit
      * events, does not manage focus order beyond the natural DOM tab sequence.
-     * Each child `cor-button` controls its own size, variant, and full-width
+     * Each child `mud-button` controls its own size, variant, and full-width
      * behavior independently.
-     * @element cor-button-group
+     * @element mud-button-group
      */
-    interface CorButtonGroup {
+    interface MudButtonGroup {
         /**
           * Accessible name for the group. Forwarded to `aria-label` on the host element so assistive technologies announce the buttons as a unit (e.g. "Form actions").
          */
@@ -4839,9 +4839,9 @@ declare namespace LocalJSX {
      *   State = Default | Focus | Error (`invalid`) | Disabled
      *   Size  = Medium (24px) | Small (20px)
      * Indeterminate is a visual-only third state — `checked` semantics are unchanged.
-     * @element cor-checkbox
+     * @element mud-checkbox
      */
-    interface CorCheckbox {
+    interface MudCheckbox {
         /**
           * Accessible name override. Used when no visible label is present.
          */
@@ -4875,7 +4875,7 @@ declare namespace LocalJSX {
          */
         "invalid"?: boolean;
         /**
-          * Accessible-name fallback. Used as `aria-label` on the internal input when no `label` slot is provided. Does NOT render visible text — use the `label` slot for that. Matches the `cor-button` convention.
+          * Accessible-name fallback. Used as `aria-label` on the internal input when no `label` slot is provided. Does NOT render visible text — use the `label` slot for that. Matches the `mud-button` convention.
          */
         "label"?: string;
         /**
@@ -4885,15 +4885,15 @@ declare namespace LocalJSX {
         /**
           * Fires when the control loses focus. The native `FocusEvent` is forwarded as-is.
          */
-        "onCorBlur"?: (event: CorCheckboxCustomEvent<FocusEvent>) => void;
+        "onMudBlur"?: (event: MudCheckboxCustomEvent<FocusEvent>) => void;
         /**
           * Fires when `checked` (or `indeterminate`) changes from a user action.
          */
-        "onCorChange"?: (event: CorCheckboxCustomEvent<CheckboxChangeDetail>) => void;
+        "onMudChange"?: (event: MudCheckboxCustomEvent<CheckboxChangeDetail>) => void;
         /**
           * Fires when the control gains focus. The native `FocusEvent` is forwarded as-is.
          */
-        "onCorFocus"?: (event: CorCheckboxCustomEvent<FocusEvent>) => void;
+        "onMudFocus"?: (event: MudCheckboxCustomEvent<FocusEvent>) => void;
         /**
           * Renders read-only — checkbox keeps focus but ignores toggles.
           * @default false
@@ -4924,33 +4924,33 @@ declare namespace LocalJSX {
      * so it participates in tab order and exposes a real accessible role.
      * Two modes:
      * - `type="filter"` (default) — toggleable filter chip. Click flips `selected`
-     *   and emits `corSelect`. Best used inside a chip group for mono- or
+     *   and emits `mudSelect`. Best used inside a chip group for mono- or
      *   multi-selection filtering.
      * - `type="input"` — a discrete value entered by a user (e.g. a tag inside
      *   a search field). When `removable`, a trailing close button is rendered;
-     *   activating it emits `corRemove`.
-     * @element cor-chip
+     *   activating it emits `mudRemove`.
+     * @element mud-chip
      */
-    interface CorChip {
+    interface MudChip {
         /**
           * Disables interactivity. Reflects `aria-disabled` and removes the chip from pointer/keyboard activation paths.
           * @default false
          */
         "disabled"?: boolean;
         /**
-          * Accessible-name fallback. Used as `aria-label` on the internal `<button>` when the default slot is empty (and no explicit `aria-label` is set). Does NOT render visible text — use the default slot for that. Matches the `cor-button` convention.
+          * Accessible-name fallback. Used as `aria-label` on the internal `<button>` when the default slot is empty (and no explicit `aria-label` is set). Does NOT render visible text — use the default slot for that. Matches the `mud-button` convention.
          */
         "label"?: string;
         /**
           * Fires when the user activates the remove button on a `type="input"` chip.
          */
-        "onCorRemove"?: (event: CorChipCustomEvent<void>) => void;
+        "onMudRemove"?: (event: MudChipCustomEvent<void>) => void;
         /**
           * Fires when `type="filter"` is toggled. Payload reports the new selected state.
          */
-        "onCorSelect"?: (event: CorChipCustomEvent<ChipSelectEventDetail>) => void;
+        "onMudSelect"?: (event: MudChipCustomEvent<ChipSelectEventDetail>) => void;
         /**
-          * When `type="input"`, renders a trailing close button that emits `corRemove` on activation. Ignored when `type="filter"`.
+          * When `type="input"`, renders a trailing close button that emits `mudRemove` on activation. Ignored when `type="filter"`.
           * @default false
          */
         "removable"?: boolean;
@@ -4965,7 +4965,7 @@ declare namespace LocalJSX {
          */
         "size"?: ChipSize;
         /**
-          * Behavioral mode. - `filter` — toggle on click, emits `corSelect` - `input` — represents a user-entered value; combine with `removable` for a trailing × button
+          * Behavioral mode. - `filter` — toggle on click, emits `mudSelect` - `input` — represents a user-entered value; combine with `removable` for a trailing × button
           * @default 'filter'
          */
         "type"?: ChipType;
@@ -4973,8 +4973,8 @@ declare namespace LocalJSX {
     /**
      * Cookie banner — GDPR consent surface (molecule).
      * Pattern B (composed molecule): renders its own header / body / categories /
-     * footer in shadow DOM. Composes `cor-button`, `cor-switch`, `cor-icon`,
-     * `cor-tag` and `cor-separator` for the interactive pieces. The host is a
+     * footer in shadow DOM. Composes `mud-button`, `mud-switch`, `mud-icon`,
+     * `mud-tag` and `mud-separator` for the interactive pieces. The host is a
      * non-modal dialog (`role="dialog" aria-modal="false"`) anchored to the bottom
      * or top edge of the viewport — it does NOT trap focus so the page underneath
      * stays operable.
@@ -4984,12 +4984,12 @@ declare namespace LocalJSX {
      *   expanded mode.
      * - `variant="detailed"` — same collapsed footprint, but expanding reveals a
      *   category list (necessary / analytics / marketing by default) with per-row
-     *   `cor-switch`. Required categories render a fixed check-mark instead.
+     *   `mud-switch`. Required categories render a fixed check-mark instead.
      * Romanian voice ships as defaults; every label is overridable via the public
      * `@Prop` surface for localisation.
-     * @element cor-cookie-banner
+     * @element mud-cookie-banner
      */
-    interface CorCookieBanner {
+    interface MudCookieBanner {
         /**
           * "Accept all" button label.
          */
@@ -5022,23 +5022,23 @@ declare namespace LocalJSX {
         /**
           * Fires when the user accepts every (non-required) category.
          */
-        "onCorAccept"?: (event: CorCookieBannerCustomEvent<CookieConsentDetail>) => void;
+        "onMudAccept"?: (event: MudCookieBannerCustomEvent<CookieConsentDetail>) => void;
         /**
           * Fires when the banner transitions from expanded → collapsed (via close / Esc).
          */
-        "onCorDismiss"?: (event: CorCookieBannerCustomEvent<void>) => void;
+        "onMudDismiss"?: (event: MudCookieBannerCustomEvent<void>) => void;
         /**
           * Fires when the banner transitions from collapsed → expanded.
          */
-        "onCorExpand"?: (event: CorCookieBannerCustomEvent<void>) => void;
+        "onMudExpand"?: (event: MudCookieBannerCustomEvent<void>) => void;
         /**
           * Fires when the user rejects every non-required category.
          */
-        "onCorReject"?: (event: CorCookieBannerCustomEvent<CookieConsentDetail>) => void;
+        "onMudReject"?: (event: MudCookieBannerCustomEvent<CookieConsentDetail>) => void;
         /**
           * Fires when the user saves a custom selection (detailed/expanded only).
          */
-        "onCorSavePreferences"?: (event: CorCookieBannerCustomEvent<CookieConsentDetail>) => void;
+        "onMudSavePreferences"?: (event: MudCookieBannerCustomEvent<CookieConsentDetail>) => void;
         /**
           * Edge the banner is anchored to.
           * @default 'bottom'
@@ -5076,9 +5076,9 @@ declare namespace LocalJSX {
      * inside shadow DOM and overlays a ghost format hint that lets the unfilled
      * `DD/MM/YYYY` segments stay visible while the user types — matching the
      * "focus: date-populated / month-populated / fully-populated" Figma states.
-     * @element cor-date-input
+     * @element mud-date-input
      */
-    interface CorDateInput {
+    interface MudDateInput {
         /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
          */
@@ -5129,19 +5129,19 @@ declare namespace LocalJSX {
         /**
           * Fires when the internal control loses focus. The native `FocusEvent` is forwarded as-is.
          */
-        "onCorBlur"?: (event: CorDateInputCustomEvent<FocusEvent>) => void;
+        "onMudBlur"?: (event: MudDateInputCustomEvent<FocusEvent>) => void;
         /**
           * Fires when the value is committed (typically on `blur` or `Enter`). `detail.value` is the committed display value; `detail.isoValue` is the ISO `YYYY-MM-DD` when fully populated and valid, otherwise `null`.
          */
-        "onCorChange"?: (event: CorDateInputCustomEvent<DateInputChangeDetail>) => void;
+        "onMudChange"?: (event: MudDateInputCustomEvent<DateInputChangeDetail>) => void;
         /**
           * Fires when the internal control gains focus. The native `FocusEvent` is forwarded as-is.
          */
-        "onCorFocus"?: (event: CorDateInputCustomEvent<FocusEvent>) => void;
+        "onMudFocus"?: (event: MudDateInputCustomEvent<FocusEvent>) => void;
         /**
           * Fires on every keystroke. `detail.value` is the current display value; `detail.isoValue` is the ISO `YYYY-MM-DD` when fully populated and valid, otherwise `null`. `detail.segment` is the segment under the caret.
          */
-        "onCorInput"?: (event: CorDateInputCustomEvent<DateInputTypingDetail>) => void;
+        "onMudInput"?: (event: MudDateInputCustomEvent<DateInputTypingDetail>) => void;
         /**
           * Placeholder shown when the control is empty. Defaults to the format pattern (`DD/MM/YYYY` / `MM/DD/YYYY` / `YYYY-MM-DD`).
          */
@@ -5182,7 +5182,7 @@ declare namespace LocalJSX {
      * Three breakpoints (visual modes):
      * - `desktop` — 320px elevated card with shadow.
      * - `mobile` — full-width bottom-sheet style with drag handle.
-     * - `docked` — compact (no shadow) intended to attach beneath a `cor-date-input`.
+     * - `docked` — compact (no shadow) intended to attach beneath a `mud-date-input`.
      * All weekday + month labels come from `Intl.DateTimeFormat` so the locale prop drives the language —
      * no hard-coded strings. Romanian (`ro-RO`) is the default.
      * Keyboard:
@@ -5191,9 +5191,9 @@ declare namespace LocalJSX {
      * - Shift+PageUp/PageDown change year
      * - Home/End jump to the start/end of the visible week
      * - Enter/Space selects the focused day
-     * @element cor-date-picker
+     * @element mud-date-picker
      */
-    interface CorDatePicker {
+    interface MudDatePicker {
         /**
           * Visual breakpoint / placement.
           * @default 'desktop'
@@ -5214,7 +5214,7 @@ declare namespace LocalJSX {
          */
         "hideTodayShortcut"?: boolean;
         /**
-          * Accessible label for the entire picker. Set the `aria-label` attribute on the host (or use this prop) and the component captures it on connect into `resolvedAriaLabel`, then strips the host attribute to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb).
+          * Accessible label for the entire picker. Set the `aria-label` attribute on the host (or use this prop) and the component captures it on connect into `resolvedAriaLabel`, then strips the host attribute to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb).
          */
         "label"?: string;
         /**
@@ -5238,11 +5238,11 @@ declare namespace LocalJSX {
         /**
           * Fires whenever the selection changes. For `range` mode, `detail.rangeStart` / `detail.rangeEnd` carry the canonical ISO strings; for `multi`, `detail.value` is `string[]`.
          */
-        "onCorChange"?: (event: CorDatePickerCustomEvent<DatePickerChangeDetail>) => void;
+        "onMudChange"?: (event: MudDatePickerCustomEvent<DatePickerChangeDetail>) => void;
         /**
           * Fires when the visible month changes (arrows, swipe, keyboard). `month` is 0-indexed.
          */
-        "onCorMonthChange"?: (event: CorDatePickerCustomEvent<DatePickerMonthChangeDetail>) => void;
+        "onMudMonthChange"?: (event: MudDatePickerCustomEvent<DatePickerMonthChangeDetail>) => void;
         /**
           * Range mode: end date (ISO `YYYY-MM-DD`). Set together with `rangeStart`.
          */
@@ -5261,24 +5261,24 @@ declare namespace LocalJSX {
      * Pattern B (molecule, internal DOM, form-associated): the host owns a hidden
      * native `<input type="file">` for the browse path, manages the drop zone
      * affordance, validates by `accept` / `maxSize` / `maxFiles`, and renders a
-     * per-file list of `cor-file-item` rows. Citizens get keyboard parity (Tab
+     * per-file list of `mud-file-item` rows. Citizens get keyboard parity (Tab
      * to focus, Enter/Space to open the picker) and a `role="status"` live region
      * that announces add / remove / reject events.
      * The component owns SELECTION + VALIDATION + DISPLAY. Real upload (progress,
-     * network errors, retries) is consumer-driven via the `corChange` event.
+     * network errors, retries) is consumer-driven via the `mudChange` event.
      * State model (no style axis — Figma is state-only):
      *   default → hover → focus → active (drag-over) → disabled
      *   `invalid` is a separate validation flag that recolors the dashed border red
      *   without introducing a style variant.
-     * @element cor-file-input
+     * @element mud-file-input
      */
-    interface CorFileInput {
+    interface MudFileInput {
         /**
           * Native HTML `accept` attribute — MIME types and/or extensions, comma-separated.
          */
         "accept"?: string;
         /**
-          * Accessible name; mirrors to the drop zone's `aria-label` when no visible label is provided. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker / cor-modal / cor-pagination / cor-receipt).
+          * Accessible name; mirrors to the drop zone's `aria-label` when no visible label is provided. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb / mud-date-picker / mud-modal / mud-pagination / mud-receipt).
          */
         "ariaLabel"?: string;
         /**
@@ -5351,27 +5351,27 @@ declare namespace LocalJSX {
         /**
           * Fires when the accepted file list changes (browse OR drop OR remove).
          */
-        "onCorChange"?: (event: CorFileInputCustomEvent<FileInputChangeDetail>) => void;
+        "onMudChange"?: (event: MudFileInputCustomEvent<FileInputChangeDetail>) => void;
         /**
           * Fires when a drag enters the drop zone.
          */
-        "onCorDragEnter"?: (event: CorFileInputCustomEvent<DragEvent>) => void;
+        "onMudDragEnter"?: (event: MudFileInputCustomEvent<DragEvent>) => void;
         /**
           * Fires when the drag leaves the drop zone.
          */
-        "onCorDragLeave"?: (event: CorFileInputCustomEvent<DragEvent>) => void;
+        "onMudDragLeave"?: (event: MudFileInputCustomEvent<DragEvent>) => void;
         /**
           * Fires after a drop, with the accepted / rejected split + the first rejection reason.
          */
-        "onCorDrop"?: (event: CorFileInputCustomEvent<FileInputDropDetail>) => void;
+        "onMudDrop"?: (event: MudFileInputCustomEvent<FileInputDropDetail>) => void;
         /**
           * Fires for every rejected file (size / type / count). One event per file.
          */
-        "onCorError"?: (event: CorFileInputCustomEvent<FileInputErrorDetail>) => void;
+        "onMudError"?: (event: MudFileInputCustomEvent<FileInputErrorDetail>) => void;
         /**
           * Fires when a file is removed from the inline list.
          */
-        "onCorRemove"?: (event: CorFileInputCustomEvent<FileInputRemoveDetail>) => void;
+        "onMudRemove"?: (event: MudFileInputCustomEvent<FileInputRemoveDetail>) => void;
         /**
           * Marks the field as mandatory. Adds the red asterisk + `aria-required`.
           * @default false
@@ -5388,14 +5388,14 @@ declare namespace LocalJSX {
         "supportedFormatsText"?: string;
     }
     /**
-     * File Item — single-file row inside `cor-file-input` (or any file list surface).
+     * File Item — single-file row inside `mud-file-input` (or any file list surface).
      * Pattern B (atom, internal DOM): renders filename + meta (size / error message)
      * + state icon + remove button. The remove button is the only interactive
      * element; the row itself is not focusable so it cannot trap citizens who tab
      * past a long list.
-     * @element cor-file-item
+     * @element mud-file-item
      */
-    interface CorFileItem {
+    interface MudFileItem {
         /**
           * Disables the remove button.
           * @default false
@@ -5418,7 +5418,7 @@ declare namespace LocalJSX {
         /**
           * Fires when the citizen presses the remove control. The host is responsible for splicing the file out of its list.
          */
-        "onCorRemove"?: (event: CorFileItemCustomEvent<FileItemRemoveDetail>) => void;
+        "onMudRemove"?: (event: MudFileItemCustomEvent<FileItemRemoveDetail>) => void;
         /**
           * Accessible label for the remove button. Provided in Romanian by default to match the institutional voice.
           * @default 'Elimină fișierul'
@@ -5437,7 +5437,7 @@ declare namespace LocalJSX {
     /**
      * Page footer — civic, multi-section organism for AGE / EVO platforms.
      * Pattern B (composed organism): renders all sections inside shadow DOM and
-     * composes `cor-link`, `cor-logo`, and `cor-icon` for atomic pieces. The host
+     * composes `mud-link`, `mud-logo`, and `mud-icon` for atomic pieces. The host
      * carries `role="contentinfo"` so screen readers announce it as the page
      * footer landmark.
      * Two variants share one element:
@@ -5450,9 +5450,9 @@ declare namespace LocalJSX {
      *   (modals, embedded apps) where the full footer is too tall.
      * Romanian voice ships as defaults; every visible string is overridable via
      * the public `@Prop` surface or the `branding` / `sections` slots.
-     * @element cor-footer
+     * @element mud-footer
      */
-    interface CorFooter {
+    interface MudFooter {
         /**
           * Optional href for the accessibility statement link in the legal bar.
          */
@@ -5480,7 +5480,7 @@ declare namespace LocalJSX {
         /**
           * Fires when the user selects a new locale from the language switcher. Consumers update their app-level i18n state in response.
          */
-        "onCorLocaleChange"?: (event: CorFooterCustomEvent<FooterLocaleChangeDetail>) => void;
+        "onMudLocaleChange"?: (event: MudFooterCustomEvent<FooterLocaleChangeDetail>) => void;
         /**
           * Partner logo list. Each entry renders as a text badge (or anchor when `href` is set). Use the `branding` slot for custom logo SVGs.
          */
@@ -5506,9 +5506,9 @@ declare namespace LocalJSX {
      * When the exact `size`/`name` combination is missing from the manifest, the
      * provider falls back to the closest larger size (preferred) and then to the
      * largest smaller size before giving up.
-     * @element cor-icon
+     * @element mud-icon
      */
-    interface CorIcon {
+    interface MudIcon {
         /**
           * Accessible label. When provided, the icon is announced; when omitted it is decorative.
          */
@@ -5545,9 +5545,9 @@ declare namespace LocalJSX {
      * inside shadow DOM. Form participation works via `formAssociated` +
      * `ElementInternals`. The component is the canonical text-input primitive;
      * specialised inputs (date, search, phone, etc.) compose around it.
-     * @element cor-input
+     * @element mud-input
      */
-    interface CorInput {
+    interface MudInput {
         /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
          */
@@ -5606,19 +5606,19 @@ declare namespace LocalJSX {
         /**
           * Fires when the internal control loses focus. The native `FocusEvent` is forwarded as-is.
          */
-        "onCorBlur"?: (event: CorInputCustomEvent<FocusEvent>) => void;
+        "onMudBlur"?: (event: MudInputCustomEvent<FocusEvent>) => void;
         /**
           * Fires when the value is committed (typically on `blur` or `Enter`). `detail.value` is the committed value.
          */
-        "onCorChange"?: (event: CorInputCustomEvent<InputChangeDetail>) => void;
+        "onMudChange"?: (event: MudInputCustomEvent<InputChangeDetail>) => void;
         /**
           * Fires when the internal control gains focus. The native `FocusEvent` is forwarded as-is.
          */
-        "onCorFocus"?: (event: CorInputCustomEvent<FocusEvent>) => void;
+        "onMudFocus"?: (event: MudInputCustomEvent<FocusEvent>) => void;
         /**
           * Fires on every keystroke. `detail.value` is the current control value.
          */
-        "onCorInput"?: (event: CorInputCustomEvent<InputChangeDetail>) => void;
+        "onMudInput"?: (event: MudInputCustomEvent<InputChangeDetail>) => void;
         /**
           * Native `pattern` regex forwarded to the internal control.
          */
@@ -5670,9 +5670,9 @@ declare namespace LocalJSX {
      *   - a `role="status"` live region that announces add / remove / reject.
      * The form value submitted to the surrounding `<form>` is a JSON-encoded
      * array of strings (e.g. `["a@b.md","c@d.md"]`) when a `name` is set.
-     * @element cor-input-chip
+     * @element mud-input-chip
      */
-    interface CorInputChip {
+    interface MudInputChip {
         /**
           * Accessible name; mirrors to the group's `aria-label` when no visible label.
          */
@@ -5709,7 +5709,7 @@ declare namespace LocalJSX {
          */
         "label"?: string;
         /**
-          * Maximum number of chips accepted. Further additions emit `corError` with `code: 'max'`.
+          * Maximum number of chips accepted. Further additions emit `mudError` with `code: 'max'`.
          */
         "maxChips"?: number;
         /**
@@ -5719,27 +5719,27 @@ declare namespace LocalJSX {
         /**
           * Fires when the inline input loses focus.
          */
-        "onCorBlur"?: (event: CorInputChipCustomEvent<FocusEvent>) => void;
+        "onMudBlur"?: (event: MudInputChipCustomEvent<FocusEvent>) => void;
         /**
           * Fires whenever the chip array changes (add or remove).
          */
-        "onCorChange"?: (event: CorInputChipCustomEvent<InputChipChangeDetail>) => void;
+        "onMudChange"?: (event: MudInputChipCustomEvent<InputChipChangeDetail>) => void;
         /**
           * Fires when a chip is successfully added.
          */
-        "onCorChipAdd"?: (event: CorInputChipCustomEvent<InputChipAddDetail>) => void;
+        "onMudChipAdd"?: (event: MudInputChipCustomEvent<InputChipAddDetail>) => void;
         /**
           * Fires when a chip is removed from the list.
          */
-        "onCorChipRemove"?: (event: CorInputChipCustomEvent<InputChipRemoveDetail>) => void;
+        "onMudChipRemove"?: (event: MudInputChipCustomEvent<InputChipRemoveDetail>) => void;
         /**
           * Fires for every rejected chip (pattern / duplicate / max).
          */
-        "onCorError"?: (event: CorInputChipCustomEvent<InputChipErrorDetail>) => void;
+        "onMudError"?: (event: MudInputChipCustomEvent<InputChipErrorDetail>) => void;
         /**
           * Fires when the inline input gains focus.
          */
-        "onCorFocus"?: (event: CorInputChipCustomEvent<FocusEvent>) => void;
+        "onMudFocus"?: (event: MudInputChipCustomEvent<FocusEvent>) => void;
         /**
           * Placeholder shown when the inline input is empty and no chips exist.
          */
@@ -5788,9 +5788,9 @@ declare namespace LocalJSX {
      * is set, `rel="noopener noreferrer"` is auto-applied and a small external-link
      * indicator is rendered after the label unless the consumer explicitly opts out
      * via `external="false"`.
-     * @element cor-link
+     * @element mud-link
      */
-    interface CorLink {
+    interface MudLink {
         /**
           * Forwarded to the internal element as `aria-label`. Required when the default slot contains only an icon with no text label.
          */
@@ -5851,11 +5851,11 @@ declare namespace LocalJSX {
      * "just works" without a CSS contract change.
      * Consumers that need to reserve layout space before the async fetch
      * resolves (e.g. above-the-fold marketing, dense grids) should wrap the
-     * logo in a sized container — `cor-service-button` does this for its
+     * logo in a sized container — `mud-service-button` does this for its
      * `badge` slot (24 × 24).
-     * @element cor-logo
+     * @element mud-logo
      */
-    interface CorLogo {
+    interface MudLogo {
         /**
           * Accessible label. When provided (and non-whitespace), the logo is announced as an image; when omitted or whitespace-only the logo is decorative (aria-hidden).
          */
@@ -5868,7 +5868,7 @@ declare namespace LocalJSX {
         /**
           * Emitted when an asset fails to load — either because the `name` is not in the manifest (`'unknown'`) or because the SVG fetch failed (`'fetch-failed'`). Lets consumers react in production where `console.warn` is invisible (telemetry, fallback UI, etc.).  Note: events emitted during `componentWillLoad` (initial mount) fire before consumer listeners can attach to a freshly-inserted host. Attach the listener BEFORE setting the `name` prop, or rely on the warning for mount-time failures.
          */
-        "onCorLogoError"?: (event: CorLogoCustomEvent<{ name: string; reason: 'unknown' | 'fetch-failed' }>) => void;
+        "onMudLogoError"?: (event: MudLogoCustomEvent<{ name: string; reason: 'unknown' | 'fetch-failed' }>) => void;
     }
     /**
      * Modal — overlay dialog molecule.
@@ -5886,21 +5886,21 @@ declare namespace LocalJSX {
      * - `default` — title + close button (text-only header)
      * - `with-image` — full-bleed hero image at top with overlaid close button
      * - `with-icon` — leading 48px icon above the body content (no top header bar)
-     * Dismiss reasons routed through `corClose<{reason}>`:
+     * Dismiss reasons routed through `mudClose<{reason}>`:
      * - `backdrop` — click on backdrop (suppressed by `closeOnBackdrop=false`)
      * - `escape` — ESC keypress (suppressed by `closeOnEscape=false`)
      * - `close-button` — trailing × button activated
      * - `action` — programmatic via `closeModal('action')`, used by footer buttons
-     * @element cor-modal
+     * @element mud-modal
      */
-    interface CorModal {
+    interface MudModal {
         /**
           * Footer button arrangement (Figma 358:16247). - `inline` — buttons sit side-by-side, right-aligned (default) - `stacked` — buttons span the full footer width, stacked vertically
           * @default 'inline'
          */
         "actionsLayout"?: ModalActionsLayout;
         /**
-          * When `true`, renders a trailing × close button in the header. Activating it emits `corClose` with `reason: 'close-button'`. Hide it for required confirmation flows by setting `closable=false`.
+          * When `true`, renders a trailing × close button in the header. Activating it emits `mudClose` with `reason: 'close-button'`. Hide it for required confirmation flows by setting `closable=false`.
           * @default true
          */
         "closable"?: boolean;
@@ -5920,7 +5920,7 @@ declare namespace LocalJSX {
          */
         "closeOnEscape"?: boolean;
         /**
-          * Styles the dialog frame and footer for an irreversible action (e.g. delete account). Adds a red top border accent and is intended to be paired with a destructive primary `cor-button` in the actions slot.
+          * Styles the dialog frame and footer for an irreversible action (e.g. delete account). Adds a red top border accent and is intended to be paired with a destructive primary `mud-button` in the actions slot.
           * @default false
          */
         "destructive"?: boolean;
@@ -5934,19 +5934,19 @@ declare namespace LocalJSX {
          */
         "imageSrc"?: string;
         /**
-          * Accessible name forwarded to the host as `aria-label`. Required when no title is provided. The consumer-supplied `aria-label` attribute is captured on connect into `resolvedAriaLabel` and stripped from the host to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker).
+          * Accessible name forwarded to the host as `aria-label`. Required when no title is provided. The consumer-supplied `aria-label` attribute is captured on connect into `resolvedAriaLabel` and stripped from the host to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb / mud-date-picker).
          */
         "label"?: string;
         /**
           * Fires after the dialog has been dismissed. Payload carries the `reason` so consumers can distinguish backdrop vs. escape vs. close-button vs. footer-action dismissals.
          */
-        "onCorClose"?: (event: CorModalCustomEvent<ModalCloseEvent>) => void;
+        "onMudClose"?: (event: MudModalCustomEvent<ModalCloseEvent>) => void;
         /**
           * Fires after the dialog has been shown.
          */
-        "onCorOpen"?: (event: CorModalCustomEvent<void>) => void;
+        "onMudOpen"?: (event: MudModalCustomEvent<void>) => void;
         /**
-          * Whether the modal is currently shown. Reflected so consumers can target `cor-modal[open]` in selectors. Mutable so the component can flip it back to `false` on internal dismiss (backdrop / escape / close button).
+          * Whether the modal is currently shown. Reflected so consumers can target `mud-modal[open]` in selectors. Mutable so the component can flip it back to `false` on internal dismiss (backdrop / escape / close button).
           * @default false
          */
         "open"?: boolean;
@@ -5979,15 +5979,15 @@ declare namespace LocalJSX {
      * Live-region routing:
      * - `info` / `positive` / `neutral` → `role="status"` + `aria-live="polite"`
      * - `warning` / `danger` → `role="alert"` + `aria-live="assertive"`
-     * @element cor-notification
+     * @element mud-notification
      */
-    interface CorNotification {
+    interface MudNotification {
         /**
           * Forwarded to the host as `aria-label`. Use this to give the entire notification an explicit accessible name when the body content alone is not descriptive enough.
          */
         "ariaLabel"?: string;
         /**
-          * When `true`, renders a trailing close button. Activating it emits `corClose`; the consumer is responsible for removing the notification from the DOM.
+          * When `true`, renders a trailing close button. Activating it emits `mudClose`; the consumer is responsible for removing the notification from the DOM.
           * @default false
          */
         "closable"?: boolean;
@@ -5997,7 +5997,7 @@ declare namespace LocalJSX {
          */
         "closeLabel"?: string;
         /**
-          * Override the default `cor-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
+          * Override the default `mud-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
          */
         "iconName"?: string;
         /**
@@ -6008,7 +6008,7 @@ declare namespace LocalJSX {
         /**
           * Fires when the user activates the close button. Payload is `void` — the consumer is responsible for the dismiss animation / DOM removal.
          */
-        "onCorClose"?: (event: CorNotificationCustomEvent<void>) => void;
+        "onMudClose"?: (event: MudNotificationCustomEvent<void>) => void;
         /**
           * Optional bold title rendered above the body.
          */
@@ -6023,7 +6023,7 @@ declare namespace LocalJSX {
      * Numeric Input — numeric-entry control with stacked step buttons.
      * Pattern B (atom-interactive, form-associated): renders its own `<input>`
      * inside shadow DOM and pairs it with a trailing stepper stack (chevron-up
-     * over chevron-bottom). Shares the visual primitives of `cor-input` (border,
+     * over chevron-bottom). Shares the visual primitives of `mud-input` (border,
      * focus ring, label, helper / error, sizes, states) and adds a
      * `--numeric-input-stepper-*` token namespace for the increment / decrement
      * affordance.
@@ -6033,9 +6033,9 @@ declare namespace LocalJSX {
      * `min`/`max` clamping. The component delegates parsing + clamping to its own
      * logic and exposes `inputmode="decimal"` so mobile devices still surface the
      * numeric keypad.
-     * @element cor-numeric-input
+     * @element mud-numeric-input
      */
-    interface CorNumericInput {
+    interface MudNumericInput {
         /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
          */
@@ -6081,7 +6081,7 @@ declare namespace LocalJSX {
          */
         "label"?: string;
         /**
-          * Loading state. When true the control becomes uninteractive and a brand `cor-spinner` replaces the trailing stepper stack. The host carries `aria-busy="true"` for assistive technologies.
+          * Loading state. When true the control becomes uninteractive and a brand `mud-spinner` replaces the trailing stepper stack. The host carries `aria-busy="true"` for assistive technologies.
           * @default false
          */
         "loading"?: boolean;
@@ -6100,27 +6100,27 @@ declare namespace LocalJSX {
         /**
           * Fires when the internal control loses focus.
          */
-        "onCorBlur"?: (event: CorNumericInputCustomEvent<FocusEvent>) => void;
+        "onMudBlur"?: (event: MudNumericInputCustomEvent<FocusEvent>) => void;
         /**
           * Fires when the value is committed (blur / Enter / stepper). `detail.value` is the clamped, precision-rounded value or `null`.
          */
-        "onCorChange"?: (event: CorNumericInputCustomEvent<NumericInputChangeDetail>) => void;
+        "onMudChange"?: (event: MudNumericInputCustomEvent<NumericInputChangeDetail>) => void;
         /**
           * Fires when validation rejects the current input (out-of-range, NaN).
          */
-        "onCorError"?: (event: CorNumericInputCustomEvent<NumericInputErrorDetail>) => void;
+        "onMudError"?: (event: MudNumericInputCustomEvent<NumericInputErrorDetail>) => void;
         /**
           * Fires when the internal control gains focus.
          */
-        "onCorFocus"?: (event: CorNumericInputCustomEvent<FocusEvent>) => void;
+        "onMudFocus"?: (event: MudNumericInputCustomEvent<FocusEvent>) => void;
         /**
           * Fires on every keystroke. `detail.value` is the parsed current value or `null`.
          */
-        "onCorInput"?: (event: CorNumericInputCustomEvent<NumericInputChangeDetail>) => void;
+        "onMudInput"?: (event: MudNumericInputCustomEvent<NumericInputChangeDetail>) => void;
         /**
           * Fires when a stepper button (or arrow key) bumps the value.
          */
-        "onCorStep"?: (event: CorNumericInputCustomEvent<NumericInputStepDetail>) => void;
+        "onMudStep"?: (event: MudNumericInputCustomEvent<NumericInputStepDetail>) => void;
         /**
           * Placeholder shown when the control is empty.
          */
@@ -6172,15 +6172,15 @@ declare namespace LocalJSX {
      * window, an interactive overflow button (`…`) collapses the skipped range
      * and lets users jump directly to any of those pages via a dropdown menu
      * (Figma "overflow-active" interaction).
-     * The component is internally controlled but exposes a `corChange` event so
+     * The component is internally controlled but exposes a `mudChange` event so
      * the host can drive the active page. Updating `current-page` from outside
      * is also honoured (e.g. when the URL changes via routing).
      * Previous / Next buttons are hidden at the boundaries (page 1 hides Prev,
      * the last page hides Next) instead of being rendered in a disabled state —
      * this matches the Figma "first-page" / "last-page" specification.
-     * @element cor-pagination
+     * @element mud-pagination
      */
-    interface CorPagination {
+    interface MudPagination {
         /**
           * Number of page buttons shown at the start and end of the range (before / after the leading / trailing ellipsis).
           * @default 1
@@ -6192,7 +6192,7 @@ declare namespace LocalJSX {
          */
         "currentPage"?: number;
         /**
-          * Accessible name for the navigation landmark when no `aria-label` is set on the host. Defaults to "Navigare pagini". Setting `aria-label` directly on the host also works — the consumer-supplied attribute wins and is captured on connect into `resolvedAriaLabel`, then stripped from the host to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker / cor-modal).
+          * Accessible name for the navigation landmark when no `aria-label` is set on the host. Defaults to "Navigare pagini". Setting `aria-label` directly on the host also works — the consumer-supplied attribute wins and is captured on connect into `resolvedAriaLabel`, then stripped from the host to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb / mud-date-picker / mud-modal).
          */
         "label"?: string;
         /**
@@ -6208,7 +6208,7 @@ declare namespace LocalJSX {
         /**
           * Fires when the user activates a different page via click on a numbered button, the Previous / Next controls, or a page in the overflow dropdown. Carries the new and previous page numbers so consumers can drive routing or data fetches.
          */
-        "onCorChange"?: (event: CorPaginationCustomEvent<PaginationChangeDetail>) => void;
+        "onMudChange"?: (event: MudPaginationCustomEvent<PaginationChangeDetail>) => void;
         /**
           * Accessible label template for the overflow ("…") button. The `{from}` and `{to}` tokens are replaced with the first and last page in the collapsed range.
           * @default 'Arată paginile de la {from} la {to}'
@@ -6261,9 +6261,9 @@ declare namespace LocalJSX {
      * default) or a combobox that opens a country listbox (`type="international"`).
      * Form participation works via `formAssociated` + `ElementInternals`; the
      * form value is the canonical E.164 string (`+37362123456`).
-     * @element cor-phone-input
+     * @element mud-phone-input
      */
-    interface CorPhoneInput {
+    interface MudPhoneInput {
         /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
          */
@@ -6304,7 +6304,7 @@ declare namespace LocalJSX {
          */
         "label"?: string;
         /**
-          * Loading state. When true the control becomes uninteractive and an inline `cor-spinner` renders inside the input row. The host carries `aria-busy="true"` for assistive technologies.
+          * Loading state. When true the control becomes uninteractive and an inline `mud-spinner` renders inside the input row. The host carries `aria-busy="true"` for assistive technologies.
           * @default false
          */
         "loading"?: boolean;
@@ -6315,33 +6315,33 @@ declare namespace LocalJSX {
         /**
           * Fires when the internal input loses focus. The native `FocusEvent` is forwarded as-is.
          */
-        "onCorBlur"?: (event: CorPhoneInputCustomEvent<FocusEvent>) => void;
+        "onMudBlur"?: (event: MudPhoneInputCustomEvent<FocusEvent>) => void;
         /**
           * Fires when the value is committed (typically on `blur` or `Enter`). `detail.isValid` reflects whether the local-segment length sits in the active country's window.
          */
-        "onCorChange"?: (event: CorPhoneInputCustomEvent<PhoneInputChangeDetail>) => void;
+        "onMudChange"?: (event: MudPhoneInputCustomEvent<PhoneInputChangeDetail>) => void;
         /**
           * Fires when the country listbox closes.
          */
-        "onCorClose"?: (event: CorPhoneInputCustomEvent<void>) => void;
+        "onMudClose"?: (event: MudPhoneInputCustomEvent<void>) => void;
         /**
           * Fires when the user picks a different country from the dropdown.
          */
-        "onCorCountryChange"?: (event: CorPhoneInputCustomEvent<PhoneInputCountryChangeDetail>) => void;
+        "onMudCountryChange"?: (event: MudPhoneInputCustomEvent<PhoneInputCountryChangeDetail>) => void;
         /**
           * Fires when the internal input gains focus. The native `FocusEvent` is forwarded as-is.
          */
-        "onCorFocus"?: (event: CorPhoneInputCustomEvent<FocusEvent>) => void;
+        "onMudFocus"?: (event: MudPhoneInputCustomEvent<FocusEvent>) => void;
         /**
           * Fires on every keystroke. `detail.value` is the current canonical E.164 string; `detail.countryCode` is the active ISO 3166-1 alpha-2.
          */
-        "onCorInput"?: (event: CorPhoneInputCustomEvent<PhoneInputInputDetail>) => void;
+        "onMudInput"?: (event: MudPhoneInputCustomEvent<PhoneInputInputDetail>) => void;
         /**
           * Fires when the country listbox opens.
          */
-        "onCorOpen"?: (event: CorPhoneInputCustomEvent<void>) => void;
+        "onMudOpen"?: (event: MudPhoneInputCustomEvent<void>) => void;
         /**
-          * Reflects the open state of the country listbox. Mutate via `corOpen` / `corClose` events, not by writing to the attribute. Only meaningful when `type="international"` — Local mode never opens a listbox.
+          * Reflects the open state of the country listbox. Mutate via `mudOpen` / `mudClose` events, not by writing to the attribute. Only meaningful when `type="international"` — Local mode never opens a listbox.
           * @default false
          */
         "open"?: boolean;
@@ -6387,7 +6387,7 @@ declare namespace LocalJSX {
      *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
      *   submissions where the parent app drives navigation.
      * - **Interactive tracker** (`interactive=true`) — each completed (and the current)
-     *   step renders as a `<button>` and emits `corStepClick`. Pending steps remain
+     *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
      *   non-actionable per the WAI-ARIA stepper pattern.
      * State legend (Figma node 267:6905):
      *   - `pending`    — neutral grey ring + faded number
@@ -6396,9 +6396,9 @@ declare namespace LocalJSX {
      *   - `error`      — danger ring + danger cross
      * The component renders an ordered list with `role="list"` for AT compatibility
      * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
-     * @element cor-progress-tracker
+     * @element mud-progress-tracker
      */
-    interface CorProgressTracker {
+    interface MudProgressTracker {
         /**
           * Accessible name for the surrounding list landmark. Falls back to `'Progress tracker'` (English) — Romanian consumers can pass `'Pași'`.
          */
@@ -6408,14 +6408,14 @@ declare namespace LocalJSX {
          */
         "currentStep"?: number;
         /**
-          * When true, completed and current steps render as `<button>` elements and emit `corStepClick`. Pending and error steps remain non-actionable in this mode.
+          * When true, completed and current steps render as `<button>` elements and emit `mudStepClick`. Pending and error steps remain non-actionable in this mode.
           * @default false
          */
         "interactive"?: boolean;
         /**
           * Emitted when an interactive step is activated via mouse, keyboard, or AT. Detail carries the `index` and the full `step` object that was clicked. Only fires when `interactive=true` and the step is not disabled.
          */
-        "onCorStepClick"?: (event: CorProgressTrackerCustomEvent<ProgressTrackerStepClickDetail>) => void;
+        "onMudStepClick"?: (event: MudProgressTrackerCustomEvent<ProgressTrackerStepClickDetail>) => void;
         /**
           * Layout orientation.   - `horizontal` (default): steps flow left to right; labels render under indicators.   - `vertical`: steps stack top to bottom; labels render to the right of indicators.
           * @default 'horizontal'
@@ -6432,11 +6432,11 @@ declare namespace LocalJSX {
      * `<input type="radio">` inside shadow DOM and paints the visual circle
      * with CSS. Form participation works via `formAssociated` +
      * `ElementInternals.setFormValue`. The component is the standalone radio
-     * primitive; a future `cor-radio-group` molecule will manage roving focus
+     * primitive; a future `mud-radio-group` molecule will manage roving focus
      * and `name`-based exclusivity across siblings.
-     * @element cor-radio
+     * @element mud-radio
      */
-    interface CorRadio {
+    interface MudRadio {
         /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
          */
@@ -6465,7 +6465,7 @@ declare namespace LocalJSX {
          */
         "invalid"?: boolean;
         /**
-          * Accessible-name fallback. Used as `aria-label` on the internal input when no `label` slot is provided. Does NOT render visible text — use the `label` slot for that. Matches the `cor-button` / `cor-checkbox` convention.
+          * Accessible-name fallback. Used as `aria-label` on the internal input when no `label` slot is provided. Does NOT render visible text — use the `label` slot for that. Matches the `mud-button` / `mud-checkbox` convention.
          */
         "label"?: string;
         /**
@@ -6475,15 +6475,15 @@ declare namespace LocalJSX {
         /**
           * Fires when the internal control loses focus. The native `FocusEvent` is forwarded as-is.
          */
-        "onCorBlur"?: (event: CorRadioCustomEvent<FocusEvent>) => void;
+        "onMudBlur"?: (event: MudRadioCustomEvent<FocusEvent>) => void;
         /**
           * Fires whenever the checked state changes. `detail.checked` is the new state.
          */
-        "onCorChange"?: (event: CorRadioCustomEvent<RadioChangeDetail>) => void;
+        "onMudChange"?: (event: MudRadioCustomEvent<RadioChangeDetail>) => void;
         /**
           * Fires when the internal control gains focus. The native `FocusEvent` is forwarded as-is.
          */
-        "onCorFocus"?: (event: CorRadioCustomEvent<FocusEvent>) => void;
+        "onMudFocus"?: (event: MudRadioCustomEvent<FocusEvent>) => void;
         /**
           * Renders the control read-only. It remains focusable but cannot be toggled.
           * @default false
@@ -6512,8 +6512,8 @@ declare namespace LocalJSX {
      * Receipt — confirmation surface for a finished Moldovan e-Gov transaction
      * (molecule).
      * Pattern B (composed molecule): renders its own header / amount block /
-     * details list / QR / footer in shadow DOM. Composes `cor-logo`, `cor-tag`,
-     * and `cor-button` for the interactive pieces.
+     * details list / QR / footer in shadow DOM. Composes `mud-logo`, `mud-tag`,
+     * and `mud-button` for the interactive pieces.
      * Four sibling variants share one element via the `service` attribute —
      * each maps to one of the e-Gov properties:
      * - `service="mpay"` (default) — payment receipt
@@ -6529,9 +6529,9 @@ declare namespace LocalJSX {
      * receipt without the surrounding UI bleeding through.
      * Romanian voice ships as defaults; every label is overridable via the
      * public `@Prop` surface for localisation.
-     * @element cor-receipt
+     * @element mud-receipt
      */
-    interface CorReceipt {
+    interface MudReceipt {
         /**
           * Pre-formatted amount string (e.g. `"150,00"`). The receipt does NOT format numbers — locale-aware grouping and decimal style belong to the caller. Omit to hide the amount panel entirely (used by mpass / msign receipts that carry no monetary value).
          */
@@ -6570,7 +6570,7 @@ declare namespace LocalJSX {
          */
         "emailLabel"?: string;
         /**
-          * Override for the receipt's accessible name. Defaults to the resolved title plus status (e.g. "Bon de plată — Plătit"). Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker / cor-modal / cor-pagination).
+          * Override for the receipt's accessible name. Defaults to the resolved title plus status (e.g. "Bon de plată — Plătit"). Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb / mud-date-picker / mud-modal / mud-pagination).
          */
         "label"?: string;
         /**
@@ -6581,19 +6581,19 @@ declare namespace LocalJSX {
         /**
           * Fires when the user activates the "Descarcă PDF" action.
          */
-        "onCorDownload"?: (event: CorReceiptCustomEvent<ReceiptActionDetail>) => void;
+        "onMudDownload"?: (event: MudReceiptCustomEvent<ReceiptActionDetail>) => void;
         /**
           * Fires when the user activates the "Trimite email" action.
          */
-        "onCorEmail"?: (event: CorReceiptCustomEvent<ReceiptActionDetail>) => void;
+        "onMudEmail"?: (event: MudReceiptCustomEvent<ReceiptActionDetail>) => void;
         /**
           * Fires when the user activates the "Imprimă" action.
          */
-        "onCorPrint"?: (event: CorReceiptCustomEvent<ReceiptActionDetail>) => void;
+        "onMudPrint"?: (event: MudReceiptCustomEvent<ReceiptActionDetail>) => void;
         /**
           * Fires when the user activates the "Distribuie" action.
          */
-        "onCorShare"?: (event: CorReceiptCustomEvent<ReceiptActionDetail>) => void;
+        "onMudShare"?: (event: MudReceiptCustomEvent<ReceiptActionDetail>) => void;
         /**
           * "Imprimă" button label.
          */
@@ -6669,7 +6669,7 @@ declare namespace LocalJSX {
      * icon and an optional trailing clear `×` button that appears whenever the
      * control carries a value. Behavior, props, slots, events, keyboard contract,
      * ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
-     * `cor-search-input-rectangular` — the only visual difference is the
+     * `mud-search-input-rectangular` — the only visual difference is the
      * silhouette: corners flip to `borderRadius.full` (9999px). The trailing
      * submit button (when `with-button` is set) inherits the pill silhouette via
      * `borderRadius.full`, rendering as a perfect circle that hugs the pill end
@@ -6682,11 +6682,11 @@ declare namespace LocalJSX {
      * - `loading` — async query is in flight; a trailing spinner appears next to
      *   the value/placeholder and the control is announced as `aria-busy`.
      * - `with-button` — adds a trailing brand-blue circular submit button that
-     *   fires `corSearch` on click. Coexists with the clear button and the
+     *   fires `mudSearch` on click. Coexists with the clear button and the
      *   loading spinner.
-     * @element cor-search-input-circular
+     * @element mud-search-input-circular
      */
-    interface CorSearchInputCircular {
+    interface MudSearchInputCircular {
         /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
@@ -6737,7 +6737,7 @@ declare namespace LocalJSX {
          */
         "label"?: string;
         /**
-          * Indicates an in-flight query. Replaces the leading magnifying-glass icon with a brand-coloured `cor-spinner` and exposes `aria-busy` on the internal control. The field stays focusable; emitting `corSearch` while loading is the consumer's responsibility (typically debounced).
+          * Indicates an in-flight query. Replaces the leading magnifying-glass icon with a brand-coloured `mud-spinner` and exposes `aria-busy` on the internal control. The field stays focusable; emitting `mudSearch` while loading is the consumer's responsibility (typically debounced).
           * @default false
          */
         "loading"?: boolean;
@@ -6756,27 +6756,27 @@ declare namespace LocalJSX {
         /**
           * Fires when the internal control loses focus.
          */
-        "onCorBlur"?: (event: CorSearchInputCircularCustomEvent<FocusEvent>) => void;
+        "onMudBlur"?: (event: MudSearchInputCircularCustomEvent<FocusEvent>) => void;
         /**
           * Fires when the value is committed (typically on `blur`). `detail.value` is the committed value.
          */
-        "onCorChange"?: (event: CorSearchInputCircularCustomEvent<SearchInputCircularChangeDetail>) => void;
+        "onMudChange"?: (event: MudSearchInputCircularCustomEvent<SearchInputCircularChangeDetail>) => void;
         /**
           * Fires when the value is cleared by the user (clear button or Escape key).
          */
-        "onCorClear"?: (event: CorSearchInputCircularCustomEvent<void>) => void;
+        "onMudClear"?: (event: MudSearchInputCircularCustomEvent<void>) => void;
         /**
           * Fires when the internal control gains focus.
          */
-        "onCorFocus"?: (event: CorSearchInputCircularCustomEvent<FocusEvent>) => void;
+        "onMudFocus"?: (event: MudSearchInputCircularCustomEvent<FocusEvent>) => void;
         /**
           * Fires on every keystroke. `detail.value` is the current control value.
          */
-        "onCorInput"?: (event: CorSearchInputCircularCustomEvent<SearchInputCircularChangeDetail>) => void;
+        "onMudInput"?: (event: MudSearchInputCircularCustomEvent<SearchInputCircularChangeDetail>) => void;
         /**
           * Fires when the user submits the query (Enter key). `detail.value` is the submitted query.
          */
-        "onCorSearch"?: (event: CorSearchInputCircularCustomEvent<SearchInputCircularSearchDetail>) => void;
+        "onMudSearch"?: (event: MudSearchInputCircularCustomEvent<SearchInputCircularSearchDetail>) => void;
         /**
           * Placeholder shown when the control is empty.
          */
@@ -6812,7 +6812,7 @@ declare namespace LocalJSX {
          */
         "variant"?: SearchInputCircularVariant;
         /**
-          * Renders a trailing brand-blue circular submit button (the Figma "Button=True" axis on master `933:29721`). Clicking the button — or pressing Enter inside the input — dispatches `corSearch` with the current value. When the field is empty or disabled, the button enters a disabled visual state and does not fire the event.
+          * Renders a trailing brand-blue circular submit button (the Figma "Button=True" axis on master `933:29721`). Clicking the button — or pressing Enter inside the input — dispatches `mudSearch` with the current value. When the field is empty or disabled, the button enters a disabled visual state and does not fire the event.
           * @default false
          */
         "withButton"?: boolean;
@@ -6823,21 +6823,21 @@ declare namespace LocalJSX {
      * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
      * icon and an optional trailing clear `×` button that appears whenever the
      * control carries a value. Visual primitives (border, focus ring, label,
-     * helper / error, sizes, states) are shared with `cor-input`; specific
+     * helper / error, sizes, states) are shared with `mud-input`; specific
      * affordances (icon-start, icon-end-clear, submit-button) live in the
      * `--search-input-rectangular-*` token namespace.
-     * Rectangular shape is the default sibling of `cor-search-input-circular`
+     * Rectangular shape is the default sibling of `mud-search-input-circular`
      * (pill). The two ship as distinct components per the Figma component-set
      * separation in the Republic of Moldova Unified Design System library.
      * Optional axes per Figma master `933:29099`:
      * - `loading` — async query is in flight; a trailing spinner appears next to
      *   the value/placeholder and the control is announced as `aria-busy`.
      * - `with-button` — adds a trailing brand-blue submit button that fires
-     *   `corSearch` on click. Coexists with the clear button and the loading
+     *   `mudSearch` on click. Coexists with the clear button and the loading
      *   spinner.
-     * @element cor-search-input-rectangular
+     * @element mud-search-input-rectangular
      */
-    interface CorSearchInputRectangular {
+    interface MudSearchInputRectangular {
         /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
@@ -6888,7 +6888,7 @@ declare namespace LocalJSX {
          */
         "label"?: string;
         /**
-          * Indicates an in-flight query. Replaces the leading magnifying-glass icon with a brand-coloured `cor-spinner` and exposes `aria-busy` on the internal control. The field stays focusable; emitting `corSearch` while loading is the consumer's responsibility (typically debounced).
+          * Indicates an in-flight query. Replaces the leading magnifying-glass icon with a brand-coloured `mud-spinner` and exposes `aria-busy` on the internal control. The field stays focusable; emitting `mudSearch` while loading is the consumer's responsibility (typically debounced).
           * @default false
          */
         "loading"?: boolean;
@@ -6907,27 +6907,27 @@ declare namespace LocalJSX {
         /**
           * Fires when the internal control loses focus.
          */
-        "onCorBlur"?: (event: CorSearchInputRectangularCustomEvent<FocusEvent>) => void;
+        "onMudBlur"?: (event: MudSearchInputRectangularCustomEvent<FocusEvent>) => void;
         /**
           * Fires when the value is committed (typically on `blur`). `detail.value` is the committed value.
          */
-        "onCorChange"?: (event: CorSearchInputRectangularCustomEvent<SearchInputRectangularChangeDetail>) => void;
+        "onMudChange"?: (event: MudSearchInputRectangularCustomEvent<SearchInputRectangularChangeDetail>) => void;
         /**
           * Fires when the value is cleared by the user (clear button or Escape key).
          */
-        "onCorClear"?: (event: CorSearchInputRectangularCustomEvent<void>) => void;
+        "onMudClear"?: (event: MudSearchInputRectangularCustomEvent<void>) => void;
         /**
           * Fires when the internal control gains focus.
          */
-        "onCorFocus"?: (event: CorSearchInputRectangularCustomEvent<FocusEvent>) => void;
+        "onMudFocus"?: (event: MudSearchInputRectangularCustomEvent<FocusEvent>) => void;
         /**
           * Fires on every keystroke. `detail.value` is the current control value.
          */
-        "onCorInput"?: (event: CorSearchInputRectangularCustomEvent<SearchInputRectangularChangeDetail>) => void;
+        "onMudInput"?: (event: MudSearchInputRectangularCustomEvent<SearchInputRectangularChangeDetail>) => void;
         /**
           * Fires when the user submits the query (Enter key). `detail.value` is the submitted query.
          */
-        "onCorSearch"?: (event: CorSearchInputRectangularCustomEvent<SearchInputRectangularSearchDetail>) => void;
+        "onMudSearch"?: (event: MudSearchInputRectangularCustomEvent<SearchInputRectangularSearchDetail>) => void;
         /**
           * Placeholder shown when the control is empty.
          */
@@ -6963,7 +6963,7 @@ declare namespace LocalJSX {
          */
         "variant"?: SearchInputRectangularVariant;
         /**
-          * Renders a trailing brand-blue submit button (the Figma "Button=True" axis). Clicking the button — or pressing Enter inside the input — dispatches `corSearch` with the current value. When the field is empty or disabled, the button enters a disabled visual state and does not fire the event.
+          * Renders a trailing brand-blue submit button (the Figma "Button=True" axis). Clicking the button — or pressing Enter inside the input — dispatches `mudSearch` with the current value. When the field is empty or disabled, the button enters a disabled visual state and does not fire the event.
           * @default false
          */
         "withButton"?: boolean;
@@ -6980,9 +6980,9 @@ declare namespace LocalJSX {
      * - `ArrowLeft` / `ArrowRight` move selection between segments
      * - `Home` / `End` jump to first / last segment
      * - `Enter` / `Space` reaffirm selection on the focused segment
-     * @element cor-segmented-control
+     * @element mud-segmented-control
      */
-    interface CorSegmentedControl {
+    interface MudSegmentedControl {
         /**
           * Accessible name for the group. Forwarded to the host's `aria-label`. Required when no surrounding `<label>` references the control.
          */
@@ -7007,7 +7007,7 @@ declare namespace LocalJSX {
         /**
           * Fires when the selected segment changes. `detail.value` is the new selection.
          */
-        "onCorChange"?: (event: CorSegmentedControlCustomEvent<SegmentedControlChangeDetail>) => void;
+        "onMudChange"?: (event: MudSegmentedControlCustomEvent<SegmentedControlChangeDetail>) => void;
         /**
           * Segment configuration. Order in the array maps left-to-right. When omitted the control renders nothing.
          */
@@ -7027,13 +7027,13 @@ declare namespace LocalJSX {
      * Pattern B (atom-interactive, form-associated): renders a custom-styled
      * trigger button and a listbox popover inside shadow DOM. Form participation
      * works via `formAssociated` + `ElementInternals`. Shares the visual primitives
-     * of `cor-input` (border, focus ring, label, helper / error text, sizes,
+     * of `mud-input` (border, focus ring, label, helper / error text, sizes,
      * states) and adds a trailing chevron icon, listbox menu, and keyboard
      * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
      * pattern.
-     * @element cor-select-input
+     * @element mud-select-input
      */
-    interface CorSelectInput {
+    interface MudSelectInput {
         /**
           * Accessible name. Mirrors to the trigger's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
@@ -7071,25 +7071,25 @@ declare namespace LocalJSX {
         /**
           * Fires when the trigger loses focus. The native `FocusEvent` is forwarded as-is.
          */
-        "onCorBlur"?: (event: CorSelectInputCustomEvent<FocusEvent>) => void;
+        "onMudBlur"?: (event: MudSelectInputCustomEvent<FocusEvent>) => void;
         /**
           * Fires when the selected value changes. `detail.value` is the new value.
          */
-        "onCorChange"?: (event: CorSelectInputCustomEvent<SelectChangeDetail>) => void;
+        "onMudChange"?: (event: MudSelectInputCustomEvent<SelectChangeDetail>) => void;
         /**
           * Fires when the listbox closes.
          */
-        "onCorClose"?: (event: CorSelectInputCustomEvent<void>) => void;
+        "onMudClose"?: (event: MudSelectInputCustomEvent<void>) => void;
         /**
           * Fires when the trigger gains focus. The native `FocusEvent` is forwarded as-is.
          */
-        "onCorFocus"?: (event: CorSelectInputCustomEvent<FocusEvent>) => void;
+        "onMudFocus"?: (event: MudSelectInputCustomEvent<FocusEvent>) => void;
         /**
           * Fires when the listbox opens.
          */
-        "onCorOpen"?: (event: CorSelectInputCustomEvent<void>) => void;
+        "onMudOpen"?: (event: MudSelectInputCustomEvent<void>) => void;
         /**
-          * Reflects the open state of the listbox popover. Read-only externally — use `corOpen` / `corClose` to react to changes.
+          * Reflects the open state of the listbox popover. Read-only externally — use `mudOpen` / `mudClose` to react to changes.
           * @default false
          */
         "open"?: boolean;
@@ -7131,9 +7131,9 @@ declare namespace LocalJSX {
      * Separator — visual divider between groups of content or UI components.
      * Pattern B (atom-visual): renders a 1D rule, optionally with an inline label.
      * No events, no interactivity. ARIA `separator` semantics.
-     * @element cor-separator
+     * @element mud-separator
      */
-    interface CorSeparator {
+    interface MudSeparator {
         /**
           * Accessible label for screen readers. Most separators are decorative and do not need this; provide it only when the separator conveys a discrete semantic boundary that benefits from an announcement.
          */
@@ -7169,12 +7169,12 @@ declare namespace LocalJSX {
      * A specialised filled button with a logo badge embedded on the inline-start
      * edge of the geometry. Fixed 48 px height (= minimum touch target) and
      * asymmetric padding (16 start / 20 end) per Figma spec.
-     * Slot `badge` reserves a 24×24 box for a `<cor-logo>` rendering a
+     * Slot `badge` reserves a 24×24 box for a `<mud-logo>` rendering a
      * `*-logo-logomark-only` asset (or any other element rendered at that size).
      * The default slot carries the label text.
-     * @element cor-service-button
+     * @element mud-service-button
      */
-    interface CorServiceButton {
+    interface MudServiceButton {
         /**
           * Visual treatment. - `primary` — solid brand background, white label - `neutral` — light surface background, dark label
           * @default 'primary'
@@ -7233,9 +7233,9 @@ declare namespace LocalJSX {
      * Spinner — animated circular loading indicator.
      * Pattern B (atom-visual): renders a CSS-only rotating arc.
      * No slots, no events, no interactivity.
-     * @element cor-spinner
+     * @element mud-spinner
      */
-    interface CorSpinner {
+    interface MudSpinner {
         /**
           * Accessible label for screen readers.
           * @default 'Loading'
@@ -7264,9 +7264,9 @@ declare namespace LocalJSX {
      * pointer-devices and 40px on touch-devices (via `pointer: coarse`) per the
      * Figma "Target Sizes" spec, achieved with a `::before` pseudo-element so the
      * visual footprint stays untouched.
-     * @element cor-switch
+     * @element mud-switch
      */
-    interface CorSwitch {
+    interface MudSwitch {
         /**
           * Consumer-set `aria-label` on the host. The component caches the value (see `resolvedAriaLabel`) and strips the host attribute on mount to avoid the `aria-prohibited-attr` axe rule on the custom-element host.
          */
@@ -7290,7 +7290,7 @@ declare namespace LocalJSX {
          */
         "form"?: string;
         /**
-          * Accessible-name fallback. Used as `aria-label` on the internal input when no `label` slot is provided. Does NOT render visible text — use the `label` slot for that. Matches the cor-button / cor-checkbox / cor-radio convention.
+          * Accessible-name fallback. Used as `aria-label` on the internal input when no `label` slot is provided. Does NOT render visible text — use the `label` slot for that. Matches the mud-button / mud-checkbox / mud-radio convention.
          */
         "label"?: string;
         /**
@@ -7300,15 +7300,15 @@ declare namespace LocalJSX {
         /**
           * Fires when the internal control loses focus. The native `FocusEvent` is forwarded as-is.
          */
-        "onCorBlur"?: (event: CorSwitchCustomEvent<FocusEvent>) => void;
+        "onMudBlur"?: (event: MudSwitchCustomEvent<FocusEvent>) => void;
         /**
           * Fires whenever the checked state changes. `detail.checked` is the new state.
          */
-        "onCorChange"?: (event: CorSwitchCustomEvent<SwitchChangeDetail>) => void;
+        "onMudChange"?: (event: MudSwitchCustomEvent<SwitchChangeDetail>) => void;
         /**
           * Fires when the internal control gains focus. The native `FocusEvent` is forwarded as-is.
          */
-        "onCorFocus"?: (event: CorSwitchCustomEvent<FocusEvent>) => void;
+        "onMudFocus"?: (event: MudSwitchCustomEvent<FocusEvent>) => void;
         /**
           * Marks the field as mandatory. Sets `aria-required` on the internal control.
           * @default false
@@ -7321,16 +7321,16 @@ declare namespace LocalJSX {
         "value"?: string;
     }
     /**
-     * `cor-tab` — single tab item inside a `cor-tabs` tablist.
-     * Pattern A child: rendered as a slotted child of `cor-tabs`. Owns its own
+     * `mud-tab` — single tab item inside a `mud-tabs` tablist.
+     * Pattern A child: rendered as a slotted child of `mud-tabs`. Owns its own
      * `role="tab"` host with `aria-selected`, an optional leading icon, the
      * label, and an optional trailing numbered badge.
      * The component is intentionally light: selection, focus management and
-     * `aria-controls` wiring are all driven by the parent `cor-tabs` via
+     * `aria-controls` wiring are all driven by the parent `mud-tabs` via
      * reflected attributes and DOM ids.
-     * @element cor-tab
+     * @element mud-tab
      */
-    interface CorTab {
+    interface MudTab {
         /**
           * Optional numbered badge displayed after the label.
          */
@@ -7341,7 +7341,7 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
-          * Optional leading icon name resolved against the `cor-icon` registry.
+          * Optional leading icon name resolved against the `mud-icon` registry.
          */
         "iconName"?: string;
         /**
@@ -7349,11 +7349,11 @@ declare namespace LocalJSX {
          */
         "label"?: string;
         /**
-          * Fires when the user clicks or keyboard-activates the tab. The parent `cor-tabs` listens for this event to drive selection.
+          * Fires when the user clicks or keyboard-activates the tab. The parent `mud-tabs` listens for this event to drive selection.
          */
-        "onCorTabActivate"?: (event: CorTabCustomEvent<{ value: string }>) => void;
+        "onMudTabActivate"?: (event: MudTabCustomEvent<{ value: string }>) => void;
         /**
-          * Id of the panel this tab controls. Set by the parent `cor-tabs`.
+          * Id of the panel this tab controls. Set by the parent `mud-tabs`.
          */
         "panelId"?: string;
         /**
@@ -7367,7 +7367,7 @@ declare namespace LocalJSX {
          */
         "size"?: 'md' | 'sm';
         /**
-          * Identity of the tab. Used by the parent `cor-tabs` to track selection.
+          * Identity of the tab. Used by the parent `mud-tabs` to track selection.
          */
         "value": string;
     }
@@ -7376,18 +7376,18 @@ declare namespace LocalJSX {
      * selection, and responsive mobile collapse.
      * Pattern B (molecule, internal DOM): renders a native `<table>` inside
      * shadow DOM for full a11y semantics (`role="table"`, `role="columnheader"`,
-     * `aria-sort`, `aria-selected`). Composes existing primitives — `cor-checkbox`
-     * for the selection column, `cor-icon` for sort chevrons. Status badges and
+     * `aria-sort`, `aria-selected`). Composes existing primitives — `mud-checkbox`
+     * for the selection column, `mud-icon` for sort chevrons. Status badges and
      * row actions are projected via named slots so consumers can drop in
-     * `cor-tag`, `cor-button`, or any custom content per cell.
+     * `mud-tag`, `mud-button`, or any custom content per cell.
      * At ≤640 px container width the inline padding shrinks from 24 → 16 to
      * match Figma's "Mobile" breakpoint specs (table-header `4930:14358`,
      * table-cell `649:4296`). The table structure itself is preserved; consumers
      * who need a card-stack layout on narrow screens should wrap their own
      * presentation around the data.
-     * @element cor-table
+     * @element mud-table
      */
-    interface CorTable {
+    interface MudTable {
         /**
           * Accessible label propagated to the rendered `<table>` element. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
@@ -7409,15 +7409,15 @@ declare namespace LocalJSX {
         /**
           * Emitted when a row body is clicked (excluding the selection checkbox).
          */
-        "onCorRowClick"?: (event: CorTableCustomEvent<TableRowClickDetail>) => void;
+        "onMudRowClick"?: (event: MudTableCustomEvent<TableRowClickDetail>) => void;
         /**
           * Emitted when the selection set changes.
          */
-        "onCorSelectionChange"?: (event: CorTableCustomEvent<TableSelectionChangeDetail>) => void;
+        "onMudSelectionChange"?: (event: MudTableCustomEvent<TableSelectionChangeDetail>) => void;
         /**
           * Emitted when the user activates a sortable header.
          */
-        "onCorSort"?: (event: CorTableCustomEvent<TableSortChangeDetail>) => void;
+        "onMudSort"?: (event: MudTableCustomEvent<TableSortChangeDetail>) => void;
         /**
           * Field used to uniquely identify a row. Used for selection state and stable React-like keys.
           * @default 'id'
@@ -7438,7 +7438,7 @@ declare namespace LocalJSX {
          */
         "selectable"?: boolean;
         /**
-          * Selected row IDs (controlled). Each entry must correspond to a row's `rowIdField` value (stringified). Toggling rows or the master checkbox emits `corSelectionChange` — the consumer reflects the new array back via this prop.
+          * Selected row IDs (controlled). Each entry must correspond to a row's `rowIdField` value (stringified). Toggling rows or the master checkbox emits `mudSelectionChange` — the consumer reflects the new array back via this prop.
          */
         "selectedRows"?: string[];
         /**
@@ -7451,13 +7451,13 @@ declare namespace LocalJSX {
         "sortDirection"?: TableSortDirection;
     }
     /**
-     * `cor-tabs` — horizontal tablist that switches the currently visible panel.
+     * `mud-tabs` — horizontal tablist that switches the currently visible panel.
      * Two composition modes:
-     *  1. **Declarative** (recommended for static menus): slot `<cor-tab>` children
+     *  1. **Declarative** (recommended for static menus): slot `<mud-tab>` children
      *     into the default slot and matching `<div slot="panel-{value}">` blocks
      *     into the panel slots.
      *  2. **Data-driven**: pass a `tabs` array. The component renders each entry
-     *     as a child `cor-tab` and exposes panels via `<div slot="panel-{value}">`
+     *     as a child `mud-tab` and exposes panels via `<div slot="panel-{value}">`
      *     elements supplied by the consumer.
      * Pattern A (molecule, slot-based). The host carries `role="tablist"`; the
      * tabs are rendered children with `role="tab"`; the panels are slotted into
@@ -7472,9 +7472,9 @@ declare namespace LocalJSX {
      * exposes leading + trailing chevron buttons that scroll the strip. Both
      * chevrons are mouse-only; their `aria-hidden="true"` keeps them out of the
      * keyboard order (arrow keys already move selection without overflow help).
-     * @element cor-tabs
+     * @element mud-tabs
      */
-    interface CorTabs {
+    interface MudTabs {
         /**
           * Accessible name for the tablist. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
@@ -7486,14 +7486,14 @@ declare namespace LocalJSX {
         /**
           * Fires when the selected tab changes. `detail.value` is the new selection.
          */
-        "onCorChange"?: (event: CorTabsCustomEvent<TabsChangeDetail>) => void;
+        "onMudChange"?: (event: MudTabsCustomEvent<TabsChangeDetail>) => void;
         /**
           * Size rung. `md` is 48 px tall; `sm` is 40 px tall (mobile + dense layouts).
           * @default 'md'
          */
         "size"?: TabsSize;
         /**
-          * Data-driven tab list. When supplied, the component renders one `<cor-tab>` per entry. Mutually compatible with slotted children — the slotted variant takes precedence when both are present.
+          * Data-driven tab list. When supplied, the component renders one `<mud-tab>` per entry. Mutually compatible with slotted children — the slotted variant takes precedence when both are present.
          */
         "tabs"?: TabDescriptor[];
         /**
@@ -7519,12 +7519,12 @@ declare namespace LocalJSX {
      * host will adopt `role="status"` automatically — otherwise the host
      * stays silent so visual-only tags don't pollute the a11y tree.
      * For horizontally stacked groups (8 px gutter, wrap on overflow),
-     * compose multiple tags inside a `cor-tag-group` slot wrapper —
+     * compose multiple tags inside a `mud-tag-group` slot wrapper —
      * available as a CSS utility on this element via the `group` data
      * attribute on the parent.
-     * @element cor-tag
+     * @element mud-tag
      */
-    interface CorTag {
+    interface MudTag {
         /**
           * Overrides the accessible name. When set, the host also adopts `role="status"` so screen readers announce the tag as a live status region (e.g. "Procesare în curs").
          */
@@ -7558,12 +7558,12 @@ declare namespace LocalJSX {
      * Text Area — multi-line text-entry control.
      * Pattern B (atom-interactive, form-associated): renders its own `<textarea>`
      * inside shadow DOM. Form participation works via `formAssociated` +
-     * `ElementInternals`. Mirrors the `cor-input` contract for label, helper,
+     * `ElementInternals`. Mirrors the `mud-input` contract for label, helper,
      * error and variant treatment, and adds a vertical resize handle plus an
      * optional character counter.
-     * @element cor-textarea
+     * @element mud-textarea
      */
-    interface CorTextarea {
+    interface MudTextarea {
         /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
@@ -7605,19 +7605,19 @@ declare namespace LocalJSX {
         /**
           * Fires when the internal control loses focus. The native `FocusEvent` is forwarded as-is.
          */
-        "onCorBlur"?: (event: CorTextareaCustomEvent<FocusEvent>) => void;
+        "onMudBlur"?: (event: MudTextareaCustomEvent<FocusEvent>) => void;
         /**
           * Fires when the value is committed (typically on `blur`). `detail.value` is the committed value.
          */
-        "onCorChange"?: (event: CorTextareaCustomEvent<TextareaChangeDetail>) => void;
+        "onMudChange"?: (event: MudTextareaCustomEvent<TextareaChangeDetail>) => void;
         /**
           * Fires when the internal control gains focus. The native `FocusEvent` is forwarded as-is.
          */
-        "onCorFocus"?: (event: CorTextareaCustomEvent<FocusEvent>) => void;
+        "onMudFocus"?: (event: MudTextareaCustomEvent<FocusEvent>) => void;
         /**
           * Fires on every keystroke. `detail.value` is the current control value.
          */
-        "onCorInput"?: (event: CorTextareaCustomEvent<TextareaChangeDetail>) => void;
+        "onMudInput"?: (event: MudTextareaCustomEvent<TextareaChangeDetail>) => void;
         /**
           * Placeholder shown when the control is empty.
          */
@@ -7676,9 +7676,9 @@ declare namespace LocalJSX {
      *   second click, `Esc`, or outside click.
      * - `coach` — persistent instructional overlay with a close button + localized
      *   hint. Dismissed only by Esc, the close button, or an outside click.
-     * @element cor-tooltip
+     * @element mud-tooltip
      */
-    interface CorTooltip {
+    interface MudTooltip {
         /**
           * Accessible name applied to the rendered bubble. Stripped from the host after ingestion; the value is forwarded to the bubble's `aria-label`.
          */
@@ -7720,11 +7720,11 @@ declare namespace LocalJSX {
         /**
           * Fired when the tooltip is hidden. `detail.reason` records the cause: `'blur'` (mouseleave / focusout), `'escape'` (Esc), `'close-button'` (coach variant close), `'click-outside'` (outside click), or `'click-trigger'` (second click on the trigger when `trigger="click"`).
          */
-        "onCorClose"?: (event: CorTooltipCustomEvent<TooltipCloseEventDetail>) => void;
+        "onMudClose"?: (event: MudTooltipCustomEvent<TooltipCloseEventDetail>) => void;
         /**
           * Fired when the tooltip becomes visible (after `showDelay` for hover triggers).
          */
-        "onCorOpen"?: (event: CorTooltipCustomEvent<void>) => void;
+        "onMudOpen"?: (event: MudTooltipCustomEvent<void>) => void;
         /**
           * Whether the tooltip is currently visible. Mutable so the component can close itself in response to mouseleave / blur / Esc / outside-click, and so consumers can drive visibility imperatively (`trigger="manual"`).
           * @default false
@@ -7762,7 +7762,7 @@ declare namespace LocalJSX {
         "variant"?: TooltipVariant;
     }
 
-    interface CorAccordionAttributes {
+    interface MudAccordionAttributes {
         "mode": AccordionMode;
         "appearance": AccordionAppearance;
         "size": AccordionSize;
@@ -7770,7 +7770,7 @@ declare namespace LocalJSX {
         "breakpoint": 'desktop' | 'mobile';
         "label": string;
     }
-    interface CorAccordionItemAttributes {
+    interface MudAccordionItemAttributes {
         "open": boolean;
         "disabled": boolean;
         "heading": string;
@@ -7781,7 +7781,7 @@ declare namespace LocalJSX {
         "size": AccordionSize;
         "iconPosition": AccordionIconPosition;
     }
-    interface CorAvatarAttributes {
+    interface MudAvatarAttributes {
         "type": AvatarType;
         "size": AvatarSize;
         "src": string;
@@ -7791,7 +7791,7 @@ declare namespace LocalJSX {
         "iconName": string;
         "ariaLabel": string;
     }
-    interface CorBadgeAttributes {
+    interface MudBadgeAttributes {
         "type": BadgeType;
         "variant": BadgeVariant;
         "size": BadgeSize;
@@ -7799,13 +7799,13 @@ declare namespace LocalJSX {
         "max": number;
         "ariaLabel": string;
     }
-    interface CorBreadcrumbAttributes {
+    interface MudBreadcrumbAttributes {
         "maxVisible": number;
         "separator": string;
         "responsive": boolean;
         "label": string;
     }
-    interface CorBreadcrumbItemAttributes {
+    interface MudBreadcrumbItemAttributes {
         "href": string;
         "active": boolean;
         "visited": boolean;
@@ -7813,7 +7813,7 @@ declare namespace LocalJSX {
         "loading": boolean;
         "label": string;
     }
-    interface CorButtonAttributes {
+    interface MudButtonAttributes {
         "variant": ButtonVariant;
         "appearance": ButtonAppearance;
         "size": ButtonSize;
@@ -7830,11 +7830,11 @@ declare namespace LocalJSX {
         "value": string;
         "label": string;
     }
-    interface CorButtonGroupAttributes {
+    interface MudButtonGroupAttributes {
         "orientation": ButtonGroupOrientation;
         "label": string;
     }
-    interface CorCheckboxAttributes {
+    interface MudCheckboxAttributes {
         "size": CheckboxSize;
         "checked": boolean;
         "indeterminate": boolean;
@@ -7849,7 +7849,7 @@ declare namespace LocalJSX {
         "ariaLabel": string;
         "ariaLabelledby": string;
     }
-    interface CorChipAttributes {
+    interface MudChipAttributes {
         "type": ChipType;
         "size": ChipSize;
         "selected": boolean;
@@ -7857,7 +7857,7 @@ declare namespace LocalJSX {
         "label": string;
         "removable": boolean;
     }
-    interface CorCookieBannerAttributes {
+    interface MudCookieBannerAttributes {
         "variant": CookieBannerVariant;
         "expanded": boolean;
         "position": CookieBannerPosition;
@@ -7872,7 +7872,7 @@ declare namespace LocalJSX {
         "closeLabel": string;
         "ariaLabel": string;
     }
-    interface CorDateInputAttributes {
+    interface MudDateInputAttributes {
         "variant": DateInputVariant;
         "size": DateInputSize;
         "format": DateInputFormat;
@@ -7890,7 +7890,7 @@ declare namespace LocalJSX {
         "placeholder": string;
         "ariaLabel": string;
     }
-    interface CorDatePickerAttributes {
+    interface MudDatePickerAttributes {
         "mode": DatePickerMode;
         "breakpoint": DatePickerBreakpoint;
         "value": string | string[];
@@ -7903,7 +7903,7 @@ declare namespace LocalJSX {
         "firstDayOfWeek": number;
         "hideTodayShortcut": boolean;
     }
-    interface CorFileInputAttributes {
+    interface MudFileInputAttributes {
         "size": FileInputSize;
         "disabled": boolean;
         "required": boolean;
@@ -7923,7 +7923,7 @@ declare namespace LocalJSX {
         "maxSizeText": string;
         "ariaLabel": string;
     }
-    interface CorFileItemAttributes {
+    interface MudFileItemAttributes {
         "state": FileItemState;
         "filename": string;
         "size": number;
@@ -7932,7 +7932,7 @@ declare namespace LocalJSX {
         "noRemove": boolean;
         "removeLabel": string;
     }
-    interface CorFooterAttributes {
+    interface MudFooterAttributes {
         "variant": FooterVariant;
         "copyrightText": string;
         "accessibilityHref": string;
@@ -7940,7 +7940,7 @@ declare namespace LocalJSX {
         "locale": FooterLocale;
         "ariaLabel": string;
     }
-    interface CorIconAttributes {
+    interface MudIconAttributes {
         "name": string;
         "size": IconSize;
         "color": string;
@@ -7948,7 +7948,7 @@ declare namespace LocalJSX {
         "disabled": boolean;
         "ariaLabel": string;
     }
-    interface CorInputAttributes {
+    interface MudInputAttributes {
         "variant": InputVariant;
         "loading": boolean;
         "size": InputSize;
@@ -7970,7 +7970,7 @@ declare namespace LocalJSX {
         "pattern": string;
         "ariaLabel": string;
     }
-    interface CorInputChipAttributes {
+    interface MudInputChipAttributes {
         "variant": InputChipVariant;
         "size": InputChipSize;
         "disabled": boolean;
@@ -7988,7 +7988,7 @@ declare namespace LocalJSX {
         "separators": string;
         "ariaLabel": string;
     }
-    interface CorLinkAttributes {
+    interface MudLinkAttributes {
         "size": LinkSize;
         "variant": LinkVariant;
         "underline": LinkUnderline;
@@ -8001,11 +8001,11 @@ declare namespace LocalJSX {
         "ariaLabel": string;
         "external": boolean;
     }
-    interface CorLogoAttributes {
+    interface MudLogoAttributes {
         "name": LogoName;
         "ariaLabel": string;
     }
-    interface CorModalAttributes {
+    interface MudModalAttributes {
         "open": boolean;
         "size": ModalSize;
         "variant": ModalVariant;
@@ -8020,7 +8020,7 @@ declare namespace LocalJSX {
         "label": string;
         "closeLabel": string;
     }
-    interface CorNotificationAttributes {
+    interface MudNotificationAttributes {
         "variant": NotificationVariant;
         "notificationStyle": NotificationStyle;
         "closable": boolean;
@@ -8029,7 +8029,7 @@ declare namespace LocalJSX {
         "ariaLabel": string;
         "closeLabel": string;
     }
-    interface CorNumericInputAttributes {
+    interface MudNumericInputAttributes {
         "variant": NumericInputVariant;
         "loading": boolean;
         "size": NumericInputSize;
@@ -8053,7 +8053,7 @@ declare namespace LocalJSX {
         "ariaLabel": string;
         "ariaValuetext": string;
     }
-    interface CorPaginationAttributes {
+    interface MudPaginationAttributes {
         "size": PaginationSize;
         "currentPage": number;
         "totalPages": number;
@@ -8068,7 +8068,7 @@ declare namespace LocalJSX {
         "pageAriaLabel": string;
         "overflowAriaLabel": string;
     }
-    interface CorPhoneInputAttributes {
+    interface MudPhoneInputAttributes {
         "variant": PhoneInputVariant;
         "size": PhoneInputSize;
         "type": PhoneInputType;
@@ -8087,13 +8087,13 @@ declare namespace LocalJSX {
         "placeholder": string;
         "ariaLabel": string;
     }
-    interface CorProgressTrackerAttributes {
+    interface MudProgressTrackerAttributes {
         "orientation": ProgressTrackerOrientation;
         "interactive": boolean;
         "currentStep": number;
         "ariaLabel": string;
     }
-    interface CorRadioAttributes {
+    interface MudRadioAttributes {
         "size": RadioSize;
         "checked": boolean;
         "disabled": boolean;
@@ -8107,7 +8107,7 @@ declare namespace LocalJSX {
         "ariaLabel": string;
         "ariaLabelledby": string;
     }
-    interface CorReceiptAttributes {
+    interface MudReceiptAttributes {
         "service": ReceiptService;
         "titleText": string;
         "status": ReceiptStatus;
@@ -8134,7 +8134,7 @@ declare namespace LocalJSX {
         "emailLabel": string;
         "shareLabel": string;
     }
-    interface CorSearchInputCircularAttributes {
+    interface MudSearchInputCircularAttributes {
         "variant": SearchInputCircularVariant;
         "size": SearchInputCircularSize;
         "disabled": boolean;
@@ -8158,7 +8158,7 @@ declare namespace LocalJSX {
         "minLength": number;
         "ariaLabel": string;
     }
-    interface CorSearchInputRectangularAttributes {
+    interface MudSearchInputRectangularAttributes {
         "variant": SearchInputRectangularVariant;
         "size": SearchInputRectangularSize;
         "disabled": boolean;
@@ -8182,7 +8182,7 @@ declare namespace LocalJSX {
         "minLength": number;
         "ariaLabel": string;
     }
-    interface CorSegmentedControlAttributes {
+    interface MudSegmentedControlAttributes {
         "size": SegmentedControlSize;
         "disabled": boolean;
         "value": string;
@@ -8190,7 +8190,7 @@ declare namespace LocalJSX {
         "ariaLabel": string;
         "ariaLabelledby": string;
     }
-    interface CorSelectInputAttributes {
+    interface MudSelectInputAttributes {
         "variant": SelectInputVariant;
         "size": SelectInputSize;
         "disabled": boolean;
@@ -8206,7 +8206,7 @@ declare namespace LocalJSX {
         "errorText": string;
         "ariaLabel": string;
     }
-    interface CorSeparatorAttributes {
+    interface MudSeparatorAttributes {
         "orientation": SeparatorOrientation;
         "size": SeparatorSize;
         "variant": SeparatorVariant;
@@ -8214,7 +8214,7 @@ declare namespace LocalJSX {
         "label": string;
         "ariaLabel": string;
     }
-    interface CorServiceButtonAttributes {
+    interface MudServiceButtonAttributes {
         "appearance": ServiceButtonAppearance;
         "type": ServiceButtonType;
         "disabled": boolean;
@@ -8227,12 +8227,12 @@ declare namespace LocalJSX {
         "value": string;
         "label": string;
     }
-    interface CorSpinnerAttributes {
+    interface MudSpinnerAttributes {
         "size": SpinnerSize;
         "variant": SpinnerVariant;
         "label": string;
     }
-    interface CorSwitchAttributes {
+    interface MudSwitchAttributes {
         "checked": boolean;
         "disabled": boolean;
         "required": boolean;
@@ -8242,7 +8242,7 @@ declare namespace LocalJSX {
         "ariaLabel": string;
         "ariaLabelledby": string;
     }
-    interface CorTabAttributes {
+    interface MudTabAttributes {
         "value": string;
         "selected": boolean;
         "disabled": boolean;
@@ -8252,7 +8252,7 @@ declare namespace LocalJSX {
         "badgeCount": number;
         "panelId": string;
     }
-    interface CorTableAttributes {
+    interface MudTableAttributes {
         "headerStyle": TableHeaderStyle;
         "rowStyle": TableRowStyle;
         "hoverable": boolean;
@@ -8262,13 +8262,13 @@ declare namespace LocalJSX {
         "rowIdField": string;
         "ariaLabel": string;
     }
-    interface CorTabsAttributes {
+    interface MudTabsAttributes {
         "size": TabsSize;
         "value": string;
         "ariaLabel": string;
         "ariaLabelledby": string;
     }
-    interface CorTagAttributes {
+    interface MudTagAttributes {
         "variant": TagVariant;
         "size": TagSize;
         "type": TagType;
@@ -8276,7 +8276,7 @@ declare namespace LocalJSX {
         "label": string;
         "ariaLabel": string;
     }
-    interface CorTextareaAttributes {
+    interface MudTextareaAttributes {
         "variant": TextareaVariant;
         "size": TextareaSize;
         "disabled": boolean;
@@ -8295,7 +8295,7 @@ declare namespace LocalJSX {
         "showCounter": boolean;
         "ariaLabel": string;
     }
-    interface CorTooltipAttributes {
+    interface MudTooltipAttributes {
         "size": TooltipSize;
         "position": TooltipPosition;
         "variant": TooltipVariant;
@@ -8314,49 +8314,49 @@ declare namespace LocalJSX {
     }
 
     interface IntrinsicElements {
-        "cor-accordion": Omit<CorAccordion, keyof CorAccordionAttributes> & { [K in keyof CorAccordion & keyof CorAccordionAttributes]?: CorAccordion[K] } & { [K in keyof CorAccordion & keyof CorAccordionAttributes as `attr:${K}`]?: CorAccordionAttributes[K] } & { [K in keyof CorAccordion & keyof CorAccordionAttributes as `prop:${K}`]?: CorAccordion[K] };
-        "cor-accordion-item": Omit<CorAccordionItem, keyof CorAccordionItemAttributes> & { [K in keyof CorAccordionItem & keyof CorAccordionItemAttributes]?: CorAccordionItem[K] } & { [K in keyof CorAccordionItem & keyof CorAccordionItemAttributes as `attr:${K}`]?: CorAccordionItemAttributes[K] } & { [K in keyof CorAccordionItem & keyof CorAccordionItemAttributes as `prop:${K}`]?: CorAccordionItem[K] };
-        "cor-avatar": Omit<CorAvatar, keyof CorAvatarAttributes> & { [K in keyof CorAvatar & keyof CorAvatarAttributes]?: CorAvatar[K] } & { [K in keyof CorAvatar & keyof CorAvatarAttributes as `attr:${K}`]?: CorAvatarAttributes[K] } & { [K in keyof CorAvatar & keyof CorAvatarAttributes as `prop:${K}`]?: CorAvatar[K] };
-        "cor-badge": Omit<CorBadge, keyof CorBadgeAttributes> & { [K in keyof CorBadge & keyof CorBadgeAttributes]?: CorBadge[K] } & { [K in keyof CorBadge & keyof CorBadgeAttributes as `attr:${K}`]?: CorBadgeAttributes[K] } & { [K in keyof CorBadge & keyof CorBadgeAttributes as `prop:${K}`]?: CorBadge[K] };
-        "cor-breadcrumb": Omit<CorBreadcrumb, keyof CorBreadcrumbAttributes> & { [K in keyof CorBreadcrumb & keyof CorBreadcrumbAttributes]?: CorBreadcrumb[K] } & { [K in keyof CorBreadcrumb & keyof CorBreadcrumbAttributes as `attr:${K}`]?: CorBreadcrumbAttributes[K] } & { [K in keyof CorBreadcrumb & keyof CorBreadcrumbAttributes as `prop:${K}`]?: CorBreadcrumb[K] };
-        "cor-breadcrumb-item": Omit<CorBreadcrumbItem, keyof CorBreadcrumbItemAttributes> & { [K in keyof CorBreadcrumbItem & keyof CorBreadcrumbItemAttributes]?: CorBreadcrumbItem[K] } & { [K in keyof CorBreadcrumbItem & keyof CorBreadcrumbItemAttributes as `attr:${K}`]?: CorBreadcrumbItemAttributes[K] } & { [K in keyof CorBreadcrumbItem & keyof CorBreadcrumbItemAttributes as `prop:${K}`]?: CorBreadcrumbItem[K] };
-        "cor-button": Omit<CorButton, keyof CorButtonAttributes> & { [K in keyof CorButton & keyof CorButtonAttributes]?: CorButton[K] } & { [K in keyof CorButton & keyof CorButtonAttributes as `attr:${K}`]?: CorButtonAttributes[K] } & { [K in keyof CorButton & keyof CorButtonAttributes as `prop:${K}`]?: CorButton[K] };
-        "cor-button-group": Omit<CorButtonGroup, keyof CorButtonGroupAttributes> & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes]?: CorButtonGroup[K] } & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes as `attr:${K}`]?: CorButtonGroupAttributes[K] } & { [K in keyof CorButtonGroup & keyof CorButtonGroupAttributes as `prop:${K}`]?: CorButtonGroup[K] };
-        "cor-checkbox": Omit<CorCheckbox, keyof CorCheckboxAttributes> & { [K in keyof CorCheckbox & keyof CorCheckboxAttributes]?: CorCheckbox[K] } & { [K in keyof CorCheckbox & keyof CorCheckboxAttributes as `attr:${K}`]?: CorCheckboxAttributes[K] } & { [K in keyof CorCheckbox & keyof CorCheckboxAttributes as `prop:${K}`]?: CorCheckbox[K] };
-        "cor-chip": Omit<CorChip, keyof CorChipAttributes> & { [K in keyof CorChip & keyof CorChipAttributes]?: CorChip[K] } & { [K in keyof CorChip & keyof CorChipAttributes as `attr:${K}`]?: CorChipAttributes[K] } & { [K in keyof CorChip & keyof CorChipAttributes as `prop:${K}`]?: CorChip[K] };
-        "cor-cookie-banner": Omit<CorCookieBanner, keyof CorCookieBannerAttributes> & { [K in keyof CorCookieBanner & keyof CorCookieBannerAttributes]?: CorCookieBanner[K] } & { [K in keyof CorCookieBanner & keyof CorCookieBannerAttributes as `attr:${K}`]?: CorCookieBannerAttributes[K] } & { [K in keyof CorCookieBanner & keyof CorCookieBannerAttributes as `prop:${K}`]?: CorCookieBanner[K] };
-        "cor-date-input": Omit<CorDateInput, keyof CorDateInputAttributes> & { [K in keyof CorDateInput & keyof CorDateInputAttributes]?: CorDateInput[K] } & { [K in keyof CorDateInput & keyof CorDateInputAttributes as `attr:${K}`]?: CorDateInputAttributes[K] } & { [K in keyof CorDateInput & keyof CorDateInputAttributes as `prop:${K}`]?: CorDateInput[K] };
-        "cor-date-picker": Omit<CorDatePicker, keyof CorDatePickerAttributes> & { [K in keyof CorDatePicker & keyof CorDatePickerAttributes]?: CorDatePicker[K] } & { [K in keyof CorDatePicker & keyof CorDatePickerAttributes as `attr:${K}`]?: CorDatePickerAttributes[K] } & { [K in keyof CorDatePicker & keyof CorDatePickerAttributes as `prop:${K}`]?: CorDatePicker[K] };
-        "cor-file-input": Omit<CorFileInput, keyof CorFileInputAttributes> & { [K in keyof CorFileInput & keyof CorFileInputAttributes]?: CorFileInput[K] } & { [K in keyof CorFileInput & keyof CorFileInputAttributes as `attr:${K}`]?: CorFileInputAttributes[K] } & { [K in keyof CorFileInput & keyof CorFileInputAttributes as `prop:${K}`]?: CorFileInput[K] };
-        "cor-file-item": Omit<CorFileItem, keyof CorFileItemAttributes> & { [K in keyof CorFileItem & keyof CorFileItemAttributes]?: CorFileItem[K] } & { [K in keyof CorFileItem & keyof CorFileItemAttributes as `attr:${K}`]?: CorFileItemAttributes[K] } & { [K in keyof CorFileItem & keyof CorFileItemAttributes as `prop:${K}`]?: CorFileItem[K] };
-        "cor-footer": Omit<CorFooter, keyof CorFooterAttributes> & { [K in keyof CorFooter & keyof CorFooterAttributes]?: CorFooter[K] } & { [K in keyof CorFooter & keyof CorFooterAttributes as `attr:${K}`]?: CorFooterAttributes[K] } & { [K in keyof CorFooter & keyof CorFooterAttributes as `prop:${K}`]?: CorFooter[K] };
-        "cor-icon": Omit<CorIcon, keyof CorIconAttributes> & { [K in keyof CorIcon & keyof CorIconAttributes]?: CorIcon[K] } & { [K in keyof CorIcon & keyof CorIconAttributes as `attr:${K}`]?: CorIconAttributes[K] } & { [K in keyof CorIcon & keyof CorIconAttributes as `prop:${K}`]?: CorIcon[K] };
-        "cor-input": Omit<CorInput, keyof CorInputAttributes> & { [K in keyof CorInput & keyof CorInputAttributes]?: CorInput[K] } & { [K in keyof CorInput & keyof CorInputAttributes as `attr:${K}`]?: CorInputAttributes[K] } & { [K in keyof CorInput & keyof CorInputAttributes as `prop:${K}`]?: CorInput[K] };
-        "cor-input-chip": Omit<CorInputChip, keyof CorInputChipAttributes> & { [K in keyof CorInputChip & keyof CorInputChipAttributes]?: CorInputChip[K] } & { [K in keyof CorInputChip & keyof CorInputChipAttributes as `attr:${K}`]?: CorInputChipAttributes[K] } & { [K in keyof CorInputChip & keyof CorInputChipAttributes as `prop:${K}`]?: CorInputChip[K] };
-        "cor-link": Omit<CorLink, keyof CorLinkAttributes> & { [K in keyof CorLink & keyof CorLinkAttributes]?: CorLink[K] } & { [K in keyof CorLink & keyof CorLinkAttributes as `attr:${K}`]?: CorLinkAttributes[K] } & { [K in keyof CorLink & keyof CorLinkAttributes as `prop:${K}`]?: CorLink[K] };
-        "cor-logo": Omit<CorLogo, keyof CorLogoAttributes> & { [K in keyof CorLogo & keyof CorLogoAttributes]?: CorLogo[K] } & { [K in keyof CorLogo & keyof CorLogoAttributes as `attr:${K}`]?: CorLogoAttributes[K] } & { [K in keyof CorLogo & keyof CorLogoAttributes as `prop:${K}`]?: CorLogo[K] };
-        "cor-modal": Omit<CorModal, keyof CorModalAttributes> & { [K in keyof CorModal & keyof CorModalAttributes]?: CorModal[K] } & { [K in keyof CorModal & keyof CorModalAttributes as `attr:${K}`]?: CorModalAttributes[K] } & { [K in keyof CorModal & keyof CorModalAttributes as `prop:${K}`]?: CorModal[K] };
-        "cor-notification": Omit<CorNotification, keyof CorNotificationAttributes> & { [K in keyof CorNotification & keyof CorNotificationAttributes]?: CorNotification[K] } & { [K in keyof CorNotification & keyof CorNotificationAttributes as `attr:${K}`]?: CorNotificationAttributes[K] } & { [K in keyof CorNotification & keyof CorNotificationAttributes as `prop:${K}`]?: CorNotification[K] };
-        "cor-numeric-input": Omit<CorNumericInput, keyof CorNumericInputAttributes> & { [K in keyof CorNumericInput & keyof CorNumericInputAttributes]?: CorNumericInput[K] } & { [K in keyof CorNumericInput & keyof CorNumericInputAttributes as `attr:${K}`]?: CorNumericInputAttributes[K] } & { [K in keyof CorNumericInput & keyof CorNumericInputAttributes as `prop:${K}`]?: CorNumericInput[K] };
-        "cor-pagination": Omit<CorPagination, keyof CorPaginationAttributes> & { [K in keyof CorPagination & keyof CorPaginationAttributes]?: CorPagination[K] } & { [K in keyof CorPagination & keyof CorPaginationAttributes as `attr:${K}`]?: CorPaginationAttributes[K] } & { [K in keyof CorPagination & keyof CorPaginationAttributes as `prop:${K}`]?: CorPagination[K] };
-        "cor-phone-input": Omit<CorPhoneInput, keyof CorPhoneInputAttributes> & { [K in keyof CorPhoneInput & keyof CorPhoneInputAttributes]?: CorPhoneInput[K] } & { [K in keyof CorPhoneInput & keyof CorPhoneInputAttributes as `attr:${K}`]?: CorPhoneInputAttributes[K] } & { [K in keyof CorPhoneInput & keyof CorPhoneInputAttributes as `prop:${K}`]?: CorPhoneInput[K] };
-        "cor-progress-tracker": Omit<CorProgressTracker, keyof CorProgressTrackerAttributes> & { [K in keyof CorProgressTracker & keyof CorProgressTrackerAttributes]?: CorProgressTracker[K] } & { [K in keyof CorProgressTracker & keyof CorProgressTrackerAttributes as `attr:${K}`]?: CorProgressTrackerAttributes[K] } & { [K in keyof CorProgressTracker & keyof CorProgressTrackerAttributes as `prop:${K}`]?: CorProgressTracker[K] };
-        "cor-radio": Omit<CorRadio, keyof CorRadioAttributes> & { [K in keyof CorRadio & keyof CorRadioAttributes]?: CorRadio[K] } & { [K in keyof CorRadio & keyof CorRadioAttributes as `attr:${K}`]?: CorRadioAttributes[K] } & { [K in keyof CorRadio & keyof CorRadioAttributes as `prop:${K}`]?: CorRadio[K] };
-        "cor-receipt": Omit<CorReceipt, keyof CorReceiptAttributes> & { [K in keyof CorReceipt & keyof CorReceiptAttributes]?: CorReceipt[K] } & { [K in keyof CorReceipt & keyof CorReceiptAttributes as `attr:${K}`]?: CorReceiptAttributes[K] } & { [K in keyof CorReceipt & keyof CorReceiptAttributes as `prop:${K}`]?: CorReceipt[K] };
-        "cor-search-input-circular": Omit<CorSearchInputCircular, keyof CorSearchInputCircularAttributes> & { [K in keyof CorSearchInputCircular & keyof CorSearchInputCircularAttributes]?: CorSearchInputCircular[K] } & { [K in keyof CorSearchInputCircular & keyof CorSearchInputCircularAttributes as `attr:${K}`]?: CorSearchInputCircularAttributes[K] } & { [K in keyof CorSearchInputCircular & keyof CorSearchInputCircularAttributes as `prop:${K}`]?: CorSearchInputCircular[K] };
-        "cor-search-input-rectangular": Omit<CorSearchInputRectangular, keyof CorSearchInputRectangularAttributes> & { [K in keyof CorSearchInputRectangular & keyof CorSearchInputRectangularAttributes]?: CorSearchInputRectangular[K] } & { [K in keyof CorSearchInputRectangular & keyof CorSearchInputRectangularAttributes as `attr:${K}`]?: CorSearchInputRectangularAttributes[K] } & { [K in keyof CorSearchInputRectangular & keyof CorSearchInputRectangularAttributes as `prop:${K}`]?: CorSearchInputRectangular[K] };
-        "cor-segmented-control": Omit<CorSegmentedControl, keyof CorSegmentedControlAttributes> & { [K in keyof CorSegmentedControl & keyof CorSegmentedControlAttributes]?: CorSegmentedControl[K] } & { [K in keyof CorSegmentedControl & keyof CorSegmentedControlAttributes as `attr:${K}`]?: CorSegmentedControlAttributes[K] } & { [K in keyof CorSegmentedControl & keyof CorSegmentedControlAttributes as `prop:${K}`]?: CorSegmentedControl[K] };
-        "cor-select-input": Omit<CorSelectInput, keyof CorSelectInputAttributes> & { [K in keyof CorSelectInput & keyof CorSelectInputAttributes]?: CorSelectInput[K] } & { [K in keyof CorSelectInput & keyof CorSelectInputAttributes as `attr:${K}`]?: CorSelectInputAttributes[K] } & { [K in keyof CorSelectInput & keyof CorSelectInputAttributes as `prop:${K}`]?: CorSelectInput[K] };
-        "cor-separator": Omit<CorSeparator, keyof CorSeparatorAttributes> & { [K in keyof CorSeparator & keyof CorSeparatorAttributes]?: CorSeparator[K] } & { [K in keyof CorSeparator & keyof CorSeparatorAttributes as `attr:${K}`]?: CorSeparatorAttributes[K] } & { [K in keyof CorSeparator & keyof CorSeparatorAttributes as `prop:${K}`]?: CorSeparator[K] };
-        "cor-service-button": Omit<CorServiceButton, keyof CorServiceButtonAttributes> & { [K in keyof CorServiceButton & keyof CorServiceButtonAttributes]?: CorServiceButton[K] } & { [K in keyof CorServiceButton & keyof CorServiceButtonAttributes as `attr:${K}`]?: CorServiceButtonAttributes[K] } & { [K in keyof CorServiceButton & keyof CorServiceButtonAttributes as `prop:${K}`]?: CorServiceButton[K] };
-        "cor-spinner": Omit<CorSpinner, keyof CorSpinnerAttributes> & { [K in keyof CorSpinner & keyof CorSpinnerAttributes]?: CorSpinner[K] } & { [K in keyof CorSpinner & keyof CorSpinnerAttributes as `attr:${K}`]?: CorSpinnerAttributes[K] } & { [K in keyof CorSpinner & keyof CorSpinnerAttributes as `prop:${K}`]?: CorSpinner[K] };
-        "cor-switch": Omit<CorSwitch, keyof CorSwitchAttributes> & { [K in keyof CorSwitch & keyof CorSwitchAttributes]?: CorSwitch[K] } & { [K in keyof CorSwitch & keyof CorSwitchAttributes as `attr:${K}`]?: CorSwitchAttributes[K] } & { [K in keyof CorSwitch & keyof CorSwitchAttributes as `prop:${K}`]?: CorSwitch[K] };
-        "cor-tab": Omit<CorTab, keyof CorTabAttributes> & { [K in keyof CorTab & keyof CorTabAttributes]?: CorTab[K] } & { [K in keyof CorTab & keyof CorTabAttributes as `attr:${K}`]?: CorTabAttributes[K] } & { [K in keyof CorTab & keyof CorTabAttributes as `prop:${K}`]?: CorTab[K] } & OneOf<"value", CorTab["value"], CorTabAttributes["value"]>;
-        "cor-table": Omit<CorTable, keyof CorTableAttributes> & { [K in keyof CorTable & keyof CorTableAttributes]?: CorTable[K] } & { [K in keyof CorTable & keyof CorTableAttributes as `attr:${K}`]?: CorTableAttributes[K] } & { [K in keyof CorTable & keyof CorTableAttributes as `prop:${K}`]?: CorTable[K] };
-        "cor-tabs": Omit<CorTabs, keyof CorTabsAttributes> & { [K in keyof CorTabs & keyof CorTabsAttributes]?: CorTabs[K] } & { [K in keyof CorTabs & keyof CorTabsAttributes as `attr:${K}`]?: CorTabsAttributes[K] } & { [K in keyof CorTabs & keyof CorTabsAttributes as `prop:${K}`]?: CorTabs[K] };
-        "cor-tag": Omit<CorTag, keyof CorTagAttributes> & { [K in keyof CorTag & keyof CorTagAttributes]?: CorTag[K] } & { [K in keyof CorTag & keyof CorTagAttributes as `attr:${K}`]?: CorTagAttributes[K] } & { [K in keyof CorTag & keyof CorTagAttributes as `prop:${K}`]?: CorTag[K] };
-        "cor-textarea": Omit<CorTextarea, keyof CorTextareaAttributes> & { [K in keyof CorTextarea & keyof CorTextareaAttributes]?: CorTextarea[K] } & { [K in keyof CorTextarea & keyof CorTextareaAttributes as `attr:${K}`]?: CorTextareaAttributes[K] } & { [K in keyof CorTextarea & keyof CorTextareaAttributes as `prop:${K}`]?: CorTextarea[K] };
-        "cor-tooltip": Omit<CorTooltip, keyof CorTooltipAttributes> & { [K in keyof CorTooltip & keyof CorTooltipAttributes]?: CorTooltip[K] } & { [K in keyof CorTooltip & keyof CorTooltipAttributes as `attr:${K}`]?: CorTooltipAttributes[K] } & { [K in keyof CorTooltip & keyof CorTooltipAttributes as `prop:${K}`]?: CorTooltip[K] };
+        "mud-accordion": Omit<MudAccordion, keyof MudAccordionAttributes> & { [K in keyof MudAccordion & keyof MudAccordionAttributes]?: MudAccordion[K] } & { [K in keyof MudAccordion & keyof MudAccordionAttributes as `attr:${K}`]?: MudAccordionAttributes[K] } & { [K in keyof MudAccordion & keyof MudAccordionAttributes as `prop:${K}`]?: MudAccordion[K] };
+        "mud-accordion-item": Omit<MudAccordionItem, keyof MudAccordionItemAttributes> & { [K in keyof MudAccordionItem & keyof MudAccordionItemAttributes]?: MudAccordionItem[K] } & { [K in keyof MudAccordionItem & keyof MudAccordionItemAttributes as `attr:${K}`]?: MudAccordionItemAttributes[K] } & { [K in keyof MudAccordionItem & keyof MudAccordionItemAttributes as `prop:${K}`]?: MudAccordionItem[K] };
+        "mud-avatar": Omit<MudAvatar, keyof MudAvatarAttributes> & { [K in keyof MudAvatar & keyof MudAvatarAttributes]?: MudAvatar[K] } & { [K in keyof MudAvatar & keyof MudAvatarAttributes as `attr:${K}`]?: MudAvatarAttributes[K] } & { [K in keyof MudAvatar & keyof MudAvatarAttributes as `prop:${K}`]?: MudAvatar[K] };
+        "mud-badge": Omit<MudBadge, keyof MudBadgeAttributes> & { [K in keyof MudBadge & keyof MudBadgeAttributes]?: MudBadge[K] } & { [K in keyof MudBadge & keyof MudBadgeAttributes as `attr:${K}`]?: MudBadgeAttributes[K] } & { [K in keyof MudBadge & keyof MudBadgeAttributes as `prop:${K}`]?: MudBadge[K] };
+        "mud-breadcrumb": Omit<MudBreadcrumb, keyof MudBreadcrumbAttributes> & { [K in keyof MudBreadcrumb & keyof MudBreadcrumbAttributes]?: MudBreadcrumb[K] } & { [K in keyof MudBreadcrumb & keyof MudBreadcrumbAttributes as `attr:${K}`]?: MudBreadcrumbAttributes[K] } & { [K in keyof MudBreadcrumb & keyof MudBreadcrumbAttributes as `prop:${K}`]?: MudBreadcrumb[K] };
+        "mud-breadcrumb-item": Omit<MudBreadcrumbItem, keyof MudBreadcrumbItemAttributes> & { [K in keyof MudBreadcrumbItem & keyof MudBreadcrumbItemAttributes]?: MudBreadcrumbItem[K] } & { [K in keyof MudBreadcrumbItem & keyof MudBreadcrumbItemAttributes as `attr:${K}`]?: MudBreadcrumbItemAttributes[K] } & { [K in keyof MudBreadcrumbItem & keyof MudBreadcrumbItemAttributes as `prop:${K}`]?: MudBreadcrumbItem[K] };
+        "mud-button": Omit<MudButton, keyof MudButtonAttributes> & { [K in keyof MudButton & keyof MudButtonAttributes]?: MudButton[K] } & { [K in keyof MudButton & keyof MudButtonAttributes as `attr:${K}`]?: MudButtonAttributes[K] } & { [K in keyof MudButton & keyof MudButtonAttributes as `prop:${K}`]?: MudButton[K] };
+        "mud-button-group": Omit<MudButtonGroup, keyof MudButtonGroupAttributes> & { [K in keyof MudButtonGroup & keyof MudButtonGroupAttributes]?: MudButtonGroup[K] } & { [K in keyof MudButtonGroup & keyof MudButtonGroupAttributes as `attr:${K}`]?: MudButtonGroupAttributes[K] } & { [K in keyof MudButtonGroup & keyof MudButtonGroupAttributes as `prop:${K}`]?: MudButtonGroup[K] };
+        "mud-checkbox": Omit<MudCheckbox, keyof MudCheckboxAttributes> & { [K in keyof MudCheckbox & keyof MudCheckboxAttributes]?: MudCheckbox[K] } & { [K in keyof MudCheckbox & keyof MudCheckboxAttributes as `attr:${K}`]?: MudCheckboxAttributes[K] } & { [K in keyof MudCheckbox & keyof MudCheckboxAttributes as `prop:${K}`]?: MudCheckbox[K] };
+        "mud-chip": Omit<MudChip, keyof MudChipAttributes> & { [K in keyof MudChip & keyof MudChipAttributes]?: MudChip[K] } & { [K in keyof MudChip & keyof MudChipAttributes as `attr:${K}`]?: MudChipAttributes[K] } & { [K in keyof MudChip & keyof MudChipAttributes as `prop:${K}`]?: MudChip[K] };
+        "mud-cookie-banner": Omit<MudCookieBanner, keyof MudCookieBannerAttributes> & { [K in keyof MudCookieBanner & keyof MudCookieBannerAttributes]?: MudCookieBanner[K] } & { [K in keyof MudCookieBanner & keyof MudCookieBannerAttributes as `attr:${K}`]?: MudCookieBannerAttributes[K] } & { [K in keyof MudCookieBanner & keyof MudCookieBannerAttributes as `prop:${K}`]?: MudCookieBanner[K] };
+        "mud-date-input": Omit<MudDateInput, keyof MudDateInputAttributes> & { [K in keyof MudDateInput & keyof MudDateInputAttributes]?: MudDateInput[K] } & { [K in keyof MudDateInput & keyof MudDateInputAttributes as `attr:${K}`]?: MudDateInputAttributes[K] } & { [K in keyof MudDateInput & keyof MudDateInputAttributes as `prop:${K}`]?: MudDateInput[K] };
+        "mud-date-picker": Omit<MudDatePicker, keyof MudDatePickerAttributes> & { [K in keyof MudDatePicker & keyof MudDatePickerAttributes]?: MudDatePicker[K] } & { [K in keyof MudDatePicker & keyof MudDatePickerAttributes as `attr:${K}`]?: MudDatePickerAttributes[K] } & { [K in keyof MudDatePicker & keyof MudDatePickerAttributes as `prop:${K}`]?: MudDatePicker[K] };
+        "mud-file-input": Omit<MudFileInput, keyof MudFileInputAttributes> & { [K in keyof MudFileInput & keyof MudFileInputAttributes]?: MudFileInput[K] } & { [K in keyof MudFileInput & keyof MudFileInputAttributes as `attr:${K}`]?: MudFileInputAttributes[K] } & { [K in keyof MudFileInput & keyof MudFileInputAttributes as `prop:${K}`]?: MudFileInput[K] };
+        "mud-file-item": Omit<MudFileItem, keyof MudFileItemAttributes> & { [K in keyof MudFileItem & keyof MudFileItemAttributes]?: MudFileItem[K] } & { [K in keyof MudFileItem & keyof MudFileItemAttributes as `attr:${K}`]?: MudFileItemAttributes[K] } & { [K in keyof MudFileItem & keyof MudFileItemAttributes as `prop:${K}`]?: MudFileItem[K] };
+        "mud-footer": Omit<MudFooter, keyof MudFooterAttributes> & { [K in keyof MudFooter & keyof MudFooterAttributes]?: MudFooter[K] } & { [K in keyof MudFooter & keyof MudFooterAttributes as `attr:${K}`]?: MudFooterAttributes[K] } & { [K in keyof MudFooter & keyof MudFooterAttributes as `prop:${K}`]?: MudFooter[K] };
+        "mud-icon": Omit<MudIcon, keyof MudIconAttributes> & { [K in keyof MudIcon & keyof MudIconAttributes]?: MudIcon[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `attr:${K}`]?: MudIconAttributes[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `prop:${K}`]?: MudIcon[K] };
+        "mud-input": Omit<MudInput, keyof MudInputAttributes> & { [K in keyof MudInput & keyof MudInputAttributes]?: MudInput[K] } & { [K in keyof MudInput & keyof MudInputAttributes as `attr:${K}`]?: MudInputAttributes[K] } & { [K in keyof MudInput & keyof MudInputAttributes as `prop:${K}`]?: MudInput[K] };
+        "mud-input-chip": Omit<MudInputChip, keyof MudInputChipAttributes> & { [K in keyof MudInputChip & keyof MudInputChipAttributes]?: MudInputChip[K] } & { [K in keyof MudInputChip & keyof MudInputChipAttributes as `attr:${K}`]?: MudInputChipAttributes[K] } & { [K in keyof MudInputChip & keyof MudInputChipAttributes as `prop:${K}`]?: MudInputChip[K] };
+        "mud-link": Omit<MudLink, keyof MudLinkAttributes> & { [K in keyof MudLink & keyof MudLinkAttributes]?: MudLink[K] } & { [K in keyof MudLink & keyof MudLinkAttributes as `attr:${K}`]?: MudLinkAttributes[K] } & { [K in keyof MudLink & keyof MudLinkAttributes as `prop:${K}`]?: MudLink[K] };
+        "mud-logo": Omit<MudLogo, keyof MudLogoAttributes> & { [K in keyof MudLogo & keyof MudLogoAttributes]?: MudLogo[K] } & { [K in keyof MudLogo & keyof MudLogoAttributes as `attr:${K}`]?: MudLogoAttributes[K] } & { [K in keyof MudLogo & keyof MudLogoAttributes as `prop:${K}`]?: MudLogo[K] };
+        "mud-modal": Omit<MudModal, keyof MudModalAttributes> & { [K in keyof MudModal & keyof MudModalAttributes]?: MudModal[K] } & { [K in keyof MudModal & keyof MudModalAttributes as `attr:${K}`]?: MudModalAttributes[K] } & { [K in keyof MudModal & keyof MudModalAttributes as `prop:${K}`]?: MudModal[K] };
+        "mud-notification": Omit<MudNotification, keyof MudNotificationAttributes> & { [K in keyof MudNotification & keyof MudNotificationAttributes]?: MudNotification[K] } & { [K in keyof MudNotification & keyof MudNotificationAttributes as `attr:${K}`]?: MudNotificationAttributes[K] } & { [K in keyof MudNotification & keyof MudNotificationAttributes as `prop:${K}`]?: MudNotification[K] };
+        "mud-numeric-input": Omit<MudNumericInput, keyof MudNumericInputAttributes> & { [K in keyof MudNumericInput & keyof MudNumericInputAttributes]?: MudNumericInput[K] } & { [K in keyof MudNumericInput & keyof MudNumericInputAttributes as `attr:${K}`]?: MudNumericInputAttributes[K] } & { [K in keyof MudNumericInput & keyof MudNumericInputAttributes as `prop:${K}`]?: MudNumericInput[K] };
+        "mud-pagination": Omit<MudPagination, keyof MudPaginationAttributes> & { [K in keyof MudPagination & keyof MudPaginationAttributes]?: MudPagination[K] } & { [K in keyof MudPagination & keyof MudPaginationAttributes as `attr:${K}`]?: MudPaginationAttributes[K] } & { [K in keyof MudPagination & keyof MudPaginationAttributes as `prop:${K}`]?: MudPagination[K] };
+        "mud-phone-input": Omit<MudPhoneInput, keyof MudPhoneInputAttributes> & { [K in keyof MudPhoneInput & keyof MudPhoneInputAttributes]?: MudPhoneInput[K] } & { [K in keyof MudPhoneInput & keyof MudPhoneInputAttributes as `attr:${K}`]?: MudPhoneInputAttributes[K] } & { [K in keyof MudPhoneInput & keyof MudPhoneInputAttributes as `prop:${K}`]?: MudPhoneInput[K] };
+        "mud-progress-tracker": Omit<MudProgressTracker, keyof MudProgressTrackerAttributes> & { [K in keyof MudProgressTracker & keyof MudProgressTrackerAttributes]?: MudProgressTracker[K] } & { [K in keyof MudProgressTracker & keyof MudProgressTrackerAttributes as `attr:${K}`]?: MudProgressTrackerAttributes[K] } & { [K in keyof MudProgressTracker & keyof MudProgressTrackerAttributes as `prop:${K}`]?: MudProgressTracker[K] };
+        "mud-radio": Omit<MudRadio, keyof MudRadioAttributes> & { [K in keyof MudRadio & keyof MudRadioAttributes]?: MudRadio[K] } & { [K in keyof MudRadio & keyof MudRadioAttributes as `attr:${K}`]?: MudRadioAttributes[K] } & { [K in keyof MudRadio & keyof MudRadioAttributes as `prop:${K}`]?: MudRadio[K] };
+        "mud-receipt": Omit<MudReceipt, keyof MudReceiptAttributes> & { [K in keyof MudReceipt & keyof MudReceiptAttributes]?: MudReceipt[K] } & { [K in keyof MudReceipt & keyof MudReceiptAttributes as `attr:${K}`]?: MudReceiptAttributes[K] } & { [K in keyof MudReceipt & keyof MudReceiptAttributes as `prop:${K}`]?: MudReceipt[K] };
+        "mud-search-input-circular": Omit<MudSearchInputCircular, keyof MudSearchInputCircularAttributes> & { [K in keyof MudSearchInputCircular & keyof MudSearchInputCircularAttributes]?: MudSearchInputCircular[K] } & { [K in keyof MudSearchInputCircular & keyof MudSearchInputCircularAttributes as `attr:${K}`]?: MudSearchInputCircularAttributes[K] } & { [K in keyof MudSearchInputCircular & keyof MudSearchInputCircularAttributes as `prop:${K}`]?: MudSearchInputCircular[K] };
+        "mud-search-input-rectangular": Omit<MudSearchInputRectangular, keyof MudSearchInputRectangularAttributes> & { [K in keyof MudSearchInputRectangular & keyof MudSearchInputRectangularAttributes]?: MudSearchInputRectangular[K] } & { [K in keyof MudSearchInputRectangular & keyof MudSearchInputRectangularAttributes as `attr:${K}`]?: MudSearchInputRectangularAttributes[K] } & { [K in keyof MudSearchInputRectangular & keyof MudSearchInputRectangularAttributes as `prop:${K}`]?: MudSearchInputRectangular[K] };
+        "mud-segmented-control": Omit<MudSegmentedControl, keyof MudSegmentedControlAttributes> & { [K in keyof MudSegmentedControl & keyof MudSegmentedControlAttributes]?: MudSegmentedControl[K] } & { [K in keyof MudSegmentedControl & keyof MudSegmentedControlAttributes as `attr:${K}`]?: MudSegmentedControlAttributes[K] } & { [K in keyof MudSegmentedControl & keyof MudSegmentedControlAttributes as `prop:${K}`]?: MudSegmentedControl[K] };
+        "mud-select-input": Omit<MudSelectInput, keyof MudSelectInputAttributes> & { [K in keyof MudSelectInput & keyof MudSelectInputAttributes]?: MudSelectInput[K] } & { [K in keyof MudSelectInput & keyof MudSelectInputAttributes as `attr:${K}`]?: MudSelectInputAttributes[K] } & { [K in keyof MudSelectInput & keyof MudSelectInputAttributes as `prop:${K}`]?: MudSelectInput[K] };
+        "mud-separator": Omit<MudSeparator, keyof MudSeparatorAttributes> & { [K in keyof MudSeparator & keyof MudSeparatorAttributes]?: MudSeparator[K] } & { [K in keyof MudSeparator & keyof MudSeparatorAttributes as `attr:${K}`]?: MudSeparatorAttributes[K] } & { [K in keyof MudSeparator & keyof MudSeparatorAttributes as `prop:${K}`]?: MudSeparator[K] };
+        "mud-service-button": Omit<MudServiceButton, keyof MudServiceButtonAttributes> & { [K in keyof MudServiceButton & keyof MudServiceButtonAttributes]?: MudServiceButton[K] } & { [K in keyof MudServiceButton & keyof MudServiceButtonAttributes as `attr:${K}`]?: MudServiceButtonAttributes[K] } & { [K in keyof MudServiceButton & keyof MudServiceButtonAttributes as `prop:${K}`]?: MudServiceButton[K] };
+        "mud-spinner": Omit<MudSpinner, keyof MudSpinnerAttributes> & { [K in keyof MudSpinner & keyof MudSpinnerAttributes]?: MudSpinner[K] } & { [K in keyof MudSpinner & keyof MudSpinnerAttributes as `attr:${K}`]?: MudSpinnerAttributes[K] } & { [K in keyof MudSpinner & keyof MudSpinnerAttributes as `prop:${K}`]?: MudSpinner[K] };
+        "mud-switch": Omit<MudSwitch, keyof MudSwitchAttributes> & { [K in keyof MudSwitch & keyof MudSwitchAttributes]?: MudSwitch[K] } & { [K in keyof MudSwitch & keyof MudSwitchAttributes as `attr:${K}`]?: MudSwitchAttributes[K] } & { [K in keyof MudSwitch & keyof MudSwitchAttributes as `prop:${K}`]?: MudSwitch[K] };
+        "mud-tab": Omit<MudTab, keyof MudTabAttributes> & { [K in keyof MudTab & keyof MudTabAttributes]?: MudTab[K] } & { [K in keyof MudTab & keyof MudTabAttributes as `attr:${K}`]?: MudTabAttributes[K] } & { [K in keyof MudTab & keyof MudTabAttributes as `prop:${K}`]?: MudTab[K] } & OneOf<"value", MudTab["value"], MudTabAttributes["value"]>;
+        "mud-table": Omit<MudTable, keyof MudTableAttributes> & { [K in keyof MudTable & keyof MudTableAttributes]?: MudTable[K] } & { [K in keyof MudTable & keyof MudTableAttributes as `attr:${K}`]?: MudTableAttributes[K] } & { [K in keyof MudTable & keyof MudTableAttributes as `prop:${K}`]?: MudTable[K] };
+        "mud-tabs": Omit<MudTabs, keyof MudTabsAttributes> & { [K in keyof MudTabs & keyof MudTabsAttributes]?: MudTabs[K] } & { [K in keyof MudTabs & keyof MudTabsAttributes as `attr:${K}`]?: MudTabsAttributes[K] } & { [K in keyof MudTabs & keyof MudTabsAttributes as `prop:${K}`]?: MudTabs[K] };
+        "mud-tag": Omit<MudTag, keyof MudTagAttributes> & { [K in keyof MudTag & keyof MudTagAttributes]?: MudTag[K] } & { [K in keyof MudTag & keyof MudTagAttributes as `attr:${K}`]?: MudTagAttributes[K] } & { [K in keyof MudTag & keyof MudTagAttributes as `prop:${K}`]?: MudTag[K] };
+        "mud-textarea": Omit<MudTextarea, keyof MudTextareaAttributes> & { [K in keyof MudTextarea & keyof MudTextareaAttributes]?: MudTextarea[K] } & { [K in keyof MudTextarea & keyof MudTextareaAttributes as `attr:${K}`]?: MudTextareaAttributes[K] } & { [K in keyof MudTextarea & keyof MudTextareaAttributes as `prop:${K}`]?: MudTextarea[K] };
+        "mud-tooltip": Omit<MudTooltip, keyof MudTooltipAttributes> & { [K in keyof MudTooltip & keyof MudTooltipAttributes]?: MudTooltip[K] } & { [K in keyof MudTooltip & keyof MudTooltipAttributes as `attr:${K}`]?: MudTooltipAttributes[K] } & { [K in keyof MudTooltip & keyof MudTooltipAttributes as `prop:${K}`]?: MudTooltip[K] };
     }
 }
 export { LocalJSX as JSX };
@@ -8365,29 +8365,29 @@ declare module "@stencil/core" {
         interface IntrinsicElements {
             /**
              * Accordion — vertical stack of collapsible regions per WAI-ARIA Accordion Pattern.
-             * Pattern A (slot container): coordinates child `cor-accordion-item` elements,
+             * Pattern A (slot container): coordinates child `mud-accordion-item` elements,
              * enforces `mode="single"` exclusivity, manages keyboard traversal across
-             * headers (Arrow Up/Down, Home, End), and dispatches `corChange` whenever the
+             * headers (Arrow Up/Down, Home, End), and dispatches `mudChange` whenever the
              * active set changes.
              * Consumers may either:
-             *   1. Slot `<cor-accordion-item>` children directly (declarative, recommended), or
+             *   1. Slot `<mud-accordion-item>` children directly (declarative, recommended), or
              *   2. Pass an `items` array (data-driven; the accordion renders the items for you).
-             * @element cor-accordion
-             * @fires corChange - Emitted on every open/close. `detail.openIds` lists every
+             * @element mud-accordion
+             * @fires mudChange - Emitted on every open/close. `detail.openIds` lists every
              *              item currently open (single entry in `mode="single"`).
              */
-            "cor-accordion": LocalJSX.IntrinsicElements["cor-accordion"] & JSXBase.HTMLAttributes<HTMLCorAccordionElement>;
+            "mud-accordion": LocalJSX.IntrinsicElements["mud-accordion"] & JSXBase.HTMLAttributes<HTMLMudAccordionElement>;
             /**
-             * Accordion item — a single collapsible row inside `cor-accordion`.
+             * Accordion item — a single collapsible row inside `mud-accordion`.
              * Pattern B (atom-interactive): renders its own header `<button>` and a
              * `<div role="region">` panel inside shadow DOM. The container manages
              * exclusivity in `mode="single"`; the item owns its visual state.
-             * @element cor-accordion-item
-             * @fires corToggle - Fired when the user activates the header. The container
+             * @element mud-accordion-item
+             * @fires mudToggle - Fired when the user activates the header. The container
              *             listens for this and decides whether to honour it
              *             (single-mode collapsing of siblings).
              */
-            "cor-accordion-item": LocalJSX.IntrinsicElements["cor-accordion-item"] & JSXBase.HTMLAttributes<HTMLCorAccordionItemElement>;
+            "mud-accordion-item": LocalJSX.IntrinsicElements["mud-accordion-item"] & JSXBase.HTMLAttributes<HTMLMudAccordionItemElement>;
             /**
              * Avatar — represents a user via a photo, initials, or a generic person icon.
              * Pattern A (atom-display): wraps a single piece of slottable content (an
@@ -8397,10 +8397,10 @@ declare module "@stencil/core" {
              *   back to initials (when `name`/`initials` is set) or the person icon.
              * - `initials` — renders 1–2 uppercase letters derived from `initials` or
              *   `name`. If neither is set, the icon fallback kicks in.
-             * - `icon` — renders a `cor-icon` (default `person`).
-             * @element cor-avatar
+             * - `icon` — renders a `mud-icon` (default `person`).
+             * @element mud-avatar
              */
-            "cor-avatar": LocalJSX.IntrinsicElements["cor-avatar"] & JSXBase.HTMLAttributes<HTMLCorAvatarElement>;
+            "mud-avatar": LocalJSX.IntrinsicElements["mud-avatar"] & JSXBase.HTMLAttributes<HTMLMudAvatarElement>;
             /**
              * Badge — small, non-interactive status / count indicator.
              * Two visual forms:
@@ -8412,49 +8412,49 @@ declare module "@stencil/core" {
              * Position offsets are exposed as CSS variables (`--badge-offset-top`,
              * `--badge-offset-right`) so consumers can compose without overrides.
              * Pattern B (atom-visual): internal DOM only, no slots, no events.
-             * @element cor-badge
+             * @element mud-badge
              */
-            "cor-badge": LocalJSX.IntrinsicElements["cor-badge"] & JSXBase.HTMLAttributes<HTMLCorBadgeElement>;
+            "mud-badge": LocalJSX.IntrinsicElements["mud-badge"] & JSXBase.HTMLAttributes<HTMLMudBadgeElement>;
             /**
              * Breadcrumb — navigational trail showing the user's location in the site hierarchy.
              * Two equivalent authoring modes:
              * 1. **Prop-driven** (preferred for dynamic data): pass `items` as a typed array.
-             * 2. **Slot-driven** (preferred for static markup): nest `<cor-breadcrumb-item>` children.
+             * 2. **Slot-driven** (preferred for static markup): nest `<mud-breadcrumb-item>` children.
              * When both are present, the `items` prop wins.
              * On desktop the full trail renders horizontally. When `maxVisible` is exceeded,
              * intermediate crumbs collapse into an overflow "…" menu. On mobile (≤640px) with
              * `responsive=true`, the trail collapses to a single "‹ Back to {parent}" link
              * per the WAI-ARIA breadcrumb pattern and Figma 69:408.
-             * @element cor-breadcrumb
+             * @element mud-breadcrumb
              */
-            "cor-breadcrumb": LocalJSX.IntrinsicElements["cor-breadcrumb"] & JSXBase.HTMLAttributes<HTMLCorBreadcrumbElement>;
+            "mud-breadcrumb": LocalJSX.IntrinsicElements["mud-breadcrumb"] & JSXBase.HTMLAttributes<HTMLMudBreadcrumbElement>;
             /**
-             * A single crumb inside `cor-breadcrumb`. Renders an anchor when `href` is set,
+             * A single crumb inside `mud-breadcrumb`. Renders an anchor when `href` is set,
              * otherwise plain text. The active crumb renders as text with `aria-current="page"`,
              * regardless of `href`.
              * Use this directly when the markup variant of the breadcrumb is preferred over
-             * the `items` prop on `cor-breadcrumb`. Both APIs are equivalent in behavior.
-             * @element cor-breadcrumb-item
+             * the `items` prop on `mud-breadcrumb`. Both APIs are equivalent in behavior.
+             * @element mud-breadcrumb-item
              */
-            "cor-breadcrumb-item": LocalJSX.IntrinsicElements["cor-breadcrumb-item"] & JSXBase.HTMLAttributes<HTMLCorBreadcrumbItemElement>;
+            "mud-breadcrumb-item": LocalJSX.IntrinsicElements["mud-breadcrumb-item"] & JSXBase.HTMLAttributes<HTMLMudBreadcrumbItemElement>;
             /**
              * Button — interactive control.
              * Pattern B (atom-interactive): renders its own `<button>` (or `<a>` when `href`
              * is set) inside shadow DOM. Form participation works via `formAssociated` +
              * `ElementInternals`.
-             * @element cor-button
+             * @element mud-button
              */
-            "cor-button": LocalJSX.IntrinsicElements["cor-button"] & JSXBase.HTMLAttributes<HTMLCorButtonElement>;
+            "mud-button": LocalJSX.IntrinsicElements["mud-button"] & JSXBase.HTMLAttributes<HTMLMudButtonElement>;
             /**
-             * Button group — layout container for stacking multiple `cor-button` elements
+             * Button group — layout container for stacking multiple `mud-button` elements
              * with consistent spacing (12px gap) per the AGE Design System.
              * Pure layout primitive: does not propagate props to children, does not emit
              * events, does not manage focus order beyond the natural DOM tab sequence.
-             * Each child `cor-button` controls its own size, variant, and full-width
+             * Each child `mud-button` controls its own size, variant, and full-width
              * behavior independently.
-             * @element cor-button-group
+             * @element mud-button-group
              */
-            "cor-button-group": LocalJSX.IntrinsicElements["cor-button-group"] & JSXBase.HTMLAttributes<HTMLCorButtonGroupElement>;
+            "mud-button-group": LocalJSX.IntrinsicElements["mud-button-group"] & JSXBase.HTMLAttributes<HTMLMudButtonGroupElement>;
             /**
              * Checkbox — boolean / tri-state form control.
              * Pattern B (atom-interactive, form-associated): renders its own visual box
@@ -8465,28 +8465,28 @@ declare module "@stencil/core" {
              *   State = Default | Focus | Error (`invalid`) | Disabled
              *   Size  = Medium (24px) | Small (20px)
              * Indeterminate is a visual-only third state — `checked` semantics are unchanged.
-             * @element cor-checkbox
+             * @element mud-checkbox
              */
-            "cor-checkbox": LocalJSX.IntrinsicElements["cor-checkbox"] & JSXBase.HTMLAttributes<HTMLCorCheckboxElement>;
+            "mud-checkbox": LocalJSX.IntrinsicElements["mud-checkbox"] & JSXBase.HTMLAttributes<HTMLMudCheckboxElement>;
             /**
              * Chip — compact, pill-shaped control for filter selection or token display.
              * Pattern B (atom-interactive): renders its own `<button>` inside shadow DOM
              * so it participates in tab order and exposes a real accessible role.
              * Two modes:
              * - `type="filter"` (default) — toggleable filter chip. Click flips `selected`
-             *   and emits `corSelect`. Best used inside a chip group for mono- or
+             *   and emits `mudSelect`. Best used inside a chip group for mono- or
              *   multi-selection filtering.
              * - `type="input"` — a discrete value entered by a user (e.g. a tag inside
              *   a search field). When `removable`, a trailing close button is rendered;
-             *   activating it emits `corRemove`.
-             * @element cor-chip
+             *   activating it emits `mudRemove`.
+             * @element mud-chip
              */
-            "cor-chip": LocalJSX.IntrinsicElements["cor-chip"] & JSXBase.HTMLAttributes<HTMLCorChipElement>;
+            "mud-chip": LocalJSX.IntrinsicElements["mud-chip"] & JSXBase.HTMLAttributes<HTMLMudChipElement>;
             /**
              * Cookie banner — GDPR consent surface (molecule).
              * Pattern B (composed molecule): renders its own header / body / categories /
-             * footer in shadow DOM. Composes `cor-button`, `cor-switch`, `cor-icon`,
-             * `cor-tag` and `cor-separator` for the interactive pieces. The host is a
+             * footer in shadow DOM. Composes `mud-button`, `mud-switch`, `mud-icon`,
+             * `mud-tag` and `mud-separator` for the interactive pieces. The host is a
              * non-modal dialog (`role="dialog" aria-modal="false"`) anchored to the bottom
              * or top edge of the viewport — it does NOT trap focus so the page underneath
              * stays operable.
@@ -8496,21 +8496,21 @@ declare module "@stencil/core" {
              *   expanded mode.
              * - `variant="detailed"` — same collapsed footprint, but expanding reveals a
              *   category list (necessary / analytics / marketing by default) with per-row
-             *   `cor-switch`. Required categories render a fixed check-mark instead.
+             *   `mud-switch`. Required categories render a fixed check-mark instead.
              * Romanian voice ships as defaults; every label is overridable via the public
              * `@Prop` surface for localisation.
-             * @element cor-cookie-banner
+             * @element mud-cookie-banner
              */
-            "cor-cookie-banner": LocalJSX.IntrinsicElements["cor-cookie-banner"] & JSXBase.HTMLAttributes<HTMLCorCookieBannerElement>;
+            "mud-cookie-banner": LocalJSX.IntrinsicElements["mud-cookie-banner"] & JSXBase.HTMLAttributes<HTMLMudCookieBannerElement>;
             /**
              * Date Input — segment-masked date entry molecule.
              * Pattern B (atom-interactive, form-associated): renders its own `<input>`
              * inside shadow DOM and overlays a ghost format hint that lets the unfilled
              * `DD/MM/YYYY` segments stay visible while the user types — matching the
              * "focus: date-populated / month-populated / fully-populated" Figma states.
-             * @element cor-date-input
+             * @element mud-date-input
              */
-            "cor-date-input": LocalJSX.IntrinsicElements["cor-date-input"] & JSXBase.HTMLAttributes<HTMLCorDateInputElement>;
+            "mud-date-input": LocalJSX.IntrinsicElements["mud-date-input"] & JSXBase.HTMLAttributes<HTMLMudDateInputElement>;
             /**
              * Romanian date picker — locale-aware calendar molecule.
              * Three modes:
@@ -8521,7 +8521,7 @@ declare module "@stencil/core" {
              * Three breakpoints (visual modes):
              * - `desktop` — 320px elevated card with shadow.
              * - `mobile` — full-width bottom-sheet style with drag handle.
-             * - `docked` — compact (no shadow) intended to attach beneath a `cor-date-input`.
+             * - `docked` — compact (no shadow) intended to attach beneath a `mud-date-input`.
              * All weekday + month labels come from `Intl.DateTimeFormat` so the locale prop drives the language —
              * no hard-coded strings. Romanian (`ro-RO`) is the default.
              * Keyboard:
@@ -8530,39 +8530,39 @@ declare module "@stencil/core" {
              * - Shift+PageUp/PageDown change year
              * - Home/End jump to the start/end of the visible week
              * - Enter/Space selects the focused day
-             * @element cor-date-picker
+             * @element mud-date-picker
              */
-            "cor-date-picker": LocalJSX.IntrinsicElements["cor-date-picker"] & JSXBase.HTMLAttributes<HTMLCorDatePickerElement>;
+            "mud-date-picker": LocalJSX.IntrinsicElements["mud-date-picker"] & JSXBase.HTMLAttributes<HTMLMudDatePickerElement>;
             /**
              * File Input — drag-and-drop / click-to-browse file selection molecule.
              * Pattern B (molecule, internal DOM, form-associated): the host owns a hidden
              * native `<input type="file">` for the browse path, manages the drop zone
              * affordance, validates by `accept` / `maxSize` / `maxFiles`, and renders a
-             * per-file list of `cor-file-item` rows. Citizens get keyboard parity (Tab
+             * per-file list of `mud-file-item` rows. Citizens get keyboard parity (Tab
              * to focus, Enter/Space to open the picker) and a `role="status"` live region
              * that announces add / remove / reject events.
              * The component owns SELECTION + VALIDATION + DISPLAY. Real upload (progress,
-             * network errors, retries) is consumer-driven via the `corChange` event.
+             * network errors, retries) is consumer-driven via the `mudChange` event.
              * State model (no style axis — Figma is state-only):
              *   default → hover → focus → active (drag-over) → disabled
              *   `invalid` is a separate validation flag that recolors the dashed border red
              *   without introducing a style variant.
-             * @element cor-file-input
+             * @element mud-file-input
              */
-            "cor-file-input": LocalJSX.IntrinsicElements["cor-file-input"] & JSXBase.HTMLAttributes<HTMLCorFileInputElement>;
+            "mud-file-input": LocalJSX.IntrinsicElements["mud-file-input"] & JSXBase.HTMLAttributes<HTMLMudFileInputElement>;
             /**
-             * File Item — single-file row inside `cor-file-input` (or any file list surface).
+             * File Item — single-file row inside `mud-file-input` (or any file list surface).
              * Pattern B (atom, internal DOM): renders filename + meta (size / error message)
              * + state icon + remove button. The remove button is the only interactive
              * element; the row itself is not focusable so it cannot trap citizens who tab
              * past a long list.
-             * @element cor-file-item
+             * @element mud-file-item
              */
-            "cor-file-item": LocalJSX.IntrinsicElements["cor-file-item"] & JSXBase.HTMLAttributes<HTMLCorFileItemElement>;
+            "mud-file-item": LocalJSX.IntrinsicElements["mud-file-item"] & JSXBase.HTMLAttributes<HTMLMudFileItemElement>;
             /**
              * Page footer — civic, multi-section organism for AGE / EVO platforms.
              * Pattern B (composed organism): renders all sections inside shadow DOM and
-             * composes `cor-link`, `cor-logo`, and `cor-icon` for atomic pieces. The host
+             * composes `mud-link`, `mud-logo`, and `mud-icon` for atomic pieces. The host
              * carries `role="contentinfo"` so screen readers announce it as the page
              * footer landmark.
              * Two variants share one element:
@@ -8575,9 +8575,9 @@ declare module "@stencil/core" {
              *   (modals, embedded apps) where the full footer is too tall.
              * Romanian voice ships as defaults; every visible string is overridable via
              * the public `@Prop` surface or the `branding` / `sections` slots.
-             * @element cor-footer
+             * @element mud-footer
              */
-            "cor-footer": LocalJSX.IntrinsicElements["cor-footer"] & JSXBase.HTMLAttributes<HTMLCorFooterElement>;
+            "mud-footer": LocalJSX.IntrinsicElements["mud-footer"] & JSXBase.HTMLAttributes<HTMLMudFooterElement>;
             /**
              * Icon — renders an inline SVG fetched on-demand from per-size asset files.
              * Names follow the Material Symbols convention: append `-filled` to the base name
@@ -8585,18 +8585,18 @@ declare module "@stencil/core" {
              * When the exact `size`/`name` combination is missing from the manifest, the
              * provider falls back to the closest larger size (preferred) and then to the
              * largest smaller size before giving up.
-             * @element cor-icon
+             * @element mud-icon
              */
-            "cor-icon": LocalJSX.IntrinsicElements["cor-icon"] & JSXBase.HTMLAttributes<HTMLCorIconElement>;
+            "mud-icon": LocalJSX.IntrinsicElements["mud-icon"] & JSXBase.HTMLAttributes<HTMLMudIconElement>;
             /**
              * Input — single-line text-entry control.
              * Pattern B (atom-interactive, form-associated): renders its own `<input>`
              * inside shadow DOM. Form participation works via `formAssociated` +
              * `ElementInternals`. The component is the canonical text-input primitive;
              * specialised inputs (date, search, phone, etc.) compose around it.
-             * @element cor-input
+             * @element mud-input
              */
-            "cor-input": LocalJSX.IntrinsicElements["cor-input"] & JSXBase.HTMLAttributes<HTMLCorInputElement>;
+            "mud-input": LocalJSX.IntrinsicElements["mud-input"] & JSXBase.HTMLAttributes<HTMLMudInputElement>;
             /**
              * Input Chip — multi-value text-entry control where each confirmed value
              * renders as a removable pill (chip / tag).
@@ -8609,9 +8609,9 @@ declare module "@stencil/core" {
              *   - a `role="status"` live region that announces add / remove / reject.
              * The form value submitted to the surrounding `<form>` is a JSON-encoded
              * array of strings (e.g. `["a@b.md","c@d.md"]`) when a `name` is set.
-             * @element cor-input-chip
+             * @element mud-input-chip
              */
-            "cor-input-chip": LocalJSX.IntrinsicElements["cor-input-chip"] & JSXBase.HTMLAttributes<HTMLCorInputChipElement>;
+            "mud-input-chip": LocalJSX.IntrinsicElements["mud-input-chip"] & JSXBase.HTMLAttributes<HTMLMudInputChipElement>;
             /**
              * Link — interactive navigational atom.
              * Pattern B (atom-interactive): renders its own `<a>` (or `<button>` when no
@@ -8621,9 +8621,9 @@ declare module "@stencil/core" {
              * is set, `rel="noopener noreferrer"` is auto-applied and a small external-link
              * indicator is rendered after the label unless the consumer explicitly opts out
              * via `external="false"`.
-             * @element cor-link
+             * @element mud-link
              */
-            "cor-link": LocalJSX.IntrinsicElements["cor-link"] & JSXBase.HTMLAttributes<HTMLCorLinkElement>;
+            "mud-link": LocalJSX.IntrinsicElements["mud-link"] & JSXBase.HTMLAttributes<HTMLMudLinkElement>;
             /**
              * Brand logo for Moldovan M-products.
              * Each `name` resolves to a single self-contained SVG asset under `./assets/`.
@@ -8633,11 +8633,11 @@ declare module "@stencil/core" {
              * "just works" without a CSS contract change.
              * Consumers that need to reserve layout space before the async fetch
              * resolves (e.g. above-the-fold marketing, dense grids) should wrap the
-             * logo in a sized container — `cor-service-button` does this for its
+             * logo in a sized container — `mud-service-button` does this for its
              * `badge` slot (24 × 24).
-             * @element cor-logo
+             * @element mud-logo
              */
-            "cor-logo": LocalJSX.IntrinsicElements["cor-logo"] & JSXBase.HTMLAttributes<HTMLCorLogoElement>;
+            "mud-logo": LocalJSX.IntrinsicElements["mud-logo"] & JSXBase.HTMLAttributes<HTMLMudLogoElement>;
             /**
              * Modal — overlay dialog molecule.
              * Renders a centered dialog card on top of a dimmed backdrop using the native
@@ -8654,14 +8654,14 @@ declare module "@stencil/core" {
              * - `default` — title + close button (text-only header)
              * - `with-image` — full-bleed hero image at top with overlaid close button
              * - `with-icon` — leading 48px icon above the body content (no top header bar)
-             * Dismiss reasons routed through `corClose<{reason}>`:
+             * Dismiss reasons routed through `mudClose<{reason}>`:
              * - `backdrop` — click on backdrop (suppressed by `closeOnBackdrop=false`)
              * - `escape` — ESC keypress (suppressed by `closeOnEscape=false`)
              * - `close-button` — trailing × button activated
              * - `action` — programmatic via `closeModal('action')`, used by footer buttons
-             * @element cor-modal
+             * @element mud-modal
              */
-            "cor-modal": LocalJSX.IntrinsicElements["cor-modal"] & JSXBase.HTMLAttributes<HTMLCorModalElement>;
+            "mud-modal": LocalJSX.IntrinsicElements["mud-modal"] & JSXBase.HTMLAttributes<HTMLMudModalElement>;
             /**
              * Notification — semantic messaging banner.
              * Renders an optional leading icon, an optional bold title, the message body
@@ -8676,14 +8676,14 @@ declare module "@stencil/core" {
              * Live-region routing:
              * - `info` / `positive` / `neutral` → `role="status"` + `aria-live="polite"`
              * - `warning` / `danger` → `role="alert"` + `aria-live="assertive"`
-             * @element cor-notification
+             * @element mud-notification
              */
-            "cor-notification": LocalJSX.IntrinsicElements["cor-notification"] & JSXBase.HTMLAttributes<HTMLCorNotificationElement>;
+            "mud-notification": LocalJSX.IntrinsicElements["mud-notification"] & JSXBase.HTMLAttributes<HTMLMudNotificationElement>;
             /**
              * Numeric Input — numeric-entry control with stacked step buttons.
              * Pattern B (atom-interactive, form-associated): renders its own `<input>`
              * inside shadow DOM and pairs it with a trailing stepper stack (chevron-up
-             * over chevron-bottom). Shares the visual primitives of `cor-input` (border,
+             * over chevron-bottom). Shares the visual primitives of `mud-input` (border,
              * focus ring, label, helper / error, sizes, states) and adds a
              * `--numeric-input-stepper-*` token namespace for the increment / decrement
              * affordance.
@@ -8693,9 +8693,9 @@ declare module "@stencil/core" {
              * `min`/`max` clamping. The component delegates parsing + clamping to its own
              * logic and exposes `inputmode="decimal"` so mobile devices still surface the
              * numeric keypad.
-             * @element cor-numeric-input
+             * @element mud-numeric-input
              */
-            "cor-numeric-input": LocalJSX.IntrinsicElements["cor-numeric-input"] & JSXBase.HTMLAttributes<HTMLCorNumericInputElement>;
+            "mud-numeric-input": LocalJSX.IntrinsicElements["mud-numeric-input"] & JSXBase.HTMLAttributes<HTMLMudNumericInputElement>;
             /**
              * Pagination — navigation control for paged content.
              * Renders a list of page-number buttons flanked by Previous / Next controls.
@@ -8704,15 +8704,15 @@ declare module "@stencil/core" {
              * window, an interactive overflow button (`…`) collapses the skipped range
              * and lets users jump directly to any of those pages via a dropdown menu
              * (Figma "overflow-active" interaction).
-             * The component is internally controlled but exposes a `corChange` event so
+             * The component is internally controlled but exposes a `mudChange` event so
              * the host can drive the active page. Updating `current-page` from outside
              * is also honoured (e.g. when the URL changes via routing).
              * Previous / Next buttons are hidden at the boundaries (page 1 hides Prev,
              * the last page hides Next) instead of being rendered in a disabled state —
              * this matches the Figma "first-page" / "last-page" specification.
-             * @element cor-pagination
+             * @element mud-pagination
              */
-            "cor-pagination": LocalJSX.IntrinsicElements["cor-pagination"] & JSXBase.HTMLAttributes<HTMLCorPaginationElement>;
+            "mud-pagination": LocalJSX.IntrinsicElements["mud-pagination"] & JSXBase.HTMLAttributes<HTMLMudPaginationElement>;
             /**
              * Phone Input — phone-number entry molecule with country-code prefix and
              * format mask. The most Moldova-specific input in the family: it ships a
@@ -8724,9 +8724,9 @@ declare module "@stencil/core" {
              * default) or a combobox that opens a country listbox (`type="international"`).
              * Form participation works via `formAssociated` + `ElementInternals`; the
              * form value is the canonical E.164 string (`+37362123456`).
-             * @element cor-phone-input
+             * @element mud-phone-input
              */
-            "cor-phone-input": LocalJSX.IntrinsicElements["cor-phone-input"] & JSXBase.HTMLAttributes<HTMLCorPhoneInputElement>;
+            "mud-phone-input": LocalJSX.IntrinsicElements["mud-phone-input"] & JSXBase.HTMLAttributes<HTMLMudPhoneInputElement>;
             /**
              * Progress Tracker (Stepper) — visualises a user's position in a multi-step process.
              * Two flavours:
@@ -8734,7 +8734,7 @@ declare module "@stencil/core" {
              *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
              *   submissions where the parent app drives navigation.
              * - **Interactive tracker** (`interactive=true`) — each completed (and the current)
-             *   step renders as a `<button>` and emits `corStepClick`. Pending steps remain
+             *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
              *   non-actionable per the WAI-ARIA stepper pattern.
              * State legend (Figma node 267:6905):
              *   - `pending`    — neutral grey ring + faded number
@@ -8743,26 +8743,26 @@ declare module "@stencil/core" {
              *   - `error`      — danger ring + danger cross
              * The component renders an ordered list with `role="list"` for AT compatibility
              * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
-             * @element cor-progress-tracker
+             * @element mud-progress-tracker
              */
-            "cor-progress-tracker": LocalJSX.IntrinsicElements["cor-progress-tracker"] & JSXBase.HTMLAttributes<HTMLCorProgressTrackerElement>;
+            "mud-progress-tracker": LocalJSX.IntrinsicElements["mud-progress-tracker"] & JSXBase.HTMLAttributes<HTMLMudProgressTrackerElement>;
             /**
              * Radio — single-select form input atom.
              * Pattern B (atom-interactive, form-associated): renders its own
              * `<input type="radio">` inside shadow DOM and paints the visual circle
              * with CSS. Form participation works via `formAssociated` +
              * `ElementInternals.setFormValue`. The component is the standalone radio
-             * primitive; a future `cor-radio-group` molecule will manage roving focus
+             * primitive; a future `mud-radio-group` molecule will manage roving focus
              * and `name`-based exclusivity across siblings.
-             * @element cor-radio
+             * @element mud-radio
              */
-            "cor-radio": LocalJSX.IntrinsicElements["cor-radio"] & JSXBase.HTMLAttributes<HTMLCorRadioElement>;
+            "mud-radio": LocalJSX.IntrinsicElements["mud-radio"] & JSXBase.HTMLAttributes<HTMLMudRadioElement>;
             /**
              * Receipt — confirmation surface for a finished Moldovan e-Gov transaction
              * (molecule).
              * Pattern B (composed molecule): renders its own header / amount block /
-             * details list / QR / footer in shadow DOM. Composes `cor-logo`, `cor-tag`,
-             * and `cor-button` for the interactive pieces.
+             * details list / QR / footer in shadow DOM. Composes `mud-logo`, `mud-tag`,
+             * and `mud-button` for the interactive pieces.
              * Four sibling variants share one element via the `service` attribute —
              * each maps to one of the e-Gov properties:
              * - `service="mpay"` (default) — payment receipt
@@ -8778,9 +8778,9 @@ declare module "@stencil/core" {
              * receipt without the surrounding UI bleeding through.
              * Romanian voice ships as defaults; every label is overridable via the
              * public `@Prop` surface for localisation.
-             * @element cor-receipt
+             * @element mud-receipt
              */
-            "cor-receipt": LocalJSX.IntrinsicElements["cor-receipt"] & JSXBase.HTMLAttributes<HTMLCorReceiptElement>;
+            "mud-receipt": LocalJSX.IntrinsicElements["mud-receipt"] & JSXBase.HTMLAttributes<HTMLMudReceiptElement>;
             /**
              * Search Input (circular) — single-line search-entry control with a fully
              * rounded (pill) silhouette.
@@ -8789,7 +8789,7 @@ declare module "@stencil/core" {
              * icon and an optional trailing clear `×` button that appears whenever the
              * control carries a value. Behavior, props, slots, events, keyboard contract,
              * ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
-             * `cor-search-input-rectangular` — the only visual difference is the
+             * `mud-search-input-rectangular` — the only visual difference is the
              * silhouette: corners flip to `borderRadius.full` (9999px). The trailing
              * submit button (when `with-button` is set) inherits the pill silhouette via
              * `borderRadius.full`, rendering as a perfect circle that hugs the pill end
@@ -8802,32 +8802,32 @@ declare module "@stencil/core" {
              * - `loading` — async query is in flight; a trailing spinner appears next to
              *   the value/placeholder and the control is announced as `aria-busy`.
              * - `with-button` — adds a trailing brand-blue circular submit button that
-             *   fires `corSearch` on click. Coexists with the clear button and the
+             *   fires `mudSearch` on click. Coexists with the clear button and the
              *   loading spinner.
-             * @element cor-search-input-circular
+             * @element mud-search-input-circular
              */
-            "cor-search-input-circular": LocalJSX.IntrinsicElements["cor-search-input-circular"] & JSXBase.HTMLAttributes<HTMLCorSearchInputCircularElement>;
+            "mud-search-input-circular": LocalJSX.IntrinsicElements["mud-search-input-circular"] & JSXBase.HTMLAttributes<HTMLMudSearchInputCircularElement>;
             /**
              * Search Input (rectangular) — single-line search-entry control.
              * Pattern B (atom-interactive, form-associated): renders its own
              * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
              * icon and an optional trailing clear `×` button that appears whenever the
              * control carries a value. Visual primitives (border, focus ring, label,
-             * helper / error, sizes, states) are shared with `cor-input`; specific
+             * helper / error, sizes, states) are shared with `mud-input`; specific
              * affordances (icon-start, icon-end-clear, submit-button) live in the
              * `--search-input-rectangular-*` token namespace.
-             * Rectangular shape is the default sibling of `cor-search-input-circular`
+             * Rectangular shape is the default sibling of `mud-search-input-circular`
              * (pill). The two ship as distinct components per the Figma component-set
              * separation in the Republic of Moldova Unified Design System library.
              * Optional axes per Figma master `933:29099`:
              * - `loading` — async query is in flight; a trailing spinner appears next to
              *   the value/placeholder and the control is announced as `aria-busy`.
              * - `with-button` — adds a trailing brand-blue submit button that fires
-             *   `corSearch` on click. Coexists with the clear button and the loading
+             *   `mudSearch` on click. Coexists with the clear button and the loading
              *   spinner.
-             * @element cor-search-input-rectangular
+             * @element mud-search-input-rectangular
              */
-            "cor-search-input-rectangular": LocalJSX.IntrinsicElements["cor-search-input-rectangular"] & JSXBase.HTMLAttributes<HTMLCorSearchInputRectangularElement>;
+            "mud-search-input-rectangular": LocalJSX.IntrinsicElements["mud-search-input-rectangular"] & JSXBase.HTMLAttributes<HTMLMudSearchInputRectangularElement>;
             /**
              * Segmented control — single-select horizontal switcher.
              * Pattern B (atom-interactive, form-associated): renders an internal
@@ -8840,47 +8840,47 @@ declare module "@stencil/core" {
              * - `ArrowLeft` / `ArrowRight` move selection between segments
              * - `Home` / `End` jump to first / last segment
              * - `Enter` / `Space` reaffirm selection on the focused segment
-             * @element cor-segmented-control
+             * @element mud-segmented-control
              */
-            "cor-segmented-control": LocalJSX.IntrinsicElements["cor-segmented-control"] & JSXBase.HTMLAttributes<HTMLCorSegmentedControlElement>;
+            "mud-segmented-control": LocalJSX.IntrinsicElements["mud-segmented-control"] & JSXBase.HTMLAttributes<HTMLMudSegmentedControlElement>;
             /**
              * Select Input — single-select dropdown atom.
              * Pattern B (atom-interactive, form-associated): renders a custom-styled
              * trigger button and a listbox popover inside shadow DOM. Form participation
              * works via `formAssociated` + `ElementInternals`. Shares the visual primitives
-             * of `cor-input` (border, focus ring, label, helper / error text, sizes,
+             * of `mud-input` (border, focus ring, label, helper / error text, sizes,
              * states) and adds a trailing chevron icon, listbox menu, and keyboard
              * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
              * pattern.
-             * @element cor-select-input
+             * @element mud-select-input
              */
-            "cor-select-input": LocalJSX.IntrinsicElements["cor-select-input"] & JSXBase.HTMLAttributes<HTMLCorSelectInputElement>;
+            "mud-select-input": LocalJSX.IntrinsicElements["mud-select-input"] & JSXBase.HTMLAttributes<HTMLMudSelectInputElement>;
             /**
              * Separator — visual divider between groups of content or UI components.
              * Pattern B (atom-visual): renders a 1D rule, optionally with an inline label.
              * No events, no interactivity. ARIA `separator` semantics.
-             * @element cor-separator
+             * @element mud-separator
              */
-            "cor-separator": LocalJSX.IntrinsicElements["cor-separator"] & JSXBase.HTMLAttributes<HTMLCorSeparatorElement>;
+            "mud-separator": LocalJSX.IntrinsicElements["mud-separator"] & JSXBase.HTMLAttributes<HTMLMudSeparatorElement>;
             /**
              * Service Button — interactive control for Moldovan M-products (mpay, mpass,
              * msign, mpower, mdelivery).
              * A specialised filled button with a logo badge embedded on the inline-start
              * edge of the geometry. Fixed 48 px height (= minimum touch target) and
              * asymmetric padding (16 start / 20 end) per Figma spec.
-             * Slot `badge` reserves a 24×24 box for a `<cor-logo>` rendering a
+             * Slot `badge` reserves a 24×24 box for a `<mud-logo>` rendering a
              * `*-logo-logomark-only` asset (or any other element rendered at that size).
              * The default slot carries the label text.
-             * @element cor-service-button
+             * @element mud-service-button
              */
-            "cor-service-button": LocalJSX.IntrinsicElements["cor-service-button"] & JSXBase.HTMLAttributes<HTMLCorServiceButtonElement>;
+            "mud-service-button": LocalJSX.IntrinsicElements["mud-service-button"] & JSXBase.HTMLAttributes<HTMLMudServiceButtonElement>;
             /**
              * Spinner — animated circular loading indicator.
              * Pattern B (atom-visual): renders a CSS-only rotating arc.
              * No slots, no events, no interactivity.
-             * @element cor-spinner
+             * @element mud-spinner
              */
-            "cor-spinner": LocalJSX.IntrinsicElements["cor-spinner"] & JSXBase.HTMLAttributes<HTMLCorSpinnerElement>;
+            "mud-spinner": LocalJSX.IntrinsicElements["mud-spinner"] & JSXBase.HTMLAttributes<HTMLMudSpinnerElement>;
             /**
              * Switch — binary on/off toggle atom (form-associated).
              * Pattern B (atom-interactive, form-associated): renders its own
@@ -8893,45 +8893,45 @@ declare module "@stencil/core" {
              * pointer-devices and 40px on touch-devices (via `pointer: coarse`) per the
              * Figma "Target Sizes" spec, achieved with a `::before` pseudo-element so the
              * visual footprint stays untouched.
-             * @element cor-switch
+             * @element mud-switch
              */
-            "cor-switch": LocalJSX.IntrinsicElements["cor-switch"] & JSXBase.HTMLAttributes<HTMLCorSwitchElement>;
+            "mud-switch": LocalJSX.IntrinsicElements["mud-switch"] & JSXBase.HTMLAttributes<HTMLMudSwitchElement>;
             /**
-             * `cor-tab` — single tab item inside a `cor-tabs` tablist.
-             * Pattern A child: rendered as a slotted child of `cor-tabs`. Owns its own
+             * `mud-tab` — single tab item inside a `mud-tabs` tablist.
+             * Pattern A child: rendered as a slotted child of `mud-tabs`. Owns its own
              * `role="tab"` host with `aria-selected`, an optional leading icon, the
              * label, and an optional trailing numbered badge.
              * The component is intentionally light: selection, focus management and
-             * `aria-controls` wiring are all driven by the parent `cor-tabs` via
+             * `aria-controls` wiring are all driven by the parent `mud-tabs` via
              * reflected attributes and DOM ids.
-             * @element cor-tab
+             * @element mud-tab
              */
-            "cor-tab": LocalJSX.IntrinsicElements["cor-tab"] & JSXBase.HTMLAttributes<HTMLCorTabElement>;
+            "mud-tab": LocalJSX.IntrinsicElements["mud-tab"] & JSXBase.HTMLAttributes<HTMLMudTabElement>;
             /**
              * Table — data table molecule for tabular content with optional sorting,
              * selection, and responsive mobile collapse.
              * Pattern B (molecule, internal DOM): renders a native `<table>` inside
              * shadow DOM for full a11y semantics (`role="table"`, `role="columnheader"`,
-             * `aria-sort`, `aria-selected`). Composes existing primitives — `cor-checkbox`
-             * for the selection column, `cor-icon` for sort chevrons. Status badges and
+             * `aria-sort`, `aria-selected`). Composes existing primitives — `mud-checkbox`
+             * for the selection column, `mud-icon` for sort chevrons. Status badges and
              * row actions are projected via named slots so consumers can drop in
-             * `cor-tag`, `cor-button`, or any custom content per cell.
+             * `mud-tag`, `mud-button`, or any custom content per cell.
              * At ≤640 px container width the inline padding shrinks from 24 → 16 to
              * match Figma's "Mobile" breakpoint specs (table-header `4930:14358`,
              * table-cell `649:4296`). The table structure itself is preserved; consumers
              * who need a card-stack layout on narrow screens should wrap their own
              * presentation around the data.
-             * @element cor-table
+             * @element mud-table
              */
-            "cor-table": LocalJSX.IntrinsicElements["cor-table"] & JSXBase.HTMLAttributes<HTMLCorTableElement>;
+            "mud-table": LocalJSX.IntrinsicElements["mud-table"] & JSXBase.HTMLAttributes<HTMLMudTableElement>;
             /**
-             * `cor-tabs` — horizontal tablist that switches the currently visible panel.
+             * `mud-tabs` — horizontal tablist that switches the currently visible panel.
              * Two composition modes:
-             *  1. **Declarative** (recommended for static menus): slot `<cor-tab>` children
+             *  1. **Declarative** (recommended for static menus): slot `<mud-tab>` children
              *     into the default slot and matching `<div slot="panel-{value}">` blocks
              *     into the panel slots.
              *  2. **Data-driven**: pass a `tabs` array. The component renders each entry
-             *     as a child `cor-tab` and exposes panels via `<div slot="panel-{value}">`
+             *     as a child `mud-tab` and exposes panels via `<div slot="panel-{value}">`
              *     elements supplied by the consumer.
              * Pattern A (molecule, slot-based). The host carries `role="tablist"`; the
              * tabs are rendered children with `role="tab"`; the panels are slotted into
@@ -8946,9 +8946,9 @@ declare module "@stencil/core" {
              * exposes leading + trailing chevron buttons that scroll the strip. Both
              * chevrons are mouse-only; their `aria-hidden="true"` keeps them out of the
              * keyboard order (arrow keys already move selection without overflow help).
-             * @element cor-tabs
+             * @element mud-tabs
              */
-            "cor-tabs": LocalJSX.IntrinsicElements["cor-tabs"] & JSXBase.HTMLAttributes<HTMLCorTabsElement>;
+            "mud-tabs": LocalJSX.IntrinsicElements["mud-tabs"] & JSXBase.HTMLAttributes<HTMLMudTabsElement>;
             /**
              * Tag — compact, non-interactive label used to mark state, category,
              * or supplementary metadata.
@@ -8967,22 +8967,22 @@ declare module "@stencil/core" {
              * host will adopt `role="status"` automatically — otherwise the host
              * stays silent so visual-only tags don't pollute the a11y tree.
              * For horizontally stacked groups (8 px gutter, wrap on overflow),
-             * compose multiple tags inside a `cor-tag-group` slot wrapper —
+             * compose multiple tags inside a `mud-tag-group` slot wrapper —
              * available as a CSS utility on this element via the `group` data
              * attribute on the parent.
-             * @element cor-tag
+             * @element mud-tag
              */
-            "cor-tag": LocalJSX.IntrinsicElements["cor-tag"] & JSXBase.HTMLAttributes<HTMLCorTagElement>;
+            "mud-tag": LocalJSX.IntrinsicElements["mud-tag"] & JSXBase.HTMLAttributes<HTMLMudTagElement>;
             /**
              * Text Area — multi-line text-entry control.
              * Pattern B (atom-interactive, form-associated): renders its own `<textarea>`
              * inside shadow DOM. Form participation works via `formAssociated` +
-             * `ElementInternals`. Mirrors the `cor-input` contract for label, helper,
+             * `ElementInternals`. Mirrors the `mud-input` contract for label, helper,
              * error and variant treatment, and adds a vertical resize handle plus an
              * optional character counter.
-             * @element cor-textarea
+             * @element mud-textarea
              */
-            "cor-textarea": LocalJSX.IntrinsicElements["cor-textarea"] & JSXBase.HTMLAttributes<HTMLCorTextareaElement>;
+            "mud-textarea": LocalJSX.IntrinsicElements["mud-textarea"] & JSXBase.HTMLAttributes<HTMLMudTextareaElement>;
             /**
              * Tooltip — transient label, structured popover, or coach mark anchored to a
              * trigger element.
@@ -8996,9 +8996,9 @@ declare module "@stencil/core" {
              *   second click, `Esc`, or outside click.
              * - `coach` — persistent instructional overlay with a close button + localized
              *   hint. Dismissed only by Esc, the close button, or an outside click.
-             * @element cor-tooltip
+             * @element mud-tooltip
              */
-            "cor-tooltip": LocalJSX.IntrinsicElements["cor-tooltip"] & JSXBase.HTMLAttributes<HTMLCorTooltipElement>;
+            "mud-tooltip": LocalJSX.IntrinsicElements["mud-tooltip"] & JSXBase.HTMLAttributes<HTMLMudTooltipElement>;
         }
     }
 }

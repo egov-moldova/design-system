@@ -28,10 +28,10 @@
  *   spent on dispatching, parsing per-script output, and stitching reports.
  *
  * Usage:
- *   node scripts/audit/run-all.mjs cor-button [--json] [--out report.json]
+ *   node scripts/audit/run-all.mjs mud-button [--json] [--out report.json]
  *   node scripts/audit/run-all.mjs --all --json
- *   node scripts/audit/run-all.mjs cor-button --skip 06,08 --json
- *   node scripts/audit/run-all.mjs cor-button --only 01,02,03 --json
+ *   node scripts/audit/run-all.mjs mud-button --skip 06,08 --json
+ *   node scripts/audit/run-all.mjs mud-button --only 01,02,03 --json
  */
 import { spawn } from 'node:child_process';
 import { join, dirname } from 'node:path';
@@ -51,7 +51,7 @@ a single JSON envelope. AI agents should call this instead of dispatching each
 script individually.
 
 Targets (choose one):
-  <cor-name>          Audit one component (e.g. cor-button or button)
+  <mud-name>          Audit one component (e.g. mud-button or button)
   --all               Audit every cor-* component
   --changed           Audit components touched in git diff vs main
 

@@ -8,25 +8,25 @@ import { scanUsage, checkExports } from '../../audit/07-integration-usage.mjs';
 
 describe('07-integration-usage: checkExports', () => {
   it('builds the expected CustomEvent type name', () => {
-    assert.equal(checkExports('cor-button', '').expectedTypeName, 'CorButtonCustomEvent');
-    assert.equal(checkExports('cor-banner-notification', '').expectedTypeName, 'CorBannerNotificationCustomEvent');
-    assert.equal(checkExports('cor-input', '').expectedTypeName, 'CorInputCustomEvent');
+    assert.equal(checkExports('mud-button', '').expectedTypeName, 'MudButtonCustomEvent');
+    assert.equal(checkExports('mud-banner-notification', '').expectedTypeName, 'MudBannerNotificationCustomEvent');
+    assert.equal(checkExports('mud-input', '').expectedTypeName, 'MudInputCustomEvent');
   });
 
   it('detects the type in index source', () => {
     const indexSource = `
       export type {
-        CorButtonCustomEvent,
-        CorInputCustomEvent,
+        MudButtonCustomEvent,
+        MudInputCustomEvent,
       };
     `;
-    assert.equal(checkExports('cor-button', indexSource).customEventType, true);
-    assert.equal(checkExports('cor-tooltip', indexSource).customEventType, false);
+    assert.equal(checkExports('mud-button', indexSource).customEventType, true);
+    assert.equal(checkExports('mud-tooltip', indexSource).customEventType, false);
   });
 
   it('returns false when no index source is loaded', () => {
-    assert.equal(checkExports('cor-button', null).customEventType, false);
-    assert.equal(checkExports('cor-button', '').customEventType, false);
+    assert.equal(checkExports('mud-button', null).customEventType, false);
+    assert.equal(checkExports('mud-button', '').customEventType, false);
   });
 });
 
@@ -35,7 +35,7 @@ describe('07-integration-usage: scanUsage', () => {
   // from disk, so for unit tests we use a small in-memory shim by writing temp
   // files. But for shape verification, we can pass an empty fileList.
   it('produces a categories map with all expected slots', () => {
-    const usage = scanUsage('cor-button', []);
+    const usage = scanUsage('mud-button', []);
     assert.equal(usage.total, 0);
     assert.deepEqual(Object.keys(usage.byCategory).sort(), [
       'components',
@@ -47,18 +47,18 @@ describe('07-integration-usage: scanUsage', () => {
   });
 
   it('respects own-component exclusion (component does not count itself)', async () => {
-    // Real-file integration test: pass cor-button.tsx as a candidate; it should
-    // be filtered out because it's inside src/components/cor-button/.
+    // Real-file integration test: pass mud-button.tsx as a candidate; it should
+    // be filtered out because it's inside src/components/mud-button/.
     const { default: path } = await import('node:path');
     const { REPO_ROOT } = await import('../../audit/lib/component-paths.mjs');
-    const ownTsx = path.join(REPO_ROOT, 'src/components/cor-button/cor-button.tsx');
-    const usage = scanUsage('cor-button', [ownTsx]);
-    assert.equal(usage.total, 0, 'cor-button.tsx should not count cor-button as a usage');
+    const ownTsx = path.join(REPO_ROOT, 'src/components/mud-button/mud-button.tsx');
+    const usage = scanUsage('mud-button', [ownTsx]);
+    assert.equal(usage.total, 0, 'mud-button.tsx should not count mud-button as a usage');
   });
 });
 
 describe('07-integration-usage: end-to-end on baseline component', () => {
-  it('cor-button has usages across stories/tests/components categories', async () => {
+  it('mud-button has usages across stories/tests/components categories', async () => {
     const { analyzeComponent } = await import('../../audit/07-integration-usage.mjs');
     const { resolveComponentPaths } = await import('../../audit/lib/component-paths.mjs');
     const { glob } = await import('node:fs/promises');
@@ -80,10 +80,10 @@ describe('07-integration-usage: end-to-end on baseline component', () => {
     }
     const fileList = [...files];
 
-    const target = resolveComponentPaths('cor-button');
+    const target = resolveComponentPaths('mud-button');
     const { findings, usage } = await analyzeComponent(target, { fileList, indexSource: '' });
 
-    assert.ok(usage.total > 0, 'cor-button should have at least one usage');
+    assert.ok(usage.total > 0, 'mud-button should have at least one usage');
     assert.equal(findings.filter(f => f.severity === 'error').length, 0);
   });
 });

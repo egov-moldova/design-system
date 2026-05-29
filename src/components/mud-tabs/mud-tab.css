@@ -1,0 +1,187 @@
+/*
+ * mud-tab — single tab item inside a mud-tabs tablist.
+ *
+ * Pattern A (slot-based): the host owns ARIA + indicator, while its children
+ * are slotted via `default`, `icon-start`, and `badge` slots. The bottom
+ * indicator is painted as a sibling `<span class="tab__indicator">` so that
+ * `selected ↔ unselected` transitions stay isolated and the focus ring can
+ * sit *over* the indicator without clipping.
+ */
+
+:host {
+  --_tab-height: var(--tabs-tab-height-md);
+  --_tab-padding: var(--tabs-tab-padding-inline-md);
+  --_label-font-size: var(--tabs-label-font-size-md);
+  --_label-line-height: var(--tabs-label-line-height-md);
+  --_icon-size: var(--tabs-icon-size-md);
+  --_badge-min-size: var(--tabs-badge-min-size-md);
+  --_badge-padding: var(--tabs-badge-padding-inline-md);
+  --_badge-font-size: var(--tabs-badge-font-size-md);
+  --_badge-line-height: var(--tabs-badge-line-height-md);
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tabs-tab-gap);
+  block-size: var(--_tab-height);
+  padding-inline: var(--_tab-padding);
+  padding-block: 0;
+  background-color: transparent;
+  color: var(--tabs-unselected-color);
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  white-space: nowrap;
+  font-family: var(--tabs-label-font-family);
+  font-size: var(--_label-font-size);
+  line-height: var(--_label-line-height);
+  font-weight: var(--tabs-label-font-weight-unselected);
+  /* Box-sizing keeps padding stable when font weight changes between states. */
+  box-sizing: border-box;
+  transition: color var(--tabs-container-transition-duration) var(--tabs-container-transition-timing-function);
+}
+
+:host([size='sm']) {
+  --_tab-height: var(--tabs-tab-height-sm);
+  --_tab-padding: var(--tabs-tab-padding-inline-sm);
+  --_label-font-size: var(--tabs-label-font-size-sm);
+  --_label-line-height: var(--tabs-label-line-height-sm);
+  --_icon-size: var(--tabs-icon-size-sm);
+  --_badge-min-size: var(--tabs-badge-min-size-sm);
+  --_badge-padding: var(--tabs-badge-padding-inline-sm);
+  --_badge-font-size: var(--tabs-badge-font-size-sm);
+  --_badge-line-height: var(--tabs-badge-line-height-sm);
+}
+
+:host(:hover:not([disabled]):not([selected])) {
+  color: var(--tabs-unselected-color-hover);
+}
+
+:host([selected]) {
+  color: var(--tabs-selected-color);
+  font-weight: var(--tabs-label-font-weight-selected);
+}
+
+:host([disabled]) {
+  color: var(--tabs-disabled-color);
+  cursor: not-allowed;
+}
+
+/* ---------- Inner cluster (icon + label) ---------- */
+
+.tab__inner {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tabs-tab-inner-gap);
+  /* `min-inline-size: 0` lets long labels truncate without pushing the badge. */
+  min-inline-size: 0;
+}
+
+.tab__label {
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-inline-size: 0;
+  /* Inherit colour + weight from `:host`. */
+}
+
+::slotted(*),
+.tab__icon {
+  flex-shrink: 0;
+}
+
+/* Default-slot icon colour mirrors the tab text colour. */
+.tab__icon {
+  color: var(--tabs-unselected-icon-color);
+  inline-size: var(--_icon-size);
+  block-size: var(--_icon-size);
+}
+
+:host(:hover:not([disabled]):not([selected])) .tab__icon {
+  color: var(--tabs-unselected-icon-color-hover);
+}
+
+:host([selected]) .tab__icon {
+  color: var(--tabs-selected-icon-color);
+}
+
+:host([disabled]) .tab__icon {
+  color: var(--tabs-disabled-icon-color);
+}
+
+/* ---------- Badge ---------- */
+
+.tab__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: var(--_badge-min-size);
+  min-block-size: var(--_badge-min-size);
+  padding-inline: var(--_badge-padding);
+  padding-block: 0;
+  background-color: var(--tabs-badge-background);
+  color: var(--tabs-badge-color);
+  border-radius: var(--tabs-badge-border-radius);
+  font-size: var(--_badge-font-size);
+  line-height: var(--_badge-line-height);
+  font-weight: var(--tabs-badge-font-weight);
+  flex-shrink: 0;
+  /* The badge counter never inherits the (changing) tab font weight. */
+  font-variant-numeric: tabular-nums;
+}
+
+:host([disabled]) .tab__badge {
+  color: var(--tabs-disabled-color);
+  background-color: var(--tabs-badge-background);
+  opacity: 0.6;
+}
+
+/* ---------- Selected indicator (bottom rule) ---------- */
+
+.tab__indicator {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  block-size: var(--tabs-tab-indicator-height);
+  background-color: var(--tabs-tab-indicator-color);
+  border-radius: var(--tabs-tab-indicator-height);
+  opacity: 0;
+  transform: scaleX(0.4);
+  transform-origin: center;
+  transition:
+    opacity var(--tabs-container-transition-duration) var(--tabs-container-transition-timing-function),
+    transform var(--tabs-container-transition-duration) var(--tabs-container-transition-timing-function);
+  pointer-events: none;
+}
+
+:host([selected]) .tab__indicator {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+:host([disabled][selected]) .tab__indicator {
+  background-color: var(--tabs-disabled-color);
+}
+
+/* ---------- Focus ring (keyboard only) ---------- */
+
+:host(:focus-visible) {
+  /* Inset focus ring so it never clips the container border or indicator. */
+  box-shadow:
+    inset 0 0 0 var(--tabs-focus-ring-inner-width) var(--tabs-focus-ring-inner-color),
+    inset 0 0 0 calc(var(--tabs-focus-ring-inner-width) + var(--tabs-focus-ring-outer-width))
+      var(--tabs-focus-ring-outer-color);
+  border-radius: 4px;
+  z-index: 1;
+}
+
+/* ---------- prefers-reduced-motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  :host,
+  .tab__indicator {
+    transition: none;
+  }
+}

@@ -2,7 +2,7 @@
  * Smoke tests for scripts/audit/01-component-structure.mjs
  *
  * Strategy:
- *   - Use a real repo component (cor-button) as the "happy path" — it should pass.
+ *   - Use a real repo component (mud-button) as the "happy path" — it should pass.
  *   - Fabricate target objects with selective `exists` flags to exercise the
  *     pure analyzeComponent() without touching the filesystem.
  *   - Verify the JSON envelope shape (severity codes, exit-code derivation).
@@ -16,20 +16,20 @@ import { buildResult } from '../../audit/lib/json-output.mjs';
 
 describe('01-component-structure', () => {
   describe('analyzeComponent — real component', () => {
-    it('cor-button passes (all required files present, components location)', () => {
-      const target = resolveComponentPaths('cor-button');
+    it('mud-button passes (all required files present, components location)', () => {
+      const target = resolveComponentPaths('mud-button');
       assert.equal(target.found, true);
       assert.equal(target.location, 'components');
 
       const { findings, requiredMissing } = analyzeComponent(target);
-      assert.equal(requiredMissing, 0, 'cor-button must have all required files');
+      assert.equal(requiredMissing, 0, 'mud-button must have all required files');
 
       const errors = findings.filter(f => f.severity === 'error');
-      assert.deepEqual(errors, [], 'cor-button should produce zero errors');
+      assert.deepEqual(errors, [], 'mud-button should produce zero errors');
     });
 
-    it('cor-input and cor-tooltip both have all required files', () => {
-      for (const name of ['cor-input', 'cor-tooltip']) {
+    it('mud-input and mud-tooltip both have all required files', () => {
+      for (const name of ['mud-input', 'mud-tooltip']) {
         const target = resolveComponentPaths(name);
         assert.equal(target.found, true, `${name} should be found`);
         const { requiredMissing } = analyzeComponent(target);
@@ -40,7 +40,7 @@ describe('01-component-structure', () => {
 
   describe('analyzeComponent — synthetic missing-file targets', () => {
     function makeTarget(overrides = {}) {
-      const base = resolveComponentPaths('cor-button');
+      const base = resolveComponentPaths('mud-button');
       // Clone exists map so we can mutate
       return {
         ...base,
@@ -56,7 +56,7 @@ describe('01-component-structure', () => {
       const errors = findings.filter(f => f.code === 'STRUCTURE-MISSING-REQUIRED');
       assert.equal(errors.length, 1);
       assert.equal(errors[0].severity, 'error');
-      assert.match(errors[0].file, /cor-button\.tsx$/);
+      assert.match(errors[0].file, /mud-button\.tsx$/);
     });
 
     it('flags missing tokens file as warning, not error', () => {
@@ -92,7 +92,7 @@ describe('01-component-structure', () => {
     });
 
     it('returns STRUCTURE-NOT-FOUND for component that does not exist', () => {
-      const target = resolveComponentPaths('cor-this-does-not-exist-xyz');
+      const target = resolveComponentPaths('mud-this-does-not-exist-xyz');
       const { findings } = analyzeComponent(target);
       assert.equal(findings.find(f => f.code === 'STRUCTURE-NOT-FOUND')?.severity, 'error');
     });
@@ -102,7 +102,7 @@ describe('01-component-structure', () => {
     it('exit-code rule: ok iff zero errors (warnings are non-fatal)', () => {
       const result = buildResult({
         tool: TOOL,
-        target: 'cor-fake',
+        target: 'mud-fake',
         findings: [
           { severity: 'warning', code: 'X', message: 'w' },
           { severity: 'info', code: 'Y', message: 'i' },
@@ -116,7 +116,7 @@ describe('01-component-structure', () => {
     it('errors flip ok=false', () => {
       const result = buildResult({
         tool: TOOL,
-        target: 'cor-fake',
+        target: 'mud-fake',
         findings: [{ severity: 'error', code: 'X', message: 'e' }],
       });
       assert.equal(result.ok, false);

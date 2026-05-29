@@ -82,7 +82,7 @@ Use `--{component}-{property}-{scale/state}` when a component is a single visual
 --label-font-size-sm
 ```
 
-**When to use**: Single-element components like `cor-skeleton`, `cor-label`, `cor-link` (when not using nested elements).
+**When to use**: Single-element components like `mud-skeleton`, `mud-label`, `mud-link` (when not using nested elements).
 
 #### Shared Base Tokens
 
@@ -163,20 +163,20 @@ Following Style Dictionary best practices, we use a **hybrid approach**:
 
 | Component | Status | Complexity | Token Keys | CSS Variables | Notes |
 |-----------|--------|------------|------------|---------------|-------|
-| cor-skeleton | ✅ Compliant | LOW | 0 | 0 | Already follows property-first naming |
-| cor-avatar-group | 🚧 Pending | LOW | ~2 | ~2 | Minimal changes |
-| cor-checkbox-group | 🚧 Pending | LOW | ~3 | ~3 | References shared tokens |
-| cor-radio-button-group | 🚧 Pending | LOW | ~3 | ~3 | References shared tokens |
-| cor-label | 🚧 Pending | MEDIUM | ~25 | ~20 | **PRIORITY** — fix palette token violations |
-| cor-avatar | 🚧 Pending | MEDIUM | ~30 | ~40 | Add element layer |
-| cor-link | 🚧 Pending | MEDIUM | ~45 | ~40 | Add element layer for text/icon |
-| cor-badge-interactive | 🚧 Pending | HIGH | ~50 | ~35 | Complex state combinations |
-| cor-checkbox | 🚧 Pending | MEDIUM | ~20 | ~45 | Hybrid: shared + component-specific |
-| cor-radio-button | 🚧 Pending | MEDIUM | ~15 | ~40 | Hybrid: shared + component-specific |
-| cor-toggle | 🚧 Pending | MEDIUM | ~55 | ~40 | Hybrid: shared + component-specific |
-| cor-select-item | 🚧 Pending | HIGH | ~50 | ~45 | Complex nested elements |
-| cor-input | 🚧 Pending | VERY HIGH | ~120 | ~80 | Many nested elements |
-| cor-textarea | 🚧 Pending | VERY HIGH | ~80 | ~70 | Similar to input |
+| mud-skeleton | ✅ Compliant | LOW | 0 | 0 | Already follows property-first naming |
+| mud-avatar-group | 🚧 Pending | LOW | ~2 | ~2 | Minimal changes |
+| mud-checkbox-group | 🚧 Pending | LOW | ~3 | ~3 | References shared tokens |
+| mud-radio-button-group | 🚧 Pending | LOW | ~3 | ~3 | References shared tokens |
+| mud-label | 🚧 Pending | MEDIUM | ~25 | ~20 | **PRIORITY** — fix palette token violations |
+| mud-avatar | 🚧 Pending | MEDIUM | ~30 | ~40 | Add element layer |
+| mud-link | 🚧 Pending | MEDIUM | ~45 | ~40 | Add element layer for text/icon |
+| mud-badge-interactive | 🚧 Pending | HIGH | ~50 | ~35 | Complex state combinations |
+| mud-checkbox | 🚧 Pending | MEDIUM | ~20 | ~45 | Hybrid: shared + component-specific |
+| mud-radio-button | 🚧 Pending | MEDIUM | ~15 | ~40 | Hybrid: shared + component-specific |
+| mud-toggle | 🚧 Pending | MEDIUM | ~55 | ~40 | Hybrid: shared + component-specific |
+| mud-select-item | 🚧 Pending | HIGH | ~50 | ~45 | Complex nested elements |
+| mud-input | 🚧 Pending | VERY HIGH | ~120 | ~80 | Many nested elements |
+| mud-textarea | 🚧 Pending | VERY HIGH | ~80 | ~70 | Similar to input |
 
 **Legend**:
 - ✅ Compliant — already follows new convention
@@ -405,10 +405,10 @@ Three legacy token files removed after auditing usage:
 
 | File | Was | Now |
 |------|-----|-----|
-| `cor-avatar.css` | `var(--z-index-popout)` | `950` |
-| `cor-pagination-item.css` | `var(--z-index-dropdown, 1000)` | `600` |
-| `cor-select.css` | `var(--z-index-dropdown, 1000)` | `600` |
-| `cor-toast-notification.css` | `var(--z-index-toast, 500)` | `500` |
+| `mud-avatar.css` | `var(--z-index-popout)` | `950` |
+| `mud-pagination-item.css` | `var(--z-index-dropdown, 1000)` | `600` |
+| `mud-select.css` | `var(--z-index-dropdown, 1000)` | `600` |
+| `mud-toast-notification.css` | `var(--z-index-toast, 500)` | `500` |
 
 ### Net effect
 

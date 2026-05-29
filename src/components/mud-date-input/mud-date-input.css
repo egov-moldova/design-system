@@ -1,0 +1,338 @@
+:host {
+  --_height: var(--date-input-container-height-md);
+  --_padding-inline: var(--date-input-container-padding-inline-md);
+  --_gap: var(--date-input-container-gap-md);
+  --_radius: var(--date-input-container-border-radius);
+  --_border-width-default: var(--date-input-container-border-width-default);
+  --_border-width-emphasized: var(--date-input-container-border-width-emphasized);
+  --_focus-ring-width: var(--date-input-container-focus-ring-width);
+  --_transition-duration: var(--date-input-container-transition-duration);
+  --_transition-easing: var(--date-input-container-transition-timing-function);
+
+  --_control-font-size: var(--date-input-control-font-size-md);
+  --_control-line-height: var(--date-input-control-line-height-md);
+  --_icon-size: var(--date-input-icon-size-md);
+
+  --_bg: var(--date-input-default-background-default);
+  --_text: var(--date-input-default-text-default);
+  --_text-placeholder: var(--date-input-default-text-placeholder);
+  --_border-color: var(--date-input-default-border-default);
+  --_border-color-hover: var(--date-input-default-border-hover);
+  --_border-color-focus: var(--date-input-default-border-focus);
+  --_focus-ring-color: var(--date-input-default-focus-ring);
+
+  display: flex;
+  flex-direction: column;
+  /* `relative` so the absolutely-positioned calendar popover anchors below the
+     field instead of escaping to the document body. */
+  position: relative;
+  gap: var(--date-input-field-gap);
+  inline-size: 100%;
+  font-family: var(--date-input-control-font-family);
+  color: var(--_text);
+}
+
+:host([size='lg']) {
+  --_height: var(--date-input-container-height-lg);
+  --_padding-inline: var(--date-input-container-padding-inline-lg);
+  --_gap: var(--date-input-container-gap-lg);
+  --_control-font-size: var(--date-input-control-font-size-lg);
+  --_control-line-height: var(--date-input-control-line-height-lg);
+  --_icon-size: var(--date-input-icon-size-lg);
+}
+
+:host(.variant-destructive) {
+  --_border-color: var(--date-input-destructive-border-default);
+  --_border-color-hover: var(--date-input-destructive-border-hover);
+  --_border-color-focus: var(--date-input-destructive-border-focus);
+  --_focus-ring-color: var(--date-input-destructive-focus-ring);
+}
+
+/* ---------- Label ---------- */
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: var(--date-input-label-gap);
+  font-family: var(--date-input-label-font-family);
+  font-size: var(--date-input-label-font-size);
+  line-height: var(--date-input-label-line-height);
+  font-weight: var(--date-input-label-font-weight);
+  color: var(--date-input-label-color-default);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.label-text {
+  display: block;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.required-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--date-input-label-required-mark-size);
+  block-size: var(--date-input-label-required-mark-size);
+  color: var(--date-input-label-required-mark-color);
+  font-weight: var(--date-input-control-font-weight);
+  line-height: 1;
+}
+
+:host(.is-disabled) .label {
+  color: var(--date-input-label-color-disabled);
+}
+
+:host(.is-disabled) .required-mark {
+  color: var(--date-input-label-color-disabled);
+}
+
+:host(:not(.has-label)) .label {
+  display: none;
+}
+
+/* ---------- Control row ---------- */
+
+.control {
+  display: flex;
+  align-items: center;
+  gap: var(--_gap);
+  block-size: var(--_height);
+  padding-inline: var(--_padding-inline);
+  background-color: var(--_bg);
+  border: var(--_border-width-default) solid var(--_border-color);
+  border-radius: var(--_radius);
+  transition:
+    border-color var(--_transition-duration) var(--_transition-easing),
+    box-shadow var(--_transition-duration) var(--_transition-easing),
+    background-color var(--_transition-duration) var(--_transition-easing);
+}
+
+:host(:not(.is-disabled):not(.is-focused):hover) .control {
+  border-color: var(--_border-color-hover);
+  box-shadow: inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default))
+    var(--_border-color-hover);
+}
+
+:host(.is-focused:not(.is-disabled)) .control {
+  border-color: var(--_border-color-focus);
+  box-shadow:
+    inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default)) var(--_border-color-focus),
+    0 0 0 var(--spacing-4) var(--_focus-ring-color);
+}
+
+:host(.is-disabled) .control {
+  background-color: var(--date-input-default-background-disabled);
+  border-color: var(--date-input-default-border-disabled);
+  cursor: not-allowed;
+}
+
+/* ---------- Field wrapper (native + ghost overlay) ---------- */
+
+.field {
+  position: relative;
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  block-size: 100%;
+  display: flex;
+  align-items: center;
+}
+
+/* ---------- Native input ---------- */
+
+.native {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: var(--_control-font-size);
+  line-height: var(--_control-line-height);
+  font-weight: var(--date-input-control-font-weight);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  /* Caret blends the placeholder remnant pattern in focus; brand-blue caret to match Figma "|" marker */
+  caret-color: var(--date-input-control-caret-color);
+  /* Inherit ink color; ghost overlay below renders the placeholder remnant when not empty. */
+  position: relative;
+  z-index: 1;
+}
+
+/* Hide the native placeholder so we can render a richer ghost overlay below. */
+.native::placeholder {
+  color: transparent;
+}
+
+.native:disabled {
+  color: var(--date-input-default-text-disabled);
+  cursor: not-allowed;
+  -webkit-text-fill-color: var(--date-input-default-text-disabled);
+  caret-color: transparent;
+}
+
+.native[readonly] {
+  cursor: default;
+}
+
+.native:focus,
+.native:focus-visible {
+  outline: none;
+}
+
+.native:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 var(--spacing-120) var(--_bg) inset;
+  -webkit-text-fill-color: var(--_text);
+}
+
+/* ---------- Ghost overlay: shows placeholder remnant aligned under the caret ----------
+   When the user has typed `15/04/` the overlay shows the same `15/04/` in transparent
+   then renders the remaining `YYYY` in the placeholder color, so the format pattern
+   keeps guiding the eye while typing — matching the Figma "focus: month-populated"
+   spec exactly. */
+
+.ghost {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+  z-index: 0;
+  font-family: inherit;
+  font-size: var(--_control-font-size);
+  line-height: var(--_control-line-height);
+  font-weight: var(--date-input-control-font-weight);
+  white-space: pre;
+  overflow: hidden;
+  color: var(--_text-placeholder);
+}
+
+.ghost-typed {
+  /* The typed-portion span exists only to reserve horizontal space so
+     `.ghost-remaining` stays anchored under the caret. Use `visibility: hidden`
+     rather than `color: transparent` — the former still reserves layout while
+     also excluding the box from axe's color-contrast checks (transparent text
+     keeps tripping the `bgOverlap` heuristic via the native input above). */
+  visibility: hidden;
+}
+
+.ghost-remaining {
+  color: var(--_text-placeholder);
+  /* Known limitation: axe's `color-contrast.bgOverlap` heuristic flags this
+     span as Incomplete on every partial-typed value (e.g. user types "15/" →
+     ghost-remaining shows "MM/YYYY"). The native `<input>` element above has a
+     transparent fill but its bounding box covers the field, and axe gives up
+     when one element overlaps another regardless of whether their paint pixels
+     interfere. The ghost is aria-hidden and the same hint is exposed to AT via
+     `aria-placeholder` on the native input — actual contrast (#757575 on white,
+     ~4.54:1) meets WCAG 1.4.3 AA. Same pattern Material UI / Carbon use; same
+     known false-positive. No CSS or DOM tweak can clear this without removing
+     the ghost-overlay UX. */
+}
+
+:host(.is-disabled) .ghost-remaining {
+  color: var(--date-input-default-text-disabled);
+}
+
+/* When the field is fully populated and not focused, the ghost is empty so it
+   stays invisible behind the native value. */
+
+/* ---------- Trailing calendar icon ---------- */
+
+.trailing-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--_icon-size);
+  block-size: var(--_icon-size);
+  color: var(--date-input-icon-color-default);
+  /* Reset native button chrome — the icon stands on its own. */
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  border-radius: var(--border-radius-4);
+}
+
+.trailing-icon:disabled {
+  cursor: not-allowed;
+}
+
+.trailing-icon:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
+    0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
+}
+
+:host(.is-disabled) .trailing-icon {
+  color: var(--date-input-icon-color-disabled);
+}
+
+/* ---------- Calendar popover (mud-date-picker overlay) ---------- */
+
+.picker-popover {
+  position: absolute;
+  inset-block-start: 100%;
+  inset-inline-start: 0;
+  z-index: 10;
+  margin-block-start: var(--spacing-4);
+  display: block;
+}
+
+/* ---------- Assistive (helper / error) ---------- */
+
+.assistive {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--date-input-assistive-gap-default);
+  font-family: var(--date-input-assistive-font-family);
+  font-size: var(--date-input-assistive-font-size);
+  line-height: var(--date-input-assistive-line-height);
+  font-weight: var(--date-input-assistive-font-weight);
+  color: var(--date-input-assistive-color-default);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.assistive-error {
+  gap: var(--date-input-assistive-gap-error);
+  color: var(--date-input-assistive-color-error);
+}
+
+.assistive-icon {
+  flex-shrink: 0;
+  inline-size: var(--date-input-assistive-icon-size);
+  block-size: var(--date-input-assistive-icon-size);
+  margin-block-start: 0;
+}
+
+.assistive-text {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  text-overflow: ellipsis;
+}
+
+/* ---------- prefers-reduced-motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .control {
+    transition: none;
+  }
+}

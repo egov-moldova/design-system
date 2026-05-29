@@ -80,14 +80,14 @@ Every script emits this shape (`scripts/audit/lib/json-output.mjs`):
 {
   "schemaVersion": "1.0.0",
   "tool": "stencil-antipatterns",
-  "target": "cor-button",
+  "target": "mud-button",
   "ok": true,
   "summary": { "errors": 0, "warnings": 2, "info": 5 },
   "findings": [
     {
       "severity": "error",
       "code": "ANTIPATTERN-005-ARRAY-MUTATION",
-      "file": "src/components/cor-input/cor-input.tsx",
+      "file": "src/components/mud-input/mud-input.tsx",
       "line": 42,
       "column": 8,
       "message": "Direct mutation of a reactive array via push/pop/...",
@@ -171,16 +171,16 @@ Choose exactly ONE target: positional component name, `--all`, or `--changed`.
 
 ```bash
 # All checks for one component (skips 11 if --figma-dir not provided)
-node scripts/audit/run-all.mjs cor-button --json
+node scripts/audit/run-all.mjs mud-button --json
 
 # Skip browser waves (for CI without Playwright, or pre-commit speed)
-node scripts/audit/run-all.mjs cor-button --no-browser --json
+node scripts/audit/run-all.mjs mud-button --no-browser --json
 
 # Only specific scripts
-node scripts/audit/run-all.mjs cor-button --only 02,07 --json
+node scripts/audit/run-all.mjs mud-button --only 02,07 --json
 
 # Skip specific scripts
-node scripts/audit/run-all.mjs cor-button --skip 06,08 --json
+node scripts/audit/run-all.mjs mud-button --skip 06,08 --json
 
 # Audit changed components vs main (great for pre-PR)
 node scripts/audit/run-all.mjs --changed --no-browser --json
@@ -195,7 +195,7 @@ The orchestrator returns one combined envelope:
 {
   "schemaVersion": "1.0.0",
   "tool": "run-all",
-  "target": "cor-button",
+  "target": "mud-button",
   "ok": false,
   "summary": { "errors": 3, "warnings": 8, "info": 12 },
   "blockers": [

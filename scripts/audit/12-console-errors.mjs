@@ -16,7 +16,7 @@
  *
  * Usage:
  *   yarn sp.dev.watch                              # in another terminal
- *   node scripts/audit/12-console-errors.mjs cor-button --json
+ *   node scripts/audit/12-console-errors.mjs mud-button --json
  *   node scripts/audit/12-console-errors.mjs --all --json
  */
 import { fileURLToPath } from 'node:url';

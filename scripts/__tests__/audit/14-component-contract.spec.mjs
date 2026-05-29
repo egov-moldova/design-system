@@ -69,12 +69,12 @@ describe('14-component-contract: extractContractFromTsx', () => {
     const tsx = `
       import { Component } from '@stencil/core';
       /** Test. */
-      @Component({ tag: 'cor-test', shadow: true, formAssociated: true })
-      export class CorTest {}
+      @Component({ tag: 'mud-test', shadow: true, formAssociated: true })
+      export class MudTest {}
     `;
-    const p = tempTsx('cor-test', tsx);
-    const { contract } = extractContractFromTsx(p, 'cor-test');
-    assert.equal(contract.tag, 'cor-test');
+    const p = tempTsx('mud-test', tsx);
+    const { contract } = extractContractFromTsx(p, 'mud-test');
+    assert.equal(contract.tag, 'mud-test');
     assert.equal(contract.shadow, true);
     assert.equal(contract.formAssociated, true);
   });
@@ -83,16 +83,16 @@ describe('14-component-contract: extractContractFromTsx', () => {
     const tsx = `
       import { Component, Prop } from '@stencil/core';
       /** Test. */
-      @Component({ tag: 'cor-test' })
-      export class CorTest {
+      @Component({ tag: 'mud-test' })
+      export class MudTest {
         /** The variant. @default primary */
         @Prop({ reflect: true }) variant: string = 'primary';
         /** Optional flag. */
         @Prop() iconOnly?: boolean = false;
       }
     `;
-    const p = tempTsx('cor-test', tsx);
-    const { contract } = extractContractFromTsx(p, 'cor-test');
+    const p = tempTsx('mud-test', tsx);
+    const { contract } = extractContractFromTsx(p, 'mud-test');
     assert.equal(contract.props.length, 2);
 
     const variant = contract.props.find(p => p.name === 'variant');
@@ -110,22 +110,22 @@ describe('14-component-contract: extractContractFromTsx', () => {
     const tsx = `
       import { Component, Event, EventEmitter } from '@stencil/core';
       /** Test. */
-      @Component({ tag: 'cor-test' })
-      export class CorTest {
+      @Component({ tag: 'mud-test' })
+      export class MudTest {
         /** Fires on change. */
-        @Event() corChange: EventEmitter<string>;
-        @Event({ eventName: 'cor-custom-name' }) corCustom: EventEmitter<{ value: number }>;
+        @Event() mudChange: EventEmitter<string>;
+        @Event({ eventName: 'mud-custom-name' }) mudCustom: EventEmitter<{ value: number }>;
       }
     `;
-    const p = tempTsx('cor-test', tsx);
-    const { contract } = extractContractFromTsx(p, 'cor-test');
+    const p = tempTsx('mud-test', tsx);
+    const { contract } = extractContractFromTsx(p, 'mud-test');
     assert.equal(contract.events.length, 2);
 
-    const change = contract.events.find(e => e.name === 'corChange');
+    const change = contract.events.find(e => e.name === 'mudChange');
     assert.equal(change.payloadType, 'string');
 
-    const custom = contract.events.find(e => e.name === 'corCustom');
-    assert.equal(custom.eventName, 'cor-custom-name');
+    const custom = contract.events.find(e => e.name === 'mudCustom');
+    assert.equal(custom.eventName, 'mud-custom-name');
     assert.equal(custom.payloadType, '{ value: number }');
   });
 
@@ -133,14 +133,14 @@ describe('14-component-contract: extractContractFromTsx', () => {
     const tsx = `
       import { Component, Method } from '@stencil/core';
       /** Test. */
-      @Component({ tag: 'cor-test' })
-      export class CorTest {
+      @Component({ tag: 'mud-test' })
+      export class MudTest {
         /** Opens the panel. */
         @Method() async open(direction: string, force?: boolean): Promise<void> {}
       }
     `;
-    const p = tempTsx('cor-test', tsx);
-    const { contract } = extractContractFromTsx(p, 'cor-test');
+    const p = tempTsx('mud-test', tsx);
+    const { contract } = extractContractFromTsx(p, 'mud-test');
     assert.equal(contract.methods.length, 1);
     const method = contract.methods[0];
     assert.equal(method.name, 'open');
@@ -155,7 +155,7 @@ describe('14-component-contract: extractContractFromTsx', () => {
   it('errors when file has no @Component class', () => {
     const tsx = `export const foo = 1;`;
     const p = tempTsx('not-component', tsx);
-    const { findings, contract } = extractContractFromTsx(p, 'cor-test');
+    const { findings, contract } = extractContractFromTsx(p, 'mud-test');
     assert.equal(contract, null);
     assert.ok(findings.find(f => f.code === 'CONTRACT-NO-COMPONENT-CLASS'));
   });
@@ -166,7 +166,7 @@ describe('14-component-contract: inferArchetype (pure)', () => {
     const result = inferArchetype({
       contract: { formAssociated: false, props: [], events: [] },
       tsxContent: '',
-      componentName: 'cor-anything',
+      componentName: 'mud-anything',
       overrideValue: 'FORM',
     });
     assert.equal(result.value, 'FORM');
@@ -179,7 +179,7 @@ describe('14-component-contract: inferArchetype (pure)', () => {
     const result = inferArchetype({
       contract: { formAssociated: true, props: [], events: [] },
       tsxContent: '',
-      componentName: 'cor-test',
+      componentName: 'mud-test',
       overrideValue: 'NOT_REAL',
     });
     assert.equal(result.value, 'FORM');
@@ -190,7 +190,7 @@ describe('14-component-contract: inferArchetype (pure)', () => {
     const result = inferArchetype({
       contract: { formAssociated: true, props: [], events: [] },
       tsxContent: '<Host>...</Host>',
-      componentName: 'cor-input',
+      componentName: 'mud-input',
     });
     assert.equal(result.value, 'FORM');
     assert.equal(result.confidence, 'high');
@@ -201,7 +201,7 @@ describe('14-component-contract: inferArchetype (pure)', () => {
     const result = inferArchetype({
       contract: { formAssociated: false, props: [], events: [] },
       tsxContent: `return <Host role="status">{children}</Host>;`,
-      componentName: 'cor-banner',
+      componentName: 'mud-banner',
     });
     assert.equal(result.value, 'STATUS');
     assert.equal(result.confidence, 'high');
@@ -213,7 +213,7 @@ describe('14-component-contract: inferArchetype (pure)', () => {
       const result = inferArchetype({
         contract: { formAssociated: false, props: [], events: [] },
         tsxContent: `<Host role="${role}"></Host>`,
-        componentName: 'cor-something',
+        componentName: 'mud-something',
       });
       assert.equal(result.value, 'STATUS', `role=${role} should map to STATUS`);
       assert.equal(result.confidence, 'high');
@@ -224,7 +224,7 @@ describe('14-component-contract: inferArchetype (pure)', () => {
     const result = inferArchetype({
       contract: { formAssociated: false, props: [], events: [] },
       tsxContent: `<Host role={this.ariaRole}>...</Host>`,
-      componentName: 'cor-toast-notification',
+      componentName: 'mud-toast-notification',
     });
     assert.equal(result.value, 'STATUS');
     assert.equal(result.confidence, 'medium');
@@ -237,10 +237,10 @@ describe('14-component-contract: inferArchetype (pure)', () => {
       contract: {
         formAssociated: false,
         props: [{ name: 'open', type: 'boolean' }],
-        events: [{ name: 'corOpen' }],
+        events: [{ name: 'mudOpen' }],
       },
       tsxContent: '<div></div>',
-      componentName: 'cor-modal',
+      componentName: 'mud-modal',
     });
     assert.equal(result.value, 'OVERLAY');
     assert.equal(result.confidence, 'high');
@@ -256,7 +256,7 @@ describe('14-component-contract: inferArchetype (pure)', () => {
           events: [],
         },
         tsxContent: '',
-        componentName: 'cor-thing',
+        componentName: 'mud-thing',
       });
       assert.equal(result.value, 'OVERLAY', `${name} should map to OVERLAY`);
     }
@@ -267,10 +267,10 @@ describe('14-component-contract: inferArchetype (pure)', () => {
       contract: {
         formAssociated: false,
         props: [{ name: 'variant', type: 'string' }],
-        events: [{ name: 'corClick' }, { name: 'corHover' }],
+        events: [{ name: 'mudClick' }, { name: 'mudHover' }],
       },
       tsxContent: '',
-      componentName: 'cor-chip',
+      componentName: 'mud-chip',
     });
     assert.equal(result.value, 'ACTION');
     assert.equal(result.confidence, 'high');
@@ -282,10 +282,10 @@ describe('14-component-contract: inferArchetype (pure)', () => {
       contract: {
         formAssociated: false,
         props: [{ name: 'open', type: 'string' /* odd, but realistic for stencil "true"|"false" */ }],
-        events: [{ name: 'corClick' }],
+        events: [{ name: 'mudClick' }],
       },
       tsxContent: '',
-      componentName: 'cor-weird',
+      componentName: 'mud-weird',
     });
     assert.notEqual(result.value, 'ACTION');
   });
@@ -294,7 +294,7 @@ describe('14-component-contract: inferArchetype (pure)', () => {
     const result = inferArchetype({
       contract: { formAssociated: false, props: [], events: [] },
       tsxContent: `<Host role="rowgroup"><slot/></Host>`,
-      componentName: 'cor-tbody',
+      componentName: 'mud-tbody',
     });
     assert.equal(result.value, 'CONTAINER');
     assert.equal(result.confidence, 'medium');
@@ -305,7 +305,7 @@ describe('14-component-contract: inferArchetype (pure)', () => {
     const result = inferArchetype({
       contract: { formAssociated: false, props: [], events: [] },
       tsxContent: `<Host><slot/></Host>`,
-      componentName: 'cor-card',
+      componentName: 'mud-card',
     });
     assert.equal(result.value, 'CONTAINER');
     assert.equal(result.confidence, 'low');
@@ -315,7 +315,7 @@ describe('14-component-contract: inferArchetype (pure)', () => {
     const result = inferArchetype({
       contract: { formAssociated: true, props: [], events: [] },
       tsxContent: `<Host role="status"></Host>`,
-      componentName: 'cor-progress-input',
+      componentName: 'mud-progress-input',
     });
     assert.equal(result.value, 'FORM');
   });
@@ -325,10 +325,10 @@ describe('14-component-contract: inferArchetype (pure)', () => {
       contract: {
         formAssociated: false,
         props: [{ name: 'open', type: 'boolean' }],
-        events: [{ name: 'corOpen' }, { name: 'corClose' }],
+        events: [{ name: 'mudOpen' }, { name: 'mudClose' }],
       },
       tsxContent: '',
-      componentName: 'cor-popover',
+      componentName: 'mud-popover',
     });
     assert.equal(result.value, 'OVERLAY');
   });
@@ -339,11 +339,11 @@ describe('14-component-contract: archetype emission (end-to-end)', () => {
     const tsx = `
       import { Component } from '@stencil/core';
       /** Form input. */
-      @Component({ tag: 'cor-form-input', formAssociated: true })
-      export class CorFormInput {}
+      @Component({ tag: 'mud-form-input', formAssociated: true })
+      export class MudFormInput {}
     `;
-    const p = tempTsx('cor-form-input', tsx);
-    const { contract } = extractContractFromTsx(p, 'cor-form-input');
+    const p = tempTsx('mud-form-input', tsx);
+    const { contract } = extractContractFromTsx(p, 'mud-form-input');
     assert.equal(contract.archetype.value, 'FORM');
     assert.equal(contract.archetype.source, 'heuristic');
   });
@@ -355,11 +355,11 @@ describe('14-component-contract: archetype emission (end-to-end)', () => {
        * Looks like a container but is really a button wrapper.
        * @archetype ACTION
        */
-      @Component({ tag: 'cor-fancy-button' })
-      export class CorFancyButton {}
+      @Component({ tag: 'mud-fancy-button' })
+      export class MudFancyButton {}
     `;
-    const p = tempTsx('cor-fancy-button', tsx);
-    const { contract } = extractContractFromTsx(p, 'cor-fancy-button');
+    const p = tempTsx('mud-fancy-button', tsx);
+    const { contract } = extractContractFromTsx(p, 'mud-fancy-button');
     assert.equal(contract.archetype.value, 'ACTION');
     assert.equal(contract.archetype.source, 'override');
     assert.equal(contract.archetype.confidence, 'high');
@@ -367,31 +367,31 @@ describe('14-component-contract: archetype emission (end-to-end)', () => {
 });
 
 describe('14-component-contract: baseline components', () => {
-  it('cor-button — extracts expected shape', async () => {
-    const target = resolveComponentPaths('cor-button');
+  it('mud-button — extracts expected shape', async () => {
+    const target = resolveComponentPaths('mud-button');
     const { contract, findings } = await analyzeComponent(target);
     assert.equal(findings.filter(f => f.severity === 'error').length, 0);
-    assert.equal(contract.tag, 'cor-button');
+    assert.equal(contract.tag, 'mud-button');
     assert.equal(contract.shadow, true);
     assert.equal(contract.formAssociated, false);
-    assert.ok(contract.props.length >= 3, 'cor-button should have >= 3 props');
+    assert.ok(contract.props.length >= 3, 'mud-button should have >= 3 props');
     // Default slot should be present
     assert.ok(contract.slots.some(s => s.name === 'default'));
   });
 
-  it('cor-input — form-associated, has multiple slots', async () => {
-    const target = resolveComponentPaths('cor-input');
+  it('mud-input — form-associated, has multiple slots', async () => {
+    const target = resolveComponentPaths('mud-input');
     const { contract } = await analyzeComponent(target);
     assert.equal(contract.formAssociated, true);
-    assert.ok(contract.slots.length >= 2, 'cor-input should have multiple named slots');
+    assert.ok(contract.slots.length >= 2, 'mud-input should have multiple named slots');
   });
 
-  it('cor-tooltip — has events with proper EventEmitter<T> payloads', async () => {
-    const target = resolveComponentPaths('cor-tooltip');
+  it('mud-tooltip — has events with proper EventEmitter<T> payloads', async () => {
+    const target = resolveComponentPaths('mud-tooltip');
     const { contract } = await analyzeComponent(target);
-    assert.ok(contract.events.length > 0, 'cor-tooltip should expose at least one event');
+    assert.ok(contract.events.length > 0, 'mud-tooltip should expose at least one event');
     for (const ev of contract.events) {
-      assert.ok(ev.name.startsWith('cor'), `event ${ev.name} should start with cor*`);
+      assert.ok(ev.name.startsWith('mud'), `event ${ev.name} should start with mud*`);
     }
   });
 });

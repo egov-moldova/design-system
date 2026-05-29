@@ -19,14 +19,14 @@ These are intentional, design-driven sizes used by the project. They are **confo
 
 | Component | Variant | Visual size | Adjacent spacing | Notes |
 |----|----|----|----|----|
-| `cor-button` | `size='lg'` | 48 × 48 | n/a | ✅ Meets AAA 44×44 too |
-| `cor-button` | `size='md'` | 32 × 32 | tokens enforce ≥ 8 px gap | Default size; conforms to 2.1 AA |
-| `cor-button` | `size='sm'` | 32 × 32 | tokens enforce ≥ 8 px gap | Conforms to 2.1 AA; meets 2.2 AA (24×24) |
-| `cor-button` | `size='xs'` | 24 × 24 | tokens enforce ≥ 8 px gap | Conforms to 2.1 AA; **exactly** meets 2.2 AA (24×24) |
-| `cor-checkbox` | `size='md'` | 20 × 20 visual; hit area expanded via label wrapper | label provides additional click area | Conforms to 2.1 AA; hit area via label exceeds 24×24 |
-| `cor-checkbox` | `size='sm'` | 16 × 16 visual; same label-wrapped hit area | label provides additional click area | Conforms to 2.1 AA |
-| `cor-radio-button` | `md` / `sm` | same as checkbox | same as checkbox | Conforms to 2.1 AA |
-| `cor-toggle` | — | per Figma | tokens enforce padding | Conforms to 2.1 AA |
+| `mud-button` | `size='lg'` | 48 × 48 | n/a | ✅ Meets AAA 44×44 too |
+| `mud-button` | `size='md'` | 32 × 32 | tokens enforce ≥ 8 px gap | Default size; conforms to 2.1 AA |
+| `mud-button` | `size='sm'` | 32 × 32 | tokens enforce ≥ 8 px gap | Conforms to 2.1 AA; meets 2.2 AA (24×24) |
+| `mud-button` | `size='xs'` | 24 × 24 | tokens enforce ≥ 8 px gap | Conforms to 2.1 AA; **exactly** meets 2.2 AA (24×24) |
+| `mud-checkbox` | `size='md'` | 20 × 20 visual; hit area expanded via label wrapper | label provides additional click area | Conforms to 2.1 AA; hit area via label exceeds 24×24 |
+| `mud-checkbox` | `size='sm'` | 16 × 16 visual; same label-wrapped hit area | label provides additional click area | Conforms to 2.1 AA |
+| `mud-radio-button` | `md` / `sm` | same as checkbox | same as checkbox | Conforms to 2.1 AA |
+| `mud-toggle` | — | per Figma | tokens enforce padding | Conforms to 2.1 AA |
 
 **Note on hit areas:** Native HTML controls (`<input type="checkbox">`, `<input type="radio">`) are typically wrapped in a `<label>` that extends the interactive area to the surrounding text. This means the practical click/touch target is much larger than the visual indicator. WCAG 2.5.8 (when applicable) explicitly counts the effective hit area, not the rendered glyph.
 
@@ -34,9 +34,9 @@ These are intentional, design-driven sizes used by the project. They are **confo
 
 A consumer application can opt into stricter target sizes (WCAG 2.1 AAA or 2.2 AA) by:
 
-1. **Using larger variants** — `cor-button size='lg'` (48×48) for primary actions on touch surfaces.
+1. **Using larger variants** — `mud-button size='lg'` (48×48) for primary actions on touch surfaces.
 2. **Wrapping in larger containers** — use generous padding around small interactive elements.
-3. **Increasing spacing** — `cor-button-group` and `cor-controls-group` already enforce minimum gaps.
+3. **Increasing spacing** — `mud-button-group` and `mud-controls-group` already enforce minimum gaps.
 
 If the **Figma project spec** (node 2753-5965) requires 44×44 for a specific component, that supersedes 2.1 AA — update tokens accordingly and remove the relevant row from this document.
 
@@ -44,7 +44,7 @@ If the **Figma project spec** (node 2753-5965) requires 44×44 for a specific co
 
 - `yarn audit:contrast` does not check target size — it is a contrast-only script.
 - Storybook a11y addon (axe-core) does NOT enforce 44×44 by default (it follows 2.1 AA). To enable 2.2 AA target-size checks, add `target-size` to the `runOnly` rule list in `.storybook/preview.js`. Currently disabled by design.
-- For pixel-perfect Figma checks, inspect `cor-button` height/min-height tokens in `tokens/core/components/button.tokens.json`.
+- For pixel-perfect Figma checks, inspect `mud-button` height/min-height tokens in `tokens/core/components/button.tokens.json`.
 
 ## References
 

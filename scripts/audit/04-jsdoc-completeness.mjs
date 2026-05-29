@@ -15,7 +15,7 @@
  *   - `.claude/skills/audit-component/SKILL.md` Wave 2 docs check
  *
  * Usage:
- *   node scripts/audit/04-jsdoc-completeness.mjs cor-button [--json] [--out file]
+ *   node scripts/audit/04-jsdoc-completeness.mjs mud-button [--json] [--out file]
  *   node scripts/audit/04-jsdoc-completeness.mjs --all
  */
 import { spawnSync } from 'node:child_process';

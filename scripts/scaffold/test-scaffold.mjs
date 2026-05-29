@@ -25,7 +25,7 @@
  *   - test-writer Step 4 (compose spec.tsx)
  *
  * Usage:
- *   node scripts/scaffold/test-scaffold.mjs cor-button [--out path] [--write]
+ *   node scripts/scaffold/test-scaffold.mjs mud-button [--out path] [--write]
  */
 import { writeFileSync, existsSync } from 'node:fs';
 import { dirname } from 'node:path';

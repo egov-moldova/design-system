@@ -1,0 +1,144 @@
+:host {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--breadcrumb-gap-item);
+  font-family: var(--breadcrumb-font-family);
+  font-size: var(--breadcrumb-font-size);
+  line-height: var(--breadcrumb-line-height);
+  font-weight: var(--breadcrumb-font-weight-default);
+  color: var(--breadcrumb-item-text-default);
+}
+
+/* Slot-mode chevron separator — when nested inside `<mud-breadcrumb>` (slot
+   mode), the parent doesn't render the chevron `<li>` between siblings, so we
+   paint it from the child's host instead. `:host(:not(:last-child))` keeps the
+   separator off the trailing crumb regardless of parent. */
+:host(:not(:last-child))::after {
+  content: '›';
+  color: var(--breadcrumb-separator-color);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Active = current page. Medium weight, ink-default color. */
+:host([active]) {
+  font-weight: var(--breadcrumb-font-weight-active);
+  color: var(--breadcrumb-item-text-active);
+}
+
+:host([visited]) {
+  color: var(--breadcrumb-item-text-visited);
+}
+
+:host([disabled]) {
+  color: var(--breadcrumb-item-text-disabled);
+  cursor: not-allowed;
+}
+
+:host([loading]) {
+  cursor: progress;
+}
+
+.crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--breadcrumb-gap-item);
+  padding-inline: var(--breadcrumb-item-padding-inline);
+  padding-block: var(--breadcrumb-item-padding-block);
+  border-radius: var(--breadcrumb-item-border-radius);
+  color: inherit;
+  font: inherit;
+  background-color: transparent;
+  text-decoration: none;
+  transition:
+    color 150ms ease-out,
+    text-decoration-color 150ms ease-out,
+    background-color 150ms ease-out;
+}
+
+/* Anchor — interactive crumb */
+.crumb--link {
+  cursor: pointer;
+}
+
+.crumb--link:hover {
+  color: var(--breadcrumb-item-text-hover);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+
+.crumb--link:active {
+  color: var(--breadcrumb-item-text-active);
+}
+
+/* Dual halo focus ring — matches button + input across the system */
+.crumb--link:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
+    0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
+}
+
+/* Active crumb — text only, no underline ever */
+.crumb--active {
+  cursor: default;
+}
+
+.crumb--disabled {
+  cursor: not-allowed;
+}
+
+.crumb--loading {
+  cursor: progress;
+}
+
+/* ----- Crumb content layout (icon-start + label) ----- */
+
+.crumb-content {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--breadcrumb-gap-item);
+  min-width: 0;
+  flex: 1 1 auto;
+  max-width: 100%;
+}
+
+/* mud-tooltip wraps the whole <a>/<span> crumb (link sits in slot="trigger"),
+   so the link itself carries the max-width cap and the inner `.crumb-text`
+   truncates naturally without any extra flex propagation rules. */
+:host mud-tooltip {
+  display: inline-flex;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.icon-start {
+  display: none;
+  flex-shrink: 0;
+  align-items: center;
+}
+
+.icon-start--visible {
+  display: inline-flex;
+}
+
+::slotted([slot='icon-start']) {
+  --icon-color: currentcolor;
+}
+
+.crumb-text {
+  display: block;
+  min-width: 0;
+  flex: 1 1 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Respect reduced motion at the component level too. */
+@media (prefers-reduced-motion: reduce) {
+  .crumb {
+    transition: none;
+  }
+}

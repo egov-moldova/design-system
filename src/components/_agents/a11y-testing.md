@@ -14,7 +14,7 @@ This file describes the three layers used to validate accessibility of every `co
 
 ## When to add a11y coverage
 
-**Every interactive `cor-*` component must include structural WCAG contract assertions** in its `.spec.tsx` (role, aria-* attributes, focusability) AND must have at least one Storybook story whose `addon-a11y` panel runs in both light and dark modes. Non-interactive presentational components (`cor-illustration-*`, `cor-icon`) need only the accessible-name assertion (label / aria-hidden).
+**Every interactive `cor-*` component must include structural WCAG contract assertions** in its `.spec.tsx` (role, aria-* attributes, focusability) AND must have at least one Storybook story whose `addon-a11y` panel runs in both light and dark modes. Non-interactive presentational components (`mud-illustration-*`, `mud-icon`) need only the accessible-name assertion (label / aria-hidden).
 
 Components with state changes (modal open/close, dropdown expand, error state) must assert the contract for every meaningful state.
 
@@ -27,26 +27,26 @@ Use `render()` from `@stencil/vitest` and assert documented role / aria-* / focu
 > **Coverage requirement (always add this side-effect import)**: every spec MUST `import '../<componentName>';` at the top so `stencilVitestPlugin` compiles the source file on-the-fly and `coverage v8` sees real per-file numbers. Without it the test still passes IF the element was registered elsewhere, but coverage reports **0%** for the component TSX — see `_agents/testing.md` for the full rule.
 
 ```tsx
-// src/components/cor-button/test/cor-button.spec.tsx
+// src/components/mud-button/test/mud-button.spec.tsx
 import { render, describe, it, expect } from '@stencil/vitest';
 
-// Side-effect import — registers <cor-button> AND makes coverage v8 see the source.
-import '../cor-button';
+// Side-effect import — registers <mud-button> AND makes coverage v8 see the source.
+import '../mud-button';
 
-describe('cor-button — WCAG 2.1 AA contract', () => {
+describe('mud-button — WCAG 2.1 AA contract', () => {
   it('default state exposes the button role and an accessible name', async () => {
-    const { root } = await render(<cor-button>Save</cor-button>);
+    const { root } = await render(<mud-button>Save</mud-button>);
     expect(root?.getAttribute('role') ?? 'button').toBe('button');
     expect(root?.textContent?.trim()).toBe('Save');
   });
 
   it('disabled state mirrors aria-disabled', async () => {
-    const { root } = await render(<cor-button disabled>Save</cor-button>);
+    const { root } = await render(<mud-button disabled>Save</mud-button>);
     expect(root?.getAttribute('aria-disabled')).toBe('true');
   });
 
   it('loading state announces busy', async () => {
-    const { root } = await render(<cor-button skeleton>Save</cor-button>);
+    const { root } = await render(<mud-button skeleton>Save</mud-button>);
     expect(root?.getAttribute('aria-busy')).toBe('true');
   });
 });
@@ -124,13 +124,13 @@ Snapshot the result. Repeat with `data-theme="dark"` set on `<html>` for dark-mo
 
 | Component family | Spec contract required | Storybook a11y required | Browser axe required | States to cover |
 |--|--|--|--|--|
-| `cor-button`, `cor-link` | yes | yes | yes | default, disabled, loading, all variants |
-| `cor-input`, `cor-textarea`, `cor-select` | yes | yes | yes | default, invalid (error), disabled, focused, with value, empty |
-| `cor-checkbox`, `cor-radio-*`, `cor-toggle` | yes | yes | yes | unchecked, checked, disabled, indeterminate (if applicable) |
-| `cor-modal`, `cor-tooltip`, `cor-menu-*`, `cor-tabs` | yes | yes | yes | closed/open, with arrow keys, with Escape |
-| `cor-toast-notification`, `cor-banner-notification`, `cor-inline-notification` | yes | yes | no | each severity (info, success, warning, error) |
-| `cor-table`, `cor-pagination`, `cor-datepicker` | yes | yes | yes | data-rich states, empty state, error state |
-| `cor-icon`, `cor-illustration-*`, `cor-skeleton`, `cor-loading` | accessible-name only | yes | no | accessible name OR `aria-hidden` correct |
+| `mud-button`, `mud-link` | yes | yes | yes | default, disabled, loading, all variants |
+| `mud-input`, `mud-textarea`, `mud-select` | yes | yes | yes | default, invalid (error), disabled, focused, with value, empty |
+| `mud-checkbox`, `mud-radio-*`, `mud-toggle` | yes | yes | yes | unchecked, checked, disabled, indeterminate (if applicable) |
+| `mud-modal`, `mud-tooltip`, `mud-menu-*`, `mud-tabs` | yes | yes | yes | closed/open, with arrow keys, with Escape |
+| `mud-toast-notification`, `mud-banner-notification`, `mud-inline-notification` | yes | yes | no | each severity (info, success, warning, error) |
+| `mud-table`, `mud-pagination`, `mud-datepicker` | yes | yes | yes | data-rich states, empty state, error state |
+| `mud-icon`, `mud-illustration-*`, `mud-skeleton`, `mud-loading` | accessible-name only | yes | no | accessible name OR `aria-hidden` correct |
 
 ---
 

@@ -23,7 +23,7 @@ import { optimize } from 'svgo';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-const ASSETS_ROOT = path.join(PROJECT_ROOT, 'src/components/cor-icon/assets');
+const ASSETS_ROOT = path.join(PROJECT_ROOT, 'src/components/mud-icon/assets');
 const SIZES = [12, 16, 20, 24];
 
 const VIEWBOX_RE = /viewBox="\s*([-\d.]+)\s+([-\d.]+)\s+([\d.]+)\s+([\d.]+)\s*"/;

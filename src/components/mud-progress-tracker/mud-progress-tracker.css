@@ -1,0 +1,311 @@
+/* ============================================================================
+ * mud-progress-tracker — visual stepper / progress tracker
+ * Figma reference: 267:6905
+ *
+ * Layout strategy:
+ *   - The root <ol> is a flex container. In horizontal mode steps line up in a
+ *     row; in vertical mode in a column.
+ *   - Each <li> contains: indicator (circle) + label block + connector line.
+ *   - Connector lines are `flex: 1` so they expand to fill the gap between
+ *     indicators, naturally producing the proportional "rail" from Figma.
+ *   - State colours are applied per-step via `.step--{status}` modifier classes,
+ *     all colours coming from the `--progress-tracker-*` token surface.
+ *   - The previous step's connector is owned by the **next** step (CSS sibling
+ *     selector below) so the connector colour reflects whether the user has
+ *     already passed it (= upstream step is completed).
+ * ============================================================================ */
+
+:host {
+  display: block;
+  font-family: var(--progress-tracker-font-family);
+  font-size: var(--progress-tracker-font-size);
+  line-height: var(--progress-tracker-line-height);
+  color: var(--progress-tracker-label-color);
+  max-width: var(--progress-tracker-container-max-width);
+}
+
+.root {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  align-items: stretch;
+}
+
+/* ---------- Orientation ---------- */
+
+:host([orientation='horizontal']) .root {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0;
+}
+
+:host([orientation='vertical']) .root {
+  flex-direction: column;
+  gap: 0;
+  align-items: stretch;
+}
+
+/* ---------- Step container ---------- */
+
+.step {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  /* Each step except the last grows to absorb the connector length. */
+}
+
+:host([orientation='horizontal']) .step {
+  /* Each step is a row: [body][connector]. The connector flex-grows so the
+   * step itself fills available width proportionally. */
+  flex-direction: row;
+  align-items: center;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+:host([orientation='horizontal']) .step.step--last {
+  /* Last step does NOT grow — anchors the indicator at the end of the row. */
+  flex: 0 0 auto;
+}
+
+:host([orientation='vertical']) .step {
+  flex-direction: row;
+  align-items: flex-start;
+  flex: 0 0 auto;
+}
+
+/* ---------- Step body (indicator + label) ---------- */
+
+.step-content,
+.step-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--progress-tracker-step-indicator-gap);
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+:host([orientation='vertical']) .step-content,
+:host([orientation='vertical']) .step-trigger {
+  align-items: flex-start;
+}
+
+.step-trigger {
+  cursor: pointer;
+  border-radius: var(--progress-tracker-interactive-border-radius);
+  padding-inline: var(--progress-tracker-interactive-padding-inline);
+  padding-block: var(--progress-tracker-interactive-padding-block);
+  transition:
+    background-color var(--progress-tracker-indicator-transition-duration)
+      var(--progress-tracker-indicator-transition-timing-function),
+    color var(--progress-tracker-indicator-transition-duration)
+      var(--progress-tracker-indicator-transition-timing-function);
+}
+
+.step-trigger:hover {
+  background: var(--progress-tracker-interactive-hover-background);
+}
+
+.step-trigger:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
+    0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
+}
+
+/* ---------- Indicator (circle) ---------- */
+
+.indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: var(--progress-tracker-indicator-size);
+  height: var(--progress-tracker-indicator-size);
+  border-radius: var(--progress-tracker-indicator-border-radius);
+  border: var(--progress-tracker-indicator-border-width) solid transparent;
+  background: var(--progress-tracker-indicator-background);
+  font-weight: var(--progress-tracker-font-weight-indicator);
+  font-size: var(--progress-tracker-font-size);
+  line-height: 1;
+  transition:
+    background-color var(--progress-tracker-indicator-transition-duration)
+      var(--progress-tracker-indicator-transition-timing-function),
+    border-color var(--progress-tracker-indicator-transition-duration)
+      var(--progress-tracker-indicator-transition-timing-function),
+    color var(--progress-tracker-indicator-transition-duration)
+      var(--progress-tracker-indicator-transition-timing-function);
+}
+
+.indicator-number {
+  font: inherit;
+  color: inherit;
+  /* tighten optical centring of digits in the small circle */
+  transform: translateY(-0.5px);
+}
+
+/* ---------- Label block ---------- */
+
+.label-block {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.label {
+  color: var(--progress-tracker-label-color);
+  font-weight: var(--progress-tracker-font-weight-label);
+  font-size: var(--progress-tracker-font-size);
+  line-height: var(--progress-tracker-line-height);
+}
+
+.supporting-text {
+  color: var(--progress-tracker-supporting-text-color);
+  font-size: var(--progress-tracker-supporting-text-font-size);
+  line-height: var(--progress-tracker-supporting-text-line-height);
+}
+
+/* ---------- Connector line ---------- */
+.connector {
+  display: block;
+  background: var(--progress-tracker-pending-connector);
+  flex-shrink: 0;
+}
+
+:host([orientation='horizontal']) .connector {
+  height: var(--progress-tracker-connector-thickness);
+  flex: 1 1 0;
+  min-width: var(--progress-tracker-connector-min-length);
+  margin-block: calc((var(--progress-tracker-indicator-size) - var(--progress-tracker-connector-thickness)) / 2);
+  margin-inline-start: var(--progress-tracker-step-indicator-gap);
+}
+
+:host([orientation='horizontal']) .step .step-content,
+:host([orientation='horizontal']) .step .step-trigger {
+  /* In horizontal mode, indicator + label stack vertically (label under). */
+  flex-direction: column;
+  align-items: center;
+  gap: var(--progress-tracker-container-label-gap);
+  flex-shrink: 0;
+}
+
+:host([orientation='vertical']) .step:not(.step--last) {
+  /* Each non-last step must be tall enough to host the vertical connector
+   * that drops from its indicator. 84px matches the Figma vertical spacing. */
+  min-height: 84px;
+}
+
+:host([orientation='vertical']) .connector {
+  width: var(--progress-tracker-connector-thickness);
+  align-self: stretch;
+  position: absolute;
+  left: calc(var(--progress-tracker-indicator-size) / 2 - var(--progress-tracker-connector-thickness) / 2);
+  top: calc(var(--progress-tracker-indicator-size) + var(--progress-tracker-container-label-gap));
+  bottom: 0;
+}
+
+/* ---------- State: PENDING (default colours) ---------- */
+
+.step--pending .indicator {
+  border-color: var(--progress-tracker-pending-indicator-border);
+  background: var(--progress-tracker-pending-indicator-background);
+  color: var(--progress-tracker-pending-indicator-text);
+}
+
+.step--pending .label {
+  color: var(--progress-tracker-pending-label);
+}
+
+/* The connector lives INSIDE the step (after its body), so its colour is
+ * derived from the containing step's status — i.e. the connector to the
+ * right of a completed step is brand-blue. */
+.step--pending .connector {
+  background: var(--progress-tracker-pending-connector);
+}
+
+.step--current .connector {
+  background: var(--progress-tracker-pending-connector);
+}
+
+.step--completed .connector {
+  background: var(--progress-tracker-completed-connector);
+}
+
+.step--error .connector {
+  background: var(--progress-tracker-error-connector);
+}
+
+/* ---------- State: CURRENT ---------- */
+
+.step--current .indicator {
+  border-color: var(--progress-tracker-current-indicator-border);
+  background: var(--progress-tracker-current-indicator-background);
+  color: var(--progress-tracker-current-indicator-text);
+}
+
+.step--current .label {
+  color: var(--progress-tracker-current-label);
+  font-weight: var(--progress-tracker-current-label-font-weight);
+}
+
+/* ---------- State: COMPLETED ---------- */
+
+.step--completed .indicator {
+  border-color: var(--progress-tracker-completed-indicator-border);
+  background: var(--progress-tracker-completed-indicator-background);
+  color: var(--progress-tracker-completed-indicator-text);
+}
+
+.step--completed .label {
+  color: var(--progress-tracker-completed-label);
+}
+
+/* ---------- State: ERROR ---------- */
+
+.step--error .indicator {
+  border-color: var(--progress-tracker-error-indicator-border);
+  background: var(--progress-tracker-error-indicator-background);
+  color: var(--progress-tracker-error-indicator-text);
+}
+
+.step--error .label {
+  color: var(--progress-tracker-error-label);
+}
+
+/* ---------- Disabled (in interactive mode) ---------- */
+
+.step--disabled .indicator {
+  border-color: var(--progress-tracker-interactive-disabled-indicator-border);
+  color: var(--progress-tracker-interactive-disabled-indicator-text);
+}
+
+.step--disabled .label {
+  color: var(--progress-tracker-interactive-disabled-label);
+}
+
+.step--disabled .step-trigger,
+.step--disabled .step-content {
+  cursor: not-allowed;
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .indicator,
+  .step-trigger {
+    transition: none;
+  }
+}
+
+/* ---------- Slot fallback (advanced authoring) ---------- */
+::slotted(*) {
+  display: contents;
+}

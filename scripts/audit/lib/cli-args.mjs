@@ -96,7 +96,7 @@ export function defaultUsage(toolName, summary, extraLines = []) {
     summary,
     '',
     'Targets (choose one):',
-    '  <cor-name>          Audit a single component (e.g. cor-button or button)',
+    '  <mud-name>          Audit a single component (e.g. mud-button or button)',
     '  --all               Audit every cor-* component under src/components and src/hidden',
     '  --changed           Audit components touched in git diff (HEAD vs main)',
     '',

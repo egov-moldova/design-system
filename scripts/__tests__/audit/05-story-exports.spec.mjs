@@ -4,7 +4,7 @@
  * Strategy:
  *   - Pure helpers (extractStoryTitle, extractStoryExports, buildStoryId,
  *     computeCoverage) get unit tests via synthetic source files.
- *   - analyzeComponent() runs against cor-button + cor-tooltip + cor-input
+ *   - analyzeComponent() runs against mud-button + mud-tooltip + mud-input
  *     for the quality regression bar.
  */
 import assert from 'node:assert/strict';
@@ -60,7 +60,7 @@ describe('05-story-exports: helpers', () => {
         tempStoriesFile(
           'a',
           `
-        export default { title: 'Atoms/Button', component: 'cor-button' };
+        export default { title: 'Atoms/Button', component: 'mud-button' };
         export const Default = {};
       `,
         ),
@@ -73,7 +73,7 @@ describe('05-story-exports: helpers', () => {
         tempStoriesFile(
           'b',
           `
-        const meta = { title: 'Molecules/Tooltip', component: 'cor-tooltip' };
+        const meta = { title: 'Molecules/Tooltip', component: 'mud-tooltip' };
         export default meta;
         export const Default = {};
       `,
@@ -88,7 +88,7 @@ describe('05-story-exports: helpers', () => {
           'c',
           `
         import type { Meta } from '@storybook/web-components-vite';
-        const meta = { title: 'Atoms/Foo', component: 'cor-foo' } satisfies Meta;
+        const meta = { title: 'Atoms/Foo', component: 'mud-foo' } satisfies Meta;
         export default meta;
       `,
         ),
@@ -170,12 +170,12 @@ describe('05-story-exports: end-to-end on synthetic stories', () => {
     const p = tempStoriesFile(
       'test',
       `
-      export default { title: 'Atoms/Test', component: 'cor-test' };
+      export default { title: 'Atoms/Test', component: 'mud-test' };
       export const Default = { args: {} };
       export const AllVariants = { args: {} };
     `,
     );
-    const { stories, coverage, findings } = analyzeStoriesFile(p, 'cor-test');
+    const { stories, coverage, findings } = analyzeStoriesFile(p, 'mud-test');
     assert.equal(stories.length, 2);
     assert.equal(stories[0].name, 'Default');
     assert.equal(stories[0].storyId, 'atoms-test--default');
@@ -193,7 +193,7 @@ describe('05-story-exports: end-to-end on synthetic stories', () => {
       export const Primary = {};
     `,
     );
-    const { findings } = analyzeStoriesFile(p, 'cor-test');
+    const { findings } = analyzeStoriesFile(p, 'mud-test');
     const missingDefault = findings.find(f => f.code === 'STORY-MISSING-DEFAULT');
     assert.ok(missingDefault, 'expected STORY-MISSING-DEFAULT finding');
     assert.equal(missingDefault.severity, 'warning');
@@ -206,7 +206,7 @@ describe('05-story-exports: end-to-end on synthetic stories', () => {
       export default { title: 'Atoms/Empty' };
     `,
     );
-    const { findings } = analyzeStoriesFile(p, 'cor-empty');
+    const { findings } = analyzeStoriesFile(p, 'mud-empty');
     const noExports = findings.find(f => f.code === 'STORY-NO-EXPORTS');
     assert.ok(noExports);
     assert.equal(noExports.severity, 'error');
@@ -218,20 +218,20 @@ describe('05-story-exports: docs.source contract', () => {
     const p = tempStoriesFile(
       'missing-dynamic',
       `
-      export default { title: 'Atoms/X', component: 'cor-x' };
+      export default { title: 'Atoms/X', component: 'mud-x' };
       export const Default = {
-        render: (args) => \`<cor-x />\`,
+        render: (args) => \`<mud-x />\`,
         parameters: {
           docs: {
             source: {
-              transform: (_code, { args }) => \`<cor-x />\`,
+              transform: (_code, { args }) => \`<mud-x />\`,
             },
           },
         },
       };
     `,
     );
-    const { findings } = analyzeStoriesFile(p, 'cor-x');
+    const { findings } = analyzeStoriesFile(p, 'mud-x');
     const hit = findings.find(f => f.code === 'STORY-DOCS-SOURCE-MISSING-DYNAMIC');
     assert.ok(hit, `expected STORY-DOCS-SOURCE-MISSING-DYNAMIC, got: ${findings.map(f => f.code).join(', ')}`);
     assert.equal(hit.severity, 'warning');
@@ -241,21 +241,21 @@ describe('05-story-exports: docs.source contract', () => {
     const p = tempStoriesFile(
       'with-dynamic',
       `
-      export default { title: 'Atoms/X', component: 'cor-x' };
+      export default { title: 'Atoms/X', component: 'mud-x' };
       export const Default = {
-        render: (args) => \`<cor-x />\`,
+        render: (args) => \`<mud-x />\`,
         parameters: {
           docs: {
             source: {
               type: 'dynamic',
-              transform: (_code, { args }) => \`<cor-x />\`,
+              transform: (_code, { args }) => \`<mud-x />\`,
             },
           },
         },
       };
     `,
     );
-    const { findings } = analyzeStoriesFile(p, 'cor-x');
+    const { findings } = analyzeStoriesFile(p, 'mud-x');
     assert.equal(findings.filter(f => f.code === 'STORY-DOCS-SOURCE-MISSING-DYNAMIC').length, 0);
   });
 
@@ -263,20 +263,20 @@ describe('05-story-exports: docs.source contract', () => {
     const p = tempStoriesFile(
       'args-any',
       `
-      export default { title: 'Atoms/X', component: 'cor-x' };
+      export default { title: 'Atoms/X', component: 'mud-x' };
       export const Default = {
         parameters: {
           docs: {
             source: {
               type: 'dynamic',
-              transform: (_code, { args }: any) => \`<cor-x />\`,
+              transform: (_code, { args }: any) => \`<mud-x />\`,
             },
           },
         },
       };
     `,
     );
-    const { findings } = analyzeStoriesFile(p, 'cor-x');
+    const { findings } = analyzeStoriesFile(p, 'mud-x');
     const hit = findings.find(f => f.code === 'STORY-DOCS-SOURCE-ARGS-ANY');
     assert.ok(hit, `expected STORY-DOCS-SOURCE-ARGS-ANY, got: ${findings.map(f => f.code).join(', ')}`);
     assert.equal(hit.severity, 'warning');
@@ -286,20 +286,20 @@ describe('05-story-exports: docs.source contract', () => {
     const p = tempStoriesFile(
       'args-typed',
       `
-      export default { title: 'Atoms/X', component: 'cor-x' };
+      export default { title: 'Atoms/X', component: 'mud-x' };
       export const Default = {
         parameters: {
           docs: {
             source: {
               type: 'dynamic',
-              transform: (_code, { args }: { args: { foo: string } }) => \`<cor-x />\`,
+              transform: (_code, { args }: { args: { foo: string } }) => \`<mud-x />\`,
             },
           },
         },
       };
     `,
     );
-    const { findings } = analyzeStoriesFile(p, 'cor-x');
+    const { findings } = analyzeStoriesFile(p, 'mud-x');
     assert.equal(findings.filter(f => f.code === 'STORY-DOCS-SOURCE-ARGS-ANY').length, 0);
   });
 
@@ -308,14 +308,14 @@ describe('05-story-exports: docs.source contract', () => {
       'composite-no-code',
       `
       const VARIANTS = ['a', 'b'];
-      export default { title: 'Atoms/X', component: 'cor-x' };
+      export default { title: 'Atoms/X', component: 'mud-x' };
       export const AllVariants = {
         parameters: { controls: { disable: true } },
-        render: () => \`<div>\${VARIANTS.map(v => \`<cor-x variant="\${v}"></cor-x>\`).join('')}</div>\`,
+        render: () => \`<div>\${VARIANTS.map(v => \`<mud-x variant="\${v}"></mud-x>\`).join('')}</div>\`,
       };
     `,
     );
-    const { findings } = analyzeStoriesFile(p, 'cor-x');
+    const { findings } = analyzeStoriesFile(p, 'mud-x');
     const hit = findings.find(f => f.code === 'STORY-COMPOSITE-NO-CODE-OVERRIDE');
     assert.ok(hit, `expected STORY-COMPOSITE-NO-CODE-OVERRIDE, got: ${findings.map(f => f.code).join(', ')}`);
     assert.equal(hit.severity, 'warning');
@@ -326,18 +326,18 @@ describe('05-story-exports: docs.source contract', () => {
       'composite-with-code',
       `
       const VARIANTS = ['a', 'b'];
-      const docsSource = VARIANTS.map(v => \`<cor-x variant="\${v}"></cor-x>\`).join('\\n');
-      export default { title: 'Atoms/X', component: 'cor-x' };
+      const docsSource = VARIANTS.map(v => \`<mud-x variant="\${v}"></mud-x>\`).join('\\n');
+      export default { title: 'Atoms/X', component: 'mud-x' };
       export const AllVariants = {
         parameters: {
           controls: { disable: true },
           docs: { source: { code: docsSource } },
         },
-        render: () => \`<div>\${VARIANTS.map(v => \`<cor-x variant="\${v}"></cor-x>\`).join('')}</div>\`,
+        render: () => \`<div>\${VARIANTS.map(v => \`<mud-x variant="\${v}"></mud-x>\`).join('')}</div>\`,
       };
     `,
     );
-    const { findings } = analyzeStoriesFile(p, 'cor-x');
+    const { findings } = analyzeStoriesFile(p, 'mud-x');
     assert.equal(findings.filter(f => f.code === 'STORY-COMPOSITE-NO-CODE-OVERRIDE').length, 0);
   });
 
@@ -345,29 +345,29 @@ describe('05-story-exports: docs.source contract', () => {
     const p = tempStoriesFile(
       'composite-clean-render',
       `
-      export default { title: 'Atoms/X', component: 'cor-x' };
+      export default { title: 'Atoms/X', component: 'mud-x' };
       export const Plain = {
         parameters: { controls: { disable: true } },
-        render: () => \`<cor-x></cor-x>\`,
+        render: () => \`<mud-x></mud-x>\`,
       };
     `,
     );
-    const { findings } = analyzeStoriesFile(p, 'cor-x');
+    const { findings } = analyzeStoriesFile(p, 'mud-x');
     assert.equal(findings.filter(f => f.code === 'STORY-COMPOSITE-NO-CODE-OVERRIDE').length, 0);
   });
 });
 
 describe('05-story-exports: baseline regression', () => {
-  it('cor-input has Default + 0 errors', async () => {
-    const target = resolveComponentPaths('cor-input');
+  it('mud-input has Default + 0 errors', async () => {
+    const target = resolveComponentPaths('mud-input');
     const { findings, stories, coverage } = await analyzeComponent(target);
     assert.equal(findings.filter(f => f.severity === 'error').length, 0);
-    assert.ok(stories.length > 0, 'cor-input should have stories');
-    assert.equal(coverage.Default, 'Default', 'cor-input should have a Default story');
+    assert.ok(stories.length > 0, 'mud-input should have stories');
+    assert.equal(coverage.Default, 'Default', 'mud-input should have a Default story');
   });
 
-  it('cor-tooltip has Default + 0 errors', async () => {
-    const target = resolveComponentPaths('cor-tooltip');
+  it('mud-tooltip has Default + 0 errors', async () => {
+    const target = resolveComponentPaths('mud-tooltip');
     const { findings, coverage } = await analyzeComponent(target);
     assert.equal(findings.filter(f => f.severity === 'error').length, 0);
     assert.equal(coverage.Default, 'Default');

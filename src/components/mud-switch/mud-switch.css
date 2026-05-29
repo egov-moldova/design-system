@@ -1,0 +1,222 @@
+/*
+ * mud-switch — Pattern B (atom-interactive, form-associated).
+ *
+ * The native <input type="checkbox" role="switch"> is rendered inside
+ * `.control` but visually hidden (opacity 0, sized to the touch target).
+ * The painted track in `.track` and the sliding `.thumb` are pure CSS.
+ * Checked + focus + disabled state remap a small set of local custom
+ * properties; the geometry stays the same.
+ *
+ * Target sizes (Figma): 32px on pointer-devices, 40px on touch-devices
+ * (`@media (pointer: coarse)`). The visual track is always 48 × 28px;
+ * the hit area grows via the `.touch-target` pseudo element so the
+ * spec'd footprint is preserved.
+ */
+
+:host {
+  --_track-width: var(--switch-track-width);
+  --_track-height: var(--switch-track-height);
+  --_track-radius: var(--switch-track-border-radius);
+  --_track-padding: var(--switch-track-padding);
+
+  --_thumb-size: var(--switch-thumb-size);
+  --_thumb-radius: var(--switch-thumb-border-radius);
+  --_thumb-color: var(--switch-thumb-color-default);
+  --_thumb-shadow: var(--switch-thumb-shadow);
+
+  --_bg: var(--switch-background-off);
+
+  --_touch-size: var(--switch-touch-target-pointer);
+
+  --_transition-duration: var(--switch-track-transition-duration);
+  --_transition-easing: var(--switch-track-transition-timing-function);
+
+  display: inline-block;
+  font-family: var(--switch-label-font-family);
+  color: var(--switch-label-color-default);
+}
+
+/* Touch target grows to 40px on coarse pointers (mobile / tablet). */
+@media (pointer: coarse) {
+  :host {
+    --_touch-size: var(--switch-touch-target-touch);
+  }
+}
+
+/* ---------- Layout ---------- */
+/*
+ * <label> acts as the click target for the entire switch+text composition,
+ * so consumers get "click the label to toggle" for free.
+ */
+.layout {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--switch-gap-switch-label);
+  min-block-size: var(--_track-height);
+  cursor: pointer;
+}
+
+:host(.is-disabled) .layout {
+  cursor: not-allowed;
+}
+
+/* ---------- Control (track + thumb + native + touch target) ---------- */
+
+.control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  inline-size: var(--_track-width);
+  block-size: var(--_track-height);
+}
+
+.track {
+  position: relative;
+  inline-size: var(--_track-width);
+  block-size: var(--_track-height);
+  background-color: var(--_bg);
+  border-radius: var(--_track-radius);
+  transition:
+    background-color var(--_transition-duration) var(--_transition-easing),
+    box-shadow var(--_transition-duration) var(--_transition-easing);
+}
+
+/*
+ * Touch target — an invisible overlay that expands the hit area to 32px /
+ * 40px around the visible track without changing the painted geometry.
+ * Sits above `.track` but below the native input so pointer events still
+ * reach the input.
+ */
+.track::before {
+  content: '';
+  position: absolute;
+  inset: 50% auto auto 50%;
+  inline-size: 100%;
+  block-size: var(--_touch-size);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.thumb {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: var(--_track-padding);
+  inline-size: var(--_thumb-size);
+  block-size: var(--_thumb-size);
+  background-color: var(--_thumb-color);
+  border-radius: var(--_thumb-radius);
+  box-shadow: var(--_thumb-shadow);
+  transform: translateY(-50%);
+  transition:
+    inset-inline-start var(--_transition-duration) var(--_transition-easing),
+    box-shadow var(--_transition-duration) var(--_transition-easing);
+}
+
+/*
+ * Native input is sized to the touch target (not the visual) so pointer
+ * activation works anywhere inside the touch zone. Hidden visually but
+ * kept in the a11y tree.
+ */
+.native {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  inline-size: var(--_touch-size);
+  block-size: var(--_touch-size);
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: inherit;
+  z-index: 1;
+}
+
+.native:disabled {
+  cursor: not-allowed;
+}
+
+/* Suppress native focus ring — we paint our own on `.track`. */
+.native:focus,
+.native:focus-visible {
+  outline: none;
+}
+
+/* ---------- States — checked, focus, disabled ---------- */
+
+:host(.is-checked) {
+  --_bg: var(--switch-background-on);
+}
+
+:host(.is-checked) .thumb {
+  /* Slide thumb from left padding to right edge minus padding minus thumb width. */
+  inset-inline-start: calc(var(--_track-width) - var(--_thumb-size) - var(--_track-padding));
+}
+
+:host(:not(.is-disabled)) .layout:hover .track {
+  background-color: var(--switch-background-off-hover);
+}
+
+:host(.is-checked:not(.is-disabled)) .layout:hover .track {
+  background-color: var(--switch-background-on-hover);
+}
+
+/*
+ * Focus ring per Figma "Focus Ring/Small": 1px white inner halo + 3px
+ * brand-blue outer ring. Implemented as two stacked box-shadows so the
+ * track's own dimensions stay untouched.
+ */
+:host(.is-focused) .track {
+  box-shadow:
+    0 0 0 var(--switch-focus-ring-inner-width) var(--switch-focus-ring-inner-color),
+    0 0 0 calc(var(--switch-focus-ring-inner-width) + var(--switch-focus-ring-outer-width))
+      var(--switch-focus-ring-outer-color);
+}
+
+:host(.is-disabled) {
+  --_bg: var(--switch-background-disabled);
+  --_thumb-color: var(--switch-thumb-color-disabled);
+  /* Figma disabled spec: thumb loses its drop-shadow alongside the muted track. */
+  --_thumb-shadow: none;
+}
+
+/* ---------- Text column (label) ---------- */
+
+.text {
+  display: inline-flex;
+  flex-direction: column;
+  min-inline-size: 0;
+}
+
+/* Slot-driven visibility: `.text` always renders so slot projection happens
+   on first paint. The host class drives whether it's visible. */
+:host(:not(.has-label)) .text {
+  display: none;
+}
+
+.label-text {
+  font-size: var(--switch-label-font-size);
+  line-height: var(--switch-label-line-height);
+  font-weight: var(--switch-label-font-weight);
+  color: var(--switch-label-color-default);
+  overflow-wrap: anywhere;
+}
+
+:host(.is-disabled) .label-text {
+  color: var(--switch-label-color-disabled);
+}
+
+/* Pattern A (slotted) reuse: keep slotted typography color inheriting from
+   the controlled label so rich content follows the same contrast rules. */
+::slotted([slot='label']) {
+  color: inherit;
+  font: inherit;
+}
+
+/* ---------- prefers-reduced-motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .track,
+  .thumb {
+    transition: none;
+  }
+}

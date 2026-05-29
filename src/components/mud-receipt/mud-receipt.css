@@ -1,0 +1,366 @@
+/* ===========================================================================
+   mud-receipt — composed molecule, Pattern B (internal DOM).
+
+   Single-card layout: header → divider → body (details + QR) → actions.
+   Restrained color: surface-canvas card on the page, brand-blue appears
+   only on the primary action button (Descarcă PDF) and inside the logo
+   asset. The status tag earns its semantic color through mud-tag.
+
+   Print styles (bottom of file) hide actions, drop shadows, and force
+   ink-primary text so the citizen can print the artifact cleanly.
+   =========================================================================== */
+
+:host {
+  display: block;
+  width: 100%;
+  max-width: var(--receipt-container-max-width);
+  font-family: var(--receipt-title-font-family, var(--font-family-primary, 'Onest'));
+  color: var(--receipt-title-color, var(--color-text-base-default));
+  /* Container queries — collapse to vertical when the host narrows, regardless
+     of viewport width. Lets the same receipt embed in a sidebar at 360px or a
+     full-width content well at 640px without consumer overrides. */
+  container-type: inline-size;
+  container-name: mud-receipt;
+}
+
+.receipt-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--receipt-container-gap);
+  background: var(--receipt-container-background, var(--color-background-base-default));
+  border: var(--receipt-container-border-width) solid
+    var(--receipt-container-border, var(--color-border-base-tertiary));
+  border-radius: var(--receipt-container-border-radius);
+  box-shadow: var(--receipt-container-shadow);
+  padding: var(--receipt-container-padding);
+}
+
+/* ---- Header ------------------------------------------------------------- */
+
+.receipt-header {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--receipt-header-gap);
+}
+
+.receipt-logo {
+  display: inline-flex;
+  align-items: center;
+  height: var(--receipt-header-logo-size);
+}
+
+.receipt-title {
+  margin: 0;
+  font-family: var(--receipt-title-font-family, var(--font-family-primary, 'Onest'));
+  font-size: var(--receipt-title-font-size);
+  line-height: var(--receipt-title-line-height);
+  font-weight: var(--receipt-title-font-weight, 600);
+  color: var(--receipt-title-color, var(--color-text-base-default));
+  letter-spacing: -0.005em;
+}
+
+.receipt-status {
+  justify-self: end;
+}
+
+/* ---- Divider ------------------------------------------------------------ */
+
+.receipt-divider {
+  height: var(--receipt-divider-width);
+  background: var(--receipt-divider-color, var(--color-border-base-tertiary));
+  width: 100%;
+}
+
+/* ---- Body --------------------------------------------------------------- */
+
+.receipt-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--receipt-container-gap);
+  align-items: flex-start;
+}
+
+.receipt-body-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--receipt-container-gap);
+  min-width: 0;
+}
+
+/* ---- Amount block ------------------------------------------------------- */
+
+.receipt-amount {
+  display: flex;
+  flex-direction: column;
+  gap: var(--receipt-amount-gap);
+  padding: var(--receipt-amount-padding);
+  background: var(--receipt-amount-background, var(--color-background-base-secondary));
+  border-radius: var(--receipt-amount-border-radius);
+}
+
+.receipt-amount-label {
+  font-family: var(--receipt-amount-label-font-family, var(--font-family-primary, 'Onest'));
+  font-size: var(--receipt-amount-label-font-size);
+  line-height: var(--receipt-amount-label-line-height);
+  font-weight: var(--receipt-amount-label-font-weight, 500);
+  color: var(--receipt-amount-label-color, var(--color-text-base-secondary));
+}
+
+.receipt-amount-row {
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-8);
+  flex-wrap: wrap;
+}
+
+.receipt-amount-value {
+  font-family: var(--receipt-amount-value-font-family, var(--font-family-primary, 'Onest'));
+  font-size: var(--receipt-amount-value-font-size);
+  line-height: var(--receipt-amount-value-line-height);
+  font-weight: var(--receipt-amount-value-font-weight, 600);
+  color: var(--receipt-amount-value-color, var(--color-text-base-default));
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.receipt-amount-currency {
+  font-size: var(--receipt-amount-currency-font-size);
+  font-weight: var(--receipt-amount-currency-font-weight, 500);
+  color: var(--receipt-amount-currency-color, var(--color-text-base-secondary));
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Details list ------------------------------------------------------- */
+
+.receipt-details {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.receipt-row {
+  display: grid;
+  grid-template-columns: minmax(var(--spacing-120), 0.4fr) minmax(0, 1fr);
+  gap: var(--receipt-row-gap);
+  padding-block: var(--receipt-row-padding-block);
+  align-items: start;
+  border-bottom: var(--border-width-1) solid var(--receipt-divider-color, var(--color-border-base-tertiary));
+}
+
+.receipt-row:last-of-type {
+  border-bottom: none;
+}
+
+.receipt-row-label {
+  margin: 0;
+  font-family: var(--receipt-row-label-font-family, var(--font-family-primary, 'Onest'));
+  font-size: var(--receipt-row-label-font-size);
+  line-height: var(--receipt-row-label-line-height);
+  font-weight: var(--receipt-row-label-font-weight, 400);
+  color: var(--receipt-row-label-color, var(--color-text-base-secondary));
+}
+
+.receipt-row-value {
+  margin: 0;
+  font-family: var(--receipt-row-value-font-family, var(--font-family-primary, 'Onest'));
+  font-size: var(--receipt-row-value-font-size);
+  line-height: var(--receipt-row-value-line-height);
+  font-weight: var(--receipt-row-value-font-weight, 500);
+  color: var(--receipt-row-value-color, var(--color-text-base-default));
+  overflow-wrap: break-word;
+}
+
+.receipt-row[data-row='transactionId'] .receipt-row-value {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.01em;
+}
+
+.receipt-party {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.receipt-party-name {
+  font-weight: 500;
+  color: var(--receipt-row-value-color, var(--color-text-base-default));
+}
+
+.receipt-party-idnp {
+  font-size: var(--font-size-12);
+  line-height: var(--line-height-16);
+  font-weight: var(--font-weight-regular);
+  color: var(--receipt-row-label-color, var(--color-text-base-secondary));
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.04em;
+}
+
+/* ---- QR ----------------------------------------------------------------- */
+
+.receipt-qr {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-8);
+  width: max-content;
+}
+
+.receipt-qr-frame {
+  width: var(--receipt-qr-size);
+  height: var(--receipt-qr-size);
+  padding: var(--receipt-qr-padding);
+  box-sizing: content-box;
+  /* QR background + module color are theme-locked via palette primitives in
+     receipt.tokens.json (CSS vars resolve to #ffffff / #121212). Dark modules
+     on a light surface are a scanner requirement — even when the surrounding
+     receipt is in dark mode. No CSS fallback by design: the component tokens
+     are the contract and must be present at runtime. */
+  background: var(--receipt-qr-background);
+  border: var(--border-width-1) solid var(--receipt-qr-border-color, var(--color-border-base-tertiary));
+  border-radius: var(--receipt-qr-border-radius);
+  display: grid;
+  place-items: center;
+  color: var(--receipt-qr-module-color);
+}
+
+.receipt-qr-frame ::slotted(*),
+.qr-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.receipt-qr-caption {
+  font-family: var(--font-family-primary, 'Onest');
+  font-size: var(--receipt-qr-caption-font-size);
+  line-height: var(--receipt-qr-caption-line-height);
+  font-weight: var(--receipt-qr-caption-font-weight, 400);
+  color: var(--receipt-qr-caption-color, var(--color-text-base-tertiary));
+  text-align: center;
+  max-width: calc(var(--receipt-qr-size) + 2 * var(--receipt-qr-padding));
+}
+
+/* ---- Actions footer ----------------------------------------------------- */
+
+.receipt-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--receipt-actions-gap);
+  padding-top: var(--receipt-actions-padding-top);
+  border-top: var(--border-width-1) solid var(--receipt-divider-color, var(--color-border-base-tertiary));
+}
+
+.receipt-actions mud-button {
+  flex: 0 0 auto;
+}
+
+/* ---- Service-driven accent (subtle) ------------------------------------ */
+
+:host([service='mpay']) .receipt-amount {
+  background: var(--receipt-amount-background, var(--color-background-base-secondary));
+}
+
+/* When the receipt is paid, a hairline brand accent on the amount panel
+   gives the citizen a calm visual confirmation without shouting. Restraint
+   per DESIGN.md: still uses the semantic positive border token only. */
+:host([status='paid']) .receipt-amount {
+  box-shadow: inset 0 0 0 var(--border-width-1) var(--color-border-positive-default);
+}
+
+:host([status='failed']) .receipt-amount {
+  box-shadow: inset 0 0 0 var(--border-width-1) var(--color-border-danger-default);
+}
+
+/* ---- Responsive — container queries (host width, not viewport) -------- */
+
+@container mud-receipt (max-width: 520px) {
+  .receipt-card {
+    padding: var(--receipt-container-padding-mobile, var(--spacing-20));
+    gap: var(--spacing-20);
+  }
+
+  .receipt-header {
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      'logo status'
+      'title title';
+    row-gap: var(--spacing-12);
+  }
+
+  .receipt-logo {
+    grid-area: logo;
+  }
+  .receipt-title {
+    grid-area: title;
+  }
+  .receipt-status {
+    grid-area: status;
+  }
+
+  .receipt-body {
+    grid-template-columns: 1fr;
+  }
+
+  .receipt-qr {
+    align-self: center;
+    margin-inline: auto;
+  }
+
+  .receipt-row {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-2);
+    padding-block: var(--spacing-12);
+  }
+
+  .receipt-actions {
+    width: 100%;
+  }
+
+  .receipt-actions mud-button {
+    flex: 1 1 calc(50% - var(--receipt-actions-gap, var(--spacing-8)));
+  }
+}
+
+/* Plain @media kept as a safety net for very narrow viewports — applies even
+   if the consumer wraps the receipt in a `display: contents` parent that
+   defeats the container query. */
+@media (max-width: 520px) {
+  :host {
+    --receipt-container-padding: var(--receipt-container-padding-mobile, var(--spacing-20));
+  }
+}
+
+/* ---- Print -------------------------------------------------------------- */
+
+@media print {
+  :host {
+    max-width: none;
+    color: var(--color-text-base-default);
+  }
+
+  .receipt-card {
+    box-shadow: none;
+    border-color: var(--color-border-base-tertiary);
+    background: var(--color-background-base-default);
+    padding: var(--spacing-24);
+    break-inside: avoid;
+  }
+
+  .receipt-amount {
+    background: var(--color-background-base-default);
+    box-shadow: inset 0 0 0 var(--border-width-1) var(--color-border-base-tertiary);
+  }
+
+  .receipt-actions {
+    display: none;
+  }
+
+  /* keep status badge legible in B/W */
+  .receipt-status {
+    filter: grayscale(1);
+  }
+}

@@ -139,10 +139,10 @@ describe('13-token-diff: diffTokens', () => {
 
 describe('13-token-diff: resolveMode', () => {
   it('returns component mode when only component is given', () => {
-    const m = resolveMode({ component: 'cor-button', figmaExport: 'tokens-tokenhaus.json' });
+    const m = resolveMode({ component: 'mud-button', figmaExport: 'tokens-tokenhaus.json' });
     assert.equal(m.ok, true);
     assert.equal(m.kind, 'component');
-    assert.equal(m.componentName, 'cor-button');
+    assert.equal(m.componentName, 'mud-button');
   });
 
   it('returns file mode when --from and --to are both provided', () => {

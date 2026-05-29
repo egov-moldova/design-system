@@ -33,10 +33,10 @@ const TOKENS_COMPONENTS_ROOT = path.join(REPO_ROOT, 'tokens', 'core', 'component
 
 /**
  * Normalize a user-provided component name. Accepts:
- *   - "cor-button"        → "cor-button"
- *   - "button"            → "cor-button"
- *   - "@cor-button"       → "cor-button"        (Claude Code @-prefix convention)
- *   - "cor-button/"       → "cor-button"
+ *   - "mud-button"        → "mud-button"
+ *   - "button"            → "mud-button"
+ *   - "@mud-button"       → "mud-button"        (Claude Code @-prefix convention)
+ *   - "mud-button/"       → "mud-button"
  *
  * Returns null if the input doesn't look like a valid component name.
  */
@@ -47,14 +47,14 @@ export function normalizeComponentName(input) {
     .replace(/^@/, '')
     .replace(/[/\\]+$/, '');
   if (!name) return null;
-  if (!name.startsWith('cor-')) name = `cor-${name}`;
-  if (!/^cor-[a-z0-9-]+$/.test(name)) return null;
+  if (!name.startsWith('mud-')) name = `mud-${name}`;
+  if (!/^mud-[a-z0-9-]+$/.test(name)) return null;
   return name;
 }
 
-/** "cor-button" → "button"  (used for tokens/core/components/<bare>.tokens.json) */
+/** "mud-button" → "button"  (used for tokens/core/components/<bare>.tokens.json) */
 export function bareName(componentName) {
-  return componentName.replace(/^cor-/, '');
+  return componentName.replace(/^mud-/, '');
 }
 
 /**
@@ -140,7 +140,7 @@ export function listAllComponents() {
   ]) {
     if (!isDirSafe(base)) continue;
     for (const entry of readDirSafe(base)) {
-      if (!entry.startsWith('cor-')) continue;
+      if (!entry.startsWith('mud-')) continue;
       const root = path.join(base, entry);
       if (isDirSafe(root)) out.push({ name: entry, location, root });
     }

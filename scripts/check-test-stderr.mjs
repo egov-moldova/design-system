@@ -105,8 +105,8 @@ child.on('exit', (code, signal) => {
         '   /* … assertions … */\n' +
         '   warn.mockRestore();\n\n' +
         'Canonical references:\n' +
-        '   src/components/cor-chip/test/cor-chip.spec.tsx   (silence + assert)\n' +
-        '   src/components/cor-button/test/cor-button.spec.tsx (silence only)\n\n' +
+        '   src/components/mud-chip/test/mud-chip.spec.tsx   (silence + assert)\n' +
+        '   src/components/mud-button/test/mud-button.spec.tsx (silence only)\n\n' +
         'Escape hatch (use sparingly):  SKIP_STDERR_CHECK=1 yarn test\n\n',
     );
     process.exit(1);

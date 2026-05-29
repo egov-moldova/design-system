@@ -1,0 +1,327 @@
+:host {
+  --_min-height: var(--textarea-container-min-height-lg);
+  --_padding-inline: var(--input-container-padding-inline-lg);
+  --_padding-block: var(--textarea-container-padding-block-lg);
+  --_gap: var(--input-container-gap-lg);
+  --_radius: var(--input-container-border-radius);
+  --_border-width-default: var(--input-container-border-width-default);
+  --_border-width-emphasized: var(--input-container-border-width-emphasized);
+  --_transition-duration: var(--input-container-transition-duration);
+  --_transition-easing: var(--input-container-transition-timing-function);
+
+  --_control-font-size: var(--input-control-font-size-lg);
+  --_control-line-height: var(--input-control-line-height-lg);
+
+  --_resize-size: var(--textarea-resize-size);
+  --_resize-offset: var(--textarea-resize-offset);
+  --_resize-color: var(--textarea-resize-color-default);
+
+  --_bg: var(--input-default-background-default);
+  --_text: var(--input-default-text-default);
+  --_text-placeholder: var(--input-default-text-placeholder);
+  --_border-color: var(--input-default-border-default);
+  --_border-color-hover: var(--input-default-border-hover);
+  --_border-color-focus: var(--input-default-border-focus);
+  --_focus-ring-color: var(--input-default-focus-ring);
+  --_assistive-color: var(--input-assistive-color-default);
+  --_counter-color: var(--textarea-counter-color-default);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--input-field-gap);
+  inline-size: 100%;
+  font-family: var(--input-control-font-family);
+  color: var(--_text);
+}
+
+:host([size='md']) {
+  --_min-height: var(--textarea-container-min-height-md);
+  --_padding-inline: var(--input-container-padding-inline-md);
+  --_padding-block: var(--textarea-container-padding-block-md);
+  --_gap: var(--input-container-gap-md);
+  --_control-font-size: var(--input-control-font-size-md);
+  --_control-line-height: var(--input-control-line-height-md);
+}
+
+/* ---------- Variant token overrides ---------- */
+/*
+ * Borders for warning/destructive/success use the same semantic color across
+ * default / hover / focus per Figma. Mirrors mud-input.
+ */
+:host(.variant-warning) {
+  --_border-color: var(--input-warning-border-default);
+  --_border-color-hover: var(--input-warning-border-hover);
+  --_border-color-focus: var(--input-warning-border-focus);
+  --_focus-ring-color: var(--input-warning-focus-ring);
+  --_assistive-color: var(--input-assistive-color-warning);
+}
+
+:host(.variant-destructive) {
+  --_border-color: var(--input-destructive-border-default);
+  --_border-color-hover: var(--input-destructive-border-hover);
+  --_border-color-focus: var(--input-destructive-border-focus);
+  --_focus-ring-color: var(--input-destructive-focus-ring);
+  --_assistive-color: var(--input-assistive-color-error);
+}
+
+:host(.variant-success) {
+  --_border-color: var(--input-success-border-default);
+  --_border-color-hover: var(--input-success-border-hover);
+  --_border-color-focus: var(--input-success-border-focus);
+  --_focus-ring-color: var(--input-success-focus-ring);
+  --_assistive-color: var(--input-assistive-color-success);
+}
+
+/* ---------- Label ---------- */
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: var(--input-label-gap);
+  font-family: var(--input-label-font-family);
+  font-size: var(--input-label-font-size);
+  line-height: var(--input-label-line-height);
+  /* Textarea-specific override: Figma 378:17677 uses Onest Regular for the label,
+     while mud-input ships Medium. */
+  font-weight: var(--textarea-label-font-weight);
+  color: var(--input-label-color-default);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.label-text {
+  display: block;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.required-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--input-label-required-mark-size);
+  block-size: var(--input-label-required-mark-size);
+  color: var(--input-label-required-mark-color);
+  font-weight: var(--input-control-font-weight);
+  line-height: 1;
+}
+
+:host(.is-disabled) .label,
+:host(.is-disabled) .required-mark {
+  color: var(--input-label-color-disabled);
+}
+
+:host(:not(.has-label)) .label {
+  display: none;
+}
+
+/* ---------- Control row ----------
+ * Textarea-specific: vertical stack instead of horizontal flex.
+ * The native <textarea> grows to fill the container; the resize grip
+ * floats over the bottom-right corner.
+ */
+
+.control {
+  position: relative;
+  display: block;
+  min-block-size: var(--_min-height);
+  background-color: var(--_bg);
+  border: var(--_border-width-default) solid var(--_border-color);
+  border-radius: var(--_radius);
+  transition:
+    border-color var(--_transition-duration) var(--_transition-easing),
+    box-shadow var(--_transition-duration) var(--_transition-easing),
+    background-color var(--_transition-duration) var(--_transition-easing);
+  overflow: hidden;
+}
+
+:host(:not(.is-disabled):not(.is-readonly):not(.is-focused):hover) .control {
+  border-color: var(--_border-color-hover);
+  box-shadow: inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default))
+    var(--_border-color-hover);
+}
+
+:host(.is-focused:not(.is-disabled):not(.is-readonly)) .control {
+  border-color: var(--_border-color-focus);
+  box-shadow:
+    inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default)) var(--_border-color-focus),
+    0 0 0 var(--spacing-4) var(--_focus-ring-color);
+}
+
+:host(.is-readonly) .control {
+  background-color: var(--input-default-background-read-only);
+  border-color: var(--input-default-border-read-only);
+  cursor: default;
+}
+
+:host(.is-disabled) .control {
+  background-color: var(--input-default-background-disabled);
+  border-color: var(--input-default-border-disabled);
+  cursor: not-allowed;
+}
+
+/* ---------- Native textarea ---------- */
+
+.native {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  min-block-size: calc(var(--_min-height) - 2 * var(--_padding-block) - 2 * var(--_border-width-default));
+  padding: var(--_padding-block) var(--_padding-inline);
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: var(--_control-font-size);
+  line-height: var(--_control-line-height);
+  font-weight: var(--input-control-font-weight);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  /* Reserve room on the right for the resize grip so long lines don't
+     visually collide with it (Figma puts the grip at 5px from edges). */
+  scrollbar-gutter: stable;
+  /* The resize affordance comes from the host class — kill the native
+     bottom-right square so we can show our token-driven icon instead. */
+  resize: none;
+}
+
+.native::placeholder {
+  color: var(--_text-placeholder);
+  opacity: 1;
+}
+
+.native:disabled {
+  color: var(--input-default-text-disabled);
+  cursor: not-allowed;
+  -webkit-text-fill-color: var(--input-default-text-disabled);
+}
+
+.native:disabled::placeholder {
+  color: var(--input-default-text-disabled);
+  -webkit-text-fill-color: var(--input-default-text-disabled);
+}
+
+.native[readonly] {
+  cursor: default;
+}
+
+.native:focus,
+.native:focus-visible {
+  outline: none;
+}
+
+/* Vertical resize mode — native handle is hidden (`resize: none`) but the
+   container grows because the native textarea owns its own height under
+   the hood. We expose vertical resize through the visible grip. */
+:host(.resize-vertical:not(.is-disabled):not(.is-readonly)) .native {
+  resize: vertical;
+}
+
+/* ---------- Resize grip ----------
+ * Visual affordance only — the actual resize behavior comes from the native
+ * `resize: vertical` on the <textarea>, so dragging anywhere along the bottom
+ * edge resizes. The grip lives in the bottom-right corner per Figma.
+ */
+.resize-grip {
+  position: absolute;
+  bottom: var(--_resize-offset);
+  inset-inline-end: var(--_resize-offset);
+  inline-size: var(--_resize-size);
+  block-size: var(--_resize-size);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--_resize-color);
+  pointer-events: none;
+}
+
+:host(.resize-none) .resize-grip,
+:host(.is-disabled) .resize-grip,
+:host(.is-readonly) .resize-grip {
+  display: none;
+}
+
+/* ---------- Captions row (helper/error + counter) ---------- */
+
+.captions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--textarea-counter-gap);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.assistive {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--input-assistive-gap-default);
+  font-family: var(--input-assistive-font-family);
+  font-size: var(--input-assistive-font-size);
+  line-height: var(--input-assistive-line-height);
+  font-weight: var(--input-assistive-font-weight);
+  color: var(--_assistive-color);
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+
+.assistive-error {
+  gap: var(--input-assistive-gap-error);
+  color: var(--input-assistive-color-error);
+}
+
+.assistive-icon {
+  flex-shrink: 0;
+  inline-size: var(--input-assistive-icon-size);
+  block-size: var(--input-assistive-icon-size);
+}
+
+.assistive-text {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  text-overflow: ellipsis;
+}
+
+/* When neither helper nor error renders, push the counter to the right
+   via margin-left auto (justify-content already covers the empty case). */
+.captions > .counter:only-child {
+  margin-inline-start: auto;
+}
+
+.counter {
+  flex-shrink: 0;
+  font-family: var(--textarea-counter-font-family);
+  font-size: var(--textarea-counter-font-size);
+  line-height: var(--textarea-counter-line-height);
+  font-weight: var(--textarea-counter-font-weight);
+  color: var(--_counter-color);
+  white-space: nowrap;
+  text-align: end;
+}
+
+/* Counter turns red when over the limit OR the host is destructive. */
+:host(.variant-destructive) .counter,
+:host(.counter-over) .counter {
+  color: var(--textarea-counter-color-error);
+}
+
+:host(.is-disabled) .counter {
+  color: var(--textarea-counter-color-disabled);
+}
+
+/* ---------- prefers-reduced-motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .control {
+    transition: none;
+  }
+}

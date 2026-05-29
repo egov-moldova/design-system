@@ -2,8 +2,8 @@
  * Resolve the list of `cor-*` components touched in the current branch's git
  * diff against `main`. Shared by every audit script that accepts `--changed`.
  *
- * Returns a sorted, de-duplicated array of component names (e.g. ["cor-button",
- * "cor-input"]). If git is unavailable or returns non-zero, returns []. Callers
+ * Returns a sorted, de-duplicated array of component names (e.g. ["mud-button",
+ * "mud-input"]). If git is unavailable or returns non-zero, returns []. Callers
  * should treat empty as "no work needed" — not an error.
  */
 import { spawnSync } from 'node:child_process';

@@ -136,7 +136,7 @@ describe('10-contrast-pairs: classifyContrast', () => {
 describe('10-contrast-pairs: buildPair', () => {
   it('combines sample + ratio + classification', () => {
     const sample = {
-      tag: 'cor-button',
+      tag: 'mud-button',
       fg: 'rgb(0, 0, 0)',
       bg: 'rgb(255, 255, 255)',
       kind: 'ui',

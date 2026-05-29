@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Read asset-urls.json (produced by the Figma extraction loop) and download each
- * referenced SVG into src/components/cor-icon/assets/{size}/{name}.svg.
+ * referenced SVG into src/components/mud-icon/assets/{size}/{name}.svg.
  *
  * asset-urls.json shape:
  *   { "<size>/<name>": "<figma asset url>", ... }
@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
-const ASSETS_ROOT = path.join(PROJECT_ROOT, 'src/components/cor-icon/assets');
+const ASSETS_ROOT = path.join(PROJECT_ROOT, 'src/components/mud-icon/assets');
 const URLS_FILE = path.join(__dirname, 'asset-urls.json');
 
 function normalizeSvg(svg) {

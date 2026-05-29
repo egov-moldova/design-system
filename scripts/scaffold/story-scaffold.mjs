@@ -23,7 +23,7 @@
  *   - story-writer Step 4 (compose CSF3 file)
  *
  * Usage:
- *   node scripts/scaffold/story-scaffold.mjs cor-button [--out path] [--dry-run]
+ *   node scripts/scaffold/story-scaffold.mjs mud-button [--out path] [--dry-run]
  */
 import { writeFileSync, existsSync } from 'node:fs';
 import { dirname } from 'node:path';
@@ -148,7 +148,7 @@ async function main() {
  */
 export function generateStoriesFile({ contract, atomic, target }) {
   const tag = contract.tag ?? contract.componentName;
-  const bare = (contract.componentName ?? tag).replace(/^cor-/, '');
+  const bare = (contract.componentName ?? tag).replace(/^mud-/, '');
   const pascal = pascalCase(bare);
   const titleCategory = capitalize(atomic);
   const enumsAvailable = target?.exists?.enums ?? false;
