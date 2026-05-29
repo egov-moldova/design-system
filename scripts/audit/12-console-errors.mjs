@@ -2,7 +2,7 @@
 /**
  * 12-console-errors.mjs
  *
- * Navigates to each story of a `cor-*` component and captures runtime
+ * Navigates to each story of a `mud-*` component and captures runtime
  * `console.error` + `console.warn` + uncaught `pageerror` events. Reports
  * any non-empty channel as a finding.
  *

@@ -2,7 +2,7 @@
 /**
  * 05-story-exports.mjs
  *
- * Enumerates named exports of a `cor-X.stories.ts` file and maps them to
+ * Enumerates named exports of a `mud-X.stories.ts` file and maps them to
  * Storybook IDs, then reports coverage against the project's standard story
  * lineup (Default / AllVariants / AllSizes / States / etc.).
  *

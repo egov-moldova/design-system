@@ -159,7 +159,8 @@ export const AllSizes: Story = {
     docs: {
       source: {
         code: SEARCH_INPUT_CIRCULAR_SIZES.map(
-          s => `<mud-search-input-circular aria-label="Caută" size="${s}" placeholder="Caută…"></mud-search-input-circular>`,
+          s =>
+            `<mud-search-input-circular aria-label="Caută" size="${s}" placeholder="Caută…"></mud-search-input-circular>`,
         ).join('\n'),
       },
     },

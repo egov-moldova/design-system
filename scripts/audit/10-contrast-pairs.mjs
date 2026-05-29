@@ -2,7 +2,7 @@
 /**
  * 10-contrast-pairs.mjs
  *
- * Visits a `cor-*` story (light + dark), measures the computed foreground /
+ * Visits a `mud-*` story (light + dark), measures the computed foreground /
  * background / border colors of every interactive element, and reports the
  * WCAG 2.1 AA contrast ratio for each foreground-vs-background pair.
  *
@@ -311,9 +311,9 @@ async function measureSamples(url, componentName, theme) {
           // Scope element collection to the audited component's subtree only.
           // Without this, the selector matches Storybook chrome + tooling
           // overlays (Agentation MCP, docs page) and produces dozens of false
-          // positives unrelated to the cor-* under test.
+          // positives unrelated to the mud-* under test.
           //
-          // Walk: each <cor-X> host + its light-DOM descendants (slotted
+          // Walk: each <mud-X> host + its light-DOM descendants (slotted
           // content) + its own shadow-root descendants. Do NOT pierce nested
           // custom-element shadow roots — those belong to other components.
           const interactiveSel = [...ctx.tags, ...ctx.roles.map(r => `[role="${r}"]`)].join(',');

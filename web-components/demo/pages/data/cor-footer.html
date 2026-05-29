@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-footer · @age/web-components</title>
+    <title>mud-footer · @age/web-components</title>
   </head>
-  <body data-component="cor-footer">
+  <body data-component="mud-footer">
     <main class="demo-main">
-      <section id="cor-footer" class="component-section">
-        <h2>&lt;cor-footer&gt;</h2>
+      <section id="mud-footer" class="component-section">
+        <h2>&lt;mud-footer&gt;</h2>
 
         <div class="subsection">
           <h3>Default EVO footer (no props — Romanian defaults)</h3>
@@ -16,18 +16,18 @@
             Renders branding, four link columns, contact, social, and partner logos with zero configuration.
           </p>
           <div style="width: 100%">
-            <cor-footer
+            <mud-footer
               variant="evo"
               accessibility-href="#accesibilitate"
               license-href="#confidentialitate"
-            ></cor-footer>
+            ></mud-footer>
           </div>
         </div>
 
         <div class="subsection">
           <h3>Simple variant (legal bar only)</h3>
           <div style="width: 100%">
-            <cor-footer variant="simple" license-href="#termeni"></cor-footer>
+            <mud-footer variant="simple" license-href="#termeni"></mud-footer>
           </div>
         </div>
 
@@ -35,14 +35,14 @@
           <h3>Locale switcher (locale set → switcher visible)</h3>
           <p class="label">Default footer with <code>locale="ro"</code>; click the language pill to open the menu.</p>
           <div style="width: 100%">
-            <cor-footer variant="evo" locale="ro" accessibility-href="#a11y" license-href="#license"></cor-footer>
+            <mud-footer variant="evo" locale="ro" accessibility-href="#a11y" license-href="#license"></mud-footer>
           </div>
         </div>
 
         <div class="subsection">
           <h3>Custom sections via JS property</h3>
           <div style="width: 100%">
-            <cor-footer id="footer-custom" variant="evo" locale="en"></cor-footer>
+            <mud-footer id="footer-custom" variant="evo" locale="en"></mud-footer>
           </div>
           <span class="label">sections / contact / social / partnerLogos assigned imperatively</span>
         </div>
@@ -51,12 +51,12 @@
           <h3>Edge cases</h3>
           <p class="label">Long unbroken section title + diacritics; <code>locale="ru"</code> attribute.</p>
           <div style="width: 100%">
-            <cor-footer id="footer-edge" variant="evo" locale="ru"></cor-footer>
+            <mud-footer id="footer-edge" variant="evo" locale="ru"></mud-footer>
           </div>
         </div>
       </section>
       <script type="module">
-        customElements.whenDefined('cor-footer').then(() => {
+        customElements.whenDefined('mud-footer').then(() => {
           const custom = document.getElementById('footer-custom');
           if (custom) {
             custom.sections = [

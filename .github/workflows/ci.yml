@@ -215,7 +215,7 @@ jobs:
 
       - name: Audit all components (no browser)
         # Runs scripts/audit/run-all.mjs --all --no-browser across every
-        # cor-* component. Surfaces blocker-level findings as a CI failure;
+        # mud-* component. Surfaces blocker-level findings as a CI failure;
         # warnings + info are visible in the JSON report uploaded as an artifact.
         run: node scripts/audit/run-all.mjs --all --no-browser --out reports/audit-all.json
         continue-on-error: true

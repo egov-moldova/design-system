@@ -87,7 +87,7 @@
     "wca.custom-elements": "wireit",
     "svg:remove-size": "svgo -f assets/icons --config svgo.config.icons.js --recursive",
     "svg:remove-fill": "svgo -f assets/icons --config svgo.config.icons.js --recursive",
-    "svg:icons": "yarn svg:remove-size && yarn svg:remove-fill && yarn format && node scripts/process-svg.js -i assets/icons -s src/components/cor-icon/assets/local-icons.json",
+    "svg:icons": "yarn svg:remove-size && yarn svg:remove-fill && yarn format && node scripts/process-svg.js -i assets/icons -s src/components/mud-icon/assets/local-icons.json",
     "sync:tokens": "node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --output tokens/figma-export",
     "sync:tokens:apply": "node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --apply",
     "audit:structure": "node scripts/audit/01-component-structure.mjs",

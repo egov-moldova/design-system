@@ -3,58 +3,58 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-modal · @age/web-components</title>
+    <title>mud-modal · @age/web-components</title>
   </head>
-  <body data-component="cor-modal">
+  <body data-component="mud-modal">
     <main class="demo-main">
-      <section id="cor-modal" class="component-section">
-        <h2>&lt;cor-modal&gt;</h2>
+      <section id="mud-modal" class="component-section">
+        <h2>&lt;mud-modal&gt;</h2>
 
         <div class="subsection">
           <h3>Variants × sizes (click to open)</h3>
           <div class="row">
             <div class="cell">
-              <cor-button id="open-modal-default" variant="primary">Default (md)</cor-button>
+              <mud-button id="open-modal-default" variant="primary">Default (md)</mud-button>
               <span class="label">variant=default, size=md</span>
             </div>
             <div class="cell">
-              <cor-button id="open-modal-icon" variant="secondary">With-icon (sm)</cor-button>
+              <mud-button id="open-modal-icon" variant="secondary">With-icon (sm)</mud-button>
               <span class="label">variant=with-icon, size=sm</span>
             </div>
             <div class="cell">
-              <cor-button id="open-modal-image" variant="secondary">With-image (lg)</cor-button>
+              <mud-button id="open-modal-image" variant="secondary">With-image (lg)</mud-button>
               <span class="label">variant=with-image, size=lg</span>
             </div>
             <div class="cell">
-              <cor-button id="open-modal-destructive" variant="secondary">Destructive</cor-button>
+              <mud-button id="open-modal-destructive" variant="secondary">Destructive</mud-button>
               <span class="label">destructive + closeOnBackdrop=false</span>
             </div>
             <div class="cell">
-              <cor-button id="open-modal-long" variant="secondary">Long body (scroll)</cor-button>
+              <mud-button id="open-modal-long" variant="secondary">Long body (scroll)</mud-button>
               <span class="label">edge case: overflowing body</span>
             </div>
           </div>
         </div>
 
         <!-- Modal: default -->
-        <cor-modal id="modal-default" size="md" variant="default" title-text="Confirmați acțiunea">
+        <mud-modal id="modal-default" size="md" variant="default" title-text="Confirmați acțiunea">
           <p style="margin: 0">
             Sunteți pe cale să trimiteți cererea către instituție. Verificați datele înainte de confirmare. Diacritice:
             ăâîșțĂÂÎȘȚ.
           </p>
-          <cor-button slot="actions" variant="secondary" data-close="">Anulează</cor-button>
-          <cor-button slot="actions" variant="primary" data-close="">Confirmă</cor-button>
-        </cor-modal>
+          <mud-button slot="actions" variant="secondary" data-close="">Anulează</mud-button>
+          <mud-button slot="actions" variant="primary" data-close="">Confirmă</mud-button>
+        </mud-modal>
 
         <!-- Modal: with-icon -->
-        <cor-modal id="modal-icon" size="sm" variant="with-icon" title-text="Cerere trimisă">
-          <cor-icon slot="icon" name="circle-info" size="48" color="icon-brand-default"></cor-icon>
+        <mud-modal id="modal-icon" size="sm" variant="with-icon" title-text="Cerere trimisă">
+          <mud-icon slot="icon" name="circle-info" size="48" color="icon-brand-default"></mud-icon>
           <p style="margin: 0">Cererea dvs. a fost înregistrată cu numărul 2024-00123.</p>
-          <cor-button slot="actions" variant="primary" data-close="">Am înțeles</cor-button>
-        </cor-modal>
+          <mud-button slot="actions" variant="primary" data-close="">Am înțeles</mud-button>
+        </mud-modal>
 
         <!-- Modal: with-image -->
-        <cor-modal id="modal-image" size="lg" variant="with-image" title-text="Serviciu nou disponibil">
+        <mud-modal id="modal-image" size="lg" variant="with-image" title-text="Serviciu nou disponibil">
           <div
             slot="image"
             style="
@@ -72,12 +72,12 @@
           <p style="margin: 0">
             Acum puteți depune cereri online pentru certificate de stare civilă. Procesul durează sub 5 minute.
           </p>
-          <cor-button slot="actions" variant="secondary" data-close="">Mai târziu</cor-button>
-          <cor-button slot="actions" variant="primary" data-close="">Începe</cor-button>
-        </cor-modal>
+          <mud-button slot="actions" variant="secondary" data-close="">Mai târziu</mud-button>
+          <mud-button slot="actions" variant="primary" data-close="">Începe</mud-button>
+        </mud-modal>
 
         <!-- Modal: destructive -->
-        <cor-modal
+        <mud-modal
           id="modal-destructive"
           size="sm"
           variant="with-icon"
@@ -85,14 +85,14 @@
           title-text="Ștergeți contul?"
           close-on-backdrop="false"
         >
-          <cor-icon slot="icon" name="delete" size="48" color="icon-status-error-default"></cor-icon>
+          <mud-icon slot="icon" name="delete" size="48" color="icon-status-error-default"></mud-icon>
           <p style="margin: 0">Această acțiune este ireversibilă. Toate datele asociate vor fi șterse definitiv.</p>
-          <cor-button slot="actions" variant="secondary" data-close="">Renunță</cor-button>
-          <cor-button slot="actions" variant="primary" data-close="">Șterge definitiv</cor-button>
-        </cor-modal>
+          <mud-button slot="actions" variant="secondary" data-close="">Renunță</mud-button>
+          <mud-button slot="actions" variant="primary" data-close="">Șterge definitiv</mud-button>
+        </mud-modal>
 
         <!-- Modal: long body -->
-        <cor-modal id="modal-long" size="md" variant="default" title-text="Termeni și condiții">
+        <mud-modal id="modal-long" size="md" variant="default" title-text="Termeni și condiții">
           <div>
             <p style="margin: 0 0 var(--spacing-12)">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Diacritice: ăâîșțĂÂÎȘȚ. RTL: مرحبا بكم. Special:
@@ -118,12 +118,12 @@
             </p>
             <p style="margin: 0">Final paragraf pentru a forta scroll-ul vertical in corpul modalului.</p>
           </div>
-          <cor-button slot="actions" variant="secondary" data-close="">Refuz</cor-button>
-          <cor-button slot="actions" variant="primary" data-close="">Accept</cor-button>
-        </cor-modal>
+          <mud-button slot="actions" variant="secondary" data-close="">Refuz</mud-button>
+          <mud-button slot="actions" variant="primary" data-close="">Accept</mud-button>
+        </mud-modal>
 
         <script type="module">
-          customElements.whenDefined('cor-modal').then(() => {
+          customElements.whenDefined('mud-modal').then(() => {
             const wire = (btnId, modalId) => {
               const btn = document.getElementById(btnId);
               const modal = document.getElementById(modalId);

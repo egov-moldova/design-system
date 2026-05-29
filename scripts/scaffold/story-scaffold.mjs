@@ -2,12 +2,12 @@
 /**
  * story-scaffold.mjs
  *
- * Generates a CSF3 *.stories.ts skeleton for a `cor-*` component by reading
+ * Generates a CSF3 *.stories.ts skeleton for a `mud-*` component by reading
  * its API contract (props/events/slots) via scripts/audit/14-component-contract.mjs
  * and filling in a Storybook template.
  *
  * What it generates:
- *   - Imports: types, Meta, StoryObj, related enums (from cor-X.enums.ts if present)
+ *   - Imports: types, Meta, StoryObj, related enums (from mud-X.enums.ts if present)
  *   - `type Args` from @Prop() declarations
  *   - `Meta` config: title, component, argTypes with controls + options for enums
  *   - Default story with `args: {}` and a basic render() returning the host element
@@ -37,13 +37,13 @@ const TOOL = 'story-scaffold';
 
 const USAGE = `Usage: node scripts/scaffold/story-scaffold.mjs <component> [options]
 
-Generate a CSF3 *.stories.ts skeleton for a cor-* component. The output is a
+Generate a CSF3 *.stories.ts skeleton for a mud-* component. The output is a
 starting point; the AI / developer fills edge case stories, slot content,
 and interaction logic.
 
 Options:
   --out <path>     Write to this path (default: stdout)
-  --write          Write next to cor-X.tsx (cor-X.stories.ts). Refuses to
+  --write          Write next to mud-X.tsx (mud-X.stories.ts). Refuses to
                    overwrite an existing file unless --force is also set.
   --force          Overwrite an existing stories file (use with --write)
   --dry-run        Print the generated source to stdout (alias for default)

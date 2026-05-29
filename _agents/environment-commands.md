@@ -104,12 +104,12 @@ yarn sp.dev.watch handles all three in watch mode. Only run it once.
 **Examples**:
 ```bash
 # Test specific component file
-yarn test.dev src/components/cor-button/test/cor-button.spec.tsx
+yarn test.dev src/components/mud-button/test/mud-button.spec.tsx
 # or for all tests in a component folder
-yarn test.dev src/components/cor-button
+yarn test.dev src/components/mud-button
 
 # Test multiple components
-yarn test.dev src/components/cor-button src/components/cor-input
+yarn test.dev src/components/mud-button src/components/mud-input
 
 # Run all tests (fast)
 yarn test.dev
@@ -172,8 +172,8 @@ yarn lint.css.fix              # Auto-fix CSS issues via Stylelint
 yarn format                    # Auto-fix TS/TSX + Prettier
 
 # Test Examples
-yarn test.dev src/components/cor-button/test/cor-button.spec.tsx  # Test specific component file
-yarn test.dev src/components/cor-button                           # Test all tests in a component folder
+yarn test.dev src/components/mud-button/test/mud-button.spec.tsx  # Test specific component file
+yarn test.dev src/components/mud-button                           # Test all tests in a component folder
 yarn test.dev                                                     # Run all tests (fast)
 
 # Utilities
@@ -186,5 +186,5 @@ yarn format.icons              # Format SVG icons with SVGO
 
 # Storybook URLs (port 6007)
 # Story iframe: http://localhost:6007/iframe.html?id={path}--{story}&viewMode=story
-# Example:      http://localhost:6007/iframe.html?id=atoms-cor-button--default&viewMode=story
+# Example:      http://localhost:6007/iframe.html?id=atoms-mud-button--default&viewMode=story
 ```

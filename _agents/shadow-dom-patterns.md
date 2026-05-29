@@ -14,22 +14,22 @@ CSS pattern for slots with default content — must target both externally slott
 
 ```tsx
 <slot name="badge-icon">
-  <cor-icon name="warning" size="xs" />  {/* Default — in shadow DOM */}
+  <mud-icon name="warning" size="xs" />  {/* Default — in shadow DOM */}
 </slot>
 ```
 
 **❌ WRONG** (only targets external):
 
 ```css
-::slotted(cor-icon) { --icon-color: var(--badge-icon-color); }
-/* Default cor-icon NOT styled! */
+::slotted(mud-icon) { --icon-color: var(--badge-icon-color); }
+/* Default mud-icon NOT styled! */
 ```
 
 **✅ CORRECT** (targets both):
 
 ```css
-::slotted(cor-icon) { --icon-color: var(--badge-icon-color); }
-.badge cor-icon { --icon-color: var(--badge-icon-color); }
+::slotted(mud-icon) { --icon-color: var(--badge-icon-color); }
+.badge mud-icon { --icon-color: var(--badge-icon-color); }
 ```
 
 ---
@@ -39,14 +39,14 @@ CSS pattern for slots with default content — must target both externally slott
 Use dual selectors whenever:
 
 1. You have a `<slot>` with default content
-2. The default content is a styled element (cor-icon, img, span, etc.)
+2. The default content is a styled element (mud-icon, img, span, etc.)
 3. The element needs state-specific styling (hover, selected, disabled)
 
 | Scenario | TSX | Required CSS |
 |---|---|---|
-| Icon slot with default | `<slot name="icon"><cor-icon /></slot>` | `::slotted(cor-icon)` + `.parent cor-icon` |
+| Icon slot with default | `<slot name="icon"><mud-icon /></slot>` | `::slotted(mud-icon)` + `.parent mud-icon` |
 | Image slot with default | `<slot name="avatar"><img /></slot>` | `::slotted(img)` + `.parent img` |
-| Badge with icon | `<slot name="badge-icon"><cor-icon /></slot>` | `::slotted(cor-icon)` + `.badge cor-icon` |
+| Badge with icon | `<slot name="badge-icon"><mud-icon /></slot>` | `::slotted(mud-icon)` + `.badge mud-icon` |
 
 ---
 
@@ -55,27 +55,27 @@ Use dual selectors whenever:
 **❌ WRONG** (only default state has dual):
 
 ```css
-::slotted(cor-icon) { --icon-color: var(--default-color); }
-.badge cor-icon { --icon-color: var(--default-color); }
+::slotted(mud-icon) { --icon-color: var(--default-color); }
+.badge mud-icon { --icon-color: var(--default-color); }
 
-:host([selected]) .badge ::slotted(cor-icon) { --icon-color: var(--selected-color); }
-/* Missing: :host([selected]) .badge cor-icon */
+:host([selected]) .badge ::slotted(mud-icon) { --icon-color: var(--selected-color); }
+/* Missing: :host([selected]) .badge mud-icon */
 ```
 
 **✅ CORRECT** (every state has dual):
 
 ```css
 /* Default */
-::slotted(cor-icon) { --icon-color: var(--default-color); }
-.badge cor-icon { --icon-color: var(--default-color); }
+::slotted(mud-icon) { --icon-color: var(--default-color); }
+.badge mud-icon { --icon-color: var(--default-color); }
 
 /* Selected */
-:host([selected]) .badge ::slotted(cor-icon) { --icon-color: var(--selected-color); }
-:host([selected]) .badge cor-icon { --icon-color: var(--selected-color); }
+:host([selected]) .badge ::slotted(mud-icon) { --icon-color: var(--selected-color); }
+:host([selected]) .badge mud-icon { --icon-color: var(--selected-color); }
 
 /* Disabled */
-:host([disabled]) .badge ::slotted(cor-icon) { --icon-color: var(--disabled-color); }
-:host([disabled]) .badge cor-icon { --icon-color: var(--disabled-color); }
+:host([disabled]) .badge ::slotted(mud-icon) { --icon-color: var(--disabled-color); }
+:host([disabled]) .badge mud-icon { --icon-color: var(--disabled-color); }
 ```
 
 **Rule**: If you write a `::slotted()` selector for a state, ALWAYS write the corresponding direct child selector.
@@ -91,12 +91,12 @@ Use dual selectors whenever:
 
 ```html
 <!-- Test 1: Default element (no slot content) -->
-<cor-select-item badge badge-icon="true" />
+<mud-select-item badge badge-icon="true" />
 
 <!-- Test 2: Externally slotted -->
-<cor-select-item badge>
-  <cor-icon slot="badge-icon" name="custom-icon" />
-</cor-select-item>
+<mud-select-item badge>
+  <mud-icon slot="badge-icon" name="custom-icon" />
+</mud-select-item>
 ```
 
 Both must render identically in all states.

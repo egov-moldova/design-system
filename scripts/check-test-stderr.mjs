@@ -2,7 +2,7 @@
 /**
  * Test wrapper that fails the build if `stencil-test --project spec` produces
  * unexpected stderr noise — i.e. a `console.warn`/`console.error` from a
- * `cor-*` component that wasn't silenced by a `vi.spyOn(console, …)` in the
+ * `mud-*` component that wasn't silenced by a `vi.spyOn(console, …)` in the
  * test itself.
  *
  * Why: every component-level warning exists to flag misuse. Tests that hit
@@ -91,15 +91,15 @@ child.on('exit', (code, signal) => {
   // Any such header means a test wrote to stderr without a spy catching it.
   const stderrBlocks = plain.match(/^stderr \| .+$/gm) ?? [];
 
-  // Belt-and-braces: detect bare `[cor-*]` warnings even if Vitest's framing
+  // Belt-and-braces: detect bare `[mud-*]` warnings even if Vitest's framing
   // ever changes (e.g. captured during render but printed outside a test).
-  const componentWarnings = plain.match(/^\s*\[cor-[a-z-]+\][^\n]*/gm) ?? [];
+  const componentWarnings = plain.match(/^\s*\[mud-[a-z-]+\][^\n]*/gm) ?? [];
 
   if (stderrBlocks.length > 0 || componentWarnings.length > 0) {
     process.stderr.write(
       '\n❌  Spec suite produced unexpected console output.\n' +
         `   stderr blocks    : ${stderrBlocks.length}\n` +
-        `   [cor-*] warnings : ${componentWarnings.length}\n\n` +
+        `   [mud-*] warnings : ${componentWarnings.length}\n\n` +
         'Every component console.warn / console.error must be silenced inside the test that triggers it:\n' +
         "   const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});\n" +
         '   /* … assertions … */\n' +

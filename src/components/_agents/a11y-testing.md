@@ -2,7 +2,7 @@
 
 **Canonical reference:** Skill [`accessibility-compliance`](../../../.claude/skills/accessibility-compliance/SKILL.md) and Success Criteria list.
 
-This file describes the three layers used to validate accessibility of every `cor-*` component:
+This file describes the three layers used to validate accessibility of every `mud-*` component:
 
 1. **Structural WCAG contract assertions** inside `.spec.tsx` (Vitest + `@stencil/vitest`)
 2. **Visual axe-core scans** inside Storybook (`addon-a11y`, both light and dark)
@@ -14,7 +14,7 @@ This file describes the three layers used to validate accessibility of every `co
 
 ## When to add a11y coverage
 
-**Every interactive `cor-*` component must include structural WCAG contract assertions** in its `.spec.tsx` (role, aria-* attributes, focusability) AND must have at least one Storybook story whose `addon-a11y` panel runs in both light and dark modes. Non-interactive presentational components (`mud-illustration-*`, `mud-icon`) need only the accessible-name assertion (label / aria-hidden).
+**Every interactive `mud-*` component must include structural WCAG contract assertions** in its `.spec.tsx` (role, aria-* attributes, focusability) AND must have at least one Storybook story whose `addon-a11y` panel runs in both light and dark modes. Non-interactive presentational components (`mud-illustration-*`, `mud-icon`) need only the accessible-name assertion (label / aria-hidden).
 
 Components with state changes (modal open/close, dropdown expand, error state) must assert the contract for every meaningful state.
 

@@ -330,7 +330,9 @@ describe('mud-segmented-control', () => {
       // Force focus onto the segment so the focusedIndex internal state is set
       queryButtons(root)[2]!.focus();
       // Then dispatch Enter via keydown
-      queryButtons(root)[2]!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, composed: true }));
+      queryButtons(root)[2]!.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, composed: true }),
+      );
       await flush();
       expect((root as HostWithSegments).value).toBe('inactive');
       expect(onChange).toHaveBeenCalledTimes(1);

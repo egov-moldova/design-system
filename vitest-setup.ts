@@ -1,7 +1,7 @@
 // Vitest setup — runs before each spec file in the `spec` project.
 //
 // With `stencilVitestPlugin` in the project config, components are compiled
-// on-the-fly when their source is imported (`import '../cor-spinner'`) and
+// on-the-fly when their source is imported (`import '../mud-spinner'`) and
 // `customElements.define()` is appended automatically. No dist lazy-bundle
 // loader is needed here.
 //

@@ -3,7 +3,7 @@
  * test-scaffold.mjs
  *
  * Generates a *.spec.tsx skeleton for the Vitest + @stencil/vitest stack
- * for a `cor-*` component by reading its API contract via
+ * for a `mud-*` component by reading its API contract via
  * scripts/audit/14-component-contract.mjs.
  *
  * Generated tests:
@@ -39,13 +39,13 @@ const TOOL = 'test-scaffold';
 
 const USAGE = `Usage: node scripts/scaffold/test-scaffold.mjs <component> [options]
 
-Generate a *.spec.tsx skeleton (@stencil/vitest render) for a cor-* component.
+Generate a *.spec.tsx skeleton (@stencil/vitest render) for a mud-* component.
 The output is a starting point; the AI / developer fills assertions for state
 transitions, event triggers, and edge cases.
 
 Options:
   --out <path>    Write to this path (default: stdout)
-  --write         Write to src/components/cor-X/test/cor-X.spec.tsx.
+  --write         Write to src/components/mud-X/test/mud-X.spec.tsx.
                   Refuses to overwrite an existing file unless --force is set.
   --force         Overwrite existing spec file (use with --write)
   --help, -h      Show this help`;
@@ -281,7 +281,7 @@ export function generateSpecFile({ contract }) {
 
 function guessClassName(tag) {
   return tag
-    .replace(/^cor-/, 'Cor-')
+    .replace(/^mud-/, 'mud-')
     .split('-')
     .filter(Boolean)
     .map(s => s.charAt(0).toUpperCase() + s.slice(1))

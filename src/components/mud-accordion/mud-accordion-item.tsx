@@ -255,22 +255,8 @@ export class MudAccordionItem {
     // mud-chip / mud-tooltip.
     const triggerIcon = (
       <span class="trigger" aria-hidden="true">
-        <svg
-          class="trigger-icon"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          focusable="false"
-        >
-          <line
-            x1="4.25"
-            y1="10"
-            x2="15.75"
-            y2="10"
-            stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-          />
+        <svg class="trigger-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" focusable="false">
+          <line x1="4.25" y1="10" x2="15.75" y2="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
           <line
             class="trigger-icon-vertical"
             x1="10"

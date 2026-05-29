@@ -12,18 +12,18 @@ Engineering posture for the Corlab Design System (Stencil web components, design
 
 - **Rule of two.** Extract a helper the second time a pattern duplicates, not the first. The second duplication is the signal — waiting for the third invites drift and divergent copies in the meantime.
 - **No interfaces / abstract base classes with one implementation.** Generic types and TS interfaces enter the codebase only after ≥2 concrete consumers exist. Until then, ship the concrete class or shape.
-- **Composition over inheritance for `cor-*` components.** Reuse happens via slots + CSS `::part()`. We do not extend one `cor-*` from another at the TS class level — even `cor-icon-button` composes `cor-icon` via slot, it does not inherit `cor-button`.
+- **Composition over inheritance for `mud-*` components.** Reuse happens via slots + CSS `::part()`. We do not extend one `mud-*` from another at the TS class level — even `mud-icon-button` composes `mud-icon` via slot, it does not inherit `mud-button`.
 
 ## C. Comments & naming
 
 - **Zero comments by default; WHY-only when needed.** Comments exist for non-obvious workarounds, subtle invariants, hidden constraints, or behavior that would surprise a reader. Never WHAT-comments — naming covers that. Never reference the current task, PR, or caller — those rot.
-- **Short names when the domain is clear; long names otherwise.** Inside `cor-button.tsx`, `variant` and `state` are fine. At module boundaries, prefer the explicit form (`getActiveTokenForVariant` over `getToken`). The test: would a new contributor reading this file cold understand the name?
+- **Short names when the domain is clear; long names otherwise.** Inside `mud-button.tsx`, `variant` and `state` are fine. At module boundaries, prefer the explicit form (`getActiveTokenForVariant` over `getToken`). The test: would a new contributor reading this file cold understand the name?
 - **Abbreviations: universal conventions only.** `i` / `idx` in loops, `ctx` for context, `el` for `@Element` host references, `props` / `attrs` for component inputs. Everything else is spelled out — no `usr`, `cfg`, `btn`, `cmp`.
 
 ## D. Error handling
 
 - **Validate at the public `@Prop` boundary only.** Internal functions trust their callers and the type system. No defensive `if (!arg) return` in pure helpers. `@Prop` decorators with `!` plus `@Watch` for runtime range checks (e.g. invalid `variant`) cover the validation surface.
-- **Invalid input → `console.warn` + fallback to default.** When a `@Watch` detects a bad `@Prop` value (e.g. `variant="bogus"`), warn in development with the component name and offending value, then coerce to the default. Never throw — a `cor-*` rendering with the wrong variant is better than a broken page.
+- **Invalid input → `console.warn` + fallback to default.** When a `@Watch` detects a bad `@Prop` value (e.g. `variant="bogus"`), warn in development with the component name and offending value, then coerce to the default. Never throw — a `mud-*` rendering with the wrong variant is better than a broken page.
 - **Logging: critical errors in dev only; production silent.** Components must never `console.log`. `console.warn` only for clear integration mistakes (invalid props, required slot missing when variant demands it), stripped or quiet in production builds. State changes leave the component via `@Event` — the consumer decides what to log.
 
 ## E. Discipline

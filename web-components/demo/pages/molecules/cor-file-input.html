@@ -3,22 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-file-input · @age/web-components</title>
+    <title>mud-file-input · @age/web-components</title>
   </head>
-  <body data-component="cor-file-input">
+  <body data-component="mud-file-input">
     <main class="demo-main">
-      <section id="cor-file-input" class="component-section">
-        <h2>&lt;cor-file-input&gt;</h2>
+      <section id="mud-file-input" class="component-section">
+        <h2>&lt;mud-file-input&gt;</h2>
 
         <div class="subsection">
           <h3>Sizes</h3>
           <div class="row" style="align-items: flex-start">
             <div class="cell" style="width: 100%; max-width: 420px; align-items: stretch">
-              <cor-file-input size="md" label="Încarcă documentul"></cor-file-input>
+              <mud-file-input size="md" label="Încarcă documentul"></mud-file-input>
               <span class="label">md (default)</span>
             </div>
             <div class="cell" style="width: 100%; max-width: 420px; align-items: stretch">
-              <cor-file-input size="lg" label="Încarcă documentul"></cor-file-input>
+              <mud-file-input size="lg" label="Încarcă documentul"></mud-file-input>
               <span class="label">lg</span>
             </div>
           </div>
@@ -28,32 +28,32 @@
           <h3>States</h3>
           <div class="row" style="align-items: flex-start">
             <div class="cell" style="width: 100%; max-width: 420px; align-items: stretch">
-              <cor-file-input
+              <mud-file-input
                 label="Document de identitate"
                 helper-text="Acceptăm copii scanate ale buletinului."
                 accept="image/jpeg,image/png,application/pdf"
                 max-size="5242880"
-              ></cor-file-input>
+              ></mud-file-input>
               <span class="label">helper + accept + max-size captions</span>
             </div>
             <div class="cell" style="width: 100%; max-width: 420px; align-items: stretch">
-              <cor-file-input
+              <mud-file-input
                 required=""
                 label="Câmp obligatoriu"
                 helper-text="Marcat cu asterisc roșu."
-              ></cor-file-input>
+              ></mud-file-input>
               <span class="label">required</span>
             </div>
             <div class="cell" style="width: 100%; max-width: 420px; align-items: stretch">
-              <cor-file-input disabled="" label="Indisponibil" helper-text="Drop zone inert."></cor-file-input>
+              <mud-file-input disabled="" label="Indisponibil" helper-text="Drop zone inert."></mud-file-input>
               <span class="label">disabled</span>
             </div>
             <div class="cell" style="width: 100%; max-width: 420px; align-items: stretch">
-              <cor-file-input
+              <mud-file-input
                 invalid=""
                 label="Eroare de validare"
                 error-text="Fișierul depășește limita de 5 MB."
-              ></cor-file-input>
+              ></mud-file-input>
               <span class="label">invalid + error-text</span>
             </div>
           </div>
@@ -63,10 +63,10 @@
           <h3>Slots &amp; multiple</h3>
           <div class="row" style="align-items: flex-start">
             <div class="cell" style="width: 100%; max-width: 420px; align-items: stretch">
-              <cor-file-input multiple="" max-files="5" label="Atașamente (max 5)">
+              <mud-file-input multiple="" max-files="5" label="Atașamente (max 5)">
                 <span slot="helper">Poți încărca până la <strong>5</strong> fișiere.</span>
-                <cor-icon slot="icon" name="bookmark" size="24"></cor-icon>
-              </cor-file-input>
+                <mud-icon slot="icon" name="bookmark" size="24"></mud-icon>
+              </mud-file-input>
               <span class="label">multiple + helper slot + icon slot</span>
             </div>
           </div>
@@ -76,17 +76,17 @@
           <h3>Edge cases</h3>
           <div class="row" style="align-items: flex-start">
             <div class="cell" style="width: 100%; max-width: 420px; align-items: stretch">
-              <cor-file-input
+              <mud-file-input
                 label="Helper foarte lung"
                 helper-text="Acceptăm doar documente oficiale emise de autoritățile publice din Republica Moldova, în format PDF sau imagine, cu o mărime maximă de 5 MB per fișier; orice altceva va fi respins automat la validare."
-              ></cor-file-input>
+              ></mud-file-input>
               <span class="label">long helper text (wrap)</span>
             </div>
             <div class="cell" style="width: 100%; max-width: 420px; align-items: stretch">
-              <cor-file-input
+              <mud-file-input
                 label="Caractere &amp; diacritice: ăâîșțĂÂÎȘȚ <> &quot; ' 🗂️"
                 helper-text="Test escaping &amp; i18n."
-              ></cor-file-input>
+              ></mud-file-input>
               <span class="label">special chars + diacritics in label</span>
             </div>
           </div>

@@ -3,38 +3,38 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-avatar · @age/web-components</title>
+    <title>mud-avatar · @age/web-components</title>
   </head>
-  <body data-component="cor-avatar">
+  <body data-component="mud-avatar">
     <main class="demo-main">
-      <section id="cor-avatar" class="component-section">
-        <h2>&lt;cor-avatar&gt;</h2>
+      <section id="mud-avatar" class="component-section">
+        <h2>&lt;mud-avatar&gt;</h2>
 
         <div class="subsection">
           <h3>Types</h3>
           <div class="row">
             <div class="cell">
-              <cor-avatar
+              <mud-avatar
                 type="photo"
                 src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Crect width='96' height='96' fill='%234c47ff'/%3E%3Ccircle cx='48' cy='38' r='18' fill='%23fff'/%3E%3Crect x='18' y='60' width='60' height='40' rx='20' fill='%23fff'/%3E%3C/svg%3E"
                 name="Ion Creangă"
-              ></cor-avatar>
+              ></mud-avatar>
               <span class="label">photo</span>
             </div>
             <div class="cell">
-              <cor-avatar type="initials" name="Ana Pop"></cor-avatar>
+              <mud-avatar type="initials" name="Ana Pop"></mud-avatar>
               <span class="label">initials (from name)</span>
             </div>
             <div class="cell">
-              <cor-avatar type="initials" initials="MV"></cor-avatar>
+              <mud-avatar type="initials" initials="MV"></mud-avatar>
               <span class="label">initials (explicit)</span>
             </div>
             <div class="cell">
-              <cor-avatar type="icon"></cor-avatar>
+              <mud-avatar type="icon"></mud-avatar>
               <span class="label">icon (default person)</span>
             </div>
             <div class="cell">
-              <cor-avatar type="icon" icon-name="settings"></cor-avatar>
+              <mud-avatar type="icon" icon-name="settings"></mud-avatar>
               <span class="label">icon (icon-name)</span>
             </div>
           </div>
@@ -44,23 +44,23 @@
           <h3>Sizes (type initials)</h3>
           <div class="row">
             <div class="cell">
-              <cor-avatar size="xs" initials="XS"></cor-avatar>
+              <mud-avatar size="xs" initials="XS"></mud-avatar>
               <span class="label">xs (24)</span>
             </div>
             <div class="cell">
-              <cor-avatar size="sm" initials="SM"></cor-avatar>
+              <mud-avatar size="sm" initials="SM"></mud-avatar>
               <span class="label">sm (32)</span>
             </div>
             <div class="cell">
-              <cor-avatar size="md" initials="MD"></cor-avatar>
+              <mud-avatar size="md" initials="MD"></mud-avatar>
               <span class="label">md (40)</span>
             </div>
             <div class="cell">
-              <cor-avatar size="lg" initials="LG"></cor-avatar>
+              <mud-avatar size="lg" initials="LG"></mud-avatar>
               <span class="label">lg (48)</span>
             </div>
             <div class="cell">
-              <cor-avatar size="xl" initials="XL"></cor-avatar>
+              <mud-avatar size="xl" initials="XL"></mud-avatar>
               <span class="label">xl (72)</span>
             </div>
           </div>
@@ -70,26 +70,26 @@
           <h3>Slots — badge composition</h3>
           <div class="row">
             <div class="cell">
-              <cor-avatar
+              <mud-avatar
                 type="photo"
                 src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96'%3E%3Crect width='96' height='96' fill='%2300a896'/%3E%3Ccircle cx='48' cy='38' r='18' fill='%23fff'/%3E%3Crect x='18' y='60' width='60' height='40' rx='20' fill='%23fff'/%3E%3C/svg%3E"
                 name="Maria Ene"
                 size="lg"
               >
-                <cor-badge slot="badge" type="dot" variant="positive" size="sm"></cor-badge>
-              </cor-avatar>
+                <mud-badge slot="badge" type="dot" variant="positive" size="sm"></mud-badge>
+              </mud-avatar>
               <span class="label">photo + dot badge</span>
             </div>
             <div class="cell">
-              <cor-avatar type="initials" name="Dan Z" size="lg">
-                <cor-badge slot="badge" type="numbered" variant="danger" size="sm" count="3"></cor-badge>
-              </cor-avatar>
+              <mud-avatar type="initials" name="Dan Z" size="lg">
+                <mud-badge slot="badge" type="numbered" variant="danger" size="sm" count="3"></mud-badge>
+              </mud-avatar>
               <span class="label">initials + count badge</span>
             </div>
             <div class="cell">
-              <cor-avatar type="icon" size="lg">
-                <cor-badge slot="badge" type="numbered" variant="brand" size="sm" count="128"></cor-badge>
-              </cor-avatar>
+              <mud-avatar type="icon" size="lg">
+                <mud-badge slot="badge" type="numbered" variant="brand" size="sm" count="128"></mud-badge>
+              </mud-avatar>
               <span class="label">icon + overflow badge</span>
             </div>
           </div>
@@ -99,31 +99,31 @@
           <h3>Edge cases</h3>
           <div class="row">
             <div class="cell">
-              <cor-avatar type="photo" src="https://example.invalid/nope.png" name="Vasile Lupu"></cor-avatar>
+              <mud-avatar type="photo" src="https://example.invalid/nope.png" name="Vasile Lupu"></mud-avatar>
               <span class="label">broken src → initials fallback</span>
             </div>
             <div class="cell">
-              <cor-avatar type="photo" src="https://example.invalid/nope.png"></cor-avatar>
+              <mud-avatar type="photo" src="https://example.invalid/nope.png"></mud-avatar>
               <span class="label">broken src + no name → icon</span>
             </div>
             <div class="cell">
-              <cor-avatar type="photo"></cor-avatar>
+              <mud-avatar type="photo"></mud-avatar>
               <span class="label">photo, no src at all</span>
             </div>
             <div class="cell">
-              <cor-avatar type="initials"></cor-avatar>
+              <mud-avatar type="initials"></mud-avatar>
               <span class="label">initials, none set → icon</span>
             </div>
             <div class="cell">
-              <cor-avatar type="initials" initials="ABCDEF"></cor-avatar>
+              <mud-avatar type="initials" initials="ABCDEF"></mud-avatar>
               <span class="label">very long initials (trim 2)</span>
             </div>
             <div class="cell">
-              <cor-avatar type="initials" name="Ștefan Țăranu"></cor-avatar>
+              <mud-avatar type="initials" name="Ștefan Țăranu"></mud-avatar>
               <span class="label">diacritics name</span>
             </div>
             <div class="cell">
-              <cor-avatar type="initials" initials="مر"></cor-avatar>
+              <mud-avatar type="initials" initials="مر"></mud-avatar>
               <span class="label">RTL initials</span>
             </div>
           </div>

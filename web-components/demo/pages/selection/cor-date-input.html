@@ -3,31 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-date-input · @age/web-components</title>
+    <title>mud-date-input · @age/web-components</title>
   </head>
-  <body data-component="cor-date-input">
+  <body data-component="mud-date-input">
     <main class="demo-main">
-      <section id="cor-date-input" class="component-section">
-        <h2>&lt;cor-date-input&gt;</h2>
+      <section id="mud-date-input" class="component-section">
+        <h2>&lt;mud-date-input&gt;</h2>
 
         <div class="subsection">
           <h3>Formats</h3>
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-date-input format="DD/MM/YYYY" value="15/04/2025" label="Data nașterii"></cor-date-input>
+                <mud-date-input format="DD/MM/YYYY" value="15/04/2025" label="Data nașterii"></mud-date-input>
               </div>
               <span class="label">DD/MM/YYYY</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-date-input format="MM/DD/YYYY" value="04/15/2025" label="Issue date"></cor-date-input>
+                <mud-date-input format="MM/DD/YYYY" value="04/15/2025" label="Issue date"></mud-date-input>
               </div>
               <span class="label">MM/DD/YYYY</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-date-input format="YYYY-MM-DD" value="2025-04-15" label="ISO date"></cor-date-input>
+                <mud-date-input format="YYYY-MM-DD" value="2025-04-15" label="ISO date"></mud-date-input>
               </div>
               <span class="label">YYYY-MM-DD</span>
             </div>
@@ -39,19 +39,19 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-date-input size="md" value="15/04/2025" label="Data"></cor-date-input>
+                <mud-date-input size="md" value="15/04/2025" label="Data"></mud-date-input>
               </div>
               <span class="label">md</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-date-input size="lg" value="15/04/2025" label="Data"></cor-date-input>
+                <mud-date-input size="lg" value="15/04/2025" label="Data"></mud-date-input>
               </div>
               <span class="label">lg</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-date-input variant="destructive" value="15/04/2025" label="Data"></cor-date-input>
+                <mud-date-input variant="destructive" value="15/04/2025" label="Data"></mud-date-input>
               </div>
               <span class="label">variant=destructive</span>
             </div>
@@ -63,40 +63,40 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-date-input label="Data" placeholder="DD/MM/YYYY"></cor-date-input>
+                <mud-date-input label="Data" placeholder="DD/MM/YYYY"></mud-date-input>
               </div>
               <span class="label">empty (placeholder)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-date-input label="Data programării" helper-text="Selectează o zi lucrătoare"></cor-date-input>
+                <mud-date-input label="Data programării" helper-text="Selectează o zi lucrătoare"></mud-date-input>
               </div>
               <span class="label">helper-text</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-date-input disabled="" value="15/04/2025" label="Data"></cor-date-input>
+                <mud-date-input disabled="" value="15/04/2025" label="Data"></mud-date-input>
               </div>
               <span class="label">disabled</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-date-input readonly="" value="15/04/2025" label="Data"></cor-date-input>
+                <mud-date-input readonly="" value="15/04/2025" label="Data"></mud-date-input>
               </div>
               <span class="label">readonly</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-date-input required="" label="Data" placeholder="DD/MM/YYYY"></cor-date-input>
+                <mud-date-input required="" label="Data" placeholder="DD/MM/YYYY"></mud-date-input>
               </div>
               <span class="label">required (asterisk)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-date-input>
+                <mud-date-input>
                   <span slot="label">Data expirării</span>
                   <span slot="helper">Format <code>ZZ/LL/AAAA</code></span>
-                </cor-date-input>
+                </mud-date-input>
               </div>
               <span class="label">label + helper slots</span>
             </div>
@@ -108,42 +108,42 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-date-input
+                <mud-date-input
                   min="2025-01-01"
                   max="2025-12-31"
                   value="01/06/2025"
                   label="Interval 2025"
-                ></cor-date-input>
+                ></mud-date-input>
               </div>
               <span class="label">min/max bounds</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-date-input
+                <mud-date-input
                   invalid=""
                   value="32/13/2025"
                   label="Data"
                   error-text="Data introdusă nu există"
-                ></cor-date-input>
+                ></mud-date-input>
               </div>
               <span class="label">invalid calendar date + error</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-date-input value="15/04" label="Data" helper-text="Continuă să completezi"></cor-date-input>
+                <mud-date-input value="15/04" label="Data" helper-text="Continuă să completezi"></mud-date-input>
               </div>
               <span class="label">incomplete value</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-date-input
+                <mud-date-input
                   min="2025-01-01"
                   max="2025-12-31"
                   invalid=""
                   value="01/01/2030"
                   label="Data"
                   error-text="Data este în afara intervalului permis"
-                ></cor-date-input>
+                ></mud-date-input>
               </div>
               <span class="label">out-of-range</span>
             </div>

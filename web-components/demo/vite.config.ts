@@ -68,7 +68,7 @@ function serveDesignSystemAssets(): Plugin {
  * at `dist-demo/assets/assets/...`. The dev middleware short-circuits this by
  * intercepting `/node_modules/@age/design-system/...` requests, but in a
  * deployed build nothing serves those bytes — copy them next to the bundle so
- * `<cor-icon>`, `<cor-logo>`, etc. work from any host (including file://).
+ * `<mud-icon>`, `<mud-logo>`, etc. work from any host (including file://).
  */
 function copyDesignSystemAssetsToBuild(): Plugin {
   const srcAssets = resolve(DESIGN_SYSTEM_DIST, 'assets');
@@ -78,7 +78,7 @@ function copyDesignSystemAssetsToBuild(): Plugin {
     async closeBundle() {
       if (!existsSync(srcAssets)) {
         this.warn(
-          `[demo] design-system assets not found at ${srcAssets} — run \`yarn build\` first so cor-icon/cor-logo can resolve their SVGs.`,
+          `[demo] design-system assets not found at ${srcAssets} — run \`yarn build\` first so mud-icon/mud-logo can resolve their SVGs.`,
         );
         return;
       }
@@ -111,7 +111,7 @@ export default defineConfig({
   },
   // Stencil's lazy bundle uses `import.meta.url` to resolve asset paths.
   // Pre-bundling would rewrite the URL into Vite's optimized-deps cache, which
-  // doesn't contain the assets/ folder — leaving cor-icon SVGs at 404.
+  // doesn't contain the assets/ folder — leaving mud-icon SVGs at 404.
   optimizeDeps: {
     exclude: ['@age/design-system/dist/design-system/design-system.esm.js'],
   },

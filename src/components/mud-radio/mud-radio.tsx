@@ -315,7 +315,10 @@ export class MudRadio {
     // text content for free; the duplicate aria-label is the
     // belt-and-suspenders for tools that don't.
     const ariaLabelAttr =
-      this.resolvedAriaLabel ?? (hasLabel ? this.slottedLabelText || undefined : undefined) ?? this.label?.trim() ?? undefined;
+      this.resolvedAriaLabel ??
+      (hasLabel ? this.slottedLabelText || undefined : undefined) ??
+      this.label?.trim() ??
+      undefined;
     const ariaLabelledbyAttr = hasLabel ? this.labelId : this.resolvedAriaLabelledby;
 
     const describedByIds: string[] = [];

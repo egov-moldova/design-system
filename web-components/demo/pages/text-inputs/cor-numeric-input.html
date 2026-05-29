@@ -3,44 +3,44 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-numeric-input · @age/web-components</title>
+    <title>mud-numeric-input · @age/web-components</title>
   </head>
-  <body data-component="cor-numeric-input">
+  <body data-component="mud-numeric-input">
     <main class="demo-main">
-      <section id="cor-numeric-input" class="component-section">
-        <h2>&lt;cor-numeric-input&gt;</h2>
+      <section id="mud-numeric-input" class="component-section">
+        <h2>&lt;mud-numeric-input&gt;</h2>
 
         <div class="subsection">
           <h3>Variants (with steppers)</h3>
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input variant="default" label="Cantitate" value="3" min="0" max="100"></cor-numeric-input>
+                <mud-numeric-input variant="default" label="Cantitate" value="3" min="0" max="100"></mud-numeric-input>
               </div>
               <span class="label">default</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input
+                <mud-numeric-input
                   variant="success"
                   label="Cantitate validă"
                   value="5"
                   min="0"
                   max="100"
                   helper-text="În limite"
-                ></cor-numeric-input>
+                ></mud-numeric-input>
               </div>
               <span class="label">success</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input
+                <mud-numeric-input
                   variant="destructive"
                   label="Peste limită"
                   value="150"
                   min="0"
                   max="100"
-                ></cor-numeric-input>
+                ></mud-numeric-input>
               </div>
               <span class="label">destructive</span>
             </div>
@@ -52,13 +52,13 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input size="md" label="md" value="10" min="0" max="50"></cor-numeric-input>
+                <mud-numeric-input size="md" label="md" value="10" min="0" max="50"></mud-numeric-input>
               </div>
               <span class="label">md</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input size="lg" label="lg" value="10" min="0" max="50"></cor-numeric-input>
+                <mud-numeric-input size="lg" label="lg" value="10" min="0" max="50"></mud-numeric-input>
               </div>
               <span class="label">lg</span>
             </div>
@@ -70,26 +70,26 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input label="Suma de plată" value="120" min="0" step="10" precision="2">
-                  <cor-icon slot="icon-start" name="copy" size="20"></cor-icon>
+                <mud-numeric-input label="Suma de plată" value="120" min="0" step="10" precision="2">
+                  <mud-icon slot="icon-start" name="copy" size="20"></mud-icon>
                   <span slot="suffix">lei</span>
-                </cor-numeric-input>
+                </mud-numeric-input>
               </div>
               <span class="label">icon-start + suffix (lei)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input label="Greutate" value="2.5" step="0.5" precision="1">
+                <mud-numeric-input label="Greutate" value="2.5" step="0.5" precision="1">
                   <span slot="suffix">kg</span>
-                </cor-numeric-input>
+                </mud-numeric-input>
               </div>
               <span class="label">suffix only (kg) + decimals</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input label="Fără steppere" value="42" show-steppers="false">
+                <mud-numeric-input label="Fără steppere" value="42" show-steppers="false">
                   <span slot="suffix">%</span>
-                </cor-numeric-input>
+                </mud-numeric-input>
               </div>
               <span class="label">show-steppers=false</span>
             </div>
@@ -101,26 +101,26 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input label="step=5" value="20" step="5" min="0" max="100"></cor-numeric-input>
+                <mud-numeric-input label="step=5" value="20" step="5" min="0" max="100"></mud-numeric-input>
               </div>
               <span class="label">step=5</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input
+                <mud-numeric-input
                   label="precision=2, step=0.25"
                   value="1.5"
                   step="0.25"
                   precision="2"
-                ></cor-numeric-input>
+                ></mud-numeric-input>
               </div>
               <span class="label">decimals precision=2</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input label="aria-valuetext" value="5" min="0" max="10" aria-valuetext="5 lei">
+                <mud-numeric-input label="aria-valuetext" value="5" min="0" max="10" aria-valuetext="5 lei">
                   <span slot="suffix">lei</span>
-                </cor-numeric-input>
+                </mud-numeric-input>
               </div>
               <span class="label">aria-valuetext</span>
             </div>
@@ -132,38 +132,38 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input label="Dezactivat" value="7" disabled=""></cor-numeric-input>
+                <mud-numeric-input label="Dezactivat" value="7" disabled=""></mud-numeric-input>
               </div>
               <span class="label">disabled</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input label="Doar citire (fără steppere)" value="7" readonly=""></cor-numeric-input>
+                <mud-numeric-input label="Doar citire (fără steppere)" value="7" readonly=""></mud-numeric-input>
               </div>
               <span class="label">readonly (no steppers)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input label="În curs" value="7" loading=""></cor-numeric-input>
+                <mud-numeric-input label="În curs" value="7" loading=""></mud-numeric-input>
               </div>
               <span class="label">loading (spinner)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input
+                <mud-numeric-input
                   label="Invalid"
                   value="999"
                   min="0"
                   max="100"
                   invalid=""
                   error-text="Valoarea depășește maximul permis."
-                ></cor-numeric-input>
+                ></mud-numeric-input>
               </div>
               <span class="label">invalid + error-text</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input label="Obligatoriu" required="" placeholder="0"></cor-numeric-input>
+                <mud-numeric-input label="Obligatoriu" required="" placeholder="0"></mud-numeric-input>
               </div>
               <span class="label">required + empty</span>
             </div>
@@ -175,68 +175,68 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input
+                <mud-numeric-input
                   label="Out-of-range (value 200, max 100)"
                   value="200"
                   min="0"
                   max="100"
                   helper-text="Stepper-up should be disabled"
-                ></cor-numeric-input>
+                ></mud-numeric-input>
               </div>
               <span class="label">out-of-range</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input
+                <mud-numeric-input
                   label="Value at max (100)"
                   value="100"
                   min="0"
                   max="100"
                   helper-text="Increment disabled at max"
-                ></cor-numeric-input>
+                ></mud-numeric-input>
               </div>
               <span class="label">value == max</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input
+                <mud-numeric-input
                   label="Value at min (-50)"
                   value="-50"
                   min="-50"
                   max="50"
                   helper-text="Decrement disabled at min"
-                ></cor-numeric-input>
+                ></mud-numeric-input>
               </div>
               <span class="label">value == min (negative)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input
+                <mud-numeric-input
                   label="Negative allowed"
                   value="-12.75"
                   min="-100"
                   max="100"
                   step="0.25"
                   precision="2"
-                ></cor-numeric-input>
+                ></mud-numeric-input>
               </div>
               <span class="label">negative decimal</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input label="Large number" value="1000000" min="0" max="9999999"></cor-numeric-input>
+                <mud-numeric-input label="Large number" value="1000000" min="0" max="9999999"></mud-numeric-input>
               </div>
               <span class="label">large value</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-numeric-input
+                <mud-numeric-input
                   label="Empty (no value)"
                   min="0"
                   max="10"
                   placeholder="—"
                   helper-text="value undefined; step seeds from bounds"
-                ></cor-numeric-input>
+                ></mud-numeric-input>
               </div>
               <span class="label">empty value</span>
             </div>

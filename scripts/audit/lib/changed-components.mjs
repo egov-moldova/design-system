@@ -1,5 +1,5 @@
 /**
- * Resolve the list of `cor-*` components touched in the current branch's git
+ * Resolve the list of `mud-*` components touched in the current branch's git
  * diff against `main`. Shared by every audit script that accepts `--changed`.
  *
  * Returns a sorted, de-duplicated array of component names (e.g. ["mud-button",
@@ -13,7 +13,7 @@ export function listChangedComponents({ base = 'main' } = {}) {
   if (res.status !== 0) return [];
   const names = new Set();
   for (const line of (res.stdout ?? '').split('\n')) {
-    const m = line.match(/^src\/(components|hidden)\/(cor-[a-z0-9-]+)\//);
+    const m = line.match(/^src\/(components|hidden)\/(mud-[a-z0-9-]+)\//);
     if (m) names.add(m[2]);
   }
   return [...names].sort();

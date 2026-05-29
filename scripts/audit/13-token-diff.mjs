@@ -41,7 +41,7 @@ const USAGE = `Usage:
   node scripts/audit/13-token-diff.mjs --from <file> --to <file> [--json]
 
 Modes:
-  component mode: <component> = cor-X. Diffs tokens/core/components/<bare>.tokens.json
+  component mode: <component> = mud-X. Diffs tokens/core/components/<bare>.tokens.json
                   against the matching block in <figma-export> (default: tokens-tokenhaus.json).
   file mode:      --from / --to point to two DTCG JSON files; the entire structures are diffed.
 

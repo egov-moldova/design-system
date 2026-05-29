@@ -3,22 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-pagination · @age/web-components</title>
+    <title>mud-pagination · @age/web-components</title>
   </head>
-  <body data-component="cor-pagination">
+  <body data-component="mud-pagination">
     <main class="demo-main">
-      <section id="cor-pagination" class="component-section">
-        <h2>&lt;cor-pagination&gt;</h2>
+      <section id="mud-pagination" class="component-section">
+        <h2>&lt;mud-pagination&gt;</h2>
 
         <div class="subsection">
           <h3>Sizes (3 pages, current=2)</h3>
           <div class="row">
             <div class="cell">
-              <cor-pagination size="md" total-pages="3" current-page="2"></cor-pagination>
+              <mud-pagination size="md" total-pages="3" current-page="2"></mud-pagination>
               <span class="label">md</span>
             </div>
             <div class="cell">
-              <cor-pagination size="sm" total-pages="3" current-page="2"></cor-pagination>
+              <mud-pagination size="sm" total-pages="3" current-page="2"></mud-pagination>
               <span class="label">sm (prev/next labels hidden)</span>
             </div>
           </div>
@@ -28,11 +28,11 @@
           <h3>States</h3>
           <div class="row">
             <div class="cell">
-              <cor-pagination size="md" total-pages="5" current-page="1"></cor-pagination>
+              <mud-pagination size="md" total-pages="5" current-page="1"></mud-pagination>
               <span class="label">first page — prev disabled</span>
             </div>
             <div class="cell">
-              <cor-pagination size="md" total-pages="5" current-page="5"></cor-pagination>
+              <mud-pagination size="md" total-pages="5" current-page="5"></mud-pagination>
               <span class="label">last page — next disabled</span>
             </div>
           </div>
@@ -42,10 +42,10 @@
           <h3>Custom prev/next icon slots</h3>
           <div class="row">
             <div class="cell">
-              <cor-pagination size="md" total-pages="9" current-page="4">
-                <cor-icon slot="prev-icon" name="chevron-left-small" size="20"></cor-icon>
-                <cor-icon slot="next-icon" name="chevron-right-small" size="20"></cor-icon>
-              </cor-pagination>
+              <mud-pagination size="md" total-pages="9" current-page="4">
+                <mud-icon slot="prev-icon" name="chevron-left-small" size="20"></mud-icon>
+                <mud-icon slot="next-icon" name="chevron-right-small" size="20"></mud-icon>
+              </mud-pagination>
               <span class="label">prev-icon / next-icon overrides</span>
             </div>
           </div>
@@ -55,17 +55,17 @@
           <h3>Edge cases</h3>
           <div class="row">
             <div class="cell">
-              <cor-pagination size="md" total-pages="999" current-page="500"></cor-pagination>
+              <mud-pagination size="md" total-pages="999" current-page="500"></mud-pagination>
               <span class="label">999 pages, current=500 → leading + trailing ellipsis</span>
             </div>
           </div>
           <div class="row">
             <div class="cell">
-              <cor-pagination size="md" total-pages="1" current-page="1"></cor-pagination>
+              <mud-pagination size="md" total-pages="1" current-page="1"></mud-pagination>
               <span class="label">total-pages=1 → renders nothing (hidden)</span>
             </div>
             <div class="cell">
-              <cor-pagination size="md" total-pages="5" current-page="99"></cor-pagination>
+              <mud-pagination size="md" total-pages="5" current-page="99"></mud-pagination>
               <span class="label">out-of-range current → clamped to last</span>
             </div>
           </div>

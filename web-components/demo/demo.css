@@ -170,7 +170,7 @@ code {
   max-width: 100%;
   /* Break long unbroken strings (URLs, slugs) at the cell boundary instead of
      letting them spill into sibling cells. Applies to text content of inline
-     children like cor-link where max-width on the child itself has no effect. */
+     children like mud-link where max-width on the child itself has no effect. */
   overflow-wrap: anywhere;
 }
 /* Containment guard: a child of .cell never visually overflows its cell, so wide
@@ -205,7 +205,7 @@ code {
   font-size: var(--font-size-12);
   color: var(--color-text-base-tertiary);
 }
-/* Slotted helper row used in the cor-receipt `extra` slot demo. */
+/* Slotted helper row used in the mud-receipt `extra` slot demo. */
 .receipt-row {
   display: flex;
   justify-content: space-between;

@@ -4,7 +4,7 @@
 
 `@age/design-system` is a **Stencil web-component design system** that powers Corlab products. It exposes:
 
-- Native custom elements (`cor-*` prefix) consumed directly in HTML or via framework wrappers
+- Native custom elements (`mud-*` prefix) consumed directly in HTML or via framework wrappers
 - Design tokens generated through Style Dictionary (DTCG format)
 - Storybook documentation as the canonical visual reference
 - Theme support — base (`core`) and AGE client variant; dark mode is a separate phase
@@ -34,7 +34,7 @@ Yarn monorepo with a single workspace (`web-components`):
 ```
 age-design/
 ├── package.json              ← root: shared deps + scripts
-├── src/                       ← Stencil source (cor-* components)
+├── src/                       ← Stencil source (mud-* components)
 ├── tokens/                    ← design tokens (DTCG JSON)
 ├── .storybook/                ← Storybook config
 ├── dist/                      ← built outputs (gitignored)
@@ -146,7 +146,7 @@ Theme switching via `data-theme` attribute on the document root.
 
 **In scope**:
 
-- Stencil web components with `cor-` prefix
+- Stencil web components with `mud-` prefix
 - Design tokens in DTCG format
 - Storybook docs and visual reference
 - Framework wrappers (consume same web components)
@@ -156,7 +156,7 @@ Theme switching via `data-theme` attribute on the document root.
 - Business logic, data fetching, state management — consumer concern
 - Backend validation — design system implements client-side validation only
 - Dark mode tokens — DEFERRED
-- Custom illustrations beyond `cor-illustration-*` components — handled via `figma-illustration-import` skill on demand
+- Custom illustrations beyond `mud-illustration-*` components — handled via `figma-illustration-import` skill on demand
 
 ## 11. References
 

@@ -13,15 +13,15 @@ Scan existing components (see `_agents/reuse-architecture.md`), then produce:
 ```markdown
 | # | Component | Level | Status | Location / Action |
 |---|-----------|-------|--------|-------------------|
-| 1 | cor-button | Atom | ✅ Reuse | src/components/cor-button/ |
-| 2 | cor-badge | Atom | 🟡 Extend | Needs `size="xs"` variant |
-| 3 | cor-input | Atom | 🔴 Create | New component |
-| 4 | cor-form-field | Molecule | 🔴 Create | Composes cor-label + cor-input |
+| 1 | mud-button | Atom | ✅ Reuse | src/components/mud-button/ |
+| 2 | mud-badge | Atom | 🟡 Extend | Needs `size="xs"` variant |
+| 3 | mud-input | Atom | 🔴 Create | New component |
+| 4 | mud-form-field | Molecule | 🔴 Create | Composes mud-label + mud-input |
 ```
 
 For each **✅ Reuse** or **🟡 Extend**, verify in Storybook:
 
-- [ ] Opened in Storybook: `browser_navigate({ url: "...?id=atoms-cor-[name]--default" })`
+- [ ] Opened in Storybook: `browser_navigate({ url: "...?id=atoms-mud-[name]--default" })`
 - [ ] Screenshot taken
 - [ ] **Figma vs Storybook**: ✅ MATCH / ❌ MISMATCH → describe diff
 - [ ] Read `.tsx` → list available props
@@ -37,10 +37,10 @@ Always build **bottom-up**: atoms → molecules → organisms. Never build a mol
 
 ```markdown
 ## Build Order
-1. 🔴 Atom: cor-badge (create)
-2. 🟡 Atom: cor-button (extend — add icon slot)
-3. 🔴 Molecule: cor-form-field (create — depends on cor-label + cor-input)
-4. 🔴 Organism: cor-sidebar (create — depends on cor-nav-item + cor-logo)
+1. 🔴 Atom: mud-badge (create)
+2. 🟡 Atom: mud-button (extend — add icon slot)
+3. 🔴 Molecule: mud-form-field (create — depends on mud-label + mud-input)
+4. 🔴 Organism: mud-sidebar (create — depends on mud-nav-item + mud-logo)
 ```
 
 ---
@@ -78,7 +78,7 @@ Style Dictionary **always** converts token paths to kebab-case CSS variables:
 
 ```bash
 # 1. Find all CSS variable references in your component
-grep "var(--" src/components/cor-component-name/cor-component-name.css
+grep "var(--" src/components/mud-component-name/mud-component-name.css
 
 # 2. Verify each follows kebab-case convention
 # ✅ CORRECT: var(--select-item-label-font-size)

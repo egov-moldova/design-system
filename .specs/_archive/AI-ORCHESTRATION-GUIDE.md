@@ -148,10 +148,10 @@ AI TASK:
 Execute in order:
 1. Create tokens/core/components/{component-name}.tokens.json
 2. Run: yarn tokens.build
-3. Create src/components/cor-{component-name}/cor-{component-name}.enums.ts
-4. Create src/components/cor-{component-name}/cor-{component-name}.constants.ts
-5. Create src/components/cor-{component-name}/cor-{component-name}.tsx
-6. Create src/components/cor-{component-name}/cor-{component-name}.css
+3. Create src/components/mud-{component-name}/mud-{component-name}.enums.ts
+4. Create src/components/mud-{component-name}/mud-{component-name}.constants.ts
+5. Create src/components/mud-{component-name}/mud-{component-name}.tsx
+6. Create src/components/mud-{component-name}/mud-{component-name}.css
 7. Validate build: yarn build
 ```
 
@@ -298,8 +298,8 @@ When prompting AI to create a component, include:
    - Interactive states
 
 3. Reference Components:
-   - "Follow the pattern from cor-input component"
-   - "Use similar token structure as cor-input"
+   - "Follow the pattern from mud-input component"
+   - "Use similar token structure as mud-input"
 
 4. Constraints:
    - "Must be WCAG 2.1 AA compliant"
@@ -313,7 +313,7 @@ When prompting AI to create a component, include:
 ```
 Create a new component for AGE Design System following these requirements:
 
-Component: cor-card
+Component: mud-card
 Type: Organism
 Architecture: Slot-based (wrap semantic HTML)
 
@@ -338,12 +338,12 @@ Features:
 Instructions:
 1. Create tokens in tokens/core/components/card.tokens.json
 2. Reference existing spacing, radius, and shadow tokens
-3. Create cor-card.tsx with slot-based architecture
-4. Create cor-card.css with token-based styling
+3. Create mud-card.tsx with slot-based architecture
+4. Create mud-card.css with token-based styling
 5. Create enums for CardVariant and CardSize
 6. Create Storybook stories showing all variants
 7. Write unit and E2E tests
-8. Follow patterns from cor-button and cor-typography
+8. Follow patterns from mud-button and mud-typography
 
 Requirements:
 - Use design tokens exclusively (no hard-coded values)
@@ -354,7 +354,7 @@ Requirements:
 
 **Add Variant to Existing Component:**
 ```
-Add a new variant 'outlined' to the cor-button component:
+Add a new variant 'outlined' to the mud-button component:
 
 Requirements:
 1. Add 'outlined' to ButtonVariant enum
@@ -364,9 +364,9 @@ Requirements:
    - button.outlined.active.{background, border, color}
    - button.outlined.focus.{background, border, color}
    - button.outlined.disabled.{background, border, color}
-3. Add CSS rules in cor-button.css for :host([variant='outlined'])
-4. Add story in cor-button.stories.ts
-5. Add test case in test/cor-button.spec.tsx
+3. Add CSS rules in mud-button.css for :host([variant='outlined'])
+4. Add story in mud-button.stories.ts
+5. Add test case in test/mud-button.spec.tsx
 6. Rebuild tokens (yarn tokens.build)
 7. Test in light and dark themes
 
@@ -379,7 +379,7 @@ Design specs:
 
 **Fix Accessibility Issue:**
 ```
-Fix keyboard navigation in cor-modal component:
+Fix keyboard navigation in mud-modal component:
 
 Issues:
 1. Focus not trapped within modal when open
@@ -403,15 +403,15 @@ Requirements:
 ```
 Review this component implementation and suggest improvements:
 
-Component: cor-{name}
-File: src/components/cor-{name}/cor-{name}.tsx
+Component: mud-{name}
+File: src/components/mud-{name}/mud-{name}.tsx
 
 Check for:
 1. Token usage (any hard-coded values?)
 2. Accessibility (keyboard nav, ARIA, focus management)
 3. Edge cases (empty content, invalid props, null values)
 4. Type safety (any 'any' types?)
-5. Pattern consistency (matches cor-button pattern?)
+5. Pattern consistency (matches mud-button pattern?)
 6. Performance (unnecessary re-renders?)
 7. Shadow DOM best practices
 8. Slot validation
@@ -447,12 +447,12 @@ Always follow this order:
 **Pattern:**
 ```typescript
 // ✅ CORRECT: Slot-based
-<cor-button variant="primary" size="medium">
+<mud-button variant="primary" size="medium">
   <button onClick={handleClick}>Click Me</button>
-</cor-button>
+</mud-button>
 
 // ❌ WRONG: Prop-based (anti-pattern)
-<cor-button 
+<mud-button 
   variant="primary" 
   size="medium" 
   text="Click Me" 
@@ -661,14 +661,14 @@ const validateComponent = (componentPath) => {
 
 **❌ WRONG:**
 ```typescript
-<cor-button text="Click" onClick={handler} />
+<mud-button text="Click" onClick={handler} />
 ```
 
 **✅ CORRECT:**
 ```typescript
-<cor-button variant="primary">
+<mud-button variant="primary">
   <button onClick={handler}>Click</button>
-</cor-button>
+</mud-button>
 ```
 
 **AI Solution:**
@@ -722,14 +722,14 @@ Always remind the AI: "Use slot-based architecture. Wrap semantic HTML elements.
 **❌ WRONG:**
 ```typescript
 // No keyboard support, no ARIA, no focus management
-<cor-modal>
+<mud-modal>
   <div>Modal content</div>
-</cor-modal>
+</mud-modal>
 ```
 
 **✅ CORRECT:**
 ```typescript
-<cor-modal 
+<mud-modal 
   open={isOpen} 
   onCorClose={handleClose}
   aria-labelledby="modal-title"
@@ -739,7 +739,7 @@ Always remind the AI: "Use slot-based architecture. Wrap semantic HTML elements.
     <h2 id="modal-title">Title</h2>
     <p id="modal-description">Description</p>
   </div>
-</cor-modal>
+</mud-modal>
 ```
 
 **AI Solution:**
@@ -796,7 +796,7 @@ font-size: var(--button-large-font-size, var(--button-font-size, var(--font-size
 **Design → Development:**
 ```json
 {
-  "component": "cor-card",
+  "component": "mud-card",
   "tokens": {
     "file": "tokens/core/components/card.tokens.json",
     "generated": true
@@ -810,10 +810,10 @@ font-size: var(--button-large-font-size, var(--button-font-size, var(--font-size
 **Development → Testing:**
 ```json
 {
-  "component": "cor-card",
+  "component": "mud-card",
   "files": [
-    "src/components/cor-card/cor-card.tsx",
-    "src/components/cor-card/cor-card.css"
+    "src/components/mud-card/mud-card.tsx",
+    "src/components/mud-card/mud-card.css"
   ],
   "implemented": true,
   "needsTests": true,
@@ -829,7 +829,7 @@ font-size: var(--button-large-font-size, var(--button-font-size, var(--font-size
 **Testing → Documentation:**
 ```json
 {
-  "component": "cor-card",
+  "component": "mud-card",
   "testsPassing": true,
   "coverage": 85,
   "accessibilityScore": 100,
@@ -852,9 +852,9 @@ font-size: var(--button-large-font-size, var(--button-font-size, var(--font-size
 
 ```
 Before implementing new component:
-1. Review cor-button for slot-based pattern
-2. Review cor-icon for prop handling
-3. Review cor-grid for responsive patterns
+1. Review mud-button for slot-based pattern
+2. Review mud-icon for prop handling
+3. Review mud-grid for responsive patterns
 4. Review component tokens for token structure
 5. Review component stories for story patterns
 6. Review component tests for test patterns
@@ -1005,7 +1005,7 @@ CONTEXT:
 - Accessibility: WCAG 2.1 AA required
 
 COMPONENT SPECIFICATION:
-Name: cor-{name}
+Name: mud-{name}
 Type: Atom/Molecule/Organism/Template
 Purpose: {description}
 
@@ -1035,17 +1035,17 @@ ACCESSIBILITY:
 - Screen reader: {announcements}
 
 REFERENCE COMPONENTS:
-Follow patterns from: cor-{similar-component}
+Follow patterns from: mud-{similar-component}
 
 DELIVERABLES:
 1. tokens/core/components/{name}.tokens.json
-2. src/components/cor-{name}/cor-{name}.enums.ts
-3. src/components/cor-{name}/cor-{name}.constants.ts
-4. src/components/cor-{name}/cor-{name}.tsx (with JSDoc)
-5. src/components/cor-{name}/cor-{name}.css (with tokens)
-6. src/components/cor-{name}/cor-{name}.stories.ts (all variants)
-7. test/cor-{name}.spec.tsx (unit tests)
-8. test/cor-{name}.e2e.tsx (E2E tests)
+2. src/components/mud-{name}/mud-{name}.enums.ts
+3. src/components/mud-{name}/mud-{name}.constants.ts
+4. src/components/mud-{name}/mud-{name}.tsx (with JSDoc)
+5. src/components/mud-{name}/mud-{name}.css (with tokens)
+6. src/components/mud-{name}/mud-{name}.stories.ts (all variants)
+7. test/mud-{name}.spec.tsx (unit tests)
+8. test/mud-{name}.e2e.tsx (E2E tests)
 
 VALIDATION:
 - yarn tokens.build → success
@@ -1178,13 +1178,13 @@ yarn format                             # Format with Prettier
 
 ```
 Component Files:
-src/components/cor-{name}/cor-{name}.tsx
-src/components/cor-{name}/cor-{name}.css
-src/components/cor-{name}/cor-{name}.enums.ts
-src/components/cor-{name}/cor-{name}.constants.ts
-src/components/cor-{name}/cor-{name}.stories.ts
-src/components/cor-{name}/test/cor-{name}.spec.tsx
-src/components/cor-{name}/test/cor-{name}.e2e.tsx
+src/components/mud-{name}/mud-{name}.tsx
+src/components/mud-{name}/mud-{name}.css
+src/components/mud-{name}/mud-{name}.enums.ts
+src/components/mud-{name}/mud-{name}.constants.ts
+src/components/mud-{name}/mud-{name}.stories.ts
+src/components/mud-{name}/test/mud-{name}.spec.tsx
+src/components/mud-{name}/test/mud-{name}.e2e.tsx
 
 Token Files:
 tokens/core/components/{name}.tokens.json
@@ -1275,11 +1275,11 @@ export const Primary: Story = {
 // ✅ CORRECT (Web Components pattern for this project)
 import { html } from 'lit-html';
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
-import { ButtonVariant, ButtonSize } from './cor-button.enums';
+import { ButtonVariant, ButtonSize } from './mud-button.enums';
 
 export default {
   title: 'Atoms/Button',
-  component: 'cor-button',
+  component: 'mud-button',
   argTypes: {
     variant: {
       control: 'select',
@@ -1289,13 +1289,13 @@ export default {
 };
 
 export const Default = (args) => html`
-  <cor-button variant="${args.variant}" size="${args.size}">
+  <mud-button variant="${args.variant}" size="${args.size}">
     <button>${args.content}</button>
-  </cor-button>
+  </mud-button>
 `;
 ```
 
-**Reference:** `src/components/cor-button/cor-button.stories.ts`
+**Reference:** `src/components/mud-button/mud-button.stories.ts`
 
 ### 14.2 Token Variable Naming
 
@@ -1328,7 +1328,7 @@ When using `pix-stencil-storybook` skill, note current MCP server tool naming:
 | Topic | Location |
 |-------|----------|
 | Token structure | `tokens/core/*.tokens.json` |
-| Component pattern | `src/components/cor-button/` |
+| Component pattern | `src/components/mud-button/` |
 | Storybook config | `.storybook/main.mjs` |
 | Project spec | `.specs/PROJECT-SPECIFICATION.md` |
 | Token architecture | `.specs/TOKEN-ARCHITECTURE.md` |
@@ -1393,7 +1393,7 @@ cp .windsurf/skills/pix-stencil-storybook/SKILL.md .windsurf/skills.local/pix-st
 
 **Input Spec:**
 ```
-Create cor-badge component
+Create mud-badge component
 - Type: Atom
 - Variants: neutral, primary, success, warning, danger
 - Sizes: small, medium
@@ -1412,7 +1412,7 @@ Create cor-badge component
 
 **Input Spec:**
 ```
-Create cor-input-field component
+Create mud-input-field component
 - Type: Molecule
 - Includes: label, input, error message
 - Variants: default, error, success
@@ -1432,7 +1432,7 @@ Create cor-input-field component
 
 **Input Spec:**
 ```
-Create cor-data-table component
+Create mud-data-table component
 - Type: Organism
 - Features: sorting, pagination, row selection
 - Slots: table with semantic HTML

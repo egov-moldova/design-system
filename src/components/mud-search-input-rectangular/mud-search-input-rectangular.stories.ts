@@ -162,7 +162,8 @@ export const AllSizes: Story = {
     docs: {
       source: {
         code: SEARCH_INPUT_RECTANGULAR_SIZES.map(
-          s => `<mud-search-input-rectangular aria-label="Caută" size="${s}" placeholder="Caută…"></mud-search-input-rectangular>`,
+          s =>
+            `<mud-search-input-rectangular aria-label="Caută" size="${s}" placeholder="Caută…"></mud-search-input-rectangular>`,
         ).join('\n'),
       },
     },

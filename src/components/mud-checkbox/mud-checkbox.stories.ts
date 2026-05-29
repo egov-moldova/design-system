@@ -75,7 +75,9 @@ const renderCheckbox = (args: CheckboxArgs) =>
   });
 
 const docsSource = (args: CheckboxArgs) =>
-  renderCheckbox(args).replace(/<\/mud-checkbox>/, '\n</mud-checkbox>').replace(/<span slot=/g, '\n  <span slot=');
+  renderCheckbox(args)
+    .replace(/<\/mud-checkbox>/, '\n</mud-checkbox>')
+    .replace(/<span slot=/g, '\n  <span slot=');
 
 const meta: Meta<CheckboxArgs> = {
   title: 'Atoms/Checkbox',

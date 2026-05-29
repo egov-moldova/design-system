@@ -79,7 +79,9 @@ const renderRadio = (args: RadioArgs) =>
   });
 
 const docsSourceDefault = (args: RadioArgs) =>
-  renderRadio(args).replace(/<\/mud-radio>/, '\n</mud-radio>').replace(/<span slot=/g, '\n  <span slot=');
+  renderRadio(args)
+    .replace(/<\/mud-radio>/, '\n</mud-radio>')
+    .replace(/<span slot=/g, '\n  <span slot=');
 
 const meta: Meta<RadioArgs> = {
   title: 'Atoms/Radio',

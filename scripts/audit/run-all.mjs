@@ -52,7 +52,7 @@ script individually.
 
 Targets (choose one):
   <mud-name>          Audit one component (e.g. mud-button or button)
-  --all               Audit every cor-* component
+  --all               Audit every mud-* component
   --changed           Audit components touched in git diff vs main
 
 Options:

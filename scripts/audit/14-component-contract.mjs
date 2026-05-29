@@ -2,7 +2,7 @@
 /**
  * 14-component-contract.mjs
  *
- * Extracts the public API surface of a `cor-*` Stencil component using the
+ * Extracts the public API surface of a `mud-*` Stencil component using the
  * TypeScript compiler API:
  *
  *   - tag                 — from @Component({ tag: '...' })

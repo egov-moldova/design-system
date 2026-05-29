@@ -3,49 +3,49 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-switch · @age/web-components</title>
+    <title>mud-switch · @age/web-components</title>
   </head>
-  <body data-component="cor-switch">
+  <body data-component="mud-switch">
     <main class="demo-main">
-      <section id="cor-switch" class="component-section">
-        <h2>&lt;cor-switch&gt;</h2>
+      <section id="mud-switch" class="component-section">
+        <h2>&lt;mud-switch&gt;</h2>
 
         <div class="subsection">
           <h3>States</h3>
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-switch label="Notificări push"></cor-switch>
+                <mud-switch label="Notificări push"></mud-switch>
               </div>
               <span class="label">off</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-switch checked="" label="Notificări push"></cor-switch>
+                <mud-switch checked="" label="Notificări push"></mud-switch>
               </div>
               <span class="label">on</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-switch disabled="" label="Indisponibil"></cor-switch>
+                <mud-switch disabled="" label="Indisponibil"></mud-switch>
               </div>
               <span class="label">disabled (off)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-switch checked="" disabled="" label="Pornit și blocat"></cor-switch>
+                <mud-switch checked="" disabled="" label="Pornit și blocat"></mud-switch>
               </div>
               <span class="label">disabled (on)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-switch
+                <mud-switch
                   checked=""
                   required=""
                   name="autosave"
                   value="enabled"
                   label="Salvare automată"
-                ></cor-switch>
+                ></mud-switch>
               </div>
               <span class="label">required + value</span>
             </div>
@@ -57,36 +57,36 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-switch checked="">
+                <mud-switch checked="">
                   <span slot="label">Mod întunecat (dark mode)</span>
-                </cor-switch>
+                </mud-switch>
               </div>
               <span class="label">label slot</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-switch
+                <mud-switch
                   checked=""
                   label="Activează autentificarea în doi pași prin SMS pentru toate sesiunile noi de pe dispozitive necunoscute"
-                ></cor-switch>
+                ></mud-switch>
               </div>
               <span class="label">long wrapping label</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-switch label="Diacritice ăâîșțĂÂÎȘȚ &amp; <b> 🔔"></cor-switch>
+                <mud-switch label="Diacritice ăâîșțĂÂÎȘȚ &amp; <b> 🔔"></mud-switch>
               </div>
               <span class="label">diacritics + special chars</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px" dir="rtl">
-                <cor-switch checked="" label="مرحبا بكم"></cor-switch>
+                <mud-switch checked="" label="مرحبا بكم"></mud-switch>
               </div>
               <span class="label">RTL label</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-switch checked="" aria-label="Toggle without visible label"></cor-switch>
+                <mud-switch checked="" aria-label="Toggle without visible label"></mud-switch>
               </div>
               <span class="label">no label (aria-label only)</span>
             </div>

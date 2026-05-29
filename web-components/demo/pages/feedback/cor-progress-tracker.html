@@ -3,52 +3,52 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-progress-tracker · @age/web-components</title>
+    <title>mud-progress-tracker · @age/web-components</title>
   </head>
-  <body data-component="cor-progress-tracker">
+  <body data-component="mud-progress-tracker">
     <main class="demo-main">
-      <section id="cor-progress-tracker" class="component-section">
-        <h2>&lt;cor-progress-tracker&gt;</h2>
+      <section id="mud-progress-tracker" class="component-section">
+        <h2>&lt;mud-progress-tracker&gt;</h2>
 
         <div class="subsection">
           <h3>Horizontal — one of each status (steps set via JS property)</h3>
           <div style="width: 100%; max-width: 720px">
-            <cor-progress-tracker id="demo-tracker-horizontal" orientation="horizontal"></cor-progress-tracker>
+            <mud-progress-tracker id="demo-tracker-horizontal" orientation="horizontal"></mud-progress-tracker>
           </div>
         </div>
 
         <div class="subsection">
           <h3>Vertical — with supporting text</h3>
           <div style="width: 100%; max-width: 480px">
-            <cor-progress-tracker id="demo-tracker-vertical" orientation="vertical"></cor-progress-tracker>
+            <mud-progress-tracker id="demo-tracker-vertical" orientation="vertical"></mud-progress-tracker>
           </div>
         </div>
 
         <div class="subsection">
           <h3>Interactive (completed + current emit corStepClick)</h3>
           <div style="width: 100%; max-width: 720px">
-            <cor-progress-tracker
+            <mud-progress-tracker
               id="demo-tracker-interactive"
               orientation="horizontal"
               interactive=""
-            ></cor-progress-tracker>
+            ></mud-progress-tracker>
           </div>
         </div>
 
         <div class="subsection">
           <h3>Edge cases — 6+ steps and long labels</h3>
           <div style="width: 100%; max-width: 720px">
-            <cor-progress-tracker id="demo-tracker-many" orientation="horizontal"></cor-progress-tracker>
+            <mud-progress-tracker id="demo-tracker-many" orientation="horizontal"></mud-progress-tracker>
           </div>
           <div style="width: 100%; max-width: 480px; margin-top: 24px">
-            <cor-progress-tracker id="demo-tracker-longlabels" orientation="vertical"></cor-progress-tracker>
+            <mud-progress-tracker id="demo-tracker-longlabels" orientation="vertical"></mud-progress-tracker>
           </div>
         </div>
       </section>
       <script type="module">
-        // cor-progress-tracker.steps is an ARRAY prop — must be assigned as a JS
+        // mud-progress-tracker.steps is an ARRAY prop — must be assigned as a JS
         // property (Stencil cannot deserialize arrays from HTML attributes).
-        customElements.whenDefined('cor-progress-tracker').then(() => {
+        customElements.whenDefined('mud-progress-tracker').then(() => {
           const horizontal = document.getElementById('demo-tracker-horizontal');
           if (horizontal) {
             horizontal.steps = [

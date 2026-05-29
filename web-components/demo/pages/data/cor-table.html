@@ -3,26 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-table · @age/web-components</title>
+    <title>mud-table · @age/web-components</title>
   </head>
-  <body data-component="cor-table">
+  <body data-component="mud-table">
     <main class="demo-main">
-      <section id="cor-table" class="component-section">
-        <h2>&lt;cor-table&gt;</h2>
+      <section id="mud-table" class="component-section">
+        <h2>&lt;mud-table&gt;</h2>
 
         <div class="subsection">
           <h3>Zebra rows, sortable columns, custom status cell (slot)</h3>
           <p class="label">
             <code>columns</code> + <code>rows</code> set via JS property. The <code>cell-status</code> slot is matched
-            per-row as <code>cell-status-{index}</code> so each row gets its own <code>cor-tag</code>.
+            per-row as <code>cell-status-{index}</code> so each row gets its own <code>mud-tag</code>.
           </p>
           <div style="width: 100%; max-width: 760px; overflow: auto">
-            <cor-table id="demo-table-zebra" row-style="zebra" hoverable="" aria-label="Cereri depuse">
-              <cor-tag slot="cell-status-0" variant="status" type="subtle" semantic="success">Aprobat</cor-tag>
-              <cor-tag slot="cell-status-1" variant="status" type="subtle" semantic="warning">În curs</cor-tag>
-              <cor-tag slot="cell-status-2" variant="status" type="subtle" semantic="danger">Refuzat</cor-tag>
-              <cor-tag slot="cell-status-3" variant="status" type="subtle" semantic="brand">Confirmat</cor-tag>
-            </cor-table>
+            <mud-table id="demo-table-zebra" row-style="zebra" hoverable="" aria-label="Cereri depuse">
+              <mud-tag slot="cell-status-0" variant="status" type="subtle" semantic="success">Aprobat</mud-tag>
+              <mud-tag slot="cell-status-1" variant="status" type="subtle" semantic="warning">În curs</mud-tag>
+              <mud-tag slot="cell-status-2" variant="status" type="subtle" semantic="danger">Refuzat</mud-tag>
+              <mud-tag slot="cell-status-3" variant="status" type="subtle" semantic="brand">Confirmat</mud-tag>
+            </mud-table>
           </div>
         </div>
 
@@ -30,11 +30,11 @@
           <h3>Header styles &amp; row styles</h3>
           <div class="row" style="align-items: flex-start; gap: var(--spacing-32)">
             <div class="cell" style="align-items: stretch; min-width: 280px">
-              <cor-table id="demo-table-inverted" header-style="inverted" row-style="divided"></cor-table>
+              <mud-table id="demo-table-inverted" header-style="inverted" row-style="divided"></mud-table>
               <span class="label">header-style=inverted · row-style=divided</span>
             </div>
             <div class="cell" style="align-items: stretch; min-width: 280px">
-              <cor-table id="demo-table-borderless" header-style="default" row-style="borderless"></cor-table>
+              <mud-table id="demo-table-borderless" header-style="default" row-style="borderless"></mud-table>
               <span class="label">header-style=default · row-style=borderless</span>
             </div>
           </div>
@@ -43,19 +43,19 @@
         <div class="subsection">
           <h3>Selectable rows (preselected via selectedRows prop)</h3>
           <div style="width: 100%; max-width: 760px; overflow: auto">
-            <cor-table id="demo-table-select" selectable="" row-style="zebra" aria-label="Documente"></cor-table>
+            <mud-table id="demo-table-select" selectable="" row-style="zebra" aria-label="Documente"></mud-table>
           </div>
         </div>
 
         <div class="subsection">
           <h3>Slots (header-cell-{key} + empty)</h3>
           <div style="width: 100%; max-width: 760px; overflow: auto">
-            <cor-table id="demo-table-slots" row-style="divided">
+            <mud-table id="demo-table-slots" row-style="divided">
               <span slot="header-cell-amount" style="font-weight: 700">Sumă (MDL) ⤓</span>
               <span slot="empty" style="display: block; padding: var(--spacing-24); text-align: center">
                 Nu există tranzacții în această perioadă. <a href="#new">Creează una</a>.
               </span>
-            </cor-table>
+            </mud-table>
           </div>
         </div>
 
@@ -64,14 +64,14 @@
 
           <p class="label">Empty table (<code>rows = []</code>) — built-in default empty state.</p>
           <div style="width: 100%; max-width: 760px; overflow: auto">
-            <cor-table id="demo-table-empty" row-style="zebra"></cor-table>
+            <mud-table id="demo-table-empty" row-style="zebra"></mud-table>
           </div>
 
           <p class="label" style="margin-top: var(--spacing-16)">
             No columns / no rows at all (both props unset) — renders an empty shell with only the default empty row.
           </p>
           <div style="width: 100%; max-width: 760px; overflow: auto">
-            <cor-table aria-label="Tabel gol"></cor-table>
+            <mud-table aria-label="Tabel gol"></mud-table>
           </div>
 
           <p class="label" style="margin-top: var(--spacing-16)">
@@ -80,18 +80,18 @@
             >) and an emoji. Scroll horizontally and vertically.
           </p>
           <div style="width: 100%; max-width: 760px; max-height: 360px; overflow: auto">
-            <cor-table
+            <mud-table
               id="demo-table-stress"
               row-style="zebra"
               hoverable=""
               sort-column="amount"
               sort-direction="desc"
-            ></cor-table>
+            ></mud-table>
           </div>
         </div>
       </section>
       <script type="module">
-        customElements.whenDefined('cor-table').then(() => {
+        customElements.whenDefined('mud-table').then(() => {
           // 1) Zebra + sortable + custom status slot
           const zebra = document.getElementById('demo-table-zebra');
           if (zebra) {

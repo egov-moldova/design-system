@@ -233,9 +233,8 @@
   appearance: none;
   -webkit-appearance: none;
 
-  transition:
-    background-color var(--pagination-container-transition-duration)
-      var(--pagination-container-transition-timing-function);
+  transition: background-color var(--pagination-container-transition-duration)
+    var(--pagination-container-transition-timing-function);
 }
 
 :host([size='sm']) .overflow-menu-item {

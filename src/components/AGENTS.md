@@ -51,17 +51,17 @@ These topics have their **canonical location** in the root `_agents/` folder:
 ## Quick Reference — File Structure
 
 ```text
-src/components/cor-[name]/
-├── cor-[name].tsx              # Component class
-├── cor-[name].css              # Styles (PostCSS nested)
-├── cor-[name].types.ts         # TypeScript interfaces
-├── cor-[name].enums.ts         # Enum values for props
-├── cor-[name].constants.ts     # Static constants
-├── cor-[name].stories.ts       # Storybook CSF3 stories
+src/components/mud-[name]/
+├── mud-[name].tsx              # Component class
+├── mud-[name].css              # Styles (PostCSS nested)
+├── mud-[name].types.ts         # TypeScript interfaces
+├── mud-[name].enums.ts         # Enum values for props
+├── mud-[name].constants.ts     # Static constants
+├── mud-[name].stories.ts       # Storybook CSF3 stories
 ├── readme.md                   # Auto-generated
 └── test/
-    ├── cor-[name].spec.tsx     # Unit tests
-    └── cor-[name].e2e.ts      # E2E tests
+    ├── mud-[name].spec.tsx     # Unit tests
+    └── mud-[name].e2e.ts      # E2E tests
 ```
 
 ## Quick Reference — TSX Member Order
@@ -81,11 +81,11 @@ src/components/cor-[name]/
 
 ## Stencil Compliance — Stencil 4.x
 
-Every `cor-*` component must conform to the [`stencil-compliance` Skill](../../.claude/skills/stencil-compliance/SKILL.md). It catalogs the **14 areas** of Stencil rules across decorators, lifecycle, host element, JSX, styling, form-associated custom elements, reactive data, serialization, functional components, and the public API surface.
+Every `mud-*` component must conform to the [`stencil-compliance` Skill](../../.claude/skills/stencil-compliance/SKILL.md). It catalogs the **14 areas** of Stencil rules across decorators, lifecycle, host element, JSX, styling, form-associated custom elements, reactive data, serialization, functional components, and the public API surface.
 
 **Top-10 must-check rules** (full table in the Skill):
 
-1. `@Component`: `tag: 'cor-<name>'`, `shadow: true`, never `scoped: true`.
+1. `@Component`: `tag: 'mud-<name>'`, `shadow: true`, never `scoped: true`.
 2. All `@Method()` are `async` or return `Promise<T>`.
 3. `EventEmitter<T>` always typed with non-empty payload.
 4. Events that must escape shadow DOM use `composed: true` (default).
@@ -105,13 +105,13 @@ Every `cor-*` component must conform to the [`stencil-compliance` Skill](../../.
 - [`stencil-compliance/references/functional-api.md`](../../.claude/skills/stencil-compliance/references/functional-api.md) — Functional Components + public API
 - [`stencil-compliance/references/anti-patterns.md`](../../.claude/skills/stencil-compliance/references/anti-patterns.md) — top 25 anti-patterns with fixes
 
-**Verification:** `/audit-component @cor-<name> --deep` invokes this Skill end-to-end; `/pre-pr-check` runs Wave 1 grep gates from the anti-pattern catalog.
+**Verification:** `/audit-component @mud-<name> --deep` invokes this Skill end-to-end; `/pre-pr-check` runs Wave 1 grep gates from the anti-pattern catalog.
 
 ---
 
 ## Accessibility — WCAG 2.1 Level AA
 
-Every `cor-*` component must conform to **WCAG 2.1 Level AA** in both light and dark mode. Canonical guide: Skill [`accessibility-compliance`](../../.claude/skills/accessibility-compliance/SKILL.md). Project-specific spec: Figma [node 2753-5965](https://www.figma.com/design/doJ7tDY0PlQ0PqMgbpFVIC/Components?node-id=2753-5965&m=dev).
+Every `mud-*` component must conform to **WCAG 2.1 Level AA** in both light and dark mode. Canonical guide: Skill [`accessibility-compliance`](../../.claude/skills/accessibility-compliance/SKILL.md). Project-specific spec: Figma [node 2753-5965](https://www.figma.com/design/doJ7tDY0PlQ0PqMgbpFVIC/Components?node-id=2753-5965&m=dev).
 
 **Five essential rules** (full details in the Skill):
 
@@ -123,4 +123,4 @@ Every `cor-*` component must conform to **WCAG 2.1 Level AA** in both light and 
 
 **Target size exceptions:** button sm/xs (32/24 px) and checkbox sm/md (16/20 px) are below 24×24. WCAG 2.1 AA does NOT require 24×24 (that is 2.2 SC 2.5.8). See [`_agents/target-size-exceptions.md`](_agents/target-size-exceptions.md) for the documented rationale.
 
-**Verification:** `/audit-accessibility @cor-<name>` deep audit; `/audit-component @cor-<name>` for category-level pass; Storybook a11y addon during dev; `yarn audit:contrast` for token-level light + dark.
+**Verification:** `/audit-accessibility @mud-<name>` deep audit; `/audit-component @mud-<name>` for category-level pass; Storybook a11y addon during dev; `yarn audit:contrast` for token-level light + dark.

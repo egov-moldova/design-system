@@ -9,21 +9,21 @@ and updates PR https://github.com/corlab-org/age-design/pull/5.
 
 | # | Component | Figma componentKey | Status | Commit | Screenshots |
 |---|---|---|---|---|---|
-| 1 | `cor-input` (text-input) | `f035f11544e0883bc29ca99b48309238db82edf8` | ✅ done | `6624b85` | `docs/screenshots/cor-input/` |
-| 2 | `cor-select-input` | `24351877baeb81b99cceea90d885b3455191ac62` | ✅ done | `41171ea` | `docs/screenshots/cor-select-input/` |
-| 3 | `cor-date-input` | `4449e61e554888eb4357b4f2e6e16dacf738fda3` | ✅ done | `f503fec` | `docs/screenshots/cor-date-input/` |
-| 4 | `cor-file-input` + `cor-file-item` | `2e8a0a8cc37b76d197dfdd8af2a4cac5ce8aa884` / `f7e6d1eed8dd15497025e1a9cad9d355403a68b8` | ✅ done | `299c6a2` | `docs/screenshots/cor-file-input/` |
-| 5 | `cor-search-input-rectangular` | `a27b4efaed053f6cd4a57411a032d7391174c425` | ✅ done | `a625494` | `docs/screenshots/cor-search-input-rectangular/` |
-| 6 | `cor-search-input-circular` | `b33c35c72dbe621375862c300c0238c4a4eacc78` | ✅ done | `1a3c4e6` | `docs/screenshots/cor-search-input-circular/` |
-| 7 | `cor-numeric-input` | `3029a32fe1e2ca1eb6e2bc68571f1965bded9ef6` | ✅ done | `2b76568` | `docs/screenshots/cor-numeric-input/` |
-| 8 | `cor-phone-input` | `f2ba725de62bbecd5bd84870a1e6b7bb1eb5adfe` | ✅ done | `70df409` | `docs/screenshots/cor-phone-input/` |
-| 9 | `cor-input-chip` | `3168d84c4883c991b5643e4feab97de2cfe8fb7e` | ✅ done | (this commit) | `docs/screenshots/cor-input-chip/` |
+| 1 | `mud-input` (text-input) | `f035f11544e0883bc29ca99b48309238db82edf8` | ✅ done | `6624b85` | `docs/screenshots/mud-input/` |
+| 2 | `mud-select-input` | `24351877baeb81b99cceea90d885b3455191ac62` | ✅ done | `41171ea` | `docs/screenshots/mud-select-input/` |
+| 3 | `mud-date-input` | `4449e61e554888eb4357b4f2e6e16dacf738fda3` | ✅ done | `f503fec` | `docs/screenshots/mud-date-input/` |
+| 4 | `mud-file-input` + `mud-file-item` | `2e8a0a8cc37b76d197dfdd8af2a4cac5ce8aa884` / `f7e6d1eed8dd15497025e1a9cad9d355403a68b8` | ✅ done | `299c6a2` | `docs/screenshots/mud-file-input/` |
+| 5 | `mud-search-input-rectangular` | `a27b4efaed053f6cd4a57411a032d7391174c425` | ✅ done | `a625494` | `docs/screenshots/mud-search-input-rectangular/` |
+| 6 | `mud-search-input-circular` | `b33c35c72dbe621375862c300c0238c4a4eacc78` | ✅ done | `1a3c4e6` | `docs/screenshots/mud-search-input-circular/` |
+| 7 | `mud-numeric-input` | `3029a32fe1e2ca1eb6e2bc68571f1965bded9ef6` | ✅ done | `2b76568` | `docs/screenshots/mud-numeric-input/` |
+| 8 | `mud-phone-input` | `f2ba725de62bbecd5bd84870a1e6b7bb1eb5adfe` | ✅ done | `70df409` | `docs/screenshots/mud-phone-input/` |
+| 9 | `mud-input-chip` | `3168d84c4883c991b5643e4feab97de2cfe8fb7e` | ✅ done | (this commit) | `docs/screenshots/mud-input-chip/` |
 
 **Input family complete — 9/9 components shipped. Figma drift fix loop complete 7/7.**
 
 ## Drift fix log
 
-### 2026-05-23 — `cor-phone-input` realigned to Figma — 4 styles, Type axis, Loading + Read-Only, country flag SVGs
+### 2026-05-23 — `mud-phone-input` realigned to Figma — 4 styles, Type axis, Loading + Read-Only, country flag SVGs
 
 **LAST fix in the input-family Figma-alignment loop (7/7).** Docs page
 `3340:5684`, master component-set encompasses 100 shipped variants
@@ -34,7 +34,7 @@ Previous implementation shipped 2 styles, 1 type axis, no flags. This is
 the most complex drift fix in the family — additive change, existing API
 preserved.
 
-**TSX** (`cor-phone-input.tsx` + new `cor-phone-input.flags.ts`):
+**TSX** (`mud-phone-input.tsx` + new `mud-phone-input.flags.ts`):
 
 - `variant` enum widened from `['default','destructive']` to
   `['default','warning','destructive','success']`. `@Watch` validation
@@ -57,21 +57,21 @@ preserved.
   - Native input gets `disabled` + `aria-busy="true"` + dimmed opacity
     via `--phone-input-control-loading-opacity` (0.6).
   - Country trigger becomes `pointer-events: none`.
-  - Inline `cor-spinner` (xs on md size, sm on lg) renders at the
+  - Inline `mud-spinner` (xs on md size, sm on lg) renders at the
     trailing edge of the control row.
   - `canStep()` / `openListbox()` / `toggleListbox()` /
     `handleTriggerKeyDown()` all refuse work while loading.
 - Existing `readonly` prop now:
   - Sets `aria-readonly="true"` on the native input AND on the country
     trigger button (international mode).
-  - Renders a green `cor-icon[name=checkmark-circle-filled]` at the
+  - Renders a green `mud-icon[name=checkmark-circle-filled]` at the
     trailing edge of the control IFF the value passes the country's
     `[minLen, maxLen]` window AND `invalid` is not set — telegraphs
     "this value was confirmed" per the Figma Read-Only variant.
   - Disabled-vs-readonly distinction preserved at the structural
     layer: read-only has `aria-readonly=true` + `is-readonly` class,
     disabled has `aria-disabled=true` + `is-disabled` class.
-- New `cor-phone-input.flags.ts` ships **15 hand-drawn inline SVG flag
+- New `mud-phone-input.flags.ts` ships **15 hand-drawn inline SVG flag
   glyphs** at a shared 20×16 viewBox: MD (Moldova tricolor + eagle hint),
   RO (Romania tricolor), RU (white-blue-red horizontal), UA (blue-yellow),
   US (red/white stripes + blue canton with star dots), GB (Union Jack
@@ -84,9 +84,9 @@ preserved.
   round-trips, works inside Shadow DOM without CORS/referer hassles,
   ~6 KB total vs the ~140 KB `libphonenumber-js` alternative
   (`PRINCIPLES.md §B` rule-of-two not yet fired for a separate
-  `cor-country-flag` atom).
+  `mud-country-flag` atom).
 
-**CSS** (`cor-phone-input.css`):
+**CSS** (`mud-phone-input.css`):
 
 - Added `:host(.variant-warning)` and `:host(.variant-success)` blocks
   that remap the local `--_border-color*`, `--_focus-ring-color`,
@@ -97,7 +97,7 @@ preserved.
   default border (no emphasis), `cursor: default`. Label and value stay
   full-contrast (unlike disabled which dims them).
 - Added `:host(.is-loading)` block — dims native input + suppresses
-  pointer events, surfaces inline `cor-spinner` (brand blue, sized per
+  pointer events, surfaces inline `mud-spinner` (brand blue, sized per
   field size).
 - `.country-trigger` styled as a soft-gray pill (`#f5f5f5`,
   `borderRadius.6`) that hover-tints to `#f1f1f1` in international mode
@@ -120,7 +120,7 @@ preserved.
   warning border `#dc6803` (`color.border.warning.default`), warning
   focus-ring `#fedf89` (`palette.apricot.200`), success border `#027948`
   (`color.border.positive.default`), success focus-ring `#cdeadd`
-  (`palette.green.200`) — same shades the `cor-input` v2 fix shipped.
+  (`palette.green.200`) — same shades the `mud-input` v2 fix shipped.
 - Added `phoneInput.default.background.readOnly` (=
   `color.background.base.secondary` `#f5f5f5`),
   `phoneInput.default.border.readOnly`,
@@ -141,7 +141,7 @@ preserved.
 - Total CSS-var count: 113 → **143 phone-input tokens** (+30 new
   variables).
 
-**Stories** (`cor-phone-input.stories.ts`):
+**Stories** (`mud-phone-input.stories.ts`):
 
 - `Default` story stays at `type="local"` (Moldova-first).
 - New `International` story — `type="international"`, same defaults,
@@ -170,7 +170,7 @@ preserved.
 - `WithCountrySelected` rewritten in International mode (RO, UA, US,
   DE, IT swap correctly with flag changes).
 
-**Spec** (`test/cor-phone-input.spec.tsx`):
+**Spec** (`test/mud-phone-input.spec.tsx`):
 
 - Added `type` prop reflection + warn-and-fallback (`type="bogus"` →
   warn + `local` fallback).
@@ -196,7 +196,7 @@ preserved.
 - Added `loading state` describe block:
   - reflects `loading` to host (+ `is-loading` class),
   - sets `aria-busy="true"` on host,
-  - renders `cor-spinner` inside the input row,
+  - renders `mud-spinner` inside the input row,
   - xs spinner on md size, sm spinner on lg,
   - loading disables the native input + sets `aria-busy="true"` on it,
   - loading blocks listbox open in international mode,
@@ -231,7 +231,7 @@ match exact), ~3.3% diff on Read Only (same caveats).
 🇬🇧 Regatul Unit, 🇩🇪 Germania, 🇫🇷 Franța, 🇮🇹 Italia, 🇪🇸 Spania,
 🇵🇹 Portugalia, 🇮🇱 Israel, 🇹🇷 Turcia, 🇧🇬 Bulgaria, 🇬🇷 Grecia.
 
-Screenshots: `docs/screenshots/cor-phone-input/v2/` —
+Screenshots: `docs/screenshots/mud-phone-input/v2/` —
 `storybook-default-local.png`, `storybook-default-international.png`,
 `storybook-all-variants.png`, `storybook-all-variants-local.png`,
 `storybook-open-dropdown-all-flags.png`, `storybook-loading.png`,
@@ -243,7 +243,7 @@ Screenshots: `docs/screenshots/cor-phone-input/v2/` —
 `figma-{loading,readonly,warning,destructive,success}-international-large.png`,
 `figma-selection-menu.png` (canonical listbox node `10758:2541`).
 
-### Figma node resolution (cor-phone-input)
+### Figma node resolution (mud-phone-input)
 
 The docs canvas (`3340:5684`) was reachable via
 `mcp__figma__get_metadata` and `get_screenshot` at `maxDimension=2048`.
@@ -264,13 +264,13 @@ layer (no derivation needed): `--color-background-base-secondary`,
 `--color-border-brand-default`, `blue-sky/200` focus-ring effect, and
 the Onest font-stack.
 
-### 2026-05-23 — `cor-search-input-circular` realigned to Figma (mirror of rectangular)
+### 2026-05-23 — `mud-search-input-circular` realigned to Figma (mirror of rectangular)
 
 Mirrored the rectangular sibling's Figma realignment (commit `2eff62c`) onto
 the circular pill variant. Figma master `933:29721` exposes the same two
 axes the shipped circular component was missing:
 
-- **`loading` prop** — renders a brand `cor-spinner` next to the value /
+- **`loading` prop** — renders a brand `mud-spinner` next to the value /
   placeholder (`md` on `size="lg"`, `sm` on `size="md"`), sets
   `aria-busy="true"` on the internal control, and suppresses the trailing
   clear `×` button while in flight per the Figma loading variant on master
@@ -326,7 +326,7 @@ Pixel-perfect: Storybook screenshots visually match Figma master `933:29721`
 panels — the trailing submit button renders as a perfect circle (vs the
 rectangular's rounded square) per the silhouette philosophy.
 
-Screenshots: `docs/screenshots/cor-search-input-circular/v2/` —
+Screenshots: `docs/screenshots/mud-search-input-circular/v2/` —
 `storybook-with-submit-button-{light,dark}.png`,
 `storybook-loading-no-button-{light,dark}.png`,
 `storybook-with-submit-button-loading-{light,dark}.png`,
@@ -341,12 +341,12 @@ green. 518 spec tests pass (was 498 after the rectangular fix; +20 for
 circular parity), 0 console errors across every story, 0 contrast
 failures in light or dark (21 pass / 0 fail).
 
-### 2026-05-23 — `cor-search-input-rectangular` realigned to Figma (Loading visual + Button axis)
+### 2026-05-23 — `mud-search-input-rectangular` realigned to Figma (Loading visual + Button axis)
 
 Added the two axes Figma master `933:29099` exposes that the shipped
 component was missing:
 
-- **`loading` prop** — renders a `cor-spinner` next to the value/placeholder
+- **`loading` prop** — renders a `mud-spinner` next to the value/placeholder
   (sized `md` on `size="lg"`, `sm` on `size="md"` to match Figma's spinner
   tokens), exposes `aria-busy="true"` on the internal control, and suppresses
   the trailing clear `×` button while in flight (per Figma Loading variants
@@ -400,7 +400,7 @@ panels (the only Figma variants that were previously unreachable). The
 previously shipped Default/Filled/Disabled/ReadOnly/Destructive/Hover/Focus
 panels are unchanged.
 
-Screenshots: `docs/screenshots/cor-search-input-rectangular/v2/` —
+Screenshots: `docs/screenshots/mud-search-input-rectangular/v2/` —
 `storybook-with-submit-button-{light,dark}.png`,
 `storybook-loading-no-button-{light,dark}.png`,
 `storybook-with-submit-button-loading-{light,dark}.png`,
@@ -413,7 +413,7 @@ typecheck && yarn test && yarn sp.build && yarn audit:contrast` — all
 green. 498 spec tests pass, 0 console errors across every story, 0
 contrast failures in light or dark.
 
-### 2026-05-23 — `cor-file-input` realigned to Figma (state-only model)
+### 2026-05-23 — `mud-file-input` realigned to Figma (state-only model)
 
 Removed the shipped `variant: 'default' | 'destructive'` axis (drift — Figma's
 master component-set `262:6718` exposes only 5 state-only symbols: `Default`,
@@ -426,7 +426,7 @@ body text swapped to `dropzoneActiveText` (default `Eliberează pentru a
 `.is-drag-over` → `.is-active` to match the Figma vocabulary; the underlying
 drag events still drive the state.
 
-Companion atom `cor-file-item` renamed the resting state `idle` → `uploaded`
+Companion atom `mud-file-item` renamed the resting state `idle` → `uploaded`
 to match Figma's master component-set `262:6744` (4 states: `Uploaded`,
 `Uploading`, `Success`, `Error`).
 
@@ -440,11 +440,11 @@ was corrected to ink primary per pixel-sampled Figma).
 
 **Breaking changes** — none of which are in downstream production consumers
 yet (the component is freshly shipped on this branch):
-- `cor-file-input` `variant` prop removed; consumers using
+- `mud-file-input` `variant` prop removed; consumers using
   `variant="destructive"` migrate to `invalid` (which now drives the red
   dashed-border treatment).
-- `cor-file-input` `FILE_INPUT_VARIANTS` and `FileInputVariant` types removed.
-- `cor-file-item` state name `idle` → `uploaded`.
+- `mud-file-input` `FILE_INPUT_VARIANTS` and `FileInputVariant` types removed.
+- `mud-file-item` state name `idle` → `uploaded`.
 - `--file-input-default-*`, `--file-input-destructive-*` CSS variables
   removed → use `--file-input-background-*`, `--file-input-border-*`,
   `--file-input-text-*`, `--file-input-icon-*`, `--file-input-focus-ring-{default,invalid}`.
@@ -456,8 +456,8 @@ Pixel-perfect diff against Figma Active panel crop: **5.81%** (anti-aliasing
 and font-rendering noise; structural and colour match exact — colour-sampled
 the Figma PNG to confirm ink-primary body text in Active, not brand blue).
 
-Screenshots: `docs/screenshots/cor-file-input/v2/`,
-`docs/screenshots/cor-file-item/v2/`.
+Screenshots: `docs/screenshots/mud-file-input/v2/`,
+`docs/screenshots/mud-file-item/v2/`.
 
 Gates: `yarn tokens.build && yarn dx:stencil:once && yarn lint && yarn
 typecheck && yarn test && yarn sp.build && yarn audit:contrast` — all green.
@@ -466,7 +466,7 @@ failures in light or dark.
 
 ## Failure / restart log
 
-### 2026-05-22 — `cor-file-input` Figma node resolution
+### 2026-05-22 — `mud-file-input` Figma node resolution
 
 The Figma file `doJ7tDY0PlQ0PqMgbpFVIC` exposed via the MCP server only listed
 9 top-level pages (Getting Started, Badge, Button, Checkbox, Link, Messaging,
@@ -476,28 +476,28 @@ component keys. The advertised `search_design_system` MCP tool was not
 available in this environment (only `get_design_context`, `get_screenshot`,
 `get_metadata`, `get_variable_defs` were exposed).
 
-The earlier inputs (`cor-input`, `cor-select-input`, `cor-date-input`) shipped
+The earlier inputs (`mud-input`, `mud-select-input`, `mud-date-input`) shipped
 without preserved Figma node references in this repo either, so there was no
 prior anchor to walk from.
 
 **Decision:** continue without a Figma node anchor. The user-provided task
 specification was sufficient to derive the visual contract (input-family
-border / focus ring / label / helper / error — see `cor-input`) and the
+border / focus ring / label / helper / error — see `mud-input`) and the
 drop-zone affordance (dashed border, brand-tint background on `is-drag-over`,
 brand-blue solid border on `is-focused`). All other surfaces (typography
 scale, spacing, semantic colors, dark-mode mappings) came from the canonical
 sources: `DESIGN.md`, `.impeccable/design.json`, the existing token bundles,
-and the `cor-input` / `cor-date-input` patterns on disk.
+and the `mud-input` / `mud-date-input` patterns on disk.
 
 Future agent runs: if a Figma node-id for either component_set is rediscovered,
 log it here so pixel-perfect comparison against the original can be re-checked.
 
 ## Last updated
 
-2026-05-23 — `cor-phone-input` realigned to Figma — LAST fix in the input
+2026-05-23 — `mud-phone-input` realigned to Figma — LAST fix in the input
 family Figma-alignment loop (7/7). Widened `variant` to 4 styles (added
 `warning` + `success`), added `type: 'local' | 'international'` axis,
-added `loading` prop with inline `cor-spinner`, gave `readonly` a distinct
+added `loading` prop with inline `mud-spinner`, gave `readonly` a distinct
 soft-gray-surface treatment with a trailing green-check valid icon, and
 shipped 15 hand-drawn inline SVG country flag glyphs (Moldova first, then
 RO/RU/UA/US/GB/DE/FR/IT/ES/PT/IL/TR/BG/GR — all visible side-by-side in
@@ -508,7 +508,7 @@ shape preserved, every new prop defaults to a Moldova-first value
 drift fix loop now complete 7/7.** See "Drift fix log" above for the full
 delta.
 
-2026-05-23 — `cor-search-input-circular` realigned to Figma — mirror of the
+2026-05-23 — `mud-search-input-circular` realigned to Figma — mirror of the
 rectangular sibling's `2eff62c` fix. Added the `loading` visual state
 (spinner + `aria-busy`, clear button suppressed in-flight) and the
 `withButton` axis (trailing brand-blue circular submit button that fires
@@ -518,26 +518,26 @@ pill silhouette) and `loadingSpinner.*`. 20 new spec tests (498 → 518).
 No breaking changes. Rectangular and circular siblings are now feature
 pared at parity. See "Drift fix log" above for the full delta.
 
-2026-05-23 — `cor-search-input-rectangular` realigned to Figma — added the
+2026-05-23 — `mud-search-input-rectangular` realigned to Figma — added the
 `loading` visual state (spinner + `aria-busy`, clear button suppressed
 in-flight) and the `withButton` axis (trailing brand-blue submit button
 that fires `corSearch`). 17 new tokens under `submitButton.*` and
 `loadingSpinner.*`. 20 new spec tests (478 → 498). No breaking changes.
 See "Drift fix log" above for the full delta.
 
-2026-05-23 — `cor-file-input` realigned to Figma (state-only model) — removed
-the `variant` axis, added the `Active` state, renamed `cor-file-item` resting
+2026-05-23 — `mud-file-input` realigned to Figma (state-only model) — removed
+the `variant` axis, added the `Active` state, renamed `mud-file-item` resting
 state `idle` → `uploaded`, flattened the token namespace. See "Drift fix log"
 above for the full delta.
 
-2026-05-23 — `cor-input-chip` shipped (multi-value chip-input molecule with
+2026-05-23 — `mud-input-chip` shipped (multi-value chip-input molecule with
 form association). LAST input variant — input family is now complete (9/9).
 Pattern B: hosts an internal `<input type="text">` for the next chip plus
 inline pill rendering for confirmed values, all inside a single
-shadow-DOM container that mirrors the `cor-input` visual contract (1px
+shadow-DOM container that mirrors the `mud-input` visual contract (1px
 border, brand-blue focus ring, label, helper / error, sizes md/lg, states
 default / hover / focus / filled / disabled / mandatory / destructive).
-Chips kept INTERNAL to `cor-input-chip` (not as a separate `cor-chip`
+Chips kept INTERNAL to `mud-input-chip` (not as a separate `mud-chip`
 sibling) — no standalone chip component was visible in the Figma file
 scope reachable via MCP, and the rule-of-two (PRINCIPLES.md §B) hasn't
 fired yet (one consumer). Sibling extraction can come later via
@@ -582,7 +582,7 @@ fail). Live keyboard contract verified in browser: Enter adds a chip,
 clears the input, and emits `corChipAdd` + `corChange`; × click removes
 and emits `corChipRemove` + `corChange`.
 
-### 2026-05-23 — `cor-input-chip` Figma node resolution
+### 2026-05-23 — `mud-input-chip` Figma node resolution
 
 Same MCP file scope as the eight earlier inputs — `doJ7tDY0PlQ0PqMgbpFVIC`
 only exposes 9 top-level pages (Getting Started, Badge, Button, Checkbox,
@@ -595,24 +595,24 @@ Probed the known sibling page nodeId `403:21765` ("Input: Date") via
 `get_screenshot` (PNG rendered successfully — file scope hasn't shifted)
 plus `get_metadata` (returned date-input subtree, no cross-link to
 input-chip). Derivation followed the established graceful-fallback
-pattern from the eight earlier inputs: cor-input provides the canonical
+pattern from the eight earlier inputs: mud-input provides the canonical
 container / focus-ring / label / helper / error visual contract;
-cor-file-input provides the multi-value list-inside-container precedent
+mud-file-input provides the multi-value list-inside-container precedent
 plus the `role="status"` live-region pattern. Chip pill styling
 (soft-gray background `color.background.base.secondary`,
-borderRadius.6, medium-weight label) follows the `cor-button` neutral
-variant's tinting cues (read via `git show origin/feat/cor-button:...`
+borderRadius.6, medium-weight label) follows the `mud-button` neutral
+variant's tinting cues (read via `git show origin/feat/mud-button:...`
 without switching branches per the prompt constraint). Romanian copy
 follows PRODUCT.md voice (verbs over nouns, second-person formal
 implied). Validated against `DESIGN.md`, `.impeccable/design.json`, and
-the on-disk `cor-input` / `cor-file-input` / `cor-file-item` /
-`cor-select-input` / `cor-button` implementations. If the
+the on-disk `mud-input` / `mud-file-input` / `mud-file-item` /
+`mud-select-input` / `mud-button` implementations. If the
 component_set's node-id becomes reachable later, re-run pixel-perfect
 comparison and log diff results here.
 
 ---
 
-2026-05-23 — `cor-phone-input` shipped (phone-number-entry molecule with
+2026-05-23 — `mud-phone-input` shipped (phone-number-entry molecule with
 country prefix + format mask, form-associated). Pattern B: renders its own
 `<input type="tel" inputmode="tel" autocomplete="tel-national">` paired
 with a combobox-triggered country listbox inside one continuous border /
@@ -653,7 +653,7 @@ EdgeCases (paste E.164 +44 → GB, long DE 11-digit). 0 console errors
 across every story; 0 contrast failures across light + dark (`yarn
 audit:contrast` summary 21 pass / 0 fail).
 
-### 2026-05-23 — `cor-phone-input` Figma node resolution
+### 2026-05-23 — `mud-phone-input` Figma node resolution
 
 Same MCP file scope as the seven earlier inputs — `doJ7tDY0PlQ0PqMgbpFVIC`
 only exposes 9 top-level pages and no `phone-number-input` node was
@@ -663,21 +663,21 @@ reachable through the available `get_metadata` traversal. The advertised
 `403:21765` ("Input: Date") was reachable via `get_screenshot`
 (confirming the file scope hasn't shifted), but it doesn't link back to
 the phone-input page. Derivation followed the well-validated pattern from
-seven earlier components on this branch: cor-input provides the canonical
+seven earlier components on this branch: mud-input provides the canonical
 border / focus-ring / label / helper / error visual contract;
-cor-select-input provides the combobox + listbox + keyboard contract; the
+mud-select-input provides the combobox + listbox + keyboard contract; the
 country-trigger / divider / dial-code layout follows ITU-T E.164 + WAI-ARIA
 combobox conventions. The Moldova-first audience (PRODUCT.md) drove the
 defaults: MD as `defaultCountry`, Romanian display names + Romanian error
 copy. Validated against `DESIGN.md`, `.impeccable/design.json`, and the
-on-disk `cor-input` / `cor-select-input` / `cor-date-input` /
-`cor-numeric-input` implementations. If the component_set's node-id
+on-disk `mud-input` / `mud-select-input` / `mud-date-input` /
+`mud-numeric-input` implementations. If the component_set's node-id
 becomes reachable later, re-run pixel-perfect comparison and log diff
 results here.
 
 ---
 
-2026-05-23 — `cor-numeric-input` shipped (numeric-entry atom with stacked
+2026-05-23 — `mud-numeric-input` shipped (numeric-entry atom with stacked
 step controls, form-associated). Pattern B: renders its own
 `<input type="text" role="spinbutton" inputmode="decimal">` inside shadow DOM
 plus a trailing vertical stepper stack (`chevron-top` / `chevron-bottom`)
@@ -712,7 +712,7 @@ WithStep / WithPrecision / WithSuffix / WithCurrencyIcon / WithoutSteppers /
 WithHelperText / WithError / EdgeCases. 0 console errors across every
 story, 0 contrast failures across light + dark.
 
-### 2026-05-23 — `cor-numeric-input` Figma node resolution
+### 2026-05-23 — `mud-numeric-input` Figma node resolution
 
 Same MCP file scope as the earlier inputs — `doJ7tDY0PlQ0PqMgbpFVIC` only
 exposes 9 top-level pages and no `numeric-input` node was reachable through
@@ -720,20 +720,20 @@ the available `get_metadata` traversal. The known sibling page nodeId
 `403:21765` ("Input: Date") was reachable for screenshot retrieval (date
 input page rendered), confirming the file scope hasn't shifted, but no
 parent reference links from there to the numeric-input page. Derivation
-followed the established pattern (see prior failure-log entries): cor-input
+followed the established pattern (see prior failure-log entries): mud-input
 provides the canonical input-family visual contract; the stacked stepper
 affordance (chevron-up over chevron-bottom inside the right edge of the
 control, each ~50% of the input height) follows the task brief and standard
 spinbutton conventions. Validated against `DESIGN.md`,
-`.impeccable/design.json`, and the on-disk `cor-input` / `cor-select-input`
-(chevron pattern) / `cor-search-input-rectangular` (trailing affordance
+`.impeccable/design.json`, and the on-disk `mud-input` / `mud-select-input`
+(chevron pattern) / `mud-search-input-rectangular` (trailing affordance
 pattern) implementations. If the component_set's node-id becomes reachable
 later, re-run pixel-perfect comparison and log diff results here.
 
 ---
 
-2026-05-23 — `cor-search-input-circular` shipped (pill-silhouette search-field
-atom, form-associated). Sibling of `cor-search-input-rectangular` — same
+2026-05-23 — `mud-search-input-circular` shipped (pill-silhouette search-field
+atom, form-associated). Sibling of `mud-search-input-rectangular` — same
 behavior, same `@Prop`/`@Event`/keyboard contract, same Romanian default
 placeholder `Caută…` and clear `aria-label="Șterge"`. The only deltas live
 in tokens: `container.borderRadius` flips to `{borderRadius.full}` (9999px)
@@ -750,7 +750,7 @@ WithCustomIcon / WithoutClearButton / WithHelperText / WithError /
 ShapeComparison (side-by-side vs rectangular) / EdgeCases. 0 console errors
 across every story, 0 contrast failures across light + dark.
 
-### 2026-05-23 — `cor-search-input-circular` Figma node resolution
+### 2026-05-23 — `mud-search-input-circular` Figma node resolution
 
 Same MCP file scope as the earlier inputs — `doJ7tDY0PlQ0PqMgbpFVIC` only
 exposes 9 top-level pages and no `search-input-circular` node was reachable
@@ -759,7 +759,7 @@ through the available `get_metadata` traversal. The advertised
 agent's allow-list, and the only known sibling page nodeId (`403:21765`,
 "Input: Date") doesn't link back to the search circular page. Derivation
 followed the established pattern (see prior failure log entries): the
-sibling `cor-search-input-rectangular` provided the 1:1 behavioural and
+sibling `mud-search-input-rectangular` provided the 1:1 behavioural and
 visual template, and the silhouette delta (border-radius full, +4px
 padding-inline at each size to balance the curve) follows the task brief's
 heuristic. Validated against `DESIGN.md`, `.impeccable/design.json`, and
@@ -769,7 +769,7 @@ results here.
 
 ---
 
-2026-05-23 — `cor-search-input-rectangular` shipped (rectangular search-field
+2026-05-23 — `mud-search-input-rectangular` shipped (rectangular search-field
 atom, form-associated). Pattern B: renders its own `<input type="search">`
 inside shadow DOM. Reuses the input-family visual primitives (border, focus
 ring, label, helper / error, sizes md/lg, states default/hover/focus/filled
@@ -787,23 +787,23 @@ visibility (value/clearable/disabled/readonly), keyboard contract (Enter/
 Escape), mouse click clear, ARIA wiring, slots. 0 contrast failures across
 light + dark, 0 console errors.
 
-### 2026-05-23 — `cor-search-input-rectangular` Figma node resolution
+### 2026-05-23 — `mud-search-input-rectangular` Figma node resolution
 
 Same MCP file scope as the earlier inputs — `doJ7tDY0PlQ0PqMgbpFVIC` only
 exposes 9 top-level pages and no `search-input-rectangular` node was
 reachable through the available `get_metadata` traversal. Derivation
-followed the established pattern (see prior failure log entry): cor-input
+followed the established pattern (see prior failure log entry): mud-input
 provides the canonical input-family visual contract, and the affordance
 specifics (leading search icon, trailing × clear) match
 the documented design-system search pattern (`mdi:magnify` /
 `mdi:close-circle` semantics, render-as-`role="searchbox"`). Validated
-against `DESIGN.md`, `.impeccable/design.json`, and the cor-input on-disk
+against `DESIGN.md`, `.impeccable/design.json`, and the mud-input on-disk
 implementation. If the component_set's node-id becomes reachable later,
 re-run pixel-perfect comparison and log diff results here.
 
-2026-05-22 — `cor-file-input` + `cor-file-item` shipped (drag-and-drop file
+2026-05-22 — `mud-file-input` + `mud-file-item` shipped (drag-and-drop file
 selection molecule + per-file row atom). Sibling components, both
-form-associated where applicable (`cor-file-input` exposes its `File[]` via
+form-associated where applicable (`mud-file-input` exposes its `File[]` via
 `ElementInternals.setFormValue` as `FormData`). 112 tokens added across
 `--file-input-*` + `--file-item-*` namespaces. Drop zone uses dashed border at
 rest, flips to solid brand-blue + brand-tint background on drag-over, solid
@@ -821,12 +821,12 @@ form association.
 
 ## Figma drift fixes
 
-### 2026-05-23 — `cor-numeric-input` aligned with Figma source-of-truth
+### 2026-05-23 — `mud-numeric-input` aligned with Figma source-of-truth
 
 Docs page `3340:8279`, master component-set `210:2265`. Previous
 implementation shipped 2 styles × 6 visible states; Figma carries
 **3 styles × 7 states × 2 sizes = 42 variants**. Additive change —
-no breaking API delta. **Confirming 3 styles (NOT 4 like `cor-input`)
+no breaking API delta. **Confirming 3 styles (NOT 4 like `mud-input`)
 — numeric-input has NO Warning** because numeric values are typically
 out-of-range (Destructive) or confirmed-valid (Success) with no
 in-between state worth a warning tone.
@@ -851,16 +851,16 @@ variant tone. Tokens resolve to: success border `#027948`
 (`color.background.positive.secondary`), destructive filled bg
 `#fee4e2` (`color.background.danger.secondary`). Label `fontWeight`
 corrected to `medium` (500) per `DESIGN.md` "Medium-Weight Label
-Rule" and the v2 `cor-input` precedent — was inheriting `regular`.
+Rule" and the v2 `mud-input` precedent — was inheriting `regular`.
 
-**TSX** (`cor-numeric-input.tsx`): `variant` enum widened to
+**TSX** (`mud-numeric-input.tsx`): `variant` enum widened to
 `'default' | 'destructive' | 'success'` (NUMERIC_INPUT_VARIANTS).
 Anyone passing `variant="warning"` hits the `@Watch` validation in
 `PRINCIPLES.md §D` and gets a dev-mode `console.warn` + automatic
 fallback to `'default'`. New `loading: boolean @Prop({reflect: true})`
 — when true the host carries `aria-busy="true"`, the trailing
 stepper stack is suppressed (`showSteppersStack()` now refuses
-when `loading`), and a `cor-spinner` (xs for `md` size, sm for `lg`)
+when `loading`), and a `mud-spinner` (xs for `md` size, sm for `lg`)
 renders in its place. Native input gets `pointer-events: none` +
 `opacity: 0.6`. `canStep()` and `handleKeyDown()` both refuse when
 `loading` is true so ArrowUp/Down + clicks are dead during in-flight
@@ -869,7 +869,7 @@ validation. Native input also receives `aria-readonly="true"` when
 tech layer. `:host(.is-focused)` is also gated by `!this.readonly` so
 focus visuals don't bleed through the read-only treatment.
 
-**CSS** (`cor-numeric-input.css`): added `:host(.variant-success)`
+**CSS** (`mud-numeric-input.css`): added `:host(.variant-success)`
 block remapping the local `--_border-color`, `--_border-color-hover`,
 `--_border-color-focus`, `--_focus-ring-color`, `--_assistive-color`
 to the success token bundle. Added `--_assistive-color` to the
@@ -879,14 +879,14 @@ rules now exclude `.is-readonly` AND `.is-loading` so those
 treatments stay visually stable across pointer states. Added
 `:host(.is-loading)` block — hides the stepper stack (via the
 `showSteppersStack()` TSX gate), surfaces `.control-spinner` (brand
-blue `cor-spinner`), dims the native input. Added
+blue `mud-spinner`), dims the native input. Added
 `:host(.is-readonly)` block with `gray-100` background, default
 border (no emphasis), `cursor: default`. Read-only label stays at
 `--numeric-input-label-color-default` unlike disabled which dims to
 `--numeric-input-label-color-disabled` — matches Figma's "visible
 but not editable" semantic.
 
-**Stories** (`cor-numeric-input.stories.ts`): `AllVariants` re-
+**Stories** (`mud-numeric-input.stories.ts`): `AllVariants` re-
 rendered as 3-column grid (was 2) showing default / destructive /
 success with suffix `lei` per Figma master. Added `Loading` story
 (4 cells: lg / md / destructive+loading / success+loading with
@@ -902,9 +902,9 @@ Type=MDL & Type=Euro). Existing `WithMinMax`, `WithStep`,
 `WithHelperText`, `WithError`, `EdgeCases`, `Default`, `AllSizes`
 preserved unchanged.
 
-**Spec** (`test/cor-numeric-input.spec.tsx`): added `loading state`
+**Spec** (`test/mud-numeric-input.spec.tsx`): added `loading state`
 describe block (reflects `loading` to host, sets `aria-busy="true"`,
-renders `cor-spinner` and scales md→xs / lg→sm, hides stepper stack,
+renders `mud-spinner` and scales md→xs / lg→sm, hides stepper stack,
 ignores ArrowUp/Down when loading); added `variant matrix` describe
 block (asserts all 3 variants reflect without `console.warn`,
 asserts `variant="warning"` triggers warn + fallback to default
@@ -921,7 +921,7 @@ true, aria-disabled=null, is-readonly class only). 531 specs pass
 light + dark, including `border.positive.default` and
 `background.positive.secondary` pairs against
 `background.base.default` — the new success tokens are already
-audited via the cor-input v2 contrast rationale; no regressions
+audited via the mud-input v2 contrast rationale; no regressions
 introduced).
 
 Pixel-perfect: Storybook screenshots visually match Figma master
@@ -931,7 +931,7 @@ Figma "Loading" row), the ReadOnly grid (gray surface, default
 border, full-contrast label — distinct from Disabled), and the
 WithSuffix MDL/€/kg/% set.
 
-Screenshots: `docs/screenshots/cor-numeric-input/v2/{all-variants,
+Screenshots: `docs/screenshots/mud-numeric-input/v2/{all-variants,
 states,loading,read-only,with-success,with-destructive,
 with-suffix}.png`. Figma canonical reference copied as
 `figma-canonical.png` (node `3340:8279`), master component-set as
@@ -952,7 +952,7 @@ Type=Euro. Both are now exercised by the `WithSuffix` story.
 
 ---
 
-### 2026-05-23 — `cor-input` aligned with Figma source-of-truth
+### 2026-05-23 — `mud-input` aligned with Figma source-of-truth
 
 Docs page `107:1034`, master component-set `132:3419`. Previous
 implementation shipped 2 styles × 6 visible states; Figma carries
@@ -978,16 +978,16 @@ exact match to the four Figma "Focus Ring/Large/{Default,Warning,Error,
 Success}" effect tokens. Label `fontWeight` corrected to `medium` (500)
 per the DESIGN.md "Medium-Weight Label Rule" — was inheriting `regular`.
 
-**TSX** (`cor-input.tsx`): `variant` enum expanded to
+**TSX** (`mud-input.tsx`): `variant` enum expanded to
 `'default' | 'warning' | 'destructive' | 'success'`. New `loading: boolean`
 `@Prop({ reflect: true })` — when true the host carries `aria-busy="true"`
-and a `cor-spinner` (xs for md size, sm for lg) renders in the trailing
+and a `mud-spinner` (xs for md size, sm for lg) renders in the trailing
 slot, replacing the `icon-end` slot for the duration of the load. Native
 input gets `pointer-events: none` + `opacity: 0.6`. Existing `readonly`
 prop now also sets `aria-readonly="true"` on the native input — required
 to distinguish read-only from disabled at the assistive-tech layer.
 
-**CSS** (`cor-input.css`): added `:host(.variant-warning)`,
+**CSS** (`mud-input.css`): added `:host(.variant-warning)`,
 `:host(.variant-success)` blocks that remap the local
 `--_border-color`, `--_border-color-hover`, `--_border-color-focus`,
 `--_focus-ring-color`, `--_assistive-color` to the variant token bundle.
@@ -1000,7 +1000,7 @@ default border, full-contrast label, `cursor: default` (vs disabled's
 unlike disabled which dims to `--input-label-color-disabled` — matches
 Figma's "visible but not editable" semantic.
 
-**Stories** (`cor-input.stories.ts`): added `Loading` (4 cells: lg / md
+**Stories** (`mud-input.stories.ts`): added `Loading` (4 cells: lg / md
 / warning+loading / success+loading), `ReadOnly` (3 cells: lg / md /
 disabled-for-comparison), `WithWarning` (Romanian helper "Această
 valoare ar putea cauza probleme"), `WithSuccess` (Romanian helper
@@ -1010,9 +1010,9 @@ including loading + read-only. Existing `WithIcons`, `WithError`,
 `EdgeCases`, `AllSizes`, `WithHelperText`, `Default` preserved
 unchanged.
 
-**Spec** (`cor-input.spec.tsx`): added `loading state` describe block
+**Spec** (`mud-input.spec.tsx`): added `loading state` describe block
 (reflects `loading` to host, sets `aria-busy="true"`, renders
-`cor-spinner`, scales md→xs / lg→sm), `variant matrix` describe block
+`mud-spinner`, scales md→xs / lg→sm), `variant matrix` describe block
 (asserts all 4 variants reflect without `console.warn`), added
 `readonly is distinct from disabled` test (aria-readonly=true,
 aria-disabled=null, is-readonly class only) and `aria-readonly` to the
@@ -1025,7 +1025,7 @@ pass WCAG 2.1 AA in light + dark, including new
 `border.warning.default` and `border.positive.default` against
 `background.base.default`).
 
-Screenshots: `docs/screenshots/cor-input/v2/{all-variants,states,
+Screenshots: `docs/screenshots/mud-input/v2/{all-variants,states,
 with-warning,with-success,with-destructive,loading,read-only}.png`.
 Figma canonical reference at `/tmp/figma-input-text-canonical.png` and
 master component-set at `/tmp/figma-input-text-master.png`.
@@ -1043,12 +1043,12 @@ Error,Success}`) map to `blue-sky/200`, `apricot/200`, `red/200`,
 `green/200` palette shades — all already present in
 `tokens/core/palette.tokens.json`.
 
-2026-05-23 — `cor-select-input` audited against Figma source-of-truth
+2026-05-23 — `mud-select-input` audited against Figma source-of-truth
 (docs page `411:23995`, master component-set `159:1112`). Variant
 matrix already correct: **2 styles (Default / Destructive) × 5 states
 (Default / Hover / Focus / Filled / Disabled) × 2 sizes (md / lg) = 20
 variants** — matches the Figma master exactly (no Warning / Success
-styles, no Loading / ReadOnly states unlike `cor-input`). Two drift
+styles, no Loading / ReadOnly states unlike `mud-input`). Two drift
 items found and fixed:
 
 1. **Listbox selected option background** flipped from
@@ -1062,7 +1062,7 @@ items found and fixed:
    (selected + highlighted) flipped to the same `#f5f5f5` so the
    selection state stays stable when the user re-hovers it.
 2. **Field label `fontWeight`** corrected to `medium` (500) — was
-   inheriting `regular` (400). Aligns with the v2 `cor-input` precedent
+   inheriting `regular` (400). Aligns with the v2 `mud-input` precedent
    (commit `6624b85`) and the DESIGN.md "Medium-Weight Label Rule" for
    input-family consistency. Figma's variable defs nominally say
    `fw-regular` for "Desktop/Body/Small", but the AGE design system
@@ -1099,13 +1099,13 @@ tokens via local `--select-input-*` custom properties.
 
 **Gates**: `yarn tokens.build` (rebuilt clean), `yarn lint` (CSS + JS
 pass), `yarn typecheck` (pass), `yarn test.dev` (478/478 pass —
-including 60 `cor-select-input` specs), `yarn sp.build` (clean export),
+including 60 `mud-select-input` specs), `yarn sp.build` (clean export),
 `yarn audit:contrast` (21 pass / 0 fail across light + dark, including
 the new selected-option pair `text.brand.default` on
 `background.base.secondary` = 5.79:1, well above the 4.5 AA floor).
 Zero console errors across every story.
 
-Screenshots: `docs/screenshots/cor-select-input/audit-v2/` with
+Screenshots: `docs/screenshots/mud-select-input/audit-v2/` with
 before/after pairs for the open-listbox (selected-option background
 drift) and the label weight (regular → medium across all states).
 Figma canonical reference at `/tmp/figma-select-canonical.png` (full
@@ -1114,16 +1114,16 @@ selection-menu detail at `/tmp/figma-select-selection-menu-hires.png`.
 
 **TODOs** (logged for future work, not blocking):
 
-- `cor-select-input` multi-select mode (`multiple: boolean` prop) with
+- `mud-select-input` multi-select mode (`multiple: boolean` prop) with
   checkbox-prefixed options — not in current Figma scope; add only
   when a real consumer surfaces the need (rule-of-two,
   PRINCIPLES.md §B).
 - Nested submenu support (Figma `Submenu` subcomponent) — not in
   current Figma scope for the select-input docs page; introduce as a
-  separate `cor-menu` / `cor-submenu` molecule if a consumer adopts a
+  separate `mud-menu` / `mud-submenu` molecule if a consumer adopts a
   multi-level menu pattern.
 
-### Figma node resolution (cor-select-input)
+### Figma node resolution (mud-select-input)
 
 The component-set master (`159:1112`) and docs canvas (`411:23995`)
 were reachable via `mcp__figma__get_metadata` + `get_screenshot` at
@@ -1133,10 +1133,10 @@ Disabled × Large/Medium). The `selection-menu` instance (`454:5903`)
 and the macOS `Menu` (`456:6181`) / iOS `Submenu` (`456:24768`)
 subcomponents on the docs page were reachable via direct nodeId
 screenshots. No `get_design_context` was needed — the screenshots +
-metadata + the prior `cor-input` token map (which covers the same
+metadata + the prior `mud-input` token map (which covers the same
 input-family semantic palette) gave full coverage.
 
-2026-05-23 — `cor-file-input` drop-zone realigned to Figma instance
+2026-05-23 — `mud-file-input` drop-zone realigned to Figma instance
 `616:6942` (canonical "State=Default" symbol `262:6717`, master
 component-set `262:6718`). Two drift items reported by the user and
 verified against the Figma source-of-truth, both fixed:
@@ -1144,12 +1144,12 @@ verified against the Figma source-of-truth, both fixed:
 1. **Centre icon was missing the icon-circle wrapper.** Figma shows a
    light-gray pill (`#f1f1f1`, fully rounded, 48×48 at lg / 40×40 at
    md) containing the 24px `cloud-upload` glyph (`#121212`, ink
-   primary). The shipped TSX rendered only the bare `cor-icon` without
+   primary). The shipped TSX rendered only the bare `mud-icon` without
    the surrounding circle. Wrapped `<slot name="icon">` in a
    `.dropzone-icon` `inline-flex` pill with `background-color`,
    `padding`, and `border-radius: 999px` driven by the new
    `dropzone.iconCircle.*` token group. `cloud-upload` was already in
-   `src/components/cor-icon/assets/icons.manifest.json` (sizes 20 and
+   `src/components/mud-icon/assets/icons.manifest.json` (sizes 20 and
    24) — no new SVG required.
 
 2. **"Choose files" link affordance was missing.** Figma shows the
@@ -1222,7 +1222,7 @@ visual breathing was too tight at the previous values).
 
 **Gates**: `yarn tokens.build` (clean), `yarn dx:stencil:once`
 (clean), `yarn lint` (CSS + JS pass), `yarn typecheck` (pass),
-`yarn test.dev` (688/688 pass — including 17 new `cor-file-input`
+`yarn test.dev` (688/688 pass — including 17 new `mud-file-input`
 spec cases covering icon-circle, link button, click stop-prop,
 captions auto-derivation, English override, active-state hides
 both icon and captions), `yarn test.storybook` (169/169 pass),
@@ -1238,7 +1238,7 @@ exact: icon-circle background `#f1f1f1`, glyph color `#121212`,
 link color `#0058d2` with underline, captions `#757575` at 14/20
 regular, dashed border `#b2b2b2` at 1.5px width.
 
-Screenshots: `docs/screenshots/cor-file-input/v3/` — Figma canonical
+Screenshots: `docs/screenshots/mud-file-input/v3/` — Figma canonical
 (`figma-616-6942.png`), Storybook Default (`storybook-default.png`
 at native 588×190, `storybook-default-588x188.png` cropped for the
 compare), diff (`diff-default.png`), Storybook English-override

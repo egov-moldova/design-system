@@ -50,7 +50,11 @@
         "info": { "$value": "{color.background.base.default}", "$type": "color" },
         "accent": { "$value": "{color.background.warning.secondary}", "$type": "color" },
         "success": { "$value": "{color.background.positive.secondary}", "$type": "color" },
-        "warning": { "$value": "{color.background.warning.secondary}", "$type": "color", "$comment": "Was secondary-active (#fedf89) which combined with warning-on-secondary text (#b54708) yielded 4.16:1 — fails AA at the 12px small size. Lighter secondary (#feefc6) passes 4.53:1. Other semantics already use the `.secondary` rung at the subtle treatment — warning was the odd one out." },
+        "warning": {
+          "$value": "{color.background.warning.secondary}",
+          "$type": "color",
+          "$comment": "Was secondary-active (#fedf89) which combined with warning-on-secondary text (#b54708) yielded 4.16:1 — fails AA at the 12px small size. Lighter secondary (#feefc6) passes 4.53:1. Other semantics already use the `.secondary` rung at the subtle treatment — warning was the odd one out."
+        },
         "brand": { "$value": "{color.background.brand.secondary}", "$type": "color" },
         "danger": { "$value": "{color.background.danger.secondary}", "$type": "color" }
       },

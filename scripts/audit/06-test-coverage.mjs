@@ -2,7 +2,7 @@
 /**
  * 06-test-coverage.mjs
  *
- * Reports Vitest test coverage for a `cor-*` component by reading the existing
+ * Reports Vitest test coverage for a `mud-*` component by reading the existing
  * `coverage/coverage-summary.json` (produced by `@vitest/coverage-v8` when
  * `stencil-test --project spec --coverage` is run). With `--run`, executes
  * the test runner first; otherwise expects the report to be present.
@@ -173,7 +173,7 @@ export function analyzeComponent(target, summary, threshold = DEFAULT_THRESHOLD)
           code: 'COVERAGE-COMPONENT-MISSING',
           file: relativeToRepo(tsxAbs),
           message: `${target.name}: not present in coverage report — no tests ran against ${relativeToRepo(tsxAbs)}.`,
-          fix: 'Add a test/cor-X.spec.tsx file or run yarn test --coverage to regenerate.',
+          fix: 'Add a test/mud-X.spec.tsx file or run yarn test --coverage to regenerate.',
         }),
       ],
       coverage: null,

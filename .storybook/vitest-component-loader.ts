@@ -3,7 +3,7 @@
 // Why this exists:
 //   In normal Storybook dev/build, preview.js imports the pre-compiled lazy
 //   bundle (`dist/design-system/design-system.esm.js`) to register all
-//   `cor-*` custom elements. That bundle is opaque to coverage tooling —
+//   `mud-*` custom elements. That bundle is opaque to coverage tooling —
 //   browser-mode tests run by `@storybook/addon-vitest` then report 0%
 //   for every component file even though stories execute correctly.
 //
@@ -20,7 +20,7 @@
 // `.storybook/preview.js`) to this file for the `storybook` project only.
 // The dist bundle keeps powering regular Storybook dev / production builds.
 
-const modules = import.meta.glob('../src/components/cor-*/cor-*.tsx', { eager: true });
+const modules = import.meta.glob('../src/components/mud-*/mud-*.tsx', { eager: true });
 
 // Reference the binding so tree-shakers don't drop the side-effect imports.
 void modules;

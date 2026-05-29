@@ -3,44 +3,44 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-tooltip · @age/web-components</title>
+    <title>mud-tooltip · @age/web-components</title>
   </head>
-  <body data-component="cor-tooltip">
+  <body data-component="mud-tooltip">
     <main class="demo-main">
-      <section id="cor-tooltip" class="component-section">
-        <h2>&lt;cor-tooltip&gt;</h2>
+      <section id="mud-tooltip" class="component-section">
+        <h2>&lt;mud-tooltip&gt;</h2>
 
         <div class="subsection">
           <h3>Positions (hover, give it room)</h3>
           <div class="row" style="padding: 48px; gap: 32px">
             <div class="cell">
-              <cor-tooltip position="top" content="Poziție: sus">
-                <cor-button slot="trigger" variant="secondary" size="sm">Top</cor-button>
-              </cor-tooltip>
+              <mud-tooltip position="top" content="Poziție: sus">
+                <mud-button slot="trigger" variant="secondary" size="sm">Top</mud-button>
+              </mud-tooltip>
               <span class="label">top</span>
             </div>
             <div class="cell">
-              <cor-tooltip position="bottom" content="Poziție: jos">
-                <cor-button slot="trigger" variant="secondary" size="sm">Bottom</cor-button>
-              </cor-tooltip>
+              <mud-tooltip position="bottom" content="Poziție: jos">
+                <mud-button slot="trigger" variant="secondary" size="sm">Bottom</mud-button>
+              </mud-tooltip>
               <span class="label">bottom</span>
             </div>
             <div class="cell">
-              <cor-tooltip position="left" content="Poziție: stânga">
-                <cor-button slot="trigger" variant="secondary" size="sm">Left</cor-button>
-              </cor-tooltip>
+              <mud-tooltip position="left" content="Poziție: stânga">
+                <mud-button slot="trigger" variant="secondary" size="sm">Left</mud-button>
+              </mud-tooltip>
               <span class="label">left</span>
             </div>
             <div class="cell">
-              <cor-tooltip position="right" content="Poziție: dreapta">
-                <cor-button slot="trigger" variant="secondary" size="sm">Right</cor-button>
-              </cor-tooltip>
+              <mud-tooltip position="right" content="Poziție: dreapta">
+                <mud-button slot="trigger" variant="secondary" size="sm">Right</mud-button>
+              </mud-tooltip>
               <span class="label">right</span>
             </div>
             <div class="cell">
-              <cor-tooltip position="auto" content="Auto: preferă sus, se întoarce la nevoie">
-                <cor-button slot="trigger" variant="secondary" size="sm">Auto</cor-button>
-              </cor-tooltip>
+              <mud-tooltip position="auto" content="Auto: preferă sus, se întoarce la nevoie">
+                <mud-button slot="trigger" variant="secondary" size="sm">Auto</mud-button>
+              </mud-tooltip>
               <span class="label">auto (default)</span>
             </div>
           </div>
@@ -50,21 +50,21 @@
           <h3>Sizes &amp; triggers</h3>
           <div class="row" style="padding: 48px; gap: 32px">
             <div class="cell">
-              <cor-tooltip size="sm" content="Tooltip mic">
-                <cor-button slot="trigger" variant="secondary" size="sm">sm</cor-button>
-              </cor-tooltip>
+              <mud-tooltip size="sm" content="Tooltip mic">
+                <mud-button slot="trigger" variant="secondary" size="sm">sm</mud-button>
+              </mud-tooltip>
               <span class="label">size sm (default)</span>
             </div>
             <div class="cell">
-              <cor-tooltip size="lg" content="Tooltip mare cu mai mult conținut explicativ">
-                <cor-button slot="trigger" variant="secondary" size="sm">lg</cor-button>
-              </cor-tooltip>
+              <mud-tooltip size="lg" content="Tooltip mare cu mai mult conținut explicativ">
+                <mud-button slot="trigger" variant="secondary" size="sm">lg</mud-button>
+              </mud-tooltip>
               <span class="label">size lg</span>
             </div>
             <div class="cell">
-              <cor-tooltip trigger="focus" content="Apare la focalizare (Tab)">
-                <cor-button slot="trigger" variant="secondary" size="sm">Focus me</cor-button>
-              </cor-tooltip>
+              <mud-tooltip trigger="focus" content="Apare la focalizare (Tab)">
+                <mud-button slot="trigger" variant="secondary" size="sm">Focus me</mud-button>
+              </mud-tooltip>
               <span class="label">trigger focus</span>
             </div>
           </div>
@@ -74,18 +74,18 @@
           <h3>Manual trigger (driven by <code>open</code>)</h3>
           <div class="row" style="padding: 48px; gap: 32px">
             <div class="cell">
-              <cor-tooltip
+              <mud-tooltip
                 id="demo-tooltip-manual"
                 trigger="manual"
                 position="bottom"
                 content="Controlat imperativ prin proprietatea open"
               >
-                <cor-button slot="trigger" variant="secondary" size="sm">Ancoră</cor-button>
-              </cor-tooltip>
+                <mud-button slot="trigger" variant="secondary" size="sm">Ancoră</mud-button>
+              </mud-tooltip>
               <span class="label">manual tooltip</span>
             </div>
             <div class="cell">
-              <cor-button id="demo-tooltip-toggle" variant="primary" size="sm">Toggle tooltip</cor-button>
+              <mud-button id="demo-tooltip-toggle" variant="primary" size="sm">Toggle tooltip</mud-button>
               <span class="label">external toggle</span>
             </div>
           </div>
@@ -95,15 +95,15 @@
           <h3>Coach variant (persistent, with close button)</h3>
           <div class="row" style="padding: 48px; gap: 32px">
             <div class="cell">
-              <cor-tooltip
+              <mud-tooltip
                 variant="coach"
                 size="lg"
                 open=""
                 position="bottom"
                 content="Acesta este un coach mark: rămâne deschis până apăsați Esc, butonul de închidere sau faceți clic în afară."
               >
-                <cor-button slot="trigger" variant="primary" size="sm">Funcție nouă</cor-button>
-              </cor-tooltip>
+                <mud-button slot="trigger" variant="primary" size="sm">Funcție nouă</mud-button>
+              </mud-tooltip>
               <span class="label">coach (open by default)</span>
             </div>
           </div>
@@ -113,26 +113,26 @@
           <h3>Edge cases</h3>
           <div class="row" style="padding: 48px; gap: 32px">
             <div class="cell">
-              <cor-tooltip
+              <mud-tooltip
                 max-width="320"
                 content="Text foarte lung pentru tooltip care verifică încadrarea pe mai multe rânduri sub lățimea maximă configurată, inclusiv diacritice ăâîșțĂÂÎȘȚ și o adresă fără-spații: foarteLungCuvântNeîntreruptPentruTestareaÎncadrării."
               >
-                <cor-button slot="trigger" variant="secondary" size="sm">Long text</cor-button>
-              </cor-tooltip>
+                <mud-button slot="trigger" variant="secondary" size="sm">Long text</mud-button>
+              </mud-tooltip>
               <span class="label">long text + max-width 320</span>
             </div>
             <div class="cell">
-              <cor-tooltip content="مرحبا بكم في الخدمات الحكومية">
-                <cor-button slot="trigger" variant="secondary" size="sm">RTL</cor-button>
-              </cor-tooltip>
+              <mud-tooltip content="مرحبا بكم في الخدمات الحكومية">
+                <mud-button slot="trigger" variant="secondary" size="sm">RTL</mud-button>
+              </mud-tooltip>
               <span class="label">RTL body</span>
             </div>
           </div>
         </div>
       </section>
       <script type="module">
-        // cor-tooltip manual: drive visibility by toggling the `open` property.
-        customElements.whenDefined('cor-tooltip').then(() => {
+        // mud-tooltip manual: drive visibility by toggling the `open` property.
+        customElements.whenDefined('mud-tooltip').then(() => {
           const tip = document.getElementById('demo-tooltip-manual');
           const btn = document.getElementById('demo-tooltip-toggle');
           if (!tip || !btn) return;

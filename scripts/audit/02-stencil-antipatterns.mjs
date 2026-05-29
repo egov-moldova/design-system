@@ -682,7 +682,7 @@ function listChangedComponents() {
   if (res.status !== 0) return [];
   const names = new Set();
   for (const line of (res.stdout ?? '').split('\n')) {
-    const m = line.match(/^src\/(components|hidden)\/(cor-[a-z0-9-]+)\//);
+    const m = line.match(/^src\/(components|hidden)\/(mud-[a-z0-9-]+)\//);
     if (m) names.add(m[2]);
   }
   return [...names].sort();

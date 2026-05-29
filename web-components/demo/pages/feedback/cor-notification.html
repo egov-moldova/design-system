@@ -3,101 +3,101 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-notification · @age/web-components</title>
+    <title>mud-notification · @age/web-components</title>
   </head>
-  <body data-component="cor-notification">
+  <body data-component="mud-notification">
     <main class="demo-main">
-      <section id="cor-notification" class="component-section">
-        <h2>&lt;cor-notification&gt;</h2>
+      <section id="mud-notification" class="component-section">
+        <h2>&lt;mud-notification&gt;</h2>
 
         <div class="subsection">
           <h3>Variant × style matrix (subtle, then strong)</h3>
           <div class="row" style="flex-direction: column; align-items: stretch; width: 100%; max-width: 520px">
-            <cor-notification variant="info" notification-style="subtle" title-text="Informație">
+            <mud-notification variant="info" notification-style="subtle" title-text="Informație">
               Cererea dumneavoastră a fost înregistrată cu succes.
-            </cor-notification>
-            <cor-notification variant="positive" notification-style="subtle" title-text="Succes">
+            </mud-notification>
+            <mud-notification variant="positive" notification-style="subtle" title-text="Succes">
               Documentul a fost semnat electronic.
-            </cor-notification>
-            <cor-notification variant="warning" notification-style="subtle" title-text="Atenție">
+            </mud-notification>
+            <mud-notification variant="warning" notification-style="subtle" title-text="Atenție">
               Sesiunea expiră în 5 minute.
-            </cor-notification>
-            <cor-notification variant="danger" notification-style="subtle" title-text="Eroare">
+            </mud-notification>
+            <mud-notification variant="danger" notification-style="subtle" title-text="Eroare">
               IDNP-ul introdus nu este valid.
-            </cor-notification>
-            <cor-notification variant="neutral" notification-style="subtle" title-text="Notă">
+            </mud-notification>
+            <mud-notification variant="neutral" notification-style="subtle" title-text="Notă">
               Programul de lucru s-a modificat.
-            </cor-notification>
+            </mud-notification>
           </div>
           <div class="row" style="flex-direction: column; align-items: stretch; width: 100%; max-width: 520px">
-            <cor-notification variant="info" notification-style="strong" title-text="Informație">
+            <mud-notification variant="info" notification-style="strong" title-text="Informație">
               Cererea dumneavoastră a fost înregistrată cu succes.
-            </cor-notification>
-            <cor-notification variant="positive" notification-style="strong" title-text="Succes">
+            </mud-notification>
+            <mud-notification variant="positive" notification-style="strong" title-text="Succes">
               Documentul a fost semnat electronic.
-            </cor-notification>
-            <cor-notification variant="warning" notification-style="strong" title-text="Atenție">
+            </mud-notification>
+            <mud-notification variant="warning" notification-style="strong" title-text="Atenție">
               Sesiunea expiră în 5 minute.
-            </cor-notification>
-            <cor-notification variant="danger" notification-style="strong" title-text="Eroare">
+            </mud-notification>
+            <mud-notification variant="danger" notification-style="strong" title-text="Eroare">
               IDNP-ul introdus nu este valid.
-            </cor-notification>
-            <cor-notification variant="neutral" notification-style="strong" title-text="Notă">
+            </mud-notification>
+            <mud-notification variant="neutral" notification-style="strong" title-text="Notă">
               Programul de lucru s-a modificat.
-            </cor-notification>
+            </mud-notification>
           </div>
         </div>
 
         <div class="subsection">
           <h3>Closable + actions slot</h3>
           <div class="row" style="flex-direction: column; align-items: stretch; width: 100%; max-width: 520px">
-            <cor-notification id="demo-notif-closable" variant="info" closable="" title-text="Actualizare disponibilă">
+            <mud-notification id="demo-notif-closable" variant="info" closable="" title-text="Actualizare disponibilă">
               O nouă versiune a portalului este gata de instalare.
-            </cor-notification>
-            <cor-notification variant="warning" notification-style="subtle" title-text="Confirmare necesară">
+            </mud-notification>
+            <mud-notification variant="warning" notification-style="subtle" title-text="Confirmare necesară">
               Doriți să trimiteți cererea acum?
-              <cor-button slot="actions" variant="secondary" size="sm">Mai târziu</cor-button>
-              <cor-button slot="actions" variant="primary" size="sm">Trimite</cor-button>
-            </cor-notification>
-            <cor-notification variant="danger" notification-style="strong" closable="" title-text="Acțiune cu buton">
+              <mud-button slot="actions" variant="secondary" size="sm">Mai târziu</mud-button>
+              <mud-button slot="actions" variant="primary" size="sm">Trimite</mud-button>
+            </mud-notification>
+            <mud-notification variant="danger" notification-style="strong" closable="" title-text="Acțiune cu buton">
               Plata nu a putut fi procesată.
-              <cor-button slot="actions" variant="primary" size="sm">Reîncearcă</cor-button>
-            </cor-notification>
+              <mud-button slot="actions" variant="primary" size="sm">Reîncearcă</mud-button>
+            </mud-notification>
           </div>
         </div>
 
         <div class="subsection">
           <h3>Slots — custom icon-start</h3>
           <div class="row" style="flex-direction: column; align-items: stretch; width: 100%; max-width: 520px">
-            <cor-notification variant="info" title-text="Pictogramă personalizată">
-              <cor-icon slot="icon-start" name="sparkles-filled" size="24"></cor-icon>
+            <mud-notification variant="info" title-text="Pictogramă personalizată">
+              <mud-icon slot="icon-start" name="sparkles-filled" size="24"></mud-icon>
               Funcție nouă: semnătura mobilă.
-            </cor-notification>
+            </mud-notification>
           </div>
         </div>
 
         <div class="subsection">
           <h3>Edge cases</h3>
           <div class="row" style="flex-direction: column; align-items: stretch; width: 100%; max-width: 520px">
-            <cor-notification variant="info"> Mesaj fără titlu — doar corpul notificării. </cor-notification>
-            <cor-notification variant="neutral" closable="" title-text="Corp foarte lung">
+            <mud-notification variant="info"> Mesaj fără titlu — doar corpul notificării. </mud-notification>
+            <mud-notification variant="neutral" closable="" title-text="Corp foarte lung">
               Aceasta este o notificare cu un mesaj deosebit de lung pentru a verifica încadrarea textului pe mai multe
               rânduri, alinierea pictogramei la prima linie și poziționarea butonului de închidere atunci când
               conținutul depășește înălțimea unei singure linii în containerul cu lățime maximă de 520 de pixeli.
               Diacritice: ăâîșțĂÂÎȘȚ.
-            </cor-notification>
-            <cor-notification variant="danger" title-text="Cuvânt-neîntrerupt">
+            </mud-notification>
+            <mud-notification variant="danger" title-text="Cuvânt-neîntrerupt">
               Pneumonoultramicroscopicsilicovolcanoconiosisextraordinarwithoutanyspaces
-            </cor-notification>
-            <cor-notification variant="info" title-text="RTL">
+            </mud-notification>
+            <mud-notification variant="info" title-text="RTL">
               مرحبا بكم في البوابة الإلكترونية للخدمات الحكومية
-            </cor-notification>
+            </mud-notification>
           </div>
         </div>
       </section>
       <script type="module">
-        // cor-notification: corClose only removes the node when the consumer handles it.
-        customElements.whenDefined('cor-notification').then(() => {
+        // mud-notification: corClose only removes the node when the consumer handles it.
+        customElements.whenDefined('mud-notification').then(() => {
           const el = document.getElementById('demo-notif-closable');
           if (!el) return;
           el.addEventListener('corClose', () => el.remove());

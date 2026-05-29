@@ -79,15 +79,15 @@ Instead of stopping after each component, **accumulate summaries** and present a
 ```markdown
 ## Task Complete — Consolidated Review
 
-### 1. cor-badge (Atom) ✅
+### 1. mud-badge (Atom) ✅
 - Tokens: created in tokens/core/components/badge.tokens.json
 - States: default ✅, hover ✅, disabled ✅
-- Story: src/components/cor-badge/cor-badge.stories.ts
+- Story: src/components/mud-badge/mud-badge.stories.ts
 
-### 2. cor-form-field (Molecule) ✅
-- Tokens: reused from cor-input + cor-label
+### 2. mud-form-field (Molecule) ✅
+- Tokens: reused from mud-input + mud-label
 - States: default ✅, focus ✅, invalid ✅, disabled ✅
-- Story: src/components/cor-form-field/cor-form-field.stories.ts
+- Story: src/components/mud-form-field/mud-form-field.stories.ts
 
 **All components verified against Figma. Console errors: none. Build: passing.**
 **Please review. Any adjustments needed?**

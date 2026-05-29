@@ -39,8 +39,8 @@ Per the plan that produced this suite, every script obeys:
 ```
 scripts/audit/
 ├── lib/
-│   ├── changed-components.mjs       — git diff vs main, returns cor-* names
-│   ├── component-paths.mjs          — resolve cor-X → canonical file paths
+│   ├── changed-components.mjs       — git diff vs main, returns mud-* names
+│   ├── component-paths.mjs          — resolve mud-X → canonical file paths
 │   ├── browser-context.mjs          — lazy Playwright wrapper + install hint
 │   ├── storybook-helpers.mjs        — port probe (TCP, no shell), URL builder
 │   ├── ts-parser.mjs                — TypeScript compiler API wrappers
@@ -130,7 +130,7 @@ read the JSON.
 ## CLI conventions
 
 ```bash
-node scripts/audit/<NN>-<name>.mjs <cor-X | --all | --changed> [options]
+node scripts/audit/<NN>-<name>.mjs <mud-X | --all | --changed> [options]
 
   --json              emit JSON envelope to stdout
   --out <file>        write JSON envelope to file
@@ -164,8 +164,8 @@ Choose exactly ONE target: positional component name, `--all`, or `--changed`.
 | `yarn audit:console-errors <X>`    | run 12 (needs Storybook + Playwright) |
 | `yarn audit:all <X>`               | orchestrator (all waves) |
 | `yarn audit:all:no-browser <X>`    | orchestrator without Wave C |
-| `yarn scaffold:story <X>`          | generate cor-X.stories.ts boilerplate |
-| `yarn scaffold:test <X>`           | generate cor-X.spec.tsx skeleton |
+| `yarn scaffold:story <X>`          | generate mud-X.stories.ts boilerplate |
+| `yarn scaffold:test <X>`           | generate mud-X.spec.tsx skeleton |
 
 ## Orchestrator (`run-all.mjs`)
 
@@ -185,7 +185,7 @@ node scripts/audit/run-all.mjs mud-button --skip 06,08 --json
 # Audit changed components vs main (great for pre-PR)
 node scripts/audit/run-all.mjs --changed --no-browser --json
 
-# Audit every cor-* component (CI / housekeeping)
+# Audit every mud-* component (CI / housekeeping)
 node scripts/audit/run-all.mjs --all --no-browser --out reports/audit-all.json
 ```
 

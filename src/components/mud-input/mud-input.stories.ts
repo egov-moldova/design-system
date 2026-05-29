@@ -200,7 +200,10 @@ export const States: Story = {
         cell('filled', /*html*/ `<mud-input size="lg" label="Label" value="15/04/2025"></mud-input>`),
         cell('read-only', /*html*/ `<mud-input size="lg" label="Label" value="15/04/2025" readonly></mud-input>`),
         cell('disabled', /*html*/ `<mud-input size="lg" label="Label" placeholder="Placeholder" disabled></mud-input>`),
-        cell('mandatory', /*html*/ `<mud-input size="lg" label="Label" placeholder="Placeholder" required></mud-input>`),
+        cell(
+          'mandatory',
+          /*html*/ `<mud-input size="lg" label="Label" placeholder="Placeholder" required></mud-input>`,
+        ),
       ].join(''),
     ),
   parameters: {

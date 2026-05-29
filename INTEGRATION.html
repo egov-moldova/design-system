@@ -1,0 +1,1166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>INTEGRATION — @age/design-system</title>
+    <meta
+      name="description"
+      content="Integration guide for consuming the AGE Design System outside a bundler — HTML, PHP, .NET."
+    />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/styles/github.min.css"
+      integrity="sha384-oz/N5SlileGZrM9CHLcwJF4jVIHdsq8Qe3tiSdtyaEUCdQeUn9iJdNet0qHOCPAR"
+      crossorigin="anonymous"
+      media="(prefers-color-scheme: light)"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/styles/github-dark.min.css"
+      integrity="sha384-wH75j6z1lH97ZOpMOInqhgKzFkAInZPPSPlZpYKYTOqsaizPvhQZmAtLcPKXpLyH"
+      crossorigin="anonymous"
+      media="(prefers-color-scheme: dark)"
+    />
+
+    <style>
+      /* Colors mirror AGE Design System semantic tokens
+       (background-base-*, text-base-*, border-base-*, *-brand-*, *-danger-*, *-positive-*). */
+      :root {
+        color-scheme: light dark;
+
+        /* Light — from tokens/generated/core.tokens.css */
+        --bg: #ffffff; /* background-base-default */
+        --bg-elev: #f5f5f5; /* background-base-secondary */
+        --bg-code: #f1f1f1; /* background-base-tertiary */
+        --bg-callout: #e8f0fb; /* background-brand-secondary */
+        --bg-warn: #fee4e2; /* background-danger-secondary */
+        --bg-table-stripe: #f5f5f5; /* background-base-secondary */
+
+        --text: #121212; /* text-base-default */
+        --text-muted: #383838; /* text-base-secondary */
+        --text-faint: #757575; /* text-base-tertiary */
+
+        --border: #d9d9d9; /* border-base-default */
+        --border-soft: #f1f1f1; /* background-base-tertiary as soft divider */
+
+        --accent: #0058d2; /* text-brand-default / background-brand-default */
+        --accent-soft: #e8f0fb; /* background-brand-secondary */
+        --warn: #d92d20; /* text-danger-default */
+        --ok: #039855; /* text-positive-default */
+
+        --radius: 8px;
+        --radius-sm: 4px;
+
+        --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+        --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+        --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, 'Helvetica Neue', Arial, sans-serif;
+        --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+        --sidebar-w: 280px;
+        --max-w: 880px;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          /* Dark — from tokens/generated/core.dark.tokens.css */
+          --bg: #1e1e1e; /* background-base-default */
+          --bg-elev: #2c2c2c; /* background-base-secondary */
+          --bg-code: #383838; /* background-base-tertiary */
+          --bg-callout: #00295a; /* background-brand-tertiary */
+          --bg-warn: #7a271a; /* background-danger-default-active */
+          --bg-table-stripe: #2c2c2c; /* background-base-secondary */
+
+          --text: #ffffff; /* text-base-default */
+          --text-muted: #f1f1f1; /* text-base-secondary */
+          --text-faint: #b2b2b2; /* text-base-tertiary */
+
+          --border: #444444; /* border-base-default */
+          --border-soft: #383838; /* background-base-tertiary as soft divider */
+
+          --accent: #669be4; /* text-brand-default */
+          --accent-soft: #00295a; /* background-brand-tertiary */
+          --warn: #f04438; /* text-danger-default */
+          --ok: #35ad77; /* text-positive-default */
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 24px;
+      }
+
+      body {
+        margin: 0;
+        font-family: var(--sans);
+        font-size: 15px;
+        line-height: 1.6;
+        color: var(--text);
+        background: var(--bg);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+
+      /* ---------------------------------------------------------------- */
+      /* Layout                                                            */
+      /* ---------------------------------------------------------------- */
+      .layout {
+        display: grid;
+        grid-template-columns: var(--sidebar-w) 1fr;
+        max-width: 1280px;
+        margin: 0 auto;
+      }
+
+      aside.toc {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        padding: 24px 16px 24px 24px;
+        border-right: 1px solid var(--border-soft);
+        overflow-y: auto;
+        font-size: 13.5px;
+      }
+
+      aside.toc h2 {
+        margin: 0 0 12px;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+        font-weight: 600;
+      }
+
+      aside.toc ol {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        counter-reset: toc;
+      }
+
+      aside.toc li {
+        margin: 0;
+      }
+
+      aside.toc a {
+        display: block;
+        padding: 6px 10px;
+        border-radius: var(--radius-sm);
+        color: var(--text-muted);
+        line-height: 1.35;
+        counter-increment: toc;
+      }
+      aside.toc a::before {
+        content: counter(toc) '. ';
+        color: var(--text-faint);
+        font-variant-numeric: tabular-nums;
+      }
+      aside.toc a:hover {
+        background: var(--bg-code);
+        color: var(--text);
+        text-decoration: none;
+      }
+      aside.toc a.active {
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-weight: 600;
+      }
+
+      main {
+        padding: 48px 48px 96px;
+        max-width: var(--max-w);
+        min-width: 0;
+      }
+
+      /* ---------------------------------------------------------------- */
+      /* Header                                                            */
+      /* ---------------------------------------------------------------- */
+      header.page-head {
+        margin-bottom: 32px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid var(--border-soft);
+      }
+      header.page-head .eyebrow {
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-faint);
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      header.page-head h1 {
+        font-size: 32px;
+        line-height: 1.2;
+        margin: 0 0 12px;
+        letter-spacing: -0.02em;
+      }
+      header.page-head h1 code {
+        font-size: 0.85em;
+      }
+      header.page-head p.lede {
+        font-size: 16px;
+        color: var(--text-muted);
+        margin: 0;
+        max-width: 65ch;
+      }
+
+      /* ---------------------------------------------------------------- */
+      /* Sections                                                          */
+      /* ---------------------------------------------------------------- */
+      section {
+        margin-top: 56px;
+        scroll-margin-top: 24px;
+      }
+      section:first-of-type {
+        margin-top: 0;
+      }
+
+      section > h2 {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        font-size: 22px;
+        margin: 0 0 4px;
+        letter-spacing: -0.01em;
+      }
+      section > h2 .sec-num {
+        font-variant-numeric: tabular-nums;
+        color: var(--text-faint);
+        font-weight: 500;
+        font-size: 18px;
+      }
+      section > h2 .anchor {
+        opacity: 0;
+        color: var(--text-faint);
+        font-weight: 400;
+        transition: opacity 120ms;
+      }
+      section > h2:hover .anchor {
+        opacity: 1;
+      }
+
+      p.tldr {
+        font-size: 14px;
+        color: var(--text-muted);
+        background: var(--bg-elev);
+        border-left: 3px solid var(--accent);
+        padding: 10px 14px;
+        border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+        margin: 12px 0 24px;
+      }
+      p.tldr strong {
+        color: var(--text);
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        font-size: 11px;
+        margin-right: 6px;
+      }
+
+      h3 {
+        font-size: 17px;
+        margin: 32px 0 8px;
+        letter-spacing: -0.01em;
+      }
+
+      h4 {
+        font-size: 14.5px;
+        margin: 24px 0 6px;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-weight: 600;
+      }
+
+      p {
+        margin: 12px 0;
+      }
+
+      /* ---------------------------------------------------------------- */
+      /* Inline code & code blocks                                        */
+      /* ---------------------------------------------------------------- */
+      code {
+        font-family: var(--mono);
+        font-size: 0.88em;
+        background: var(--bg-code);
+        padding: 0.15em 0.4em;
+        border-radius: 4px;
+        border: 1px solid var(--border-soft);
+      }
+
+      pre {
+        position: relative;
+        background: var(--bg-code);
+        border: 1px solid var(--border-soft);
+        border-radius: var(--radius);
+        padding: 14px 16px;
+        overflow-x: auto;
+        font-size: 13px;
+        line-height: 1.55;
+        margin: 16px 0;
+        box-shadow: var(--shadow-sm);
+      }
+      pre code {
+        background: none;
+        border: 0;
+        padding: 0;
+        font-size: 13px;
+        line-height: 1.55;
+      }
+
+      pre .copy-btn {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        background: var(--bg-elev);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+        font-size: 11px;
+        font-family: var(--sans);
+        padding: 4px 8px;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 120ms;
+      }
+      pre:hover .copy-btn {
+        opacity: 1;
+      }
+      pre .copy-btn:hover {
+        color: var(--text);
+        border-color: var(--text-muted);
+      }
+      pre .copy-btn.copied {
+        color: var(--ok);
+        border-color: var(--ok);
+      }
+
+      /* ---------------------------------------------------------------- */
+      /* Tables                                                            */
+      /* ---------------------------------------------------------------- */
+      .table-wrap {
+        overflow-x: auto;
+        margin: 16px 0;
+        border: 1px solid var(--border-soft);
+        border-radius: var(--radius);
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+      }
+      th,
+      td {
+        padding: 10px 14px;
+        text-align: left;
+        vertical-align: top;
+        border-bottom: 1px solid var(--border-soft);
+      }
+      thead th {
+        background: var(--bg-elev);
+        font-weight: 600;
+        font-size: 12.5px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+      }
+      tbody tr:nth-child(even) {
+        background: var(--bg-table-stripe);
+      }
+      tbody tr:last-child td {
+        border-bottom: 0;
+      }
+
+      /* ---------------------------------------------------------------- */
+      /* Callouts                                                          */
+      /* ---------------------------------------------------------------- */
+      .callout {
+        display: flex;
+        gap: 12px;
+        padding: 12px 16px;
+        border-radius: var(--radius);
+        border: 1px solid var(--border-soft);
+        background: var(--bg-callout);
+        margin: 16px 0;
+        font-size: 14px;
+        line-height: 1.55;
+      }
+      .callout .icon {
+        flex: none;
+        font-weight: 700;
+        font-family: var(--mono);
+        color: var(--accent);
+      }
+      .callout.warn {
+        background: var(--bg-warn);
+      }
+      .callout.warn .icon {
+        color: var(--warn);
+      }
+      .callout p {
+        margin: 0;
+      }
+      .callout p + p {
+        margin-top: 6px;
+      }
+
+      /* ---------------------------------------------------------------- */
+      /* Lists                                                             */
+      /* ---------------------------------------------------------------- */
+      ul,
+      ol {
+        padding-left: 22px;
+      }
+      li {
+        margin: 6px 0;
+      }
+
+      /* ---------------------------------------------------------------- */
+      /* Sub-section heading "card"                                        */
+      /* ---------------------------------------------------------------- */
+      .sub {
+        margin-top: 28px;
+        padding: 16px 18px;
+        border: 1px solid var(--border-soft);
+        border-radius: var(--radius);
+        background: var(--bg-elev);
+      }
+      .sub > h3:first-child {
+        margin-top: 0;
+      }
+
+      /* ---------------------------------------------------------------- */
+      /* Mobile                                                            */
+      /* ---------------------------------------------------------------- */
+      @media (max-width: 960px) {
+        .layout {
+          grid-template-columns: 1fr;
+        }
+        aside.toc {
+          position: static;
+          height: auto;
+          border-right: 0;
+          border-bottom: 1px solid var(--border-soft);
+          padding: 16px;
+        }
+        main {
+          padding: 24px;
+        }
+        header.page-head h1 {
+          font-size: 26px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="layout">
+      <aside class="toc" aria-label="Table of contents">
+        <h2>On this page</h2>
+        <ol>
+          <li><a href="#emits">What the build emits</a></li>
+          <li><a href="#three-lines">Three-line integration</a></li>
+          <li><a href="#html">Plain HTML / static site</a></li>
+          <li><a href="#php">PHP — Laravel, Symfony, WordPress</a></li>
+          <li><a href="#dotnet">.NET — Razor, Blazor, MAUI, WPF</a></li>
+          <li><a href="#props">Setting non-string props</a></li>
+          <li><a href="#events">Listening to custom events</a></li>
+          <li><a href="#dark">Dark mode</a></li>
+          <li><a href="#hosting">Hosting &amp; cache strategy</a></li>
+          <li><a href="#troubleshooting">Troubleshooting</a></li>
+        </ol>
+      </aside>
+
+      <main>
+        <header class="page-head">
+          <div class="eyebrow">@age/design-system</div>
+          <h1>Integration guide — outside a bundler</h1>
+          <p class="lede">
+            Drop AGE components into anything that emits HTML: a static page, a server-rendered template (PHP, Razor,
+            Twig, Blade), or a desktop <code>WebView</code>. Every <code>mud-*</code> is a W3C Custom Element, so the
+            integration story is the same everywhere a browser renders HTML — only the delivery of asset files changes.
+          </p>
+        </header>
+
+        <!-- ========================================================== -->
+        <section id="emits">
+          <h2>
+            <span class="sec-num">1.</span> What the build emits
+            <a class="anchor" href="#emits" aria-hidden="true">#</a>
+          </h2>
+          <p class="tldr">
+            <strong>TL;DR</strong> Ship the entire <code>dist/design-system/</code> folder. The lazy loader resolves
+            chunks and SVG assets via <code>import.meta.url</code> — split it and asset resolution breaks at runtime.
+          </p>
+
+          <p>After <code>yarn build</code>, the relevant artifacts live in <code>dist/design-system/</code>:</p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>File / folder</th>
+                  <th>Purpose</th>
+                  <th>Required?</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>design-system.esm.js</code></td>
+                  <td>Lazy-loader entry. Discovers and <code>import()</code>s component chunks on demand.</td>
+                  <td><strong>Yes</strong></td>
+                </tr>
+                <tr>
+                  <td><code>design-system.css</code></td>
+                  <td>Global base styles (reset, body defaults, focus ring helpers).</td>
+                  <td><strong>Yes</strong></td>
+                </tr>
+                <tr>
+                  <td><code>tokens/core.tokens.css</code></td>
+                  <td>Light-theme CSS variables (palette + semantic).</td>
+                  <td><strong>Yes</strong></td>
+                </tr>
+                <tr>
+                  <td><code>tokens/core.dark.tokens.css</code></td>
+                  <td>Dark-theme overrides, scoped under <code>[data-theme='dark']</code>.</td>
+                  <td>Recommended</td>
+                </tr>
+                <tr>
+                  <td><code>p-*.js</code> chunks</td>
+                  <td>One per component, lazy-loaded by the entry.</td>
+                  <td>Auto-served</td>
+                </tr>
+                <tr>
+                  <td><code>assets/</code></td>
+                  <td>SVG sprites (used by <code>mud-icon</code>, <code>mud-logo</code>, …).</td>
+                  <td><strong>Yes</strong> — keep alongside the entry</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="three-lines">
+          <h2>
+            <span class="sec-num">2.</span> Three-line integration
+            <a class="anchor" href="#three-lines" aria-hidden="true">#</a>
+          </h2>
+          <p class="tldr"><strong>TL;DR</strong> Two stylesheets and one ES module. That is the entire contract.</p>
+
+          <p>Anywhere you control the <code>&lt;head&gt;</code>:</p>
+          <pre><code class="language-html">&lt;link rel="stylesheet" href="/age/tokens/core.tokens.css"&gt;
+&lt;link rel="stylesheet" href="/age/design-system.css"&gt;
+&lt;script type="module" src="/age/design-system.esm.js"&gt;&lt;/script&gt;</code></pre>
+
+          <p>
+            Optional — opt into dark mode by including the dark tokens <em>and</em> setting
+            <code>data-theme="dark"</code> on <code>&lt;html&gt;</code>:
+          </p>
+          <pre><code class="language-html">&lt;link rel="stylesheet" href="/age/tokens/core.dark.tokens.css"&gt;</code></pre>
+
+          <p>
+            From now on, <code>&lt;mud-button&gt;</code>, <code>&lt;mud-icon&gt;</code>, <code>&lt;mud-modal&gt;</code>,
+            etc. work as native HTML tags.
+          </p>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="html">
+          <h2>
+            <span class="sec-num">3.</span> Plain HTML / static site
+            <a class="anchor" href="#html" aria-hidden="true">#</a>
+          </h2>
+          <p class="tldr">
+            <strong>TL;DR</strong> Copy <code>dist/design-system/</code> to <code>public/age/</code> and reference it.
+            Or use a CDN — but pin the version and add SRI.
+          </p>
+
+          <pre><code class="language-html">&lt;!doctype html&gt;
+&lt;html lang="en"&gt;
+  &lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;title&gt;AGE demo&lt;/title&gt;
+
+    &lt;link rel="stylesheet" href="/age/tokens/core.tokens.css"&gt;
+    &lt;link rel="stylesheet" href="/age/tokens/core.dark.tokens.css"&gt;
+    &lt;link rel="stylesheet" href="/age/design-system.css"&gt;
+    &lt;script type="module" src="/age/design-system.esm.js"&gt;&lt;/script&gt;
+  &lt;/head&gt;
+  &lt;body&gt;
+    &lt;mud-button variant="primary"&gt;Save&lt;/mud-button&gt;
+    &lt;mud-icon name="check" size="md"&gt;&lt;/mud-icon&gt;
+
+    &lt;mud-modal id="confirm" heading="Delete record?"&gt;
+      &lt;p slot="body"&gt;This action cannot be undone.&lt;/p&gt;
+      &lt;mud-button slot="footer" variant="primary"&gt;Delete&lt;/mud-button&gt;
+    &lt;/mud-modal&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+          <h3>CDN alternative [TBD]</h3>
+          <p>
+            The package declares <code>"unpkg": "dist/design-system/design-system.esm.js"</code>, so any npm-mirroring
+            CDN works once published.
+          </p>
+
+          <div class="callout warn">
+            <span class="icon">!</span>
+            <div>
+              <p>
+                <strong>Always pin a version and use Subresource Integrity (SRI).</strong> Without it, a CDN compromise
+                silently runs attacker code on every page that loads the script.
+              </p>
+            </div>
+          </div>
+
+          <pre><code class="language-html">&lt;link
+  rel="stylesheet"
+  href="https://unpkg.com/@age/design-system@0.0.1/dist/design-system/tokens/core.tokens.css"
+  integrity="sha384-REPLACE_WITH_REAL_HASH"
+  crossorigin="anonymous"&gt;
+&lt;link
+  rel="stylesheet"
+  href="https://unpkg.com/@age/design-system@0.0.1/dist/design-system/design-system.css"
+  integrity="sha384-REPLACE_WITH_REAL_HASH"
+  crossorigin="anonymous"&gt;
+&lt;script
+  type="module"
+  src="https://unpkg.com/@age/design-system@0.0.1/dist/design-system/design-system.esm.js"
+  integrity="sha384-REPLACE_WITH_REAL_HASH"
+  crossorigin="anonymous"&gt;&lt;/script&gt;</code></pre>
+
+          <p>Generate hashes locally against the exact published files:</p>
+          <pre><code class="language-bash">curl -sL https://unpkg.com/@age/design-system@0.0.1/dist/design-system/design-system.esm.js \
+  | openssl dgst -sha384 -binary | openssl base64 -A</code></pre>
+
+          <div class="callout warn">
+            <span class="icon">⚠</span>
+            <div>
+              <p>
+                <strong>SRI caveat.</strong> SRI protects the entry file but cannot cover the lazy-loaded
+                <code>p-*.js</code> chunks that <code>design-system.esm.js</code> imports dynamically — the browser has
+                no <code>integrity</code> attribute on dynamic <code>import()</code>.
+              </p>
+              <p>
+                If your threat model includes CDN compromise, <strong>self-host the build</strong> and apply SRI at your
+                origin. CDN delivery is best for prototypes, internal tools, and demos.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="php">
+          <h2>
+            <span class="sec-num">4.</span> PHP — Laravel, Symfony, WordPress, raw
+            <a class="anchor" href="#php" aria-hidden="true">#</a>
+          </h2>
+          <p class="tldr">
+            <strong>TL;DR</strong> PHP only emits HTML, so the integration is identical to plain HTML. Only the
+            asset-URL helper differs per framework.
+          </p>
+
+          <div class="sub">
+            <h3>Laravel / Blade</h3>
+            <pre><code class="language-php">{{-- resources/views/layouts/app.blade.php --}}
+&lt;head&gt;
+  &lt;link rel="stylesheet" href="{{ asset('age/tokens/core.tokens.css') }}"&gt;
+  &lt;link rel="stylesheet" href="{{ asset('age/design-system.css') }}"&gt;
+  &lt;script type="module" src="{{ asset('age/design-system.esm.js') }}"&gt;&lt;/script&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+  &lt;mud-button variant="primary"&gt;{{ __('Save') }}&lt;/mud-button&gt;
+&lt;/body&gt;</code></pre>
+            <p>Place the build under <code>public/age/</code> and the helper produces the right path.</p>
+          </div>
+
+          <div class="sub">
+            <h3>Symfony / Twig</h3>
+            <pre><code class="language-twig">{# templates/base.html.twig #}
+&lt;link rel="stylesheet" href="{{ asset('age/tokens/core.tokens.css') }}"&gt;
+&lt;link rel="stylesheet" href="{{ asset('age/design-system.css') }}"&gt;
+&lt;script type="module" src="{{ asset('age/design-system.esm.js') }}"&gt;&lt;/script&gt;</code></pre>
+          </div>
+
+          <div class="sub">
+            <h3>WordPress</h3>
+            <p>
+              Custom elements with hyphens are valid HTML5 — WordPress's <code>wpautop</code> and KSES filters will
+              <em>not</em> strip the tags, but KSES will strip unknown <em>attributes</em> on some posts. Enqueue assets
+              in your theme's <code>functions.php</code>:
+            </p>
+            <pre><code class="language-php">add_action('wp_enqueue_scripts', function () {
+    wp_enqueue_style('age-tokens', get_template_directory_uri() . '/age/tokens/core.tokens.css', [], null);
+    wp_enqueue_style('age-base',   get_template_directory_uri() . '/age/design-system.css',     [], null);
+    wp_enqueue_script('age-loader', get_template_directory_uri() . '/age/design-system.esm.js', [], null, true);
+});
+
+// Make the loader a module — WP wraps scripts in classic &lt;script&gt; by default.
+add_filter('script_loader_tag', function ($tag, $handle) {
+    if ($handle === 'age-loader') {
+        return str_replace('&lt;script ', '&lt;script type="module" ', $tag);
+    }
+    return $tag;
+}, 10, 2);</code></pre>
+          </div>
+
+          <div class="sub">
+            <h3>Raw PHP</h3>
+            <pre><code class="language-php">&lt;link rel="stylesheet" href="/age/tokens/core.tokens.css"&gt;
+&lt;link rel="stylesheet" href="/age/design-system.css"&gt;
+&lt;script type="module" src="/age/design-system.esm.js"&gt;&lt;/script&gt;
+
+&lt;mud-button variant="primary"&gt;&lt;?= htmlspecialchars($label) ?&gt;&lt;/mud-button&gt;</code></pre>
+          </div>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="dotnet">
+          <h2>
+            <span class="sec-num">5.</span> .NET — Razor, Blazor, MAUI, WPF/WinForms
+            <a class="anchor" href="#dotnet" aria-hidden="true">#</a>
+          </h2>
+          <p class="tldr">
+            <strong>TL;DR</strong> Razor = same as PHP. Blazor works natively but needs JS interop for object props and
+            a small <code>[EventHandler]</code> wrapper for custom events. WPF/WinForms require WebView2.
+          </p>
+
+          <div class="sub">
+            <h3>5a. ASP.NET MVC / Razor Pages</h3>
+            <p>Identical to PHP. Drop the build under <code>wwwroot/age/</code>:</p>
+            <pre><code class="language-razor">@* Views/Shared/_Layout.cshtml *@
+&lt;head&gt;
+  &lt;link rel="stylesheet" href="~/age/tokens/core.tokens.css" /&gt;
+  &lt;link rel="stylesheet" href="~/age/design-system.css" /&gt;
+  &lt;script type="module" src="~/age/design-system.esm.js"&gt;&lt;/script&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+  &lt;mud-button variant="primary"&gt;@Localizer["Save"]&lt;/mud-button&gt;
+&lt;/body&gt;</code></pre>
+          </div>
+
+          <div class="sub">
+            <h3>5b. Blazor Server / Blazor WebAssembly</h3>
+            <p>
+              Blazor (≥ .NET 7) renders custom elements natively. Attributes, slots, and <code>@onclick</code> work
+              without ceremony:
+            </p>
+            <pre><code class="language-razor">@* Pages/Demo.razor *@
+&lt;mud-button variant="primary" @onclick="HandleClick"&gt;
+  Save
+&lt;/mud-button&gt;
+
+&lt;mud-modal heading="Confirm"&gt;
+  &lt;p slot="body"&gt;Are you sure?&lt;/p&gt;
+&lt;/mud-modal&gt;
+
+@code {
+    void HandleClick() =&gt; Console.WriteLine("clicked");
+}</code></pre>
+
+            <p>Add the assets in <code>App.razor</code> (Server) or <code>wwwroot/index.html</code> (WASM):</p>
+            <pre><code class="language-html">&lt;link rel="stylesheet" href="age/tokens/core.tokens.css" /&gt;
+&lt;link rel="stylesheet" href="age/design-system.css" /&gt;
+&lt;script type="module" src="age/design-system.esm.js"&gt;&lt;/script&gt;</code></pre>
+
+            <p><strong>Three caveats:</strong></p>
+            <ol>
+              <li><strong>Object/array props</strong> must be set via JS interop — see <a href="#props">§6</a>.</li>
+              <li>
+                <strong>Custom events</strong> (<code>corChange</code>, <code>corSelect</code>, …) need an
+                <code>[EventHandler]</code> registration — see <a href="#events">§7</a>.
+              </li>
+              <li>
+                <strong>Render mode</strong>: in interactive Server mode, SSR emits tags before
+                <code>design-system.esm.js</code> runs. That is fine (custom elements upgrade automatically), but JS
+                interop that sets a property must wait for upgrade:
+                <pre><code class="language-csharp">await JS.InvokeVoidAsync(
+    "eval",
+    """
+    customElements.whenDefined('mud-select').then(() =&gt; {
+      document.getElementById('mySelect').options = ...;
+    });
+    """);</code></pre>
+              </li>
+            </ol>
+          </div>
+
+          <div class="sub">
+            <h3>5c. MAUI Blazor Hybrid</h3>
+            <p>
+              Same as Blazor WebAssembly. Assets ship inside <code>wwwroot/</code> and are served by the embedded
+              WebView2 (Windows) or WKWebView (macOS / iOS).
+            </p>
+          </div>
+
+          <div class="sub">
+            <h3>5d. WPF / WinForms (desktop)</h3>
+            <p>
+              Custom elements only work in a <strong>WebView2</strong> control — there is no native HTML rendering in
+              Win32. Embed a local HTML page exactly as in <a href="#html">§3</a> and load it:
+            </p>
+            <pre><code class="language-csharp">await webView.EnsureCoreWebView2Async();
+webView.CoreWebView2.SetVirtualHostNameToFolderMapping(
+    "app.local", "Resources/age", CoreWebView2HostResourceAccessKind.Allow);
+webView.Source = new Uri("https://app.local/index.html");</code></pre>
+          </div>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="props">
+          <h2>
+            <span class="sec-num">6.</span> Setting non-string props (objects, arrays)
+            <a class="anchor" href="#props" aria-hidden="true">#</a>
+          </h2>
+          <p class="tldr">
+            <strong>TL;DR</strong> Attributes are strings. For object/array data — <code>mud-select.options</code>,
+            <code>mud-breadcrumb.items</code>, <code>mud-receipt.lineItems</code> — wait for
+            <code>customElements.whenDefined</code> and assign the JS property.
+          </p>
+
+          <p>
+            HTML attributes are strings. Several AGE components accept structured data via
+            <strong>JS properties</strong> instead:
+          </p>
+          <ul>
+            <li><code>&lt;mud-select&gt;</code> → <code>.options = [{ label, value }, …]</code></li>
+            <li><code>&lt;mud-breadcrumb&gt;</code> → <code>.items = [{ label, href }, …]</code></li>
+            <li><code>&lt;mud-receipt&gt;</code> → <code>.lineItems = [...]</code></li>
+          </ul>
+          <p>
+            For these, the attribute form (<code>options='[…]'</code>) does <strong>not</strong> work. Wait for upgrade,
+            then assign:
+          </p>
+
+          <pre><code class="language-html">&lt;mud-select id="country"&gt;&lt;/mud-select&gt;
+
+&lt;script type="module"&gt;
+  customElements.whenDefined('mud-select').then(() =&gt; {
+    const el = document.getElementById('country');
+    el.options = [
+      { label: 'Romania', value: 'RO' },
+      { label: 'Moldova', value: 'MD' },
+    ];
+  });
+&lt;/script&gt;</code></pre>
+
+          <h4>Blazor equivalent</h4>
+          <pre><code class="language-razor">@inject IJSRuntime JS
+
+&lt;mud-select @ref="selectRef"&gt;&lt;/mud-select&gt;
+
+@code {
+    ElementReference selectRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        await JS.InvokeVoidAsync("setCorProp", selectRef, "options", new[] {
+            new { label = "Romania", value = "RO" },
+            new { label = "Moldova", value = "MD" },
+        });
+    }
+}</code></pre>
+
+          <p>Ship the helper once:</p>
+          <pre><code class="language-javascript">// wwwroot/age-interop.js
+window.setCorProp = async (el, prop, value) =&gt; {
+  await customElements.whenDefined(el.tagName.toLowerCase());
+  el[prop] = value;
+};</code></pre>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="events">
+          <h2>
+            <span class="sec-num">7.</span> Listening to custom events
+            <a class="anchor" href="#events" aria-hidden="true">#</a>
+          </h2>
+          <p class="tldr">
+            <strong>TL;DR</strong> DOM <code>addEventListener</code> always works. For Razor
+            <code>@oncorclose</code> syntax, register an <code>[EventHandler]</code> in a tiny helper assembly.
+          </p>
+
+          <p>
+            AGE components dispatch namespaced events (<code>corChange</code>, <code>corSelect</code>,
+            <code>corClose</code>, …). DOM listeners work everywhere:
+          </p>
+
+          <pre><code class="language-html">&lt;mud-modal id="m"&gt;&lt;/mud-modal&gt;
+&lt;script type="module"&gt;
+  document.getElementById('m').addEventListener('corClose', e =&gt; {
+    console.log('closed', e.detail);
+  });
+&lt;/script&gt;</code></pre>
+
+          <h4>Blazor — enable <code>@oncorclose</code> syntax</h4>
+          <p>Create a small assembly:</p>
+          <pre><code class="language-csharp">[EventHandler("oncorclose", typeof(EventArgs), enableStopPropagation: true, enablePreventDefault: true)]
+public static class CorEventHandlers { }</code></pre>
+
+          <p>Reference it from <code>_Imports.razor</code>:</p>
+          <pre><code class="language-razor">@using YourApp.JsInterop</code></pre>
+
+          <p>Then:</p>
+          <pre><code class="language-razor">&lt;mud-modal @oncorclose="HandleClose"&gt;&lt;/mud-modal&gt;</code></pre>
+
+          <p>
+            Alternative without <code>[EventHandler]</code>: attach the listener manually in
+            <code>OnAfterRenderAsync</code> via <code>JSInterop</code> and forward to a
+            <code>DotNetObjectReference</code>.
+          </p>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="dark">
+          <h2><span class="sec-num">8.</span> Dark mode <a class="anchor" href="#dark" aria-hidden="true">#</a></h2>
+          <p class="tldr">
+            <strong>TL;DR</strong> Include <code>core.dark.tokens.css</code> and set <code>data-theme="dark"</code> on
+            any element. The dark overrides are scoped to that subtree.
+          </p>
+
+          <p>
+            The dark stylesheet scopes its overrides to <code>[data-theme='dark']</code>. To switch modes, toggle the
+            attribute on <code>&lt;html&gt;</code>:
+          </p>
+
+          <pre><code class="language-javascript">document.documentElement.dataset.theme = 'dark'; // or 'light'</code></pre>
+
+          <p>Pattern with <code>prefers-color-scheme</code> fallback + persistence:</p>
+          <pre><code class="language-javascript">const stored = localStorage.getItem('theme');
+const dark = stored
+  ? stored === 'dark'
+  : matchMedia('(prefers-color-scheme: dark)').matches;
+document.documentElement.dataset.theme = dark ? 'dark' : 'light';</code></pre>
+
+          <div class="callout">
+            <span class="icon">i</span>
+            <p>
+              You can also scope dark mode to a subtree — apply <code>data-theme="dark"</code> to any wrapping element
+              and only its descendants flip.
+            </p>
+          </div>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="hosting">
+          <h2>
+            <span class="sec-num">9.</span> Hosting &amp; cache strategy
+            <a class="anchor" href="#hosting" aria-hidden="true">#</a>
+          </h2>
+          <p class="tldr">
+            <strong>TL;DR</strong> Self-host in production, fingerprint chunks (long cache), short-cache the entry, gzip
+            everything, configure CSP with <code>setNonce()</code>.
+          </p>
+
+          <ul>
+            <li>
+              <strong>Same-origin or CORS.</strong> ESM imports honor CORS. Third-party hosts must send
+              <code>Access-Control-Allow-Origin</code>. unpkg and jsDelivr already do.
+            </li>
+            <li>
+              <strong>Subresource Integrity (SRI).</strong> Any third-party-hosted asset must carry
+              <code>integrity="sha384-…"</code> + <code>crossorigin="anonymous"</code>. SRI only covers files referenced
+              directly in markup; lazy-loaded chunks cannot be SRI-protected because they are pulled via dynamic
+              <code>import()</code>. Self-hosting eliminates this gap entirely — prefer it for production.
+            </li>
+            <li>
+              <strong>MIME type.</strong> <code>.js</code> must be served as <code>application/javascript</code> (or
+              <code>text/javascript</code>). Legacy servers that default to <code>application/octet-stream</code> will
+              cause the browser to refuse the module.
+            </li>
+            <li>
+              <strong>Cache headers.</strong> Chunks (<code>p-*.js</code>) are content-hashed and safe to serve with
+              <code>Cache-Control: public, max-age=31536000, immutable</code>. The entry
+              <code>design-system.esm.js</code> is <em>not</em> hashed — give it a short cache (e.g. 5 min) or version
+              it via your asset pipeline.
+            </li>
+            <li>
+              <strong>Compression.</strong> Enable Brotli / gzip on <code>.js</code>, <code>.css</code>,
+              <code>.svg</code>.
+            </li>
+            <li>
+              <strong>CSP.</strong> The loader uses dynamic <code>import()</code>. Production is CSP-friendly with
+              <code>script-src 'self'</code> + a nonce. Call <code>setNonce(…)</code> before the loader runs:
+              <pre><code class="language-html">&lt;script type="module" nonce="abc123"&gt;
+  import { setNonce } from '/age/loader/index.js';
+  setNonce('abc123');
+&lt;/script&gt;</code></pre>
+            </li>
+          </ul>
+        </section>
+
+        <!-- ========================================================== -->
+        <section id="troubleshooting">
+          <h2>
+            <span class="sec-num">10.</span> Troubleshooting
+            <a class="anchor" href="#troubleshooting" aria-hidden="true">#</a>
+          </h2>
+          <p class="tldr">
+            <strong>TL;DR</strong> Most failures trace to a split deploy (chunks 404) or token CSS loaded after
+            component CSS. Both are visible in DevTools → Network.
+          </p>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Symptom</th>
+                  <th>Likely cause</th>
+                  <th>Fix</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>&lt;mud-button&gt;</code> renders as plain text, no styling</td>
+                  <td>The loader didn't run, or chunks 404</td>
+                  <td>
+                    DevTools → Network. If <code>design-system.esm.js</code> is 200 but <code>p-*.js</code> chunks are
+                    404, the folder is split — re-deploy <code>dist/design-system/</code> as a whole.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Icons render as blank squares</td>
+                  <td>Asset resolution failed</td>
+                  <td>
+                    The SVG sprite path is derived from <code>design-system.esm.js</code>'s URL. Ensure
+                    <code>dist/design-system/assets/</code> is co-located with the entry.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Modal/popover positioned wrong</td>
+                  <td>Tokens not loaded</td>
+                  <td>
+                    Verify <code>core.tokens.css</code> is in the document <em>before</em>
+                    <code>design-system.css</code>. Otherwise component CSS resolves variables to fallback.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Dark mode doesn't apply</td>
+                  <td>Missing dark tokens or wrong attribute</td>
+                  <td>
+                    Confirm <code>core.dark.tokens.css</code> is linked <strong>and</strong>
+                    <code>&lt;html data-theme="dark"&gt;</code> is set.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Blazor: <code>e.target.value</code> is empty in event handler</td>
+                  <td>
+                    Stencil emits typed <code>CustomEvent</code>; <code>value</code> lives on <code>event.detail</code>
+                  </td>
+                  <td>Use <code>e.Detail</code> (Blazor) or <code>e.detail</code> (JS).</td>
+                </tr>
+                <tr>
+                  <td><code>&lt;mud-select&gt;</code> shows no options after data load</td>
+                  <td>Tried to set <code>options</code> as an attribute</td>
+                  <td>
+                    Set the JS property after <code>customElements.whenDefined()</code>. See <a href="#props">§6</a>.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Console warns about dev mode</td>
+                  <td>You shipped the dev build (<code>stencil build --dev</code>)</td>
+                  <td>Run <code>yarn build</code> and deploy the <code>dist/</code> from that run.</td>
+                </tr>
+                <tr>
+                  <td>CSP blocks the loader</td>
+                  <td><code>script-src</code> doesn't allow dynamic imports / no nonce</td>
+                  <td>
+                    Add a nonce, call <code>setNonce()</code>, or relax to <code>'self'</code> for module sources.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <script
+      src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/highlight.min.js"
+      integrity="sha384-GdEWAbCjn+ghjX0gLx7/N1hyTVmPAjdC2OvoAA0RyNcAOhqwtT8qnbCxWle2+uJX"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/languages/csharp.min.js"
+      integrity="sha384-6NsOlZtv7W2iSoDU+Yi+hENfl3MuiECvnl7emdRUvpIpDbLvoCjpAU1fjE6HxIQp"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/languages/twig.min.js"
+      integrity="sha384-XlDRKuo3Ea9pIqT0CUrf4Vp4ZN/AItGl/aUiL/4AgHSC2N7xJI1commJxYZo0I1T"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.10.0/build/languages/php.min.js"
+      integrity="sha384-Xd0AQIkWCEjBL8BNMtDMGVqFXkf445J6PNUJdXbh334ckjeSa90wtSUjXySuz+rt"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      // Razor → highlight as cshtml (fallback to html)
+      hljs.registerAliases(['razor'], { languageName: 'xml' });
+      hljs.highlightAll();
+
+      // Copy-to-clipboard buttons on every <pre>
+      document.querySelectorAll('pre').forEach(pre => {
+        const btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.type = 'button';
+        btn.textContent = 'Copy';
+        btn.addEventListener('click', async () => {
+          const code = pre.querySelector('code');
+          if (!code) return;
+          try {
+            await navigator.clipboard.writeText(code.innerText);
+            btn.textContent = 'Copied';
+            btn.classList.add('copied');
+            setTimeout(() => {
+              btn.textContent = 'Copy';
+              btn.classList.remove('copied');
+            }, 1400);
+          } catch {
+            btn.textContent = 'Failed';
+          }
+        });
+        pre.appendChild(btn);
+      });
+
+      // Sidebar active-section highlight via IntersectionObserver
+      const links = new Map();
+      document.querySelectorAll('aside.toc a[href^="#"]').forEach(a => {
+        const id = a.getAttribute('href').slice(1);
+        links.set(id, a);
+      });
+
+      const io = new IntersectionObserver(
+        entries => {
+          entries.forEach(entry => {
+            const link = links.get(entry.target.id);
+            if (!link) return;
+            if (entry.isIntersecting) {
+              links.forEach(l => l.classList.remove('active'));
+              link.classList.add('active');
+            }
+          });
+        },
+        { rootMargin: '-20% 0px -70% 0px', threshold: 0 },
+      );
+
+      document.querySelectorAll('main section[id]').forEach(s => io.observe(s));
+    </script>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 # @age/web-components
 
 Vanilla HTML / JavaScript adapter for the AGE Design System. Registers every
-Stencil-compiled custom element (`<cor-button>`, `<cor-input>`, …) so they can
+Stencil-compiled custom element (`<mud-button>`, `<mud-input>`, …) so they can
 be used in any HTML page or non-framework app.
 
 ## Install
@@ -21,7 +21,7 @@ defineCustomElements();
 ```
 
 ```html
-<cor-button variant="primary"><button>Click me</button></cor-button>
+<mud-button variant="primary"><button>Click me</button></mud-button>
 ```
 
 ## Usage — plain HTML with import map
@@ -48,7 +48,7 @@ defineCustomElements();
     </script>
   </head>
   <body>
-    <cor-button variant="primary"><button>Click me</button></cor-button>
+    <mud-button variant="primary"><button>Click me</button></mud-button>
     <script type="module">
       import { defineCustomElements } from '@age/web-components';
       defineCustomElements();
@@ -68,16 +68,16 @@ yarn demo.web    # serve the demo at http://localhost:5174
 ```
 
 The demo lives in [`demo/index.html`](./demo/index.html) and showcases
-`<cor-button>` variants + sizes.
+`<mud-button>` variants + sizes.
 
 ## Available components
 
 Every component published by `@age/design-system` is registered. The full list
 is browseable in [Storybook](../.storybook/). Highlights include:
 
-- `<cor-button>` — primary action button
-- `<cor-input>`, `<cor-textarea>` — form fields
-- `<cor-select>`, `<cor-pagination-item>`, `<cor-toast-notification>`, `<cor-avatar>` — …
+- `<mud-button>` — primary action button
+- `<mud-input>`, `<mud-textarea>` — form fields
+- `<mud-select>`, `<mud-pagination-item>`, `<mud-toast-notification>`, `<mud-avatar>` — …
 
 ## API
 

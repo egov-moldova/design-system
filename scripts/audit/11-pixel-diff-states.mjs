@@ -2,7 +2,7 @@
 /**
  * 11-pixel-diff-states.mjs ★ QUALITY-CRITICAL
  *
- * Captures Playwright screenshots for every story of a `cor-*` component
+ * Captures Playwright screenshots for every story of a `mud-*` component
  * (light + dark) and diffs them against Figma references using **Pixelmatch
  * (Mapbox)** — the same library the existing `scripts/visual-diff.mjs` uses
  * and the same algorithm under the MCP `image-compare` server. This matches
@@ -10,7 +10,7 @@
  * rejected in plan question Q2).
  *
  * Required inputs:
- *   - <componentName>                    — cor-X
+ *   - <componentName>                    — mud-X
  *   - --figma-dir <path>                 — folder containing one `<state>.png`
  *                                          per story name (kebab-cased)
  *
@@ -54,7 +54,7 @@ const USAGE = defaultUsage(
     '  --port <N>          Storybook port (default: 6007)',
     '  --figma-dir <dir>   Folder containing one <state>.png per story (kebab-cased)',
     '  --skip-dark         Skip the dark-mode pass',
-    '  --out-dir <dir>     Where to save captured PNGs + diff images (default: .audit-screenshots/cor-X/)',
+    '  --out-dir <dir>     Where to save captured PNGs + diff images (default: .audit-screenshots/mud-X/)',
     '  --pass-threshold <%>  Percent diff that still counts as PASS (default: 0.5)',
     '  --warn-threshold <%>  Above this is FAIL (default: 2.0)',
   ],

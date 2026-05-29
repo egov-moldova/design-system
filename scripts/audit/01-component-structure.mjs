@@ -2,9 +2,9 @@
 /**
  * 01-component-structure.mjs
  *
- * Verifies the canonical file layout of a `cor-*` component:
- *   - REQUIRED:  cor-X.tsx, cor-X.css, cor-X.stories.ts, test/cor-X.spec.tsx, readme.md
- *   - OPTIONAL:  cor-X.types.ts, cor-X.enums.ts, cor-X.constants.ts, test/cor-X.e2e.ts
+ * Verifies the canonical file layout of a `mud-*` component:
+ *   - REQUIRED:  mud-X.tsx, mud-X.css, mud-X.stories.ts, test/mud-X.spec.tsx, readme.md
+ *   - OPTIONAL:  mud-X.types.ts, mud-X.enums.ts, mud-X.constants.ts, test/mud-X.e2e.ts
  *   - TOKENS:    tokens/core/components/<bare>.tokens.json (warning if missing)
  *
  * Also reports the component's location (`components` vs `hidden`) so callers
@@ -100,7 +100,7 @@ export function analyzeComponent(target) {
         code: 'STRUCTURE-NOT-FOUND',
         message:
           target.reason === 'invalid-name'
-            ? `Invalid component name: "${target.input}". Expected "cor-<name>".`
+            ? `Invalid component name: "${target.input}". Expected "mud-<name>".`
             : `Component "${target.name}" not found in src/components or src/hidden.`,
       }),
     );
@@ -226,7 +226,7 @@ async function listChangedComponents() {
     const raw = execFileSync('git', ['diff', '--name-only', 'main...HEAD'], { encoding: 'utf8' });
     const names = new Set();
     for (const line of raw.split('\n')) {
-      const m = line.match(/^src\/(components|hidden)\/(cor-[a-z0-9-]+)\//);
+      const m = line.match(/^src\/(components|hidden)\/(mud-[a-z0-9-]+)\//);
       if (m) names.add(m[2]);
     }
     return [...names].sort();

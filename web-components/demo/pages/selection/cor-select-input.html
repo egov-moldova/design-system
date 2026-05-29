@@ -3,35 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-select-input · @age/web-components</title>
+    <title>mud-select-input · @age/web-components</title>
   </head>
-  <body data-component="cor-select-input">
+  <body data-component="mud-select-input">
     <main class="demo-main">
-      <section id="cor-select-input" class="component-section">
-        <h2>&lt;cor-select-input&gt;</h2>
+      <section id="mud-select-input" class="component-section">
+        <h2>&lt;mud-select-input&gt;</h2>
 
         <div class="subsection">
           <h3>Sizes (options set via JS property)</h3>
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-select-input
+                <mud-select-input
                   id="sel-size-md"
                   size="md"
                   label="Raion"
                   placeholder="Alege raionul"
-                ></cor-select-input>
+                ></mud-select-input>
               </div>
               <span class="label">md</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-select-input
+                <mud-select-input
                   id="sel-size-lg"
                   size="lg"
                   label="Raion"
                   placeholder="Alege raionul"
-                ></cor-select-input>
+                ></mud-select-input>
               </div>
               <span class="label">lg</span>
             </div>
@@ -43,60 +43,60 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-select-input id="sel-default" label="Tip document" placeholder="Selectează"></cor-select-input>
+                <mud-select-input id="sel-default" label="Tip document" placeholder="Selectează"></mud-select-input>
               </div>
               <span class="label">default + placeholder</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-select-input id="sel-prefilled" label="Tip document" value="buletin"></cor-select-input>
+                <mud-select-input id="sel-prefilled" label="Tip document" value="buletin"></mud-select-input>
               </div>
               <span class="label">prefilled value</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-select-input
+                <mud-select-input
                   id="sel-destructive"
                   variant="destructive"
                   label="Tip document"
                   placeholder="Selectează"
-                ></cor-select-input>
+                ></mud-select-input>
               </div>
               <span class="label">variant=destructive</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-select-input
+                <mud-select-input
                   id="sel-error"
                   invalid=""
                   required=""
                   label="Tip document"
                   placeholder="Selectează"
                   error-text="Acest câmp este obligatoriu"
-                ></cor-select-input>
+                ></mud-select-input>
               </div>
               <span class="label">invalid + error-text + required</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-select-input
+                <mud-select-input
                   id="sel-helper"
                   label="Tip document"
                   placeholder="Selectează"
                   helper-text="Documentul scanat trebuie să fie lizibil"
-                ></cor-select-input>
+                ></mud-select-input>
               </div>
               <span class="label">helper-text</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-select-input id="sel-disabled" disabled="" label="Tip document" value="buletin"></cor-select-input>
+                <mud-select-input id="sel-disabled" disabled="" label="Tip document" value="buletin"></mud-select-input>
               </div>
               <span class="label">disabled</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-select-input id="sel-readonly" readonly="" label="Tip document" value="buletin"></cor-select-input>
+                <mud-select-input id="sel-readonly" readonly="" label="Tip document" value="buletin"></mud-select-input>
               </div>
               <span class="label">readonly</span>
             </div>
@@ -108,19 +108,19 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-select-input id="sel-icon" label="Caută serviciu" placeholder="Selectează un serviciu">
-                  <cor-icon slot="icon-start" name="search" size="20"></cor-icon>
-                </cor-select-input>
+                <mud-select-input id="sel-icon" label="Caută serviciu" placeholder="Selectează un serviciu">
+                  <mud-icon slot="icon-start" name="search" size="20"></mud-icon>
+                </mud-select-input>
               </div>
               <span class="label">icon-start slot</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-select-input
+                <mud-select-input
                   id="sel-disabled-opt"
                   label="Plan abonament"
                   placeholder="Alege planul"
-                ></cor-select-input>
+                ></mud-select-input>
               </div>
               <span class="label">contains a disabled option</span>
             </div>
@@ -132,19 +132,19 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-select-input id="sel-many" label="Țară (25+ opțiuni)" placeholder="Alege țara"></cor-select-input>
+                <mud-select-input id="sel-many" label="Țară (25+ opțiuni)" placeholder="Alege țara"></mud-select-input>
               </div>
               <span class="label">25+ options (scroll)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-select-input id="sel-long" label="Categorie" placeholder="Alege"></cor-select-input>
+                <mud-select-input id="sel-long" label="Categorie" placeholder="Alege"></mud-select-input>
               </div>
               <span class="label">very long option labels</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-select-input id="sel-empty" label="Fără opțiuni" placeholder="Nimic disponibil"></cor-select-input>
+                <mud-select-input id="sel-empty" label="Fără opțiuni" placeholder="Nimic disponibil"></mud-select-input>
               </div>
               <span class="label">empty options array</span>
             </div>
@@ -152,7 +152,7 @@
         </div>
       </section>
       <script type="module">
-        customElements.whenDefined('cor-select-input').then(() => {
+        customElements.whenDefined('mud-select-input').then(() => {
           const set = (id, options) => {
             const el = document.getElementById(id);
             if (el) el.options = options;

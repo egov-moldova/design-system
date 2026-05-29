@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-cookie-banner · @age/web-components</title>
+    <title>mud-cookie-banner · @age/web-components</title>
   </head>
-  <body data-component="cor-cookie-banner">
+  <body data-component="mud-cookie-banner">
     <main class="demo-main">
-      <section id="cor-cookie-banner" class="component-section">
-        <h2>&lt;cor-cookie-banner&gt;</h2>
+      <section id="mud-cookie-banner" class="component-section">
+        <h2>&lt;mud-cookie-banner&gt;</h2>
 
         <div class="subsection">
           <h3>Variant: simple (position bottom)</h3>
@@ -28,7 +28,7 @@
               align-items: flex-end;
             "
           >
-            <cor-cookie-banner variant="simple" position="bottom" privacy-href="#"></cor-cookie-banner>
+            <mud-cookie-banner variant="simple" position="bottom" privacy-href="#"></mud-cookie-banner>
           </div>
         </div>
 
@@ -50,7 +50,7 @@
               align-items: flex-start;
             "
           >
-            <cor-cookie-banner variant="detailed" position="top" expanded="" privacy-href="#"></cor-cookie-banner>
+            <mud-cookie-banner variant="detailed" position="top" expanded="" privacy-href="#"></mud-cookie-banner>
           </div>
         </div>
 
@@ -72,13 +72,13 @@
               align-items: flex-start;
             "
           >
-            <cor-cookie-banner
+            <mud-cookie-banner
               id="demo-cookie-custom"
               variant="detailed"
               position="bottom"
               expanded=""
               privacy-href="#"
-            ></cor-cookie-banner>
+            ></mud-cookie-banner>
           </div>
         </div>
 
@@ -100,7 +100,7 @@
               align-items: flex-end;
             "
           >
-            <cor-cookie-banner
+            <mud-cookie-banner
               variant="simple"
               position="bottom"
               title-text="Confidențialitatea ta contează — ăâîșțĂÂÎȘȚ"
@@ -113,12 +113,12 @@
                 în politica noastră de confidențialitate și îți poți retrage consimțământul oricând din setările
                 contului. Caractere speciale de testare: &amp; &lt; &gt; " ' 🍪
               </span>
-            </cor-cookie-banner>
+            </mud-cookie-banner>
           </div>
         </div>
       </section>
       <script type="module">
-        customElements.whenDefined('cor-cookie-banner').then(() => {
+        customElements.whenDefined('mud-cookie-banner').then(() => {
           const el = document.getElementById('demo-cookie-custom');
           if (!el) return;
           el.categories = [

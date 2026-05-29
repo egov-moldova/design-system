@@ -3,19 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-receipt · @age/web-components</title>
+    <title>mud-receipt · @age/web-components</title>
   </head>
-  <body data-component="cor-receipt">
+  <body data-component="mud-receipt">
     <main class="demo-main">
-      <section id="cor-receipt" class="component-section">
-        <h2>&lt;cor-receipt&gt;</h2>
+      <section id="mud-receipt" class="component-section">
+        <h2>&lt;mud-receipt&gt;</h2>
 
         <div class="subsection">
           <h3>Service × status pairings</h3>
           <div class="row--auto-fit" style="--auto-fit-min: 600px; gap: var(--spacing-32)">
             <div class="cell" style="align-items: stretch">
               <div style="width: 100%; max-width: 600px">
-                <cor-receipt
+                <mud-receipt
                   id="receipt-mpay"
                   service="mpay"
                   status="paid"
@@ -24,49 +24,49 @@
                   date="2026-05-22T14:32:00Z"
                   transaction-id="MPAY-2026-0058871-AB"
                   description="Achitare taxă de stat — eliberare pașaport"
-                ></cor-receipt>
+                ></mud-receipt>
               </div>
               <span class="label">mpay · paid · amount + QR + parties</span>
             </div>
 
             <div class="cell" style="align-items: stretch">
               <div style="width: 100%; max-width: 1200px">
-                <cor-receipt
+                <mud-receipt
                   id="receipt-mpass"
                   service="mpass"
                   status="confirmed"
                   date="2026-05-22T09:05:00Z"
                   transaction-id="MPASS-7731-2026"
                   description="Autentificare în portalul guvernamental"
-                ></cor-receipt>
+                ></mud-receipt>
               </div>
               <span class="label">mpass · confirmed · no amount</span>
             </div>
 
             <div class="cell" style="align-items: stretch">
               <div style="width: 100%; max-width: 1200px">
-                <cor-receipt
+                <mud-receipt
                   id="receipt-msign"
                   service="msign"
                   status="pending"
                   date="2026-05-22T16:48:00Z"
                   transaction-id="MSIGN-AA01-PEND"
                   description="Semnare electronică — contract de prestări servicii"
-                ></cor-receipt>
+                ></mud-receipt>
               </div>
               <span class="label">msign · pending</span>
             </div>
 
             <div class="cell" style="align-items: stretch">
               <div style="width: 100%; max-width: 1200px">
-                <cor-receipt
+                <mud-receipt
                   id="receipt-mdelivery"
                   service="mdelivery"
                   status="failed"
                   date="2026-05-22T11:20:00Z"
                   transaction-id="MDLV-9920-FAIL"
                   description="Livrare document oficial la adresă"
-                ></cor-receipt>
+                ></mud-receipt>
               </div>
               <span class="label">mdelivery · failed</span>
             </div>
@@ -76,14 +76,14 @@
         <div class="subsection">
           <h3>Slots (qr override + custom actions + extra rows)</h3>
           <div style="width: 100%; max-width: 1200px">
-            <cor-receipt service="mpay" status="paid" amount="430,00" date="2026-05-20T10:00:00Z">
+            <mud-receipt service="mpay" status="paid" amount="430,00" date="2026-05-20T10:00:00Z">
               <div slot="qr" style="font-size: 64px; line-height: 1">🔳</div>
               <div slot="extra" class="receipt-row" data-row="custom">
                 <dt style="font-weight: 600">Cod de bare</dt>
                 <dd>0123-4567-8901</dd>
               </div>
-              <cor-button slot="actions" variant="primary" size="md">Vezi în istoric</cor-button>
-            </cor-receipt>
+              <mud-button slot="actions" variant="primary" size="md">Vezi în istoric</mud-button>
+            </mud-receipt>
           </div>
           <span class="label">qr slot replaces generated QR; actions slot replaces default 4-button footer</span>
         </div>
@@ -93,14 +93,14 @@
           <div class="row--auto-fit" style="--auto-fit-min: 380px; gap: var(--spacing-32)">
             <div class="cell" style="align-items: stretch">
               <div style="width: 100%; max-width: 1200px">
-                <cor-receipt id="receipt-min" service="mpay"></cor-receipt>
+                <mud-receipt id="receipt-min" service="mpay"></mud-receipt>
               </div>
               <span class="label">Bare minimum: no status, no amount, no date, no parties, no QR</span>
             </div>
 
             <div class="cell" style="align-items: stretch">
               <div style="width: 100%; max-width: 1200px">
-                <cor-receipt
+                <mud-receipt
                   id="receipt-long"
                   service="mpay"
                   status="paid"
@@ -108,14 +108,14 @@
                   currency="MDL"
                   date="2026-12-31T23:59:00Z"
                   transaction-id="MPAY-VERY-LONG-TRANSACTION-IDENTIFIER-0000-9999-ABCDEF"
-                ></cor-receipt>
+                ></mud-receipt>
               </div>
               <span class="label">Long names, IDNP masking, huge amount, long transaction id</span>
             </div>
 
             <div class="cell" style="align-items: stretch">
               <div style="width: 100%; max-width: 1200px">
-                <cor-receipt
+                <mud-receipt
                   service="mpay"
                   status="paid"
                   amount="0,00"
@@ -123,7 +123,7 @@
                   title-text="Bon &amp; Confirmare «specială» 🧾"
                   show-actions="false"
                   transaction-id="TX-0"
-                ></cor-receipt>
+                ></mud-receipt>
               </div>
               <span class="label">Invalid date (raw passthrough), special chars in title-text, show-actions=false</span>
             </div>
@@ -131,7 +131,7 @@
         </div>
       </section>
       <script type="module">
-        customElements.whenDefined('cor-receipt').then(() => {
+        customElements.whenDefined('mud-receipt').then(() => {
           const parties = {
             mpay: {
               sender: { name: 'Ion Vasile Creangă', idnp: '2002003456789' },

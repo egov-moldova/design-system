@@ -36,7 +36,7 @@ Capture a normalized snapshot of \`run-all.mjs\` output for one or more
 components. Used as the input for regression-check.mjs.
 
 Options:
-  --components <list>     Comma-separated cor-* names (default: ${DEFAULT_COMPONENTS.join(',')})
+  --components <list>     Comma-separated mud-* names (default: ${DEFAULT_COMPONENTS.join(',')})
   --out <file>            Output path (default: ${DEFAULT_OUT})
   --include-browser       Run Wave C scripts too (needs Storybook + Playwright)
   --skip <ids>            Comma-separated audit ids to skip (default: 06,08 — no coverage / build deps)

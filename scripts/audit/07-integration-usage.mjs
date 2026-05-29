@@ -2,7 +2,7 @@
 /**
  * 07-integration-usage.mjs
  *
- * Reports where a `cor-*` component is USED across the codebase. Helpful for:
+ * Reports where a `mud-*` component is USED across the codebase. Helpful for:
  *   - Refactoring impact analysis ("if I rename this prop, what stories break?")
  *   - Redesign sanity check ("are there callsites that depend on the old API?")
  *   - Migration planning ("how widely adopted is this component?")
@@ -10,7 +10,7 @@
  * Categories scanned:
  *   - Storybook stories          (src/**\/*.stories.ts)
  *   - Component tests            (src/**\/test/*.spec.tsx, *.e2e.ts)
- *   - Other components           (src/components/cor-Y/cor-Y.tsx — cross-references)
+ *   - Other components           (src/components/mud-Y/mud-Y.tsx — cross-references)
  *   - web-components workspace   (web-components/**\/*.ts)
  *
  * Also verifies the component's auto-generated CustomEvent type is exported
@@ -37,7 +37,7 @@ const TOOL = 'integration-usage';
 
 const USAGE = defaultUsage(
   '07-integration-usage',
-  'Find every usage of a cor-* component (stories, tests, cross-component references, web-components workspace) and verify type exports.',
+  'Find every usage of a mud-* component (stories, tests, cross-component references, web-components workspace) and verify type exports.',
 );
 
 // Source globs scanned for usage references.
@@ -171,12 +171,12 @@ async function collectCandidateFiles() {
 }
 
 /**
- * Scan candidate files for usages of <cor-X>, cor-X tag references, and
+ * Scan candidate files for usages of <mud-X>, mud-X tag references, and
  * component name imports. Pure helper — exported for tests.
  */
 export function scanUsage(componentName, fileList) {
-  // Match `<cor-X>` or `<cor-X ` (opening tag with attrs)
-  // and the bare tag string `cor-X` inside templates / strings.
+  // Match `<mud-X>` or `<mud-X ` (opening tag with attrs)
+  // and the bare tag string `mud-X` inside templates / strings.
   const escaped = escapeRegex(componentName);
   const tagRe = new RegExp(`<${escaped}\\b|['"\`]${escaped}['"\`]`, 'g');
 

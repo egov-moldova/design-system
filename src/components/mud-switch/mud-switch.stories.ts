@@ -53,7 +53,9 @@ const renderSwitch = (args: SwitchArgs) =>
   });
 
 const docsSourceDefault = (args: SwitchArgs) =>
-  renderSwitch(args).replace(/<\/mud-switch>/, '\n</mud-switch>').replace(/<span slot=/g, '\n  <span slot=');
+  renderSwitch(args)
+    .replace(/<\/mud-switch>/, '\n</mud-switch>')
+    .replace(/<span slot=/g, '\n  <span slot=');
 
 const meta: Meta<SwitchArgs> = {
   title: 'Atoms/Switch',

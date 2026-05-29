@@ -239,7 +239,7 @@ The system does not use directional shadows ("light from above" with a hard offs
 
 The system is intentionally small. As of this DESIGN.md, the inventory is five atoms and one molecule, each with a tight contract. New components join only when the existing primitives cannot compose the use case.
 
-### Buttons (`cor-button`)
+### Buttons (`mud-button`)
 
 - **Shape:** rectangular by default (`rounded.sm` = 6px for sm/md, `rounded.md` = 8px for lg). Circular variant exists for icon-only floating actions (`rounded.full` = 9999px).
 - **Sizes:** `sm` (32px height, 14px label), `md` (40px height, 14px label), `lg` (48px height, 16px label). Minimum width is the touch target — never narrower than 40px at md.
@@ -247,34 +247,34 @@ The system is intentionally small. As of this DESIGN.md, the inventory is five a
 - **Appearances:** `filled` (default), `outlined` (1.5px border, transparent fill at rest; hover/active converge to filled), `text` (no border, transparent fill at rest, tinted hover/active background). Outlined and text only support primary/strict/destructive; other variants fall back to primary with a dev-time `console.warn`.
 - **States:** default → hover → active → focus-visible → disabled → loading. Focus indicator uses brand blue at 1.5px outline plus 2px offset; visible against every surface.
 - **Hover / Focus:** 150ms `ease-out` transition on background, border, and label color. No transform, no scale, no shadow change.
-- **Loading:** centered `cor-spinner` (xs on sm, sm on md/lg) replaces label; `aria-busy="true"`, control remains in tab order but does not fire activation.
+- **Loading:** centered `mud-spinner` (xs on sm, sm on md/lg) replaces label; `aria-busy="true"`, control remains in tab order but does not fire activation.
 - **Icon-only:** square footprint, equal padding, `slot="icon"`, requires `label` prop for screen readers.
 
-### Button Group (`cor-button-group`)
+### Button Group (`mud-button-group`)
 
 - **Horizontal** (default) or **vertical** orientation; `full-width` mode distributes children equally across the container.
 - **Label slot** at the top of vertical groups for form composition.
 - **Sizing:** children may mix sizes, but the group does not normalize them — the consumer chooses.
 
-### Icons (`cor-icon`)
+### Icons (`mud-icon`)
 
 - **Sizes** match the 8pt scale; default 20px (matches md button label).
 - **Color** inherits via `currentColor`; never carries hardcoded fill.
 - **Source** is the curated local SVG library (`src/assets/images/icons`), pre-processed by `yarn svg:icons` to strip size and fill.
 
-### Logo (`cor-logo`)
+### Logo (`mud-logo`)
 
 - **Brand set:** `mpay`, `mpass`, `msign`, `mpower`, `mdelivery` — one component per Moldovan e-Government service.
 - **Variants:** `logomark-only`, `with-name`, `with-long-name-medium`, `with-long-name-large`, `with-verb`. The `with-verb` variant pairs the wordmark with its Romanian-language service verb (`plătește`, `loghează-te`, `semnează`, `împuternicește`, `solicită și primește`).
 - **Color:** the institutional blue is baked into the SVG path; the logo is not recolorable.
 
-### Service Button (`cor-service-button`)
+### Service Button (`mud-service-button`)
 
 - **Purpose:** entry-point tile for one of the five `mpay`/`mpass`/`msign`/`mpower`/`mdelivery` services from a portal landing page.
 - **Composition:** logo + verb + optional description, on a tinted-brand surface (`primary-brand-tint` background, `primary-brand` typography).
 - **Appearance:** larger than a button, smaller than a card; sits between the two in the hierarchy.
 
-### Spinner (`cor-spinner`)
+### Spinner (`mud-spinner`)
 
 - **Variants** carry tone (`brand`, `neutral`, `on-color`); never used for decoration.
 - **Sizes** align to surrounding components: `xs` inside a `sm` button, `sm` inside `md`/`lg` buttons, `md`+ for page-level loading.

@@ -262,7 +262,13 @@ describe('mud-numeric-input', () => {
       const onChange = vi.fn();
       const onStep = vi.fn();
       const { root } = await render(
-        <mud-numeric-input label="x" show-steppers value={5} onMudChange={onChange} onMudStep={onStep}></mud-numeric-input>,
+        <mud-numeric-input
+          label="x"
+          show-steppers
+          value={5}
+          onMudChange={onChange}
+          onMudStep={onStep}
+        ></mud-numeric-input>,
       );
       const up = queryStepperUp(root)!;
       up.click();
@@ -275,7 +281,13 @@ describe('mud-numeric-input', () => {
       const onChange = vi.fn();
       const onStep = vi.fn();
       const { root } = await render(
-        <mud-numeric-input label="x" show-steppers value={5} onMudChange={onChange} onMudStep={onStep}></mud-numeric-input>,
+        <mud-numeric-input
+          label="x"
+          show-steppers
+          value={5}
+          onMudChange={onChange}
+          onMudStep={onStep}
+        ></mud-numeric-input>,
       );
       const down = queryStepperDown(root)!;
       down.click();
@@ -287,7 +299,14 @@ describe('mud-numeric-input', () => {
     it('honors a fractional `step`', async () => {
       const onChange = vi.fn();
       const { root } = await render(
-        <mud-numeric-input label="x" show-steppers value={1} step={0.5} precision={1} onMudChange={onChange}></mud-numeric-input>,
+        <mud-numeric-input
+          label="x"
+          show-steppers
+          value={1}
+          step={0.5}
+          precision={1}
+          onMudChange={onChange}
+        ></mud-numeric-input>,
       );
       const up = queryStepperUp(root)!;
       up.click();

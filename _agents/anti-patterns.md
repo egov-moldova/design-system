@@ -28,13 +28,13 @@ Complete list of forbidden patterns. **Read before writing component code.**
 15. **Optional chaining without `??`** — must use `?? ''`. See `_agents/typescript-strict.md`
 16. **Untyped object maps** — use `Record<string, T>`. See `_agents/typescript-strict.md`
 17. **Inline slot validation constants** — use shared constants from `src/components/shared.constants.ts`
-18. **Shadow DOM `element.find()` in E2E** — use `page.find('cor-input >>> input')`. See `src/components/_agents/e2e-testing.md`
+18. **Shadow DOM `element.find()` in E2E** — use `page.find('mud-input >>> input')`. See `src/components/_agents/e2e-testing.md`
 26. **Imperative `classList` manipulation for state-driven classes** — never use `this.host.classList.add/remove()` in lifecycle methods or event handlers for component state. Use declarative `getHostClasses()` pattern. See `src/components/_agents/component-structure.md §Host Class Management`
 
 ## Design Fidelity
 
 19. **Ignore states** — every interactive component needs: default, hover, active, focus-visible, disabled
-20. **Forget accessibility** — every `cor-*` component must conform to **WCAG 2.1 Level AA**. See Skill [`accessibility-compliance`](../.claude/skills/accessibility-compliance/SKILL.md) for the full Success Criteria list, contrast tables, ARIA patterns, and dark-mode requirements. Mandatory: accessible names, keyboard navigation (Tab/Enter/Esc/arrows), visible `:focus-visible` ring (3:1 contrast), color contrast 4.5:1 text / 3:1 UI in **both light and dark mode**, ARIA states, `role="status"`/`role="alert"` for dynamic content, honor `prefers-reduced-motion`
+20. **Forget accessibility** — every `mud-*` component must conform to **WCAG 2.1 Level AA**. See Skill [`accessibility-compliance`](../.claude/skills/accessibility-compliance/SKILL.md) for the full Success Criteria list, contrast tables, ARIA patterns, and dark-mode requirements. Mandatory: accessible names, keyboard navigation (Tab/Enter/Esc/arrows), visible `:focus-visible` ring (3:1 contrast), color contrast 4.5:1 text / 3:1 UI in **both light and dark mode**, ARIA states, `role="status"`/`role="alert"` for dynamic content, honor `prefers-reduced-motion`
 21. **Assume Figma match** — always screenshot-compare; human eye misses 1–2px diffs
 22. **Use placeholder images** — download real assets from Figma; verify >10KB
 23. **Add elements not in Figma** — never add sections/components/decorations not in the design

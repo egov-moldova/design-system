@@ -77,7 +77,7 @@ The `web-components/dist/` folder will contain:
 yarn demo.web
 ```
 
-Opens `http://localhost:5174` with a live `<cor-button>` showcase (variants + sizes) served by Vite from [`web-components/demo/index.html`](web-components/demo/index.html).
+Opens `http://localhost:5174` with a live `<mud-button>` showcase (variants + sizes) served by Vite from [`web-components/demo/index.html`](web-components/demo/index.html).
 
 The demo proves the export is *complete* — every component is registered by `defineCustomElements()`, even though the demo only renders the button. Verify in the browser console:
 
@@ -95,7 +95,7 @@ You should see the full list (`HTMLCorButtonElement`, `HTMLCorInputElement`, `HT
 web-components/
 ├── src/index.ts              # defineCustomElements + type re-exports
 ├── demo/
-│   ├── index.html            # cor-button showcase
+│   ├── index.html            # mud-button showcase
 │   ├── main.ts               # CSS imports + defineCustomElements()
 │   ├── demo.css              # @font-face for Onest + body font-family
 │   └── vite.config.ts        # port 5174, allows fs access to portal-linked parent
@@ -216,7 +216,7 @@ defineCustomElements();
 ```
 
 ```html
-<cor-button variant="primary"><button>Click me</button></cor-button>
+<mud-button variant="primary"><button>Click me</button></mud-button>
 ```
 
 #### Step 3: Usage — plain HTML with `<script type="importmap">`
@@ -239,7 +239,7 @@ When you have no bundler, resolve the bare specifiers via an import map:
     </script>
   </head>
   <body>
-    <cor-button variant="primary"><button>Click me</button></cor-button>
+    <mud-button variant="primary"><button>Click me</button></mud-button>
     <script type="module">
       import { defineCustomElements } from '@age/web-components';
       defineCustomElements();
@@ -279,7 +279,7 @@ You can copy the TTF from `node_modules/@age/design-system/assets/font/Onest/` o
 Because the components are native custom elements, they integrate with every modern framework without a wrapper layer:
 
 - **React 19+** treats unknown lowercase tags as custom elements and forwards props/attributes directly. Use `ref` for imperative APIs and standard `addEventListener` for events.
-- **Vue 3** needs `app.config.compilerOptions.isCustomElement = tag => tag.startsWith('cor-')` (or via `vite-plugin-vue`'s `template.compilerOptions`).
+- **Vue 3** needs `app.config.compilerOptions.isCustomElement = tag => tag.startsWith('mud-')` (or via `vite-plugin-vue`'s `template.compilerOptions`).
 - **Angular 14+** needs `CUSTOM_ELEMENTS_SCHEMA` in the `NgModule`'s `schemas` array (or the standalone component's `schemas`). Use `(event)` bindings against the dispatched custom-event name.
 - **Svelte**, **SolidJS**, **Lit** — work out of the box; no extra config required.
 

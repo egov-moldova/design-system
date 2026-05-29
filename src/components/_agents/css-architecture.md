@@ -101,5 +101,5 @@ Use when the component renders its own internal markup.
 | `:host(.button--small) .button` | `:host([size='sm']) ::slotted(*)` |
 | `.button` class selector | `::slotted(*)` for slot-based components |
 | `class={{ 'button--variant': true }}` | `@Prop({ reflect: true })` + `:host([variant])` CSS |
-| `ds-` prefix | Always **`cor-`** prefix |
+| `ds-` prefix | Always **`mud-`** prefix |
 | `transition: 250ms ease` | `transition: property 150ms ease-in-out` |

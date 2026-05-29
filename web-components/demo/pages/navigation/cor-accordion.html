@@ -3,22 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-accordion · @age/web-components</title>
+    <title>mud-accordion · @age/web-components</title>
   </head>
-  <body data-component="cor-accordion">
+  <body data-component="mud-accordion">
     <main class="demo-main">
-      <section id="cor-accordion" class="component-section">
-        <h2>&lt;cor-accordion&gt;</h2>
+      <section id="mud-accordion" class="component-section">
+        <h2>&lt;mud-accordion&gt;</h2>
 
         <div class="subsection">
           <h3>Data-driven (<code>items</code> prop, mode="multiple")</h3>
           <div style="width: 100%; max-width: 640px">
-            <cor-accordion
+            <mud-accordion
               id="demo-accordion-data"
               mode="multiple"
               appearance="default"
               label="Întrebări frecvente"
-            ></cor-accordion>
+            ></mud-accordion>
           </div>
           <span class="label">items set as a JS property (arrays cannot be set via attribute)</span>
         </div>
@@ -26,38 +26,38 @@
         <div class="subsection">
           <h3>Single mode + trail-sites appearance (<code>items</code> prop)</h3>
           <div style="width: 100%; max-width: 640px">
-            <cor-accordion
+            <mud-accordion
               id="demo-accordion-single"
               mode="single"
               appearance="trail-sites"
               label="Servicii"
-            ></cor-accordion>
+            ></mud-accordion>
           </div>
           <span class="label">mode="single" — opening one collapses the others</span>
         </div>
 
         <div class="subsection">
-          <h3>Slotted children (<code>&lt;cor-accordion-item&gt;</code>) with slots</h3>
+          <h3>Slotted children (<code>&lt;mud-accordion-item&gt;</code>) with slots</h3>
           <div style="width: 100%; max-width: 640px">
-            <cor-accordion mode="multiple" appearance="default" label="Setări cont">
-              <cor-accordion-item heading="Date personale" supporting-text="Nume, prenume, IDNP" open="">
-                <cor-icon slot="icon-start" name="person" size="20"></cor-icon>
-                <cor-tag slot="trailing">Verificat</cor-tag>
+            <mud-accordion mode="multiple" appearance="default" label="Setări cont">
+              <mud-accordion-item heading="Date personale" supporting-text="Nume, prenume, IDNP" open="">
+                <mud-icon slot="icon-start" name="person" size="20"></mud-icon>
+                <mud-tag slot="trailing">Verificat</mud-tag>
                 <p style="margin: 0">Modificați datele din profilul dvs. de utilizator MCabinet.</p>
-              </cor-accordion-item>
-              <cor-accordion-item heading="Notificări" supporting-text="Email și SMS">
-                <cor-icon slot="icon-start" name="notification" size="20"></cor-icon>
+              </mud-accordion-item>
+              <mud-accordion-item heading="Notificări" supporting-text="Email și SMS">
+                <mud-icon slot="icon-start" name="notification" size="20"></mud-icon>
                 <p style="margin: 0">Gestionați canalele prin care primiți notificări de la stat.</p>
-              </cor-accordion-item>
-              <cor-accordion-item
+              </mud-accordion-item>
+              <mud-accordion-item
                 heading="Confidențialitate (dezactivat)"
                 supporting-text="Indisponibil momentan"
                 disabled=""
               >
-                <cor-icon slot="icon-start" name="lock" size="20"></cor-icon>
+                <mud-icon slot="icon-start" name="lock" size="20"></mud-icon>
                 <p style="margin: 0">Această secțiune nu este disponibilă.</p>
-              </cor-accordion-item>
-            </cor-accordion>
+              </mud-accordion-item>
+            </mud-accordion>
           </div>
           <span class="label">one open, one disabled, icon-start + trailing slots</span>
         </div>
@@ -65,8 +65,8 @@
         <div class="subsection">
           <h3>Edge cases</h3>
           <div style="width: 100%; max-width: 640px">
-            <cor-accordion mode="multiple" label="Edge cases">
-              <cor-accordion-item
+            <mud-accordion mode="multiple" label="Edge cases">
+              <mud-accordion-item
                 heading="Heading foarte lung fără spații: Supercalifragilisticexpialidocious_AAAAAAAAAAAAAAAAAAAAAAAAAA"
                 supporting-text="Text suport lung pentru a verifica trunchierea — ăâîșțĂÂÎȘȚ și emoji 🎉 plus simboluri &amp; < > &quot; '"
                 open=""
@@ -76,15 +76,15 @@
                   elit, sed do eiusmod tempor incididunt ut labore. Diacritice: ăâîșțĂÂÎȘȚ. RTL: مرحبا بكم. Special:
                   &amp; &lt; &gt; " '.
                 </p>
-              </cor-accordion-item>
-              <cor-accordion-item heading="Empty body (no panel content)"></cor-accordion-item>
-            </cor-accordion>
+              </mud-accordion-item>
+              <mud-accordion-item heading="Empty body (no panel content)"></mud-accordion-item>
+            </mud-accordion>
           </div>
           <span class="label">long no-space heading, diacritics, RTL, empty body</span>
         </div>
 
         <script type="module">
-          customElements.whenDefined('cor-accordion').then(() => {
+          customElements.whenDefined('mud-accordion').then(() => {
             const data = document.getElementById('demo-accordion-data');
             if (data) {
               data.items = [

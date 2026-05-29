@@ -28,8 +28,7 @@
   flex-direction: column;
   gap: var(--receipt-container-gap);
   background: var(--receipt-container-background, var(--color-background-base-default));
-  border: var(--receipt-container-border-width) solid
-    var(--receipt-container-border, var(--color-border-base-tertiary));
+  border: var(--receipt-container-border-width) solid var(--receipt-container-border, var(--color-border-base-tertiary));
   border-radius: var(--receipt-container-border-radius);
   box-shadow: var(--receipt-container-shadow);
   padding: var(--receipt-container-padding);

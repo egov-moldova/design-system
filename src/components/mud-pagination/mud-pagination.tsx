@@ -203,8 +203,7 @@ export class MudPagination {
       case 'ArrowUp': {
         ev.preventDefault();
         if (items.length === 0) return;
-        this.focusedOverflowIndex =
-          this.focusedOverflowIndex <= 0 ? items.length - 1 : this.focusedOverflowIndex - 1;
+        this.focusedOverflowIndex = this.focusedOverflowIndex <= 0 ? items.length - 1 : this.focusedOverflowIndex - 1;
         return;
       }
       case 'Home': {
@@ -404,7 +403,7 @@ export class MudPagination {
     const to = slot.pages[slot.pages.length - 1] ?? this.currentPage;
     const triggerLabel = this.formatLabel(this.overflowAriaLabel, { from, to });
     return (
-      <li class={{ item: true, 'overflow-item': true, 'is-open': isOpen }} key={`overflow-${slot.key}`}>
+      <li class={{ 'item': true, 'overflow-item': true, 'is-open': isOpen }} key={`overflow-${slot.key}`}>
         <button
           type="button"
           class="overflow-trigger"

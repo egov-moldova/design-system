@@ -189,9 +189,7 @@ describe('mud-radio', () => {
 
     it('whitespace-only slot text does NOT trigger has-label', async () => {
       const { root } = await render(<mud-radio aria-label="x"></mud-radio>);
-      (root as unknown as { onLabelSlotChange: (ev: Event) => void }).onLabelSlotChange(
-        fakeSlotEvent('text', '   '),
-      );
+      (root as unknown as { onLabelSlotChange: (ev: Event) => void }).onLabelSlotChange(fakeSlotEvent('text', '   '));
       await flush();
       expect(root?.classList.contains('has-label')).toBe(false);
     });

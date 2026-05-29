@@ -3,7 +3,7 @@
  * 03-git-hygiene.mjs
  *
  * Verifies pre-PR git hygiene:
- *   - Branch name follows convention: feat/cor-X, fix/cor-X-desc, refactor/cor-X, redesign/cor-X, chore/..., docs/..., test/...
+ *   - Branch name follows convention: feat/mud-X, fix/mud-X-desc, refactor/mud-X, redesign/mud-X, chore/..., docs/..., test/...
  *   - Recent commits (default last 10) follow Conventional Commits
  *   - No build artifacts or generated files staged (dist/, node_modules/, .stencil/, .wireit/, tokens/generated/, etc.)
  *   - No noisy untracked files like ".env" or "*.log"
@@ -43,7 +43,7 @@ Options:
   --changed        Ignored (accepted for orchestrator uniformity)
   --help, -h       Show this help`;
 
-// Branch names that DON'T need to follow the cor-* convention (special branches)
+// Branch names that DON'T need to follow the mud-* convention (special branches)
 const ALLOWED_BARE_BRANCHES = new Set(['main', 'master', 'develop', 'staging', 'production']);
 
 // Conventional Commits regex — type(scope)?: subject

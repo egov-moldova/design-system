@@ -3,30 +3,30 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-breadcrumb · @age/web-components</title>
+    <title>mud-breadcrumb · @age/web-components</title>
   </head>
-  <body data-component="cor-breadcrumb">
+  <body data-component="mud-breadcrumb">
     <main class="demo-main">
-      <section id="cor-breadcrumb" class="component-section">
-        <h2>&lt;cor-breadcrumb&gt;</h2>
+      <section id="mud-breadcrumb" class="component-section">
+        <h2>&lt;mud-breadcrumb&gt;</h2>
 
         <div class="subsection">
           <h3>Data-driven (<code>items</code> prop — states)</h3>
           <div style="width: 100%; max-width: 640px">
-            <cor-breadcrumb id="demo-breadcrumb-states"></cor-breadcrumb>
+            <mud-breadcrumb id="demo-breadcrumb-states"></mud-breadcrumb>
           </div>
           <span class="label">items set as a JS property: link, visited, loading, disabled, active</span>
         </div>
 
         <div class="subsection">
-          <h3>Slotted children (<code>&lt;cor-breadcrumb-item&gt;</code>)</h3>
+          <h3>Slotted children (<code>&lt;mud-breadcrumb-item&gt;</code>)</h3>
           <div style="width: 100%; max-width: 640px">
-            <cor-breadcrumb>
-              <cor-breadcrumb-item href="#/acasa">Acasă</cor-breadcrumb-item>
-              <cor-breadcrumb-item href="#/servicii" visited="">Servicii</cor-breadcrumb-item>
-              <cor-breadcrumb-item href="#/servicii/acte" disabled="">Acte (indisponibil)</cor-breadcrumb-item>
-              <cor-breadcrumb-item active="">Buletin de identitate</cor-breadcrumb-item>
-            </cor-breadcrumb>
+            <mud-breadcrumb>
+              <mud-breadcrumb-item href="#/acasa">Acasă</mud-breadcrumb-item>
+              <mud-breadcrumb-item href="#/servicii" visited="">Servicii</mud-breadcrumb-item>
+              <mud-breadcrumb-item href="#/servicii/acte" disabled="">Acte (indisponibil)</mud-breadcrumb-item>
+              <mud-breadcrumb-item active="">Buletin de identitate</mud-breadcrumb-item>
+            </mud-breadcrumb>
           </div>
           <span class="label">href links, visited, disabled, active crumb</span>
         </div>
@@ -34,12 +34,12 @@
         <div class="subsection">
           <h3>Custom separator slot</h3>
           <div style="width: 100%; max-width: 640px">
-            <cor-breadcrumb>
+            <mud-breadcrumb>
               <span slot="separator">›</span>
-              <cor-breadcrumb-item href="#/a">Acasă</cor-breadcrumb-item>
-              <cor-breadcrumb-item href="#/b">Documente</cor-breadcrumb-item>
-              <cor-breadcrumb-item active="">Detalii</cor-breadcrumb-item>
-            </cor-breadcrumb>
+              <mud-breadcrumb-item href="#/a">Acasă</mud-breadcrumb-item>
+              <mud-breadcrumb-item href="#/b">Documente</mud-breadcrumb-item>
+              <mud-breadcrumb-item active="">Detalii</mud-breadcrumb-item>
+            </mud-breadcrumb>
           </div>
           <span class="label">separator slot overrides the default chevron</span>
         </div>
@@ -47,17 +47,17 @@
         <div class="subsection">
           <h3>Edge cases</h3>
           <div style="width: 100%; max-width: 640px">
-            <cor-breadcrumb id="demo-breadcrumb-overflow"></cor-breadcrumb>
+            <mud-breadcrumb id="demo-breadcrumb-overflow"></mud-breadcrumb>
           </div>
           <span class="label">8+ crumbs → middle collapses to "…" overflow menu (maxVisible=5)</span>
           <div style="width: 100%; max-width: 640px">
-            <cor-breadcrumb id="demo-breadcrumb-long"></cor-breadcrumb>
+            <mud-breadcrumb id="demo-breadcrumb-long"></mud-breadcrumb>
           </div>
           <span class="label">single very long label, no spaces</span>
         </div>
 
         <script type="module">
-          customElements.whenDefined('cor-breadcrumb').then(() => {
+          customElements.whenDefined('mud-breadcrumb').then(() => {
             const states = document.getElementById('demo-breadcrumb-states');
             if (states) {
               states.items = [

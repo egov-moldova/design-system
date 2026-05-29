@@ -2,7 +2,7 @@
 /**
  * 09-a11y-tree.mjs
  *
- * Visits a `cor-*` component story (light + dark) and collects two pieces of
+ * Visits a `mud-*` component story (light + dark) and collects two pieces of
  * structured data the a11y-verifier agent currently extracts manually:
  *
  *   1. The accessibility snapshot tree (`page.accessibility.snapshot()`)
@@ -46,7 +46,7 @@ const USAGE = defaultUsage(
   ],
 );
 
-// Tag names we consider "interactive" by default. Custom cor-* elements are
+// Tag names we consider "interactive" by default. Custom mud-* elements are
 // added on top by the per-component name match.
 const INTERACTIVE_TAGS = ['button', 'a', 'input', 'select', 'textarea', 'details', 'summary'];
 

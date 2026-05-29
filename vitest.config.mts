@@ -72,7 +72,7 @@ export default defineVitestConfig({
         // Vite's transform pipeline (instead of loading the pre-built lazy
         // bundle). Two consequences:
         //   1. Components must be imported from source in the spec
-        //      (e.g. `import '../cor-spinner';`) — that triggers the compile
+        //      (e.g. `import '../mud-spinner';`) — that triggers the compile
         //      and the appended `customElements.define()` call.
         //   2. Coverage v8 sees the source TSX directly and produces real
         //      per-file numbers (the dist-loader path reports 0%).

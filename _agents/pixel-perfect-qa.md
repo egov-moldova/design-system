@@ -32,7 +32,7 @@ Core QA workflow: Figma vs Storybook visual comparison. **Every component MUST p
 **Before any Playwright/screenshot work**: confirm the component renders and has correct structure. Costs near-zero context — catches missing story exports, broken imports, or wrong element tag before spending screenshot tokens.
 
 ```bash
-agent-browser open http://localhost:6007/iframe.html?id=atoms-cor-[name]--default&viewMode=story
+agent-browser open http://localhost:6007/iframe.html?id=atoms-mud-[name]--default&viewMode=story
 ```
 
 **Check the output tree for**:
@@ -56,7 +56,7 @@ agent-browser open http://localhost:6007/iframe.html?id=atoms-cor-[name]--defaul
 ```javascript
 browser_evaluate({
   function: `() => {
-    const component = document.querySelector('cor-[name]');
+    const component = document.querySelector('mud-[name]');
     const container = component?.shadowRoot?.querySelector('.container');
     const s = container ? window.getComputedStyle(container) : null;
     return { backgroundColor: s?.backgroundColor, color: s?.color, fontSize: s?.fontSize };
@@ -79,7 +79,7 @@ If CSS variable doesn't exist:
 
 ```text
 1. Ensure Storybook on port 6007
-2. browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-cor-[name]--default&viewMode=story" })
+2. browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-mud-[name]--default&viewMode=story" })
 3. browser_wait_for({ time: 2 })
 4. browser_take_screenshot({ type: "png", filename: ".playwright-mcp/storybook-render.png" })
 ```
@@ -172,12 +172,12 @@ Verify: no horizontal scroll, no overflow, proper stacking, text ≥14px on mobi
 ## Step 8: Per-Component Summary
 
 ```markdown
-## cor-[name] — Implementation Complete
+## mud-[name] — Implementation Complete
 - **Tokens**: [created/reused] in `tokens/core/components/[name].tokens.json`
 - **States verified**: default ✅, hover ✅, active ✅, focus ✅, disabled ✅
 - **Responsive**: ✅ 375px | ✅ 768px | ✅ 1440px (atoms: N/A)
 - **Console errors**: none
-- **Story**: `src/components/cor-[name]/cor-[name].stories.ts`
+- **Story**: `src/components/mud-[name]/mud-[name].stories.ts`
 ```
 
 **Auto-proceed** (single component, zero mismatches): show inline, continue to verification.
@@ -190,8 +190,8 @@ When screenshots aren't conclusive:
 ```javascript
 browser_evaluate({
   function: `() => {
-    const el = document.querySelector('cor-button')?.shadowRoot?.querySelector('.button')
-      || document.querySelector('cor-button');
+    const el = document.querySelector('mud-button')?.shadowRoot?.querySelector('.button')
+      || document.querySelector('mud-button');
     const s = window.getComputedStyle(el);
     return { bg: s.backgroundColor, color: s.color, padding: s.padding,
              fontSize: s.fontSize, fontWeight: s.fontWeight, borderRadius: s.borderRadius };

@@ -363,8 +363,7 @@ describe('mud-checkbox', () => {
 
     it('slotHasContent returns true for an element-type assigned node', async () => {
       const { root } = await render(<mud-checkbox aria-label="x"></mud-checkbox>);
-      const onLabelSlotChange = (root as unknown as { onLabelSlotChange: (ev: Event) => void })
-        .onLabelSlotChange;
+      const onLabelSlotChange = (root as unknown as { onLabelSlotChange: (ev: Event) => void }).onLabelSlotChange;
       onLabelSlotChange(buildSlotEvent([{ nodeType: 1 /* ELEMENT */ }]));
       await flush();
       expect(root?.classList.contains('has-label')).toBe(true);
@@ -372,8 +371,7 @@ describe('mud-checkbox', () => {
 
     it('slotHasContent returns false for whitespace-only text nodes', async () => {
       const { root } = await render(<mud-checkbox aria-label="x"></mud-checkbox>);
-      const onLabelSlotChange = (root as unknown as { onLabelSlotChange: (ev: Event) => void })
-        .onLabelSlotChange;
+      const onLabelSlotChange = (root as unknown as { onLabelSlotChange: (ev: Event) => void }).onLabelSlotChange;
       onLabelSlotChange(buildSlotEvent([{ nodeType: 3 /* TEXT */, textContent: '   ' }]));
       await flush();
       expect(root?.classList.contains('has-label')).toBe(false);
@@ -381,9 +379,8 @@ describe('mud-checkbox', () => {
 
     it('supporting-slot handler flips has-supporting class', async () => {
       const { root } = await render(<mud-checkbox label="x"></mud-checkbox>);
-      const onSupportingSlotChange = (
-        root as unknown as { onSupportingSlotChange: (ev: Event) => void }
-      ).onSupportingSlotChange;
+      const onSupportingSlotChange = (root as unknown as { onSupportingSlotChange: (ev: Event) => void })
+        .onSupportingSlotChange;
       onSupportingSlotChange(buildSlotEvent([{ nodeType: 1 }]));
       await flush();
       expect(root?.classList.contains('has-supporting')).toBe(true);

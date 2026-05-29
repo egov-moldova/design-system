@@ -2,7 +2,7 @@
 
 ## Scope
 
-Patterns for exercising `shadow: true` `cor-*` components in a **real browser**. Read when:
+Patterns for exercising `shadow: true` `mud-*` components in a **real browser**. Read when:
 
 - Adding a Vitest `browser` project (via `@vitest/browser-playwright`)
 - Writing custom Playwright tests against the built Storybook
@@ -118,7 +118,7 @@ When a Vitest `browser` project is added (`@vitest/browser-playwright`), spec fi
 
 - `import { page } from '@vitest/browser/context'` — locators, keyboard, mouse
 - `expect.element(locator).toHaveAttribute(...)` — Vitest browser matchers
-- Mount the component by appending a real custom element node to `page.body` (use `document.createElement('cor-...')` + `appendChild` — avoid `innerHTML`)
+- Mount the component by appending a real custom element node to `page.body` (use `document.createElement('mud-...')` + `appendChild` — avoid `innerHTML`)
 - All shadow-DOM patterns above apply unchanged
 
 Until the browser project is wired into `vitest.config.ts`, exercise live browser behavior through the Playwright MCP (`/audit-accessibility`, `/audit-component --deep`) or a manual Playwright script.

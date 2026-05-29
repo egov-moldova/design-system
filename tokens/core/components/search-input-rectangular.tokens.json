@@ -87,7 +87,11 @@
         "disabled": { "$value": "{color.icon.disabled.on-disabled}", "$type": "color" }
       },
       "background": {
-        "default": { "$value": "{color.background.base.tertiary}", "$type": "color", "$comment": "Per Figma 933:29146 — the clear button carries a subtle gray oval at rest in the Filled state. Hardcoded color in Figma is #1212121a; base.tertiary (#f1f1f1) is the closest design-system semantic." },
+        "default": {
+          "$value": "{color.background.base.tertiary}",
+          "$type": "color",
+          "$comment": "Per Figma 933:29146 — the clear button carries a subtle gray oval at rest in the Filled state. Hardcoded color in Figma is #1212121a; base.tertiary (#f1f1f1) is the closest design-system semantic."
+        },
         "hover": { "$value": "{color.background.base.tertiary-hover}", "$type": "color" },
         "active": { "$value": "{color.background.base.tertiary-active}", "$type": "color" }
       }

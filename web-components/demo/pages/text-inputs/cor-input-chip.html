@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-input-chip · @age/web-components</title>
+    <title>mud-input-chip · @age/web-components</title>
   </head>
-  <body data-component="cor-input-chip">
+  <body data-component="mud-input-chip">
     <main class="demo-main">
-      <section id="cor-input-chip" class="component-section">
-        <h2>&lt;cor-input-chip&gt;</h2>
+      <section id="mud-input-chip" class="component-section">
+        <h2>&lt;mud-input-chip&gt;</h2>
         <p style="margin: 0; max-width: 640px">
           <code>chips</code> is a <code>string[]</code> prop — Stencil only deserializes string/number/boolean
           attributes, so it MUST be set as a JS property after the element is defined (see co-located scripts).
@@ -19,24 +19,24 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input-chip
+                <mud-input-chip
                   id="chip-default"
                   variant="default"
                   label="Destinatari"
                   placeholder="Adăugați email…"
-                ></cor-input-chip>
+                ></mud-input-chip>
               </div>
               <span class="label">default + prefilled</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input-chip
+                <mud-input-chip
                   id="chip-destructive"
                   variant="destructive"
                   invalid=""
                   label="Etichete"
                   error-text="Cel puțin o etichetă este nevalidă."
-                ></cor-input-chip>
+                ></mud-input-chip>
               </div>
               <span class="label">destructive + invalid + error-text</span>
             </div>
@@ -48,13 +48,13 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input-chip id="chip-md" size="md" label="md"></cor-input-chip>
+                <mud-input-chip id="chip-md" size="md" label="md"></mud-input-chip>
               </div>
               <span class="label">md</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input-chip id="chip-lg" size="lg" label="lg"></cor-input-chip>
+                <mud-input-chip id="chip-lg" size="lg" label="lg"></mud-input-chip>
               </div>
               <span class="label">lg</span>
             </div>
@@ -66,36 +66,36 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input-chip
+                <mud-input-chip
                   id="chip-max"
                   max-chips="3"
                   label="Max 3 etichete"
                   helper-text="Adăugarea peste 3 este respinsă"
-                ></cor-input-chip>
+                ></mud-input-chip>
               </div>
               <span class="label">max-chips=3 (input disabled at limit)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input-chip
+                <mud-input-chip
                   id="chip-pattern"
                   label="Doar email-uri"
                   validate-pattern="^[^@\s]+@[^@\s]+\.[^@\s]+$"
                   placeholder="nume@domeniu.md"
                   helper-text="Pattern: must match an email"
-                ></cor-input-chip>
+                ></mud-input-chip>
               </div>
               <span class="label">validate-pattern (email)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input-chip
+                <mud-input-chip
                   id="chip-sep"
                   label="Separator ';'"
                   separators=";"
                   placeholder="a; b; c"
                   helper-text="Type ; or Enter to confirm"
-                ></cor-input-chip>
+                ></mud-input-chip>
               </div>
               <span class="label">custom separators</span>
             </div>
@@ -107,24 +107,24 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input-chip id="chip-disabled" disabled="" label="Dezactivat"></cor-input-chip>
+                <mud-input-chip id="chip-disabled" disabled="" label="Dezactivat"></mud-input-chip>
               </div>
               <span class="label">disabled</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input-chip id="chip-readonly" readonly="" label="Doar citire"></cor-input-chip>
+                <mud-input-chip id="chip-readonly" readonly="" label="Doar citire"></mud-input-chip>
               </div>
               <span class="label">readonly</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input-chip
+                <mud-input-chip
                   id="chip-required"
                   required=""
                   label="Obligatoriu"
                   placeholder="Adăugați cel puțin una"
-                ></cor-input-chip>
+                ></mud-input-chip>
               </div>
               <span class="label">required + empty</span>
             </div>
@@ -136,25 +136,25 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input-chip id="chip-many" label="Multe etichete (15+ wrapping)"></cor-input-chip>
+                <mud-input-chip id="chip-many" label="Multe etichete (15+ wrapping)"></mud-input-chip>
               </div>
               <span class="label">15+ chips wrapping</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input-chip id="chip-long" label="O etichetă foarte lungă"></cor-input-chip>
+                <mud-input-chip id="chip-long" label="O etichetă foarte lungă"></mud-input-chip>
               </div>
               <span class="label">single very long chip</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input-chip id="chip-special" label="Diacritice, special chars &amp; emoji"></cor-input-chip>
+                <mud-input-chip id="chip-special" label="Diacritice, special chars &amp; emoji"></mud-input-chip>
               </div>
               <span class="label">diacritics + special + emoji + RTL</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input-chip id="chip-empty" label="Empty array []" placeholder="Niciun chip încă"></cor-input-chip>
+                <mud-input-chip id="chip-empty" label="Empty array []" placeholder="Niciun chip încă"></mud-input-chip>
               </div>
               <span class="label">empty array</span>
             </div>
@@ -162,7 +162,7 @@
         </div>
 
         <script type="module">
-          customElements.whenDefined('cor-input-chip').then(() => {
+          customElements.whenDefined('mud-input-chip').then(() => {
             const set = (id, chips) => {
               const el = document.getElementById(id);
               if (el) el.chips = chips;

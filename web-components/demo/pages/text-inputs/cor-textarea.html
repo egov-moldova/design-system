@@ -3,51 +3,51 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-textarea · @age/web-components</title>
+    <title>mud-textarea · @age/web-components</title>
   </head>
-  <body data-component="cor-textarea">
+  <body data-component="mud-textarea">
     <main class="demo-main">
-      <section id="cor-textarea" class="component-section">
-        <h2>&lt;cor-textarea&gt;</h2>
+      <section id="mud-textarea" class="component-section">
+        <h2>&lt;mud-textarea&gt;</h2>
 
         <div class="subsection">
           <h3>Variants (resize vertical, prefilled)</h3>
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-textarea
+                <mud-textarea
                   variant="default"
                   label="Descriere"
                   value="Descrierea solicitării dumneavoastră."
-                ></cor-textarea>
+                ></mud-textarea>
               </div>
               <span class="label">default</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-textarea
+                <mud-textarea
                   variant="success"
                   label="Comentariu"
                   value="Mesaj acceptat."
                   helper-text="Salvat automat"
-                ></cor-textarea>
+                ></mud-textarea>
               </div>
               <span class="label">success</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-textarea
+                <mud-textarea
                   variant="warning"
                   label="Observații"
                   value="Verificați conținutul."
                   helper-text="Câmp neverificat"
-                ></cor-textarea>
+                ></mud-textarea>
               </div>
               <span class="label">warning</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-textarea variant="destructive" label="Motiv" value="Text problematic"></cor-textarea>
+                <mud-textarea variant="destructive" label="Motiv" value="Text problematic"></mud-textarea>
               </div>
               <span class="label">destructive</span>
             </div>
@@ -59,13 +59,13 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-textarea size="md" rows="3" label="md, rows=3" value="Trei rânduri vizibile."></cor-textarea>
+                <mud-textarea size="md" rows="3" label="md, rows=3" value="Trei rânduri vizibile."></mud-textarea>
               </div>
               <span class="label">md / rows=3</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-textarea size="lg" rows="6" label="lg, rows=6" value="Șase rânduri vizibile."></cor-textarea>
+                <mud-textarea size="lg" rows="6" label="lg, rows=6" value="Șase rânduri vizibile."></mud-textarea>
               </div>
               <span class="label">lg / rows=6</span>
             </div>
@@ -77,17 +77,17 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-textarea
+                <mud-textarea
                   resize="vertical"
                   label="Redimensionabil"
                   value="Trageți colțul din dreapta-jos."
-                ></cor-textarea>
+                ></mud-textarea>
               </div>
               <span class="label">resize=vertical (grip visible)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-textarea resize="none" label="Înălțime fixă" value="Fără mâner de redimensionare."></cor-textarea>
+                <mud-textarea resize="none" label="Înălțime fixă" value="Fără mâner de redimensionare."></mud-textarea>
               </div>
               <span class="label">resize=none</span>
             </div>
@@ -99,33 +99,33 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-textarea
+                <mud-textarea
                   label="Mesaj (max 120)"
                   maxlength="120"
                   value="Un mesaj scurt care se încadrează."
                   helper-text="Counter auto-shown with maxlength"
-                ></cor-textarea>
+                ></mud-textarea>
               </div>
               <span class="label">counter under limit</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-textarea
+                <mud-textarea
                   label="Counter suppressed"
                   maxlength="120"
                   show-counter="false"
                   value="show-counter=false"
-                ></cor-textarea>
+                ></mud-textarea>
               </div>
               <span class="label">show-counter=false</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-textarea
+                <mud-textarea
                   label="Over limit (max 20)"
                   maxlength="20"
                   value="Acest text depășește clar limita de douăzeci."
-                ></cor-textarea>
+                ></mud-textarea>
               </div>
               <span class="label">counter OVER limit</span>
             </div>
@@ -137,30 +137,30 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-textarea
+                <mud-textarea
                   label="Invalid"
                   invalid=""
                   error-text="Descrierea este prea scurtă."
                   value="ab"
-                ></cor-textarea>
+                ></mud-textarea>
               </div>
               <span class="label">invalid + error-text</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-textarea label="Dezactivat" disabled="" value="Conținut blocat"></cor-textarea>
+                <mud-textarea label="Dezactivat" disabled="" value="Conținut blocat"></mud-textarea>
               </div>
               <span class="label">disabled</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-textarea label="Doar citire" readonly="" value="Conținut read-only"></cor-textarea>
+                <mud-textarea label="Doar citire" readonly="" value="Conținut read-only"></mud-textarea>
               </div>
               <span class="label">readonly</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-textarea label="Obligatoriu" required="" placeholder="Necesită completare"></cor-textarea>
+                <mud-textarea label="Obligatoriu" required="" placeholder="Necesită completare"></mud-textarea>
               </div>
               <span class="label">required</span>
             </div>
@@ -172,48 +172,48 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-textarea
+                <mud-textarea
                   label="Very long prefilled value (overflow)"
                   rows="3"
                   value="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-                ></cor-textarea>
+                ></mud-textarea>
               </div>
               <span class="label">long value scroll/overflow</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-textarea
+                <mud-textarea
                   label="Unbroken token"
                   rows="3"
                   value="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-                ></cor-textarea>
+                ></mud-textarea>
               </div>
               <span class="label">no-space wrap</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-textarea
+                <mud-textarea
                   label="Diacritice + emoji"
                   rows="3"
                   value="Mulțumim că folosiți serviciile guvernamentale. ăâîșțĂÂÎȘȚ 🇲🇩"
-                ></cor-textarea>
+                ></mud-textarea>
               </div>
               <span class="label">diacritics + emoji</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-textarea
+                <mud-textarea
                   label="RTL (Arabic)"
                   rows="3"
                   dir="rtl"
                   value="مرحبا بكم في الخدمات الحكومية الإلكترونية"
-                ></cor-textarea>
+                ></mud-textarea>
               </div>
               <span class="label">RTL bidi</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-textarea label="Special chars" rows="3" value="&amp; < > &quot; '"></cor-textarea>
+                <mud-textarea label="Special chars" rows="3" value="&amp; < > &quot; '"></mud-textarea>
               </div>
               <span class="label">special chars escaping</span>
             </div>

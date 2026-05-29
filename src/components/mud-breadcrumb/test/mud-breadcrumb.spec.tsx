@@ -304,9 +304,7 @@ describe('mud-breadcrumb', () => {
     };
 
     it('ArrowDown sets aria-activedescendant on the trigger', async () => {
-      const { root, waitForChanges } = await render(
-        <mud-breadcrumb items={longItems} maxVisible={5}></mud-breadcrumb>,
-      );
+      const { root, waitForChanges } = await render(<mud-breadcrumb items={longItems} maxVisible={5}></mud-breadcrumb>);
       const trigger = await openMenu(root!, waitForChanges);
       root!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
       await waitForChanges();
@@ -316,9 +314,7 @@ describe('mud-breadcrumb', () => {
     });
 
     it('End jumps to the last menu item', async () => {
-      const { root, waitForChanges } = await render(
-        <mud-breadcrumb items={longItems} maxVisible={5}></mud-breadcrumb>,
-      );
+      const { root, waitForChanges } = await render(<mud-breadcrumb items={longItems} maxVisible={5}></mud-breadcrumb>);
       const trigger = await openMenu(root!, waitForChanges);
       root!.dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true }));
       await waitForChanges();
@@ -326,9 +322,7 @@ describe('mud-breadcrumb', () => {
     });
 
     it('Escape closes the menu and clears the active descendant', async () => {
-      const { root, waitForChanges } = await render(
-        <mud-breadcrumb items={longItems} maxVisible={5}></mud-breadcrumb>,
-      );
+      const { root, waitForChanges } = await render(<mud-breadcrumb items={longItems} maxVisible={5}></mud-breadcrumb>);
       const trigger = await openMenu(root!, waitForChanges);
       root!.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
       await waitForChanges();
@@ -339,9 +333,7 @@ describe('mud-breadcrumb', () => {
     });
 
     it('Tab closes the menu', async () => {
-      const { root, waitForChanges } = await render(
-        <mud-breadcrumb items={longItems} maxVisible={5}></mud-breadcrumb>,
-      );
+      const { root, waitForChanges } = await render(<mud-breadcrumb items={longItems} maxVisible={5}></mud-breadcrumb>);
       const trigger = await openMenu(root!, waitForChanges);
       root!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }));
       await waitForChanges();

@@ -17,8 +17,8 @@ Skill invocation rules and available workflows. **Read when starting any compone
 | `token-creation` | Creating new component tokens, unfamiliar token structure or naming | Active skill |
 | `systematic-debugging` | **ALWAYS** at `/fix-visual-bug` Step 0 — before touching any code | Active skill |
 | `verification-before-completion` | **ALWAYS** before claiming any step complete — must run verification AND read output | Active skill |
-| `figma-illustration-import` | Custom multi-layer illustration — check `src/components/cor-illustration-*/` first | Active skill |
-| `accessibility-compliance` | **MANDATORY** reference for every `cor-*` component — WCAG 2.1 AA criteria, ARIA, contrast, keyboard, focus, dark mode | Active skill |
+| `figma-illustration-import` | Custom multi-layer illustration — check `src/components/mud-illustration-*/` first | Active skill |
+| `accessibility-compliance` | **MANDATORY** reference for every `mud-*` component — WCAG 2.1 AA criteria, ARIA, contrast, keyboard, focus, dark mode | Active skill |
 
 **Standard component workflow** (atom/molecule with known patterns): follow AGENTS.md directly — no skill invocation needed.
 

@@ -16,7 +16,7 @@ This guide provides a quick reference for developers and AI agents working on th
 | Action | Windows (PowerShell) | macOS / Linux (Unix) |
 |---|---|---|
 | **List Token CSS** | `ls dist/design-system/tokens/*.css` | `ls dist/design-system/tokens/*.css` |
-| **Check Directory** | `Test-Path src/components/cor-button` | `ls -d src/components/cor-button` |
+| **Check Directory** | `Test-Path src/components/mud-button` | `ls -d src/components/mud-button` |
 | **Move Component** | `Move-Item -Path src/hidden/x -Destination src/components/x` | `mv src/hidden/x src/components/x` |
 | **Copy Component** | `Copy-Item -Path src/x -Destination src/y -Recurse` | `cp -r src/x src/y` |
 | **Delete Artifacts** | `Remove-Item -Path dist,loader,www -Recurse -Force` | `rm -rf dist loader www` |

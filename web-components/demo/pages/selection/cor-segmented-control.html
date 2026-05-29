@@ -3,35 +3,35 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-segmented-control · @age/web-components</title>
+    <title>mud-segmented-control · @age/web-components</title>
   </head>
-  <body data-component="cor-segmented-control">
+  <body data-component="mud-segmented-control">
     <main class="demo-main">
-      <section id="cor-segmented-control" class="component-section">
-        <h2>&lt;cor-segmented-control&gt;</h2>
+      <section id="mud-segmented-control" class="component-section">
+        <h2>&lt;mud-segmented-control&gt;</h2>
 
         <div class="subsection">
           <h3>Sizes (segments set via JS property)</h3>
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-segmented-control
+                <mud-segmented-control
                   id="seg-md"
                   size="md"
                   value="lista"
                   aria-label="Vizualizare"
-                ></cor-segmented-control>
+                ></mud-segmented-control>
               </div>
               <span class="label">md</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-segmented-control
+                <mud-segmented-control
                   id="seg-sm"
                   size="sm"
                   value="lista"
                   aria-label="Vizualizare"
-                ></cor-segmented-control>
+                ></mud-segmented-control>
               </div>
               <span class="label">sm</span>
             </div>
@@ -43,24 +43,24 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-segmented-control id="seg-icons" value="acasa" aria-label="Navigare"></cor-segmented-control>
+                <mud-segmented-control id="seg-icons" value="acasa" aria-label="Navigare"></mud-segmented-control>
               </div>
               <span class="label">segments with iconName</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-segmented-control id="seg-disabled-seg" value="luna" aria-label="Perioadă"></cor-segmented-control>
+                <mud-segmented-control id="seg-disabled-seg" value="luna" aria-label="Perioadă"></mud-segmented-control>
               </div>
               <span class="label">one disabled segment</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-segmented-control
+                <mud-segmented-control
                   id="seg-disabled-all"
                   disabled=""
                   value="lista"
                   aria-label="Blocat"
-                ></cor-segmented-control>
+                ></mud-segmented-control>
               </div>
               <span class="label">disabled (whole group)</span>
             </div>
@@ -72,13 +72,13 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-segmented-control id="seg-many" value="s1" aria-label="Pași"></cor-segmented-control>
+                <mud-segmented-control id="seg-many" value="s1" aria-label="Pași"></mud-segmented-control>
               </div>
               <span class="label">5+ segments (overflow)</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-segmented-control id="seg-long" value="t1" aria-label="Filtru"></cor-segmented-control>
+                <mud-segmented-control id="seg-long" value="t1" aria-label="Filtru"></mud-segmented-control>
               </div>
               <span class="label">long labels + diacritics</span>
             </div>
@@ -86,7 +86,7 @@
         </div>
       </section>
       <script type="module">
-        customElements.whenDefined('cor-segmented-control').then(() => {
+        customElements.whenDefined('mud-segmented-control').then(() => {
           const set = (id, segments) => {
             const el = document.getElementById(id);
             if (el) el.segments = segments;

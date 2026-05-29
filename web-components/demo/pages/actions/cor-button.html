@@ -3,34 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-button · @age/web-components</title>
+    <title>mud-button · @age/web-components</title>
   </head>
-  <body data-component="cor-button">
+  <body data-component="mud-button">
     <main class="demo-main">
-      <section id="cor-button" class="component-section">
-        <h2>&lt;cor-button&gt;</h2>
+      <section id="mud-button" class="component-section">
+        <h2>&lt;mud-button&gt;</h2>
 
         <div class="subsection">
           <h3>Variants (appearance filled, size md)</h3>
           <div class="row">
             <div class="cell">
-              <cor-button variant="primary">Primary</cor-button>
+              <mud-button variant="primary">Primary</mud-button>
               <span class="label">primary</span>
             </div>
             <div class="cell">
-              <cor-button variant="secondary">Secondary</cor-button>
+              <mud-button variant="secondary">Secondary</mud-button>
               <span class="label">secondary</span>
             </div>
             <div class="cell">
-              <cor-button variant="strict">Strict</cor-button>
+              <mud-button variant="strict">Strict</mud-button>
               <span class="label">strict</span>
             </div>
             <div class="cell">
-              <cor-button variant="neutral">Neutral</cor-button>
+              <mud-button variant="neutral">Neutral</mud-button>
               <span class="label">neutral</span>
             </div>
             <div class="cell">
-              <cor-button variant="destructive">Șterge</cor-button>
+              <mud-button variant="destructive">Șterge</mud-button>
               <span class="label">destructive</span>
             </div>
           </div>
@@ -40,27 +40,27 @@
           <h3>Appearance × variant (outlined / text support primary · strict · destructive only)</h3>
           <div class="row">
             <div class="cell">
-              <cor-button appearance="outlined" variant="primary">Primary</cor-button>
+              <mud-button appearance="outlined" variant="primary">Primary</mud-button>
               <span class="label">outlined · primary</span>
             </div>
             <div class="cell">
-              <cor-button appearance="outlined" variant="strict">Strict</cor-button>
+              <mud-button appearance="outlined" variant="strict">Strict</mud-button>
               <span class="label">outlined · strict</span>
             </div>
             <div class="cell">
-              <cor-button appearance="outlined" variant="destructive">Șterge</cor-button>
+              <mud-button appearance="outlined" variant="destructive">Șterge</mud-button>
               <span class="label">outlined · destructive</span>
             </div>
             <div class="cell">
-              <cor-button appearance="text" variant="primary">Primary</cor-button>
+              <mud-button appearance="text" variant="primary">Primary</mud-button>
               <span class="label">text · primary</span>
             </div>
             <div class="cell">
-              <cor-button appearance="text" variant="strict">Strict</cor-button>
+              <mud-button appearance="text" variant="strict">Strict</mud-button>
               <span class="label">text · strict</span>
             </div>
             <div class="cell">
-              <cor-button appearance="text" variant="destructive">Șterge</cor-button>
+              <mud-button appearance="text" variant="destructive">Șterge</mud-button>
               <span class="label">text · destructive</span>
             </div>
           </div>
@@ -70,11 +70,11 @@
           <h3>Unsupported appearance + variant (expect console warn, fallback to primary visuals)</h3>
           <div class="row">
             <div class="cell">
-              <cor-button appearance="outlined" variant="secondary">Secondary</cor-button>
+              <mud-button appearance="outlined" variant="secondary">Secondary</mud-button>
               <span class="label">outlined · secondary → warn</span>
             </div>
             <div class="cell">
-              <cor-button appearance="text" variant="neutral">Neutral</cor-button>
+              <mud-button appearance="text" variant="neutral">Neutral</mud-button>
               <span class="label">text · neutral → warn</span>
             </div>
           </div>
@@ -84,15 +84,15 @@
           <h3>Sizes (appearance filled, variant primary)</h3>
           <div class="row">
             <div class="cell">
-              <cor-button size="sm">Small</cor-button>
+              <mud-button size="sm">Small</mud-button>
               <span class="label">sm</span>
             </div>
             <div class="cell">
-              <cor-button size="md">Medium</cor-button>
+              <mud-button size="md">Medium</mud-button>
               <span class="label">md</span>
             </div>
             <div class="cell">
-              <cor-button size="lg">Large</cor-button>
+              <mud-button size="lg">Large</mud-button>
               <span class="label">lg</span>
             </div>
           </div>
@@ -102,25 +102,25 @@
           <h3>Icon slots (icon-start / icon-end)</h3>
           <div class="row">
             <div class="cell">
-              <cor-button variant="primary">
-                <cor-icon slot="icon-start" name="download"></cor-icon>
+              <mud-button variant="primary">
+                <mud-icon slot="icon-start" name="download"></mud-icon>
                 Descarcă
-              </cor-button>
+              </mud-button>
               <span class="label">icon-start</span>
             </div>
             <div class="cell">
-              <cor-button variant="secondary">
+              <mud-button variant="secondary">
                 Înainte
-                <cor-icon slot="icon-end" name="arrow-right"></cor-icon>
-              </cor-button>
+                <mud-icon slot="icon-end" name="arrow-right"></mud-icon>
+              </mud-button>
               <span class="label">icon-end</span>
             </div>
             <div class="cell">
-              <cor-button variant="primary">
-                <cor-icon slot="icon-start" name="bookmark"></cor-icon>
+              <mud-button variant="primary">
+                <mud-icon slot="icon-start" name="bookmark"></mud-icon>
                 Salvează
-                <cor-icon slot="icon-end" name="chevron-right"></cor-icon>
-              </cor-button>
+                <mud-icon slot="icon-end" name="chevron-right"></mud-icon>
+              </mud-button>
               <span class="label">both icons</span>
             </div>
           </div>
@@ -130,27 +130,27 @@
           <h3>Icon-only · circular (icon slot + label prop for AT)</h3>
           <div class="row">
             <div class="cell">
-              <cor-button icon-only="" shape="circular" label="Caută" variant="primary" size="sm">
-                <cor-icon slot="icon" name="search"></cor-icon>
-              </cor-button>
+              <mud-button icon-only="" shape="circular" label="Caută" variant="primary" size="sm">
+                <mud-icon slot="icon" name="search"></mud-icon>
+              </mud-button>
               <span class="label">circular · sm</span>
             </div>
             <div class="cell">
-              <cor-button icon-only="" shape="circular" label="Editează" variant="primary" size="md">
-                <cor-icon slot="icon" name="edit"></cor-icon>
-              </cor-button>
+              <mud-button icon-only="" shape="circular" label="Editează" variant="primary" size="md">
+                <mud-icon slot="icon" name="edit"></mud-icon>
+              </mud-button>
               <span class="label">circular · md</span>
             </div>
             <div class="cell">
-              <cor-button icon-only="" shape="circular" label="Setări" variant="secondary" size="lg">
-                <cor-icon slot="icon" name="settings"></cor-icon>
-              </cor-button>
+              <mud-button icon-only="" shape="circular" label="Setări" variant="secondary" size="lg">
+                <mud-icon slot="icon" name="settings"></mud-icon>
+              </mud-button>
               <span class="label">circular · lg</span>
             </div>
             <div class="cell">
-              <cor-button icon-only="" label="Șterge" variant="destructive">
-                <cor-icon slot="icon" name="delete"></cor-icon>
-              </cor-button>
+              <mud-button icon-only="" label="Șterge" variant="destructive">
+                <mud-icon slot="icon" name="delete"></mud-icon>
+              </mud-button>
               <span class="label">rectangular · destructive</span>
             </div>
           </div>
@@ -160,25 +160,25 @@
           <h3>States (loading / disabled)</h3>
           <div class="row">
             <div class="cell">
-              <cor-button variant="primary" loading="">Se încarcă</cor-button>
+              <mud-button variant="primary" loading="">Se încarcă</mud-button>
               <span class="label">loading</span>
             </div>
             <div class="cell">
-              <cor-button variant="primary" disabled="">Primary</cor-button>
+              <mud-button variant="primary" disabled="">Primary</mud-button>
               <span class="label">disabled</span>
             </div>
             <div class="cell">
-              <cor-button appearance="outlined" variant="strict" disabled="">Strict</cor-button>
+              <mud-button appearance="outlined" variant="strict" disabled="">Strict</mud-button>
               <span class="label">disabled · outlined</span>
             </div>
             <div class="cell">
-              <cor-button variant="destructive" loading="">Șterge</cor-button>
+              <mud-button variant="destructive" loading="">Șterge</mud-button>
               <span class="label">loading · destructive</span>
             </div>
             <div class="cell">
-              <cor-button icon-only="" shape="circular" label="Se încarcă" loading="" variant="primary">
-                <cor-icon slot="icon" name="download"></cor-icon>
-              </cor-button>
+              <mud-button icon-only="" shape="circular" label="Se încarcă" loading="" variant="primary">
+                <mud-icon slot="icon" name="download"></mud-icon>
+              </mud-button>
               <span class="label">loading · icon-only</span>
             </div>
           </div>
@@ -188,13 +188,13 @@
           <h3>Link mode (href renders &lt;a&gt;) &amp; full-width</h3>
           <div class="row">
             <div class="cell">
-              <cor-button href="https://gov.md" target="_blank" rel="noopener" variant="primary">
+              <mud-button href="https://gov.md" target="_blank" rel="noopener" variant="primary">
                 Deschide gov.md
-              </cor-button>
+              </mud-button>
               <span class="label">href · target=_blank</span>
             </div>
             <div class="cell" style="width: 240px">
-              <cor-button full-width="" variant="primary">Full width</cor-button>
+              <mud-button full-width="" variant="primary">Full width</mud-button>
               <span class="label">full-width</span>
             </div>
           </div>
@@ -204,10 +204,10 @@
           <h3>Form participation (formAssociated submit / reset)</h3>
           <form id="demo-button-form" style="display: flex; flex-direction: column; gap: 8px; max-width: 320px">
             <input name="nume" placeholder="Nume" value="Ion" style="padding: 8px; font: inherit" />
-            <cor-button-group>
-              <cor-button type="submit" name="action" value="save" variant="primary">Trimite</cor-button>
-              <cor-button type="reset" appearance="outlined" variant="strict">Resetează</cor-button>
-            </cor-button-group>
+            <mud-button-group>
+              <mud-button type="submit" name="action" value="save" variant="primary">Trimite</mud-button>
+              <mud-button type="reset" appearance="outlined" variant="strict">Resetează</mud-button>
+            </mud-button-group>
             <output id="demo-button-form-out" class="label" style="min-height: 1em"></output>
           </form>
         </div>
@@ -216,42 +216,42 @@
           <h3>Edge cases</h3>
           <div class="row">
             <div class="cell" style="width: 200px">
-              <cor-button variant="primary">
+              <mud-button variant="primary">
                 Confirmă transferul către contul de trezorerie al instituției publice
-              </cor-button>
+              </mud-button>
               <span class="label">long multi-word in 200px</span>
             </div>
             <div class="cell" style="width: 200px">
-              <cor-button variant="secondary">Antreprenoriatuldigitalizatînregistratorul</cor-button>
+              <mud-button variant="secondary">Antreprenoriatuldigitalizatînregistratorul</mud-button>
               <span class="label">long unbroken word in 200px</span>
             </div>
             <div class="cell">
-              <cor-button variant="primary"></cor-button>
+              <mud-button variant="primary"></mud-button>
               <span class="label">empty label</span>
             </div>
             <div class="cell">
-              <cor-button variant="primary">&amp; &lt; &gt; " ' 🎉</cor-button>
+              <mud-button variant="primary">&amp; &lt; &gt; " ' 🎉</mud-button>
               <span class="label">special chars + emoji</span>
             </div>
             <div class="cell">
-              <cor-button variant="strict" appearance="text">مرحبا بكم</cor-button>
+              <mud-button variant="strict" appearance="text">مرحبا بكم</mud-button>
               <span class="label">RTL (Arabic)</span>
             </div>
             <div class="cell">
-              <cor-button icon-only="" shape="circular" variant="primary">
-                <cor-icon slot="icon" name="search"></cor-icon>
-              </cor-button>
+              <mud-button icon-only="" shape="circular" variant="primary">
+                <mud-icon slot="icon" name="search"></mud-icon>
+              </mud-button>
               <span class="label">icon-only, no label → AT warn</span>
             </div>
             <div class="cell">
-              <cor-button icon-only="" label="Gol" variant="primary"></cor-button>
+              <mud-button icon-only="" label="Gol" variant="primary"></mud-button>
               <span class="label">icon-only, no icon → empty-square warn</span>
             </div>
           </div>
         </div>
       </section>
       <script type="module">
-        customElements.whenDefined('cor-button').then(() => {
+        customElements.whenDefined('mud-button').then(() => {
           const form = document.getElementById('demo-button-form');
           const out = document.getElementById('demo-button-form-out');
           if (!form || !out) return;

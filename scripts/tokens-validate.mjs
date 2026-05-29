@@ -345,7 +345,7 @@ if (!SKIP_COMPONENT_CSS) {
   const componentTokenFiles = files.filter(f => f.split(sep).join('/').includes('/tokens/core/components/'));
   for (const file of componentTokenFiles) {
     const name = basename(file).replace(/\.tokens\.json$/, '');
-    const cssPath = resolve(REPO_ROOT, `src/components/cor-${name}/cor-${name}.css`);
+    const cssPath = resolve(REPO_ROOT, `src/components/mud-${name}/mud-${name}.css`);
     if (!existsSync(cssPath)) continue;
     const css = readFileSync(cssPath, 'utf8');
     const componentPrefix = `--${name}-`;

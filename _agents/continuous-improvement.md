@@ -24,7 +24,7 @@ Feedback loop to improve AGENTS.md accuracy and prevent recurring issues. **Read
 ```markdown
 ## Workflow Gap Analysis — [Date]
 
-**Component**: `cor-[name]`
+**Component**: `mud-[name]`
 **Issue Type**: [Visual Bug | Process Gap | Missing Validation | Pattern Discovery]
 
 ### What Went Wrong

@@ -1,6 +1,6 @@
 # Spec Testing & Coverage — Vitest + @stencil/vitest
 
-**Canonical reference for unit/spec testing of `cor-*` components.** Read this before writing any `*.spec.tsx`.
+**Canonical reference for unit/spec testing of `mud-*` components.** Read this before writing any `*.spec.tsx`.
 
 The project migrated from Jest + `newSpecPage` (`@stencil/core/testing`) to **Vitest + `@stencil/vitest`**. The harness, helpers, and coverage semantics differ — patterns below are mandatory.
 
@@ -22,17 +22,17 @@ The project migrated from Jest + `newSpecPage` (`@stencil/core/testing`) to **Vi
 ## Spec file template
 
 ```tsx
-// src/components/cor-<name>/test/cor-<name>.spec.tsx
+// src/components/mud-<name>/test/mud-<name>.spec.tsx
 import { render, describe, it, expect } from '@stencil/vitest';
 
 // MANDATORY side-effect import — see "Coverage rules" below.
-import '../cor-<name>';
+import '../mud-<name>';
 
-import type { ComponentSize, ComponentVariant } from '../cor-<name>.types';
+import type { ComponentSize, ComponentVariant } from '../mud-<name>.types';
 
-describe('cor-<name>', () => {
+describe('mud-<name>', () => {
   it('renders with default props', async () => {
-    const { root } = await render(<cor-<name> />);
+    const { root } = await render(<mud-<name> />);
     expect(root?.getAttribute('role')).toBe('<role>');
   });
 });
@@ -56,7 +56,7 @@ Coverage v8 only instruments code that goes through Vite's transform pipeline. S
 ```tsx
 import { render, describe, it, expect } from '@stencil/vitest';
 
-import '../cor-<name>';   // 👈 mandatory — registers element AND enables coverage
+import '../mud-<name>';   // 👈 mandatory — registers element AND enables coverage
 ```
 
 Without it:
@@ -66,7 +66,7 @@ Without it:
 
 ### Why this works
 
-`vitest.config.mts` activates `stencilVitestPlugin()` on both the `spec` and `storybook` projects. When a `.tsx` is imported from `src/components/cor-*/cor-*.tsx`, the plugin compiles it through `@stencil/core/compiler` with `componentExport: 'customelement'`, appends a `customElements.define()` call, and hands the result to Vite. Coverage v8 then sees the original TSX in its module graph and produces correct line/branch numbers.
+`vitest.config.mts` activates `stencilVitestPlugin()` on both the `spec` and `storybook` projects. When a `.tsx` is imported from `src/components/mud-*/mud-*.tsx`, the plugin compiles it through `@stencil/core/compiler` with `componentExport: 'customelement'`, appends a `customElements.define()` call, and hands the result to Vite. Coverage v8 then sees the original TSX in its module graph and produces correct line/branch numbers.
 
 For browser-mode (`@storybook/addon-vitest`), a `pre`-resolver plugin in `vitest.config.mts` rewrites `preview.js`'s lazy-bundle import (`'../dist/design-system/design-system.esm.js'`) to `.storybook/vitest-component-loader.ts`, which glob-imports every component source. Same effect: coverage shows real numbers instead of 0%.
 
@@ -141,7 +141,7 @@ Both `spec` and `storybook` projects need a dedicated test that exercises the "e
 
 ```tsx
 it('constructs without registering a host when registerHost=false', () => {
-  const Ctor = customElements.get('cor-<name>') as unknown as new (registerHost: boolean) => unknown;
+  const Ctor = customElements.get('mud-<name>') as unknown as new (registerHost: boolean) => unknown;
   expect(Ctor).toBeTruthy();
   const instance = new Ctor(false);
   expect(instance).toBeTruthy();
@@ -157,13 +157,13 @@ Browser-mode tests run **stories**, not specs, so the spec workaround above does
 ```ts
 export const CoverageGuard: Story = {
   tags: ['!autodocs', '!dev'],
-  render: () => /*html*/ `<cor-<name>></cor-<name>>`,
+  render: () => /*html*/ `<mud-<name>></mud-<name>>`,
   parameters: { controls: { disable: true }, docs: { disable: true } },
   play: async () => {
-    const Ctor = customElements.get('cor-<name>') as unknown as
+    const Ctor = customElements.get('mud-<name>') as unknown as
       | (new (registerHost: boolean) => unknown)
       | undefined;
-    if (!Ctor) throw new Error('cor-<name> constructor missing from registry');
+    if (!Ctor) throw new Error('mud-<name> constructor missing from registry');
     const instance = new Ctor(false);
     if (!instance) throw new Error('instance not constructed');
   },

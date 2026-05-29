@@ -3,47 +3,47 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cor-input · @age/web-components</title>
+    <title>mud-input · @age/web-components</title>
   </head>
-  <body data-component="cor-input">
+  <body data-component="mud-input">
     <main class="demo-main">
-      <section id="cor-input" class="component-section">
-        <h2>&lt;cor-input&gt;</h2>
+      <section id="mud-input" class="component-section">
+        <h2>&lt;mud-input&gt;</h2>
 
         <div class="subsection">
           <h3>Variants (size md, prefilled)</h3>
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input variant="default" label="Nume complet" value="Ion Creangă"></cor-input>
+                <mud-input variant="default" label="Nume complet" value="Ion Creangă"></mud-input>
               </div>
               <span class="label">default</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input
+                <mud-input
                   variant="success"
                   label="Email"
                   value="ion@gov.md"
                   helper-text="Adresă verificată"
-                ></cor-input>
+                ></mud-input>
               </div>
               <span class="label">success</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input
+                <mud-input
                   variant="warning"
                   label="IDNP"
                   value="2002004012345"
                   helper-text="Verificați cifra de control"
-                ></cor-input>
+                ></mud-input>
               </div>
               <span class="label">warning</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input variant="destructive" label="Telefon" value="abc" helper-text="Format invalid"></cor-input>
+                <mud-input variant="destructive" label="Telefon" value="abc" helper-text="Format invalid"></mud-input>
               </div>
               <span class="label">destructive</span>
             </div>
@@ -55,36 +55,36 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input
+                <mud-input
                   label="Email"
                   value="ion[at]gov.md"
                   invalid=""
                   error-text="Adresa de email nu este validă."
-                ></cor-input>
+                ></mud-input>
               </div>
               <span class="label">invalid + error-text</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input
+                <mud-input
                   variant="success"
                   label="Email (success forced to destructive by invalid)"
                   value="x"
                   invalid=""
                   error-text="invalid overrides variant"
-                ></cor-input>
+                ></mud-input>
               </div>
               <span class="label">invalid forces destructive</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input
+                <mud-input
                   label="Câmp obligatoriu"
                   required=""
                   invalid=""
                   error-text="Acest câmp este obligatoriu."
                   placeholder="Introduceți o valoare"
-                ></cor-input>
+                ></mud-input>
               </div>
               <span class="label">required + invalid (placeholder)</span>
             </div>
@@ -96,13 +96,13 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input size="md" label="Adresă" value="str. Ștefan cel Mare 1" helper-text="md"></cor-input>
+                <mud-input size="md" label="Adresă" value="str. Ștefan cel Mare 1" helper-text="md"></mud-input>
               </div>
               <span class="label">md</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input size="lg" label="Adresă" value="str. Ștefan cel Mare 1" helper-text="lg"></cor-input>
+                <mud-input size="lg" label="Adresă" value="str. Ștefan cel Mare 1" helper-text="lg"></mud-input>
               </div>
               <span class="label">lg</span>
             </div>
@@ -114,25 +114,25 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input label="Utilizator" placeholder="nume.prenume">
-                  <cor-icon slot="icon-start" name="person" size="20"></cor-icon>
-                </cor-input>
+                <mud-input label="Utilizator" placeholder="nume.prenume">
+                  <mud-icon slot="icon-start" name="person" size="20"></mud-icon>
+                </mud-input>
               </div>
               <span class="label">icon-start</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input label="Căutare în dosar" value="hotărâre">
-                  <cor-icon slot="icon-end" name="search" size="20"></cor-icon>
-                </cor-input>
+                <mud-input label="Căutare în dosar" value="hotărâre">
+                  <mud-icon slot="icon-end" name="search" size="20"></mud-icon>
+                </mud-input>
               </div>
               <span class="label">icon-end</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input type="email" label="Email" value="ion@gov.md">
-                  <cor-icon slot="icon-start" name="envelope" size="20"></cor-icon>
-                </cor-input>
+                <mud-input type="email" label="Email" value="ion@gov.md">
+                  <mud-icon slot="icon-start" name="envelope" size="20"></mud-icon>
+                </mud-input>
               </div>
               <span class="label">icon-start + type=email</span>
             </div>
@@ -144,27 +144,27 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input type="password" label="Parolă" value="secret123">
-                  <cor-icon slot="icon-start" name="lock" size="20"></cor-icon>
-                </cor-input>
+                <mud-input type="password" label="Parolă" value="secret123">
+                  <mud-icon slot="icon-start" name="lock" size="20"></mud-icon>
+                </mud-input>
               </div>
               <span class="label">password</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input type="tel" label="Telefon" value="+373 22 250 100" inputmode="tel"></cor-input>
+                <mud-input type="tel" label="Telefon" value="+373 22 250 100" inputmode="tel"></mud-input>
               </div>
               <span class="label">tel</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input type="url" label="Site web" value="https://gov.md"></cor-input>
+                <mud-input type="url" label="Site web" value="https://gov.md"></mud-input>
               </div>
               <span class="label">url</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input type="search" label="Căutare" placeholder="Căutați…"></cor-input>
+                <mud-input type="search" label="Căutare" placeholder="Căutați…"></mud-input>
               </div>
               <span class="label">search</span>
             </div>
@@ -176,37 +176,37 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input label="Prefilled" value="O valoare introdusă"></cor-input>
+                <mud-input label="Prefilled" value="O valoare introdusă"></mud-input>
               </div>
               <span class="label">value</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input label="Placeholder only" placeholder="Introduceți textul aici"></cor-input>
+                <mud-input label="Placeholder only" placeholder="Introduceți textul aici"></mud-input>
               </div>
               <span class="label">placeholder-only</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input label="Dezactivat" value="Nu se poate edita" disabled=""></cor-input>
+                <mud-input label="Dezactivat" value="Nu se poate edita" disabled=""></mud-input>
               </div>
               <span class="label">disabled</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input label="Doar citire" value="Valoare read-only" readonly=""></cor-input>
+                <mud-input label="Doar citire" value="Valoare read-only" readonly=""></mud-input>
               </div>
               <span class="label">readonly</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input label="În curs" value="Se validează…" loading=""></cor-input>
+                <mud-input label="În curs" value="Se validează…" loading=""></mud-input>
               </div>
               <span class="label">loading</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input label="Obligatoriu" required="" placeholder="Necesită completare"></cor-input>
+                <mud-input label="Obligatoriu" required="" placeholder="Necesită completare"></mud-input>
               </div>
               <span class="label">required (asterisk)</span>
             </div>
@@ -218,63 +218,63 @@
           <div class="row">
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input
+                <mud-input
                   label="Long unbroken value"
                   value="Supercalifragilisticexpialidocious_aaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-                ></cor-input>
+                ></mud-input>
               </div>
               <span class="label">overflow: no-space value</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input
+                <mud-input
                   label="Etichetă foarte lungă care ar trebui să se înfășoare pe mai multe rânduri în acest container îngust"
                   value="ok"
-                ></cor-input>
+                ></mud-input>
               </div>
               <span class="label">long wrapping label</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input label="Diacritice românești" value="ăâîșțĂÂÎȘȚ — Chișinău"></cor-input>
+                <mud-input label="Diacritice românești" value="ăâîșțĂÂÎȘȚ — Chișinău"></mud-input>
               </div>
               <span class="label">diacritics</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input label="RTL (Arabic)" value="مرحبا بكم" dir="rtl"></cor-input>
+                <mud-input label="RTL (Arabic)" value="مرحبا بكم" dir="rtl"></mud-input>
               </div>
               <span class="label">RTL bidi</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input label="Special chars &amp; escaping" value="&amp; < > &quot; ' 🎉"></cor-input>
+                <mud-input label="Special chars &amp; escaping" value="&amp; < > &quot; ' 🎉"></mud-input>
               </div>
               <span class="label">special chars + emoji</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input label="Empty value" value="" placeholder=""></cor-input>
+                <mud-input label="Empty value" value="" placeholder=""></mud-input>
               </div>
               <span class="label">empty value + empty placeholder</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input
+                <mud-input
                   aria-label="Fără etichetă vizibilă"
                   placeholder="No visible label (aria-label only)"
-                ></cor-input>
+                ></mud-input>
               </div>
               <span class="label">no label, aria-label</span>
             </div>
             <div class="cell">
               <div style="width: 100%; max-width: 360px">
-                <cor-input
+                <mud-input
                   label="maxlength 10"
                   value="1234567890"
                   maxlength="10"
                   helper-text="max 10 chars"
-                ></cor-input>
+                ></mud-input>
               </div>
               <span class="label">maxlength</span>
             </div>

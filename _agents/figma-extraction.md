@@ -36,7 +36,7 @@ Steps A through A.1.5 of the pre-implementation protocol: Figma screenshot analy
 After `figma_get_design_context`, check for non-icon assets.
 
 **Download**: Custom illustrations, logos, background images, decorative SVGs
-**Skip**: standard UI icons → handled separately by `cor-icon` component (loaded via Figma-exported SVG set, TBD in next branch)
+**Skip**: standard UI icons → handled separately by `mud-icon` component (loaded via Figma-exported SVG set, TBD in next branch)
 
 **Download workflow** (only if custom graphics found):
 
@@ -45,7 +45,7 @@ After `figma_get_design_context`, check for non-icon assets.
 3. Save to `assets/icons/` for SVGs or new subdirectory for illustrations
 4. Document paths for implementation
 
-**Skip if**: Design uses only `cor-icon` or existing `assets/icons/*.svg`.
+**Skip if**: Design uses only `mud-icon` or existing `assets/icons/*.svg`.
 
 ---
 
@@ -88,8 +88,8 @@ When nested components found:
 
 | Subcomponent | Exists? | Action |
 |---|---|---|
-| cor-avatar | ✅ Yes | Reuse |
-| cor-badge | 🔴 No | **CREATE** — reusable atom |
+| mud-avatar | ✅ Yes | Reuse |
+| mud-badge | 🔴 No | **CREATE** — reusable atom |
 
 ### Verification Before Proceeding
 

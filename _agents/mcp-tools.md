@@ -244,8 +244,8 @@ Headless browser CLI for AI agents (Vercel Labs, native Rust). Outputs a compact
 ab_open → agent-browser open <url>
 
 # Examples
-agent-browser open http://localhost:6007/iframe.html?id=atoms-cor-button--default
-agent-browser open http://localhost:6007/iframe.html?id=atoms-cor-input--default
+agent-browser open http://localhost:6007/iframe.html?id=atoms-mud-button--default
+agent-browser open http://localhost:6007/iframe.html?id=atoms-mud-input--default
 ```
 
 **Use agent-browser when** the check can be answered by the accessibility tree alone:
@@ -336,7 +336,7 @@ agent-browser **cannot** pierce Shadow DOM. All internal Stencil element checks 
 ```javascript
 browser_evaluate({
   function: `() => {
-    const el = document.querySelector('cor-[name]')?.shadowRoot?.querySelector('.inner-el');
+    const el = document.querySelector('mud-[name]')?.shadowRoot?.querySelector('.inner-el');
     return window.getComputedStyle(el).backgroundColor;
   }`
 })

@@ -46,11 +46,11 @@ Prefer a component-specific `Args` type/interface when practical. Use `(args: an
 ```typescript
 // ✅ PREFERRED
 type CorButtonArgs = { label: string };
-const renderComponent = (args: CorButtonArgs) => /*html*/ `<cor-button>${args.label}</cor-button>`;
+const renderComponent = (args: CorButtonArgs) => /*html*/ `<mud-button>${args.label}</mud-button>`;
 export const Default = { render: (args: CorButtonArgs) => /*html*/ `...` };
 
 // ✅ ACCEPTABLE FALLBACK
-const renderComponentFallback = (args: any) => /*html*/ `<cor-button>${args.label}</cor-button>`;
+const renderComponentFallback = (args: any) => /*html*/ `<mud-button>${args.label}</mud-button>`;
 
 // ❌ WRONG — "Parameter 'args' implicitly has an 'any' type"
 const renderComponent = args => /*html*/ `...`;

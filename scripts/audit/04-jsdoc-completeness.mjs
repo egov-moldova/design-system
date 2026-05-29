@@ -3,7 +3,7 @@
  * 04-jsdoc-completeness.mjs
  *
  * Uses the TypeScript compiler API to extract the public API surface of a
- * `cor-*` component and verify each piece has a JSDoc block:
+ * `mud-*` component and verify each piece has a JSDoc block:
  *
  *   - Component class itself     → must have @description + ideally @example/@slot
  *   - @Prop()                     → JSDoc with description; optional props need @default
@@ -334,7 +334,7 @@ function listChangedComponents() {
   if (res.status !== 0) return [];
   const names = new Set();
   for (const line of (res.stdout ?? '').split('\n')) {
-    const m = line.match(/^src\/(components|hidden)\/(cor-[a-z0-9-]+)\//);
+    const m = line.match(/^src\/(components|hidden)\/(mud-[a-z0-9-]+)\//);
     if (m) names.add(m[2]);
   }
   return [...names].sort();
