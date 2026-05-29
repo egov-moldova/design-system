@@ -61,6 +61,11 @@
         "$value": "{borderWidth.1}",
         "$type": "dimension"
       },
+      "underlineThicknessHover": {
+        "$value": "1.5px",
+        "$type": "dimension",
+        "$comment": "Hover thickens the underline to 1.5px per Figma 661:7090 (no 1.5px borderWidth primitive exists)."
+      },
       "underlineOffset": {
         "$value": "{spacing.2}",
         "$type": "dimension"
@@ -77,8 +82,8 @@
     "primary": {
       "label": {
         "default": { "$value": "{color.text.brand.default}", "$type": "color" },
-        "$comment": "hover/active reference background.brand.* because color.text.brand.* lacks a proper default-active and the existing default-hover duplicates default. Resolved values (blue-sky.700/800) are visually correct; semantic-tier fix tracked in docs/backlog.",
-        "hover": { "$value": "{color.background.brand.default-hover}", "$type": "color" },
+        "$comment": "hover matches Figma 661:7090 — text.brand.default-hover resolves to #0058d2 (same blue as default; hover affordance comes from the thickened underline). active uses background.brand.default-active because the text tier lacks an active step; Figma's link doc does not show an active state.",
+        "hover": { "$value": "{color.text.brand.default-hover}", "$type": "color" },
         "active": { "$value": "{color.background.brand.default-active}", "$type": "color" },
         "visited": { "$value": "{color.text.brand.visited}", "$type": "color" }
       }
