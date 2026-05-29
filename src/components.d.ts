@@ -2035,12 +2035,12 @@ export namespace Components {
      * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
      * icon and an optional trailing clear `×` button that appears whenever the
      * control carries a value. Behavior, props, slots, events, keyboard contract,
-     * and ARIA wiring are IDENTICAL to `cor-search-input-rectangular` — the only
-     * visual difference is the silhouette: corners flip to `borderRadius.full`
-     * (9999px) and horizontal padding grows one step (md +4px, lg +4px) to balance
-     * the rounded ends. The trailing submit button (when `with-button` is set)
-     * inherits the pill silhouette via `borderRadius.full`, rendering as a perfect
-     * circle that hugs the pill end per Figma master `933:29721`.
+     * ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
+     * `cor-search-input-rectangular` — the only visual difference is the
+     * silhouette: corners flip to `borderRadius.full` (9999px). The trailing
+     * submit button (when `with-button` is set) inherits the pill silhouette via
+     * `borderRadius.full`, rendering as a perfect circle that hugs the pill end
+     * per Figma master `933:29721`.
      * The Republic of Moldova Unified Design System library catalogues circular
      * and rectangular search fields as separate component_sets, so we ship them
      * as distinct atoms with parallel token namespaces (`--search-input-circular-*`
@@ -2055,7 +2055,7 @@ export namespace Components {
      */
     interface CorSearchInputCircular {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -2178,7 +2178,7 @@ export namespace Components {
      */
     interface CorSearchInputRectangular {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -3980,12 +3980,12 @@ declare global {
      * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
      * icon and an optional trailing clear `×` button that appears whenever the
      * control carries a value. Behavior, props, slots, events, keyboard contract,
-     * and ARIA wiring are IDENTICAL to `cor-search-input-rectangular` — the only
-     * visual difference is the silhouette: corners flip to `borderRadius.full`
-     * (9999px) and horizontal padding grows one step (md +4px, lg +4px) to balance
-     * the rounded ends. The trailing submit button (when `with-button` is set)
-     * inherits the pill silhouette via `borderRadius.full`, rendering as a perfect
-     * circle that hugs the pill end per Figma master `933:29721`.
+     * ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
+     * `cor-search-input-rectangular` — the only visual difference is the
+     * silhouette: corners flip to `borderRadius.full` (9999px). The trailing
+     * submit button (when `with-button` is set) inherits the pill silhouette via
+     * `borderRadius.full`, rendering as a perfect circle that hugs the pill end
+     * per Figma master `933:29721`.
      * The Republic of Moldova Unified Design System library catalogues circular
      * and rectangular search fields as separate component_sets, so we ship them
      * as distinct atoms with parallel token namespaces (`--search-input-circular-*`
@@ -6664,12 +6664,12 @@ declare namespace LocalJSX {
      * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
      * icon and an optional trailing clear `×` button that appears whenever the
      * control carries a value. Behavior, props, slots, events, keyboard contract,
-     * and ARIA wiring are IDENTICAL to `cor-search-input-rectangular` — the only
-     * visual difference is the silhouette: corners flip to `borderRadius.full`
-     * (9999px) and horizontal padding grows one step (md +4px, lg +4px) to balance
-     * the rounded ends. The trailing submit button (when `with-button` is set)
-     * inherits the pill silhouette via `borderRadius.full`, rendering as a perfect
-     * circle that hugs the pill end per Figma master `933:29721`.
+     * ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
+     * `cor-search-input-rectangular` — the only visual difference is the
+     * silhouette: corners flip to `borderRadius.full` (9999px). The trailing
+     * submit button (when `with-button` is set) inherits the pill silhouette via
+     * `borderRadius.full`, rendering as a perfect circle that hugs the pill end
+     * per Figma master `933:29721`.
      * The Republic of Moldova Unified Design System library catalogues circular
      * and rectangular search fields as separate component_sets, so we ship them
      * as distinct atoms with parallel token namespaces (`--search-input-circular-*`
@@ -6684,7 +6684,7 @@ declare namespace LocalJSX {
      */
     interface CorSearchInputCircular {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -6835,7 +6835,7 @@ declare namespace LocalJSX {
      */
     interface CorSearchInputRectangular {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -8782,12 +8782,12 @@ declare module "@stencil/core" {
              * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
              * icon and an optional trailing clear `×` button that appears whenever the
              * control carries a value. Behavior, props, slots, events, keyboard contract,
-             * and ARIA wiring are IDENTICAL to `cor-search-input-rectangular` — the only
-             * visual difference is the silhouette: corners flip to `borderRadius.full`
-             * (9999px) and horizontal padding grows one step (md +4px, lg +4px) to balance
-             * the rounded ends. The trailing submit button (when `with-button` is set)
-             * inherits the pill silhouette via `borderRadius.full`, rendering as a perfect
-             * circle that hugs the pill end per Figma master `933:29721`.
+             * ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
+             * `cor-search-input-rectangular` — the only visual difference is the
+             * silhouette: corners flip to `borderRadius.full` (9999px). The trailing
+             * submit button (when `with-button` is set) inherits the pill silhouette via
+             * `borderRadius.full`, rendering as a perfect circle that hugs the pill end
+             * per Figma master `933:29721`.
              * The Republic of Moldova Unified Design System library catalogues circular
              * and rectangular search fields as separate component_sets, so we ship them
              * as distinct atoms with parallel token namespaces (`--search-input-circular-*`

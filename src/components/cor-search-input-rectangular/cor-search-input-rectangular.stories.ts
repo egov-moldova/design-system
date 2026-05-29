@@ -27,6 +27,7 @@ const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-
 
 const renderSearch = (args: SearchArgs) => /*html*/ `
   <cor-search-input-rectangular
+    aria-label="Caută"
     variant="${args.variant}"
     size="${args.size}"
     label="${args.label}"
@@ -63,7 +64,7 @@ const docsSourceDefault = (args: SearchArgs) => {
   ]
     .filter(Boolean)
     .join(' ');
-  return `<cor-search-input-rectangular ${attrs}></cor-search-input-rectangular>`;
+  return `<cor-search-input-rectangular aria-label="Caută" ${attrs}></cor-search-input-rectangular>`;
 };
 
 const meta: Meta<SearchArgs> = {
@@ -152,7 +153,7 @@ export const AllSizes: Story = {
       SEARCH_INPUT_RECTANGULAR_SIZES.map(size =>
         cell(
           size,
-          /*html*/ `<cor-search-input-rectangular size="${size}" placeholder="Caută…"></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="${size}" placeholder="Caută…"></cor-search-input-rectangular>`,
         ),
       ).join(''),
     ),
@@ -161,7 +162,7 @@ export const AllSizes: Story = {
     docs: {
       source: {
         code: SEARCH_INPUT_RECTANGULAR_SIZES.map(
-          s => `<cor-search-input-rectangular size="${s}" placeholder="Caută…"></cor-search-input-rectangular>`,
+          s => `<cor-search-input-rectangular aria-label="Caută" size="${s}" placeholder="Caută…"></cor-search-input-rectangular>`,
         ).join('\n'),
       },
     },
@@ -175,27 +176,27 @@ export const States: Story = {
       [
         cell(
           'default',
-          /*html*/ `<cor-search-input-rectangular size="lg" placeholder="Caută…"></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="lg" placeholder="Caută…"></cor-search-input-rectangular>`,
         ),
         cell(
           'filled (clear button visible)',
-          /*html*/ `<cor-search-input-rectangular size="lg" value="permis de conducere"></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="lg" value="permis de conducere"></cor-search-input-rectangular>`,
         ),
         cell(
           'loading',
-          /*html*/ `<cor-search-input-rectangular size="lg" value="permis de conducere" loading></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="lg" value="permis de conducere" loading></cor-search-input-rectangular>`,
         ),
         cell(
           'disabled',
-          /*html*/ `<cor-search-input-rectangular size="lg" placeholder="Caută…" disabled></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="lg" placeholder="Caută…" disabled></cor-search-input-rectangular>`,
         ),
         cell(
           'readonly (filled)',
-          /*html*/ `<cor-search-input-rectangular size="lg" value="permis de conducere" readonly></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="lg" value="permis de conducere" readonly></cor-search-input-rectangular>`,
         ),
         cell(
           'destructive (invalid)',
-          /*html*/ `<cor-search-input-rectangular size="lg" variant="destructive" placeholder="Caută…"></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="lg" variant="destructive" placeholder="Caută…"></cor-search-input-rectangular>`,
         ),
         cell(
           'required + labeled',
@@ -208,12 +209,12 @@ export const States: Story = {
     docs: {
       source: {
         code: [
-          '<cor-search-input-rectangular size="lg" placeholder="Caută…"></cor-search-input-rectangular>',
-          '<cor-search-input-rectangular size="lg" value="permis de conducere"></cor-search-input-rectangular>',
-          '<cor-search-input-rectangular size="lg" value="permis de conducere" loading></cor-search-input-rectangular>',
-          '<cor-search-input-rectangular size="lg" placeholder="Caută…" disabled></cor-search-input-rectangular>',
-          '<cor-search-input-rectangular size="lg" value="permis de conducere" readonly></cor-search-input-rectangular>',
-          '<cor-search-input-rectangular size="lg" variant="destructive" placeholder="Caută…"></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="lg" placeholder="Caută…"></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="lg" value="permis de conducere"></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="lg" value="permis de conducere" loading></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="lg" placeholder="Caută…" disabled></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="lg" value="permis de conducere" readonly></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="lg" variant="destructive" placeholder="Caută…"></cor-search-input-rectangular>',
           '<cor-search-input-rectangular size="lg" label="Căutare" placeholder="Caută…" required></cor-search-input-rectangular>',
         ].join('\n'),
       },
@@ -228,19 +229,19 @@ export const LoadingNoButton: Story = {
       [
         cell(
           'lg — loading + value',
-          /*html*/ `<cor-search-input-rectangular size="lg" value="permis de conducere" loading></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="lg" value="permis de conducere" loading></cor-search-input-rectangular>`,
         ),
         cell(
           'md — loading + value',
-          /*html*/ `<cor-search-input-rectangular size="md" value="permis de conducere" loading></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="md" value="permis de conducere" loading></cor-search-input-rectangular>`,
         ),
         cell(
           'lg — loading + placeholder',
-          /*html*/ `<cor-search-input-rectangular size="lg" placeholder="Caută…" loading></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="lg" placeholder="Caută…" loading></cor-search-input-rectangular>`,
         ),
         cell(
           'lg — loading + disabled',
-          /*html*/ `<cor-search-input-rectangular size="lg" value="permis de conducere" loading disabled></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="lg" value="permis de conducere" loading disabled></cor-search-input-rectangular>`,
         ),
       ].join(''),
     ),
@@ -249,10 +250,10 @@ export const LoadingNoButton: Story = {
     docs: {
       source: {
         code: [
-          '<cor-search-input-rectangular size="lg" value="permis de conducere" loading></cor-search-input-rectangular>',
-          '<cor-search-input-rectangular size="md" value="permis de conducere" loading></cor-search-input-rectangular>',
-          '<cor-search-input-rectangular size="lg" placeholder="Caută…" loading></cor-search-input-rectangular>',
-          '<cor-search-input-rectangular size="lg" value="permis de conducere" loading disabled></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="lg" value="permis de conducere" loading></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="md" value="permis de conducere" loading></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="lg" placeholder="Caută…" loading></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="lg" value="permis de conducere" loading disabled></cor-search-input-rectangular>',
         ].join('\n'),
       },
     },
@@ -266,23 +267,23 @@ export const WithSubmitButton: Story = {
       [
         cell(
           'lg — empty (button disabled)',
-          /*html*/ `<cor-search-input-rectangular size="lg" placeholder="Caută…" with-button></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="lg" placeholder="Caută…" with-button></cor-search-input-rectangular>`,
         ),
         cell(
           'lg — filled (button active)',
-          /*html*/ `<cor-search-input-rectangular size="lg" value="permis de conducere" with-button></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="lg" value="permis de conducere" with-button></cor-search-input-rectangular>`,
         ),
         cell(
           'md — empty (button disabled)',
-          /*html*/ `<cor-search-input-rectangular size="md" placeholder="Caută…" with-button></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="md" placeholder="Caută…" with-button></cor-search-input-rectangular>`,
         ),
         cell(
           'md — filled (button active)',
-          /*html*/ `<cor-search-input-rectangular size="md" value="cazier judiciar" with-button></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="md" value="cazier judiciar" with-button></cor-search-input-rectangular>`,
         ),
         cell(
           'lg — disabled',
-          /*html*/ `<cor-search-input-rectangular size="lg" value="permis de conducere" with-button disabled></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="lg" value="permis de conducere" with-button disabled></cor-search-input-rectangular>`,
         ),
         cell(
           'lg — labeled + helper',
@@ -295,11 +296,11 @@ export const WithSubmitButton: Story = {
     docs: {
       source: {
         code: [
-          '<cor-search-input-rectangular size="lg" placeholder="Caută…" with-button></cor-search-input-rectangular>',
-          '<cor-search-input-rectangular size="lg" value="permis de conducere" with-button></cor-search-input-rectangular>',
-          '<cor-search-input-rectangular size="md" placeholder="Caută…" with-button></cor-search-input-rectangular>',
-          '<cor-search-input-rectangular size="md" value="cazier judiciar" with-button></cor-search-input-rectangular>',
-          '<cor-search-input-rectangular size="lg" value="permis de conducere" with-button disabled></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="lg" placeholder="Caută…" with-button></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="lg" value="permis de conducere" with-button></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="md" placeholder="Caută…" with-button></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="md" value="cazier judiciar" with-button></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="lg" value="permis de conducere" with-button disabled></cor-search-input-rectangular>',
         ].join('\n'),
       },
     },
@@ -313,11 +314,11 @@ export const WithSubmitButtonLoading: Story = {
       [
         cell(
           'lg — loading + filled',
-          /*html*/ `<cor-search-input-rectangular size="lg" value="permis de conducere" loading with-button></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="lg" value="permis de conducere" loading with-button></cor-search-input-rectangular>`,
         ),
         cell(
           'md — loading + filled',
-          /*html*/ `<cor-search-input-rectangular size="md" value="cazier judiciar" loading with-button></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="md" value="cazier judiciar" loading with-button></cor-search-input-rectangular>`,
         ),
       ].join(''),
     ),
@@ -326,8 +327,8 @@ export const WithSubmitButtonLoading: Story = {
     docs: {
       source: {
         code: [
-          '<cor-search-input-rectangular size="lg" value="permis de conducere" loading with-button></cor-search-input-rectangular>',
-          '<cor-search-input-rectangular size="md" value="cazier judiciar" loading with-button></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="lg" value="permis de conducere" loading with-button></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="md" value="cazier judiciar" loading with-button></cor-search-input-rectangular>',
         ].join('\n'),
       },
     },
@@ -341,11 +342,11 @@ export const WithValue: Story = {
       [
         cell(
           'md',
-          /*html*/ `<cor-search-input-rectangular size="md" value="cazier judiciar"></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="md" value="cazier judiciar"></cor-search-input-rectangular>`,
         ),
         cell(
           'lg',
-          /*html*/ `<cor-search-input-rectangular size="lg" value="cazier judiciar"></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="lg" value="cazier judiciar"></cor-search-input-rectangular>`,
         ),
       ].join(''),
     ),
@@ -354,8 +355,8 @@ export const WithValue: Story = {
     docs: {
       source: {
         code: [
-          '<cor-search-input-rectangular size="md" value="cazier judiciar"></cor-search-input-rectangular>',
-          '<cor-search-input-rectangular size="lg" value="cazier judiciar"></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="md" value="cazier judiciar"></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="lg" value="cazier judiciar"></cor-search-input-rectangular>',
         ].join('\n'),
       },
     },
@@ -369,13 +370,13 @@ export const WithCustomIcon: Story = {
       [
         cell(
           'icon-start slot override',
-          /*html*/ `<cor-search-input-rectangular size="lg" placeholder="Filtrează…">
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="lg" placeholder="Filtrează…">
             <cor-icon slot="icon-start" name="filter" size="24"></cor-icon>
           </cor-search-input-rectangular>`,
         ),
         cell(
           'iconName prop override',
-          /*html*/ `<cor-search-input-rectangular size="lg" icon-name="document" placeholder="Caută în documente"></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="lg" icon-name="document" placeholder="Caută în documente"></cor-search-input-rectangular>`,
         ),
       ].join(''),
     ),
@@ -384,8 +385,8 @@ export const WithCustomIcon: Story = {
     docs: {
       source: {
         code: [
-          '<cor-search-input-rectangular size="lg" placeholder="Filtrează…"><cor-icon slot="icon-start" name="filter" size="24"></cor-icon></cor-search-input-rectangular>',
-          '<cor-search-input-rectangular size="lg" icon-name="document" placeholder="Caută în documente"></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="lg" placeholder="Filtrează…"><cor-icon slot="icon-start" name="filter" size="24"></cor-icon></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="lg" icon-name="document" placeholder="Caută în documente"></cor-search-input-rectangular>',
         ].join('\n'),
       },
     },
@@ -399,11 +400,11 @@ export const WithoutClearButton: Story = {
       [
         cell(
           'clearable=false (persistent filter)',
-          /*html*/ `<cor-search-input-rectangular size="lg" value="serviciu activ" clearable="false"></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="lg" value="serviciu activ" clearable="false"></cor-search-input-rectangular>`,
         ),
         cell(
           'default (clear visible)',
-          /*html*/ `<cor-search-input-rectangular size="lg" value="serviciu activ"></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="lg" value="serviciu activ"></cor-search-input-rectangular>`,
         ),
       ].join(''),
     ),
@@ -412,8 +413,8 @@ export const WithoutClearButton: Story = {
     docs: {
       source: {
         code: [
-          '<cor-search-input-rectangular size="lg" value="serviciu activ" clearable="false"></cor-search-input-rectangular>',
-          '<cor-search-input-rectangular size="lg" value="serviciu activ"></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="lg" value="serviciu activ" clearable="false"></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="lg" value="serviciu activ"></cor-search-input-rectangular>',
         ].join('\n'),
       },
     },
@@ -483,7 +484,7 @@ export const EdgeCases: Story = {
       [
         cell(
           'long value truncation',
-          /*html*/ `<cor-search-input-rectangular size="lg" value="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services"></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="lg" value="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services"></cor-search-input-rectangular>`,
         ),
         cell(
           'long helper truncation (two lines)',
@@ -495,7 +496,7 @@ export const EdgeCases: Story = {
         ),
         cell(
           'mid-typing (with value, focused)',
-          /*html*/ `<cor-search-input-rectangular size="md" value="permis"></cor-search-input-rectangular>`,
+          /*html*/ `<cor-search-input-rectangular aria-label="Caută" size="md" value="permis"></cor-search-input-rectangular>`,
         ),
       ].join(''),
     ),
@@ -504,7 +505,7 @@ export const EdgeCases: Story = {
     docs: {
       source: {
         code: [
-          '<cor-search-input-rectangular size="lg" value="…long value…"></cor-search-input-rectangular>',
+          '<cor-search-input-rectangular aria-label="Caută" size="lg" value="…long value…"></cor-search-input-rectangular>',
           '<cor-search-input-rectangular size="lg" label="Căutare" helper-text="…long helper…"></cor-search-input-rectangular>',
           '<cor-search-input-rectangular size="md" aria-label="Caută" placeholder="Caută…"></cor-search-input-rectangular>',
         ].join('\n'),

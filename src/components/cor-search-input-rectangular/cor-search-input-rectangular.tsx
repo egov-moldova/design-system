@@ -172,15 +172,18 @@ export class CorSearchInputRectangular {
 
   /**
    * Accessible name. Mirrors to the internal control's `aria-label` when no
-   * visible label is present.
+   * visible label is present. Captured into `resolvedAriaLabel` on mount and
+   * the host attribute is stripped to avoid Stencil's auto-reflection loop.
    */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop() ariaLabel?: string;
 
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
+  @State() private hasIconStartSlot: boolean = false;
   @State() private hasIconEndSlot: boolean = false;
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
+  @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLCorSearchInputRectangularElement;
 
@@ -212,8 +215,41 @@ export class CorSearchInputRectangular {
   private nativeEl?: HTMLInputElement;
 
   componentWillLoad() {
+    this.captureAriaLabel();
     this.initialValue = this.value;
     this.internals.setFormValue(this.value, this.value);
+    this.syncValidity();
+  }
+
+  /**
+   * Stencil auto-reflects `@Prop()` values back onto the host attribute. For
+   * `aria-label` that creates an observer loop (host attr → prop → host attr).
+   * Capture the consumer-provided value into a state field, then strip the
+   * attribute so the loop never fires.
+   */
+  private captureAriaLabel() {
+    const attr = this.host.getAttribute('aria-label');
+    if (attr) {
+      this.resolvedAriaLabel = attr;
+      this.host.removeAttribute('aria-label');
+    } else if (this.ariaLabel) {
+      this.resolvedAriaLabel = this.ariaLabel;
+    }
+  }
+
+  /**
+   * Reflects required + value into `ElementInternals` so the host participates
+   * in native form validation. Anchored on the native input so a11y focus
+   * lands on the visible control.
+   */
+  private syncValidity() {
+    if (!this.internals) return;
+    const value = (this.value ?? '').trim();
+    if (this.required && value.length === 0) {
+      this.internals.setValidity({ valueMissing: true }, 'Completați acest câmp.', this.nativeEl);
+      return;
+    }
+    this.internals.setValidity({});
   }
 
   @Watch('variant')
@@ -244,6 +280,21 @@ export class CorSearchInputRectangular {
   handleValueChange(next: string) {
     const value = next ?? '';
     this.internals.setFormValue(value, value);
+    this.syncValidity();
+  }
+
+  @Watch('required')
+  handleRequiredChange() {
+    this.syncValidity();
+  }
+
+  @Watch('ariaLabel')
+  handleAriaLabelChange(next: string | undefined) {
+    // Guarded against the strip-from-host self-trigger (next will be null/empty
+    // when captureAriaLabel() removes the attribute).
+    if (next && next.length > 0) {
+      this.resolvedAriaLabel = next;
+    }
   }
 
   formDisabledCallback(disabled: boolean) {
@@ -253,12 +304,14 @@ export class CorSearchInputRectangular {
   formResetCallback() {
     this.value = this.initialValue;
     this.internals.setFormValue(this.initialValue, this.initialValue);
+    this.syncValidity();
   }
 
   formStateRestoreCallback(state: string | File | FormData | null) {
     if (typeof state === 'string') {
       this.value = state;
       this.internals.setFormValue(state, state);
+      this.syncValidity();
     }
   }
 
@@ -267,6 +320,9 @@ export class CorSearchInputRectangular {
   };
   private onHelperSlotChange = (ev: Event) => {
     this.hasHelperSlot = this.slotHasContent(ev);
+  };
+  private onIconStartSlotChange = (ev: Event) => {
+    this.hasIconStartSlot = this.slotHasContent(ev);
   };
   private onIconEndSlotChange = (ev: Event) => {
     this.hasIconEndSlot = this.slotHasContent(ev);
@@ -383,7 +439,7 @@ export class CorSearchInputRectangular {
     const labelText = this.label?.trim();
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
-    const ariaLabelAttr = !this.hasVisibleLabel() ? this.ariaLabel : undefined;
+    const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
     const iconSize = this.size === 'lg' ? 24 : 20;
     const submitIconSize: 16 | 20 = this.size === 'lg' ? 20 : 16;
     const spinnerSize = this.size === 'lg' ? 'md' : 'sm';
@@ -407,9 +463,8 @@ export class CorSearchInputRectangular {
       <Host class={hostClasses}>
         <label class="label" htmlFor={`search-input-${this.instanceId}`} id={this.labelId} part="label">
           <span class="label-text">
-            <slot name="label" onSlotchange={this.onLabelSlotChange}>
-              {labelText}
-            </slot>
+            {this.hasLabelSlot ? null : labelText}
+            <slot name="label" onSlotchange={this.onLabelSlotChange} />
           </span>
           {this.required ? (
             <span class="required-mark" aria-hidden="true" part="required-mark">
@@ -420,9 +475,8 @@ export class CorSearchInputRectangular {
 
         <div class="control" part="control">
           <span class="control-icon control-icon-start" aria-hidden="true">
-            <slot name="icon-start">
-              <cor-icon name={this.iconName} size={iconSize} />
-            </slot>
+            {this.hasIconStartSlot ? null : <cor-icon name={this.iconName} size={iconSize} />}
+            <slot name="icon-start" onSlotchange={this.onIconStartSlotChange} />
           </span>
 
           <input
@@ -445,8 +499,6 @@ export class CorSearchInputRectangular {
             aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
             aria-describedby={this.describedBy()}
             aria-invalid={this.invalid ? 'true' : null}
-            aria-required={this.required ? 'true' : null}
-            aria-disabled={effectivelyDisabled ? 'true' : null}
             aria-busy={this.loading ? 'true' : null}
             onInput={this.handleInput}
             onChange={this.handleChange}
@@ -503,9 +555,8 @@ export class CorSearchInputRectangular {
         ) : this.hasHelperMessage() ? (
           <div class="assistive assistive-helper" id={this.helperId} part="helper">
             <span class="assistive-text">
-              <slot name="helper" onSlotchange={this.onHelperSlotChange}>
-                {helperText}
-              </slot>
+              {this.hasHelperSlot ? null : helperText}
+              <slot name="helper" onSlotchange={this.onHelperSlotChange} />
             </span>
           </div>
         ) : null}
