@@ -95,6 +95,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+    panel.querySelectorAll('[data-close-menu]').forEach((closeBtn) => {
+      closeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeMenu();
+      });
+    });
+
     document.addEventListener('click', (e) => {
       if (!panel.classList.contains('is-active')) return;
       if (!e.target.closest(panel) && !e.target.closest(toggle)) {
