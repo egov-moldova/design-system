@@ -259,7 +259,7 @@ export namespace Components {
      */
     interface MudBadge {
         /**
-          * Override the accessible name. When omitted, `numbered` uses the visible count text and `dot` falls back to "Notification" (so screen readers announce something meaningful for empty dots).
+          * Override the accessible name. When omitted, `numbered` uses the visible count text and `dot` falls back to "Notification" (so screen readers announce something meaningful for empty dots). Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -272,7 +272,7 @@ export namespace Components {
          */
         "max": number;
         /**
-          * Size rung — `sm` (12 px) for tight overlays, `md` (16 px) for default.
+          * Size rung — five-step scale matching Figma masters `551:17421`:  - `xs` (8 px)  — dot-only presence pip  - `sm` (12 px) — compact dot or numbered  - `md` (16 px) — default numbered/dot (Figma Caption Medium 12/16)  - `lg` (20 px) — emphasised numbered (Figma Caption Medium 12/16)  - `xl` (24 px) — large numbered (Figma Body/Small Medium 14/20)
           * @default 'md'
          */
         "size": BadgeSize;
@@ -4616,7 +4616,7 @@ declare namespace LocalJSX {
      */
     interface MudBadge {
         /**
-          * Override the accessible name. When omitted, `numbered` uses the visible count text and `dot` falls back to "Notification" (so screen readers announce something meaningful for empty dots).
+          * Override the accessible name. When omitted, `numbered` uses the visible count text and `dot` falls back to "Notification" (so screen readers announce something meaningful for empty dots). Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -4629,7 +4629,7 @@ declare namespace LocalJSX {
          */
         "max"?: number;
         /**
-          * Size rung — `sm` (12 px) for tight overlays, `md` (16 px) for default.
+          * Size rung — five-step scale matching Figma masters `551:17421`:  - `xs` (8 px)  — dot-only presence pip  - `sm` (12 px) — compact dot or numbered  - `md` (16 px) — default numbered/dot (Figma Caption Medium 12/16)  - `lg` (20 px) — emphasised numbered (Figma Caption Medium 12/16)  - `xl` (24 px) — large numbered (Figma Body/Small Medium 14/20)
           * @default 'md'
          */
         "size"?: BadgeSize;

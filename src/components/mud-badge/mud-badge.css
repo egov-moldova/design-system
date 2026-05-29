@@ -29,7 +29,15 @@
   vertical-align: middle;
 }
 
-/* Sizes */
+/* Sizes — five-step scale matching Figma masters 551:17421. */
+:host([size='xs']) {
+  --_size: var(--badge-size-xs);
+  --_min-width: var(--badge-min-width-xs);
+  --_padding-inline: var(--badge-padding-inline-xs);
+  --_font-size: var(--badge-font-size-xs);
+  --_line-height: var(--badge-line-height-xs);
+}
+
 :host([size='sm']) {
   --_size: var(--badge-size-sm);
   --_min-width: var(--badge-min-width-sm);
@@ -44,6 +52,22 @@
   --_padding-inline: var(--badge-padding-inline-md);
   --_font-size: var(--badge-font-size-md);
   --_line-height: var(--badge-line-height-md);
+}
+
+:host([size='lg']) {
+  --_size: var(--badge-size-lg);
+  --_min-width: var(--badge-min-width-lg);
+  --_padding-inline: var(--badge-padding-inline-lg);
+  --_font-size: var(--badge-font-size-lg);
+  --_line-height: var(--badge-line-height-lg);
+}
+
+:host([size='xl']) {
+  --_size: var(--badge-size-xl);
+  --_min-width: var(--badge-min-width-xl);
+  --_padding-inline: var(--badge-padding-inline-xl);
+  --_font-size: var(--badge-font-size-xl);
+  --_line-height: var(--badge-line-height-xl);
 }
 
 /* Variants */
