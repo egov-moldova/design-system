@@ -39,7 +39,7 @@ const meta: Meta<BadgeArgs> = {
     size: {
       control: 'select',
       options: SIZES,
-      description: 'Size rung. `sm` = 12 px, `md` = 16 px.',
+      description: 'Size rung — `xs` 8 px (dot only), `sm` 12, `md` 16, `lg` 20, `xl` 24 px.',
       table: { defaultValue: { summary: 'md' } },
     },
     count: {
@@ -133,10 +133,10 @@ export const AllSizes: Story = {
         size => /*html*/ `
         <div style="display: flex; flex-direction: column; align-items: center; gap: var(--spacing-8);">
           <div style="display: flex; align-items: center; gap: var(--spacing-12);">
-            <mud-badge type="numbered" variant="danger" size="${size}" count="3"></mud-badge>
+            ${size === 'xs' ? '' : /*html*/ `<mud-badge type="numbered" variant="danger" size="${size}" count="3"></mud-badge>`}
             <mud-badge type="dot" variant="danger" size="${size}"></mud-badge>
           </div>
-          <span style="${cellLabelStyle}">${size}</span>
+          <span style="${cellLabelStyle}">${size}${size === 'xs' ? ' (dot only)' : ''}</span>
         </div>`,
       ).join('')}
     </div>
@@ -145,10 +145,15 @@ export const AllSizes: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: SIZES.flatMap(size => [
-          `<mud-badge type="numbered" variant="danger" size="${size}" count="3"></mud-badge>`,
-          `<mud-badge type="dot" variant="danger" size="${size}"></mud-badge>`,
-        ]).join('\n'),
+        // xs is a dot-only size in Figma — numbered starts at sm.
+        code: SIZES.flatMap(size =>
+          size === 'xs'
+            ? [`<mud-badge type="dot" variant="danger" size="${size}"></mud-badge>`]
+            : [
+                `<mud-badge type="numbered" variant="danger" size="${size}" count="3"></mud-badge>`,
+                `<mud-badge type="dot" variant="danger" size="${size}"></mud-badge>`,
+              ],
+        ).join('\n'),
       },
     },
   },

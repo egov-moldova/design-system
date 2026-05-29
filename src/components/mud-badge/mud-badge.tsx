@@ -7,7 +7,8 @@ import type { BadgeSize, BadgeType, BadgeVariant } from './mud-badge.types';
  *
  * Two visual forms:
  *  - `numbered` (default): shows a numeric counter inside a rounded pill.
- *  - `dot`: a tiny solid circle used for "unread" presence indication.
+ *  - `dot`: a presence circle for "unread" indication. `xs`/`sm` are solid;
+ *    `md`/`lg`/`xl` carry a small centered inner pip (per Figma 551:18330).
  *
  * Five color variants map to the project's semantic token roles.
  * Designed to overlay parent elements (avatars, icon buttons, list items)
@@ -39,7 +40,7 @@ export class MudBadge {
 
   /**
    * Size rung — five-step scale matching Figma masters `551:17421`:
-   *  - `xs` (8 px)  — dot-only presence pip
+   *  - `xs` (8 px)  — dot-only presence pip (e.g. dropdown row indicator)
    *  - `sm` (12 px) — compact dot or numbered
    *  - `md` (16 px) — default numbered/dot (Figma Caption Medium 12/16)
    *  - `lg` (20 px) — emphasised numbered (Figma Caption Medium 12/16)
@@ -120,9 +121,13 @@ export class MudBadge {
   }
 
   render() {
-    const isDot = this.type === 'dot';
+    // `xs` is a dot-only rung in Figma (8 px can't hold a count), so a numbered
+    // xs always degrades to a solid dot rather than clipping the digits.
+    const isDot = this.type === 'dot' || this.size === 'xs';
     const displayText = isDot ? '' : this.formatCount();
     const accessibleName = this.resolveAccessibleName(displayText);
+    // Per Figma 551:18330, md/lg/xl dots carry a centered inner pip; xs/sm are solid.
+    const showInnerDot = isDot && (this.size === 'md' || this.size === 'lg' || this.size === 'xl');
 
     return (
       <Host role="status" aria-live="polite" aria-label={accessibleName}>
@@ -131,6 +136,7 @@ export class MudBadge {
             {displayText}
           </span>
         )}
+        {showInnerDot && <span class="badge-dot" aria-hidden="true"></span>}
       </Host>
     );
   }

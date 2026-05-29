@@ -73,6 +73,36 @@ describe('mud-badge', () => {
     expect(root?.shadowRoot?.querySelector('.badge-count')).toBeFalsy();
   });
 
+  it('renders a centered inner pip for md/lg/xl dot badges (Figma 551:18330)', async () => {
+    for (const size of ['md', 'lg', 'xl'] as const) {
+      const { root } = await render(<mud-badge type="dot" size={size} />);
+      const pip = root?.shadowRoot?.querySelector('.badge-dot');
+      expect(pip).toBeTruthy();
+      expect(pip?.getAttribute('aria-hidden')).toBe('true');
+    }
+  });
+
+  it('omits the inner pip for xs/sm dot badges (solid pips per Figma)', async () => {
+    for (const size of ['xs', 'sm'] as const) {
+      const { root } = await render(<mud-badge type="dot" size={size} />);
+      expect(root?.shadowRoot?.querySelector('.badge-dot')).toBeFalsy();
+    }
+  });
+
+  it('never renders an inner pip for numbered badges', async () => {
+    const { root } = await render(<mud-badge type="numbered" size="xl" count={3} />);
+    expect(root?.shadowRoot?.querySelector('.badge-dot')).toBeFalsy();
+  });
+
+  it('degrades numbered xs to a solid dot (xs is dot-only per Figma)', async () => {
+    const { root } = await render(<mud-badge type="numbered" size="xs" count={5} />);
+    // No count text and no inner pip — renders as a solid 8px dot.
+    expect(root?.shadowRoot?.querySelector('.badge-count')).toBeFalsy();
+    expect(root?.shadowRoot?.querySelector('.badge-dot')).toBeFalsy();
+    // Still announces a meaningful accessible name.
+    expect(root?.getAttribute('aria-label')).toBe('Notification');
+  });
+
   it('uses the visible count as the accessible name when no ariaLabel is set', async () => {
     const { root } = await render(<mud-badge count={3} />);
     expect(root?.getAttribute('aria-label')).toBe('3');

@@ -27,6 +27,13 @@
       "$value": "{borderRadius.full}",
       "$type": "dimension"
     },
+    "dot": {
+      "size": {
+        "md": { "$value": "{spacing.2}", "$type": "dimension", "$comment": "Inner presence pip, dot type only, per Figma 53:660 (2px)." },
+        "lg": { "$value": "3px", "$type": "dimension", "$comment": "Inner presence pip per Figma 53:664 (3px; no 3px spacing primitive exists)." },
+        "xl": { "$value": "3px", "$type": "dimension", "$comment": "Inner presence pip per Figma 797:43133 (3px)." }
+      }
+    },
     "fontSize": {
       "xs": { "$value": "{fontSize.10}", "$type": "dimension", "$comment": "Dot only — fontSize is unused but kept for API symmetry." },
       "sm": { "$value": "{fontSize.10}", "$type": "dimension" },
@@ -81,12 +88,14 @@
         "$type": "color"
       },
       "positive": {
-        "$value": "{color.text.base-inverse.on-color}",
-        "$type": "color"
+        "$value": "{color.text.base.default-on-color}",
+        "$type": "color",
+        "$comment": "Dark text — white on #039855 is 3.73:1 (fails WCAG AA); #121212 gives ~4.7:1."
       },
       "warning": {
-        "$value": "{color.text.base-inverse.on-color}",
-        "$type": "color"
+        "$value": "{color.text.base.default-on-color}",
+        "$type": "color",
+        "$comment": "Dark text on amber per Figma accent badge — white is 1.84:1 (fails AA); #121212 gives ~9.9:1."
       },
       "danger": {
         "$value": "{color.text.base-inverse.on-color}",

@@ -248,7 +248,8 @@ export namespace Components {
      * Badge — small, non-interactive status / count indicator.
      * Two visual forms:
      *  - `numbered` (default): shows a numeric counter inside a rounded pill.
-     *  - `dot`: a tiny solid circle used for "unread" presence indication.
+     *  - `dot`: a presence circle for "unread" indication. `xs`/`sm` are solid;
+     *    `md`/`lg`/`xl` carry a small centered inner pip (per Figma 551:18330).
      * Five color variants map to the project's semantic token roles.
      * Designed to overlay parent elements (avatars, icon buttons, list items)
      * via consumer-controlled positioning — the badge itself just paints.
@@ -272,7 +273,7 @@ export namespace Components {
          */
         "max": number;
         /**
-          * Size rung — five-step scale matching Figma masters `551:17421`:  - `xs` (8 px)  — dot-only presence pip  - `sm` (12 px) — compact dot or numbered  - `md` (16 px) — default numbered/dot (Figma Caption Medium 12/16)  - `lg` (20 px) — emphasised numbered (Figma Caption Medium 12/16)  - `xl` (24 px) — large numbered (Figma Body/Small Medium 14/20)
+          * Size rung — five-step scale matching Figma masters `551:17421`:  - `xs` (8 px)  — dot-only presence pip (e.g. dropdown row indicator)  - `sm` (12 px) — compact dot or numbered  - `md` (16 px) — default numbered/dot (Figma Caption Medium 12/16)  - `lg` (20 px) — emphasised numbered (Figma Caption Medium 12/16)  - `xl` (24 px) — large numbered (Figma Body/Small Medium 14/20)
           * @default 'md'
          */
         "size": BadgeSize;
@@ -3189,7 +3190,8 @@ declare global {
      * Badge — small, non-interactive status / count indicator.
      * Two visual forms:
      *  - `numbered` (default): shows a numeric counter inside a rounded pill.
-     *  - `dot`: a tiny solid circle used for "unread" presence indication.
+     *  - `dot`: a presence circle for "unread" indication. `xs`/`sm` are solid;
+     *    `md`/`lg`/`xl` carry a small centered inner pip (per Figma 551:18330).
      * Five color variants map to the project's semantic token roles.
      * Designed to overlay parent elements (avatars, icon buttons, list items)
      * via consumer-controlled positioning — the badge itself just paints.
@@ -4605,7 +4607,8 @@ declare namespace LocalJSX {
      * Badge — small, non-interactive status / count indicator.
      * Two visual forms:
      *  - `numbered` (default): shows a numeric counter inside a rounded pill.
-     *  - `dot`: a tiny solid circle used for "unread" presence indication.
+     *  - `dot`: a presence circle for "unread" indication. `xs`/`sm` are solid;
+     *    `md`/`lg`/`xl` carry a small centered inner pip (per Figma 551:18330).
      * Five color variants map to the project's semantic token roles.
      * Designed to overlay parent elements (avatars, icon buttons, list items)
      * via consumer-controlled positioning — the badge itself just paints.
@@ -4629,7 +4632,7 @@ declare namespace LocalJSX {
          */
         "max"?: number;
         /**
-          * Size rung — five-step scale matching Figma masters `551:17421`:  - `xs` (8 px)  — dot-only presence pip  - `sm` (12 px) — compact dot or numbered  - `md` (16 px) — default numbered/dot (Figma Caption Medium 12/16)  - `lg` (20 px) — emphasised numbered (Figma Caption Medium 12/16)  - `xl` (24 px) — large numbered (Figma Body/Small Medium 14/20)
+          * Size rung — five-step scale matching Figma masters `551:17421`:  - `xs` (8 px)  — dot-only presence pip (e.g. dropdown row indicator)  - `sm` (12 px) — compact dot or numbered  - `md` (16 px) — default numbered/dot (Figma Caption Medium 12/16)  - `lg` (20 px) — emphasised numbered (Figma Caption Medium 12/16)  - `xl` (24 px) — large numbered (Figma Body/Small Medium 14/20)
           * @default 'md'
          */
         "size"?: BadgeSize;
@@ -8405,7 +8408,8 @@ declare module "@stencil/core" {
              * Badge — small, non-interactive status / count indicator.
              * Two visual forms:
              *  - `numbered` (default): shows a numeric counter inside a rounded pill.
-             *  - `dot`: a tiny solid circle used for "unread" presence indication.
+             *  - `dot`: a presence circle for "unread" indication. `xs`/`sm` are solid;
+             *    `md`/`lg`/`xl` carry a small centered inner pip (per Figma 551:18330).
              * Five color variants map to the project's semantic token roles.
              * Designed to overlay parent elements (avatars, icon buttons, list items)
              * via consumer-controlled positioning — the badge itself just paints.
