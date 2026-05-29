@@ -202,7 +202,10 @@
   block-size: var(--_icon-end-clear-size);
   padding: 0;
   margin: 0;
-  background: transparent;
+  /* Per Figma 933:29146 — the clear button carries a subtle gray oval at rest
+     in the Filled state. The transparent-inactive hardcode in Figma maps to
+     base.tertiary in our semantic system. */
+  background: var(--search-input-rectangular-icon-end-clear-background-default);
   border: 0;
   border-radius: var(--search-input-rectangular-icon-end-clear-border-radius);
   color: var(--search-input-rectangular-icon-end-clear-color-default);
