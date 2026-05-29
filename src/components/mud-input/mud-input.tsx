@@ -199,13 +199,17 @@ export class MudInput {
       message = this.errorText && this.errorText.length > 0 ? this.errorText : 'Acest câmp este obligatoriu.';
     } else if (this.nativeInput) {
       // Mirror native HTML5 constraint validation (pattern / minLength / maxLength / typeMismatch).
+      // `validity` is always present in a real browser; the mock DOM used in unit
+      // tests omits it, so guard before dereferencing — no native constraint to mirror.
       const nv = this.nativeInput.validity;
-      if (nv.patternMismatch) flags.patternMismatch = true;
-      if (nv.tooShort) flags.tooShort = true;
-      if (nv.tooLong) flags.tooLong = true;
-      if (nv.typeMismatch) flags.typeMismatch = true;
-      if (nv.patternMismatch || nv.tooShort || nv.tooLong || nv.typeMismatch) {
-        message = this.errorText && this.errorText.length > 0 ? this.errorText : this.nativeInput.validationMessage;
+      if (nv) {
+        if (nv.patternMismatch) flags.patternMismatch = true;
+        if (nv.tooShort) flags.tooShort = true;
+        if (nv.tooLong) flags.tooLong = true;
+        if (nv.typeMismatch) flags.typeMismatch = true;
+        if (nv.patternMismatch || nv.tooShort || nv.tooLong || nv.typeMismatch) {
+          message = this.errorText && this.errorText.length > 0 ? this.errorText : this.nativeInput.validationMessage;
+        }
       }
     }
 

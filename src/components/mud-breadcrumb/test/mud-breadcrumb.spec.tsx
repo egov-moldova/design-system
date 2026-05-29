@@ -491,6 +491,24 @@ describe('mud-breadcrumb', () => {
 });
 
 describe('mud-breadcrumb-item', () => {
+  let warnSpy: ReturnType<typeof vi.spyOn>;
+  let fetchSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    fetchSpy = vi.spyOn(globalThis, 'fetch').mockImplementation(async () => {
+      return new Response('<svg></svg>', {
+        status: 200,
+        headers: { 'Content-Type': 'image/svg+xml' },
+      });
+    });
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
+    fetchSpy.mockRestore();
+  });
+
   it('renders as an anchor when href is set', async () => {
     const { root } = await render(<mud-breadcrumb-item href="/acasa">Acasă</mud-breadcrumb-item>);
     expect(root?.shadowRoot?.querySelector('a.crumb')).toBeTruthy();
