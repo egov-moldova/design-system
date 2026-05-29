@@ -173,25 +173,24 @@ describe('cor-input', () => {
   });
 
   describe('disabled + readonly behavior', () => {
-    it('passes disabled through to the native input', async () => {
+    it('passes disabled through to the native input (native attr only — no redundant aria-disabled)', async () => {
       const { root } = await render(<cor-input label="x" disabled></cor-input>);
       const native = queryNative(root);
       expect(native?.disabled).toBe(true);
-      expect(native?.getAttribute('aria-disabled')).toBe('true');
+      expect(native?.hasAttribute('aria-disabled')).toBe(false);
     });
 
-    it('passes readonly through to the native input', async () => {
+    it('passes readonly through to the native input (native attr only — no redundant aria-readonly)', async () => {
       const { root } = await render(<cor-input label="x" readonly value="x"></cor-input>);
       const native = queryNative(root);
       expect(native?.readOnly).toBe(true);
-      expect(native?.getAttribute('aria-readonly')).toBe('true');
+      expect(native?.hasAttribute('aria-readonly')).toBe(false);
     });
 
-    it('readonly is distinct from disabled — input stays focusable and not aria-disabled', async () => {
+    it('readonly is distinct from disabled — input stays focusable', async () => {
       const { root } = await render(<cor-input label="x" readonly value="x"></cor-input>);
       const native = queryNative(root);
       expect(native?.disabled).toBe(false);
-      expect(native?.getAttribute('aria-disabled')).toBeNull();
       expect(root?.classList.contains('is-readonly')).toBe(true);
       expect(root?.classList.contains('is-disabled')).toBe(false);
     });
@@ -216,9 +215,11 @@ describe('cor-input', () => {
       expect(label?.id).toBe(id);
     });
 
-    it('exposes aria-required when required', async () => {
+    it('marks the native input as required (native attr only — no redundant aria-required)', async () => {
       const { root } = await render(<cor-input label="x" required></cor-input>);
-      expect(queryNative(root)?.getAttribute('aria-required')).toBe('true');
+      const native = queryNative(root);
+      expect(native?.required).toBe(true);
+      expect(native?.hasAttribute('aria-required')).toBe(false);
     });
 
     it('exposes aria-invalid when invalid', async () => {
@@ -312,5 +313,56 @@ describe('cor-input', () => {
         warn.mockRestore();
       },
     );
+  });
+
+  describe('form validity', () => {
+    type InstanceWithInternals = { internals: ElementInternals };
+
+    it('sets valueMissing on transition from filled to empty when required', async () => {
+      const { root } = await render(<cor-input label="x" required value="foo"></cor-input>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { value: string }).value = '';
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toEqual({ valueMissing: true });
+      spy.mockRestore();
+    });
+
+    it('uses error-text as the validation message when required + empty', async () => {
+      const { root } = await render(
+        <cor-input label="x" required error-text="Câmp obligatoriu" value="foo"></cor-input>,
+      );
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { value: string }).value = '';
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[1]).toBe('Câmp obligatoriu');
+      spy.mockRestore();
+    });
+
+    it('re-syncs validity when required toggles', async () => {
+      const { root } = await render(<cor-input label="x" value=""></cor-input>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { required: boolean }).required = true;
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toEqual({ valueMissing: true });
+      spy.mockRestore();
+    });
+  });
+
+  describe('aria-label capture', () => {
+    it('puts aria-label on the inner input when no visible label is present', async () => {
+      const { root } = await render(<cor-input ariaLabel="Search"></cor-input>);
+      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Search');
+    });
+
+    it('omits aria-label on the input when a visible label is provided', async () => {
+      const { root } = await render(<cor-input label="Email" ariaLabel="Other"></cor-input>);
+      expect(queryNative(root)?.hasAttribute('aria-label')).toBe(false);
+    });
   });
 });

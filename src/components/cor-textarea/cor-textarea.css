@@ -81,7 +81,9 @@
   font-family: var(--input-label-font-family);
   font-size: var(--input-label-font-size);
   line-height: var(--input-label-line-height);
-  font-weight: var(--input-label-font-weight);
+  /* Textarea-specific override: Figma 378:17677 uses Onest Regular for the label,
+     while cor-input ships Medium. */
+  font-weight: var(--textarea-label-font-weight);
   color: var(--input-label-color-default);
   inline-size: 100%;
   min-inline-size: 0;

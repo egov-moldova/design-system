@@ -37,7 +37,13 @@
       "Bash(node /Users/vitalie/corlab-projects/age-design/scripts/audit/02-stencil-antipatterns.mjs cor-service-button --json)",
       "Bash(python3 -c \"import json, sys; d = json.load\\(sys.stdin\\); hits = [f for f in d.get\\('findings', []\\) if 'PROP-CONTENT-SLOT-FALLBACK' in f.get\\('code',''\\)]; print\\(f'cor-service-button: {len\\(hits\\)} hit\\(s\\)'\\)\")",
       "mcp__playwright__browser_snapshot",
-      "Bash(node /Users/vitalie/corlab-projects/age-design/scripts/audit/run-all.mjs cor-radio --json)"
+      "Bash(node /Users/vitalie/corlab-projects/age-design/scripts/audit/run-all.mjs cor-radio --json)",
+      "mcp__playwright__browser_take_screenshot",
+      "mcp__image-compare__compare_images",
+      "mcp__figma__get_screenshot",
+      "Read(//tmp/**)",
+      "Read(//private/tmp/**)",
+      "mcp__figma__get_variable_defs"
     ]
   },
   "hooks": {

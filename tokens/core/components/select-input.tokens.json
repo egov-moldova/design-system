@@ -41,11 +41,11 @@
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
       "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
       "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
-      "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight", "$comment": "Per Figma 454:4192 — Label uses Onest Regular (fw-regular 400), not medium." },
       "gap": { "$value": "{spacing.4}", "$type": "dimension" },
       "color": {
         "default": { "$value": "{color.text.base.secondary}", "$type": "color" },
-        "disabled": { "$value": "{color.text.disabled.on-disabled}", "$type": "color" }
+        "disabled": { "$value": "{color.text.base.secondary}", "$type": "color", "$comment": "Stays at base.secondary in disabled state; on-disabled (#b2b2b2) fails WCAG AA on the disabled grey surface. Figma's Disabled SelectInput keeps the label dark." }
       },
       "requiredMark": {
         "size": { "$value": "{spacing.12}", "$type": "dimension" },
@@ -117,40 +117,40 @@
     },
     "listbox": {
       "background": { "$value": "{color.background.base.default}", "$type": "color" },
-      "borderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" },
-      "borderWidth": { "$value": "{borderWidth.1}", "$type": "dimension" },
+      "borderRadius": { "$value": "{borderRadius.16}", "$type": "dimension", "$comment": "Figma selection-menu 172:3093 uses border-radius/16." },
+      "borderWidth": { "$value": "0px", "$type": "dimension", "$comment": "Figma selection-menu has no border — depth comes from dropShadow.300 only." },
       "borderColor": { "$value": "{color.border.base.default}", "$type": "color" },
-      "padding": { "$value": "{spacing.4}", "$type": "dimension" },
-      "gap": { "$value": "{spacing.2}", "$type": "dimension" },
+      "padding": { "$value": "{spacing.8}", "$type": "dimension", "$comment": "Figma selection-menu uses spacing/8 around the option list." },
+      "gap": { "$value": "{spacing.4}", "$type": "dimension", "$comment": "Figma selection-menu uses spacing/4 between options." },
       "marginBlockStart": { "$value": "{spacing.4}", "$type": "dimension" },
       "shadow": { "$value": "{dropShadow.300}", "$type": "string" },
       "maxBlockSize": { "$value": "320px", "$type": "dimension" }
     },
     "option": {
       "minBlockSize": {
-        "md": { "$value": "{spacing.32}", "$type": "dimension" },
-        "lg": { "$value": "{spacing.40}", "$type": "dimension" }
+        "md": { "$value": "{spacing.40}", "$type": "dimension", "$comment": "Figma menu-item-selection: 12px paddingBlock + 16px lh = 40px clickable target." },
+        "lg": { "$value": "{spacing.40}", "$type": "dimension", "$comment": "Floor on the clickable target — intrinsic content (12px paddingBlock × 2 + 20px lh) drives the rendered height to ~44px." }
       },
-      "paddingInline": { "$value": "{spacing.8}", "$type": "dimension" },
-      "paddingBlock": { "$value": "{spacing.6}", "$type": "dimension" },
-      "borderRadius": { "$value": "{borderRadius.4}", "$type": "dimension" },
-      "gap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "paddingInline": { "$value": "{spacing.16}", "$type": "dimension", "$comment": "Figma menu-item-selection uses spacing/16 left/right." },
+      "paddingBlock": { "$value": "{spacing.12}", "$type": "dimension", "$comment": "Figma menu-item-selection uses spacing/12 top/bottom." },
+      "borderRadius": { "$value": "{borderRadius.8}", "$type": "dimension", "$comment": "Figma menu-item-selection uses border-radius/8." },
+      "gap": { "$value": "{spacing.12}", "$type": "dimension", "$comment": "Figma menu-item-selection puts spacing/12 between label and check icon." },
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
       "fontSize": {
         "md": { "$value": "{fontSize.14}", "$type": "dimension" },
-        "lg": { "$value": "{fontSize.16}", "$type": "dimension" }
+        "lg": { "$value": "{fontSize.14}", "$type": "dimension", "$comment": "Figma menu-item-selection renders Body/Small 500 (14px) at both rungs." }
       },
       "lineHeight": {
         "md": { "$value": "{lineHeight.20}", "$type": "dimension" },
-        "lg": { "$value": "{lineHeight.24}", "$type": "dimension" }
+        "lg": { "$value": "{lineHeight.20}", "$type": "dimension" }
       },
       "fontWeight": {
-        "default": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
+        "default": { "$value": "{fontWeight.medium}", "$type": "fontWeight", "$comment": "Figma menu-item-selection Default state uses Onest Medium (500), matching the Selected weight." },
         "selected": { "$value": "{fontWeight.medium}", "$type": "fontWeight" }
       },
       "iconSize": {
-        "md": { "$value": "{spacing.16}", "$type": "dimension" },
-        "lg": { "$value": "{spacing.20}", "$type": "dimension" }
+        "md": { "$value": "{spacing.20}", "$type": "dimension" },
+        "lg": { "$value": "{spacing.24}", "$type": "dimension", "$comment": "Figma menu-item-selection renders the 24/checkmark-small icon at 24px." }
       },
       "background": {
         "default": { "$value": "{color.background.base.default}", "$type": "color" },
@@ -159,9 +159,9 @@
         "selected": { "$value": "{color.background.base.secondary}", "$type": "color" }
       },
       "text": {
-        "default": { "$value": "{color.text.base.default}", "$type": "color" },
+        "default": { "$value": "{color.text.base.secondary}", "$type": "color", "$comment": "Figma menu-item-selection Default text is color.text.base.secondary (#383838)." },
         "selected": { "$value": "{color.text.brand.default}", "$type": "color" },
-        "disabled": { "$value": "{color.text.disabled.on-disabled}", "$type": "color" }
+        "disabled": { "$value": "{color.text.base.tertiary}", "$type": "color", "$comment": "Disabled options keep dark-enough contrast on the white surface; text.disabled.on-disabled fails AA on white." }
       },
       "checkColor": { "$value": "{color.icon.brand.default}", "$type": "color" }
     }

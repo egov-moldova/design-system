@@ -175,7 +175,7 @@
   block-size: var(--_icon-circle-size);
   padding: var(--_icon-circle-padding);
   background-color: var(--_icon-circle-bg);
-  border-radius: 999px;
+  border-radius: var(--border-radius-full);
   color: var(--_icon-glyph-color);
   box-sizing: border-box;
 }
@@ -252,7 +252,7 @@
   font: inherit;
   color: var(--_cta-link-color);
   text-decoration: underline;
-  text-underline-offset: 2px;
+  text-underline-offset: var(--spacing-2);
   cursor: pointer;
 }
 

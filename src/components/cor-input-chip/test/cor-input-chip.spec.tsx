@@ -176,14 +176,25 @@ describe('cor-input-chip', () => {
       expect(control?.getAttribute('aria-labelledby')).toBe(labelEl?.getAttribute('id'));
     });
 
-    it('forwards aria-required when required', async () => {
+    it('forwards aria-required to the inner input when required', async () => {
       const { root } = await render(<cor-input-chip label="x" required></cor-input-chip>);
-      expect(queryControl(root)?.getAttribute('aria-required')).toBe('true');
+      expect(queryNative(root)?.getAttribute('aria-required')).toBe('true');
+      // Group itself no longer carries aria-required (not a supported attr on role="group").
+      expect(queryControl(root)?.hasAttribute('aria-required')).toBe(false);
     });
 
-    it('forwards aria-invalid when invalid', async () => {
+    it('forwards aria-invalid to the inner input when invalid', async () => {
       const { root } = await render(<cor-input-chip label="x" invalid></cor-input-chip>);
-      expect(queryControl(root)?.getAttribute('aria-invalid')).toBe('true');
+      expect(queryNative(root)?.getAttribute('aria-invalid')).toBe('true');
+      // Avoid duplicate aria-invalid on the group wrapper.
+      expect(queryControl(root)?.hasAttribute('aria-invalid')).toBe(false);
+    });
+
+    it('wires aria-describedby on the inner input (not the group)', async () => {
+      const { root } = await render(<cor-input-chip label="x" helper-text="Tip"></cor-input-chip>);
+      const helper = root?.shadowRoot?.querySelector('.assistive-helper');
+      expect(queryNative(root)?.getAttribute('aria-describedby')).toBe(helper?.id);
+      expect(queryControl(root)?.hasAttribute('aria-describedby')).toBe(false);
     });
   });
 
@@ -385,6 +396,62 @@ describe('cor-input-chip', () => {
       pressOnInput(root, 'Enter');
       await flush();
       expect(onAdd).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('aria-label capture', () => {
+    it('puts aria-label on the inner input when no visible label is present', async () => {
+      const { root } = await render(<cor-input-chip aria-label="Destinatari"></cor-input-chip>);
+      // Native label association (<label for=>) is hidden because hasVisibleLabel() is false;
+      // the input carries the accessible name via aria-label.
+      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Destinatari');
+    });
+
+    it('omits aria-label on the input when a visible label is provided', async () => {
+      const { root } = await render(<cor-input-chip label="Destinatari" aria-label="Other"></cor-input-chip>);
+      expect(queryNative(root)?.hasAttribute('aria-label')).toBe(false);
+      // The group is still labelled via aria-labelledby in this case.
+      expect(queryControl(root)?.getAttribute('aria-labelledby')).toBeTruthy();
+    });
+  });
+
+  describe('form validity', () => {
+    type InstanceWithInternals = { internals: ElementInternals };
+
+    it('calls setValidity with valueMissing when required + empty', async () => {
+      const { root } = await render(<cor-input-chip label="x" required></cor-input-chip>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      // Force a re-sync to capture the call shape.
+      (root as unknown as { chips: string[] }).chips = [];
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toEqual({ valueMissing: true });
+      spy.mockRestore();
+    });
+
+    it('clears validity once a chip is added', async () => {
+      const { root } = await render(<cor-input-chip label="x" required></cor-input-chip>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { value: string }).value = 'foo';
+      await flush();
+      pressOnInput(root, 'Enter');
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toEqual({});
+      spy.mockRestore();
+    });
+
+    it('reports the error-text as validation message when required + empty', async () => {
+      const { root } = await render(<cor-input-chip label="x" required error-text="Câmp obligatoriu"></cor-input-chip>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { chips: string[] }).chips = [];
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[1]).toBe('Câmp obligatoriu');
+      spy.mockRestore();
     });
   });
 });

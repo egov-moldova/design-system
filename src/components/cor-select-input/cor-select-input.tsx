@@ -121,9 +121,10 @@ export class CorSelectInput {
 
   /**
    * Accessible name. Mirrors to the trigger's `aria-label` when no visible
-   * label is present.
+   * label is present. Captured into `resolvedAriaLabel` on mount and the
+   * host attribute is stripped to avoid Stencil's auto-reflection loop.
    */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop() ariaLabel?: string;
 
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
@@ -132,6 +133,7 @@ export class CorSelectInput {
   @State() private fieldsetDisabled: boolean = false;
   @State() private highlightedIndex: number = -1;
   @State() private slotOptions: SelectOption[] = [];
+  @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLCorSelectInputElement;
 
@@ -163,15 +165,48 @@ export class CorSelectInput {
   private listboxEl?: HTMLElement;
 
   componentWillLoad() {
+    this.captureAriaLabel();
     this.initialValue = this.value;
     this.refreshSlotOptions();
     this.internals.setFormValue(this.value, this.value);
+    this.syncValidity();
     if (this.open) this.primeHighlight();
+  }
+
+  /**
+   * Stencil auto-reflects `@Prop()` values back onto the host attribute. For
+   * `aria-label` that creates an observer loop (host attr → prop → host attr).
+   * Capture the consumer-provided value into a state field, then strip the
+   * attribute so the loop never fires.
+   */
+  private captureAriaLabel() {
+    const attr = this.host.getAttribute('aria-label');
+    if (attr) {
+      this.resolvedAriaLabel = attr;
+      this.host.removeAttribute('aria-label');
+    } else if (this.ariaLabel) {
+      this.resolvedAriaLabel = this.ariaLabel;
+    }
   }
 
   private primeHighlight() {
     const idx = this.resolvedOptions().findIndex(opt => opt.value === this.value && !opt.disabled);
     this.highlightedIndex = idx >= 0 ? idx : this.firstEnabledIndex();
+  }
+
+  /**
+   * Reflects required + value into `ElementInternals` so the host participates
+   * in native form validation. Anchored on the trigger button so a11y focus
+   * lands on the visible control.
+   */
+  private syncValidity() {
+    if (!this.internals) return;
+    const value = (this.value ?? '').trim();
+    if (this.required && value.length === 0) {
+      this.internals.setValidity({ valueMissing: true }, 'Selectați o opțiune.', this.triggerEl);
+      return;
+    }
+    this.internals.setValidity({});
   }
 
   @Watch('variant')
@@ -202,6 +237,21 @@ export class CorSelectInput {
   handleValueChange(next: string) {
     const value = next ?? '';
     this.internals.setFormValue(value, value);
+    this.syncValidity();
+  }
+
+  @Watch('required')
+  handleRequiredChange() {
+    this.syncValidity();
+  }
+
+  @Watch('ariaLabel')
+  handleAriaLabelChange(next: string | undefined) {
+    // Guarded against the strip-from-host self-trigger (next will be null/empty
+    // when captureAriaLabel() removes the attribute).
+    if (next && next.length > 0) {
+      this.resolvedAriaLabel = next;
+    }
   }
 
   @Watch('options')
@@ -211,6 +261,7 @@ export class CorSelectInput {
 
   @Watch('open')
   handleOpenChange(next: boolean) {
+    // Thin sync only — open/close imperative work lives in setListboxOpen().
     if (next) {
       this.primeHighlight();
       this.corOpen.emit();
@@ -228,12 +279,14 @@ export class CorSelectInput {
   formResetCallback() {
     this.value = this.initialValue;
     this.internals.setFormValue(this.initialValue, this.initialValue);
+    this.syncValidity();
   }
 
   formStateRestoreCallback(state: string | File | FormData | null) {
     if (typeof state === 'string') {
       this.value = state;
       this.internals.setFormValue(state, state);
+      this.syncValidity();
     }
   }
 
@@ -340,23 +393,29 @@ export class CorSelectInput {
     return from;
   }
 
+  /**
+   * Single entrypoint for open/close. Owns the imperative side effects
+   * (focus return on close) so `@Watch('open')` can stay a thin DOM sync.
+   */
+  private setListboxOpen(next: boolean, opts: { returnFocus?: boolean } = {}) {
+    if (this.open === next) return;
+    this.open = next;
+    if (!next && opts.returnFocus !== false) this.triggerEl?.focus();
+  }
+
   private openListbox = () => {
     if (this.isInert() || this.readonly) return;
-    if (!this.open) this.open = true;
+    this.setListboxOpen(true);
   };
 
   private closeListbox = () => {
-    if (this.open) {
-      this.open = false;
-      this.triggerEl?.focus();
-    }
+    this.setListboxOpen(false);
   };
 
   private toggleListbox = (ev?: MouseEvent) => {
     ev?.stopPropagation();
     if (this.isInert() || this.readonly) return;
-    if (this.open) this.closeListbox();
-    else this.openListbox();
+    this.setListboxOpen(!this.open);
   };
 
   private selectIndex(index: number) {
@@ -415,8 +474,9 @@ export class CorSelectInput {
         this.closeListbox();
         break;
       case 'Tab':
-        // Tab closes the listbox but allows focus to move naturally.
-        this.open = false;
+        // Tab closes the listbox but allows focus to move naturally — no focus
+        // return on close.
+        this.setListboxOpen(false, { returnFocus: false });
         break;
     }
   };
@@ -456,7 +516,7 @@ export class CorSelectInput {
     const labelText = this.label?.trim();
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
-    const ariaLabelAttr = !this.hasVisibleLabel() ? this.ariaLabel : undefined;
+    const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
     const opts = this.resolvedOptions();
     const selected = opts.find(opt => opt.value === this.value);
     const triggerText = selected?.label ?? this.placeholder ?? '';
@@ -480,9 +540,8 @@ export class CorSelectInput {
       <Host class={hostClasses}>
         <label class="label" htmlFor={this.triggerId} id={this.labelId} part="label">
           <span class="label-text">
-            <slot name="label" onSlotchange={this.onLabelSlotChange}>
-              {labelText}
-            </slot>
+            {this.hasLabelSlot ? null : labelText}
+            <slot name="label" onSlotchange={this.onLabelSlotChange} />
           </span>
           {this.required ? (
             <span class="required-mark" aria-hidden="true" part="required-mark">
@@ -513,7 +572,6 @@ export class CorSelectInput {
               aria-describedby={this.describedBy()}
               aria-invalid={this.invalid ? 'true' : null}
               aria-required={this.required ? 'true' : null}
-              aria-disabled={effectivelyDisabled ? 'true' : null}
               aria-readonly={this.readonly ? 'true' : null}
               disabled={effectivelyDisabled}
               onClick={this.toggleListbox}
@@ -536,7 +594,7 @@ export class CorSelectInput {
             part="listbox"
             role="listbox"
             aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
-            aria-label={!this.hasVisibleLabel() ? (this.ariaLabel ?? 'Options') : undefined}
+            aria-label={!this.hasVisibleLabel() ? (this.resolvedAriaLabel ?? 'Options') : undefined}
             hidden={!this.open}
           >
             {opts.length === 0 ? (
@@ -585,9 +643,8 @@ export class CorSelectInput {
         ) : this.hasHelperMessage() ? (
           <div class="assistive assistive-helper" id={this.helperId} part="helper">
             <span class="assistive-text">
-              <slot name="helper" onSlotchange={this.onHelperSlotChange}>
-                {helperText}
-              </slot>
+              {this.hasHelperSlot ? null : helperText}
+              <slot name="helper" onSlotchange={this.onHelperSlotChange} />
             </span>
           </div>
         ) : null}

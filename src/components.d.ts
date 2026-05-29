@@ -837,7 +837,7 @@ export namespace Components {
          */
         "accept"?: string;
         /**
-          * Accessible name; mirrors to the drop zone's `aria-label` when no visible label.
+          * Accessible name; mirrors to the drop zone's `aria-label` when no visible label is provided. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker / cor-modal / cor-pagination / cor-receipt).
          */
         "ariaLabel"?: string;
         /**
@@ -1072,7 +1072,7 @@ export namespace Components {
      */
     interface CorInput {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
          */
         "ariaLabel"?: string;
         /**
@@ -1504,11 +1504,11 @@ export namespace Components {
      */
     interface CorNumericInput {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
          */
         "ariaLabel"?: string;
         /**
-          * Human-readable value announcement for screen readers (e.g. `"5 lei"`). Maps to the native `aria-valuetext` on the spinbutton.
+          * Human-readable value announcement for screen readers (e.g. `"5 lei"`). Maps to the native `aria-valuetext` on the spinbutton. Same capture-and-strip pattern as `ariaLabel`.
          */
         "ariaValuetext"?: string;
         /**
@@ -1579,8 +1579,8 @@ export namespace Components {
          */
         "required": boolean;
         /**
-          * Show the trailing stacked stepper (chevron-up / chevron-bottom) buttons. Set to `false` for displays where steppers would clutter (e.g. compact filter chips).
-          * @default true
+          * Show the trailing stacked stepper (chevron-up / chevron-bottom) buttons. Off by default per Figma master, which renders the canonical numeric input without steppers (suffix-only). Opt in via `show-steppers` for compact quantity / rating fields where stepper affordance is valuable.
+          * @default false
          */
         "showSteppers": boolean;
         /**
@@ -1700,7 +1700,7 @@ export namespace Components {
      */
     interface CorPhoneInput {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
          */
         "ariaLabel"?: string;
         /**
@@ -2035,12 +2035,12 @@ export namespace Components {
      * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
      * icon and an optional trailing clear `×` button that appears whenever the
      * control carries a value. Behavior, props, slots, events, keyboard contract,
-     * and ARIA wiring are IDENTICAL to `cor-search-input-rectangular` — the only
-     * visual difference is the silhouette: corners flip to `borderRadius.full`
-     * (9999px) and horizontal padding grows one step (md +4px, lg +4px) to balance
-     * the rounded ends. The trailing submit button (when `with-button` is set)
-     * inherits the pill silhouette via `borderRadius.full`, rendering as a perfect
-     * circle that hugs the pill end per Figma master `933:29721`.
+     * ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
+     * `cor-search-input-rectangular` — the only visual difference is the
+     * silhouette: corners flip to `borderRadius.full` (9999px). The trailing
+     * submit button (when `with-button` is set) inherits the pill silhouette via
+     * `borderRadius.full`, rendering as a perfect circle that hugs the pill end
+     * per Figma master `933:29721`.
      * The Republic of Moldova Unified Design System library catalogues circular
      * and rectangular search fields as separate component_sets, so we ship them
      * as distinct atoms with parallel token namespaces (`--search-input-circular-*`
@@ -2055,7 +2055,7 @@ export namespace Components {
      */
     interface CorSearchInputCircular {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -2178,7 +2178,7 @@ export namespace Components {
      */
     interface CorSearchInputRectangular {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -2338,7 +2338,7 @@ export namespace Components {
      */
     interface CorSelectInput {
         /**
-          * Accessible name. Mirrors to the trigger's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the trigger's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -2635,14 +2635,16 @@ export namespace Components {
      * for the selection column, `cor-icon` for sort chevrons. Status badges and
      * row actions are projected via named slots so consumers can drop in
      * `cor-tag`, `cor-button`, or any custom content per cell.
-     * Below the `--breakpoint-mobile` (≤640 px) container query, every row
-     * collapses to a vertical key:value card stack — each `<td>` becomes a
-     * labelled line with the column title rendered inline before its value.
+     * At ≤640 px container width the inline padding shrinks from 24 → 16 to
+     * match Figma's "Mobile" breakpoint specs (table-header `4930:14358`,
+     * table-cell `649:4296`). The table structure itself is preserved; consumers
+     * who need a card-stack layout on narrow screens should wrap their own
+     * presentation around the data.
      * @element cor-table
      */
     interface CorTable {
         /**
-          * Accessible label propagated to the rendered `<table>` element.
+          * Accessible label propagated to the rendered `<table>` element. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -2717,7 +2719,7 @@ export namespace Components {
      */
     interface CorTabs {
         /**
-          * Accessible name for the tablist. Forwarded to the host's `aria-label`.
+          * Accessible name for the tablist. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -2802,7 +2804,7 @@ export namespace Components {
      */
     interface CorTextarea {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -3980,12 +3982,12 @@ declare global {
      * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
      * icon and an optional trailing clear `×` button that appears whenever the
      * control carries a value. Behavior, props, slots, events, keyboard contract,
-     * and ARIA wiring are IDENTICAL to `cor-search-input-rectangular` — the only
-     * visual difference is the silhouette: corners flip to `borderRadius.full`
-     * (9999px) and horizontal padding grows one step (md +4px, lg +4px) to balance
-     * the rounded ends. The trailing submit button (when `with-button` is set)
-     * inherits the pill silhouette via `borderRadius.full`, rendering as a perfect
-     * circle that hugs the pill end per Figma master `933:29721`.
+     * ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
+     * `cor-search-input-rectangular` — the only visual difference is the
+     * silhouette: corners flip to `borderRadius.full` (9999px). The trailing
+     * submit button (when `with-button` is set) inherits the pill silhouette via
+     * `borderRadius.full`, rendering as a perfect circle that hugs the pill end
+     * per Figma master `933:29721`.
      * The Republic of Moldova Unified Design System library catalogues circular
      * and rectangular search fields as separate component_sets, so we ship them
      * as distinct atoms with parallel token namespaces (`--search-input-circular-*`
@@ -4232,9 +4234,11 @@ declare global {
      * for the selection column, `cor-icon` for sort chevrons. Status badges and
      * row actions are projected via named slots so consumers can drop in
      * `cor-tag`, `cor-button`, or any custom content per cell.
-     * Below the `--breakpoint-mobile` (≤640 px) container query, every row
-     * collapses to a vertical key:value card stack — each `<td>` becomes a
-     * labelled line with the column title rendered inline before its value.
+     * At ≤640 px container width the inline padding shrinks from 24 → 16 to
+     * match Figma's "Mobile" breakpoint specs (table-header `4930:14358`,
+     * table-cell `649:4296`). The table structure itself is preserved; consumers
+     * who need a card-stack layout on narrow screens should wrap their own
+     * presentation around the data.
      * @element cor-table
      */
     interface HTMLCorTableElement extends Components.CorTable, HTMLStencilElement {
@@ -5274,7 +5278,7 @@ declare namespace LocalJSX {
          */
         "accept"?: string;
         /**
-          * Accessible name; mirrors to the drop zone's `aria-label` when no visible label.
+          * Accessible name; mirrors to the drop zone's `aria-label` when no visible label is provided. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb / cor-date-picker / cor-modal / cor-pagination / cor-receipt).
          */
         "ariaLabel"?: string;
         /**
@@ -5545,7 +5549,7 @@ declare namespace LocalJSX {
      */
     interface CorInput {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
          */
         "ariaLabel"?: string;
         /**
@@ -6033,11 +6037,11 @@ declare namespace LocalJSX {
      */
     interface CorNumericInput {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
          */
         "ariaLabel"?: string;
         /**
-          * Human-readable value announcement for screen readers (e.g. `"5 lei"`). Maps to the native `aria-valuetext` on the spinbutton.
+          * Human-readable value announcement for screen readers (e.g. `"5 lei"`). Maps to the native `aria-valuetext` on the spinbutton. Same capture-and-strip pattern as `ariaLabel`.
          */
         "ariaValuetext"?: string;
         /**
@@ -6136,8 +6140,8 @@ declare namespace LocalJSX {
          */
         "required"?: boolean;
         /**
-          * Show the trailing stacked stepper (chevron-up / chevron-bottom) buttons. Set to `false` for displays where steppers would clutter (e.g. compact filter chips).
-          * @default true
+          * Show the trailing stacked stepper (chevron-up / chevron-bottom) buttons. Off by default per Figma master, which renders the canonical numeric input without steppers (suffix-only). Opt in via `show-steppers` for compact quantity / rating fields where stepper affordance is valuable.
+          * @default false
          */
         "showSteppers"?: boolean;
         /**
@@ -6261,7 +6265,7 @@ declare namespace LocalJSX {
      */
     interface CorPhoneInput {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
          */
         "ariaLabel"?: string;
         /**
@@ -6664,12 +6668,12 @@ declare namespace LocalJSX {
      * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
      * icon and an optional trailing clear `×` button that appears whenever the
      * control carries a value. Behavior, props, slots, events, keyboard contract,
-     * and ARIA wiring are IDENTICAL to `cor-search-input-rectangular` — the only
-     * visual difference is the silhouette: corners flip to `borderRadius.full`
-     * (9999px) and horizontal padding grows one step (md +4px, lg +4px) to balance
-     * the rounded ends. The trailing submit button (when `with-button` is set)
-     * inherits the pill silhouette via `borderRadius.full`, rendering as a perfect
-     * circle that hugs the pill end per Figma master `933:29721`.
+     * ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
+     * `cor-search-input-rectangular` — the only visual difference is the
+     * silhouette: corners flip to `borderRadius.full` (9999px). The trailing
+     * submit button (when `with-button` is set) inherits the pill silhouette via
+     * `borderRadius.full`, rendering as a perfect circle that hugs the pill end
+     * per Figma master `933:29721`.
      * The Republic of Moldova Unified Design System library catalogues circular
      * and rectangular search fields as separate component_sets, so we ship them
      * as distinct atoms with parallel token namespaces (`--search-input-circular-*`
@@ -6684,7 +6688,7 @@ declare namespace LocalJSX {
      */
     interface CorSearchInputCircular {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -6835,7 +6839,7 @@ declare namespace LocalJSX {
      */
     interface CorSearchInputRectangular {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -7031,7 +7035,7 @@ declare namespace LocalJSX {
      */
     interface CorSelectInput {
         /**
-          * Accessible name. Mirrors to the trigger's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the trigger's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -7376,14 +7380,16 @@ declare namespace LocalJSX {
      * for the selection column, `cor-icon` for sort chevrons. Status badges and
      * row actions are projected via named slots so consumers can drop in
      * `cor-tag`, `cor-button`, or any custom content per cell.
-     * Below the `--breakpoint-mobile` (≤640 px) container query, every row
-     * collapses to a vertical key:value card stack — each `<td>` becomes a
-     * labelled line with the column title rendered inline before its value.
+     * At ≤640 px container width the inline padding shrinks from 24 → 16 to
+     * match Figma's "Mobile" breakpoint specs (table-header `4930:14358`,
+     * table-cell `649:4296`). The table structure itself is preserved; consumers
+     * who need a card-stack layout on narrow screens should wrap their own
+     * presentation around the data.
      * @element cor-table
      */
     interface CorTable {
         /**
-          * Accessible label propagated to the rendered `<table>` element.
+          * Accessible label propagated to the rendered `<table>` element. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -7470,7 +7476,7 @@ declare namespace LocalJSX {
      */
     interface CorTabs {
         /**
-          * Accessible name for the tablist. Forwarded to the host's `aria-label`.
+          * Accessible name for the tablist. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -7559,7 +7565,7 @@ declare namespace LocalJSX {
      */
     interface CorTextarea {
         /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
         "ariaLabel"?: string;
         /**
@@ -8782,12 +8788,12 @@ declare module "@stencil/core" {
              * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
              * icon and an optional trailing clear `×` button that appears whenever the
              * control carries a value. Behavior, props, slots, events, keyboard contract,
-             * and ARIA wiring are IDENTICAL to `cor-search-input-rectangular` — the only
-             * visual difference is the silhouette: corners flip to `borderRadius.full`
-             * (9999px) and horizontal padding grows one step (md +4px, lg +4px) to balance
-             * the rounded ends. The trailing submit button (when `with-button` is set)
-             * inherits the pill silhouette via `borderRadius.full`, rendering as a perfect
-             * circle that hugs the pill end per Figma master `933:29721`.
+             * ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
+             * `cor-search-input-rectangular` — the only visual difference is the
+             * silhouette: corners flip to `borderRadius.full` (9999px). The trailing
+             * submit button (when `with-button` is set) inherits the pill silhouette via
+             * `borderRadius.full`, rendering as a perfect circle that hugs the pill end
+             * per Figma master `933:29721`.
              * The Republic of Moldova Unified Design System library catalogues circular
              * and rectangular search fields as separate component_sets, so we ship them
              * as distinct atoms with parallel token namespaces (`--search-input-circular-*`
@@ -8910,9 +8916,11 @@ declare module "@stencil/core" {
              * for the selection column, `cor-icon` for sort chevrons. Status badges and
              * row actions are projected via named slots so consumers can drop in
              * `cor-tag`, `cor-button`, or any custom content per cell.
-             * Below the `--breakpoint-mobile` (≤640 px) container query, every row
-             * collapses to a vertical key:value card stack — each `<td>` becomes a
-             * labelled line with the column title rendered inline before its value.
+             * At ≤640 px container width the inline padding shrinks from 24 → 16 to
+             * match Figma's "Mobile" breakpoint specs (table-header `4930:14358`,
+             * table-cell `649:4296`). The table structure itself is preserved; consumers
+             * who need a card-stack layout on narrow screens should wrap their own
+             * presentation around the data.
              * @element cor-table
              */
             "cor-table": LocalJSX.IntrinsicElements["cor-table"] & JSXBase.HTMLAttributes<HTMLCorTableElement>;

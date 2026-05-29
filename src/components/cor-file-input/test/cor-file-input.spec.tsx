@@ -93,11 +93,16 @@ describe('cor-file-input', () => {
   });
 
   describe('shadow structure', () => {
-    it('renders a drop zone with role=button', async () => {
+    it('renders the drop zone as a passive container — the inner "choose files" button is the keyboard activator', async () => {
       const { root } = await render(<cor-file-input label="x"></cor-file-input>);
       const dropzone = queryDropzone(root);
       expect(dropzone).toBeTruthy();
-      expect(dropzone?.getAttribute('role')).toBe('button');
+      // No `role="button"` on the outer dropzone (nested-interactive axe rule):
+      // it contains the inner choose-files <button> which carries the semantics.
+      expect(dropzone?.getAttribute('role')).toBe(null);
+      expect(dropzone?.getAttribute('tabindex')).toBe(null);
+      const innerBtn = root?.shadowRoot?.querySelector('button.dropzone-cta__link');
+      expect(innerBtn).toBeTruthy();
     });
 
     it('renders the label text via `label` prop', async () => {
@@ -450,29 +455,22 @@ describe('cor-file-input', () => {
   });
 
   describe('keyboard activation', () => {
-    // Same mock-doc shadow-trigger constraint as drag — drive the registered
-    // handler directly off the instance.
-    type KbInstance = { handleBrowseKey: (ev: KeyboardEvent) => void };
-    const press = (root: Element | null | undefined, key: string) => {
-      const instance = root as unknown as KbInstance;
-      const ev = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
-      instance.handleBrowseKey.call(instance, ev);
-    };
-
-    it('Enter on drop zone clicks the native input', async () => {
+    it('clicking the inner "choose files" button opens the native picker', async () => {
       const { root } = await render(<cor-file-input label="x"></cor-file-input>);
       const native = queryNative(root)!;
       const clickSpy = vi.spyOn(native, 'click');
-      press(root, 'Enter');
+      const innerBtn = root?.shadowRoot?.querySelector<HTMLButtonElement>('button.dropzone-cta__link');
+      innerBtn?.click();
       await flush();
       expect(clickSpy).toHaveBeenCalledTimes(1);
     });
 
-    it('Space on drop zone clicks the native input', async () => {
+    it('clicking the dropzone container (drop-target area) also opens the picker (event bubbles)', async () => {
       const { root } = await render(<cor-file-input label="x"></cor-file-input>);
       const native = queryNative(root)!;
       const clickSpy = vi.spyOn(native, 'click');
-      press(root, ' ');
+      const dropzone = queryDropzone(root);
+      dropzone?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
       await flush();
       expect(clickSpy).toHaveBeenCalledTimes(1);
     });
@@ -481,7 +479,8 @@ describe('cor-file-input', () => {
       const { root } = await render(<cor-file-input label="x" disabled></cor-file-input>);
       const native = queryNative(root)!;
       const clickSpy = vi.spyOn(native, 'click');
-      press(root, 'Enter');
+      const innerBtn = root?.shadowRoot?.querySelector<HTMLButtonElement>('button.dropzone-cta__link');
+      innerBtn?.click();
       await flush();
       expect(clickSpy).not.toHaveBeenCalled();
     });
@@ -511,61 +510,78 @@ describe('cor-file-input', () => {
   });
 
   describe('ARIA contract', () => {
-    it('links the label via aria-labelledby on the drop zone', async () => {
+    /* All ARIA associations (labelledby / label / describedby / invalid) now
+       live on the inner "Alege fișiere" <button>. The outer dropzone div has
+       no role, so ARIA's aria-prohibited-attr rule forbids those attrs on it. */
+    const innerBtn = (root: Element | null | undefined) =>
+      root?.shadowRoot?.querySelector<HTMLButtonElement>('button.dropzone-cta__link') ?? null;
+
+    it('links the label via aria-labelledby on the inner choose-files button', async () => {
       const { root } = await render(<cor-file-input label="Documente"></cor-file-input>);
-      const dropzone = queryDropzone(root);
+      const btn = innerBtn(root);
       const label = queryLabel(root);
-      const id = dropzone?.getAttribute('aria-labelledby');
+      const id = btn?.getAttribute('aria-labelledby');
       expect(id).toBeTruthy();
       expect(label?.id).toBe(id);
     });
 
-    it('exposes aria-required when required', async () => {
-      const { root } = await render(<cor-file-input label="x" required></cor-file-input>);
-      expect(queryDropzone(root)?.getAttribute('aria-required')).toBe('true');
+    it('reflects required via internals.validity (no aria-required on the role-less dropzone)', async () => {
+      const { root } = await render(<cor-file-input label="x" required name="doc"></cor-file-input>);
+      // aria-required on the dropzone violates aria-allowed-attr; the validity
+      // contract is enforced via ElementInternals instead so native form
+      // submission still blocks on an empty required cor-file-input.
+      expect(queryDropzone(root)?.getAttribute('aria-required')).toBe(null);
+      expect(root?.hasAttribute('required')).toBe(true);
     });
 
-    it('exposes aria-invalid when invalid', async () => {
+    it('exposes aria-invalid on the inner button when invalid', async () => {
       const { root } = await render(<cor-file-input label="x" invalid></cor-file-input>);
-      expect(queryDropzone(root)?.getAttribute('aria-invalid')).toBe('true');
+      expect(innerBtn(root)?.getAttribute('aria-invalid')).toBe('true');
     });
 
-    it('wires aria-describedby to the helper id when helper-text present', async () => {
+    it('wires aria-describedby on the inner button to the helper id when helper-text present', async () => {
       const { root } = await render(<cor-file-input label="x" helper-text="hint"></cor-file-input>);
-      const describedBy = queryDropzone(root)?.getAttribute('aria-describedby');
+      const describedBy = innerBtn(root)?.getAttribute('aria-describedby');
       const helper = root?.shadowRoot?.querySelector('.assistive-helper');
       expect(describedBy).toBeTruthy();
       expect(helper?.id).toBe(describedBy);
     });
 
-    it('wires aria-describedby to the error id when invalid + error-text present', async () => {
+    it('wires aria-describedby on the inner button to the error id when invalid + error-text present', async () => {
       const { root } = await render(<cor-file-input label="x" invalid error-text="Required"></cor-file-input>);
-      const describedBy = queryDropzone(root)?.getAttribute('aria-describedby');
+      const describedBy = innerBtn(root)?.getAttribute('aria-describedby');
       const error = root?.shadowRoot?.querySelector('.assistive-error');
       expect(describedBy).toBeTruthy();
       expect(error?.id).toBe(describedBy);
     });
 
-    it('uses aria-label when no visible label is present', async () => {
+    it('uses aria-label on the inner button when no visible label is present', async () => {
       const { root } = await render(<cor-file-input aria-label="Atașează"></cor-file-input>);
-      const dropzone = queryDropzone(root);
-      expect(dropzone?.getAttribute('aria-label')).toBe('Atașează');
-      expect(dropzone?.getAttribute('aria-labelledby')).toBeNull();
+      const btn = innerBtn(root);
+      expect(btn?.getAttribute('aria-label')).toBe('Atașează');
+      expect(btn?.getAttribute('aria-labelledby')).toBeNull();
     });
 
-    it('makes the drop zone untabbable when disabled', async () => {
+    it('makes the inner choose-files button untabbable when disabled', async () => {
       const { root } = await render(<cor-file-input label="x" disabled></cor-file-input>);
-      expect(queryDropzone(root)?.getAttribute('tabindex')).toBe('-1');
+      // The dropzone itself is no longer focusable (no role, no tabindex);
+      // the inner button is the keyboard activator and it carries tabIndex=-1 when disabled.
+      const innerBtn = root?.shadowRoot?.querySelector<HTMLButtonElement>('button.dropzone-cta__link');
+      expect(innerBtn?.getAttribute('tabindex')).toBe('-1');
+      expect(innerBtn?.hasAttribute('disabled')).toBe(true);
     });
   });
 
   describe('form association', () => {
     it('responds to fieldset disabled via formDisabledCallback', async () => {
       const { root } = await render(<cor-file-input label="x"></cor-file-input>);
-      expect(queryDropzone(root)?.getAttribute('aria-disabled')).toBeNull();
+      const btn = () => root?.shadowRoot?.querySelector<HTMLButtonElement>('button.dropzone-cta__link');
+      expect(btn()?.getAttribute('aria-disabled')).toBeNull();
       (root as unknown as { formDisabledCallback: (d: boolean) => void }).formDisabledCallback(true);
       await flush();
-      expect(queryDropzone(root)?.getAttribute('aria-disabled')).toBe('true');
+      // aria-disabled is now exposed on the interactive inner button, not the
+      // role-less dropzone div (ARIA aria-prohibited-attr rule).
+      expect(btn()?.getAttribute('aria-disabled')).toBe('true');
     });
 
     it('clears files on formResetCallback', async () => {

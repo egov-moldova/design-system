@@ -310,8 +310,9 @@ describe('cor-select-input', () => {
     it('keeps the trigger disabled when `disabled`', async () => {
       const { root } = await render(<cor-select-input label="x" disabled></cor-select-input>);
       const trigger = queryTrigger(root);
+      // Native `disabled` is the source of truth; ARIA duplication is dropped.
       expect(trigger?.hasAttribute('disabled')).toBe(true);
-      expect(trigger?.getAttribute('aria-disabled')).toBe('true');
+      expect(trigger?.getAttribute('aria-disabled')).toBeNull();
     });
 
     it('does not open on click when disabled', async () => {
@@ -410,6 +411,74 @@ describe('cor-select-input', () => {
       );
       const slotted = root?.querySelector('[slot="icon-start"]');
       expect(slotted?.tagName.toLowerCase()).toBe('cor-icon');
+    });
+  });
+
+  describe('aria-label capture', () => {
+    it('captures the host aria-label into a state field and strips the attribute', async () => {
+      const { root } = await render(<cor-select-input aria-label="Filter"></cor-select-input>);
+      await flush();
+      expect(root?.hasAttribute('aria-label')).toBe(false);
+      const trigger = queryTrigger(root);
+      expect(trigger?.getAttribute('aria-label')).toBe('Filter');
+    });
+
+    it('keeps using the captured value after the host attribute is gone', async () => {
+      const { root } = await render(<cor-select-input aria-label="Filter"></cor-select-input>);
+      await flush();
+      // Re-render via prop change; aria-label must persist.
+      (root as unknown as { variant: string }).variant = 'destructive';
+      await flush();
+      expect(queryTrigger(root)?.getAttribute('aria-label')).toBe('Filter');
+    });
+  });
+
+  describe('form validity', () => {
+    type InstanceWithInternals = { internals: ElementInternals };
+
+    it('sets valueMissing on transition from filled to empty when required', async () => {
+      const { root } = await render(<cor-select-input label="x" required value="opt-2"></cor-select-input>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { value: string }).value = '';
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toEqual({ valueMissing: true });
+      spy.mockRestore();
+    });
+
+    it('clears validity when value is set and required is true', async () => {
+      const { root } = await render(<cor-select-input label="x" required></cor-select-input>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { value: string }).value = 'opt-2';
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toEqual({});
+      spy.mockRestore();
+    });
+
+    it('re-syncs validity when required toggles', async () => {
+      const { root } = await render(<cor-select-input label="x"></cor-select-input>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { required: boolean }).required = true;
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toEqual({ valueMissing: true });
+      spy.mockRestore();
+    });
+
+    it('resets validity on formResetCallback', async () => {
+      const { root } = await render(<cor-select-input label="x" required value="opt-2"></cor-select-input>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { formResetCallback: () => void }).formResetCallback();
+      await flush();
+      // initialValue was 'opt-2' so reset keeps the value → no valueMissing.
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toEqual({});
+      spy.mockRestore();
     });
   });
 });

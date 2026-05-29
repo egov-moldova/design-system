@@ -9,8 +9,8 @@
         "lg": { "$value": "{spacing.48}", "$type": "dimension" }
       },
       "paddingInline": {
-        "md": { "$value": "{spacing.16}", "$type": "dimension" },
-        "lg": { "$value": "{spacing.20}", "$type": "dimension" }
+        "md": { "$value": "{spacing.12}", "$type": "dimension", "$comment": "Figma master 933:29731 uses spacing.12 at md (same as rectangular sibling) — the pill silhouette doesn't warrant extra inset." },
+        "lg": { "$value": "{spacing.16}", "$type": "dimension", "$comment": "Figma master 933:29722 uses spacing.16 at lg (same as rectangular sibling)." }
       },
       "gap": {
         "md": { "$value": "{spacing.8}", "$type": "dimension" },
@@ -87,8 +87,9 @@
         "disabled": { "$value": "{color.icon.disabled.on-disabled}", "$type": "color" }
       },
       "background": {
-        "hover": { "$value": "{color.background.base.tertiary}", "$type": "color" },
-        "active": { "$value": "{color.background.base.secondary-active}", "$type": "color" }
+        "default": { "$value": "{color.background.base.tertiary}", "$type": "color", "$comment": "Per Figma 933:29806 — the clear button carries a subtle gray oval at rest in the Filled state. Hardcoded color in Figma is #1212121a; base.tertiary (#f1f1f1) is the closest design-system semantic." },
+        "hover": { "$value": "{color.background.base.tertiary-hover}", "$type": "color" },
+        "active": { "$value": "{color.background.base.tertiary-active}", "$type": "color" }
       }
     },
     "default": {

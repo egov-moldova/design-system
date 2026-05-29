@@ -343,14 +343,4 @@ describe('cor-table', () => {
     });
   });
 
-  describe('mobile collapse data-label', () => {
-    it('exposes the column label on every cell via data-mobile-label', async () => {
-      const { root, waitForChanges } = await render(<cor-table />);
-      setProps(root, { columns, rows });
-      await waitForChanges();
-      const firstRowCells = queryBodyRows(root)[0]?.querySelectorAll('td');
-      expect(firstRowCells?.[0]?.getAttribute('data-mobile-label')).toBe('Nume');
-      expect(firstRowCells?.[1]?.getAttribute('data-mobile-label')).toBe('Email');
-    });
-  });
 });

@@ -63,15 +63,21 @@ export class CorTabs {
    */
   @Prop() tabs?: TabDescriptor[];
 
-  /** Accessible name for the tablist. Forwarded to the host's `aria-label`. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  /**
+   * Accessible name for the tablist. Captured into `resolvedAriaLabel` on
+   * mount and the host attribute is stripped to avoid Stencil's
+   * auto-reflection loop.
+   */
+  @Prop() ariaLabel?: string;
 
   /** Id of an external labelling element (overrides `aria-label`). */
-  @Prop({ attribute: 'aria-labelledby' }) ariaLabelledby?: string;
+  @Prop() ariaLabelledby?: string;
 
   @State() private hasOverflow: boolean = false;
   @State() private canScrollStart: boolean = false;
   @State() private canScrollEnd: boolean = false;
+  @State() private resolvedAriaLabel?: string;
+  @State() private resolvedAriaLabelledby?: string;
   /**
    * Panel slot names projected through the shadow DOM. Tracked separately
    * from `tabs` so that declarative `<cor-tab>` children also project their
@@ -91,9 +97,51 @@ export class CorTabs {
   private mutationObserver?: MutationObserver;
   private scrollRafId?: number;
 
+  componentWillLoad() {
+    this.captureAriaAttrs();
+  }
+
   componentDidLoad() {
     this.observeOverflow();
     this.observeChildren();
+  }
+
+  /**
+   * Stencil auto-reflects `@Prop()` values back onto the host attribute. For
+   * `aria-label` / `aria-labelledby` that creates an observer loop. Capture
+   * each consumer-provided value into a state field, then strip the
+   * attribute so the loop never fires.
+   */
+  private captureAriaAttrs() {
+    const labelAttr = this.host.getAttribute('aria-label');
+    if (labelAttr) {
+      this.resolvedAriaLabel = labelAttr;
+      this.host.removeAttribute('aria-label');
+    } else if (this.ariaLabel) {
+      this.resolvedAriaLabel = this.ariaLabel;
+    }
+
+    const labelledbyAttr = this.host.getAttribute('aria-labelledby');
+    if (labelledbyAttr) {
+      this.resolvedAriaLabelledby = labelledbyAttr;
+      this.host.removeAttribute('aria-labelledby');
+    } else if (this.ariaLabelledby) {
+      this.resolvedAriaLabelledby = this.ariaLabelledby;
+    }
+  }
+
+  @Watch('ariaLabel')
+  handleAriaLabelChange(next: string | undefined) {
+    if (next && next.length > 0) {
+      this.resolvedAriaLabel = next;
+    }
+  }
+
+  @Watch('ariaLabelledby')
+  handleAriaLabelledbyChange(next: string | undefined) {
+    if (next && next.length > 0) {
+      this.resolvedAriaLabelledby = next;
+    }
   }
 
   componentDidRender() {
@@ -394,8 +442,8 @@ export class CorTabs {
     return (
       <Host
         role="tablist"
-        aria-label={this.ariaLabel}
-        aria-labelledby={this.ariaLabelledby}
+        aria-label={this.resolvedAriaLabel}
+        aria-labelledby={this.resolvedAriaLabelledby}
         aria-orientation="horizontal"
         class={{
           'has-overflow': this.hasOverflow,

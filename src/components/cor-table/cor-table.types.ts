@@ -1,4 +1,4 @@
-export const TABLE_HEADER_STYLES = ['default', 'inverted'] as const;
+export const TABLE_HEADER_STYLES = ['default', 'inverted', 'white'] as const;
 export const TABLE_ROW_STYLES = ['zebra', 'divided', 'borderless'] as const;
 export const TABLE_ALIGN = ['start', 'center', 'end'] as const;
 export const TABLE_SORT_DIRECTIONS = ['asc', 'desc'] as const;

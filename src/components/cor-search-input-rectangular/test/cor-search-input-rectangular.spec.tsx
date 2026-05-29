@@ -328,8 +328,9 @@ describe('cor-search-input-rectangular', () => {
     it('passes disabled through to the native input', async () => {
       const { root } = await render(<cor-search-input-rectangular disabled></cor-search-input-rectangular>);
       const native = queryNative(root);
+      // Native `disabled` is the source of truth; aria-disabled duplication is dropped.
       expect(native?.disabled).toBe(true);
-      expect(native?.getAttribute('aria-disabled')).toBe('true');
+      expect(native?.getAttribute('aria-disabled')).toBeNull();
     });
 
     it('passes readonly through to the native input', async () => {
@@ -365,9 +366,12 @@ describe('cor-search-input-rectangular', () => {
       expect(native?.getAttribute('aria-labelledby')).toBeNull();
     });
 
-    it('exposes aria-required when required', async () => {
+    it('exposes the native `required` attribute when required (no aria-required dup)', async () => {
       const { root } = await render(<cor-search-input-rectangular label="x" required></cor-search-input-rectangular>);
-      expect(queryNative(root)?.getAttribute('aria-required')).toBe('true');
+      const native = queryNative(root);
+      // Native `required` conveys the semantic; aria-required duplication is dropped.
+      expect(native?.hasAttribute('required')).toBe(true);
+      expect(native?.getAttribute('aria-required')).toBeNull();
     });
 
     it('exposes aria-invalid when invalid', async () => {
@@ -576,6 +580,63 @@ describe('cor-search-input-rectangular', () => {
       );
       expect(querySpinner(root)).toBeTruthy();
       expect(querySubmitButton(root)).toBeTruthy();
+    });
+  });
+
+  describe('aria-label capture', () => {
+    it('captures the host aria-label into a state field and strips the attribute', async () => {
+      const { root } = await render(<cor-search-input-rectangular aria-label="Caută"></cor-search-input-rectangular>);
+      await flush();
+      expect(root?.hasAttribute('aria-label')).toBe(false);
+      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Caută');
+    });
+
+    it('keeps using the captured value after the host attribute is gone', async () => {
+      const { root } = await render(<cor-search-input-rectangular aria-label="Caută"></cor-search-input-rectangular>);
+      await flush();
+      // Re-render via prop change; aria-label must persist.
+      (root as unknown as { variant: string }).variant = 'destructive';
+      await flush();
+      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Caută');
+    });
+  });
+
+  describe('form validity', () => {
+    type InstanceWithInternals = { internals: ElementInternals };
+
+    it('sets valueMissing on transition from filled to empty when required', async () => {
+      const { root } = await render(
+        <cor-search-input-rectangular label="x" required value="query"></cor-search-input-rectangular>,
+      );
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { value: string }).value = '';
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toEqual({ valueMissing: true });
+      spy.mockRestore();
+    });
+
+    it('clears validity when value is set and required is true', async () => {
+      const { root } = await render(<cor-search-input-rectangular label="x" required></cor-search-input-rectangular>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { value: string }).value = 'query';
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toEqual({});
+      spy.mockRestore();
+    });
+
+    it('re-syncs validity when required toggles', async () => {
+      const { root } = await render(<cor-search-input-rectangular label="x"></cor-search-input-rectangular>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { required: boolean }).required = true;
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toEqual({ valueMissing: true });
+      spy.mockRestore();
     });
   });
 });

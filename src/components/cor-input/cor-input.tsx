@@ -121,9 +121,11 @@ export class CorInput {
 
   /**
    * Accessible name. Mirrors to the internal control's `aria-label` when no
-   * visible label is present.
+   * visible label is present. Setting `aria-label` directly on the host also
+   * works — captured on connect into `resolvedAriaLabel` and stripped to
+   * avoid Stencil's attribute-observer / render-loop antipattern.
    */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  @Prop() ariaLabel?: string;
 
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
@@ -131,6 +133,7 @@ export class CorInput {
   @State() private hasIconEnd: boolean = false;
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
+  @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLCorInputElement;
 
@@ -152,11 +155,66 @@ export class CorInput {
   private readonly labelId = `cor-input-label-${this.instanceId}`;
   private readonly helperId = `cor-input-helper-${this.instanceId}`;
   private readonly errorId = `cor-input-error-${this.instanceId}`;
+  private nativeInput?: HTMLInputElement;
   private initialValue: string = '';
 
   componentWillLoad() {
+    this.captureAriaLabel();
     this.initialValue = this.value;
     this.internals.setFormValue(this.value, this.value);
+    this.syncValidity();
+  }
+
+  private captureAriaLabel() {
+    const hostAttr = this.host.getAttribute('aria-label');
+    if (hostAttr && hostAttr.length > 0) {
+      this.resolvedAriaLabel = hostAttr;
+      this.host.removeAttribute('aria-label');
+    } else if (this.ariaLabel && this.ariaLabel.length > 0) {
+      this.resolvedAriaLabel = this.ariaLabel;
+    }
+  }
+
+  @Watch('ariaLabel')
+  syncAriaLabelProp(next?: string) {
+    // Only override resolvedAriaLabel when the prop is actually set —
+    // captureAriaLabel strips the attribute, which would otherwise null this out.
+    if (next && next.length > 0) this.resolvedAriaLabel = next;
+  }
+
+  @Watch('required')
+  onRequiredChange() {
+    this.syncValidity();
+  }
+
+  private syncValidity() {
+    if (!this.internals) return;
+    const value = this.value ?? '';
+    const isMissing = this.required && value.length === 0;
+    const flags: ValidityStateFlags = {};
+    let message: string | undefined;
+
+    if (isMissing) {
+      flags.valueMissing = true;
+      message = this.errorText && this.errorText.length > 0 ? this.errorText : 'Acest câmp este obligatoriu.';
+    } else if (this.nativeInput) {
+      // Mirror native HTML5 constraint validation (pattern / minLength / maxLength / typeMismatch).
+      const nv = this.nativeInput.validity;
+      if (nv.patternMismatch) flags.patternMismatch = true;
+      if (nv.tooShort) flags.tooShort = true;
+      if (nv.tooLong) flags.tooLong = true;
+      if (nv.typeMismatch) flags.typeMismatch = true;
+      if (nv.patternMismatch || nv.tooShort || nv.tooLong || nv.typeMismatch) {
+        message = this.errorText && this.errorText.length > 0 ? this.errorText : this.nativeInput.validationMessage;
+      }
+    }
+
+    const anchor = this.nativeInput ?? undefined;
+    if (Object.keys(flags).length > 0) {
+      this.internals.setValidity(flags, message, anchor);
+    } else {
+      this.internals.setValidity({}, undefined, anchor);
+    }
   }
 
   // Validation lives at the @Prop boundary (PRINCIPLES.md §D). Bad enum values
@@ -189,6 +247,7 @@ export class CorInput {
   handleValueChange(next: string) {
     const value = next ?? '';
     this.internals.setFormValue(value, value);
+    this.syncValidity();
   }
 
   /** Mirrors `disabled` from an ancestor `<fieldset disabled>` without clobbering the consumer-set prop. */
@@ -199,12 +258,14 @@ export class CorInput {
   formResetCallback() {
     this.value = this.initialValue;
     this.internals.setFormValue(this.initialValue, this.initialValue);
+    this.syncValidity();
   }
 
   formStateRestoreCallback(state: string | File | FormData | null) {
     if (typeof state === 'string') {
       this.value = state;
       this.internals.setFormValue(state, state);
+      this.syncValidity();
     }
   }
 
@@ -286,7 +347,7 @@ export class CorInput {
     const labelText = this.label?.trim();
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
-    const ariaLabelAttr = !this.hasVisibleLabel() ? this.ariaLabel : undefined;
+    const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -304,9 +365,8 @@ export class CorInput {
       <Host class={hostClasses} aria-busy={this.loading ? 'true' : null}>
         <label class="label" htmlFor={`input-${this.instanceId}`} id={this.labelId} part="label">
           <span class="label-text">
-            <slot name="label" onSlotchange={this.onLabelSlotChange}>
-              {labelText}
-            </slot>
+            {this.hasLabelSlot ? null : labelText}
+            <slot name="label" onSlotchange={this.onLabelSlotChange} />
           </span>
           {this.required ? (
             <span class="required-mark" aria-hidden="true" part="required-mark">
@@ -321,6 +381,7 @@ export class CorInput {
           </span>
 
           <input
+            ref={el => (this.nativeInput = el as HTMLInputElement)}
             id={`input-${this.instanceId}`}
             class="native"
             part="native"
@@ -342,9 +403,6 @@ export class CorInput {
             aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
             aria-describedby={this.describedBy()}
             aria-invalid={this.invalid ? 'true' : null}
-            aria-required={this.required ? 'true' : null}
-            aria-readonly={this.readonly ? 'true' : null}
-            aria-disabled={effectivelyDisabled ? 'true' : null}
             onInput={this.handleInput}
             onChange={this.handleChange}
             onFocus={this.handleFocus}
@@ -369,10 +427,14 @@ export class CorInput {
           </div>
         ) : this.hasHelperMessage() ? (
           <div class="assistive assistive-helper" id={this.helperId} part="helper">
+            {variant === 'warning' ? (
+              <cor-icon class="assistive-icon" name="warning-filled" size={20} color="icon-warning-default" />
+            ) : variant === 'success' ? (
+              <cor-icon class="assistive-icon" name="circle-checkmark-filled" size={20} color="icon-positive-default" />
+            ) : null}
             <span class="assistive-text">
-              <slot name="helper" onSlotchange={this.onHelperSlotChange}>
-                {helperText}
-              </slot>
+              {this.hasHelperSlot ? null : helperText}
+              <slot name="helper" onSlotchange={this.onHelperSlotChange} />
             </span>
           </div>
         ) : null}

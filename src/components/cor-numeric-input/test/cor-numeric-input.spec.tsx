@@ -37,8 +37,8 @@ describe('cor-numeric-input', () => {
       expect(root?.getAttribute('readonly')).toBeNull();
       expect(root?.getAttribute('invalid')).toBeNull();
       expect(root?.getAttribute('loading')).toBeNull();
-      // Stencil reflects `boolean` true as the empty-string attribute presence.
-      expect(root?.hasAttribute('show-steppers')).toBe(true);
+      // Steppers off by default per Figma master — opt in via `show-steppers`.
+      expect(root?.hasAttribute('show-steppers')).toBe(false);
     });
 
     it('ships exactly 3 variants per Figma — default, destructive, success (no warning)', () => {
@@ -114,18 +114,16 @@ describe('cor-numeric-input', () => {
       expect(assistive?.textContent).toContain('Out of range');
     });
 
-    it('renders both stepper buttons by default', async () => {
+    it('suppresses the stepper stack by default (Figma master ships no steppers)', async () => {
       const { root } = await render(<cor-numeric-input label="x"></cor-numeric-input>);
-      expect(queryStepperUp(root)).toBeTruthy();
-      expect(queryStepperDown(root)).toBeTruthy();
-    });
-
-    it('suppresses the stepper stack when show-steppers=false', async () => {
-      const { root } = await render(<cor-numeric-input label="x"></cor-numeric-input>);
-      (root as unknown as { showSteppers: boolean }).showSteppers = false;
-      await flush();
       expect(queryStepperUp(root)).toBeNull();
       expect(queryStepperDown(root)).toBeNull();
+    });
+
+    it('renders both stepper buttons when show-steppers is opted in', async () => {
+      const { root } = await render(<cor-numeric-input label="x" show-steppers></cor-numeric-input>);
+      expect(queryStepperUp(root)).toBeTruthy();
+      expect(queryStepperDown(root)).toBeTruthy();
     });
   });
 
@@ -264,7 +262,7 @@ describe('cor-numeric-input', () => {
       const onChange = vi.fn();
       const onStep = vi.fn();
       const { root } = await render(
-        <cor-numeric-input label="x" value={5} onCorChange={onChange} onCorStep={onStep}></cor-numeric-input>,
+        <cor-numeric-input label="x" show-steppers value={5} onCorChange={onChange} onCorStep={onStep}></cor-numeric-input>,
       );
       const up = queryStepperUp(root)!;
       up.click();
@@ -277,7 +275,7 @@ describe('cor-numeric-input', () => {
       const onChange = vi.fn();
       const onStep = vi.fn();
       const { root } = await render(
-        <cor-numeric-input label="x" value={5} onCorChange={onChange} onCorStep={onStep}></cor-numeric-input>,
+        <cor-numeric-input label="x" show-steppers value={5} onCorChange={onChange} onCorStep={onStep}></cor-numeric-input>,
       );
       const down = queryStepperDown(root)!;
       down.click();
@@ -289,7 +287,7 @@ describe('cor-numeric-input', () => {
     it('honors a fractional `step`', async () => {
       const onChange = vi.fn();
       const { root } = await render(
-        <cor-numeric-input label="x" value={1} step={0.5} precision={1} onCorChange={onChange}></cor-numeric-input>,
+        <cor-numeric-input label="x" show-steppers value={1} step={0.5} precision={1} onCorChange={onChange}></cor-numeric-input>,
       );
       const up = queryStepperUp(root)!;
       up.click();
@@ -298,13 +296,17 @@ describe('cor-numeric-input', () => {
     });
 
     it('disables stepper-up at max', async () => {
-      const { root } = await render(<cor-numeric-input label="x" value={10} min={0} max={10}></cor-numeric-input>);
+      const { root } = await render(
+        <cor-numeric-input label="x" show-steppers value={10} min={0} max={10}></cor-numeric-input>,
+      );
       expect(queryStepperUp(root)?.hasAttribute('disabled')).toBe(true);
       expect(queryStepperDown(root)?.hasAttribute('disabled')).toBe(false);
     });
 
     it('disables stepper-down at min', async () => {
-      const { root } = await render(<cor-numeric-input label="x" value={0} min={0} max={10}></cor-numeric-input>);
+      const { root } = await render(
+        <cor-numeric-input label="x" show-steppers value={0} min={0} max={10}></cor-numeric-input>,
+      );
       expect(queryStepperDown(root)?.hasAttribute('disabled')).toBe(true);
       expect(queryStepperUp(root)?.hasAttribute('disabled')).toBe(false);
     });
@@ -312,7 +314,7 @@ describe('cor-numeric-input', () => {
     it('seeds the value from `min` when the field is empty and stepper-up is pressed', async () => {
       const onChange = vi.fn();
       const { root } = await render(
-        <cor-numeric-input label="x" min={5} max={20} onCorChange={onChange}></cor-numeric-input>,
+        <cor-numeric-input label="x" show-steppers min={5} max={20} onCorChange={onChange}></cor-numeric-input>,
       );
       const up = queryStepperUp(root)!;
       up.click();
@@ -382,11 +384,11 @@ describe('cor-numeric-input', () => {
   });
 
   describe('disabled + readonly behavior', () => {
-    it('passes disabled through to the native input', async () => {
+    it('passes disabled through to the native input (native attr only — no redundant aria-disabled)', async () => {
       const { root } = await render(<cor-numeric-input label="x" disabled></cor-numeric-input>);
       const native = queryNative(root);
       expect(native?.disabled).toBe(true);
-      expect(native?.getAttribute('aria-disabled')).toBe('true');
+      expect(native?.hasAttribute('aria-disabled')).toBe(false);
     });
 
     it('hides the stepper stack when disabled', async () => {
@@ -406,12 +408,13 @@ describe('cor-numeric-input', () => {
       expect(queryNative(root)?.readOnly).toBe(true);
     });
 
-    it('readonly is distinct from disabled — input stays focusable and not aria-disabled', async () => {
+    it('readonly is distinct from disabled — input stays focusable (native readonly only)', async () => {
       const { root } = await render(<cor-numeric-input label="x" readonly value={5}></cor-numeric-input>);
       const native = queryNative(root);
       expect(native?.disabled).toBe(false);
-      expect(native?.getAttribute('aria-disabled')).toBeNull();
-      expect(native?.getAttribute('aria-readonly')).toBe('true');
+      expect(native?.hasAttribute('aria-disabled')).toBe(false);
+      expect(native?.hasAttribute('aria-readonly')).toBe(false);
+      expect(native?.readOnly).toBe(true);
       expect(root?.classList.contains('is-readonly')).toBe(true);
       expect(root?.classList.contains('is-disabled')).toBe(false);
     });
@@ -448,13 +451,15 @@ describe('cor-numeric-input', () => {
     });
 
     it('forwards aria-valuetext to the native input', async () => {
-      const { root } = await render(<cor-numeric-input label="x" value={5} aria-valuetext="5 lei"></cor-numeric-input>);
+      const { root } = await render(<cor-numeric-input label="x" value={5} ariaValuetext="5 lei"></cor-numeric-input>);
       expect(queryNative(root)?.getAttribute('aria-valuetext')).toBe('5 lei');
     });
 
-    it('exposes aria-required when required', async () => {
+    it('marks the native input as required (native attr only — no redundant aria-required)', async () => {
       const { root } = await render(<cor-numeric-input label="x" required></cor-numeric-input>);
-      expect(queryNative(root)?.getAttribute('aria-required')).toBe('true');
+      const native = queryNative(root);
+      expect(native?.required).toBe(true);
+      expect(native?.hasAttribute('aria-required')).toBe(false);
     });
 
     it('exposes aria-invalid when invalid', async () => {
@@ -463,21 +468,21 @@ describe('cor-numeric-input', () => {
     });
 
     it('uses aria-label as the accessible name when no visible label is present', async () => {
-      const { root } = await render(<cor-numeric-input aria-label="Quantity"></cor-numeric-input>);
+      const { root } = await render(<cor-numeric-input ariaLabel="Quantity"></cor-numeric-input>);
       const native = queryNative(root);
       expect(native?.getAttribute('aria-label')).toBe('Quantity');
       expect(native?.getAttribute('aria-labelledby')).toBeNull();
     });
 
     it('exposes Romanian aria-labels on stepper buttons by default', async () => {
-      const { root } = await render(<cor-numeric-input label="x"></cor-numeric-input>);
+      const { root } = await render(<cor-numeric-input label="x" show-steppers></cor-numeric-input>);
       expect(queryStepperUp(root)?.getAttribute('aria-label')).toBe('Crește');
       expect(queryStepperDown(root)?.getAttribute('aria-label')).toBe('Scade');
     });
 
     it('honors custom increment / decrement labels', async () => {
       const { root } = await render(
-        <cor-numeric-input label="x" increment-label="Plus" decrement-label="Minus"></cor-numeric-input>,
+        <cor-numeric-input label="x" show-steppers increment-label="Plus" decrement-label="Minus"></cor-numeric-input>,
       );
       expect(queryStepperUp(root)?.getAttribute('aria-label')).toBe('Plus');
       expect(queryStepperDown(root)?.getAttribute('aria-label')).toBe('Minus');
@@ -590,6 +595,67 @@ describe('cor-numeric-input', () => {
       expect(warn).toHaveBeenCalledWith(expect.stringContaining('variant="warning"'));
       expect(root?.getAttribute('variant')).toBe('default');
       warn.mockRestore();
+    });
+  });
+
+  describe('form validity', () => {
+    type InstanceWithInternals = { internals: ElementInternals };
+
+    it('sets valueMissing on transition from filled to empty when required', async () => {
+      const { root } = await render(<cor-numeric-input label="x" required value={5}></cor-numeric-input>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { value: number | undefined }).value = undefined;
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toEqual({ valueMissing: true });
+      spy.mockRestore();
+    });
+
+    it('reports rangeUnderflow when value drops below min', async () => {
+      const { root } = await render(<cor-numeric-input label="x" min={0} value={5}></cor-numeric-input>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { value: number }).value = -1;
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toEqual({ rangeUnderflow: true });
+      spy.mockRestore();
+    });
+
+    it('reports rangeOverflow when value exceeds max', async () => {
+      const { root } = await render(<cor-numeric-input label="x" max={10} value={5}></cor-numeric-input>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { value: number }).value = 50;
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toEqual({ rangeOverflow: true });
+      spy.mockRestore();
+    });
+
+    it('re-syncs validity when required toggles', async () => {
+      const { root } = await render(<cor-numeric-input label="x"></cor-numeric-input>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { required: boolean }).required = true;
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toEqual({ valueMissing: true });
+      spy.mockRestore();
+    });
+
+    it('uses error-text as the validation message when set', async () => {
+      const { root } = await render(
+        <cor-numeric-input label="x" required value={5} error-text="Câmp obligatoriu"></cor-numeric-input>,
+      );
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { value: number | undefined }).value = undefined;
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[1]).toBe('Câmp obligatoriu');
+      spy.mockRestore();
     });
   });
 });

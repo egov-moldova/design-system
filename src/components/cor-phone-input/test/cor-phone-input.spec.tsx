@@ -37,6 +37,15 @@ const querySpinner = (root: Element | null | undefined): HTMLElement | null =>
 const queryValidIcon = (root: Element | null | undefined): HTMLElement | null =>
   (root?.shadowRoot?.querySelector('.valid-icon') ?? null) as HTMLElement | null;
 
+const queryClearButton = (root: Element | null | undefined): HTMLButtonElement | null =>
+  (root?.shadowRoot?.querySelector('.clear-button') ?? null) as HTMLButtonElement | null;
+
+const querySearchClearButton = (root: Element | null | undefined): HTMLButtonElement | null =>
+  (root?.shadowRoot?.querySelector('.listbox-search-clear') ?? null) as HTMLButtonElement | null;
+
+const querySearchInput = (root: Element | null | undefined): HTMLInputElement | null =>
+  (root?.shadowRoot?.querySelector('.listbox-search-input') ?? null) as HTMLInputElement | null;
+
 const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
 
 // Stencil-test renders shadow DOM but JSX event handlers (onKeyDown / onPaste)
@@ -451,6 +460,20 @@ describe('cor-phone-input', () => {
       await flush();
       expect(root?.hasAttribute('open')).toBe(false);
     });
+
+    it('does not emit corOpen/corClose when open is changed externally', async () => {
+      const onOpen = vi.fn();
+      const onClose = vi.fn();
+      const { root } = await render(
+        <cor-phone-input label="x" type="international" onCorOpen={onOpen} onCorClose={onClose}></cor-phone-input>,
+      );
+      (root as unknown as { open: boolean }).open = true;
+      await flush();
+      (root as unknown as { open: boolean }).open = false;
+      await flush();
+      expect(onOpen).not.toHaveBeenCalled();
+      expect(onClose).not.toHaveBeenCalled();
+    });
   });
 
   describe('paste detection', () => {
@@ -546,13 +569,14 @@ describe('cor-phone-input', () => {
   });
 
   describe('disabled + readonly', () => {
-    it('passes disabled through to the native input and trigger', async () => {
+    it('passes disabled through to the native input and trigger (native attrs only)', async () => {
       const { root } = await render(<cor-phone-input label="x" type="international" disabled></cor-phone-input>);
       const native = queryNative(root);
       const trigger = queryTriggerButton(root);
       expect(native?.disabled).toBe(true);
-      expect(native?.getAttribute('aria-disabled')).toBe('true');
+      expect(native?.hasAttribute('aria-disabled')).toBe(false);
       expect(trigger?.hasAttribute('disabled')).toBe(true);
+      expect(trigger?.hasAttribute('aria-disabled')).toBe(false);
     });
 
     it('disabled blocks listbox open', async () => {
@@ -571,11 +595,12 @@ describe('cor-phone-input', () => {
       expect(native?.readOnly).toBe(true);
     });
 
-    it('readonly is distinct from disabled — input has aria-readonly, NOT aria-disabled', async () => {
+    it('readonly is distinct from disabled — input keeps native readonly only', async () => {
       const { root } = await render(<cor-phone-input label="x" readonly></cor-phone-input>);
       const native = queryNative(root);
-      expect(native?.getAttribute('aria-readonly')).toBe('true');
-      expect(native?.getAttribute('aria-disabled')).toBeNull();
+      expect(native?.readOnly).toBe(true);
+      expect(native?.hasAttribute('aria-readonly')).toBe(false);
+      expect(native?.hasAttribute('aria-disabled')).toBe(false);
       expect(root?.classList.contains('is-readonly')).toBe(true);
       expect(root?.classList.contains('is-disabled')).toBe(false);
     });
@@ -668,13 +693,25 @@ describe('cor-phone-input', () => {
       expect(label?.id).toBe(id);
     });
 
-    it('exposes aria-required when required', async () => {
+    it('marks the native input as required (native attr only — no redundant aria-required)', async () => {
       const { root } = await render(<cor-phone-input label="x" required></cor-phone-input>);
-      expect(queryNative(root)?.getAttribute('aria-required')).toBe('true');
+      const native = queryNative(root);
+      expect(native?.required).toBe(true);
+      expect(native?.hasAttribute('aria-required')).toBe(false);
     });
 
     it('exposes aria-invalid when invalid', async () => {
       const { root } = await render(<cor-phone-input label="x" invalid></cor-phone-input>);
+      expect(queryNative(root)?.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('exposes aria-invalid when required value is missing', async () => {
+      const { root } = await render(<cor-phone-input label="x" required></cor-phone-input>);
+      expect(queryNative(root)?.getAttribute('aria-invalid')).toBe('true');
+    });
+
+    it('exposes aria-invalid when current value is too short', async () => {
+      const { root } = await render(<cor-phone-input label="x" value="+3736212"></cor-phone-input>);
       expect(queryNative(root)?.getAttribute('aria-invalid')).toBe('true');
     });
 
@@ -743,6 +780,24 @@ describe('cor-phone-input', () => {
     });
   });
 
+  describe('keyboard reachable clear actions', () => {
+    it('keeps the value clear button in the tab order when visible', async () => {
+      const { root } = await render(<cor-phone-input label="x" value="+37362123456"></cor-phone-input>);
+      queryNative(root)?.dispatchEvent(new FocusEvent('focus'));
+      await flush();
+      expect(queryClearButton(root)?.hasAttribute('tabindex')).toBe(false);
+    });
+
+    it('keeps the search clear button in the tab order when visible', async () => {
+      const { root } = await render(<cor-phone-input label="x" type="international" open></cor-phone-input>);
+      const search = querySearchInput(root)!;
+      search.value = 'ro';
+      search.dispatchEvent(new Event('input', { bubbles: true }));
+      await flush();
+      expect(querySearchClearButton(root)?.hasAttribute('tabindex')).toBe(false);
+    });
+  });
+
   describe('form lifecycle', () => {
     it('formResetCallback restores initial value and country', async () => {
       const { root } = await render(
@@ -759,6 +814,44 @@ describe('cor-phone-input', () => {
       (root as unknown as { formStateRestoreCallback: (s: string) => void }).formStateRestoreCallback('+447911123456');
       await flush();
       expect(queryTrigger(root)?.textContent).toContain('+44');
+    });
+  });
+
+  describe('form validity', () => {
+    type InstanceWithInternals = { internals: ElementInternals };
+
+    it('sets valueMissing on transition from filled to empty when required', async () => {
+      const { root } = await render(<cor-phone-input label="x" required value="+37362123456"></cor-phone-input>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { value: string }).value = '';
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toEqual({ valueMissing: true });
+      spy.mockRestore();
+    });
+
+    it('reports tooShort when value has fewer digits than minLen', async () => {
+      const { root } = await render(<cor-phone-input label="x" value="+37362123456"></cor-phone-input>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      // Moldova requires 8 digits; "+3736212" is only 4 local digits.
+      (root as unknown as { value: string }).value = '+3736212';
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toMatchObject({ tooShort: true });
+      spy.mockRestore();
+    });
+
+    it('re-syncs validity when required toggles', async () => {
+      const { root } = await render(<cor-phone-input label="x"></cor-phone-input>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { required: boolean }).required = true;
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toEqual({ valueMissing: true });
+      spy.mockRestore();
     });
   });
 });

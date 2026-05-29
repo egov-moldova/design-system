@@ -16,14 +16,14 @@ the `items` prop on `cor-breadcrumb`. Both APIs are equivalent in behavior.
 
 ## Properties
 
-| Property   | Attribute  | Description                                                                                                                                            | Type                  | Default     |
-| ---------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------- | ----------- |
-| `active`   | `active`   | Marks this crumb as the current page. Adds `aria-current="page"`, switches to medium font weight, and disables navigation (renders as text).           | `boolean`             | `false`     |
-| `disabled` | `disabled` | Disables interaction and applies the disabled text color.                                                                                              | `boolean`             | `false`     |
-| `href`     | `href`     | Optional navigation target. Renders as `<a>` when set, otherwise as `<span>`. Ignored when `active` is true (active crumb is always rendered as text). | `string \| undefined` | `undefined` |
-| `label`    | `label`    | Accessible name override — required when the default slot is empty.                                                                                    | `string \| undefined` | `undefined` |
-| `loading`  | `loading`  | Replaces the label with a spinner while keeping the crumb width. Used for async navigation where the parent page hasn't loaded yet.                    | `boolean`             | `false`     |
-| `visited`  | `visited`  | Visited link styling — text turns magenta (`--color-text-brand-visited`). Maps to the CSS pseudo-state for declarative use cases.                      | `boolean`             | `false`     |
+| Property   | Attribute  | Description                                                                                                                                                                                                                                                                 | Type                  | Default     |
+| ---------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | ----------- |
+| `active`   | `active`   | Marks this crumb as the current page. Adds `aria-current="page"`, switches to medium font weight, and disables navigation (renders as text).                                                                                                                                | `boolean`             | `false`     |
+| `disabled` | `disabled` | Disables interaction and applies the disabled text color.                                                                                                                                                                                                                   | `boolean`             | `false`     |
+| `href`     | `href`     | Optional navigation target. Renders as `<a>` when set, otherwise as `<span>`. Ignored when `active` is true (active crumb is always rendered as text).                                                                                                                      | `string \| undefined` | `undefined` |
+| `label`    | `label`    | Accessible-name fallback when the default slot is empty (e.g. icon-only crumb). If the slot contains visible text, that text is the accessible name — this prop is NOT applied as an `aria-label` override on the rendered element to preserve the slot-first content rule. | `string \| undefined` | `undefined` |
+| `loading`  | `loading`  | Replaces the label with a spinner while keeping the crumb width. Used for async navigation where the parent page hasn't loaded yet.                                                                                                                                         | `boolean`             | `false`     |
+| `visited`  | `visited`  | Visited link styling — text turns magenta (`--color-text-brand-visited`). Maps to the CSS pseudo-state for declarative use cases.                                                                                                                                           | `boolean`             | `false`     |
 
 
 ## Events
@@ -35,9 +35,10 @@ the `items` prop on `cor-breadcrumb`. Both APIs are equivalent in behavior.
 
 ## Slots
 
-| Slot | Description                                                                        |
-| ---- | ---------------------------------------------------------------------------------- |
-|      | (default) Label content. Use plain text or inline elements (`<strong>`, `<span>`). |
+| Slot           | Description                                                                        |
+| -------------- | ---------------------------------------------------------------------------------- |
+|                | (default) Label content. Use plain text or inline elements (`<strong>`, `<span>`). |
+| `"icon-start"` | Optional leading icon (use `<cor-icon>`).                                          |
 
 
 ## Dependencies
@@ -45,11 +46,13 @@ the `items` prop on `cor-breadcrumb`. Both APIs are equivalent in behavior.
 ### Depends on
 
 - [cor-spinner](../cor-spinner)
+- [cor-tooltip](../cor-tooltip)
 
 ### Graph
 ```mermaid
 graph TD;
   cor-breadcrumb-item --> cor-spinner
+  cor-breadcrumb-item --> cor-tooltip
   style cor-breadcrumb-item fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

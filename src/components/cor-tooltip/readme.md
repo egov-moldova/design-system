@@ -61,6 +61,21 @@ Variants:
 | `"trigger"`     | The element the tooltip describes (button, icon, link).                   |
 
 
+## Dependencies
+
+### Used by
+
+ - [cor-breadcrumb](../cor-breadcrumb)
+ - [cor-breadcrumb-item](../cor-breadcrumb)
+
+### Graph
+```mermaid
+graph TD;
+  cor-breadcrumb --> cor-tooltip
+  cor-breadcrumb-item --> cor-tooltip
+  style cor-tooltip fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

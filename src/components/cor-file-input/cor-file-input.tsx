@@ -126,8 +126,15 @@ export class CorFileInput {
    */
   @Prop({ mutable: true }) files: File[] = [];
 
-  /** Accessible name; mirrors to the drop zone's `aria-label` when no visible label. */
-  @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
+  /**
+   * Accessible name; mirrors to the drop zone's `aria-label` when no visible
+   * label is provided. Setting `aria-label` directly on the host also works —
+   * captured on connect into `resolvedAriaLabel` and stripped to avoid
+   * Stencil's attribute-observer / render-loop antipattern (same pattern as
+   * cor-radio / cor-switch / cor-tooltip / cor-accordion / cor-breadcrumb /
+   * cor-date-picker / cor-modal / cor-pagination / cor-receipt).
+   */
+  @Prop() ariaLabel?: string;
 
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
@@ -136,6 +143,7 @@ export class CorFileInput {
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
   @State() private announcement: string = '';
+  @State() private resolvedAriaLabel?: string;
 
   @Element() host!: HTMLCorFileInputElement;
 
@@ -170,7 +178,29 @@ export class CorFileInput {
   private dragDepth: number = 0;
 
   componentWillLoad() {
+    this.captureAriaLabel();
     this.syncFormValue(this.files);
+    this.syncValidity(this.files);
+  }
+
+  private captureAriaLabel(): void {
+    const userLabel = this.host.getAttribute('aria-label');
+    if (userLabel && userLabel.length > 0) {
+      this.resolvedAriaLabel = userLabel;
+      this.host.removeAttribute('aria-label');
+    } else if (this.ariaLabel && this.ariaLabel.length > 0) {
+      this.resolvedAriaLabel = this.ariaLabel;
+    }
+  }
+
+  @Watch('ariaLabel')
+  protected syncAriaLabelProp(next?: string): void {
+    if (next && next.length > 0) this.resolvedAriaLabel = next;
+  }
+
+  @Watch('required')
+  protected onRequiredChange() {
+    this.syncValidity(this.files);
   }
 
   @Watch('size')
@@ -198,6 +228,9 @@ export class CorFileInput {
     this.files = [];
     this.syncFormValue([]);
     this.announcement = '';
+    // setValidity is already called inside syncFormValue → syncValidity; calling
+    // it here too would be redundant. Left as a comment so the reset contract
+    // (value + validity wiped together) is obvious to future readers.
   }
 
   formStateRestoreCallback(state: FormData | string | File | null) {
@@ -226,6 +259,27 @@ export class CorFileInput {
       formData.append(this.name, file);
     }
     this.internals.setFormValue(formData, formData);
+    this.syncValidity(files);
+  }
+
+  /**
+   * Mirror the component's validation state onto `ElementInternals` so the
+   * native form submission flow respects `required`. Without this, a required
+   * file-input could submit with zero files because the browser asks
+   * `internals.validity`, not the visual `invalid` prop. Anchor on the hidden
+   * native input so focus/scroll-into-view works during constraint validation.
+   */
+  private syncValidity(files: File[]) {
+    if (!this.internals) return;
+    const isMissing = this.required && files.length === 0;
+    const flags: ValidityStateFlags = { valueMissing: isMissing };
+    const anchor = this.nativeInput ?? undefined;
+    if (isMissing) {
+      const msg = this.errorText && this.errorText.length > 0 ? this.errorText : 'Acest câmp este obligatoriu.';
+      this.internals.setValidity(flags, msg, anchor);
+    } else {
+      this.internals.setValidity({}, undefined, anchor);
+    }
   }
 
   private onLabelSlotChange = (ev: Event) => {
@@ -360,14 +414,6 @@ export class CorFileInput {
     if (this.isInert()) return;
     ev.preventDefault();
     this.nativeInput?.click();
-  };
-
-  private handleBrowseKey = (ev: KeyboardEvent) => {
-    if (this.isInert()) return;
-    if (ev.key === 'Enter' || ev.key === ' ') {
-      ev.preventDefault();
-      this.nativeInput?.click();
-    }
   };
 
   private handleNativeChange = (ev: Event) => {
@@ -522,7 +568,7 @@ export class CorFileInput {
     const labelText = this.label?.trim();
     const helperText = this.helperText?.trim();
     const errorText = this.errorText?.trim();
-    const ariaLabelAttr = !this.hasVisibleLabel() ? this.ariaLabel : undefined;
+    const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
     const isActiveNow = this.isActive && !effectivelyDisabled;
     const supportedFormats = this.resolvedSupportedFormatsText();
     const maxSizeCaption = this.resolvedMaxSizeText();
@@ -555,22 +601,21 @@ export class CorFileInput {
           id={this.dropzoneId}
           class="dropzone"
           part="dropzone"
-          role="button"
-          tabIndex={effectivelyDisabled ? -1 : 0}
-          aria-label={ariaLabelAttr}
-          aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
-          aria-describedby={this.describedBy()}
-          aria-disabled={effectivelyDisabled ? 'true' : null}
-          aria-invalid={this.invalid ? 'true' : null}
-          aria-required={this.required ? 'true' : null}
+          /* Drop-target only — no `role="button"` / `tabIndex` here. ARIA forbids
+             a button-role on an element that contains a focusable descendant
+             (the inner "Alege fișiere" `<button>`), and `aria-required` is not
+             allowed on `role="button"`. The inner button is the keyboard
+             activator; clicks anywhere on the dropzone still bubble to it.
+
+             `aria-label` / `aria-labelledby` / `aria-describedby` are NOT set
+             here either — ARIA's `aria-prohibited-attr` rule disallows them
+             on generic (`<div>`-without-role) elements. Those associations
+             live on the inner button (the actual interactive control). */
           onClick={this.handleBrowseClick}
-          onKeyDown={this.handleBrowseKey}
           onDragEnter={this.handleDragEnter}
           onDragOver={this.handleDragOver}
           onDragLeave={this.handleDragLeave}
           onDrop={this.handleDrop}
-          onFocus={this.handleFocus}
-          onBlur={this.handleBlur}
         >
           {!isActiveNow ? (
             <span class="dropzone-icon" part="dropzone-icon" aria-hidden="true">
@@ -594,7 +639,13 @@ export class CorFileInput {
                   tabIndex={effectivelyDisabled ? -1 : 0}
                   disabled={effectivelyDisabled}
                   aria-disabled={effectivelyDisabled ? 'true' : null}
+                  aria-label={ariaLabelAttr}
+                  aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
+                  aria-describedby={this.describedBy()}
+                  aria-invalid={this.invalid ? 'true' : null}
                   onClick={this.handleChooseFilesClick}
+                  onFocus={this.handleFocus}
+                  onBlur={this.handleBlur}
                 >
                   {this.chooseFilesText}
                 </button>

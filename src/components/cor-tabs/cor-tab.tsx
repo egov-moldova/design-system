@@ -1,4 +1,4 @@
-import { Component, Element, Event, EventEmitter, Host, Listen, Prop, h } from '@stencil/core';
+import { Component, Element, Event, EventEmitter, Host, Listen, Prop, State, h } from '@stencil/core';
 
 let tabInstanceCounter = 0;
 
@@ -48,6 +48,8 @@ export class CorTab {
   /** Id of the panel this tab controls. Set by the parent `cor-tabs`. */
   @Prop({ reflect: true, attribute: 'panel-id' }) panelId?: string;
 
+  @State() private hasLabelSlot: boolean = false;
+
   @Element() host!: HTMLCorTabElement;
 
   /**
@@ -67,6 +69,14 @@ export class CorTab {
       this.host.id = this.internalId;
     }
   }
+
+  private onLabelSlotChange = (ev: Event) => {
+    const slot = ev.target as HTMLSlotElement;
+    this.hasLabelSlot = slot.assignedNodes({ flatten: true }).some(node => {
+      if (node.nodeType === Node.TEXT_NODE) return (node.textContent ?? '').trim().length > 0;
+      return true;
+    });
+  };
 
   private handleClick = (ev: MouseEvent) => {
     if (this.disabled) {
@@ -107,7 +117,8 @@ export class CorTab {
             {this.iconName ? <cor-icon class="tab__icon" name={this.iconName} size={iconSize}></cor-icon> : null}
           </slot>
           <span class="tab__label" part="label">
-            <slot>{this.label}</slot>
+            {this.hasLabelSlot ? null : this.label}
+            <slot onSlotchange={this.onLabelSlotChange} />
           </span>
         </span>
         <slot name="badge">

@@ -248,23 +248,23 @@ describe('cor-textarea', () => {
     it('passes disabled through to the native textarea', async () => {
       const { root } = await render(<cor-textarea label="x" disabled></cor-textarea>);
       const native = queryNative(root);
-      // mock-doc renders booleans as attributes — assert the attribute, not the IDL prop.
+      // Native `disabled` is the source of truth; aria-disabled duplication is dropped.
       expect(native?.hasAttribute('disabled')).toBe(true);
-      expect(native?.getAttribute('aria-disabled')).toBe('true');
+      expect(native?.getAttribute('aria-disabled')).toBeNull();
     });
 
     it('passes readonly through to the native textarea', async () => {
       const { root } = await render(<cor-textarea label="x" readonly value="x"></cor-textarea>);
       const native = queryNative(root);
+      // Native `readonly` is the source of truth; aria-readonly duplication is dropped.
       expect(native?.hasAttribute('readonly')).toBe(true);
-      expect(native?.getAttribute('aria-readonly')).toBe('true');
+      expect(native?.getAttribute('aria-readonly')).toBeNull();
     });
 
-    it('readonly is distinct from disabled — input stays focusable and not aria-disabled', async () => {
+    it('readonly is distinct from disabled — input stays focusable and not disabled', async () => {
       const { root } = await render(<cor-textarea label="x" readonly value="x"></cor-textarea>);
       const native = queryNative(root);
       expect(native?.hasAttribute('disabled')).toBe(false);
-      expect(native?.getAttribute('aria-disabled')).toBeNull();
       expect(root?.classList.contains('is-readonly')).toBe(true);
       expect(root?.classList.contains('is-disabled')).toBe(false);
     });
@@ -295,9 +295,12 @@ describe('cor-textarea', () => {
       expect(label?.id).toBe(id);
     });
 
-    it('exposes aria-required when required', async () => {
+    it('exposes the native `required` attribute when required (no aria-required dup)', async () => {
       const { root } = await render(<cor-textarea label="x" required></cor-textarea>);
-      expect(queryNative(root)?.getAttribute('aria-required')).toBe('true');
+      const native = queryNative(root);
+      // Native `required` already conveys the semantic to AT; dropped aria-required.
+      expect(native?.hasAttribute('required')).toBe(true);
+      expect(native?.getAttribute('aria-required')).toBeNull();
     });
 
     it('exposes aria-invalid when invalid', async () => {
@@ -362,5 +365,73 @@ describe('cor-textarea', () => {
         warn.mockRestore();
       },
     );
+  });
+
+  describe('aria-label capture', () => {
+    it('captures the host aria-label into a state field and strips the attribute', async () => {
+      const { root } = await render(<cor-textarea aria-label="Comentarii"></cor-textarea>);
+      await flush();
+      expect(root?.hasAttribute('aria-label')).toBe(false);
+      const native = queryNative(root);
+      expect(native?.getAttribute('aria-label')).toBe('Comentarii');
+    });
+
+    it('keeps using the captured value after the host attribute is gone', async () => {
+      const { root } = await render(<cor-textarea aria-label="Comentarii"></cor-textarea>);
+      await flush();
+      // Re-render via prop change; aria-label must persist.
+      (root as unknown as { variant: string }).variant = 'destructive';
+      await flush();
+      expect(queryNative(root)?.getAttribute('aria-label')).toBe('Comentarii');
+    });
+  });
+
+  describe('form validity', () => {
+    type InstanceWithInternals = { internals: ElementInternals };
+
+    it('sets valueMissing on transition from filled to empty when required', async () => {
+      const { root } = await render(<cor-textarea label="x" required value="hello"></cor-textarea>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { value: string }).value = '';
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toEqual({ valueMissing: true });
+      spy.mockRestore();
+    });
+
+    it('clears validity when value is set and required is true', async () => {
+      const { root } = await render(<cor-textarea label="x" required></cor-textarea>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { value: string }).value = 'hello';
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toEqual({});
+      spy.mockRestore();
+    });
+
+    it('re-syncs validity when required toggles', async () => {
+      const { root } = await render(<cor-textarea label="x"></cor-textarea>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { required: boolean }).required = true;
+      await flush();
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toEqual({ valueMissing: true });
+      spy.mockRestore();
+    });
+
+    it('resets validity on formResetCallback', async () => {
+      const { root } = await render(<cor-textarea label="x" required value="hello"></cor-textarea>);
+      const internals = (root as unknown as InstanceWithInternals).internals;
+      const spy = vi.spyOn(internals, 'setValidity');
+      (root as unknown as { formResetCallback: () => void }).formResetCallback();
+      await flush();
+      // initialValue was 'hello' so reset keeps the value → no valueMissing.
+      const lastCall = spy.mock.calls[spy.mock.calls.length - 1];
+      expect(lastCall?.[0]).toEqual({});
+      spy.mockRestore();
+    });
   });
 });
