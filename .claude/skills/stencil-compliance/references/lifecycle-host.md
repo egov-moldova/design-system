@@ -248,7 +248,7 @@ Need to manipulate host?
 
 ### Project-specific extras
 
-- `getHostClasses()` helper pattern — see `src/components/cor-accordion/cor-accordion.tsx` for reference:
+- `getHostClasses()` helper pattern — see `src/components/mud-accordion/mud-accordion.tsx` for reference:
   ```ts
   private getHostClasses(): string {
     const classes: string[] = [];

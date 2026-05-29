@@ -1,11 +1,11 @@
 ---
 name: accessibility-compliance
-description: Use when designing, implementing, auditing, or modifying any component to ensure WCAG 2.1 Level AA conformance. Covers color contrast, keyboard navigation, ARIA, focus management, motion preferences, screen reader compatibility, and dark mode validation. Required reference for all `cor-*` components.
+description: Use when designing, implementing, auditing, or modifying any component to ensure WCAG 2.1 Level AA conformance. Covers color contrast, keyboard navigation, ARIA, focus management, motion preferences, screen reader compatibility, and dark mode validation. Required reference for all `mud-*` components.
 ---
 
 # Accessibility Compliance — WCAG 2.1 Level AA
 
-**Target standard:** WCAG 2.1 Level AA. Every `cor-*` component must conform.
+**Target standard:** WCAG 2.1 Level AA. Every `mud-*` component must conform.
 
 **Project source of truth:** [Figma Components — node 2753-5965](https://www.figma.com/design/doJ7tDY0PlQ0PqMgbpFVIC/Components?node-id=2753-5965&m=dev) (project-specific addendum to 2.1 AA — see Section 7).
 
@@ -169,7 +169,7 @@ When implementing or modifying a component:
 1. **Before coding** — read this Skill + relevant component pattern in `references/aria-patterns.md`.
 2. **During coding** — apply checklists from Sections 3 & 4.
 3. **Before commit** — run `yarn audit:contrast` (token-level) + Storybook a11y addon (component-level).
-4. **Before PR** — run `/audit-accessibility @cor-<name>` for deep audit (keyboard flow, ARIA states, focus contrast, both modes).
+4. **Before PR** — run `/audit-accessibility @mud-<name>` for deep audit (keyboard flow, ARIA states, focus contrast, both modes).
 5. **Component migration** — `/migrate-component` blocks graduation from `src/hidden/` to `src/components/` if a11y audit fails.
 
 ---

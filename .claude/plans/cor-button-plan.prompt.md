@@ -1,10 +1,10 @@
-# Redesign `cor-button` — AGE Design System
+# Redesign `mud-button` — AGE Design System
 
 ## Context
 
-`cor-button` is the next legacy atom queued for redesign, following the spinner → icon → button order documented in `memory/legacy-components-migration.md`. The legacy implementation at [src/legacy/cor-button/](src/legacy/cor-button/) exposes 12 colour variants × 4 sizes (`tiny`/`sm`/`md`/`lg`) using a flat CSS-variable API. The new AGE design system in Figma file `doJ7tDY0PlQ0PqMgbpFVIC` (primary node `653:14291`, state matrix `653:19201`) consolidates these into **5 filled variants × 3 sizes**, introduces a new shape axis (`rectangular`/`circular`), and adds first-class `loading` + slot-driven `icon-only` rendering.
+`mud-button` is the next legacy atom queued for redesign, following the spinner → icon → button order documented in `memory/legacy-components-migration.md`. The legacy implementation at [src/legacy/mud-button/](src/legacy/mud-button/) exposes 12 colour variants × 4 sizes (`tiny`/`sm`/`md`/`lg`) using a flat CSS-variable API. The new AGE design system in Figma file `doJ7tDY0PlQ0PqMgbpFVIC` (primary node `653:14291`, state matrix `653:19201`) consolidates these into **5 filled variants × 3 sizes**, introduces a new shape axis (`rectangular`/`circular`), and adds first-class `loading` + slot-driven `icon-only` rendering.
 
-The goal of this redesign is to ship a production-ready `src/components/cor-button/` that is Figma-pixel-perfect, follows the spinner/icon precedent (CSS Pattern A — slot-based, consumer-supplied `<button>`/`<a>`), uses the 3-tier token hierarchy, and unlocks the next wave of legacy-consumer migrations (`cor-calendar`, `cor-modal`, `cor-pagination-go-to`, `cor-upload-area`). The legacy folder stays untouched so existing consumers keep working until they are migrated one-by-one in follow-up PRs.
+The goal of this redesign is to ship a production-ready `src/components/mud-button/` that is Figma-pixel-perfect, follows the spinner/icon precedent (CSS Pattern A — slot-based, consumer-supplied `<button>`/`<a>`), uses the 3-tier token hierarchy, and unlocks the next wave of legacy-consumer migrations (`mud-calendar`, `mud-modal`, `mud-pagination-go-to`, `mud-upload-area`). The legacy folder stays untouched so existing consumers keep working until they are migrated one-by-one in follow-up PRs.
 
 Out of scope (separate follow-up specs): **Button Outlined**, **Button Text**, **Button w/ Badge**.
 
@@ -18,28 +18,28 @@ Out of scope (separate follow-up specs): **Button Outlined**, **Button Text**, *
 | `tokens/core/focus-ring.tokens.json` | Shared focus-ring tokens (`focusRing.color.inner`, `focusRing.color.outer`, `focusRing.shadow.medium`) — reusable by future interactive atoms. |
 | `tokens/core/components/button.tokens.json` | DTCG button tokens — 5 variants × 6 states × 4 elements + size rungs + shape radii. |
 | `tokens/core.dark/components/button.tokens.json` | Dark-mode overrides for the variant × state colour grid (extracted from Figma state matrix `653:19201` dark frames). |
-| `src/components/cor-button/cor-button.tsx` | Stencil component, Pattern A, slot-driven icon-only + loading detection. |
-| `src/components/cor-button/cor-button.css` | `:host` + `::slotted(button)` / `::slotted(a)` styles; logical properties; reduced-motion guard. |
-| `src/components/cor-button/cor-button.types.ts` | `BUTTON_SIZES` / `BUTTON_VARIANTS` / `BUTTON_SHAPES` const arrays + types (matches [cor-spinner.types.ts](src/components/cor-spinner/cor-spinner.types.ts)). |
-| `src/components/cor-button/cor-button.constants.ts` | Local `BUTTON_TAGS = ['button', 'a']` (not promoted to shared.constants.ts — only one consumer). |
-| `src/components/cor-button/cor-button.stories.ts` | CSF3 stories per archetype-router gated set (see § 7). |
-| `src/components/cor-button/test/cor-button.spec.tsx` | `@stencil/vitest` unit suite — props, slots, ARIA, slot validation, loading/disabled gates. |
+| `src/components/mud-button/mud-button.tsx` | Stencil component, Pattern A, slot-driven icon-only + loading detection. |
+| `src/components/mud-button/mud-button.css` | `:host` + `::slotted(button)` / `::slotted(a)` styles; logical properties; reduced-motion guard. |
+| `src/components/mud-button/mud-button.types.ts` | `BUTTON_SIZES` / `BUTTON_VARIANTS` / `BUTTON_SHAPES` const arrays + types (matches [mud-spinner.types.ts](src/components/mud-spinner/mud-spinner.types.ts)). |
+| `src/components/mud-button/mud-button.constants.ts` | Local `BUTTON_TAGS = ['button', 'a']` (not promoted to shared.constants.ts — only one consumer). |
+| `src/components/mud-button/mud-button.stories.ts` | CSF3 stories per archetype-router gated set (see § 7). |
+| `src/components/mud-button/test/mud-button.spec.tsx` | `@stencil/vitest` unit suite — props, slots, ARIA, slot validation, loading/disabled gates. |
 
 ### To modify
 | Path | Change |
 |---|---|
-| `src/index.ts` | Append `export { CorButton } from './components/cor-button/cor-button';` and `export type { ButtonSize, ButtonVariant, ButtonShape, BUTTON_SIZES, BUTTON_VARIANTS, BUTTON_SHAPES } from './components/cor-button/cor-button.types';` after the existing spinner export block. |
+| `src/index.ts` | Append `export { CorButton } from './components/mud-button/mud-button';` and `export type { ButtonSize, ButtonVariant, ButtonShape, BUTTON_SIZES, BUTTON_VARIANTS, BUTTON_SHAPES } from './components/mud-button/mud-button.types';` after the existing spinner export block. |
 
 ### Reused as-is (no edits)
 | Path | Use |
 |---|---|
-| [src/components/cor-spinner/cor-spinner.tsx](src/components/cor-spinner/cor-spinner.tsx) | Loading overlay (`<cor-spinner size="sm\|xs" variant="…">`). |
-| [src/components/cor-icon/cor-icon.tsx](src/components/cor-icon/cor-icon.tsx) | Consumed via `leading-icon` / `trailing-icon` / `icon-only` slots; uses `color="currentColor"` to inherit button label colour. |
+| [src/components/mud-spinner/mud-spinner.tsx](src/components/mud-spinner/mud-spinner.tsx) | Loading overlay (`<mud-spinner size="sm\|xs" variant="…">`). |
+| [src/components/mud-icon/mud-icon.tsx](src/components/mud-icon/mud-icon.tsx) | Consumed via `leading-icon` / `trailing-icon` / `icon-only` slots; uses `color="currentColor"` to inherit button label colour. |
 | [src/utils/invalid-slotted-tag.ts](src/utils/invalid-slotted-tag.ts) | Default-slot validation fallback render. |
 | [src/legacy/shared.constants.ts](src/legacy/shared.constants.ts) | `VALID_ICON_SLOT_TAGS` for `leading-icon` / `trailing-icon` / `icon-only` allowlist. |
 
 ### Untouched (intentional)
-- [src/legacy/cor-button/](src/legacy/cor-button/) — keep until consumers migrate.
+- [src/legacy/mud-button/](src/legacy/mud-button/) — keep until consumers migrate.
 - [tokens/legacy/components/button.tokens.json](tokens/legacy/components/button.tokens.json) — keep, drives legacy CSS vars.
 
 ---
@@ -62,12 +62,12 @@ None. Pattern A opts out — the consumer's slotted `<button>` / `<a>` bubbles i
 | Name | Required | Detection | Allowed tags |
 |---|---|---|---|
 | (default) | yes | `firstElementChild` tag check at render → `invalidSlottedTag()` fallback | `button`, `a` |
-| `leading-icon` | no | `@State() hasLeading` via `onSlotchange` → `getHostClasses()` adds `.has-leading` | `VALID_ICON_SLOT_TAGS` (`cor-icon`) |
+| `leading-icon` | no | `@State() hasLeading` via `onSlotchange` → `getHostClasses()` adds `.has-leading` | `VALID_ICON_SLOT_TAGS` (`mud-icon`) |
 | `trailing-icon` | no | `@State() hasTrailing` → `.has-trailing` | `VALID_ICON_SLOT_TAGS` |
 | `icon-only` | no | `@State() hasIconOnly` → `.is-icon-only` (squares container; requires `aria-label` on slotted root — dev warning if absent) | `VALID_ICON_SLOT_TAGS` |
 
 ### Exported types
-From `src/components/cor-button/cor-button.types.ts`:
+From `src/components/mud-button/mud-button.types.ts`:
 - `BUTTON_SIZES`, `BUTTON_VARIANTS`, `BUTTON_SHAPES` (const tuples)
 - `ButtonSize`, `ButtonVariant`, `ButtonShape` (derived types)
 
@@ -137,9 +137,9 @@ Dark mode counterpart values are extracted at execution time from the dark frame
 Per AGENTS.md § "Build Order" and § "Token-First":
 
 1. **Tokens** — write `tokens/core/focus-ring.tokens.json` → `tokens/core/components/button.tokens.json` → `tokens/core.dark/components/button.tokens.json`. Run `yarn tokens.build`. Run `yarn tokens.validate` until clean (3-tier, no palette refs, DTCG-shape).
-2. **CSS** — `cor-button.css` consuming only `--cor-button-*` and `--focus-ring-*` vars. No hex/px literals. Logical properties throughout (`padding-inline`, `padding-block`, `inset-inline-start`). `@media (prefers-reduced-motion: reduce)` disables transitions + spinner rotation.
-3. **TSX** — `cor-button.tsx` in member order (props → state → element → lifecycle → private → render). Slot detection via `onSlotchange` → `@State`. Declarative `<Host class={this.getHostClasses()}>`. Default-slot validation via `invalidSlottedTag()`. Loading overlay renders `<cor-spinner>` inside shadow tree; size mapped `sm→xs`, `md|lg→sm`.
-4. **Types/constants** — `cor-button.types.ts` (const-tuple pattern from spinner), `cor-button.constants.ts` (`BUTTON_TAGS`).
+2. **CSS** — `mud-button.css` consuming only `--mud-button-*` and `--focus-ring-*` vars. No hex/px literals. Logical properties throughout (`padding-inline`, `padding-block`, `inset-inline-start`). `@media (prefers-reduced-motion: reduce)` disables transitions + spinner rotation.
+3. **TSX** — `mud-button.tsx` in member order (props → state → element → lifecycle → private → render). Slot detection via `onSlotchange` → `@State`. Declarative `<Host class={this.getHostClasses()}>`. Default-slot validation via `invalidSlottedTag()`. Loading overlay renders `<mud-spinner>` inside shadow tree; size mapped `sm→xs`, `md|lg→sm`.
+4. **Types/constants** — `mud-button.types.ts` (const-tuple pattern from spinner), `mud-button.constants.ts` (`BUTTON_TAGS`).
 5. **Registration** — append exports to `src/index.ts`.
 6. **Storybook smoke** — `yarn dx:stencil:once && yarn sp.dev`. Visit `/iframe.html?id=atoms-button--default`. Confirm shadow DOM is clean (no console errors, no missing CSS vars).
 7. **Auxiliary work** — dispatch `parallel-aux-tasks` skill in `parallel-write` mode with the standard 5-subagent set (see § 8).
@@ -153,7 +153,7 @@ Verification gates after each layer:
 
 ## Stories (archetype `atom-interactive` gated set)
 
-Per `src/components/_agents/storybook-stories.md` and the spinner precedent, write these stories in `cor-button.stories.ts`:
+Per `src/components/_agents/storybook-stories.md` and the spinner precedent, write these stories in `mud-button.stories.ts`:
 
 | Story | Purpose |
 |---|---|
@@ -167,13 +167,13 @@ Per `src/components/_agents/storybook-stories.md` and the spinner precedent, wri
 | `LoadingPlayground` | Live `loading` toggle; demonstrates focus + AT preservation + reduced-motion. |
 | `IconOnlyA11yWarning` | An `icon-only` button **without** `aria-label` on the slotted root — used to demonstrate the dev-time console warning. Tagged `['!autodocs']`. |
 | `CoverageGuard` | Mirrors spinner's constructor-branch coverage trick. Hidden. |
-| `ReducedMotion` | Override `--cor-button-transition-duration: 0ms` wrapper; mirrors spinner story 173–209. |
+| `ReducedMotion` | Override `--mud-button-transition-duration: 0ms` wrapper; mirrors spinner story 173–209. |
 
 ---
 
 ## Tests
 
-`src/components/cor-button/test/cor-button.spec.tsx` — `@stencil/vitest` + `render(<jsx>)`. Mirror the [spinner spec](src/components/cor-spinner/test/cor-spinner.spec.tsx) shape. Coverage target ≥ 80% per project standard.
+`src/components/mud-button/test/mud-button.spec.tsx` — `@stencil/vitest` + `render(<jsx>)`. Mirror the [spinner spec](src/components/mud-spinner/test/mud-spinner.spec.tsx) shape. Coverage target ≥ 80% per project standard.
 
 Cases:
 - Default render — variant=primary, size=md, shape=rectangular reflected to host.
@@ -181,7 +181,7 @@ Cases:
 - `it.each(BUTTON_SIZES)` — size attribute reflects + correct min-width applied.
 - `it.each(BUTTON_SHAPES)` — shape attribute reflects.
 - `disabled` prop → host has `aria-disabled="true"` and slotted button has `aria-disabled` mirrored.
-- `loading` prop → host has `aria-busy="true"`, `cor-spinner` rendered in shadow tree with mapped size (`button.sm → spinner.xs`, `button.md|lg → spinner.sm`), variant-mapped colour.
+- `loading` prop → host has `aria-busy="true"`, `mud-spinner` rendered in shadow tree with mapped size (`button.sm → spinner.xs`, `button.md|lg → spinner.sm`), variant-mapped colour.
 - Invalid default-slot tag (e.g. `<p>`) → fallback string from `invalidSlottedTag()` rendered.
 - Valid default slot — `<button>` and `<a>` both accepted.
 - Slot detection — adding/removing `[slot="leading-icon"]` toggles `has-leading` class on host; same for `trailing-icon` and `icon-only`.
@@ -198,9 +198,9 @@ Once the Storybook smoke story renders cleanly, invoke the `parallel-aux-tasks` 
 |---|---|---|
 | `pixel-perfect-verifier` | read-only | Per-state diff report against Figma nodes 653:19205…653:19304, 653:21100, 653:21110, 653:19116/19120/19124/19128 — both light & dark. |
 | `a11y-verifier` | read-only | WCAG 2.1 AA findings — keyboard nav, focus ring contrast (3:1 vs adjacent), label contrast (4.5:1), ARIA reflection, `prefers-reduced-motion`. |
-| `story-writer` | parallel-write | Writes `cor-button.stories.ts` per the § 7 gated set. (Plan already contains the spec; story-writer fills in the helper functions.) |
-| `test-writer` | parallel-write | Writes `cor-button.spec.tsx` per § 8. |
-| `integration-checker` | read-only | Confirms `src/index.ts` exports added; greps `cor-button` usages across the repo; flags `src/legacy/*` consumers as out-of-scope for this PR. |
+| `story-writer` | parallel-write | Writes `mud-button.stories.ts` per the § 7 gated set. (Plan already contains the spec; story-writer fills in the helper functions.) |
+| `test-writer` | parallel-write | Writes `mud-button.spec.tsx` per § 8. |
+| `integration-checker` | read-only | Confirms `src/index.ts` exports added; greps `mud-button` usages across the repo; flags `src/legacy/*` consumers as out-of-scope for this PR. |
 
 After dispatch returns, fold the findings back into the codebase, re-run the smoke gates.
 
@@ -231,7 +231,7 @@ After dispatch returns, fold the findings back into the codebase, re-run the smo
 - `yarn lint` + `yarn lint.css` exit 0.
 - `yarn tokens.validate` exit 0.
 - `yarn audit:contrast` exit 0 (light + dark).
-- `yarn test` exit 0 with ≥ 80% coverage on `cor-button.tsx`.
+- `yarn test` exit 0 with ≥ 80% coverage on `mud-button.tsx`.
 - `yarn sp.build` exit 0; new stories render without console errors.
 
 ---
@@ -259,4 +259,4 @@ Then in the browser:
 
 Use `mcp__playwright__browser_navigate` + `mcp__playwright__browser_take_screenshot` + `mcp__image-compare__compare_images` to automate the visual gate against the Figma reference screenshots captured for the state matrix.
 
-Final step: open a draft PR with the **Migration table** (§ 9 of the user-supplied spec) included in the description so consumers of the legacy `cor-button` understand the rename map (`primary-gray → secondary`, `tertiary → neutral`, `positive → primary`, `negative → destructive`, etc. — final mapping confirmed at PR-author time).
+Final step: open a draft PR with the **Migration table** (§ 9 of the user-supplied spec) included in the description so consumers of the legacy `mud-button` understand the rename map (`primary-gray → secondary`, `tertiary → neutral`, `positive → primary`, `negative → destructive`, etc. — final mapping confirmed at PR-author time).

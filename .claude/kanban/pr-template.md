@@ -1,8 +1,8 @@
-# PR: redesign(cor-`<name>`): align to AGE Design System
+# PR: redesign(mud-`<name>`): align to AGE Design System
 
 ## Summary
 
-Redesigns `cor-<name>` to align with the new AGE Design System. Source of truth: Figma node `<node-id>`. Driven by Cline Kanban card `<card-url>` and the `redesign-component` agent.
+Redesigns `mud-<name>` to align with the new AGE Design System. Source of truth: Figma node `<node-id>`. Driven by Cline Kanban card `<card-url>` and the `redesign-component` agent.
 
 ## Visual changes
 
@@ -74,7 +74,7 @@ Attach as PNG files in the PR description, or link to Storybook deploy preview i
 ## Reviewer checklist
 
 - [ ] Pixel-perfect diffs match Figma intent
-- [ ] No accidental visual regressions on other components (sanity check `cor-button`, `cor-input` if shared tokens changed)
+- [ ] No accidental visual regressions on other components (sanity check `mud-button`, `mud-input` if shared tokens changed)
 - [ ] No `--palette-*` usage in updated CSS
 - [ ] CSS pattern preserved (A: slotted / B: internal DOM) — or breaking change approved separately
 - [ ] Tests cover new variants/sizes/states introduced

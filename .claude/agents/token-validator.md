@@ -21,7 +21,7 @@ This agent is read-only. It surfaces issues; it does not auto-fix.
 ## Inputs
 
 - No arguments required.
-- Optional caller hint: a token path (e.g. `color.background.brand.default`) or a component name (e.g. `cor-button`) to focus the summary on.
+- Optional caller hint: a token path (e.g. `color.background.brand.default`) or a component name (e.g. `mud-button`) to focus the summary on.
 
 ## Procedure
 

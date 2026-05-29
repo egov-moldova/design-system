@@ -158,7 +158,7 @@ Reference: Skill [`accessibility-compliance`](../skills/accessibility-compliance
 ## Step 8: Visual Check (if component exists)
 
 ```text
-mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-cor-<name>--default" })
+mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-mud-<name>--default" })
 mcp__playwright__browser_take_screenshot({ type: "png", filename: ".playwright-mcp/token-update-check.png" })
 ```
 

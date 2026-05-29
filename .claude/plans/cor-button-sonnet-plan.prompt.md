@@ -1,10 +1,10 @@
-# Redesign `cor-button` — AGE Design System
+# Redesign `mud-button` — AGE Design System
 
 ## Context
 
-`cor-button` is the next legacy atom queued for redesign, following the spinner → icon → button order documented in `memory/legacy-components-migration.md`. The legacy implementation at [src/legacy/cor-button/](src/legacy/cor-button/) exposes 12 colour variants × 4 sizes using a flat CSS-variable API. The new AGE design system in Figma file `doJ7tDY0PlQ0PqMgbpFVIC` (primary node `653:14291`, state matrix `653:19201`) consolidates these into **5 filled variants × 3 sizes**, introduces a new `shape` axis (`rectangular`/`circular`), and adds first-class `loading` + slot-driven `icon-only` rendering.
+`mud-button` is the next legacy atom queued for redesign, following the spinner → icon → button order documented in `memory/legacy-components-migration.md`. The legacy implementation at [src/legacy/mud-button/](src/legacy/mud-button/) exposes 12 colour variants × 4 sizes using a flat CSS-variable API. The new AGE design system in Figma file `doJ7tDY0PlQ0PqMgbpFVIC` (primary node `653:14291`, state matrix `653:19201`) consolidates these into **5 filled variants × 3 sizes**, introduces a new `shape` axis (`rectangular`/`circular`), and adds first-class `loading` + slot-driven `icon-only` rendering.
 
-The goal of this redesign is to ship a production-ready `src/components/cor-button/` that is Figma-pixel-perfect, follows the spinner/icon precedent (CSS Pattern A — slot-based, consumer-supplied `<button>`/`<a>`), uses the 3-tier token hierarchy, and unlocks the next wave of legacy-consumer migrations (`cor-calendar`, `cor-modal`, `cor-pagination-go-to`, `cor-upload-area`). The legacy folder stays untouched so existing consumers keep working until they are migrated one-by-one in follow-up PRs.
+The goal of this redesign is to ship a production-ready `src/components/mud-button/` that is Figma-pixel-perfect, follows the spinner/icon precedent (CSS Pattern A — slot-based, consumer-supplied `<button>`/`<a>`), uses the 3-tier token hierarchy, and unlocks the next wave of legacy-consumer migrations (`mud-calendar`, `mud-modal`, `mud-pagination-go-to`, `mud-upload-area`). The legacy folder stays untouched so existing consumers keep working until they are migrated one-by-one in follow-up PRs.
 
 **Out of scope** (separate follow-up specs): Button Outlined · Button Text · Button w/ Badge.
 
@@ -48,25 +48,25 @@ These semantic tokens **exist today** and will be the only references used by `b
 |---|---|
 | `tokens/core/focus-ring.tokens.json` | ~20 |
 | `tokens/core/components/button.tokens.json` | ~250 |
-| `src/components/cor-button/cor-button.tsx` | ~140 |
-| `src/components/cor-button/cor-button.css` | ~280 |
-| `src/components/cor-button/cor-button.types.ts` | ~10 |
-| `src/components/cor-button/cor-button.constants.ts` | ~3 |
-| `src/components/cor-button/cor-button.stories.ts` | ~300 |
-| `src/components/cor-button/test/cor-button.spec.tsx` | ~180 |
+| `src/components/mud-button/mud-button.tsx` | ~140 |
+| `src/components/mud-button/mud-button.css` | ~280 |
+| `src/components/mud-button/mud-button.types.ts` | ~10 |
+| `src/components/mud-button/mud-button.constants.ts` | ~3 |
+| `src/components/mud-button/mud-button.stories.ts` | ~300 |
+| `src/components/mud-button/test/mud-button.spec.tsx` | ~180 |
 
 ### To modify
 | Path | Change |
 |---|---|
-| [src/index.ts](src/index.ts) | After the existing `cor-spinner` export block, append the two `cor-button` export lines (see § "Step 5"). |
+| [src/index.ts](src/index.ts) | After the existing `mud-spinner` export block, append the two `mud-button` export lines (see § "Step 5"). |
 
 ### Reused as-is (no edits)
-- [src/components/cor-spinner/cor-spinner.tsx](src/components/cor-spinner/cor-spinner.tsx) — loading overlay
+- [src/components/mud-spinner/mud-spinner.tsx](src/components/mud-spinner/mud-spinner.tsx) — loading overlay
 - [src/utils/invalid-slotted-tag.ts](src/utils/invalid-slotted-tag.ts) — default-slot fallback
-- [src/legacy/shared.constants.ts](src/legacy/shared.constants.ts) — `VALID_ICON_SLOT_TAGS = ['cor-icon']`
+- [src/legacy/shared.constants.ts](src/legacy/shared.constants.ts) — `VALID_ICON_SLOT_TAGS = ['mud-icon']`
 
 ### Untouched
-- [src/legacy/cor-button/](src/legacy/cor-button/)
+- [src/legacy/mud-button/](src/legacy/mud-button/)
 - [tokens/legacy/components/button.tokens.json](tokens/legacy/components/button.tokens.json)
 
 ---
@@ -93,7 +93,7 @@ None. Pattern A — the consumer's slotted `<button>` / `<a>` bubbles its own na
 | `trailing-icon` | no | `onSlotchange` → `@State hasTrailing` → `.has-trailing` host class | `VALID_ICON_SLOT_TAGS` |
 | `icon-only` | no | `onSlotchange` → `@State hasIconOnly` → `.is-icon-only` host class | `VALID_ICON_SLOT_TAGS` |
 
-### Exported types (`cor-button.types.ts`)
+### Exported types (`mud-button.types.ts`)
 ```ts
 export const BUTTON_VARIANTS = ['primary', 'secondary', 'strict', 'neutral', 'destructive'] as const;
 export const BUTTON_SIZES = ['sm', 'md', 'lg'] as const;
@@ -104,7 +104,7 @@ export type ButtonSize = (typeof BUTTON_SIZES)[number];
 export type ButtonShape = (typeof BUTTON_SHAPES)[number];
 ```
 
-### Constants (`cor-button.constants.ts`)
+### Constants (`mud-button.constants.ts`)
 ```ts
 export const BUTTON_TAGS: readonly string[] = ['button', 'a'];
 ```
@@ -265,7 +265,7 @@ yarn tokens.validate
 ```
 Both must exit 0 before proceeding.
 
-### Step 3 — `src/components/cor-button/cor-button.css` (new)
+### Step 3 — `src/components/mud-button/mud-button.css` (new)
 Skeleton (PostCSS nested syntax matches the legacy file). Replace `<variant>` and `<size>` with the actual values per the loop comments; do not factor with `@each` (PostCSS plugins available do not support that).
 
 ```css
@@ -286,8 +286,8 @@ Skeleton (PostCSS nested syntax matches the legacy file). Replace `<variant>` an
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-family: var(--cor-button-label-font-family);
-    font-weight: var(--cor-button-label-font-weight);
+    font-family: var(--mud-button-label-font-family);
+    font-weight: var(--mud-button-label-font-weight);
     height: 100%;
     width: 100%;
     background-color: inherit;
@@ -295,11 +295,11 @@ Skeleton (PostCSS nested syntax matches the legacy file). Replace `<variant>` an
     border-radius: inherit;
     padding-inline: inherit;
     padding-block: 0;
-    gap: var(--cor-button-container-gap);
+    gap: var(--mud-button-container-gap);
     transition:
-      background-color var(--cor-button-container-transition-duration) var(--cor-button-container-transition-timing-function),
-      color var(--cor-button-container-transition-duration) var(--cor-button-container-transition-timing-function),
-      box-shadow var(--cor-button-container-transition-duration) var(--cor-button-container-transition-timing-function);
+      background-color var(--mud-button-container-transition-duration) var(--mud-button-container-transition-timing-function),
+      color var(--mud-button-container-transition-duration) var(--mud-button-container-transition-timing-function),
+      box-shadow var(--mud-button-container-transition-duration) var(--mud-button-container-transition-timing-function);
   }
 
   /* Focus-visible — dual ring, shared across all variants */
@@ -314,63 +314,63 @@ Skeleton (PostCSS nested syntax matches the legacy file). Replace `<variant>` an
 
 /* Container sets the bounding box; slotted root inherits */
 :host {
-  background-color: var(--cor-button-bg);
-  color: var(--cor-button-label);
-  border-radius: var(--cor-button-container-border-radius);
-  padding-inline: var(--cor-button-container-padding-inline);
-  height: var(--cor-button-container-height);
-  min-width: var(--cor-button-container-min-width);
+  background-color: var(--mud-button-bg);
+  color: var(--mud-button-label);
+  border-radius: var(--mud-button-container-border-radius);
+  padding-inline: var(--mud-button-container-padding-inline);
+  height: var(--mud-button-container-height);
+  min-width: var(--mud-button-container-min-width);
 }
 
 /* Size rungs — write all three explicitly */
 :host([size='sm']) {
-  --cor-button-container-height: var(--cor-button-container-height-sm);
-  --cor-button-container-min-width: var(--cor-button-container-min-width-sm);
-  --cor-button-container-padding-inline: var(--cor-button-container-padding-inline-sm);
-  --cor-button-container-border-radius: var(--cor-button-container-border-radius-sm);
-  --cor-button-label-font-size: var(--cor-button-label-font-size-sm);
-  --cor-button-label-line-height: var(--cor-button-label-line-height-sm);
-  --cor-button-icon-size: var(--cor-button-icon-size-sm);
+  --mud-button-container-height: var(--mud-button-container-height-sm);
+  --mud-button-container-min-width: var(--mud-button-container-min-width-sm);
+  --mud-button-container-padding-inline: var(--mud-button-container-padding-inline-sm);
+  --mud-button-container-border-radius: var(--mud-button-container-border-radius-sm);
+  --mud-button-label-font-size: var(--mud-button-label-font-size-sm);
+  --mud-button-label-line-height: var(--mud-button-label-line-height-sm);
+  --mud-button-icon-size: var(--mud-button-icon-size-sm);
 }
 /* Repeat for size='md' and size='lg' */
 
 ::slotted(button),
 ::slotted(a) {
   /* picked up after :host font-size cascade */
-  font-size: var(--cor-button-label-font-size);
-  line-height: var(--cor-button-label-line-height);
+  font-size: var(--mud-button-label-font-size);
+  line-height: var(--mud-button-label-line-height);
 }
 
 /* Shape */
 :host([shape='circular']) {
-  --cor-button-container-border-radius: var(--cor-button-container-border-radius-circular);
+  --mud-button-container-border-radius: var(--mud-button-container-border-radius-circular);
 }
 
 /* Icon-only (slot-detected via class) — squares the container */
 :host(.is-icon-only) {
-  --cor-button-container-padding-inline: 0;
-  --cor-button-container-min-width: var(--cor-button-container-height);
+  --mud-button-container-padding-inline: 0;
+  --mud-button-container-min-width: var(--mud-button-container-height);
 }
 
 /* Variants — write all five explicitly */
 :host([variant='primary']) {
-  --cor-button-bg: var(--cor-button-primary-background-default);
-  --cor-button-label: var(--cor-button-primary-label-default);
-  --cor-button-icon: var(--cor-button-primary-icon-default);
+  --mud-button-bg: var(--mud-button-primary-background-default);
+  --mud-button-label: var(--mud-button-primary-label-default);
+  --mud-button-icon: var(--mud-button-primary-icon-default);
 }
 :host([variant='primary']:hover:not([disabled]):not([loading])) {
-  --cor-button-bg: var(--cor-button-primary-background-hover);
+  --mud-button-bg: var(--mud-button-primary-background-hover);
 }
 :host([variant='primary']:active:not([disabled]):not([loading])) {
-  --cor-button-bg: var(--cor-button-primary-background-active);
+  --mud-button-bg: var(--mud-button-primary-background-active);
 }
 /* Repeat the trio for secondary, strict, neutral, destructive */
 
 /* Disabled (any variant) */
 :host([disabled]) {
-  --cor-button-bg: var(--cor-button-primary-background-disabled);  /* same disabled tone for all variants */
-  --cor-button-label: var(--cor-button-primary-label-disabled);
-  --cor-button-icon: var(--cor-button-primary-icon-disabled);
+  --mud-button-bg: var(--mud-button-primary-background-disabled);  /* same disabled tone for all variants */
+  --mud-button-label: var(--mud-button-primary-label-disabled);
+  --mud-button-icon: var(--mud-button-primary-icon-disabled);
   cursor: not-allowed;
 }
 :host([disabled]) ::slotted(button),
@@ -399,10 +399,10 @@ Skeleton (PostCSS nested syntax matches the legacy file). Replace `<variant>` an
 }
 :host { position: relative; }
 
-/* Icon colour — cor-icon honours currentColor */
-::slotted(cor-icon) {
-  color: var(--cor-button-icon);
-  --cor-icon-size: var(--cor-button-icon-size);
+/* Icon colour — mud-icon honours currentColor */
+::slotted(mud-icon) {
+  color: var(--mud-button-icon);
+  --mud-icon-size: var(--mud-button-icon-size);
 }
 
 /* sm-touch-target boost (WCAG 2.5.5) — invisible ::before extends to 40×40 */
@@ -422,29 +422,29 @@ Skeleton (PostCSS nested syntax matches the legacy file). Replace `<variant>` an
 }
 ```
 
-### Step 4 — `src/components/cor-button/cor-button.tsx` (new)
-Full file. Mirrors the [legacy cor-button.tsx](src/legacy/cor-button/cor-button.tsx) structure but adds slot-detection state, the spinner overlay, and ARIA mirroring.
+### Step 4 — `src/components/mud-button/mud-button.tsx` (new)
+Full file. Mirrors the [legacy mud-button.tsx](src/legacy/mud-button/mud-button.tsx) structure but adds slot-detection state, the spinner overlay, and ARIA mirroring.
 
 ```tsx
 import { Component, Element, h, Host, Prop, State } from '@stencil/core';
 
 import { invalidSlottedTag } from '../../utils/invalid-slotted-tag';
 import { VALID_ICON_SLOT_TAGS } from '../../legacy/shared.constants';
-import { BUTTON_TAGS } from './cor-button.constants';
-import type { ButtonShape, ButtonSize, ButtonVariant } from './cor-button.types';
+import { BUTTON_TAGS } from './mud-button.constants';
+import type { ButtonShape, ButtonSize, ButtonVariant } from './mud-button.types';
 
 /**
  * Filled button — Pattern A (slot-based, consumer supplies <button> or <a>).
  *
- * @element cor-button
+ * @element mud-button
  * @slot - Default slot. Must be exactly one <button> or <a>.
- * @slot leading-icon - Optional <cor-icon> placed before the label.
- * @slot trailing-icon - Optional <cor-icon> placed after the label.
- * @slot icon-only - Optional <cor-icon>. When present and the default slot is empty, the button renders as an icon-only square.
+ * @slot leading-icon - Optional <mud-icon> placed before the label.
+ * @slot trailing-icon - Optional <mud-icon> placed after the label.
+ * @slot icon-only - Optional <mud-icon>. When present and the default slot is empty, the button renders as an icon-only square.
  */
 @Component({
-  tag: 'cor-button',
-  styleUrl: 'cor-button.css',
+  tag: 'mud-button',
+  styleUrl: 'mud-button.css',
   shadow: true,
 })
 export class CorButton {
@@ -488,7 +488,7 @@ export class CorButton {
     if (!hasName) {
       // eslint-disable-next-line no-console
       console.warn(
-        '[cor-button] icon-only button is missing an accessible name. Add aria-label to the slotted <button> or <a>.',
+        '[mud-button] icon-only button is missing an accessible name. Add aria-label to the slotted <button> or <a>.',
       );
     }
   };
@@ -540,7 +540,7 @@ export class CorButton {
         <slot name="icon-only" onSlotchange={this.onIconOnlySlotChange} />
         {this.loading && (
           <div class="spinner-overlay" aria-hidden="true">
-            <cor-spinner size={this.mapSpinnerSize()} variant={this.mapSpinnerVariant()} />
+            <mud-spinner size={this.mapSpinnerSize()} variant={this.mapSpinnerVariant()} />
           </div>
         )}
       </Host>
@@ -549,12 +549,12 @@ export class CorButton {
 }
 ```
 
-> **Note on the slot-detection slots**: the consumer puts the icon inline like `<button><cor-icon slot="leading-icon" name="check"/>Save</button>`. The `slot="leading-icon"` attribute on a *child of the slotted root* won't be picked up by Stencil's named slots — it would need to be a direct child of `<cor-button>`. Document this in the readme example: icons go as **siblings** of the `<button>`, not as children of it:
+> **Note on the slot-detection slots**: the consumer puts the icon inline like `<button><mud-icon slot="leading-icon" name="check"/>Save</button>`. The `slot="leading-icon"` attribute on a *child of the slotted root* won't be picked up by Stencil's named slots — it would need to be a direct child of `<mud-button>`. Document this in the readme example: icons go as **siblings** of the `<button>`, not as children of it:
 > ```html
-> <cor-button>
->   <cor-icon slot="leading-icon" name="check"></cor-icon>
+> <mud-button>
+>   <mud-icon slot="leading-icon" name="check"></mud-icon>
 >   <button>Save</button>
-> </cor-button>
+> </mud-button>
 > ```
 > The default-slot validation must therefore look for the first `<button>` / `<a>` child (any position), not strictly `firstElementChild`. Update the render guard:
 > ```ts
@@ -569,19 +569,19 @@ export class CorButton {
 > And update `mirrorAriaStateToSlottedRoot` + `warnIfIconOnlyMissingLabel` to use the same lookup helper.
 
 ### Step 5 — Append exports to `src/index.ts`
-After the existing `cor-spinner` export block:
+After the existing `mud-spinner` export block:
 ```ts
-export { CorButton } from './components/cor-button/cor-button';
+export { CorButton } from './components/mud-button/mud-button';
 export {
   BUTTON_SIZES,
   BUTTON_VARIANTS,
   BUTTON_SHAPES,
-} from './components/cor-button/cor-button.types';
+} from './components/mud-button/mud-button.types';
 export type {
   ButtonSize,
   ButtonVariant,
   ButtonShape,
-} from './components/cor-button/cor-button.types';
+} from './components/mud-button/mud-button.types';
 ```
 
 ### Step 6 — Storybook smoke
@@ -595,15 +595,15 @@ Visit `http://localhost:6007/iframe.html?id=atoms-button--default` and confirm n
 Single message, full-5 subagent set in `parallel-write` mode:
 - `pixel-perfect-verifier` (read-only): diff vs Figma nodes `653:19205`–`653:19304`, `653:21100`, `653:21110`, `653:19116/19120/19124/19128` — **light mode only** for this PR.
 - `a11y-verifier` (read-only): WCAG 2.1 AA — keyboard, focus contrast, label contrast, ARIA reflection, reduced-motion.
-- `story-writer` (parallel-write): writes `cor-button.stories.ts` per § "Stories".
-- `test-writer` (parallel-write): writes `cor-button.spec.tsx` per § "Tests".
-- `integration-checker` (read-only): confirms `src/index.ts` exports added; greps `cor-button` usages; flags legacy consumers as out-of-scope.
+- `story-writer` (parallel-write): writes `mud-button.stories.ts` per § "Stories".
+- `test-writer` (parallel-write): writes `mud-button.spec.tsx` per § "Tests".
+- `integration-checker` (read-only): confirms `src/index.ts` exports added; greps `mud-button` usages; flags legacy consumers as out-of-scope.
 
 ---
 
-## Stories (`cor-button.stories.ts`)
+## Stories (`mud-button.stories.ts`)
 
-Use [cor-spinner.stories.ts](src/components/cor-spinner/cor-spinner.stories.ts) as the formatting reference (CSF3, `@storybook/web-components-vite`, template literals via `/*html*/`). Required stories:
+Use [mud-spinner.stories.ts](src/components/mud-spinner/mud-spinner.stories.ts) as the formatting reference (CSF3, `@storybook/web-components-vite`, template literals via `/*html*/`). Required stories:
 
 | Story | What it shows |
 |---|---|
@@ -616,27 +616,27 @@ Use [cor-spinner.stories.ts](src/components/cor-spinner/cor-spinner.stories.ts) 
 | `AllStatesTable` | 5 × 6 matrix (variant × state). `tags: ['!autodocs']`. This is the canonical pixel-perfect target. |
 | `LoadingPlayground` | One button with a `loading` toggle bound via Storybook controls. |
 | `IconOnlyA11yWarning` | An `icon-only` button without `aria-label`; documents that the console will warn. `tags: ['!autodocs']`. |
-| `CoverageGuard` | Mirrors [cor-spinner.stories.ts:158-171](src/components/cor-spinner/cor-spinner.stories.ts#L158-L171) verbatim — change selector to `cor-button` and ensure default-slot `<button>` is present. |
-| `ReducedMotion` | Wrapper overrides `--cor-button-container-transition-duration: 0ms`; demonstrates the static state. |
+| `CoverageGuard` | Mirrors [mud-spinner.stories.ts:158-171](src/components/mud-spinner/mud-spinner.stories.ts#L158-L171) verbatim — change selector to `mud-button` and ensure default-slot `<button>` is present. |
+| `ReducedMotion` | Wrapper overrides `--mud-button-container-transition-duration: 0ms`; demonstrates the static state. |
 
 For forced-state stories, if [storybook-addon-pseudo-states](https://storybook.js.org/addons/storybook-addon-pseudo-states) is not installed, use this trick: add a `data-force-state="hover"` attribute on the slotted `<button>` and a CSS rule in the story's `<style>` block: `[data-force-state="hover"] { /* duplicate the :hover declarations */ }`. The story-writer subagent should pick whichever approach is already present in the project — if neither, use the data-attribute fallback.
 
 ---
 
-## Tests (`test/cor-button.spec.tsx`)
+## Tests (`test/mud-button.spec.tsx`)
 
-Use [cor-spinner.spec.tsx](src/components/cor-spinner/test/cor-spinner.spec.tsx) as the formatting reference. `@stencil/vitest` + `render(<jsx>)`. Coverage target ≥ 80% on `cor-button.tsx`.
+Use [mud-spinner.spec.tsx](src/components/mud-spinner/test/mud-spinner.spec.tsx) as the formatting reference. `@stencil/vitest` + `render(<jsx>)`. Coverage target ≥ 80% on `mud-button.tsx`.
 
 Required cases:
 ```ts
 import { render, h, describe, it, expect, vi } from '@stencil/vitest';
-import '../cor-button';
-import { BUTTON_SIZES, BUTTON_VARIANTS, BUTTON_SHAPES } from '../cor-button.types';
+import '../mud-button';
+import { BUTTON_SIZES, BUTTON_VARIANTS, BUTTON_SHAPES } from '../mud-button.types';
 
-describe('cor-button', () => {
+describe('mud-button', () => {
   // — Rendering & prop reflection —
   it('renders with defaults', async () => {
-    const { root } = await render(<cor-button><button>Hi</button></cor-button>);
+    const { root } = await render(<mud-button><button>Hi</button></mud-button>);
     expect(root?.getAttribute('variant')).toBe('primary');
     expect(root?.getAttribute('size')).toBe('md');
     expect(root?.getAttribute('shape')).toBe('rectangular');
@@ -649,16 +649,16 @@ describe('cor-button', () => {
   it('renders the slotted <button>', async () => { /* … */ });
   it('renders the slotted <a>', async () => { /* … */ });
   it('renders fallback string for invalid slotted tag', async () => {
-    const { root } = await render(<cor-button><p>x</p></cor-button>);
+    const { root } = await render(<mud-button><p>x</p></mud-button>);
     expect(root?.textContent).toContain('is invalid');
   });
 
   // — Disabled / loading mirroring —
   it('mirrors aria-disabled to slotted root when disabled', async () => { /* assert slotted button has aria-disabled="true" */ });
   it('mirrors aria-busy to slotted root when loading', async () => { /* assert aria-busy="true" */ });
-  it('renders cor-spinner overlay when loading', async () => {
-    const { root } = await render(<cor-button loading={true}><button>x</button></cor-button>);
-    const spinner = root?.shadowRoot?.querySelector('cor-spinner');
+  it('renders mud-spinner overlay when loading', async () => {
+    const { root } = await render(<mud-button loading={true}><button>x</button></mud-button>);
+    const spinner = root?.shadowRoot?.querySelector('mud-spinner');
     expect(spinner).toBeTruthy();
   });
   it.each([
@@ -683,10 +683,10 @@ describe('cor-button', () => {
   it('warns when icon-only button has no accessible name', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     await render(
-      <cor-button>
-        <cor-icon slot="icon-only" name="check" />
+      <mud-button>
+        <mud-icon slot="icon-only" name="check" />
         <button></button>
-      </cor-button>,
+      </mud-button>,
     );
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('icon-only button is missing an accessible name'));
     warn.mockRestore();
@@ -694,7 +694,7 @@ describe('cor-button', () => {
 
   // — Coverage guard parity with spinner —
   it('constructs without registering a host when registerHost=false', () => {
-    const Ctor = customElements.get('cor-button') as unknown as new (registerHost: boolean) => unknown;
+    const Ctor = customElements.get('mud-button') as unknown as new (registerHost: boolean) => unknown;
     expect(Ctor).toBeTruthy();
     expect(new Ctor(false)).toBeTruthy();
   });
@@ -728,7 +728,7 @@ describe('cor-button', () => {
 - `yarn tokens.validate` exit 0
 - `yarn audit:contrast` exit 0
 - `yarn lint` + `yarn lint.css` exit 0
-- `yarn test` exit 0 with ≥ 80% coverage on `cor-button.tsx`
+- `yarn test` exit 0 with ≥ 80% coverage on `mud-button.tsx`
 - `yarn sp.build` exit 0
 
 ---
@@ -760,7 +760,7 @@ describe('cor-button', () => {
 |---|---|
 | `iconOnly: boolean` | _(removed — derived from `icon-only` slot; combine with `shape="circular"` for a round button)_ |
 
-CSS-var rename: `--button-*` → `--cor-button-*`. List the deprecation in the PR body.
+CSS-var rename: `--button-*` → `--mud-button-*`. List the deprecation in the PR body.
 
 ---
 
@@ -783,4 +783,4 @@ Browser checks (manual, via Playwright MCP if scripted):
 4. `?path=/story/atoms-button--icon-only-a-11-y-warning` — open DevTools console, confirm `console.warn` fires.
 5. OS-level `prefers-reduced-motion: reduce` (or the `ReducedMotion` story) — spinner static.
 
-Open the PR as **draft** with the migration map above pasted into the body. The actual legacy-consumer migrations (`cor-calendar`, `cor-modal`, `cor-pagination-go-to`, `cor-upload-area`) are separate follow-up PRs and not part of this scope.
+Open the PR as **draft** with the migration map above pasted into the body. The actual legacy-consumer migrations (`mud-calendar`, `mud-modal`, `mud-pagination-go-to`, `mud-upload-area`) are separate follow-up PRs and not part of this scope.

@@ -207,8 +207,8 @@ Document scurt care:
 1. **Skill canonic:** invocă Skill `accessibility-compliance` și confirmă că răspunde cu ghidul WCAG 2.1 AA actualizat.
 2. **Storybook a11y:** `yarn sp.dev.watch` → deschide orice componentă → panel a11y → zero violations pentru tag-urile 2.1 AA în light și dark mode.
 3. **Contrast tokens:** `yarn audit:contrast` → exit 0; raport listează toate perechile cu ratio actual; orice FAIL este blocant.
-4. **jest-axe:** `yarn test` → toate componentele cu test a11y pass; cel puțin un test demonstrativ scris pe cor-button.
-5. **Audit accessibility comandă:** rulează `/audit-accessibility @cor-button` → verifică că raportul include light + dark, ARIA states, focus contrast, Success Criteria numbers.
+4. **jest-axe:** `yarn test` → toate componentele cu test a11y pass; cel puțin un test demonstrativ scris pe mud-button.
+5. **Audit accessibility comandă:** rulează `/audit-accessibility @mud-button` → verifică că raportul include light + dark, ARIA states, focus contrast, Success Criteria numbers.
 6. **Pre-PR check:** rulează `/pre-pr-check` → include faza a11y (contrast + storybook a11y).
 7. **Figma alignment:** după autorizare Figma, confirmă că cerințele de la nodul 2753-5965 sunt reflectate în Skill ca addendum.
 8. **Migration blocker:** rulează `/migrate-component` pe o componentă din `src/hidden/` cu probleme a11y intenționate → verifică blocare graduare.

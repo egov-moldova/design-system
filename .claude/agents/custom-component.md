@@ -37,7 +37,7 @@ Do not proceed without clear answers. Ambiguity here causes rework later.
 
 ## Step 3: Reuse Check (MANDATORY)
 
-- Search `src/components/cor-*/` for similar existing components
+- Search `src/components/mud-*/` for similar existing components
 - Search `tokens/core/components/` for existing token files
 - If similar exists → extend/modify it instead
 
@@ -143,11 +143,11 @@ Modes:
 Dispatch ALL of the following in a SINGLE message with parallel `Agent` tool calls (full-5 set; pixel-perfect-verifier uses computed-style assertions only since there's no Figma reference):
 
 ```
-Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=cor-<name>, figmaReferenceDir=<optional-folder-or-omit>, threshold=0.5")
-Agent(subagent_type="a11y-verifier",          prompt="componentName=cor-<name>")
-Agent(subagent_type="story-writer",           prompt="componentName=cor-<name>, componentTsxPath=..., atomicLevel=<level>, writeMode=<mode>")
-Agent(subagent_type="test-writer",            prompt="componentName=cor-<name>, componentTsxPath=..., writeMode=<mode>")
-Agent(subagent_type="integration-checker",    prompt="componentName=cor-<name>, changeKind=new")
+Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=mud-<name>, figmaReferenceDir=<optional-folder-or-omit>, threshold=0.5")
+Agent(subagent_type="a11y-verifier",          prompt="componentName=mud-<name>")
+Agent(subagent_type="story-writer",           prompt="componentName=mud-<name>, componentTsxPath=..., atomicLevel=<level>, writeMode=<mode>")
+Agent(subagent_type="test-writer",            prompt="componentName=mud-<name>, componentTsxPath=..., writeMode=<mode>")
+Agent(subagent_type="integration-checker",    prompt="componentName=mud-<name>, changeKind=new")
 ```
 
 When all 5 reports return, aggregate into a triage table (see `parallel-aux-tasks` skill). Apply critical fixes (TSX/CSS/tokens — orchestrator's responsibility) before continuing to Step 8.

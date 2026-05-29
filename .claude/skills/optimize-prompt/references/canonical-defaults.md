@@ -12,7 +12,7 @@ These defaults are auto-injected by [`SKILL.md`](../SKILL.md) into every spec, s
 
 - Components emit only the rungs they use as enum members.
 - Naming convention: enum named `<Component>Size` exported from `<component>.types.ts`.
-- Token suffix uses the same rungs: `--cor-<component>-<element>-<property>-<size>` (e.g., `--cor-button-container-height-md`).
+- Token suffix uses the same rungs: `--mud-<component>-<element>-<property>-<size>` (e.g., `--mud-button-container-height-md`).
 
 **Opt-out:** `--size-scale=single` — for atoms that have no size axis (some illustration-style atoms). Emit a single literal value, no enum.
 
@@ -26,15 +26,15 @@ Always rendered on `:focus-visible`, **never** on `:focus`. Forbidden: `outline:
 
 ```css
 :focus-visible {
-  outline: var(--cor-focus-ring-width, 2px) solid var(--cor-focus-ring-color, var(--color-border-focus-default));
-  outline-offset: var(--cor-focus-ring-offset, 2px);
+  outline: var(--mud-focus-ring-width, 2px) solid var(--mud-focus-ring-color, var(--color-border-focus-default));
+  outline-offset: var(--mud-focus-ring-offset, 2px);
 }
 ```
 
 **Tokens** (canonical names — emit in Token Mapping when missing):
-- `--cor-focus-ring-width`
-- `--cor-focus-ring-color`
-- `--cor-focus-ring-offset`
+- `--mud-focus-ring-width`
+- `--mud-focus-ring-color`
+- `--mud-focus-ring-offset`
 
 **Contrast:** Focus ring MUST achieve ≥ 3:1 against both adjacent surfaces (component + background). Verified in both light and dark mode.
 
@@ -143,13 +143,13 @@ For **layout** archetype:
 **Payload type MUST be exported** from `<component>.types.ts` as `<Component><Action>Detail`. Even single-value payloads use a typed interface, not raw `string` / `number`.
 
 ```ts
-// cor-button.types.ts
+// mud-button.types.ts
 export interface ButtonClickDetail {
   variant: ButtonVariant;
   size: ButtonSize;
 }
 
-// cor-button.tsx
+// mud-button.tsx
 @Event({ composed: true, bubbles: true }) corClick!: EventEmitter<ButtonClickDetail>;
 ```
 
@@ -163,8 +163,8 @@ Every form-associated component MUST declare:
 
 ```ts
 @Component({
-  tag: 'cor-<name>',
-  styleUrl: 'cor-<name>.css',
+  tag: 'mud-<name>',
+  styleUrl: 'mud-<name>.css',
   shadow: true,
   formAssociated: true,  // ← mandatory
 })
@@ -239,17 +239,17 @@ private getHostClasses(): string {
 
 ## 11. CSS variable naming
 
-**Regex:** `^--cor-<component>(-<element>)?-<property>(-<state>)?$`
+**Regex:** `^--mud-<component>(-<element>)?-<property>(-<state>)?$`
 
 Components → kebab-case. Properties → kebab-case. State suffix LAST.
 
 Examples:
-- `--cor-button-container-height-md` (size as state)
-- `--cor-button-primary-background-default` (variant + state)
-- `--cor-button-primary-background-hover`
-- `--cor-input-icon-color-focus`
+- `--mud-button-container-height-md` (size as state)
+- `--mud-button-primary-background-default` (variant + state)
+- `--mud-button-primary-background-hover`
+- `--mud-input-icon-color-focus`
 
-**Forbidden:** ALL-CAPS, camelCase, or `--Button-...` (no `cor-` prefix). Validated by `yarn lint.tokens`.
+**Forbidden:** ALL-CAPS, camelCase, or `--Button-...` (no `mud-` prefix). Validated by `yarn lint.tokens`.
 
 ---
 
@@ -261,13 +261,13 @@ text-overflow: ellipsis;
 white-space: nowrap;
 ```
 
-Per-size `min-width` declared via token (e.g., `--cor-button-container-min-width-sm: 52px`). Per-size `max-width` typically not enforced; emit only if Figma defines one.
+Per-size `min-width` declared via token (e.g., `--mud-button-container-min-width-sm: 52px`). Per-size `max-width` typically not enforced; emit only if Figma defines one.
 
 ---
 
 ## 13. Shape primitives
 
-- `rectangular` (default): `border-radius: var(--cor-radius-<size>)` per Figma scale
+- `rectangular` (default): `border-radius: var(--mud-radius-<size>)` per Figma scale
 - `circular`: `aspect-ratio: 1; border-radius: 50%;`
 - `pill`: `border-radius: 9999px;`
 
@@ -291,5 +291,5 @@ When a component has `loading: boolean`:
 - `@Prop({ reflect: true }) loading: boolean = false;`
 - Render `aria-busy={String(this.loading)}` on host
 - Internally apply `disabled` semantics (`pointer-events: none`, click prevented)
-- Render `cor-spinner` overlay with `color` matching the text token
+- Render `mud-spinner` overlay with `color` matching the text token
 - Visually hide the original content but keep it for screen readers (`opacity: 0` or `visibility: hidden` with width preserved)

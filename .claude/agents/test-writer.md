@@ -1,13 +1,13 @@
 ---
 name: test-writer
-description: Generates `*.spec.tsx` unit tests for a `cor-*` Stencil component using `@stencil/vitest` `render()`. Covers rendering, props, slots, events, states, ARIA, and structural WCAG contract assertions. Respects `--write-mode` flag. Use as part of `parallel-aux-tasks` after Core build.
+description: Generates `*.spec.tsx` unit tests for a `mud-*` Stencil component using `@stencil/vitest` `render()`. Covers rendering, props, slots, events, states, ARIA, and structural WCAG contract assertions. Respects `--write-mode` flag. Use as part of `parallel-aux-tasks` after Core build.
 tools: Read, Write, Edit, Glob, Grep, Bash
 model: sonnet
 ---
 
 # Test Writer
 
-Generates a `*.spec.tsx` unit test file for a `cor-*` component. Targets > 80% coverage and includes structural accessibility assertions. Respects the `--write-mode` flag.
+Generates a `*.spec.tsx` unit test file for a `mud-*` component. Targets > 80% coverage and includes structural accessibility assertions. Respects the `--write-mode` flag.
 
 > **Stack note**: tests run on Vitest via `@stencil/vitest` (Stencil's official Vitest wrapper). The Jest/`newSpecPage` stack is retired — see `vitest.config.ts` + `vitest-setup.ts`. `yarn test` invokes `stencil-test --project spec` which builds Stencil once and then runs Vitest with the `spec` project.
 
@@ -15,8 +15,8 @@ Generates a `*.spec.tsx` unit test file for a `cor-*` component. Targets > 80% c
 
 Required:
 
-- `componentName` — e.g. `cor-button`
-- `componentTsxPath` — e.g. `src/components/cor-button/cor-button.tsx`
+- `componentName` — e.g. `mud-button`
+- `componentTsxPath` — e.g. `src/components/mud-button/mud-button.tsx`
 - `writeMode` — `parallel-write` (default) | `read-only`
 
 Optional:
@@ -45,7 +45,7 @@ If `<componentName>.enums.ts` exists, read it for enum values.
 
 Reference patterns to follow:
 
-- `src/components/cor-spinner/test/cor-spinner.spec.tsx` — canonical Vitest pattern (`render()`, JSX, attribute reflection)
+- `src/components/mud-spinner/test/mud-spinner.spec.tsx` — canonical Vitest pattern (`render()`, JSX, attribute reflection)
 - `src/components/_agents/a11y-testing.md` — structural WCAG contract assertions (axe runs in Storybook, not specs)
 
 ### Step 3 — Test plan
@@ -145,16 +145,16 @@ describe('<componentName>', () => {
 **Storybook (browser-mode) coverage** — for the Storybook UI panel Test report to also reach 100%, add a hidden `play()` story alongside the visible variants:
 
 ```ts
-// In `cor-<name>.stories.ts`
+// In `mud-<name>.stories.ts`
 export const CoverageGuard: Story = {
   tags: ['!autodocs', '!dev'],
-  render: () => /*html*/ `<cor-<name>></cor-<name>>`,
+  render: () => /*html*/ `<mud-<name>></mud-<name>>`,
   parameters: { controls: { disable: true }, docs: { disable: true } },
   play: async () => {
-    const Ctor = customElements.get('cor-<name>') as unknown as
+    const Ctor = customElements.get('mud-<name>') as unknown as
       | (new (registerHost: boolean) => unknown)
       | undefined;
-    if (!Ctor) throw new Error('cor-<name> constructor missing from registry');
+    if (!Ctor) throw new Error('mud-<name> constructor missing from registry');
     const instance = new Ctor(false);
     if (!instance) throw new Error('instance not constructed');
   },
@@ -165,7 +165,7 @@ export const CoverageGuard: Story = {
 
 - Import everything from `@stencil/vitest` (`render`, `describe`, `it`, `expect`, `vi`, `h`) — NOT `@stencil/core/testing` (the Jest harness was removed).
 - **MANDATORY** side-effect import of the component source: `import '../<componentName>';` — registers the custom element via `stencilVitestPlugin` and makes coverage v8 see the real source file. Without it the spec either fails (`render()` returns `undefined`) or passes with 0% coverage.
-- Use JSX in `render(<cor-name prop="value" />)` — NOT a string `html` template literal.
+- Use JSX in `render(<mud-name prop="value" />)` — NOT a string `html` template literal.
 - Destructure what you need from the `RenderResult`: `{ root, instance, waitForChanges, setProps, spyOnEvent, unmount }`.
 - For event tests, prefer `spyOnEvent('eventName')` over manual `addEventListener` + `vi.fn()`. The returned `EventSpy` exposes `{ length, firstEvent, lastEvent, events }`.
 - For ARIA reflection tests, after `setProps()` or interaction call `await waitForChanges()` before asserting attributes.

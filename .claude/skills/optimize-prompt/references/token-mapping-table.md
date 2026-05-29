@@ -9,11 +9,11 @@ Loaded by [`SKILL.md`](../SKILL.md) Step 3 when an output mode requires a Token 
 ## 1. Naming regex
 
 ```
---cor-<component>(-<element>)?-<property>(-<state>)?
+--mud-<component>(-<element>)?-<property>(-<state>)?
 ```
 
 Where:
-- `<component>` — kebab-case component name (without `cor-` prefix in the JSON path; kebab-case with `cor-` in the CSS var)
+- `<component>` — kebab-case component name (without `mud-` prefix in the JSON path; kebab-case with `mud-` in the CSS var)
 - `<element>` — optional structural part: `container`, `label`, `icon`, `helper-text`, `border`, `dot`, `track`, `thumb`
 - `<property>` — `background`, `color`, `border-color`, `border-width`, `border-radius`, `height`, `min-width`, `max-width`, `padding-inline`, `padding-block`, `gap`, `font-size`, `font-weight`, `line-height`, `letter-spacing`, `shadow`, `opacity`
 - `<state>` — `default`, `hover`, `active`, `focus`, `disabled`, `loading`, `selected`, `invalid`, `error`, `success`, `warning`, `info`, OR a size rung (`xs`, `sm`, `md`, `lg`, `xl`)
@@ -23,12 +23,12 @@ Where:
 cor.<component>.<element>.<property>.<state>
 ```
 
-Becomes CSS var via: every capital → hyphen + lowercase; concatenate with `--cor-`.
+Becomes CSS var via: every capital → hyphen + lowercase; concatenate with `--mud-`.
 
 Examples:
-- `cor.button.container.height.md` → `--cor-button-container-height-md`
-- `cor.button.primary.background.hover` → `--cor-button-primary-background-hover`
-- `cor.input.icon.color.focus` → `--cor-input-icon-color-focus`
+- `cor.button.container.height.md` → `--mud-button-container-height-md`
+- `cor.button.primary.background.hover` → `--mud-button-primary-background-hover`
+- `cor.input.icon.color.focus` → `--mud-input-icon-color-focus`
 
 ---
 
@@ -65,7 +65,7 @@ Emit one explicit token-path-per-cell with full DTCG path + CSS var pair. Used w
 ```
 | Element   | default                                              | hover                                          | ...
 |-----------|------------------------------------------------------|------------------------------------------------|------
-| container | `cor.button.primary.background.default` → `--cor-button-primary-background-default` | `cor.button.primary.background.hover` → `--cor-button-primary-background-hover` | ...
+| container | `cor.button.primary.background.default` → `--mud-button-primary-background-default` | `cor.button.primary.background.hover` → `--mud-button-primary-background-hover` | ...
 ```
 
 ---
@@ -150,7 +150,7 @@ Every Token Mapping section ends with:
 **Validation:** `yarn lint.tokens` checks naming regex; `yarn tokens.validate` checks contrast.
 ```
 
-Replace `<name>` with the component name (without `cor-` prefix). E.g., `tokens/core/components/button.tokens.json`.
+Replace `<name>` with the component name (without `mud-` prefix). E.g., `tokens/core/components/button.tokens.json`.
 
 ---
 
@@ -159,13 +159,13 @@ Replace `<name>` with the component name (without `cor-` prefix). E.g., `tokens/
 When redesigning a legacy component, emit a **Token Diff** showing current → new:
 
 ```
-### Token Diff — cor-badge
+### Token Diff — mud-badge
 
 | Current token                          | New token                              | Reason          |
 |----------------------------------------|----------------------------------------|------------------|
-| --badge-error-background               | --cor-badge-error-background           | naming convention |
-| #515967 (hardcoded)                    | --cor-badge-default-color              | de-hardcode      |
-| --badge-iconColor-error (camelCase)    | --cor-badge-icon-color-error           | kebab-case       |
+| --badge-error-background               | --mud-badge-error-background           | naming convention |
+| #515967 (hardcoded)                    | --mud-badge-default-color              | de-hardcode      |
+| --badge-iconColor-error (camelCase)    | --mud-badge-icon-color-error           | kebab-case       |
 
 **Removed tokens:** (list any deprecated)
 **Added tokens:** (list any new)

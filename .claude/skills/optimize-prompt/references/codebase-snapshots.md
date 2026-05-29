@@ -14,20 +14,20 @@ The eight lookups below run in parallel during Step 0.5. Results are passed into
 
 ### 1. Existing components
 
-**Tool:** `Glob` with pattern `src/components/cor-*/cor-*.tsx`
+**Tool:** `Glob` with pattern `src/components/mud-*/mud-*.tsx`
 
 **Purpose:**
 - Name-collision check — refuse to emit `--mode=new` spec for a name that already exists
 - Reuse candidate scan — fuzzy match the requested name against existing names (see [`reuse-lookup.md`](reuse-lookup.md))
 - Cross-component dependency resolution — pattern #8 in [`contradiction-detector.md`](contradiction-detector.md)
 
-**Caveat:** In current state (post-legacy-migration), `src/components/` is empty. All components are in `src/legacy/cor-*/`. Lookup MUST also Glob `src/legacy/cor-*/cor-*.tsx` and mark hits as "legacy candidate" vs "production candidate".
+**Caveat:** In current state (post-legacy-migration), `src/components/` is empty. All components are in `src/legacy/mud-*/`. Lookup MUST also Glob `src/legacy/mud-*/mud-*.tsx` and mark hits as "legacy candidate" vs "production candidate".
 
 **Output payload:**
 ```
 componentInventory: {
-  production: ['cor-button', 'cor-input', ...],   // from src/components/
-  legacy:     ['cor-spinner', 'cor-badge', ...],  // from src/legacy/
+  production: ['mud-button', 'mud-input', ...],   // from src/components/
+  legacy:     ['mud-spinner', 'mud-badge', ...],  // from src/legacy/
 }
 ```
 
@@ -42,7 +42,7 @@ componentInventory: {
 - For `--mode=new`: detect if `<name>.tokens.json` already exists (rare but possible — flag as collision)
 - For `--mode=modify`: confirm the token file the consumer will edit exists
 
-**Caveat:** Token files use the component name **without** the `cor-` prefix (e.g., `button.tokens.json`, not `cor-button.tokens.json`). Strip the prefix when matching.
+**Caveat:** Token files use the component name **without** the `mud-` prefix (e.g., `button.tokens.json`, not `mud-button.tokens.json`). Strip the prefix when matching.
 
 **Output payload:**
 ```
@@ -70,16 +70,16 @@ When [`token-mapping-table.md`](token-mapping-table.md) emits its tables, cite t
 | Constant | Tags | Used by |
 |---|---|---|
 | `VALID_HELPER_TEXT_TAGS` | `span`, `small`, `div`, `p` | form components helper-text slot |
-| `VALID_ICON_SLOT_TAGS` | `cor-icon` | all icon slots across all components |
+| `VALID_ICON_SLOT_TAGS` | `mud-icon` | all icon slots across all components |
 | `VALID_AVATAR_IMAGE_TAGS` | `img`, `svg` | avatar image slot |
-| `VALID_AVATAR_ICON_TAGS` | `cor-icon`, `svg` | avatar icon slot |
-| `VALID_AVATAR_SLOT_TAGS` | `cor-avatar` | select-item avatar slot |
-| `VALID_TABLE_SECTION_TAGS` | `cor-thead`, `cor-tbody`, `cor-tfoot` | table default slot |
-| `VALID_TABLE_HEADER_TAGS` | `cor-column` | thead default slot |
-| `VALID_TABLE_ROW_TAGS` | `cor-row` | tbody default slot |
-| `VALID_TABLE_CELL_TAGS` | `cor-cell` | row default slot |
-| `VALID_NOTIFICATION_ACTION_TAGS` | `cor-button` | notification action slot |
-| `VALID_NOTIFICATION_CLOSE_TAGS` | `cor-icon` | notification close-icon override |
+| `VALID_AVATAR_ICON_TAGS` | `mud-icon`, `svg` | avatar icon slot |
+| `VALID_AVATAR_SLOT_TAGS` | `mud-avatar` | select-item avatar slot |
+| `VALID_TABLE_SECTION_TAGS` | `mud-thead`, `mud-tbody`, `mud-tfoot` | table default slot |
+| `VALID_TABLE_HEADER_TAGS` | `mud-column` | thead default slot |
+| `VALID_TABLE_ROW_TAGS` | `mud-row` | tbody default slot |
+| `VALID_TABLE_CELL_TAGS` | `mud-cell` | row default slot |
+| `VALID_NOTIFICATION_ACTION_TAGS` | `mud-button` | notification action slot |
+| `VALID_NOTIFICATION_CLOSE_TAGS` | `mud-icon` | notification close-icon override |
 
 **Caveat:** When `src/legacy/shared.constants.ts` moves to `src/utils/shared.constants.ts` (likely future refactor), update the Read target. The constant table above is the stable contract — re-verify the file location on each upgrade.
 
@@ -113,7 +113,7 @@ When [`token-mapping-table.md`](token-mapping-table.md) emits its tables, cite t
 0, 2, 4, 6, 8, 12, 16, 20, 24, 32, 40, 48, 56, 64, 80, ...
 ```
 
-DTCG paths: `spacing.<n>` → `cor.size.spacing.<n>`. Example: `16px` → `cor.size.spacing.16` → `--cor-size-spacing-16`.
+DTCG paths: `spacing.<n>` → `cor.size.spacing.<n>`. Example: `16px` → `cor.size.spacing.16` → `--mud-size-spacing-16`.
 
 **Mapping table generation:** When the prompt cites Figma-extracted dimensions, optimize-prompt MUST emit a Sizing Tokens table (per [`token-mapping-table.md`](token-mapping-table.md) § 5) with each px value mapped to its closest scale rung. If no exact match, emit `closest: <rung>` + `delta: <n>px` so the consumer agent can decide whether to round or extend the scale.
 
@@ -158,7 +158,7 @@ DTCG paths: `spacing.<n>` → `cor.size.spacing.<n>`. Example: `16px` → `cor.s
 | `src/utils/invalid-slotted-tag.ts` | `invalidSlottedTag(tag, valid)` | Returns the error string rendered when an invalid tag is slotted |
 | `src/utils/css-helpers.ts` | (multiple) | CSS-in-JS helpers |
 | `src/utils/flatten-tokens.ts` | `flattenTokens(...)` | DTCG JSON → flat key-value map |
-| `src/utils/svg-sanitizer.ts` | `sanitizeSvg(...)` | Sanitize inline SVG strings (for `cor-illustration`) |
+| `src/utils/svg-sanitizer.ts` | `sanitizeSvg(...)` | Sanitize inline SVG strings (for `mud-illustration`) |
 | `src/utils/token-parser.ts` | (multiple) | Parse `{path.to.token}` references in JSON |
 
 When a spec needs slot validation, the Implementation Rules section MUST cite `import { invalidSlottedTag } from '../../utils/invalid-slotted-tag'` and the constant import from `shared.constants`. Never re-specify these.
@@ -169,8 +169,8 @@ When a spec needs slot validation, the Implementation Rules section MUST cite `i
 
 ```
 Run in parallel (all 8 lookups):
-  Glob src/components/cor-*/cor-*.tsx       → componentInventory.production
-  Glob src/legacy/cor-*/cor-*.tsx           → componentInventory.legacy
+  Glob src/components/mud-*/mud-*.tsx       → componentInventory.production
+  Glob src/legacy/mud-*/mud-*.tsx           → componentInventory.legacy
   Glob tokens/core/components/*.tokens.json → tokenInventory
   Read src/legacy/shared.constants.ts       → slotConstants
   Read tokens/core/color.tokens.json        → colorTokens
@@ -192,7 +192,7 @@ Run against the composed draft from Step 3:
 
 | # | Check | Inputs | On failure |
 |---|---|---|---|
-| V1 | Every `cor-X` referenced exists in `componentInventory.production ∪ componentInventory.legacy` OR appears in `## Build Order` | draft, componentInventory | Emit `## Validation Issues`: "Component `cor-X` referenced but does not exist and is not in Build Order" |
+| V1 | Every `mud-X` referenced exists in `componentInventory.production ∪ componentInventory.legacy` OR appears in `## Build Order` | draft, componentInventory | Emit `## Validation Issues`: "Component `mud-X` referenced but does not exist and is not in Build Order" |
 | V2 | Every `cor.<comp>.<...>` token path matches the regex in [`token-mapping-table.md`](token-mapping-table.md) § 1 | draft | Emit warning with the offending path |
 | V3 | Every slot validation constant cited exists in `slotConstants` keys | draft, slotConstants | If constant unknown: emit "Constant `X` not found in shared.constants.ts. Did you mean: `Y`?" |
 | V4 | No raw color word (regex: `\b(light|dark|subtle|brand|primary|secondary|tertiary|emphasis)\s+(gray|grey|blue|red|green|yellow|color)\b`) outside cited tokens | draft | Emit "Unmapped color descriptor: `<phrase>`. Map to a semantic token from `tokens/core/color.tokens.json`." |
@@ -200,7 +200,7 @@ Run against the composed draft from Step 3:
 | V6 | CSS Pattern (A/B/C) declared in Architecture Constraints matches the routed archetype per [`archetype-router.md`](archetype-router.md) | draft, archetype | Emit "Pattern mismatch: archetype `X` routes to Pattern `Y`, but spec declares Pattern `Z`." |
 | V7 | Required sections per (mode, archetype) per [`output-templates.md`](output-templates.md) are all present | draft, mode, archetype | Emit "Missing required section: `<name>` for archetype `<archetype>` in mode `<mode>`." |
 
-**V1 special case** — Build Order entries: if a `cor-X` appears in the draft AND in `## Build Order`, V1 passes. This allows specs to legitimately reference unbuilt dependencies as long as the build order is explicit.
+**V1 special case** — Build Order entries: if a `mud-X` appears in the draft AND in `## Build Order`, V1 passes. This allows specs to legitimately reference unbuilt dependencies as long as the build order is explicit.
 
 **V2 special case** — `--mode=new` defines new tokens that don't exist yet. V2 validates the **format** of the path (regex match), not its existence in `tokenInventory`. Existence checking happens at execution time via `yarn lint.tokens`.
 
@@ -215,7 +215,7 @@ When validation finds issues:
 ```
 ## Validation Issues
 
-- [V1] Component `cor-foo` referenced in Behavior but not in src/components/, src/legacy/, or Build Order. Add to Build Order or fix the reference.
+- [V1] Component `mud-foo` referenced in Behavior but not in src/components/, src/legacy/, or Build Order. Add to Build Order or fix the reference.
 - [V3] Constant `VALID_FOO_TAGS` cited but not found in src/legacy/shared.constants.ts. Closest matches: VALID_ICON_SLOT_TAGS. Did you mean to declare a new constant? Add a "## New Constants" block.
 - [V5] Line 47: `72px` is hardcoded. Map to `cor.size.spacing.72` (exact match exists).
 
@@ -272,7 +272,7 @@ When Figma MCP is unavailable (OAuth expired, network error, server down):
 
 When extraction succeeds, the payloads merge **silently** into the composed spec:
 
-- `figmaVariables` populates Token Mapping table cells with actual `--cor-*` token paths
+- `figmaVariables` populates Token Mapping table cells with actual `--mud-*` token paths
 - `figmaContext` populates State × Element matrix descriptors (default vs hover deltas)
 - `figmaMetadata` confirms node hierarchy used in archetype inference
 - `figmaScreenshot` is **not** inlined in the spec — referenced only as "screenshot captured for pixel-perfect verify"

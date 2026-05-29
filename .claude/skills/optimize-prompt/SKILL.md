@@ -36,8 +36,8 @@ Auto-detect from the prompt, with `--mode=<value>` as escape hatch:
 
 | Mode | Trigger keywords / context | Sections emitted |
 |---|---|---|
-| `new` | "Create cor-X", "new component", no existing component named | Full template |
-| `redesign` | "Redesign cor-X", target in `src/legacy/`, Figma reference for new design | Visual Changes + API Changes + Migration |
+| `new` | "Create mud-X", "new component", no existing component named | Full template |
+| `redesign` | "Redesign mud-X", target in `src/legacy/`, Figma reference for new design | Visual Changes + API Changes + Migration |
 | `modify` | "Add variant", "add prop", target in `src/components/` already exists | API Changes + Behavior delta |
 | `fix` | "Fix", "bug", "regression", file path in prompt | Symptom + root cause + regression test |
 | `tokens` | "Update tokens", "rename token", no TSX/CSS changes | Token Diff only |
@@ -62,8 +62,8 @@ Archetype determines: which CSS Pattern (A/B/C), which sections are required, wh
 
 Run 8 lookups in parallel against the working tree per [`references/codebase-snapshots.md`](references/codebase-snapshots.md):
 
-1. `Glob src/components/cor-*/cor-*.tsx` → `componentInventory.production`
-2. `Glob src/legacy/cor-*/cor-*.tsx` → `componentInventory.legacy`
+1. `Glob src/components/mud-*/mud-*.tsx` → `componentInventory.production`
+2. `Glob src/legacy/mud-*/mud-*.tsx` → `componentInventory.legacy`
 3. `Glob tokens/core/components/*.tokens.json` → `tokenInventory`
 4. `Read src/legacy/shared.constants.ts` → `slotConstants`
 5. `Read tokens/core/color.tokens.json` → `colorTokens`
@@ -133,7 +133,7 @@ Run the 7-point validator from [`references/codebase-snapshots.md`](references/c
 
 | # | Check | Against |
 |---|---|---|
-| V1 | Every `cor-X` referenced exists in `componentInventory` (production ∪ legacy) OR appears in `## Build Order` | snapshot |
+| V1 | Every `mud-X` referenced exists in `componentInventory` (production ∪ legacy) OR appears in `## Build Order` | snapshot |
 | V2 | Every `cor.<comp>.<...>` token path matches the regex in [`token-mapping-table.md`](references/token-mapping-table.md) § 1 | draft |
 | V3 | Every slot validation constant cited exists in `slotConstants` | snapshot |
 | V4 | No raw color descriptor outside cited tokens | draft + `colorTokens` |

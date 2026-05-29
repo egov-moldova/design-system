@@ -1,8 +1,8 @@
 # worktree-init.ps1 — Initialize a redesign worktree for a single component (Windows)
 #
 # Usage:
-#   .\.claude\kanban\worktree-init.ps1 -ComponentName cor-button
-#   .\.claude\kanban\worktree-init.ps1 -ComponentName cor-input -StartPort 6010
+#   .\.claude\kanban\worktree-init.ps1 -ComponentName mud-button
+#   .\.claude\kanban\worktree-init.ps1 -ComponentName mud-input -StartPort 6010
 #
 # Behavior:
 #   1. Creates `redesign/<ComponentName>` branch from `main` if it doesn't exist
@@ -32,8 +32,8 @@ $ErrorActionPreference = "Stop"
 
 # --- Validate inputs ---
 
-if (-not $ComponentName.StartsWith("cor-")) {
-    Write-Error "ComponentName must start with 'cor-'. Got: $ComponentName"
+if (-not $ComponentName.StartsWith("mud-")) {
+    Write-Error "ComponentName must start with 'mud-'. Got: $ComponentName"
     exit 1
 }
 

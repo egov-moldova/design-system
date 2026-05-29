@@ -30,10 +30,10 @@ For brand-new components without an existing implementation.
 
 ```
 ## 1. Goal
-- Component: cor-<name>
+- Component: mud-<name>
 - Atomic level: <Atom | Molecule | Organism | Layout>
 - Archetype: <atom-visual | atom-interactive | form-associated | molecule | molecule-interactive | organism | layout>
-- Directory: src/components/cor-<name>/
+- Directory: src/components/mud-<name>/
 - Figma source: <file URL> — primary node <node-id>
 - Figma state matrix: see § 6
 
@@ -66,7 +66,7 @@ For brand-new components without an existing implementation.
 | ...  | ...      | slotchange + .has-X class | VALID_<X>_SLOT_TAGS (cite or declare new) |
 
 ### Exported types
-- <Component>Variant, <Component>Size, <Component><Action>Detail in src/components/cor-<name>/cor-<name>.types.ts
+- <Component>Variant, <Component>Size, <Component><Action>Detail in src/components/mud-<name>/mud-<name>.types.ts
 
 ### Utilities
 - <existing utils to reuse from src/utils/, or "none">
@@ -119,12 +119,12 @@ For brand-new components without an existing implementation.
 
 ## Mode: `redesign`
 
-For legacy components moving from `src/legacy/cor-X/` to `src/components/cor-X/` with new Figma design.
+For legacy components moving from `src/legacy/mud-X/` to `src/components/mud-X/` with new Figma design.
 
 ```
 ## 1. Goal
-- Component: cor-<name>
-- Source: src/legacy/cor-<name>/ → target: src/components/cor-<name>/
+- Component: mud-<name>
+- Source: src/legacy/mud-<name>/ → target: src/components/mud-<name>/
 - Figma source (NEW design): <file URL> — primary node <node-id>
 - Reason: AGE Design System redesign program
 
@@ -163,7 +163,7 @@ For adding a variant/prop/size to an existing component.
 
 ```
 ## 1. Goal
-- Component: cor-<name>
+- Component: mud-<name>
 - Modification: <add variant X | add prop Y | add size Z>
 - Reason: <one sentence>
 
@@ -192,7 +192,7 @@ For visual or behavioral bug fixes.
 
 ```
 ## 1. Goal
-- Component: cor-<name>
+- Component: mud-<name>
 - Symptom: <one sentence>
 - Root cause: <if known; otherwise "TBD — investigation needed">
 - Affected files: <list>

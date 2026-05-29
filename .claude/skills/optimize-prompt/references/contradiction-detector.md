@@ -17,7 +17,7 @@ Run on every raw prompt before emission. Each pattern declares its trigger, the 
 - "Slot-based approach" → Pattern B (internal DOM/SVG). Visual atoms own their markup; no consumer-provided content. (see _agents/reuse-architecture.md § Architecture Decision Tree)
 ```
 
-**Example trigger:** Spinner prompt: `"Create cor-spinner component, slot based approach"` → atom-visual, no consumer content makes sense.
+**Example trigger:** Spinner prompt: `"Create mud-spinner component, slot based approach"` → atom-visual, no consumer content makes sense.
 
 ---
 
@@ -79,7 +79,7 @@ Run on every raw prompt before emission. Each pattern declares its trigger, the 
 
 ```
 ## Auto-corrections
-- `var(--cor-badge-color, #515967)` → `var(--cor-badge-color, var(--cor-color-text-secondary))`. Fallbacks chain to semantic tokens, never literal hex. (see _agents/anti-patterns.md § Hardcoded fallbacks)
+- `var(--mud-badge-color, #515967)` → `var(--mud-badge-color, var(--mud-color-text-secondary))`. Fallbacks chain to semantic tokens, never literal hex. (see _agents/anti-patterns.md § Hardcoded fallbacks)
 ```
 
 ---
@@ -118,22 +118,22 @@ Run on every raw prompt before emission. Each pattern declares its trigger, the 
 
 ## Pattern 8 — Cross-component dependency unresolved
 
-**Trigger:** API or Behavior section references a `cor-X` component that:
-- Does not exist in `src/components/cor-X/`, AND
+**Trigger:** API or Behavior section references a `mud-X` component that:
+- Does not exist in `src/components/mud-X/`, AND
 - Is not part of the current spec being optimized
 
 **Auto-fix:** Emit a `## Build Order` block at the top of output:
 
 ```
 ## Build Order
-1. cor-spinner — atom-visual, must build first (dependency for cor-button loading state)
-2. cor-button — atom-interactive, consumes cor-spinner
+1. mud-spinner — atom-visual, must build first (dependency for mud-button loading state)
+2. mud-button — atom-interactive, consumes mud-spinner
 
 ## Auto-corrections
-- Detected dependency `cor-spinner` (referenced in loading state) does not exist in src/components/. Build Order added.
+- Detected dependency `mud-spinner` (referenced in loading state) does not exist in src/components/. Build Order added.
 ```
 
-**Example trigger:** Button prompt: `"Loading state is same as default + spinner"` where cor-spinner doesn't exist → emit Build Order.
+**Example trigger:** Button prompt: `"Loading state is same as default + spinner"` where mud-spinner doesn't exist → emit Build Order.
 
 ---
 
@@ -150,7 +150,7 @@ Run on every raw prompt before emission. Each pattern declares its trigger, the 
 
 **Fallback:** If no exact token match, emit candidates in `## Clarification Needed`.
 
-**Exception:** Component dimensions cited directly from Figma extraction (height/min-width per size) get a token mapping with `--cor-<component>-container-height-<size>` format — not flagged.
+**Exception:** Component dimensions cited directly from Figma extraction (height/min-width per size) get a token mapping with `--mud-<component>-container-height-<size>` format — not flagged.
 
 ---
 
@@ -162,7 +162,7 @@ Run on every raw prompt before emission. Each pattern declares its trigger, the 
 
 ```
 ## Auto-corrections
-- `@Event() corChange!: EventEmitter<string>` → `@Event() corChange!: EventEmitter<InputChangeDetail>` where `InputChangeDetail` is exported from `cor-input.types.ts`. Even single-value payloads use a typed interface. (see canonical-defaults.md § 7 Event naming)
+- `@Event() corChange!: EventEmitter<string>` → `@Event() corChange!: EventEmitter<InputChangeDetail>` where `InputChangeDetail` is exported from `mud-input.types.ts`. Even single-value payloads use a typed interface. (see canonical-defaults.md § 7 Event naming)
 ```
 
 ---
@@ -175,11 +175,11 @@ Run on every raw prompt before emission. Each pattern declares its trigger, the 
 
 ```
 ## Reuse candidates
-- cor-button (80%+ match) — consider extending with `variant="ghost"` instead of creating new.
+- mud-button (80%+ match) — consider extending with `variant="ghost"` instead of creating new.
 - Decision needed: (a) reuse with extension, (b) create separate component. Default: (a).
 ```
 
-**Phase 1+2 limitation:** This pattern requires Phase 3 live lookup (Glob on `src/components/cor-*/`). In Phase 1+2, the detector flags only when the prompt explicitly mentions an existing component name as a "similar but different" baseline.
+**Phase 1+2 limitation:** This pattern requires Phase 3 live lookup (Glob on `src/components/mud-*/`). In Phase 1+2, the detector flags only when the prompt explicitly mentions an existing component name as a "similar but different" baseline.
 
 ---
 

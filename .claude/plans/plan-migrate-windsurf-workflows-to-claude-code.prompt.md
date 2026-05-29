@@ -155,13 +155,13 @@ Rescrie cele 3 fisiere active sa reflecte 1:1 starea actuala a repo-ului si conv
 
 **Surse de adevar**:
 - `src/components/AGENTS.md` + toate `src/components/_agents/*.md` (form-associated, slot-patterns, component-structure, css-architecture, storybook-stories, composition-interactive, e2e-testing)
-- `src/components/cor-button/` — exemplu canonic
+- `src/components/mud-button/` — exemplu canonic
 - `_agents/anti-patterns.md`, `_agents/pixel-perfect-qa.md`
 
 **Restructurare**:
 - **12 pasi development**: pastreaza dar sincronizeaza cu ordinea corecta token-first din workflows
 - **Member order TSX**: documenteaza ordinea exacta din `src/components/AGENTS.md` (decorators, props, state, internal vars, lifecycle, methods, render)
-- **Slot patterns**: link explicit catre `_agents/slot-patterns.md` + exemplu `invalidSlottedTag` din `cor-button.tsx`
+- **Slot patterns**: link explicit catre `_agents/slot-patterns.md` + exemplu `invalidSlottedTag` din `mud-button.tsx`
 - **Pixel-perfect QA loop**: sectiune noua despre browser screenshot + comparatie Figma (workflow real)
 - **Testing**: include unit (Vitest), E2E (Playwright via MCP), visual regression — cu link la `e2e-testing.md`
 
@@ -220,13 +220,13 @@ Creeaza `.claude/commands/` si `.claude/agents/`. Pentru fiecare workflow Windsu
 
 ### 3.2 Slash Commands — `.claude/commands/` (9 fisiere)
 
-Pentru workflows linear, single-pass, fara checkpoint state complex. Suporta `$ARGUMENTS` placeholder pentru input gen `@cor-button`.
+Pentru workflows linear, single-pass, fara checkpoint state complex. Suporta `$ARGUMENTS` placeholder pentru input gen `@mud-button`.
 
 **Format Claude Code slash command**:
 ```markdown
 ---
 description: <short help text shown in /help>
-argument-hint: "@cor-<component-name>"
+argument-hint: "@mud-<component-name>"
 allowed-tools: [Read, Glob, Grep, Bash, ...]
 ---
 
@@ -239,13 +239,13 @@ Component: $ARGUMENTS
 
 | Slash command | Sursa Windsurf | Argumente |
 |---|---|---|
-| `/audit-component` | `audit-component.md` | `@cor-{name}` |
-| `/audit-accessibility` | `audit-accessibility.md` | `@cor-{name}` |
+| `/audit-component` | `audit-component.md` | `@mud-{name}` |
+| `/audit-accessibility` | `audit-accessibility.md` | `@mud-{name}` |
 | `/pre-pr-check` | `pre-pr-check.md` | (niciunul) |
 | `/update-tokens` | `update-tokens.md` | component name + scope |
-| `/fix-visual-bug` | `fix-visual-bug.md` | `@cor-{name}` + descriere + optional Figma link |
-| `/migrate-component` | `migrate-component.md` | `@cor-{name}` din `src/hidden/` |
-| `/modify-component` | `modify-component.md` | `@cor-{name}` + descriere change + optional Figma link |
+| `/fix-visual-bug` | `fix-visual-bug.md` | `@mud-{name}` + descriere + optional Figma link |
+| `/migrate-component` | `migrate-component.md` | `@mud-{name}` din `src/hidden/` |
+| `/modify-component` | `modify-component.md` | `@mud-{name}` + descriere change + optional Figma link |
 | `/optimize-prompt` | `optimize-prompt.md` | raw prompt |
 | `/optimize-prompt-new-component` | `optimize-prompt-new-component.md` | raw prompt |
 
@@ -426,15 +426,15 @@ Adauga header in fiecare `.windsurf/workflows/*.md`:
 
 ### Phase 3 — Workflows migration end-to-end
 Pentru fiecare slash command nou:
-- [ ] Invoca in Claude Code via `/<name> @cor-button` (sau argument relevant)
+- [ ] Invoca in Claude Code via `/<name> @mud-button` (sau argument relevant)
 - [ ] Verifica ca pasii descrisi se executa
 - [ ] Verifica ca tool calls (figma_*, browser_*) functioneaza prin MCP
 
 Pentru fiecare subagent:
 - [ ] Test invocation via Task tool cu `subagent_type: <name>`
 - [ ] Verifica ca checkpoints se intorc corect la main agent
-- [ ] Pentru `new-component`: rulare end-to-end pe o componenta simpla (de ex. `cor-divider` daca nu exista) cu Figma link
-- [ ] Pentru `audit-production`: rulare pe `cor-button` (componenta matura) — toate 9 faze ar trebui sa returneze raport structurat
+- [ ] Pentru `new-component`: rulare end-to-end pe o componenta simpla (de ex. `mud-divider` daca nu exista) cu Figma link
+- [ ] Pentru `audit-production`: rulare pe `mud-button` (componenta matura) — toate 9 faze ar trebui sa returneze raport structurat
 
 ### Phase 4 — Windsurf legacy marker
 - [ ] `.windsurf/README.md` exista cu mesaj clar de redirectionare
@@ -443,7 +443,7 @@ Pentru fiecare subagent:
 
 ### Final integration test
 - [ ] Rulare `/pre-pr-check` din Claude Code pe branch curent — pass
-- [ ] Rulare `/audit-component @cor-button` — output structurat 12-categorii
+- [ ] Rulare `/audit-component @mud-button` — output structurat 12-categorii
 - [ ] Update minor in `.specs/TOKEN-ARCHITECTURE.md` → confirma ca developer care urmeaza specs creeaza token JSON valid DTCG
 - [ ] Sectiunea "Automation" din root `AGENTS.md` linkurile sunt valide
 

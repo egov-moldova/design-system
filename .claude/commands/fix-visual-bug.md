@@ -1,6 +1,6 @@
 ---
 description: Diagnose and fix a visual bug by tracing root cause through token → CSS → TSX layers
-argument-hint: "@cor-<name> <bug description> [Figma URL]"
+argument-hint: "@mud-<name> <bug description> [Figma URL]"
 ---
 
 # /fix-visual-bug
@@ -59,8 +59,8 @@ Read computed styles of the broken element via `mcp__playwright__browser_evaluat
 
 ```javascript
 () => {
-  const el = document.querySelector('cor-<name>')?.shadowRoot?.querySelector('.target')
-    || document.querySelector('cor-<name>');
+  const el = document.querySelector('mud-<name>')?.shadowRoot?.querySelector('.target')
+    || document.querySelector('mud-<name>');
   const s = window.getComputedStyle(el);
   return {
     bg: s.backgroundColor, color: s.color, border: s.border,

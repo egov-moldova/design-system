@@ -23,16 +23,16 @@ Reference: <https://stenciljs.com/docs/component>.
 | # | Rule | Verification |
 |---|------|--------------|
 | C1 | `tag` is required, must contain `-`, must be globally unique | Read TSX `@Component({ tag: '...' })` |
-| C2 | `tag` MUST start with `cor-` (project-specific overlay; AGENTS.md root rule) | Grep `tag:\s*['"](?!cor-)` |
+| C2 | `tag` MUST start with `mud-` (project-specific overlay; AGENTS.md root rule) | Grep `tag:\s*['"](?!mud-)` |
 | C3 | `shadow: true` for every component (project default) — NEVER `scoped: true` | Grep `scoped:\s*true` should be empty |
 | C4 | `shadow` and `scoped` are mutually exclusive (Stencil throws at build) | Build-time error |
-| C5 | `styleUrl` (single CSS file) — DEFAULT for `cor-*` | Read decorator |
+| C5 | `styleUrl` (single CSS file) — DEFAULT for `mud-*` | Read decorator |
 | C6 | `styleUrls` (array OR `{ mode: path }` object) — only when multiple stylesheets; rare in this repo | Manual review |
 | C7 | `styles` (inline string) — only for tests/scaffolding; must be PURE CSS (no preprocessor) | Manual review |
 | C8 | `assetsDirs: ['assets']` — if component bundles static assets; requires `getAssetPath()` in template | Pair grep |
 | C9 | `shadow: { delegatesFocus: true }` — opt-in for form-associated wrappers (forwards focus to first focusable) | Manual review for form components |
 | C10 | `shadow: { slotAssignment: 'manual' }` — only for components that imperatively assign slots; rarely needed | Manual review |
-| C11 | `formAssociated: true` — REQUIRED for `cor-input`, `cor-select`, `cor-textarea`, `cor-checkbox`, `cor-radio-button`, `cor-toggle`, `cor-switch` | Read decorator + `@AttachInternals()` presence |
+| C11 | `formAssociated: true` — REQUIRED for `mud-input`, `mud-select`, `mud-textarea`, `mud-checkbox`, `mud-radio-button`, `mud-toggle`, `mud-switch` | Read decorator + `@AttachInternals()` presence |
 
 ### Anti-patterns
 
@@ -41,10 +41,10 @@ Reference: <https://stenciljs.com/docs/component>.
 @Component({ tag: 'my-button', shadow: true })
 
 // ❌ Both shadow and scoped
-@Component({ tag: 'cor-button', shadow: true, scoped: true })
+@Component({ tag: 'mud-button', shadow: true, scoped: true })
 
 // ❌ formAssociated without AttachInternals
-@Component({ tag: 'cor-input', shadow: true, formAssociated: true })
+@Component({ tag: 'mud-input', shadow: true, formAssociated: true })
 export class CorInput {
   // missing @AttachInternals() internals!: ElementInternals
 }
@@ -74,7 +74,7 @@ Reference: <https://stenciljs.com/docs/properties>.
 | P6 | Optional props use TS `?`: `@Prop() width?: string \| number;` | Grep prop signatures |
 | P7 | Required props use `!`: `@Prop() label!: string;` (rarely needed; prefer defaults) | Grep `@Prop\(\)\s+\w+!:` |
 | P8 | Booleans MUST default to `false` (project convention; HTML attribute presence-semantics) | Grep `@Prop\([^)]*\)\s+\w+:\s*boolean\s*(?!=\s*false)` |
-| P9 | Enum props use imported enum from `cor-<name>.enums.ts` | Grep import + type |
+| P9 | Enum props use imported enum from `mud-<name>.enums.ts` | Grep import + type |
 | P10 | Every `@Prop()` has JSDoc with description + `@default <value>` if has default | Manual review or AST scan |
 | P11 | Use TS union literals (`'sm' \| 'md' \| 'lg'`) OR an enum — not bare strings | Manual review |
 
@@ -102,7 +102,7 @@ Stencil supports validation via either:
 @Watch('max')
 validateMax(newValue: number) {
   if (newValue < 0) {
-    console.warn('cor-slider: max must be >= 0');
+    console.warn('mud-slider: max must be >= 0');
     this.max = 100;
   }
 }
@@ -173,7 +173,7 @@ this.config.theme = 'dark';
 ### Project-specific extras
 
 - Refs (DOM elements) like `this.inputElement!: HTMLInputElement` — NEVER `@State`. Just plain class field.
-- Same for IDs (`this.uid = `cor-${counter++}``) — plain field, set in `componentWillLoad`.
+- Same for IDs (`this.uid = `mud-${counter++}``) — plain field, set in `componentWillLoad`.
 
 ---
 
@@ -194,7 +194,7 @@ Reference: <https://stenciljs.com/docs/events>.
 | E7 | Set `cancelable: false` when listeners cannot prevent default behavior | Manual review |
 | E8 | Check `event.defaultPrevented` after `.emit()` for opt-out patterns | Manual review |
 | E9 | Use `eventName: 'override'` option only when DOM event name should differ from class property — rarely needed | Manual review |
-| E10 | Payload types defined in `cor-<name>.types.ts` (e.g. `CorAccordionToggleEventDetail`) | Read types file |
+| E10 | Payload types defined in `mud-<name>.types.ts` (e.g. `CorAccordionToggleEventDetail`) | Read types file |
 
 ### @Listen rules
 
@@ -239,8 +239,8 @@ handleScroll() { /* ... */ }
 
 Stencil converts camelCase → kebab-case for the DOM event name:
 
-- TS / JSX: `<cor-accordion onCorAccordionToggle={handler}>`
-- HTML: `<cor-accordion oncoraccordiontoggle="handler()">` (NB: lowercased — no dashes in inline attr) OR `el.addEventListener('corAccordionToggle', handler)`
+- TS / JSX: `<mud-accordion onCorAccordionToggle={handler}>`
+- HTML: `<mud-accordion oncoraccordiontoggle="handler()">` (NB: lowercased — no dashes in inline attr) OR `el.addEventListener('corAccordionToggle', handler)`
 
 > Stencil keeps the original camelCase as the DOM event name (it does NOT auto-kebab-case it). Use `addEventListener('corAccordionToggle', …)` from JS.
 
@@ -278,7 +278,7 @@ Reference: <https://stenciljs.com/docs/methods>.
  * Programmatically focus the input.
  * @returns Promise that resolves after focus is set.
  * @example
- *   const el = document.querySelector('cor-input');
+ *   const el = document.querySelector('mud-input');
  *   await el.componentOnReady();
  *   await el.focus();
  */

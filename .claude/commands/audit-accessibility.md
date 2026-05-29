@@ -1,6 +1,6 @@
 ---
 description: Deep WCAG 2.1 AA audit — keyboard navigation, ARIA validation, color contrast (light + dark mode), focus indicators, screen reader compatibility
-argument-hint: "@cor-<component-name>"
+argument-hint: "@mud-<component-name>"
 ---
 
 # /audit-accessibility

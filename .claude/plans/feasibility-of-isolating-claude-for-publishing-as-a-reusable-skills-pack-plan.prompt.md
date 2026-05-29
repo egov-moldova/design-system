@@ -2,7 +2,7 @@
 
 ## Context
 
-Folderul `x:\WORK\corlab\age-design\.claude\` conține un sistem matur de instrucțiuni AI: **11 agenți, 12 skill-uri, 10 comenzi slash**, construit specific în jurul AGE Design System (`cor-*` Stencil components). Există un repo dedicat (separat de age-design) pentru skill-uri ce pot fi publicate ulterior pe **skills.sh**.
+Folderul `x:\WORK\corlab\age-design\.claude\` conține un sistem matur de instrucțiuni AI: **11 agenți, 12 skill-uri, 10 comenzi slash**, construit specific în jurul AGE Design System (`mud-*` Stencil components). Există un repo dedicat (separat de age-design) pentru skill-uri ce pot fi publicate ulterior pe **skills.sh**.
 
 **Decizia user-ului acum**: nu execuția. **Analiza** dacă publicarea agnostică e (a) posibilă, (b) are sens, (c) nu strică calitatea proiectului curent. Implementarea se va face mai târziu în repo-ul dedicat.
 
@@ -27,13 +27,13 @@ Folderul `x:\WORK\corlab\age-design\.claude\` conține un sistem matur de instru
 **Concret pe nume**:
 
 - **Plug-and-play (zero refactor)**: `optimize-prompt`, `skill-creator`, `systematic-debugging`, `terminal-ansi-colors`, `verification-before-completion` skills + `/optimize-prompt`, `/optimize-prompt-new-component` commands.
-- **Rebrand simplu (`cor-` → `{{prefix}}-`)**: `story-writer`, `test-writer`, `integration-checker`, `pixel-perfect-verifier`, `a11y-verifier` agents + `carbon-icons`, `figma-illustration-import` skills.
+- **Rebrand simplu (`mud-` → `{{prefix}}-`)**: `story-writer`, `test-writer`, `integration-checker`, `pixel-perfect-verifier`, `a11y-verifier` agents + `carbon-icons`, `figma-illustration-import` skills.
 - **Parametrizare moderată (paths + yarn scripts + bundle scripts)**: `token-validator`, `custom-component`, `refactor-component` agents + `accessibility-compliance`, `stencil-compliance`, `token-creation` skills + `/update-tokens`, `/audit-accessibility`, `/modify-component`, `/fix-visual-bug`, `/pre-pr-check`, `/audit-component` commands.
 - **Reference-only (orchestratori indispensabili, publici cu disclaimer)**: `new-component`, `redesign-component`, `audit-production` agents + `audit-component`, `parallel-aux-tasks` skills + `/migrate-component` command.
 
 ### Surse principale de cuplaj proiect (cuantificate)
 
-1. Prefix `cor-` — **~200+ ocurențe** total în `.claude/`.
+1. Prefix `mud-` — **~200+ ocurențe** total în `.claude/`.
 2. Path-uri hardcodate (`src/components/`, `src/hidden/`, `tokens/core/`, `tokens/core.dark/`, `tokens/age/`) — ~40 ocurențe.
 3. Comenzi yarn proiect-specific (`yarn tokens.build`, `yarn audit:contrast`, `yarn sp.dev.watch`, `yarn lint.tokens`) — ~40 ocurențe.
 4. Scripts referențiate din `scripts/audit/*.mjs`, `scripts/tokens-validate.mjs`, `scripts/audit-token-contrast.mjs`, `scripts/git/setup-merge-drivers.mjs` — **NU bundle-uite** în niciun skill, dar invocate.
@@ -74,7 +74,7 @@ Folderul `x:\WORK\corlab\age-design\.claude\` conține un sistem matur de instru
 **NU, dacă urmăm strict generator-script-approach (Opțiunea B)**. Argumentare:
 
 - `.claude/` live **NU se atinge niciodată**. Generator-ul citește, transformă, scrie în alt output dir.
-- Toate exemplele noastre rămân concrete (`cor-button`, `cor-input`) — DX-ul nostru NU pierde claritate.
+- Toate exemplele noastre rămân concrete (`mud-button`, `mud-input`) — DX-ul nostru NU pierde claritate.
 - Comenzile/agenții/skill-urile invocate de noi rulează identic ca acum.
 - Singurul cost intern recurent = sync-ul ocazional (când îmbunătățim un skill, rulăm generator-ul → push la repo-ul publicat). Estimare: <30 min/sync, 4-6 sync/an.
 
@@ -93,7 +93,7 @@ Folderul `x:\WORK\corlab\age-design\.claude\` conține un sistem matur de instru
   - Aplică substituții
   - Pentru Tier 2/3, copiază scripturile dependente în `bundled-scripts/` al skill-ului
   - Outputs la `<output-dir>` configurabil prin arg CLI
-- Test: rulează → verifică `rg "cor-|/scripts/audit/|yarn lint.tokens" <output-dir>` returnează zero hits.
+- Test: rulează → verifică `rg "mud-|/scripts/audit/|yarn lint.tokens" <output-dir>` returnează zero hits.
 
 ### Etapa B — Manifest & per-tier README (½ zi)
 - Generează README per skill cu: parameters required, scripts bundled, dependencies (other skills), example invocation, limitations.
@@ -107,7 +107,7 @@ Folderul `x:\WORK\corlab\age-design\.claude\` conține un sistem matur de instru
 
 ### Etapa D — Push către repo-ul tău dedicat skill-urilor (1-2 ore)
 - Copiezi `<output-dir>` în repo-ul skill-uri.
-- Verifici git diff: niciun `cor-` rămas; toate paths sunt placeholders sau params.
+- Verifici git diff: niciun `mud-` rămas; toate paths sunt placeholders sau params.
 - Commit + push. Dacă repo-ul are CI care publică pe skills.sh, urmărești release-ul.
 
 **Total efort one-shot**: ~3 zile (one developer). Ongoing: <30 min/sync.
@@ -119,7 +119,7 @@ Folderul `x:\WORK\corlab\age-design\.claude\` conține un sistem matur de instru
 **În age-design (singurele schimbări locale)**:
 - `scripts/publish-claude-pack.mjs` — generator nou
 - `scripts/publish-claude-pack/template-vars.json` — vars
-- `scripts/publish-claude-pack/transformations.mjs` — regex map cor- → placeholders
+- `scripts/publish-claude-pack/transformations.mjs` — regex map mud- → placeholders
 - (opțional) yarn alias `yarn pack.publish` în `package.json`
 
 **În repo-ul dedicat skill-urilor (separat)**:
@@ -148,10 +148,10 @@ Folderul `x:\WORK\corlab\age-design\.claude\` conține un sistem matur de instru
 
 ## Verification (când execuție va fi făcută)
 
-1. **DX local intact**: înainte și după ce există generator-ul, rulează `audit-component cor-button` în `.claude/` → același output (zero impact).
+1. **DX local intact**: înainte și după ce există generator-ul, rulează `audit-component mud-button` în `.claude/` → același output (zero impact).
 2. **Cross-project run**: în repo curat Stencil, instalează pack-ul, configurează `template-vars.json` cu `{prefix: "my", components-root: "src/components"}`, rulează `story-writer my-button` → produce stories funcționale fără referințe AGE.
 3. **Scripts bundling**: `node skills/audit-component/bundled-scripts/audit/run-all.mjs` rulează standalone fără `scripts/` din root.
-4. **Grep clean**: `rg "cor-|/scripts/audit/|yarn lint.tokens|AGE Design System|Corlab" <output-dir>` returnează zero hits pentru Tier 1-2; Tier 3 are doar referințe explicate în README ca "AGE-specific examples".
+4. **Grep clean**: `rg "mud-|/scripts/audit/|yarn lint.tokens|AGE Design System|Corlab" <output-dir>` returnează zero hits pentru Tier 1-2; Tier 3 are doar referințe explicate în README ca "AGE-specific examples".
 5. **Doc check**: README pack-ului are: setup guide (5 min), exemplu per tier, limitations Tier 3, sync policy.
 
 ---

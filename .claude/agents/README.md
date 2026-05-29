@@ -26,7 +26,7 @@ For simple linear workflows, use [`.claude/commands/`](../commands/README.md) in
 ```text
 Task({
   subagent_type: "new-component",
-  prompt: "Build cor-divider from Figma https://figma.com/file/.../?node-id=1234:5678. Single atom, --fast mode."
+  prompt: "Build mud-divider from Figma https://figma.com/file/.../?node-id=1234:5678. Single atom, --fast mode."
 })
 ```
 

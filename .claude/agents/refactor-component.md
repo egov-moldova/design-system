@@ -73,7 +73,7 @@ Strict dependency order:
    - DTCG format: `$value` / `$type`
    - Dark mode DEFERRED — skip `tokens/core.dark/`
 2. **Build tokens**: `yarn tokens.build`
-3. **CSS** → refactor `cor-<name>.css`
+3. **CSS** → refactor `mud-<name>.css`
    - Switch to correct pattern (A: Slotted or B: Internal DOM)
    - Replace hardcoded values with `var(--token-name)`
    - Replace `var(--palette-*)` fallbacks with `--color-*` semantic equivalents
@@ -81,7 +81,7 @@ Strict dependency order:
    - See `tokens/AGENTS.md` for full palette→semantic mapping table
    - Fix selector patterns (`:host([attr])` over class toggling)
    - Standardize transitions to `property 150ms ease-in-out`
-4. **TSX** → refactor `cor-<name>.tsx`
+4. **TSX** → refactor `mud-<name>.tsx`
    - Reorder members to match convention
    - Add `{ reflect: true }` to visual props
    - Add missing JSDoc
@@ -90,11 +90,11 @@ Strict dependency order:
 5. **Types/Enums** → create or update `.types.ts` and `.enums.ts`
    - Extract string literals into enums
    - Create interfaces for event payloads
-6. **Stories** → update `cor-<name>.stories.ts`
+6. **Stories** → update `mud-<name>.stories.ts`
    - Switch to CSF3 if not already
    - Use `@storybook/web-components-vite` imports
    - Add missing story variants (AllVariants, AllSizes, States)
-7. **Tests** → update `test/cor-<name>.spec.tsx`
+7. **Tests** → update `test/mud-<name>.spec.tsx`
    - Add missing test coverage identified by audit
 
 ## Step 4.5: Parallel Auxiliary Tasks (refactor-3 set)
@@ -102,9 +102,9 @@ Strict dependency order:
 Once the refactored component renders without console errors, invoke the **`parallel-aux-tasks` skill** with the **refactor-3** subagent set:
 
 ```
-Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=cor-<name>, figmaNodeId=<id-if-available>, threshold=0.5, useBaseline=true")
-Agent(subagent_type="a11y-verifier",          prompt="componentName=cor-<name>")
-Agent(subagent_type="integration-checker",    prompt="componentName=cor-<name>, changeKind=refactor, apiChanges=<list-if-any>")
+Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=mud-<name>, figmaNodeId=<id-if-available>, threshold=0.5, useBaseline=true")
+Agent(subagent_type="a11y-verifier",          prompt="componentName=mud-<name>")
+Agent(subagent_type="integration-checker",    prompt="componentName=mud-<name>, changeKind=refactor, apiChanges=<list-if-any>")
 ```
 
 A refactor SHOULD NOT change the visual or API. The reports should be all-PASS:
@@ -182,7 +182,7 @@ mcp__playwright__browser_console_messages({ level: "error" })
 ## Step 8: Summary
 
 ```text
-## Refactor Summary: cor-<name>
+## Refactor Summary: mud-<name>
 
 ### Changes Applied
 - [ ] Member order corrected

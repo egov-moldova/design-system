@@ -1,6 +1,6 @@
 ---
 description: Add a variant, prop, size, or state to an existing component using strict token-first change order
-argument-hint: "@cor-<name> <change description> [Figma URL]"
+argument-hint: "@mud-<name> <change description> [Figma URL]"
 ---
 
 # /modify-component
@@ -45,12 +45,12 @@ lsof -i :6007
 
 ## Step 2: Read All Component Files
 
-- `src/components/cor-<name>/cor-<name>.tsx` — component class
-- `src/components/cor-<name>/cor-<name>.css` — styles
-- `src/components/cor-<name>/cor-<name>.enums.ts` — enum values
-- `src/components/cor-<name>/cor-<name>.types.ts` — TypeScript interfaces
-- `src/components/cor-<name>/cor-<name>.constants.ts` — static constants
-- `src/components/cor-<name>/cor-<name>.stories.ts` — Storybook stories
+- `src/components/mud-<name>/mud-<name>.tsx` — component class
+- `src/components/mud-<name>/mud-<name>.css` — styles
+- `src/components/mud-<name>/mud-<name>.enums.ts` — enum values
+- `src/components/mud-<name>/mud-<name>.types.ts` — TypeScript interfaces
+- `src/components/mud-<name>/mud-<name>.constants.ts` — static constants
+- `src/components/mud-<name>/mud-<name>.stories.ts` — Storybook stories
 
 ## Step 3: Read Existing Tokens
 
@@ -65,7 +65,7 @@ Dependency order — use targeted build per change type:
    - DTCG: `$value` / `$type`
    - Dark mode: DEFERRED
 2. **Build tokens** → `yarn tokens.build` (~5s) — no Stencil rebuild needed
-3. **CSS** → update `cor-<name>.css` using `var(--token-name)` → Stencil watch (~2–5s) or `yarn dx:stencil:once`
+3. **CSS** → update `mud-<name>.css` using `var(--token-name)` → Stencil watch (~2–5s) or `yarn dx:stencil:once`
 4. **TSX** → update props, state, render logic → Stencil watch (~2–5s)
 5. **Stories** → update `.stories.ts` to cover new variants/states → Storybook HMR (~1s)
 
@@ -110,7 +110,7 @@ yarn audit:contrast
 For new state/variant/size:
 
 ```text
-/audit-accessibility @cor-<name>
+/audit-accessibility @mud-<name>
 ```
 
 Verify in BOTH light and dark mode via Storybook a11y panel. Zero violations required.

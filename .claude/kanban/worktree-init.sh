@@ -2,8 +2,8 @@
 # worktree-init.sh — Initialize a redesign worktree for a single component (Mac/Linux)
 #
 # Usage:
-#   ./.claude/kanban/worktree-init.sh cor-button
-#   ./.claude/kanban/worktree-init.sh cor-input 6010
+#   ./.claude/kanban/worktree-init.sh mud-button
+#   ./.claude/kanban/worktree-init.sh mud-input 6010
 #
 # Behavior:
 #   1. Creates `redesign/<ComponentName>` branch from `main` if it doesn't exist
@@ -30,8 +30,8 @@ export NO_COLOR=1
 
 # --- Validate inputs ---
 
-if [[ ! "$COMPONENT_NAME" =~ ^cor- ]]; then
-  echo "Error: ComponentName must start with 'cor-'. Got: $COMPONENT_NAME" >&2
+if [[ ! "$COMPONENT_NAME" =~ ^mud- ]]; then
+  echo "Error: ComponentName must start with 'mud-'. Got: $COMPONENT_NAME" >&2
   exit 1
 fi
 

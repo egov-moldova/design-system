@@ -1,13 +1,13 @@
 ---
 name: integration-checker
-description: Read-only integration checker for a `cor-*` component. Greps the repo for usage sites, verifies exports in `src/index.ts` and `src/components/index.ts`, confirms types exposed via `.types.ts`, and identifies callsites that may need updates if the component's API or visual is changing. Never modifies source files. Use as part of `parallel-aux-tasks` after Core build.
+description: Read-only integration checker for a `mud-*` component. Greps the repo for usage sites, verifies exports in `src/index.ts` and `src/components/index.ts`, confirms types exposed via `.types.ts`, and identifies callsites that may need updates if the component's API or visual is changing. Never modifies source files. Use as part of `parallel-aux-tasks` after Core build.
 tools: Read, Glob, Grep, Bash
 model: sonnet
 ---
 
 # Integration Checker
 
-Read-only subagent. Maps every callsite of a `cor-*` component, confirms exports + types are wired correctly, and flags integration points that may need attention when the component changes.
+Read-only subagent. Maps every callsite of a `mud-*` component, confirms exports + types are wired correctly, and flags integration points that may need attention when the component changes.
 
 **Never modifies source files.** Reads, greps, reports.
 
@@ -15,7 +15,7 @@ Read-only subagent. Maps every callsite of a `cor-*` component, confirms exports
 
 Required:
 
-- `componentName` — e.g. `cor-button`
+- `componentName` — e.g. `mud-button`
 
 Optional:
 
@@ -29,8 +29,8 @@ Optional:
 The whole mechanical pass is two script calls:
 
 ```bash
-node scripts/audit/07-integration-usage.mjs cor-<name> --json
-node scripts/audit/14-component-contract.mjs cor-<name> --json
+node scripts/audit/07-integration-usage.mjs mud-<name> --json
+node scripts/audit/14-component-contract.mjs mud-<name> --json
 ```
 
 What you get back:
@@ -55,7 +55,7 @@ If `apiChanges` is not provided, skip this step.
 Use this template; populate from the JSON envelopes above:
 
 ```text
-## Integration Report: cor-<name>
+## Integration Report: mud-<name>
 
 ### Exports
 - Component registered via stencil.config.ts (implicit) / explicit re-export: <yes/no from 14>
@@ -67,7 +67,7 @@ Use this template; populate from the JSON envelopes above:
 
 - Stories (<N>):    <top entries from usage.byCategory.stories with file + count>
 - Tests (<N>):      <top entries>
-- Components (<N>): <top entries — cross-references in other cor-* components>
+- Components (<N>): <top entries — cross-references in other mud-* components>
 - web-components (<N>): <top entries>
 - Other (<N>):      <top entries — typically demos or docs>
 

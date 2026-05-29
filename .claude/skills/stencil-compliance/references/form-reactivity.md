@@ -24,9 +24,9 @@ Make a component form-associated if it represents a form field whose value shoul
 - Participate in native validation (`form.checkValidity()`, `:invalid` pseudo-class on the form)
 
 Project components that MUST be form-associated:
-- `cor-input`, `cor-textarea`
-- `cor-checkbox`, `cor-radio-button`, `cor-toggle`, `cor-switch`
-- `cor-select`, `cor-combobox` (any custom dropdown that picks a value)
+- `mud-input`, `mud-textarea`
+- `mud-checkbox`, `mud-radio-button`, `mud-toggle`, `mud-switch`
+- `mud-select`, `mud-combobox` (any custom dropdown that picks a value)
 
 ### Required pattern
 
@@ -45,8 +45,8 @@ import {
 } from '@stencil/core';
 
 @Component({
-  tag: 'cor-input',
-  styleUrl: 'cor-input.css',
+  tag: 'mud-input',
+  styleUrl: 'mud-input.css',
   shadow: true,
   formAssociated: true,                  // ← REQUIRED
 })
@@ -195,7 +195,7 @@ CSS:
 :host(:state(invalid)) .input { border-color: var(--color-border-error); }
 
 /* Consumer can also target externally */
-cor-input:state(invalid) { /* … */ }
+mud-input:state(invalid) { /* … */ }
 ```
 
 ### Common mistakes
@@ -208,14 +208,14 @@ this.internals.setFormValue(this.value);
 this.internals.setFormValue(this.value, this.value);
 
 // ❌ Missing formResetCallback — form.reset() won't clear this component
-@Component({ tag: 'cor-input', formAssociated: true })
+@Component({ tag: 'mud-input', formAssociated: true })
 export class CorInput {
   @Prop({ mutable: true }) value: string = '';
   // … no formResetCallback!
 }
 
 // ❌ formAssociated: true without @AttachInternals — Stencil build error
-@Component({ tag: 'cor-x', formAssociated: true })
+@Component({ tag: 'mud-x', formAssociated: true })
 export class CorX { /* missing @AttachInternals */ }
 ```
 
@@ -340,7 +340,7 @@ Stencil 4 supports two complementary decorators for complex prop serialization:
 - **You don't** for primitives (string, number, boolean) — Stencil auto-handles.
 - **You DO** when:
   - Component must hydrate from SSR HTML (attribute is the only carrier of state)
-  - Want to expose a complex prop as an HTML attribute (`<cor-x config='{"a":1}'>`) — discouraged by Stencil docs but sometimes needed for analytics tooling or markup-driven config
+  - Want to expose a complex prop as an HTML attribute (`<mud-x config='{"a":1}'>`) — discouraged by Stencil docs but sometimes needed for analytics tooling or markup-driven config
 
 ### Rules
 
@@ -366,12 +366,12 @@ interface Config {
   density: 'compact' | 'spacious';
 }
 
-@Component({ tag: 'cor-widget', shadow: true })
+@Component({ tag: 'mud-widget', shadow: true })
 export class CorWidget {
   /**
    * Configuration object. Can be set as JS property or JSON-encoded attribute.
    * @example
-   *   <cor-widget config='{"theme":"dark","density":"compact"}'></cor-widget>
+   *   <mud-widget config='{"theme":"dark","density":"compact"}'></mud-widget>
    */
   @Prop() config?: Config;
 
@@ -387,7 +387,7 @@ export class CorWidget {
     try {
       return JSON.parse(value) as Config;
     } catch {
-      console.warn('cor-widget: invalid JSON in config attribute');
+      console.warn('mud-widget: invalid JSON in config attribute');
       return undefined;
     }
   }
@@ -421,5 +421,5 @@ deserializeConfig(value: string | null): Config | undefined {
 
 ### Project-specific extras
 
-- Most `cor-*` components do NOT need serialization — complex props are rare. If you reach for `@PropSerialize`, reconsider whether the data should be passed via slot content + DOM instead.
-- Document the JSON shape in `cor-<name>.types.ts` and reference from JSDoc.
+- Most `mud-*` components do NOT need serialization — complex props are rare. If you reach for `@PropSerialize`, reconsider whether the data should be passed via slot content + DOM instead.
+- Document the JSON shape in `mud-<name>.types.ts` and reference from JSDoc.

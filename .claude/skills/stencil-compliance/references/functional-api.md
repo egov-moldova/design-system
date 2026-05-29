@@ -41,7 +41,7 @@ Functional components are plain JS functions that return JSX. They are NOT web c
 | FC8 | No `@State` — pass derived data as props | Conceptual |
 | FC9 | DON'T re-export from a barrel index file — Stencil documented limitation (won't resolve dynamic rendering) | Manual review |
 | FC10 | Use only WITHIN class component `render()` — not standalone | Manual review |
-| FC11 | Co-locate next to the class component that uses it (or in `cor-<name>.partials.tsx` if reused across stories) | Manual review |
+| FC11 | Co-locate next to the class component that uses it (or in `mud-<name>.partials.tsx` if reused across stories) | Manual review |
 
 ### Example
 
@@ -72,7 +72,7 @@ export const Card: FunctionalComponent<CardProps> = ({ title }, children, utils)
 Usage in a class component:
 
 ```tsx
-@Component({ tag: 'cor-widget', shadow: true })
+@Component({ tag: 'mud-widget', shadow: true })
 export class CorWidget {
   render() {
     return (
@@ -220,7 +220,7 @@ This prevents layout thrashing by batching reads and writes into separate animat
 ### `componentOnReady()` usage (consumer side)
 
 ```ts
-const el = document.querySelector('cor-input') as HTMLCorInputElement;
+const el = document.querySelector('mud-input') as HTMLCorInputElement;
 await el.componentOnReady();    // resolves after first render
 await el.focus();                // safe to call public @Method now
 ```
@@ -250,4 +250,4 @@ const host = getElement(this);
 
 - The repo does NOT use Stencil style modes — use CSS variables and `data-theme="dark"` instead.
 - `readTask`/`writeTask` are useful but rarely used in this codebase; most layout is handled via CSS Grid / Flex.
-- `getAssetPath` is used for the SVG sprite path in `cor-icon` (see `src/assets/`).
+- `getAssetPath` is used for the SVG sprite path in `mud-icon` (see `src/assets/`).

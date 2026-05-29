@@ -13,10 +13,10 @@ Reference: Cline Kanban docs at https://docs.cline.bot/usage/kanban.
 ```
 main repo (this folder is here)
    │
-   ├── git worktree: ../age-design-redesign-cor-button   (branch redesign/cor-button)
-   ├── git worktree: ../age-design-redesign-cor-input    (branch redesign/cor-input)
-   ├── git worktree: ../age-design-redesign-cor-badge    (branch redesign/cor-badge)
-   └── git worktree: ../age-design-redesign-cor-chip     (branch redesign/cor-chip)
+   ├── git worktree: ../age-design-redesign-mud-button   (branch redesign/mud-button)
+   ├── git worktree: ../age-design-redesign-mud-input    (branch redesign/mud-input)
+   ├── git worktree: ../age-design-redesign-mud-badge    (branch redesign/mud-badge)
+   └── git worktree: ../age-design-redesign-mud-chip     (branch redesign/mud-chip)
         │
         each worktree runs:
         - Its own Storybook on port 6007 + N (auto-allocated by worktree-init script)
@@ -65,8 +65,8 @@ After a PR merges, the worktree is no longer needed. Remove it:
 
 ```bash
 # From the main repo root
-git worktree remove ../age-design-redesign-cor-<name>
-git branch -d redesign/cor-<name>
+git worktree remove ../age-design-redesign-mud-<name>
+git branch -d redesign/mud-<name>
 ```
 
 Or use the included cleanup helper (if present): `scripts/cleanup-redesign-worktree.ps1 <name>`.

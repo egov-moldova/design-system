@@ -4,17 +4,17 @@ Copy this markdown into the **Description** field of every Cline Kanban card for
 
 ---
 
-## Component: `cor-<name>`
+## Component: `mud-<name>`
 
 **Figma URL**: `<https://www.figma.com/file/.../?node-id=...>`
 **Atomic level**: `<atoms | molecules | organisms>`
-**Worktree branch**: `redesign/cor-<name>`
+**Worktree branch**: `redesign/mud-<name>`
 **Storybook port**: auto-allocated by init script (default 6007 + offset)
 
 ## Pre-flight (operator confirms before queuing)
 
 - [ ] Figma URL points to the redesigned component in the AGE Design System frame
-- [ ] Component currently exists in `src/components/cor-<name>/`
+- [ ] Component currently exists in `src/components/mud-<name>/`
 - [ ] Tokens for this component exist in `tokens/core/components/<name>.tokens.json` (or are explicitly TBD)
 - [ ] No other Kanban card is in-flight for the same component
 
@@ -28,20 +28,20 @@ Run the OS-appropriate init script from the main repo root:
 
 ```powershell
 # Windows
-.\.claude\kanban\worktree-init.ps1 -ComponentName cor-<name>
+.\.claude\kanban\worktree-init.ps1 -ComponentName mud-<name>
 ```
 
 ```bash
 # Mac/Linux
-./.claude/kanban/worktree-init.sh cor-<name>
+./.claude/kanban/worktree-init.sh mud-<name>
 ```
 
-The script creates a worktree at `../age-design-redesign-cor-<name>`, allocates a Storybook port, starts `yarn sp.dev.watch`, and outputs the worktree path + port.
+The script creates a worktree at `../age-design-redesign-mud-<name>`, allocates a Storybook port, starts `yarn sp.dev.watch`, and outputs the worktree path + port.
 
 ### Step 2: Switch to worktree
 
 ```bash
-cd ../age-design-redesign-cor-<name>
+cd ../age-design-redesign-mud-<name>
 ```
 
 All subsequent commands run inside the worktree.
@@ -54,7 +54,7 @@ Use the `Agent` tool:
 Agent(
   subagent_type="redesign-component",
   prompt="
-    componentName: cor-<name>
+    componentName: mud-<name>
     figmaUrl: <figma-url-from-card>
     --worktree-aware
     --write-mode=parallel-write
@@ -81,9 +81,9 @@ When the agent reports complete:
 
 ```bash
 git add -A
-git commit -m "redesign(cor-<name>): align to AGE Design System"
-git push -u origin redesign/cor-<name>
-gh pr create --title "redesign(cor-<name>): align to AGE Design System" --body "$(cat .claude/kanban/pr-template.md)"
+git commit -m "redesign(mud-<name>): align to AGE Design System"
+git push -u origin redesign/mud-<name>
+gh pr create --title "redesign(mud-<name>): align to AGE Design System" --body "$(cat .claude/kanban/pr-template.md)"
 ```
 
 Fill in the PR template placeholders (component name, Figma node, diff %, a11y status, coverage delta) from the agent's final report.

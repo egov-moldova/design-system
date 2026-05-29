@@ -37,17 +37,17 @@ If any of these failed in Step 0.5, reuse lookup uses the empty payload (no cand
 Compute fuzzy match between the requested component name (extracted from the prompt) and `componentInventory` entries.
 
 **Strategy:**
-1. **Exact match** — `cor-X` in prompt exists in `componentInventory.production` → emit "Component already exists" error
-2. **Exact match in legacy** — `cor-X` exists in `componentInventory.legacy` → emit "Legacy component to redesign" (auto-set `--mode=redesign`)
-3. **Singular/plural variant** — `cor-X` vs `cor-Xs` → emit candidate
-4. **Suffix variants** — `cor-X-group`, `cor-X-item`, `cor-X-header` — surface as related components
-5. **Semantic match** — words in `cor-X` overlap with existing component (e.g., `cor-loader` vs existing `cor-spinner`) → emit "Possible synonym"
+1. **Exact match** — `mud-X` in prompt exists in `componentInventory.production` → emit "Component already exists" error
+2. **Exact match in legacy** — `mud-X` exists in `componentInventory.legacy` → emit "Legacy component to redesign" (auto-set `--mode=redesign`)
+3. **Singular/plural variant** — `mud-X` vs `mud-Xs` → emit candidate
+4. **Suffix variants** — `mud-X-group`, `mud-X-item`, `mud-X-header` — surface as related components
+5. **Semantic match** — words in `mud-X` overlap with existing component (e.g., `mud-loader` vs existing `mud-spinner`) → emit "Possible synonym"
 
 ### Step C — Functional match
 
 For atom-interactive and form-associated archetypes, additionally check:
 
-- Variants in the request (e.g., `primary | secondary | strict | neutral | destructive`) vs variants of existing components — if a request "Create cor-call-to-action with primary/secondary" overlaps 80%+ with `cor-button` variants, emit "Extend cor-button instead?"
+- Variants in the request (e.g., `primary | secondary | strict | neutral | destructive`) vs variants of existing components — if a request "Create mud-call-to-action with primary/secondary" overlaps 80%+ with `mud-button` variants, emit "Extend mud-button instead?"
 - Slot patterns — if request mentions slots that match an existing constant in `slotConstants`, cite that constant
 - Event surface — if request emits `corChange` and an existing component already emits that name for a similar payload, surface it
 
@@ -76,7 +76,7 @@ Emitted at the top of the optimized prompt (after preamble blocks like Auto-corr
 ```
 ## Reuse candidates
 
-⚠ Component name collision: `cor-button` already exists in `src/components/cor-button/`. Cannot create as `--mode=new`.
+⚠ Component name collision: `mud-button` already exists in `src/components/mud-button/`. Cannot create as `--mode=new`.
 - Did you mean to extend with a new variant? → use `--mode=modify`
 - Did you mean to redesign per new Figma? → use `--mode=redesign`
 - Stopping emission. Pick a mode and re-invoke.
@@ -89,8 +89,8 @@ This is one of the **few** cases where the lookup blocks emission. Continuing wo
 ```
 ## Reuse candidates
 
-ℹ Legacy component `cor-spinner` exists in `src/legacy/cor-spinner/`. Auto-switching to `--mode=redesign`.
-- Source files: src/legacy/cor-spinner/cor-spinner.tsx, .css, .types.ts
+ℹ Legacy component `mud-spinner` exists in `src/legacy/mud-spinner/`. Auto-switching to `--mode=redesign`.
+- Source files: src/legacy/mud-spinner/mud-spinner.tsx, .css, .types.ts
 - Token file: tokens/core/components/spinner.tokens.json (existing — will be migrated to new naming)
 - Reason for redesign: AGE Design System redesign program
 ```
@@ -102,13 +102,13 @@ The mode switch is **automatic** — user intent inferred. If user wants a truly
 ```
 ## Reuse candidates
 
-⚠ Functional overlap detected with `cor-button` (~80% match):
+⚠ Functional overlap detected with `mud-button` (~80% match):
 - Both have variants: primary, secondary, destructive
 - Both have sizes: sm, md, lg
 - Both have loading state
 - Decision needed:
-  (a) Extend cor-button with a new `cor-button-style="cta"` variant — recommended
-  (b) Create cor-call-to-action as separate component — only if behavior diverges significantly
+  (a) Extend mud-button with a new `mud-button-style="cta"` variant — recommended
+  (b) Create mud-call-to-action as separate component — only if behavior diverges significantly
 - Default: (a). Pass `--force-new` to override.
 ```
 
@@ -143,7 +143,7 @@ Replicated from [`_agents/reuse-architecture.md`](../../../../_agents/reuse-arch
 
 ## False-positive handling
 
-Reuse lookup can produce false positives — e.g., word overlap without functional overlap (`cor-tab-button` vs `cor-button` — tab-button is a molecule-interactive while button is atom-interactive).
+Reuse lookup can produce false positives — e.g., word overlap without functional overlap (`mud-tab-button` vs `mud-button` — tab-button is a molecule-interactive while button is atom-interactive).
 
 When confidence is borderline:
 - < 50% confidence → do not emit candidate (would create noise)
@@ -171,6 +171,6 @@ When a new utility is added to `src/utils/`:
 1. Add its export signature to the `utilsInventory` table in [`codebase-snapshots.md`](codebase-snapshots.md) § 8
 2. Add a Step E match rule if the utility has a common-need keyword (e.g., "parse RGB" → `rgb-parser.ts`)
 
-When a new sub-component pattern emerges (e.g., `cor-X-group` / `cor-X-item` / `cor-X-header`):
+When a new sub-component pattern emerges (e.g., `mud-X-group` / `mud-X-item` / `mud-X-header`):
 1. Add a Step B rule for the suffix family
 2. Document the parent-child architecture in [`archetype-router.md`](archetype-router.md)

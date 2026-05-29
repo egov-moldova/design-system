@@ -35,7 +35,7 @@ Reference: <https://stenciljs.com/docs/templating-jsx>.
 | J17 | `tabindex` lowercase (HTML), `tabIndex` camelCase in JSX both work; prefer `tabindex` for consistency with HTML | Manual review |
 | J18 | `aria-*` attributes lowercase with dash (`aria-label`, `aria-disabled`) — JSX accepts both but kebab-case is standard | Manual review |
 | J19 | Stencil auto-keys non-conditional JSX nodes; manual `key` needed for conditional branches | Manual review |
-| J20 | TS strict: typed props on JSX components — `<cor-button variant={ButtonVariant.PRIMARY}>` | Manual review |
+| J20 | TS strict: typed props on JSX components — `<mud-button variant={ButtonVariant.PRIMARY}>` | Manual review |
 | J21 | NO direct DOM mutations from render — render is PURE | Anti-Pattern #1 |
 
 ### Examples
@@ -86,10 +86,10 @@ render() {
 }
 
 // ❌ Reused JSX variable
-const icon = <cor-icon name="alert" />;
+const icon = <mud-icon name="alert" />;
 return <Host>{icon}{icon}</Host>;  // ← second instance breaks lifecycle
 // FIX: factory function
-const renderIcon = () => <cor-icon name="alert" />;
+const renderIcon = () => <mud-icon name="alert" />;
 return <Host>{renderIcon()}{renderIcon()}</Host>;
 ```
 
@@ -109,7 +109,7 @@ return <Host>{renderIcon()}{renderIcon()}</Host>;
 
 // Slot fallback content
 <slot name="icon">
-  <cor-icon name="default-icon" />
+  <mud-icon name="default-icon" />
 </slot>
 
 // Slot detection (componentDidLoad)
@@ -123,7 +123,7 @@ componentDidLoad() {
 - **NO `className=`** — Stencil uses native `class=` (React's `className` is JSX-specific and not the Stencil convention).
 - **NO inline `style={{ }}`** — Anti-Pattern #2. Use CSS classes + `:host([attr])` selectors + CSS variables.
 - **All slot-accepting components MUST validate slotted content** via `invalidSlottedTag()` utility — see `src/utils/invalid-slotted-tag` and `src/components/_agents/slot-patterns.md`.
-- **Icons** — use `<cor-icon name="...">`, NEVER inline SVG (a new `cor-icon` component loading Figma-exported SVGs by `name` prop is coming in a follow-up branch).
+- **Icons** — use `<mud-icon name="...">`, NEVER inline SVG (a new `mud-icon` component loading Figma-exported SVGs by `name` prop is coming in a follow-up branch).
 
 ---
 
@@ -152,7 +152,7 @@ Reference: <https://stenciljs.com/docs/styling>.
 
 ### Two architectural patterns
 
-#### Pattern A — Slot-based (e.g. `cor-button`)
+#### Pattern A — Slot-based (e.g. `mud-button`)
 
 ```css
 :host {
@@ -177,7 +177,7 @@ Reference: <https://stenciljs.com/docs/styling>.
 }
 ```
 
-#### Pattern B — Internal DOM (e.g. `cor-input`)
+#### Pattern B — Internal DOM (e.g. `mud-input`)
 
 ```css
 :host {
@@ -233,17 +233,17 @@ Use ONLY when consumer needs to restyle internal DOM AND token API isn't enough:
 
 ```css
 /* Consumer CSS */
-cor-input::part(input) { font-family: monospace; }
-cor-input::part(error) { font-style: italic; }
+mud-input::part(input) { font-family: monospace; }
+mud-input::part(error) { font-style: italic; }
 ```
 
-For compound components (e.g. `cor-input` wrapping nested `cor-icon`), use `exportparts`:
+For compound components (e.g. `mud-input` wrapping nested `mud-icon`), use `exportparts`:
 
 ```tsx
-<cor-icon name="alert" exportparts="svg: icon-svg" />
+<mud-icon name="alert" exportparts="svg: icon-svg" />
 ```
 
-Then consumer can target: `cor-input::part(icon-svg)`.
+Then consumer can target: `mud-input::part(icon-svg)`.
 
 ### Style Modes (Stencil feature — N/A for this project)
 

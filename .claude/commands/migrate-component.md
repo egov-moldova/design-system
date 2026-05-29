@@ -1,6 +1,6 @@
 ---
 description: Graduate a WIP component from src/hidden/ to src/components/ — full audit, test coverage, story completion
-argument-hint: "@cor-<component-name>"
+argument-hint: "@mud-<component-name>"
 ---
 
 # /migrate-component
@@ -19,7 +19,7 @@ Read all files in `src/hidden/$ARGUMENTS/`:
 - `$ARGUMENTS.stories.ts` (if exists)
 - `test/$ARGUMENTS.spec.tsx` (if exists)
 
-Check token file: `tokens/core/components/<name>.tokens.json` (drop `cor-` prefix).
+Check token file: `tokens/core/components/<name>.tokens.json` (drop `mud-` prefix).
 
 ## Step 2: Gap Analysis
 
@@ -107,7 +107,7 @@ yarn audit:contrast
 
 ## Step 10a: Accessibility Gate — WCAG 2.1 AA (BLOCKING)
 
-Migration to `src/components/` is **not allowed** unless `/audit-accessibility @cor-<name>` passes with zero Critical and zero High findings.
+Migration to `src/components/` is **not allowed** unless `/audit-accessibility @mud-<name>` passes with zero Critical and zero High findings.
 
 ```text
 /audit-accessibility $ARGUMENTS

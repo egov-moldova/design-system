@@ -11,7 +11,7 @@ Comprehensive validation that a component meets all production standards before 
 
 ## Inputs
 
-- Component name: `cor-<name>` (folder in `src/components/` or `src/hidden/`)
+- Component name: `mud-<name>` (folder in `src/components/` or `src/hidden/`)
 - Optional flags:
   - `--e2e` — include Phase 5b E2E test audit (default: unit-only)
   - `--skip-visual` — skip Phase 5c Visual Regression (when Figma references not available)
@@ -45,11 +45,11 @@ parallel:
 
 ```bash
 # All non-browser checks for one component (Wave A + B of the orchestrator)
-node scripts/audit/run-all.mjs cor-<name> --no-browser --json
+node scripts/audit/run-all.mjs mud-<name> --no-browser --json
 
 # With browser checks (a11y tree, contrast, console errors) — requires Storybook + Playwright
 yarn sp.dev.watch
-node scripts/audit/run-all.mjs cor-<name> --json
+node scripts/audit/run-all.mjs mud-<name> --json
 ```
 
 The envelope has `summary`, `blockers`, and `findingsByTool` keys. After
@@ -80,14 +80,14 @@ Dispatch pattern:
 ```
 [After Phase 2 completes, send one message with parallel tool calls:]
 
-Agent(subagent_type="a11y-verifier", prompt="componentName=cor-<name>, storyId=atoms-cor-<name>--default")
-Bash("yarn test --spec --findRelatedTests src/components/cor-<name>/test/cor-<name>.spec.tsx")
+Agent(subagent_type="a11y-verifier", prompt="componentName=mud-<name>, storyId=atoms-mud-<name>--default")
+Bash("yarn test --spec --findRelatedTests src/components/mud-<name>/test/mud-<name>.spec.tsx")
 Bash("yarn build")
 Bash("yarn audit")
 Bash("git log --oneline -10")
-Bash("git diff --stat main...HEAD -- src/components/cor-<name>/ tokens/core/components/")
-Read("src/components/cor-<name>/cor-<name>.tsx")  // for JSDoc inspection
-Read("src/components/cor-<name>/readme.md")
+Bash("git diff --stat main...HEAD -- src/components/mud-<name>/ tokens/core/components/")
+Read("src/components/mud-<name>/mud-<name>.tsx")  // for JSDoc inspection
+Read("src/components/mud-<name>/readme.md")
 ```
 
 Collect all outputs before composing the final report (Phase 10).
@@ -115,7 +115,7 @@ needed; just confirm the script reported `errors: 0`.
 
 ### 1.2 TSX Member Order
 
-Verify `cor-[name].tsx` follows strict order (see `src/components/AGENTS.md`):
+Verify `mud-[name].tsx` follows strict order (see `src/components/AGENTS.md`):
 
 1. `@Prop({ reflect: true })` — public props (with JSDoc, defaults, enums)
 2. `@State()` — internal reactive state
@@ -203,7 +203,7 @@ Both must exit 0. Manual Storybook check: toggle `Mode → Dark` and verify comp
 
 ### 2.3 CSS Token Usage
 
-Open `cor-[name].css` and verify:
+Open `mud-[name].css` and verify:
 
 - Zero hardcoded colors — all use `var(--[name]-*)` component tokens or `var(--color-*)` semantic tokens
 - Zero hardcoded spacing — use `var(--spacing-*)` / `var(--space-*)`
@@ -224,13 +224,13 @@ yarn tokens.audit
 
 Component follows ONE of:
 
-**Slot-based (Pattern A — cor-button)**:
+**Slot-based (Pattern A — mud-button)**:
 
 - `:host` for component container
 - `::slotted(*)` for slot content
 - `:host([variant])`, `:host([size])`, `:host([disabled])` attribute selectors
 
-**Internal DOM (Pattern B — cor-input)**:
+**Internal DOM (Pattern B — mud-input)**:
 
 - `:host` for container
 - `.input-wrapper`, `.input-field`, `.label` class selectors
@@ -241,7 +241,7 @@ Component follows ONE of:
 
 ## Phase 3: Accessibility Audit — WCAG 2.1 Level AA
 
-**Canonical reference:** Skill [`accessibility-compliance`](../skills/accessibility-compliance/SKILL.md). For deepest audit delegate to `/audit-accessibility @cor-<name>`.
+**Canonical reference:** Skill [`accessibility-compliance`](../skills/accessibility-compliance/SKILL.md). For deepest audit delegate to `/audit-accessibility @mud-<name>`.
 
 **Mandatory automated checks before completing Phase 3:**
 
@@ -318,7 +318,7 @@ Use `mcp__playwright__browser_snapshot()` for accessibility tree:
 
 ### 4.1 Story Coverage
 
-Check `cor-[name].stories.ts` includes:
+Check `mud-[name].stories.ts` includes:
 
 1. Default — component with default props
 2. AllVariants — one per variant (if has variants)
@@ -334,7 +334,7 @@ Check `cor-[name].stories.ts` includes:
 Verify:
 
 - Imports from `@storybook/web-components-vite` (NOT react / not the bare `@storybook/web-components` renderer)
-- `component: 'cor-[name]'` (string tag, NOT JS reference)
+- `component: 'mud-[name]'` (string tag, NOT JS reference)
 - `render` function with HTML template strings
 - `/*html*/` prefix for IDE syntax highlighting
 - `title` follows atomic hierarchy: `Atoms/CorName`, `Molecules/CorName`, etc.
@@ -364,7 +364,7 @@ Default: unit tests only. With `--e2e` flag also audit E2E tests.
 
 ### 5a. Unit Tests (DEFAULT — always audited)
 
-Check `test/cor-[name].spec.tsx` covers:
+Check `test/mud-[name].spec.tsx` covers:
 
 1. Rendering — `render()` from `@stencil/vitest` resolves without errors
 2. Props — all `@Prop` reflect correctly to host attributes / JSX output
@@ -382,7 +382,7 @@ Check `test/cor-[name].spec.tsx` covers:
    - `setValidity` reflects flags
 
 ```bash
-yarn test --spec --findRelatedTests src/components/cor-[name]/test/cor-[name].spec.tsx
+yarn test --spec --findRelatedTests src/components/mud-[name]/test/mud-[name].spec.tsx
 ```
 
 **Pass criteria**: all tests pass, coverage > 80% (target — not enforced by tooling).
@@ -391,18 +391,18 @@ yarn test --spec --findRelatedTests src/components/cor-[name]/test/cor-[name].sp
 
 If `--e2e` flag is NOT set: emit `INFO: E2E audit skipped (use --e2e to enable)` and continue.
 
-When `--e2e` set, check `test/cor-[name].e2e.ts`:
+When `--e2e` set, check `test/mud-[name].e2e.ts`:
 
 1. `newE2EPage` setup
 2. Hydration: component gets `.hydrated` class
-3. Shadow DOM access: `page.find('cor-x >>> .target')` combinator
+3. Shadow DOM access: `page.find('mud-x >>> .target')` combinator
 4. Event spies: `page.spyOnEvent('corChange')`
 5. Focus/blur: `page.evaluate()` to trigger native focus
 6. Form-associated: form submission produces correct FormData
 7. Cross-reference [`src/components/_agents/e2e-testing.md`](../../src/components/_agents/e2e-testing.md)
 
 ```bash
-yarn test --e2e --findRelatedTests src/components/cor-[name]/test/cor-[name].e2e.ts
+yarn test --e2e --findRelatedTests src/components/mud-[name]/test/mud-[name].e2e.ts
 ```
 
 **Pass criteria**: all E2E pass; no flakes.
@@ -415,7 +415,7 @@ Skipped if `--skip-visual` flag set.
 Run pixel-perfect comparison against Figma:
 
 ```text
-mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-cor-[name]--default" })
+mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-mud-[name]--default" })
 mcp__playwright__browser_take_screenshot({ type: "png", filename: ".playwright-mcp/current.png" })
 mcp__image-compare__compare_images({
   image1_path: ".playwright-mcp/figma-ref.png",
@@ -434,7 +434,7 @@ mcp__image-compare__compare_images({
 yarn build
 ```
 
-Check `dist/design-system/cor-[name].entry.js` size. **Warning threshold**: > 50KB.
+Check `dist/design-system/mud-[name].entry.js` size. **Warning threshold**: > 50KB.
 
 ### 6.2 Runtime Performance
 
@@ -493,7 +493,7 @@ yarn audit
 
 ### 8.1 JSDoc Completeness
 
-Check `cor-[name].tsx`:
+Check `mud-[name].tsx`:
 
 - Component-level JSDoc: `@description`, `@example`, `@slot` (if applicable)
 - JSDoc for every `@Prop()` with `@default` if optional
@@ -502,7 +502,7 @@ Check `cor-[name].tsx`:
 
 ### 8.2 README.md
 
-Verify `src/components/cor-[name]/readme.md` exists (auto-generated by Stencil) and includes:
+Verify `src/components/mud-[name]/readme.md` exists (auto-generated by Stencil) and includes:
 
 - Component usage examples
 - All props documented
@@ -512,7 +512,7 @@ Verify `src/components/cor-[name]/readme.md` exists (auto-generated by Stencil) 
 
 ### 8.3 Storybook Docs
 
-Open `http://localhost:6007/?path=/docs/components-cor-[name]--docs` and verify:
+Open `http://localhost:6007/?path=/docs/components-mud-[name]--docs` and verify:
 
 - Component description is clear
 - All props in Controls table
@@ -555,7 +555,7 @@ Sections audited (delegated to [`stencil-compliance`](../skills/stencil-complian
 13. Functional Components (if used)
 14. Public API (imports, `readTask`/`writeTask`)
 
-For component-level deep audit (interactive), invoke `/audit-component @cor-<name> --deep`.
+For component-level deep audit (interactive), invoke `/audit-component @mud-<name> --deep`.
 
 ## Automated Audit Bundle
 
@@ -589,7 +589,7 @@ Layer-1-only verdict and the matrix shows L2 rows as ⏭️ with reason `--ci`.
 ## Phase 11: Final Report
 
 ```text
-## Production Readiness Audit: cor-[name]
+## Production Readiness Audit: mud-[name]
 **Flags**: <list active flags, e.g. --e2e, --skip-visual>
 
 ### Summary
@@ -638,5 +638,5 @@ Layer-1-only verdict and the matrix shows L2 rows as ⏭️ with reason `--ci`.
 
 Present the report. Do NOT auto-fix. Wait for user instruction on which findings to address.
 
-For component-level deep audit, suggest `/audit-component @cor-<name> --deep`.
-For accessibility-only deep audit, suggest `/audit-accessibility @cor-<name>`.
+For component-level deep audit, suggest `/audit-component @mud-<name> --deep`.
+For accessibility-only deep audit, suggest `/audit-accessibility @mud-<name>`.

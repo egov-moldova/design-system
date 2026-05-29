@@ -78,11 +78,11 @@ The orchestrator dispatches subagents using the `Agent` tool with multiple paral
 ```
 [full-5, parallel-write mode]
 
-Agent(description="Pixel-perfect verify cor-button", subagent_type="pixel-perfect-verifier", prompt="...")
-Agent(description="A11y verify cor-button",         subagent_type="a11y-verifier",          prompt="...")
-Agent(description="Write stories for cor-button",   subagent_type="story-writer",           prompt="... --write-mode=parallel-write ...")
-Agent(description="Write tests for cor-button",     subagent_type="test-writer",            prompt="... --write-mode=parallel-write ...")
-Agent(description="Integration check cor-button",   subagent_type="integration-checker",    prompt="...")
+Agent(description="Pixel-perfect verify mud-button", subagent_type="pixel-perfect-verifier", prompt="...")
+Agent(description="A11y verify mud-button",         subagent_type="a11y-verifier",          prompt="...")
+Agent(description="Write stories for mud-button",   subagent_type="story-writer",           prompt="... --write-mode=parallel-write ...")
+Agent(description="Write tests for mud-button",     subagent_type="test-writer",            prompt="... --write-mode=parallel-write ...")
+Agent(description="Integration check mud-button",   subagent_type="integration-checker",    prompt="...")
 ```
 
 **All five Agent tool calls go in ONE assistant message** so they run in parallel.
@@ -91,7 +91,7 @@ Agent(description="Integration check cor-button",   subagent_type="integration-c
 
 For each subagent, the orchestrator's prompt MUST include:
 
-1. **Component identifier**: `cor-<name>` (the folder under `src/components/`)
+1. **Component identifier**: `mud-<name>` (the folder under `src/components/`)
 2. **Storybook URL**: `http://localhost:6007` (assume running; subagent verifies)
 3. **Figma reference**: node ID or URL when relevant (pixel-perfect, story-writer)
 4. **Component contract**: brief summary of props/slots/events (paste from TSX `@Prop()` declarations)
@@ -104,8 +104,8 @@ Each subagent's own agent file documents its specific I/O contract — this skil
 
 | Subagent | Writes to | Forbidden from |
 |---|---|---|
-| `story-writer` | `src/components/cor-<name>/cor-<name>.stories.ts` | TSX, CSS, tokens, spec |
-| `test-writer` | `src/components/cor-<name>/test/cor-<name>.spec.tsx` | TSX, CSS, tokens, stories |
+| `story-writer` | `src/components/mud-<name>/mud-<name>.stories.ts` | TSX, CSS, tokens, spec |
+| `test-writer` | `src/components/mud-<name>/test/mud-<name>.spec.tsx` | TSX, CSS, tokens, stories |
 | `pixel-perfect-verifier` | nothing | always read-only |
 | `a11y-verifier` | nothing | always read-only |
 | `integration-checker` | nothing | always read-only |

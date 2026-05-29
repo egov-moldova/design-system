@@ -1,13 +1,13 @@
 ---
 name: stencil-compliance
-description: Use when designing, implementing, auditing, or modifying any `cor-*` Stencil component to ensure conformance with Stencil 4.x best practices. Covers @Component decorator options, @Prop/@State/@Event/@Listen/@Method/@Watch decorators, lifecycle hooks, Host element + @Element(), JSX/templating, shadow DOM styling, form-associated custom elements, reactive data, serialization, functional components, and public API surface. Required reference for all `cor-*` components.
+description: Use when designing, implementing, auditing, or modifying any `mud-*` Stencil component to ensure conformance with Stencil 4.x best practices. Covers @Component decorator options, @Prop/@State/@Event/@Listen/@Method/@Watch decorators, lifecycle hooks, Host element + @Element(), JSX/templating, shadow DOM styling, form-associated custom elements, reactive data, serialization, functional components, and public API surface. Required reference for all `mud-*` components.
 ---
 
 # Stencil Compliance — Stencil 4.x Best Practices
 
-**Target standard:** Stencil 4.x (aligned with the official docs at <https://stenciljs.com/docs>). Every `cor-*` component must conform.
+**Target standard:** Stencil 4.x (aligned with the official docs at <https://stenciljs.com/docs>). Every `mud-*` component must conform.
 
-**Project source of truth:** [`AGENTS.md`](../../../AGENTS.md) (root) and [`src/components/AGENTS.md`](../../../src/components/AGENTS.md) — project-specific overlays (`cor-` prefix, member order, slot patterns) take precedence where stricter than Stencil docs.
+**Project source of truth:** [`AGENTS.md`](../../../AGENTS.md) (root) and [`src/components/AGENTS.md`](../../../src/components/AGENTS.md) — project-specific overlays (`mud-` prefix, member order, slot patterns) take precedence where stricter than Stencil docs.
 
 **Companion skill:** [`accessibility-compliance`](../accessibility-compliance/SKILL.md) — WCAG 2.1 AA rules. Cross-referenced from this skill for ARIA/role rules (SC 4.1.2 overlaps with `@Prop` reflectarea ARIA, focus handling overlaps cu `delegatesFocus`, etc.).
 
@@ -46,7 +46,7 @@ When running a fast pass, verify these first — they catch the highest-impact i
 
 | # | Rule | Severity | Detection |
 |---|------|----------|-----------|
-| Q1 | `@Component` has `tag: 'cor-<name>'` and `shadow: true` (never `scoped: true`) | Critical | Read TSX `@Component({...})` block |
+| Q1 | `@Component` has `tag: 'mud-<name>'` and `shadow: true` (never `scoped: true`) | Critical | Read TSX `@Component({...})` block |
 | Q2 | All `@Method()` are `async` or return `Promise<T>` | Critical | Grep `@Method\(\)\s+\w+\([^)]*\)\s*:\s*(?!Promise)` |
 | Q3 | All `@Event() corX!: EventEmitter<T>` are typed with non-empty `<T>` | High | Grep `EventEmitter(\W|$)` (no `<`) |
 | Q4 | `@Event({ composed: true })` for events that must cross shadow boundaries (DEFAULT) | High | Manual: shadow:true component emits user-visible event without composed |
@@ -121,7 +121,7 @@ When implementing or modifying a component:
 1. **Before coding** — read this Skill's Section 2 (Top-10) + relevant reference file for the decorator/feature you're using.
 2. **During coding** — apply the rule tables from the reference file; cross-check with [`anti-patterns.md`](references/anti-patterns.md).
 3. **Before commit** — `yarn lint && yarn build` must pass; grep checks from Section 3 should return zero hits.
-4. **Before PR** — run `/audit-component @cor-<name> --deep` (invokes this skill + `accessibility-compliance`).
+4. **Before PR** — run `/audit-component @mud-<name> --deep` (invokes this skill + `accessibility-compliance`).
 5. **Production gate** — `audit-production` (agent) runs the full 11-phase audit; Phase 1 delegates here for decorator/lifecycle checks.
 
 ---

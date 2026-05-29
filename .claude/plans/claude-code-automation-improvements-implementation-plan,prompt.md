@@ -137,7 +137,7 @@ A Node ≥ 22 script that loads every `*.tokens.json` under `tokens/core/` and `
 | **DTCG compliance** | Every leaf token has `$value` and `$type` (never legacy `value`/`type`). Dimensions are explicit strings (`"12px"`, not `12`). `fontWeight` values are numeric. | error |
 | **Dark-mode parity** | Every semantic color token in `tokens/core/color.tokens.json` has a matching key in `tokens/core.dark/color.tokens.json`, or is explicitly marked light-only. | warning |
 | **Generated CSS drift** | Every token visible in source produces a matching CSS variable in `tokens/generated/core.tokens.css`. (Implementation: re-run Style Dictionary to a temp dir, diff against committed output. Skip if `--no-build` flag.) | warning |
-| **Component-CSS coverage** | For each `tokens/core/components/<name>.tokens.json`, find `src/components/cor-<name>/cor-<name>.css` and check that every `--<name>-*` CSS variable referenced has a token definition, and (warn-only) every defined token is used. | warning |
+| **Component-CSS coverage** | For each `tokens/core/components/<name>.tokens.json`, find `src/components/mud-<name>/mud-<name>.css` and check that every `--<name>-*` CSS variable referenced has a token definition, and (warn-only) every defined token is used. | warning |
 
 The script imports `style-dictionary` (already a devDependency at version 4.4.0) to resolve references using the same algorithm Style Dictionary uses internally, avoiding parser drift.
 
@@ -209,7 +209,7 @@ Add `"tokens.validate": "node scripts/tokens-validate.mjs"` to `scripts` and a m
 
 2. **PostToolUse formatter**
    ```powershell
-   echo '{"tool_name":"Edit","tool_input":{"file_path":"x:/WORK/corlab/age-design/src/components/cor-button/cor-button.css"}}' | node .claude/hooks/post-edit-format.mjs
+   echo '{"tool_name":"Edit","tool_input":{"file_path":"x:/WORK/corlab/age-design/src/components/mud-button/mud-button.css"}}' | node .claude/hooks/post-edit-format.mjs
    echo "exit=$LASTEXITCODE"   # expect 0
    ```
    Then edit a `.ts` file with a deliberate style violation, confirm Claude's edit triggers `prettier --write` and `eslint --fix` automatically.
@@ -240,6 +240,6 @@ Add `"tokens.validate": "node scripts/tokens-validate.mjs"` to `scripts` and a m
 Because no a11y content is being moved or deleted, this is a lightweight sanity pass, not a full migration audit:
 
 - Confirm `accessibility-compliance/SKILL.md`, `references/aria-patterns.md`, `references/mobile-accessibility.md`, `references/wcag-guidelines.md` are byte-identical to their pre-change state (`git diff --stat` on those paths shows zero lines changed).
-- Run `/audit-accessibility` (`.claude/commands/audit-accessibility.md`) against one keyboard-heavy component (e.g., `cor-button`) and one form/widget component (e.g., `cor-input` or `cor-select`). Expect the audit to pass — confirming that the 5 deletions did not orphan any guidance the audit relies on.
+- Run `/audit-accessibility` (`.claude/commands/audit-accessibility.md`) against one keyboard-heavy component (e.g., `mud-button`) and one form/widget component (e.g., `mud-input` or `mud-select`). Expect the audit to pass — confirming that the 5 deletions did not orphan any guidance the audit relies on.
 - Spot-run Storybook's `@storybook/addon-a11y` against the same components (the addon is already in `devDependencies`). Expect zero new violations vs. the pre-implementation baseline.
 - For future a11y work, the authoritative requirements live in Figma node `2753-5965` of file `doJ7tDY0PlQ0PqMgbpFVIC` — call this out in `src/components/AGENTS.md` if it is not already documented there (one-line pointer only; do not duplicate the spec).

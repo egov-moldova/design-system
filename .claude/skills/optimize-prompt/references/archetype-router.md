@@ -32,7 +32,7 @@ Is this a form-associated element (input, select, textarea, checkbox, radio, swi
 
 ### 2.1 atom-visual
 
-> **Examples in legacy:** `cor-spinner`, `cor-badge`, `cor-icon`, `cor-skeleton`, `cor-separator`, `cor-divider`, `cor-illustration`, `cor-loading-*`.
+> **Examples in legacy:** `mud-spinner`, `mud-badge`, `mud-icon`, `mud-skeleton`, `mud-separator`, `mud-divider`, `mud-illustration`, `mud-loading-*`.
 
 **CSS Pattern:** B (internal DOM/SVG). **NO slots** by default.
 
@@ -64,7 +64,7 @@ Is this a form-associated element (input, select, textarea, checkbox, radio, swi
 
 ### 2.2 atom-interactive
 
-> **Examples in legacy:** `cor-button`, `cor-link`, `cor-chip`.
+> **Examples in legacy:** `mud-button`, `mud-link`, `mud-chip`.
 
 **CSS Pattern:** A (slot-based — user passes the interactive root element). Style with `::slotted(*)` + `:host([variant])` + `:host([size])`.
 
@@ -104,7 +104,7 @@ Is this a form-associated element (input, select, textarea, checkbox, radio, swi
 
 ### 2.3 form-associated
 
-> **Examples in legacy:** `cor-input`, `cor-textarea`, `cor-select`, `cor-checkbox`, `cor-toggle`, `cor-radio-button`, `cor-datepicker`.
+> **Examples in legacy:** `mud-input`, `mud-textarea`, `mud-select`, `mud-checkbox`, `mud-toggle`, `mud-radio-button`, `mud-datepicker`.
 
 **CSS Pattern:** C (internal DOM, form-associated). MUST declare `formAssociated: true` and `@AttachInternals()`.
 
@@ -156,9 +156,9 @@ Is this a form-associated element (input, select, textarea, checkbox, radio, swi
 
 ### 2.4 molecule
 
-> **Examples in legacy:** `cor-avatar`, `cor-breadcrumbs`, `cor-pagination-item`, `cor-label`, `cor-modal-header`.
+> **Examples in legacy:** `mud-avatar`, `mud-breadcrumbs`, `mud-pagination-item`, `mud-label`, `mud-modal-header`.
 
-**CSS Pattern:** B (internal DOM, owns markup). Composes other `cor-*` atoms via internal `<cor-icon>` / `<cor-spinner>` calls, NOT user slots.
+**CSS Pattern:** B (internal DOM, owns markup). Composes other `mud-*` atoms via internal `<mud-icon>` / `<mud-spinner>` calls, NOT user slots.
 
 **Required sections:**
 - Goal
@@ -170,7 +170,7 @@ Is this a form-associated element (input, select, textarea, checkbox, radio, swi
 - Acceptance Criteria
 - Stories (Default, AllVariants, AllSizes)
 
-**Reuse declaration mandatory:** Goal section must list which atoms are consumed (e.g., "consumes `cor-icon`, `cor-badge`").
+**Reuse declaration mandatory:** Goal section must list which atoms are consumed (e.g., "consumes `mud-icon`, `mud-badge`").
 
 **A11y baseline:** Inherits per-atom rules + the composition's accessible name (group label, etc.).
 
@@ -178,7 +178,7 @@ Is this a form-associated element (input, select, textarea, checkbox, radio, swi
 
 ### 2.5 molecule-interactive
 
-> **Examples in legacy:** `cor-tab-button`, `cor-accordion-header`, `cor-dropdown-item`.
+> **Examples in legacy:** `mud-tab-button`, `mud-accordion-header`, `mud-dropdown-item`.
 
 **CSS Pattern:** B with `@State()` for interaction state.
 
@@ -200,7 +200,7 @@ Is this a form-associated element (input, select, textarea, checkbox, radio, swi
 
 ### 2.6 organism
 
-> **Examples in legacy:** `cor-modal`, `cor-table`, `cor-datepicker`, `cor-dropdown`, `cor-accordion`, `cor-tabs`, `cor-pagination`, `cor-calendar`, `cor-tooltip`.
+> **Examples in legacy:** `mud-modal`, `mud-table`, `mud-datepicker`, `mud-dropdown`, `mud-accordion`, `mud-tabs`, `mud-pagination`, `mud-calendar`, `mud-tooltip`.
 
 **CSS Pattern:** B with extensive `@State()` + `@Listen()` + `@Method()` for orchestrated child components.
 
@@ -227,7 +227,7 @@ Is this a form-associated element (input, select, textarea, checkbox, radio, swi
 
 ### 2.7 layout
 
-> **Examples in legacy:** `cor-row`, `cor-column`, `cor-grid`.
+> **Examples in legacy:** `mud-row`, `mud-column`, `mud-grid`.
 
 **CSS Pattern:** B (internal DOM, structural only).
 

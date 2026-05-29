@@ -89,7 +89,7 @@ node scripts/audit/02-stencil-antipatterns.mjs --changed --json
 node scripts/audit/03-git-hygiene.mjs --json
 ```
 
-For full anti-pattern catalogue see [`stencil-compliance/references/anti-patterns.md`](../skills/stencil-compliance/references/anti-patterns.md). For per-component deep audit invoke `/audit-component @cor-<name> --fast` after Wave 5.
+For full anti-pattern catalogue see [`stencil-compliance/references/anti-patterns.md`](../skills/stencil-compliance/references/anti-patterns.md). For per-component deep audit invoke `/audit-component @mud-<name> --fast` after Wave 5.
 
 **Verify after Wave 1 results land**:
 
@@ -186,7 +186,7 @@ Navigate to each modified component's story and verify no runtime errors or warn
 
 For each modified component:
 
-1. Open `http://localhost:6007/?path=/story/atoms-cor-<name>--default`.
+1. Open `http://localhost:6007/?path=/story/atoms-mud-<name>--default`.
 2. Open the "Accessibility" panel.
 3. Verify zero **Violations** in light mode.
 4. Switch global `Mode → Dark` (top toolbar).
@@ -194,7 +194,7 @@ For each modified component:
 
 Record any violation as blocking.
 
-For component-level deep audit, optionally run `/audit-accessibility @cor-<name>` after the pipeline.
+For component-level deep audit, optionally run `/audit-accessibility @mud-<name>` after the pipeline.
 
 ### 5c. Commit Message Audit
 

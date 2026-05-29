@@ -1,11 +1,11 @@
 ---
 name: audit-component
-description: Use when auditing a single `cor-*` Stencil component for production readiness. Runs a 3-wave audit (Discovery → Static Analysis → Browser Verification) covering structure, TypeScript, design tokens, CSS architecture, Stencil decorators, lifecycle, host management, stories, tests, accessibility, security, and performance. Accepts flags `--deep` (invoke companion skills end-to-end), `--e2e` (include E2E test audit), `--fast` (skip browser wave for pre-commit). Returns a categorized report; never auto-fixes.
+description: Use when auditing a single `mud-*` Stencil component for production readiness. Runs a 3-wave audit (Discovery → Static Analysis → Browser Verification) covering structure, TypeScript, design tokens, CSS architecture, Stencil decorators, lifecycle, host management, stories, tests, accessibility, security, and performance. Accepts flags `--deep` (invoke companion skills end-to-end), `--e2e` (include E2E test audit), `--fast` (skip browser wave for pre-commit). Returns a categorized report; never auto-fixes.
 ---
 
 # audit-component — Skill
 
-Audit a single `cor-*` Stencil component end-to-end. This skill encapsulates the logic previously in `/audit-component` slash command so it can be invoked from any orchestrator agent (`new-component`, `refactor-component`, `migrate-component`, `custom-component`, `audit-production`).
+Audit a single `mud-*` Stencil component end-to-end. This skill encapsulates the logic previously in `/audit-component` slash command so it can be invoked from any orchestrator agent (`new-component`, `refactor-component`, `migrate-component`, `custom-component`, `audit-production`).
 
 ## Three-Layer Architecture (read this first)
 
@@ -21,7 +21,7 @@ The audit runs in three layers. Each layer has a distinct responsibility, runtim
 
 ## Inputs
 
-- `componentName` (required): `cor-<name>` — folder name in `src/components/` or `src/hidden/`
+- `componentName` (required): `mud-<name>` — folder name in `src/components/` or `src/hidden/`
 - Optional flags:
   - `--deep` — also invoke [`stencil-compliance`](../stencil-compliance/SKILL.md) full rule pass + [`accessibility-compliance`](../accessibility-compliance/SKILL.md) deep audit (via `/audit-accessibility`)
   - `--e2e` — include Phase 5b E2E test audit (default: unit-only). For future when E2E tests are mandated.
@@ -32,7 +32,7 @@ The audit runs in three layers. Each layer has a distinct responsibility, runtim
 
 | Caller | Why |
 |--------|-----|
-| User via `/audit-component @cor-x` | Pre-PR audit on a specific component |
+| User via `/audit-component @mud-x` | Pre-PR audit on a specific component |
 | `new-component` agent (after Core Build) | Block scaffolding-to-ready transition |
 | `refactor-component` agent | Verify refactor didn't break invariants |
 | `migrate-component` agent | Required for `src/hidden/` → `src/components/` graduation |
@@ -44,7 +44,7 @@ The audit runs in three layers. Each layer has a distinct responsibility, runtim
 Wave 1 — Discovery (parallel I/O)
    ├─ Read all component files (TSX/CSS/types/enums/constants/stories/spec)
    ├─ Read tokens/core/components/<name>.tokens.json
-   ├─ Read reference impls (cor-button, cor-input)
+   ├─ Read reference impls (mud-button, mud-input)
    ├─ Grep anti-patterns (CSS + TSX)
    ├─ Bash: yarn lint
    ├─ Bash: yarn tokens.build (must complete before Wave 2 token verification)
@@ -197,12 +197,12 @@ Dispatch in a SINGLE message with multiple parallel tool calls.
 - `src/components/<componentName>/<componentName>.stories.ts`
 - `src/components/<componentName>/test/<componentName>.spec.tsx`
 - `src/components/<componentName>/test/<componentName>.e2e.ts` (read but only score if `--e2e`)
-- `tokens/core/components/<bareName>.tokens.json` (drop the `cor-` prefix)
+- `tokens/core/components/<bareName>.tokens.json` (drop the `mud-` prefix)
 
 ### Reference Reads (parallel — for cross-comparison)
 
-- `src/components/cor-button/cor-button.tsx`
-- `src/components/cor-input/cor-input.tsx`
+- `src/components/mud-button/mud-button.tsx`
+- `src/components/mud-input/mud-input.tsx`
 
 ### Anti-Pattern detection
 
@@ -295,7 +295,7 @@ Cross-reference [`stencil-compliance/references/decorators.md`](../stencil-compl
 
 Apply the Top-10 quick rules from [`stencil-compliance/SKILL.md`](../stencil-compliance/SKILL.md#2-top-10-must-check-rules-quick-audit):
 
-- **Q1** `@Component`: `tag` starts with `cor-`, `shadow: true`, never `scoped: true`
+- **Q1** `@Component`: `tag` starts with `mud-`, `shadow: true`, never `scoped: true`
 - **Q2** All `@Method()` async / `Promise<T>` (verified by Wave 1 grep)
 - **Q3** `EventEmitter<T>` non-empty type (verified by Wave 1 grep)
 - **Q4** Events that escape shadow DOM use `composed: true` (default; flag if overridden to false unintentionally)
@@ -364,12 +364,12 @@ Cross-reference [`stencil-compliance/references/jsx-styling.md#styling`](../sten
 
 Determine which CSS pattern applies and verify it's used consistently:
 
-**Pattern A — Slot-based (cor-button style)**:
+**Pattern A — Slot-based (mud-button style)**:
 - Uses `::slotted(*)` for styling slot children
 - Uses `:host([variant='x'])`, `:host([size='y'])` attribute selectors
 - Pseudo-states on slotted: `::slotted(*:hover:not(:disabled))`
 
-**Pattern B — Internal DOM (cor-input style)**:
+**Pattern B — Internal DOM (mud-input style)**:
 - Uses `:host` CSS variables for size mapping
 - Internal `.container`, `.input-wrapper` classes
 - State via host class: `:host(.is-focused) .container { ... }`
@@ -395,7 +395,7 @@ For components with `<slot>`:
   string `@Prop()` (e.g. `label`) AND renders it inside a slot
   (`<slot>{this.label}</slot>` or `<slot>{labelText}</slot>`), the prop and
   the slot are two ways to set the same content — flag as
-  **MEDIUM**. Reference components: `cor-button`, `cor-service-button` keep
+  **MEDIUM**. Reference components: `mud-button`, `mud-service-button` keep
   `label` ARIA-only; visible content lives exclusively in the slot.
   Detected automatically as `ANTIPATTERN-026-PROP-CONTENT-SLOT-FALLBACK`.
 
@@ -407,7 +407,7 @@ Read `.stories.ts` (already loaded) and verify:
 
 **Format**:
 - CSF3 format with `@storybook/web-components-vite` (NOT `@storybook/react`)
-- `component: 'cor-<name>'` is string tag name (not JS reference)
+- `component: 'mud-<name>'` is string tag name (not JS reference)
 - `render` function with HTML template strings (`/*html*/` prefix)
 - `title` follows atomic hierarchy: `Atoms/CorName`, `Molecules/CorName`, etc.
 - No `tags: ['autodocs']` — autodocs configured globally in `.storybook/main.mjs`
@@ -419,7 +419,7 @@ Read `.stories.ts` (already loaded) and verify:
 - `STORY-TYPEOF-META` — `type Story = StoryObj<typeof meta>`. Works in React/Vue Storybook but breaks in `@storybook/web-components-vite@^10.x` (nests `Meta<Args>` into the args slot). Required form: `type Story = StoryObj<Args>`.
 - `STORY-DOCS-SOURCE-MISSING-DYNAMIC` — `parameters.docs.source` provides a `transform` without `type: 'dynamic'`. The global `type: 'code'` (in `.storybook/preview.js`) caches the snippet at story registration and ignores Controls changes; per-story `type: 'dynamic'` is required to make the transform re-run.
 - `STORY-DOCS-SOURCE-ARGS-ANY` — `transform: (_code, { args }: any) => ...`. Type the destructure: `{ args }: { args: ComponentArgs }`.
-- `STORY-COMPOSITE-NO-CODE-OVERRIDE` — story with `controls: { disable: true }` AND a helper-laden `render` (template-string `.map(...)`, local `cellStyle` constants, etc.) AND no `parameters.docs.source.code` override. The global `'code'` mode then captures the demo-chrome render output verbatim, exposing wrapper divs and `${LOOP.map(...)}` template guts as the "consumer-ready" snippet. Provide a static `code` with one clean `<cor-component …></cor-component>` per variation. See `src/components/cor-logo/cor-logo.stories.ts` for the canonical example.
+- `STORY-COMPOSITE-NO-CODE-OVERRIDE` — story with `controls: { disable: true }` AND a helper-laden `render` (template-string `.map(...)`, local `cellStyle` constants, etc.) AND no `parameters.docs.source.code` override. The global `'code'` mode then captures the demo-chrome render output verbatim, exposing wrapper divs and `${LOOP.map(...)}` template guts as the "consumer-ready" snippet. Provide a static `code` with one clean `<mud-component …></mud-component>` per variation. See `src/components/mud-logo/mud-logo.stories.ts` for the canonical example.
 
 **Spec-file anti-patterns** (flag any of these in Wave 2.10):
 - `SPEC-LEGACY-NEWSPECPAGE` — `import { newSpecPage } from '@stencil/core/testing';`. Retired Jest harness. Must use `import { render, ... } from '@stencil/vitest';`.
@@ -450,7 +450,7 @@ Read `.stories.ts` (already loaded) and verify:
 
 Read `test/<componentName>.spec.tsx` (already loaded from Wave 1) and verify:
 
-- Uses `render(<cor-x ... />)` from `@stencil/vitest` (the Jest-era `newSpecPage` was retired)
+- Uses `render(<mud-x ... />)` from `@stencil/vitest` (the Jest-era `newSpecPage` was retired)
 - **MANDATORY** side-effect source import: `import '../<componentName>';` is present as the first non-vitest import. Without it `stencilVitestPlugin` cannot compile the source on-the-fly and coverage v8 will report 0% for the TSX. Flag missing import as **High** — silent coverage regressions otherwise. See `src/components/_agents/testing.md` → Coverage rules.
 - At least 1 smoke test (renders without throwing)
 - Props tested: each `@Prop` reflected to host attribute and JSX output
@@ -482,7 +482,7 @@ Inspect the summary row for `src/components/<componentName>/<componentName>.tsx`
 - **Branches stuck at exactly 50% (1/2)** while statements/functions/lines are 100% → the Stencil-injected `registerHost !== false` guard isn't being hit. Flag **Low** with the canonical fix: add the boilerplate test below + a hidden `CoverageGuard` story. Recipe documented in [`src/components/_agents/testing.md`](../../../src/components/_agents/testing.md) → "Reaching 100% Branches".
   ```ts
   it('constructs without registering a host when registerHost=false', () => {
-    const Ctor = customElements.get('cor-<name>') as unknown as new (registerHost: boolean) => unknown;
+    const Ctor = customElements.get('mud-<name>') as unknown as new (registerHost: boolean) => unknown;
     expect(Ctor).toBeTruthy();
     const instance = new Ctor(false);
     expect(instance).toBeTruthy();
@@ -498,12 +498,12 @@ Default: skip and emit `INFO: E2E audit disabled (use --e2e to enable)`.
 
 When `--e2e` flag set:
 - Read `test/<componentName>.e2e.ts` (loaded from Wave 1)
-- Uses `newE2EPage({ html: '<cor-x ...></cor-x>' })`
-- Smoke test: hydration class present (`page.find('cor-x.hydrated')`)
-- Prop reflection: attributes verified via `page.find('cor-x').getAttribute('variant')`
+- Uses `newE2EPage({ html: '<mud-x ...></mud-x>' })`
+- Smoke test: hydration class present (`page.find('mud-x.hydrated')`)
+- Prop reflection: attributes verified via `page.find('mud-x').getAttribute('variant')`
 - Event spies: `page.spyOnEvent('corChange')` with await for emission
-- Focus/blur: `page.evaluate(() => document.querySelector('cor-x')?.focus())`
-- Shadow DOM access: `page.find('cor-x >>> .target')` combinator
+- Focus/blur: `page.evaluate(() => document.querySelector('mud-x')?.focus())`
+- Shadow DOM access: `page.find('mud-x >>> .target')` combinator
 - Form-associated: form submission produces correct FormData
 
 Cross-reference `src/components/_agents/e2e-testing.md`.
@@ -517,7 +517,7 @@ Dispatch in a SINGLE message; reuse Storybook session if active.
 ### 3.1 Navigate
 
 ```text
-mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-cor-<name>--default" })
+mcp__playwright__browser_navigate({ url: "http://localhost:6007/iframe.html?id=atoms-mud-<name>--default" })
 ```
 
 ### 3.2 Wait + Snapshot + Console + Contrast (parallel)
@@ -535,7 +535,7 @@ yarn audit:contrast
 ### 3.3 Computed Styles (light + dark)
 
 ```text
-mcp__playwright__browser_evaluate({ function: "() => { const el = document.querySelector('cor-<name>')?.shadowRoot?.querySelector('.target') || document.querySelector('cor-<name>'); const s = window.getComputedStyle(el); return { bg: s.backgroundColor, fg: s.color }; }" })
+mcp__playwright__browser_evaluate({ function: "() => { const el = document.querySelector('mud-<name>')?.shadowRoot?.querySelector('.target') || document.querySelector('mud-<name>'); const s = window.getComputedStyle(el); return { bg: s.backgroundColor, fg: s.color }; }" })
 ```
 
 Toggle dark mode and repeat:
@@ -546,7 +546,7 @@ mcp__playwright__browser_evaluate({ function: "() => { document.documentElement.
 
 ### 3.4 Accessibility Quick-Check (WCAG 2.1 AA subset)
 
-**Canonical reference:** [`accessibility-compliance`](../accessibility-compliance/SKILL.md). For deep audit run `/audit-accessibility @cor-<name>` (auto-invoked when `--deep`).
+**Canonical reference:** [`accessibility-compliance`](../accessibility-compliance/SKILL.md). For deep audit run `/audit-accessibility @mud-<name>` (auto-invoked when `--deep`).
 
 **ARIA & semantics** (SC 4.1.2, 4.1.3, 2.5.3):
 - Interactive elements have appropriate ARIA roles
@@ -598,7 +598,7 @@ BX1 — Hydration + first paint
   mcp__playwright__browser_navigate({ url: storyUrl(componentName, 'default') })
   mcp__playwright__browser_wait_for({ time: 1 })
   mcp__playwright__browser_snapshot()
-  PASS: snapshot contains cor-<name> with class `hydrated` and ≥1 child node
+  PASS: snapshot contains mud-<name> with class `hydrated` and ≥1 child node
   FAIL: BLOCK (verdict "Block — incomplete audit"; no point running BX2–BX7)
   Fallback: if no Default story exists, navigate to the FIRST story id from
             envelope.findingsByTool['story-exports'].
@@ -714,7 +714,7 @@ Cross-reference Wave 1 grep results.
 - No DOM queries in loops — cache `querySelector` results
 - Event listeners properly scoped (no leaked `window`/`document` listeners — pair with `disconnectedCallback`)
 - CSS `transition: all` NOT used
-- No large inline SVGs — use `cor-icon`
+- No large inline SVGs — use `mud-icon`
 - No large external dependencies
 
 ---
@@ -861,7 +861,7 @@ Present the report. **Do NOT auto-fix** — wait for the user to choose which is
 Other agents can invoke this skill via the Skill tool:
 
 ```text
-Skill('audit-component', { args: 'cor-button --fast' })
+Skill('audit-component', { args: 'mud-button --fast' })
 ```
 
 When invoked headlessly, the skill returns the Final Report string. The orchestrator agent decides whether to surface it or act on findings.

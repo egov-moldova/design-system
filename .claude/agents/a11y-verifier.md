@@ -1,6 +1,6 @@
 ---
 name: a11y-verifier
-description: Read-only WCAG 2.1 AA accessibility verification subagent. Audits keyboard navigation, ARIA attributes, color contrast (light + dark), focus indicators, and screen reader compatibility on a `cor-*` Storybook story. Returns a categorized findings report. Never modifies source files. Use as part of `parallel-aux-tasks` after Core build.
+description: Read-only WCAG 2.1 AA accessibility verification subagent. Audits keyboard navigation, ARIA attributes, color contrast (light + dark), focus indicators, and screen reader compatibility on a `mud-*` Storybook story. Returns a categorized findings report. Never modifies source files. Use as part of `parallel-aux-tasks` after Core build.
 tools: Read, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, mcp__playwright__browser_press_key, Skill
 model: sonnet
 ---
@@ -15,7 +15,7 @@ Read-only subagent. Audits keyboard, ARIA, contrast, focus, screen reader compat
 
 Required:
 
-- `componentName` — e.g. `cor-button`
+- `componentName` — e.g. `mud-button`
 
 Optional:
 
@@ -38,15 +38,15 @@ Steps 2-6 below). They return JSON envelopes; the script runs in light + dark
 in parallel:
 
 ```bash
-node scripts/audit/run-all.mjs cor-<name> --only 09,10,12 --json
+node scripts/audit/run-all.mjs mud-<name> --only 09,10,12 --json
 ```
 
 Or individually if you only need one:
 
 ```bash
-node scripts/audit/09-a11y-tree.mjs cor-<name> --json     # a11y tree + element census
-node scripts/audit/10-contrast-pairs.mjs cor-<name> --json # WCAG contrast pairs (light + dark)
-node scripts/audit/12-console-errors.mjs cor-<name> --json # runtime errors that affect a11y
+node scripts/audit/09-a11y-tree.mjs mud-<name> --json     # a11y tree + element census
+node scripts/audit/10-contrast-pairs.mjs mud-<name> --json # WCAG contrast pairs (light + dark)
+node scripts/audit/12-console-errors.mjs mud-<name> --json # runtime errors that affect a11y
 ```
 
 Also run the token-level pair:
@@ -112,7 +112,7 @@ This is where the agent's value lands. For each script finding, decide:
 ### Step 3 — Report
 
 ```text
-## Accessibility Report: cor-<name> (WCAG 2.1 AA)
+## Accessibility Report: mud-<name> (WCAG 2.1 AA)
 
 ### Summary
 - Critical issues: X

@@ -39,7 +39,7 @@ After re-verification on 2026-05-17, **nothing in the original plan had been exe
 - `angular-design-system/` — entire directory (~1,752 items, includes `src/`, `package.json`, `scripts/`)
 - `react-design-system/` — entire directory (~37 items)
 - `vue-design-system/` — entire directory (~34 items)
-- `components/` (root) — auto-generated ng-packagr shim folder (~70 `cor-*.{js,d.ts}` re-export pairs, only consumed by Angular wrapper)
+- `components/` (root) — auto-generated ng-packagr shim folder (~70 `mud-*.{js,d.ts}` re-export pairs, only consumed by Angular wrapper)
 - `scripts/generate-component-shims.mjs` — only used by `build.angular`
 
 ### Files to edit
@@ -117,7 +117,7 @@ yarn demo.web
 ```
 
 Open http://localhost:5174. Confirm:
-- All `<cor-button>` variants and sizes render with Onest font.
+- All `<mud-button>` variants and sizes render with Onest font.
 - DevTools console: `[demo] @age/web-components registered all custom elements`.
 - DevTools console: `Object.keys(window).filter(k => k.startsWith('HTMLCor')).length` returns > 30.
 
@@ -324,7 +324,7 @@ git commit -m "chore: remove angular/react/vue adapter workspaces"
 
 ```bash
 git grep -nE "from '@age/design-system/components/" -- ':!components/' ':!dist/' ':!yarn.lock'
-git grep -nE "components/cor-.*\.js" -- ':!components/' ':!dist/' ':!yarn.lock' ':!src/'
+git grep -nE "components/mud-.*\.js" -- ':!components/' ':!dist/' ':!yarn.lock' ':!src/'
 ```
 
 Expected: zero matches.
@@ -579,7 +579,7 @@ Expected: produces `storybook-static/`.
 yarn demo.web
 ```
 
-Open http://localhost:5174. Confirm `<cor-button>` variants render with Onest font; console reports registration; `Object.keys(window).filter(k => k.startsWith('HTMLCor')).length` > 30.
+Open http://localhost:5174. Confirm `<mud-button>` variants render with Onest font; console reports registration; `Object.keys(window).filter(k => k.startsWith('HTMLCor')).length` > 30.
 
 - [ ] **Step 5: Final dangling-reference scan**
 

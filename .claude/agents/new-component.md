@@ -59,9 +59,9 @@ Read `_agents/reuse-architecture.md` for decision matrix and architecture patter
 
 Quick check:
 
-- Search `src/components/cor-*/` for similar existing components
+- Search `src/components/mud-*/` for similar existing components
 - Search `tokens/core/components/` for existing token files
-- Reference `cor-button` (slot-based, Pattern A) and `cor-input` (internal DOM, Pattern B) as canonical implementations
+- Reference `mud-button` (slot-based, Pattern A) and `mud-input` (internal DOM, Pattern B) as canonical implementations
 
 ## Step 3: Figma Extraction
 
@@ -107,7 +107,7 @@ Decide: atomic level, props/slots/events, tokens needed, states to support, reus
 
 Read `_agents/pre-implementation.md` for component inventory format and approval gate.
 
-**`--fast` inventory**: `cor-name (Atom) — tokens: new, states: default/hover/disabled, slots: default/icon`
+**`--fast` inventory**: `mud-name (Atom) — tokens: new, states: default/hover/disabled, slots: default/icon`
 
 **Default mode**: present inventory and STOP for user approval before continuing.
 
@@ -160,11 +160,11 @@ Modes:
 Dispatch ALL of the following in a SINGLE message with parallel `Agent` tool calls (full-5 set):
 
 ```
-Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=cor-<name>, figmaNodeId=<id>, threshold=0.5")
-Agent(subagent_type="a11y-verifier",          prompt="componentName=cor-<name>")
-Agent(subagent_type="story-writer",           prompt="componentName=cor-<name>, componentTsxPath=..., atomicLevel=<level>, writeMode=<mode>, figmaMetadata=<metadata>")
-Agent(subagent_type="test-writer",            prompt="componentName=cor-<name>, componentTsxPath=..., writeMode=<mode>")
-Agent(subagent_type="integration-checker",    prompt="componentName=cor-<name>, changeKind=new")
+Agent(subagent_type="pixel-perfect-verifier", prompt="componentName=mud-<name>, figmaNodeId=<id>, threshold=0.5")
+Agent(subagent_type="a11y-verifier",          prompt="componentName=mud-<name>")
+Agent(subagent_type="story-writer",           prompt="componentName=mud-<name>, componentTsxPath=..., atomicLevel=<level>, writeMode=<mode>, figmaMetadata=<metadata>")
+Agent(subagent_type="test-writer",            prompt="componentName=mud-<name>, componentTsxPath=..., writeMode=<mode>")
+Agent(subagent_type="integration-checker",    prompt="componentName=mud-<name>, changeKind=new")
 ```
 
 When all 5 reports return, aggregate into a triage table (see `parallel-aux-tasks` skill). Apply critical fixes (TSX/CSS/tokens — orchestrator's responsibility) before continuing to Step 8.

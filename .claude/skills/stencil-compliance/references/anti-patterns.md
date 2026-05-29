@@ -221,7 +221,7 @@ this.internals.setFormValue(formData, this.value);
 **Fix**: Always pair.
 
 ```ts
-@Component({ tag: 'cor-input', formAssociated: true })
+@Component({ tag: 'mud-input', formAssociated: true })
 export class CorInput {
   @AttachInternals() internals!: ElementInternals;   // ← REQUIRED
 }
@@ -406,13 +406,13 @@ componentDidLoad() {
 
 ---
 
-## #21 — Inline SVG instead of `cor-icon`
+## #21 — Inline SVG instead of `mud-icon`
 
-**Detect**: `rg "<svg" src/components --type ts` (in TSX renders, excluding `cor-icon` itself)
+**Detect**: `rg "<svg" src/components --type ts` (in TSX renders, excluding `mud-icon` itself)
 
 **Why**: Doesn't follow token-based sizing/coloring, balloons bundle size, harder to maintain.
 
-**Fix**: Use `<cor-icon name="..." />`.
+**Fix**: Use `<mud-icon name="..." />`.
 
 ---
 
@@ -469,7 +469,7 @@ componentDidLoad() {
 ```ts
 // ✅
 render() {
-  if (invalidSlottedTag(this.host, 'cor-icon', { slotName: 'icon' })) {
+  if (invalidSlottedTag(this.host, 'mud-icon', { slotName: 'icon' })) {
     return null;  // or fallback
   }
   return <Host><slot name="icon" /></Host>;

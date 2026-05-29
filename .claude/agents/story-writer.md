@@ -1,20 +1,20 @@
 ---
 name: story-writer
-description: Generates `*.stories.ts` for a `cor-*` Stencil component using CSF3 format with `@storybook/web-components-vite`. Writes Default, AllVariants, AllSizes, States, and Edge-case stories based on the component's `@Prop()` declarations and Figma metadata. Respects `--write-mode` flag — writes the file in `parallel-write` mode, returns a draft in `read-only` mode. Use as part of `parallel-aux-tasks` after Core build.
+description: Generates `*.stories.ts` for a `mud-*` Stencil component using CSF3 format with `@storybook/web-components-vite`. Writes Default, AllVariants, AllSizes, States, and Edge-case stories based on the component's `@Prop()` declarations and Figma metadata. Respects `--write-mode` flag — writes the file in `parallel-write` mode, returns a draft in `read-only` mode. Use as part of `parallel-aux-tasks` after Core build.
 tools: Read, Write, Edit, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for
 model: sonnet
 ---
 
 # Story Writer
 
-Generates a complete `*.stories.ts` file for a `cor-*` component in CSF3 format. Respects the `--write-mode` flag from the orchestrator.
+Generates a complete `*.stories.ts` file for a `mud-*` component in CSF3 format. Respects the `--write-mode` flag from the orchestrator.
 
 ## Inputs (from orchestrator prompt)
 
 Required:
 
-- `componentName` — e.g. `cor-button`
-- `componentTsxPath` — e.g. `src/components/cor-button/cor-button.tsx`
+- `componentName` — e.g. `mud-button`
+- `componentTsxPath` — e.g. `src/components/mud-button/mud-button.tsx`
 - `atomicLevel` — `atoms` | `molecules` | `organisms` | `templates`
 - `writeMode` — `parallel-write` (default) | `read-only`
 
@@ -102,7 +102,7 @@ export const Default: Story = {
 **Single source of truth for union types**: when the component exposes enum-like props (`size`, `variant`), declare both the runtime list and the type from one `as const` array in `<componentName>.types.ts` and import both into the story:
 
 ```ts
-// cor-spinner.types.ts
+// mud-spinner.types.ts
 export const SPINNER_SIZES = ['xs', 'sm', 'md', 'lg'] as const;
 export type SpinnerSize = (typeof SPINNER_SIZES)[number];
 ```
@@ -173,19 +173,19 @@ parameters: {
     source: {
       type: 'dynamic',  // overrides global 'code' from .storybook/preview.js:113
       transform: (_code: string, { args }: { args: ComponentArgs }) =>
-        `<cor-component prop="${args.prop}">...</cor-component>`,
+        `<mud-component prop="${args.prop}">...</mud-component>`,
     },
   },
 },
 ```
 
-The global `parameters.docs.source.type: 'code'` from `.storybook/preview.js` caches the rendered snippet at story registration time and ignores Controls panel changes. `type: 'dynamic'` per-story overrides this so the transform re-runs on each args change. The `{ args }` destructure must be typed (`{ args }: { args: ComponentArgs }`), never `any`. Reference: `src/components/cor-spinner/cor-spinner.stories.ts:59-70`.
+The global `parameters.docs.source.type: 'code'` from `.storybook/preview.js` caches the rendered snippet at story registration time and ignores Controls panel changes. `type: 'dynamic'` per-story overrides this so the transform re-runs on each args change. The `{ args }` destructure must be typed (`{ args }: { args: ComponentArgs }`), never `any`. Reference: `src/components/mud-spinner/mud-spinner.stories.ts:59-70`.
 
-For **composite / grid stories** with `controls: { disable: true }` whose `render` uses template-string helpers (`cellStyle`, `${LAYOUTS.flatMap(...)}`, etc.), DO NOT omit `parameters.docs.source`. The global `'code'` mode captures the render function output verbatim — including wrapper divs, demo chrome, and helper interpolations — which is unusable to consumers. Provide a static `code` containing one clean `<cor-component …></cor-component>` per variation:
+For **composite / grid stories** with `controls: { disable: true }` whose `render` uses template-string helpers (`cellStyle`, `${LAYOUTS.flatMap(...)}`, etc.), DO NOT omit `parameters.docs.source`. The global `'code'` mode captures the render function output verbatim — including wrapper divs, demo chrome, and helper interpolations — which is unusable to consumers. Provide a static `code` containing one clean `<mud-component …></mud-component>` per variation:
 
 ```ts
 const docsSourceAllVariants = VARIANTS.map(
-  v => /*html*/ `<cor-component variant="${v}"></cor-component>`,
+  v => /*html*/ `<mud-component variant="${v}"></mud-component>`,
 ).join('\n');
 
 export const AllVariants: Story = {
@@ -197,7 +197,7 @@ export const AllVariants: Story = {
 };
 ```
 
-Reference: `src/components/cor-logo/cor-logo.stories.ts` (all 3 stories) and `src/components/cor-service-button/cor-service-button.stories.ts`. Omit `docs.source` only when the render function is already a single clean `<cor-component …></cor-component>` line with no helpers.
+Reference: `src/components/mud-logo/mud-logo.stories.ts` (all 3 stories) and `src/components/mud-service-button/mud-service-button.stories.ts`. Omit `docs.source` only when the render function is already a single clean `<mud-component …></mud-component>` line with no helpers.
 
 ### Step 6 — Write or draft
 

@@ -57,9 +57,9 @@ What do you need to do?
 
 ## Invocation Patterns
 
-- **Component argument**: pass `@cor-button` (or component folder name) as `$ARGUMENTS`. Example: `/audit-component @cor-button`.
+- **Component argument**: pass `@mud-button` (or component folder name) as `$ARGUMENTS`. Example: `/audit-component @mud-button`.
 - **No argument**: workflows like `/pre-pr-check` operate on the current branch state.
-- **Free-text**: `/fix-visual-bug @cor-input red border showing on focus instead of blue` or `/optimize-prompt build a tabs component with three variants`.
+- **Free-text**: `/fix-visual-bug @mud-input red border showing on focus instead of blue` or `/optimize-prompt build a tabs component with three variants`.
 
 ## Conventions Shared Across Commands
 

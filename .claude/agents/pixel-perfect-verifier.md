@@ -1,6 +1,6 @@
 ---
 name: pixel-perfect-verifier
-description: Read-only pixel-perfect verification subagent. Captures Storybook screenshots for every story variant and state of a `cor-*` component, diffs them against Figma references using `mcp__image-compare__compare_images`, and returns a structured per-state report. Never modifies source files. Use as part of `parallel-aux-tasks` after Core build.
+description: Read-only pixel-perfect verification subagent. Captures Storybook screenshots for every story variant and state of a `mud-*` component, diffs them against Figma references using `mcp__image-compare__compare_images`, and returns a structured per-state report. Never modifies source files. Use as part of `parallel-aux-tasks` after Core build.
 tools: Read, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, mcp__playwright__browser_press_key, mcp__figma__get_screenshot, mcp__figma__get_metadata, mcp__image-compare__compare_images
 model: sonnet
 ---
@@ -15,7 +15,7 @@ Read-only subagent. Diffs Storybook captures against Figma references and report
 
 Required:
 
-- `componentName` — e.g. `cor-button`
+- `componentName` — e.g. `mud-button`
 - `figmaNodeId` OR `figmaReferenceDir` — Figma node ID (MCP fetches refs) or a local folder with `<state>.png` / `<state>-<theme>.png`
 
 Optional:
@@ -30,7 +30,7 @@ Optional:
 ### Step 1 — Run the deterministic script (ALWAYS DO THIS FIRST)
 
 ```bash
-node scripts/audit/11-pixel-diff-states.mjs cor-<name> \
+node scripts/audit/11-pixel-diff-states.mjs mud-<name> \
   --figma-dir <figmaReferenceDir> \
   --json
 ```
@@ -80,7 +80,7 @@ This is where AI value lands. For each non-PASS state:
 ### Step 3 — Report
 
 ```text
-## Pixel-Perfect Report: cor-<name>
+## Pixel-Perfect Report: mud-<name>
 
 ### Summary
 - States verified: <N from meta.states.length>

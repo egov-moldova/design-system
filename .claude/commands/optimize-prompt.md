@@ -84,7 +84,7 @@ Step 4   — Validate (7-point check against snapshot)
 Input:
 
 ```text
-/optimize-prompt Create cor-spinner component, slot based approach, reuse existing components where possible, token-driven. Figma: https://www.figma.com/design/.../?node-id=724-41243
+/optimize-prompt Create mud-spinner component, slot based approach, reuse existing components where possible, token-driven. Figma: https://www.figma.com/design/.../?node-id=724-41243
 ```
 
 Expected behavior:
@@ -93,21 +93,21 @@ Expected behavior:
 - Archetype auto-detected: `atom-visual`
 - Detector pattern 1 fires: "slot based approach" on visual atom → rewrite to Pattern B (auto-correction noted)
 - Output includes: Animation spec, A11y (`role="status"`, `aria-label`, `prefers-reduced-motion`), Token Mapping for size×color matrix, Stories list (Default, AllSizes, AllVariants)
-- Build Order block emitted (spinner is a dependency for cor-button loading)
+- Build Order block emitted (spinner is a dependency for mud-button loading)
 
 ### Example 2 — atom-interactive (button)
 
 Input:
 
 ```text
-/optimize-prompt Create cor-button with primary/secondary/strict/neutral/destructive variants, sm/md/lg sizes, leading-icon and trailing-icon slots, loading state uses cor-spinner. Future Outlined/Text/Badge variants will come later.
+/optimize-prompt Create mud-button with primary/secondary/strict/neutral/destructive variants, sm/md/lg sizes, leading-icon and trailing-icon slots, loading state uses mud-spinner. Future Outlined/Text/Badge variants will come later.
 ```
 
 Expected behavior:
 
 - Mode: `new`; Archetype: `atom-interactive`
 - Detector pattern 3 fires: "Future Outlined/Text/Badge" → moved to `## Out of Scope`
-- Detector pattern 8 fires: `cor-spinner` referenced in loading → Build Order block emitted
+- Detector pattern 8 fires: `mud-spinner` referenced in loading → Build Order block emitted
 - Output: per-variant Token Mapping (5 variants × 6 states), Stories (Default, AllVariants, AllSizes, States, AllStatesTable), Loading interactivity strategy (disabled + aria-busy + pointer-events:none)
 
 ### Example 3 — redesign legacy (badge)
@@ -115,7 +115,7 @@ Expected behavior:
 Input:
 
 ```text
-/optimize-prompt --mode=redesign Redesign cor-badge per AGE Design System. Figma: https://www.figma.com/design/.../?node-id=...
+/optimize-prompt --mode=redesign Redesign mud-badge per AGE Design System. Figma: https://www.figma.com/design/.../?node-id=...
 ```
 
 Expected behavior:
@@ -130,7 +130,7 @@ Expected behavior:
 Input:
 
 ```text
-/optimize-prompt --mode=tokens Rename --badge-iconColor-error to --cor-badge-icon-color-error (kebab-case canonicalization)
+/optimize-prompt --mode=tokens Rename --badge-iconColor-error to --mud-badge-icon-color-error (kebab-case canonicalization)
 ```
 
 Expected behavior:
