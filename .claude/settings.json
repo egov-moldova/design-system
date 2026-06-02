@@ -86,7 +86,21 @@
       "Bash(node -e \"const p=require\\('./package.json'\\); const d={...p.dependencies,...p.devDependencies}; Object.keys\\(d\\).filter\\(k=>/storybook|viewport/i.test\\(k\\)\\).forEach\\(k=>console.log\\(k, d[k]\\)\\)\")",
       "Bash(node -e \"try{const v=require\\('storybook/viewport'\\);console.log\\('storybook/viewport exports:',Object.keys\\(v\\)\\)}catch\\(e\\){console.log\\('storybook/viewport not requireable:',e.message\\)}\")",
       "Bash(node -e \"const p=require\\('./node_modules/storybook/package.json'\\); console.log\\(Object.keys\\(p.exports||{}\\).filter\\(k=>/viewport/i.test\\(k\\)\\)\\)\")",
-      "Bash(node -e \"let s='';process.stdin.on\\('data',d=>s+=d\\).on\\('end',\\(\\)=>{const j=JSON.parse\\(s\\);Object.keys\\(j.entries\\).filter\\(k=>k.includes\\('cookie-banner'\\)&&k.includes\\('mobile'\\)\\).forEach\\(k=>console.log\\(' •',k\\)\\)}\\)\")"
+      "Bash(node -e \"let s='';process.stdin.on\\('data',d=>s+=d\\).on\\('end',\\(\\)=>{const j=JSON.parse\\(s\\);Object.keys\\(j.entries\\).filter\\(k=>k.includes\\('cookie-banner'\\)&&k.includes\\('mobile'\\)\\).forEach\\(k=>console.log\\(' •',k\\)\\)}\\)\")",
+      "Bash(cd /Users/vitalie/corlab-projects/age-design *)",
+      "Bash(node -e ' *)",
+      "Bash(node -e 'const e=JSON.parse\\(require\\(\"fs\"\\).readFileSync\\(\"/tmp/cb-audit.json\",\"utf8\"\\)\\);const cc=e.findingsByTool[\"component-contract\"]||[];console.log\\(JSON.stringify\\(cc.map\\(x=>\\({code:x.code,meta:x.meta}\\)\\),null,1\\).slice\\(0,900\\)\\)')",
+      "Bash(node -e 'const c=JSON.parse\\(require\\(\"fs\"\\).readFileSync\\(\"coverage/coverage-summary.json\",\"utf8\"\\)\\);const k=Object.keys\\(c\\).find\\(k=>k.includes\\(\"mud-cookie-banner/mud-cookie-banner.tsx\"\\)\\);console.log\\(\"entry in coverage-summary:\", k? JSON.stringify\\(c[k].lines\\)+\" lines, \"+JSON.stringify\\(c[k].branches\\)+\" branches\" : \"ABSENT \\(→ script reported 0% because this component was not in the last coverage run\\)\"\\)')",
+      "Bash(node_modules/.bin/vitest --project spec --coverage --run src/components/mud-cookie-banner)",
+      "Bash(node -e 'const c=JSON.parse\\(require\\(\"fs\"\\).readFileSync\\(\"coverage/coverage-summary.json\",\"utf8\"\\)\\);const k=Object.keys\\(c\\).find\\(k=>k.includes\\(\"mud-cookie-banner/mud-cookie-banner.tsx\"\\)\\);const e=c[k];console.log\\(\"mud-cookie-banner.tsx:\", e?`stmts ${e.statements.pct}% · branches ${e.branches.pct}% · funcs ${e.functions.pct}% · lines ${e.lines.pct}%`:\"ABSENT\"\\)')",
+      "Bash(curl -s -o /tmp/tag-overview.png \"https://www.figma.com/api/mcp/asset/e8ac9bab-0914-4bae-ac51-9834fc89787d\")",
+      "Bash(yarn tokens.build)",
+      "Bash(node_modules/.bin/vitest --project spec --run src/components/mud-tag src/components/mud-receipt)",
+      "Bash(node_modules/.bin/vitest --project spec --run src/components/mud-tag src/components/mud-receipt src/components/mud-table)",
+      "Bash(git --no-pager diff --stat HEAD -- src/components/mud-tag tokens/core/components/tag.tokens.json src/components/mud-receipt src/components/mud-table)"
+    ],
+    "additionalDirectories": [
+      "/tmp"
     ]
   },
   "hooks": {

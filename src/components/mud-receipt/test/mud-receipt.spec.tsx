@@ -66,7 +66,7 @@ describe('mud-receipt — pure helpers', () => {
   describe('status → tag semantic + label maps', () => {
     it('has a tag semantic for every status', () => {
       for (const st of RECEIPT_STATUSES) {
-        expect(STATUS_TAG_SEMANTIC[st]).toMatch(/^(success|brand|warning|danger)$/);
+        expect(STATUS_TAG_SEMANTIC[st]).toMatch(/^(success|brand|accent|danger)$/);
       }
     });
     it('has a Romanian label for every status', () => {

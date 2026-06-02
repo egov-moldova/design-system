@@ -53,7 +53,7 @@ const baseRows: TableRowData[] = [
 
 const statusTagMap: Record<string, { semantic: string; label: string }> = {
   platit: { semantic: 'success', label: 'Plătit' },
-  asteptare: { semantic: 'warning', label: 'În așteptare' },
+  asteptare: { semantic: 'accent', label: 'În așteptare' },
   anulat: { semantic: 'danger', label: 'Anulat' },
 };
 

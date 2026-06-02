@@ -32,11 +32,10 @@ const hintStyle =
 // ---------------------------------------------------------------------------
 
 const ROMANIAN_LABELS: Record<TagSemantic, string> = {
+  muted: 'Schiță',
   neutral: 'Nou',
-  info: 'Schiță',
   accent: 'În așteptare',
   success: 'Aprobat',
-  warning: 'Expirat',
   brand: 'Activ',
   danger: 'Refuzat',
 };
@@ -85,8 +84,8 @@ Two visual scales coexist behind the same element:
 
 - \`variant="status"\` — the canonical **Status Tag** for state ("Activ",
   "În așteptare", "Refuzat"). Medium-weight label, three surface
-  treatments (\`subtle\`, \`strong\`, \`outlined\`) across seven semantic
-  colors.
+  treatments (\`subtle\`, \`strong\`, \`outlined\`) across six semantic
+  colors (\`muted\`, \`neutral\`, \`accent\`, \`success\`, \`brand\`, \`danger\`).
 - \`variant="info"\` — the lighter **Info Tag**, intended for metadata
   embedded in body text. Regular-weight label, tighter padding.
 
@@ -312,7 +311,7 @@ export const WithIcon: Story = {
             Detalii
             <mud-icon slot="icon-end" name="arrow-right" size="16"></mud-icon>
           </mud-tag>
-          <mud-tag type="outlined" semantic="warning">
+          <mud-tag type="outlined" semantic="accent">
             Expiră curând
             <mud-icon slot="icon-end" name="bubble-alert" size="16"></mud-icon>
           </mud-tag>
@@ -420,7 +419,7 @@ export const Group: Story = {
         <mud-tag type="subtle" semantic="success">Aprobat</mud-tag>
         <mud-tag type="subtle" semantic="accent">În așteptare</mud-tag>
         <mud-tag type="subtle" semantic="danger">Refuzat</mud-tag>
-        <mud-tag type="subtle" semantic="warning">Expirat</mud-tag>
+        <mud-tag type="subtle" semantic="accent">Expirat</mud-tag>
         <mud-tag type="subtle" semantic="neutral">Nou</mud-tag>
       </div>
       <div style="${groupStyle}">
@@ -430,7 +429,7 @@ export const Group: Story = {
         </mud-tag>
         <mud-tag type="outlined" semantic="success">Aprobat</mud-tag>
         <mud-tag type="outlined" semantic="danger">Refuzat</mud-tag>
-        <mud-tag type="outlined" semantic="neutral">Schiță</mud-tag>
+        <mud-tag type="outlined" semantic="muted">Schiță</mud-tag>
       </div>
       <div style="${groupStyle}; max-width: 320px;">
         <mud-tag type="subtle" semantic="brand">Apartament</mud-tag>

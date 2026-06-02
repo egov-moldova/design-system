@@ -2751,7 +2751,8 @@ export namespace Components {
      * - `variant="status"` (default) — the standard Status Tag used for
      *   state ("Activ", "În așteptare", "Refuzat"). Medium-weight label,
      *   three surface treatments (`subtle`, `strong`, `outlined`) across
-     *   seven semantic colors.
+     *   six semantic colors (`muted`, `neutral`, `accent`, `success`,
+     *   `brand`, `danger`).
      * - `variant="info"` — a lighter inline tag for metadata embedded in
      *   body text. Regular-weight label, tighter padding. Honors the same
      *   `type` and `semantic` axes.
@@ -4309,7 +4310,8 @@ declare global {
      * - `variant="status"` (default) — the standard Status Tag used for
      *   state ("Activ", "În așteptare", "Refuzat"). Medium-weight label,
      *   three surface treatments (`subtle`, `strong`, `outlined`) across
-     *   seven semantic colors.
+     *   six semantic colors (`muted`, `neutral`, `accent`, `success`,
+     *   `brand`, `danger`).
      * - `variant="info"` — a lighter inline tag for metadata embedded in
      *   body text. Regular-weight label, tighter padding. Honors the same
      *   `type` and `semantic` axes.
@@ -7516,7 +7518,8 @@ declare namespace LocalJSX {
      * - `variant="status"` (default) — the standard Status Tag used for
      *   state ("Activ", "În așteptare", "Refuzat"). Medium-weight label,
      *   three surface treatments (`subtle`, `strong`, `outlined`) across
-     *   seven semantic colors.
+     *   six semantic colors (`muted`, `neutral`, `accent`, `success`,
+     *   `brand`, `danger`).
      * - `variant="info"` — a lighter inline tag for metadata embedded in
      *   body text. Regular-weight label, tighter padding. Honors the same
      *   `type` and `semantic` axes.
@@ -8966,7 +8969,8 @@ declare module "@stencil/core" {
              * - `variant="status"` (default) — the standard Status Tag used for
              *   state ("Activ", "În așteptare", "Refuzat"). Medium-weight label,
              *   three surface treatments (`subtle`, `strong`, `outlined`) across
-             *   seven semantic colors.
+             *   six semantic colors (`muted`, `neutral`, `accent`, `success`,
+             *   `brand`, `danger`).
              * - `variant="info"` — a lighter inline tag for metadata embedded in
              *   body text. Regular-weight label, tighter padding. Honors the same
              *   `type` and `semantic` axes.

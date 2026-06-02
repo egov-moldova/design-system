@@ -60,7 +60,7 @@
 /* ---------- Variant: info uses regular weight + tighter padding ---------- */
 
 :host([variant='info']) {
-  --_font-weight: var(--tag-label-font-weight-info);
+  --_font-weight: var(--tag-label-font-weight-muted);
   --_padding-inline: var(--tag-container-padding-inline-sm);
 }
 
@@ -74,9 +74,9 @@
   --_bg: var(--tag-subtle-background-neutral);
   --_label-color: var(--tag-subtle-label-neutral);
 }
-:host([type='subtle'][semantic='info']) {
-  --_bg: var(--tag-subtle-background-info);
-  --_label-color: var(--tag-subtle-label-info);
+:host([type='subtle'][semantic='muted']) {
+  --_bg: var(--tag-subtle-background-muted);
+  --_label-color: var(--tag-subtle-label-muted);
 }
 :host([type='subtle'][semantic='accent']) {
   --_bg: var(--tag-subtle-background-accent);
@@ -85,10 +85,6 @@
 :host([type='subtle'][semantic='success']) {
   --_bg: var(--tag-subtle-background-success);
   --_label-color: var(--tag-subtle-label-success);
-}
-:host([type='subtle'][semantic='warning']) {
-  --_bg: var(--tag-subtle-background-warning);
-  --_label-color: var(--tag-subtle-label-warning);
 }
 :host([type='subtle'][semantic='brand']) {
   --_bg: var(--tag-subtle-background-brand);
@@ -109,9 +105,9 @@
   --_bg: var(--tag-strong-background-neutral);
   --_label-color: var(--tag-strong-label-neutral);
 }
-:host([type='strong'][semantic='info']) {
-  --_bg: var(--tag-strong-background-info);
-  --_label-color: var(--tag-strong-label-info);
+:host([type='strong'][semantic='muted']) {
+  --_bg: var(--tag-strong-background-muted);
+  --_label-color: var(--tag-strong-label-muted);
 }
 :host([type='strong'][semantic='accent']) {
   --_bg: var(--tag-strong-background-accent);
@@ -120,10 +116,6 @@
 :host([type='strong'][semantic='success']) {
   --_bg: var(--tag-strong-background-success);
   --_label-color: var(--tag-strong-label-success);
-}
-:host([type='strong'][semantic='warning']) {
-  --_bg: var(--tag-strong-background-warning);
-  --_label-color: var(--tag-strong-label-warning);
 }
 :host([type='strong'][semantic='brand']) {
   --_bg: var(--tag-strong-background-brand);
@@ -145,9 +137,9 @@
   --_label-color: var(--tag-outlined-label-neutral);
   --_border-color: var(--tag-outlined-border-neutral);
 }
-:host([type='outlined'][semantic='info']) {
-  --_label-color: var(--tag-outlined-label-info);
-  --_border-color: var(--tag-outlined-border-info);
+:host([type='outlined'][semantic='muted']) {
+  --_label-color: var(--tag-outlined-label-muted);
+  --_border-color: var(--tag-outlined-border-muted);
 }
 :host([type='outlined'][semantic='accent']) {
   --_label-color: var(--tag-outlined-label-accent);
@@ -156,10 +148,6 @@
 :host([type='outlined'][semantic='success']) {
   --_label-color: var(--tag-outlined-label-success);
   --_border-color: var(--tag-outlined-border-success);
-}
-:host([type='outlined'][semantic='warning']) {
-  --_label-color: var(--tag-outlined-label-warning);
-  --_border-color: var(--tag-outlined-border-warning);
 }
 :host([type='outlined'][semantic='brand']) {
   --_label-color: var(--tag-outlined-label-brand);
