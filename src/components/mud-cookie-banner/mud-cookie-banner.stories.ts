@@ -5,7 +5,7 @@ import {
   COOKIE_BANNER_POSITIONS,
   COOKIE_BANNER_VARIANTS,
 } from './mud-cookie-banner.types';
-import type { CookieBannerPosition, CookieBannerVariant } from './mud-cookie-banner.types';
+import type { CookieBannerPosition, CookieBannerVariant, CookieCategory } from './mud-cookie-banner.types';
 
 type BannerArgs = {
   variant: CookieBannerVariant;
@@ -19,6 +19,10 @@ type BannerArgs = {
   saveLabel: string;
   privacyHref: string;
   privacyLabel: string;
+};
+
+type CookieBannerElement = Element & {
+  categories: ReadonlyArray<CookieCategory>;
 };
 
 const stageStyle =
@@ -40,6 +44,23 @@ const renderCookieBanner = (args: BannerArgs) => /*html*/ `
       ${args.saveLabel ? `save-label="${escapeAttr(args.saveLabel)}"` : ''}
       ${args.privacyHref ? `privacy-href="${escapeAttr(args.privacyHref)}"` : ''}
       ${args.privacyLabel ? `privacy-label="${escapeAttr(args.privacyLabel)}"` : ''}
+    ></mud-cookie-banner>
+  </div>
+`;
+
+// Mobile frame — bottom-anchored, narrow stage. The component switches to its
+// mobile layout from the viewport width (matchMedia + CSS @media ≤540px), so
+// these stories rely on the `mobile1` viewport parameter to drive the breakpoint.
+// A fixed mobile-width frame. The banner is container-query driven, so a narrow
+// wrapper renders the mobile layout inline — in the canvas AND on the Docs page,
+// no viewport emulation needed (375px wrapper − 8px padding ≈ a 359px banner).
+const renderMobileBanner = (args: BannerArgs) => /*html*/ `
+  <div style="inline-size: 375px; max-inline-size: 100%; box-sizing: border-box; padding: var(--spacing-8, 8px); background: var(--color-background-base-secondary, #f5f5f5);">
+    <mud-cookie-banner
+      variant="${args.variant}"
+      ${args.expanded ? 'expanded' : ''}
+      position="${args.position}"
+      style="inline-size: 100%;"
     ></mud-cookie-banner>
   </div>
 `;
@@ -163,24 +184,24 @@ export const TopPosition: Story = {
 };
 
 // ---------------------------------------------------------------------------
-// Mobile — narrow viewport (uses Storybook viewport config when available)
+// Mobile (simple) — collapsed; CTAs stack full-width and reorder so the primary
+// action is on top (Accept toate → Refuză toate → Personalizează). Title/body
+// scale up and buttons grow to size lg below the 540px breakpoint.
+// ---------------------------------------------------------------------------
+export const MobileSimple: Story = {
+  name: 'Mobile (simple)',
+  args: { variant: 'simple', expanded: false },
+  render: renderMobileBanner,
+};
+
+// ---------------------------------------------------------------------------
+// Mobile (detailed) — expanded; category list with per-row switches and a
+// single full-width "Salvează preferințele" CTA.
 // ---------------------------------------------------------------------------
 export const Mobile: Story = {
+  name: 'Mobile (detailed)',
   args: { variant: 'detailed', expanded: true },
-  parameters: {
-    viewport: { defaultViewport: 'iphone14' },
-    layout: 'fullscreen',
-  },
-  render: (args: BannerArgs) => /*html*/ `
-    <div style="padding: 16px; background: var(--color-background-base-secondary, #f5f5f5); display: flex; justify-content: center; align-items: flex-end; min-block-size: 100vh; max-inline-size: 375px; margin: 0 auto;">
-      <mud-cookie-banner
-        variant="${args.variant}"
-        ${args.expanded ? 'expanded' : ''}
-        position="${args.position}"
-        style="inline-size: 100%; max-inline-size: 359px;"
-      ></mud-cookie-banner>
-    </div>
-  `,
+  render: renderMobileBanner,
 };
 
 // ---------------------------------------------------------------------------
@@ -208,23 +229,17 @@ export const WithPrivacyLink: Story = {
   render: renderCookieBanner,
 };
 
-// ---------------------------------------------------------------------------
-// Programmatic categories — render once with a known payload, then expand
-// ---------------------------------------------------------------------------
-const customCategoriesScript = /*html*/ `
-  <div id="mud-cookie-banner-custom-host" style="${stageStyle}">
-    <mud-cookie-banner variant="detailed" expanded id="mud-cookie-banner-custom"></mud-cookie-banner>
-  </div>
-  <script>
-    (function () {
-      var el = document.getElementById('mud-cookie-banner-custom');
-      if (!el) return;
-      el.categories = ${JSON.stringify(COOKIE_BANNER_DEFAULT_CATEGORIES)};
-    })();
-  </script>
-`;
-
 export const WithCustomCategories: Story = {
-  render: () => customCategoriesScript,
+  render: () => /*html*/ `
+    <div id="mud-cookie-banner-custom-host" style="${stageStyle}">
+      <mud-cookie-banner variant="detailed" expanded id="mud-cookie-banner-custom"></mud-cookie-banner>
+    </div>
+  `,
+  play: async ({ canvasElement }) => {
+    const banner = canvasElement.querySelector('#mud-cookie-banner-custom') as CookieBannerElement | null;
+    if (banner) {
+      banner.categories = COOKIE_BANNER_DEFAULT_CATEGORIES;
+    }
+  },
   parameters: { controls: { disable: true } },
 };

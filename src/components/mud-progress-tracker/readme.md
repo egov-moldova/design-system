@@ -18,11 +18,12 @@ Two flavours:
   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
   non-actionable per the WAI-ARIA stepper pattern.
 
-State legend (Figma node 267:6905):
-  - `pending`    — neutral grey ring + faded number
-  - `current`    — brand ring + brand number, label in default text colour
-  - `completed`  — brand filled circle + white checkmark
-  - `error`      — danger ring + danger cross
+State legend (Figma node 634:10573):
+  - `pending`    — neutral grey ring + faded number, non-navigable
+  - `current`    — brand ring + brand number, neutral label
+  - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
+  - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
+  - `error`      — danger ring + danger cross, neutral label
 
 The component renders an ordered list with `role="list"` for AT compatibility
 (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
@@ -33,7 +34,7 @@ The component renders an ordered list with `role="list"` for AT compatibility
 | ------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | -------------- |
 | `ariaLabel`   | `aria-label`   | Accessible name for the surrounding list landmark. Falls back to `'Progress tracker'` (English) — Romanian consumers can pass `'Pași'`.                                                                        | `string \| undefined`                | `undefined`    |
 | `currentStep` | `current-step` | Optional zero-based index of the current step. When set, it overrides the `status: 'current'` value in `steps`. Mostly useful for parent-driven flows that mutate a single number rather than the whole array. | `number \| undefined`                | `undefined`    |
-| `interactive` | `interactive`  | When true, completed and current steps render as `<button>` elements and emit `mudStepClick`. Pending and error steps remain non-actionable in this mode.                                                      | `boolean`                            | `false`        |
+| `interactive` | `interactive`  | When true, completed, current, and available steps render as `<button>` elements and emit `mudStepClick`. Pending and error steps remain non-actionable in this mode.                                          | `boolean`                            | `false`        |
 | `orientation` | `orientation`  | Layout orientation.   - `horizontal` (default): steps flow left to right; labels render under indicators.   - `vertical`: steps stack top to bottom; labels render to the right of indicators.                 | `"horizontal" \| "vertical"`         | `'horizontal'` |
 | `steps`       | --             | Declarative step list. Each item: `{ id?, label, supportingText?, status, iconName?, disabled? }`. `status` drives the visual state and ARIA semantics — see {@link ProgressTrackerStepStatus}.                | `ProgressTrackerStep[] \| undefined` | `undefined`    |
 
