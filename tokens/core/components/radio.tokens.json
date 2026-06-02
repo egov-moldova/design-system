@@ -22,8 +22,8 @@
       }
     },
     "border": {
-      "default": { "$value": "{color.border.base.tertiary}", "$type": "color" },
-      "hover": { "$value": "{color.border.base.tertiary}", "$type": "color" },
+      "default": { "$value": "{color.border.base.secondary}", "$type": "color", "$comment": "#b2b2b2 unselected border per Figma 578:34822 (was base.tertiary #444, too dark — same fix as mud-checkbox)." },
+      "hover": { "$value": "{color.border.base.secondary}", "$type": "color", "$comment": "Matches default — Figma defines no distinct hover border for the unselected radio." },
       "checked": { "$value": "{color.border.brand.default}", "$type": "color" },
       "error": { "$value": "{color.border.danger.default}", "$type": "color" },
       "disabled": { "$value": "{color.border.disabled.default}", "$type": "color" }
@@ -40,8 +40,8 @@
     },
     "touchTarget": {
       "size": {
-        "md": { "$value": "{spacing.40}", "$type": "dimension" },
-        "sm": { "$value": "{spacing.32}", "$type": "dimension" }
+        "md": { "$value": "36px", "$type": "dimension", "$comment": "WCAG/Figma coarse-pointer minimum 36×36 (Figma 2814:40915 Target). No spacing step maps to 36 (scale jumps 32→40); matches mud-checkbox touch target." },
+        "sm": { "$value": "36px", "$type": "dimension", "$comment": "WCAG/Figma coarse-pointer minimum 36×36 (Figma 2813:40908 Target)." }
       }
     },
     "label": {
