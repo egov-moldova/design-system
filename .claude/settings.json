@@ -48,7 +48,8 @@
       "Bash(node_modules/.bin/vitest --run scripts/__tests__/)",
       "Bash(node_modules/.bin/vitest --project audit --run)",
       "Bash(node_modules/.bin/vitest --project spec --run scripts/__tests__)",
-      "Bash(node --test 'scripts/__tests__/**/*.spec.mjs')"
+      "Bash(node --test 'scripts/__tests__/**/*.spec.mjs')",
+      "Bash(git --no-pager diff -- tokens/core/components/date-picker.tokens.json src/components/mud-date-picker/mud-date-picker.css)"
     ]
   },
   "hooks": {

@@ -180,10 +180,15 @@
   color: var(--date-picker-day-cell-hover-color);
 }
 
+/* Focus = Figma "Focus Ring/Small": 1px container-bg halo + 3px brand ring,
+   drawn as stacked box-shadows. No border-color override — a focused normal
+   cell must NOT mimic the today cell's brand border. */
 .day-cell:focus-visible {
   outline: 0;
-  border-color: var(--date-picker-day-cell-today-border-color);
-  box-shadow: 0 0 0 var(--date-picker-day-cell-focus-ring-width) var(--date-picker-day-cell-focus-ring);
+  box-shadow:
+    0 0 0 var(--date-picker-day-cell-focus-ring-offset) var(--_container-bg),
+    0 0 0 calc(var(--date-picker-day-cell-focus-ring-offset) + var(--date-picker-day-cell-focus-ring-width))
+      var(--date-picker-day-cell-focus-ring);
 }
 
 .day-cell.is-outside {
