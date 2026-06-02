@@ -6,11 +6,11 @@
         "md": { "$value": "{spacing.24}", "$type": "dimension" }
       },
       "touchTarget": {
-        "sm": { "$value": "{spacing.32}", "$type": "dimension" },
-        "md": { "$value": "{spacing.32}", "$type": "dimension" }
+        "sm": { "$value": "36px", "$type": "dimension", "$comment": "WCAG/Figma coarse-pointer minimum 36×36 (Figma 2822:1227/1230 Target). No spacing step maps to 36 (scale jumps 32→40), so a literal is used like transitionDuration below." },
+        "md": { "$value": "36px", "$type": "dimension", "$comment": "WCAG/Figma coarse-pointer minimum 36×36 (Figma 2822:1230 Target)." }
       },
       "borderRadius": {
-        "sm": { "$value": "{borderRadius.4}", "$type": "dimension" },
+        "sm": { "$value": "{borderRadius.6}", "$type": "dimension", "$comment": "Both sizes share radius-6 per Figma 403:21816 (sm 20px box also binds --border-radius-6)." },
         "md": { "$value": "{borderRadius.6}", "$type": "dimension" }
       },
       "borderWidth": { "$value": "{borderWidth.2}", "$type": "dimension" },
