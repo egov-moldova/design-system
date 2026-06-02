@@ -147,8 +147,9 @@
 .indicator-number {
   font: inherit;
   color: inherit;
-  /* tighten optical centring of digits in the small circle */
-  transform: translateY(-0.5px);
+  /* The digit's ink box is symmetric about the line-box centre in Onest (cap-top
+     to baseline straddles the centre), so flex `align-items: center` already
+     centres it — no translate nudge (the old -0.5px pushed digits visibly high). */
 }
 
 /* ---------- Label block ---------- */
@@ -278,6 +279,34 @@
 
 .step--error .label {
   color: var(--progress-tracker-error-label);
+}
+
+/* ---------- State: AVAILABLE (navigable future step) ---------- */
+/* Same brand-outline indicator as `current`; the connector it owns stays the
+ * pending grey (base .connector rule) because the path beyond it isn't travelled. */
+
+.step--available .indicator {
+  border-color: var(--progress-tracker-available-indicator-border);
+  background: var(--progress-tracker-available-indicator-background);
+  color: var(--progress-tracker-available-indicator-text);
+}
+
+.step--available .label {
+  color: var(--progress-tracker-available-label);
+}
+
+/* ---------- Navigable (actionable) labels render as brand underlined links ----------
+ * Per Figma 639:11170 / 639:11225: completed + available steps that are clickable
+ * (interactive mode) get a brand colour + underline. `current` stays neutral. */
+
+.step--actionable.step--completed .label {
+  color: var(--progress-tracker-completed-label-actionable);
+}
+
+.step--actionable.step--completed .label,
+.step--actionable.step--available .label {
+  text-decoration: underline;
+  text-underline-position: from-font;
 }
 
 /* ---------- Disabled (in interactive mode) ---------- */

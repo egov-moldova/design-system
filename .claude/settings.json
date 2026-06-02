@@ -49,7 +49,16 @@
       "Bash(node_modules/.bin/vitest --project audit --run)",
       "Bash(node_modules/.bin/vitest --project spec --run scripts/__tests__)",
       "Bash(node --test 'scripts/__tests__/**/*.spec.mjs')",
-      "Bash(git --no-pager diff -- tokens/core/components/date-picker.tokens.json src/components/mud-date-picker/mud-date-picker.css)"
+      "Bash(git --no-pager diff -- tokens/core/components/date-picker.tokens.json src/components/mud-date-picker/mud-date-picker.css)",
+      "mcp__figma__get_design_context",
+      "Bash(yarn eslint *)",
+      "Bash(yarn vitest *)",
+      "Bash(yarn lint.colors)",
+      "Bash(git --no-pager diff --stat -- src/components/mud-progress-tracker tokens/core/components/progress-tracker.tokens.json)",
+      "Bash(yarn dx:stencil:once)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(git --no-pager diff -- src/components/mud-progress-tracker/mud-progress-tracker.css)",
+      "Bash(node scripts/audit/run-all.mjs mud-progress-tracker --json)"
     ]
   },
   "hooks": {

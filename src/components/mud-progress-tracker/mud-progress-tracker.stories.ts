@@ -34,6 +34,7 @@ const verticalSteps: ProgressTrackerStep[] = [
 const allStatesSteps: ProgressTrackerStep[] = [
   { label: 'Finalizat', status: 'completed' },
   { label: 'Curent', status: 'current' },
+  { label: 'Disponibil', status: 'available' },
   { label: 'În așteptare', status: 'pending' },
   { label: 'Eroare', status: 'error' },
 ];
@@ -91,7 +92,8 @@ const interactiveSteps: ProgressTrackerStep[] = [
   { label: 'Pasul 1: Date personale', status: 'completed' },
   { label: 'Pasul 2: Documente', status: 'completed' },
   { label: 'Pasul 3: Plată', status: 'current' },
-  { label: 'Pasul 4: Confirmare', status: 'pending' },
+  { label: 'Pasul 4: Confirmare', status: 'available' },
+  { label: 'Pasul 5: Finalizare', status: 'pending' },
 ];
 
 let storyInstance = 0;
@@ -223,7 +225,7 @@ export const Interactive: Story = {
     const logId = `${id}-log`;
     return /*html*/ `
       <div style="padding: var(--spacing-24); background: var(--color-background-base-default); max-width: 996px;">
-        <p style="${sectionLabelStyle}">interactive = true — completed and current steps render as &lt;button&gt; and emit <code>mudStepClick</code>. Pending steps remain non-actionable per the WAI-ARIA stepper pattern.</p>
+        <p style="${sectionLabelStyle}">interactive = true — completed, current, and available steps render as &lt;button&gt; and emit <code>mudStepClick</code>. Completed/available labels become brand underlined links. Pending steps remain non-actionable per the WAI-ARIA stepper pattern.</p>
         <mud-progress-tracker
           id="${id}"
           orientation="${args.orientation}"
@@ -281,9 +283,9 @@ export const NonInteractive: Story = {
 export const AllStates: Story = {
   render: () => /*html*/ `
     <div style="display: flex; flex-direction: column; gap: var(--spacing-24); padding: var(--spacing-24); background: var(--color-background-base-default); max-width: 996px;">
-      <p style="${sectionLabelStyle}">All four lifecycle states sampled from Figma node 267:6905. The error state retains the danger colour even when overridden by <code>currentStep</code>.</p>
+      <p style="${sectionLabelStyle}">All five lifecycle states sampled from Figma node 634:10573. The error state retains the danger indicator even when overridden by <code>currentStep</code>.</p>
       <div>
-        <p style="${headingStyle}">horizontal — completed / current / pending / error</p>
+        <p style="${headingStyle}">horizontal — completed / current / available / pending / error</p>
         ${renderTracker({
           steps: allStatesSteps,
           orientation: 'horizontal',

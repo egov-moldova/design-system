@@ -1793,11 +1793,12 @@ export namespace Components {
      * - **Interactive tracker** (`interactive=true`) — each completed (and the current)
      *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
      *   non-actionable per the WAI-ARIA stepper pattern.
-     * State legend (Figma node 267:6905):
-     *   - `pending`    — neutral grey ring + faded number
-     *   - `current`    — brand ring + brand number, label in default text colour
-     *   - `completed`  — brand filled circle + white checkmark
-     *   - `error`      — danger ring + danger cross
+     * State legend (Figma node 634:10573):
+     *   - `pending`    — neutral grey ring + faded number, non-navigable
+     *   - `current`    — brand ring + brand number, neutral label
+     *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
+     *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
+     *   - `error`      — danger ring + danger cross, neutral label
      * The component renders an ordered list with `role="list"` for AT compatibility
      * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
      * @element mud-progress-tracker
@@ -1812,7 +1813,7 @@ export namespace Components {
          */
         "currentStep"?: number;
         /**
-          * When true, completed and current steps render as `<button>` elements and emit `mudStepClick`. Pending and error steps remain non-actionable in this mode.
+          * When true, completed, current, and available steps render as `<button>` elements and emit `mudStepClick`. Pending and error steps remain non-actionable in this mode.
           * @default false
          */
         "interactive": boolean;
@@ -3874,11 +3875,12 @@ declare global {
      * - **Interactive tracker** (`interactive=true`) — each completed (and the current)
      *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
      *   non-actionable per the WAI-ARIA stepper pattern.
-     * State legend (Figma node 267:6905):
-     *   - `pending`    — neutral grey ring + faded number
-     *   - `current`    — brand ring + brand number, label in default text colour
-     *   - `completed`  — brand filled circle + white checkmark
-     *   - `error`      — danger ring + danger cross
+     * State legend (Figma node 634:10573):
+     *   - `pending`    — neutral grey ring + faded number, non-navigable
+     *   - `current`    — brand ring + brand number, neutral label
+     *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
+     *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
+     *   - `error`      — danger ring + danger cross, neutral label
      * The component renders an ordered list with `role="list"` for AT compatibility
      * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
      * @element mud-progress-tracker
@@ -6392,11 +6394,12 @@ declare namespace LocalJSX {
      * - **Interactive tracker** (`interactive=true`) — each completed (and the current)
      *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
      *   non-actionable per the WAI-ARIA stepper pattern.
-     * State legend (Figma node 267:6905):
-     *   - `pending`    — neutral grey ring + faded number
-     *   - `current`    — brand ring + brand number, label in default text colour
-     *   - `completed`  — brand filled circle + white checkmark
-     *   - `error`      — danger ring + danger cross
+     * State legend (Figma node 634:10573):
+     *   - `pending`    — neutral grey ring + faded number, non-navigable
+     *   - `current`    — brand ring + brand number, neutral label
+     *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
+     *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
+     *   - `error`      — danger ring + danger cross, neutral label
      * The component renders an ordered list with `role="list"` for AT compatibility
      * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
      * @element mud-progress-tracker
@@ -6411,7 +6414,7 @@ declare namespace LocalJSX {
          */
         "currentStep"?: number;
         /**
-          * When true, completed and current steps render as `<button>` elements and emit `mudStepClick`. Pending and error steps remain non-actionable in this mode.
+          * When true, completed, current, and available steps render as `<button>` elements and emit `mudStepClick`. Pending and error steps remain non-actionable in this mode.
           * @default false
          */
         "interactive"?: boolean;
@@ -8740,11 +8743,12 @@ declare module "@stencil/core" {
              * - **Interactive tracker** (`interactive=true`) — each completed (and the current)
              *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
              *   non-actionable per the WAI-ARIA stepper pattern.
-             * State legend (Figma node 267:6905):
-             *   - `pending`    — neutral grey ring + faded number
-             *   - `current`    — brand ring + brand number, label in default text colour
-             *   - `completed`  — brand filled circle + white checkmark
-             *   - `error`      — danger ring + danger cross
+             * State legend (Figma node 634:10573):
+             *   - `pending`    — neutral grey ring + faded number, non-navigable
+             *   - `current`    — brand ring + brand number, neutral label
+             *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
+             *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
+             *   - `error`      — danger ring + danger cross, neutral label
              * The component renders an ordered list with `role="list"` for AT compatibility
              * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
              * @element mud-progress-tracker

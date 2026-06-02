@@ -64,16 +64,19 @@ describe('mud-progress-tracker', () => {
   describe('default rendering', () => {
     it('renders the list landmark with a default aria-label', async () => {
       const { root } = await render(<mud-progress-tracker steps={ROMANIAN_STEPS}></mud-progress-tracker>);
-      const list = queryRoot(root);
-      expect(list?.getAttribute('role')).toBe('list');
-      expect(list?.getAttribute('aria-label')).toBe('Progress tracker');
+      // List semantics live on the HOST (a roleless host carrying aria-label trips
+      // axe `aria-prohibited-attr`); the inner <ol> is presentational.
+      expect(root?.getAttribute('role')).toBe('list');
+      expect(root?.getAttribute('aria-label')).toBe('Progress tracker');
+      expect(queryRoot(root)?.getAttribute('role')).toBe('none');
     });
 
     it('honors a custom aria-label (Romanian)', async () => {
       const { root } = await render(
         <mud-progress-tracker steps={ROMANIAN_STEPS} aria-label="Pași"></mud-progress-tracker>,
       );
-      expect(queryRoot(root)?.getAttribute('aria-label')).toBe('Pași');
+      expect(root?.getAttribute('role')).toBe('list');
+      expect(root?.getAttribute('aria-label')).toBe('Pași');
     });
 
     it('reflects orientation on the host', async () => {
