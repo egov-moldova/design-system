@@ -2,12 +2,12 @@ import { Component, Element, Event, Host, Prop, State, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
 import { NOTIFICATION_ASSERTIVE_VARIANTS, NOTIFICATION_DEFAULT_ICONS } from './mud-notification.types';
-import type { NotificationStyle, NotificationVariant } from './mud-notification.types';
+import type { NotificationVariant } from './mud-notification.types';
 
 /**
- * Notification — semantic messaging banner.
+ * Notification — semantic toast message (350px filled surface, 8px radius).
  *
- * Renders an optional leading icon, an optional bold title, the message body
+ * Renders a leading icon, an optional bold heading, the message body
  * (default slot), an optional inline action group (`actions` slot) and an
  * optional trailing close button.
  *
@@ -15,13 +15,12 @@ import type { NotificationStyle, NotificationVariant } from './mud-notification.
  * inside shadow DOM so it participates in tab order with a real
  * `button` role. The body itself is not interactive.
  *
- * `variant` selects the semantic color family (info / positive / warning /
- * danger / neutral). `notificationStyle` toggles between the soft tinted
- * background (`subtle`) and the filled high-emphasis treatment (`strong`).
+ * `variant` selects the semantic color family — `info`, `warning`, `success`,
+ * or `error` — each a filled toast surface with its own leading icon.
  *
  * Live-region routing:
- * - `info` / `positive` / `neutral` → `role="status"` + `aria-live="polite"`
- * - `warning` / `danger` → `role="alert"` + `aria-live="assertive"`
+ * - `info` / `success` → `role="status"` + `aria-live="polite"`
+ * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
  *
  * @element mud-notification
  *
@@ -44,16 +43,6 @@ export class MudNotification {
    * @default 'info'
    */
   @Prop({ reflect: true }) variant: NotificationVariant = 'info';
-
-  /**
-   * Visual intensity. `subtle` renders a tinted background with high-contrast
-   * dark text; `strong` renders a filled semantic background with on-color
-   * text. The attribute is reflected as `notification-style` to avoid
-   * colliding with the global `style` attribute on every HTML element.
-   * @default 'subtle'
-   */
-  @Prop({ reflect: true, attribute: 'notification-style' })
-  notificationStyle: NotificationStyle = 'subtle';
 
   /**
    * When `true`, renders a trailing close button. Activating it emits
@@ -170,21 +159,25 @@ export class MudNotification {
 
     return (
       <Host class={hostClasses} role={role} aria-live={ariaLive} aria-atomic="true">
-        <span class="icon" aria-hidden="true">
-          <slot name="icon-start" onSlotchange={this.onIconSlotChange}>
-            <mud-icon name={iconName} size={24} />
-          </slot>
-        </span>
+        <div class="main">
+          <span class="icon" aria-hidden="true">
+            <slot name="icon-start" onSlotchange={this.onIconSlotChange}>
+              <mud-icon name={iconName} size={24} />
+            </slot>
+          </span>
 
-        <div class="content">
-          {this.titleText && this.titleText.trim().length > 0 ? <p class="title">{this.titleText}</p> : null}
-          <p class="body">
-            <slot />
-          </p>
-        </div>
+          <div class="content">
+            <div class="heading">
+              {this.titleText && this.titleText.trim().length > 0 ? <p class="title">{this.titleText}</p> : null}
+              <p class="body">
+                <slot />
+              </p>
+            </div>
 
-        <div class="actions">
-          <slot name="actions" onSlotchange={this.onActionsSlotChange} />
+            <div class="actions">
+              <slot name="actions" onSlotchange={this.onActionsSlotChange} />
+            </div>
+          </div>
         </div>
 
         {this.closable ? (

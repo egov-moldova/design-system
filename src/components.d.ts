@@ -25,7 +25,7 @@ import { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputC
 import { LinkSize, LinkUnderline, LinkVariant } from "./components/mud-link/mud-link.types";
 import { LogoName } from "./components/mud-logo/mud-logo.types";
 import { ModalActionsLayout, ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/mud-modal/mud-modal.types";
-import { NotificationStyle, NotificationVariant } from "./components/mud-notification/mud-notification.types";
+import { NotificationVariant } from "./components/mud-notification/mud-notification.types";
 import { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/mud-numeric-input/mud-numeric-input.types";
 import { PaginationChangeDetail, PaginationSize } from "./components/mud-pagination/mud-pagination.types";
 import { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/mud-phone-input/mud-phone-input.types";
@@ -65,7 +65,7 @@ export { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputC
 export { LinkSize, LinkUnderline, LinkVariant } from "./components/mud-link/mud-link.types";
 export { LogoName } from "./components/mud-logo/mud-logo.types";
 export { ModalActionsLayout, ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/mud-modal/mud-modal.types";
-export { NotificationStyle, NotificationVariant } from "./components/mud-notification/mud-notification.types";
+export { NotificationVariant } from "./components/mud-notification/mud-notification.types";
 export { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/mud-numeric-input/mud-numeric-input.types";
 export { PaginationChangeDetail, PaginationSize } from "./components/mud-pagination/mud-pagination.types";
 export { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/mud-phone-input/mud-phone-input.types";
@@ -1438,19 +1438,18 @@ export namespace Components {
         "variant": ModalVariant;
     }
     /**
-     * Notification — semantic messaging banner.
-     * Renders an optional leading icon, an optional bold title, the message body
+     * Notification — semantic toast message (350px filled surface, 8px radius).
+     * Renders a leading icon, an optional bold heading, the message body
      * (default slot), an optional inline action group (`actions` slot) and an
      * optional trailing close button.
      * Pattern B (atom-display + interactive close): the close affordance lives
      * inside shadow DOM so it participates in tab order with a real
      * `button` role. The body itself is not interactive.
-     * `variant` selects the semantic color family (info / positive / warning /
-     * danger / neutral). `notificationStyle` toggles between the soft tinted
-     * background (`subtle`) and the filled high-emphasis treatment (`strong`).
+     * `variant` selects the semantic color family — `info`, `warning`, `success`,
+     * or `error` — each a filled toast surface with its own leading icon.
      * Live-region routing:
-     * - `info` / `positive` / `neutral` → `role="status"` + `aria-live="polite"`
-     * - `warning` / `danger` → `role="alert"` + `aria-live="assertive"`
+     * - `info` / `success` → `role="status"` + `aria-live="polite"`
+     * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
      * @element mud-notification
      */
     interface MudNotification {
@@ -1472,11 +1471,6 @@ export namespace Components {
           * Override the default `mud-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
          */
         "iconName"?: string;
-        /**
-          * Visual intensity. `subtle` renders a tinted background with high-contrast dark text; `strong` renders a filled semantic background with on-color text. The attribute is reflected as `notification-style` to avoid colliding with the global `style` attribute on every HTML element.
-          * @default 'subtle'
-         */
-        "notificationStyle": NotificationStyle;
         /**
           * Optional bold title rendered above the body.
          */
@@ -3728,19 +3722,18 @@ declare global {
         "mudClose": void;
     }
     /**
-     * Notification — semantic messaging banner.
-     * Renders an optional leading icon, an optional bold title, the message body
+     * Notification — semantic toast message (350px filled surface, 8px radius).
+     * Renders a leading icon, an optional bold heading, the message body
      * (default slot), an optional inline action group (`actions` slot) and an
      * optional trailing close button.
      * Pattern B (atom-display + interactive close): the close affordance lives
      * inside shadow DOM so it participates in tab order with a real
      * `button` role. The body itself is not interactive.
-     * `variant` selects the semantic color family (info / positive / warning /
-     * danger / neutral). `notificationStyle` toggles between the soft tinted
-     * background (`subtle`) and the filled high-emphasis treatment (`strong`).
+     * `variant` selects the semantic color family — `info`, `warning`, `success`,
+     * or `error` — each a filled toast surface with its own leading icon.
      * Live-region routing:
-     * - `info` / `positive` / `neutral` → `role="status"` + `aria-live="polite"`
-     * - `warning` / `danger` → `role="alert"` + `aria-live="assertive"`
+     * - `info` / `success` → `role="status"` + `aria-live="polite"`
+     * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
      * @element mud-notification
      */
     interface HTMLMudNotificationElement extends Components.MudNotification, HTMLStencilElement {
@@ -5973,19 +5966,18 @@ declare namespace LocalJSX {
         "variant"?: ModalVariant;
     }
     /**
-     * Notification — semantic messaging banner.
-     * Renders an optional leading icon, an optional bold title, the message body
+     * Notification — semantic toast message (350px filled surface, 8px radius).
+     * Renders a leading icon, an optional bold heading, the message body
      * (default slot), an optional inline action group (`actions` slot) and an
      * optional trailing close button.
      * Pattern B (atom-display + interactive close): the close affordance lives
      * inside shadow DOM so it participates in tab order with a real
      * `button` role. The body itself is not interactive.
-     * `variant` selects the semantic color family (info / positive / warning /
-     * danger / neutral). `notificationStyle` toggles between the soft tinted
-     * background (`subtle`) and the filled high-emphasis treatment (`strong`).
+     * `variant` selects the semantic color family — `info`, `warning`, `success`,
+     * or `error` — each a filled toast surface with its own leading icon.
      * Live-region routing:
-     * - `info` / `positive` / `neutral` → `role="status"` + `aria-live="polite"`
-     * - `warning` / `danger` → `role="alert"` + `aria-live="assertive"`
+     * - `info` / `success` → `role="status"` + `aria-live="polite"`
+     * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
      * @element mud-notification
      */
     interface MudNotification {
@@ -6007,11 +5999,6 @@ declare namespace LocalJSX {
           * Override the default `mud-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
          */
         "iconName"?: string;
-        /**
-          * Visual intensity. `subtle` renders a tinted background with high-contrast dark text; `strong` renders a filled semantic background with on-color text. The attribute is reflected as `notification-style` to avoid colliding with the global `style` attribute on every HTML element.
-          * @default 'subtle'
-         */
-        "notificationStyle"?: NotificationStyle;
         /**
           * Fires when the user activates the close button. Payload is `void` — the consumer is responsible for the dismiss animation / DOM removal.
          */
@@ -8031,7 +8018,6 @@ declare namespace LocalJSX {
     }
     interface MudNotificationAttributes {
         "variant": NotificationVariant;
-        "notificationStyle": NotificationStyle;
         "closable": boolean;
         "titleText": string;
         "iconName": string;
@@ -8673,19 +8659,18 @@ declare module "@stencil/core" {
              */
             "mud-modal": LocalJSX.IntrinsicElements["mud-modal"] & JSXBase.HTMLAttributes<HTMLMudModalElement>;
             /**
-             * Notification — semantic messaging banner.
-             * Renders an optional leading icon, an optional bold title, the message body
+             * Notification — semantic toast message (350px filled surface, 8px radius).
+             * Renders a leading icon, an optional bold heading, the message body
              * (default slot), an optional inline action group (`actions` slot) and an
              * optional trailing close button.
              * Pattern B (atom-display + interactive close): the close affordance lives
              * inside shadow DOM so it participates in tab order with a real
              * `button` role. The body itself is not interactive.
-             * `variant` selects the semantic color family (info / positive / warning /
-             * danger / neutral). `notificationStyle` toggles between the soft tinted
-             * background (`subtle`) and the filled high-emphasis treatment (`strong`).
+             * `variant` selects the semantic color family — `info`, `warning`, `success`,
+             * or `error` — each a filled toast surface with its own leading icon.
              * Live-region routing:
-             * - `info` / `positive` / `neutral` → `role="status"` + `aria-live="polite"`
-             * - `warning` / `danger` → `role="alert"` + `aria-live="assertive"`
+             * - `info` / `success` → `role="status"` + `aria-live="polite"`
+             * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
              * @element mud-notification
              */
             "mud-notification": LocalJSX.IntrinsicElements["mud-notification"] & JSXBase.HTMLAttributes<HTMLMudNotificationElement>;

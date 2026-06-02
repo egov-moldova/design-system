@@ -97,7 +97,9 @@
       "Bash(yarn tokens.build)",
       "Bash(node_modules/.bin/vitest --project spec --run src/components/mud-tag src/components/mud-receipt)",
       "Bash(node_modules/.bin/vitest --project spec --run src/components/mud-tag src/components/mud-receipt src/components/mud-table)",
-      "Bash(git --no-pager diff --stat HEAD -- src/components/mud-tag tokens/core/components/tag.tokens.json src/components/mud-receipt src/components/mud-table)"
+      "Bash(git --no-pager diff --stat HEAD -- src/components/mud-tag tokens/core/components/tag.tokens.json src/components/mud-receipt src/components/mud-table)",
+      "Bash(git --no-pager log --oneline -6)",
+      "Bash(grep -iA3 \"commit\\\\|PreToolUse\\\\|Bash\")"
     ],
     "additionalDirectories": [
       "/tmp"
