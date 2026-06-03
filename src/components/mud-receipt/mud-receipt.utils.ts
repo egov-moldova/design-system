@@ -74,7 +74,7 @@ export const SERVICE_DEFAULT_TITLE: Record<ReceiptService, string> = {
 export const STATUS_TAG_SEMANTIC: Record<ReceiptStatus, TagSemantic> = {
   paid: 'success',
   confirmed: 'brand',
-  pending: 'warning',
+  pending: 'accent',
   failed: 'danger',
 };
 

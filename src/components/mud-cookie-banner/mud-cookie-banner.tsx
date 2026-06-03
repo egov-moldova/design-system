@@ -115,6 +115,7 @@ export class MudCookieBanner {
   @State() private hasBodySlot: boolean = false;
   @State() private hasCategoriesSlot: boolean = false;
   @State() private internalCategories: Record<string, boolean> = {};
+  @State() private isMobile: boolean = false;
 
   @Element() host!: HTMLMudCookieBannerElement;
 
@@ -135,6 +136,21 @@ export class MudCookieBanner {
 
   private readonly instanceId = ++bannerInstanceCounter;
   private readonly titleId = `mud-cookie-banner-title-${this.instanceId}`;
+  private resizeObserver?: ResizeObserver;
+
+  connectedCallback() {
+    if (typeof ResizeObserver !== 'undefined') {
+      this.resizeObserver = new ResizeObserver(entries => {
+        this.isMobile = entries[0].contentRect.width <= 540;
+      });
+      this.resizeObserver.observe(this.host as unknown as Element);
+    }
+  }
+
+  disconnectedCallback() {
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = undefined;
+  }
 
   componentWillLoad() {
     if (!COOKIE_BANNER_VARIANTS.includes(this.variant)) {
@@ -391,11 +407,13 @@ export class MudCookieBanner {
     const reject = this.rejectLabel ?? COOKIE_BANNER_DEFAULTS.rejectLabel;
     const manage = this.manageLabel ?? COOKIE_BANNER_DEFAULTS.manageLabel;
     const save = this.saveLabel ?? COOKIE_BANNER_DEFAULTS.saveLabel;
+    // Figma: footer buttons scale up to size lg (48px) on the mobile breakpoint.
+    const buttonSize = this.isMobile ? 'lg' : 'md';
 
     if (this.expanded) {
       return (
         <div class="footer footer--expanded" part="footer">
-          <mud-button variant="primary" appearance="filled" size="md" onClick={this.handleSaveClick}>
+          <mud-button variant="primary" appearance="filled" size={buttonSize} fullWidth onClick={this.handleSaveClick}>
             {save}
           </mud-button>
         </div>
@@ -408,7 +426,8 @@ export class MudCookieBanner {
           class="cta-manage"
           variant="strict"
           appearance="outlined"
-          size="md"
+          size={buttonSize}
+          fullWidth={this.isMobile}
           onClick={this.handleManageClick}
         >
           {manage}
@@ -418,7 +437,8 @@ export class MudCookieBanner {
             class="cta-reject"
             variant="primary"
             appearance="outlined"
-            size="md"
+            size={buttonSize}
+            fullWidth
             onClick={this.handleRejectClick}
           >
             {reject}
@@ -427,7 +447,8 @@ export class MudCookieBanner {
             class="cta-accept"
             variant="primary"
             appearance="filled"
-            size="md"
+            size={buttonSize}
+            fullWidth
             onClick={this.handleAcceptClick}
           >
             {accept}

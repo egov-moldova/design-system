@@ -2,7 +2,7 @@ import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-notification';
 
-import { NOTIFICATION_STYLES, NOTIFICATION_VARIANTS } from '../mud-notification.types';
+import { NOTIFICATION_VARIANTS } from '../mud-notification.types';
 
 const queryClose = (root: Element | null | undefined): HTMLButtonElement | null =>
   (root?.shadowRoot?.querySelector('button.close') ?? null) as HTMLButtonElement | null;
@@ -21,7 +21,6 @@ describe('mud-notification', () => {
       const { root } = await render(<mud-notification>Mesaj</mud-notification>);
 
       expect(root?.getAttribute('variant')).toBe('info');
-      expect(root?.getAttribute('notification-style')).toBe('subtle');
       expect(root?.getAttribute('closable')).toBeNull();
       expect(root?.getAttribute('role')).toBe('status');
       expect(root?.getAttribute('aria-live')).toBe('polite');
@@ -51,7 +50,7 @@ describe('mud-notification', () => {
     });
 
     it('uses role="status" + aria-live="polite" for non-urgent variants', async () => {
-      const politeVariants = ['info', 'positive', 'neutral'] as const;
+      const politeVariants = ['info', 'success'] as const;
       for (const variant of politeVariants) {
         const { root } = await render(<mud-notification variant={variant}>Mesaj</mud-notification>);
         expect(root?.getAttribute('role')).toBe('status');
@@ -59,20 +58,13 @@ describe('mud-notification', () => {
       }
     });
 
-    it('uses role="alert" + aria-live="assertive" for warning and danger', async () => {
-      const assertiveVariants = ['warning', 'danger'] as const;
+    it('uses role="alert" + aria-live="assertive" for warning and error', async () => {
+      const assertiveVariants = ['warning', 'error'] as const;
       for (const variant of assertiveVariants) {
         const { root } = await render(<mud-notification variant={variant}>Mesaj</mud-notification>);
         expect(root?.getAttribute('role')).toBe('alert');
         expect(root?.getAttribute('aria-live')).toBe('assertive');
       }
-    });
-  });
-
-  describe('notificationStyle prop', () => {
-    it.each(NOTIFICATION_STYLES)('reflects notification-style="%s" on the host', async style => {
-      const { root } = await render(<mud-notification notification-style={style}>Mesaj</mud-notification>);
-      expect(root?.getAttribute('notification-style')).toBe(style);
     });
   });
 
@@ -191,13 +183,13 @@ describe('mud-notification', () => {
     });
 
     it('falls back to the per-variant default icon when iconName is unset', async () => {
-      const { root } = await render(<mud-notification variant="danger">Eroare</mud-notification>);
+      const { root } = await render(<mud-notification variant="error">Eroare</mud-notification>);
       const icon = root?.shadowRoot?.querySelector('mud-icon');
       expect(icon?.getAttribute('name')).toBe('circle-error-filled');
     });
 
-    it('uses circle-checkmark-filled for positive variant', async () => {
-      const { root } = await render(<mud-notification variant="positive">OK</mud-notification>);
+    it('uses circle-checkmark-filled for success variant', async () => {
+      const { root } = await render(<mud-notification variant="success">OK</mud-notification>);
       const icon = root?.shadowRoot?.querySelector('mud-icon');
       expect(icon?.getAttribute('name')).toBe('circle-checkmark-filled');
     });

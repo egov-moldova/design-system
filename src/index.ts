@@ -32,5 +32,5 @@ export type {
 } from './components/mud-service-button/mud-service-button.types';
 
 export { MudNotification } from './components/mud-notification/mud-notification';
-export { NOTIFICATION_VARIANTS, NOTIFICATION_STYLES } from './components/mud-notification/mud-notification.types';
-export type { NotificationVariant, NotificationStyle } from './components/mud-notification/mud-notification.types';
+export { NOTIFICATION_VARIANTS } from './components/mud-notification/mud-notification.types';
+export type { NotificationVariant } from './components/mud-notification/mud-notification.types';

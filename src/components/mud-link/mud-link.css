@@ -18,6 +18,7 @@
   --_underline-hover: underline;
   --_underline-offset: var(--link-label-underline-offset);
   --_underline-thickness: var(--link-label-underline-thickness);
+  --_underline-thickness-hover: var(--link-label-underline-thickness-hover);
 
   display: inline-flex;
   vertical-align: baseline;
@@ -179,6 +180,8 @@
 :host(:not([disabled])) .control:hover {
   color: var(--_label-hover);
   text-decoration-line: var(--_underline-hover);
+  /* Figma 661:7090 thickens the underline on hover (1px → 1.5px). */
+  text-decoration-thickness: var(--_underline-thickness-hover);
 }
 
 :host(:not([disabled])) .control:active {

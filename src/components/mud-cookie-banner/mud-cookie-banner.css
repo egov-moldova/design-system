@@ -1,9 +1,13 @@
 :host {
   display: block;
   box-sizing: border-box;
+  /* Query container: the banner adapts to its OWN width, not the viewport, so
+     it lays out correctly in any container (narrow column, Storybook Docs
+     canvas, real bottom-sheet) — see the @container block below. */
+  container-type: inline-size;
   inline-size: 100%;
   max-inline-size: var(--cookie-banner-container-max-width);
-  min-inline-size: var(--cookie-banner-container-min-width);
+  min-inline-size: 0;
   font-family: var(--cookie-banner-body-font-family);
   color: var(--cookie-banner-title-color);
 
@@ -175,11 +179,18 @@
 }
 
 .category-label {
+  /* Allow the label to wrap so the "Required" tag never gets compressed/clipped. */
+  min-inline-size: 0;
   font-family: var(--cookie-banner-category-label-font-family);
   font-size: var(--cookie-banner-category-label-font-size);
   line-height: var(--cookie-banner-category-label-line-height);
   font-weight: var(--cookie-banner-category-label-font-weight);
   color: var(--cookie-banner-category-label-color);
+}
+
+/* Keep the required tag at its intrinsic width — it must not shrink/clip. */
+.category-heading mud-tag {
+  flex-shrink: 0;
 }
 
 .category-description {
@@ -227,12 +238,15 @@
   display: flex;
   align-items: center;
   gap: var(--cookie-banner-footer-gap);
+  /* Figma: the reject/accept pair live in a fixed 414px group, each button
+     flex-1 (≈201px) and full-width so the control fills its slot — no dead space. */
+  inline-size: 414px;
   flex-shrink: 0;
 }
 
-.footer--collapsed mud-button.cta-reject,
-.footer--collapsed mud-button.cta-accept {
-  min-inline-size: 200px;
+.footer--collapsed .cta-group mud-button {
+  flex: 1 1 0;
+  min-inline-size: 0;
 }
 
 .footer--expanded {
@@ -240,7 +254,7 @@
 }
 
 .footer--expanded mud-button {
-  min-inline-size: 201px;
+  inline-size: 201px;
 }
 
 /* ---------- Position attribute (host-driven) ---------- */
@@ -249,29 +263,44 @@
   /* Inherit the same shadow; consumers control positioning via inset rules. */
 }
 
-/* ---------- Mobile breakpoint ---------- */
+/* ---------- Mobile breakpoint (container-driven) ----------
+   Triggered by the banner's OWN inline-size (≤540px), not the viewport — so the
+   mobile layout renders in any narrow container, including the Storybook Docs
+   canvas. The JS button-size swap (md→lg) is driven by the same threshold via a
+   ResizeObserver. */
 
-@media (max-width: 540px) {
-  :host {
-    max-inline-size: var(--cookie-banner-container-mobile-width);
-    min-inline-size: 0;
-  }
-
+@container (max-width: 540px) {
   .container {
     border-radius: var(--cookie-banner-container-border-radius-mobile);
   }
 
   .header {
+    padding-block-start: var(--cookie-banner-header-padding-top-mobile);
     padding-inline-start: var(--cookie-banner-container-padding-inline-mobile);
-    padding-inline-end: var(--cookie-banner-container-padding-inline-mobile);
+    padding-inline-end: var(--cookie-banner-header-padding-inline-end-mobile);
+  }
+
+  /* Responsive typography — mobile scales up (H3 title, Body/Default). */
+  .title {
+    font-size: var(--cookie-banner-title-font-size-mobile);
+    line-height: var(--cookie-banner-title-line-height-mobile);
+    letter-spacing: var(--cookie-banner-title-letter-spacing-mobile);
   }
 
   .body {
+    padding-block-start: var(--cookie-banner-body-padding-top-mobile);
     padding-inline: var(--cookie-banner-container-padding-inline-mobile);
+  }
+
+  .body-text,
+  ::slotted([slot='body']) {
+    font-size: var(--cookie-banner-body-font-size-mobile);
+    line-height: var(--cookie-banner-body-line-height-mobile);
   }
 
   .footer {
     padding-inline: var(--cookie-banner-container-padding-inline-mobile);
+    padding-block-end: var(--cookie-banner-footer-padding-bottom-mobile);
     flex-direction: column;
     align-items: stretch;
   }
@@ -280,10 +309,20 @@
     gap: var(--spacing-8, 8px);
   }
 
+  /* Mobile stack order (Figma): Accept (top) → Reject → Manage (bottom). */
+  .footer--collapsed .cta-manage {
+    order: 1;
+  }
+
   .footer--collapsed .cta-group {
     flex-direction: column-reverse;
     inline-size: 100%;
     gap: var(--spacing-8, 8px);
+  }
+
+  /* Reset the desktop flex-fill — buttons are full-width-stacked on mobile. */
+  .footer--collapsed .cta-group mud-button {
+    flex: 0 0 auto;
   }
 
   .footer--collapsed mud-button {

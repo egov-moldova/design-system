@@ -1,23 +1,28 @@
 {
   "notification": {
     "container": {
-      "minHeight": { "$value": "48px", "$type": "dimension" },
-      "paddingBlock": { "$value": "{spacing.12}", "$type": "dimension" },
-      "paddingInline": { "$value": "{spacing.16}", "$type": "dimension" },
-      "gap": { "$value": "{spacing.8}", "$type": "dimension" },
-      "gapMobile": { "$value": "{spacing.16}", "$type": "dimension" },
-      "borderRadius": { "$value": "{borderRadius.0}", "$type": "dimension" },
+      "width": { "$value": "350px", "$type": "dimension" },
+      "paddingTop": { "$value": "{spacing.12}", "$type": "dimension" },
+      "paddingBottom": { "$value": "{spacing.16}", "$type": "dimension" },
+      "paddingInline": { "$value": "{spacing.12}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.16}", "$type": "dimension" },
+      "contentGap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "stackGap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "headingGap": { "$value": "{spacing.6}", "$type": "dimension" },
+      "borderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" },
       "transitionDuration": { "$value": "150ms", "$type": "duration" },
       "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" }
     },
     "icon": {
-      "size": { "$value": "{spacing.24}", "$type": "dimension" }
+      "size": { "$value": "{spacing.24}", "$type": "dimension" },
+      "padding": { "$value": "{spacing.2}", "$type": "dimension" }
     },
     "title": {
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
-      "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
-      "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
-      "fontWeight": { "$value": "{fontWeight.semibold}", "$type": "fontWeight" }
+      "fontSize": { "$value": "{fontSize.18}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.26}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.semibold}", "$type": "fontWeight" },
+      "letterSpacing": { "$value": "-0.18px", "$type": "dimension" }
     },
     "body": {
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
@@ -33,74 +38,32 @@
       "backgroundHoverOnColor": { "$value": "{color.background.base.tertiary}", "$type": "color" }
     },
     "info": {
-      "subtle": {
-        "background": { "$value": "{color.background.brand.secondary}", "$type": "color" },
-        "text": { "$value": "{color.text.base.default-on-color}", "$type": "color" },
-        "icon": { "$value": "{color.icon.brand.on-secondary}", "$type": "color" },
-        "closeIcon": { "$value": "{color.icon.base.secondary-on-color}", "$type": "color" }
-      },
-      "strong": {
-        "background": { "$value": "{color.background.brand.default}", "$type": "color" },
-        "text": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" },
-        "icon": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" },
-        "closeIcon": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" }
-      }
-    },
-    "positive": {
-      "subtle": {
-        "background": { "$value": "{color.background.positive.secondary}", "$type": "color" },
-        "text": { "$value": "{color.text.base.default-on-color}", "$type": "color" },
-        "icon": { "$value": "{color.icon.positive.on-secondary}", "$type": "color" },
-        "closeIcon": { "$value": "{color.icon.base.secondary-on-color}", "$type": "color" }
-      },
-      "strong": {
-        "background": { "$value": "{color.background.positive.default}", "$type": "color" },
-        "text": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" },
-        "icon": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" },
-        "closeIcon": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" }
-      }
+      "background": { "$value": "{color.background.brand.default}", "$type": "color" },
+      "text": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" },
+      "icon": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" },
+      "closeIcon": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" }
     },
     "warning": {
-      "subtle": {
-        "background": { "$value": "{color.background.warning.secondary}", "$type": "color" },
-        "text": { "$value": "{color.text.base.default-on-color}", "$type": "color" },
-        "icon": { "$value": "{color.icon.warning.on-secondary}", "$type": "color" },
-        "closeIcon": { "$value": "{color.icon.base.secondary-on-color}", "$type": "color" }
-      },
-      "strong": {
-        "background": { "$value": "{color.background.warning.accent}", "$type": "color" },
-        "text": { "$value": "{color.text.base.default-on-color}", "$type": "color" },
-        "icon": { "$value": "{color.icon.warning.on-secondary}", "$type": "color" },
-        "closeIcon": { "$value": "{color.icon.base.secondary-on-color}", "$type": "color" }
-      }
+      "background": { "$value": "{color.background.warning.accent}", "$type": "color" },
+      "text": { "$value": "{color.text.base.default-on-color}", "$type": "color" },
+      "icon": { "$value": "{color.icon.warning.on-secondary}", "$type": "color" },
+      "closeIcon": { "$value": "{color.icon.base.secondary-on-color}", "$type": "color" }
     },
-    "danger": {
-      "subtle": {
-        "background": { "$value": "{color.background.danger.secondary}", "$type": "color" },
-        "text": { "$value": "{color.text.base.default-on-color}", "$type": "color" },
-        "icon": { "$value": "{color.icon.danger.on-secondary}", "$type": "color" },
-        "closeIcon": { "$value": "{color.icon.base.secondary-on-color}", "$type": "color" }
+    "success": {
+      "background": {
+        "$value": "{color.background.positive.default-hover}",
+        "$type": "color",
+        "$comment": "Darker green (#027948) instead of positive.default (#039855): white on-color text yields 3.73:1 against the lighter green (fails WCAG AA at the 14px body), but 5.48:1 against this rung. Figma's filled-success uses the lighter green; we darken it to keep the on-color text AA-compliant."
       },
-      "strong": {
-        "background": { "$value": "{color.background.danger.default}", "$type": "color" },
-        "text": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" },
-        "icon": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" },
-        "closeIcon": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" }
-      }
+      "text": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" },
+      "icon": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" },
+      "closeIcon": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" }
     },
-    "neutral": {
-      "subtle": {
-        "background": { "$value": "{color.background.base.tertiary}", "$type": "color" },
-        "text": { "$value": "{color.text.base.default}", "$type": "color" },
-        "icon": { "$value": "{color.icon.base.default}", "$type": "color" },
-        "closeIcon": { "$value": "{color.icon.base.secondary}", "$type": "color" }
-      },
-      "strong": {
-        "background": { "$value": "{color.background.base-inverse.default}", "$type": "color" },
-        "text": { "$value": "{color.text.base-inverse.default}", "$type": "color" },
-        "icon": { "$value": "{color.icon.base-inverse.default}", "$type": "color" },
-        "closeIcon": { "$value": "{color.icon.base-inverse.default}", "$type": "color" }
-      }
+    "error": {
+      "background": { "$value": "{color.background.danger.default}", "$type": "color" },
+      "text": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" },
+      "icon": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" },
+      "closeIcon": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" }
     }
   }
 }

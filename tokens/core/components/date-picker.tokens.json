@@ -61,12 +61,13 @@
       "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
       "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
       "borderWidth": { "$value": "{borderWidth.1-5}", "$type": "dimension" },
-      "focusRingWidth": { "$value": "{borderWidth.2}", "$type": "dimension" },
+      "focusRingWidth": { "$value": "{borderWidth.3}", "$type": "dimension", "$comment": "Figma 'Focus Ring/Small' blue spread = 3 (node 489:8302)." },
+      "focusRingOffset": { "$value": "{borderWidth.1}", "$type": "dimension", "$comment": "Figma 'Focus Ring/Small' white halo spread = 1." },
       "default": {
         "color": { "$value": "{color.text.base.default}", "$type": "color" }
       },
       "hover": {
-        "background": { "$value": "{color.background.base.tertiary}", "$type": "color" },
+        "background": { "$value": "{color.background.base.default-hover}", "$type": "color", "$comment": "#f5f5f5 per Figma 489:9011 (was base.tertiary #f1f1f1)." },
         "color": { "$value": "{color.text.base.default}", "$type": "color" }
       },
       "selected": {
@@ -97,7 +98,7 @@
       "disabled": {
         "color": { "$value": "{color.text.disabled.default}", "$type": "color" }
       },
-      "focusRing": { "$value": "{palette.blue-sky.200}", "$type": "color" }
+      "focusRing": { "$value": "{color.background.brand.focus-ring}", "$type": "color", "$comment": "#3379db per Figma 'Focus Ring/Small' (node 489:8302); was palette.blue-sky.200 #ccdef6 — too pale (that's 'Focus Ring/Large') and a tier-purity violation. Semantic token matches mud-checkbox." }
     },
     "yearGrid": {
       "rowGap": { "$value": "{spacing.8}", "$type": "dimension" },

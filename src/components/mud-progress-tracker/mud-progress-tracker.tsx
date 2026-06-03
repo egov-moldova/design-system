@@ -19,11 +19,12 @@ import type {
  *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
  *   non-actionable per the WAI-ARIA stepper pattern.
  *
- * State legend (Figma node 267:6905):
- *   - `pending`    — neutral grey ring + faded number
- *   - `current`    — brand ring + brand number, label in default text colour
- *   - `completed`  — brand filled circle + white checkmark
- *   - `error`      — danger ring + danger cross
+ * State legend (Figma node 634:10573):
+ *   - `pending`    — neutral grey ring + faded number, non-navigable
+ *   - `current`    — brand ring + brand number, neutral label
+ *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
+ *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
+ *   - `error`      — danger ring + danger cross, neutral label
  *
  * The component renders an ordered list with `role="list"` for AT compatibility
  * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
@@ -47,8 +48,8 @@ export class MudProgressTracker {
   @Prop({ reflect: true }) orientation: ProgressTrackerOrientation = 'horizontal';
 
   /**
-   * When true, completed and current steps render as `<button>` elements and emit
-   * `mudStepClick`. Pending and error steps remain non-actionable in this mode.
+   * When true, completed, current, and available steps render as `<button>` elements
+   * and emit `mudStepClick`. Pending and error steps remain non-actionable in this mode.
    * @default false
    */
   @Prop({ reflect: true }) interactive: boolean = false;
@@ -81,6 +82,15 @@ export class MudProgressTracker {
    */
   @Event({ bubbles: true, composed: true }) mudStepClick!: EventEmitter<ProgressTrackerStepClickDetail>;
 
+  componentWillLoad() {
+    // Default accessible name for the host `role="list"`. Set imperatively (not
+    // via render) so it doesn't round-trip through the `ariaLabel` prop's native
+    // attribute reflection, which would warn "changed during rendering".
+    if (!this.ariaLabel) {
+      this.host.setAttribute('aria-label', 'Progress tracker');
+    }
+  }
+
   /**
    * Returns the effective status for a step, honouring `currentStep` override.
    * When `currentStep` is provided, the step at that index is promoted to
@@ -98,8 +108,9 @@ export class MudProgressTracker {
   private isActionable(step: ProgressTrackerStep, status: ProgressTrackerStepStatus): boolean {
     if (!this.interactive) return false;
     if (step.disabled) return false;
-    // Pending steps are intentionally not actionable — mirrors WAI-ARIA stepper.
-    return status === 'completed' || status === 'current';
+    // `completed` (navigable back), `current`, and `available` (navigable forward) are
+    // actionable. `pending` stays non-actionable — mirrors the WAI-ARIA stepper pattern.
+    return status === 'completed' || status === 'current' || status === 'available';
   }
 
   /** Pick the right inline indicator (icon name, number, or null for raw text). */
@@ -178,9 +189,11 @@ export class MudProgressTracker {
         ? ', finalizat'
         : status === 'current'
           ? ', curent'
-          : status === 'error'
-            ? ', eroare'
-            : ', în așteptare';
+          : status === 'available'
+            ? ', disponibil'
+            : status === 'error'
+              ? ', eroare'
+              : ', în așteptare';
 
     const body = this.renderStepBody(step, status, index);
     const connector = !isLast ? <span class="connector" aria-hidden="true" /> : null;
@@ -227,9 +240,17 @@ export class MudProgressTracker {
   render() {
     const steps = this.steps;
     const hasSteps = Array.isArray(steps) && steps.length > 0;
+    // The list semantics live on the Host so the consumer-supplied `aria-label`
+    // (which lands on the host element) names a real `role="list"` — a bare
+    // custom-element host with `aria-label` and no role trips axe
+    // `aria-prohibited-attr`. The default name is applied in componentWillLoad
+    // (NOT here) because re-emitting `aria-label` through the vdom collides with
+    // the native `ariaLabel` reflection ("changed during rendering"). The inner
+    // <ol> is presentational; the <li> steps keep their explicit
+    // `role="listitem"` and are owned by the host list.
     return (
-      <Host>
-        <ol class="root" role="list" aria-label={this.ariaLabel ?? 'Progress tracker'}>
+      <Host role="list">
+        <ol class="root" role="none">
           {hasSteps ? steps!.map((step, index) => this.renderStep(step, index, steps!.length)) : <slot />}
         </ol>
       </Host>

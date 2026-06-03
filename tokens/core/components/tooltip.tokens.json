@@ -21,7 +21,11 @@
         "lg": { "$value": "{spacing.12}", "$type": "dimension" }
       },
       "maxWidth": { "$value": "200px", "$type": "dimension" },
-      "shadow": { "$value": "{dropShadow.200}", "$type": "string" },
+      "shadow": {
+        "$value": "{dropShadow.100}",
+        "$type": "string",
+        "$comment": "Lightest elevation rung. dropShadow.200 carries a 2px spread that pushes a faint grey halo ~2px beyond the bubble edges; on the dark bubble against a light page that halo reads as a thin border. dropShadow.100 has no spread on its primary layer and is the correct elevation for a small floating tooltip."
+      },
       "transitionDuration": { "$value": "150ms", "$type": "duration" },
       "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" },
       "background": {

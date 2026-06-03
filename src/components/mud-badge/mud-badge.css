@@ -29,7 +29,15 @@
   vertical-align: middle;
 }
 
-/* Sizes */
+/* Sizes — five-step scale matching Figma masters 551:17421. */
+:host([size='xs']) {
+  --_size: var(--badge-size-xs);
+  --_min-width: var(--badge-min-width-xs);
+  --_padding-inline: var(--badge-padding-inline-xs);
+  --_font-size: var(--badge-font-size-xs);
+  --_line-height: var(--badge-line-height-xs);
+}
+
 :host([size='sm']) {
   --_size: var(--badge-size-sm);
   --_min-width: var(--badge-min-width-sm);
@@ -44,6 +52,25 @@
   --_padding-inline: var(--badge-padding-inline-md);
   --_font-size: var(--badge-font-size-md);
   --_line-height: var(--badge-line-height-md);
+  --_dot-size: var(--badge-dot-size-md);
+}
+
+:host([size='lg']) {
+  --_size: var(--badge-size-lg);
+  --_min-width: var(--badge-min-width-lg);
+  --_padding-inline: var(--badge-padding-inline-lg);
+  --_font-size: var(--badge-font-size-lg);
+  --_line-height: var(--badge-line-height-lg);
+  --_dot-size: var(--badge-dot-size-lg);
+}
+
+:host([size='xl']) {
+  --_size: var(--badge-size-xl);
+  --_min-width: var(--badge-min-width-xl);
+  --_padding-inline: var(--badge-padding-inline-xl);
+  --_font-size: var(--badge-font-size-xl);
+  --_line-height: var(--badge-line-height-xl);
+  --_dot-size: var(--badge-dot-size-xl);
 }
 
 /* Variants */
@@ -72,8 +99,11 @@
   --_color: var(--badge-text-danger);
 }
 
-/* Dot variant: no inner content, padding collapses, width matches height. */
-:host([type='dot']) {
+/* Dot variant: padding collapses, width matches height (a circle). xs/sm are
+   solid pips; md/lg/xl carry a small centered inner dot per Figma 551:18330.
+   `xs` is dot-only — it renders as a circle even when type='numbered'. */
+:host([type='dot']),
+:host([size='xs']) {
   padding-inline: 0;
   min-inline-size: var(--_size);
   inline-size: var(--_size);
@@ -87,4 +117,14 @@
   font-weight: inherit;
   line-height: inherit;
   color: inherit;
+}
+
+/* Inner presence pip — centered dot for md/lg/xl dot badges. Uses the variant
+   foreground colour so it inherits the same on-color contrast as the count. */
+.badge-dot {
+  flex: 0 0 auto;
+  inline-size: var(--_dot-size);
+  block-size: var(--_dot-size);
+  border-radius: var(--badge-border-radius);
+  background: var(--_color);
 }

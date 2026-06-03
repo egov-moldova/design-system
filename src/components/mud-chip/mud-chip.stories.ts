@@ -266,19 +266,32 @@ const renderMultiSelectionGroup = () => /*html*/ `
   <div style="${sectionStyle}">
     <p style="${captionStyle}">Tip de proprietate (mai multe selecții permise)</p>
     <div style="${groupStyle}" role="group" aria-label="Tip de proprietate">
-      <mud-chip selected>Apartament</mud-chip>
+      <mud-chip selected>
+        <mud-icon slot="icon-start" name="checkmark-small" size="20"></mud-icon>
+        Apartament
+      </mud-chip>
       <mud-chip>Casă</mud-chip>
-      <mud-chip selected>Comercial</mud-chip>
+      <mud-chip selected>
+        <mud-icon slot="icon-start" name="checkmark-small" size="20"></mud-icon>
+        Comercial
+      </mud-chip>
       <mud-chip>Teren</mud-chip>
       <mud-chip>Garaj</mud-chip>
       <mud-chip>Depozit</mud-chip>
     </div>
   </div>
 `;
+// Multi-selection chips show a leading check on the selected state (Figma 524:3964).
 const docsSourceMultiSelectionGroup = /*html*/ `<div role="group" aria-label="Tip de proprietate">
-  <mud-chip selected>Apartament</mud-chip>
+  <mud-chip selected>
+    <mud-icon slot="icon-start" name="checkmark-small" size="20"></mud-icon>
+    Apartament
+  </mud-chip>
   <mud-chip>Casă</mud-chip>
-  <mud-chip selected>Comercial</mud-chip>
+  <mud-chip selected>
+    <mud-icon slot="icon-start" name="checkmark-small" size="20"></mud-icon>
+    Comercial
+  </mud-chip>
   <mud-chip>Teren</mud-chip>
   <mud-chip>Garaj</mud-chip>
   <mud-chip>Depozit</mud-chip>

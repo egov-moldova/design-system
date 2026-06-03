@@ -1,0 +1,11 @@
+{
+  "badge": {
+    "text": {
+      "positive": {
+        "$value": "{color.text.base-inverse.on-color}",
+        "$type": "color",
+        "$comment": "Dark-theme override: the positive background drops to #027948, so white text gives ~5.5:1. (Light theme keeps #121212 dark text on the brighter #039855; dark text on #027948 would be 3.4:1 and fail WCAG AA.)"
+      }
+    }
+  }
+}

@@ -51,6 +51,13 @@
   font-family: var(--segmented-control-label-font-family);
 }
 
+/* The default slot is reserved for future declarative segments — keep any
+   accidental slotted content hidden so AT never sees it twice (segments come
+   from the `segments` prop today). */
+::slotted(*) {
+  display: none;
+}
+
 :host([size='sm']) {
   --_segment-height: var(--segmented-control-segment-height-sm);
   --_segment-padding: var(--segmented-control-segment-padding-inline-sm);

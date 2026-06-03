@@ -46,44 +46,36 @@
     },
     "subtle": {
       "background": {
+        "muted": { "$value": "{color.background.base.default}", "$type": "color" },
         "neutral": { "$value": "{color.background.base.tertiary}", "$type": "color" },
-        "info": { "$value": "{color.background.base.default}", "$type": "color" },
         "accent": { "$value": "{color.background.warning.secondary}", "$type": "color" },
         "success": { "$value": "{color.background.positive.secondary}", "$type": "color" },
-        "warning": {
-          "$value": "{color.background.warning.secondary}",
-          "$type": "color",
-          "$comment": "Was secondary-active (#fedf89) which combined with warning-on-secondary text (#b54708) yielded 4.16:1 — fails AA at the 12px small size. Lighter secondary (#feefc6) passes 4.53:1. Other semantics already use the `.secondary` rung at the subtle treatment — warning was the odd one out."
-        },
         "brand": { "$value": "{color.background.brand.secondary}", "$type": "color" },
         "danger": { "$value": "{color.background.danger.secondary}", "$type": "color" }
       },
       "label": {
+        "muted": { "$value": "{color.text.base.tertiary}", "$type": "color" },
         "neutral": { "$value": "{color.text.base.default}", "$type": "color" },
-        "info": { "$value": "{color.text.base.secondary}", "$type": "color" },
         "accent": { "$value": "{color.text.warning.on-secondary}", "$type": "color" },
         "success": { "$value": "{color.text.positive.on-secondary}", "$type": "color" },
-        "warning": { "$value": "{color.text.warning.on-secondary}", "$type": "color" },
         "brand": { "$value": "{color.text.brand.on-secondary}", "$type": "color" },
         "danger": { "$value": "{color.text.danger.on-secondary}", "$type": "color" }
       }
     },
     "strong": {
       "background": {
+        "muted": { "$value": "{color.background.base-inverse.default-active}", "$type": "color" },
         "neutral": { "$value": "{color.background.base-inverse.default}", "$type": "color" },
-        "info": { "$value": "{color.background.base-inverse.default-active}", "$type": "color" },
         "accent": { "$value": "{color.background.warning.accent}", "$type": "color" },
         "success": { "$value": "{color.background.positive.default}", "$type": "color" },
-        "warning": { "$value": "{color.background.warning.default}", "$type": "color" },
         "brand": { "$value": "{color.background.brand.default}", "$type": "color" },
         "danger": { "$value": "{color.background.danger.default}", "$type": "color" }
       },
       "label": {
+        "muted": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" },
         "neutral": { "$value": "{color.text.base-inverse.default}", "$type": "color" },
-        "info": { "$value": "{color.text.base-inverse.default}", "$type": "color" },
         "accent": { "$value": "{color.text.base.default-on-color}", "$type": "color" },
         "success": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" },
-        "warning": { "$value": "{color.text.base.default-on-color}", "$type": "color" },
         "brand": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" },
         "danger": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" }
       }
@@ -91,20 +83,18 @@
     "outlined": {
       "background": { "$value": "transparent", "$type": "color" },
       "border": {
+        "muted": { "$value": "{color.border.base.default}", "$type": "color" },
         "neutral": { "$value": "{color.border.base.default}", "$type": "color" },
-        "info": { "$value": "{color.border.base.default}", "$type": "color" },
         "accent": { "$value": "{color.border.warning.default}", "$type": "color" },
         "success": { "$value": "{color.border.positive.default}", "$type": "color" },
-        "warning": { "$value": "{color.border.warning.default}", "$type": "color" },
         "brand": { "$value": "{color.border.brand.default}", "$type": "color" },
         "danger": { "$value": "{color.border.danger.default}", "$type": "color" }
       },
       "label": {
+        "muted": { "$value": "{color.text.base.tertiary}", "$type": "color" },
         "neutral": { "$value": "{color.text.base.default}", "$type": "color" },
-        "info": { "$value": "{color.text.base.secondary}", "$type": "color" },
         "accent": { "$value": "{color.text.warning.on-secondary}", "$type": "color" },
         "success": { "$value": "{color.text.positive.on-secondary}", "$type": "color" },
-        "warning": { "$value": "{color.text.warning.on-secondary}", "$type": "color" },
         "brand": { "$value": "{color.text.brand.on-secondary}", "$type": "color" },
         "danger": { "$value": "{color.text.danger.on-secondary}", "$type": "color" }
       }

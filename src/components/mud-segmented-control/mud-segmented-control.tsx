@@ -62,8 +62,10 @@ export class MudSegmentedControl {
   @Prop({ reflect: true }) disabled: boolean = false;
 
   /**
-   * Value of the currently selected segment.
-   * Mutable so two-way binding via `@Watch('value')` keeps the host attribute in sync.
+   * Value of the currently selected segment. Mutable so the control updates it
+   * on selection. Like a native form control, `value` is intentionally NOT
+   * reflected to the attribute (the attribute represents the default value) —
+   * read the current selection from the property or the submitted form value.
    */
   @Prop({ mutable: true }) value?: string;
 
@@ -115,6 +117,64 @@ export class MudSegmentedControl {
   @Watch('value')
   handleValueChange() {
     this.syncFormValue();
+  }
+
+  @Listen('keydown')
+  handleKeyDown(ev: KeyboardEvent) {
+    if (this.isInert()) return;
+    const segments = this.getEnabledSegments();
+    if (segments.length === 0) return;
+
+    // The test environment fires keyboard events without first dispatching a
+    // synthetic `focus`, so `focusedIndex` may stay -1 even though
+    // `document.activeElement` points at a button. Resolve the current index
+    // from (in priority): the `focusedIndex` we tracked from `onFocus`, the
+    // active element in our shadow DOM, then the current selection.
+    let currentIndex = this.focusedIndex;
+    if (currentIndex < 0) {
+      const activeEl = this.host.shadowRoot?.activeElement as HTMLButtonElement | null;
+      if (activeEl) {
+        const refIndex = this.segmentRefs.indexOf(activeEl);
+        if (refIndex >= 0) currentIndex = refIndex;
+      }
+    }
+    if (currentIndex < 0) currentIndex = Math.max(0, this.getSelectedIndex());
+
+    switch (ev.key) {
+      case 'ArrowRight':
+      case 'ArrowDown': {
+        ev.preventDefault();
+        this.moveFocus(this.findNextEnabled(currentIndex, 1));
+        return;
+      }
+      case 'ArrowLeft':
+      case 'ArrowUp': {
+        ev.preventDefault();
+        this.moveFocus(this.findNextEnabled(currentIndex, -1));
+        return;
+      }
+      case 'Home': {
+        ev.preventDefault();
+        const first = this.findNextEnabled(-1, 1);
+        this.moveFocus(first);
+        return;
+      }
+      case 'End': {
+        ev.preventDefault();
+        const last = this.findNextEnabled(segments.length, -1);
+        this.moveFocus(last);
+        return;
+      }
+      case ' ':
+      case 'Enter': {
+        ev.preventDefault();
+        const target = segments[currentIndex];
+        if (target) this.selectSegment(target);
+        return;
+      }
+      default:
+        return;
+    }
   }
 
   componentWillLoad() {
@@ -202,64 +262,6 @@ export class MudSegmentedControl {
       if (candidate && !candidate.disabled) return probe;
     }
     return start;
-  }
-
-  @Listen('keydown')
-  handleKeyDown(ev: KeyboardEvent) {
-    if (this.isInert()) return;
-    const segments = this.getEnabledSegments();
-    if (segments.length === 0) return;
-
-    // The test environment fires keyboard events without first dispatching a
-    // synthetic `focus`, so `focusedIndex` may stay -1 even though
-    // `document.activeElement` points at a button. Resolve the current index
-    // from (in priority): the `focusedIndex` we tracked from `onFocus`, the
-    // active element in our shadow DOM, then the current selection.
-    let currentIndex = this.focusedIndex;
-    if (currentIndex < 0) {
-      const activeEl = this.host.shadowRoot?.activeElement as HTMLButtonElement | null;
-      if (activeEl) {
-        const refIndex = this.segmentRefs.indexOf(activeEl);
-        if (refIndex >= 0) currentIndex = refIndex;
-      }
-    }
-    if (currentIndex < 0) currentIndex = Math.max(0, this.getSelectedIndex());
-
-    switch (ev.key) {
-      case 'ArrowRight':
-      case 'ArrowDown': {
-        ev.preventDefault();
-        this.moveFocus(this.findNextEnabled(currentIndex, 1));
-        return;
-      }
-      case 'ArrowLeft':
-      case 'ArrowUp': {
-        ev.preventDefault();
-        this.moveFocus(this.findNextEnabled(currentIndex, -1));
-        return;
-      }
-      case 'Home': {
-        ev.preventDefault();
-        const first = this.findNextEnabled(-1, 1);
-        this.moveFocus(first);
-        return;
-      }
-      case 'End': {
-        ev.preventDefault();
-        const last = this.findNextEnabled(segments.length, -1);
-        this.moveFocus(last);
-        return;
-      }
-      case ' ':
-      case 'Enter': {
-        ev.preventDefault();
-        const target = segments[currentIndex];
-        if (target) this.selectSegment(target);
-        return;
-      }
-      default:
-        return;
-    }
   }
 
   private setSegmentRef = (index: number) => (el?: HTMLButtonElement) => {

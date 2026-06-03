@@ -23,31 +23,40 @@
     },
     "header": {
       "paddingTop": { "$value": "{spacing.20}", "$type": "dimension" },
+      "paddingTopMobile": { "$value": "{spacing.24}", "$type": "dimension" },
       "paddingBottom": { "$value": "{spacing.0}", "$type": "dimension" },
+      "paddingInlineEndMobile": { "$value": "{spacing.12}", "$type": "dimension" },
       "gap": { "$value": "{spacing.12}", "$type": "dimension" }
     },
     "title": {
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
       "fontSize": { "$value": "{fontSize.20}", "$type": "dimension" },
+      "fontSizeMobile": { "$value": "{fontSize.22}", "$type": "dimension" },
       "lineHeight": { "$value": "{lineHeight.28}", "$type": "dimension" },
+      "lineHeightMobile": { "$value": "{lineHeight.30}", "$type": "dimension" },
       "fontWeight": { "$value": "{fontWeight.semibold}", "$type": "fontWeight" },
       "letterSpacing": { "$value": "-0.2px", "$type": "dimension" },
+      "letterSpacingMobile": { "$value": "-0.22px", "$type": "dimension" },
       "color": { "$value": "{color.text.base.default}", "$type": "color" }
     },
     "body": {
       "paddingTop": { "$value": "{spacing.8}", "$type": "dimension" },
+      "paddingTopMobile": { "$value": "{spacing.16}", "$type": "dimension" },
       "paddingBottom": { "$value": "{spacing.16}", "$type": "dimension" },
       "gap": { "$value": "{spacing.16}", "$type": "dimension" },
       "gapExpanded": { "$value": "{spacing.24}", "$type": "dimension" },
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
       "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "fontSizeMobile": { "$value": "{fontSize.16}", "$type": "dimension" },
       "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "lineHeightMobile": { "$value": "{lineHeight.24}", "$type": "dimension" },
       "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
       "color": { "$value": "{color.text.base.secondary}", "$type": "color" }
     },
     "footer": {
       "paddingTop": { "$value": "{spacing.12}", "$type": "dimension" },
       "paddingBottom": { "$value": "{spacing.20}", "$type": "dimension" },
+      "paddingBottomMobile": { "$value": "{spacing.24}", "$type": "dimension" },
       "gap": { "$value": "{spacing.12}", "$type": "dimension" }
     },
     "close": {
