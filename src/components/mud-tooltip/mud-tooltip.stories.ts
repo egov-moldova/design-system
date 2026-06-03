@@ -12,7 +12,7 @@ type TooltipArgs = {
   content: string;
   triggerLabel: string;
   maxWidth: number;
-  delay: number;
+  showDelay: number;
 };
 
 const renderTooltip = (args: TooltipArgs) => /*html*/ `
@@ -23,7 +23,7 @@ const renderTooltip = (args: TooltipArgs) => /*html*/ `
     trigger="${args.trigger}"
     ${args.open ? 'open' : ''}
     max-width="${args.maxWidth}"
-    delay="${args.delay}"
+    show-delay="${args.showDelay}"
   >
     <button slot="trigger" type="button">${args.triggerLabel}</button>
     ${args.content}
@@ -38,7 +38,7 @@ const docsSourceDefault = (args: TooltipArgs) => {
     args.trigger !== 'hover' ? `trigger="${args.trigger}"` : '',
     args.open ? 'open' : '',
     args.maxWidth !== 200 ? `max-width="${args.maxWidth}"` : '',
-    args.delay !== 0 ? `delay="${args.delay}"` : '',
+    args.showDelay !== 200 ? `show-delay="${args.showDelay}"` : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -70,11 +70,16 @@ const meta: Meta<TooltipArgs> = {
   parameters: {
     layout: 'centered',
     docs: {
+      // The bubble is `position: fixed`; Storybook's inline Docs canvases apply a
+      // `transform` + `overflow` that traps and clips fixed descendants, which
+      // mispositions the always-open demo bubbles. Rendering each story in its own
+      // iframe gives a clean viewport so positioning resolves correctly.
+      story: { inline: false, iframeHeight: 480 },
       description: {
         component: /*md*/ `
 **Tooltip** — transient label or persistent coach mark anchored to a trigger
-element. The default variant opens on hover (after \`delay\` ms) or focus and
-closes on \`mouseleave\` / \`blur\` / \`Esc\`. The coach variant adds a close
+element. The default variant opens on hover (after \`show-delay\` ms) or focus
+and closes on \`mouseleave\` / \`blur\` / \`Esc\`. The coach variant adds a close
 button and stays open until the user explicitly dismisses it.
 
 Position is computed against the trigger's bounding rect; \`auto\` (default)
@@ -83,6 +88,10 @@ prefers \`top\` and flips to the opposite side when the bubble would overflow.
 The slotted trigger element receives \`aria-describedby\` pointing at the
 bubble (which carries \`role="tooltip"\`) so screen readers announce the
 tooltip body alongside the control.
+
+> **Note:** the size/position/variant grids below use \`trigger="manual" open\`
+> to display the bubble statically — they do **not** react to hover or click.
+> Use **Default** (hover), **Focus Trigger**, or **Manual** to test interaction.
         `.trim(),
       },
     },
@@ -116,7 +125,12 @@ tooltip body alongside the control.
     content: { control: 'text', description: 'Default-slot text content.' },
     triggerLabel: { control: 'text', description: 'Trigger button label.' },
     maxWidth: { control: 'number', description: 'Max bubble width in pixels.' },
-    delay: { control: 'number', description: 'Hover show-delay (ms).' },
+    showDelay: {
+      name: 'show-delay',
+      control: 'number',
+      description: 'Hover show-delay (ms). Focus/click/manual ignore it.',
+      table: { defaultValue: { summary: '200' } },
+    },
   },
   args: {
     size: 'sm',
@@ -127,7 +141,7 @@ tooltip body alongside the control.
     content: 'Ajutor: introdu codul de 13 cifre.',
     triggerLabel: 'Detalii suplimentare',
     maxWidth: 200,
-    delay: 0,
+    showDelay: 0,
   },
 };
 

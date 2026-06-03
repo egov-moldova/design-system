@@ -203,7 +203,10 @@
 :host(.position-top) .arrow,
 :host(.position-top-left) .arrow,
 :host(.position-top-right) .arrow {
-  bottom: calc(var(--tooltip-arrow-size) * -1);
+  /* Overlap the arrow base 1px into the bubble so the two anti-aliased edges
+     never leave a hairline seam. The base is the same color as the bubble,
+     so the overlap is invisible. */
+  bottom: calc(var(--tooltip-arrow-size) * -1 + 1px);
   left: var(--_arrow-offset, 0);
   transform: translateX(calc(var(--tooltip-arrow-width) / -2));
   border-inline-start: calc(var(--tooltip-arrow-width) / 2) solid transparent;
@@ -215,7 +218,7 @@
 :host(.position-bottom) .arrow,
 :host(.position-bottom-left) .arrow,
 :host(.position-bottom-right) .arrow {
-  top: calc(var(--tooltip-arrow-size) * -1);
+  top: calc(var(--tooltip-arrow-size) * -1 + 1px);
   left: var(--_arrow-offset, 0);
   transform: translateX(calc(var(--tooltip-arrow-width) / -2));
   border-inline-start: calc(var(--tooltip-arrow-width) / 2) solid transparent;
@@ -227,7 +230,7 @@
 :host(.position-left) .arrow,
 :host(.position-left-top) .arrow,
 :host(.position-left-bottom) .arrow {
-  right: calc(var(--tooltip-arrow-size) * -1);
+  right: calc(var(--tooltip-arrow-size) * -1 + 1px);
   top: var(--_arrow-offset, 0);
   transform: translateY(calc(var(--tooltip-arrow-width) / -2));
   border-block-start: calc(var(--tooltip-arrow-width) / 2) solid transparent;
@@ -239,7 +242,7 @@
 :host(.position-right) .arrow,
 :host(.position-right-top) .arrow,
 :host(.position-right-bottom) .arrow {
-  left: calc(var(--tooltip-arrow-size) * -1);
+  left: calc(var(--tooltip-arrow-size) * -1 + 1px);
   top: var(--_arrow-offset, 0);
   transform: translateY(calc(var(--tooltip-arrow-width) / -2));
   border-block-start: calc(var(--tooltip-arrow-width) / 2) solid transparent;
