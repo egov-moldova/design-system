@@ -2317,7 +2317,7 @@ export namespace Components {
          */
         "size": SegmentedControlSize;
         /**
-          * Value of the currently selected segment. Mutable so two-way binding via `@Watch('value')` keeps the host attribute in sync.
+          * Value of the currently selected segment. Mutable so the control updates it on selection. Like a native form control, `value` is intentionally NOT reflected to the attribute (the attribute represents the default value) — read the current selection from the property or the submitted form value.
          */
         "value"?: string;
     }
@@ -7013,7 +7013,7 @@ declare namespace LocalJSX {
          */
         "size"?: SegmentedControlSize;
         /**
-          * Value of the currently selected segment. Mutable so two-way binding via `@Watch('value')` keeps the host attribute in sync.
+          * Value of the currently selected segment. Mutable so the control updates it on selection. Like a native form control, `value` is intentionally NOT reflected to the attribute (the attribute represents the default value) — read the current selection from the property or the submitted form value.
          */
         "value"?: string;
     }
