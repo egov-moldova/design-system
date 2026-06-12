@@ -1,9 +1,9 @@
 ---
 name: optimize-prompt
-description: Use ONLY when the user explicitly requests prompt optimization — e.g. invokes /optimize-prompt, says "optimize this prompt", "structure this request", or "follow the optimize-prompt workflow". Do NOT auto-trigger on normal coding tasks. Compiles raw component requests into project-aware specs for AGE Design System (Stencil 4.x) — routes on archetype, applies canonical defaults, detects contradictions, and emits an audit-ready spec for `new-component`, `redesign-component`, `modify-component`, `fix-visual-bug`, or `update-tokens` downstream consumers.
+description: Use ONLY when the user explicitly requests prompt optimization — e.g. invokes /optimize-prompt, says "optimize this prompt", "structure this request", or "follow the optimize-prompt workflow". Do NOT auto-trigger on normal coding tasks. Compiles raw component requests into project-aware specs for MUD Design System (Stencil 4.x) — routes on archetype, applies canonical defaults, detects contradictions, and emits an audit-ready spec for `new-component`, `redesign-component`, `modify-component`, `fix-visual-bug`, or `update-tokens` downstream consumers.
 ---
 
-# Optimize Prompt — AGE Design System Compiler
+# Optimize Prompt — MUD Design System Compiler
 
 Transforms a raw request into an unambiguous, project-aware spec. Unlike a generic prompt-shaper, this skill **knows the AGE codebase**: it routes on archetype, cites real `_agents/*.md` rules, references existing tokens/constants, and auto-injects design-system defaults so the user never has to repeat them.
 

@@ -1,6 +1,6 @@
 # Cross-Platform AI & Developer Usage Guide
 
-This guide provides a quick reference for developers and AI agents working on the `@age/design-system` across different operating systems.
+This guide provides a quick reference for developers and AI agents working on the `@egovmd/mud` across different operating systems.
 
 ## 1. Environment & Process Management
 

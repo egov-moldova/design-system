@@ -1,6 +1,6 @@
-# AGE Design System — Integration Guide
+# MUD Design System — Integration Guide
 
-This document provides step-by-step instructions for building, publishing, and using the AGE Design System (`@age/design-system` Stencil web components + the `@age/web-components` vanilla adapter) in any application — bundler-based or plain HTML.
+This document provides step-by-step instructions for building, publishing, and using the MUD Design System (`@egovmd/mud` Stencil web components + the `@egovmd/mud-web-components` vanilla adapter) in any application — bundler-based or plain HTML.
 
 ## Table of Contents
 
@@ -43,7 +43,7 @@ This command will:
 
 ## Web Components (Vanilla HTML / JS) Build & Setup
 
-For any consumer — bundler-based or plain HTML — use `@age/web-components`. Because Stencil already compiles to native custom elements, this adapter is a *thin* re-export of the loader; no framework-specific build step is required.
+For any consumer — bundler-based or plain HTML — use `@egovmd/mud-web-components`. Because Stencil already compiles to native custom elements, this adapter is a *thin* re-export of the loader; no framework-specific build step is required.
 
 ### Step 1: Build Stencil Components
 
@@ -55,7 +55,7 @@ yarn build
 
 This produces `dist/`, `loader/`, and `dist/types/` — all the runtime files the vanilla adapter re-exports.
 
-### Step 2: Build the `@age/web-components` Package
+### Step 2: Build the `@egovmd/mud-web-components` Package
 
 ```bash
 yarn build.web
@@ -68,7 +68,7 @@ This command:
 
 The `web-components/dist/` folder will contain:
 
-- `index.js` — re-exports `defineCustomElements` and `setNonce` from `@age/design-system/loader`
+- `index.js` — re-exports `defineCustomElements` and `setNonce` from `@egovmd/mud/loader`
 - `index.d.ts` — type declarations including full element type augmentation (`HTMLCorButtonElement`, …)
 
 ### Step 3: Run the local demo
@@ -99,7 +99,7 @@ web-components/
 │   ├── main.ts               # CSS imports + defineCustomElements()
 │   ├── demo.css              # @font-face for Onest + body font-family
 │   └── vite.config.ts        # port 5174, allows fs access to portal-linked parent
-├── package.json              # @age/web-components, portal:.. to @age/design-system
+├── package.json              # @egovmd/mud-web-components, portal:.. to @egovmd/mud
 ├── tsconfig.json             # ES2020, declaration: true
 └── README.md
 ```
@@ -108,7 +108,7 @@ web-components/
 
 ## Publishing Options
 
-Two packages need to be published together: the Stencil core (`@age/design-system`) and the vanilla adapter (`@age/web-components`). Pick whichever registry option fits your team.
+Two packages need to be published together: the Stencil core (`@egovmd/mud`) and the vanilla adapter (`@egovmd/mud-web-components`). Pick whichever registry option fits your team.
 
 ### Option A: Publish to GitLab Package Registry (Private)
 
@@ -180,8 +180,8 @@ cd dist && yarn link
 cd ../web-components && yarn link && yarn build
 
 # In your consuming app
-yarn link @age/design-system
-yarn link @age/web-components
+yarn link @egovmd/mud
+yarn link @egovmd/mud-web-components
 ```
 
 ### Option E: Install from Local Path (No Token Required)
@@ -197,20 +197,20 @@ yarn add file:/absolute/path/to/age-design/web-components
 
 ### Vanilla HTML / Plain JS Application
 
-`@age/web-components` is framework-agnostic — it works with any application that can load ES modules.
+`@egovmd/mud-web-components` is framework-agnostic — it works with any application that can load ES modules.
 
 #### Step 1: Install Dependencies
 
 ```bash
-yarn add @age/design-system @age/web-components
+yarn add @egovmd/mud @egovmd/mud-web-components
 ```
 
 #### Step 2: Usage — with a bundler (Vite, webpack, esbuild, …)
 
 ```ts
-import '@age/design-system/dist/design-system/tokens/core.tokens.css';
-import '@age/design-system/dist/design-system/design-system.css';
-import { defineCustomElements } from '@age/web-components';
+import '@egovmd/mud/dist/design-system/tokens/core.tokens.css';
+import '@egovmd/mud/dist/design-system/design-system.css';
+import { defineCustomElements } from '@egovmd/mud-web-components';
 
 defineCustomElements();
 ```
@@ -227,13 +227,13 @@ When you have no bundler, resolve the bare specifiers via an import map:
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="/node_modules/@age/design-system/dist/design-system/tokens/core.tokens.css" />
-    <link rel="stylesheet" href="/node_modules/@age/design-system/dist/design-system/design-system.css" />
+    <link rel="stylesheet" href="/node_modules/@egovmd/mud/dist/design-system/tokens/core.tokens.css" />
+    <link rel="stylesheet" href="/node_modules/@egovmd/mud/dist/design-system/design-system.css" />
     <script type="importmap">
       {
         "imports": {
-          "@age/web-components": "/node_modules/@age/web-components/dist/index.js",
-          "@age/design-system/loader": "/node_modules/@age/design-system/loader/index.js"
+          "@egovmd/mud-web-components": "/node_modules/@egovmd/mud-web-components/dist/index.js",
+          "@egovmd/mud/loader": "/node_modules/@egovmd/mud/loader/index.js"
         }
       }
     </script>
@@ -241,7 +241,7 @@ When you have no bundler, resolve the bare specifiers via an import map:
   <body>
     <mud-button variant="primary"><button>Click me</button></mud-button>
     <script type="module">
-      import { defineCustomElements } from '@age/web-components';
+      import { defineCustomElements } from '@egovmd/mud-web-components';
       defineCustomElements();
     </script>
   </body>
@@ -266,13 +266,13 @@ html, body {
 }
 ```
 
-You can copy the TTF from `node_modules/@age/design-system/assets/font/Onest/` or load Onest from Google Fonts (`https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap`).
+You can copy the TTF from `node_modules/@egovmd/mud/assets/font/Onest/` or load Onest from Google Fonts (`https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap`).
 
 #### API
 
 - `defineCustomElements(opts?)` — registers every Stencil custom element on the current document; returns a `Promise<void>`
 - `setNonce(nonce: string)` — applies a CSP nonce to injected `<style>` tags
-- Full element type augmentation (`HTMLCorButtonElement`, `HTMLCorInputElement`, …) and prop / event interfaces are re-exported via `export type *` from `@age/design-system`
+- Full element type augmentation (`HTMLMudButtonElement`, `HTMLMudInputElement`, …) and prop / event interfaces are re-exported via `export type *` from `@egovmd/mud`
 
 #### Framework-specific usage
 
@@ -294,14 +294,14 @@ Because the components are native custom elements, they integrate with every mod
 **Solution:**
 
 ```bash
-yarn add @age/design-system @age/web-components
+yarn add @egovmd/mud @egovmd/mud-web-components
 ```
 
 Then ensure your `tsconfig.json`'s `compilerOptions.types` (or a global declaration file) imports the augmentation:
 
 ```ts
 // src/types/age.d.ts
-import type {} from '@age/web-components';
+import type {} from '@egovmd/mud-web-components';
 ```
 
 ### Issue: Styles not applied
@@ -311,8 +311,8 @@ import type {} from '@age/web-components';
 **Solution:** Import both at app startup, before calling `defineCustomElements()`:
 
 ```ts
-import '@age/design-system/dist/design-system/tokens/core.tokens.css';
-import '@age/design-system/dist/design-system/design-system.css';
+import '@egovmd/mud/dist/design-system/tokens/core.tokens.css';
+import '@egovmd/mud/dist/design-system/design-system.css';
 ```
 
 ### Issue: Components don't render in the DOM
@@ -321,11 +321,11 @@ import '@age/design-system/dist/design-system/design-system.css';
 
 **Solution:** Call `defineCustomElements()` once at the earliest startup point. The Stencil loader is async — components upgrade as soon as the call resolves, even if the markup is already in the DOM.
 
-### Issue: Vite / esbuild can't resolve `@age/web-components`
+### Issue: Vite / esbuild can't resolve `@egovmd/mud-web-components`
 
 **Cause:** Yarn workspaces resolve the package via a symlink/portal that some bundlers don't follow.
 
-**Solution:** Set `optimizeDeps.include: ['@age/web-components', '@age/design-system/loader']` in your Vite config, or add the packages to esbuild's `external` list and use an import map for runtime resolution.
+**Solution:** Set `optimizeDeps.include: ['@egovmd/mud-web-components', '@egovmd/mud/loader']` in your Vite config, or add the packages to esbuild's `external` list and use an import map for runtime resolution.
 
 ---
 
@@ -345,7 +345,7 @@ import '@age/design-system/dist/design-system/design-system.css';
 - [ ] Build Stencil components: `yarn build`
 - [ ] Build vanilla adapter: `yarn build.web`
 - [ ] Visually verify demo: `yarn demo.web` (<http://localhost:5174>)
-- [ ] Install in app: `yarn add @age/design-system @age/web-components`
+- [ ] Install in app: `yarn add @egovmd/mud @egovmd/mud-web-components`
 - [ ] Import token CSS + design-system CSS, then call `defineCustomElements()` once at startup
 - [ ] Lint tokens before any token change: `yarn tokens.lint.all`
 

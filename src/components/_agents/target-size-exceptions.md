@@ -1,4 +1,4 @@
-# Target Size — WCAG Exceptions in `@age/design-system`
+# Target Size — WCAG Exceptions in `@egovmd/mud`
 
 ## What WCAG 2.1 AA Requires
 

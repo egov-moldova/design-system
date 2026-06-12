@@ -1,8 +1,8 @@
-# PR: redesign(mud-`<name>`): align to AGE Design System
+# PR: redesign(mud-`<name>`): align to MUD Design System
 
 ## Summary
 
-Redesigns `mud-<name>` to align with the new AGE Design System. Source of truth: Figma node `<node-id>`. Driven by Cline Kanban card `<card-url>` and the `redesign-component` agent.
+Redesigns `mud-<name>` to align with the new MUD Design System. Source of truth: Figma node `<node-id>`. Driven by Cline Kanban card `<card-url>` and the `redesign-component` agent.
 
 ## Visual changes
 

@@ -1,6 +1,6 @@
-# INTEGRATION.md — consuming `@age/design-system` outside a bundler
+# INTEGRATION.md — consuming `@egovmd/mud` outside a bundler
 
-This guide is for integrators who want to drop AGE components into a host that **emits HTML directly**: a static page, a server-rendered template (PHP, Razor, Twig, Blade), or a `WebView` in a desktop app. For bundler-based installs (Vite, Webpack, Rollup, esbuild), see [`README.md`](./README.md).
+This guide is for integrators who want to drop MUD components into a host that **emits HTML directly**: a static page, a server-rendered template (PHP, Razor, Twig, Blade), or a `WebView` in a desktop app. For bundler-based installs (Vite, Webpack, Rollup, esbuild), see [`README.md`](./README.md).
 
 Because Stencil compiles every `mud-*` component to a **W3C-standard Custom Element**, the integration story is the same everywhere a browser engine renders HTML. The only thing that changes between hosts is *how you ship the asset files* and *how you set non-string props*.
 
@@ -43,15 +43,15 @@ After `yarn build`, the relevant artifacts live in `dist/design-system/`:
 Anywhere you control the `<head>`:
 
 ```html
-<link rel="stylesheet" href="/age/tokens/core.tokens.css">
-<link rel="stylesheet" href="/age/design-system.css">
-<script type="module" src="/age/design-system.esm.js"></script>
+<link rel="stylesheet" href="/mud/tokens/core.tokens.css">
+<link rel="stylesheet" href="/mud/design-system.css">
+<script type="module" src="/mud/design-system.esm.js"></script>
 ```
 
 Optional — opt into dark mode by including the dark tokens *and* setting `data-theme="dark"` on `<html>`:
 
 ```html
-<link rel="stylesheet" href="/age/tokens/core.dark.tokens.css">
+<link rel="stylesheet" href="/mud/tokens/core.dark.tokens.css">
 ```
 
 That's it. From now on, `<mud-button>`, `<mud-icon>`, `<mud-modal>`, etc. work as native HTML tags.
@@ -60,19 +60,19 @@ That's it. From now on, `<mud-button>`, `<mud-icon>`, `<mud-modal>`, etc. work a
 
 ## 3. Plain HTML / static site
 
-Copy `dist/design-system/` to your site's static folder (e.g. `public/age/`) and reference it from the page:
+Copy `dist/design-system/` to your site's static folder (e.g. `public/mud/`) and reference it from the page:
 
 ```html
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>AGE demo</title>
+    <title>MUD demo</title>
 
-    <link rel="stylesheet" href="/age/tokens/core.tokens.css">
-    <link rel="stylesheet" href="/age/tokens/core.dark.tokens.css">
-    <link rel="stylesheet" href="/age/design-system.css">
-    <script type="module" src="/age/design-system.esm.js"></script>
+    <link rel="stylesheet" href="/mud/tokens/core.tokens.css">
+    <link rel="stylesheet" href="/mud/tokens/core.dark.tokens.css">
+    <link rel="stylesheet" href="/mud/design-system.css">
+    <script type="module" src="/mud/design-system.esm.js"></script>
   </head>
   <body>
     <mud-button variant="primary">Save</mud-button>
@@ -93,17 +93,17 @@ The package declares `"unpkg": "dist/design-system/design-system.esm.js"`, so an
 ```html
 <link
   rel="stylesheet"
-  href="https://unpkg.com/@age/design-system@0.0.1/dist/design-system/tokens/core.tokens.css"
+  href="https://unpkg.com/@egovmd/mud@0.0.1/dist/design-system/tokens/core.tokens.css"
   integrity="sha384-REPLACE_WITH_REAL_HASH"
   crossorigin="anonymous">
 <link
   rel="stylesheet"
-  href="https://unpkg.com/@age/design-system@0.0.1/dist/design-system/design-system.css"
+  href="https://unpkg.com/@egovmd/mud@0.0.1/dist/design-system/design-system.css"
   integrity="sha384-REPLACE_WITH_REAL_HASH"
   crossorigin="anonymous">
 <script
   type="module"
-  src="https://unpkg.com/@age/design-system@0.0.1/dist/design-system/design-system.esm.js"
+  src="https://unpkg.com/@egovmd/mud@0.0.1/dist/design-system/design-system.esm.js"
   integrity="sha384-REPLACE_WITH_REAL_HASH"
   crossorigin="anonymous"></script>
 ```
@@ -111,7 +111,7 @@ The package declares `"unpkg": "dist/design-system/design-system.esm.js"`, so an
 Generate hashes locally against the exact published files:
 
 ```bash
-curl -sL https://unpkg.com/@age/design-system@0.0.1/dist/design-system/design-system.esm.js \
+curl -sL https://unpkg.com/@egovmd/mud@0.0.1/dist/design-system/design-system.esm.js \
   | openssl dgst -sha384 -binary | openssl base64 -A
 ```
 
@@ -382,7 +382,7 @@ You can also scope dark mode to a subtree — apply `data-theme="dark"` to any w
 - **MIME type**: `.js` files must be served as `application/javascript` (or `text/javascript`). Some legacy servers default to `application/octet-stream` for unknown extensions and the browser will refuse to execute the module. Configure your server to send the right MIME for `.js`, `.css`, and `.svg`.
 - **Cache headers**: chunks (`p-*.js`) are content-hashed, so they can be served with `Cache-Control: public, max-age=31536000, immutable`. The entry file `design-system.esm.js` is **not** hashed — give it a short cache (e.g. 5 minutes) or version it via your asset pipeline.
 - **Compression**: enable Brotli/gzip on `.js`, `.css`, `.svg`. The unminified ESM is ~3 KB but each component chunk benefits significantly.
-- **CSP**: the loader uses dynamic `import()` and inline source maps in dev. Production builds are CSP-friendly with `script-src 'self'` plus a nonce — call `setNonce('<your-nonce>')` from `@age/design-system/loader` before the loader runs:
+- **CSP**: the loader uses dynamic `import()` and inline source maps in dev. Production builds are CSP-friendly with `script-src 'self'` plus a nonce — call `setNonce('<your-nonce>')` from `@egovmd/mud/loader` before the loader runs:
 
   ```html
   <script type="module" nonce="abc123">

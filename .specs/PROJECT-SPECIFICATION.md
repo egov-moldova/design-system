@@ -1,15 +1,15 @@
-# Project Specification — `@age/design-system`
+# Project Specification — `@egovmd/mud`
 
 ## 1. Purpose
 
-`@age/design-system` is a **Stencil web-component design system** that powers Corlab products. It exposes:
+`@egovmd/mud` is a **Stencil web-component design system** that powers Corlab products. It exposes:
 
 - Native custom elements (`mud-*` prefix) consumed directly in HTML or via framework wrappers
 - Design tokens generated through Style Dictionary (DTCG format)
 - Storybook documentation as the canonical visual reference
 - Theme support — base (`core`) and AGE client variant; dark mode is a separate phase
 
-The package is published as `@age/design-system` and is built to be framework-agnostic; React, Angular, and Vue wrappers consume the same web components.
+The package is published as `@egovmd/mud` and is built to be framework-agnostic; React, Angular, and Vue wrappers consume the same web components.
 
 ## 2. Tech Stack
 
@@ -38,10 +38,10 @@ age-design/
 ├── tokens/                    ← design tokens (DTCG JSON)
 ├── .storybook/                ← Storybook config
 ├── dist/                      ← built outputs (gitignored)
-└── web-components/            ← workspace: consumable @age/web-components bundle
+└── web-components/            ← workspace: consumable @egovmd/mud-web-components bundle
 ```
 
-`web-components` is the supported consumable adapter. Framework wrappers (Angular, React, Vue) were retired in 2026-05; consumers use `defineCustomElements()` from `@age/web-components` directly.
+`web-components` is the supported consumable adapter. Framework wrappers (Angular, React, Vue) were retired in 2026-05; consumers use `defineCustomElements()` from `@egovmd/mud-web-components` directly.
 
 ## 4. Build Orchestration — Wireit
 
@@ -53,8 +53,8 @@ Key entry points (see `package.json` and [`_agents/environment-commands.md`](../
 |---|---|---|
 | `yarn dev` | Stencil + Storybook + token watch (services) | n/a |
 | `yarn build` | Full production: tokens + components + custom-elements + docs | ~30–60s |
-| `yarn build.web` | Build the `@age/web-components` vanilla adapter | varies |
-| `yarn demo.web` | Serve the `@age/web-components` demo (<http://localhost:5174>) | service |
+| `yarn build.web` | Build the `@egovmd/mud-web-components` vanilla adapter | varies |
+| `yarn demo.web` | Serve the `@egovmd/mud-web-components` demo (<http://localhost:5174>) | service |
 | `yarn tokens.build` | Build core + dark tokens (cached) | ~5s |
 | `yarn tokens.build.prod` | Production tokens (optimized) | ~5s |
 | `yarn tokens.build.age` | AGE client theme tokens only | ~5s |
@@ -76,9 +76,9 @@ Published artifacts:
 
 Consumers:
 
-- Direct HTML: `<script type="module" src="...design-system.esm.js">` + `defineCustomElements()` from `@age/web-components`
-- Vanilla / bundler-based apps: install `@age/design-system` + `@age/web-components`, then call `defineCustomElements()` once at startup
-- Token CSS: import `@age/design-system/dist/design-system/tokens/core.tokens.css`
+- Direct HTML: `<script type="module" src="...design-system.esm.js">` + `defineCustomElements()` from `@egovmd/mud-web-components`
+- Vanilla / bundler-based apps: install `@egovmd/mud` + `@egovmd/mud-web-components`, then call `defineCustomElements()` once at startup
+- Token CSS: import `@egovmd/mud/dist/design-system/tokens/core.tokens.css`
 
 ## 6. AI Automation & Agentic Tooling
 

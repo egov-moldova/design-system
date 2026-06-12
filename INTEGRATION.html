@@ -3,10 +3,10 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>INTEGRATION — @age/design-system</title>
+    <title>INTEGRATION — @egovmd/mud</title>
     <meta
       name="description"
-      content="Integration guide for consuming the AGE Design System outside a bundler — HTML, PHP, .NET."
+      content="Integration guide for consuming the MUD Design System outside a bundler — HTML, PHP, .NET."
     />
 
     <link
@@ -25,7 +25,7 @@
     />
 
     <style>
-      /* Colors mirror AGE Design System semantic tokens
+      /* Colors mirror MUD Design System semantic tokens
        (background-base-*, text-base-*, border-base-*, *-brand-*, *-danger-*, *-positive-*). */
       :root {
         color-scheme: light dark;
@@ -484,7 +484,7 @@
 
       <main>
         <header class="page-head">
-          <div class="eyebrow">@age/design-system</div>
+          <div class="eyebrow">@egovmd/mud</div>
           <h1>Integration guide — outside a bundler</h1>
           <p class="lede">
             Drop AGE components into anything that emits HTML: a static page, a server-rendered template (PHP, Razor,
@@ -627,22 +627,22 @@
 
           <pre><code class="language-html">&lt;link
   rel="stylesheet"
-  href="https://unpkg.com/@age/design-system@0.0.1/dist/design-system/tokens/core.tokens.css"
+  href="https://unpkg.com/@egovmd/mud@0.0.1/dist/design-system/tokens/core.tokens.css"
   integrity="sha384-REPLACE_WITH_REAL_HASH"
   crossorigin="anonymous"&gt;
 &lt;link
   rel="stylesheet"
-  href="https://unpkg.com/@age/design-system@0.0.1/dist/design-system/design-system.css"
+  href="https://unpkg.com/@egovmd/mud@0.0.1/dist/design-system/design-system.css"
   integrity="sha384-REPLACE_WITH_REAL_HASH"
   crossorigin="anonymous"&gt;
 &lt;script
   type="module"
-  src="https://unpkg.com/@age/design-system@0.0.1/dist/design-system/design-system.esm.js"
+  src="https://unpkg.com/@egovmd/mud@0.0.1/dist/design-system/design-system.esm.js"
   integrity="sha384-REPLACE_WITH_REAL_HASH"
   crossorigin="anonymous"&gt;&lt;/script&gt;</code></pre>
 
           <p>Generate hashes locally against the exact published files:</p>
-          <pre><code class="language-bash">curl -sL https://unpkg.com/@age/design-system@0.0.1/dist/design-system/design-system.esm.js \
+          <pre><code class="language-bash">curl -sL https://unpkg.com/@egovmd/mud@0.0.1/dist/design-system/design-system.esm.js \
   | openssl dgst -sha384 -binary | openssl base64 -A</code></pre>
 
           <div class="callout warn">

@@ -1,21 +1,21 @@
-# @age/web-components
+# @egovmd/mud-web-components
 
-Vanilla HTML / JavaScript adapter for the AGE Design System. Registers every
+Vanilla HTML / JavaScript adapter for the MUD Design System. Registers every
 Stencil-compiled custom element (`<mud-button>`, `<mud-input>`, …) so they can
 be used in any HTML page or non-framework app.
 
 ## Install
 
 ```bash
-yarn add @age/web-components @age/design-system
+yarn add @egovmd/mud-web-components @egovmd/mud
 ```
 
 ## Usage — with a bundler (Vite, webpack, esbuild, …)
 
 ```ts
-import '@age/design-system/dist/design-system/tokens/core.tokens.css';
-import '@age/design-system/dist/design-system/design-system.css';
-import { defineCustomElements } from '@age/web-components';
+import '@egovmd/mud/dist/design-system/tokens/core.tokens.css';
+import '@egovmd/mud/dist/design-system/design-system.css';
+import { defineCustomElements } from '@egovmd/mud-web-components';
 
 defineCustomElements();
 ```
@@ -32,17 +32,17 @@ defineCustomElements();
   <head>
     <link
       rel="stylesheet"
-      href="/node_modules/@age/design-system/dist/design-system/tokens/core.tokens.css"
+      href="/node_modules/@egovmd/mud/dist/design-system/tokens/core.tokens.css"
     />
     <link
       rel="stylesheet"
-      href="/node_modules/@age/design-system/dist/design-system/design-system.css"
+      href="/node_modules/@egovmd/mud/dist/design-system/design-system.css"
     />
     <script type="importmap">
       {
         "imports": {
-          "@age/web-components": "/node_modules/@age/web-components/dist/index.js",
-          "@age/design-system/loader": "/node_modules/@age/design-system/loader/index.js"
+          "@egovmd/mud-web-components": "/node_modules/@egovmd/mud-web-components/dist/index.js",
+          "@egovmd/mud/loader": "/node_modules/@egovmd/mud/loader/index.js"
         }
       }
     </script>
@@ -50,7 +50,7 @@ defineCustomElements();
   <body>
     <mud-button variant="primary"><button>Click me</button></mud-button>
     <script type="module">
-      import { defineCustomElements } from '@age/web-components';
+      import { defineCustomElements } from '@egovmd/mud-web-components';
       defineCustomElements();
     </script>
   </body>
@@ -62,8 +62,8 @@ defineCustomElements();
 From the repo root:
 
 ```bash
-yarn build       # one-time: produces dist/ and loader/ for @age/design-system
-yarn build.web   # compile @age/web-components
+yarn build       # one-time: produces dist/ and loader/ for @egovmd/mud
+yarn build.web   # compile @egovmd/mud-web-components
 yarn demo.web    # serve the demo at http://localhost:5174
 ```
 
@@ -72,7 +72,7 @@ The demo lives in [`demo/index.html`](./demo/index.html) and showcases
 
 ## Available components
 
-Every component published by `@age/design-system` is registered. The full list
+Every component published by `@egovmd/mud` is registered. The full list
 is browseable in [Storybook](../.storybook/). Highlights include:
 
 - `<mud-button>` — primary action button
@@ -90,4 +90,4 @@ registers every Stencil custom element on the current document. Returns a
 
 TypeScript users also get full element type augmentation (`HTMLCorButtonElement`,
 `HTMLCorInputElement`, …) and prop interfaces via `export type *` from
-`@age/design-system`.
+`@egovmd/mud`.

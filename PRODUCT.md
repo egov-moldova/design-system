@@ -8,7 +8,7 @@ product
 
 **Primary: Moldovan citizens** using government services online. They open `egov.md` properties (FOD, MPay, MPass, MSign, MPower, MDelivery) to pay fees, authenticate against state systems, sign documents, grant power-of-attorney, or receive deliveries. Their context: they have *one task* to finish — usually under time pressure, often on mobile, often anxious that they will misclick and lose their place in the queue.
 
-**Secondary: integrators inside government agencies and public-service operators** consuming `@age/design-system` to build their own service flows on top of the e-Gov stack. They want a small, stable component contract that compiles into any framework and survives accessibility audits without rework.
+**Secondary: integrators inside government agencies and public-service operators** consuming `@egovmd/mud` to build their own service flows on top of the e-Gov stack. They want a small, stable component contract that compiles into any framework and survives accessibility audits without rework.
 
 **Tertiary: in-house product and design teams** at Corlab and partner agencies shipping new screens against shared tokens.
 
@@ -16,7 +16,7 @@ The job is always the same shape: complete a government interaction with confide
 
 ## Product Purpose
 
-`@age/design-system` is the visual and behavioral substrate of the Moldovan e-Government ecosystem. It exists to make every state-issued web surface — payment, authentication, signature, representation registry, delivery — look, feel, and behave the same way, so that a citizen who learns one service has already learned the rest.
+`@egovmd/mud` is the visual and behavioral substrate of the Moldovan e-Government ecosystem. It exists to make every state-issued web surface — payment, authentication, signature, representation registry, delivery — look, feel, and behave the same way, so that a citizen who learns one service has already learned the rest.
 
 Success looks like: a person submitting a form on `mpay.gov.md`, then opening `mdelivery.gov.md` the same week, and never wondering whether they are still on a `.gov.md` site. The button looks the same. The error state looks the same. The keyboard works the same. The institution is recognisable.
 

@@ -1,4 +1,4 @@
-// AGE Design System — active exports.
+// MUD Design System — active exports.
 //
 // Components inherited from the previous DS are archived in `src/legacy/`
 // and intentionally not exported here. Each component is added back to this

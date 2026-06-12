@@ -1,6 +1,6 @@
 # AGENTS.md — Corlab Design System AI Engineering Guide
 
-**Project**: `@age/design-system` — Stencil.js web components with design tokens, Storybook docs, multi-theme support via Style Dictionary.
+**Project**: `@egovmd/mud` — Stencil.js web components with design tokens, Storybook docs, multi-theme support via Style Dictionary.
 
 **Tech Stack**: StencilJS 4.x, TypeScript 5.x, Storybook 10.x (`@storybook/web-components-vite`, Vite 8 / Rolldown + Oxc, port **6007**), Style Dictionary 4.x (DTCG `$value`/`$type`), Vitest 4.x via `@stencil/vitest` (`yarn test` → `stencil-test --project spec`), Wireit (script orchestration + caching), Yarn 4.x, Node >=22.
 
@@ -111,8 +111,8 @@ yarn dx:clean                  # Clean all build artifacts (.stencil, storybook-
 
 # Build (production / final verification)
 yarn build                     # Full production build with tokens, custom-elements, and docs
-yarn build.web                 # Build @age/web-components vanilla adapter
-yarn demo.web                  # Serve the @age/web-components demo (http://localhost:5174)
+yarn build.web                 # Build @egovmd/mud-web-components vanilla adapter
+yarn demo.web                  # Serve the @egovmd/mud-web-components demo (http://localhost:5174)
 yarn sp.build                  # Storybook static export (validates everything)
 yarn sp.docker                 # Docker-optimized Storybook build
 

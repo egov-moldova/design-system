@@ -37,7 +37,7 @@ if (hasDocs) {
 }
 
 export const config: Config = {
-  namespace: 'design-system',
+  namespace: 'mud',
   srcDir: 'src',
   globalStyle: 'src/assets/css/index.css',
   sourceMap: shouldGenerateSourceMaps,

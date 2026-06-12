@@ -4,7 +4,7 @@ This folder contains the **infrastructure for running multiple component redesig
 
 ## Why this exists
 
-The AGE Design System redesign covers 62 components. Sequential work (1 component at a time, 1 Claude Code session) takes weeks. Parallel work (3–5 components simultaneously, 1 Claude Code session per Kanban card, each in its own git worktree) reduces wall-clock time to days.
+The MUD Design System redesign covers 62 components. Sequential work (1 component at a time, 1 Claude Code session) takes weeks. Parallel work (3–5 components simultaneously, 1 Claude Code session per Kanban card, each in its own git worktree) reduces wall-clock time to days.
 
 Reference: Cline Kanban docs at https://docs.cline.bot/usage/kanban.
 

@@ -1,4 +1,4 @@
-# Claude Code Subagents — `@age/design-system`
+# Claude Code Subagents — `@egovmd/mud`
 
 Subagents for complex, multi-phase workflows with separate context windows. Invoke via the `Task` tool with `subagent_type: <agent-name>`, or trust auto-trigger based on description matching.
 

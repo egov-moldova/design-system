@@ -1,4 +1,4 @@
-# Plan: Aliniere @age/design-system la WCAG 2.1 AA
+# Plan: Aliniere @egovmd/mud la WCAG 2.1 AA
 
 ## Context
 

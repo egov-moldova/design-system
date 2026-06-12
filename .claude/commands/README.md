@@ -1,4 +1,4 @@
-# Claude Code Slash Commands — `@age/design-system`
+# Claude Code Slash Commands — `@egovmd/mud`
 
 Slash commands for linear, single-pass workflows. Invoke with `/command-name [arguments]` in the Claude Code prompt.
 

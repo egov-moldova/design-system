@@ -1,5 +1,5 @@
 ---
-name: AGE Design System
+name: MUD Design System
 description: The visual substrate of the Moldovan e-Government ecosystem — calm, civic, exact.
 colors:
   primary-brand: "#0058d2"
@@ -132,7 +132,7 @@ components:
     height: "40px"
 ---
 
-# Design System: AGE Design System
+# Design System: MUD Design System
 
 ## 1. Overview
 

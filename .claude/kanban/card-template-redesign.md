@@ -13,7 +13,7 @@ Copy this markdown into the **Description** field of every Cline Kanban card for
 
 ## Pre-flight (operator confirms before queuing)
 
-- [ ] Figma URL points to the redesigned component in the AGE Design System frame
+- [ ] Figma URL points to the redesigned component in the MUD Design System frame
 - [ ] Component currently exists in `src/components/mud-<name>/`
 - [ ] Tokens for this component exist in `tokens/core/components/<name>.tokens.json` (or are explicitly TBD)
 - [ ] No other Kanban card is in-flight for the same component
@@ -81,9 +81,9 @@ When the agent reports complete:
 
 ```bash
 git add -A
-git commit -m "redesign(mud-<name>): align to AGE Design System"
+git commit -m "redesign(mud-<name>): align to MUD Design System"
 git push -u origin redesign/mud-<name>
-gh pr create --title "redesign(mud-<name>): align to AGE Design System" --body "$(cat .claude/kanban/pr-template.md)"
+gh pr create --title "redesign(mud-<name>): align to MUD Design System" --body "$(cat .claude/kanban/pr-template.md)"
 ```
 
 Fill in the PR template placeholders (component name, Figma node, diff %, a11y status, coverage delta) from the agent's final report.

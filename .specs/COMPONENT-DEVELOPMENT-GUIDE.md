@@ -1,8 +1,8 @@
-# Component Development Guide — `@age/design-system`
+# Component Development Guide — `@egovmd/mud`
 
 ## 1. Purpose
 
-This guide describes how to build a Stencil web component in `@age/design-system`: file anatomy, member order, CSS architecture patterns, slot validation, stories, tests, and the pixel-perfect QA loop.
+This guide describes how to build a Stencil web component in `@egovmd/mud`: file anatomy, member order, CSS architecture patterns, slot validation, stories, tests, and the pixel-perfect QA loop.
 
 For runtime guidance (anti-patterns, full command reference, decision matrices), see [`src/components/AGENTS.md`](../src/components/AGENTS.md) and its `_agents/*.md` subfiles. For the workflow itself, use the `new-component` or `custom-component` subagents.
 

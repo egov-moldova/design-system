@@ -1,6 +1,6 @@
 # WCAG Guidelines Reference
 
-**Conformance target for `@age/design-system`:** **WCAG 2.1 Level AA**.
+**Conformance target for `@egovmd/mud`:** **WCAG 2.1 Level AA**.
 
 This document is split into two parts:
 
@@ -508,7 +508,7 @@ Interactive targets must be ≥ 24×24 CSS pixels (with exceptions for inline, u
 .touch-target-aaa { min-width: 44px; min-height: 44px; }
 ```
 
-**Note:** The `@age/design-system` has documented exceptions where `button` sm/xs and `checkbox` sm/md are below 24×24 visually but maintain adequate spacing. See [`src/components/_agents/target-size-exceptions.md`](../../../../src/components/_agents/target-size-exceptions.md).
+**Note:** The `@egovmd/mud` has documented exceptions where `button` sm/xs and `checkbox` sm/md are below 24×24 visually but maintain adequate spacing. See [`src/components/_agents/target-size-exceptions.md`](../../../../src/components/_agents/target-size-exceptions.md).
 
 ## 3.2.6 Consistent Help (Level A, new in 2.2)
 

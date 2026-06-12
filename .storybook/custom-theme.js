@@ -38,7 +38,7 @@ const buildTheme = (tokens, base) => {
 
   return create({
     base,
-    brandTitle: 'AGE Design System',
+    brandTitle: 'MUD Design System',
     brandUrl: '/',
     brandTarget: '_self',
 

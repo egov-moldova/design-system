@@ -1,3 +1,3 @@
-export { defineCustomElements, setNonce } from '@age/design-system/loader';
+export { defineCustomElements, setNonce } from '@egovmd/mud/loader';
 
-export type * from '@age/design-system';
+export type * from '@egovmd/mud';

@@ -1,8 +1,8 @@
 {
-  "name": "@age/design-system",
-  "_id": "@age/design-system@0.0.1",
-  "version": "0.0.1",
-  "description": "AGE Design System — Stencil web components, Figma-aligned design tokens, and Storybook docs for Corlab products.",
+  "name": "@egovmd/mud",
+  "_id": "@egovmd/mud@1.0.0",
+  "version": "1.0.0",
+  "description": "MUD Design System — Stencil web components",
   "main": "dist/index.cjs.js",
   "unpkg": "dist/design-system/design-system.esm.js",
   "module": "dist/index.js",
@@ -14,6 +14,7 @@
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
+
       "import": "./dist/index.js",
       "require": "./dist/index.cjs.js"
     },
@@ -36,6 +37,10 @@
     "dist/",
     "loader/"
   ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "prepare": "husky install && node scripts/git/setup-merge-drivers.mjs",
     "build": "wireit",
@@ -228,7 +233,7 @@
       ]
     },
     "build.web": {
-      "command": "yarn workspace @age/web-components build",
+      "command": "yarn workspace @egovmd/mud-web-components build",
       "dependencies": [
         "build"
       ],
@@ -245,14 +250,14 @@
       ]
     },
     "demo.web": {
-      "command": "yarn workspace @age/web-components demo",
+      "command": "yarn workspace @egovmd/mud-web-components demo",
       "dependencies": [
         "build"
       ],
       "service": true
     },
     "demo.web.build": {
-      "command": "yarn workspace @age/web-components demo.build",
+      "command": "yarn workspace @egovmd/mud-web-components demo.build",
       "dependencies": [
         "build"
       ],

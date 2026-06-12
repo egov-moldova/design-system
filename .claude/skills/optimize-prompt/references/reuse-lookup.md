@@ -92,7 +92,7 @@ This is one of the **few** cases where the lookup blocks emission. Continuing wo
 ℹ Legacy component `mud-spinner` exists in `src/legacy/mud-spinner/`. Auto-switching to `--mode=redesign`.
 - Source files: src/legacy/mud-spinner/mud-spinner.tsx, .css, .types.ts
 - Token file: tokens/core/components/spinner.tokens.json (existing — will be migrated to new naming)
-- Reason for redesign: AGE Design System redesign program
+- Reason for redesign: MUD Design System redesign program
 ```
 
 The mode switch is **automatic** — user intent inferred. If user wants a truly new component (not a redesign of legacy), they pass `--mode=new --force-new` (escape hatch).

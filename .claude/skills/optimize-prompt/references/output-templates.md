@@ -126,7 +126,7 @@ For legacy components moving from `src/legacy/mud-X/` to `src/components/mud-X/`
 - Component: mud-<name>
 - Source: src/legacy/mud-<name>/ → target: src/components/mud-<name>/
 - Figma source (NEW design): <file URL> — primary node <node-id>
-- Reason: AGE Design System redesign program
+- Reason: MUD Design System redesign program
 
 ## 2. Visual Changes (Token Diff)
 (table: current token → new token + reason — see references/token-mapping-table.md § 7)

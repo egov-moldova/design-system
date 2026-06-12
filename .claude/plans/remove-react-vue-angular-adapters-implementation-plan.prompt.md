@@ -4,9 +4,9 @@
 >
 > **NOTE — supersedes the v1 plan.** v1 is preserved in git history. Task 0 is a no-op once this v2 is committed.
 
-**Goal:** Delete `angular-design-system/`, `react-design-system/`, `vue-design-system/` workspace packages plus every operational reference (build scripts, CI steps, merge-driver rules, skill/agent invocations) so `@age/web-components` becomes the only adapter. Skills, agents, and docs may keep *contextual* mentions of past adapter support — but must not instruct or invoke adapter build scripts.
+**Goal:** Delete `angular-design-system/`, `react-design-system/`, `vue-design-system/` workspace packages plus every operational reference (build scripts, CI steps, merge-driver rules, skill/agent invocations) so `@egovmd/mud-web-components` becomes the only adapter. Skills, agents, and docs may keep *contextual* mentions of past adapter support — but must not instruct or invoke adapter build scripts.
 
-**Architecture:** Pure removal — no new code. After this plan: build graph = `build` + `build.web` + `demo.web` + tokens/storybook; published surface = `@age/design-system` + `@age/web-components`; CI green; no skill/agent runs `yarn build.react` and friends.
+**Architecture:** Pure removal — no new code. After this plan: build graph = `build` + `build.web` + `demo.web` + tokens/storybook; published surface = `@egovmd/mud` + `@egovmd/mud-web-components`; CI green; no skill/agent runs `yarn build.react` and friends.
 
 **Tech Stack:** Yarn 4 workspaces, Wireit, Stencil 4.43, Docker, GitHub Actions, Markdown.
 
@@ -14,7 +14,7 @@
 
 ## Context
 
-`@age/web-components` (the vanilla HTML / JS adapter at [`web-components/`](web-components/)) has been built, demoed (`yarn demo.web` → http://localhost:5174), and documented. It registers every Stencil custom element via a single `defineCustomElements()` call and works with bundlers, plain HTML import maps, and TS type augmentation.
+`@egovmd/mud-web-components` (the vanilla HTML / JS adapter at [`web-components/`](web-components/)) has been built, demoed (`yarn demo.web` → http://localhost:5174), and documented. It registers every Stencil custom element via a single `defineCustomElements()` call and works with bundlers, plain HTML import maps, and TS type augmentation.
 
 The three legacy framework adapters (`react-design-system/`, `vue-design-system/`, `angular-design-system/`) are now redundant. Keeping them imposes carrying costs: extra dependencies, longer build pipelines, parallel-worktree merge conflicts (`.gitattributes` `merge=ours` rules), four extra CI steps per PR, and the misleading implication that those packages remain supported.
 
@@ -96,7 +96,7 @@ Once this v2 is committed, Task 0 is a no-op.
 
 ---
 
-## Task 1: Pre-flight — confirm `@age/web-components` works
+## Task 1: Pre-flight — confirm `@egovmd/mud-web-components` works
 
 Safety net. If the vanilla adapter has any regression, we cannot detect it after deletion (no way to compare).
 
@@ -118,7 +118,7 @@ yarn demo.web
 
 Open http://localhost:5174. Confirm:
 - All `<mud-button>` variants and sizes render with Onest font.
-- DevTools console: `[demo] @age/web-components registered all custom elements`.
+- DevTools console: `[demo] @egovmd/mud-web-components registered all custom elements`.
 - DevTools console: `Object.keys(window).filter(k => k.startsWith('HTMLCor')).length` returns > 30.
 
 - [ ] **Step 3: Stop the dev server** (Ctrl-C).
@@ -153,8 +153,8 @@ With:
 
 ```bash
 yarn build                     # Full production build with tokens, custom-elements, and docs
-yarn build.web                 # Build @age/web-components vanilla adapter
-yarn demo.web                  # Serve the @age/web-components demo (http://localhost:5174)
+yarn build.web                 # Build @egovmd/mud-web-components vanilla adapter
+yarn demo.web                  # Serve the @egovmd/mud-web-components demo (http://localhost:5174)
 yarn sp.build                  # Storybook static export (validates everything)
 yarn sp.docker                 # Docker-optimized Storybook build
 ```
@@ -323,7 +323,7 @@ git commit -m "chore: remove angular/react/vue adapter workspaces"
 - [ ] **Step 1: Sanity-check no live consumer of the shim folder**
 
 ```bash
-git grep -nE "from '@age/design-system/components/" -- ':!components/' ':!dist/' ':!yarn.lock'
+git grep -nE "from '@egovmd/mud/components/" -- ':!components/' ':!dist/' ':!yarn.lock'
 git grep -nE "components/mud-.*\.js" -- ':!components/' ':!dist/' ':!yarn.lock' ':!src/'
 ```
 
@@ -469,9 +469,9 @@ Heading map (verified 2026-05-17; 1939 total lines):
 - [ ] **Step 1: Rewrite intro + TOC (lines 1–17)**:
 
 ```markdown
-# AGE Design System — Integration Guide
+# MUD Design System — Integration Guide
 
-This document provides step-by-step instructions for building, publishing, and using the AGE Design System (`@age/design-system` web components + the `@age/web-components` vanilla adapter) in any application — bundler-based or plain HTML.
+This document provides step-by-step instructions for building, publishing, and using the MUD Design System (`@egovmd/mud` web components + the `@egovmd/mud-web-components` vanilla adapter) in any application — bundler-based or plain HTML.
 
 ## Table of Contents
 
@@ -497,7 +497,7 @@ This document provides step-by-step instructions for building, publishing, and u
   - `### Issue: Build errors after updating components` (Angular-only)
   - `### Issue: Module not found errors` (Angular `yarn link` recipe)
 
-  Keep `### Issue: TypeScript errors for component properties` (rewrite solution to recommend `yarn add @age/design-system @age/web-components`) and `### Issue: Styles not applied` (rewrite token import paths to `@age/design-system/dist/design-system/tokens/core.tokens.css`).
+  Keep `### Issue: TypeScript errors for component properties` (rewrite solution to recommend `yarn add @egovmd/mud @egovmd/mud-web-components`) and `### Issue: Styles not applied` (rewrite token import paths to `@egovmd/mud/dist/design-system/tokens/core.tokens.css`).
 
 - [ ] **Step 7: Rewrite Development Workflow + Summary Checklist**:
 
@@ -515,7 +515,7 @@ This document provides step-by-step instructions for building, publishing, and u
 - [ ] Build Stencil components: `yarn build`
 - [ ] Build vanilla adapter: `yarn build.web`
 - [ ] Visually verify demo: `yarn demo.web` (http://localhost:5174)
-- [ ] Install in app: `yarn add @age/design-system @age/web-components`
+- [ ] Install in app: `yarn add @egovmd/mud @egovmd/mud-web-components`
 - [ ] Import tokens + global CSS, then call `defineCustomElements()`
 - [ ] Lint tokens before any token change: `yarn tokens.lint.all`
 ```
@@ -538,7 +538,7 @@ This document provides step-by-step instructions for building, publishing, and u
 
 ```bash
 git add README.md
-git commit -m "docs(readme): rewrite around @age/web-components; drop adapter sections"
+git commit -m "docs(readme): rewrite around @egovmd/mud-web-components; drop adapter sections"
 ```
 
 ---
@@ -611,6 +611,6 @@ Watch the GitHub Actions run. Expected: green (no "Build React adapter" / "Build
 ## Out of Scope
 
 - Communicating the deprecation externally (npm deprecation tags, blog post, customer migration guide) — separate communications PR.
-- Bumping `@age/design-system` to a new major version to signal the breaking change — separate version-management PR.
+- Bumping `@egovmd/mud` to a new major version to signal the breaking change — separate version-management PR.
 - Re-tagging old commits or rewriting history of adapter folders — the adapters live in git history forever; no cleanup needed.
 - Adding `// react/react-dom kept for agentation toolbar` JSON5 comments to `package.json` — JSON doesn't support comments and the rationale belongs in [AGENTS.md](../../AGENTS.md) anyway (handled inline in Task 4 Step 7 fallback).

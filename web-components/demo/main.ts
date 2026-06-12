@@ -1,11 +1,11 @@
-import '@age/design-system/dist/design-system/tokens/core.tokens.css';
-import '@age/design-system/dist/design-system/tokens/core.dark.tokens.css';
-import '@age/design-system/dist/design-system/design-system.css';
+import '@egovmd/mud/dist/design-system/tokens/core.tokens.css';
+import '@egovmd/mud/dist/design-system/tokens/core.dark.tokens.css';
+import '@egovmd/mud/dist/design-system/design-system.css';
 import './demo.css';
 
 // Import the lazy bundle entry directly so Stencil resolves `getAssetPath()`
 // relative to dist/design-system/ (where the SVG assets live) via import.meta.url.
-import '@age/design-system/dist/design-system/design-system.esm.js';
+import '@egovmd/mud/dist/design-system/design-system.esm.js';
 
 import { CATEGORIES, indexPath, locate, pagePath, type ComponentEntry } from './manifest';
 
@@ -98,7 +98,7 @@ function renderComponentChrome(tag: string) {
 
   const header = el('header', { class: 'demo-header' }, lead, nav);
   document.body.insertBefore(header, document.body.firstChild);
-  document.title = `${tag} · @age/web-components`;
+  document.title = `${tag} · @egovmd/mud-web-components`;
 }
 
 /* ----------------------------------------------------------------- */
@@ -108,7 +108,7 @@ function renderToc() {
   const header = el(
     'header',
     { class: 'demo-header' },
-    el('div', { class: 'demo-header__lead' }, el('h1', {}, '@age/web-components')),
+    el('div', { class: 'demo-header__lead' }, el('h1', {}, '@egovmd/mud-web-components')),
     el('div', { class: 'demo-header__nav' }, buildThemeToggle()),
   );
 
@@ -117,7 +117,7 @@ function renderToc() {
     {},
     'Vanilla-HTML playground for the ',
     strong('compiled'),
-    ' AGE Design System bundle. Each component lives on its own page and is exercised through its ',
+    ' MUD Design System bundle. Each component lives on its own page and is exercised through its ',
     strong('public API only'),
     ' — the way a downstream consumer integrates it. One component per page means the browser console shows ',
     strong('only that component’s'),
@@ -186,7 +186,7 @@ function renderToc() {
 
   const main = el('main', { class: 'toc' }, intro, search, ...groups, empty);
   document.body.append(header, main);
-  document.title = '@age/web-components — table of contents';
+  document.title = '@egovmd/mud-web-components — table of contents';
 }
 
 /* ----------------------------------------------------------------- */
@@ -198,7 +198,7 @@ function boot() {
   else if ('toc' in document.body.dataset) renderToc();
 
   applyTheme(getInitialTheme());
-  console.info('[demo] @age/design-system custom elements registered');
+  console.info('[demo] @egovmd/mud custom elements registered');
 }
 
 if (document.readyState === 'loading') {

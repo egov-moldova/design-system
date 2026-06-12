@@ -4,7 +4,7 @@
 
 ## Overview
 
-This guide provides instructions for AI agents (like Windsurf Cascade, GitHub Copilot, ChatGPT, Claude, etc.) to effectively develop components for the AGE Design System. It defines workflows, prompting strategies, validation steps, and quality checkpoints for autonomous or AI-assisted component development.
+This guide provides instructions for AI agents (like Windsurf Cascade, GitHub Copilot, ChatGPT, Claude, etc.) to effectively develop components for the MUD Design System. It defines workflows, prompting strategies, validation steps, and quality checkpoints for autonomous or AI-assisted component development.
 
 ---
 
@@ -87,7 +87,7 @@ AI TASK:
 
 **Example Analysis Prompt:**
 ```
-Analyze this component specification for AGE Design System:
+Analyze this component specification for MUD Design System:
 - Component Name: Input Field
 - Type: Molecule
 - Design: [Figma link or description]
@@ -286,7 +286,7 @@ Run these checks before marking complete:
 When prompting AI to create a component, include:
 
 1. Project Context:
-   - "This is the AGE Design System built with Stencil.js"
+   - "This is the MUD Design System built with Stencil.js"
    - "We use slot-based architecture, not prop-based"
    - "We use a three-tier design token system"
 
@@ -311,7 +311,7 @@ When prompting AI to create a component, include:
 
 **Create New Component:**
 ```
-Create a new component for AGE Design System following these requirements:
+Create a new component for MUD Design System following these requirements:
 
 Component: mud-card
 Type: Organism
@@ -996,10 +996,10 @@ Common fixes:
 ### 11.1 Component Creation Template
 
 ```
-Create a new component for AGE Design System:
+Create a new component for MUD Design System:
 
 CONTEXT:
-- Project: AGE Design System (Stencil.js)
+- Project: MUD Design System (Stencil.js)
 - Architecture: Slot-based (NO prop-based element recreation)
 - Token System: Three-tier (Global → Semantic → Component)
 - Accessibility: WCAG 2.1 AA required
@@ -1242,7 +1242,7 @@ return (
 
 ## 13. Conclusion
 
-AI agents following this guide should be able to autonomously develop high-quality, accessible, token-driven components for the AGE Design System. The key principles are:
+AI agents following this guide should be able to autonomously develop high-quality, accessible, token-driven components for the MUD Design System. The key principles are:
 
 1. **Slot-based architecture** - Always wrap semantic HTML
 2. **Token-driven styling** - Never hard-code values

@@ -1,13 +1,13 @@
 ---
 name: redesign-component
-description: Redesign an existing `mud-*` component to align with the new AGE Design System per a Figma reference. Reads the current implementation, diffs current tokens against Figma's new design tokens, plans the redesign, applies changes in strict token-first order, and dispatches the parallel-aux-tasks skill for verification + auxiliary writing. Optimized for Cline Kanban + worktree parallelism. Supports `--write-mode` flag (default `parallel-write`).
+description: Redesign an existing `mud-*` component to align with the new MUD Design System per a Figma reference. Reads the current implementation, diffs current tokens against Figma's new design tokens, plans the redesign, applies changes in strict token-first order, and dispatches the parallel-aux-tasks skill for verification + auxiliary writing. Optimized for Cline Kanban + worktree parallelism. Supports `--write-mode` flag (default `parallel-write`).
 tools: Read, Write, Edit, Glob, Grep, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_evaluate, mcp__playwright__browser_console_messages, mcp__playwright__browser_wait_for, mcp__playwright__browser_press_key, mcp__figma__get_design_context, mcp__figma__get_screenshot, mcp__figma__get_variable_defs, mcp__figma__get_metadata, mcp__image-compare__compare_images, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, Skill
 model: opus
 ---
 
-# Redesign Component (AGE Design System)
+# Redesign Component (MUD Design System)
 
-Redesign an existing `mud-*` component to align with the new AGE Design System using a Figma reference as the source of truth. This is the **primary orchestrator** for the 62-component redesign program.
+Redesign an existing `mud-*` component to align with the new MUD Design System using a Figma reference as the source of truth. This is the **primary orchestrator** for the 62-component redesign program.
 
 **Key differences from `refactor-component`**:
 
@@ -308,7 +308,7 @@ mcp__playwright__browser_console_messages({ level: "error" })
 If running inside Cline Kanban worktree:
 
 1. Stage changes: `git add -A` (only files modified by this redesign)
-2. Commit: `git commit -m "redesign(mud-<name>): align to AGE Design System"`
+2. Commit: `git commit -m "redesign(mud-<name>): align to MUD Design System"`
 3. Push: `git push -u origin redesign/mud-<name>`
 4. Open PR (see `.claude/kanban/pr-template.md`)
 5. Update the Kanban card with PR link + summary

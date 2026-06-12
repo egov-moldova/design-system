@@ -1,4 +1,4 @@
-# PRINCIPLES.md — `@age/design-system`
+# PRINCIPLES.md — `@egovmd/mud`
 
 Engineering posture for the Corlab Design System (Stencil web components, design tokens, Storybook). This file is durable policy. When a rule below collides with `AGENTS.md`, `AGENTS.md` wins on workflow specifics; this file owns code-shape opinions.
 

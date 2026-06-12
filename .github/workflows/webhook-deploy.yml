@@ -1,0 +1,76 @@
+name: Webhook Deployment
+
+on:
+  repository_dispatch:
+    types: [webhook-deploy]
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: georgel2489/age-design
+
+jobs:
+  build-and-push:
+    name: Build and Push Docker Image
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Cleanup old builds
+        run: |
+          docker ps -a --filter "status=exited" -q | xargs -r docker rm || true
+          docker images --filter "dangling=true" -q | xargs -r docker rmi || true
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          network: host
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          labels: ${{ steps.meta.outputs.labels }}
+
+  deploy:
+    name: Deploy to Dev
+    needs: build-and-push
+    runs-on: self-hosted
+    steps:
+      - name: Deploy to dev server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.HOST_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -euo pipefail
+
+            echo "🔄 Deploying to dev via webhook..."
+            cd /home/azureuser/app
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login ${{ env.REGISTRY }} -u ${{ github.actor }} --password-stdin
+            docker image pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            docker compose stop storybook
+            docker compose rm -f storybook
+            sleep 5
+            docker compose up --remove-orphans --no-deps -d storybook
+
+            echo "🧹 Cleaning up..."
+            docker system prune -f
+
+            echo "✅ Webhook deployment completed successfully"

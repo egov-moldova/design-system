@@ -1,8 +1,8 @@
-# Redesign `mud-button` — AGE Design System
+# Redesign `mud-button` — MUD Design System
 
 ## Context
 
-`mud-button` is the next legacy atom queued for redesign, following the spinner → icon → button order documented in `memory/legacy-components-migration.md`. The legacy implementation at [src/legacy/mud-button/](src/legacy/mud-button/) exposes 12 colour variants × 4 sizes using a flat CSS-variable API. The new AGE design system in Figma file `doJ7tDY0PlQ0PqMgbpFVIC` (primary node `653:14291`, state matrix `653:19201`) consolidates these into **5 filled variants × 3 sizes**, introduces a new `shape` axis (`rectangular`/`circular`), and adds first-class `loading` + slot-driven `icon-only` rendering.
+`mud-button` is the next legacy atom queued for redesign, following the spinner → icon → button order documented in `memory/legacy-components-migration.md`. The legacy implementation at [src/legacy/mud-button/](src/legacy/mud-button/) exposes 12 colour variants × 4 sizes using a flat CSS-variable API. The new MUD Design System in Figma file `doJ7tDY0PlQ0PqMgbpFVIC` (primary node `653:14291`, state matrix `653:19201`) consolidates these into **5 filled variants × 3 sizes**, introduces a new `shape` axis (`rectangular`/`circular`), and adds first-class `loading` + slot-driven `icon-only` rendering.
 
 The goal of this redesign is to ship a production-ready `src/components/mud-button/` that is Figma-pixel-perfect, follows the spinner/icon precedent (CSS Pattern A — slot-based, consumer-supplied `<button>`/`<a>`), uses the 3-tier token hierarchy, and unlocks the next wave of legacy-consumer migrations (`mud-calendar`, `mud-modal`, `mud-pagination-go-to`, `mud-upload-area`). The legacy folder stays untouched so existing consumers keep working until they are migrated one-by-one in follow-up PRs.
 

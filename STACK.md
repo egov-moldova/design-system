@@ -1,4 +1,4 @@
-# STACK.md — `@age/design-system`
+# STACK.md — `@egovmd/mud`
 
 The stack is fixed by current `package.json` + `AGENTS.md`. Treat this file as the rationale layer: what we picked, why, and what we explicitly reject.
 

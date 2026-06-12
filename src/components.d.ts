@@ -443,7 +443,7 @@ export namespace Components {
     }
     /**
      * Button group — layout container for stacking multiple `mud-button` elements
-     * with consistent spacing (12px gap) per the AGE Design System.
+     * with consistent spacing (12px gap) per the MUD Design System.
      * Pure layout primitive: does not propagate props to children, does not emit
      * events, does not manage focus order beyond the natural DOM tab sequence.
      * Each child `mud-button` controls its own size, variant, and full-width
@@ -3271,7 +3271,7 @@ declare global {
     };
     /**
      * Button group — layout container for stacking multiple `mud-button` elements
-     * with consistent spacing (12px gap) per the AGE Design System.
+     * with consistent spacing (12px gap) per the MUD Design System.
      * Pure layout primitive: does not propagate props to children, does not emit
      * events, does not manage focus order beyond the natural DOM tab sequence.
      * Each child `mud-button` controls its own size, variant, and full-width
@@ -4811,7 +4811,7 @@ declare namespace LocalJSX {
     }
     /**
      * Button group — layout container for stacking multiple `mud-button` elements
-     * with consistent spacing (12px gap) per the AGE Design System.
+     * with consistent spacing (12px gap) per the MUD Design System.
      * Pure layout primitive: does not propagate props to children, does not emit
      * events, does not manage focus order beyond the natural DOM tab sequence.
      * Each child `mud-button` controls its own size, variant, and full-width
@@ -8443,7 +8443,7 @@ declare module "@stencil/core" {
             "mud-button": LocalJSX.IntrinsicElements["mud-button"] & JSXBase.HTMLAttributes<HTMLMudButtonElement>;
             /**
              * Button group — layout container for stacking multiple `mud-button` elements
-             * with consistent spacing (12px gap) per the AGE Design System.
+             * with consistent spacing (12px gap) per the MUD Design System.
              * Pure layout primitive: does not propagate props to children, does not emit
              * events, does not manage focus order beyond the natural DOM tab sequence.
              * Each child `mud-button` controls its own size, variant, and full-width

@@ -2,7 +2,7 @@
 
 ## Context
 
-The `@age/design-system` repo is a Stencil web-components monorepo with a mature Claude Code setup (5 MCP servers, 4 subagents, 10 slash commands, 15 skills). Project requirements (including accessibility scope) are authored in Figma — the canonical specification for this work is:
+The `@egovmd/mud` repo is a Stencil web-components monorepo with a mature Claude Code setup (5 MCP servers, 4 subagents, 10 slash commands, 15 skills). Project requirements (including accessibility scope) are authored in Figma — the canonical specification for this work is:
 
 - **Figma source of truth:** https://www.figma.com/design/doJ7tDY0PlQ0PqMgbpFVIC/Components?node-id=2753-5965&m=dev (node `2753-5965`). Any change to the skills tree, hooks, or token validator that could affect component a11y must be verified against this node before merge.
 

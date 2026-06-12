@@ -2,7 +2,7 @@
 
 ## Context
 
-Folderul `x:\WORK\corlab\age-design\.claude\` conține un sistem matur de instrucțiuni AI: **11 agenți, 12 skill-uri, 10 comenzi slash**, construit specific în jurul AGE Design System (`mud-*` Stencil components). Există un repo dedicat (separat de age-design) pentru skill-uri ce pot fi publicate ulterior pe **skills.sh**.
+Folderul `x:\WORK\corlab\age-design\.claude\` conține un sistem matur de instrucțiuni AI: **11 agenți, 12 skill-uri, 10 comenzi slash**, construit specific în jurul MUD Design System (`mud-*` Stencil components). Există un repo dedicat (separat de age-design) pentru skill-uri ce pot fi publicate ulterior pe **skills.sh**.
 
 **Decizia user-ului acum**: nu execuția. **Analiza** dacă publicarea agnostică e (a) posibilă, (b) are sens, (c) nu strică calitatea proiectului curent. Implementarea se va face mai târziu în repo-ul dedicat.
 
@@ -151,7 +151,7 @@ Folderul `x:\WORK\corlab\age-design\.claude\` conține un sistem matur de instru
 1. **DX local intact**: înainte și după ce există generator-ul, rulează `audit-component mud-button` în `.claude/` → același output (zero impact).
 2. **Cross-project run**: în repo curat Stencil, instalează pack-ul, configurează `template-vars.json` cu `{prefix: "my", components-root: "src/components"}`, rulează `story-writer my-button` → produce stories funcționale fără referințe AGE.
 3. **Scripts bundling**: `node skills/audit-component/bundled-scripts/audit/run-all.mjs` rulează standalone fără `scripts/` din root.
-4. **Grep clean**: `rg "mud-|/scripts/audit/|yarn lint.tokens|AGE Design System|Corlab" <output-dir>` returnează zero hits pentru Tier 1-2; Tier 3 are doar referințe explicate în README ca "AGE-specific examples".
+4. **Grep clean**: `rg "mud-|/scripts/audit/|yarn lint.tokens|MUD Design System|Corlab" <output-dir>` returnează zero hits pentru Tier 1-2; Tier 3 are doar referințe explicate în README ca "AGE-specific examples".
 5. **Doc check**: README pack-ului are: setup guide (5 min), exemplu per tier, limitations Tier 3, sync policy.
 
 ---

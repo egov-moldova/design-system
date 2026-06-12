@@ -1,4 +1,4 @@
-# TESTING.md — `@age/design-system`
+# TESTING.md — `@egovmd/mud`
 
 ## What we test
 

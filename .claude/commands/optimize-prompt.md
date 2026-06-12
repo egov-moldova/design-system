@@ -5,7 +5,7 @@ argument-hint: "<raw request> [--mode=new|redesign|modify|fix|tokens] [--archety
 
 # /optimize-prompt
 
-Optimize the request `$ARGUMENTS` into a project-aware spec for AGE Design System. This is the **only** entry point for prompt optimization — the previous `/optimize-prompt-new-component` variant has been collapsed into this command via `--mode=new`.
+Optimize the request `$ARGUMENTS` into a project-aware spec for MUD Design System. This is the **only** entry point for prompt optimization — the previous `/optimize-prompt-new-component` variant has been collapsed into this command via `--mode=new`.
 
 The full methodology lives in [`.claude/skills/optimize-prompt/SKILL.md`](../skills/optimize-prompt/SKILL.md). This file is a thin command wrapper.
 
@@ -115,7 +115,7 @@ Expected behavior:
 Input:
 
 ```text
-/optimize-prompt --mode=redesign Redesign mud-badge per AGE Design System. Figma: https://www.figma.com/design/.../?node-id=...
+/optimize-prompt --mode=redesign Redesign mud-badge per MUD Design System. Figma: https://www.figma.com/design/.../?node-id=...
 ```
 
 Expected behavior:

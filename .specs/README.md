@@ -1,6 +1,6 @@
 # `.specs/` — High-Level Project Specifications
 
-These three documents describe what `@age/design-system` is, how its design tokens are organized, and how components are built. They are the **onboarding-level reference** — concise enough to read end-to-end, deep enough to anchor decisions.
+These three documents describe what `@egovmd/mud` is, how its design tokens are organized, and how components are built. They are the **onboarding-level reference** — concise enough to read end-to-end, deep enough to anchor decisions.
 
 For **actionable, runtime guidance** (file structures, commands, anti-patterns, workflows), see [`AGENTS.md`](../AGENTS.md) and its scoped subfiles.
 

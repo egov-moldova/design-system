@@ -8,7 +8,7 @@
 ## Overview
 
 Button group — layout container for stacking multiple `mud-button` elements
-with consistent spacing (12px gap) per the AGE Design System.
+with consistent spacing (12px gap) per the MUD Design System.
 
 Pure layout primitive: does not propagate props to children, does not emit
 events, does not manage focus order beyond the natural DOM tab sequence.

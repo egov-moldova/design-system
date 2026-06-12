@@ -5,7 +5,7 @@
  *
  * Usage:
  * ```ts
- * import { createFileUploader } from '@age/design-system/utils/file-upload-helper';
+ * import { createFileUploader } from '@egovmd/mud/utils/file-upload-helper';
  *
  * const uploader = createFileUploader({
  *   url: '/api/upload',

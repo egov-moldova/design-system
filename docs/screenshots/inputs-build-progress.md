@@ -2,7 +2,7 @@
 
 Tracking the sequential build of every input variant from the
 Unified Design System of the Republic of Moldova (Figma file
-`doJ7tDY0PlQ0PqMgbpFVIC`) into `@age/design-system`.
+`doJ7tDY0PlQ0PqMgbpFVIC`) into `@egovmd/mud`.
 
 All work lands on branch `docs/bootstrap-engineering-design-context`
 and updates PR https://github.com/corlab-org/age-design/pull/5.
@@ -1065,7 +1065,7 @@ items found and fixed:
    inheriting `regular` (400). Aligns with the v2 `mud-input` precedent
    (commit `6624b85`) and the DESIGN.md "Medium-Weight Label Rule" for
    input-family consistency. Figma's variable defs nominally say
-   `fw-regular` for "Desktop/Body/Small", but the AGE design system
+   `fw-regular` for "Desktop/Body/Small", but the MUD Design System
    overrides the field-label specifically to medium per the rule (one
    way to do each thing across the input family).
 
