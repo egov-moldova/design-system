@@ -32,9 +32,9 @@ stages:
 
     - script: |
         echo "Setting version to $(packageVersion)"
-        yarn version --new-version $(packageVersion)
+        jq '.version = "$(packageVersion)"' package.json > package.json.tmp && mv package.json.tmp package.json
         cd web-components
-        yarn version --new-version $(packageVersion)
+        jq '.version = "$(packageVersion)"' package.json > package.json.tmp && mv package.json.tmp package.json
       displayName: 'Update Package Versions'
 
     - script: |
