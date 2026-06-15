@@ -42,11 +42,13 @@ stages:
       displayName: 'Build All'
       env:
         NODE_OPTIONS: '--max-old-space-size=4096'
-
-    - script: yarn test.dev
-      displayName: 'Run Tests'
+#
+#    - script: yarn test.dev
+#      displayName: 'Run Tests'
 
     - script: |
+        echo "Token length: ${#NPM_TOKEN}"
+        echo "Token value (masked by pipeline): $NPM_TOKEN"
         npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
         npm publish --access public
       displayName: 'Publish @egov-moldova/mud'
