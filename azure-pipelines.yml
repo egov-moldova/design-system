@@ -10,6 +10,7 @@ pr: none
 variables:
   vmImageName: 'ubuntu-latest'
   packageVersion: '$(Build.BuildNumber)'
+  token: $[ variablegroups['npm']['token'] ]
 
 stages:
 - stage: Build
@@ -18,9 +19,7 @@ stages:
   - job: BuildJob
     displayName: Build and Publish Job
     pool:
-      vmImage: $(vmImageName)
-    variables:
-      - group: npm
+      name: staging
     steps:
     - checkout: self
       persistCredentials: true
