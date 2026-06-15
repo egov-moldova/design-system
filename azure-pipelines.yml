@@ -32,9 +32,9 @@ stages:
 
     - script: |
         echo "Setting version to $(packageVersion)"
-        jq ".version = \"$(packageVersion)\"" package.json > package.json.tmp && mv package.json.tmp package.json
+        node -e "const fs=require('fs');const pkg=JSON.parse(fs.readFileSync('package.json'));pkg.version='$(packageVersion)';fs.writeFileSync('package.json',JSON.stringify(pkg,null,2)+'\n');"
         cd web-components
-        jq ".version = \"$(packageVersion)\"" package.json > package.json.tmp && mv package.json.tmp package.json
+        node -e "const fs=require('fs');const pkg=JSON.parse(fs.readFileSync('package.json'));pkg.version='$(packageVersion)';fs.writeFileSync('package.json',JSON.stringify(pkg,null,2)+'\n');"
       displayName: 'Update Package Versions'
 
     - script: |
