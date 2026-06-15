@@ -1,6 +1,5 @@
 {
   "name": "@egov-moldova/mud",
-  "_id": "@egovmd/mud@1.0.0",
   "version": "1.0.6",
   "description": "MUD Design System — Stencil web components",
   "main": "dist/index.cjs.js",
@@ -249,14 +248,14 @@
       ]
     },
     "demo.web": {
-      "command": "yarn workspace @egovmd/mud-web-components demo",
+      "command": "yarn workspace @egov-moldova/mud-web-components demo",
       "dependencies": [
         "build"
       ],
       "service": true
     },
     "demo.web.build": {
-      "command": "yarn workspace @egovmd/mud-web-components demo.build",
+      "command": "yarn workspace @egov-moldova/mud-web-components demo.build",
       "dependencies": [
         "build"
       ],
