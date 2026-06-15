@@ -49,7 +49,7 @@ stages:
     - script: yarn npm publish --access public
       displayName: 'Publish @egov-moldova/mud'
       env:
-        YARN_NPM_AUT H_TOKEN: $(token)
+        YARN_NPM_AUTH_TOKEN: $(token)
 
     - script: |
         cd web-components
