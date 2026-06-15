@@ -7,9 +7,9 @@
 
 ## Overview
 
-Notification — semantic messaging banner.
+Notification — semantic toast message (350px filled surface, 8px radius).
 
-Renders an optional leading icon, an optional bold title, the message body
+Renders a leading icon, an optional bold heading, the message body
 (default slot), an optional inline action group (`actions` slot) and an
 optional trailing close button.
 
@@ -17,25 +17,23 @@ Pattern B (atom-display + interactive close): the close affordance lives
 inside shadow DOM so it participates in tab order with a real
 `button` role. The body itself is not interactive.
 
-`variant` selects the semantic color family (info / positive / warning /
-danger / neutral). `notificationStyle` toggles between the soft tinted
-background (`subtle`) and the filled high-emphasis treatment (`strong`).
+`variant` selects the semantic color family — `info`, `warning`, `success`,
+or `error` — each a filled toast surface with its own leading icon.
 
 Live-region routing:
-- `info` / `positive` / `neutral` → `role="status"` + `aria-live="polite"`
-- `warning` / `danger` → `role="alert"` + `aria-live="assertive"`
+- `info` / `success` → `role="status"` + `aria-live="polite"`
+- `warning` / `error` → `role="alert"` + `aria-live="assertive"`
 
 ## Properties
 
-| Property            | Attribute            | Description                                                                                                                                                                                                                                                                           | Type                                                         | Default     |
-| ------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------ | ----------- |
-| `ariaLabel`         | `aria-label`         | Forwarded to the host as `aria-label`. Use this to give the entire notification an explicit accessible name when the body content alone is not descriptive enough.                                                                                                                    | `string \| undefined`                                        | `undefined` |
-| `closable`          | `closable`           | When `true`, renders a trailing close button. Activating it emits `mudClose`; the consumer is responsible for removing the notification from the DOM.                                                                                                                                 | `boolean`                                                    | `false`     |
-| `closeLabel`        | `close-label`        | Close-button accessible label. Defaults to the Romanian "Închide". Provide an alternative for non-Romanian locales.                                                                                                                                                                   | `string`                                                     | `'Închide'` |
-| `iconName`          | `icon-name`          | Override the default `mud-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.                                                                                                              | `string \| undefined`                                        | `undefined` |
-| `notificationStyle` | `notification-style` | Visual intensity. `subtle` renders a tinted background with high-contrast dark text; `strong` renders a filled semantic background with on-color text. The attribute is reflected as `notification-style` to avoid colliding with the global `style` attribute on every HTML element. | `"strong" \| "subtle"`                                       | `'subtle'`  |
-| `titleText`         | `title-text`         | Optional bold title rendered above the body.                                                                                                                                                                                                                                          | `string \| undefined`                                        | `undefined` |
-| `variant`           | `variant`            | Semantic color family.                                                                                                                                                                                                                                                                | `"danger" \| "info" \| "neutral" \| "positive" \| "warning"` | `'info'`    |
+| Property     | Attribute     | Description                                                                                                                                                              | Type                                          | Default     |
+| ------------ | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------- | ----------- |
+| `ariaLabel`  | `aria-label`  | Forwarded to the host as `aria-label`. Use this to give the entire notification an explicit accessible name when the body content alone is not descriptive enough.       | `string \| undefined`                         | `undefined` |
+| `closable`   | `closable`    | When `true`, renders a trailing close button. Activating it emits `mudClose`; the consumer is responsible for removing the notification from the DOM.                    | `boolean`                                     | `false`     |
+| `closeLabel` | `close-label` | Close-button accessible label. Defaults to the Romanian "Închide". Provide an alternative for non-Romanian locales.                                                      | `string`                                      | `'Închide'` |
+| `iconName`   | `icon-name`   | Override the default `mud-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored. | `string \| undefined`                         | `undefined` |
+| `titleText`  | `title-text`  | Optional bold title rendered above the body.                                                                                                                             | `string \| undefined`                         | `undefined` |
+| `variant`    | `variant`     | Semantic color family.                                                                                                                                                   | `"error" \| "info" \| "success" \| "warning"` | `'info'`    |
 
 
 ## Events

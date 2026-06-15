@@ -1,6 +1,6 @@
 {
-  "name": "@egovmd/mud-web-components",
-  "version": "1.0.0",
+  "name": "@egov-moldova/mud-web-components",
+  "version": "1.0.5",
   "description": "Vanilla HTML / JS adapter for MUD Design System web components",
   "main": "dist/index.js",
   "module": "dist/index.js",
@@ -25,7 +25,7 @@
     "prepare": "yarn build"
   },
   "dependencies": {
-    "@egovmd/mud": "portal:.."
+    "@egov-moldova/mud": "portal:.."
   },
   "devDependencies": {
     "typescript": "^5.9.3",

@@ -1,7 +1,7 @@
 {
-  "name": "@egovmd/mud",
+  "name": "@egov-moldova/mud",
   "_id": "@egovmd/mud@1.0.0",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "MUD Design System — Stencil web components",
   "main": "dist/index.cjs.js",
   "unpkg": "dist/design-system/design-system.esm.js",
@@ -14,7 +14,6 @@
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
-
       "import": "./dist/index.js",
       "require": "./dist/index.cjs.js"
     },
@@ -528,8 +527,5 @@
     "node": ">=24.0.0 <25.0.0"
   },
   "readme": "./README.md",
-  "publishConfig": {
-    "@age:registry": "https://gitlab.com/api/v4/projects/44763899/packages/npm/"
-  },
   "packageManager": "yarn@4.12.0+sha512.f45ab632439a67f8bc759bf32ead036a1f413287b9042726b7cc4818b7b49e14e9423ba49b18f9e06ea4941c1ad062385b1d8760a8d5091a1a31e5f6219afca8"
 }

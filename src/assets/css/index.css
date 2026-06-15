@@ -5,7 +5,7 @@ Index CSS File
 ------------------------------------------------------------------------------------------------------------------------
 */
 
+@import 'base/fonts.css';
 @import 'base/html.css';
 @import 'utilities/scrollbars.css';
 @import 'utilities/overlays.css';
-/*@import 'base/fonts.css';*/

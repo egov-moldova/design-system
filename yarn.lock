@@ -19,85 +19,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@age/design-system@portal:..::locator=%40age%2Fweb-components%40workspace%3Aweb-components":
-  version: 0.0.0-use.local
-  resolution: "@age/design-system@portal:..::locator=%40age%2Fweb-components%40workspace%3Aweb-components"
-  dependencies:
-    "@stencil/core": "npm:^4.43.4"
-  languageName: node
-  linkType: soft
-
-"@age/design-system@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "@age/design-system@workspace:."
-  dependencies:
-    "@axe-core/playwright": "npm:^4.10.2"
-    "@commitlint/cli": "npm:^21.0.1"
-    "@commitlint/config-conventional": "npm:^21.0.1"
-    "@playwright/test": "npm:^1.60.0"
-    "@prettier/plugin-oxc": "npm:^0.1.4"
-    "@stencil/core": "npm:^4.43.4"
-    "@stencil/eslint-plugin": "npm:^1.3.0"
-    "@stencil/postcss": "npm:^2.1.0"
-    "@stencil/vitest": "npm:^1.11.6"
-    "@storybook/addon-a11y": "npm:^10.4.0"
-    "@storybook/addon-docs": "npm:^10.4.0"
-    "@storybook/addon-links": "npm:^10.4.0"
-    "@storybook/addon-vitest": "npm:^10.4.0"
-    "@storybook/web-components-vite": "npm:^10.4.0"
-    "@types/node": "npm:^24.12.4"
-    "@typescript-eslint/eslint-plugin": "npm:^8.59.4"
-    "@typescript-eslint/parser": "npm:^8.59.4"
-    "@vitest/browser-playwright": "npm:^4.1.6"
-    "@vitest/coverage-v8": "npm:^4.1.6"
-    "@whitespace/storybook-addon-html": "npm:^9.0.0"
-    agent-browser: "npm:latest"
-    agentation: "npm:^3.0.2"
-    commander: "npm:^14.0.3"
-    cross-env: "npm:^10.1.0"
-    eslint: "npm:^10.4.0"
-    eslint-config-prettier: "npm:^10.1.8"
-    eslint-plugin-react: "npm:^7.37.5"
-    eslint-plugin-storybook: "npm:^10.4.0"
-    husky: "npm:^9.1.7"
-    known-css-properties: "npm:^0.37.0"
-    lit: "npm:^3.3.2"
-    lodash: "npm:^4.18.1"
-    oxlint: "npm:^1.66.0"
-    pixelmatch: "npm:^7.1.0"
-    playwright: "npm:^1.60.0"
-    pngjs: "npm:^7.0.0"
-    postcss: "npm:^8.5.14"
-    postcss-nested: "npm:^7.0.2"
-    postcss-preset-env: "npm:^11.1.3"
-    prettier: "npm:^3.8.1"
-    rimraf: "npm:^6.1.2"
-    storybook: "npm:^10.4.0"
-    style-dictionary: "npm:^5.4.1"
-    stylelint: "npm:^17.4.0"
-    stylelint-config-standard: "npm:^40.0.0"
-    stylelint-declaration-strict-value: "npm:^1.11.1"
-    svgo: "npm:^4.0.1"
-    typescript: "npm:^5.9.3"
-    typescript-eslint: "npm:^8.59.4"
-    vite: "npm:^8.0.13"
-    vitest: "npm:^4.1.6"
-    wait-on: "npm:^9.0.3"
-    web-component-analyzer: "npm:^2.0.0"
-    wireit: "npm:^0.14.12"
-  languageName: unknown
-  linkType: soft
-
-"@age/web-components@workspace:web-components":
-  version: 0.0.0-use.local
-  resolution: "@age/web-components@workspace:web-components"
-  dependencies:
-    "@age/design-system": "portal:.."
-    typescript: "npm:^5.9.3"
-    vite: "npm:^8.0.13"
-  languageName: unknown
-  linkType: soft
-
 "@asamuzakjp/css-color@npm:^4.1.1":
   version: 4.1.2
   resolution: "@asamuzakjp/css-color@npm:4.1.2"
@@ -1094,6 +1015,85 @@ __metadata:
   checksum: 10c0/65b6f6aa4ea899777bea710aab5f17028aa5e1aa41f7fe892c2e916b188da2b929c76be643d4a5d8d9ca5a7853df94f05c0247dd6b63540b360055d36db3104f
   languageName: node
   linkType: hard
+
+"@egov-moldova/mud-web-components@workspace:web-components":
+  version: 0.0.0-use.local
+  resolution: "@egov-moldova/mud-web-components@workspace:web-components"
+  dependencies:
+    "@egov-moldova/mud": "portal:.."
+    typescript: "npm:^5.9.3"
+    vite: "npm:^8.0.13"
+  languageName: unknown
+  linkType: soft
+
+"@egov-moldova/mud@portal:..::locator=%40egov-moldova%2Fmud-web-components%40workspace%3Aweb-components":
+  version: 0.0.0-use.local
+  resolution: "@egov-moldova/mud@portal:..::locator=%40egov-moldova%2Fmud-web-components%40workspace%3Aweb-components"
+  dependencies:
+    "@stencil/core": "npm:^4.43.4"
+  languageName: node
+  linkType: soft
+
+"@egov-moldova/mud@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@egov-moldova/mud@workspace:."
+  dependencies:
+    "@axe-core/playwright": "npm:^4.10.2"
+    "@commitlint/cli": "npm:^21.0.1"
+    "@commitlint/config-conventional": "npm:^21.0.1"
+    "@playwright/test": "npm:^1.60.0"
+    "@prettier/plugin-oxc": "npm:^0.1.4"
+    "@stencil/core": "npm:^4.43.4"
+    "@stencil/eslint-plugin": "npm:^1.3.0"
+    "@stencil/postcss": "npm:^2.1.0"
+    "@stencil/vitest": "npm:^1.11.6"
+    "@storybook/addon-a11y": "npm:^10.4.0"
+    "@storybook/addon-docs": "npm:^10.4.0"
+    "@storybook/addon-links": "npm:^10.4.0"
+    "@storybook/addon-vitest": "npm:^10.4.0"
+    "@storybook/web-components-vite": "npm:^10.4.0"
+    "@types/node": "npm:^24.12.4"
+    "@typescript-eslint/eslint-plugin": "npm:^8.59.4"
+    "@typescript-eslint/parser": "npm:^8.59.4"
+    "@vitest/browser-playwright": "npm:^4.1.6"
+    "@vitest/coverage-v8": "npm:^4.1.6"
+    "@whitespace/storybook-addon-html": "npm:^9.0.0"
+    agent-browser: "npm:latest"
+    agentation: "npm:^3.0.2"
+    commander: "npm:^14.0.3"
+    cross-env: "npm:^10.1.0"
+    eslint: "npm:^10.4.0"
+    eslint-config-prettier: "npm:^10.1.8"
+    eslint-plugin-react: "npm:^7.37.5"
+    eslint-plugin-storybook: "npm:^10.4.0"
+    husky: "npm:^9.1.7"
+    known-css-properties: "npm:^0.37.0"
+    lit: "npm:^3.3.2"
+    lodash: "npm:^4.18.1"
+    oxlint: "npm:^1.66.0"
+    pixelmatch: "npm:^7.1.0"
+    playwright: "npm:^1.60.0"
+    pngjs: "npm:^7.0.0"
+    postcss: "npm:^8.5.14"
+    postcss-nested: "npm:^7.0.2"
+    postcss-preset-env: "npm:^11.1.3"
+    prettier: "npm:^3.8.1"
+    rimraf: "npm:^6.1.2"
+    storybook: "npm:^10.4.0"
+    style-dictionary: "npm:^5.4.1"
+    stylelint: "npm:^17.4.0"
+    stylelint-config-standard: "npm:^40.0.0"
+    stylelint-declaration-strict-value: "npm:^1.11.1"
+    svgo: "npm:^4.0.1"
+    typescript: "npm:^5.9.3"
+    typescript-eslint: "npm:^8.59.4"
+    vite: "npm:^8.0.13"
+    vitest: "npm:^4.1.6"
+    wait-on: "npm:^9.0.3"
+    web-component-analyzer: "npm:^2.0.0"
+    wireit: "npm:^0.14.12"
+  languageName: unknown
+  linkType: soft
 
 "@emnapi/core@npm:1.10.0":
   version: 1.10.0

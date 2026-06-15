@@ -1,0 +1,71 @@
+trigger:
+  branches:
+    include:
+      - main
+
+pr: none
+
+variables:
+  - group: npm
+  # Define a version base (e.g., 1.0) and append the BuildId for uniqueness
+  - name: versionBase
+    value: '1.0'
+  - name: fullVersion
+    value: '$(versionBase).$(Build.BuildId)'
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  - checkout: self
+    persistCredentials: true
+
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '22.x'
+    displayName: 'Install Node.js'
+
+  - script: corepack enable
+    displayName: 'Enable Corepack'
+
+  - script: yarn install --immutable
+    displayName: 'Install dependencies'
+
+  - script: |
+      echo "Setting version to $(fullVersion)"
+      yarn version set $(fullVersion)
+      cd web-components
+      yarn version set $(fullVersion)
+    displayName: 'Update Package Versions'
+
+  - script: |
+      yarn tokens.build
+      yarn build
+      yarn build.web
+    displayName: 'Build All'
+    env:
+      NODE_OPTIONS: "--max-old-space-size=4096"
+
+  - script: yarn test.dev
+    displayName: 'Run Tests'
+
+  - script: |
+      yarn npm publish --access public
+    displayName: 'Publish Core Package (@egov-moldova/mud)'
+    env:
+      YARN_NPM_AUTH_TOKEN: $(token)
+
+  - script: |
+      cd web-components
+      yarn npm publish --access public
+    displayName: 'Publish Web Components (@egov-moldova/mud-web-components)'
+    env:
+      YARN_NPM_AUTH_TOKEN: $(token)
+
+  - script: |
+      git config --global user.email "azure-pipelines@dev.azure.com"
+      git config --global user.name "Azure Pipelines"
+      git tag -a "v$(fullVersion)" -m "Release v$(fullVersion) [skip ci]"
+      git push origin "v$(fullVersion)"
+    displayName: 'Create and Push Tag'
+    condition: succeeded()

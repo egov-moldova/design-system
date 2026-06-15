@@ -2,6 +2,7 @@ import { Config } from '@stencil/core';
 import { OutputTarget } from '@stencil/core/internal';
 import { postcss } from '@stencil/postcss';
 import * as postcssNested from 'postcss-nested';
+// import postcssPresetEnv from 'postcss-preset-env';
 
 const args = process.argv.slice(2);
 const isWatchMode = args.includes('--watch');
@@ -23,6 +24,11 @@ const outputTargets: OutputTarget[] = [
           {
             src: '../tokens/generated/*.css',
             dest: 'tokens',
+            warn: false,
+          },
+          {
+            src: 'assets/fonts/*.ttf',
+            dest: 'assets/fonts',
             warn: false,
           },
         ],
@@ -55,7 +61,9 @@ export const config: Config = {
   },
   plugins: [
     postcss({
-      plugins: [(postcssNested.default ?? postcssNested)()],
+      plugins: [
+        (postcssNested.default ?? postcssNested)(),
+      ],
     }),
   ],
 };

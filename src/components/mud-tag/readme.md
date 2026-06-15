@@ -17,7 +17,8 @@ element:
 - `variant="status"` (default) — the standard Status Tag used for
   state ("Activ", "În așteptare", "Refuzat"). Medium-weight label,
   three surface treatments (`subtle`, `strong`, `outlined`) across
-  seven semantic colors.
+  six semantic colors (`muted`, `neutral`, `accent`, `success`,
+  `brand`, `danger`).
 - `variant="info"` — a lighter inline tag for metadata embedded in
   body text. Regular-weight label, tighter padding. Honors the same
   `type` and `semantic` axes.
@@ -34,14 +35,14 @@ attribute on the parent.
 
 ## Properties
 
-| Property    | Attribute    | Description                                                                                                                                                                                      | Type                                                                               | Default     |
-| ----------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- | ----------- |
-| `ariaLabel` | `aria-label` | Overrides the accessible name. When set, the host also adopts `role="status"` so screen readers announce the tag as a live status region (e.g. "Procesare în curs").                             | `string \| undefined`                                                              | `undefined` |
-| `label`     | `label`      | Fallback label text rendered when the default slot is empty. Plain text only.                                                                                                                    | `string \| undefined`                                                              | `undefined` |
-| `semantic`  | `semantic`   | Semantic color role.                                                                                                                                                                             | `"accent" \| "brand" \| "danger" \| "info" \| "neutral" \| "success" \| "warning"` | `'neutral'` |
-| `size`      | `size`       | Size rung — affects height, padding, icon size, and typography. `md` = 24 px, `sm` = 20 px.                                                                                                      | `"md" \| "sm"`                                                                     | `'md'`      |
-| `type`      | `type`       | Surface treatment. - `subtle` — tinted background, semantic foreground (default). - `strong` — saturated background, on-color foreground. - `outlined` — transparent fill, semantic 1 px border. | `"outlined" \| "strong" \| "subtle"`                                               | `'subtle'`  |
-| `variant`   | `variant`    | Visual scale. `status` is the standard Status Tag (medium label, three types). `info` is the lighter inline tag for metadata.                                                                    | `"info" \| "status"`                                                               | `'status'`  |
+| Property    | Attribute    | Description                                                                                                                                                                                      | Type                                                                   | Default     |
+| ----------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- | ----------- |
+| `ariaLabel` | `aria-label` | Overrides the accessible name. When set, the host also adopts `role="status"` so screen readers announce the tag as a live status region (e.g. "Procesare în curs").                             | `string \| undefined`                                                  | `undefined` |
+| `label`     | `label`      | Fallback label text rendered when the default slot is empty. Plain text only.                                                                                                                    | `string \| undefined`                                                  | `undefined` |
+| `semantic`  | `semantic`   | Semantic color role.                                                                                                                                                                             | `"accent" \| "brand" \| "danger" \| "muted" \| "neutral" \| "success"` | `'neutral'` |
+| `size`      | `size`       | Size rung — affects height, padding, icon size, and typography. `md` = 24 px, `sm` = 20 px.                                                                                                      | `"md" \| "sm"`                                                         | `'md'`      |
+| `type`      | `type`       | Surface treatment. - `subtle` — tinted background, semantic foreground (default). - `strong` — saturated background, on-color foreground. - `outlined` — transparent fill, semantic 1 px border. | `"outlined" \| "strong" \| "subtle"`                                   | `'subtle'`  |
+| `variant`   | `variant`    | Visual scale. `status` is the standard Status Tag (medium label, three types). `info` is the lighter inline tag for metadata.                                                                    | `"info" \| "status"`                                                   | `'status'`  |
 
 
 ## Slots

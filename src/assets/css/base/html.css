@@ -5,16 +5,7 @@ HTML CSS File
 ------------------------------------------------------------------------------------------------------------------------
 */
 
-@custom-media --bp-xs (min-width: 0px);
-@custom-media --bp-sm (min-width: 640px);
-@custom-media --bp-md (min-width: 768px);
-@custom-media --bp-lg (min-width: 1024px);
-@custom-media --bp-xl (min-width: 1280px);
-@custom-media --bp-2xl (min-width: 1440px);
-@custom-media --bp-3xl (min-width: 1660px);
-@custom-media --reduce-motion (prefers-reduced-motion: reduce);
-
-@media --reduce-motion {
+@media (prefers-reduced-motion: reduce) {
   html:focus-within {
     scroll-behavior: auto;
   }

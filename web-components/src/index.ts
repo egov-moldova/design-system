@@ -1,3 +1,3 @@
-export { defineCustomElements, setNonce } from '@egovmd/mud/loader';
+export { defineCustomElements, setNonce } from '@egov-moldova/mud/loader';
 
-export type * from '@egovmd/mud';
+export type * from '@egov-moldova/mud';
