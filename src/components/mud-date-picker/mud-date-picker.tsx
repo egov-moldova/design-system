@@ -133,6 +133,12 @@ export class MudDatePicker {
   /** Hide the "Today" quick-jump shortcut. Default keeps it visible. */
   @Prop() hideTodayShortcut: boolean = false;
 
+  /**
+   * ISO `YYYY-MM-DD` date that controls the initially displayed month without affecting selection.
+   * Useful for tests and controlled scenarios where you need a specific month in view.
+   */
+  @Prop() viewDate?: string;
+
   @State() private viewYear: number = new Date().getUTCFullYear();
   @State() private viewMonth: number = new Date().getUTCMonth();
   @State() private view: DatePickerView = 'days';
@@ -211,8 +217,22 @@ export class MudDatePicker {
     this.syncViewFromValue();
   }
 
+  @Watch('viewDate')
+  handleViewDateChange() {
+    this.syncViewFromValue();
+  }
+
   /** Move the visible month to whatever the selection (or today) implies. */
   private syncViewFromValue() {
+    // Explicit viewDate takes highest priority.
+    if (this.viewDate) {
+      const anchor = parseIso(this.viewDate);
+      if (anchor) {
+        this.viewYear = anchor.getUTCFullYear();
+        this.viewMonth = anchor.getUTCMonth();
+        return;
+      }
+    }
     let anchor: Date | null = null;
     if (this.mode === 'single' && typeof this.value === 'string') {
       anchor = parseIso(this.value);

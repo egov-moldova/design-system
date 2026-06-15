@@ -145,7 +145,7 @@ describe('mud-date-picker', () => {
 
   describe('selection — range mode', () => {
     it('sets rangeStart on the first click and rangeEnd on the second', async () => {
-      const { root } = await render(<mud-date-picker mode="range"></mud-date-picker>);
+      const { root } = await render(<mud-date-picker mode="range" viewDate="2026-05-01"></mud-date-picker>);
       const onChange = vi.fn();
       root?.addEventListener('mudChange', onChange);
 
@@ -163,7 +163,7 @@ describe('mud-date-picker', () => {
     });
 
     it('swaps endpoints when the second click is earlier than the first', async () => {
-      const { root } = await render(<mud-date-picker mode="range"></mud-date-picker>);
+      const { root } = await render(<mud-date-picker mode="range" viewDate="2026-05-01"></mud-date-picker>);
       const onChange = vi.fn();
       root?.addEventListener('mudChange', onChange);
       queryCellByIso(root, '2026-05-15')?.click();
@@ -188,7 +188,7 @@ describe('mud-date-picker', () => {
 
   describe('selection — multi mode', () => {
     it('toggles individual dates into and out of the value array', async () => {
-      const { root } = await render(<mud-date-picker mode="multi"></mud-date-picker>);
+      const { root } = await render(<mud-date-picker mode="multi" viewDate="2026-05-01"></mud-date-picker>);
       const onChange = vi.fn();
       root?.addEventListener('mudChange', onChange);
       queryCellByIso(root, '2026-05-10')?.click();

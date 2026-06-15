@@ -815,6 +815,10 @@ export namespace Components {
           * Selected value: - `single` → ISO `YYYY-MM-DD` string (or empty) - `range` → ISO array `[start, end]` (use `rangeStart`/`rangeEnd` for explicit access) - `multi` → array of ISO strings
          */
         "value"?: string | string[];
+        /**
+          * ISO `YYYY-MM-DD` date that controls the initially displayed month without affecting selection. Useful for tests and controlled scenarios where you need a specific month in view.
+         */
+        "viewDate"?: string;
     }
     /**
      * File Input — drag-and-drop / click-to-browse file selection molecule.
@@ -5255,6 +5259,10 @@ declare namespace LocalJSX {
           * Selected value: - `single` → ISO `YYYY-MM-DD` string (or empty) - `range` → ISO array `[start, end]` (use `rangeStart`/`rangeEnd` for explicit access) - `multi` → array of ISO strings
          */
         "value"?: string | string[];
+        /**
+          * ISO `YYYY-MM-DD` date that controls the initially displayed month without affecting selection. Useful for tests and controlled scenarios where you need a specific month in view.
+         */
+        "viewDate"?: string;
     }
     /**
      * File Input — drag-and-drop / click-to-browse file selection molecule.
@@ -7898,6 +7906,7 @@ declare namespace LocalJSX {
         "label": string;
         "firstDayOfWeek": number;
         "hideTodayShortcut": boolean;
+        "viewDate": string;
     }
     interface MudFileInputAttributes {
         "size": FileInputSize;
