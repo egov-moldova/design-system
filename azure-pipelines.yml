@@ -32,9 +32,9 @@ stages:
 
     - script: |
         echo "Setting version to $(packageVersion)"
-        yarn version set $(packageVersion)
+        yarn version --new-version $(packageVersion)
         cd web-components
-        yarn version set $(packageVersion)
+        yarn version --new-version $(packageVersion)
       displayName: 'Update Package Versions'
 
     - script: |
