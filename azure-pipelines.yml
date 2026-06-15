@@ -4,7 +4,9 @@ trigger: none
 pr: none
 
 variables:
-  packageVersion: '$(Build.BuildNumber)'
+  - group: npm
+  - name: packageVersion
+    value: '$(Build.BuildNumber)'
 
 stages:
 - stage: Build
