@@ -44,13 +44,11 @@ stages:
       displayName: 'Build All'
       env:
         NODE_OPTIONS: '--max-old-space-size=4096'
-#
-#    - script: yarn test.dev
-#      displayName: 'Run Tests'
+
+    - script: yarn test.dev
+      displayName: 'Run Tests'
 
     - script: |
-        echo "Token length: ${#NPM_TOKEN}"
-        echo "Token value (masked by pipeline): $NPM_TOKEN"
         npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
         npm publish --access public
       displayName: 'Publish @egov-moldova/mud'
@@ -65,10 +63,3 @@ stages:
       env:
         NPM_TOKEN: $(token)
 
-    - script: |
-        git config --global user.email "azure-pipelines@dev.azure.com"
-        git config --global user.name "Azure Pipelines"
-        git tag -a "v$(packageVersion)" -m "Release v$(packageVersion) [skip ci]"
-        git push origin "v$(packageVersion)"
-      displayName: 'Create and Push Tag'
-      condition: succeeded()
