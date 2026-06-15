@@ -47,15 +47,19 @@ stages:
       displayName: 'Run Tests'
 
     - script: |
-        npm config set //registry.npmjs.org/:_authToken $(token)
+        npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
         npm publish --access public
       displayName: 'Publish @egov-moldova/mud'
+      env:
+        NPM_TOKEN: $(token)
 
     - script: |
-        npm config set //registry.npmjs.org/:_authToken $(token)
+        npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
         cd web-components
         npm publish --access public
       displayName: 'Publish @egov-moldova/mud-web-components'
+      env:
+        NPM_TOKEN: $(token)
 
     - script: |
         git config --global user.email "azure-pipelines@dev.azure.com"
