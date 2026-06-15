@@ -26,7 +26,7 @@ const queryHostAttrs = (root: Element | null | undefined): Record<string, string
   return attrs;
 };
 
-const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
+const flush = () => new Promise<void>(resolve => setTimeout(resolve, 10));
 
 describe('mud-date-picker', () => {
   describe('defaults + prop reflection', () => {
@@ -164,12 +164,15 @@ describe('mud-date-picker', () => {
 
     it('swaps endpoints when the second click is earlier than the first', async () => {
       const { root } = await render(<mud-date-picker mode="range"></mud-date-picker>);
+      const onChange = vi.fn();
+      root?.addEventListener('mudChange', onChange);
       queryCellByIso(root, '2026-05-15')?.click();
       await flush();
       queryCellByIso(root, '2026-05-10')?.click();
       await flush();
-      expect((root as unknown as { rangeStart: string }).rangeStart).toBe('2026-05-10');
-      expect((root as unknown as { rangeEnd: string }).rangeEnd).toBe('2026-05-15');
+      expect(onChange).toHaveBeenCalledTimes(2);
+      expect(onChange.mock.calls[1][0].detail.rangeStart).toBe('2026-05-10');
+      expect(onChange.mock.calls[1][0].detail.rangeEnd).toBe('2026-05-15');
     });
 
     it('starts a new range when both endpoints are already set', async () => {
@@ -192,11 +195,13 @@ describe('mud-date-picker', () => {
       await flush();
       queryCellByIso(root, '2026-05-12')?.click();
       await flush();
-      expect((root as unknown as { value: string[] }).value).toEqual(['2026-05-10', '2026-05-12']);
+      expect(onChange).toHaveBeenCalledTimes(2);
+      expect(onChange.mock.calls[1][0].detail.value).toEqual(['2026-05-10', '2026-05-12']);
       // Re-click removes
       queryCellByIso(root, '2026-05-10')?.click();
       await flush();
-      expect((root as unknown as { value: string[] }).value).toEqual(['2026-05-12']);
+      expect(onChange).toHaveBeenCalledTimes(3);
+      expect(onChange.mock.calls[2][0].detail.value).toEqual(['2026-05-12']);
     });
   });
 
