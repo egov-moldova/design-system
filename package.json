@@ -232,7 +232,7 @@
       ]
     },
     "build.web": {
-      "command": "yarn workspace @egovmd/mud-web-components build",
+      "command": "yarn workspace @egov-moldova/mud-web-components build",
       "dependencies": [
         "build"
       ],
