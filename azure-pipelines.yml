@@ -20,7 +20,7 @@ stages:
 
     - task: NodeTool@0
       inputs:
-        versionSpec: '22.x'
+        versionSpec: '24.x'
       displayName: 'Install Node.js'
 
     - script: corepack enable
@@ -46,17 +46,16 @@ stages:
     - script: yarn test.dev
       displayName: 'Run Tests'
 
-    - script: yarn npm publish --access public
+    - script: |
+        npm config set //registry.npmjs.org/:_authToken $(token)
+        npm publish --access public
       displayName: 'Publish @egov-moldova/mud'
-      env:
-        YARN_NPM_AUTH_TOKEN: $(token)
 
     - script: |
+        npm config set //registry.npmjs.org/:_authToken $(token)
         cd web-components
-        yarn npm publish --access public
+        npm publish --access public
       displayName: 'Publish @egov-moldova/mud-web-components'
-      env:
-        YARN_NPM_AUTH_TOKEN: $(token)
 
     - script: |
         git config --global user.email "azure-pipelines@dev.azure.com"
