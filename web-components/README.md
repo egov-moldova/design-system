@@ -1,21 +1,25 @@
-# @egovmd/mud-web-components
+# @egov-moldova/mud-web-components
 
-Vanilla HTML / JavaScript adapter for the MUD Design System. Registers every
-Stencil-compiled custom element (`<mud-button>`, `<mud-input>`, …) so they can
-be used in any HTML page or non-framework app.
+Vanilla HTML / JavaScript adapter for the **MUD Design System** — the official UI component library of the Republic of Moldova, developed by the [Agency for Electronic Governance (eGov)](https://egov.md).
+
+This package registers every Stencil-compiled MUD custom element (`<mud-button>`, `<mud-input>`, …) so they can be used in any HTML page or non-framework application. It is a thin re-export of the `@egov-moldova/mud` Stencil loader — no framework-specific build step is required.
+
+> For the full component source, design tokens, and Storybook, see the root [`@egov-moldova/mud`](https://www.npmjs.com/package/@egov-moldova/mud) package.
 
 ## Install
 
 ```bash
-yarn add @egovmd/mud-web-components @egovmd/mud
+yarn add @egov-moldova/mud-web-components @egov-moldova/mud
+# or
+npm install @egov-moldova/mud-web-components @egov-moldova/mud
 ```
 
 ## Usage — with a bundler (Vite, webpack, esbuild, …)
 
 ```ts
-import '@egovmd/mud/dist/design-system/tokens/core.tokens.css';
-import '@egovmd/mud/dist/design-system/design-system.css';
-import { defineCustomElements } from '@egovmd/mud-web-components';
+import '@egov-moldova/mud/dist/design-system/tokens/core.tokens.css';
+import '@egov-moldova/mud/dist/design-system/design-system.css';
+import { defineCustomElements } from '@egov-moldova/mud-web-components';
 
 defineCustomElements();
 ```
@@ -32,17 +36,17 @@ defineCustomElements();
   <head>
     <link
       rel="stylesheet"
-      href="/node_modules/@egovmd/mud/dist/design-system/tokens/core.tokens.css"
+      href="/node_modules/@egov-moldova/mud/dist/design-system/tokens/core.tokens.css"
     />
     <link
       rel="stylesheet"
-      href="/node_modules/@egovmd/mud/dist/design-system/design-system.css"
+      href="/node_modules/@egov-moldova/mud/dist/design-system/design-system.css"
     />
     <script type="importmap">
       {
         "imports": {
-          "@egovmd/mud-web-components": "/node_modules/@egovmd/mud-web-components/dist/index.js",
-          "@egovmd/mud/loader": "/node_modules/@egovmd/mud/loader/index.js"
+          "@egov-moldova/mud-web-components": "/node_modules/@egov-moldova/mud-web-components/dist/index.js",
+          "@egov-moldova/mud/loader": "/node_modules/@egov-moldova/mud/loader/index.js"
         }
       }
     </script>
@@ -50,11 +54,22 @@ defineCustomElements();
   <body>
     <mud-button variant="primary"><button>Click me</button></mud-button>
     <script type="module">
-      import { defineCustomElements } from '@egovmd/mud-web-components';
+      import { defineCustomElements } from '@egov-moldova/mud-web-components';
       defineCustomElements();
     </script>
   </body>
 </html>
+```
+
+## Usage — CDN via jsDelivr
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud/dist/design-system/tokens/core.tokens.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud/dist/design-system/design-system.css" />
+<script type="module">
+  import { defineCustomElements } from 'https://cdn.jsdelivr.net/npm/@egov-moldova/mud-web-components/dist/index.js';
+  defineCustomElements();
+</script>
 ```
 
 ## Local demo
@@ -62,32 +77,26 @@ defineCustomElements();
 From the repo root:
 
 ```bash
-yarn build       # one-time: produces dist/ and loader/ for @egovmd/mud
-yarn build.web   # compile @egovmd/mud-web-components
+yarn build       # one-time: produces dist/ and loader/ for @egov-moldova/mud
+yarn build.web   # compile @egov-moldova/mud-web-components
 yarn demo.web    # serve the demo at http://localhost:5174
 ```
 
-The demo lives in [`demo/index.html`](./demo/index.html) and showcases
-`<mud-button>` variants + sizes.
+The demo lives in [`demo/index.html`](./demo/index.html) and showcases `<mud-button>` variants + sizes.
 
 ## Available components
 
-Every component published by `@egovmd/mud` is registered. The full list
-is browseable in [Storybook](../.storybook/). Highlights include:
+Every component published by `@egov-moldova/mud` is registered. The full list is browseable in [Storybook](../.storybook/). Highlights include:
 
 - `<mud-button>` — primary action button
 - `<mud-input>`, `<mud-textarea>` — form fields
-- `<mud-select>`, `<mud-pagination-item>`, `<mud-toast-notification>`, `<mud-avatar>` — …
+- `<mud-select>`, `<mud-date-picker>` — selection controls
+- `<mud-pagination-item>`, `<mud-toast-notification>`, `<mud-avatar>` — and more
 
 ## API
 
-`defineCustomElements(opts?: { resourcesUrl?: string; syncQueue?: boolean })` —
-registers every Stencil custom element on the current document. Returns a
-`Promise<void>` that resolves once polyfills (if any) are loaded.
+`defineCustomElements(opts?: { resourcesUrl?: string; syncQueue?: boolean })` — registers every Stencil custom element on the current document. Returns a `Promise<void>` that resolves once all elements are registered.
 
-`setNonce(nonce: string)` — set a CSP nonce that Stencil applies to injected
-`<style>` tags.
+`setNonce(nonce: string)` — set a CSP nonce that Stencil applies to injected `<style>` tags.
 
-TypeScript users also get full element type augmentation (`HTMLCorButtonElement`,
-`HTMLCorInputElement`, …) and prop interfaces via `export type *` from
-`@egovmd/mud`.
+TypeScript users get full element type augmentation (`HTMLMudButtonElement`, `HTMLMudInputElement`, …) and prop interfaces via `export type *` from `@egov-moldova/mud`.

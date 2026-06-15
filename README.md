@@ -1,12 +1,23 @@
-# MUD Design System — Integration Guide
+# MUD — Moldovan UI Design System
 
-This document provides step-by-step instructions for building, publishing, and using the MUD Design System (`@egovmd/mud` Stencil web components + the `@egovmd/mud-web-components` vanilla adapter) in any application — bundler-based or plain HTML.
+**MUD** (Moldovan UI Design) is the official design system of the Republic of Moldova, developed and maintained by the [Agency for Electronic Governance (Agenția de Guvernare Electronică — eGov)](https://egov.md). It provides a unified set of UI components, design tokens, and guidelines so that all Moldovan government digital services share a consistent look, feel, and accessibility baseline.
+
+This repository contains two npm packages:
+
+| Package | Description |
+| --- | --- |
+| [`@egov-moldova/mud`](https://www.npmjs.com/package/@egov-moldova/mud) | Core Stencil web components — framework-agnostic, Shadow DOM–isolated |
+| [`@egov-moldova/mud-web-components`](https://www.npmjs.com/package/@egov-moldova/mud-web-components) | Vanilla HTML/JS adapter — thin re-export of the Stencil loader for script-tag usage |
+
+> **Who should use this?** Any team building a Moldovan e-government product or service. The components implement the MUD visual language and WCAG 2.1 AA accessibility requirements out of the box.
+
+---
 
 ## Table of Contents
 
 1. [Quick Start - General Steps](#quick-start---general-steps)
 2. [Web Components (Vanilla HTML / JS) Build & Setup](#web-components-vanilla-html--js-build--setup)
-3. [Publishing Options](#publishing-options)
+3. [Publishing](#publishing)
 4. [Installing in Applications](#installing-in-applications)
 5. [Troubleshooting](#troubleshooting)
 6. [Development Workflow](#development-workflow)
@@ -43,7 +54,7 @@ This command will:
 
 ## Web Components (Vanilla HTML / JS) Build & Setup
 
-For any consumer — bundler-based or plain HTML — use `@egovmd/mud-web-components`. Because Stencil already compiles to native custom elements, this adapter is a *thin* re-export of the loader; no framework-specific build step is required.
+For any consumer — bundler-based or plain HTML — use `@egov-moldova/mud-web-components`. Because Stencil already compiles to native custom elements, this adapter is a *thin* re-export of the loader; no framework-specific build step is required.
 
 ### Step 1: Build Stencil Components
 
@@ -55,7 +66,7 @@ yarn build
 
 This produces `dist/`, `loader/`, and `dist/types/` — all the runtime files the vanilla adapter re-exports.
 
-### Step 2: Build the `@egovmd/mud-web-components` Package
+### Step 2: Build the `@egov-moldova/mud-web-components` Package
 
 ```bash
 yarn build.web
@@ -68,8 +79,8 @@ This command:
 
 The `web-components/dist/` folder will contain:
 
-- `index.js` — re-exports `defineCustomElements` and `setNonce` from `@egovmd/mud/loader`
-- `index.d.ts` — type declarations including full element type augmentation (`HTMLCorButtonElement`, …)
+- `index.js` — re-exports `defineCustomElements` and `setNonce` from `@egov-moldova/mud/loader`
+- `index.d.ts` — type declarations including full element type augmentation (`HTMLMudButtonElement`, …)
 
 ### Step 3: Run the local demo
 
@@ -83,11 +94,11 @@ The demo proves the export is *complete* — every component is registered by `d
 
 ```js
 defineCustomElements().then(() =>
-  console.log(Object.keys(window).filter(k => k.startsWith('HTMLCor')))
+  console.log(Object.keys(window).filter(k => k.startsWith('HTMLMud')))
 );
 ```
 
-You should see the full list (`HTMLCorButtonElement`, `HTMLCorInputElement`, `HTMLCorIconElement`, …).
+You should see the full list (`HTMLMudButtonElement`, `HTMLMudInputElement`, `HTMLMudIconElement`, …).
 
 ### Files
 
@@ -99,95 +110,34 @@ web-components/
 │   ├── main.ts               # CSS imports + defineCustomElements()
 │   ├── demo.css              # @font-face for Onest + body font-family
 │   └── vite.config.ts        # port 5174, allows fs access to portal-linked parent
-├── package.json              # @egovmd/mud-web-components, portal:.. to @egovmd/mud
+├── package.json              # @egov-moldova/mud-web-components
 ├── tsconfig.json             # ES2020, declaration: true
 └── README.md
 ```
 
 ---
 
-## Publishing Options
+## Publishing
 
-Two packages need to be published together: the Stencil core (`@egovmd/mud`) and the vanilla adapter (`@egovmd/mud-web-components`). Pick whichever registry option fits your team.
+Both packages are published to the public npm registry under the `@egov-moldova` scope. Publishing is handled automatically by the Azure Pipelines CI on each run — a new build number is used as the version.
 
-### Option A: Publish to GitLab Package Registry (Private)
-
-The repo's `publishConfig` already points at GitLab — this is the default path.
+To publish manually (requires an npm token with write access to `@egov-moldova`):
 
 ```bash
 # Stencil core
-cd dist
-yarn publish
+npm config set //registry.npmjs.org/:_authToken YOUR_NPM_TOKEN
+npm publish --access public
 
 # Vanilla adapter
-cd ../web-components
-yarn version --patch   # or --minor / --major
-yarn publish
+cd web-components
+npm config set //registry.npmjs.org/:_authToken YOUR_NPM_TOKEN
+npm publish --access public
 ```
 
-Configure authentication in `~/.npmrc`:
+For local development without publishing, use local path installs:
 
 ```bash
-@age:registry=https://gitlab.com/api/v4/projects/44763899/packages/npm/
-//gitlab.com/api/v4/projects/44763899/packages/npm/:_authToken=YOUR_GITLAB_DEPLOY_TOKEN
-```
-
-### Option B: Publish to npm Registry (Private or Public)
-
-Update `publishConfig` in both `package.json` (root) and `web-components/package.json`:
-
-```json
-{
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/",
-    "access": "restricted"
-  }
-}
-```
-
-Authenticate with `npm login`, then:
-
-```bash
-cd dist && yarn publish
-cd ../web-components && yarn version --patch && yarn publish
-```
-
-### Option C: Publish to Bitbucket Package Registry (Private)
-
-Configure `~/.npmrc` with a Bitbucket App Password (Repositories: Read+Write, Account: Read):
-
-```bash
-@YOUR_WORKSPACE:registry=https://api.bitbucket.org/2.0/repositories/YOUR_WORKSPACE/YOUR_REPO/npm/
-//api.bitbucket.org/2.0/repositories/YOUR_WORKSPACE/YOUR_REPO/npm/:_password=YOUR_APP_PASSWORD
-//api.bitbucket.org/2.0/repositories/YOUR_WORKSPACE/YOUR_REPO/npm/:username=YOUR_BITBUCKET_USERNAME
-//api.bitbucket.org/2.0/repositories/YOUR_WORKSPACE/YOUR_REPO/npm/:email=YOUR_EMAIL
-//api.bitbucket.org/2.0/repositories/YOUR_WORKSPACE/YOUR_REPO/npm/:always-auth=true
-```
-
-Update both packages' `publishConfig` to the same URL, rename the packages with your workspace prefix, then:
-
-```bash
-cd dist && yarn publish
-cd ../web-components && yarn version --patch && yarn publish
-```
-
-### Option D: Local Development with `yarn link` (No Token Required)
-
-```bash
-# In age-design root
-yarn build
-cd dist && yarn link
-cd ../web-components && yarn link && yarn build
-
-# In your consuming app
-yarn link @egovmd/mud
-yarn link @egovmd/mud-web-components
-```
-
-### Option E: Install from Local Path (No Token Required)
-
-```bash
-yarn add file:/absolute/path/to/age-design/dist
+yarn add file:/absolute/path/to/age-design
 yarn add file:/absolute/path/to/age-design/web-components
 ```
 
@@ -197,20 +147,20 @@ yarn add file:/absolute/path/to/age-design/web-components
 
 ### Vanilla HTML / Plain JS Application
 
-`@egovmd/mud-web-components` is framework-agnostic — it works with any application that can load ES modules.
+`@egov-moldova/mud-web-components` is framework-agnostic — it works with any application that can load ES modules.
 
 #### Step 1: Install Dependencies
 
 ```bash
-yarn add @egovmd/mud @egovmd/mud-web-components
+yarn add @egov-moldova/mud @egov-moldova/mud-web-components
 ```
 
 #### Step 2: Usage — with a bundler (Vite, webpack, esbuild, …)
 
 ```ts
-import '@egovmd/mud/dist/design-system/tokens/core.tokens.css';
-import '@egovmd/mud/dist/design-system/design-system.css';
-import { defineCustomElements } from '@egovmd/mud-web-components';
+import '@egov-moldova/mud/dist/design-system/tokens/core.tokens.css';
+import '@egov-moldova/mud/dist/design-system/design-system.css';
+import { defineCustomElements } from '@egov-moldova/mud-web-components';
 
 defineCustomElements();
 ```
@@ -227,13 +177,13 @@ When you have no bundler, resolve the bare specifiers via an import map:
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="/node_modules/@egovmd/mud/dist/design-system/tokens/core.tokens.css" />
-    <link rel="stylesheet" href="/node_modules/@egovmd/mud/dist/design-system/design-system.css" />
+    <link rel="stylesheet" href="/node_modules/@egov-moldova/mud/dist/design-system/tokens/core.tokens.css" />
+    <link rel="stylesheet" href="/node_modules/@egov-moldova/mud/dist/design-system/design-system.css" />
     <script type="importmap">
       {
         "imports": {
-          "@egovmd/mud-web-components": "/node_modules/@egovmd/mud-web-components/dist/index.js",
-          "@egovmd/mud/loader": "/node_modules/@egovmd/mud/loader/index.js"
+          "@egov-moldova/mud-web-components": "/node_modules/@egov-moldova/mud-web-components/dist/index.js",
+          "@egov-moldova/mud/loader": "/node_modules/@egov-moldova/mud/loader/index.js"
         }
       }
     </script>
@@ -241,38 +191,61 @@ When you have no bundler, resolve the bare specifiers via an import map:
   <body>
     <mud-button variant="primary"><button>Click me</button></mud-button>
     <script type="module">
-      import { defineCustomElements } from '@egovmd/mud-web-components';
+      import { defineCustomElements } from '@egov-moldova/mud-web-components';
       defineCustomElements();
     </script>
   </body>
 </html>
 ```
 
-#### Self-hosting the Onest font
+#### CDN via jsDelivr (no npm install required)
 
-The compiled `design-system.css` does **not** ship an `@font-face` declaration. If you want the design system's primary font (`Onest`), add one yourself — example pattern (matches the in-repo demo at [`web-components/demo/demo.css`](web-components/demo/demo.css)):
+You can also load MUD directly from jsDelivr for quick prototyping:
+
+```html
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud/dist/design-system/tokens/core.tokens.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud/dist/design-system/design-system.css" />
+<script type="module">
+  import { defineCustomElements } from 'https://cdn.jsdelivr.net/npm/@egov-moldova/mud-web-components/dist/index.js';
+  defineCustomElements();
+</script>
+```
+
+#### Onest font
+
+The Onest typeface is the primary font of the MUD Design System. The compiled global CSS bundles `@font-face` declarations pointing to the font files included in the npm package (`dist/mud/assets/fonts/`). When loading via CDN, the fonts are resolved automatically. For self-hosted setups, copy the TTF files from `node_modules/@egov-moldova/mud/dist/mud/assets/fonts/` into your project's public assets, then declare them yourself:
 
 ```css
 @font-face {
   font-family: 'Onest';
-  src: url('/assets/font/Onest/Onest-VariableFont_wght.ttf') format('truetype');
-  font-weight: 100 900;
+  src: url('/assets/fonts/onest-regular.ttf') format('truetype');
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
-
-html, body {
-  font-family: 'Onest', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+@font-face {
+  font-family: 'Onest';
+  src: url('/assets/fonts/onest-medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Onest';
+  src: url('/assets/fonts/onest-bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }
 ```
 
-You can copy the TTF from `node_modules/@egovmd/mud/assets/font/Onest/` or load Onest from Google Fonts (`https://fonts.googleapis.com/css2?family=Onest:wght@100..900&display=swap`).
+Alternatively, load Onest from Google Fonts: `https://fonts.googleapis.com/css2?family=Onest:wght@400;500;700&display=swap`
 
 #### API
 
 - `defineCustomElements(opts?)` — registers every Stencil custom element on the current document; returns a `Promise<void>`
 - `setNonce(nonce: string)` — applies a CSP nonce to injected `<style>` tags
-- Full element type augmentation (`HTMLMudButtonElement`, `HTMLMudInputElement`, …) and prop / event interfaces are re-exported via `export type *` from `@egovmd/mud`
+- Full element type augmentation (`HTMLMudButtonElement`, `HTMLMudInputElement`, …) and prop / event interfaces are re-exported via `export type *` from `@egov-moldova/mud`
 
 #### Framework-specific usage
 
@@ -294,14 +267,14 @@ Because the components are native custom elements, they integrate with every mod
 **Solution:**
 
 ```bash
-yarn add @egovmd/mud @egovmd/mud-web-components
+yarn add @egov-moldova/mud @egov-moldova/mud-web-components
 ```
 
 Then ensure your `tsconfig.json`'s `compilerOptions.types` (or a global declaration file) imports the augmentation:
 
 ```ts
-// src/types/age.d.ts
-import type {} from '@egovmd/mud-web-components';
+// src/types/mud.d.ts
+import type {} from '@egov-moldova/mud-web-components';
 ```
 
 ### Issue: Styles not applied
@@ -311,8 +284,8 @@ import type {} from '@egovmd/mud-web-components';
 **Solution:** Import both at app startup, before calling `defineCustomElements()`:
 
 ```ts
-import '@egovmd/mud/dist/design-system/tokens/core.tokens.css';
-import '@egovmd/mud/dist/design-system/design-system.css';
+import '@egov-moldova/mud/dist/design-system/tokens/core.tokens.css';
+import '@egov-moldova/mud/dist/design-system/design-system.css';
 ```
 
 ### Issue: Components don't render in the DOM
@@ -321,11 +294,11 @@ import '@egovmd/mud/dist/design-system/design-system.css';
 
 **Solution:** Call `defineCustomElements()` once at the earliest startup point. The Stencil loader is async — components upgrade as soon as the call resolves, even if the markup is already in the DOM.
 
-### Issue: Vite / esbuild can't resolve `@egovmd/mud-web-components`
+### Issue: Vite / esbuild can't resolve `@egov-moldova/mud-web-components`
 
 **Cause:** Yarn workspaces resolve the package via a symlink/portal that some bundlers don't follow.
 
-**Solution:** Set `optimizeDeps.include: ['@egovmd/mud-web-components', '@egovmd/mud/loader']` in your Vite config, or add the packages to esbuild's `external` list and use an import map for runtime resolution.
+**Solution:** Set `optimizeDeps.include: ['@egov-moldova/mud-web-components', '@egov-moldova/mud/loader']` in your Vite config, or add the packages to esbuild's `external` list and use an import map for runtime resolution.
 
 ---
 
@@ -345,7 +318,7 @@ import '@egovmd/mud/dist/design-system/design-system.css';
 - [ ] Build Stencil components: `yarn build`
 - [ ] Build vanilla adapter: `yarn build.web`
 - [ ] Visually verify demo: `yarn demo.web` (<http://localhost:5174>)
-- [ ] Install in app: `yarn add @egovmd/mud @egovmd/mud-web-components`
+- [ ] Install in app: `yarn add @egov-moldova/mud @egov-moldova/mud-web-components`
 - [ ] Import token CSS + design-system CSS, then call `defineCustomElements()` once at startup
 - [ ] Lint tokens before any token change: `yarn tokens.lint.all`
 
@@ -371,8 +344,6 @@ Compiles the full component library (`dist/`) then builds the static Storybook s
 yarn sp.build
 ```
 
-> `sp.build` is an alias for the same task — both are equivalent.
-
 ### Preview the production build locally
 
 After `sp.build` completes, serve `storybook-static/` locally to inspect it exactly as it will appear in production:
@@ -395,7 +366,7 @@ Opens at `http://localhost:6008` (port 6008 is intentionally one above the dev s
 
 ## Tokens — sync, audit, lint, and developer DX
 
-This project uses Style Dictionary tokens stored under `tokens/` and a Tokenhaus Figma export workflow. Follow these guidelines for syncing, testing, auditing, and consuming tokens.
+MUD uses a three-tier design token hierarchy (palette → semantic → component) built with [Style Dictionary](https://styledictionary.io/). Tokens are stored under `tokens/` and synchronized from Figma using the Tokenhaus plugin.
 
 - Recommended Figma plugin: "Tokenhaus — Variable Import/Export (with links)" (search the Figma Community). Use that plugin to export a Tokenhaus JSON file (the repo expects `tokens-tokenhaus.json` by default).
 
@@ -423,7 +394,6 @@ This project uses Style Dictionary tokens stored under `tokens/` and a Tokenhaus
 - Token build & watch
   - Rebuild tokens (dev): `yarn tokens.build`
   - Production token build (CSS + JSON used by dist): `yarn tokens.build.prod`
-  - AGE-specific tokens: `yarn tokens.build.age`
   - Watch tokens during development: `yarn tokens.watch`
 
 - Audit & lint commands (run before committing changes):
@@ -432,11 +402,6 @@ This project uses Style Dictionary tokens stored under `tokens/` and a Tokenhaus
   - `yarn tokens.lint` — lint tokens under `tokens/core` (naming, references, schema)
   - `yarn tokens.lint.dark` — lint tokens under `tokens/core.dark`
   - `yarn tokens.lint.all` — lint both `tokens/core` and `tokens/core.dark`
-
-What each does briefly:
-
-- audit (`debug-missing-token-references.mjs`): scans Style Dictionary configs for references that can't be resolved and prints human-friendly context and file/line locations to help you fix missing or broken token links.
-- lint (`scripts/tokens-lint.mjs`): validates token filename conventions, key naming, required fields, and other repo-specific rules; it returns non-zero on errors.
 
 - Typical developer DX flow
   1. Export from Figma (Tokenhaus) → `tokens-tokenhaus.json`.
@@ -460,6 +425,9 @@ What each does briefly:
 
 ## Additional Resources
 
+- [MUD Design System on npm](https://www.npmjs.com/package/@egov-moldova/mud)
+- [eGov Moldova — Agency for Electronic Governance](https://egov.md)
 - [MDN — Using custom elements](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements)
 - [Stencil documentation](https://stenciljs.com/docs/introduction)
+- [Style Dictionary](https://styledictionary.io/)
 - [Import maps specification](https://github.com/WICG/import-maps)
