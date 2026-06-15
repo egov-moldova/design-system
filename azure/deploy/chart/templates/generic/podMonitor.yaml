@@ -1,0 +1,23 @@
+{{- range $workloadKey, $workload := mustMerge (dict) (default (dict) .Values.deployment) (default (dict) .Values.statefulSet) -}}
+{{- if and (hasKey $workload "enabled" | ternary $workload.enabled true) ($workload.monitoring).enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: {{ printf "%s-%s" (include "app.fullname" $) $workloadKey }}
+  labels:
+    {{- include "app.labels" $ | nindent 4 }}
+    {{- toYaml $workload.labels | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "app.selector" $ | nindent 6 }}
+      {{- toYaml $workload.labels | nindent 6 }}
+{{- if $workload.monitoring.podMetricsEndpoints }}
+  podMetricsEndpoints: {{- toYaml $workload.monitoring.podMetricsEndpoints | nindent 2 }}
+{{- else if eq (default "aspnet" $workload.podMetricsEndpointsPreset) "aspnet" }}
+  podMetricsEndpoints:
+  - port: management
+{{- end}}
+---
+{{- end }}
+{{- end }}

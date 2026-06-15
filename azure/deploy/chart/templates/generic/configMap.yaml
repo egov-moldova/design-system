@@ -1,0 +1,28 @@
+{{- range $configKey, $config := .Values.configMap -}}
+{{- if hasKey $config "enabled" | ternary $config.enabled true -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ printf "%s-%s" (include "app.fullname" $) $configKey }}
+  labels:
+    {{- include "app.labels" $ | nindent 4 }}
+{{- with $config.annotations }}
+  annotations: {{- toYaml . | nindent 4 }}
+{{- end }}
+data:
+{{- range $key, $value := $config.strings }}
+  {{ $key }}: {{ $value }}
+{{- end }}
+{{- range $key, $value := $config.templates }}
+  {{ $key }}: |-
+    {{- tpl ($.Files.Get $value) $ | nindent 4 }}
+{{- end }}
+{{- if $config.binaries }}
+binaryData:
+{{- range $key, $value := $config.binaries }}
+  {{ $key }}: {{ $value | b64enc }}
+{{- end }}
+{{- end }}
+---
+{{- end }}
+{{- end }}

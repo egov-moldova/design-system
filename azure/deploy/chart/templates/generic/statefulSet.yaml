@@ -1,0 +1,334 @@
+{{- $fullName := include "app.fullname" . -}}
+{{- range $workloadKey, $workload := .Values.statefulSet -}}
+{{- if hasKey $workload "enabled" | ternary $workload.enabled true -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ printf "%s-%s" $fullName $workloadKey }}
+  labels:
+    {{- include "app.labels" $ | nindent 4 }}
+    {{- toYaml $workload.labels | nindent 4 }}
+{{- with $workload.annotations }}
+  annotations: {{- toYaml . | nindent 4 }}
+{{- end }}
+spec:
+{{- if not ($workload.autoscaling).enabled }}
+  replicas: {{ required "replicas required for a non-autoscaled statefulSet!" $workload.replicas }}
+{{- end }}
+{{- if $workload.updateStrategy }}
+  updateStrategy: {{- toYaml $workload.updateStrategy | nindent 4 }}
+{{- end }}
+  serviceName: {{ printf "%s-%s" $fullName $workloadKey }}
+{{- with $workload.podManagementPolicy }}
+  podManagementPolicy: {{ . }}
+{{- end }}
+{{- if $workload.volumeClaimTemplates }}
+  volumeClaimTemplates:
+  {{- with $workload.volumeClaimTemplates }}
+    {{- if kindIs "string" . }}{{ tpl . $ | nindent 2 }}{{ else }}{{ toYaml . | nindent 2 }}{{ end }}
+  {{- end }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "app.selector" $ | nindent 6 }}
+      {{- toYaml $workload.labels | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "app.selector" $ | nindent 8 }}
+        {{- toYaml $workload.labels | nindent 8 }}
+        {{- with $workload.podLabels }}
+          {{- toYaml . | nindent 8 }}
+        {{- end }}
+    {{- with $workload.podAnnotations }}
+      annotations: {{- toYaml . | nindent 8 }}
+    {{- end }}
+    spec:
+    {{- if $workload.podSecurityContext }}
+      securityContext: {{- toYaml $workload.podSecurityContext | nindent 8 }}
+    {{- else }}
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+    {{- end }}
+    {{- if not $workload.automountServiceAccountToken }}
+      automountServiceAccountToken: false
+    {{- end }}
+    {{- if and (or ($.Values.serviceAccount).create ($.Values.serviceAccount).name) (not $workload.defaultServiceAccount) }}
+      serviceAccountName: {{ default $fullName ($.Values.serviceAccount).name }}
+    {{- end }}
+    {{- with $.Values.shareProcessNamespace }}
+      shareProcessNamespace: {{ . }}
+    {{- end }}
+    {{- with $.Values.imagePullSecrets }}
+      imagePullSecrets: {{ toYaml . | nindent 6 }}
+    {{- end }}
+      containers:
+      - name: {{ printf "%s-%s" $.Chart.Name $workloadKey | quote }}
+        image: {{ printf "%s:%s" (required "image.repository is required!" ($workload.image).repository) (required "either .Chart.AppVersion or image.tag is required!" (default $.Chart.AppVersion $workload.image.tag)) | quote }}
+        imagePullPolicy: {{ default "IfNotPresent" $workload.image.pullPolicy }}
+      {{- with $workload.command }}
+        command: {{ . }}
+      {{- end }}
+      {{- with $workload.args }}
+        args:
+        {{- if kindIs "string" . }}{{ tpl . $ | nindent 8 }}{{ else }}{{ toYaml . | nindent 8 }}{{ end }}
+      {{- end }}
+      {{- if $workload.env }}
+        env:
+        {{- with $workload.env }}
+          {{- if kindIs "string" . }}{{ tpl . $ | nindent 8 }}{{ else }}{{ toYaml . | nindent 8 }}{{ end }}
+        {{- end }}
+      {{- else if or $.Values.timeZone $.Values.dotnetEnvironment (eq (default "none" $workload.envPreset) "aspnet") $workload.envFromSecret $workload.envExtra }}
+        env:
+        {{- with $.Values.timeZone }}
+        - name: TZ
+          value: {{ . }}
+        {{- end }}
+        {{- with $.Values.dotnetEnvironment }}
+        - name: DOTNET_ENVIRONMENT
+          value: {{ . }}
+        {{- end }}
+        {{- if eq (default "none" $workload.envPreset) "aspnet" }}
+        - name: ASPNETCORE_HTTP_PORTS
+          value: "8080;9090"
+        - name: ASPNETCORE_MANAGEMENTPORT
+          value: "9090"
+        {{- end }}
+        {{- range $envFromSecret := $workload.envFromSecret }}
+        - name: {{ $envFromSecret.name }}
+          valueFrom:
+            secretKeyRef:
+            {{- if $envFromSecret.secretKeyRef }}
+              name: {{ tpl (printf "{{ $.Values.%s.secretName }}" $envFromSecret.secretKeyRef) $ }}
+              key: {{ tpl (printf "{{ $.Values.%s.secretKey }}" $envFromSecret.secretKeyRef) $ }}
+            {{- else }}
+              {{- if $envFromSecret.secretName }}
+              name: {{ required "setting secretKeyRef, secretName or secret is required!" $envFromSecret.secretName }}
+              {{- else }}
+              name: {{ printf "%s-%s" $fullName (required "setting secretKeyRef, secretName or secret is required!" $envFromSecret.secret) }}
+              {{- end}}
+              key: {{ required "setting secretKeyRef or secretKey is required!" $envFromSecret.secretKey }}
+            {{- end }}
+        {{- end }}
+        {{- with $workload.envExtra }}
+          {{- if kindIs "string" . }}{{ tpl . $ | nindent 8 }}{{ else }}{{ toYaml . | nindent 8 }}{{ end }}
+        {{- end }}
+      {{- end }}
+      {{- if $workload.ports }}
+        ports:
+        {{- with $workload.ports }}
+          {{- if kindIs "string" . }}{{ tpl . $ | nindent 8 }}{{ else }}{{ toYaml . | nindent 8 }}{{ end }}
+        {{- end }}
+      {{- else if eq (default "none" $workload.portsPreset) "aspnet" }}
+        ports:
+        - name: http
+          containerPort: 8080
+        - name: management
+          containerPort: 9090
+      {{- end }}
+      {{- with $workload.startupProbe }}
+        startupProbe: {{- toYaml . | nindent 10 }}
+      {{- end }}
+      {{- with $workload.readinessProbe }}
+        readinessProbe: {{- toYaml . | nindent 10 }}
+      {{- end }}
+      {{- with $workload.livenessProbe }}
+        livenessProbe: {{- toYaml . | nindent 10 }}
+      {{- end }}
+      {{- if eq (default "none" $workload.probesPreset) "aspnet" }}
+        startupProbe:
+          httpGet:
+            path: /health
+            port: management
+          initialDelaySeconds: 15
+          failureThreshold: 5
+          timeoutSeconds: 30
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: management
+          periodSeconds: 30
+          timeoutSeconds: 30
+      {{- end }}
+      {{- if $workload.resources }}
+        resources: {{- toYaml $workload.resources | nindent 10 }}
+      {{- else }}
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 100m
+          limits:
+            memory: 256Mi
+            cpu: 250m
+      {{- end }}
+      {{- if $workload.containerSecurityContext }}
+        securityContext: {{- toYaml $workload.containerSecurityContext | nindent 10 }}
+      {{- else }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+      {{- end }}
+      {{- if $workload.volumeMounts }}
+        volumeMounts:
+          {{- with $workload.volumeMounts }}
+            {{- if kindIs "string" . }}{{ tpl . $ | nindent 8 }}{{ else }}{{ toYaml . | nindent 8 }}{{ end }}
+          {{- end }}
+      {{- else if or $workload.mountPreset $workload.volumeMountsExtra }}
+        volumeMounts:
+        {{- if ($workload.mountPreset).appSettings }}
+        - name: settings
+          mountPath: /app/appsettings.json
+          subPath: appsettings.json
+          readOnly: true
+        {{- end }}
+        {{- if ($workload.mountPreset).dataProtectionKeys }}
+        - name: data-protection
+          mountPath: /app/Files/DataProtectionKeys
+          readOnly: true
+        {{- end }}
+        {{- if ($workload.mountPreset).certificate }}
+        - name: certificate
+          mountPath: /app/Files/Certificates/Service
+          readOnly: true
+        {{- end }}
+        {{- if ($workload.mountPreset).trustedCertificates }}
+        - name: trusted-certificates
+          mountPath: /app/Files/Certificates/Trusted
+          readOnly: true
+        {{- end }}
+        {{- with $workload.volumeMountsExtra }}
+          {{- if kindIs "string" . }}{{ tpl . $ | nindent 8 }}{{ else }}{{ toYaml . | nindent 8 }}{{ end }}
+        {{- end }}
+      {{- end }}
+      {{- if ($workload.sidecarPreset).mconnectAmbassador }}
+      - name: mconnect-ambassador
+        image: {{ printf "%s:%s" (default (include "mconnect.ambassador.image.repository" $) (($.Values.mconnectAmbassador).image).repository) (default (include "mconnect.ambassador.image.tag" $) (($.Values.mconnectAmbassador).image).tag) | quote }}
+        imagePullPolicy: {{ default "IfNotPresent" $workload.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ default 8280 ($.Values.mconnectAmbassador).port }}
+        env:
+        {{- with $.Values.timeZone }}
+        - name: TZ
+          value: {{ . }}
+        {{- end }}
+        {{- with $.Values.dotnetEnvironment }}
+        - name: DOTNET_ENVIRONMENT
+          value: {{ . }}
+        {{- end }}
+        - name: ASPNETCORE_HTTP_PORTS
+          value: {{ default 8280 ($.Values.mconnectAmbassador).port | quote }}
+        {{- if ($.Values.mconnectAmbassador).resources }}
+        resources: {{- toYaml $.Values.mconnectAmbassador.resources | nindent 10 }}
+        {{- else }}
+        resources:
+          requests:
+            memory: 128Mi
+            cpu: 100m
+          limits:
+            memory: 128Mi
+            cpu: 250m
+        {{- end }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: mconnect-settings
+          mountPath: /app/appsettings.json
+          subPath: appsettings.json
+          readOnly: true
+        - name: certificate
+          mountPath: /app/Files/Certificates/Service
+          readOnly: true
+        - name: trusted-certificates
+          mountPath: /app/Files/Certificates/Trusted
+          readOnly: true
+      {{- end }}
+    {{- if $workload.volumes }}
+      volumes:
+        {{- with $workload.volumes }}
+            {{- if kindIs "string" . }}{{ tpl . $ | nindent 6 }}{{ else }}{{ toYaml . | nindent 6 }}{{ end }}
+        {{- end }}
+    {{- else if or $workload.mountPreset $workload.volumesExtra }}
+      volumes:
+      {{- if ($workload.mountPreset).appSettings }}
+      - name: settings
+        configMap:
+          name: {{ printf "%s-%s" $fullName (default $workloadKey $workload.mountPreset.appSettingsName) }}
+      {{- end }}
+      {{- if ($workload.mountPreset).dataProtectionKeys }}
+      - name: data-protection
+        secret:
+          secretName: {{ required "integrations.dataProtectionKeys.secretName required!" $.Values.integrations.dataProtectionKeys.secretName }}
+      {{- end }}
+      {{- if or ($workload.mountPreset).certificate ($workload.sidecarPreset).mconnectAmbassador }}
+      - name: certificate
+        secret:
+          secretName: {{ required "integrations.certificate.secretName required!" $.Values.integrations.certificate.secretName }}
+      {{- end }}
+      {{- if or ($workload.mountPreset).trustedCertificates ($workload.sidecarPreset).mconnectAmbassador }}
+      - name: trusted-certificates
+        configMap:
+          name: {{ required "integrations.trustedCertificates.configName required!" $.Values.integrations.trustedCertificates.configName }}
+      {{- end }}
+      {{- if ($workload.sidecarPreset).mconnectAmbassador }}
+      - name: mconnect-settings
+        configMap:
+          name: {{ printf "%s-mconnect" $fullName }}
+      {{- end }}
+      {{- with $workload.volumesExtra }}
+        {{- if kindIs "string" . }}{{ tpl . $ | nindent 6 }}{{ else }}{{ toYaml . | nindent 6 }}{{ end }}
+      {{- end }}
+    {{- end }}
+    {{- with $workload.hostAliases }}
+      hostAliases: {{- if kindIs "string" . }}{{ tpl . $ | nindent 6 }}{{ else }}{{ toYaml . | nindent 6 }}{{ end }}
+    {{- end }}
+    {{- with $workload.readinessGates }}
+      readinessGates: {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with (default 60 $workload.terminationGracePeriodSeconds) }}
+      terminationGracePeriodSeconds: {{ . }}
+    {{- end }}
+    {{- if $workload.affinity }}
+      {{- with $workload.affinity }}
+      affinity: {{- if kindIs "string" . }}{{ tpl . $ | nindent 8 }}{{ else }}{{ toYaml . | nindent 8 }}{{ end }}
+      {{- end }}
+    {{- else if eq (default "hard" $workload.podAntiAffinityPreset) "hard" }}
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                {{- include "app.selector" $ | nindent 16 }}
+                {{- toYaml $workload.labels | nindent 16 }}
+            topologyKey: {{ default "kubernetes.io/hostname" $workload.podAntiAffinityTopologyKey }}
+    {{- else if eq $workload.podAntiAffinityPreset "soft" }}
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  {{- include "app.selector" $ | nindent 18 }}
+                  {{- toYaml $workload.labels | nindent 18 }}
+              topologyKey: {{ default "kubernetes.io/hostname" $workload.podAntiAffinityTopologyKey }}
+    {{- end }}
+    {{- with $workload.nodeSelector }}
+      nodeSelector: {{- if kindIs "string" . }}{{ tpl . $ | nindent 8 }}{{ else }}{{ toYaml . | nindent 8 }}{{ end }}
+    {{- end }}
+    {{- with $workload.tolerations }}
+      tolerations: {{- if kindIs "string" . }}{{ tpl . $ | nindent 6 }}{{ else }}{{ toYaml . | nindent 6 }}{{ end }}
+    {{- end }}
+    {{- with $workload.topologySpreadConstraints }}
+      topologySpreadConstraints: {{- if kindIs "string" . }}{{ tpl . $ | nindent 6 }}{{ else }}{{ toYaml . | nindent 6 }}{{ end }}
+    {{- end }}
+---
+{{- end }}
+{{- end }}

@@ -1,0 +1,27 @@
+{{- range $workloadKey, $workload := mustMerge (dict) (default (dict) .Values.deployment) (default (dict) .Values.statefulSet) -}}
+{{- if ($workload.autoscaling).enabled -}}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ printf "%s-%s" (include "app.fullname" $) $workloadKey }}
+  labels:
+    {{- include "app.labels" $ | nindent 4 }}
+    {{- toYaml $workload.labels | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: {{ ternary "Deployment" "StatefulSet" (index $.Values.deployment $workloadKey) }}
+    name: {{ printf "%s-%s" (include "app.fullname" $) $workloadKey }}
+{{- with $workload.autoscaling.minReplicas }}
+  minReplicas: {{ . }}
+{{- end }}
+  maxReplicas: {{ required "maxReplicas field is required for workload autoscaling!" $workload.autoscaling.maxReplicas }}
+{{- with $workload.autoscaling.metrics }}
+  metrics: {{- if kindIs "string" . }}{{ tpl . $ | nindent 2 }}{{ else }}{{ toYaml . | nindent 2 }}{{ end }}
+{{- end }}
+{{- with $workload.autoscaling.behavior }}
+  behavior: {{- if kindIs "string" . }}{{ tpl . $ | nindent 4 }}{{ else }}{{ toYaml . | nindent 4 }}{{ end }}
+{{- end }}
+---
+{{- end }}
+{{- end }}

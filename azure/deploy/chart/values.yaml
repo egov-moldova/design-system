@@ -1,0 +1,42 @@
+timeZone: Europe/Chisinau
+dotnetEnvironment: Production
+
+serviceAccount:
+  create: true
+
+imagePullSecrets:
+- name: harbor
+
+deployment:
+  webui:
+    labels:
+      app.kubernetes.io/component: webui
+    replicas: 2
+    image:
+      repository: harbor.egov.md/mud/webui
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 100m
+      limits:
+        memory: 256Mi
+        cpu: 250m
+    networkPolicy:
+      ingressPreset:
+        publicIngress: true
+        prometheus: true
+      egressPreset:
+        dns: true
+        publicHttp: true
+
+
+
+
+ingress:
+  webui:
+    enabled: true
+    className: nginx
+    paths:
+      - path: /
+    host: mud.egov.md
+

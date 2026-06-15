@@ -1,0 +1,62 @@
+{{- $fullName := include "app.fullname" . -}}
+{{- $workloads := mustMerge (dict) (default (dict) .Values.deployment) (default (dict) .Values.statefulSet) -}}
+{{- range $ingressKey, $ingress := .Values.ingress -}}
+{{- if (required "ingress.enabled is required!" $ingress.enabled) -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ printf "%s-%s" $fullName $ingressKey }}
+  labels:
+    {{- include "app.labels" $ | nindent 4 }}
+{{- with $ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+{{- end }}
+spec:
+  ingressClassName: {{ default "nginx" $ingress.className }}
+  rules:
+  - host: {{ required "ingress host required!" $ingress.host | quote }}
+    http:
+    {{- if $ingress.paths }}
+      paths:
+      {{- range $ingress.paths }}
+      - path: {{ .path | quote }}
+        pathType: {{ default "Prefix" .pathType }}
+        backend:
+          service:
+            name: {{ printf "%s-%s" $fullName (default $ingressKey .serviceName) }}
+            port: 
+            {{- if .servicePort }}
+              name: {{ .servicePort }}
+            {{- else if (index $workloads (default $ingressKey .serviceName) "service").portName }}
+              name: {{ index $workloads (default $ingressKey .serviceName) "service" "portName" }}
+            {{- else if eq "aspnet" (index $workloads (default $ingressKey .serviceName) "portsPreset") }}
+              name: http
+            {{- end }}
+      {{- end }}
+    {{- else }}
+      paths:
+      - path: "/"
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ printf "%s-%s" $fullName $ingressKey }}
+            port:
+            {{- if (index $workloads $ingressKey "service").portName }}
+              name: {{ index $workloads $ingressKey "service" "portName" }}
+            {{- else if eq "aspnet" (index $workloads $ingressKey "portsPreset") }}
+              name: http
+            {{- end }}
+    {{- end }}
+    {{- with $ingress.pathsExtra }}
+      {{- tpl . $ | indent 6 }}
+    {{- end }}
+{{- if ($ingress.tls).enabled }}
+  tls:
+  - hosts:
+    - {{ required "ingress host required!" $ingress.host | quote }}
+    secretName: {{ default (printf "%s-tls" $fullName) $ingress.tls.secretName }}
+{{- end }}
+---
+{{- end }}
+{{- end }}

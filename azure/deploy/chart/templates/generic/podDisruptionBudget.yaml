@@ -1,0 +1,21 @@
+{{- range $workloadKey, $workload := mustMerge (dict) (default (dict) .Values.deployment) (default (dict) .Values.statefulSet) -}}
+{{- if hasKey $workload "enabled" | ternary $workload.enabled true -}}
+{{- if or (gt ((default 1 $workload.replicas) | int) 1) (and ($workload.autoscaling).enabled (gt ((default 1 ($workload.autoscaling).minReplicas) | int) 1)) -}}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ printf "%s-%s" (include "app.fullname" $) $workloadKey }}
+  labels:
+    {{- include "app.labels" $ | nindent 4 }}
+    {{- toYaml $workload.labels | nindent 4 }}
+spec:
+  minAvailable: {{ default 1 $workload.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "app.selector" $ | nindent 6 }}
+      {{- toYaml $workload.labels | nindent 6 }}
+  unhealthyPodEvictionPolicy: {{ default "AlwaysAllow" $workload.unhealthyPodEvictionPolicy }}
+---
+{{- end }}
+{{- end }}
+{{- end }}

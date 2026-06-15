@@ -1,0 +1,106 @@
+{{- range $workloadKey, $workload := mustMerge (dict) (default (dict) .Values.deployment) (default (dict) .Values.statefulSet) (default (dict) .Values.job) -}}
+{{- if and (hasKey $workload "enabled" | ternary $workload.enabled true) ($workload.networkPolicy).enabled -}}
+{{- $networkPolicy := $workload.networkPolicy -}}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ printf "%s-%s" (include "app.fullname" $) $workloadKey }}
+  labels:
+    {{- include "app.labels" $ | nindent 4 }}
+    {{- toYaml $workload.labels | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      {{- include "app.selector" $ | nindent 6 }}
+      {{- toYaml $workload.labels | nindent 6 }}
+  policyTypes:
+  {{- if or $networkPolicy.ingress ($networkPolicy.ingressPreset).publicIngress ($networkPolicy.ingressPreset).apiIngress ($networkPolicy.ingressPreset).prometheus $networkPolicy.ingressExtra }}
+  - Ingress
+  {{- end }}
+  {{- if or $networkPolicy.egress ($networkPolicy.egressPreset).dns ($networkPolicy.egressPreset).publicHttp $networkPolicy.egressExtra }}
+  - Egress
+  {{- end }}
+{{- if $networkPolicy.ingress }}
+  ingress:
+    {{- with $networkPolicy.ingress }}
+      {{- if kindIs "string" . }}{{ tpl . $ | nindent 2 }}{{ else }}{{ toYaml . | nindent 2 }}{{ end }}
+    {{- end }}
+{{- else if or ($networkPolicy.ingressPreset).publicIngress ($networkPolicy.ingressPreset).apiIngress ($networkPolicy.ingressPreset).prometheus $networkPolicy.ingressExtra }}
+  ingress:
+  {{- if ($networkPolicy.ingressPreset).publicIngress }}
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: nginx-ingress
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/component: controller
+    ports:
+    - port: 8080
+  {{- end }}
+  {{- if ($networkPolicy.ingressPreset).apiIngress }}
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: api-ingress
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/component: controller
+    ports:
+    - port: 8080
+  {{- end }}
+  {{- if ($networkPolicy.ingressPreset).prometheus }}
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          egov.md/monitoring: "true"
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: prometheus
+    ports:
+    - port: 9090
+  {{- end }}
+  {{- with $networkPolicy.ingressExtra }}
+    {{- if kindIs "string" . }}{{ tpl . $ | nindent 2 }}{{ else }}{{ toYaml . | nindent 2 }}{{ end }}
+  {{- end }}
+{{- end }}
+{{- if $networkPolicy.egress }}
+  egress:
+    {{- with $networkPolicy.egress }}
+      {{- if kindIs "string" . }}{{ tpl . $ | nindent 2 }}{{ else }}{{ toYaml . | nindent 2 }}{{ end }}
+    {{- end }}
+{{- else if or ($networkPolicy.egressPreset).dns ($networkPolicy.egressPreset).publicHttp $networkPolicy.egressExtra }}
+  egress:
+  {{- if ($networkPolicy.egressPreset).dns }}
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          kubernetes.io/metadata.name: kube-system
+      podSelector:
+        matchLabels:
+          k8s-app: kube-dns
+    ports:
+    - port: 53
+      protocol: UDP
+    - port: 53
+      protocol: TCP
+  {{- end }}
+  {{- if ($networkPolicy.egressPreset).publicHttp }}
+  - to:
+    - ipBlock:
+        cidr: 0.0.0.0/0
+    ports:
+    - port: 80
+    - port: 443
+    - port: 8443
+  {{- end }}
+  {{- with $networkPolicy.egressExtra }}
+    {{- if kindIs "string" . }}{{ tpl . $ | nindent 2 }}{{ else }}{{ toYaml . | nindent 2 }}{{ end }}
+  {{- end }}
+{{- end }}
+  {{- with $networkPolicy.egress }}
+  egress: {{- toYaml . | nindent 4 }}
+  {{- end }}
+---
+{{- end }}
+{{- end }}
