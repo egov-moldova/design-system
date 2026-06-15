@@ -8,6 +8,7 @@ tokens/generated/
 coverage/
 reports/
 
+node_bin/
 # Dependency directories
 
 node_modules/
