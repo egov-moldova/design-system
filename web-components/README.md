@@ -17,8 +17,8 @@ npm install @egov-moldova/mud-web-components @egov-moldova/mud
 ## Usage — with a bundler (Vite, webpack, esbuild, …)
 
 ```ts
-import '@egov-moldova/mud/dist/design-system/tokens/core.tokens.css';
-import '@egov-moldova/mud/dist/design-system/design-system.css';
+import '@egov-moldova/mud/dist/mud/tokens/core.tokens.css';
+import '@egov-moldova/mud/dist/mud/mud.css';
 import { defineCustomElements } from '@egov-moldova/mud-web-components';
 
 defineCustomElements();
@@ -36,11 +36,11 @@ defineCustomElements();
   <head>
     <link
       rel="stylesheet"
-      href="/node_modules/@egov-moldova/mud/dist/design-system/tokens/core.tokens.css"
+      href="/node_modules/@egov-moldova/mud/dist/mud/tokens/core.tokens.css"
     />
     <link
       rel="stylesheet"
-      href="/node_modules/@egov-moldova/mud/dist/design-system/design-system.css"
+      href="/node_modules/@egov-moldova/mud/dist/mud/mud.css"
     />
     <script type="importmap">
       {
@@ -64,8 +64,8 @@ defineCustomElements();
 ## Usage — CDN via jsDelivr
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud/dist/design-system/tokens/core.tokens.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud/dist/design-system/design-system.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud/dist/mud/tokens/core.tokens.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud/dist/mud/mud.css" />
 <script type="module">
   import { defineCustomElements } from 'https://cdn.jsdelivr.net/npm/@egov-moldova/mud-web-components/dist/index.js';
   defineCustomElements();

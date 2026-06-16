@@ -349,11 +349,11 @@ Read `tokens/core/components/<bareName>.tokens.json` (already loaded from Wave 1
 Verify generated CSS variables exist after `yarn tokens.build`:
 
 ```powershell
-Select-String -Path "dist/design-system/tokens/core.tokens.css" -Pattern "--<bareName>-" | Select-Object -First 20
+Select-String -Path "dist/mud/tokens/core.tokens.css" -Pattern "--<bareName>-" | Select-Object -First 20
 ```
 
 ```bash
-grep "--<bareName>-" dist/design-system/tokens/core.tokens.css | head -n 20
+grep "--<bareName>-" dist/mud/tokens/core.tokens.css | head -n 20
 ```
 
 For deeper token validation delegate to `/token-validator` agent.

@@ -50,7 +50,7 @@ lsof -i :6007
 
 If Storybook not running → `yarn sp.dev.watch` in background, wait ~10s.
 
-Verify tokens are built: if `dist/design-system/tokens/*.css` is missing or stale → `yarn tokens.build`.
+Verify tokens are built: if `dist/mud/tokens/*.css` is missing or stale → `yarn tokens.build`.
 
 ## Step 1 — Read Existing Implementation
 
@@ -164,7 +164,7 @@ Verify output:
 
 ```bash
 # PowerShell
-Select-String -Path "dist/design-system/tokens/core.tokens.css" -Pattern "--<name>-" | Select-Object -First 10
+Select-String -Path "dist/mud/tokens/core.tokens.css" -Pattern "--<name>-" | Select-Object -First 10
 ```
 
 ### 5.2 CSS

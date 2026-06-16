@@ -30,7 +30,7 @@ lsof -i :6007
 
 Check browser session: `mcp__playwright__browser_snapshot()` — reuse if active, else navigate to `http://localhost:6007`.
 
-Verify tokens built: check `dist/design-system/tokens/*.css` exists. If missing → `yarn tokens.build`.
+Verify tokens built: check `dist/mud/tokens/*.css` exists. If missing → `yarn tokens.build`.
 
 ## Step 1: Read Component Source
 

@@ -68,7 +68,7 @@ browser_evaluate({
 
 If CSS variable doesn't exist:
 
-1. Check `dist/design-system/tokens/core.tokens.css`
+1. Check `dist/mud/tokens/core.tokens.css`
 2. Verify token in `tokens/core/components/*.tokens.json`
 3. Check naming (camelCase vs kebab-case per `_agents/pre-implementation.md`)
 4. Fix → rebuild per `_agents/environment-commands.md` → retry

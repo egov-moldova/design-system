@@ -4,7 +4,7 @@
   "platforms": {
     "css": {
       "transforms": ["attribute/cti", "name/kebab", "color/hex"],
-      "buildPath": "dist/design-system/tokens/",
+      "buildPath": "dist/mud/tokens/",
       "files": [
         {
           "destination": "core.dark.tokens.css",

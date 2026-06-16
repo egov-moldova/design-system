@@ -100,7 +100,7 @@ The repo ships ready-to-use slash commands and subagents for routine workflows. 
 
 ```bash
 # Check Token Build Freshness
-ls dist/design-system/tokens/*.css
+ls dist/mud/tokens/*.css
 
 # Development
 yarn sp.dev.watch              # Check Storybook (port 6007)

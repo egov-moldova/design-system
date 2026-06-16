@@ -107,7 +107,7 @@ Validation checklist before Step 6:
 
 - Search for `{palette.` in the file — replace with semantic token
 - Search for kebab-case compound properties — convert to camelCase
-- Verify output in `dist/design-system/tokens/*.css`
+- Verify output in `dist/mud/tokens/*.css`
 
 ## Step 6: Implement Component
 

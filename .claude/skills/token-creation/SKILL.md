@@ -16,8 +16,8 @@ Guide the creation of design tokens for new or existing components, ensuring cor
 
 | Token Type | Location | CSS Output |
 | --- | --- | --- |
-| Core (light) | `tokens/core/components/{name}.tokens.json` | `dist/design-system/tokens/core.tokens.css` |
-| Dark mode | `tokens/core.dark/components/{name}.tokens.json` | `dist/design-system/tokens/core.dark.tokens.css` |
+| Core (light) | `tokens/core/components/{name}.tokens.json` | `dist/mud/tokens/core.tokens.css` |
+| Dark mode | `tokens/core.dark/components/{name}.tokens.json` | `dist/mud/tokens/core.dark.tokens.css` |
 | AGE theme | `tokens/age/components/{name}.tokens.json` | AGE theme CSS |
 
 ---
@@ -193,13 +193,13 @@ After `yarn tokens.build`:
 
 ```powershell
 # 1. Check CSS output exists
-Select-String -Path "dist/design-system/tokens/core.tokens.css" -Pattern "--{component-name}"
+Select-String -Path "dist/mud/tokens/core.tokens.css" -Pattern "--{component-name}"
 
 # 2. Run token reference audit
 yarn tokens.audit
 
 # 3. Verify no undefined values in CSS
-Select-String -Path "dist/design-system/tokens/core.tokens.css" -Pattern "undefined"
+Select-String -Path "dist/mud/tokens/core.tokens.css" -Pattern "undefined"
 ```
 
 **Pass criteria**: Variables present in CSS, zero missing references, zero `undefined` values.

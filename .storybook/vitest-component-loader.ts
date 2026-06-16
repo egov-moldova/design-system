@@ -1,8 +1,8 @@
-// Vitest-only replacement for `dist/design-system/design-system.esm.js`.
+// Vitest-only replacement for `dist/mud/mud.esm.js`.
 //
 // Why this exists:
 //   In normal Storybook dev/build, preview.js imports the pre-compiled lazy
-//   bundle (`dist/design-system/design-system.esm.js`) to register all
+//   bundle (`dist/mud/mud.esm.js`) to register all
 //   `mud-*` custom elements. That bundle is opaque to coverage tooling —
 //   browser-mode tests run by `@storybook/addon-vitest` then report 0%
 //   for every component file even though stories execute correctly.
@@ -16,7 +16,7 @@
 //   the real source files in the module graph and produces accurate numbers.
 //
 // Wired into Storybook tests via `resolve.alias` in `vitest.config.mts` —
-// the alias rewrites `../dist/design-system/design-system.esm.js` (in
+// the alias rewrites `../dist/mud/mud.esm.js` (in
 // `.storybook/preview.js`) to this file for the `storybook` project only.
 // The dist bundle keeps powering regular Storybook dev / production builds.
 

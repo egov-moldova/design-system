@@ -174,7 +174,7 @@ tokens/
 
 ## 7. Build Pipeline (Style Dictionary v4)
 
-Token CSS is produced by Style Dictionary, orchestrated by Wireit. Inputs: `tokens/**/*.tokens.json`. Outputs: `dist/design-system/tokens/*.css`.
+Token CSS is produced by Style Dictionary, orchestrated by Wireit. Inputs: `tokens/**/*.tokens.json`. Outputs: `dist/mud/tokens/*.css`.
 
 | Command | Effect | Time |
 |---|---|---|
@@ -189,7 +189,7 @@ After token edits, run `yarn tokens.build`. **No Stencil rebuild needed** — to
 ### Generated Outputs
 
 ```text
-dist/design-system/tokens/
+dist/mud/tokens/
 ├── core.tokens.css           # Light theme: --color-*, --spacing-*, --button-*, --input-*, ...
 ├── core.dark.tokens.css      # Dark theme overrides (DEFERRED)
 ├── age.tokens.css            # AGE theme overrides

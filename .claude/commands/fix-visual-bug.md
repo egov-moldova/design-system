@@ -78,7 +78,7 @@ Compare returned values against expected (from Figma or design spec).
 Identify which layer is wrong:
 
 1. **Token JSON** → is the value correct in `tokens/core/components/<name>.tokens.json`?
-2. **Token build** → is the CSS variable generated correctly in `dist/design-system/tokens/*.css`?
+2. **Token build** → is the CSS variable generated correctly in `dist/mud/tokens/*.css`?
 3. **Component CSS** → is the correct `var(--token-name)` being used?
 4. **Component TSX** → is the correct prop/state being applied?
 

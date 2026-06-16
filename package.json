@@ -3,7 +3,7 @@
   "version": "1.0.6",
   "description": "MUD Design System — Stencil web components",
   "main": "dist/index.cjs.js",
-  "unpkg": "dist/design-system/design-system.esm.js",
+  "unpkg": "dist/mud/mud.esm.js",
   "module": "dist/index.js",
   "types": "dist/types/index.d.ts",
   "collection": "dist/collection/collection-manifest.json",
@@ -21,9 +21,9 @@
       "import": "./loader/index.js",
       "require": "./loader/index.cjs.js"
     },
-    "./dist/design-system/design-system.css": "./dist/design-system/design-system.css",
-    "./dist/design-system/tokens/*.css": "./dist/design-system/tokens/*.css",
-    "./dist/design-system/*": "./dist/design-system/*"
+    "./dist/mud/mud.css": "./dist/mud/mud.css",
+    "./dist/mud/tokens/*.css": "./dist/mud/tokens/*.css",
+    "./dist/mud/*": "./dist/mud/*"
   },
   "workspaces": [
     "web-components"
@@ -156,7 +156,7 @@
         "tokens/core/style-dictionary.prod.config.json"
       ],
       "output": [
-        "dist/design-system/tokens/core.tokens.css",
+        "dist/mud/tokens/core.tokens.css",
         ".storybook/stories/assets/core.tokens.json",
         "tokens/generated/core.tokens.json"
       ],
@@ -172,7 +172,7 @@
         "tokens/core.dark/style-dictionary.prod.config.json"
       ],
       "output": [
-        "dist/design-system/tokens/core.dark.tokens.css",
+        "dist/mud/tokens/core.dark.tokens.css",
         ".storybook/stories/assets/core.dark.tokens.json",
         "tokens/generated/core.dark.tokens.json"
       ],
@@ -286,7 +286,7 @@
       ]
     },
     "test.storybook.watch": {
-      "command": "wait-on --interval 200 --timeout 60000 dist/design-system/design-system.esm.js dist/design-system/design-system.css tokens/generated/core.tokens.css && vitest --watch --project storybook",
+      "command": "wait-on --interval 200 --timeout 60000 dist/mud/mud.esm.js dist/mud/mud.css tokens/generated/core.tokens.css && vitest --watch --project storybook",
       "dependencies": [
         "dx:prepare"
       ],
@@ -300,7 +300,7 @@
       "service": true
     },
     "dx:storybook": {
-      "command": "wait-on --interval 200 dist/design-system/design-system.esm.js dist/design-system/design-system.css tokens/generated/core.tokens.css && storybook dev -p 6007 --no-open",
+      "command": "wait-on --interval 200 dist/mud/mud.esm.js dist/mud/mud.css tokens/generated/core.tokens.css && storybook dev -p 6007 --no-open",
       "dependencies": [
         "dx:prepare"
       ],

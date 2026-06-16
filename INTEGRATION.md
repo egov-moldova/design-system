@@ -23,18 +23,18 @@ Because Stencil compiles every `mud-*` component to a **W3C-standard Custom Elem
 
 ## 1. What the build emits
 
-After `yarn build`, the relevant artifacts live in `dist/design-system/`:
+After `yarn build`, the relevant artifacts live in `dist/mud/`:
 
 | File / folder | Purpose | Required? |
 |---|---|---|
-| `design-system.esm.js` | Lazy-loader entry. Discovers and `import()`s component chunks on demand. | **Yes** |
-| `design-system.css` | Global base styles (reset, body defaults, focus ring helpers). | **Yes** |
+| `mud.esm.js` | Lazy-loader entry. Discovers and `import()`s component chunks on demand. | **Yes** |
+| `mud.css` | Global base styles (reset, body defaults, focus ring helpers). | **Yes** |
 | `tokens/core.tokens.css` | Light-theme CSS variables (palette + semantic). | **Yes** |
 | `tokens/core.dark.tokens.css` | Dark-theme overrides, scoped under `[data-theme='dark']`. | Recommended |
 | `p-*.js` chunks | One per component, lazy-loaded by the entry. | Auto-served alongside the entry |
-| `assets/` | SVG sprites (used by `mud-icon`, `mud-logo`, …). Resolved via `import.meta.url` of the entry. | **Yes** — keep relative to `design-system.esm.js` |
+| `assets/` | SVG sprites (used by `mud-icon`, `mud-logo`, …). Resolved via `import.meta.url` of the entry. | **Yes** — keep relative to `mud.esm.js` |
 
-> **Critical:** ship the *entire* `dist/design-system/` directory as one unit. The lazy loader uses `import.meta.url` to locate chunks and assets — moving or renaming individual files will break asset resolution at runtime.
+> **Critical:** ship the *entire* `dist/mud/` directory as one unit. The lazy loader uses `import.meta.url` to locate chunks and assets — moving or renaming individual files will break asset resolution at runtime.
 
 ---
 
@@ -44,8 +44,8 @@ Anywhere you control the `<head>`:
 
 ```html
 <link rel="stylesheet" href="/mud/tokens/core.tokens.css">
-<link rel="stylesheet" href="/mud/design-system.css">
-<script type="module" src="/mud/design-system.esm.js"></script>
+<link rel="stylesheet" href="/mud/mud.css">
+<script type="module" src="/mud/mud.esm.js"></script>
 ```
 
 Optional — opt into dark mode by including the dark tokens *and* setting `data-theme="dark"` on `<html>`:
@@ -60,7 +60,7 @@ That's it. From now on, `<mud-button>`, `<mud-icon>`, `<mud-modal>`, etc. work a
 
 ## 3. Plain HTML / static site
 
-Copy `dist/design-system/` to your site's static folder (e.g. `public/mud/`) and reference it from the page:
+Copy `dist/mud/` to your site's static folder (e.g. `public/mud/`) and reference it from the page:
 
 ```html
 <!doctype html>
@@ -71,8 +71,8 @@ Copy `dist/design-system/` to your site's static folder (e.g. `public/mud/`) and
 
     <link rel="stylesheet" href="/mud/tokens/core.tokens.css">
     <link rel="stylesheet" href="/mud/tokens/core.dark.tokens.css">
-    <link rel="stylesheet" href="/mud/design-system.css">
-    <script type="module" src="/mud/design-system.esm.js"></script>
+    <link rel="stylesheet" href="/mud/mud.css">
+    <script type="module" src="/mud/mud.esm.js"></script>
   </head>
   <body>
     <mud-button variant="primary">Save</mud-button>
@@ -88,22 +88,22 @@ Copy `dist/design-system/` to your site's static folder (e.g. `public/mud/`) and
 
 ### CDN alternative (no copy step)
 
-The package declares `"unpkg": "dist/design-system/design-system.esm.js"`, so any npm-mirroring CDN works once the package is published. **Always pin a version and use Subresource Integrity (SRI) — without it, a CDN compromise silently runs attacker code on every page that loads the script.**
+The package declares `"unpkg": "dist/mud/mud.esm.js"`, so any npm-mirroring CDN works once the package is published. **Always pin a version and use Subresource Integrity (SRI) — without it, a CDN compromise silently runs attacker code on every page that loads the script.**
 
 ```html
 <link
   rel="stylesheet"
-  href="https://unpkg.com/@egovmd/mud@0.0.1/dist/design-system/tokens/core.tokens.css"
+  href="https://unpkg.com/@egovmd/mud@0.0.1/dist/mud/tokens/core.tokens.css"
   integrity="sha384-REPLACE_WITH_REAL_HASH"
   crossorigin="anonymous">
 <link
   rel="stylesheet"
-  href="https://unpkg.com/@egovmd/mud@0.0.1/dist/design-system/design-system.css"
+  href="https://unpkg.com/@egovmd/mud@0.0.1/dist/mud/mud.css"
   integrity="sha384-REPLACE_WITH_REAL_HASH"
   crossorigin="anonymous">
 <script
   type="module"
-  src="https://unpkg.com/@egovmd/mud@0.0.1/dist/design-system/design-system.esm.js"
+  src="https://unpkg.com/@egovmd/mud@0.0.1/dist/mud/mud.esm.js"
   integrity="sha384-REPLACE_WITH_REAL_HASH"
   crossorigin="anonymous"></script>
 ```
@@ -111,11 +111,11 @@ The package declares `"unpkg": "dist/design-system/design-system.esm.js"`, so an
 Generate hashes locally against the exact published files:
 
 ```bash
-curl -sL https://unpkg.com/@egovmd/mud@0.0.1/dist/design-system/design-system.esm.js \
+curl -sL https://unpkg.com/@egovmd/mud@0.0.1/dist/mud/mud.esm.js \
   | openssl dgst -sha384 -binary | openssl base64 -A
 ```
 
-> **Important caveat:** SRI protects the *entry* file but cannot cover the lazy-loaded `p-*.js` chunks that `design-system.esm.js` imports dynamically — the browser has no `integrity` attribute on dynamic `import()`. If your threat model includes CDN compromise, **self-host the build** (section 3 default) and apply SRI plus normal asset-pipeline integrity at your origin. CDN delivery is best for prototypes, internal tools, and demos.
+> **Important caveat:** SRI protects the *entry* file but cannot cover the lazy-loaded `p-*.js` chunks that `mud.esm.js` imports dynamically — the browser has no `integrity` attribute on dynamic `import()`. If your threat model includes CDN compromise, **self-host the build** (section 3 default) and apply SRI plus normal asset-pipeline integrity at your origin. CDN delivery is best for prototypes, internal tools, and demos.
 
 ---
 
@@ -129,8 +129,8 @@ PHP only emits HTML, so the integration is the **same as section 3**. The only d
 {{-- resources/views/layouts/app.blade.php --}}
 <head>
   <link rel="stylesheet" href="{{ asset('age/tokens/core.tokens.css') }}">
-  <link rel="stylesheet" href="{{ asset('age/design-system.css') }}">
-  <script type="module" src="{{ asset('age/design-system.esm.js') }}"></script>
+  <link rel="stylesheet" href="{{ asset('age/mud.css') }}">
+  <script type="module" src="{{ asset('age/mud.esm.js') }}"></script>
 </head>
 
 <body>
@@ -145,8 +145,8 @@ Place the build under `public/age/` and the helper produces the right path.
 ```twig
 {# templates/base.html.twig #}
 <link rel="stylesheet" href="{{ asset('age/tokens/core.tokens.css') }}">
-<link rel="stylesheet" href="{{ asset('age/design-system.css') }}">
-<script type="module" src="{{ asset('age/design-system.esm.js') }}"></script>
+<link rel="stylesheet" href="{{ asset('age/mud.css') }}">
+<script type="module" src="{{ asset('age/mud.esm.js') }}"></script>
 ```
 
 ### WordPress
@@ -156,8 +156,8 @@ Custom elements with hyphens are valid HTML5; WordPress's wpautop and KSES filte
 ```php
 add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('age-tokens', get_template_directory_uri() . '/age/tokens/core.tokens.css', [], null);
-    wp_enqueue_style('age-base',   get_template_directory_uri() . '/age/design-system.css',     [], null);
-    wp_enqueue_script('age-loader', get_template_directory_uri() . '/age/design-system.esm.js', [], null, true);
+    wp_enqueue_style('age-base',   get_template_directory_uri() . '/age/mud.css',     [], null);
+    wp_enqueue_script('age-loader', get_template_directory_uri() . '/age/mud.esm.js', [], null, true);
 });
 
 // Make the loader a module — WP wraps scripts in classic <script> by default.
@@ -173,8 +173,8 @@ add_filter('script_loader_tag', function ($tag, $handle) {
 
 ```php
 <link rel="stylesheet" href="/age/tokens/core.tokens.css">
-<link rel="stylesheet" href="/age/design-system.css">
-<script type="module" src="/age/design-system.esm.js"></script>
+<link rel="stylesheet" href="/age/mud.css">
+<script type="module" src="/age/mud.esm.js"></script>
 
 <mud-button variant="primary"><?= htmlspecialchars($label) ?></mud-button>
 ```
@@ -191,8 +191,8 @@ Identical to PHP — server renders HTML, browser does the rest. Drop the build 
 @* Views/Shared/_Layout.cshtml *@
 <head>
   <link rel="stylesheet" href="~/age/tokens/core.tokens.css" />
-  <link rel="stylesheet" href="~/age/design-system.css" />
-  <script type="module" src="~/age/design-system.esm.js"></script>
+  <link rel="stylesheet" href="~/age/mud.css" />
+  <script type="module" src="~/age/mud.esm.js"></script>
 </head>
 
 <body>
@@ -223,15 +223,15 @@ Add the assets in `App.razor` (or `_Host.cshtml` for Server) and `wwwroot/index.
 
 ```html
 <link rel="stylesheet" href="age/tokens/core.tokens.css" />
-<link rel="stylesheet" href="age/design-system.css" />
-<script type="module" src="age/design-system.esm.js"></script>
+<link rel="stylesheet" href="age/mud.css" />
+<script type="module" src="age/mud.esm.js"></script>
 ```
 
 Three caveats specific to Blazor:
 
 1. **Object/array props** must be set via JS interop. See [section 6](#6-setting-non-string-props-objects-arrays).
 2. **Custom events** (`corChange`, `corSelect`, …) need an `[EventHandler]` registration or a JS wrapper. See [section 7](#7-listening-to-custom-events).
-3. **Render mode**: in interactive Server mode, the first SSR pass emits the tags *before* `design-system.esm.js` runs. That is fine — custom elements upgrade automatically on `customElements.define`. But any JS interop that sets a property must wait for upgrade:
+3. **Render mode**: in interactive Server mode, the first SSR pass emits the tags *before* `mud.esm.js` runs. That is fine — custom elements upgrade automatically on `customElements.define`. But any JS interop that sets a property must wait for upgrade:
 
    ```csharp
    await JS.InvokeVoidAsync(
@@ -380,7 +380,7 @@ You can also scope dark mode to a subtree — apply `data-theme="dark"` to any w
 - **Same-origin or CORS**: ESM module imports honor CORS. If you host the build on a CDN under a different origin than your page, the CDN must respond with `Access-Control-Allow-Origin`. unpkg and jsDelivr already do.
 - **Subresource Integrity (SRI)**: any third-party-hosted asset (CDN, partner domain) must carry `integrity="sha384-…"` + `crossorigin="anonymous"`. Note that SRI only covers files referenced directly in markup; lazy-loaded chunks emitted by Stencil cannot be SRI-protected because they are pulled via dynamic `import()`. Self-hosting eliminates this gap entirely — prefer it for production.
 - **MIME type**: `.js` files must be served as `application/javascript` (or `text/javascript`). Some legacy servers default to `application/octet-stream` for unknown extensions and the browser will refuse to execute the module. Configure your server to send the right MIME for `.js`, `.css`, and `.svg`.
-- **Cache headers**: chunks (`p-*.js`) are content-hashed, so they can be served with `Cache-Control: public, max-age=31536000, immutable`. The entry file `design-system.esm.js` is **not** hashed — give it a short cache (e.g. 5 minutes) or version it via your asset pipeline.
+- **Cache headers**: chunks (`p-*.js`) are content-hashed, so they can be served with `Cache-Control: public, max-age=31536000, immutable`. The entry file `mud.esm.js` is **not** hashed — give it a short cache (e.g. 5 minutes) or version it via your asset pipeline.
 - **Compression**: enable Brotli/gzip on `.js`, `.css`, `.svg`. The unminified ESM is ~3 KB but each component chunk benefits significantly.
 - **CSP**: the loader uses dynamic `import()` and inline source maps in dev. Production builds are CSP-friendly with `script-src 'self'` plus a nonce — call `setNonce('<your-nonce>')` from `@egovmd/mud/loader` before the loader runs:
 
@@ -397,9 +397,9 @@ You can also scope dark mode to a subtree — apply `data-theme="dark"` to any w
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| `<mud-button>` renders as plain text, no styling | The loader didn't run, or chunks 404 | Open DevTools → Network. If `design-system.esm.js` is 200 but `p-*.js` chunks are 404, the folder is split — re-deploy `dist/design-system/` as a whole. |
-| Icons render as blank squares | Asset resolution failed | The SVG sprite path is derived from `design-system.esm.js`'s URL. Ensure `dist/design-system/assets/` is co-located with the entry. |
-| Modal/popover positioned wrong | Tokens not loaded | Verify `core.tokens.css` is in the document *before* `design-system.css`. Otherwise component CSS resolves variables to their fallback. |
+| `<mud-button>` renders as plain text, no styling | The loader didn't run, or chunks 404 | Open DevTools → Network. If `mud.esm.js` is 200 but `p-*.js` chunks are 404, the folder is split — re-deploy `dist/mud/` as a whole. |
+| Icons render as blank squares | Asset resolution failed | The SVG sprite path is derived from `mud.esm.js`'s URL. Ensure `dist/mud/assets/` is co-located with the entry. |
+| Modal/popover positioned wrong | Tokens not loaded | Verify `core.tokens.css` is in the document *before* `mud.css`. Otherwise component CSS resolves variables to their fallback. |
 | Dark mode doesn't apply | Missing dark tokens or wrong attribute | Confirm `core.dark.tokens.css` is linked **and** `<html data-theme="dark">` is set. |
 | Blazor: `e.target.value` is empty in event handler | Stencil emits typed `CustomEvent`; `value` lives on `event.detail`, not on the target | Use `e.Detail` (Blazor) or `e.detail` (JS). |
 | `<mud-select>` shows no options after data load | Tried to set `options` as an attribute | Set the JS property after `customElements.whenDefined()`. See [section 6](#6-setting-non-string-props-objects-arrays). |

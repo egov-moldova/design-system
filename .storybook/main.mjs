@@ -29,9 +29,9 @@ export default {
   // In dev mode, the custom middleware in viteFinal serves these files instead.
   // Map illustration SVGs to /assets/assets/ — in production Vite bundles the Stencil ESM into
   // /assets/[hash].js, so getAssetPath('./assets/illustrations/name.svg') resolves to
-  // /assets/assets/illustrations/*. In dev, Vite serves dist/design-system/ from the filesystem
+  // /assets/assets/illustrations/*. In dev, Vite serves dist/mud/ from the filesystem
   // directly (fs.allow: ['..']), so staticDirs is not needed there and the correct URL is
-  // /dist/design-system/assets/illustrations/* regardless of this mapping.
+  // /dist/mud/assets/illustrations/* regardless of this mapping.
   staticDirs: [
     { from: '../tokens/generated', to: 'tokens/generated' },
     // Disabled during legacy migration — mud-illustration is in src/legacy/ and not shipped.
@@ -81,7 +81,7 @@ export default {
       watch: {
         // PERF: Disable polling — uses native FS events (faster, less CPU on Windows)
         usePolling: false,
-        // PERF: Only dist/design-system matters for hot reload (handled by stencil-hot-reload
+        // PERF: Only dist/mud matters for hot reload (handled by stencil-hot-reload
         // plugin via Node fs.watch). All other dist subdirs are ignored to prevent spurious
         // Vite watcher events on every Stencil incremental rebuild.
         ignored: [
@@ -169,7 +169,7 @@ export default {
 
         // Watch both gitignored dirs with separate debounce per dir.
         // Token-only changes skip module invalidation (tokens are <link> tags).
-        // Component changes invalidate only dist/design-system modules.
+        // Component changes invalidate only dist/mud modules.
         const timers = {};
         const watchers = [];
 
@@ -186,16 +186,16 @@ export default {
         function onComponentChange(filename) {
           clearTimeout(timers.component);
           timers.component = setTimeout(() => {
-            // Only invalidate dist/design-system modules — keep Storybook core cached
+            // Only invalidate dist/mud modules — keep Storybook core cached
             let invalidated = 0;
             for (const [id, mod] of server.moduleGraph.idToModuleMap) {
-              if (id.includes('/dist/design-system/') || id.includes('\\dist\\design-system\\')) {
+              if (id.includes('/dist/mud/') || id.includes('\\dist\\mud\\')) {
                 server.moduleGraph.invalidateModule(mod);
                 invalidated++;
               }
             }
             console.log(
-              `[stencil-hot-reload] dist/design-system/${filename || '?'} changed, ${invalidated} modules invalidated, reloading...`,
+              `[stencil-hot-reload] dist/mud/${filename || '?'} changed, ${invalidated} modules invalidated, reloading...`,
             );
             server.ws.send({ type: 'full-reload' });
           }, 300);
@@ -203,7 +203,7 @@ export default {
 
         const watchMap = {
           'tokens/generated': onTokenChange,
-          'dist/design-system': onComponentChange,
+          'dist/mud': onComponentChange,
         };
 
         for (const [dir, handler] of Object.entries(watchMap)) {

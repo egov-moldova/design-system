@@ -105,7 +105,7 @@ Default: follow current structure.
 ```text
 tokens/core/components/button.tokens.json    →  Style Dictionary build
     ↓                                              ↓
-{color.background.brand.default}             →  dist/design-system/tokens/core.tokens.css
+{color.background.brand.default}             →  dist/mud/tokens/core.tokens.css
     ↓                                              ↓
 --button-primary-background-default: #hex    →  Used in mud-button.css
 ```
@@ -152,5 +152,5 @@ yarn tokens.watch              # Watch and rebuild on change
 | --- | --- |
 | `space.tokens.json` | `spacing.tokens.json` |
 | `npm run tokens:build` | `yarn tokens.build` |
-| `tokens/generated/*.css` | `dist/design-system/tokens/*.css` |
+| `tokens/generated/*.css` | `dist/mud/tokens/*.css` |
 | `npm run build` | `yarn build` |

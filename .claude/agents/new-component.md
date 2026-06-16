@@ -51,7 +51,7 @@ lsof -i :6007
 
 Check browser session: `mcp__playwright__browser_snapshot()`. If content returned, reuse. Otherwise navigate to `http://localhost:6007`.
 
-Check tokens: if `dist/design-system/tokens/*.css` missing → `yarn tokens.build`.
+Check tokens: if `dist/mud/tokens/*.css` missing → `yarn tokens.build`.
 
 ## Step 2: Reuse Check (MANDATORY)
 
@@ -124,7 +124,7 @@ Project-specific rules:
 - `var()` fallbacks: use `--color-*` semantic tokens only — never `--palette-*`
 - Dark mode tokens DEFERRED — skip `tokens/core.dark/`
 
-Build: `yarn tokens.build` (~5s). Verify output in `dist/design-system/tokens/*.css`.
+Build: `yarn tokens.build` (~5s). Verify output in `dist/mud/tokens/*.css`.
 
 Reference: `tokens/_agents/naming-conventions.md`, `tokens/AGENTS.md`.
 

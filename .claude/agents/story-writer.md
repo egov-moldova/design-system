@@ -161,7 +161,7 @@ Inline `style="..."` attributes inside `render` templates should use semantic CS
 - Grid label-gutters — `grid-template-columns: 80px repeat(N, 1fr)`
 - `0` and `1px` for borders
 
-Full catalog of available tokens: `dist/design-system/tokens/core.tokens.css`. When showcasing a `light` variant on a deliberately dark surface (or vice versa) for visual contrast, use the mode-inverse semantic token (`--color-background-base-inverse-default`), never `--palette-*`.
+Full catalog of available tokens: `dist/mud/tokens/core.tokens.css`. When showcasing a `light` variant on a deliberately dark surface (or vice versa) for visual contrast, use the mode-inverse semantic token (`--color-background-base-inverse-default`), never `--palette-*`.
 
 ### Step 5b — Docs source snippet
 

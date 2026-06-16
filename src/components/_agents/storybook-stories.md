@@ -137,7 +137,7 @@ Inline `style="..."` attributes inside `render` templates should use semantic de
 - **Grid templates**: `grid-template-columns: 80px repeat(4, 1fr)` where the first column is a fixed label gutter, not a design value.
 - **`0` and `1px`** for borders.
 
-Anything else — including paddings, gaps, font sizes, colors, radii, shadows — should use a `var(--...)` token from `dist/design-system/tokens/core.tokens.css`.
+Anything else — including paddings, gaps, font sizes, colors, radii, shadows — should use a `var(--...)` token from `dist/mud/tokens/core.tokens.css`.
 
 When a swatch backdrop must be locked to one mode (e.g., showing a `light` variant on a guaranteed-dark surface regardless of global theme), use the **mode-inverse semantic token**: `var(--color-background-base-inverse-default)`. Never reach for `--palette-*` to achieve mode-locking.
 

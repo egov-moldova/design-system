@@ -96,10 +96,10 @@ grep "var(--" src/components/mud-component-name/mud-component-name.css
 
 ```bash
 # Windows (PowerShell)
-Select-String "component-name" dist/design-system/tokens/core.tokens.css
+Select-String "component-name" dist/mud/tokens/core.tokens.css
 
 # macOS / Linux (Unix)
-grep "component-name" dist/design-system/tokens/core.tokens.css
+grep "component-name" dist/mud/tokens/core.tokens.css
 ```
 # Every var(--component-*) in CSS must have a matching definition
 

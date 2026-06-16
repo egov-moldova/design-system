@@ -72,13 +72,13 @@ Published artifacts:
 
 - `dist/` — ESM + CJS bundles, types, design-system CSS, token CSS, custom-elements JSON
 - `loader/` — Stencil lazy loader
-- `dist/design-system/tokens/*.css` — generated CSS variables consumable by any framework
+- `dist/mud/tokens/*.css` — generated CSS variables consumable by any framework
 
 Consumers:
 
-- Direct HTML: `<script type="module" src="...design-system.esm.js">` + `defineCustomElements()` from `@egovmd/mud-web-components`
+- Direct HTML: `<script type="module" src="...mud.esm.js">` + `defineCustomElements()` from `@egovmd/mud-web-components`
 - Vanilla / bundler-based apps: install `@egovmd/mud` + `@egovmd/mud-web-components`, then call `defineCustomElements()` once at startup
-- Token CSS: import `@egovmd/mud/dist/design-system/tokens/core.tokens.css`
+- Token CSS: import `@egovmd/mud/dist/mud/tokens/core.tokens.css`
 
 ## 6. AI Automation & Agentic Tooling
 

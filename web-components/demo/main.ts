@@ -1,11 +1,11 @@
-import '@egovmd/mud/dist/design-system/tokens/core.tokens.css';
-import '@egovmd/mud/dist/design-system/tokens/core.dark.tokens.css';
-import '@egovmd/mud/dist/design-system/design-system.css';
+import '@egovmd/mud/dist/mud/tokens/core.tokens.css';
+import '@egovmd/mud/dist/mud/tokens/core.dark.tokens.css';
+import '@egovmd/mud/dist/mud/mud.css';
 import './demo.css';
 
 // Import the lazy bundle entry directly so Stencil resolves `getAssetPath()`
-// relative to dist/design-system/ (where the SVG assets live) via import.meta.url.
-import '@egovmd/mud/dist/design-system/design-system.esm.js';
+// relative to dist/mud/ (where the SVG assets live) via import.meta.url.
+import '@egovmd/mud/dist/mud/mud.esm.js';
 
 import { CATEGORIES, indexPath, locate, pagePath, type ComponentEntry } from './manifest';
 

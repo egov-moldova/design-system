@@ -5,7 +5,7 @@ Snapshot of per-component token files from the previous design system.
 These tokens are intentionally outside the Style Dictionary `source` globs
 (`tokens/core/**`, `tokens/core.dark/**`), so they are **not compiled** into
 `tokens/generated/core.tokens.css` / `core.dark.tokens.css` and **not shipped**
-in `dist/design-system/tokens/`.
+in `dist/mud/tokens/`.
 
 They live here as a reference for the previous DS surface, mirroring the
 `src/legacy/` arrangement for component source code:

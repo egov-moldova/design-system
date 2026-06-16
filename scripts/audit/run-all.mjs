@@ -17,7 +17,7 @@
  *
  *   Wave B (parallel, depend on existing build artifacts):
  *     06-test-coverage         (reads coverage/coverage-summary.json)
- *     08-bundle-size           (reads dist/design-system/*)
+ *     08-bundle-size           (reads dist/mud/*)
  *     13-token-diff            (component mode requires tokens-tokenhaus.json)
  *
  *   Wave C — defer to Sprint 3:

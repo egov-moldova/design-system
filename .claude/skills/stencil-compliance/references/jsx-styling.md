@@ -148,7 +148,7 @@ Reference: <https://stenciljs.com/docs/styling>.
 | ST11 | NEVER use raw `px` values for spacing/sizing — always tokens (except `0px`, `1px` for borders) | Grep `\d+px` |
 | ST12 | `transition: 150ms ease-in-out <property>` — NEVER `transition: all` (perf + a11y) | Grep `transition:\s*all` |
 | ST13 | `prefers-reduced-motion` handled globally in `src/assets/css/base/html.css` — don't duplicate | Manual review |
-| ST14 | Global tokens (defined on `:root` in `dist/design-system/tokens/*.css`) penetrate shadow DOM | Conceptual |
+| ST14 | Global tokens (defined on `:root` in `dist/mud/tokens/*.css`) penetrate shadow DOM | Conceptual |
 
 ### Two architectural patterns
 

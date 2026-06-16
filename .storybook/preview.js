@@ -12,10 +12,10 @@ import { lightTheme } from './custom-theme';
 const { color } = coreTokens;
 const { color: colorDark } = coreDarkTokens;
 
-import '../dist/design-system/design-system.esm.js';
+import '../dist/mud/mud.esm.js';
 import customElements from './custom-elements.json';
 
-import '../dist/design-system/design-system.css';
+import '../dist/mud/mud.css';
 import './storybook-overrides.css';
 
 // Initialize Stencil custom elements manifest for Storybook

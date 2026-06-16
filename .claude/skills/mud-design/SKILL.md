@@ -14,8 +14,8 @@ You are working in a project that consumes the **MUD Design System** (`@egovmd/m
 ```ts
 // once, near app startup (e.g. main.tsx before ReactDOM.createRoot)
 import { defineCustomElements } from '@egovmd/mud-web-components';
-import '@egovmd/mud/dist/design-system/tokens/core.tokens.css';
-import '@egovmd/mud/dist/design-system/design-system.css';
+import '@egovmd/mud/dist/mud/tokens/core.tokens.css';
+import '@egovmd/mud/dist/mud/mud.css';
 
 defineCustomElements();
 // Optional: defineCustomElements({ assetPath: '/your-prod-asset-path/' })

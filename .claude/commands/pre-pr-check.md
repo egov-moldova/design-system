@@ -109,12 +109,12 @@ Verify no build errors. Check output exists:
 
 ```bash
 # PowerShell
-Get-ChildItem dist/design-system/tokens/*.css -ErrorAction SilentlyContinue
+Get-ChildItem dist/mud/tokens/*.css -ErrorAction SilentlyContinue
 ```
 
 ```bash
 # Unix
-ls dist/design-system/tokens/*.css
+ls dist/mud/tokens/*.css
 ```
 
 ## Wave 3: Compile & Contrast (parallel)

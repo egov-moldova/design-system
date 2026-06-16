@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 import { createReadStream, existsSync, statSync, globSync } from 'node:fs';
 import { cp } from 'node:fs/promises';
 
-const DESIGN_SYSTEM_DIST = resolve(__dirname, '../../dist/design-system');
+const DESIGN_SYSTEM_DIST = resolve(__dirname, '../../dist/mud');
 
 // Multi-page build: the table of contents (index.html) + one page per component under
 // pages/<category>/<tag>.html. Dev server serves any .html by path already;
@@ -28,14 +28,14 @@ const MIME_TYPES: Record<string, string> = {
 /**
  * Vite, by default, falls back to `index.html` for unknown URLs under
  * `/node_modules/...`. That breaks Stencil's lazy `getAssetPath()`, which
- * resolves SVGs to `/node_modules/@egovmd/mud/dist/design-system/assets/...`.
+ * resolves SVGs to `/node_modules/@egovmd/mud/dist/mud/assets/...`.
  *
  * This middleware intercepts those URLs and streams the file directly from
- * `<repo>/dist/design-system/`. It is dev-only; production builds serve the
+ * `<repo>/dist/mud/`. It is dev-only; production builds serve the
  * assets statically once they are deployed alongside the bundle.
  */
 function serveDesignSystemAssets(): Plugin {
-  const urlPrefix = '/node_modules/@egovmd/mud/dist/design-system/';
+  const urlPrefix = '/node_modules/@egovmd/mud/dist/mud/';
 
   return {
     name: 'serve-egovmd-mud-assets',
@@ -66,7 +66,7 @@ function serveDesignSystemAssets(): Plugin {
  * `import.meta.url` of the bundle that contains it. After `vite build`, that
  * bundle lives in `dist-demo/assets/`, so Stencil looks for the icon/logo SVGs
  * at `dist-demo/assets/assets/...`. The dev middleware short-circuits this by
- * intercepting `/node_modules/@egovmd/mud/...` requests, but in a
+ * intercepting `/node_modules/@egovmd/mud/dist/mud/...` requests, but in a
  * deployed build nothing serves those bytes — copy them next to the bundle so
  * `<mud-icon>`, `<mud-logo>`, etc. work from any host (including file://).
  */
@@ -113,6 +113,6 @@ export default defineConfig({
   // Pre-bundling would rewrite the URL into Vite's optimized-deps cache, which
   // doesn't contain the assets/ folder — leaving mud-icon SVGs at 404.
   optimizeDeps: {
-    exclude: ['@egovmd/mud/dist/design-system/design-system.esm.js'],
+    exclude: ['@egovmd/mud/dist/mud/mud.esm.js'],
   },
 });

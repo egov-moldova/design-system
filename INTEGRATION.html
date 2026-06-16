@@ -611,7 +611,7 @@
 
           <h3>CDN alternative [TBD]</h3>
           <p>
-            The package declares <code>"unpkg": "dist/design-system/design-system.esm.js"</code>, so any npm-mirroring
+            The package declares <code>"unpkg": "dist/mud/mud.esm.js"</code>, so any npm-mirroring
             CDN works once published.
           </p>
 
@@ -627,22 +627,22 @@
 
           <pre><code class="language-html">&lt;link
   rel="stylesheet"
-  href="https://unpkg.com/@egovmd/mud@0.0.1/dist/design-system/tokens/core.tokens.css"
+  href="https://unpkg.com/@egovmd/mud@0.0.1/dist/mud/tokens/core.tokens.css"
   integrity="sha384-REPLACE_WITH_REAL_HASH"
   crossorigin="anonymous"&gt;
 &lt;link
   rel="stylesheet"
-  href="https://unpkg.com/@egovmd/mud@0.0.1/dist/design-system/design-system.css"
+  href="https://unpkg.com/@egovmd/mud@0.0.1/dist/mud/mud.css"
   integrity="sha384-REPLACE_WITH_REAL_HASH"
   crossorigin="anonymous"&gt;
 &lt;script
   type="module"
-  src="https://unpkg.com/@egovmd/mud@0.0.1/dist/design-system/design-system.esm.js"
+  src="https://unpkg.com/@egovmd/mud@0.0.1/dist/mud/mud.esm.js"
   integrity="sha384-REPLACE_WITH_REAL_HASH"
   crossorigin="anonymous"&gt;&lt;/script&gt;</code></pre>
 
           <p>Generate hashes locally against the exact published files:</p>
-          <pre><code class="language-bash">curl -sL https://unpkg.com/@egovmd/mud@0.0.1/dist/design-system/design-system.esm.js \
+          <pre><code class="language-bash">curl -sL https://unpkg.com/@egovmd/mud@0.0.1/dist/mud/mud.esm.js \
   | openssl dgst -sha384 -binary | openssl base64 -A</code></pre>
 
           <div class="callout warn">
@@ -1038,7 +1038,7 @@ document.documentElement.dataset.theme = dark ? 'dark' : 'light';</code></pre>
                   <td>Asset resolution failed</td>
                   <td>
                     The SVG sprite path is derived from <code>design-system.esm.js</code>'s URL. Ensure
-                    <code>dist/design-system/assets/</code> is co-located with the entry.
+                    <code>dist/mud/assets/</code> is co-located with the entry.
                   </td>
                 </tr>
                 <tr>

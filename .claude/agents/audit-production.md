@@ -434,7 +434,7 @@ mcp__image-compare__compare_images({
 yarn build
 ```
 
-Check `dist/design-system/mud-[name].entry.js` size. **Warning threshold**: > 50KB.
+Check `dist/mud/mud-[name].entry.js` size. **Warning threshold**: > 50KB.
 
 ### 6.2 Runtime Performance
 

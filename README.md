@@ -158,8 +158,8 @@ yarn add @egov-moldova/mud @egov-moldova/mud-web-components
 #### Step 2: Usage — with a bundler (Vite, webpack, esbuild, …)
 
 ```ts
-import '@egov-moldova/mud/dist/design-system/tokens/core.tokens.css';
-import '@egov-moldova/mud/dist/design-system/design-system.css';
+import '@egov-moldova/mud/dist/mud/tokens/core.tokens.css';
+import '@egov-moldova/mud/dist/mud/mud.css';
 import { defineCustomElements } from '@egov-moldova/mud-web-components';
 
 defineCustomElements();
@@ -177,8 +177,8 @@ When you have no bundler, resolve the bare specifiers via an import map:
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="stylesheet" href="/node_modules/@egov-moldova/mud/dist/design-system/tokens/core.tokens.css" />
-    <link rel="stylesheet" href="/node_modules/@egov-moldova/mud/dist/design-system/design-system.css" />
+    <link rel="stylesheet" href="/node_modules/@egov-moldova/mud/dist/mud/tokens/core.tokens.css" />
+    <link rel="stylesheet" href="/node_modules/@egov-moldova/mud/dist/mud/mud.css" />
     <script type="importmap">
       {
         "imports": {
@@ -203,8 +203,8 @@ When you have no bundler, resolve the bare specifiers via an import map:
 You can also load MUD directly from jsDelivr for quick prototyping:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud/dist/design-system/tokens/core.tokens.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud/dist/design-system/design-system.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud/dist/mud/tokens/core.tokens.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud/dist/mud/mud.css" />
 <script type="module">
   import { defineCustomElements } from 'https://cdn.jsdelivr.net/npm/@egov-moldova/mud-web-components/dist/index.js';
   defineCustomElements();
@@ -284,8 +284,8 @@ import type {} from '@egov-moldova/mud-web-components';
 **Solution:** Import both at app startup, before calling `defineCustomElements()`:
 
 ```ts
-import '@egov-moldova/mud/dist/design-system/tokens/core.tokens.css';
-import '@egov-moldova/mud/dist/design-system/design-system.css';
+import '@egov-moldova/mud/dist/mud/tokens/core.tokens.css';
+import '@egov-moldova/mud/dist/mud/mud.css';
 ```
 
 ### Issue: Components don't render in the DOM
@@ -413,7 +413,7 @@ MUD uses a three-tier design token hierarchy (palette → semantic → component
 
 - Where files land and what consumes them
   - Source token JSON: `tokens/core/**/*.tokens.json` and `tokens/core.dark/**/*.tokens.json`
-  - Generated build outputs: `tokens/generated/` and `dist/design-system/tokens/` (used by Storybook and package consumers)
+  - Generated build outputs: `tokens/generated/` and `dist/mud/tokens/` (used by Storybook and package consumers)
   - Storybook assets: `.storybook/stories/assets/core.tokens.json` and `core.dark.tokens.json`
 
 - Helpful tips

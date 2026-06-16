@@ -46,7 +46,7 @@ Coverage v8 only instruments code that goes through Vite's transform pipeline. S
 
 | Path | Transformed by Vite? | Coverage sees source? |
 |---|---|---|
-| `dist/design-system/design-system.esm.js` (lazy bundle) | ❌ — pre-compiled JS, loaded via `await import()` at runtime | ❌ **0%** for every TSX |
+| `dist/mud/mud.esm.js` (lazy bundle) | ❌ — pre-compiled JS, loaded via `await import()` at runtime | ❌ **0%** for every TSX |
 | Direct TSX import (e.g. `import '../mud-spinner';`) — handled by `stencilVitestPlugin` in `vitest.config.mts` | ✅ — compiled on-the-fly with `componentExport: 'customelement'`; `customElements.define()` is appended automatically | ✅ Real per-file % |
 
 ### The rule
@@ -68,7 +68,7 @@ Without it:
 
 `vitest.config.mts` activates `stencilVitestPlugin()` on both the `spec` and `storybook` projects. When a `.tsx` is imported from `src/components/mud-*/mud-*.tsx`, the plugin compiles it through `@stencil/core/compiler` with `componentExport: 'customelement'`, appends a `customElements.define()` call, and hands the result to Vite. Coverage v8 then sees the original TSX in its module graph and produces correct line/branch numbers.
 
-For browser-mode (`@storybook/addon-vitest`), a `pre`-resolver plugin in `vitest.config.mts` rewrites `preview.js`'s lazy-bundle import (`'../dist/design-system/design-system.esm.js'`) to `.storybook/vitest-component-loader.ts`, which glob-imports every component source. Same effect: coverage shows real numbers instead of 0%.
+For browser-mode (`@storybook/addon-vitest`), a `pre`-resolver plugin in `vitest.config.mts` rewrites `preview.js`'s lazy-bundle import (`'../dist/mud/mud.esm.js'`) to `.storybook/vitest-component-loader.ts`, which glob-imports every component source. Same effect: coverage shows real numbers instead of 0%.
 
 ### Verifying
 

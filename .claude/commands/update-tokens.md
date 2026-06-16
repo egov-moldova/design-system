@@ -13,10 +13,10 @@ Component / scope: `$ARGUMENTS`
 
 ```bash
 # PowerShell
-Get-ChildItem dist/design-system/tokens/*.css -ErrorAction SilentlyContinue
+Get-ChildItem dist/mud/tokens/*.css -ErrorAction SilentlyContinue
 
 # Unix
-ls dist/design-system/tokens/*.css
+ls dist/mud/tokens/*.css
 ```
 
 - Files exist → token pipeline is working
@@ -115,15 +115,15 @@ Expected: completes in ~5s with no errors.
 
 ```bash
 # PowerShell
-Select-String -Path "dist/design-system/tokens/core.tokens.css" -Pattern "<component-name>"
+Select-String -Path "dist/mud/tokens/core.tokens.css" -Pattern "<component-name>"
 
 # Unix
-grep "<component-name>" dist/design-system/tokens/core.tokens.css
+grep "<component-name>" dist/mud/tokens/core.tokens.css
 ```
 
 Verify:
 
-- New CSS variables appear in `dist/design-system/tokens/core.tokens.css`
+- New CSS variables appear in `dist/mud/tokens/core.tokens.css`
 - Variable names follow naming convention
 - Values resolve correctly (no `undefined` or empty values)
 

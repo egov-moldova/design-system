@@ -100,8 +100,8 @@ export default defineVitestConfig({
             enforce: 'pre',
             resolveId(source) {
               if (
-                source.endsWith('/dist/design-system/design-system.esm.js') ||
-                source.endsWith('\\dist\\design-system\\design-system.esm.js')
+                source.endsWith('/dist/mud/mud.esm.js') ||
+                source.endsWith('\\dist\\mud\\mud.esm.js')
               ) {
                 return path.join(__dirname, '.storybook/vitest-component-loader.ts');
               }

@@ -7,7 +7,7 @@
  *
  * Stencil emits hashed chunks (e.g. `p-07883e4d.entry.js`) — there is no clean
  * 1:1 mapping from component name to file. We use two signals:
- *   1. Total dist size  (everything under `dist/design-system/`)
+ *   1. Total dist size  (everything under `dist/mud/`)
  *   2. Per-chunk listing of `.entry.js` files sorted by size
  *   3. For a single component target: grep the chunks for the literal tag and
  *      sum the matching chunks (rough upper bound).
@@ -49,7 +49,7 @@ const USAGE = defaultUsage(
   ],
 );
 
-const DIST_DIR_REL = 'dist/design-system';
+const DIST_DIR_REL = 'dist/mud';
 const DEFAULT_WARN_KB = 50;
 
 async function main() {
@@ -152,7 +152,7 @@ async function main() {
 }
 
 /**
- * List every .entry.js / .esm.js / .css file under dist/design-system/, sorted
+ * List every .entry.js / .esm.js / .css file under dist/mud/, sorted
  * by descending size. Pure async — exported for tests via runtime injection.
  */
 export async function collectChunks(distAbs) {

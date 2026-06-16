@@ -175,4 +175,4 @@ yarn sync:tokens:apply                                            # real run
 | ---------- | ------- |
 | `space.tokens.json` | `spacing.tokens.json` |
 | `npm run tokens:build` | `yarn tokens.build` |
-| `tokens/generated/*.css` | `dist/design-system/tokens/*.css` |
+| `tokens/generated/*.css` | `dist/mud/tokens/*.css` |

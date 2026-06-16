@@ -35,10 +35,10 @@ lsof -i :6007
 
 ```bash
 # Windows (PowerShell)
-Get-ChildItem dist/design-system/tokens/*.css -ErrorAction SilentlyContinue
+Get-ChildItem dist/mud/tokens/*.css -ErrorAction SilentlyContinue
 
 # macOS / Linux (Unix)
-ls dist/design-system/tokens/*.css
+ls dist/mud/tokens/*.css
 ```
 
 - **Files exist** → skip `yarn tokens.build` unless you changed a `.tokens.json` file
@@ -81,7 +81,7 @@ yarn sp.dev.watch handles all three in watch mode. Only run it once.
 | `.tokens.json` + `.css` | `yarn tokens.build` → wait for watch | ~7s | Tokens first, watch handles CSS |
 | New component (all files) | `yarn tokens.build` + `yarn wca.custom-elements` | ~10s | Watch handles Stencil; WCA updates metadata |
 
-**Why safe**: Token CSS files are standalone (`dist/design-system/tokens/*.css`) loaded at runtime via `<link>`. Components use `var(--name)` — no inline values. Stories processed by Vite independently.
+**Why safe**: Token CSS files are standalone (`dist/mud/tokens/*.css`) loaded at runtime via `<link>`. Components use `var(--name)` — no inline values. Stories processed by Vite independently.
 
 **Full `yarn build`**: Includes tokens, custom-elements analysis, and Stencil docs generation. Only for final verification, pre-PR checks, and production audits.
 
