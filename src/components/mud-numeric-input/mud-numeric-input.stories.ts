@@ -525,6 +525,55 @@ export const WithSuffix: Story = {
   },
 };
 
+export const WithPrefix: Story = {
+  name: 'With Prefix',
+  render: () =>
+    wrap2col(
+      [
+        cell(
+          '€ (Euro)',
+          /*html*/ `<mud-numeric-input size="lg" label="Sumă" value="50" step="1" precision="2">
+            <span slot="prefix">€</span>
+          </mud-numeric-input>`,
+        ),
+        cell(
+          'MDL (multi-character — no clip)',
+          /*html*/ `<mud-numeric-input size="lg" label="Sumă" value="1250" step="10" precision="2">
+            <span slot="prefix">MDL</span>
+          </mud-numeric-input>`,
+        ),
+        cell(
+          '$ + suffix',
+          /*html*/ `<mud-numeric-input size="lg" label="Preț" value="99" step="1" precision="2">
+            <span slot="prefix">$</span>
+            <span slot="suffix">USD</span>
+          </mud-numeric-input>`,
+        ),
+        cell(
+          'icon-start + prefix + suffix',
+          /*html*/ `<mud-numeric-input size="lg" label="Plată" value="1250" step="10" precision="2">
+            <mud-icon slot="icon-start" name="wallet" size="24"></mud-icon>
+            <span slot="prefix">€</span>
+            <span slot="suffix">lei</span>
+          </mud-numeric-input>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          '<mud-numeric-input size="lg" label="Sumă" value="50" step="1" precision="2"><span slot="prefix">€</span></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Sumă" value="1250" step="10" precision="2"><span slot="prefix">MDL</span></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Preț" value="99" step="1" precision="2"><span slot="prefix">$</span><span slot="suffix">USD</span></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Plată" value="1250" step="10" precision="2"><mud-icon slot="icon-start" name="wallet" size="24"></mud-icon><span slot="prefix">€</span><span slot="suffix">lei</span></mud-numeric-input>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
 export const WithCurrencyIcon: Story = {
   name: 'With Currency Icon',
   render: () =>

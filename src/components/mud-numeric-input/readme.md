@@ -65,12 +65,13 @@ numeric keypad.
 
 ## Slots
 
-| Slot           | Description                                                                                                                                                                                                   |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `"helper"`     | Rich helper / hint content, replaces the `helper-text` prop. Hidden when invalid + error-text is shown.                                                                                                       |
-| `"icon-start"` | Leading slot rendered before the value. Accepts a `mud-icon` (icon-leading variant) OR a plain currency/unit text symbol (prefix variant, e.g. `€`, `$`, `MDL`) — Figma master treats these as the same slot. |
-| `"label"`      | Rich label content, replaces the `label` prop when present.                                                                                                                                                   |
-| `"suffix"`     | Trailing unit text rendered after the value (e.g. `lei`, `kg`). Sits before the stepper stack.                                                                                                                |
+| Slot           | Description                                                                                                                                                                                                                                                                                                    |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `"helper"`     | Rich helper / hint content, replaces the `helper-text` prop. Hidden when invalid + error-text is shown.                                                                                                                                                                                                        |
+| `"icon-start"` | Leading icon (a `mud-icon`, icon-leading variant) rendered before the prefix / value. Sized to the square icon box.                                                                                                                                                                                            |
+| `"label"`      | Rich label content, replaces the `label` prop when present.                                                                                                                                                                                                                                                    |
+| `"prefix"`     | Leading unit / currency symbol rendered before the value (e.g. `€`, `$`, `MDL`). Shares the suffix's text styling — auto-width rather than the fixed icon box, so multi-character symbols don't clip. Distinct from `icon-start`, mirroring the Figma master's separate `prefix` and `leadingIcon` properties. |
+| `"suffix"`     | Trailing unit text rendered after the value (e.g. `lei`, `kg`). Sits before the stepper stack.                                                                                                                                                                                                                 |
 
 
 ## Shadow Parts
@@ -82,6 +83,7 @@ numeric keypad.
 | `"helper"`        |             |
 | `"label"`         |             |
 | `"native"`        |             |
+| `"prefix"`        |             |
 | `"required-mark"` |             |
 | `"spinner"`       |             |
 | `"stepper"`       |             |

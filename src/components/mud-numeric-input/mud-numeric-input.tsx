@@ -33,7 +33,8 @@ let numericInputInstanceCounter = 0;
  *
  * @slot label - Rich label content, replaces the `label` prop when present.
  * @slot helper - Rich helper / hint content, replaces the `helper-text` prop. Hidden when invalid + error-text is shown.
- * @slot icon-start - Leading slot rendered before the value. Accepts a `mud-icon` (icon-leading variant) OR a plain currency/unit text symbol (prefix variant, e.g. `€`, `$`, `MDL`) — Figma master treats these as the same slot.
+ * @slot icon-start - Leading icon (a `mud-icon`, icon-leading variant) rendered before the prefix / value. Sized to the square icon box.
+ * @slot prefix - Leading unit / currency symbol rendered before the value (e.g. `€`, `$`, `MDL`). Shares the suffix's text styling — auto-width rather than the fixed icon box, so multi-character symbols don't clip. Distinct from `icon-start`, mirroring the Figma master's separate `prefix` and `leadingIcon` properties.
  * @slot suffix - Trailing unit text rendered after the value (e.g. `lei`, `kg`). Sits before the stepper stack.
  */
 @Component({
@@ -176,6 +177,7 @@ export class MudNumericInput {
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
   @State() private hasIconStart: boolean = false;
+  @State() private hasPrefix: boolean = false;
   @State() private hasSuffix: boolean = false;
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
@@ -447,6 +449,9 @@ export class MudNumericInput {
   private onIconStartSlotChange = (ev: Event) => {
     this.hasIconStart = this.slotHasContent(ev);
   };
+  private onPrefixSlotChange = (ev: Event) => {
+    this.hasPrefix = this.slotHasContent(ev);
+  };
   private onSuffixSlotChange = (ev: Event) => {
     this.hasSuffix = this.slotHasContent(ev);
   };
@@ -601,6 +606,7 @@ export class MudNumericInput {
       'is-focused': this.isFocused && !effectivelyDisabled && !this.readonly,
       'has-label': this.hasVisibleLabel(),
       'has-icon-start': this.hasIconStart,
+      'has-prefix': this.hasPrefix,
       'has-suffix': this.hasSuffix,
       'has-steppers': showSteppers,
       [`variant-${variant}`]: true,
@@ -625,6 +631,10 @@ export class MudNumericInput {
         <div class="control" part="control">
           <span class="control-icon control-icon-start" aria-hidden={this.hasIconStart ? null : 'true'}>
             <slot name="icon-start" onSlotchange={this.onIconStartSlotChange} />
+          </span>
+
+          <span class="prefix" part="prefix" aria-hidden={this.hasPrefix ? null : 'true'}>
+            <slot name="prefix" onSlotchange={this.onPrefixSlotChange} />
           </span>
 
           <input
