@@ -233,6 +233,42 @@
   color: inherit;
 }
 
+/* ---------- Prefix slot ---------- */
+
+/* Leading unit / currency symbol (e.g. €, MDL). Shares the suffix's text
+   styling — size, weight, color — rather than the fixed icon-start box, so
+   multi-character symbols render at full width instead of clipping to the
+   icon square. Sits between the optional leading icon and the value. */
+.prefix {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  font-family: var(--numeric-input-suffix-font-family);
+  font-weight: var(--numeric-input-suffix-font-weight);
+  font-size: var(--_suffix-font-size);
+  line-height: var(--_suffix-line-height);
+  color: var(--numeric-input-suffix-color-default);
+  margin-inline-end: var(--numeric-input-suffix-margin-inline-start);
+  white-space: nowrap;
+}
+
+:host(:not(.has-prefix)) .prefix {
+  display: none;
+}
+
+:host(.is-readonly) .prefix {
+  color: var(--numeric-input-suffix-color-read-only);
+}
+
+:host(.is-disabled) .prefix {
+  color: var(--numeric-input-suffix-color-disabled);
+}
+
+::slotted([slot='prefix']) {
+  color: inherit;
+  font: inherit;
+}
+
 /* ---------- Native input ---------- */
 
 .native {

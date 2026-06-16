@@ -528,6 +528,27 @@ describe('mud-numeric-input', () => {
       const slotted = root?.querySelector('[slot="suffix"]');
       expect(slotted?.textContent).toBe('lei');
     });
+
+    it('forwards content into the prefix slot', async () => {
+      const { root } = await render(
+        <mud-numeric-input label="Sum">
+          <span slot="prefix">MDL</span>
+        </mud-numeric-input>,
+      );
+      const slotted = root?.querySelector('[slot="prefix"]');
+      expect(slotted?.textContent).toBe('MDL');
+    });
+
+    it('renders distinct prefix and icon-start slots', async () => {
+      const { root } = await render(
+        <mud-numeric-input label="Sum">
+          <mud-icon slot="icon-start" name="coins" size={24}></mud-icon>
+          <span slot="prefix">€</span>
+        </mud-numeric-input>,
+      );
+      expect(root?.shadowRoot?.querySelector('.prefix')).not.toBeNull();
+      expect(root?.shadowRoot?.querySelector('.control-icon-start')).not.toBeNull();
+    });
   });
 
   describe('form lifecycle', () => {
