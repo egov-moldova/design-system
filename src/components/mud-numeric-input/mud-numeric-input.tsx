@@ -174,6 +174,55 @@ export class MudNumericInput {
    */
   @Prop() ariaValuetext?: string;
 
+  /**
+   * Allow fractional input. When `false` the field is integer-only: typing a
+   * decimal separator is blocked and any fractional part is truncated on commit.
+   * @default true
+   */
+  @Prop({ attribute: 'allow-decimal' }) allowDecimal: boolean = true;
+
+  /**
+   * Allow negative input. When `false` the field is positive-only: typing `-`
+   * is blocked and negative entries are rejected on commit.
+   * @default true
+   */
+  @Prop({ attribute: 'allow-negative' }) allowNegative: boolean = true;
+
+  /**
+   * BCP-47 locale used to group the displayed value with thousands separators
+   * and to parse grouped input back (e.g. `ro-MD` → `1.250,00`). When unset the
+   * value displays ungrouped. Grouping is applied while the field is not being
+   * edited; on focus the raw editable number is shown so the caret stays sane.
+   */
+  @Prop() locale?: string;
+
+  /**
+   * When `true`, renders a trailing clear (×) button while the field holds a
+   * value. Activating it clears the value and emits `mudChange` with `null`.
+   * @default false
+   */
+  @Prop({ reflect: true }) clearable: boolean = false;
+
+  /**
+   * Accessible label for the clear button. Defaults to the Romanian "Șterge".
+   * @default 'Șterge'
+   */
+  @Prop({ attribute: 'clear-label' }) clearLabel: string = 'Șterge';
+
+  /**
+   * Maximum number of characters accepted by the field (native `maxlength`).
+   * When set, a character counter renders in the assistive row unless
+   * `show-counter` is `false`.
+   */
+  @Prop({ attribute: 'maxlength' }) maxLength?: number;
+
+  /**
+   * Force the character counter to show or hide. Auto-shows when `maxlength`
+   * is set; pass `false` to suppress it.
+   * @default true
+   */
+  @Prop({ attribute: 'show-counter' }) showCounter: boolean = true;
+
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
   @State() private hasIconStart: boolean = false;
@@ -207,10 +256,14 @@ export class MudNumericInput {
   /** Fires when the internal control loses focus. */
   @Event() mudBlur!: EventEmitter<FocusEvent>;
 
+  /** Fires when the clear button empties the field. `detail.value` is `null`. */
+  @Event() mudClear!: EventEmitter<NumericInputChangeDetail>;
+
   private readonly instanceId = ++numericInputInstanceCounter;
   private readonly labelId = `mud-numeric-input-label-${this.instanceId}`;
   private readonly helperId = `mud-numeric-input-helper-${this.instanceId}`;
   private readonly errorId = `mud-numeric-input-error-${this.instanceId}`;
+  private readonly counterId = `mud-numeric-input-counter-${this.instanceId}`;
   private initialValue: number | undefined;
   private nativeEl?: HTMLInputElement;
 
@@ -358,18 +411,38 @@ export class MudNumericInput {
   }
 
   /**
-   * Parse a raw string entry into a number. Allows leading `-`, a single
-   * decimal separator (`.` or `,` — comma is accepted for Romanian locale and
-   * normalised to a dot before parsing), trims surrounding whitespace, and
-   * rejects everything else.
+   * Resolve the active locale's grouping + decimal separators. Empty `locale`
+   * → no grouping and a dot decimal (legacy behaviour; comma is still accepted).
+   */
+  private localeSeparators(): { group: string; decimal: string } {
+    if (!this.locale) return { group: '', decimal: '.' };
+    try {
+      const parts = new Intl.NumberFormat(this.locale).formatToParts(12345.6);
+      return {
+        group: parts.find(p => p.type === 'group')?.value ?? '',
+        decimal: parts.find(p => p.type === 'decimal')?.value ?? '.',
+      };
+    } catch {
+      return { group: '', decimal: '.' };
+    }
+  }
+
+  /**
+   * Parse a raw string entry into a number. Strips the locale grouping
+   * separator, normalises the decimal separator (locale / `,` → `.`), trims
+   * whitespace, and rejects everything else. Stays lenient about sign and
+   * fractions — `allow-negative` / `allow-decimal` are enforced in `commit`.
    */
   private parseRaw(raw: string): number | null {
     const trimmed = (raw ?? '').trim();
-    if (trimmed === '' || trimmed === '-' || trimmed === '.') return null;
-    // Normalise Romanian decimal comma to dot.
-    const normalised = trimmed.replace(',', '.');
-    if (!/^-?\d*\.?\d*$/.test(normalised)) return null;
-    const num = Number(normalised);
+    if (trimmed === '' || trimmed === '-' || trimmed === '.' || trimmed === ',') return null;
+    const { group, decimal } = this.localeSeparators();
+    let s = trimmed;
+    if (group) s = s.split(group).join('');
+    if (decimal && decimal !== '.') s = s.split(decimal).join('.');
+    s = s.replace(',', '.');
+    if (!/^-?\d*\.?\d*$/.test(s)) return null;
+    const num = Number(s);
     return Number.isFinite(num) ? num : null;
   }
 
@@ -388,14 +461,29 @@ export class MudNumericInput {
     return Math.round(value * factor) / factor;
   }
 
-  /** Apply both clamp + round in one step. */
+  /** Apply sign / integer policy, then clamp + round, in one step. */
   private commit(value: number): number {
-    return this.round(this.clamp(value));
+    let v = value;
+    if (!this.allowDecimal && !Number.isInteger(v)) v = Math.trunc(v);
+    if (!this.allowNegative && v < 0) v = Math.max(0, this.min ?? 0);
+    return this.round(this.clamp(v));
   }
 
-  /** Render a number for display (precision aware). */
+  /** Render a number for display. Grouped per `locale` while not being edited. */
   private formatForDisplay(value: number | undefined): string {
     if (value === undefined || value === null || !Number.isFinite(value)) return '';
+    if (this.locale && !this.isFocused) {
+      try {
+        const digits = this.precision !== undefined ? Math.max(0, Math.floor(this.precision)) : undefined;
+        return new Intl.NumberFormat(this.locale, {
+          useGrouping: true,
+          minimumFractionDigits: digits,
+          maximumFractionDigits: digits ?? 20,
+        }).format(value);
+      } catch {
+        /* fall through to the plain rendering */
+      }
+    }
     if (this.precision !== undefined) {
       const digits = Math.max(0, Math.floor(this.precision));
       return value.toFixed(digits);
@@ -495,8 +583,31 @@ export class MudNumericInput {
 
   private handleFocus = (ev: FocusEvent) => {
     this.isFocused = true;
+    // Drop locale grouping while editing so the caret behaves — formatForDisplay
+    // returns the plain number now that isFocused is true.
+    if (this.locale && this.value !== undefined) this.displayValue = this.formatForDisplay(this.value);
     this.mudFocus.emit(ev);
   };
+
+  private handleClearClick = (ev: MouseEvent) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    if (!this.canClear()) return;
+    this.value = undefined;
+    this.displayValue = '';
+    this.mudInput.emit({ value: null });
+    this.mudChange.emit({ value: null });
+    this.mudClear.emit({ value: null });
+    requestAnimationFrame(() => this.nativeEl?.focus());
+  };
+
+  private canClear(): boolean {
+    return this.clearable && !this.isInert() && !this.readonly && !this.loading && this.value !== undefined;
+  }
+
+  private hasCharacterCounter(): boolean {
+    return this.showCounter && typeof this.maxLength === 'number' && this.maxLength > 0;
+  }
 
   private handleBlur = (ev: FocusEvent) => {
     this.isFocused = false;
@@ -528,6 +639,21 @@ export class MudNumericInput {
 
   private handleKeyDown = (ev: KeyboardEvent) => {
     if (this.isInert() || this.readonly || this.loading) return;
+    // Integer-only / positive-only: block the forbidden separator / sign at the
+    // source so the field can never hold an invalid character.
+    if (!this.allowDecimal && (ev.key === '.' || ev.key === ',')) {
+      ev.preventDefault();
+      return;
+    }
+    if (!this.allowNegative && ev.key === '-') {
+      ev.preventDefault();
+      return;
+    }
+    if (ev.key === 'Escape' && this.canClear()) {
+      ev.preventDefault();
+      this.handleClearClick(ev as unknown as MouseEvent);
+      return;
+    }
     if (ev.key === 'ArrowUp') {
       ev.preventDefault();
       this.performStep('up');
@@ -578,6 +704,7 @@ export class MudNumericInput {
     const ids: string[] = [];
     if (this.hasErrorMessage()) ids.push(this.errorId);
     else if (this.hasHelperMessage()) ids.push(this.helperId);
+    if (this.hasCharacterCounter()) ids.push(this.counterId);
     return ids.length > 0 ? ids.join(' ') : undefined;
   }
 
@@ -597,6 +724,8 @@ export class MudNumericInput {
     const canStepUp = this.canStep('up');
     const canStepDown = this.canStep('down');
     const showSteppers = this.showSteppersStack();
+    const showClear = this.canClear();
+    const showCounter = this.hasCharacterCounter();
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -609,6 +738,8 @@ export class MudNumericInput {
       'has-prefix': this.hasPrefix,
       'has-suffix': this.hasSuffix,
       'has-steppers': showSteppers,
+      'has-clear': showClear,
+      'has-counter': showCounter,
       [`variant-${variant}`]: true,
     };
 
@@ -647,6 +778,7 @@ export class MudNumericInput {
             name={this.name}
             value={this.displayValue}
             placeholder={this.placeholder}
+            maxLength={this.maxLength}
             disabled={effectivelyDisabled}
             readonly={this.readonly}
             required={this.required}
@@ -671,6 +803,20 @@ export class MudNumericInput {
           <span class="suffix" part="suffix" aria-hidden={this.hasSuffix ? null : 'true'}>
             <slot name="suffix" onSlotchange={this.onSuffixSlotChange} />
           </span>
+
+          {showClear ? (
+            <button
+              type="button"
+              class="clear-button"
+              part="clear-button"
+              tabindex={-1}
+              aria-label={this.clearLabel}
+              onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
+              onClick={this.handleClearClick}
+            >
+              <mud-icon name="cross-small" size={this.size === 'lg' ? 20 : 16} />
+            </button>
+          ) : null}
 
           {showSteppers ? (
             <div class="stepper" part="stepper" aria-hidden="true">
@@ -708,25 +854,38 @@ export class MudNumericInput {
           ) : null}
         </div>
 
-        {this.hasErrorMessage() ? (
-          <div class="assistive assistive-error" id={this.errorId} part="error">
-            <mud-icon class="assistive-icon" name="circle-error-filled" size={iconSize} color="icon-danger-default" />
-            <span class="assistive-text">{errorText}</span>
-          </div>
-        ) : this.hasHelperMessage() ? (
-          <div class="assistive assistive-helper" id={this.helperId} part="helper">
-            {variant === 'success' ? (
-              <mud-icon
-                class="assistive-icon"
-                name="circle-checkmark-filled"
-                size={iconSize}
-                color="icon-positive-default"
-              />
+        {this.hasErrorMessage() || this.hasHelperMessage() || showCounter ? (
+          <div class="assistive-row">
+            {this.hasErrorMessage() ? (
+              <div class="assistive assistive-error" id={this.errorId} part="error">
+                <mud-icon class="assistive-icon" name="circle-error-filled" size={iconSize} color="icon-danger-default" />
+                <span class="assistive-text">{errorText}</span>
+              </div>
+            ) : this.hasHelperMessage() ? (
+              <div class="assistive assistive-helper" id={this.helperId} part="helper">
+                {variant === 'success' ? (
+                  <mud-icon
+                    class="assistive-icon"
+                    name="circle-checkmark-filled"
+                    size={iconSize}
+                    color="icon-positive-default"
+                  />
+                ) : null}
+                <span class="assistive-text">
+                  {this.hasHelperSlot ? null : helperText}
+                  <slot name="helper" onSlotchange={this.onHelperSlotChange} />
+                </span>
+              </div>
+            ) : (
+              <span class="assistive-spacer" aria-hidden="true" />
+            )}
+
+            {showCounter ? (
+              <span class="counter" id={this.counterId} part="counter" aria-live="polite">
+                {this.displayValue.length}
+                {this.maxLength !== undefined ? `/${this.maxLength}` : ''}
+              </span>
             ) : null}
-            <span class="assistive-text">
-              {this.hasHelperSlot ? null : helperText}
-              <slot name="helper" onSlotchange={this.onHelperSlotChange} />
-            </span>
           </div>
         ) : null}
       </Host>

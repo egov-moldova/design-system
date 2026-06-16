@@ -698,4 +698,62 @@ describe('mud-numeric-input', () => {
       spy.mockRestore();
     });
   });
+
+  describe('form features', () => {
+    it('renders a clear button while the field holds a value', async () => {
+      const { root } = await render(<mud-numeric-input label="Sum" clearable value={1250}></mud-numeric-input>);
+      expect(root?.shadowRoot?.querySelector('.clear-button')).not.toBeNull();
+      expect(root?.classList.contains('has-clear')).toBe(true);
+    });
+
+    it('omits the clear button when the field is empty', async () => {
+      const { root } = await render(<mud-numeric-input label="Sum" clearable></mud-numeric-input>);
+      expect(root?.shadowRoot?.querySelector('.clear-button')).toBeNull();
+    });
+
+    it('clears the value and emits mudClear when the clear button is activated', async () => {
+      const { root } = await render(<mud-numeric-input label="Sum" clearable value={1250}></mud-numeric-input>);
+      let cleared = false;
+      root?.addEventListener('mudClear', () => (cleared = true));
+      (root?.shadowRoot?.querySelector('.clear-button') as HTMLButtonElement).click();
+      await flush();
+      expect((root as unknown as { value: number | undefined }).value).toBeUndefined();
+      expect(cleared).toBe(true);
+    });
+
+    it('renders a character counter when maxlength is set', async () => {
+      const { root } = await render(<mud-numeric-input label="Cod" maxLength={6} value={123}></mud-numeric-input>);
+      const counter = root?.shadowRoot?.querySelector('.counter');
+      expect(counter).not.toBeNull();
+      expect(counter?.textContent).toContain('/6');
+    });
+
+    it('groups the displayed value per locale', async () => {
+      const { root } = await render(
+        <mud-numeric-input label="Sumă" locale="ro-MD" value={1234567.89} precision={2}></mud-numeric-input>,
+      );
+      const native = root?.shadowRoot?.querySelector('input') as HTMLInputElement;
+      expect(native.value).toBe('1.234.567,89');
+    });
+
+    it('truncates the fraction on commit when allow-decimal is false', async () => {
+      const { root } = await render(<mud-numeric-input label="Cantitate" allowDecimal={false}></mud-numeric-input>);
+      const native = root?.shadowRoot?.querySelector('input') as HTMLInputElement;
+      native.value = '12.7';
+      native.dispatchEvent(new Event('input', { bubbles: true }));
+      native.dispatchEvent(new FocusEvent('blur'));
+      await flush();
+      expect((root as unknown as { value: number | undefined }).value).toBe(12);
+    });
+
+    it('rejects negative values on commit when allow-negative is false', async () => {
+      const { root } = await render(<mud-numeric-input label="Vârstă" allowNegative={false} min={0}></mud-numeric-input>);
+      const native = root?.shadowRoot?.querySelector('input') as HTMLInputElement;
+      native.value = '-5';
+      native.dispatchEvent(new Event('input', { bubbles: true }));
+      native.dispatchEvent(new FocusEvent('blur'));
+      await flush();
+      expect((root as unknown as { value: number | undefined }).value).toBe(0);
+    });
+  });
 });
