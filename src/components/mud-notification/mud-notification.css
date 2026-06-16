@@ -151,6 +151,17 @@
 ::slotted([slot='actions']) {
   color: inherit;
 }
+::slotted(mud-button[slot='actions']) {
+  --_label: currentColor;
+  --_label-hover: currentColor;
+  --_label-active: currentColor;
+  --_icon: currentColor;
+  --_border-color: currentColor;
+  --_border-color-hover: currentColor;
+  --_border-color-active: currentColor;
+  --_bg-hover: color-mix(in srgb, currentColor 16%, transparent);
+  --_bg-active: color-mix(in srgb, currentColor 28%, transparent);
+}
 
 /* ---------- close button ---------- */
 
