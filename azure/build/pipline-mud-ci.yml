@@ -50,11 +50,11 @@ stages:
               dockerfile: $(webuiDockerfile)
               buildContext: $(solutionPath)
               arguments: --progress=plain
-
-          - task: Docker@2
-            displayName: Push WebUI Image
-            inputs:
-              command: push
-              containerRegistry: $(containerRegistry)
-              repository: $(webuiContainerRepository)
-              tags: $(containerTag),latest
+#
+#          - task: Docker@2
+#            displayName: Push WebUI Image
+#            inputs:
+#              command: push
+#              containerRegistry: $(containerRegistry)
+#              repository: $(webuiContainerRepository)
+#              tags: $(containerTag),latest
