@@ -1503,6 +1503,16 @@ export namespace Components {
      */
     interface MudNumericInput {
         /**
+          * Allow fractional input. When `false` the field is integer-only: typing a decimal separator is blocked and any fractional part is truncated on commit.
+          * @default true
+         */
+        "allowDecimal": boolean;
+        /**
+          * Allow negative input. When `false` the field is positive-only: typing `-` is blocked and negative entries are rejected on commit.
+          * @default true
+         */
+        "allowNegative": boolean;
+        /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
          */
         "ariaLabel"?: string;
@@ -1510,6 +1520,16 @@ export namespace Components {
           * Human-readable value announcement for screen readers (e.g. `"5 lei"`). Maps to the native `aria-valuetext` on the spinbutton. Same capture-and-strip pattern as `ariaLabel`.
          */
         "ariaValuetext"?: string;
+        /**
+          * Accessible label for the clear button. Defaults to the Romanian "Șterge".
+          * @default 'Șterge'
+         */
+        "clearLabel": string;
+        /**
+          * When `true`, renders a trailing clear (×) button while the field holds a value. Activating it clears the value and emits `mudChange` with `null`.
+          * @default false
+         */
+        "clearable": boolean;
         /**
           * Accessible label for the decrement button. Defaults to Romanian "Scade".
           * @default 'Scade'
@@ -1548,9 +1568,17 @@ export namespace Components {
          */
         "loading": boolean;
         /**
+          * BCP-47 locale used to group the displayed value with thousands separators and to parse grouped input back (e.g. `ro-MD` → `1.250,00`). When unset the value displays ungrouped. Grouping is applied while the field is not being edited; on focus the raw editable number is shown so the caret stays sane.
+         */
+        "locale"?: string;
+        /**
           * Inclusive upper bound. Stepper-up disables at this value; manual entries above clamp on blur.
          */
         "max"?: number;
+        /**
+          * Maximum number of characters accepted by the field (native `maxlength`). When set, a character counter renders in the assistive row unless `show-counter` is `false`.
+         */
+        "maxLength"?: number;
         /**
           * Inclusive lower bound. Stepper-down disables at this value; manual entries below clamp on blur.
          */
@@ -1577,6 +1605,11 @@ export namespace Components {
           * @default false
          */
         "required": boolean;
+        /**
+          * Force the character counter to show or hide. Auto-shows when `maxlength` is set; pass `false` to suppress it.
+          * @default true
+         */
+        "showCounter": boolean;
         /**
           * Show the trailing stacked stepper (chevron-up / chevron-bottom) buttons. Off by default per Figma master, which renders the canonical numeric input without steppers (suffix-only). Opt in via `show-steppers` for compact quantity / rating fields where stepper affordance is valuable.
           * @default false
@@ -3761,6 +3794,7 @@ declare global {
         "mudError": NumericInputErrorDetail;
         "mudFocus": FocusEvent;
         "mudBlur": FocusEvent;
+        "mudClear": NumericInputChangeDetail;
     }
     /**
      * Numeric Input — numeric-entry control with stacked step buttons.
@@ -6039,6 +6073,16 @@ declare namespace LocalJSX {
      */
     interface MudNumericInput {
         /**
+          * Allow fractional input. When `false` the field is integer-only: typing a decimal separator is blocked and any fractional part is truncated on commit.
+          * @default true
+         */
+        "allowDecimal"?: boolean;
+        /**
+          * Allow negative input. When `false` the field is positive-only: typing `-` is blocked and negative entries are rejected on commit.
+          * @default true
+         */
+        "allowNegative"?: boolean;
+        /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
          */
         "ariaLabel"?: string;
@@ -6046,6 +6090,16 @@ declare namespace LocalJSX {
           * Human-readable value announcement for screen readers (e.g. `"5 lei"`). Maps to the native `aria-valuetext` on the spinbutton. Same capture-and-strip pattern as `ariaLabel`.
          */
         "ariaValuetext"?: string;
+        /**
+          * Accessible label for the clear button. Defaults to the Romanian "Șterge".
+          * @default 'Șterge'
+         */
+        "clearLabel"?: string;
+        /**
+          * When `true`, renders a trailing clear (×) button while the field holds a value. Activating it clears the value and emits `mudChange` with `null`.
+          * @default false
+         */
+        "clearable"?: boolean;
         /**
           * Accessible label for the decrement button. Defaults to Romanian "Scade".
           * @default 'Scade'
@@ -6088,9 +6142,17 @@ declare namespace LocalJSX {
          */
         "loading"?: boolean;
         /**
+          * BCP-47 locale used to group the displayed value with thousands separators and to parse grouped input back (e.g. `ro-MD` → `1.250,00`). When unset the value displays ungrouped. Grouping is applied while the field is not being edited; on focus the raw editable number is shown so the caret stays sane.
+         */
+        "locale"?: string;
+        /**
           * Inclusive upper bound. Stepper-up disables at this value; manual entries above clamp on blur.
          */
         "max"?: number;
+        /**
+          * Maximum number of characters accepted by the field (native `maxlength`). When set, a character counter renders in the assistive row unless `show-counter` is `false`.
+         */
+        "maxLength"?: number;
         /**
           * Inclusive lower bound. Stepper-down disables at this value; manual entries below clamp on blur.
          */
@@ -6107,6 +6169,10 @@ declare namespace LocalJSX {
           * Fires when the value is committed (blur / Enter / stepper). `detail.value` is the clamped, precision-rounded value or `null`.
          */
         "onMudChange"?: (event: MudNumericInputCustomEvent<NumericInputChangeDetail>) => void;
+        /**
+          * Fires when the clear button empties the field. `detail.value` is `null`.
+         */
+        "onMudClear"?: (event: MudNumericInputCustomEvent<NumericInputChangeDetail>) => void;
         /**
           * Fires when validation rejects the current input (out-of-range, NaN).
          */
@@ -6141,6 +6207,11 @@ declare namespace LocalJSX {
           * @default false
          */
         "required"?: boolean;
+        /**
+          * Force the character counter to show or hide. Auto-shows when `maxlength` is set; pass `false` to suppress it.
+          * @default true
+         */
+        "showCounter"?: boolean;
         /**
           * Show the trailing stacked stepper (chevron-up / chevron-bottom) buttons. Off by default per Figma master, which renders the canonical numeric input without steppers (suffix-only). Opt in via `show-steppers` for compact quantity / rating fields where stepper affordance is valuable.
           * @default false
@@ -8056,6 +8127,13 @@ declare namespace LocalJSX {
         "decrementLabel": string;
         "ariaLabel": string;
         "ariaValuetext": string;
+        "allowDecimal": boolean;
+        "allowNegative": boolean;
+        "locale": string;
+        "clearable": boolean;
+        "clearLabel": string;
+        "maxLength": number;
+        "showCounter": boolean;
     }
     interface MudPaginationAttributes {
         "size": PaginationSize;

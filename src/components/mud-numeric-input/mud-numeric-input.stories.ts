@@ -574,6 +574,46 @@ export const WithPrefix: Story = {
   },
 };
 
+export const WithFormFeatures: Story = {
+  name: 'Form Features',
+  render: () =>
+    wrap2col(
+      [
+        cell(
+          'locale ro-MD (thousands grouping)',
+          /*html*/ `<mud-numeric-input size="lg" label="Sumă" locale="ro-MD" value="1234567.89" precision="2">
+            <span slot="suffix">lei</span>
+          </mud-numeric-input>`,
+        ),
+        cell(
+          'clearable',
+          /*html*/ `<mud-numeric-input size="lg" label="Sumă" clearable value="1250" precision="2"></mud-numeric-input>`,
+        ),
+        cell(
+          'counter (maxlength 6)',
+          /*html*/ `<mud-numeric-input size="lg" label="Cod poștal" maxlength="6" value="2001"></mud-numeric-input>`,
+        ),
+        cell(
+          'integer-only + positive-only',
+          /*html*/ `<mud-numeric-input size="lg" label="Cantitate" allow-decimal="false" allow-negative="false" value="3" min="0"></mud-numeric-input>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          '<mud-numeric-input size="lg" label="Sumă" locale="ro-MD" value="1234567.89" precision="2"><span slot="suffix">lei</span></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Sumă" clearable value="1250" precision="2"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Cod poștal" maxlength="6" value="2001"></mud-numeric-input>',
+          '<mud-numeric-input size="lg" label="Cantitate" allow-decimal="false" allow-negative="false" value="3" min="0"></mud-numeric-input>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
 export const WithCurrencyIcon: Story = {
   name: 'With Currency Icon',
   render: () =>

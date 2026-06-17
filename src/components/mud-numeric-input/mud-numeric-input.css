@@ -354,6 +354,38 @@
   font: inherit;
 }
 
+/* ---------- Clear button ---------- */
+
+.clear-button {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--_icon-size);
+  block-size: var(--_icon-size);
+  padding: 0;
+  border: 0;
+  border-radius: var(--border-radius-full, 999px);
+  background-color: transparent;
+  color: var(--numeric-input-icon-color-default);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition:
+    background-color var(--_transition-duration) var(--_transition-easing),
+    color var(--_transition-duration) var(--_transition-easing);
+}
+
+.clear-button:hover {
+  background-color: var(--color-background-base-secondary, #f5f5f5);
+  color: var(--numeric-input-default-text-default);
+}
+
+.clear-button:focus,
+.clear-button:focus-visible {
+  outline: none;
+}
+
 /* ---------- Stepper stack ---------- */
 
 .stepper {
@@ -433,7 +465,39 @@
   cursor: not-allowed;
 }
 
-/* ---------- Assistive (helper / error) ---------- */
+/* ---------- Assistive (helper / error / counter) ---------- */
+
+.assistive-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-8, 8px);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.assistive-row .assistive {
+  inline-size: auto;
+  flex: 1 1 auto;
+}
+
+.assistive-spacer {
+  flex: 1 1 auto;
+}
+
+.counter {
+  flex-shrink: 0;
+  margin-inline-start: auto;
+  font-family: var(--numeric-input-assistive-font-family);
+  font-size: var(--numeric-input-assistive-font-size);
+  line-height: var(--numeric-input-assistive-line-height);
+  font-weight: var(--numeric-input-assistive-font-weight);
+  color: var(--numeric-input-assistive-color-default);
+  font-variant-numeric: tabular-nums;
+}
+
+:host(.is-disabled) .counter {
+  color: var(--numeric-input-default-text-disabled);
+}
 
 .assistive {
   display: flex;
