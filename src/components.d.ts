@@ -8,6 +8,7 @@ import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { AccordionAppearance, AccordionChangeDetail, AccordionIconPosition, AccordionItemDescriptor, AccordionMode, AccordionSize } from "./components/mud-accordion/mud-accordion.types";
 import { AvatarSize, AvatarType } from "./components/mud-avatar/mud-avatar.types";
 import { BadgeSize, BadgeType, BadgeVariant } from "./components/mud-badge/mud-badge.types";
+import { BannerEmphasis, BannerVariant } from "./components/mud-banner/mud-banner.types";
 import { BreadcrumbItem, BreadcrumbSelectDetail } from "./components/mud-breadcrumb/mud-breadcrumb.types";
 import { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/mud-button/mud-button.types";
 import { ButtonGroupOrientation } from "./components/mud-button-group/mud-button-group.types";
@@ -48,6 +49,7 @@ import { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, 
 export { AccordionAppearance, AccordionChangeDetail, AccordionIconPosition, AccordionItemDescriptor, AccordionMode, AccordionSize } from "./components/mud-accordion/mud-accordion.types";
 export { AvatarSize, AvatarType } from "./components/mud-avatar/mud-avatar.types";
 export { BadgeSize, BadgeType, BadgeVariant } from "./components/mud-badge/mud-badge.types";
+export { BannerEmphasis, BannerVariant } from "./components/mud-banner/mud-banner.types";
 export { BreadcrumbItem, BreadcrumbSelectDetail } from "./components/mud-breadcrumb/mud-breadcrumb.types";
 export { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/mud-button/mud-button.types";
 export { ButtonGroupOrientation } from "./components/mud-button-group/mud-button-group.types";
@@ -287,6 +289,61 @@ export namespace Components {
           * @default 'danger'
          */
         "variant": BadgeVariant;
+    }
+    /**
+     * Banner — full-width, top-of-page system message.
+     * A persistent, non-contextual notification that spans the width of its
+     * container and informs users of important system-wide events (scheduled
+     * maintenance, outages, announcements). Draws attention without blocking
+     * interaction; remains visible until dismissed or resolved.
+     * Pattern B (atom-display + interactive close): the optional close affordance
+     * lives in shadow DOM with a real `button` role. The body is not interactive
+     * apart from the optional inline link.
+     * `variant` selects the semantic color family — `info`, `warning`, or `error`
+     * (Figma exposes no `success` for banners). `emphasis` selects the surface
+     * treatment — `subtle` (tinted) or `strong` (filled, on-color foreground).
+     * Live-region routing follows WCAG status/alert conventions:
+     * - `info` → `role="status"` + `aria-live="polite"`
+     * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
+     * @element mud-banner
+     */
+    interface MudBanner {
+        /**
+          * Forwarded to the host as `aria-label`.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Close-button accessible label. Defaults to the Romanian "Închide".
+          * @default 'Închide'
+         */
+        "closeLabel": string;
+        /**
+          * When `true`, renders a trailing close (×) button. Activating it emits `mudDismiss`; the consumer is responsible for removing the banner from the DOM.
+          * @default false
+         */
+        "dismissible": boolean;
+        /**
+          * Surface treatment: `subtle` (tinted background, dark text) or `strong` (filled background, on-color text).
+          * @default 'subtle'
+         */
+        "emphasis": BannerEmphasis;
+        /**
+          * Override the default `mud-icon` name for the variant. Ignored when the `icon-start` slot is populated.
+         */
+        "iconName"?: string;
+        /**
+          * Href for the optional inline link. Defaults to `#` when omitted.
+         */
+        "linkHref"?: string;
+        /**
+          * Optional inline link text rendered after the message (the Figma "Click here" affordance). Pair with `linkHref` for a real destination.
+         */
+        "linkText"?: string;
+        /**
+          * Semantic color family. Per Figma the banner exposes `info`, `warning`, and `error` (no `success`).
+          * @default 'info'
+         */
+        "variant": BannerVariant;
     }
     /**
      * Breadcrumb — navigational trail showing the user's location in the site hierarchy.
@@ -3025,6 +3082,10 @@ export interface MudAccordionItemCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudAccordionItemElement;
 }
+export interface MudBannerCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLMudBannerElement;
+}
 export interface MudBreadcrumbCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudBreadcrumbElement;
@@ -3248,6 +3309,40 @@ declare global {
     var HTMLMudBadgeElement: {
         prototype: HTMLMudBadgeElement;
         new (): HTMLMudBadgeElement;
+    };
+    interface HTMLMudBannerElementEventMap {
+        "mudDismiss": void;
+    }
+    /**
+     * Banner — full-width, top-of-page system message.
+     * A persistent, non-contextual notification that spans the width of its
+     * container and informs users of important system-wide events (scheduled
+     * maintenance, outages, announcements). Draws attention without blocking
+     * interaction; remains visible until dismissed or resolved.
+     * Pattern B (atom-display + interactive close): the optional close affordance
+     * lives in shadow DOM with a real `button` role. The body is not interactive
+     * apart from the optional inline link.
+     * `variant` selects the semantic color family — `info`, `warning`, or `error`
+     * (Figma exposes no `success` for banners). `emphasis` selects the surface
+     * treatment — `subtle` (tinted) or `strong` (filled, on-color foreground).
+     * Live-region routing follows WCAG status/alert conventions:
+     * - `info` → `role="status"` + `aria-live="polite"`
+     * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
+     * @element mud-banner
+     */
+    interface HTMLMudBannerElement extends Components.MudBanner, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudBannerElementEventMap>(type: K, listener: (this: HTMLMudBannerElement, ev: MudBannerCustomEvent<HTMLMudBannerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudBannerElementEventMap>(type: K, listener: (this: HTMLMudBannerElement, ev: MudBannerCustomEvent<HTMLMudBannerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLMudBannerElement: {
+        prototype: HTMLMudBannerElement;
+        new (): HTMLMudBannerElement;
     };
     interface HTMLMudBreadcrumbElementEventMap {
         "mudSelect": BreadcrumbSelectDetail;
@@ -4440,6 +4535,7 @@ declare global {
         "mud-accordion-item": HTMLMudAccordionItemElement;
         "mud-avatar": HTMLMudAvatarElement;
         "mud-badge": HTMLMudBadgeElement;
+        "mud-banner": HTMLMudBannerElement;
         "mud-breadcrumb": HTMLMudBreadcrumbElement;
         "mud-breadcrumb-item": HTMLMudBreadcrumbItemElement;
         "mud-button": HTMLMudButtonElement;
@@ -4692,6 +4788,65 @@ declare namespace LocalJSX {
           * @default 'danger'
          */
         "variant"?: BadgeVariant;
+    }
+    /**
+     * Banner — full-width, top-of-page system message.
+     * A persistent, non-contextual notification that spans the width of its
+     * container and informs users of important system-wide events (scheduled
+     * maintenance, outages, announcements). Draws attention without blocking
+     * interaction; remains visible until dismissed or resolved.
+     * Pattern B (atom-display + interactive close): the optional close affordance
+     * lives in shadow DOM with a real `button` role. The body is not interactive
+     * apart from the optional inline link.
+     * `variant` selects the semantic color family — `info`, `warning`, or `error`
+     * (Figma exposes no `success` for banners). `emphasis` selects the surface
+     * treatment — `subtle` (tinted) or `strong` (filled, on-color foreground).
+     * Live-region routing follows WCAG status/alert conventions:
+     * - `info` → `role="status"` + `aria-live="polite"`
+     * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
+     * @element mud-banner
+     */
+    interface MudBanner {
+        /**
+          * Forwarded to the host as `aria-label`.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Close-button accessible label. Defaults to the Romanian "Închide".
+          * @default 'Închide'
+         */
+        "closeLabel"?: string;
+        /**
+          * When `true`, renders a trailing close (×) button. Activating it emits `mudDismiss`; the consumer is responsible for removing the banner from the DOM.
+          * @default false
+         */
+        "dismissible"?: boolean;
+        /**
+          * Surface treatment: `subtle` (tinted background, dark text) or `strong` (filled background, on-color text).
+          * @default 'subtle'
+         */
+        "emphasis"?: BannerEmphasis;
+        /**
+          * Override the default `mud-icon` name for the variant. Ignored when the `icon-start` slot is populated.
+         */
+        "iconName"?: string;
+        /**
+          * Href for the optional inline link. Defaults to `#` when omitted.
+         */
+        "linkHref"?: string;
+        /**
+          * Optional inline link text rendered after the message (the Figma "Click here" affordance). Pair with `linkHref` for a real destination.
+         */
+        "linkText"?: string;
+        /**
+          * Fires when the user activates the close button. Payload is `void` — the consumer owns the dismiss animation / DOM removal.
+         */
+        "onMudDismiss"?: (event: MudBannerCustomEvent<void>) => void;
+        /**
+          * Semantic color family. Per Figma the banner exposes `info`, `warning`, and `error` (no `success`).
+          * @default 'info'
+         */
+        "variant"?: BannerVariant;
     }
     /**
      * Breadcrumb — navigational trail showing the user's location in the site hierarchy.
@@ -7899,6 +8054,16 @@ declare namespace LocalJSX {
         "max": number;
         "ariaLabel": string;
     }
+    interface MudBannerAttributes {
+        "variant": BannerVariant;
+        "emphasis": BannerEmphasis;
+        "dismissible": boolean;
+        "linkText": string;
+        "linkHref": string;
+        "iconName": string;
+        "ariaLabel": string;
+        "closeLabel": string;
+    }
     interface MudBreadcrumbAttributes {
         "maxVisible": number;
         "separator": string;
@@ -8427,6 +8592,7 @@ declare namespace LocalJSX {
         "mud-accordion-item": Omit<MudAccordionItem, keyof MudAccordionItemAttributes> & { [K in keyof MudAccordionItem & keyof MudAccordionItemAttributes]?: MudAccordionItem[K] } & { [K in keyof MudAccordionItem & keyof MudAccordionItemAttributes as `attr:${K}`]?: MudAccordionItemAttributes[K] } & { [K in keyof MudAccordionItem & keyof MudAccordionItemAttributes as `prop:${K}`]?: MudAccordionItem[K] };
         "mud-avatar": Omit<MudAvatar, keyof MudAvatarAttributes> & { [K in keyof MudAvatar & keyof MudAvatarAttributes]?: MudAvatar[K] } & { [K in keyof MudAvatar & keyof MudAvatarAttributes as `attr:${K}`]?: MudAvatarAttributes[K] } & { [K in keyof MudAvatar & keyof MudAvatarAttributes as `prop:${K}`]?: MudAvatar[K] };
         "mud-badge": Omit<MudBadge, keyof MudBadgeAttributes> & { [K in keyof MudBadge & keyof MudBadgeAttributes]?: MudBadge[K] } & { [K in keyof MudBadge & keyof MudBadgeAttributes as `attr:${K}`]?: MudBadgeAttributes[K] } & { [K in keyof MudBadge & keyof MudBadgeAttributes as `prop:${K}`]?: MudBadge[K] };
+        "mud-banner": Omit<MudBanner, keyof MudBannerAttributes> & { [K in keyof MudBanner & keyof MudBannerAttributes]?: MudBanner[K] } & { [K in keyof MudBanner & keyof MudBannerAttributes as `attr:${K}`]?: MudBannerAttributes[K] } & { [K in keyof MudBanner & keyof MudBannerAttributes as `prop:${K}`]?: MudBanner[K] };
         "mud-breadcrumb": Omit<MudBreadcrumb, keyof MudBreadcrumbAttributes> & { [K in keyof MudBreadcrumb & keyof MudBreadcrumbAttributes]?: MudBreadcrumb[K] } & { [K in keyof MudBreadcrumb & keyof MudBreadcrumbAttributes as `attr:${K}`]?: MudBreadcrumbAttributes[K] } & { [K in keyof MudBreadcrumb & keyof MudBreadcrumbAttributes as `prop:${K}`]?: MudBreadcrumb[K] };
         "mud-breadcrumb-item": Omit<MudBreadcrumbItem, keyof MudBreadcrumbItemAttributes> & { [K in keyof MudBreadcrumbItem & keyof MudBreadcrumbItemAttributes]?: MudBreadcrumbItem[K] } & { [K in keyof MudBreadcrumbItem & keyof MudBreadcrumbItemAttributes as `attr:${K}`]?: MudBreadcrumbItemAttributes[K] } & { [K in keyof MudBreadcrumbItem & keyof MudBreadcrumbItemAttributes as `prop:${K}`]?: MudBreadcrumbItem[K] };
         "mud-button": Omit<MudButton, keyof MudButtonAttributes> & { [K in keyof MudButton & keyof MudButtonAttributes]?: MudButton[K] } & { [K in keyof MudButton & keyof MudButtonAttributes as `attr:${K}`]?: MudButtonAttributes[K] } & { [K in keyof MudButton & keyof MudButtonAttributes as `prop:${K}`]?: MudButton[K] };
@@ -8525,6 +8691,24 @@ declare module "@stencil/core" {
              * @element mud-badge
              */
             "mud-badge": LocalJSX.IntrinsicElements["mud-badge"] & JSXBase.HTMLAttributes<HTMLMudBadgeElement>;
+            /**
+             * Banner — full-width, top-of-page system message.
+             * A persistent, non-contextual notification that spans the width of its
+             * container and informs users of important system-wide events (scheduled
+             * maintenance, outages, announcements). Draws attention without blocking
+             * interaction; remains visible until dismissed or resolved.
+             * Pattern B (atom-display + interactive close): the optional close affordance
+             * lives in shadow DOM with a real `button` role. The body is not interactive
+             * apart from the optional inline link.
+             * `variant` selects the semantic color family — `info`, `warning`, or `error`
+             * (Figma exposes no `success` for banners). `emphasis` selects the surface
+             * treatment — `subtle` (tinted) or `strong` (filled, on-color foreground).
+             * Live-region routing follows WCAG status/alert conventions:
+             * - `info` → `role="status"` + `aria-live="polite"`
+             * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
+             * @element mud-banner
+             */
+            "mud-banner": LocalJSX.IntrinsicElements["mud-banner"] & JSXBase.HTMLAttributes<HTMLMudBannerElement>;
             /**
              * Breadcrumb — navigational trail showing the user's location in the site hierarchy.
              * Two equivalent authoring modes:

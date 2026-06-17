@@ -1,0 +1,173 @@
+/* mud-banner — full-width top-of-page system message.
+   The surface color comes from the variant × emphasis rules below; default
+   props (info / subtle) reflect to attributes so the surface matches before
+   hydration. Banner references the semantic color tokens directly because the
+   tokenhaus sync does not (yet) define `--banner-*` component tokens for this
+   new component. */
+
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-sizing: border-box;
+  inline-size: 100%;
+  gap: var(--spacing-8, 8px);
+  padding-block: var(--spacing-12, 12px);
+  /* Inline padding leaves room for the absolutely-positioned close button so
+     the centered content never collides with it. */
+  padding-inline: var(--spacing-48, 48px);
+  font-family: var(--font-family-primary, 'Onest', sans-serif);
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-8, 8px);
+  min-inline-size: 0;
+}
+
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: 24px;
+  block-size: 24px;
+}
+
+.message {
+  margin: 0;
+  font-size: var(--font-size-fs-14, 14px);
+  line-height: var(--line-height-lh-20, 20px);
+  font-weight: var(--font-weight-fw-regular, 400);
+  white-space: nowrap;
+}
+
+.link {
+  flex-shrink: 0;
+  font-size: var(--font-size-fs-16, 16px);
+  line-height: var(--line-height-lh-24, 24px);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  color: var(--color-text-brand-default, #0058d2);
+  cursor: pointer;
+}
+
+.close {
+  position: absolute;
+  inset-inline-end: var(--spacing-16, 16px);
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: 16px;
+  block-size: 16px;
+  padding: 0;
+  margin: 0;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  border-radius: var(--border-radius-4, 4px);
+  transition: background-color 150ms ease;
+}
+
+.close:hover {
+  background-color: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.close-icon {
+  display: inline-flex;
+  inline-size: 16px;
+  block-size: 16px;
+}
+
+.close svg {
+  inline-size: 16px;
+  block-size: 16px;
+}
+
+.close:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--focus-ring-width-inner, 2px) var(--focus-ring-color-inner, currentColor),
+    0 0 0 calc(var(--focus-ring-width-inner, 2px) + var(--focus-ring-width-outer, 2px))
+      var(--focus-ring-color-outer, transparent);
+}
+
+/* ---------- Variant × emphasis surfaces (Figma "Styles") ---------- */
+
+/* Strong = filled background, on-color foreground. */
+:host([emphasis='strong'][variant='info']) {
+  background: var(--color-background-brand-default, #0058d2);
+  color: var(--color-text-base-inverse-on-color, #ffffff);
+}
+
+:host([emphasis='strong'][variant='warning']) {
+  background: var(--color-background-warning-accent, #fec84b);
+  color: var(--color-text-base-default-on-color, #121212);
+}
+
+:host([emphasis='strong'][variant='error']) {
+  background: var(--color-background-danger-default, #d92d20);
+  color: var(--color-text-base-inverse-on-color, #ffffff);
+}
+
+/* Subtle = tinted background, dark foreground. */
+:host([emphasis='subtle'][variant='info']) {
+  background: var(--color-background-brand-secondary, #e8f0fb);
+  color: var(--color-text-base-default-on-color, #121212);
+}
+
+:host([emphasis='subtle'][variant='warning']) {
+  background: var(--color-background-warning-secondary, #feefc6);
+  color: var(--color-text-base-default-on-color, #121212);
+}
+
+:host([emphasis='subtle'][variant='error']) {
+  background: var(--color-background-danger-secondary, #fee4e2);
+  color: var(--color-text-base-default-on-color, #121212);
+}
+
+/* On a filled (strong) surface a brand-blue link is low-contrast, so the link
+   adopts the on-color foreground and stays underlined. */
+:host([emphasis='strong']) .link {
+  color: currentColor;
+}
+
+/* ---------- Narrow / touch: stack content, wrap text, 40x40 close ---------- */
+@media (max-width: 640px) {
+  :host {
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding-inline-start: var(--spacing-16, 16px);
+    padding-inline-end: var(--spacing-12, 12px);
+  }
+
+  .content {
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--spacing-12, 12px);
+  }
+
+  .message {
+    flex: 1 1 0;
+    min-inline-size: 0;
+    white-space: normal;
+    font-size: var(--font-size-fs-16, 16px);
+    line-height: var(--line-height-lh-24, 24px);
+  }
+
+  .close {
+    position: static;
+    transform: none;
+    inline-size: 40px;
+    block-size: 40px;
+    padding: var(--spacing-4, 4px);
+  }
+}

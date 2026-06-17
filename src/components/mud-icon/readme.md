@@ -33,6 +33,7 @@ largest smaller size before giving up.
 ### Used by
 
  - [mud-avatar](../mud-avatar)
+ - [mud-banner](../mud-banner)
  - [mud-breadcrumb](../mud-breadcrumb)
  - [mud-cookie-banner](../mud-cookie-banner)
  - [mud-date-input](../mud-date-input)
@@ -61,6 +62,7 @@ largest smaller size before giving up.
 ```mermaid
 graph TD;
   mud-avatar --> mud-icon
+  mud-banner --> mud-icon
   mud-breadcrumb --> mud-icon
   mud-cookie-banner --> mud-icon
   mud-date-input --> mud-icon
