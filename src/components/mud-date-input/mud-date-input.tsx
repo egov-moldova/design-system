@@ -183,6 +183,18 @@ export class MudDateInput {
    */
   @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
 
+  /**
+   * Shows a trailing clear (×) button while the field holds a value, wiping the
+   * entry in one click. Matches the Figma `clearButton` axis shown in the
+   * Focus / Filled states. The button never appears while the field is empty,
+   * disabled, or read-only. Opt-in, mirroring the Figma boolean axis.
+   * @default false
+   */
+  @Prop({ reflect: true }) clearable: boolean = false;
+
+  /** Accessible label for the clear (×) button. */
+  @Prop({ attribute: 'clear-label' }) clearLabel: string = 'Șterge';
+
   @State() private hasLabelSlot: boolean = false;
   @State() private hasHelperSlot: boolean = false;
   @State() private isFocused: boolean = false;
@@ -212,6 +224,9 @@ export class MudDateInput {
 
   /** Fires when the internal control loses focus. The native `FocusEvent` is forwarded as-is. */
   @Event() mudBlur!: EventEmitter<FocusEvent>;
+
+  /** Fires when the user empties the field via the clear (×) button. */
+  @Event() mudClear!: EventEmitter<void>;
 
   private readonly instanceId = ++dateInputInstanceCounter;
   private readonly labelId = `mud-date-input-label-${this.instanceId}`;
@@ -498,6 +513,26 @@ export class MudDateInput {
     this.mudBlur.emit(ev);
   };
 
+  private handleClearClick = (ev: MouseEvent) => {
+    ev.preventDefault();
+    ev.stopPropagation();
+    if (this.isInert() || this.readonly || this.value === '') return;
+    this.value = '';
+    this.internals.setFormValue('', '');
+    this.mudInput.emit(this.detail('', null));
+    this.mudChange.emit({ value: '', isoValue: null });
+    this.mudClear.emit();
+    // Return focus to the field so the user can type a fresh date immediately.
+    requestAnimationFrame(() => {
+      this.host.shadowRoot?.querySelector<HTMLInputElement>('.native')?.focus();
+    });
+  };
+
+  /** The clear (×) button is gated on having an editable, non-empty value. */
+  private shouldShowClear(): boolean {
+    return this.clearable && !this.isInert() && !this.readonly && this.value !== '';
+  }
+
   private handleKeyDown = (ev: KeyboardEvent) => {
     // Pressing `/` (or `-` for ISO format) jumps to the next segment when the
     // current one isn't filled yet — matches the Figma "auto-jump after valid
@@ -648,6 +683,20 @@ export class MudDateInput {
               </span>
             ) : null}
           </div>
+
+          {this.shouldShowClear() ? (
+            <button
+              type="button"
+              class="clear-button"
+              part="clear-button"
+              tabindex={-1}
+              aria-label={this.clearLabel}
+              onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
+              onClick={this.handleClearClick}
+            >
+              <mud-icon name="cross-small" size={iconSize} />
+            </button>
+          ) : null}
 
           <button
             type="button"

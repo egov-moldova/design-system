@@ -280,6 +280,43 @@
   color: var(--date-input-icon-color-disabled);
 }
 
+/* ---------- Clear button (Figma "clearButton" — × on Focus / Filled) ----------
+   Sits just before the calendar trigger; styled as a sibling of the trailing
+   icon so the two trailing controls stay visually consistent. */
+
+.clear-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--_icon-size);
+  block-size: var(--_icon-size);
+  color: var(--date-input-icon-color-default);
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  border-radius: var(--border-radius-4);
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.clear-button:hover {
+  background-color: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.clear-button:active {
+  background-color: color-mix(in srgb, currentColor 20%, transparent);
+}
+
+.clear-button:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
+    0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
+}
+
 /* ---------- Calendar popover (mud-date-picker overlay) ---------- */
 
 .picker-popover {

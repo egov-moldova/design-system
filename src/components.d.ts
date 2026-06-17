@@ -672,6 +672,16 @@ export namespace Components {
          */
         "ariaLabel"?: string;
         /**
+          * Accessible label for the clear (×) button.
+          * @default 'Șterge'
+         */
+        "clearLabel": string;
+        /**
+          * Shows a trailing clear (×) button while the field holds a value, wiping the entry in one click. Matches the Figma `clearButton` axis shown in the Focus / Filled states. The button never appears while the field is empty, disabled, or read-only. Opt-in, mirroring the Figma boolean axis.
+          * @default false
+         */
+        "clearable": boolean;
+        /**
           * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
           * @default false
          */
@@ -3428,6 +3438,7 @@ declare global {
         "mudChange": DateInputChangeDetail;
         "mudFocus": FocusEvent;
         "mudBlur": FocusEvent;
+        "mudClear": void;
     }
     /**
      * Date Input — segment-masked date entry molecule.
@@ -5122,6 +5133,16 @@ declare namespace LocalJSX {
          */
         "ariaLabel"?: string;
         /**
+          * Accessible label for the clear (×) button.
+          * @default 'Șterge'
+         */
+        "clearLabel"?: string;
+        /**
+          * Shows a trailing clear (×) button while the field holds a value, wiping the entry in one click. Matches the Figma `clearButton` axis shown in the Focus / Filled states. The button never appears while the field is empty, disabled, or read-only. Opt-in, mirroring the Figma boolean axis.
+          * @default false
+         */
+        "clearable"?: boolean;
+        /**
           * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
           * @default false
          */
@@ -5172,6 +5193,10 @@ declare namespace LocalJSX {
           * Fires when the value is committed (typically on `blur` or `Enter`). `detail.value` is the committed display value; `detail.isoValue` is the ISO `YYYY-MM-DD` when fully populated and valid, otherwise `null`.
          */
         "onMudChange"?: (event: MudDateInputCustomEvent<DateInputChangeDetail>) => void;
+        /**
+          * Fires when the user empties the field via the clear (×) button.
+         */
+        "onMudClear"?: (event: MudDateInputCustomEvent<void>) => void;
         /**
           * Fires when the internal control gains focus. The native `FocusEvent` is forwarded as-is.
          */
@@ -7964,6 +7989,8 @@ declare namespace LocalJSX {
         "errorText": string;
         "placeholder": string;
         "ariaLabel": string;
+        "clearable": boolean;
+        "clearLabel": string;
     }
     interface MudDatePickerAttributes {
         "mode": DatePickerMode;

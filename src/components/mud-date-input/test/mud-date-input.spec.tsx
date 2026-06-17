@@ -16,6 +16,9 @@ const queryAssistive = (root: Element | null | undefined): HTMLElement | null =>
 const queryTrailingIcon = (root: Element | null | undefined): Element | null =>
   root?.shadowRoot?.querySelector('.trailing-icon mud-icon') ?? null;
 
+const queryClearButton = (root: Element | null | undefined): HTMLButtonElement | null =>
+  (root?.shadowRoot?.querySelector('button.clear-button') ?? null) as HTMLButtonElement | null;
+
 const queryGhostRemaining = (root: Element | null | undefined): HTMLElement | null =>
   (root?.shadowRoot?.querySelector('.ghost-remaining') ?? null) as HTMLElement | null;
 
@@ -431,6 +434,69 @@ describe('mud-date-input', () => {
       expect(trigger?.getAttribute('aria-label')).toBeTruthy();
       expect(trigger?.getAttribute('aria-haspopup')).toBe('dialog');
       expect(trigger?.getAttribute('aria-expanded')).toBe('false');
+    });
+  });
+
+  describe('clear button (Figma clearButton axis)', () => {
+    it('is hidden by default even with a value (clearable defaults to false)', async () => {
+      const { root } = await render(<mud-date-input value="15/04/2025" label="x"></mud-date-input>);
+      expect(queryClearButton(root)).toBeNull();
+    });
+
+    it('reflects the clearable attribute on the host', async () => {
+      const { root } = await render(<mud-date-input clearable label="x"></mud-date-input>);
+      expect(root?.hasAttribute('clearable')).toBe(true);
+    });
+
+    it('appears when clearable and the field has a value', async () => {
+      const { root } = await render(<mud-date-input clearable value="15/04/2025" label="x"></mud-date-input>);
+      expect(queryClearButton(root)).not.toBeNull();
+    });
+
+    it('stays hidden when clearable but the field is empty', async () => {
+      const { root } = await render(<mud-date-input clearable label="x"></mud-date-input>);
+      expect(queryClearButton(root)).toBeNull();
+    });
+
+    it('stays hidden when readonly, even with a value', async () => {
+      const { root } = await render(
+        <mud-date-input clearable readonly value="15/04/2025" label="x"></mud-date-input>,
+      );
+      expect(queryClearButton(root)).toBeNull();
+    });
+
+    it('stays hidden when disabled, even with a value', async () => {
+      const { root } = await render(
+        <mud-date-input clearable disabled value="15/04/2025" label="x"></mud-date-input>,
+      );
+      expect(queryClearButton(root)).toBeNull();
+    });
+
+    it('clears the value and emits mudClear + mudChange + mudInput on click', async () => {
+      const onClear = vi.fn();
+      const onChange = vi.fn();
+      const onInput = vi.fn();
+      const { root } = await render(
+        <mud-date-input
+          clearable
+          value="15/04/2025"
+          label="x"
+          onMudClear={onClear}
+          onMudChange={onChange}
+          onMudInput={onInput}
+        ></mud-date-input>,
+      );
+      queryClearButton(root)!.click();
+      await flush();
+      expect((root as unknown as { value: string }).value).toBe('');
+      expect(onClear).toHaveBeenCalledTimes(1);
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onInput).toHaveBeenCalledTimes(1);
+    });
+
+    it('clear button is tabindex=-1 (reached programmatically, not via Tab)', async () => {
+      const { root } = await render(<mud-date-input clearable value="15/04/2025" label="x"></mud-date-input>);
+      expect(queryClearButton(root)?.getAttribute('tabindex')).toBe('-1');
     });
   });
 });
