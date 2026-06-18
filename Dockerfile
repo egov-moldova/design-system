@@ -64,7 +64,7 @@ RUN addgroup -g 1001 -S appgroup \
     && adduser -u 1001 -S -G appgroup -h /home/appuser appuser
 
 # Set ownership for nginx writable directories and application files
-RUN chown -R 1001:1001 /usr/share/nginx/html /var/cache/nginx /var/run /app
+RUN chown -R 1001:1001 /app
 
 # Expose port 6006
 EXPOSE 6006

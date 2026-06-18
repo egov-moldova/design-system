@@ -67,3 +67,4 @@ $RECYCLE.BIN/
 CLAUDE.local.md
 .claude/*.local.json
 .claude/skills.local/
+/.vs
