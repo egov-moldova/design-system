@@ -63,11 +63,21 @@ COPY docker/nginx-default.conf /etc/nginx/conf.d/default.conf
 RUN addgroup -g 1001 -S appgroup \
     && adduser -u 1001 -S -G appgroup -h /home/appuser appuser
 
-# Set ownership for nginx writable directories and application files
-RUN chown -R 1001:1001 /usr/share/nginx/html /var/cache/nginx /var/run
+# Prepare nginx directories for non-root execution
+RUN chown -R 1001:1001 \
+        /usr/share/nginx/html \
+        /var/cache/nginx \
+        /var/run \
+        /etc/nginx \
+    && chmod -R g+w \
+        /var/cache/nginx \
+        /var/run \
+        /etc/nginx
 
 # Expose port 6006
 EXPOSE 6006
+
+RUN sed -i 's#pid[[:space:]]\+/var/run/nginx.pid;#pid /tmp/nginx.pid;#' /etc/nginx/nginx.conf
 
 # Run container as non-root user (PSA restricted compliant)
 USER 1001:1001
