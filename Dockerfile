@@ -58,6 +58,15 @@ COPY --from=builder /app/tokens/generated /usr/share/nginx/html/tokens/generated
 # Copy nginx configuration
 COPY docker/nginx-default.conf /etc/nginx/conf.d/default.conf
 
+# Create non-root user with fixed UID/GID (PSA restricted mode compliant)
+RUN groupadd -g 1001 appgroup && useradd -u 1001 -g appgroup -m -s /bin/bash appuser
+
+# Create app directory and set permissions
+RUN chown -R 1001:1001 /app
+
+# Set ownership of all application files to non-root user
+RUN chown -R 1001:1001 /app
+
 # Expose port 6006
 EXPOSE 6006
 
