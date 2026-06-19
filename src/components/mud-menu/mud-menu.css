@@ -1,0 +1,23 @@
+:host {
+  display: block;
+}
+
+/* Hidden when used as a popover and `open` is false (reflected boolean attr). */
+:host(:not([open])) {
+  display: none;
+}
+
+.panel {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--menu-panel-gap);
+  min-inline-size: var(--menu-panel-min-inline-size);
+  max-block-size: var(--menu-panel-max-block-size);
+  overflow-y: auto;
+  padding: var(--menu-panel-padding);
+  background-color: var(--menu-panel-background);
+  border: var(--menu-panel-border-width) solid var(--menu-panel-border-color);
+  border-radius: var(--menu-panel-border-radius);
+  box-shadow: var(--menu-panel-shadow);
+}

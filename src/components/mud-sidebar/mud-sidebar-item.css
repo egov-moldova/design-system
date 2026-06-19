@@ -1,0 +1,129 @@
+:host {
+  display: block;
+}
+
+.item {
+  position: relative;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--sidebar-item-gap);
+  inline-size: 100%;
+  min-block-size: var(--sidebar-item-min-block-size);
+  padding-block: var(--sidebar-item-padding-block);
+  padding-inline-start: var(--sidebar-item-padding-inline-start);
+  padding-inline-end: var(--sidebar-item-padding-inline-end);
+  border: 0;
+  background-color: var(--sidebar-item-background-default);
+  color: var(--sidebar-item-text-default);
+  font-family: var(--sidebar-item-font-family);
+  font-size: var(--sidebar-item-font-size);
+  line-height: var(--sidebar-item-line-height);
+  font-weight: var(--sidebar-item-font-weight-default);
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 150ms ease-out;
+}
+
+.icon {
+  flex: none;
+  color: var(--sidebar-item-icon-default);
+}
+
+.label {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.secondary {
+  flex: none;
+  font-size: var(--sidebar-item-secondary-font-size);
+  line-height: var(--sidebar-item-secondary-line-height);
+  font-weight: var(--sidebar-item-secondary-font-weight);
+  color: var(--sidebar-item-secondary-color);
+}
+
+.tag,
+.badge {
+  flex: none;
+}
+
+.chevron {
+  flex: none;
+  color: var(--sidebar-item-icon-default);
+  transition: transform 150ms ease-out;
+}
+
+:host([expanded]) .chevron {
+  transform: rotate(180deg);
+}
+
+/* Hover. */
+:host(:not([active]):not([disabled])) .item:hover {
+  background-color: var(--sidebar-item-background-hover);
+}
+
+/* Active — brand surface, brand label, left rail (overlay, no layout shift). */
+:host([active]) .item {
+  background-color: var(--sidebar-item-background-active);
+  color: var(--sidebar-item-text-active);
+  font-weight: var(--sidebar-item-font-weight-active);
+}
+
+:host([active]) .item::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inline-size: var(--sidebar-item-active-border-width);
+  background-color: var(--sidebar-item-active-border-color);
+}
+
+:host([active]) .icon {
+  color: var(--sidebar-item-icon-active);
+}
+
+/* Disabled. */
+:host([disabled]) .item {
+  color: var(--sidebar-item-text-disabled);
+  cursor: default;
+  pointer-events: none;
+}
+
+:host([disabled]) .icon {
+  color: var(--sidebar-item-icon-disabled);
+}
+
+/* Keyboard focus ring — inset. */
+.item:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 var(--sidebar-focus-ring-width) var(--sidebar-focus-ring-color);
+}
+
+/* Nested children list. */
+.children {
+  display: flex;
+  flex-direction: column;
+}
+
+.children[hidden] {
+  display: none;
+}
+
+/* Icon-only collapsed rail. */
+:host([collapsed]) .item {
+  justify-content: center;
+  padding-inline: var(--sidebar-item-padding-block);
+}
+
+:host([collapsed]) .label,
+:host([collapsed]) .secondary,
+:host([collapsed]) .tag,
+:host([collapsed]) .badge,
+:host([collapsed]) .chevron {
+  display: none;
+}

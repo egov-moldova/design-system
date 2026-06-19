@@ -1,0 +1,156 @@
+{
+  "sidebar": {
+    "container": {
+      "background": { "$value": "{color.background.base.default}", "$type": "color" },
+      "borderColor": { "$value": "{color.border.base.default}", "$type": "color" },
+      "borderWidth": { "$value": "{borderWidth.1}", "$type": "dimension" },
+      "borderRadius": {
+        "$value": "{borderRadius.16}",
+        "$type": "dimension",
+        "$comment": "Figma sidebar 1236:6302 uses border-radius/16."
+      },
+      "inlineSize": {
+        "$value": "368px",
+        "$type": "dimension",
+        "$comment": "Figma sidebar fixed width 368px (expanded)."
+      },
+      "collapsedInlineSize": {
+        "$value": "68px",
+        "$type": "dimension",
+        "$comment": "Figma sidebar-mpower Type=Compact width 68px (icon-only)."
+      }
+    },
+    "section": {
+      "paddingBlock": {
+        "$value": "{spacing.32}",
+        "$type": "dimension",
+        "$comment": "Figma sidebar section container uses 32px top/bottom padding."
+      },
+      "gap": {
+        "$value": "{spacing.12}",
+        "$type": "dimension",
+        "$comment": "Figma gap between a section heading block and its list."
+      }
+    },
+    "heading": {
+      "paddingInline": { "$value": "{spacing.24}", "$type": "dimension" },
+      "separatorGap": {
+        "$value": "{spacing.20}",
+        "$type": "dimension",
+        "$comment": "Figma gap between the section separator and the heading label."
+      },
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "color": {
+        "$value": "{color.text.base.tertiary}",
+        "$type": "color",
+        "$comment": "Figma section heading label #757575."
+      }
+    },
+    "item": {
+      "minBlockSize": {
+        "$value": "{spacing.48}",
+        "$type": "dimension",
+        "$comment": "Figma sidebar-list-item height 48px."
+      },
+      "paddingInlineStart": { "$value": "{spacing.24}", "$type": "dimension" },
+      "paddingInlineEnd": { "$value": "{spacing.16}", "$type": "dimension" },
+      "paddingBlock": { "$value": "{spacing.12}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.12}", "$type": "dimension" },
+      "iconSize": {
+        "$value": "{spacing.20}",
+        "$type": "dimension",
+        "$comment": "Figma leading icon 20px."
+      },
+      "chevronSize": {
+        "$value": "{spacing.24}",
+        "$type": "dimension",
+        "$comment": "Figma expandable chevron 24px."
+      },
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSize": { "$value": "{fontSize.16}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.24}", "$type": "dimension" },
+      "fontWeight": {
+        "default": {
+          "$value": "{fontWeight.regular}",
+          "$type": "fontWeight",
+          "$comment": "Figma default item label Onest Regular (400)."
+        },
+        "active": {
+          "$value": "{fontWeight.medium}",
+          "$type": "fontWeight",
+          "$comment": "Figma active item label Onest Medium (500)."
+        }
+      },
+      "activeBorderWidth": {
+        "$value": "{borderWidth.3}",
+        "$type": "dimension",
+        "$comment": "Figma active item left rail 3px."
+      },
+      "activeBorderColor": { "$value": "{color.border.brand.default}", "$type": "color" },
+      "background": {
+        "default": { "$value": "{color.background.base.default}", "$type": "color" },
+        "hover": {
+          "$value": "{color.background.base.default-hover}",
+          "$type": "color",
+          "$comment": "Figma sidebar-list-item Hover bg #f5f5f5."
+        },
+        "active": {
+          "$value": "{color.background.brand.secondary}",
+          "$type": "color",
+          "$comment": "Figma sidebar-list-item Active bg #e8f0fb."
+        }
+      },
+      "text": {
+        "default": {
+          "$value": "{color.text.base.secondary}",
+          "$type": "color",
+          "$comment": "Figma item label #383838."
+        },
+        "active": {
+          "$value": "{color.text.brand.default}",
+          "$type": "color",
+          "$comment": "Figma active item label #0058d2."
+        },
+        "disabled": {
+          "$value": "{color.text.disabled.default}",
+          "$type": "color",
+          "$comment": "Disabled nav item (functional addition; not a Figma-specified state). Disabled text exempt from WCAG 1.4.3."
+        }
+      },
+      "icon": {
+        "default": {
+          "$value": "{color.icon.base.default}",
+          "$type": "color",
+          "$comment": "Figma leading icon #121212."
+        },
+        "active": {
+          "$value": "{color.icon.brand.default}",
+          "$type": "color",
+          "$comment": "Figma active leading icon #0058d2 (filled glyph)."
+        },
+        "disabled": { "$value": "{color.icon.disabled.default}", "$type": "color" }
+      },
+      "secondary": {
+        "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+        "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+        "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
+        "color": {
+          "$value": "{color.text.base.tertiary}",
+          "$type": "color",
+          "$comment": "Figma secondary label #757575, right-aligned."
+        }
+      }
+    },
+    "focusRing": {
+      "color": {
+        "$value": "{palette.blue-sky.500}",
+        "$type": "color",
+        "$comment": "Inset keyboard focus ring, matching the project focus treatment; reconcile in pixel QA against the hidden Figma Focus state."
+      },
+      "width": { "$value": "{borderWidth.2}", "$type": "dimension" }
+    }
+  }
+}

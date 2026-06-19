@@ -1,0 +1,161 @@
+{
+  "menu": {
+    "panel": {
+      "background": { "$value": "{color.background.base.default}", "$type": "color" },
+      "borderRadius": {
+        "$value": "{borderRadius.16}",
+        "$type": "dimension",
+        "$comment": "Figma selection-menu 172:3093 / contextual-menu 409:22462 use border-radius/16."
+      },
+      "borderWidth": {
+        "$value": "0px",
+        "$type": "dimension",
+        "$comment": "Figma menu has no border — depth comes from dropShadow.300 only."
+      },
+      "borderColor": { "$value": "{color.border.base.default}", "$type": "color" },
+      "padding": {
+        "$value": "{spacing.8}",
+        "$type": "dimension",
+        "$comment": "Figma menu uses spacing/8 around the item list."
+      },
+      "gap": {
+        "$value": "{spacing.4}",
+        "$type": "dimension",
+        "$comment": "Figma menu uses spacing/4 between items."
+      },
+      "minInlineSize": {
+        "$value": "270px",
+        "$type": "dimension",
+        "$comment": "Figma menu fixed width 270px — used as the floor so the panel can grow with content."
+      },
+      "maxBlockSize": {
+        "$value": "320px",
+        "$type": "dimension",
+        "$comment": "Scroll threshold; mirrors select-input listbox.maxBlockSize and the Figma scrollable-content example."
+      },
+      "shadow": { "$value": "{dropShadow.300}", "$type": "string" }
+    },
+    "item": {
+      "minBlockSize": {
+        "$value": "{spacing.40}",
+        "$type": "dimension",
+        "$comment": "Figma menu-item: 12px paddingBlock + 20px lh = 44px rendered; 40px floor on the clickable target."
+      },
+      "paddingBlock": { "$value": "{spacing.12}", "$type": "dimension" },
+      "paddingInlineStart": { "$value": "{spacing.16}", "$type": "dimension" },
+      "paddingInlineEnd": {
+        "$value": "{spacing.24}",
+        "$type": "dimension",
+        "$comment": "Figma default item pr-24; collapses to spacing.16 when a trailing checkmark is present."
+      },
+      "paddingInlineEndTrailing": {
+        "$value": "{spacing.16}",
+        "$type": "dimension",
+        "$comment": "Figma selected/selection item with trailing checkmark uses px-16."
+      },
+      "borderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" },
+      "gap": {
+        "$value": "{spacing.12}",
+        "$type": "dimension",
+        "$comment": "Figma menu-item puts spacing/12 between leading/label/trailing."
+      },
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "fontWeight": {
+        "$value": "{fontWeight.medium}",
+        "$type": "fontWeight",
+        "$comment": "Figma menu-item Default + Selected both render Onest Medium (500)."
+      },
+      "background": {
+        "default": { "$value": "{color.background.base.default}", "$type": "color" },
+        "hover": {
+          "$value": "{color.background.base.default-hover}",
+          "$type": "color",
+          "$comment": "Figma menu-item Hover bg #f5f5f5."
+        },
+        "active": {
+          "$value": "{color.background.base.default-active}",
+          "$type": "color",
+          "$comment": "Figma menu-item Active bg #d9d9d9."
+        },
+        "selected": {
+          "$value": "{color.background.base.secondary}",
+          "$type": "color",
+          "$comment": "Figma selection-menu Selected item bg #f5f5f5."
+        }
+      },
+      "text": {
+        "default": {
+          "$value": "{color.text.base.secondary}",
+          "$type": "color",
+          "$comment": "Figma menu-item Default text #383838."
+        },
+        "selected": {
+          "$value": "{color.text.brand.default}",
+          "$type": "color",
+          "$comment": "Figma selection-menu Selected text #0058d2."
+        },
+        "disabled": {
+          "$value": "{color.text.disabled.default}",
+          "$type": "color",
+          "$comment": "Figma menu-item Disabled text #b2b2b2. Disabled text is exempt from WCAG 1.4.3 contrast (SC applies to enabled UI only)."
+        }
+      },
+      "icon": {
+        "size": {
+          "$value": "{spacing.20}",
+          "$type": "dimension",
+          "$comment": "Leading icon glyph sized to 20px within the 24px Figma frame."
+        },
+        "color": {
+          "default": {
+            "$value": "{color.icon.base.default}",
+            "$type": "color",
+            "$comment": "Figma leading icon #121212."
+          },
+          "disabled": { "$value": "{color.icon.disabled.default}", "$type": "color" }
+        }
+      },
+      "check": {
+        "size": {
+          "$value": "{spacing.20}",
+          "$type": "dimension",
+          "$comment": "Trailing 24/checkmark-small glyph for a selected selection-item; verify 20 vs 24 in pixel QA."
+        },
+        "color": { "$value": "{color.icon.brand.default}", "$type": "color" }
+      }
+    },
+    "heading": {
+      "paddingInline": { "$value": "{spacing.16}", "$type": "dimension" },
+      "paddingBlock": { "$value": "{spacing.4}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.4}", "$type": "dimension" },
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "color": {
+        "$value": "{color.text.base.tertiary}",
+        "$type": "color",
+        "$comment": "Figma Section Heading label #757575."
+      },
+      "separatorColor": {
+        "$value": "{color.border.base.default}",
+        "$type": "color",
+        "$comment": "Figma Section Heading separator (4px tall divider above the label)."
+      }
+    },
+    "focusRing": {
+      "color": {
+        "$value": "{palette.blue-sky.500}",
+        "$type": "color",
+        "$comment": "Figma 'Focus Ring/Small: Inner' = inner shadow blue-sky/500 (#3379db), spread 2. Reconcile vs focusRing.tokens.json in CSS."
+      },
+      "width": {
+        "$value": "{borderWidth.2}",
+        "$type": "dimension",
+        "$comment": "Figma focus ring spread = 2px."
+      }
+    }
+  }
+}

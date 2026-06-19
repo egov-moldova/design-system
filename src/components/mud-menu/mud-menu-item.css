@@ -1,0 +1,108 @@
+:host {
+  display: block;
+  border-radius: var(--menu-item-border-radius);
+  outline: none;
+  cursor: pointer;
+}
+
+:host([disabled]),
+:host([heading]) {
+  cursor: default;
+}
+
+.item {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--menu-item-gap);
+  min-block-size: var(--menu-item-min-block-size);
+  padding-block: var(--menu-item-padding-block);
+  padding-inline-start: var(--menu-item-padding-inline-start);
+  padding-inline-end: var(--menu-item-padding-inline-end);
+  border-radius: var(--menu-item-border-radius);
+  background-color: var(--menu-item-background-default);
+  color: var(--menu-item-text-default);
+  font-family: var(--menu-item-font-family);
+  font-size: var(--menu-item-font-size);
+  line-height: var(--menu-item-line-height);
+  font-weight: var(--menu-item-font-weight);
+  transition: background-color 150ms ease-out;
+}
+
+/* Selected (selection) items collapse the trailing padding to make room for the checkmark. */
+:host(.has-trailing) .item {
+  padding-inline-end: var(--menu-item-padding-inline-end-trailing);
+}
+
+.label {
+  flex: 1 1 0;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.leading-icon {
+  flex: none;
+  color: var(--menu-item-icon-color-default);
+}
+
+.leading-control {
+  flex: none;
+}
+
+.check {
+  flex: none;
+  color: var(--menu-item-check-color);
+}
+
+/* Hover / active — interactive items only. */
+:host(:not([disabled]):not([heading]):hover) .item {
+  background-color: var(--menu-item-background-hover);
+}
+
+:host(:not([disabled]):not([heading]):active) .item {
+  background-color: var(--menu-item-background-active);
+}
+
+/* Selected — selection menus paint the row and brand the label. */
+:host([type='selection'][selected]) .item {
+  background-color: var(--menu-item-background-selected);
+  color: var(--menu-item-text-selected);
+}
+
+/* Disabled. */
+:host([disabled]) .item {
+  color: var(--menu-item-text-disabled);
+}
+
+:host([disabled]) .leading-icon {
+  color: var(--menu-item-icon-color-disabled);
+}
+
+/* Keyboard focus ring — inset, matching Figma "Focus Ring/Small: Inner". */
+:host(:focus-visible) {
+  outline: none;
+}
+
+:host(:focus-visible) .item {
+  box-shadow: inset 0 0 0 var(--menu-focus-ring-width) var(--menu-focus-ring-color);
+}
+
+/* Section heading. */
+.separator {
+  block-size: 1px;
+  inline-size: 100%;
+  margin-block: var(--menu-heading-padding-block);
+  background-color: var(--menu-heading-separator-color);
+}
+
+.heading {
+  padding-inline: var(--menu-heading-padding-inline);
+  padding-block: var(--menu-heading-padding-block);
+  color: var(--menu-heading-color);
+  font-family: var(--menu-heading-font-family);
+  font-size: var(--menu-heading-font-size);
+  line-height: var(--menu-heading-line-height);
+  font-weight: var(--menu-heading-font-weight);
+}

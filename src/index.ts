@@ -34,3 +34,14 @@ export type {
 export { MudNotification } from './components/mud-notification/mud-notification';
 export { NOTIFICATION_VARIANTS } from './components/mud-notification/mud-notification.types';
 export type { NotificationVariant } from './components/mud-notification/mud-notification.types';
+
+export { MudMenu } from './components/mud-menu/mud-menu';
+export { MudMenuItem } from './components/mud-menu/mud-menu-item';
+export { MENU_TYPES, MENU_ITEM_LEADINGS } from './components/mud-menu/mud-menu.types';
+export type {
+  MenuType,
+  MenuItemLeading,
+  MenuSelectDetail,
+  MenuChangeDetail,
+  MenuItemSelectDetail,
+} from './components/mud-menu/mud-menu.types';

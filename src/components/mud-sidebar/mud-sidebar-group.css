@@ -1,0 +1,45 @@
+:host {
+  display: block;
+}
+
+/* Divider above every group except the first. */
+.divider {
+  display: none;
+  padding-block-start: var(--sidebar-section-padding-block);
+  padding-inline: var(--sidebar-heading-padding-inline);
+}
+
+:host(:not(:first-child)) .divider {
+  display: block;
+}
+
+.heading {
+  padding-inline: var(--sidebar-heading-padding-inline);
+  /* First group: full top padding. Subsequent groups: the divider supplies it, leaving the separator→heading gap. */
+  padding-block-start: var(--sidebar-section-padding-block);
+  padding-block-end: var(--sidebar-section-gap);
+  font-family: var(--sidebar-heading-font-family);
+  font-size: var(--sidebar-heading-font-size);
+  line-height: var(--sidebar-heading-line-height);
+  font-weight: var(--sidebar-heading-font-weight);
+  color: var(--sidebar-heading-color);
+}
+
+:host(:not(:first-child)) .heading {
+  padding-block-start: var(--sidebar-heading-separator-gap);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Last group gets bottom breathing room to match the top padding. */
+:host(:last-child) .list {
+  padding-block-end: var(--sidebar-section-padding-block);
+}
+
+/* Icon-only rail: headings collapse away, only the divider line remains. */
+:host([collapsed]) .heading {
+  display: none;
+}

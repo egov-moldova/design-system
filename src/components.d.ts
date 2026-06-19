@@ -25,6 +25,7 @@ import { InputChangeDetail, InputSize, InputType, InputVariant } from "./compone
 import { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/mud-input-chip/mud-input-chip.types";
 import { LinkSize, LinkUnderline, LinkVariant } from "./components/mud-link/mud-link.types";
 import { LogoName } from "./components/mud-logo/mud-logo.types";
+import { MenuChangeDetail, MenuItemLeading, MenuItemSelectDetail, MenuSelectDetail, MenuType } from "./components/mud-menu/mud-menu.types";
 import { ModalActionsLayout, ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/mud-modal/mud-modal.types";
 import { NotificationVariant } from "./components/mud-notification/mud-notification.types";
 import { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/mud-numeric-input/mud-numeric-input.types";
@@ -39,6 +40,7 @@ import { SegmentedControlChangeDetail, SegmentedControlSegment, SegmentedControl
 import { SelectChangeDetail, SelectInputSize, SelectInputVariant, SelectOption } from "./components/mud-select-input/mud-select-input.types";
 import { SeparatorOrientation, SeparatorSize, SeparatorVariant } from "./components/mud-separator/mud-separator.types";
 import { ServiceButtonAppearance, ServiceButtonType } from "./components/mud-service-button/mud-service-button.types";
+import { SidebarItemSelectDetail, SidebarItemToggleDetail } from "./components/mud-sidebar/mud-sidebar.types";
 import { SpinnerSize, SpinnerVariant } from "./components/mud-spinner/mud-spinner.types";
 import { SwitchChangeDetail } from "./components/mud-switch/mud-switch.types";
 import { TableColumn, TableHeaderStyle, TableRowClickDetail, TableRowData, TableRowStyle, TableSelectionChangeDetail, TableSortChangeDetail, TableSortDirection } from "./components/mud-table/mud-table.types";
@@ -66,6 +68,7 @@ export { InputChangeDetail, InputSize, InputType, InputVariant } from "./compone
 export { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/mud-input-chip/mud-input-chip.types";
 export { LinkSize, LinkUnderline, LinkVariant } from "./components/mud-link/mud-link.types";
 export { LogoName } from "./components/mud-logo/mud-logo.types";
+export { MenuChangeDetail, MenuItemLeading, MenuItemSelectDetail, MenuSelectDetail, MenuType } from "./components/mud-menu/mud-menu.types";
 export { ModalActionsLayout, ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/mud-modal/mud-modal.types";
 export { NotificationVariant } from "./components/mud-notification/mud-notification.types";
 export { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/mud-numeric-input/mud-numeric-input.types";
@@ -80,6 +83,7 @@ export { SegmentedControlChangeDetail, SegmentedControlSegment, SegmentedControl
 export { SelectChangeDetail, SelectInputSize, SelectInputVariant, SelectOption } from "./components/mud-select-input/mud-select-input.types";
 export { SeparatorOrientation, SeparatorSize, SeparatorVariant } from "./components/mud-separator/mud-separator.types";
 export { ServiceButtonAppearance, ServiceButtonType } from "./components/mud-service-button/mud-service-button.types";
+export { SidebarItemSelectDetail, SidebarItemToggleDetail } from "./components/mud-sidebar/mud-sidebar.types";
 export { SpinnerSize, SpinnerVariant } from "./components/mud-spinner/mud-spinner.types";
 export { SwitchChangeDetail } from "./components/mud-switch/mud-switch.types";
 export { TableColumn, TableHeaderStyle, TableRowClickDetail, TableRowData, TableRowStyle, TableSelectionChangeDetail, TableSortChangeDetail, TableSortDirection } from "./components/mud-table/mud-table.types";
@@ -1414,6 +1418,91 @@ export namespace Components {
         "name": LogoName;
     }
     /**
+     * Menu — a floating panel of choosable options, composed of `mud-menu-item` children.
+     * Two flavours via `type`:
+     * - `selection` — single-select list (ARIA `listbox`), selected item shows a trailing checkmark.
+     * - `contextual` — action menu (ARIA `menu`), items may carry a leading checkbox/radio/icon.
+     * The panel is the visual + interaction primitive (keyboard roving, selection, scroll).
+     * Anchoring/positioning relative to a trigger is the consumer's responsibility; bind `open`
+     * and listen for `mudClose` (Escape / `closeOnSelect`) to drive popover behaviour.
+     * @element mud-menu
+     */
+    interface MudMenu {
+        /**
+          * Accessible name for the menu.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Emit `mudClose` immediately after an item is selected.
+          * @default false
+         */
+        "closeOnSelect": boolean;
+        /**
+          * Whether the panel is shown. Set `false` to hide it when used as a popover.
+          * @default true
+         */
+        "open": boolean;
+        /**
+          * Menu semantics: `selection` (single-select list) or `contextual` (actions).
+          * @default 'contextual'
+         */
+        "type": MenuType;
+        /**
+          * Currently selected value (selection menus).
+         */
+        "value"?: string;
+    }
+    /**
+     * Menu item — a single row inside a `mud-menu`.
+     * Pattern: the host element is the focusable, role-bearing control. Roving
+     * `tabindex` is managed imperatively by the parent `mud-menu`. The item emits
+     * `mudMenuItemSelect` (bubbling) on activation; the parent coordinates selection.
+     * @element mud-menu-item
+     */
+    interface MudMenuItem {
+        /**
+          * Whether the item is disabled and non-interactive.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Render as a non-interactive section heading (separator + tertiary label).
+          * @default false
+         */
+        "heading": boolean;
+        /**
+          * Icon name to render when `leading="icon"`.
+         */
+        "icon"?: string;
+        /**
+          * Fallback text label when no content is slotted.
+         */
+        "label"?: string;
+        /**
+          * Leading element rendered before the label.
+          * @default 'none'
+         */
+        "leading": MenuItemLeading;
+        /**
+          * Whether the item is selected (selection menus) or checked (checkbox/radio leading).
+          * @default false
+         */
+        "selected": boolean;
+        /**
+          * Move keyboard focus to this item. Used by the parent for roving navigation.
+         */
+        "setFocus": () => Promise<void>;
+        /**
+          * Menu type — propagated by the parent `mud-menu`. Controls ARIA role and whether `selected` renders as a trailing checkmark (selection) vs. a leading checkbox/radio (contextual).
+          * @default 'contextual'
+         */
+        "type": MenuType;
+        /**
+          * Value reported when the item is activated.
+         */
+        "value"?: string;
+    }
+    /**
      * Modal — overlay dialog molecule.
      * Renders a centered dialog card on top of a dimmed backdrop using the native
      * `<dialog>` element internally. The native element provides the focus trap,
@@ -2605,6 +2694,103 @@ export namespace Components {
         "value"?: string;
     }
     /**
+     * Sidebar — a vertical navigation panel composed of `mud-sidebar-group`
+     * sections and `mud-sidebar-item` rows.
+     * @element mud-sidebar
+     */
+    interface MudSidebar {
+        /**
+          * Accessible name for the navigation landmark.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Collapse to the icon-only compact rail.
+          * @default false
+         */
+        "collapsed": boolean;
+    }
+    /**
+     * Sidebar group — a labelled section of `mud-sidebar-item` rows.
+     * A divider is rendered automatically above every group except the first.
+     * @element mud-sidebar-group
+     */
+    interface MudSidebarGroup {
+        /**
+          * Collapsed (icon-only) rail — propagated by the parent `mud-sidebar`.
+          * @default false
+         */
+        "collapsed": boolean;
+        /**
+          * Section heading label.
+         */
+        "heading"?: string;
+    }
+    /**
+     * Sidebar item — a single navigation row inside a `mud-sidebar` / `mud-sidebar-group`.
+     * Renders as a link when `href` is set, otherwise a button. Expandable items
+     * toggle a nested list (the `children` slot) and rotate a chevron.
+     * @element mud-sidebar-item
+     */
+    interface MudSidebarItem {
+        /**
+          * Whether this item represents the current page/section.
+          * @default false
+         */
+        "active": boolean;
+        /**
+          * Optional trailing numbered badge count (rendered as a `mud-badge`).
+         */
+        "badge"?: number;
+        /**
+          * Collapsed (icon-only) rail — propagated by the parent `mud-sidebar`.
+          * @default false
+         */
+        "collapsed": boolean;
+        /**
+          * Whether the item is disabled.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Whether the item expands a nested list of children.
+          * @default false
+         */
+        "expandable": boolean;
+        /**
+          * Whether the nested list is expanded.
+          * @default false
+         */
+        "expanded": boolean;
+        /**
+          * Render as a link to this destination.
+         */
+        "href"?: string;
+        /**
+          * Leading icon name.
+         */
+        "icon"?: string;
+        /**
+          * Leading icon name used while active (e.g. a filled variant). Falls back to `icon`.
+         */
+        "iconActive"?: string;
+        /**
+          * Primary label (overridden by slotted content).
+         */
+        "label"?: string;
+        /**
+          * Optional right-aligned secondary label.
+         */
+        "secondary"?: string;
+        /**
+          * Optional trailing tag text (rendered as an outlined `mud-tag`).
+         */
+        "tag"?: string;
+        /**
+          * Value reported when the item is activated.
+         */
+        "value"?: string;
+    }
+    /**
      * Spinner — animated circular loading indicator.
      * Pattern B (atom-visual): renders a CSS-only rotating arc.
      * No slots, no events, no interactivity.
@@ -3138,6 +3324,14 @@ export interface MudLogoCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudLogoElement;
 }
+export interface MudMenuCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLMudMenuElement;
+}
+export interface MudMenuItemCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLMudMenuItemElement;
+}
 export interface MudModalCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudModalElement;
@@ -3185,6 +3379,10 @@ export interface MudSegmentedControlCustomEvent<T> extends CustomEvent<T> {
 export interface MudSelectInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudSelectInputElement;
+}
+export interface MudSidebarItemCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLMudSidebarItemElement;
 }
 export interface MudSwitchCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -3820,6 +4018,59 @@ declare global {
         prototype: HTMLMudLogoElement;
         new (): HTMLMudLogoElement;
     };
+    interface HTMLMudMenuElementEventMap {
+        "mudSelect": MenuSelectDetail;
+        "mudChange": MenuChangeDetail;
+        "mudClose": void;
+    }
+    /**
+     * Menu — a floating panel of choosable options, composed of `mud-menu-item` children.
+     * Two flavours via `type`:
+     * - `selection` — single-select list (ARIA `listbox`), selected item shows a trailing checkmark.
+     * - `contextual` — action menu (ARIA `menu`), items may carry a leading checkbox/radio/icon.
+     * The panel is the visual + interaction primitive (keyboard roving, selection, scroll).
+     * Anchoring/positioning relative to a trigger is the consumer's responsibility; bind `open`
+     * and listen for `mudClose` (Escape / `closeOnSelect`) to drive popover behaviour.
+     * @element mud-menu
+     */
+    interface HTMLMudMenuElement extends Components.MudMenu, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudMenuElementEventMap>(type: K, listener: (this: HTMLMudMenuElement, ev: MudMenuCustomEvent<HTMLMudMenuElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudMenuElementEventMap>(type: K, listener: (this: HTMLMudMenuElement, ev: MudMenuCustomEvent<HTMLMudMenuElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLMudMenuElement: {
+        prototype: HTMLMudMenuElement;
+        new (): HTMLMudMenuElement;
+    };
+    interface HTMLMudMenuItemElementEventMap {
+        "mudMenuItemSelect": MenuItemSelectDetail;
+    }
+    /**
+     * Menu item — a single row inside a `mud-menu`.
+     * Pattern: the host element is the focusable, role-bearing control. Roving
+     * `tabindex` is managed imperatively by the parent `mud-menu`. The item emits
+     * `mudMenuItemSelect` (bubbling) on activation; the parent coordinates selection.
+     * @element mud-menu-item
+     */
+    interface HTMLMudMenuItemElement extends Components.MudMenuItem, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudMenuItemElementEventMap>(type: K, listener: (this: HTMLMudMenuItemElement, ev: MudMenuItemCustomEvent<HTMLMudMenuItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudMenuItemElementEventMap>(type: K, listener: (this: HTMLMudMenuItemElement, ev: MudMenuItemCustomEvent<HTMLMudMenuItemElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLMudMenuItemElement: {
+        prototype: HTMLMudMenuItemElement;
+        new (): HTMLMudMenuItemElement;
+    };
     interface HTMLMudModalElementEventMap {
         "mudOpen": void;
         "mudClose": ModalCloseEvent;
@@ -4291,6 +4542,52 @@ declare global {
         new (): HTMLMudServiceButtonElement;
     };
     /**
+     * Sidebar — a vertical navigation panel composed of `mud-sidebar-group`
+     * sections and `mud-sidebar-item` rows.
+     * @element mud-sidebar
+     */
+    interface HTMLMudSidebarElement extends Components.MudSidebar, HTMLStencilElement {
+    }
+    var HTMLMudSidebarElement: {
+        prototype: HTMLMudSidebarElement;
+        new (): HTMLMudSidebarElement;
+    };
+    /**
+     * Sidebar group — a labelled section of `mud-sidebar-item` rows.
+     * A divider is rendered automatically above every group except the first.
+     * @element mud-sidebar-group
+     */
+    interface HTMLMudSidebarGroupElement extends Components.MudSidebarGroup, HTMLStencilElement {
+    }
+    var HTMLMudSidebarGroupElement: {
+        prototype: HTMLMudSidebarGroupElement;
+        new (): HTMLMudSidebarGroupElement;
+    };
+    interface HTMLMudSidebarItemElementEventMap {
+        "mudSelect": SidebarItemSelectDetail;
+        "mudToggle": SidebarItemToggleDetail;
+    }
+    /**
+     * Sidebar item — a single navigation row inside a `mud-sidebar` / `mud-sidebar-group`.
+     * Renders as a link when `href` is set, otherwise a button. Expandable items
+     * toggle a nested list (the `children` slot) and rotate a chevron.
+     * @element mud-sidebar-item
+     */
+    interface HTMLMudSidebarItemElement extends Components.MudSidebarItem, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudSidebarItemElementEventMap>(type: K, listener: (this: HTMLMudSidebarItemElement, ev: MudSidebarItemCustomEvent<HTMLMudSidebarItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudSidebarItemElementEventMap>(type: K, listener: (this: HTMLMudSidebarItemElement, ev: MudSidebarItemCustomEvent<HTMLMudSidebarItemElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLMudSidebarItemElement: {
+        prototype: HTMLMudSidebarItemElement;
+        new (): HTMLMudSidebarItemElement;
+    };
+    /**
      * Spinner — animated circular loading indicator.
      * Pattern B (atom-visual): renders a CSS-only rotating arc.
      * No slots, no events, no interactivity.
@@ -4553,6 +4850,8 @@ declare global {
         "mud-input-chip": HTMLMudInputChipElement;
         "mud-link": HTMLMudLinkElement;
         "mud-logo": HTMLMudLogoElement;
+        "mud-menu": HTMLMudMenuElement;
+        "mud-menu-item": HTMLMudMenuItemElement;
         "mud-modal": HTMLMudModalElement;
         "mud-notification": HTMLMudNotificationElement;
         "mud-numeric-input": HTMLMudNumericInputElement;
@@ -4567,6 +4866,9 @@ declare global {
         "mud-select-input": HTMLMudSelectInputElement;
         "mud-separator": HTMLMudSeparatorElement;
         "mud-service-button": HTMLMudServiceButtonElement;
+        "mud-sidebar": HTMLMudSidebarElement;
+        "mud-sidebar-group": HTMLMudSidebarGroupElement;
+        "mud-sidebar-item": HTMLMudSidebarItemElement;
         "mud-spinner": HTMLMudSpinnerElement;
         "mud-switch": HTMLMudSwitchElement;
         "mud-tab": HTMLMudTabElement;
@@ -6093,6 +6395,103 @@ declare namespace LocalJSX {
         "onMudLogoError"?: (event: MudLogoCustomEvent<{ name: string; reason: 'unknown' | 'fetch-failed' }>) => void;
     }
     /**
+     * Menu — a floating panel of choosable options, composed of `mud-menu-item` children.
+     * Two flavours via `type`:
+     * - `selection` — single-select list (ARIA `listbox`), selected item shows a trailing checkmark.
+     * - `contextual` — action menu (ARIA `menu`), items may carry a leading checkbox/radio/icon.
+     * The panel is the visual + interaction primitive (keyboard roving, selection, scroll).
+     * Anchoring/positioning relative to a trigger is the consumer's responsibility; bind `open`
+     * and listen for `mudClose` (Escape / `closeOnSelect`) to drive popover behaviour.
+     * @element mud-menu
+     */
+    interface MudMenu {
+        /**
+          * Accessible name for the menu.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Emit `mudClose` immediately after an item is selected.
+          * @default false
+         */
+        "closeOnSelect"?: boolean;
+        /**
+          * Fired when the selected value changes (selection menus only).
+         */
+        "onMudChange"?: (event: MudMenuCustomEvent<MenuChangeDetail>) => void;
+        /**
+          * Fired when the menu requests to close (Escape key, or `closeOnSelect`).
+         */
+        "onMudClose"?: (event: MudMenuCustomEvent<void>) => void;
+        /**
+          * Fired when any item is activated.
+         */
+        "onMudSelect"?: (event: MudMenuCustomEvent<MenuSelectDetail>) => void;
+        /**
+          * Whether the panel is shown. Set `false` to hide it when used as a popover.
+          * @default true
+         */
+        "open"?: boolean;
+        /**
+          * Menu semantics: `selection` (single-select list) or `contextual` (actions).
+          * @default 'contextual'
+         */
+        "type"?: MenuType;
+        /**
+          * Currently selected value (selection menus).
+         */
+        "value"?: string;
+    }
+    /**
+     * Menu item — a single row inside a `mud-menu`.
+     * Pattern: the host element is the focusable, role-bearing control. Roving
+     * `tabindex` is managed imperatively by the parent `mud-menu`. The item emits
+     * `mudMenuItemSelect` (bubbling) on activation; the parent coordinates selection.
+     * @element mud-menu-item
+     */
+    interface MudMenuItem {
+        /**
+          * Whether the item is disabled and non-interactive.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Render as a non-interactive section heading (separator + tertiary label).
+          * @default false
+         */
+        "heading"?: boolean;
+        /**
+          * Icon name to render when `leading="icon"`.
+         */
+        "icon"?: string;
+        /**
+          * Fallback text label when no content is slotted.
+         */
+        "label"?: string;
+        /**
+          * Leading element rendered before the label.
+          * @default 'none'
+         */
+        "leading"?: MenuItemLeading;
+        /**
+          * Fired when the item is activated via click, Enter or Space.
+         */
+        "onMudMenuItemSelect"?: (event: MudMenuItemCustomEvent<MenuItemSelectDetail>) => void;
+        /**
+          * Whether the item is selected (selection menus) or checked (checkbox/radio leading).
+          * @default false
+         */
+        "selected"?: boolean;
+        /**
+          * Menu type — propagated by the parent `mud-menu`. Controls ARIA role and whether `selected` renders as a trailing checkmark (selection) vs. a leading checkbox/radio (contextual).
+          * @default 'contextual'
+         */
+        "type"?: MenuType;
+        /**
+          * Value reported when the item is activated.
+         */
+        "value"?: string;
+    }
+    /**
      * Modal — overlay dialog molecule.
      * Renders a centered dialog card on top of a dimmed backdrop using the native
      * `<dialog>` element internally. The native element provides the focus trap,
@@ -7484,6 +7883,111 @@ declare namespace LocalJSX {
         "value"?: string;
     }
     /**
+     * Sidebar — a vertical navigation panel composed of `mud-sidebar-group`
+     * sections and `mud-sidebar-item` rows.
+     * @element mud-sidebar
+     */
+    interface MudSidebar {
+        /**
+          * Accessible name for the navigation landmark.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Collapse to the icon-only compact rail.
+          * @default false
+         */
+        "collapsed"?: boolean;
+    }
+    /**
+     * Sidebar group — a labelled section of `mud-sidebar-item` rows.
+     * A divider is rendered automatically above every group except the first.
+     * @element mud-sidebar-group
+     */
+    interface MudSidebarGroup {
+        /**
+          * Collapsed (icon-only) rail — propagated by the parent `mud-sidebar`.
+          * @default false
+         */
+        "collapsed"?: boolean;
+        /**
+          * Section heading label.
+         */
+        "heading"?: string;
+    }
+    /**
+     * Sidebar item — a single navigation row inside a `mud-sidebar` / `mud-sidebar-group`.
+     * Renders as a link when `href` is set, otherwise a button. Expandable items
+     * toggle a nested list (the `children` slot) and rotate a chevron.
+     * @element mud-sidebar-item
+     */
+    interface MudSidebarItem {
+        /**
+          * Whether this item represents the current page/section.
+          * @default false
+         */
+        "active"?: boolean;
+        /**
+          * Optional trailing numbered badge count (rendered as a `mud-badge`).
+         */
+        "badge"?: number;
+        /**
+          * Collapsed (icon-only) rail — propagated by the parent `mud-sidebar`.
+          * @default false
+         */
+        "collapsed"?: boolean;
+        /**
+          * Whether the item is disabled.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Whether the item expands a nested list of children.
+          * @default false
+         */
+        "expandable"?: boolean;
+        /**
+          * Whether the nested list is expanded.
+          * @default false
+         */
+        "expanded"?: boolean;
+        /**
+          * Render as a link to this destination.
+         */
+        "href"?: string;
+        /**
+          * Leading icon name.
+         */
+        "icon"?: string;
+        /**
+          * Leading icon name used while active (e.g. a filled variant). Falls back to `icon`.
+         */
+        "iconActive"?: string;
+        /**
+          * Primary label (overridden by slotted content).
+         */
+        "label"?: string;
+        /**
+          * Fired when a non-expandable item is activated.
+         */
+        "onMudSelect"?: (event: MudSidebarItemCustomEvent<SidebarItemSelectDetail>) => void;
+        /**
+          * Fired when an expandable item is expanded or collapsed.
+         */
+        "onMudToggle"?: (event: MudSidebarItemCustomEvent<SidebarItemToggleDetail>) => void;
+        /**
+          * Optional right-aligned secondary label.
+         */
+        "secondary"?: string;
+        /**
+          * Optional trailing tag text (rendered as an outlined `mud-tag`).
+         */
+        "tag"?: string;
+        /**
+          * Value reported when the item is activated.
+         */
+        "value"?: string;
+    }
+    /**
      * Spinner — animated circular loading indicator.
      * Pattern B (atom-visual): renders a CSS-only rotating arc.
      * No slots, no events, no interactivity.
@@ -8273,6 +8777,23 @@ declare namespace LocalJSX {
         "name": LogoName;
         "ariaLabel": string;
     }
+    interface MudMenuAttributes {
+        "type": MenuType;
+        "open": boolean;
+        "value": string;
+        "ariaLabel": string;
+        "closeOnSelect": boolean;
+    }
+    interface MudMenuItemAttributes {
+        "value": string;
+        "leading": MenuItemLeading;
+        "icon": string;
+        "selected": boolean;
+        "disabled": boolean;
+        "heading": boolean;
+        "label": string;
+        "type": MenuType;
+    }
     interface MudModalAttributes {
         "open": boolean;
         "size": ModalSize;
@@ -8501,6 +9022,29 @@ declare namespace LocalJSX {
         "value": string;
         "label": string;
     }
+    interface MudSidebarAttributes {
+        "collapsed": boolean;
+        "ariaLabel": string;
+    }
+    interface MudSidebarGroupAttributes {
+        "heading": string;
+        "collapsed": boolean;
+    }
+    interface MudSidebarItemAttributes {
+        "value": string;
+        "icon": string;
+        "iconActive": string;
+        "label": string;
+        "secondary": string;
+        "tag": string;
+        "badge": number;
+        "href": string;
+        "expandable": boolean;
+        "expanded": boolean;
+        "active": boolean;
+        "disabled": boolean;
+        "collapsed": boolean;
+    }
     interface MudSpinnerAttributes {
         "size": SpinnerSize;
         "variant": SpinnerVariant;
@@ -8610,6 +9154,8 @@ declare namespace LocalJSX {
         "mud-input-chip": Omit<MudInputChip, keyof MudInputChipAttributes> & { [K in keyof MudInputChip & keyof MudInputChipAttributes]?: MudInputChip[K] } & { [K in keyof MudInputChip & keyof MudInputChipAttributes as `attr:${K}`]?: MudInputChipAttributes[K] } & { [K in keyof MudInputChip & keyof MudInputChipAttributes as `prop:${K}`]?: MudInputChip[K] };
         "mud-link": Omit<MudLink, keyof MudLinkAttributes> & { [K in keyof MudLink & keyof MudLinkAttributes]?: MudLink[K] } & { [K in keyof MudLink & keyof MudLinkAttributes as `attr:${K}`]?: MudLinkAttributes[K] } & { [K in keyof MudLink & keyof MudLinkAttributes as `prop:${K}`]?: MudLink[K] };
         "mud-logo": Omit<MudLogo, keyof MudLogoAttributes> & { [K in keyof MudLogo & keyof MudLogoAttributes]?: MudLogo[K] } & { [K in keyof MudLogo & keyof MudLogoAttributes as `attr:${K}`]?: MudLogoAttributes[K] } & { [K in keyof MudLogo & keyof MudLogoAttributes as `prop:${K}`]?: MudLogo[K] };
+        "mud-menu": Omit<MudMenu, keyof MudMenuAttributes> & { [K in keyof MudMenu & keyof MudMenuAttributes]?: MudMenu[K] } & { [K in keyof MudMenu & keyof MudMenuAttributes as `attr:${K}`]?: MudMenuAttributes[K] } & { [K in keyof MudMenu & keyof MudMenuAttributes as `prop:${K}`]?: MudMenu[K] };
+        "mud-menu-item": Omit<MudMenuItem, keyof MudMenuItemAttributes> & { [K in keyof MudMenuItem & keyof MudMenuItemAttributes]?: MudMenuItem[K] } & { [K in keyof MudMenuItem & keyof MudMenuItemAttributes as `attr:${K}`]?: MudMenuItemAttributes[K] } & { [K in keyof MudMenuItem & keyof MudMenuItemAttributes as `prop:${K}`]?: MudMenuItem[K] };
         "mud-modal": Omit<MudModal, keyof MudModalAttributes> & { [K in keyof MudModal & keyof MudModalAttributes]?: MudModal[K] } & { [K in keyof MudModal & keyof MudModalAttributes as `attr:${K}`]?: MudModalAttributes[K] } & { [K in keyof MudModal & keyof MudModalAttributes as `prop:${K}`]?: MudModal[K] };
         "mud-notification": Omit<MudNotification, keyof MudNotificationAttributes> & { [K in keyof MudNotification & keyof MudNotificationAttributes]?: MudNotification[K] } & { [K in keyof MudNotification & keyof MudNotificationAttributes as `attr:${K}`]?: MudNotificationAttributes[K] } & { [K in keyof MudNotification & keyof MudNotificationAttributes as `prop:${K}`]?: MudNotification[K] };
         "mud-numeric-input": Omit<MudNumericInput, keyof MudNumericInputAttributes> & { [K in keyof MudNumericInput & keyof MudNumericInputAttributes]?: MudNumericInput[K] } & { [K in keyof MudNumericInput & keyof MudNumericInputAttributes as `attr:${K}`]?: MudNumericInputAttributes[K] } & { [K in keyof MudNumericInput & keyof MudNumericInputAttributes as `prop:${K}`]?: MudNumericInput[K] };
@@ -8624,6 +9170,9 @@ declare namespace LocalJSX {
         "mud-select-input": Omit<MudSelectInput, keyof MudSelectInputAttributes> & { [K in keyof MudSelectInput & keyof MudSelectInputAttributes]?: MudSelectInput[K] } & { [K in keyof MudSelectInput & keyof MudSelectInputAttributes as `attr:${K}`]?: MudSelectInputAttributes[K] } & { [K in keyof MudSelectInput & keyof MudSelectInputAttributes as `prop:${K}`]?: MudSelectInput[K] };
         "mud-separator": Omit<MudSeparator, keyof MudSeparatorAttributes> & { [K in keyof MudSeparator & keyof MudSeparatorAttributes]?: MudSeparator[K] } & { [K in keyof MudSeparator & keyof MudSeparatorAttributes as `attr:${K}`]?: MudSeparatorAttributes[K] } & { [K in keyof MudSeparator & keyof MudSeparatorAttributes as `prop:${K}`]?: MudSeparator[K] };
         "mud-service-button": Omit<MudServiceButton, keyof MudServiceButtonAttributes> & { [K in keyof MudServiceButton & keyof MudServiceButtonAttributes]?: MudServiceButton[K] } & { [K in keyof MudServiceButton & keyof MudServiceButtonAttributes as `attr:${K}`]?: MudServiceButtonAttributes[K] } & { [K in keyof MudServiceButton & keyof MudServiceButtonAttributes as `prop:${K}`]?: MudServiceButton[K] };
+        "mud-sidebar": Omit<MudSidebar, keyof MudSidebarAttributes> & { [K in keyof MudSidebar & keyof MudSidebarAttributes]?: MudSidebar[K] } & { [K in keyof MudSidebar & keyof MudSidebarAttributes as `attr:${K}`]?: MudSidebarAttributes[K] } & { [K in keyof MudSidebar & keyof MudSidebarAttributes as `prop:${K}`]?: MudSidebar[K] };
+        "mud-sidebar-group": Omit<MudSidebarGroup, keyof MudSidebarGroupAttributes> & { [K in keyof MudSidebarGroup & keyof MudSidebarGroupAttributes]?: MudSidebarGroup[K] } & { [K in keyof MudSidebarGroup & keyof MudSidebarGroupAttributes as `attr:${K}`]?: MudSidebarGroupAttributes[K] } & { [K in keyof MudSidebarGroup & keyof MudSidebarGroupAttributes as `prop:${K}`]?: MudSidebarGroup[K] };
+        "mud-sidebar-item": Omit<MudSidebarItem, keyof MudSidebarItemAttributes> & { [K in keyof MudSidebarItem & keyof MudSidebarItemAttributes]?: MudSidebarItem[K] } & { [K in keyof MudSidebarItem & keyof MudSidebarItemAttributes as `attr:${K}`]?: MudSidebarItemAttributes[K] } & { [K in keyof MudSidebarItem & keyof MudSidebarItemAttributes as `prop:${K}`]?: MudSidebarItem[K] };
         "mud-spinner": Omit<MudSpinner, keyof MudSpinnerAttributes> & { [K in keyof MudSpinner & keyof MudSpinnerAttributes]?: MudSpinner[K] } & { [K in keyof MudSpinner & keyof MudSpinnerAttributes as `attr:${K}`]?: MudSpinnerAttributes[K] } & { [K in keyof MudSpinner & keyof MudSpinnerAttributes as `prop:${K}`]?: MudSpinner[K] };
         "mud-switch": Omit<MudSwitch, keyof MudSwitchAttributes> & { [K in keyof MudSwitch & keyof MudSwitchAttributes]?: MudSwitch[K] } & { [K in keyof MudSwitch & keyof MudSwitchAttributes as `attr:${K}`]?: MudSwitchAttributes[K] } & { [K in keyof MudSwitch & keyof MudSwitchAttributes as `prop:${K}`]?: MudSwitch[K] };
         "mud-tab": Omit<MudTab, keyof MudTabAttributes> & { [K in keyof MudTab & keyof MudTabAttributes]?: MudTab[K] } & { [K in keyof MudTab & keyof MudTabAttributes as `attr:${K}`]?: MudTabAttributes[K] } & { [K in keyof MudTab & keyof MudTabAttributes as `prop:${K}`]?: MudTab[K] } & OneOf<"value", MudTab["value"], MudTabAttributes["value"]>;
@@ -8933,6 +9482,25 @@ declare module "@stencil/core" {
              */
             "mud-logo": LocalJSX.IntrinsicElements["mud-logo"] & JSXBase.HTMLAttributes<HTMLMudLogoElement>;
             /**
+             * Menu — a floating panel of choosable options, composed of `mud-menu-item` children.
+             * Two flavours via `type`:
+             * - `selection` — single-select list (ARIA `listbox`), selected item shows a trailing checkmark.
+             * - `contextual` — action menu (ARIA `menu`), items may carry a leading checkbox/radio/icon.
+             * The panel is the visual + interaction primitive (keyboard roving, selection, scroll).
+             * Anchoring/positioning relative to a trigger is the consumer's responsibility; bind `open`
+             * and listen for `mudClose` (Escape / `closeOnSelect`) to drive popover behaviour.
+             * @element mud-menu
+             */
+            "mud-menu": LocalJSX.IntrinsicElements["mud-menu"] & JSXBase.HTMLAttributes<HTMLMudMenuElement>;
+            /**
+             * Menu item — a single row inside a `mud-menu`.
+             * Pattern: the host element is the focusable, role-bearing control. Roving
+             * `tabindex` is managed imperatively by the parent `mud-menu`. The item emits
+             * `mudMenuItemSelect` (bubbling) on activation; the parent coordinates selection.
+             * @element mud-menu-item
+             */
+            "mud-menu-item": LocalJSX.IntrinsicElements["mud-menu-item"] & JSXBase.HTMLAttributes<HTMLMudMenuItemElement>;
+            /**
              * Modal — overlay dialog molecule.
              * Renders a centered dialog card on top of a dimmed backdrop using the native
              * `<dialog>` element internally. The native element provides the focus trap,
@@ -9168,6 +9736,25 @@ declare module "@stencil/core" {
              * @element mud-service-button
              */
             "mud-service-button": LocalJSX.IntrinsicElements["mud-service-button"] & JSXBase.HTMLAttributes<HTMLMudServiceButtonElement>;
+            /**
+             * Sidebar — a vertical navigation panel composed of `mud-sidebar-group`
+             * sections and `mud-sidebar-item` rows.
+             * @element mud-sidebar
+             */
+            "mud-sidebar": LocalJSX.IntrinsicElements["mud-sidebar"] & JSXBase.HTMLAttributes<HTMLMudSidebarElement>;
+            /**
+             * Sidebar group — a labelled section of `mud-sidebar-item` rows.
+             * A divider is rendered automatically above every group except the first.
+             * @element mud-sidebar-group
+             */
+            "mud-sidebar-group": LocalJSX.IntrinsicElements["mud-sidebar-group"] & JSXBase.HTMLAttributes<HTMLMudSidebarGroupElement>;
+            /**
+             * Sidebar item — a single navigation row inside a `mud-sidebar` / `mud-sidebar-group`.
+             * Renders as a link when `href` is set, otherwise a button. Expandable items
+             * toggle a nested list (the `children` slot) and rotate a chevron.
+             * @element mud-sidebar-item
+             */
+            "mud-sidebar-item": LocalJSX.IntrinsicElements["mud-sidebar-item"] & JSXBase.HTMLAttributes<HTMLMudSidebarItemElement>;
             /**
              * Spinner — animated circular loading indicator.
              * Pattern B (atom-visual): renders a CSS-only rotating arc.
