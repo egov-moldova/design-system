@@ -530,9 +530,7 @@ describe('mud-menu-item', () => {
 
   describe('leading prop', () => {
     it.each(MENU_ITEM_LEADINGS)('reflects leading="%s" to the host attribute', async leading => {
-      const { root } = await render(
-        <mud-menu-item value="x" label="X" leading={leading}></mud-menu-item>,
-      );
+      const { root } = await render(<mud-menu-item value="x" label="X" leading={leading}></mud-menu-item>);
       expect(root?.getAttribute('leading')).toBe(leading);
     });
   });
@@ -550,9 +548,7 @@ describe('mud-menu-item', () => {
     });
 
     it('selection → role="option"', async () => {
-      const { root } = await render(
-        <mud-menu-item type="selection" value="a" label="A"></mud-menu-item>,
-      );
+      const { root } = await render(<mud-menu-item type="selection" value="a" label="A"></mud-menu-item>);
       expect(root?.getAttribute('role')).toBe('option');
     });
 
@@ -582,23 +578,17 @@ describe('mud-menu-item', () => {
 
   describe('ARIA states', () => {
     it('aria-selected reflects selected for selection items (unselected)', async () => {
-      const { root } = await render(
-        <mud-menu-item type="selection" value="a" label="A"></mud-menu-item>,
-      );
+      const { root } = await render(<mud-menu-item type="selection" value="a" label="A"></mud-menu-item>);
       expect(root?.getAttribute('aria-selected')).toBe('false');
     });
 
     it('aria-selected reflects selected for selection items (selected)', async () => {
-      const { root } = await render(
-        <mud-menu-item type="selection" value="a" label="A" selected></mud-menu-item>,
-      );
+      const { root } = await render(<mud-menu-item type="selection" value="a" label="A" selected></mud-menu-item>);
       expect(root?.getAttribute('aria-selected')).toBe('true');
     });
 
     it('does not set aria-selected on contextual items', async () => {
-      const { root } = await render(
-        <mud-menu-item type="contextual" value="a" label="A"></mud-menu-item>,
-      );
+      const { root } = await render(<mud-menu-item type="contextual" value="a" label="A"></mud-menu-item>);
       expect(root?.hasAttribute('aria-selected')).toBe(false);
     });
 
@@ -638,16 +628,12 @@ describe('mud-menu-item', () => {
     });
 
     it('sets aria-disabled="true" when disabled', async () => {
-      const { root } = await render(
-        <mud-menu-item value="a" label="A" disabled></mud-menu-item>,
-      );
+      const { root } = await render(<mud-menu-item value="a" label="A" disabled></mud-menu-item>);
       expect(root?.getAttribute('aria-disabled')).toBe('true');
     });
 
     it('does not set aria-disabled when not disabled', async () => {
-      const { root } = await render(
-        <mud-menu-item value="a" label="A"></mud-menu-item>,
-      );
+      const { root } = await render(<mud-menu-item value="a" label="A"></mud-menu-item>);
       expect(root?.hasAttribute('aria-disabled')).toBe(false);
     });
   });
@@ -658,9 +644,7 @@ describe('mud-menu-item', () => {
 
   describe('disabled state', () => {
     it('reflects disabled attribute to the host', async () => {
-      const { root } = await render(
-        <mud-menu-item value="a" label="A" disabled></mud-menu-item>,
-      );
+      const { root } = await render(<mud-menu-item value="a" label="A" disabled></mud-menu-item>);
       expect(root?.hasAttribute('disabled')).toBe(true);
     });
 
@@ -754,9 +738,7 @@ describe('mud-menu-item', () => {
 
     it('emits empty string for value when no value prop is set', async () => {
       const handler = vi.fn();
-      const { root } = await render(
-        <mud-menu-item label="No-value" onMudMenuItemSelect={handler}></mud-menu-item>,
-      );
+      const { root } = await render(<mud-menu-item label="No-value" onMudMenuItemSelect={handler}></mud-menu-item>);
       (root as HTMLElement)?.click();
       await flush();
       expect(handler.mock.calls[0][0].detail).toEqual({ value: '' });
@@ -764,9 +746,7 @@ describe('mud-menu-item', () => {
 
     it('does not emit on unrelated key presses', async () => {
       const handler = vi.fn();
-      const { root } = await render(
-        <mud-menu-item value="a" label="A" onMudMenuItemSelect={handler}></mud-menu-item>,
-      );
+      const { root } = await render(<mud-menu-item value="a" label="A" onMudMenuItemSelect={handler}></mud-menu-item>);
       pressItemKey(root, 'Tab');
       await flush();
       expect(handler).not.toHaveBeenCalled();
@@ -779,9 +759,7 @@ describe('mud-menu-item', () => {
 
   describe('setFocus() method', () => {
     it('setFocus() is exposed as an async method and does not throw', async () => {
-      const { instance } = await render(
-        <mud-menu-item value="a" label="A"></mud-menu-item>,
-      );
+      const { instance } = await render(<mud-menu-item value="a" label="A"></mud-menu-item>);
       expect(typeof (instance as { setFocus?: unknown }).setFocus).toBe('function');
       await (instance as { setFocus: () => Promise<void> }).setFocus();
     });
@@ -793,16 +771,12 @@ describe('mud-menu-item', () => {
 
   describe('slot', () => {
     it('renders slotted label content inside the item', async () => {
-      const { root } = await render(
-        <mud-menu-item value="x">Custom label</mud-menu-item>,
-      );
+      const { root } = await render(<mud-menu-item value="x">Custom label</mud-menu-item>);
       expect(root?.textContent).toContain('Custom label');
     });
 
     it('uses the label prop as fallback when no slot content is given', async () => {
-      const { root } = await render(
-        <mud-menu-item value="x" label="Fallback label"></mud-menu-item>,
-      );
+      const { root } = await render(<mud-menu-item value="x" label="Fallback label"></mud-menu-item>);
       const labelEl = root?.shadowRoot?.querySelector('.label');
       expect(labelEl?.textContent).toContain('Fallback label');
     });
@@ -814,30 +788,22 @@ describe('mud-menu-item', () => {
 
   describe('accessibility (structural WCAG contract)', () => {
     it('exposes role="menuitem" as the default WCAG role', async () => {
-      const { root } = await render(
-        <mud-menu-item value="a" label="Action"></mud-menu-item>,
-      );
+      const { root } = await render(<mud-menu-item value="a" label="Action"></mud-menu-item>);
       expect(root?.getAttribute('role')).toBe('menuitem');
     });
 
     it('exposes role="option" for selection-type items', async () => {
-      const { root } = await render(
-        <mud-menu-item type="selection" value="a" label="Option A"></mud-menu-item>,
-      );
+      const { root } = await render(<mud-menu-item type="selection" value="a" label="Option A"></mud-menu-item>);
       expect(root?.getAttribute('role')).toBe('option');
     });
 
     it('disabled item carries aria-disabled="true" (non-interactive state)', async () => {
-      const { root } = await render(
-        <mud-menu-item value="a" label="Action" disabled></mud-menu-item>,
-      );
+      const { root } = await render(<mud-menu-item value="a" label="Action" disabled></mud-menu-item>);
       expect(root?.getAttribute('aria-disabled')).toBe('true');
     });
 
     it('selected selection item carries aria-selected="true"', async () => {
-      const { root } = await render(
-        <mud-menu-item type="selection" value="a" label="A" selected></mud-menu-item>,
-      );
+      const { root } = await render(<mud-menu-item type="selection" value="a" label="A" selected></mud-menu-item>);
       expect(root?.getAttribute('aria-selected')).toBe('true');
     });
 

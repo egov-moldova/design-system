@@ -92,7 +92,7 @@ export class MudSidebarItem {
       </span>,
       this.secondary ? <span class="secondary">{this.secondary}</span> : null,
       this.tag ? <mud-tag class="tag" type="outlined" semantic="neutral" size="md" label={this.tag}></mud-tag> : null,
-      this.badge != null ? <mud-badge class="badge" type="numbered" variant="default" count={this.badge}></mud-badge> : null,
+      this.badge != null ? <span class="badge">{this.badge}</span> : null,
       this.expandable ? <mud-icon class="chevron" name="chevron-bottom" size={24} aria-hidden="true"></mud-icon> : null,
     ];
   }

@@ -113,9 +113,7 @@ export class MudMenu {
   };
 
   private queryItems(): HTMLMudMenuItemElement[] {
-    return Array.from(this.host.children).filter(
-      (el): el is HTMLMudMenuItemElement => el.tagName === 'MUD-MENU-ITEM',
-    );
+    return Array.from(this.host.children).filter((el): el is HTMLMudMenuItemElement => el.tagName === 'MUD-MENU-ITEM');
   }
 
   private enabledItems(): HTMLMudMenuItemElement[] {
@@ -153,7 +151,12 @@ export class MudMenu {
   render() {
     return (
       <Host>
-        <div class="panel" part="panel" role={this.type === 'selection' ? 'listbox' : 'menu'} aria-label={this.ariaLabel ?? undefined}>
+        <div
+          class="panel"
+          part="panel"
+          role={this.type === 'selection' ? 'listbox' : 'menu'}
+          aria-label={this.ariaLabel ?? undefined}
+        >
           <slot onSlotchange={this.handleSlotChange}></slot>
         </div>
       </Host>

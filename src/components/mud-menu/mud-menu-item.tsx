@@ -100,7 +100,12 @@ export class MudMenuItem {
     }
     if (this.leading === 'checkbox') {
       return (
-        <mud-checkbox class="leading-control" checked={this.selected} disabled={this.disabled} inert={true}></mud-checkbox>
+        <mud-checkbox
+          class="leading-control"
+          checked={this.selected}
+          disabled={this.disabled}
+          inert={true}
+        ></mud-checkbox>
       );
     }
     if (this.leading === 'radio') {
@@ -142,7 +147,9 @@ export class MudMenuItem {
           <span class="label">
             <slot>{this.label ?? ''}</slot>
           </span>
-          {showTrailingCheck ? <mud-icon class="check" name="checkmark-small" size={20} aria-hidden="true"></mud-icon> : null}
+          {showTrailingCheck ? (
+            <mud-icon class="check" name="checkmark-small" size={20} aria-hidden="true"></mud-icon>
+          ) : null}
         </div>
       </Host>
     );

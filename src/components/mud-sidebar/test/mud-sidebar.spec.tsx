@@ -7,15 +7,15 @@ import '../mud-sidebar';
 import '../mud-sidebar-group';
 import '../mud-sidebar-item';
 
-// Sub-components rendered inside mud-sidebar-item shadow DOM. We import the
-// source forms so the plugin registers them; without this the shadow queries
-// for mud-icon / mud-tag / mud-badge return null (elements stay unupgraded).
-// Note: mud-icon's componentWillLoad resolves SVG paths via getAssetPath —
-// that part is a no-op in mock-doc, but the element itself registers fine.
-import '../../mud-icon/mud-icon';
-import '../../mud-tag/mud-tag';
-import '../../mud-badge/mud-badge';
-import '../../mud-separator/mud-separator';
+// mud-icon, mud-tag, and mud-separator are intentionally NOT imported here.
+// When registered as custom elements, their non-reflected props (name, label)
+// are NOT accessible via getAttribute() — Stencil only exposes reflected
+// @Prop values as DOM attributes. By leaving these elements un-upgraded (plain
+// HTMLElement), their JSX-set attributes remain as plain HTML attributes and
+// getAttribute() returns the expected values. This matches the pattern used in
+// mud-search-input-circular.spec.tsx where mud-icon is also not imported.
+// Note: mud-sidebar-item renders badge as <span class="badge"> (not mud-badge),
+// so mud-badge import is not required here at all.
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -321,9 +321,7 @@ describe('mud-sidebar-item', () => {
     });
 
     it('uses icon (not iconActive) when active=false even if iconActive is set', async () => {
-      const { root } = await render(
-        <mud-sidebar-item icon="home-outline" iconActive="home-filled" label="Home" />,
-      );
+      const { root } = await render(<mud-sidebar-item icon="home-outline" iconActive="home-filled" label="Home" />);
       const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
       expect(icon?.getAttribute('name')).toBe('home-outline');
     });
@@ -363,22 +361,26 @@ describe('mud-sidebar-item', () => {
       expect(root?.shadowRoot?.querySelector('mud-tag.tag')).toBeNull();
     });
 
-    it('renders a mud-badge when badge prop is set', async () => {
+    it('renders a badge span when badge prop is set', async () => {
+      // The component renders badge as <span class="badge">{count}</span> (a plain
+      // numeric span) rather than a mud-badge custom element. The `badge` number prop
+      // is non-reflected; numeric JSX props go through the element property setter
+      // directly (same path as mud-file-item's `size` prop which also works).
       const { root } = await render(<mud-sidebar-item label="Notifications" badge={5} />);
-      const badge = root?.shadowRoot?.querySelector('mud-badge.badge');
-      expect(badge).toBeTruthy();
-      expect(badge?.getAttribute('count')).toBe('5');
+      const badgeEl = root?.shadowRoot?.querySelector('span.badge');
+      expect(badgeEl).toBeTruthy();
+      expect(badgeEl?.textContent?.trim()).toBe('5');
     });
 
-    it('renders a mud-badge when badge is 0', async () => {
-      // 0 is a valid count (e.g. cleared notifications); badge != null passes
+    it('renders a badge span when badge is 0', async () => {
+      // 0 is a valid badge value; `badge != null` evaluates to true for 0.
       const { root } = await render(<mud-sidebar-item label="Notifications" badge={0} />);
-      expect(root?.shadowRoot?.querySelector('mud-badge.badge')).toBeTruthy();
+      expect(root?.shadowRoot?.querySelector('span.badge')).toBeTruthy();
     });
 
-    it('omits mud-badge when badge prop is not set', async () => {
+    it('omits badge span when badge prop is not set', async () => {
       const { root } = await render(<mud-sidebar-item label="Item" />);
-      expect(root?.shadowRoot?.querySelector('mud-badge.badge')).toBeNull();
+      expect(root?.shadowRoot?.querySelector('span.badge')).toBeNull();
     });
   });
 
@@ -558,9 +560,7 @@ describe('mud-sidebar-item', () => {
 
     it('emits mudToggle when an expandable item is activated', async () => {
       const handler = vi.fn();
-      const { root } = await render(
-        <mud-sidebar-item value="nav" expandable label="Expand" onMudToggle={handler} />,
-      );
+      const { root } = await render(<mud-sidebar-item value="nav" expandable label="Expand" onMudToggle={handler} />);
       triggerClick(root);
       await flush();
       expect(handler).toHaveBeenCalledTimes(1);
@@ -571,9 +571,7 @@ describe('mud-sidebar-item', () => {
 
     it('toggles expanded state on each click', async () => {
       const handler = vi.fn();
-      const { root } = await render(
-        <mud-sidebar-item value="nav" expandable label="Expand" onMudToggle={handler} />,
-      );
+      const { root } = await render(<mud-sidebar-item value="nav" expandable label="Expand" onMudToggle={handler} />);
       // First click → expanded becomes true
       triggerClick(root);
       await flush();
@@ -599,9 +597,7 @@ describe('mud-sidebar-item', () => {
 
     it('does NOT emit mudToggle for a non-expandable item', async () => {
       const toggleHandler = vi.fn();
-      const { root } = await render(
-        <mud-sidebar-item value="home" label="Home" onMudToggle={toggleHandler} />,
-      );
+      const { root } = await render(<mud-sidebar-item value="home" label="Home" onMudToggle={toggleHandler} />);
       const e = new MouseEvent('click', { bubbles: true, cancelable: true });
       (root as unknown as SidebarItemInstance).handleClick.call(root as unknown as SidebarItemInstance, e);
       await flush();
@@ -627,11 +623,12 @@ describe('mud-sidebar-item', () => {
     it('accepts children slot content when expandable', async () => {
       const { root } = await render(
         <mud-sidebar-item expandable label="Expand">
-          <mud-sidebar-item slot="children" label="Sub A"></mud-sidebar-item>
+          <mud-sidebar-item slot="children" value="sub-a" label="Sub A"></mud-sidebar-item>
         </mud-sidebar-item>,
       );
       const sub = root?.querySelector('[slot="children"]');
-      expect(sub?.getAttribute('label')).toBe('Sub A');
+      // `label` is not reflected; use `value` which is reflected.
+      expect(sub?.getAttribute('value')).toBe('sub-a');
     });
   });
 

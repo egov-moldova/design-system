@@ -568,9 +568,7 @@ export const Default: Story = {
       source: {
         type: 'dynamic',
         transform: (_code: string, { args }: { args: SidebarArgs }) =>
-          args.collapsed
-            ? docsSourceCollapsed
-            : docsSourceDefault,
+          args.collapsed ? docsSourceCollapsed : docsSourceDefault,
       },
     },
   },

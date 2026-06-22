@@ -1,0 +1,64 @@
+:host {
+  display: block;
+}
+
+.item {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--header-nav-item-gap);
+  block-size: var(--header-nav-item-block-size);
+  padding-inline: var(--header-nav-item-padding-inline-start);
+  border: 0;
+  background-color: transparent;
+  cursor: pointer;
+  font-family: var(--header-nav-item-font-family);
+  font-size: var(--header-nav-item-font-size);
+  line-height: var(--header-nav-item-line-height);
+  font-weight: var(--header-nav-item-font-weight);
+  color: var(--header-nav-item-color);
+  white-space: nowrap;
+  text-decoration: none;
+}
+
+/* Expandable items leave room for the trailing chevron. */
+:host([expandable]) .item {
+  padding-inline-end: var(--header-nav-item-padding-inline-end);
+}
+
+.tag {
+  flex: none;
+}
+
+.chevron {
+  flex: none;
+  color: var(--header-nav-item-color);
+  transition: transform 150ms ease-out;
+}
+
+:host([expanded]) .chevron {
+  transform: rotate(180deg);
+}
+
+/* Hover + open. */
+:host(:not([disabled])) .item:hover,
+:host([active]) .item {
+  background-color: var(--header-nav-item-hover-background);
+}
+
+/* Disabled (e.g. "coming soon"). */
+:host([disabled]) .item {
+  color: var(--header-nav-item-disabled-color);
+  background-color: var(--header-nav-item-hover-background);
+  cursor: default;
+}
+
+:host([disabled]) .chevron {
+  color: var(--header-nav-item-disabled-color);
+}
+
+/* Keyboard focus. */
+.item:focus-visible {
+  outline: var(--header-container-border-width, 1px) solid var(--color-border-brand-default);
+  outline-offset: -2px;
+}

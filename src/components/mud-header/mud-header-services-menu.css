@@ -1,0 +1,90 @@
+:host {
+  display: block;
+}
+
+:host(:not([open])) {
+  display: none;
+}
+
+.services {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--header-services-gap);
+  min-inline-size: var(--header-services-min-inline-size);
+  padding-block-start: var(--header-services-padding-block-start);
+  padding-block-end: var(--header-services-padding-block-end);
+  padding-inline: var(--header-services-padding-inline);
+  background-color: var(--header-services-background);
+  border-radius: var(--header-services-border-radius);
+  box-shadow: var(--header-services-shadow);
+  overflow: clip;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--header-services-title-font-family);
+  font-size: var(--header-services-title-font-size);
+  line-height: var(--header-services-title-line-height);
+  font-weight: var(--header-services-title-font-weight);
+  color: var(--header-services-title-color);
+}
+
+.grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--header-services-grid-gap);
+}
+
+.cell {
+  display: flex;
+}
+
+.card {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  inline-size: 100%;
+  block-size: var(--header-services-card-block-size);
+  padding-inline-start: var(--header-services-card-padding-inline-start);
+  padding-inline-end: var(--header-services-card-padding-inline-end);
+  background-color: var(--header-services-card-background);
+  border-radius: var(--header-services-card-border-radius);
+  text-decoration: none;
+  overflow: hidden;
+  transition: background-color 150ms ease-out;
+}
+
+.card:hover {
+  background-color: var(--header-services-card-hover-background);
+}
+
+.card:focus-visible {
+  outline: var(--border-width-2, 2px) solid var(--color-border-brand-default);
+  outline-offset: -2px;
+}
+
+.card-logo {
+  display: inline-flex;
+  align-items: center;
+  block-size: var(--header-services-card-logo-block-size);
+  overflow: hidden;
+}
+
+.card-logo-img {
+  display: block;
+  block-size: var(--header-services-card-logo-block-size);
+  inline-size: auto;
+}
+
+.card-logo mud-logo {
+  display: block;
+  block-size: var(--header-services-card-logo-block-size);
+}
+
+.discover {
+  inline-size: 100%;
+}

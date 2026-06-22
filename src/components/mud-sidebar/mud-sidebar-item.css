@@ -47,9 +47,26 @@
   color: var(--sidebar-item-secondary-color);
 }
 
-.tag,
+.tag {
+  flex: none;
+}
+
+/* Neutral numbered badge (Figma numbered-badge — grey, not the dark mud-badge default). */
 .badge {
   flex: none;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: var(--sidebar-item-badge-min-size);
+  min-block-size: var(--sidebar-item-badge-min-size);
+  padding-inline: var(--sidebar-item-badge-padding-inline);
+  border-radius: var(--sidebar-item-badge-border-radius);
+  background-color: var(--sidebar-item-badge-background);
+  color: var(--sidebar-item-badge-color);
+  font-size: var(--sidebar-item-badge-font-size);
+  line-height: var(--sidebar-item-badge-line-height);
+  font-weight: var(--sidebar-item-badge-font-weight);
 }
 
 .chevron {

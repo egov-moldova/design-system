@@ -27,8 +27,10 @@ const panelWidth = 'width: 270px;';
 const cellLabelStyle =
   'font-size: var(--font-size-12); color: var(--color-text-base-tertiary); margin: 0 0 var(--spacing-8);';
 
-const cell = (caption: string, body: string) =>
-  /*html*/ `<div style="display: flex; flex-direction: column; gap: var(--spacing-8);">
+const cell = (
+  caption: string,
+  body: string,
+) => /*html*/ `<div style="display: flex; flex-direction: column; gap: var(--spacing-8);">
     <p style="${cellLabelStyle}">${caption}</p>
     ${body}
   </div>`;
@@ -98,7 +100,8 @@ const meta: Meta<MenuArgs> = {
     },
     value: {
       control: 'text',
-      description: 'Currently selected value (selection menus). Propagated down to items to drive the trailing checkmark.',
+      description:
+        'Currently selected value (selection menus). Propagated down to items to drive the trailing checkmark.',
       table: { defaultValue: { summary: '' } },
     },
     closeOnSelect: {
@@ -108,7 +111,7 @@ const meta: Meta<MenuArgs> = {
     },
     ariaLabel: {
       control: 'text',
-      description: 'Accessible name forwarded to the panel\'s `aria-label`.',
+      description: "Accessible name forwarded to the panel's `aria-label`.",
       table: { defaultValue: { summary: '' } },
     },
   },

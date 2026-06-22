@@ -45,3 +45,25 @@ export type {
   MenuChangeDetail,
   MenuItemSelectDetail,
 } from './components/mud-menu/mud-menu.types';
+
+export { MudSidebar } from './components/mud-sidebar/mud-sidebar';
+export { MudSidebarGroup } from './components/mud-sidebar/mud-sidebar-group';
+export { MudSidebarItem } from './components/mud-sidebar/mud-sidebar-item';
+export type { SidebarItemSelectDetail, SidebarItemToggleDetail } from './components/mud-sidebar/mud-sidebar.types';
+
+export { MudHeader } from './components/mud-header/mud-header';
+export { MudHeaderNavItem } from './components/mud-header/mud-header-nav-item';
+export { MudHeaderMegaMenu } from './components/mud-header/mud-header-mega-menu';
+export { MudHeaderServicesMenu } from './components/mud-header/mud-header-services-menu';
+export { HEADER_DEFAULT_LANGUAGES } from './components/mud-header/mud-header.types';
+export type {
+  HeaderLanguage,
+  HeaderLanguageChangeDetail,
+  HeaderNavSelectDetail,
+  HeaderNavToggleDetail,
+  MegaMenuItem,
+  MegaMenuColumn,
+  HeaderMegaMenuSelectDetail,
+  ServicePlatform,
+  HeaderServiceSelectDetail,
+} from './components/mud-header/mud-header.types';

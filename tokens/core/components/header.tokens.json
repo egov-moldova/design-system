@@ -1,0 +1,257 @@
+{
+  "header": {
+    "container": {
+      "background": { "$value": "{color.background.base.default}", "$type": "color" },
+      "borderColor": { "$value": "{color.border.base.default}", "$type": "color" },
+      "borderWidth": { "$value": "{borderWidth.1}", "$type": "dimension" },
+      "maxInlineSize": {
+        "$value": "1280px",
+        "$type": "dimension",
+        "$comment": "Figma header inner content max-width 1280px."
+      },
+      "paddingInline": { "$value": "{spacing.24}", "$type": "dimension" }
+    },
+    "preHeader": {
+      "blockSize": {
+        "$value": "{spacing.32}",
+        "$type": "dimension",
+        "$comment": "Figma .top-section height 32px."
+      },
+      "background": {
+        "$value": "{color.background.base.tertiary}",
+        "$type": "color",
+        "$comment": "Figma pre-header bg #f1f1f1."
+      },
+      "crestSize": {
+        "$value": "{spacing.24}",
+        "$type": "dimension",
+        "$comment": "Figma AGE government crest 24px."
+      },
+      "labelFontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "labelFontSize": { "$value": "{fontSize.12}", "$type": "dimension" },
+      "labelLineHeight": { "$value": "{lineHeight.16}", "$type": "dimension" },
+      "labelFontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "labelColor": {
+        "$value": "{color.text.base.default}",
+        "$type": "color",
+        "$comment": "Figma 'Guvernul Republicii Moldova' #121212."
+      },
+      "labelGap": { "$value": "{spacing.4}", "$type": "dimension" }
+    },
+    "language": {
+      "gap": { "$value": "{spacing.12}", "$type": "dimension" },
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "activeColor": {
+        "$value": "{color.text.base.default}",
+        "$type": "color",
+        "$comment": "Figma active language (Ro) #121212, underlined."
+      },
+      "inactiveColor": {
+        "$value": "{color.text.base.secondary}",
+        "$type": "color",
+        "$comment": "Figma inactive language (Ru/En) #383838."
+      }
+    },
+    "mainBar": {
+      "blockSize": {
+        "$value": "72px",
+        "$type": "dimension",
+        "$comment": "Figma main navigation height 72px (not on the 4px spacing scale)."
+      },
+      "gap": {
+        "$value": "{spacing.24}",
+        "$type": "dimension",
+        "$comment": "Figma gap between the action cluster and the button cluster."
+      },
+      "leadingGap": {
+        "$value": "{spacing.16}",
+        "$type": "dimension",
+        "$comment": "Figma gap between the logo and the nav items."
+      },
+      "logoSize": {
+        "$value": "52px",
+        "$type": "dimension",
+        "$comment": "Figma EVO main logo 52px."
+      }
+    },
+    "navItem": {
+      "blockSize": {
+        "$value": "72px",
+        "$type": "dimension",
+        "$comment": "Figma navigation-item full bar height 72px."
+      },
+      "paddingInlineStart": { "$value": "{spacing.16}", "$type": "dimension" },
+      "paddingInlineEnd": {
+        "$value": "{spacing.8}",
+        "$type": "dimension",
+        "$comment": "Figma nav item pl-16 pr-8 (room for the trailing chevron)."
+      },
+      "gap": { "$value": "{spacing.6}", "$type": "dimension" },
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSize": { "$value": "{fontSize.16}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.24}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "color": {
+        "$value": "{color.text.base.default}",
+        "$type": "color",
+        "$comment": "Figma nav item label #121212."
+      },
+      "disabledColor": {
+        "$value": "{color.text.base.tertiary}",
+        "$type": "color",
+        "$comment": "Figma disabled nav item label #757575."
+      },
+      "hoverBackground": {
+        "$value": "{color.background.base.default-hover}",
+        "$type": "color",
+        "$comment": "Figma nav item hover/open bg #f5f5f5."
+      },
+      "chevronSize": {
+        "$value": "16px",
+        "$type": "dimension",
+        "$comment": "Figma nav item trailing chevron-bottom-small 16px."
+      }
+    },
+    "action": {
+      "size": {
+        "$value": "{spacing.40}",
+        "$type": "dimension",
+        "$comment": "Figma .header-action circular hit area 40px."
+      },
+      "iconSize": {
+        "$value": "{spacing.24}",
+        "$type": "dimension",
+        "$comment": "Figma action icon 24px."
+      },
+      "gap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" },
+      "iconColor": {
+        "$value": "{color.icon.base.default}",
+        "$type": "color",
+        "$comment": "Figma action icons #121212."
+      },
+      "hoverBackground": { "$value": "{color.background.base.default-hover}", "$type": "color" },
+      "buttonsGap": {
+        "$value": "{spacing.12}",
+        "$type": "dimension",
+        "$comment": "Figma gap between the two CTA buttons."
+      }
+    },
+    "megaMenu": {
+      "background": { "$value": "{color.background.base.default}", "$type": "color" },
+      "padding": {
+        "$value": "{spacing.40}",
+        "$type": "dimension",
+        "$comment": "Figma header-menu Full padding 40px."
+      },
+      "columnsGap": {
+        "$value": "{spacing.24}",
+        "$type": "dimension",
+        "$comment": "Figma gap between the 3 columns."
+      },
+      "columnGap": {
+        "$value": "{spacing.16}",
+        "$type": "dimension",
+        "$comment": "Figma gap between heading / separator / options."
+      },
+      "maxInlineSize": {
+        "$value": "1168px",
+        "$type": "dimension",
+        "$comment": "Figma inner container max-width 1168px."
+      },
+      "shadow": { "$value": "{dropShadow.200}", "$type": "string" },
+      "headingFontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "headingFontSize": { "$value": "{fontSize.18}", "$type": "dimension" },
+      "headingLineHeight": { "$value": "{lineHeight.26}", "$type": "dimension" },
+      "headingFontWeight": { "$value": "{fontWeight.semibold}", "$type": "fontWeight" },
+      "headingLetterSpacing": {
+        "$value": "-0.18px",
+        "$type": "dimension",
+        "$comment": "Figma H5 tracking -0.18px."
+      },
+      "headingColor": {
+        "$value": "{color.text.base.default}",
+        "$type": "color",
+        "$comment": "Figma mega-menu heading #121212."
+      },
+      "optionPadding": { "$value": "{spacing.4}", "$type": "dimension" },
+      "optionGap": { "$value": "{spacing.12}", "$type": "dimension" },
+      "optionFontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "optionFontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "optionLineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "optionFontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
+      "optionColor": {
+        "$value": "{color.text.base.secondary}",
+        "$type": "color",
+        "$comment": "Figma mega-menu option label #383838."
+      },
+      "optionHoverColor": {
+        "$value": "{color.text.base.default}",
+        "$type": "color",
+        "$comment": "Option link hover (darken to #121212; Figma shows no hover, this is a sensible link affordance)."
+      }
+    },
+    "services": {
+      "background": { "$value": "{color.background.base.default}", "$type": "color" },
+      "borderRadius": { "$value": "{borderRadius.16}", "$type": "dimension" },
+      "paddingBlockStart": {
+        "$value": "{spacing.20}",
+        "$type": "dimension",
+        "$comment": "Figma services-dropdown pt-20."
+      },
+      "paddingBlockEnd": {
+        "$value": "{spacing.16}",
+        "$type": "dimension",
+        "$comment": "Figma services-dropdown pb-16."
+      },
+      "paddingInline": { "$value": "{spacing.16}", "$type": "dimension" },
+      "gap": {
+        "$value": "{spacing.12}",
+        "$type": "dimension",
+        "$comment": "Figma gap title → grid → button."
+      },
+      "minInlineSize": {
+        "$value": "348px",
+        "$type": "dimension",
+        "$comment": "Figma services-dropdown width 348px (parity with evo-web)."
+      },
+      "shadow": { "$value": "{dropShadow.300}", "$type": "string" },
+      "titleFontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "titleFontSize": { "$value": "{fontSize.16}", "$type": "dimension" },
+      "titleLineHeight": { "$value": "{lineHeight.24}", "$type": "dimension" },
+      "titleFontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "titleColor": {
+        "$value": "{color.text.base.default}",
+        "$type": "color",
+        "$comment": "Figma DS title 'Platforme utile' #121212 Onest Medium 16 (note: evo-web landing.css used 18/600 — DS Figma differs)."
+      },
+      "gridGap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "cardBackground": {
+        "$value": "{color.background.base.secondary}",
+        "$type": "color",
+        "$comment": "Figma platform card bg #f5f5f5."
+      },
+      "cardHoverBackground": {
+        "$value": "{color.background.base.tertiary}",
+        "$type": "color",
+        "$comment": "Subtle darken on hover (#f1f1f1); evo-web parity uses gray-200."
+      },
+      "cardBlockSize": {
+        "$value": "60px",
+        "$type": "dimension",
+        "$comment": "Figma platform card height 60px."
+      },
+      "cardBorderRadius": { "$value": "{borderRadius.12}", "$type": "dimension" },
+      "cardPaddingInlineStart": { "$value": "{spacing.12}", "$type": "dimension" },
+      "cardPaddingInlineEnd": { "$value": "{spacing.8}", "$type": "dimension" },
+      "cardLogoBlockSize": {
+        "$value": "40px",
+        "$type": "dimension",
+        "$comment": "Figma platform logo height 40px (with-verb logo)."
+      }
+    }
+  }
+}

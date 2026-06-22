@@ -142,6 +142,24 @@
           "$type": "color",
           "$comment": "Figma secondary label #757575, right-aligned."
         }
+      },
+      "badge": {
+        "minSize": { "$value": "{spacing.24}", "$type": "dimension" },
+        "paddingInline": { "$value": "{spacing.8}", "$type": "dimension" },
+        "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" },
+        "background": {
+          "$value": "{color.background.base.tertiary}",
+          "$type": "color",
+          "$comment": "Figma numbered-badge bg #f1f1f1 (neutral grey, not the dark mud-badge default)."
+        },
+        "color": {
+          "$value": "{color.text.base.default}",
+          "$type": "color",
+          "$comment": "Figma numbered-badge text #121212."
+        },
+        "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+        "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+        "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" }
       }
     },
     "focusRing": {
