@@ -38,6 +38,10 @@ export default {
     // Re-enable (and update path) when a new illustration component is introduced.
     // { from: '../src/components/mud-illustration/assets', to: 'assets/assets' },
     { from: '../assets/font', to: 'assets/font' },
+    // The shipped library's @font-face (src/assets/css/base/fonts.css) requests
+    // the static Onest weights at /assets/fonts/onest-*.ttf. Without this they 404
+    // in dev and the exact-weight faces shadow the variable font → fallback render.
+    { from: '../src/assets/fonts', to: 'assets/fonts' },
     { from: '../src/components/mud-icon/assets', to: 'assets/assets' },
     { from: '../src/components/mud-logo/assets', to: 'assets/assets' },
   ],

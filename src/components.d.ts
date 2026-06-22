@@ -1152,6 +1152,54 @@ export namespace Components {
         "open": boolean;
     }
     /**
+     * Mobile header — a compact bar that opens a full-screen navigation drawer.
+     * Closed: logo + slotted bar actions (e.g. an auth button + search) + a
+     * hamburger. Open: a full-screen panel with logo + language pill + close,
+     * then slotted `search`, `nav`, `secondary` (services/help) and bottom
+     * `actions` (CTA buttons). Reuse `mud-sidebar-item` for the nav rows.
+     * @element mud-header-mobile
+     */
+    interface MudHeaderMobile {
+        /**
+          * Accessible label for the close button.
+          * @default 'Închide'
+         */
+        "closeLabel": string;
+        /**
+          * Active language code. Defaults to the first entry in `languages`.
+         */
+        "language"?: string;
+        /**
+          * Accessible label for the language pill.
+          * @default 'Schimbă limba'
+         */
+        "languageLabel": string;
+        /**
+          * Languages offered by the drawer's language pill.
+          * @default HEADER_DEFAULT_LANGUAGES
+         */
+        "languages": readonly HeaderLanguage[];
+        /**
+          * Alt text for the logo image.
+          * @default ''
+         */
+        "logoAlt": string;
+        /**
+          * Logo image URL (rendered in both the bar and the drawer).
+         */
+        "logoSrc"?: string;
+        /**
+          * Accessible label for the hamburger / drawer nav.
+          * @default 'Meniu'
+         */
+        "menuLabel": string;
+        /**
+          * Whether the drawer is open.
+          * @default false
+         */
+        "open": boolean;
+    }
+    /**
      * Header navigation item — a top-bar entry inside `mud-header`'s `nav` slot.
      * Renders as a link (`href`) or a button. Expandable items carry a trailing
      * chevron and toggle a mega-menu (wired by the consumer via `mudNavToggle`).
@@ -1187,7 +1235,7 @@ export namespace Components {
          */
         "label"?: string;
         /**
-          * Optional trailing status tag (e.g. "În curând").
+          * Optional status hint, shown as a hover/focus tooltip (e.g. "În curând").
          */
         "tag"?: string;
         /**
@@ -3455,6 +3503,10 @@ export interface MudHeaderMegaMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudHeaderMegaMenuElement;
 }
+export interface MudHeaderMobileCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLMudHeaderMobileElement;
+}
 export interface MudHeaderNavItemCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudHeaderNavItemElement;
@@ -4090,6 +4142,32 @@ declare global {
     var HTMLMudHeaderMegaMenuElement: {
         prototype: HTMLMudHeaderMegaMenuElement;
         new (): HTMLMudHeaderMegaMenuElement;
+    };
+    interface HTMLMudHeaderMobileElementEventMap {
+        "mudLanguageChange": HeaderLanguageChangeDetail;
+        "mudOpenChange": { open: boolean };
+    }
+    /**
+     * Mobile header — a compact bar that opens a full-screen navigation drawer.
+     * Closed: logo + slotted bar actions (e.g. an auth button + search) + a
+     * hamburger. Open: a full-screen panel with logo + language pill + close,
+     * then slotted `search`, `nav`, `secondary` (services/help) and bottom
+     * `actions` (CTA buttons). Reuse `mud-sidebar-item` for the nav rows.
+     * @element mud-header-mobile
+     */
+    interface HTMLMudHeaderMobileElement extends Components.MudHeaderMobile, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudHeaderMobileElementEventMap>(type: K, listener: (this: HTMLMudHeaderMobileElement, ev: MudHeaderMobileCustomEvent<HTMLMudHeaderMobileElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudHeaderMobileElementEventMap>(type: K, listener: (this: HTMLMudHeaderMobileElement, ev: MudHeaderMobileCustomEvent<HTMLMudHeaderMobileElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLMudHeaderMobileElement: {
+        prototype: HTMLMudHeaderMobileElement;
+        new (): HTMLMudHeaderMobileElement;
     };
     interface HTMLMudHeaderNavItemElementEventMap {
         "mudNavSelect": HeaderNavSelectDetail;
@@ -5096,6 +5174,7 @@ declare global {
         "mud-footer": HTMLMudFooterElement;
         "mud-header": HTMLMudHeaderElement;
         "mud-header-mega-menu": HTMLMudHeaderMegaMenuElement;
+        "mud-header-mobile": HTMLMudHeaderMobileElement;
         "mud-header-nav-item": HTMLMudHeaderNavItemElement;
         "mud-header-services-menu": HTMLMudHeaderServicesMenuElement;
         "mud-icon": HTMLMudIconElement;
@@ -6336,6 +6415,62 @@ declare namespace LocalJSX {
         "open"?: boolean;
     }
     /**
+     * Mobile header — a compact bar that opens a full-screen navigation drawer.
+     * Closed: logo + slotted bar actions (e.g. an auth button + search) + a
+     * hamburger. Open: a full-screen panel with logo + language pill + close,
+     * then slotted `search`, `nav`, `secondary` (services/help) and bottom
+     * `actions` (CTA buttons). Reuse `mud-sidebar-item` for the nav rows.
+     * @element mud-header-mobile
+     */
+    interface MudHeaderMobile {
+        /**
+          * Accessible label for the close button.
+          * @default 'Închide'
+         */
+        "closeLabel"?: string;
+        /**
+          * Active language code. Defaults to the first entry in `languages`.
+         */
+        "language"?: string;
+        /**
+          * Accessible label for the language pill.
+          * @default 'Schimbă limba'
+         */
+        "languageLabel"?: string;
+        /**
+          * Languages offered by the drawer's language pill.
+          * @default HEADER_DEFAULT_LANGUAGES
+         */
+        "languages"?: readonly HeaderLanguage[];
+        /**
+          * Alt text for the logo image.
+          * @default ''
+         */
+        "logoAlt"?: string;
+        /**
+          * Logo image URL (rendered in both the bar and the drawer).
+         */
+        "logoSrc"?: string;
+        /**
+          * Accessible label for the hamburger / drawer nav.
+          * @default 'Meniu'
+         */
+        "menuLabel"?: string;
+        /**
+          * Fired when the language is changed (cycles through `languages`).
+         */
+        "onMudLanguageChange"?: (event: MudHeaderMobileCustomEvent<HeaderLanguageChangeDetail>) => void;
+        /**
+          * Fired when the drawer opens or closes.
+         */
+        "onMudOpenChange"?: (event: MudHeaderMobileCustomEvent<{ open: boolean }>) => void;
+        /**
+          * Whether the drawer is open.
+          * @default false
+         */
+        "open"?: boolean;
+    }
+    /**
      * Header navigation item — a top-bar entry inside `mud-header`'s `nav` slot.
      * Renders as a link (`href`) or a button. Expandable items carry a trailing
      * chevron and toggle a mega-menu (wired by the consumer via `mudNavToggle`).
@@ -6379,7 +6514,7 @@ declare namespace LocalJSX {
          */
         "onMudNavToggle"?: (event: MudHeaderNavItemCustomEvent<HeaderNavToggleDetail>) => void;
         /**
-          * Optional trailing status tag (e.g. "În curând").
+          * Optional status hint, shown as a hover/focus tooltip (e.g. "În curând").
          */
         "tag"?: string;
         /**
@@ -9131,6 +9266,15 @@ declare namespace LocalJSX {
         "open": boolean;
         "ariaLabel": string;
     }
+    interface MudHeaderMobileAttributes {
+        "logoSrc": string;
+        "logoAlt": string;
+        "open": boolean;
+        "language": string;
+        "menuLabel": string;
+        "closeLabel": string;
+        "languageLabel": string;
+    }
     interface MudHeaderNavItemAttributes {
         "value": string;
         "label": string;
@@ -9587,6 +9731,7 @@ declare namespace LocalJSX {
         "mud-footer": Omit<MudFooter, keyof MudFooterAttributes> & { [K in keyof MudFooter & keyof MudFooterAttributes]?: MudFooter[K] } & { [K in keyof MudFooter & keyof MudFooterAttributes as `attr:${K}`]?: MudFooterAttributes[K] } & { [K in keyof MudFooter & keyof MudFooterAttributes as `prop:${K}`]?: MudFooter[K] };
         "mud-header": Omit<MudHeader, keyof MudHeaderAttributes> & { [K in keyof MudHeader & keyof MudHeaderAttributes]?: MudHeader[K] } & { [K in keyof MudHeader & keyof MudHeaderAttributes as `attr:${K}`]?: MudHeaderAttributes[K] } & { [K in keyof MudHeader & keyof MudHeaderAttributes as `prop:${K}`]?: MudHeader[K] };
         "mud-header-mega-menu": Omit<MudHeaderMegaMenu, keyof MudHeaderMegaMenuAttributes> & { [K in keyof MudHeaderMegaMenu & keyof MudHeaderMegaMenuAttributes]?: MudHeaderMegaMenu[K] } & { [K in keyof MudHeaderMegaMenu & keyof MudHeaderMegaMenuAttributes as `attr:${K}`]?: MudHeaderMegaMenuAttributes[K] } & { [K in keyof MudHeaderMegaMenu & keyof MudHeaderMegaMenuAttributes as `prop:${K}`]?: MudHeaderMegaMenu[K] };
+        "mud-header-mobile": Omit<MudHeaderMobile, keyof MudHeaderMobileAttributes> & { [K in keyof MudHeaderMobile & keyof MudHeaderMobileAttributes]?: MudHeaderMobile[K] } & { [K in keyof MudHeaderMobile & keyof MudHeaderMobileAttributes as `attr:${K}`]?: MudHeaderMobileAttributes[K] } & { [K in keyof MudHeaderMobile & keyof MudHeaderMobileAttributes as `prop:${K}`]?: MudHeaderMobile[K] };
         "mud-header-nav-item": Omit<MudHeaderNavItem, keyof MudHeaderNavItemAttributes> & { [K in keyof MudHeaderNavItem & keyof MudHeaderNavItemAttributes]?: MudHeaderNavItem[K] } & { [K in keyof MudHeaderNavItem & keyof MudHeaderNavItemAttributes as `attr:${K}`]?: MudHeaderNavItemAttributes[K] } & { [K in keyof MudHeaderNavItem & keyof MudHeaderNavItemAttributes as `prop:${K}`]?: MudHeaderNavItem[K] };
         "mud-header-services-menu": Omit<MudHeaderServicesMenu, keyof MudHeaderServicesMenuAttributes> & { [K in keyof MudHeaderServicesMenu & keyof MudHeaderServicesMenuAttributes]?: MudHeaderServicesMenu[K] } & { [K in keyof MudHeaderServicesMenu & keyof MudHeaderServicesMenuAttributes as `attr:${K}`]?: MudHeaderServicesMenuAttributes[K] } & { [K in keyof MudHeaderServicesMenu & keyof MudHeaderServicesMenuAttributes as `prop:${K}`]?: MudHeaderServicesMenu[K] };
         "mud-icon": Omit<MudIcon, keyof MudIconAttributes> & { [K in keyof MudIcon & keyof MudIconAttributes]?: MudIcon[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `attr:${K}`]?: MudIconAttributes[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `prop:${K}`]?: MudIcon[K] };
@@ -9877,6 +10022,15 @@ declare module "@stencil/core" {
              * @element mud-header-mega-menu
              */
             "mud-header-mega-menu": LocalJSX.IntrinsicElements["mud-header-mega-menu"] & JSXBase.HTMLAttributes<HTMLMudHeaderMegaMenuElement>;
+            /**
+             * Mobile header — a compact bar that opens a full-screen navigation drawer.
+             * Closed: logo + slotted bar actions (e.g. an auth button + search) + a
+             * hamburger. Open: a full-screen panel with logo + language pill + close,
+             * then slotted `search`, `nav`, `secondary` (services/help) and bottom
+             * `actions` (CTA buttons). Reuse `mud-sidebar-item` for the nav rows.
+             * @element mud-header-mobile
+             */
+            "mud-header-mobile": LocalJSX.IntrinsicElements["mud-header-mobile"] & JSXBase.HTMLAttributes<HTMLMudHeaderMobileElement>;
             /**
              * Header navigation item — a top-bar entry inside `mud-header`'s `nav` slot.
              * Renders as a link (`href`) or a button. Expandable items carry a trailing

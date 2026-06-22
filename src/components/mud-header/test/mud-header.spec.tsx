@@ -429,28 +429,29 @@ describe('mud-header-nav-item', () => {
   });
 
   // -------------------------------------------------------------------------
-  // tag prop — renders mud-tag
+  // tag prop — renders a hover/focus tooltip (no inline tag)
   // -------------------------------------------------------------------------
   describe('tag prop', () => {
-    it('renders a mud-tag when tag prop is set', async () => {
+    it('renders the tag as a role="tooltip" element when set', async () => {
       const { root } = await render(<mud-header-nav-item label="Noutăți" tag="În curând"></mud-header-nav-item>);
-      const tag = queryShadow(root, 'mud-tag.tag');
-      expect(tag).not.toBeNull();
-      expect(tag?.getAttribute('label')).toBe('În curând');
+      const tip = queryShadow(root, '.tag-tooltip');
+      expect(tip).not.toBeNull();
+      expect(tip?.getAttribute('role')).toBe('tooltip');
+      expect(tip?.textContent?.trim()).toBe('În curând');
     });
 
-    it('does NOT render a mud-tag when tag prop is not set', async () => {
-      const { root } = await render(<mud-header-nav-item label="Acasă"></mud-header-nav-item>);
-      const tag = queryShadow(root, 'mud-tag');
-      expect(tag).toBeNull();
-    });
-
-    it('passes outlined + neutral + md attrs to mud-tag', async () => {
+    it('links the tooltip to the control via aria-describedby', async () => {
       const { root } = await render(<mud-header-nav-item label="X" tag="Beta"></mud-header-nav-item>);
-      const tag = queryShadow(root, 'mud-tag.tag');
-      expect(tag?.getAttribute('type')).toBe('outlined');
-      expect(tag?.getAttribute('semantic')).toBe('neutral');
-      expect(tag?.getAttribute('size')).toBe('md');
+      const tip = queryShadow(root, '.tag-tooltip');
+      const control = queryShadow(root, 'button.item');
+      expect(tip?.id).toBeTruthy();
+      expect(control?.getAttribute('aria-describedby')).toBe(tip?.id);
+    });
+
+    it('does NOT render a tooltip (nor an inline mud-tag) when tag is not set', async () => {
+      const { root } = await render(<mud-header-nav-item label="Acasă"></mud-header-nav-item>);
+      expect(queryShadow(root, '.tag-tooltip')).toBeNull();
+      expect(queryShadow(root, 'mud-tag')).toBeNull();
     });
   });
 

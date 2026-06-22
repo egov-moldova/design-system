@@ -252,6 +252,73 @@
         "$type": "dimension",
         "$comment": "Figma platform logo height 40px (with-verb logo)."
       }
+    },
+    "mobile": {
+      "background": { "$value": "{color.background.base.default}", "$type": "color" },
+      "borderColor": { "$value": "{color.border.base.default}", "$type": "color" },
+      "borderWidth": { "$value": "{borderWidth.1}", "$type": "dimension" },
+      "barBlockSize": {
+        "$value": "64px",
+        "$type": "dimension",
+        "$comment": "Figma header-general-mobile bar height 64px."
+      },
+      "barPaddingInlineStart": { "$value": "{spacing.16}", "$type": "dimension" },
+      "barPaddingInlineEnd": { "$value": "{spacing.12}", "$type": "dimension" },
+      "logoSize": {
+        "$value": "40px",
+        "$type": "dimension",
+        "$comment": "Figma mobile logo 40px."
+      },
+      "rightGap": {
+        "$value": "{spacing.16}",
+        "$type": "dimension",
+        "$comment": "Figma gap between the auth button and the action cluster."
+      },
+      "actionsGap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "actionSize": {
+        "$value": "{spacing.40}",
+        "$type": "dimension",
+        "$comment": "Figma .header-action circular hit area 40px."
+      },
+      "actionIconSize": { "$value": "{spacing.24}", "$type": "dimension" },
+      "actionIconColor": { "$value": "{color.icon.base.default}", "$type": "color" },
+      "actionHoverBackground": { "$value": "{color.background.base.default-hover}", "$type": "color" },
+      "drawerPadding": {
+        "$value": "{spacing.16}",
+        "$type": "dimension",
+        "$comment": "Figma drawer content inline padding 16px."
+      },
+      "drawerSectionGap": {
+        "$value": "{spacing.16}",
+        "$type": "dimension",
+        "$comment": "Figma gap between drawer sections (search / nav / secondary / actions)."
+      },
+      "drawerActionsGap": {
+        "$value": "{spacing.12}",
+        "$type": "dimension",
+        "$comment": "Figma gap between the two bottom CTA buttons."
+      },
+      "language": {
+        "gap": { "$value": "{spacing.6}", "$type": "dimension" },
+        "paddingInline": { "$value": "{spacing.12}", "$type": "dimension" },
+        "blockSize": {
+          "$value": "{spacing.32}",
+          "$type": "dimension",
+          "$comment": "Figma drawer language pill height 32px."
+        },
+        "background": {
+          "$value": "{color.background.base.secondary}",
+          "$type": "color",
+          "$comment": "Figma drawer language pill bg #f5f5f5."
+        },
+        "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" },
+        "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+        "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+        "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+        "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+        "color": { "$value": "{color.text.base.default}", "$type": "color" },
+        "iconSize": { "$value": "{spacing.20}", "$type": "dimension" }
+      }
     }
   }
 }

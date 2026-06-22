@@ -2,6 +2,8 @@ import { Component, Element, Event, type EventEmitter, h, Host, Prop } from '@st
 
 import type { HeaderNavSelectDetail, HeaderNavToggleDetail } from './mud-header.types';
 
+let navItemTooltipUid = 0;
+
 /**
  * Header navigation item — a top-bar entry inside `mud-header`'s `nav` slot.
  *
@@ -36,7 +38,7 @@ export class MudHeaderNavItem {
   /** Whether the item is disabled. */
   @Prop({ reflect: true }) disabled = false;
 
-  /** Optional trailing status tag (e.g. "În curând"). */
+  /** Optional status hint, shown as a hover/focus tooltip (e.g. "În curând"). */
   @Prop() tag?: string;
 
   /** Render as a link to this destination. */
@@ -51,6 +53,9 @@ export class MudHeaderNavItem {
   /** Fired when an expandable item is opened or closed. */
   @Event({ eventName: 'mudNavToggle', bubbles: true, composed: true })
   mudNavToggle!: EventEmitter<HeaderNavToggleDetail>;
+
+  /** Links the status tooltip to the item via `aria-describedby`. */
+  private readonly tooltipId = `mud-header-nav-tooltip-${navItemTooltipUid++}`;
 
   private handleClick = (ev: MouseEvent): void => {
     if (this.disabled) {
@@ -71,7 +76,6 @@ export class MudHeaderNavItem {
       <span class="label">
         <slot>{this.label ?? ''}</slot>
       </span>,
-      this.tag ? <mud-tag class="tag" type="outlined" semantic="neutral" size="md" label={this.tag}></mud-tag> : null,
       this.expandable ? (
         <mud-icon class="chevron" name="chevron-bottom-small" size={16} aria-hidden="true"></mud-icon>
       ) : null,
@@ -80,10 +84,11 @@ export class MudHeaderNavItem {
 
   render() {
     const isLink = !!this.href && !this.expandable && !this.disabled;
+    const describedBy = this.tag ? this.tooltipId : undefined;
     return (
       <Host>
         {isLink ? (
-          <a class="item" part="item" href={this.href} onClick={this.handleClick}>
+          <a class="item" part="item" href={this.href} aria-describedby={describedBy} onClick={this.handleClick}>
             {this.renderContent()}
           </a>
         ) : (
@@ -92,12 +97,18 @@ export class MudHeaderNavItem {
             part="item"
             type="button"
             disabled={this.disabled}
+            aria-describedby={describedBy}
             aria-expanded={this.expandable ? (this.expanded ? 'true' : 'false') : undefined}
             onClick={this.handleClick}
           >
             {this.renderContent()}
           </button>
         )}
+        {this.tag ? (
+          <span class="tag-tooltip" id={this.tooltipId} role="tooltip">
+            {this.tag}
+          </span>
+        ) : null}
       </Host>
     );
   }

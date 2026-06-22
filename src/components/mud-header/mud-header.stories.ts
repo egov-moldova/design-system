@@ -150,8 +150,20 @@ export const ServiciiMegaMenu: Story = {
   parameters: { controls: { disable: true } },
   render: () => renderHeaderWithMega(),
   play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-    const mega = canvasElement.querySelector('#evo-mega') as (HTMLElement & { columns?: unknown }) | null;
+    const mega = canvasElement.querySelector('#evo-mega') as
+      | (HTMLElement & { columns?: unknown; open?: boolean })
+      | null;
+    const servicii = canvasElement.querySelector('mud-header-nav-item[value="servicii"]') as
+      | (HTMLElement & { active?: boolean })
+      | null;
     if (mega) mega.columns = SERVICII_COLUMNS;
+    // Toggle the mega-menu open/closed from the Servicii nav item.
+    canvasElement.addEventListener('mudNavToggle', (ev: Event) => {
+      const detail = (ev as CustomEvent<{ value: string; expanded: boolean }>).detail;
+      if (!detail || detail.value !== 'servicii') return;
+      if (mega) mega.open = detail.expanded;
+      if (servicii) servicii.active = detail.expanded;
+    });
   },
 };
 
@@ -179,4 +191,129 @@ export const ServicesMenu: Story = {
     const menu = canvasElement.querySelector('#evo-services') as (HTMLElement & { platforms?: unknown }) | null;
     if (menu) menu.platforms = PLATFORMS;
   },
+};
+
+const mobileBarActions = /*html*/ `
+  <div slot="bar-actions" style="display:flex; align-items:center; gap: var(--spacing-16, 16px);">
+    <mud-button variant="primary" appearance="filled" shape="circular">Autentificare</mud-button>
+    <mud-button appearance="text" variant="strict" shape="circular" icon-only aria-label="Căutare">
+      <mud-icon slot="icon" name="search" size="24"></mud-icon>
+    </mud-button>
+  </div>
+`;
+
+const mobileDrawer = /*html*/ `
+  <div slot="search" style="display:flex; align-items:center; gap: var(--spacing-8, 8px); height:44px; padding-inline: var(--spacing-16, 16px); border:1px solid var(--color-border-base-default, #d9d9d9); border-radius: var(--border-radius-full, 999px); color: var(--color-text-base-tertiary, #757575);">
+    <mud-icon name="search" size="20"></mud-icon>
+    <span>Caută</span>
+  </div>
+  <mud-sidebar-item slot="nav" label="Servicii" expandable></mud-sidebar-item>
+  <mud-sidebar-item slot="nav" label="Evenimente de viață" expandable></mud-sidebar-item>
+  <mud-sidebar-item slot="nav" label="Prestatori servicii" expandable></mud-sidebar-item>
+  <mud-sidebar-item slot="nav" label="Despre noi"></mud-sidebar-item>
+  <mud-sidebar-item slot="secondary" icon="dot-grid" label="Platforme utile"></mud-sidebar-item>
+  <mud-sidebar-item slot="secondary" icon="bubble-question" label="Asistență"></mud-sidebar-item>
+  <mud-button slot="actions" variant="primary" appearance="filled" shape="circular" full-width>Intră în cabinet</mud-button>
+  <mud-button slot="actions" variant="secondary" appearance="filled" shape="circular" full-width>Obține semnătura</mud-button>
+`;
+
+/** The compact mobile bar (closed): logo, auth button, search and a hamburger. */
+export const MobileClosed: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => /*html*/ `<div style="max-width:390px;">
+    <mud-header-mobile logo-src="${evoLogo}" logo-alt="EVO">${mobileBarActions}</mud-header-mobile>
+  </div>`,
+};
+
+/** The mobile navigation drawer, open over the full screen. */
+export const MobileOpen: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => /*html*/ `
+    <mud-header-mobile logo-src="${evoLogo}" logo-alt="EVO" language="ro" open>
+      ${mobileBarActions}
+      ${mobileDrawer}
+    </mud-header-mobile>
+  `,
+};
+
+// --- Authenticated state -----------------------------------------------------
+// No new component is needed: the authenticated header is the same shell with a
+// user avatar (instead of the login CTAs) in the `actions` slot, and an
+// optional profile menu (mud-menu) — all via reuse.
+
+const authActions = /*html*/ `
+  <div slot="actions" style="display:flex; align-items:center; gap: var(--spacing-8, 8px);">
+    <mud-button appearance="text" variant="strict" shape="circular" icon-only aria-label="Căutare"><mud-icon slot="icon" name="search" size="24"></mud-icon></mud-button>
+    <mud-button appearance="text" variant="strict" shape="circular" icon-only aria-label="Ajutor"><mud-icon slot="icon" name="bubble-question" size="24"></mud-icon></mud-button>
+    <mud-button appearance="text" variant="strict" shape="circular" icon-only aria-label="Platforme utile"><mud-icon slot="icon" name="dot-grid" size="24"></mud-icon></mud-button>
+  </div>
+  <button slot="actions" aria-label="Contul meu" aria-haspopup="menu" style="border:0; background:transparent; padding:0; cursor:pointer; border-radius: var(--border-radius-full, 999px);">
+    <mud-avatar name="Ion Popescu" initials="IP" size="md"></mud-avatar>
+  </button>
+`;
+
+/** Authenticated desktop header: the login CTAs give way to a user avatar, with a profile menu (mud-menu) below it. */
+export const HeaderAuthenticated: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => /*html*/ `
+    <div>
+      <mud-header government-label="Guvernul Republicii Moldova" language="ro" nav-label="Principal">
+        <img slot="government" src="${governmentCrest}" alt="" width="24" height="24" style="display:block;" />
+        <img slot="logo" src="${evoLogo}" alt="EVO" style="display:block; height:52px; width:auto;" />
+        <mud-header-nav-item slot="nav" value="servicii" label="Servicii" expandable></mud-header-nav-item>
+        <mud-header-nav-item slot="nav" value="prestatori" label="Prestatori servicii" href="#prestatori"></mud-header-nav-item>
+        ${authActions}
+      </mud-header>
+      <div style="display:flex; justify-content:flex-end; max-width:1280px; margin-inline:auto; padding-inline: var(--spacing-24, 24px); margin-block-start: var(--spacing-8, 8px);">
+        <mud-menu type="contextual" aria-label="Contul meu">
+          <mud-menu-item value="profile" label="Profilul meu"></mud-menu-item>
+          <mud-menu-item value="services" label="Serviciile mele"></mud-menu-item>
+          <mud-menu-item value="settings" label="Setări cont"></mud-menu-item>
+          <mud-menu-item heading></mud-menu-item>
+          <mud-menu-item value="logout" label="Ieși din cont"></mud-menu-item>
+        </mud-menu>
+      </div>
+    </div>
+  `,
+};
+
+const mobileAuthBar = /*html*/ `
+  <div slot="bar-actions" style="display:flex; align-items:center; gap: var(--spacing-12, 12px);">
+    <mud-button appearance="text" variant="strict" shape="circular" icon-only aria-label="Căutare"><mud-icon slot="icon" name="search" size="24"></mud-icon></mud-button>
+    <mud-avatar name="Ion Popescu" initials="IP" size="md"></mud-avatar>
+  </div>
+`;
+
+/** Authenticated mobile bar: a user avatar replaces the "Autentificare" button. */
+export const MobileAuthenticated: Story = {
+  parameters: { controls: { disable: true } },
+  render: () => /*html*/ `<div style="max-width:390px;">
+    <mud-header-mobile logo-src="${evoLogo}" logo-alt="EVO">${mobileAuthBar}</mud-header-mobile>
+  </div>`,
+};
+
+/**
+ * Responsive EVO header. At ≥1248px (the EVO desktop breakpoint) the full
+ * desktop bar shows; below it, the desktop nav + pre-header collapse and the
+ * compact `mud-header-mobile` (bar + drawer — tap the hamburger) takes over.
+ * **Resize the canvas across 1248px** to see the switch.
+ */
+export const Responsive: Story = {
+  parameters: { controls: { disable: true }, layout: 'fullscreen' },
+  render: () => /*html*/ `
+    <style>
+      .evo-h-desktop { display: none; }
+      .evo-h-mobile { display: block; }
+      @media (min-width: 1248px) {
+        .evo-h-desktop { display: block; }
+        .evo-h-mobile { display: none; }
+      }
+    </style>
+    <div class="evo-h-desktop">
+      ${renderHeader({ governmentLabel: 'Guvernul Republicii Moldova', language: 'ro', navLabel: 'Principal' })}
+    </div>
+    <div class="evo-h-mobile">
+      <mud-header-mobile logo-src="${evoLogo}" logo-alt="EVO">${mobileBarActions}${mobileDrawer}</mud-header-mobile>
+    </div>
+  `,
 };

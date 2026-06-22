@@ -55,6 +55,7 @@ export { MudHeader } from './components/mud-header/mud-header';
 export { MudHeaderNavItem } from './components/mud-header/mud-header-nav-item';
 export { MudHeaderMegaMenu } from './components/mud-header/mud-header-mega-menu';
 export { MudHeaderServicesMenu } from './components/mud-header/mud-header-services-menu';
+export { MudHeaderMobile } from './components/mud-header/mud-header-mobile';
 export { HEADER_DEFAULT_LANGUAGES } from './components/mud-header/mud-header.types';
 export type {
   HeaderLanguage,

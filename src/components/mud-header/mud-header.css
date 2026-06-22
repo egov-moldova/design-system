@@ -14,6 +14,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  column-gap: var(--header-main-bar-gap);
   inline-size: 100%;
   max-inline-size: var(--header-container-max-inline-size);
   margin-inline: auto;
@@ -115,6 +116,11 @@
   align-items: stretch;
   gap: var(--spacing-6);
   block-size: var(--header-main-bar-block-size);
+  min-inline-size: 0;
+  /* Clip horizontal overflow (prevents nav/action overlap) but let the
+     nav-item status tooltip escape vertically. */
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 .trailing {

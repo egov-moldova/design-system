@@ -1,5 +1,6 @@
 :host {
   display: block;
+  position: relative;
 }
 
 .item {
@@ -26,8 +27,33 @@
   padding-inline-end: var(--header-nav-item-padding-inline-end);
 }
 
-.tag {
-  flex: none;
+/* Status hint shown as a tooltip on hover/focus (no arrow). */
+.tag-tooltip {
+  position: absolute;
+  bottom: calc(100% - 4px);
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  padding-block: var(--spacing-2, 2px);
+  padding-inline: var(--spacing-8, 8px);
+  border-radius: var(--border-radius-4, 4px);
+  background-color: var(--color-background-base-inverse-default, #1e1e1e);
+  color: var(--color-background-base-inverse-on-color, #ffffff);
+  font-family: var(--header-nav-item-font-family);
+  font-size: var(--font-size-14, 14px);
+  line-height: var(--line-height-20, 20px);
+  font-weight: var(--font-weight-medium, 500);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 120ms ease-out;
+}
+
+:host(:hover) .tag-tooltip,
+:host(:focus-within) .tag-tooltip {
+  opacity: 1;
+  visibility: visible;
 }
 
 .chevron {
