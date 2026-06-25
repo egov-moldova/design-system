@@ -48,9 +48,10 @@ describe('mud-tabs', () => {
     it('renders with default props reflected on the host', async () => {
       const { root } = await render(<mud-tabs aria-label="Navigare"></mud-tabs>);
       expect(root?.getAttribute('size')).toBe('md');
-      expect(root?.getAttribute('role')).toBe('tablist');
-      expect(root?.getAttribute('aria-label')).toBe('Navigare');
-      expect(root?.getAttribute('aria-orientation')).toBe('horizontal');
+      // role="tablist" lives on .track (shadow DOM), not on the host, so that
+      // data-driven <mud-tab> children inside shadow DOM are owned by the tablist
+      // in the flat accessibility tree (fixes aria-required-children violation).
+      expect(root?.getAttribute('role')).toBeNull();
     });
 
     it.each(TABS_SIZES)('reflects size="%s" to the host', async size => {
@@ -247,10 +248,12 @@ describe('mud-tabs', () => {
   });
 
   describe('a11y wiring', () => {
-    it('host carries role="tablist" and forwards aria-label', async () => {
+    it('.track carries role="tablist", aria-label and aria-orientation', async () => {
       const { root } = await render(<mud-tabs aria-label="Cont"></mud-tabs>);
-      expect(root?.getAttribute('role')).toBe('tablist');
-      expect(root?.getAttribute('aria-label')).toBe('Cont');
+      const track = root?.shadowRoot?.querySelector('.track');
+      expect(track?.getAttribute('role')).toBe('tablist');
+      expect(track?.getAttribute('aria-label')).toBe('Cont');
+      expect(track?.getAttribute('aria-orientation')).toBe('horizontal');
     });
 
     it('each mud-tab carries role="tab" and aria-selected', async () => {

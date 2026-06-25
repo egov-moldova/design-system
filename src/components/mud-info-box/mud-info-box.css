@@ -1,0 +1,239 @@
+:host {
+  /* Color slots — overridden per [emphasis][variant] below (subtle/info default). */
+  --_bg: var(--info-box-subtle-info-background);
+  --_text: var(--info-box-subtle-info-text);
+  --_icon: var(--info-box-subtle-info-icon);
+  --_close-icon: var(--info-box-subtle-info-close-icon);
+
+  display: flex;
+  align-items: flex-start;
+  gap: var(--info-box-container-gap);
+  inline-size: 100%;
+  box-sizing: border-box;
+  padding-block: var(--info-box-container-padding-block);
+  padding-inline: var(--info-box-container-padding-inline);
+  border-radius: var(--info-box-container-border-radius);
+
+  background-color: var(--_bg);
+  color: var(--_text);
+
+  font-family: var(--info-box-body-font-family);
+  font-size: var(--info-box-body-font-size);
+  line-height: var(--info-box-body-line-height);
+  font-weight: var(--info-box-body-font-weight);
+}
+
+/* ---------- emphasis × variant matrix ---------- */
+
+:host([emphasis='subtle'][variant='info']) {
+  --_bg: var(--info-box-subtle-info-background);
+  --_text: var(--info-box-subtle-info-text);
+  --_icon: var(--info-box-subtle-info-icon);
+  --_close-icon: var(--info-box-subtle-info-close-icon);
+}
+
+:host([emphasis='subtle'][variant='info-moderate']) {
+  --_bg: var(--info-box-subtle-info-moderate-background);
+  --_text: var(--info-box-subtle-info-moderate-text);
+  --_icon: var(--info-box-subtle-info-moderate-icon);
+  --_close-icon: var(--info-box-subtle-info-moderate-close-icon);
+}
+
+:host([emphasis='subtle'][variant='warning']) {
+  --_bg: var(--info-box-subtle-warning-background);
+  --_text: var(--info-box-subtle-warning-text);
+  --_icon: var(--info-box-subtle-warning-icon);
+  --_close-icon: var(--info-box-subtle-warning-close-icon);
+}
+
+:host([emphasis='subtle'][variant='error']) {
+  --_bg: var(--info-box-subtle-error-background);
+  --_text: var(--info-box-subtle-error-text);
+  --_icon: var(--info-box-subtle-error-icon);
+  --_close-icon: var(--info-box-subtle-error-close-icon);
+}
+
+:host([emphasis='strong'][variant='info']) {
+  --_bg: var(--info-box-strong-info-background);
+  --_text: var(--info-box-strong-info-text);
+  --_icon: var(--info-box-strong-info-icon);
+  --_close-icon: var(--info-box-strong-info-close-icon);
+}
+
+:host([emphasis='strong'][variant='info-moderate']) {
+  --_bg: var(--info-box-strong-info-moderate-background);
+  --_text: var(--info-box-strong-info-moderate-text);
+  --_icon: var(--info-box-strong-info-moderate-icon);
+  --_close-icon: var(--info-box-strong-info-moderate-close-icon);
+}
+
+:host([emphasis='strong'][variant='warning']) {
+  --_bg: var(--info-box-strong-warning-background);
+  --_text: var(--info-box-strong-warning-text);
+  --_icon: var(--info-box-strong-warning-icon);
+  --_close-icon: var(--info-box-strong-warning-close-icon);
+}
+
+:host([emphasis='strong'][variant='error']) {
+  --_bg: var(--info-box-strong-error-background);
+  --_text: var(--info-box-strong-error-text);
+  --_icon: var(--info-box-strong-error-icon);
+  --_close-icon: var(--info-box-strong-error-close-icon);
+}
+
+/* ---------- main (leading icon + content) ---------- */
+
+.main {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--info-box-container-gap);
+}
+
+/* ---------- leading icon ---------- */
+
+.icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--info-box-icon-size);
+  /* Match the body line box so the icon aligns with the first line of text. */
+  block-size: var(--info-box-body-line-height);
+  color: var(--_icon);
+}
+
+.icon mud-icon {
+  --icon-color: currentcolor;
+}
+
+::slotted([slot='icon-start']) {
+  display: inline-flex;
+  inline-size: var(--info-box-icon-size);
+  block-size: var(--info-box-icon-size);
+  color: var(--_icon);
+}
+
+::slotted(mud-icon[slot='icon-start']) {
+  --icon-color: currentcolor;
+}
+
+/* ---------- content stack ---------- */
+
+.content {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--info-box-container-stack-gap);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--info-box-heading-font-family);
+  font-size: var(--info-box-heading-font-size);
+  line-height: var(--info-box-heading-line-height);
+  font-weight: var(--info-box-heading-font-weight);
+  color: inherit;
+}
+
+/* Heading sits directly above the body with a tighter gap than the stack. */
+:host(.has-title) .body {
+  margin-block-start: calc(var(--info-box-container-heading-gap) - var(--info-box-container-stack-gap));
+}
+
+.body {
+  margin: 0;
+  min-inline-size: 0;
+  color: inherit;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- actions (inline link / button group) ---------- */
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-12);
+}
+
+:host(:not(.has-actions)) .actions {
+  display: none;
+}
+
+::slotted([slot='actions']) {
+  color: inherit;
+}
+
+/* ---------- close button ---------- */
+
+.close {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  /* Target size per the Figma Target Sizes panel: 32px on pointer devices,
+     40px on touch (below). The × glyph stays 16px; only the hit area grows. */
+  inline-size: var(--info-box-close-size-pointer);
+  block-size: var(--info-box-close-size-pointer);
+  padding: 0;
+
+  border: 0;
+  border-radius: var(--info-box-close-border-radius);
+  background-color: transparent;
+  color: var(--_close-icon);
+
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+
+  transition:
+    background-color var(--info-box-container-transition-duration) var(--info-box-container-transition-timing-function),
+    color var(--info-box-container-transition-duration) var(--info-box-container-transition-timing-function);
+}
+
+/* Touch devices: grow the hit target to 40px (Figma Target Sizes panel). */
+@media (pointer: coarse) {
+  .close {
+    inline-size: var(--info-box-close-size-touch);
+    block-size: var(--info-box-close-size-touch);
+  }
+}
+
+.close:hover {
+  background-color: var(--info-box-close-background-hover);
+}
+
+.close:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
+    0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
+  position: relative;
+  z-index: 1;
+}
+
+.close-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--info-box-close-icon-size);
+  block-size: var(--info-box-close-icon-size);
+}
+
+.close-icon svg {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  pointer-events: none;
+}
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .close {
+    transition: none;
+  }
+}

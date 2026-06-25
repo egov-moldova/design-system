@@ -1,6 +1,6 @@
 import { AttachInternals, Component, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
 
-import { FILE_INPUT_SIZES } from './mud-file-input.types';
+import { FILE_INPUT_SIZES, FILE_INPUT_VARIANTS } from './mud-file-input.types';
 import type {
   FileInputChangeDetail,
   FileInputDropDetail,
@@ -8,6 +8,7 @@ import type {
   FileInputRejectionReason,
   FileInputRemoveDetail,
   FileInputSize,
+  FileInputVariant,
 } from './mud-file-input.types';
 
 let fileInputInstanceCounter = 0;
@@ -49,6 +50,14 @@ export class MudFileInput {
    * @default 'md'
    */
   @Prop({ reflect: true }) size: FileInputSize = 'md';
+
+  /**
+   * Presentation. `dropzone` (default) shows the dashed drag-and-drop area;
+   * `button` shows a plain "Choose file" button (the Figma "Upload Button").
+   * Both share the same file list, captions and validation.
+   * @default 'dropzone'
+   */
+  @Prop({ reflect: true }) variant: FileInputVariant = 'dropzone';
 
   /** Disables interactivity — drop zone ignores drops, button is blocked. */
   @Prop({ reflect: true }) disabled: boolean = false;
@@ -176,11 +185,43 @@ export class MudFileInput {
   private nativeInput?: HTMLInputElement;
   /** Drag enters/leaves fire for child elements too; counter-tracking keeps `isActive` stable. */
   private dragDepth: number = 0;
+  /** Object URLs created for image-preview thumbnails, keyed by File for revocation. */
+  private previewUrls = new Map<File, string>();
 
   componentWillLoad() {
     this.captureAriaLabel();
     this.syncFormValue(this.files);
     this.syncValidity(this.files);
+  }
+
+  componentWillRender() {
+    this.syncPreviewUrls();
+  }
+
+  disconnectedCallback() {
+    for (const url of this.previewUrls.values()) URL.revokeObjectURL(url);
+    this.previewUrls.clear();
+  }
+
+  /**
+   * Keep the object-URL map in step with `files`: mint a thumbnail URL for every
+   * image file and revoke any whose file left the list. Non-image files keep the
+   * document glyph. Runs in `componentWillRender` so it's idempotent and never leaks.
+   */
+  private syncPreviewUrls() {
+    if (typeof URL?.createObjectURL !== 'function') return;
+    const current = new Set(this.files);
+    for (const [file, url] of this.previewUrls) {
+      if (!current.has(file)) {
+        URL.revokeObjectURL(url);
+        this.previewUrls.delete(file);
+      }
+    }
+    for (const file of this.files) {
+      if (file.type?.startsWith('image/') && !this.previewUrls.has(file)) {
+        this.previewUrls.set(file, URL.createObjectURL(file));
+      }
+    }
   }
 
   private captureAriaLabel(): void {
@@ -212,6 +253,18 @@ export class MudFileInput {
         )}. Falling back to "md".`,
       );
       this.size = 'md';
+    }
+  }
+
+  @Watch('variant')
+  validateVariant(next: FileInputVariant) {
+    if (!FILE_INPUT_VARIANTS.includes(next)) {
+      console.warn(
+        `[mud-file-input] variant="${String(next)}" is not supported. Supported: ${FILE_INPUT_VARIANTS.join(
+          ', ',
+        )}. Falling back to "dropzone".`,
+      );
+      this.variant = 'dropzone';
     }
   }
 
@@ -573,6 +626,7 @@ export class MudFileInput {
     const supportedFormats = this.resolvedSupportedFormatsText();
     const maxSizeCaption = this.resolvedMaxSizeText();
     const hasCaptions = Boolean(supportedFormats) || Boolean(maxSizeCaption);
+    const isButton = this.variant === 'button';
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -580,6 +634,7 @@ export class MudFileInput {
       'is-focused': this.isFocused && !effectivelyDisabled,
       'has-label': this.hasVisibleLabel(),
       'has-files': this.files.length > 0,
+      'variant-button': isButton,
     };
 
     return (
@@ -597,73 +652,104 @@ export class MudFileInput {
           ) : null}
         </label>
 
-        <div
-          id={this.dropzoneId}
-          class="dropzone"
-          part="dropzone"
-          /* Drop-target only — no `role="button"` / `tabIndex` here. ARIA forbids
-             a button-role on an element that contains a focusable descendant
-             (the inner "Alege fișiere" `<button>`), and `aria-required` is not
-             allowed on `role="button"`. The inner button is the keyboard
-             activator; clicks anywhere on the dropzone still bubble to it.
+        {isButton
+          ? [
+              hasCaptions ? (
+                <div class="captions captions--inline" part="captions">
+                  <span class="captions__formats" part="captions-formats">
+                    {supportedFormats}
+                  </span>
+                  <span class="captions__max-size" part="captions-max-size">
+                    {maxSizeCaption}
+                  </span>
+                </div>
+              ) : null,
+              <mud-button
+                class="upload-button"
+                part="upload-button"
+                variant="primary"
+                appearance="filled"
+                size={this.size === 'lg' ? 'md' : 'sm'}
+                disabled={effectivelyDisabled}
+                aria-label={ariaLabelAttr}
+                aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
+                aria-describedby={this.describedBy()}
+                aria-invalid={this.invalid ? 'true' : null}
+                onClick={this.handleBrowseClick}
+                onFocus={this.handleFocus}
+                onBlur={this.handleBlur}
+              >
+                {this.chooseFilesText}
+              </mud-button>,
+            ]
+          : [
+              <div
+                id={this.dropzoneId}
+                class="dropzone"
+                part="dropzone"
+                /* Drop-target only — no `role="button"` / `tabIndex` here. ARIA forbids
+                   a button-role on an element that contains a focusable descendant
+                   (the inner "Alege fișiere" `<button>`), and `aria-required` is not
+                   allowed on `role="button"`. The inner button is the keyboard
+                   activator; clicks anywhere on the dropzone still bubble to it.
 
-             `aria-label` / `aria-labelledby` / `aria-describedby` are NOT set
-             here either — ARIA's `aria-prohibited-attr` rule disallows them
-             on generic (`<div>`-without-role) elements. Those associations
-             live on the inner button (the actual interactive control). */
-          onClick={this.handleBrowseClick}
-          onDragEnter={this.handleDragEnter}
-          onDragOver={this.handleDragOver}
-          onDragLeave={this.handleDragLeave}
-          onDrop={this.handleDrop}
-        >
-          {!isActiveNow ? (
-            <span class="dropzone-icon" part="dropzone-icon" aria-hidden="true">
-              <slot name="icon">
-                <mud-icon name="cloud-upload" size={24} color="icon-base-default" />
-              </slot>
-            </span>
-          ) : null}
-          <span class="dropzone-body" part="dropzone-body">
-            {isActiveNow ? (
-              <span class="dropzone-text" part="dropzone-text">
-                {this.dropzoneActiveText}
-              </span>
-            ) : (
-              <span class="dropzone-cta" part="dropzone-cta">
-                <span class="dropzone-cta__body">{this.ctaText}</span>
-                <button
-                  type="button"
-                  class="dropzone-cta__link"
-                  part="choose-files-link"
-                  tabIndex={effectivelyDisabled ? -1 : 0}
-                  disabled={effectivelyDisabled}
-                  aria-disabled={effectivelyDisabled ? 'true' : null}
-                  aria-label={ariaLabelAttr}
-                  aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
-                  aria-describedby={this.describedBy()}
-                  aria-invalid={this.invalid ? 'true' : null}
-                  onClick={this.handleChooseFilesClick}
-                  onFocus={this.handleFocus}
-                  onBlur={this.handleBlur}
-                >
-                  {this.chooseFilesText}
-                </button>
-              </span>
-            )}
-          </span>
-        </div>
-
-        {!isActiveNow && hasCaptions ? (
-          <div class="captions" part="captions">
-            <span class="captions__formats" part="captions-formats">
-              {supportedFormats}
-            </span>
-            <span class="captions__max-size" part="captions-max-size">
-              {maxSizeCaption}
-            </span>
-          </div>
-        ) : null}
+                   `aria-label` / `aria-labelledby` / `aria-describedby` are NOT set
+                   here either — ARIA's `aria-prohibited-attr` rule disallows them
+                   on generic (`<div>`-without-role) elements. Those associations
+                   live on the inner button (the actual interactive control). */
+                onClick={this.handleBrowseClick}
+                onDragEnter={this.handleDragEnter}
+                onDragOver={this.handleDragOver}
+                onDragLeave={this.handleDragLeave}
+                onDrop={this.handleDrop}
+              >
+                {!isActiveNow ? (
+                  <span class="dropzone-icon" part="dropzone-icon" aria-hidden="true">
+                    <slot name="icon">
+                      <mud-icon name="cloud-upload" size={24} color="icon-base-default" />
+                    </slot>
+                  </span>
+                ) : null}
+                <span class="dropzone-body" part="dropzone-body">
+                  {isActiveNow ? (
+                    <span class="dropzone-text" part="dropzone-text">
+                      {this.dropzoneActiveText}
+                    </span>
+                  ) : (
+                    <span class="dropzone-cta" part="dropzone-cta">
+                      <span class="dropzone-cta__body">{this.ctaText}</span>
+                      <button
+                        type="button"
+                        class="dropzone-cta__link"
+                        part="choose-files-link"
+                        tabIndex={effectivelyDisabled ? -1 : 0}
+                        disabled={effectivelyDisabled}
+                        aria-disabled={effectivelyDisabled ? 'true' : null}
+                        aria-label={ariaLabelAttr}
+                        aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
+                        aria-describedby={this.describedBy()}
+                        aria-invalid={this.invalid ? 'true' : null}
+                        onClick={this.handleChooseFilesClick}
+                        onFocus={this.handleFocus}
+                        onBlur={this.handleBlur}
+                      >
+                        {this.chooseFilesText}
+                      </button>
+                    </span>
+                  )}
+                </span>
+              </div>,
+              !isActiveNow && hasCaptions ? (
+                <div class="captions" part="captions">
+                  <span class="captions__formats" part="captions-formats">
+                    {supportedFormats}
+                  </span>
+                  <span class="captions__max-size" part="captions-max-size">
+                    {maxSizeCaption}
+                  </span>
+                </div>
+              ) : null,
+            ]}
 
         <input
           ref={el => (this.nativeInput = el as HTMLInputElement)}
@@ -685,6 +771,7 @@ export class MudFileInput {
                 <mud-file-item
                   filename={file.name}
                   size={file.size}
+                  preview-src={this.previewUrls.get(file)}
                   disabled={effectivelyDisabled}
                   onMudRemove={this.handleRemove(index)}
                 />

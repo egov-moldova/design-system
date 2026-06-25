@@ -1,4 +1,4 @@
-import { Component, Element, Event, EventEmitter, Host, Prop, h } from '@stencil/core';
+import { Component, Element, Event, EventEmitter, Host, Prop, State, h } from '@stencil/core';
 
 import type {
   ProgressTrackerOrientation,
@@ -6,6 +6,13 @@ import type {
   ProgressTrackerStepClickDetail,
   ProgressTrackerStepStatus,
 } from './mud-progress-tracker.types';
+
+/**
+ * Below this container inline-size (px) a horizontal tracker auto-switches to
+ * the compact dot rail, so the step labels never collide on mobile. Heuristic
+ * mobile breakpoint — tune here if longer labels need an earlier switch.
+ */
+const AUTO_COMPACT_MAX_WIDTH = 600;
 
 /**
  * Progress Tracker (Stepper) — visualises a user's position in a multi-step process.
@@ -55,6 +62,17 @@ export class MudProgressTracker {
   @Prop({ reflect: true }) interactive: boolean = false;
 
   /**
+   * Compact "dot rail" rendering — the mobile breakpoint from Figma. Hides the
+   * step numbers and labels, leaving a rail of dots; per-status fills convey
+   * progress (filled brand + checkmark = completed, hollow ring = current /
+   * available / pending, danger ring + cross = error). Status icons are kept;
+   * only the numeric indicators and text labels are hidden. Works in both
+   * orientations.
+   * @default false
+   */
+  @Prop({ reflect: true }) compact: boolean = false;
+
+  /**
    * Declarative step list. Each item: `{ id?, label, supportingText?, status, iconName?, disabled? }`.
    * `status` drives the visual state and ARIA semantics — see {@link ProgressTrackerStepStatus}.
    */
@@ -73,6 +91,9 @@ export class MudProgressTracker {
    */
   @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
 
+  /** True when the container is narrower than the auto-compact breakpoint. */
+  @State() private isNarrow: boolean = false;
+
   @Element() host!: HTMLElement;
 
   /**
@@ -82,6 +103,20 @@ export class MudProgressTracker {
    */
   @Event({ bubbles: true, composed: true }) mudStepClick!: EventEmitter<ProgressTrackerStepClickDetail>;
 
+  private resizeObserver?: ResizeObserver;
+
+  connectedCallback() {
+    // Auto-switch a horizontal tracker to the compact dot rail when its
+    // container is too narrow for the labels (the Figma mobile breakpoint).
+    // Vertical never needs this — stacked labels don't collide.
+    if (typeof ResizeObserver === 'undefined') return;
+    this.resizeObserver = new ResizeObserver(entries => {
+      const width = entries[0]?.contentRect.width ?? this.host.clientWidth;
+      if (width > 0) this.isNarrow = width < AUTO_COMPACT_MAX_WIDTH;
+    });
+    this.resizeObserver.observe(this.host);
+  }
+
   componentWillLoad() {
     // Default accessible name for the host `role="list"`. Set imperatively (not
     // via render) so it doesn't round-trip through the `ariaLabel` prop's native
@@ -89,6 +124,11 @@ export class MudProgressTracker {
     if (!this.ariaLabel) {
       this.host.setAttribute('aria-label', 'Progress tracker');
     }
+  }
+
+  disconnectedCallback() {
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = undefined;
   }
 
   /**
@@ -116,8 +156,12 @@ export class MudProgressTracker {
   /** Pick the right inline indicator (icon name, number, or null for raw text). */
   private resolveIconName(step: ProgressTrackerStep, status: ProgressTrackerStepStatus): string | null {
     if (step.iconName) return step.iconName;
-    if (status === 'completed') return 'checkmark-small';
-    if (status === 'error') return 'cross-small';
+    // `-large` checkmark (not `-small`): the small variant is heavily padded, so
+    // at 16px it under-fills the 24px indicator. Error uses the bare `exclamation`
+    // glyph (red "!" inside the danger ring) per the Figma "blocked" state — NOT a
+    // cross, which reads as "cancel" rather than "alert".
+    if (status === 'completed') return 'checkmark-large';
+    if (status === 'error') return 'exclamation';
     return null;
   }
 
@@ -240,6 +284,10 @@ export class MudProgressTracker {
   render() {
     const steps = this.steps;
     const hasSteps = Array.isArray(steps) && steps.length > 0;
+    // Compact dot rail when the consumer opts in (`compact`) OR a horizontal
+    // tracker auto-collapses on a narrow container. Vertical never auto-collapses
+    // (stacked labels don't collide), but an explicit `compact` still applies.
+    const compactMode = this.compact || (this.isNarrow && this.orientation === 'horizontal');
     // The list semantics live on the Host so the consumer-supplied `aria-label`
     // (which lands on the host element) names a real `role="list"` — a bare
     // custom-element host with `aria-label` and no role trips axe
@@ -249,7 +297,7 @@ export class MudProgressTracker {
     // <ol> is presentational; the <li> steps keep their explicit
     // `role="listitem"` and are owned by the host list.
     return (
-      <Host role="list">
+      <Host role="list" class={{ 'is-compact': compactMode }}>
         <ol class="root" role="none">
           {hasSteps ? steps!.map((step, index) => this.renderStep(step, index, steps!.length)) : <slot />}
         </ol>

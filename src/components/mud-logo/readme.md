@@ -39,11 +39,13 @@ logo in a sized container — `mud-service-button` does this for its
 
 ### Used by
 
+ - [mud-header-services-menu](../mud-header)
  - [mud-receipt](../mud-receipt)
 
 ### Graph
 ```mermaid
 graph TD;
+  mud-header-services-menu --> mud-logo
   mud-receipt --> mud-logo
   style mud-logo fill:#f9f,stroke:#333,stroke-width:4px
 ```

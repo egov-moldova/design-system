@@ -1,12 +1,14 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
-import { CHIP_SIZES, CHIP_TYPES } from './mud-chip.types';
-import type { ChipSize, ChipType } from './mud-chip.types';
+import { CHIP_SELECTION_MODES, CHIP_SIZES, CHIP_TYPES } from './mud-chip.types';
+import type { ChipSelectionMode, ChipSize, ChipType } from './mud-chip.types';
 
 type ChipArgs = {
   type: ChipType;
   size: ChipSize;
   selected: boolean;
+  selectionMode: ChipSelectionMode;
+  count: number;
   disabled: boolean;
   removable: boolean;
   label: string;
@@ -16,9 +18,11 @@ const renderChip = (args: ChipArgs) => /*html*/ `
   <mud-chip
     type="${args.type}"
     size="${args.size}"
+    selection-mode="${args.selectionMode}"
     ${args.selected ? 'selected' : ''}
     ${args.disabled ? 'disabled' : ''}
     ${args.removable ? 'removable' : ''}
+    ${typeof args.count === 'number' && args.count > 0 ? `count="${args.count}"` : ''}
   >${args.label}</mud-chip>
 `;
 
@@ -26,9 +30,11 @@ const docsSourceDefault = (args: ChipArgs) => {
   const attrs = [
     args.type !== 'filter' ? `type="${args.type}"` : '',
     args.size !== 'md' ? `size="${args.size}"` : '',
+    args.selectionMode !== 'mono' ? `selection-mode="${args.selectionMode}"` : '',
     args.selected ? 'selected' : '',
     args.disabled ? 'disabled' : '',
     args.removable ? 'removable' : '',
+    typeof args.count === 'number' && args.count > 0 ? `count="${args.count}"` : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -87,6 +93,16 @@ extension.
       control: 'boolean',
       description: 'Selected state. Only meaningful when `type="filter"`.',
     },
+    selectionMode: {
+      control: 'inline-radio',
+      options: CHIP_SELECTION_MODES,
+      description: 'Filter selection behaviour. `multi` auto-shows a leading ✓ when selected.',
+      table: { defaultValue: { summary: 'mono' } },
+    },
+    count: {
+      control: { type: 'number', min: 0 },
+      description: 'Numeric badge after the label. 0 / non-number hides it.',
+    },
     disabled: { control: 'boolean' },
     removable: {
       control: 'boolean',
@@ -98,6 +114,8 @@ extension.
     type: 'filter',
     size: 'md',
     selected: false,
+    selectionMode: 'mono',
+    count: 0,
     disabled: false,
     removable: false,
     label: 'Apartament',
@@ -266,39 +284,77 @@ const renderMultiSelectionGroup = () => /*html*/ `
   <div style="${sectionStyle}">
     <p style="${captionStyle}">Tip de proprietate (mai multe selecții permise)</p>
     <div style="${groupStyle}" role="group" aria-label="Tip de proprietate">
-      <mud-chip selected>
-        <mud-icon slot="icon-start" name="checkmark-small" size="20"></mud-icon>
-        Apartament
-      </mud-chip>
-      <mud-chip>Casă</mud-chip>
-      <mud-chip selected>
-        <mud-icon slot="icon-start" name="checkmark-small" size="20"></mud-icon>
-        Comercial
-      </mud-chip>
-      <mud-chip>Teren</mud-chip>
-      <mud-chip>Garaj</mud-chip>
-      <mud-chip>Depozit</mud-chip>
+      <mud-chip selection-mode="multi" selected>Apartament</mud-chip>
+      <mud-chip selection-mode="multi">Casă</mud-chip>
+      <mud-chip selection-mode="multi" selected>Comercial</mud-chip>
+      <mud-chip selection-mode="multi">Teren</mud-chip>
+      <mud-chip selection-mode="multi">Garaj</mud-chip>
+      <mud-chip selection-mode="multi">Depozit</mud-chip>
     </div>
   </div>
 `;
-// Multi-selection chips show a leading check on the selected state (Figma 524:3964).
+// `selection-mode="multi"` renders the leading check automatically on selected (Figma 524:3964).
 const docsSourceMultiSelectionGroup = /*html*/ `<div role="group" aria-label="Tip de proprietate">
-  <mud-chip selected>
-    <mud-icon slot="icon-start" name="checkmark-small" size="20"></mud-icon>
-    Apartament
-  </mud-chip>
-  <mud-chip>Casă</mud-chip>
-  <mud-chip selected>
-    <mud-icon slot="icon-start" name="checkmark-small" size="20"></mud-icon>
-    Comercial
-  </mud-chip>
-  <mud-chip>Teren</mud-chip>
-  <mud-chip>Garaj</mud-chip>
-  <mud-chip>Depozit</mud-chip>
+  <mud-chip selection-mode="multi" selected>Apartament</mud-chip>
+  <mud-chip selection-mode="multi">Casă</mud-chip>
+  <mud-chip selection-mode="multi" selected>Comercial</mud-chip>
+  <mud-chip selection-mode="multi">Teren</mud-chip>
 </div>`;
 export const MultiSelectionGroup: Story = {
   render: renderMultiSelectionGroup,
   parameters: { controls: { disable: true }, docs: { source: { code: docsSourceMultiSelectionGroup } } },
+};
+
+// ---------------------------------------------------------------------------
+// WithAvatar — input chip with a leading avatar (slot="avatar")
+// ---------------------------------------------------------------------------
+const AVATAR_PHOTO = 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&q=80';
+const renderWithAvatar = () => /*html*/ `
+  <div style="${rowStyle}; padding: var(--spacing-24);">
+    <mud-chip type="input" removable>
+      <mud-avatar slot="avatar" type="initials" name="Ion Popescu"></mud-avatar>
+      Ion Popescu
+    </mud-chip>
+    <mud-chip type="input" removable>
+      <img slot="avatar" src="${AVATAR_PHOTO}" alt="" />
+      Andrei Ionescu
+    </mud-chip>
+    <mud-chip type="input" size="sm" removable>
+      <mud-avatar slot="avatar" type="initials" name="Maria Pop"></mud-avatar>
+      Maria Pop
+    </mud-chip>
+  </div>
+`;
+const docsSourceWithAvatar = /*html*/ `<mud-chip type="input" removable>
+  <mud-avatar slot="avatar" type="initials" name="Ion Popescu"></mud-avatar>
+  Ion Popescu
+</mud-chip>
+
+<mud-chip type="input" removable>
+  <img slot="avatar" src="…" alt="" />
+  Andrei Ionescu
+</mud-chip>`;
+export const WithAvatar: Story = {
+  render: renderWithAvatar,
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceWithAvatar } } },
+};
+
+// ---------------------------------------------------------------------------
+// NumberedBadge — filter chip with a trailing count (default + selected)
+// ---------------------------------------------------------------------------
+const renderNumberedBadge = () => /*html*/ `
+  <div style="${rowStyle}; padding: var(--spacing-24);">
+    <mud-chip count="3">Apartament</mud-chip>
+    <mud-chip selected count="3">Casă</mud-chip>
+    <mud-chip size="sm" count="12">Comercial</mud-chip>
+    <mud-chip selected size="sm" count="12">Teren</mud-chip>
+  </div>
+`;
+const docsSourceNumberedBadge = /*html*/ `<mud-chip count="3">Apartament</mud-chip>
+<mud-chip selected count="3">Casă</mud-chip>`;
+export const NumberedBadge: Story = {
+  render: renderNumberedBadge,
+  parameters: { controls: { disable: true }, docs: { source: { code: docsSourceNumberedBadge } } },
 };
 
 // ---------------------------------------------------------------------------

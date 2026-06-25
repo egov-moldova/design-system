@@ -133,7 +133,7 @@
     },
     "border": {
       "default": { "$value": "{color.border.base.default}", "$type": "color" },
-      "hover": { "$value": "{color.border.base.tertiary}", "$type": "color" },
+      "hover": { "$value": "{color.border.brand.default}", "$type": "color" },
       "focus": { "$value": "{color.border.brand.default}", "$type": "color" },
       "active": { "$value": "{color.border.brand.default}", "$type": "color" },
       "disabled": { "$value": "{color.border.disabled.default}", "$type": "color" },

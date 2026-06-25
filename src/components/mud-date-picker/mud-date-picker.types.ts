@@ -1,10 +1,19 @@
 export const DATE_PICKER_MODES = ['single', 'range', 'multi'] as const;
 export const DATE_PICKER_BREAKPOINTS = ['desktop', 'mobile', 'docked'] as const;
 export const DATE_PICKER_VIEWS = ['days', 'months', 'years'] as const;
+export const DATE_PICKER_HEADER_STYLES = ['title', 'dropdown'] as const;
 
 export type DatePickerMode = (typeof DATE_PICKER_MODES)[number];
 export type DatePickerBreakpoint = (typeof DATE_PICKER_BREAKPOINTS)[number];
 export type DatePickerView = (typeof DATE_PICKER_VIEWS)[number];
+
+/**
+ * Header presentation:
+ * - `title` — single "Month Year" button that cycles day → month → year views.
+ * - `dropdown` — separate month + year dropdown chips (the "advanced" variant),
+ *   each opening its own selection grid.
+ */
+export type DatePickerHeaderStyle = (typeof DATE_PICKER_HEADER_STYLES)[number];
 
 /**
  * Detail emitted by `mudChange`.

@@ -202,6 +202,12 @@
   gap: var(--pagination-overflow-menu-gap);
 
   min-inline-size: var(--pagination-overflow-menu-min-width);
+  /* Cap a large collapsed range (e.g. page 1 of 40 collapses ~34 pages) to a
+     fixed height and scroll the surplus inside, instead of letting the menu run
+     off the viewport. ~7.5 rows stay visible so the cut-off row hints at more. */
+  max-block-size: var(--pagination-overflow-menu-max-height);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   background-color: var(--pagination-overflow-menu-background);
   border: var(--pagination-overflow-menu-border-width) solid var(--pagination-overflow-menu-border-color);
   border-radius: var(--pagination-overflow-menu-border-radius);

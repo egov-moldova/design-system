@@ -135,11 +135,16 @@
     box-shadow var(--_dropzone-transition-duration) var(--_dropzone-transition-easing);
 }
 
-:host(:not(.is-disabled):not(.is-focused):not(.is-active):hover) .dropzone {
+/* `.is-hover-demo` is a Storybook-only helper that statically paints the hover
+   border (real hover still works via `:hover`). */
+:host(:not(.is-disabled):not(.is-focused):not(.is-active):hover) .dropzone,
+:host(.is-hover-demo:not(.is-disabled)) .dropzone {
   border-color: var(--_border-color-hover);
 }
 
-:host(.is-focused:not(.is-disabled)) .dropzone {
+/* `.is-focus-demo` mirrors the focus visual for static story capture. */
+:host(.is-focused:not(.is-disabled)) .dropzone,
+:host(.is-focus-demo:not(.is-disabled)) .dropzone {
   outline: none;
   border-style: solid;
   border-color: var(--_border-color-focus);
@@ -306,6 +311,29 @@
 
 :host(.is-disabled) .captions {
   color: var(--file-input-caption-color-disabled);
+}
+
+/* ---------- Upload-button variant ---------- */
+
+/* Button hugs its content instead of stretching the full field width. */
+.upload-button {
+  align-self: flex-start;
+}
+
+/* In button mode the captions sit above the button as one left-aligned line
+   (wrapping rather than truncating, since there's no fixed dropzone width). */
+.captions--inline {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: var(--spacing-4) var(--spacing-8);
+  margin-block-start: 0;
+}
+
+.captions--inline .captions__formats {
+  flex: 0 1 auto;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
 }
 
 /* ---------- Native hidden input ---------- */

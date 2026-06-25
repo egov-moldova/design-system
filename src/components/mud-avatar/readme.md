@@ -35,9 +35,9 @@ The component picks its visual mode from the `type` prop:
 
 ## Slots
 
-| Slot      | Description                                                                                                           |
-| --------- | --------------------------------------------------------------------------------------------------------------------- |
-| `"badge"` | Optional notification badge composed at the top-right corner         (e.g. `<span class="notification-dot"></span>`). |
+| Slot      | Description                                                                                                                                            |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `"badge"` | Optional notification badge composed on the top-right edge         (e.g. `<mud-badge slot="badge" type="dot" />`), sized to the         avatar's rung. |
 
 
 ## Shadow Parts

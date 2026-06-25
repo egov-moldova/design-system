@@ -85,7 +85,10 @@
   block-size: var(--modal-header-image-height-sm);
 }
 
-.header-image ::slotted([slot='image']) {
+/* Cover BOTH a light-DOM slotted image AND the `imageSrc`-prop fallback <img>
+   (rendered in shadow DOM, which ::slotted cannot reach). */
+.header-image ::slotted([slot='image']),
+.header-image img {
   position: absolute;
   inset: 0;
   inline-size: 100%;
@@ -98,6 +101,8 @@
   position: absolute;
   inset-block-start: var(--spacing-24);
   inset-inline-end: var(--spacing-20);
+  /* Dedicated lighter background so the close affordance reads on the image. */
+  background-color: var(--modal-close-background-on-image);
 }
 
 .heading {
@@ -116,8 +121,13 @@
   line-height: var(--modal-title-line-height-md);
   font-weight: var(--modal-title-font-weight);
   letter-spacing: var(--modal-title-letter-spacing-md);
+  /* Clamp a long title to 2 lines with an ellipsis, per the Figma "truncation"
+     spec. (Plain text-overflow:ellipsis needs nowrap/clamp to take effect.)
+     Full text stays in the DOM, so aria-labelledby exposes it to AT. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
   overflow-wrap: anywhere;
 }
 
@@ -347,8 +357,12 @@
     max-block-size: var(--modal-container-max-height-mobile);
   }
 
+  /* column-reverse so a standard modal (inline DOM: cancel first, primary last)
+     stacks with the PRIMARY button on top on mobile, per the Figma. The explicit
+     `actions-layout="stacked"` rule (higher specificity) is unaffected — there the
+     consumer controls order. */
   .footer {
-    flex-direction: column;
+    flex-direction: column-reverse;
     align-items: stretch;
   }
 

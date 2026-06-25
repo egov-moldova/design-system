@@ -67,7 +67,11 @@
         "muted": { "$value": "{color.background.base-inverse.default-active}", "$type": "color" },
         "neutral": { "$value": "{color.background.base-inverse.default}", "$type": "color" },
         "accent": { "$value": "{color.background.warning.accent}", "$type": "color" },
-        "success": { "$value": "{color.background.positive.default}", "$type": "color" },
+        "success": {
+          "$value": "{color.background.positive.default-hover}",
+          "$type": "color",
+          "$comment": "Darker green (#027948) instead of positive.default (#039855): white on-color label is 3.73:1 on the lighter green (fails WCAG AA at 14px medium) but ~5.5:1 here. Matches mud-notification / mud-badge."
+        },
         "brand": { "$value": "{color.background.brand.default}", "$type": "color" },
         "danger": { "$value": "{color.background.danger.default}", "$type": "color" }
       },

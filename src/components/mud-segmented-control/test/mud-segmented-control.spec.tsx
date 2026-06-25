@@ -45,6 +45,16 @@ describe('mud-segmented-control', () => {
       expect(root?.getAttribute('size')).toBe(size);
     });
 
+    it('does not reflect the fluid attribute by default', async () => {
+      const { root } = await render(<mud-segmented-control aria-label="Filtru"></mud-segmented-control>);
+      expect(root?.getAttribute('fluid')).toBeNull();
+    });
+
+    it('reflects the fluid attribute when full-width', async () => {
+      const { root } = await render(<mud-segmented-control fluid aria-label="Filtru"></mud-segmented-control>);
+      expect(root?.getAttribute('fluid')).not.toBeNull();
+    });
+
     it('warns and falls back when size is invalid', async () => {
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
       const { root } = await render(<mud-segmented-control aria-label="Filtru"></mud-segmented-control>);

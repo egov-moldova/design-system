@@ -1,9 +1,10 @@
 import { setCustomElements } from '@storybook/web-components-vite';
-import { createElement } from 'react';
-import { createRoot } from 'react-dom/client';
-import { PageFeedbackToolbarCSS } from 'agentation';
+// import { createElement } from 'react';
+// import { createRoot } from 'react-dom/client';
+// import { PageFeedbackToolbarCSS } from 'agentation';
 import { addons } from 'storybook/preview-api';
 import { GLOBALS_UPDATED } from 'storybook/internal/core-events';
+import { INITIAL_VIEWPORTS, MINIMAL_VIEWPORTS } from 'storybook/viewport';
 
 import coreTokens from './stories/assets/core.tokens.json';
 import coreDarkTokens from './stories/assets/core.dark.tokens.json';
@@ -80,7 +81,7 @@ if (typeof document !== 'undefined') {
 }
 
 // Cleanup decorator to remove toast notifications when switching stories
-const cleanupDecorator = (story, context) => {
+const cleanupDecorator = (story) => {
   // Clean up any existing toast notifications from previous stories
   const existingToasts = document.body.querySelectorAll('mud-toast-notification');
   existingToasts.forEach(toast => toast.remove());
@@ -226,6 +227,12 @@ export const parameters = {
       light: { name: 'Light', value: color.background.base },
       dark: { name: 'Dark', value: colorDark.background.base },
     },
+  },
+  // Register device presets so the Viewport toolbar + per-story `defaultViewport`
+  // (e.g. 'mobile1') emulate a device frame. Storybook 9/10 no longer ships
+  // presets by default — without `options` here, `defaultViewport` is a no-op.
+  viewport: {
+    options: { ...MINIMAL_VIEWPORTS, ...INITIAL_VIEWPORTS },
   },
 };
 

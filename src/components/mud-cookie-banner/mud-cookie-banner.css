@@ -203,6 +203,43 @@
   overflow-wrap: anywhere;
 }
 
+/* Mobile: clamp the description to 2 lines until the user expands it (per the
+   Figma `mobile: extended` → `text-extended` states). Applied via the
+   `is-clamped` class, which is only added on the mobile breakpoint. */
+.category-description.is-clamped {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+/* "Mai mult / Mai puțin" (more/less) toggle — a subtle inline text affordance,
+   shown only on mobile when the description overflows its clamp. */
+.category-description-toggle {
+  align-self: flex-start;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--cookie-banner-category-description-font-family);
+  font-size: var(--cookie-banner-category-description-font-size);
+  line-height: var(--cookie-banner-category-description-line-height);
+  font-weight: var(--cookie-banner-category-label-font-weight);
+  color: var(--cookie-banner-link-color, var(--color-text-brand-default));
+  cursor: pointer;
+  text-align: start;
+}
+
+.category-description-toggle:hover {
+  text-decoration: underline;
+}
+
+.category-description-toggle:focus-visible {
+  outline: var(--focus-ring-width, 2px) solid var(--focus-ring-color, var(--color-border-brand-default));
+  outline-offset: 2px;
+  border-radius: var(--border-radius-4, 4px);
+}
+
 .category-required-icon {
   flex-shrink: 0;
   display: inline-flex;

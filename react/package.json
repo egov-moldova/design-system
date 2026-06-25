@@ -1,0 +1,53 @@
+{
+  "name": "@egov-moldova/mud-react",
+  "version": "0.0.1",
+  "description": "React adapter for the MUD Design System — typed React wrappers around the Stencil-compiled mud-* custom elements.",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src/",
+    "dist/"
+  ],
+  "scripts": {
+    "build": "tsc || true",
+    "prepare": "echo 'skip build on link; Vite consumes src directly'"
+  },
+  "dependencies": {
+    "@egov-moldova/mud": "portal:..",
+    "@stencil/react-output-target": "^1.5.2"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=24.0.0 <25.0.0"
+  },
+  "keywords": [
+    "react",
+    "web-components",
+    "custom-elements",
+    "design-system",
+    "stencil",
+    "mud"
+  ],
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

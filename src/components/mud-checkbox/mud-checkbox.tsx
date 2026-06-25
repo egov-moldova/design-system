@@ -98,6 +98,14 @@ export class MudCheckbox {
    */
   @Prop({ attribute: 'supporting-text' }) supportingText?: string;
 
+  /**
+   * Plain-text error message shown below the label when `invalid` is set.
+   * Pairs with the `circle-error-filled` icon and is wired to the control via
+   * `aria-describedby`. When present (and `invalid`) it replaces the supporting
+   * text. Mirrors the `errorText` convention of `mud-input` / `mud-textarea`.
+   */
+  @Prop({ attribute: 'error-text' }) errorText?: string;
+
   /** Accessible name override. Used when no visible label is present. */
   @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
 
@@ -125,6 +133,7 @@ export class MudCheckbox {
   private readonly instanceId = ++checkboxInstanceCounter;
   private readonly labelId = `mud-checkbox-label-${this.instanceId}`;
   private readonly supportingId = `mud-checkbox-supporting-${this.instanceId}`;
+  private readonly errorId = `mud-checkbox-error-${this.instanceId}`;
   private initialChecked: boolean = false;
   private nativeRef?: HTMLInputElement;
 
@@ -253,13 +262,19 @@ export class MudCheckbox {
     return this.disabled || this.fieldsetDisabled;
   }
 
+  private hasErrorMessage(): boolean {
+    return this.invalid && Boolean(this.errorText && this.errorText.trim().length > 0);
+  }
+
   render() {
     const effectivelyDisabled = this.isInert();
     // Slot-first content: the visible label / supporting text live ONLY in
     // their respective slots. The `label` / `supportingText` props are
     // accessible-name fallbacks (mirrors mud-button).
     const showLabel = this.hasLabelSlot;
-    const showSupporting = this.hasSupportingSlot;
+    const showError = this.hasErrorMessage();
+    // An error message takes the supporting slot's place when the field is invalid.
+    const showSupporting = this.hasSupportingSlot && !showError;
     // aria-label resolution priority:
     //   slot present                 → omit (aria-labelledby points at slot)
     //   explicit ariaLabel override → ariaLabel
@@ -267,7 +282,7 @@ export class MudCheckbox {
     //   nothing                      → undefined
     const ariaLabelAttr = showLabel ? undefined : (this.ariaLabel ?? this.label?.trim() ?? undefined);
     const ariaLabelledbyAttr = showLabel ? this.labelId : this.ariaLabelledby;
-    const ariaDescribedbyAttr = showSupporting ? this.supportingId : undefined;
+    const ariaDescribedbyAttr = showError ? this.errorId : showSupporting ? this.supportingId : undefined;
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -278,6 +293,7 @@ export class MudCheckbox {
       'is-focused': this.isFocused && !effectivelyDisabled,
       'has-label': showLabel,
       'has-supporting': showSupporting,
+      'has-error': showError,
     };
 
     return (
@@ -307,7 +323,7 @@ export class MudCheckbox {
               aria-label={ariaLabelAttr}
               aria-labelledby={ariaLabelledbyAttr}
               aria-describedby={ariaDescribedbyAttr}
-              aria-checked={this.indeterminate ? 'mixed' : this.checked ? 'true' : 'false'}
+              aria-checked={this.indeterminate ? 'mixed' : null}
               aria-invalid={this.invalid ? 'true' : null}
               aria-required={this.required ? 'true' : null}
               aria-readonly={this.readonly ? 'true' : null}
@@ -325,6 +341,18 @@ export class MudCheckbox {
             <span class="supporting" id={this.supportingId} part="supporting">
               <slot name="supporting-text" onSlotchange={this.onSupportingSlotChange} />
             </span>
+            {showError ? (
+              <span class="error" id={this.errorId} part="error">
+                <mud-icon
+                  class="error-icon"
+                  name="circle-error-filled"
+                  size={16}
+                  color="icon-danger-default"
+                  aria-hidden="true"
+                />
+                <span class="error-text">{this.errorText}</span>
+              </span>
+            ) : null}
           </span>
         </label>
       </Host>

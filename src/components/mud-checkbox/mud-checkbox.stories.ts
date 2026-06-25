@@ -13,6 +13,7 @@ type CheckboxArgs = {
   readonly: boolean;
   label: string;
   supportingText: string;
+  errorText: string;
 };
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary);';
@@ -27,6 +28,8 @@ type CbOpts = {
   size?: CheckboxSize;
   label?: string;
   supporting?: string;
+  /** Plain-text error message (rendered as `error-text="…"`; needs the `invalid` flag). */
+  errorText?: string;
   /** Space-separated boolean attribute list (e.g. 'checked disabled'). */
   flags?: string;
   /** Raw `aria-label` override — wins over the `label` prop for AT only. */
@@ -39,6 +42,7 @@ const cb = (opts: CbOpts = {}): string => {
   const attrs = [
     opts.size && opts.size !== 'md' ? `size="${opts.size}"` : '',
     opts.ariaLabel ? `aria-label="${opts.ariaLabel}"` : '',
+    opts.errorText ? `error-text="${opts.errorText}"` : '',
     opts.flags ?? '',
   ]
     .filter(Boolean)
@@ -62,6 +66,7 @@ const renderCheckbox = (args: CheckboxArgs) =>
     size: args.size,
     label: args.label,
     supporting: args.supportingText,
+    errorText: args.errorText,
     flags: [
       args.checked && 'checked',
       args.indeterminate && 'indeterminate',
@@ -103,6 +108,11 @@ const meta: Meta<CheckboxArgs> = {
       control: 'text',
       description: 'Slotted supporting text (rendered as `<span slot="supporting-text">…</span>`).',
     },
+    errorText: {
+      control: 'text',
+      description:
+        'Plain-text error message (`error-text`). Shown with the error icon when `invalid` is set; replaces supporting text.',
+    },
   },
 };
 
@@ -122,6 +132,7 @@ export const Default: Story = {
     readonly: false,
     label: 'Acord',
     supportingText: '',
+    errorText: '',
   },
   parameters: {
     docs: {
@@ -291,7 +302,7 @@ export const Error: Story = {
           'error unchecked',
           cb({
             label: 'Termeni și condiții',
-            supporting: 'Trebuie să accepți termenii pentru a continua.',
+            errorText: 'Trebuie să accepți termenii pentru a continua.',
             flags: 'invalid required',
           }),
         ),
@@ -299,12 +310,15 @@ export const Error: Story = {
           'error checked',
           cb({
             label: 'Termeni și condiții',
-            supporting: 'Trebuie să accepți termenii pentru a continua.',
+            errorText: 'Trebuie să accepți termenii pentru a continua.',
             flags: 'invalid checked',
           }),
         ),
-        cell('error sm', cb({ size: 'sm', label: 'Acord', flags: 'invalid' })),
-        cell('error sm checked', cb({ size: 'sm', label: 'Acord', flags: 'invalid checked' })),
+        cell('error sm', cb({ size: 'sm', label: 'Acord', errorText: 'Câmp obligatoriu.', flags: 'invalid' })),
+        cell(
+          'error sm checked',
+          cb({ size: 'sm', label: 'Acord', errorText: 'Câmp obligatoriu.', flags: 'invalid checked' }),
+        ),
       ].join(''),
     ),
   parameters: { controls: { disable: true } },

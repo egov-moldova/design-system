@@ -58,9 +58,9 @@ export class MudIcon {
    */
   @Prop() ariaLabel?: string;
 
-  @Element() host!: HTMLElement;
-
   @State() private svgElement: Element | null = null;
+
+  @Element() host!: HTMLMudIconElement;
 
   private svgCacheKey: string = '';
 
@@ -71,10 +71,6 @@ export class MudIcon {
     }
   };
 
-  async componentWillLoad(): Promise<void> {
-    await this.loadSvg();
-  }
-
   @Watch('name')
   async onNameChange(newVal: string, oldVal: string): Promise<void> {
     if (newVal === oldVal) return;
@@ -84,6 +80,10 @@ export class MudIcon {
   @Watch('size')
   async onSizeChange(newVal: IconSize, oldVal: IconSize): Promise<void> {
     if (newVal === oldVal) return;
+    await this.loadSvg();
+  }
+
+  async componentWillLoad(): Promise<void> {
     await this.loadSvg();
   }
 

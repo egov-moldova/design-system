@@ -79,12 +79,32 @@
 }
 
 .tab__label {
-  display: inline-block;
+  /* inline-grid so the bold-reserve ::after shares the same grid cell and
+     keeps the width stable when font-weight toggles on selection. */
+  display: inline-grid;
+  min-inline-size: 0;
+}
+
+.tab__label-text {
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   min-inline-size: 0;
-  /* Inherit colour + weight from `:host`. */
+  grid-area: 1 / 1;
+}
+
+/* Invisible bold copy in the same grid cell — cell width = bold width
+   always, so selected ↔ unselected weight change causes no layout shift. */
+.tab__label::after {
+  content: attr(data-label);
+  font-weight: var(--tabs-label-font-weight-selected);
+  visibility: hidden;
+  grid-area: 1 / 1;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  overflow: hidden;
 }
 
 ::slotted(*),

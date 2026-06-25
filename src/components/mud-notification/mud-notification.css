@@ -25,6 +25,24 @@
   font-size: var(--notification-body-font-size);
   line-height: var(--notification-body-line-height);
   font-weight: var(--notification-body-font-weight);
+
+  /* Appearance: slide down from slightly above + fade in (Figma Behavior panel).
+     Plays once on mount; the dismiss/exit transition stays consumer-owned since
+     the atom cannot defer its own DOM removal. Disabled under reduced-motion. */
+  animation: notification-appear var(--notification-container-appearance-duration)
+    var(--notification-container-transition-timing-function) both;
+}
+
+@keyframes notification-appear {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--spacing-8)));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ---------- variant matrix (filled) ---------- */
@@ -121,8 +139,14 @@
   font-weight: var(--notification-title-font-weight);
   letter-spacing: var(--notification-title-letter-spacing);
   color: inherit;
+  /* Heading stays readable in full but clamps to 2 lines with an ellipsis for
+     overly-long titles ("minimal truncation" per the Figma Truncation panel).
+     A bare `text-overflow: ellipsis` does nothing without `nowrap`/line-clamp. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .body {
@@ -171,8 +195,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  inline-size: var(--notification-close-size);
-  block-size: var(--notification-close-size);
+  /* Target size per the Figma Target Sizes panel: 32px on pointer devices,
+     40px on touch (below). The × glyph stays 16px; only the hit area grows. */
+  inline-size: var(--notification-close-size-pointer);
+  block-size: var(--notification-close-size-pointer);
   padding: 0;
 
   border: 0;
@@ -188,6 +214,14 @@
     background-color var(--notification-container-transition-duration)
       var(--notification-container-transition-timing-function),
     color var(--notification-container-transition-duration) var(--notification-container-transition-timing-function);
+}
+
+/* Touch devices: grow the hit target to 40px (Figma Target Sizes panel). */
+@media (pointer: coarse) {
+  .close {
+    inline-size: var(--notification-close-size-touch);
+    block-size: var(--notification-close-size-touch);
+  }
 }
 
 .close:hover {
@@ -221,6 +255,10 @@
 /* ---------- reduced motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {
+  :host {
+    animation: none;
+  }
+
   .close {
     transition: none;
   }

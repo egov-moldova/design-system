@@ -332,14 +332,23 @@ export const OverflowActive: Story = {
         Keyboard: <kbd>Enter</kbd>/<kbd>Space</kbd> to open, <kbd>↑</kbd>/<kbd>↓</kbd> to navigate,
         <kbd>Esc</kbd> or <kbd>Tab</kbd> to close.
       </p>
-      <mud-pagination current-page="10" total-pages="20"></mud-pagination>
+      <div>
+        <p style="${cellLabelStyle}">page 10 of 20 — leading + trailing dropdowns</p>
+        <mud-pagination current-page="10" total-pages="20"></mud-pagination>
+      </div>
+      <div>
+        <p style="${cellLabelStyle}">page 1 of 40 — the trailing dropdown collapses ~34 pages and scrolls inside</p>
+        <mud-pagination current-page="1" total-pages="40"></mud-pagination>
+      </div>
     </div>
   `,
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
-        code: /*html*/ `<mud-pagination current-page="10" total-pages="20"></mud-pagination>`,
+        code: /*html*/ `<mud-pagination current-page="10" total-pages="20"></mud-pagination>
+<!-- Large range: the … dropdown caps its height and scrolls inside -->
+<mud-pagination current-page="1" total-pages="40"></mud-pagination>`,
       },
     },
   },

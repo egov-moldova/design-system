@@ -167,9 +167,12 @@
   z-index: 1;
 }
 
-/* Hide the native placeholder so we can render a richer ghost overlay below. */
+/* Native placeholder carries the empty-state hint (format pattern or a custom
+   placeholder). The richer ghost overlay below only renders WHILE typing
+   (value non-empty + focused), so the two never paint at the same time. */
 .native::placeholder {
-  color: transparent;
+  color: var(--_text-placeholder);
+  opacity: 1;
 }
 
 .native:disabled {
@@ -326,6 +329,25 @@
   z-index: 10;
   margin-block-start: var(--spacing-4);
   display: block;
+}
+
+/* Mobile: the popover docks to the bottom of the viewport as a full-width
+   bottom sheet (the picker itself renders its `breakpoint="mobile"` chrome). */
+.picker-popover.is-mobile {
+  position: fixed;
+  inset-block-start: auto;
+  inset-block-end: 0;
+  inset-inline: 0;
+  z-index: 1001;
+  margin-block-start: 0;
+}
+
+/* Scrim behind the mobile bottom sheet. */
+.picker-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background-color: var(--color-background-alpha-overlay-dark);
 }
 
 /* ---------- Assistive (helper / error) ---------- */

@@ -2,7 +2,11 @@
   "badge": {
     "size": {
       "xs": { "$value": "{spacing.8}", "$type": "dimension", "$comment": "Dot-only presence pip per Figma 551:18348." },
-      "sm": { "$value": "{spacing.12}", "$type": "dimension", "$comment": "Compact dot / numbered per Figma 551:18343." },
+      "sm": {
+        "$value": "{spacing.12}",
+        "$type": "dimension",
+        "$comment": "Compact dot / numbered per Figma 551:18343."
+      },
       "md": { "$value": "{spacing.16}", "$type": "dimension", "$comment": "Default numbered/dot per Figma 797:43183." },
       "lg": { "$value": "{spacing.20}", "$type": "dimension", "$comment": "Emphasised numbered per Figma 797:43177." },
       "xl": { "$value": "{spacing.24}", "$type": "dimension", "$comment": "Large numbered per Figma 797:43169." }
@@ -29,13 +33,25 @@
     },
     "dot": {
       "size": {
-        "md": { "$value": "{spacing.2}", "$type": "dimension", "$comment": "Inner presence pip, dot type only, per Figma 53:660 (2px)." },
-        "lg": { "$value": "3px", "$type": "dimension", "$comment": "Inner presence pip per Figma 53:664 (3px; no 3px spacing primitive exists)." },
+        "md": {
+          "$value": "{spacing.2}",
+          "$type": "dimension",
+          "$comment": "Inner presence pip, dot type only, per Figma 53:660 (2px)."
+        },
+        "lg": {
+          "$value": "3px",
+          "$type": "dimension",
+          "$comment": "Inner presence pip per Figma 53:664 (3px; no 3px spacing primitive exists)."
+        },
         "xl": { "$value": "3px", "$type": "dimension", "$comment": "Inner presence pip per Figma 797:43133 (3px)." }
       }
     },
     "fontSize": {
-      "xs": { "$value": "{fontSize.10}", "$type": "dimension", "$comment": "Dot only — fontSize is unused but kept for API symmetry." },
+      "xs": {
+        "$value": "{fontSize.10}",
+        "$type": "dimension",
+        "$comment": "Dot only — fontSize is unused but kept for API symmetry."
+      },
       "sm": { "$value": "{fontSize.10}", "$type": "dimension" },
       "md": { "$value": "{fontSize.12}", "$type": "dimension", "$comment": "Figma Caption Medium 12/16." },
       "lg": { "$value": "{fontSize.12}", "$type": "dimension", "$comment": "Figma Caption Medium 12/16." },

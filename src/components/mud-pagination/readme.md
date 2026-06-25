@@ -14,7 +14,9 @@ The visible page list is computed from `currentPage`, `totalPages`,
 `siblingCount`, and `boundaryCount`. When the total exceeds the visible
 window, an interactive overflow button (`…`) collapses the skipped range
 and lets users jump directly to any of those pages via a dropdown menu
-(Figma "overflow-active" interaction).
+(Figma "overflow-active" interaction). When the collapsed range is large
+(e.g. page 1 of 40 hides ~34 pages), the dropdown caps its height and
+scrolls internally instead of running off the viewport.
 
 The component is internally controlled but exposes a `mudChange` event so
 the host can drive the active page. Updating `current-page` from outside

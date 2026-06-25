@@ -210,6 +210,57 @@ const docsSourceStandalone = /*html*/ `<mud-link standalone href="/servicii/mpay
 </mud-link>`;
 
 // ---------------------------------------------------------------------------
+// renderTargetSizes — mirrors the Figma "Target Sizes" panels. The enlarged
+// interactive target comes from `standalone` (32px pointer / 40px touch); the
+// tinted box traces that target zone behind each of the four sizes.
+// ---------------------------------------------------------------------------
+const TARGET_SIZE_ORDER: { size: LinkSize; label: string }[] = [
+  { size: 'lg', label: 'large' },
+  { size: 'md', label: 'medium' },
+  { size: 'sm', label: 'small' },
+  { size: 'xs', label: 'extra-small' },
+];
+
+const sectionLabelStyle =
+  'font-size: var(--font-size-14); font-weight: var(--font-weight-medium); color: var(--color-text-base-default); font-family: var(--font-family-primary);';
+
+const targetRow = (targetPx: number) => /*html*/ `
+  <div style="display: flex; align-items: flex-end; gap: var(--spacing-32); flex-wrap: wrap;">
+    ${TARGET_SIZE_ORDER.map(
+      ({ size, label }) => /*html*/ `
+      <div style="display: flex; flex-direction: column; align-items: flex-start; gap: var(--spacing-8);">
+        <div style="display: inline-flex; align-items: center; min-block-size: ${targetPx}px; padding-inline: var(--spacing-8); background: var(--color-background-brand-secondary); border-radius: var(--border-radius-4);">
+          <mud-link size="${size}" standalone href="#">Link</mud-link>
+        </div>
+        <span style="${cellLabelStyle}">${label}</span>
+      </div>`,
+    ).join('')}
+  </div>
+`;
+
+const renderTargetSizes = () => /*html*/ `
+  <div style="display: flex; flex-direction: column; gap: var(--spacing-32); padding: var(--spacing-24); font-family: var(--font-family-primary);">
+    <div style="display: flex; flex-direction: column; gap: var(--spacing-12);">
+      <span style="${sectionLabelStyle}">Pointer Devices</span>
+      ${targetRow(32)}
+      <span style="${cellLabelStyle}; max-width: 480px;">For the links, the touch target should be increased to 32px. This ensures accessibility and ease of use.</span>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: var(--spacing-12);">
+      <span style="${sectionLabelStyle}">Touch Devices</span>
+      ${targetRow(40)}
+      <span style="${cellLabelStyle}; max-width: 480px;">For the links, the touch target should be increased to 40px. This ensures accessibility and ease of use.</span>
+    </div>
+  </div>
+`;
+
+const docsSourceTargetSizes = /*html*/ `<!-- Enlarged interactive target via \`standalone\`:
+     32px min-height on pointer devices, 40px on touch (pointer: coarse). -->
+<mud-link standalone size="lg" href="#">Link</mud-link>
+<mud-link standalone size="md" href="#">Link</mud-link>
+<mud-link standalone size="sm" href="#">Link</mud-link>
+<mud-link standalone size="xs" href="#">Link</mud-link>`;
+
+// ---------------------------------------------------------------------------
 // renderExternalLink — target=_blank auto-applies rel + external indicator.
 // ---------------------------------------------------------------------------
 const renderExternalLink = () => /*html*/ `
@@ -483,6 +534,15 @@ export const Standalone: Story = {
   parameters: {
     controls: { disable: true },
     docs: { source: { code: docsSourceStandalone } },
+  },
+};
+
+export const TargetSizes: Story = {
+  name: 'Target Sizes',
+  render: renderTargetSizes,
+  parameters: {
+    controls: { disable: true },
+    docs: { source: { code: docsSourceTargetSizes } },
   },
 };
 

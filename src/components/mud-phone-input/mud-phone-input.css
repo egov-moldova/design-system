@@ -389,7 +389,9 @@ button.country-trigger:disabled {
 .listbox-popover {
   position: absolute;
   inset-inline-start: 0;
-  inline-size: max(100%, var(--phone-input-listbox-min-inline-size));
+  /* Match the control's width exactly so the dropdown aligns edge-to-edge
+     with the input across every container width. */
+  inline-size: 100%;
   inset-block-start: calc(100% + var(--phone-input-listbox-margin-block-start));
   z-index: 50;
   display: flex;

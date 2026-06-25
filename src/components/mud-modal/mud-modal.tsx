@@ -124,7 +124,12 @@ export class MudModal {
   /**
    * Footer button arrangement (Figma 358:16247).
    * - `inline` — buttons sit side-by-side, right-aligned (default)
-   * - `stacked` — buttons span the full footer width, stacked vertically
+   * - `stacked` — buttons span the full footer width, stacked vertically (primary on top)
+   *
+   * For mobile / touch layouts use `stacked` and slot the action buttons
+   * DIRECTLY (`<mud-button slot="actions" full-width>` each, primary first) — not
+   * wrapped in a container. A wrapped `<div slot="actions">` stays inline because
+   * its own layout can't be restyled from the modal's shadow CSS.
    * @default 'inline'
    */
   @Prop({ reflect: true }) actionsLayout: ModalActionsLayout = 'inline';

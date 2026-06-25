@@ -63,12 +63,22 @@ describe('mud-file-input', () => {
       expect(root?.getAttribute('invalid')).toBeNull();
     });
 
-    it('does NOT expose a variant prop (Figma is state-only — no style axis)', async () => {
+    it('defaults variant to "dropzone" and renders the dashed drop zone', async () => {
       const { root } = await render(<mud-file-input label="x"></mud-file-input>);
-      // Setting an unknown prop must not surface on the host.
-      (root as unknown as Record<string, string>).variant = 'destructive';
-      await flush();
-      expect(root?.getAttribute('variant')).toBeNull();
+      expect(root?.getAttribute('variant')).toBe('dropzone');
+      expect(root?.shadowRoot?.querySelector('.dropzone')).toBeTruthy();
+      expect(root?.shadowRoot?.querySelector('.upload-button')).toBeNull();
+    });
+
+    it('variant="button" renders a Choose-file button instead of the drop zone', async () => {
+      const { root } = await render(
+        <mud-file-input label="x" variant="button" choose-files-text="Choose file"></mud-file-input>,
+      );
+      expect(root?.getAttribute('variant')).toBe('button');
+      expect(root?.shadowRoot?.querySelector('.dropzone')).toBeNull();
+      const button = root?.shadowRoot?.querySelector('.upload-button');
+      expect(button).toBeTruthy();
+      expect(button?.textContent).toContain('Choose file');
     });
 
     it.each(FILE_INPUT_SIZES)('reflects size="%s" to host', async size => {

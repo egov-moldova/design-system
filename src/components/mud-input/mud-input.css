@@ -220,6 +220,50 @@
   color: inherit;
 }
 
+/* ---------- Clear button ----------
+ * Trailing convenience affordance shown while the field holds a value
+ * (opt-in via `clearable`). Kept out of the tab order — clearing is a mouse /
+ * touch shortcut; keyboard users clear with select-all + delete.
+ */
+.control-clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--_icon-size);
+  block-size: var(--_icon-size);
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  border-radius: var(--input-clear-button-border-radius);
+  color: var(--input-clear-button-color-default);
+  cursor: pointer;
+  transition:
+    background-color var(--_transition-duration) var(--_transition-easing),
+    color var(--_transition-duration) var(--_transition-easing);
+}
+
+.control-clear:hover {
+  color: var(--input-clear-button-color-hover);
+  background-color: var(--input-clear-button-background-hover);
+}
+
+.control-clear:focus-visible {
+  outline: var(--_border-width-emphasized) solid var(--_border-color-focus);
+  outline-offset: var(--border-width-2);
+}
+
+.control-clear mud-icon {
+  inline-size: var(--input-clear-button-size-md);
+  block-size: var(--input-clear-button-size-md);
+}
+
+:host([size='lg']) .control-clear mud-icon {
+  inline-size: var(--input-clear-button-size-lg);
+  block-size: var(--input-clear-button-size-lg);
+}
+
 /* ---------- Native input ---------- */
 
 .native {

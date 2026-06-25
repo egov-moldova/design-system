@@ -19,6 +19,7 @@ inside shadow DOM and overlays a ghost format hint that lets the unfilled
 | Property      | Attribute     | Description                                                                                                                                                                                                                                                                                   | Type                                           | Default        |
 | ------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | -------------- |
 | `ariaLabel`   | `aria-label`  | Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.                                                                                                                                                                                             | `string \| undefined`                          | `undefined`    |
+| `breakpoint`  | `breakpoint`  | Calendar-popover placement. `auto` opens a desktop dropdown on wide viewports and a full-width bottom sheet on narrow ones; `desktop` / `mobile` force one layout.                                                                                                                            | `"auto" \| "desktop" \| "mobile"`              | `'auto'`       |
 | `clearLabel`  | `clear-label` | Accessible label for the clear (×) button.                                                                                                                                                                                                                                                    | `string`                                       | `'Șterge'`     |
 | `clearable`   | `clearable`   | Shows a trailing clear (×) button while the field holds a value, wiping the entry in one click. Matches the Figma `clearButton` axis shown in the Focus / Filled states. The button never appears while the field is empty, disabled, or read-only. Opt-in, mirroring the Figma boolean axis. | `boolean`                                      | `false`        |
 | `disabled`    | `disabled`    | Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.                                                                                                                                                                                    | `boolean`                                      | `false`        |
@@ -59,18 +60,19 @@ inside shadow DOM and overlays a ghost format hint that lets the unfilled
 
 ## Shadow Parts
 
-| Part               | Description |
-| ------------------ | ----------- |
-| `"clear-button"`   |             |
-| `"control"`        |             |
-| `"error"`          |             |
-| `"ghost"`          |             |
-| `"helper"`         |             |
-| `"label"`          |             |
-| `"native"`         |             |
-| `"picker-popover"` |             |
-| `"required-mark"`  |             |
-| `"trailing-icon"`  |             |
+| Part                | Description |
+| ------------------- | ----------- |
+| `"clear-button"`    |             |
+| `"control"`         |             |
+| `"error"`           |             |
+| `"ghost"`           |             |
+| `"helper"`          |             |
+| `"label"`           |             |
+| `"native"`          |             |
+| `"picker-backdrop"` |             |
+| `"picker-popover"`  |             |
+| `"required-mark"`   |             |
+| `"trailing-icon"`   |             |
 
 
 ## Dependencies

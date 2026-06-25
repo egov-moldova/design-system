@@ -18,8 +18,9 @@ import { ICON_SIZE_FOR, deriveInitials } from './mud-avatar.utils';
  *
  * @element mud-avatar
  *
- * @slot badge - Optional notification badge composed at the top-right corner
- *               (e.g. `<span class="notification-dot"></span>`).
+ * @slot badge - Optional notification badge composed on the top-right edge
+ *               (e.g. `<mud-badge slot="badge" type="dot" />`), sized to the
+ *               avatar's rung.
  */
 @Component({
   tag: 'mud-avatar',

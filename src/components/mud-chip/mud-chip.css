@@ -17,6 +17,10 @@
   --_icon-size: var(--chip-icon-size-md);
   --_remove-size: var(--chip-input-remove-size-md);
   --_remove-icon-size: var(--chip-input-remove-icon-size-md);
+  --_avatar-size: var(--chip-avatar-size-md);
+  --_count-size: var(--chip-count-size-md);
+  --_count-font-size: var(--chip-count-font-size-md);
+  --_count-padding-inline: var(--chip-count-padding-inline-md);
 
   /* Type axis defaults (filter, off) */
   --_bg: var(--chip-filter-background-default);
@@ -54,6 +58,10 @@
   --_icon-size: var(--chip-icon-size-sm);
   --_remove-size: var(--chip-input-remove-size-sm);
   --_remove-icon-size: var(--chip-input-remove-icon-size-sm);
+  --_avatar-size: var(--chip-avatar-size-sm);
+  --_count-size: var(--chip-count-size-sm);
+  --_count-font-size: var(--chip-count-font-size-sm);
+  --_count-padding-inline: var(--chip-count-padding-inline-sm);
 }
 
 /* ---------- Type axis ---------- */
@@ -77,6 +85,14 @@
   --_bg-hover: var(--chip-input-background-hover);
   --_label-color: var(--chip-input-label-default);
   --_icon-color: var(--chip-input-icon-default);
+  /* Input chips get a slightly wider floor than filter chips (Figma spec). */
+  --_min-width: var(--chip-input-min-width-md);
+}
+
+/* 2-attribute selector beats the single-attribute size axis so the sm input
+   floor isn't clobbered by the generic sm min-width. */
+:host([type='input'][size='sm']) {
+  --_min-width: var(--chip-input-min-width-sm);
 }
 
 /* ---------- Internal main control ---------- */
@@ -149,9 +165,16 @@
   background-color: var(--_bg-hover);
 }
 
-/* Asymmetric padding when leading icon present */
-:host(.has-icon-start) .control {
+/* Asymmetric padding when a leading icon / auto-check is present */
+:host(.has-icon-start) .control,
+:host(.shows-check) .control {
   padding-inline-start: var(--_padding-inline-icon);
+}
+
+/* Avatar hugs the leading edge: inset symmetrically so the circle is centred
+   within the pill's rounded corner. */
+:host(.has-avatar) .control {
+  padding-inline-start: calc((var(--_height) - var(--_avatar-size)) / 2);
 }
 
 /* ---------- Focus ring (dual halo, same as mud-button) ---------- */
@@ -235,6 +258,62 @@
 
 ::slotted(mud-icon[slot='icon-start']) {
   --icon-color: currentcolor;
+}
+
+/* ---------- Leading avatar (flush, ~chip height) ---------- */
+
+.avatar {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+:host(:not(.has-avatar)) .avatar {
+  display: none;
+}
+
+::slotted([slot='avatar']) {
+  flex-shrink: 0;
+  inline-size: var(--_avatar-size);
+  block-size: var(--_avatar-size);
+  border-radius: var(--border-radius-full, 9999px);
+  object-fit: cover;
+  overflow: hidden;
+}
+
+/* ---------- Auto check (multi-selection, selected) ---------- */
+
+.check {
+  flex-shrink: 0;
+  --icon-color: currentcolor;
+  color: var(--_label-color);
+}
+
+/* ---------- Numbered badge (count) ---------- */
+
+.count {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-inline-size: var(--_count-size);
+  block-size: var(--_count-size);
+  padding-inline: var(--_count-padding-inline);
+  border-radius: var(--border-radius-full, 9999px);
+  /* Inverts against the chip surface so it stays legible default + selected. */
+  background-color: var(--_label-color);
+  color: var(--_bg);
+  font-family: var(--chip-label-font-family);
+  font-size: var(--_count-font-size);
+  font-weight: var(--chip-label-font-weight);
+  line-height: 1;
+}
+
+:host([disabled]) .count {
+  background-color: var(--chip-disabled-label);
+  color: var(--chip-disabled-background);
 }
 
 /* ---------- Disabled ---------- */

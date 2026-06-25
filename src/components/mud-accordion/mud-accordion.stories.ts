@@ -133,29 +133,49 @@ const renderWithSupportingText = () => /*html*/ `
   <div style="${sectionStyle}">
     <p style="${sectionLabelStyle}">Heading + text suport (descriere scurtă, una pe rând).</p>
     <mud-accordion mode="multiple">
-      <mud-accordion-item heading="Întrebări frecvente" supporting-text="Întrebări generale despre platforma e-Gov"></mud-accordion-item>
-      <mud-accordion-item heading="Suport tehnic" supporting-text="Probleme cu autentificarea sau cu plățile"></mud-accordion-item>
-      <mud-accordion-item heading="Contact instituțional" supporting-text="Datele de contact ale agenției guvernamentale"></mud-accordion-item>
+      <mud-accordion-item heading="Întrebări frecvente" supporting-text="Întrebări generale despre platforma e-Gov">
+        Găsești răspunsuri la cele mai frecvente întrebări despre serviciile electronice guvernamentale, autentificare și plăți.
+      </mud-accordion-item>
+      <mud-accordion-item heading="Suport tehnic" supporting-text="Probleme cu autentificarea sau cu plățile">
+        Echipa de suport este disponibilă de luni până vineri, între orele 8:00 și 17:00, pentru probleme legate de autentificare sau procesarea plăților.
+      </mud-accordion-item>
+      <mud-accordion-item heading="Contact instituțional" supporting-text="Datele de contact ale agenției guvernamentale">
+        Agenția de Guvernare Electronică, Piața Marii Adunări Naționale 1, Chișinău. Telefon: 022 820 000.
+      </mud-accordion-item>
     </mud-accordion>
     <p style="${sectionLabelStyle}">Heading singur (fără text suport).</p>
     <mud-accordion mode="multiple">
-      <mud-accordion-item heading="Cum mă autentific?"></mud-accordion-item>
-      <mud-accordion-item heading="Cum recuperez parola?"></mud-accordion-item>
-      <mud-accordion-item heading="Cum schimb datele de contact?"></mud-accordion-item>
+      <mud-accordion-item heading="Cum mă autentific?">
+        Accesează butonul de autentificare și folosește MPass, semnătura mobilă sau buletinul electronic pentru a-ți confirma identitatea.
+      </mud-accordion-item>
+      <mud-accordion-item heading="Cum recuperez parola?">
+        Folosește opțiunea de recuperare a parolei și urmează pașii primiți prin e-mail sau prin numărul de telefon înregistrat.
+      </mud-accordion-item>
+      <mud-accordion-item heading="Cum schimb datele de contact?">
+        Accesează secțiunea Profil din contul tău și actualizează adresa de e-mail sau numărul de telefon.
+      </mud-accordion-item>
     </mud-accordion>
   </div>
 `;
 
 const docsSourceWithSupportingText = /*html*/ `<!-- With supporting text -->
 <mud-accordion mode="multiple">
-  <mud-accordion-item heading="Întrebări frecvente" supporting-text="Întrebări generale"></mud-accordion-item>
-  <mud-accordion-item heading="Suport tehnic" supporting-text="Probleme cu autentificarea"></mud-accordion-item>
+  <mud-accordion-item heading="Întrebări frecvente" supporting-text="Întrebări generale">
+    Găsești răspunsuri la cele mai frecvente întrebări despre serviciile electronice.
+  </mud-accordion-item>
+  <mud-accordion-item heading="Suport tehnic" supporting-text="Probleme cu autentificarea">
+    Echipa de suport este disponibilă de luni până vineri, între orele 8:00 și 17:00.
+  </mud-accordion-item>
 </mud-accordion>
 
 <!-- Heading only -->
 <mud-accordion mode="multiple">
-  <mud-accordion-item heading="Cum mă autentific?"></mud-accordion-item>
-  <mud-accordion-item heading="Cum recuperez parola?"></mud-accordion-item>
+  <mud-accordion-item heading="Cum mă autentific?">
+    Folosește MPass, semnătura mobilă sau buletinul electronic pentru a-ți confirma identitatea.
+  </mud-accordion-item>
+  <mud-accordion-item heading="Cum recuperez parola?">
+    Folosește opțiunea de recuperare a parolei și urmează pașii primiți prin e-mail.
+  </mud-accordion-item>
 </mud-accordion>`;
 
 const renderWithTrailingContent = () => /*html*/ `
@@ -182,6 +202,114 @@ const docsSourceWithTrailingContent = /*html*/ `<mud-accordion mode="multiple">
   <mud-accordion-item heading="Cereri în așteptare" supporting-text="...">
     <mud-badge slot="trailing" variant="warning">3 noi</mud-badge>
     ...
+  </mud-accordion-item>
+</mud-accordion>`;
+
+// ---------------------------------------------------------------------------
+// Panel list — matches the Figma "expanded" state: the open panel reveals a
+// list of rows, each with a heading + supporting text and a trailing label.
+// The label is dropped below the 768px breakpoint, per the mobile design.
+// ---------------------------------------------------------------------------
+
+const panelListStyles = /*css*/ `
+  .mud-accordion-panel-list {
+    display: flex;
+    flex-direction: column;
+    /* Rows separated by whitespace only — no dividers, per the design. */
+    gap: var(--spacing-32);
+    /* Inset is provided by the accordion panel itself (panel-inner). */
+  }
+  .mud-accordion-panel-row {
+    display: flex;
+    /* Label is vertically centered on the heading + supporting block. */
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-16);
+  }
+  .mud-accordion-panel-row__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-8);
+    min-inline-size: 0;
+  }
+  .mud-accordion-panel-row__label {
+    flex-shrink: 0;
+  }
+  .mud-accordion-panel-row__heading {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-16);
+    font-weight: var(--font-weight-semibold);
+    line-height: var(--line-height-24);
+    color: var(--color-text-base-default);
+  }
+  .mud-accordion-panel-row__supporting {
+    font-family: var(--font-family-primary);
+    font-size: var(--font-size-14);
+    font-weight: var(--font-weight-regular);
+    line-height: var(--line-height-20);
+    color: var(--color-text-base-tertiary);
+  }
+  @media (max-width: 767.98px) {
+    .mud-accordion-panel-row__label {
+      display: none;
+    }
+  }
+`;
+
+const panelRows = [
+  { heading: 'Buletin de identitate', supporting: 'Act de identitate valabil la data depunerii', label: 'Obligatoriu' },
+  { heading: 'Certificat de naștere', supporting: 'Eliberat de oficiul stării civile', label: 'Obligatoriu' },
+  { heading: 'Certificat de căsătorie', supporting: 'După caz, pentru persoanele căsătorite', label: 'Opțional' },
+  { heading: 'Certificat de divorț', supporting: 'După caz, pentru persoanele divorțate', label: 'Opțional' },
+  { heading: 'Pașaport', supporting: 'Doar pentru cetățenii străini', label: 'Alternativ' },
+];
+
+const renderPanelRows = (rows: typeof panelRows) => /*html*/ `
+  <div class="mud-accordion-panel-list">
+    ${rows
+      .map(
+        row => /*html*/ `<div class="mud-accordion-panel-row">
+          <div class="mud-accordion-panel-row__text">
+            <span class="mud-accordion-panel-row__heading">${row.heading}</span>
+            <span class="mud-accordion-panel-row__supporting">${row.supporting}</span>
+          </div>
+          <mud-tag class="mud-accordion-panel-row__label" variant="info" type="subtle" semantic="neutral" size="sm">${row.label}</mud-tag>
+        </div>`,
+      )
+      .join('')}
+  </div>
+`;
+
+const renderWithPanelList = () => /*html*/ `
+  <style>${panelListStyles}</style>
+  <div style="${sectionStyle}">
+    <p style="${sectionLabelStyle}">Panel cu listă de elemente (heading + text suport + etichetă) — eticheta se ascunde pe mobil.</p>
+    <mud-accordion mode="single">
+      <mud-accordion-item heading="Documente necesare" supporting-text="Acte de identitate și certificate suport" open>
+        ${renderPanelRows(panelRows)}
+      </mud-accordion-item>
+      <mud-accordion-item heading="Pași de urmat" supporting-text="Procesul de depunere a cererii">
+        ${renderPanelRows(panelRows)}
+      </mud-accordion-item>
+      <mud-accordion-item heading="Întrebări frecvente" supporting-text="Răspunsuri la cele mai comune întrebări">
+        ${renderPanelRows(panelRows)}
+      </mud-accordion-item>
+    </mud-accordion>
+  </div>
+`;
+
+const docsSourceWithPanelList = /*html*/ `<mud-accordion mode="single">
+  <mud-accordion-item heading="Documente necesare" supporting-text="..." open>
+    <div class="panel-list">
+      <div class="panel-row">
+        <div class="panel-row__text">
+          <span class="panel-row__heading">Buletin de identitate</span>
+          <span class="panel-row__supporting">Act de identitate valabil la data depunerii</span>
+        </div>
+        <mud-tag variant="info" type="subtle" semantic="neutral" size="sm">Obligatoriu</mud-tag>
+      </div>
+      <!-- ...more rows -->
+    </div>
   </mud-accordion-item>
 </mud-accordion>`;
 
@@ -386,6 +514,14 @@ export const WithTrailingContent: Story = {
   parameters: {
     controls: { disable: true },
     docs: { source: { code: docsSourceWithTrailingContent } },
+  },
+};
+
+export const WithPanelList: Story = {
+  render: renderWithPanelList,
+  parameters: {
+    controls: { disable: true },
+    docs: { source: { code: docsSourceWithPanelList } },
   },
 };
 

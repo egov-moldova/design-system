@@ -1,4 +1,4 @@
-import { describe, expect, h, it, render, vi } from '@stencil/vitest';
+import { afterEach, beforeEach, describe, expect, h, it, render, vi } from '@stencil/vitest';
 
 import '../mud-date-picker';
 
@@ -144,6 +144,17 @@ describe('mud-date-picker', () => {
   });
 
   describe('selection — range mode', () => {
+    // These tests click hardcoded May-2026 cells without seeding a value, so the
+    // visible month must be May 2026. Pin only the Date clock (leave setTimeout /
+    // rAF real so `flush()` and focus management still work).
+    beforeEach(() => {
+      vi.useFakeTimers({ toFake: ['Date'] });
+      vi.setSystemTime(new Date('2026-05-15T12:00:00Z'));
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it('sets rangeStart on the first click and rangeEnd on the second', async () => {
       const { root } = await render(<mud-date-picker mode="range" viewDate="2026-05-01"></mud-date-picker>);
       const onChange = vi.fn();
@@ -187,6 +198,16 @@ describe('mud-date-picker', () => {
   });
 
   describe('selection — multi mode', () => {
+    // Same rationale as range mode: pin the clock to May 2026 so the hardcoded
+    // cells are in the visible grid.
+    beforeEach(() => {
+      vi.useFakeTimers({ toFake: ['Date'] });
+      vi.setSystemTime(new Date('2026-05-15T12:00:00Z'));
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
     it('toggles individual dates into and out of the value array', async () => {
       const { root } = await render(<mud-date-picker mode="multi" viewDate="2026-05-01"></mud-date-picker>);
       const onChange = vi.fn();
@@ -486,6 +507,41 @@ describe('mud-date-picker', () => {
       const cells = queryCellByIso(root, '2027-01-01');
       // Spillover into the next month should be present and marked outside.
       expect(cells?.classList.contains('is-outside')).toBe(true);
+    });
+  });
+
+  describe('header style', () => {
+    it('renders a single title button by default', async () => {
+      const { root } = await render(<mud-date-picker value="2026-05-15"></mud-date-picker>);
+      expect(root?.shadowRoot?.querySelector('.title')).toBeTruthy();
+      expect(root?.shadowRoot?.querySelectorAll('.dropdown-trigger').length).toBe(0);
+    });
+
+    it('renders month + year dropdown chips when header-style="dropdown"', async () => {
+      const { root } = await render(<mud-date-picker header-style="dropdown" value="2026-05-15"></mud-date-picker>);
+      expect(root?.shadowRoot?.querySelector('.title')).toBeNull();
+      expect(root?.shadowRoot?.querySelectorAll('.dropdown-trigger').length).toBe(2);
+    });
+
+    it('opens the month grid from the month dropdown chip', async () => {
+      const { root } = await render(<mud-date-picker header-style="dropdown" value="2026-05-15"></mud-date-picker>);
+      const monthChip = root?.shadowRoot?.querySelector<HTMLButtonElement>('[part="month-dropdown"]');
+      monthChip?.click();
+      await flush();
+      expect(root?.shadowRoot?.querySelector('.month-grid')).toBeTruthy();
+      expect(monthChip?.getAttribute('aria-expanded')).toBe('true');
+    });
+
+    it('opens the year grid from the year dropdown chip', async () => {
+      const { root } = await render(<mud-date-picker header-style="dropdown" value="2026-05-15"></mud-date-picker>);
+      const yearChip = root?.shadowRoot?.querySelector<HTMLButtonElement>('[part="year-dropdown"]');
+      yearChip?.click();
+      await flush();
+      expect(root?.shadowRoot?.querySelector('.year-grid')).toBeTruthy();
+      // Per the Figma, the year view collapses the month/year chips into a single
+      // decade-range header label (e.g. "2016 - 2027").
+      const title = root?.shadowRoot?.querySelector('button.title');
+      expect(title?.textContent).toMatch(/\d{4}\s*-\s*\d{4}/);
     });
   });
 });

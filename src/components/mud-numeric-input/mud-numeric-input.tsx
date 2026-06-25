@@ -800,6 +800,14 @@ export class MudNumericInput {
             onKeyDown={this.handleKeyDown}
           />
 
+          {/* Spinner sits before the suffix so the unit (e.g. `lei`) stays pinned
+              to the right edge across every state — matching the Figma master. */}
+          {this.loading ? (
+            <span class="control-spinner" part="spinner" aria-hidden="true">
+              <mud-spinner size={this.size === 'lg' ? 'sm' : 'xs'} variant="brand" label="" />
+            </span>
+          ) : null}
+
           <span class="suffix" part="suffix" aria-hidden={this.hasSuffix ? null : 'true'}>
             <slot name="suffix" onSlotchange={this.onSuffixSlotChange} />
           </span>
@@ -845,12 +853,6 @@ export class MudNumericInput {
                 <mud-icon name="chevron-bottom" size={stepperIconSize} />
               </button>
             </div>
-          ) : null}
-
-          {this.loading ? (
-            <span class="control-spinner" part="spinner" aria-hidden="true">
-              <mud-spinner size={this.size === 'lg' ? 'sm' : 'xs'} variant="brand" label="" />
-            </span>
           ) : null}
         </div>
 

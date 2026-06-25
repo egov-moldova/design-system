@@ -55,7 +55,8 @@
 :host(.is-invalid) {
   --_bg: var(--checkbox-destructive-background-unchecked);
   --_border-color: var(--checkbox-destructive-border-unchecked);
-  --_label-color: var(--checkbox-destructive-label);
+  /* Label keeps its default colour in the error state (per Figma) — only the
+     box, the error icon, and the error message turn red. */
   --_supporting-color: var(--checkbox-destructive-supporting);
 }
 
@@ -196,7 +197,7 @@
   padding-block-start: calc((var(--_box-size) - var(--_label-line-height)) / 2);
 }
 
-:host(:not(.has-label):not(.has-supporting)) .text {
+:host(:not(.has-label):not(.has-supporting):not(.has-error)) .text {
   display: none;
 }
 
@@ -225,6 +226,31 @@
 
 :host(:not(.has-supporting)) .supporting {
   display: none;
+}
+
+/* ---------- Error message (icon + text) — shown when invalid + errorText ---------- */
+
+.error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-4);
+  font-family: var(--checkbox-supporting-font-family);
+  font-weight: var(--checkbox-supporting-font-weight);
+  font-size: var(--_supporting-font-size);
+  line-height: var(--_supporting-line-height);
+  color: var(--checkbox-destructive-supporting);
+  overflow-wrap: anywhere;
+}
+
+/* Centre the 16px icon on the first text line (line-height is a px length). */
+.error-icon {
+  flex-shrink: 0;
+  margin-block-start: calc((var(--_supporting-line-height) - 16px) / 2);
+}
+
+.error-text {
+  flex: 1 1 auto;
+  min-inline-size: 0;
 }
 
 /* ---------- prefers-reduced-motion ---------- */

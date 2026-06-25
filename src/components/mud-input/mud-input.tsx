@@ -74,6 +74,14 @@ export class MudInput {
   @Prop({ reflect: true }) readonly: boolean = false;
 
   /**
+   * Shows a trailing clear (×) button while the control holds a value. Clearing
+   * empties the field, emits `mudInput` + `mudChange`, and returns focus to the
+   * input. Suppressed when disabled, read-only, or loading.
+   * @default false
+   */
+  @Prop({ reflect: true }) clearable: boolean = false;
+
+  /**
    * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`.
    * Use together with `errorText` to surface the message.
    * @default false
@@ -91,6 +99,9 @@ export class MudInput {
 
   /** Placeholder shown when the control is empty. */
   @Prop() placeholder?: string;
+
+  /** Accessible label for the clear (×) button. Only used when `clearable` is set. */
+  @Prop({ attribute: 'clear-label' }) clearLabel: string = 'Golește câmpul';
 
   /** Plain-text label. Use the `label` slot for richer content. */
   @Prop() label?: string;
@@ -316,6 +327,16 @@ export class MudInput {
     this.mudBlur.emit(ev);
   };
 
+  private handleClear = (ev: MouseEvent) => {
+    ev.preventDefault();
+    if (this.isInert() || this.readonly || this.loading) return;
+    this.value = '';
+    this.mudInput.emit({ value: '' });
+    this.mudChange.emit({ value: '' });
+    // Keep editing flow: return focus to the field after clearing.
+    this.nativeInput?.focus();
+  };
+
   private isInert(): boolean {
     return this.disabled || this.fieldsetDisabled;
   }
@@ -326,6 +347,10 @@ export class MudInput {
 
   private hasVisibleLabel(): boolean {
     return Boolean(this.label && this.label.trim().length > 0) || this.hasLabelSlot;
+  }
+
+  private showClear(): boolean {
+    return this.clearable && !this.isInert() && !this.readonly && !this.loading && (this.value ?? '').length > 0;
   }
 
   private hasErrorMessage(): boolean {
@@ -412,6 +437,20 @@ export class MudInput {
             onFocus={this.handleFocus}
             onBlur={this.handleBlur}
           />
+
+          {this.showClear() ? (
+            <button
+              type="button"
+              class="control-clear"
+              part="clear"
+              aria-label={this.clearLabel}
+              tabIndex={-1}
+              onMouseDown={ev => ev.preventDefault()}
+              onClick={this.handleClear}
+            >
+              <mud-icon name="cross-large" size={this.size === 'lg' ? 20 : 16} />
+            </button>
+          ) : null}
 
           <span class="control-icon control-icon-end" aria-hidden={this.hasIconEnd ? null : 'true'}>
             <slot name="icon-end" onSlotchange={this.onIconEndSlotChange} />

@@ -49,7 +49,7 @@
 
 /* Focus ring on the host (role=button + tabindex sit on the host now). */
 :host([interactive]:not([interactive='false']):not([disabled]):focus-visible) {
-  outline: var(--border-width-2) solid var(--color-border-focus-default);
+  outline: var(--border-width-2) solid var(--color-border-brand-default);
   outline-offset: var(--spacing-2);
 }
 

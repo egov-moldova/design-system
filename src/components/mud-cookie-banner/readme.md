@@ -38,7 +38,9 @@ Romanian voice ships as defaults; every label is overridable via the public
 | `categories`   | --              | Category catalogue rendered in detailed/expanded mode. Falls back to a three-bucket Romanian default (necessary / analytics / marketing) when omitted. Ignored when the `categories` slot is populated.                    | `readonly CookieCategory[] \| undefined` | `undefined` |
 | `closeLabel`   | `close-label`   | Close button accessible label. Defaults to Romanian "Închide".                                                                                                                                                             | `string \| undefined`                    | `undefined` |
 | `expanded`     | `expanded`      | Whether the banner is currently expanded (preferences view).                                                                                                                                                               | `boolean`                                | `false`     |
+| `lessLabel`    | `less-label`    | "Show less" toggle label for expanded category descriptions on mobile. Defaults to Romanian "Mai puțin".                                                                                                                   | `string \| undefined`                    | `undefined` |
 | `manageLabel`  | `manage-label`  | "Customise / Manage cookies" button label.                                                                                                                                                                                 | `string \| undefined`                    | `undefined` |
+| `moreLabel`    | `more-label`    | "Show more" toggle label for clamped category descriptions on mobile. Defaults to Romanian "Mai mult".                                                                                                                     | `string \| undefined`                    | `undefined` |
 | `position`     | `position`      | Edge the banner is anchored to.                                                                                                                                                                                            | `"bottom" \| "top"`                      | `'bottom'`  |
 | `privacyHref`  | `privacy-href`  | Optional href for the inline privacy-policy link.                                                                                                                                                                          | `string \| undefined`                    | `undefined` |
 | `privacyLabel` | `privacy-label` | Privacy-policy link label. Defaults to Romanian "Politica de confidențialitate".                                                                                                                                           | `string \| undefined`                    | `undefined` |
@@ -69,18 +71,19 @@ Romanian voice ships as defaults; every label is overridable via the public
 
 ## Shadow Parts
 
-| Part                     | Description |
-| ------------------------ | ----------- |
-| `"body"`                 |             |
-| `"categories"`           |             |
-| `"category"`             |             |
-| `"category-description"` |             |
-| `"category-label"`       |             |
-| `"close"`                |             |
-| `"container"`            |             |
-| `"footer"`               |             |
-| `"header"`               |             |
-| `"title"`                |             |
+| Part                            | Description |
+| ------------------------------- | ----------- |
+| `"body"`                        |             |
+| `"categories"`                  |             |
+| `"category"`                    |             |
+| `"category-description"`        |             |
+| `"category-description-toggle"` |             |
+| `"category-label"`              |             |
+| `"close"`                       |             |
+| `"container"`                   |             |
+| `"footer"`                      |             |
+| `"header"`                      |             |
+| `"title"`                       |             |
 
 
 ## Dependencies

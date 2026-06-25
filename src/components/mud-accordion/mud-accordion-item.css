@@ -91,7 +91,9 @@
   appearance: none;
   -webkit-appearance: none;
 
-  transition: padding var(--accordion-item-transition-duration) var(--accordion-item-transition-timing-function);
+  transition:
+    padding var(--accordion-item-transition-duration) var(--accordion-item-transition-timing-function),
+    background-color var(--accordion-item-transition-duration) var(--accordion-item-transition-timing-function);
 }
 
 :host(:not([disabled]):not([open])) .header:hover {
@@ -234,8 +236,15 @@
 
 .panel-inner {
   padding-block-end: var(--accordion-item-panel-padding-block-end);
-  padding-inline-start: var(--_padding-inline);
+  /* Panel body is inset from the heading, per the design. */
+  padding-inline-start: var(--accordion-item-panel-padding-inline-start);
   padding-inline-end: var(--accordion-item-panel-padding-inline-end);
+}
+
+/* Trail-sites keeps the panel aligned with the tinted header instead of the
+   default inset, so body text lines up with the brand-tinted heading. */
+:host([appearance='trail-sites'][open]) .panel-inner {
+  padding-inline-start: var(--_padding-inline);
 }
 
 ::slotted(*) {

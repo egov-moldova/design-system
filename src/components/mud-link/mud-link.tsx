@@ -53,9 +53,11 @@ export class MudLink {
   @Prop({ reflect: true }) underline: LinkUnderline = 'always';
 
   /**
-   * When `true`, the link expands to fill the inline-size of its container and
-   * receives a larger touch target. Designed for navigation lists, "View more"
-   * affordances, and standalone CTAs that are not embedded in prose.
+   * When `true`, the link receives a larger interactive target — a 32px (pointer)
+   * / 40px (touch, `pointer: coarse`) minimum block-size per the Figma "Target
+   * Sizes" spec — while still hugging its content inline-size. Designed for
+   * navigation lists, "View more" affordances, and standalone CTAs that are not
+   * embedded in prose (inline links stay compact, exempt from target-size rules).
    * @default false
    */
   @Prop({ reflect: true }) standalone: boolean = false;

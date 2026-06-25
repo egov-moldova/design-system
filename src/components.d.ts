@@ -13,15 +13,17 @@ import { BreadcrumbItem, BreadcrumbSelectDetail } from "./components/mud-breadcr
 import { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/mud-button/mud-button.types";
 import { ButtonGroupOrientation } from "./components/mud-button-group/mud-button-group.types";
 import { CheckboxChangeDetail, CheckboxSize } from "./components/mud-checkbox/mud-checkbox.types";
-import { ChipSelectEventDetail, ChipSize, ChipType } from "./components/mud-chip/mud-chip.types";
+import { ChipSelectEventDetail, ChipSelectionMode, ChipSize, ChipType } from "./components/mud-chip/mud-chip.types";
 import { CookieBannerPosition, CookieBannerVariant, CookieCategory, CookieConsentDetail } from "./components/mud-cookie-banner/mud-cookie-banner.types";
-import { DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
-import { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerMode, DatePickerMonthChangeDetail } from "./components/mud-date-picker/mud-date-picker.types";
-import { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize } from "./components/mud-file-input/mud-file-input.types";
+import { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
+import { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerHeaderStyle, DatePickerMode, DatePickerMonthChangeDetail } from "./components/mud-date-picker/mud-date-picker.types";
+import { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize, FileInputVariant } from "./components/mud-file-input/mud-file-input.types";
 import { FileItemRemoveDetail, FileItemState } from "./components/mud-file-item/mud-file-item.types";
 import { FooterContact, FooterLocale, FooterLocaleChangeDetail, FooterPartner, FooterSection, FooterSocial, FooterVariant } from "./components/mud-footer/mud-footer.types";
 import { HeaderLanguage, HeaderLanguageChangeDetail, HeaderMegaMenuSelectDetail, HeaderNavSelectDetail, HeaderNavToggleDetail, HeaderServiceSelectDetail, MegaMenuColumn, ServicePlatform } from "./components/mud-header/mud-header.types";
 import { IconSize } from "./components/mud-icon/mud-icon.types";
+import { InfoBoxEmphasis, InfoBoxVariant } from "./components/mud-info-box/mud-info-box.types";
+import { InlineMessageSize, InlineMessageVariant } from "./components/mud-inline-message/mud-inline-message.types";
 import { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/mud-input/mud-input.types";
 import { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/mud-input-chip/mud-input-chip.types";
 import { LinkSize, LinkUnderline, LinkVariant } from "./components/mud-link/mud-link.types";
@@ -57,15 +59,17 @@ export { BreadcrumbItem, BreadcrumbSelectDetail } from "./components/mud-breadcr
 export { ButtonAppearance, ButtonShape, ButtonSize, ButtonType, ButtonVariant } from "./components/mud-button/mud-button.types";
 export { ButtonGroupOrientation } from "./components/mud-button-group/mud-button-group.types";
 export { CheckboxChangeDetail, CheckboxSize } from "./components/mud-checkbox/mud-checkbox.types";
-export { ChipSelectEventDetail, ChipSize, ChipType } from "./components/mud-chip/mud-chip.types";
+export { ChipSelectEventDetail, ChipSelectionMode, ChipSize, ChipType } from "./components/mud-chip/mud-chip.types";
 export { CookieBannerPosition, CookieBannerVariant, CookieCategory, CookieConsentDetail } from "./components/mud-cookie-banner/mud-cookie-banner.types";
-export { DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
-export { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerMode, DatePickerMonthChangeDetail } from "./components/mud-date-picker/mud-date-picker.types";
-export { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize } from "./components/mud-file-input/mud-file-input.types";
+export { DateInputBreakpoint, DateInputChangeDetail, DateInputFormat, DateInputSize, DateInputTypingDetail, DateInputVariant } from "./components/mud-date-input/mud-date-input.types";
+export { DatePickerBreakpoint, DatePickerChangeDetail, DatePickerHeaderStyle, DatePickerMode, DatePickerMonthChangeDetail } from "./components/mud-date-picker/mud-date-picker.types";
+export { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileInputRemoveDetail, FileInputSize, FileInputVariant } from "./components/mud-file-input/mud-file-input.types";
 export { FileItemRemoveDetail, FileItemState } from "./components/mud-file-item/mud-file-item.types";
 export { FooterContact, FooterLocale, FooterLocaleChangeDetail, FooterPartner, FooterSection, FooterSocial, FooterVariant } from "./components/mud-footer/mud-footer.types";
 export { HeaderLanguage, HeaderLanguageChangeDetail, HeaderMegaMenuSelectDetail, HeaderNavSelectDetail, HeaderNavToggleDetail, HeaderServiceSelectDetail, MegaMenuColumn, ServicePlatform } from "./components/mud-header/mud-header.types";
 export { IconSize } from "./components/mud-icon/mud-icon.types";
+export { InfoBoxEmphasis, InfoBoxVariant } from "./components/mud-info-box/mud-info-box.types";
+export { InlineMessageSize, InlineMessageVariant } from "./components/mud-inline-message/mud-inline-message.types";
 export { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/mud-input/mud-input.types";
 export { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/mud-input-chip/mud-input-chip.types";
 export { LinkSize, LinkUnderline, LinkVariant } from "./components/mud-link/mud-link.types";
@@ -556,6 +560,10 @@ export namespace Components {
          */
         "disabled": boolean;
         /**
+          * Plain-text error message shown below the label when `invalid` is set. Pairs with the `circle-error-filled` icon and is wired to the control via `aria-describedby`. When present (and `invalid`) it replaces the supporting text. Mirrors the `errorText` convention of `mud-input` / `mud-textarea`.
+         */
+        "errorText"?: string;
+        /**
           * Tri-state visual marker. When `true`, the box renders a dash glyph regardless of `checked`. Indeterminate is a purely visual hint — the submitted form value still follows `checked`.
           * @default false
          */
@@ -612,6 +620,10 @@ export namespace Components {
      */
     interface MudChip {
         /**
+          * Optional numeric badge rendered after the label (e.g. a result count). The badge colour inverts with the chip surface so it stays legible in both the default and selected states. Omit (or pass a non-number) to hide it.
+         */
+        "count"?: number;
+        /**
           * Disables interactivity. Reflects `aria-disabled` and removes the chip from pointer/keyboard activation paths.
           * @default false
          */
@@ -630,6 +642,11 @@ export namespace Components {
           * @default false
          */
         "selected": boolean;
+        /**
+          * Selection behaviour for `type="filter"`. In `multi` mode a leading ✓ is rendered automatically when `selected` (no need to slot a checkmark icon). Ignored when `type="input"`.
+          * @default 'mono'
+         */
+        "selectionMode": ChipSelectionMode;
         /**
           * Visual size rung.
           * @default 'md'
@@ -687,9 +704,17 @@ export namespace Components {
          */
         "expanded": boolean;
         /**
+          * "Show less" toggle label for expanded category descriptions on mobile. Defaults to Romanian "Mai puțin".
+         */
+        "lessLabel"?: string;
+        /**
           * "Customise / Manage cookies" button label.
          */
         "manageLabel"?: string;
+        /**
+          * "Show more" toggle label for clamped category descriptions on mobile. Defaults to Romanian "Mai mult".
+         */
+        "moreLabel"?: string;
         /**
           * Edge the banner is anchored to.
           * @default 'bottom'
@@ -734,6 +759,11 @@ export namespace Components {
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
          */
         "ariaLabel"?: string;
+        /**
+          * Calendar-popover placement. `auto` opens a desktop dropdown on wide viewports and a full-width bottom sheet on narrow ones; `desktop` / `mobile` force one layout.
+          * @default 'auto'
+         */
+        "breakpoint": DateInputBreakpoint;
         /**
           * Accessible label for the clear (×) button.
           * @default 'Șterge'
@@ -849,6 +879,11 @@ export namespace Components {
           * @default 1
          */
         "firstDayOfWeek": number;
+        /**
+          * Header presentation. `title` (default) shows one "Month Year" button that cycles views; `dropdown` shows separate month + year dropdown chips (the "advanced" variant from the Figma spec).
+          * @default 'title'
+         */
+        "headerStyle": DatePickerHeaderStyle;
         /**
           * Hide the "Today" quick-jump shortcut. Default keeps it visible.
           * @default false
@@ -995,6 +1030,11 @@ export namespace Components {
           * Top-left caption inside the field row, shown below the dropzone. When unset and `accept` is provided, this is derived from `accept` as `Formate acceptate: jpg, png, pdf`. Explicit prop wins.
          */
         "supportedFormatsText"?: string;
+        /**
+          * Presentation. `dropzone` (default) shows the dashed drag-and-drop area; `button` shows a plain "Choose file" button (the Figma "Upload Button"). Both share the same file list, captions and validation.
+          * @default 'dropzone'
+         */
+        "variant": FileInputVariant;
     }
     /**
      * File Item — single-file row inside `mud-file-input` (or any file list surface).
@@ -1024,6 +1064,10 @@ export namespace Components {
           * @default false
          */
         "noRemove": boolean;
+        /**
+          * Optional image-preview URL (object URL or data URI). When set, a thumbnail renders in place of the leading file-type icon (the Figma "image-preview" variation). Falls back to the icon if the image fails to load.
+         */
+        "previewSrc"?: string;
         /**
           * Accessible label for the remove button. Provided in Romanian by default to match the institutional voice.
           * @default 'Elimină fișierul'
@@ -1322,6 +1366,97 @@ export namespace Components {
         "size": IconSize;
     }
     /**
+     * Informational Box — an inline, in-content callout that highlights key
+     * messages, announcements, alerts, or explanations within the page flow.
+     * Unlike `mud-notification` (a fixed-width corner toast) or `mud-banner` (a
+     * full-width page-level bar), the info box sits inside the content column,
+     * fills its container's width, and supports rich content: an optional bold
+     * heading, a multi-line body (default slot), an optional inline action group
+     * (`actions` slot — links/buttons) and an optional close button.
+     * Two axes:
+     * - `variant` — `info` (neutral icon), `info-moderate` (brand-blue icon),
+     *   `warning`, or `error`.
+     * - `emphasis` — `subtle` (neutral grey surface, coloured icon) or `strong`
+     *   (a tinted semantic surface).
+     * The box is static in-flow content, so it is **not** an ARIA live region
+     * (that would re-announce on every render). The icon is decorative; the
+     * heading and body are read in normal reading order. For transient, announced
+     * messages use `mud-notification` / `mud-banner` instead.
+     * @element mud-info-box
+     */
+    interface MudInfoBox {
+        /**
+          * When `true`, renders a trailing close button. Activating it emits `mudClose`; the consumer removes the box from the DOM.
+          * @default false
+         */
+        "closable": boolean;
+        /**
+          * Close-button accessible label. Defaults to the Romanian "Închide".
+          * @default 'Închide'
+         */
+        "closeLabel": string;
+        /**
+          * Visual emphasis — `subtle` (neutral grey surface) or `strong` (tinted semantic surface).
+          * @default 'subtle'
+         */
+        "emphasis": InfoBoxEmphasis;
+        /**
+          * Suppress the leading icon entirely (the `icon-none` variation).
+          * @default false
+         */
+        "hideIcon": boolean;
+        /**
+          * Override the default per-variant `mud-icon` name. Ignored when the `icon-start` slot is populated or `hideIcon` is set.
+         */
+        "iconName"?: string;
+        /**
+          * Optional bold heading rendered above the body.
+         */
+        "titleText"?: string;
+        /**
+          * Semantic variant. `info` uses a neutral icon; `info-moderate` uses the brand-blue icon.
+          * @default 'info'
+         */
+        "variant": InfoBoxVariant;
+    }
+    /**
+     * Inline Message — lightweight, in-context feedback rendered as a coloured
+     * leading icon plus a short text line (no surface, border, or padding).
+     * Used alongside inputs, form fields, or any UI element to give immediate
+     * guidance — the same visual pattern the form controls render as their
+     * assistive / error text, exposed here as a standalone atom for use outside a
+     * specific control.
+     * `variant` selects the semantic colour (`info` keeps neutral text with a
+     * brand-blue icon; `warning` / `success` / `error` colour both). `size` is
+     * `small` (12px) or `medium` (14px).
+     * It is plain in-flow text, **not** an ARIA live region. When used as form
+     * feedback, associate it with the field via `aria-describedby` (and
+     * `aria-invalid` for errors) on the consumer side; for a transient, announced
+     * message use `mud-notification` / `mud-banner`. The icon is decorative.
+     * @element mud-inline-message
+     */
+    interface MudInlineMessage {
+        /**
+          * Suppress the leading icon (the `icon-none` variation).
+          * @default false
+         */
+        "hideIcon": boolean;
+        /**
+          * Override the default per-variant `mud-icon` name.
+         */
+        "iconName"?: string;
+        /**
+          * Size rung — `small` (12px / 16px icon) or `medium` (14px / 20px icon).
+          * @default 'medium'
+         */
+        "size": InlineMessageSize;
+        /**
+          * Semantic variant. `info` (default) uses neutral text with a brand-blue icon; `warning` / `success` / `error` colour both icon and text.
+          * @default 'info'
+         */
+        "variant": InlineMessageVariant;
+    }
+    /**
      * Input — single-line text-entry control.
      * Pattern B (atom-interactive, form-associated): renders its own `<input>`
      * inside shadow DOM. Form participation works via `formAssociated` +
@@ -1338,6 +1473,16 @@ export namespace Components {
           * Native `autocomplete` attribute forwarded to the internal control.
          */
         "autocomplete"?: string;
+        /**
+          * Accessible label for the clear (×) button. Only used when `clearable` is set.
+          * @default 'Golește câmpul'
+         */
+        "clearLabel": string;
+        /**
+          * Shows a trailing clear (×) button while the control holds a value. Clearing empties the field, emits `mudInput` + `mudChange`, and returns focus to the input. Suppressed when disabled, read-only, or loading.
+          * @default false
+         */
+        "clearable": boolean;
         /**
           * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
           * @default false
@@ -1557,7 +1702,7 @@ export namespace Components {
          */
         "size": LinkSize;
         /**
-          * When `true`, the link expands to fill the inline-size of its container and receives a larger touch target. Designed for navigation lists, "View more" affordances, and standalone CTAs that are not embedded in prose.
+          * When `true`, the link receives a larger interactive target — a 32px (pointer) / 40px (touch, `pointer: coarse`) minimum block-size per the Figma "Target Sizes" spec — while still hugging its content inline-size. Designed for navigation lists, "View more" affordances, and standalone CTAs that are not embedded in prose (inline links stay compact, exempt from target-size rules).
           * @default false
          */
         "standalone": boolean;
@@ -1710,7 +1855,7 @@ export namespace Components {
      */
     interface MudModal {
         /**
-          * Footer button arrangement (Figma 358:16247). - `inline` — buttons sit side-by-side, right-aligned (default) - `stacked` — buttons span the full footer width, stacked vertically
+          * Footer button arrangement (Figma 358:16247). - `inline` — buttons sit side-by-side, right-aligned (default) - `stacked` — buttons span the full footer width, stacked vertically (primary on top)  For mobile / touch layouts use `stacked` and slot the action buttons DIRECTLY (`<mud-button slot="actions" full-width>` each, primary first) — not wrapped in a container. A wrapped `<div slot="actions">` stays inline because its own layout can't be restyled from the modal's shadow CSS.
           * @default 'inline'
          */
         "actionsLayout": ModalActionsLayout;
@@ -1981,7 +2126,9 @@ export namespace Components {
      * `siblingCount`, and `boundaryCount`. When the total exceeds the visible
      * window, an interactive overflow button (`…`) collapses the skipped range
      * and lets users jump directly to any of those pages via a dropdown menu
-     * (Figma "overflow-active" interaction).
+     * (Figma "overflow-active" interaction). When the collapsed range is large
+     * (e.g. page 1 of 40 hides ~34 pages), the dropdown caps its height and
+     * scrolls internally instead of running off the viewport.
      * The component is internally controlled but exposes a `mudChange` event so
      * the host can drive the active page. Updating `current-page` from outside
      * is also honoured (e.g. when the URL changes via routing).
@@ -2178,6 +2325,11 @@ export namespace Components {
           * Accessible name for the surrounding list landmark. Falls back to `'Progress tracker'` (English) — Romanian consumers can pass `'Pași'`.
          */
         "ariaLabel"?: string;
+        /**
+          * Compact "dot rail" rendering — the mobile breakpoint from Figma. Hides the step numbers and labels, leaving a rail of dots; per-status fills convey progress (filled brand + checkmark = completed, hollow ring = current / available / pending, danger ring + cross = error). Status icons are kept; only the numeric indicators and text labels are hidden. Works in both orientations.
+          * @default false
+         */
+        "compact": boolean;
         /**
           * Optional zero-based index of the current step. When set, it overrides the `status: 'current'` value in `steps`. Mostly useful for parent-driven flows that mutate a single number rather than the whole array.
          */
@@ -2472,7 +2624,7 @@ export namespace Components {
          */
         "label"?: string;
         /**
-          * Indicates an in-flight query. Replaces the leading magnifying-glass icon with a brand-coloured `mud-spinner` and exposes `aria-busy` on the internal control. The field stays focusable; emitting `mudSearch` while loading is the consumer's responsibility (typically debounced).
+          * Indicates an in-flight query. Keeps the leading magnifying-glass icon as the role indicator and reveals a trailing brand-coloured `mud-spinner` next to the value; the clear `×` is suppressed while the query is in flight and the control is announced as `aria-busy`. The field stays focusable; emitting `mudSearch` while loading is the consumer's responsibility (typically debounced).
           * @default false
          */
         "loading": boolean;
@@ -2595,7 +2747,7 @@ export namespace Components {
          */
         "label"?: string;
         /**
-          * Indicates an in-flight query. Replaces the leading magnifying-glass icon with a brand-coloured `mud-spinner` and exposes `aria-busy` on the internal control. The field stays focusable; emitting `mudSearch` while loading is the consumer's responsibility (typically debounced).
+          * Indicates an in-flight query. Keeps the leading magnifying-glass icon as the role indicator and reveals a trailing brand-coloured `mud-spinner` next to the value; the clear `×` is suppressed while the query is in flight and the control is announced as `aria-busy`. The field stays focusable; emitting `mudSearch` while loading is the consumer's responsibility (typically debounced).
           * @default false
          */
         "loading": boolean;
@@ -2679,6 +2831,11 @@ export namespace Components {
           * @default false
          */
         "disabled": boolean;
+        /**
+          * Full-width mode. The control fills its container and segments stretch to equal shares — the mobile breakpoint from Figma 659:8188. When false (default) the control hugs its content while keeping segments uniform.
+          * @default false
+         */
+        "fluid": boolean;
         /**
           * Form-control `name`. Used during form submission.
          */
@@ -3121,6 +3278,11 @@ export namespace Components {
          */
         "columns"?: TableColumn[];
         /**
+          * Master switch that disables sorting for the WHOLE table, overriding every column's `sortable` flag at once. When `true`, headers render as plain labels — no sort chevron, not keyboard-focusable, no `aria-sort`, and `mudSort` never fires. Useful for read-only or loading states without having to mutate the `columns` array.  Per-column control is unchanged: to make just one column non-sortable, omit `sortable` (or set it to `false`) on that column instead.
+          * @default false
+         */
+        "disableSort": boolean;
+        /**
           * Header treatment. `default` is the subtle gray header used on light surfaces; `inverted` is the strong dark-on-light header for emphasis.
           * @default 'default'
          */
@@ -3514,6 +3676,10 @@ export interface MudHeaderNavItemCustomEvent<T> extends CustomEvent<T> {
 export interface MudHeaderServicesMenuCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudHeaderServicesMenuElement;
+}
+export interface MudInfoBoxCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLMudInfoBoxElement;
 }
 export interface MudInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -4234,6 +4400,64 @@ declare global {
         prototype: HTMLMudIconElement;
         new (): HTMLMudIconElement;
     };
+    interface HTMLMudInfoBoxElementEventMap {
+        "mudClose": void;
+    }
+    /**
+     * Informational Box — an inline, in-content callout that highlights key
+     * messages, announcements, alerts, or explanations within the page flow.
+     * Unlike `mud-notification` (a fixed-width corner toast) or `mud-banner` (a
+     * full-width page-level bar), the info box sits inside the content column,
+     * fills its container's width, and supports rich content: an optional bold
+     * heading, a multi-line body (default slot), an optional inline action group
+     * (`actions` slot — links/buttons) and an optional close button.
+     * Two axes:
+     * - `variant` — `info` (neutral icon), `info-moderate` (brand-blue icon),
+     *   `warning`, or `error`.
+     * - `emphasis` — `subtle` (neutral grey surface, coloured icon) or `strong`
+     *   (a tinted semantic surface).
+     * The box is static in-flow content, so it is **not** an ARIA live region
+     * (that would re-announce on every render). The icon is decorative; the
+     * heading and body are read in normal reading order. For transient, announced
+     * messages use `mud-notification` / `mud-banner` instead.
+     * @element mud-info-box
+     */
+    interface HTMLMudInfoBoxElement extends Components.MudInfoBox, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudInfoBoxElementEventMap>(type: K, listener: (this: HTMLMudInfoBoxElement, ev: MudInfoBoxCustomEvent<HTMLMudInfoBoxElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudInfoBoxElementEventMap>(type: K, listener: (this: HTMLMudInfoBoxElement, ev: MudInfoBoxCustomEvent<HTMLMudInfoBoxElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLMudInfoBoxElement: {
+        prototype: HTMLMudInfoBoxElement;
+        new (): HTMLMudInfoBoxElement;
+    };
+    /**
+     * Inline Message — lightweight, in-context feedback rendered as a coloured
+     * leading icon plus a short text line (no surface, border, or padding).
+     * Used alongside inputs, form fields, or any UI element to give immediate
+     * guidance — the same visual pattern the form controls render as their
+     * assistive / error text, exposed here as a standalone atom for use outside a
+     * specific control.
+     * `variant` selects the semantic colour (`info` keeps neutral text with a
+     * brand-blue icon; `warning` / `success` / `error` colour both). `size` is
+     * `small` (12px) or `medium` (14px).
+     * It is plain in-flow text, **not** an ARIA live region. When used as form
+     * feedback, associate it with the field via `aria-describedby` (and
+     * `aria-invalid` for errors) on the consumer side; for a transient, announced
+     * message use `mud-notification` / `mud-banner`. The icon is decorative.
+     * @element mud-inline-message
+     */
+    interface HTMLMudInlineMessageElement extends Components.MudInlineMessage, HTMLStencilElement {
+    }
+    var HTMLMudInlineMessageElement: {
+        prototype: HTMLMudInlineMessageElement;
+        new (): HTMLMudInlineMessageElement;
+    };
     interface HTMLMudInputElementEventMap {
         "mudInput": InputChangeDetail;
         "mudChange": InputChangeDetail;
@@ -4520,7 +4744,9 @@ declare global {
      * `siblingCount`, and `boundaryCount`. When the total exceeds the visible
      * window, an interactive overflow button (`…`) collapses the skipped range
      * and lets users jump directly to any of those pages via a dropdown menu
-     * (Figma "overflow-active" interaction).
+     * (Figma "overflow-active" interaction). When the collapsed range is large
+     * (e.g. page 1 of 40 hides ~34 pages), the dropdown caps its height and
+     * scrolls internally instead of running off the viewport.
      * The component is internally controlled but exposes a `mudChange` event so
      * the host can drive the active page. Updating `current-page` from outside
      * is also honoured (e.g. when the URL changes via routing).
@@ -5178,6 +5404,8 @@ declare global {
         "mud-header-nav-item": HTMLMudHeaderNavItemElement;
         "mud-header-services-menu": HTMLMudHeaderServicesMenuElement;
         "mud-icon": HTMLMudIconElement;
+        "mud-info-box": HTMLMudInfoBoxElement;
+        "mud-inline-message": HTMLMudInlineMessageElement;
         "mud-input": HTMLMudInputElement;
         "mud-input-chip": HTMLMudInputChipElement;
         "mud-link": HTMLMudLinkElement;
@@ -5699,6 +5927,10 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
+          * Plain-text error message shown below the label when `invalid` is set. Pairs with the `circle-error-filled` icon and is wired to the control via `aria-describedby`. When present (and `invalid`) it replaces the supporting text. Mirrors the `errorText` convention of `mud-input` / `mud-textarea`.
+         */
+        "errorText"?: string;
+        /**
           * The `id` of a `<form>` element to associate this element with.
          */
         "form"?: string;
@@ -5771,6 +6003,10 @@ declare namespace LocalJSX {
      */
     interface MudChip {
         /**
+          * Optional numeric badge rendered after the label (e.g. a result count). The badge colour inverts with the chip surface so it stays legible in both the default and selected states. Omit (or pass a non-number) to hide it.
+         */
+        "count"?: number;
+        /**
           * Disables interactivity. Reflects `aria-disabled` and removes the chip from pointer/keyboard activation paths.
           * @default false
          */
@@ -5797,6 +6033,11 @@ declare namespace LocalJSX {
           * @default false
          */
         "selected"?: boolean;
+        /**
+          * Selection behaviour for `type="filter"`. In `multi` mode a leading ✓ is rendered automatically when `selected` (no need to slot a checkmark icon). Ignored when `type="input"`.
+          * @default 'mono'
+         */
+        "selectionMode"?: ChipSelectionMode;
         /**
           * Visual size rung.
           * @default 'md'
@@ -5854,9 +6095,17 @@ declare namespace LocalJSX {
          */
         "expanded"?: boolean;
         /**
+          * "Show less" toggle label for expanded category descriptions on mobile. Defaults to Romanian "Mai puțin".
+         */
+        "lessLabel"?: string;
+        /**
           * "Customise / Manage cookies" button label.
          */
         "manageLabel"?: string;
+        /**
+          * "Show more" toggle label for clamped category descriptions on mobile. Defaults to Romanian "Mai mult".
+         */
+        "moreLabel"?: string;
         /**
           * Fires when the user accepts every (non-required) category.
          */
@@ -5921,6 +6170,11 @@ declare namespace LocalJSX {
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present.
          */
         "ariaLabel"?: string;
+        /**
+          * Calendar-popover placement. `auto` opens a desktop dropdown on wide viewports and a full-width bottom sheet on narrow ones; `desktop` / `mobile` force one layout.
+          * @default 'auto'
+         */
+        "breakpoint"?: DateInputBreakpoint;
         /**
           * Accessible label for the clear (×) button.
           * @default 'Șterge'
@@ -6060,6 +6314,11 @@ declare namespace LocalJSX {
           * @default 1
          */
         "firstDayOfWeek"?: number;
+        /**
+          * Header presentation. `title` (default) shows one "Month Year" button that cycles views; `dropdown` shows separate month + year dropdown chips (the "advanced" variant from the Figma spec).
+          * @default 'title'
+         */
+        "headerStyle"?: DatePickerHeaderStyle;
         /**
           * Hide the "Today" quick-jump shortcut. Default keeps it visible.
           * @default false
@@ -6242,6 +6501,11 @@ declare namespace LocalJSX {
           * Top-left caption inside the field row, shown below the dropzone. When unset and `accept` is provided, this is derived from `accept` as `Formate acceptate: jpg, png, pdf`. Explicit prop wins.
          */
         "supportedFormatsText"?: string;
+        /**
+          * Presentation. `dropzone` (default) shows the dashed drag-and-drop area; `button` shows a plain "Choose file" button (the Figma "Upload Button"). Both share the same file list, captions and validation.
+          * @default 'dropzone'
+         */
+        "variant"?: FileInputVariant;
     }
     /**
      * File Item — single-file row inside `mud-file-input` (or any file list surface).
@@ -6275,6 +6539,10 @@ declare namespace LocalJSX {
           * Fires when the citizen presses the remove control. The host is responsible for splicing the file out of its list.
          */
         "onMudRemove"?: (event: MudFileItemCustomEvent<FileItemRemoveDetail>) => void;
+        /**
+          * Optional image-preview URL (object URL or data URI). When set, a thumbnail renders in place of the leading file-type icon (the Figma "image-preview" variation). Falls back to the icon if the image fails to load.
+         */
+        "previewSrc"?: string;
         /**
           * Accessible label for the remove button. Provided in Romanian by default to match the institutional voice.
           * @default 'Elimină fișierul'
@@ -6609,6 +6877,101 @@ declare namespace LocalJSX {
         "size"?: IconSize;
     }
     /**
+     * Informational Box — an inline, in-content callout that highlights key
+     * messages, announcements, alerts, or explanations within the page flow.
+     * Unlike `mud-notification` (a fixed-width corner toast) or `mud-banner` (a
+     * full-width page-level bar), the info box sits inside the content column,
+     * fills its container's width, and supports rich content: an optional bold
+     * heading, a multi-line body (default slot), an optional inline action group
+     * (`actions` slot — links/buttons) and an optional close button.
+     * Two axes:
+     * - `variant` — `info` (neutral icon), `info-moderate` (brand-blue icon),
+     *   `warning`, or `error`.
+     * - `emphasis` — `subtle` (neutral grey surface, coloured icon) or `strong`
+     *   (a tinted semantic surface).
+     * The box is static in-flow content, so it is **not** an ARIA live region
+     * (that would re-announce on every render). The icon is decorative; the
+     * heading and body are read in normal reading order. For transient, announced
+     * messages use `mud-notification` / `mud-banner` instead.
+     * @element mud-info-box
+     */
+    interface MudInfoBox {
+        /**
+          * When `true`, renders a trailing close button. Activating it emits `mudClose`; the consumer removes the box from the DOM.
+          * @default false
+         */
+        "closable"?: boolean;
+        /**
+          * Close-button accessible label. Defaults to the Romanian "Închide".
+          * @default 'Închide'
+         */
+        "closeLabel"?: string;
+        /**
+          * Visual emphasis — `subtle` (neutral grey surface) or `strong` (tinted semantic surface).
+          * @default 'subtle'
+         */
+        "emphasis"?: InfoBoxEmphasis;
+        /**
+          * Suppress the leading icon entirely (the `icon-none` variation).
+          * @default false
+         */
+        "hideIcon"?: boolean;
+        /**
+          * Override the default per-variant `mud-icon` name. Ignored when the `icon-start` slot is populated or `hideIcon` is set.
+         */
+        "iconName"?: string;
+        /**
+          * Fires when the user activates the close button. Payload is `void` — the consumer is responsible for removing the box from the DOM.
+         */
+        "onMudClose"?: (event: MudInfoBoxCustomEvent<void>) => void;
+        /**
+          * Optional bold heading rendered above the body.
+         */
+        "titleText"?: string;
+        /**
+          * Semantic variant. `info` uses a neutral icon; `info-moderate` uses the brand-blue icon.
+          * @default 'info'
+         */
+        "variant"?: InfoBoxVariant;
+    }
+    /**
+     * Inline Message — lightweight, in-context feedback rendered as a coloured
+     * leading icon plus a short text line (no surface, border, or padding).
+     * Used alongside inputs, form fields, or any UI element to give immediate
+     * guidance — the same visual pattern the form controls render as their
+     * assistive / error text, exposed here as a standalone atom for use outside a
+     * specific control.
+     * `variant` selects the semantic colour (`info` keeps neutral text with a
+     * brand-blue icon; `warning` / `success` / `error` colour both). `size` is
+     * `small` (12px) or `medium` (14px).
+     * It is plain in-flow text, **not** an ARIA live region. When used as form
+     * feedback, associate it with the field via `aria-describedby` (and
+     * `aria-invalid` for errors) on the consumer side; for a transient, announced
+     * message use `mud-notification` / `mud-banner`. The icon is decorative.
+     * @element mud-inline-message
+     */
+    interface MudInlineMessage {
+        /**
+          * Suppress the leading icon (the `icon-none` variation).
+          * @default false
+         */
+        "hideIcon"?: boolean;
+        /**
+          * Override the default per-variant `mud-icon` name.
+         */
+        "iconName"?: string;
+        /**
+          * Size rung — `small` (12px / 16px icon) or `medium` (14px / 20px icon).
+          * @default 'medium'
+         */
+        "size"?: InlineMessageSize;
+        /**
+          * Semantic variant. `info` (default) uses neutral text with a brand-blue icon; `warning` / `success` / `error` colour both icon and text.
+          * @default 'info'
+         */
+        "variant"?: InlineMessageVariant;
+    }
+    /**
      * Input — single-line text-entry control.
      * Pattern B (atom-interactive, form-associated): renders its own `<input>`
      * inside shadow DOM. Form participation works via `formAssociated` +
@@ -6625,6 +6988,16 @@ declare namespace LocalJSX {
           * Native `autocomplete` attribute forwarded to the internal control.
          */
         "autocomplete"?: string;
+        /**
+          * Accessible label for the clear (×) button. Only used when `clearable` is set.
+          * @default 'Golește câmpul'
+         */
+        "clearLabel"?: string;
+        /**
+          * Shows a trailing clear (×) button while the control holds a value. Clearing empties the field, emits `mudInput` + `mudChange`, and returns focus to the input. Suppressed when disabled, read-only, or loading.
+          * @default false
+         */
+        "clearable"?: boolean;
         /**
           * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
           * @default false
@@ -6892,7 +7265,7 @@ declare namespace LocalJSX {
          */
         "size"?: LinkSize;
         /**
-          * When `true`, the link expands to fill the inline-size of its container and receives a larger touch target. Designed for navigation lists, "View more" affordances, and standalone CTAs that are not embedded in prose.
+          * When `true`, the link receives a larger interactive target — a 32px (pointer) / 40px (touch, `pointer: coarse`) minimum block-size per the Figma "Target Sizes" spec — while still hugging its content inline-size. Designed for navigation lists, "View more" affordances, and standalone CTAs that are not embedded in prose (inline links stay compact, exempt from target-size rules).
           * @default false
          */
         "standalone"?: boolean;
@@ -7061,7 +7434,7 @@ declare namespace LocalJSX {
      */
     interface MudModal {
         /**
-          * Footer button arrangement (Figma 358:16247). - `inline` — buttons sit side-by-side, right-aligned (default) - `stacked` — buttons span the full footer width, stacked vertically
+          * Footer button arrangement (Figma 358:16247). - `inline` — buttons sit side-by-side, right-aligned (default) - `stacked` — buttons span the full footer width, stacked vertically (primary on top)  For mobile / touch layouts use `stacked` and slot the action buttons DIRECTLY (`<mud-button slot="actions" full-width>` each, primary first) — not wrapped in a container. A wrapped `<div slot="actions">` stays inline because its own layout can't be restyled from the modal's shadow CSS.
           * @default 'inline'
          */
         "actionsLayout"?: ModalActionsLayout;
@@ -7368,7 +7741,9 @@ declare namespace LocalJSX {
      * `siblingCount`, and `boundaryCount`. When the total exceeds the visible
      * window, an interactive overflow button (`…`) collapses the skipped range
      * and lets users jump directly to any of those pages via a dropdown menu
-     * (Figma "overflow-active" interaction).
+     * (Figma "overflow-active" interaction). When the collapsed range is large
+     * (e.g. page 1 of 40 hides ~34 pages), the dropdown caps its height and
+     * scrolls internally instead of running off the viewport.
      * The component is internally controlled but exposes a `mudChange` event so
      * the host can drive the active page. Updating `current-page` from outside
      * is also honoured (e.g. when the URL changes via routing).
@@ -7601,6 +7976,11 @@ declare namespace LocalJSX {
           * Accessible name for the surrounding list landmark. Falls back to `'Progress tracker'` (English) — Romanian consumers can pass `'Pași'`.
          */
         "ariaLabel"?: string;
+        /**
+          * Compact "dot rail" rendering — the mobile breakpoint from Figma. Hides the step numbers and labels, leaving a rail of dots; per-status fills convey progress (filled brand + checkmark = completed, hollow ring = current / available / pending, danger ring + cross = error). Status icons are kept; only the numeric indicators and text labels are hidden. Works in both orientations.
+          * @default false
+         */
+        "compact"?: boolean;
         /**
           * Optional zero-based index of the current step. When set, it overrides the `status: 'current'` value in `steps`. Mostly useful for parent-driven flows that mutate a single number rather than the whole array.
          */
@@ -7935,7 +8315,7 @@ declare namespace LocalJSX {
          */
         "label"?: string;
         /**
-          * Indicates an in-flight query. Replaces the leading magnifying-glass icon with a brand-coloured `mud-spinner` and exposes `aria-busy` on the internal control. The field stays focusable; emitting `mudSearch` while loading is the consumer's responsibility (typically debounced).
+          * Indicates an in-flight query. Keeps the leading magnifying-glass icon as the role indicator and reveals a trailing brand-coloured `mud-spinner` next to the value; the clear `×` is suppressed while the query is in flight and the control is announced as `aria-busy`. The field stays focusable; emitting `mudSearch` while loading is the consumer's responsibility (typically debounced).
           * @default false
          */
         "loading"?: boolean;
@@ -8086,7 +8466,7 @@ declare namespace LocalJSX {
          */
         "label"?: string;
         /**
-          * Indicates an in-flight query. Replaces the leading magnifying-glass icon with a brand-coloured `mud-spinner` and exposes `aria-busy` on the internal control. The field stays focusable; emitting `mudSearch` while loading is the consumer's responsibility (typically debounced).
+          * Indicates an in-flight query. Keeps the leading magnifying-glass icon as the role indicator and reveals a trailing brand-coloured `mud-spinner` next to the value; the clear `×` is suppressed while the query is in flight and the control is announced as `aria-busy`. The field stays focusable; emitting `mudSearch` while loading is the consumer's responsibility (typically debounced).
           * @default false
          */
         "loading"?: boolean;
@@ -8194,6 +8574,11 @@ declare namespace LocalJSX {
           * @default false
          */
         "disabled"?: boolean;
+        /**
+          * Full-width mode. The control fills its container and segments stretch to equal shares — the mobile breakpoint from Figma 659:8188. When false (default) the control hugs its content while keeping segments uniform.
+          * @default false
+         */
+        "fluid"?: boolean;
         /**
           * The `id` of a `<form>` element to associate this element with.
          */
@@ -8700,6 +9085,11 @@ declare namespace LocalJSX {
          */
         "columns"?: TableColumn[];
         /**
+          * Master switch that disables sorting for the WHOLE table, overriding every column's `sortable` flag at once. When `true`, headers render as plain labels — no sort chevron, not keyboard-focusable, no `aria-sort`, and `mudSort` never fires. Useful for read-only or loading states without having to mutate the `columns` array.  Per-column control is unchanged: to make just one column non-sortable, omit `sortable` (or set it to `false`) on that column instead.
+          * @default false
+         */
+        "disableSort"?: boolean;
+        /**
           * Header treatment. `default` is the subtle gray header used on light surfaces; `inverted` is the strong dark-on-light header for emphasis.
           * @default 'default'
          */
@@ -9160,6 +9550,7 @@ declare namespace LocalJSX {
         "value": string;
         "label": string;
         "supportingText": string;
+        "errorText": string;
         "ariaLabel": string;
         "ariaLabelledby": string;
     }
@@ -9167,6 +9558,8 @@ declare namespace LocalJSX {
         "type": ChipType;
         "size": ChipSize;
         "selected": boolean;
+        "selectionMode": ChipSelectionMode;
+        "count": number;
         "disabled": boolean;
         "label": string;
         "removable": boolean;
@@ -9184,12 +9577,15 @@ declare namespace LocalJSX {
         "privacyHref": string;
         "privacyLabel": string;
         "closeLabel": string;
+        "moreLabel": string;
+        "lessLabel": string;
         "ariaLabel": string;
     }
     interface MudDateInputAttributes {
         "variant": DateInputVariant;
         "size": DateInputSize;
         "format": DateInputFormat;
+        "breakpoint": DateInputBreakpoint;
         "disabled": boolean;
         "required": boolean;
         "readonly": boolean;
@@ -9209,6 +9605,7 @@ declare namespace LocalJSX {
     interface MudDatePickerAttributes {
         "mode": DatePickerMode;
         "breakpoint": DatePickerBreakpoint;
+        "headerStyle": DatePickerHeaderStyle;
         "value": string | string[];
         "rangeStart": string;
         "rangeEnd": string;
@@ -9222,6 +9619,7 @@ declare namespace LocalJSX {
     }
     interface MudFileInputAttributes {
         "size": FileInputSize;
+        "variant": FileInputVariant;
         "disabled": boolean;
         "required": boolean;
         "invalid": boolean;
@@ -9245,6 +9643,7 @@ declare namespace LocalJSX {
         "filename": string;
         "size": number;
         "errorText": string;
+        "previewSrc": string;
         "disabled": boolean;
         "noRemove": boolean;
         "removeLabel": string;
@@ -9300,6 +9699,21 @@ declare namespace LocalJSX {
         "disabled": boolean;
         "ariaLabel": string;
     }
+    interface MudInfoBoxAttributes {
+        "variant": InfoBoxVariant;
+        "emphasis": InfoBoxEmphasis;
+        "closable": boolean;
+        "hideIcon": boolean;
+        "titleText": string;
+        "iconName": string;
+        "closeLabel": string;
+    }
+    interface MudInlineMessageAttributes {
+        "variant": InlineMessageVariant;
+        "size": InlineMessageSize;
+        "hideIcon": boolean;
+        "iconName": string;
+    }
     interface MudInputAttributes {
         "variant": InputVariant;
         "loading": boolean;
@@ -9308,10 +9722,12 @@ declare namespace LocalJSX {
         "disabled": boolean;
         "required": boolean;
         "readonly": boolean;
+        "clearable": boolean;
         "invalid": boolean;
         "value": string;
         "name": string;
         "placeholder": string;
+        "clearLabel": string;
         "label": string;
         "helperText": string;
         "errorText": string;
@@ -9465,6 +9881,7 @@ declare namespace LocalJSX {
     interface MudProgressTrackerAttributes {
         "orientation": ProgressTrackerOrientation;
         "interactive": boolean;
+        "compact": boolean;
         "currentStep": number;
         "ariaLabel": string;
     }
@@ -9560,6 +9977,7 @@ declare namespace LocalJSX {
     interface MudSegmentedControlAttributes {
         "size": SegmentedControlSize;
         "disabled": boolean;
+        "fluid": boolean;
         "value": string;
         "name": string;
         "ariaLabel": string;
@@ -9655,6 +10073,7 @@ declare namespace LocalJSX {
         "rowStyle": TableRowStyle;
         "hoverable": boolean;
         "selectable": boolean;
+        "disableSort": boolean;
         "sortColumn": string;
         "sortDirection": TableSortDirection;
         "rowIdField": string;
@@ -9735,6 +10154,8 @@ declare namespace LocalJSX {
         "mud-header-nav-item": Omit<MudHeaderNavItem, keyof MudHeaderNavItemAttributes> & { [K in keyof MudHeaderNavItem & keyof MudHeaderNavItemAttributes]?: MudHeaderNavItem[K] } & { [K in keyof MudHeaderNavItem & keyof MudHeaderNavItemAttributes as `attr:${K}`]?: MudHeaderNavItemAttributes[K] } & { [K in keyof MudHeaderNavItem & keyof MudHeaderNavItemAttributes as `prop:${K}`]?: MudHeaderNavItem[K] };
         "mud-header-services-menu": Omit<MudHeaderServicesMenu, keyof MudHeaderServicesMenuAttributes> & { [K in keyof MudHeaderServicesMenu & keyof MudHeaderServicesMenuAttributes]?: MudHeaderServicesMenu[K] } & { [K in keyof MudHeaderServicesMenu & keyof MudHeaderServicesMenuAttributes as `attr:${K}`]?: MudHeaderServicesMenuAttributes[K] } & { [K in keyof MudHeaderServicesMenu & keyof MudHeaderServicesMenuAttributes as `prop:${K}`]?: MudHeaderServicesMenu[K] };
         "mud-icon": Omit<MudIcon, keyof MudIconAttributes> & { [K in keyof MudIcon & keyof MudIconAttributes]?: MudIcon[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `attr:${K}`]?: MudIconAttributes[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `prop:${K}`]?: MudIcon[K] };
+        "mud-info-box": Omit<MudInfoBox, keyof MudInfoBoxAttributes> & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes]?: MudInfoBox[K] } & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes as `attr:${K}`]?: MudInfoBoxAttributes[K] } & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes as `prop:${K}`]?: MudInfoBox[K] };
+        "mud-inline-message": Omit<MudInlineMessage, keyof MudInlineMessageAttributes> & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes]?: MudInlineMessage[K] } & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes as `attr:${K}`]?: MudInlineMessageAttributes[K] } & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes as `prop:${K}`]?: MudInlineMessage[K] };
         "mud-input": Omit<MudInput, keyof MudInputAttributes> & { [K in keyof MudInput & keyof MudInputAttributes]?: MudInput[K] } & { [K in keyof MudInput & keyof MudInputAttributes as `attr:${K}`]?: MudInputAttributes[K] } & { [K in keyof MudInput & keyof MudInputAttributes as `prop:${K}`]?: MudInput[K] };
         "mud-input-chip": Omit<MudInputChip, keyof MudInputChipAttributes> & { [K in keyof MudInputChip & keyof MudInputChipAttributes]?: MudInputChip[K] } & { [K in keyof MudInputChip & keyof MudInputChipAttributes as `attr:${K}`]?: MudInputChipAttributes[K] } & { [K in keyof MudInputChip & keyof MudInputChipAttributes as `prop:${K}`]?: MudInputChip[K] };
         "mud-link": Omit<MudLink, keyof MudLinkAttributes> & { [K in keyof MudLink & keyof MudLinkAttributes]?: MudLink[K] } & { [K in keyof MudLink & keyof MudLinkAttributes as `attr:${K}`]?: MudLinkAttributes[K] } & { [K in keyof MudLink & keyof MudLinkAttributes as `prop:${K}`]?: MudLink[K] };
@@ -10058,6 +10479,43 @@ declare module "@stencil/core" {
              */
             "mud-icon": LocalJSX.IntrinsicElements["mud-icon"] & JSXBase.HTMLAttributes<HTMLMudIconElement>;
             /**
+             * Informational Box — an inline, in-content callout that highlights key
+             * messages, announcements, alerts, or explanations within the page flow.
+             * Unlike `mud-notification` (a fixed-width corner toast) or `mud-banner` (a
+             * full-width page-level bar), the info box sits inside the content column,
+             * fills its container's width, and supports rich content: an optional bold
+             * heading, a multi-line body (default slot), an optional inline action group
+             * (`actions` slot — links/buttons) and an optional close button.
+             * Two axes:
+             * - `variant` — `info` (neutral icon), `info-moderate` (brand-blue icon),
+             *   `warning`, or `error`.
+             * - `emphasis` — `subtle` (neutral grey surface, coloured icon) or `strong`
+             *   (a tinted semantic surface).
+             * The box is static in-flow content, so it is **not** an ARIA live region
+             * (that would re-announce on every render). The icon is decorative; the
+             * heading and body are read in normal reading order. For transient, announced
+             * messages use `mud-notification` / `mud-banner` instead.
+             * @element mud-info-box
+             */
+            "mud-info-box": LocalJSX.IntrinsicElements["mud-info-box"] & JSXBase.HTMLAttributes<HTMLMudInfoBoxElement>;
+            /**
+             * Inline Message — lightweight, in-context feedback rendered as a coloured
+             * leading icon plus a short text line (no surface, border, or padding).
+             * Used alongside inputs, form fields, or any UI element to give immediate
+             * guidance — the same visual pattern the form controls render as their
+             * assistive / error text, exposed here as a standalone atom for use outside a
+             * specific control.
+             * `variant` selects the semantic colour (`info` keeps neutral text with a
+             * brand-blue icon; `warning` / `success` / `error` colour both). `size` is
+             * `small` (12px) or `medium` (14px).
+             * It is plain in-flow text, **not** an ARIA live region. When used as form
+             * feedback, associate it with the field via `aria-describedby` (and
+             * `aria-invalid` for errors) on the consumer side; for a transient, announced
+             * message use `mud-notification` / `mud-banner`. The icon is decorative.
+             * @element mud-inline-message
+             */
+            "mud-inline-message": LocalJSX.IntrinsicElements["mud-inline-message"] & JSXBase.HTMLAttributes<HTMLMudInlineMessageElement>;
+            /**
              * Input — single-line text-entry control.
              * Pattern B (atom-interactive, form-associated): renders its own `<input>`
              * inside shadow DOM. Form participation works via `formAssociated` +
@@ -10190,7 +10648,9 @@ declare module "@stencil/core" {
              * `siblingCount`, and `boundaryCount`. When the total exceeds the visible
              * window, an interactive overflow button (`…`) collapses the skipped range
              * and lets users jump directly to any of those pages via a dropdown menu
-             * (Figma "overflow-active" interaction).
+             * (Figma "overflow-active" interaction). When the collapsed range is large
+             * (e.g. page 1 of 40 hides ~34 pages), the dropdown caps its height and
+             * scrolls internally instead of running off the viewport.
              * The component is internally controlled but exposes a `mudChange` event so
              * the host can drive the active page. Updating `current-page` from outside
              * is also honoured (e.g. when the URL changes via routing).

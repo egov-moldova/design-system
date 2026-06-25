@@ -125,20 +125,28 @@
 }
 
 /*
- * Badge slot — pinned to the top-right corner. Sized to match the Figma
- * spec (~40% of the container) so consumers don't have to position
- * absolutely. `:empty` keeps the wrapper out of the layout tree so an
- * unused slot doesn't add a touch target.
+ * Badge slot — anchored on the avatar's north-east edge (~45°) so the badge
+ * overlaps the circle instead of floating in the empty corner of the square
+ * bounding box. 14.6% = (1 − sin45°) · 50%, the offset that lands on the
+ * circumference; `translate(50%, -50%)` makes those insets address the slot's
+ * centre, so the placement holds for any badge size (dot or count). `:empty`
+ * keeps the wrapper out of the layout tree so an unused slot adds no touch target.
  */
 .badge-slot {
   position: absolute;
-  inset-block-start: calc(var(--_size) * -0.06);
-  inset-inline-end: calc(var(--_size) * -0.06);
+  inset-block-start: 14.6%;
+  inset-inline-end: 14.6%;
+  transform: translate(50%, -50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   pointer-events: auto;
   z-index: 1;
+}
+
+/* Mirror the badge to the north-west edge in RTL contexts. */
+:host(:dir(rtl)) .badge-slot {
+  transform: translate(-50%, -50%);
 }
 
 .badge-slot:empty {

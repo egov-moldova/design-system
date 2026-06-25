@@ -100,10 +100,12 @@ export class MudSearchInputCircular {
   @Prop({ reflect: true }) clearable: boolean = true;
 
   /**
-   * Indicates an in-flight query. Replaces the leading magnifying-glass icon
-   * with a brand-coloured `mud-spinner` and exposes `aria-busy` on the
-   * internal control. The field stays focusable; emitting `mudSearch` while
-   * loading is the consumer's responsibility (typically debounced).
+   * Indicates an in-flight query. Keeps the leading magnifying-glass icon as
+   * the role indicator and reveals a trailing brand-coloured `mud-spinner`
+   * next to the value; the clear `×` is suppressed while the query is in
+   * flight and the control is announced as `aria-busy`. The field stays
+   * focusable; emitting `mudSearch` while loading is the consumer's
+   * responsibility (typically debounced).
    * @default false
    */
   @Prop({ reflect: true }) loading: boolean = false;

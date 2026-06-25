@@ -168,7 +168,12 @@
   display: block;
   inline-size: 100%;
   block-size: 100%;
-  min-block-size: calc(var(--_min-height) - 2 * var(--_padding-block) - 2 * var(--_border-width-default));
+  /* Fill the control's content box (min-height minus its border) so the
+     textarea reaches the bottom edge — the grip then sits on the textarea's
+     own corner instead of floating over an empty band. The textarea is
+     border-box, so its own padding stays inside this height (no extra
+     subtraction). */
+  min-block-size: calc(var(--_min-height) - 2 * var(--_border-width-default));
   padding: var(--_padding-block) var(--_padding-inline);
   margin: 0;
   border: 0;
@@ -214,11 +219,18 @@
   outline: none;
 }
 
-/* Vertical resize mode — native handle is hidden (`resize: none`) but the
-   container grows because the native textarea owns its own height under
-   the hood. We expose vertical resize through the visible grip. */
+/* Vertical resize mode — the native <textarea> keeps `resize: vertical` so the
+   bottom-right corner stays drag-resizable, but the engine's own resizer widget
+   is hidden (below) so only our token-driven grip icon shows. */
 :host(.resize-vertical:not(.is-disabled):not(.is-readonly)) .native {
   resize: vertical;
+}
+
+/* Hide the engine-drawn resizer (the doubled diagonal lines) so it doesn't
+   collide with our custom `.resize-grip`. Dragging the corner still resizes —
+   the behavior comes from `resize: vertical`, not this pseudo's visibility. */
+.native::-webkit-resizer {
+  display: none;
 }
 
 /* ---------- Resize grip ----------

@@ -115,6 +115,47 @@
   outline-offset: var(--spacing-2);
 }
 
+/* ---------- Header dropdown chips (header-style="dropdown") ---------- */
+
+.header-dropdowns {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-content: center;
+  gap: var(--date-picker-header-gap);
+  min-inline-size: 0;
+}
+
+.dropdown-trigger {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding-block: var(--spacing-4);
+  padding-inline: var(--spacing-8);
+  background: transparent;
+  border: 0;
+  border-radius: var(--border-radius-6);
+  cursor: pointer;
+  font-family: var(--date-picker-header-title-font-family);
+  font-weight: var(--date-picker-header-title-font-weight);
+  font-size: var(--date-picker-header-title-font-size);
+  line-height: var(--date-picker-header-title-line-height);
+  color: var(--date-picker-header-title-color);
+  --icon-color: currentcolor;
+  transition: background-color var(--_transition-duration) var(--_transition-easing);
+}
+
+.dropdown-trigger:hover,
+.dropdown-trigger.is-open {
+  background-color: var(--color-background-base-tertiary);
+}
+
+.dropdown-trigger:focus-visible {
+  outline: var(--date-picker-day-cell-focus-ring-width) solid var(--date-picker-day-cell-focus-ring);
+  outline-offset: var(--spacing-2);
+}
+
 /* ---------- Grid layout ---------- */
 
 .day-grid,
@@ -145,7 +186,7 @@
   font-size: var(--date-picker-day-label-font-size);
   line-height: var(--date-picker-day-label-line-height);
   color: var(--date-picker-day-label-color);
-  text-transform: lowercase;
+  text-transform: uppercase;
 }
 
 /* ---------- Day cells ---------- */
@@ -244,7 +285,8 @@
 .month-grid,
 .year-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* 4 columns × 3 rows for the 12-cell month/year pickers, per the Figma. */
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--date-picker-month-grid-row-gap);
 }
 

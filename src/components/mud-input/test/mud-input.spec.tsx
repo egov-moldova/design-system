@@ -365,4 +365,62 @@ describe('mud-input', () => {
       expect(queryNative(root)?.hasAttribute('aria-label')).toBe(false);
     });
   });
+
+  describe('clearable', () => {
+    const queryClear = (root: Element | null | undefined): HTMLButtonElement | null =>
+      (root?.shadowRoot?.querySelector('button.control-clear') ?? null) as HTMLButtonElement | null;
+
+    it('does not render the clear button without the clearable prop', async () => {
+      const { root } = await render(<mud-input label="x" value="hello"></mud-input>);
+      expect(queryClear(root)).toBeNull();
+    });
+
+    it('renders the clear button only when clearable and the field holds a value', async () => {
+      const { root: empty } = await render(<mud-input label="x" clearable></mud-input>);
+      expect(queryClear(empty)).toBeNull();
+      const { root: filled } = await render(<mud-input label="x" clearable value="hello"></mud-input>);
+      expect(queryClear(filled)).toBeTruthy();
+    });
+
+    it('suppresses the clear button when disabled, read-only, or loading', async () => {
+      const { root: disabled } = await render(<mud-input label="x" clearable value="hello" disabled></mud-input>);
+      expect(queryClear(disabled)).toBeNull();
+      const { root: readonly } = await render(<mud-input label="x" clearable value="hello" readonly></mud-input>);
+      expect(queryClear(readonly)).toBeNull();
+      const { root: loading } = await render(<mud-input label="x" clearable value="hello" loading></mud-input>);
+      expect(queryClear(loading)).toBeNull();
+    });
+
+    it('labels the clear button (default + custom)', async () => {
+      const { root } = await render(<mud-input label="x" clearable value="hello"></mud-input>);
+      expect(queryClear(root)?.getAttribute('aria-label')).toBe('Golește câmpul');
+      const { root: custom } = await render(
+        <mud-input label="x" clearable value="hello" clear-label="Clear search"></mud-input>,
+      );
+      expect(queryClear(custom)?.getAttribute('aria-label')).toBe('Clear search');
+    });
+
+    it('keeps the clear button out of the tab order', async () => {
+      const { root } = await render(<mud-input label="x" clearable value="hello"></mud-input>);
+      expect(queryClear(root)?.getAttribute('tabindex')).toBe('-1');
+    });
+
+    it('clears the value and emits mudInput + mudChange when activated', async () => {
+      const onInput = vi.fn();
+      const onChange = vi.fn();
+      const { root } = await render(
+        <mud-input label="x" clearable value="hello" onMudInput={onInput} onMudChange={onChange}></mud-input>,
+      );
+      const clear = queryClear(root)!;
+      clear.click();
+      await flush();
+      expect((root as unknown as { value: string }).value).toBe('');
+      expect(onInput).toHaveBeenCalledTimes(1);
+      expect(onInput.mock.calls[0][0].detail).toEqual({ value: '' });
+      expect(onChange).toHaveBeenCalledTimes(1);
+      expect(onChange.mock.calls[0][0].detail).toEqual({ value: '' });
+      // Button disappears once the field is empty.
+      expect(queryClear(root)).toBeNull();
+    });
+  });
 });

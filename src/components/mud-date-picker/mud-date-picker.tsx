@@ -1,9 +1,15 @@
 import { Component, Element, Event, EventEmitter, Host, Listen, Prop, State, Watch, h } from '@stencil/core';
 
-import { DATE_PICKER_BREAKPOINTS, DATE_PICKER_MODES, DATE_PICKER_VIEWS } from './mud-date-picker.types';
+import {
+  DATE_PICKER_BREAKPOINTS,
+  DATE_PICKER_HEADER_STYLES,
+  DATE_PICKER_MODES,
+  DATE_PICKER_VIEWS,
+} from './mud-date-picker.types';
 import type {
   DatePickerBreakpoint,
   DatePickerChangeDetail,
+  DatePickerHeaderStyle,
   DatePickerMode,
   DatePickerMonthChangeDetail,
   DatePickerView,
@@ -88,6 +94,14 @@ export class MudDatePicker {
    * @default 'desktop'
    */
   @Prop({ reflect: true }) breakpoint: DatePickerBreakpoint = 'desktop';
+
+  /**
+   * Header presentation. `title` (default) shows one "Month Year" button that
+   * cycles views; `dropdown` shows separate month + year dropdown chips (the
+   * "advanced" variant from the Figma spec).
+   * @default 'title'
+   */
+  @Prop({ reflect: true }) headerStyle: DatePickerHeaderStyle = 'title';
 
   /**
    * Selected value:
@@ -207,6 +221,18 @@ export class MudDatePicker {
     }
   }
 
+  @Watch('headerStyle')
+  validateHeaderStyle(next: DatePickerHeaderStyle) {
+    if (!DATE_PICKER_HEADER_STYLES.includes(next)) {
+      console.warn(
+        `[mud-date-picker] header-style="${String(next)}" is not supported. Supported: ${DATE_PICKER_HEADER_STYLES.join(
+          ', ',
+        )}. Falling back to "title".`,
+      );
+      this.headerStyle = 'title';
+    }
+  }
+
   @Watch('value')
   handleValueChange() {
     this.syncViewFromValue();
@@ -254,7 +280,8 @@ export class MudDatePicker {
 
   /** Short weekday names starting at `firstDayOfWeek`. Locale-driven. */
   private weekdayLabels(): { short: string; long: string }[] {
-    const formatterShort = new Intl.DateTimeFormat(this.locale, { weekday: 'short', timeZone: 'UTC' });
+    // `narrow` → single-letter weekday headers (M T W T F S S), per the Figma.
+    const formatterShort = new Intl.DateTimeFormat(this.locale, { weekday: 'narrow', timeZone: 'UTC' });
     const formatterLong = new Intl.DateTimeFormat(this.locale, { weekday: 'long', timeZone: 'UTC' });
     // 2024-01-07 is a Sunday in UTC — use as anchor.
     const sunday = Date.UTC(2024, 0, 7);
@@ -481,6 +508,10 @@ export class MudDatePicker {
 
   private renderHeader() {
     const monthYear = this.capitalize(this.monthLabel(this.viewYear, this.viewMonth));
+    // Year view shows the visible decade range (e.g. "2016 - 2027") as the header
+    // label, per the Figma year-picker — not the single Month/Year title.
+    const yearBase = Math.floor(this.viewYear / 12) * 12;
+    const yearRange = `${yearBase} - ${yearBase + 11}`;
     const onPrev = () => (this.view === 'years' ? this.goToYear(-12) : this.goToMonth(-1));
     const onNext = () => (this.view === 'years' ? this.goToYear(12) : this.goToMonth(1));
     const prevAria = new Intl.DateTimeFormat(this.locale, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
@@ -494,18 +525,62 @@ export class MudDatePicker {
         <button type="button" class="nav-button" part="nav-button" aria-label={prevAria} onClick={onPrev}>
           <mud-icon name="chevron-left-small" size={20}></mud-icon>
         </button>
-        <button
-          type="button"
-          class="title"
-          part="title"
-          id={this.titleId}
-          aria-live="polite"
-          onClick={() => (this.view = this.view === 'days' ? 'months' : this.view === 'months' ? 'years' : 'days')}
-        >
-          {monthYear}
-        </button>
+        {this.view === 'years'
+          ? this.renderHeaderTitle(yearRange)
+          : this.headerStyle === 'dropdown'
+            ? this.renderHeaderDropdowns()
+            : this.renderHeaderTitle(monthYear)}
         <button type="button" class="nav-button" part="nav-button" aria-label={nextAria} onClick={onNext}>
           <mud-icon name="chevron-right-small" size={20}></mud-icon>
+        </button>
+      </div>
+    );
+  }
+
+  private renderHeaderTitle(monthYear: string) {
+    return (
+      <button
+        type="button"
+        class="title"
+        part="title"
+        id={this.titleId}
+        aria-live="polite"
+        onClick={() => (this.view = this.view === 'days' ? 'months' : this.view === 'months' ? 'years' : 'days')}
+      >
+        {monthYear}
+      </button>
+    );
+  }
+
+  private renderHeaderDropdowns() {
+    const monthName = this.capitalize(
+      new Intl.DateTimeFormat(this.locale, { month: 'long', timeZone: 'UTC' }).format(
+        new Date(Date.UTC(this.viewYear, this.viewMonth, 1)),
+      ),
+    );
+    return (
+      <div class="header-dropdowns" part="header-dropdowns" id={this.titleId}>
+        <button
+          type="button"
+          class={{ 'dropdown-trigger': true, 'is-open': this.view === 'months' }}
+          part="month-dropdown"
+          aria-haspopup="grid"
+          aria-expanded={this.view === 'months' ? 'true' : 'false'}
+          onClick={() => (this.view = this.view === 'months' ? 'days' : 'months')}
+        >
+          <span class="dropdown-label">{monthName}</span>
+          <mud-icon name="chevron-bottom-small" size={20}></mud-icon>
+        </button>
+        <button
+          type="button"
+          class={{ 'dropdown-trigger': true, 'is-open': this.view === 'years' }}
+          part="year-dropdown"
+          aria-haspopup="grid"
+          aria-expanded={this.view === 'years' ? 'true' : 'false'}
+          onClick={() => (this.view = this.view === 'years' ? 'days' : 'years')}
+        >
+          <span class="dropdown-label">{this.viewYear}</span>
+          <mud-icon name="chevron-bottom-small" size={20}></mud-icon>
         </button>
       </div>
     );
