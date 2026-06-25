@@ -65,6 +65,19 @@ and `name`-based exclusivity across siblings.
 | `"visual"`          |             |
 
 
+## Dependencies
+
+### Used by
+
+ - [mud-menu-item](../mud-menu)
+
+### Graph
+```mermaid
+graph TD;
+  mud-menu-item --> mud-radio
+  style mud-radio fill:#f9f,stroke:#333,stroke-width:4px
+```
+
 ----------------------------------------------
 
 *Built with [StencilJS](https://stenciljs.com/)*

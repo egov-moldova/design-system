@@ -74,6 +74,19 @@ export class MudTable {
   @Prop({ reflect: true }) selectable: boolean = false;
 
   /**
+   * Master switch that disables sorting for the WHOLE table, overriding every
+   * column's `sortable` flag at once. When `true`, headers render as plain
+   * labels — no sort chevron, not keyboard-focusable, no `aria-sort`, and
+   * `mudSort` never fires. Useful for read-only or loading states without
+   * having to mutate the `columns` array.
+   *
+   * Per-column control is unchanged: to make just one column non-sortable,
+   * omit `sortable` (or set it to `false`) on that column instead.
+   * @default false
+   */
+  @Prop({ reflect: true, attribute: 'disable-sort' }) disableSort: boolean = false;
+
+  /**
    * Column definitions. Each entry maps a row field (`key`) to a header
    * `label`, an optional `sortable` flag, alignment, and width.
    */
@@ -213,7 +226,7 @@ export class MudTable {
   }
 
   private handleSort = (column: TableColumn): void => {
-    if (!column.sortable) {
+    if (!this.isColumnSortable(column)) {
       return;
     }
     const sameColumn = this.sortColumn === column.key;
@@ -239,7 +252,7 @@ export class MudTable {
     }
     const key = th.getAttribute('data-sort-key');
     const column = (this.columns ?? []).find(c => c.key === key);
-    if (!column || !column.sortable) {
+    if (!column || !this.isColumnSortable(column)) {
       return;
     }
     event.preventDefault();
@@ -286,8 +299,17 @@ export class MudTable {
     return { '--col-width': value };
   }
 
+  /**
+   * A column is sortable only when its own `sortable` flag is set AND the
+   * table-level `disableSort` master switch is off. Centralised here so every
+   * sort affordance (icon, focus, aria-sort, click, keyboard) stays in sync.
+   */
+  private isColumnSortable(column: TableColumn): boolean {
+    return !this.disableSort && !!column.sortable;
+  }
+
   private getAriaSort(column: TableColumn): 'ascending' | 'descending' | 'none' | undefined {
-    if (!column.sortable) {
+    if (!this.isColumnSortable(column)) {
       return undefined;
     }
     if (this.sortColumn !== column.key) {
@@ -297,7 +319,7 @@ export class MudTable {
   }
 
   private renderSortIcon(column: TableColumn) {
-    if (!column.sortable) {
+    if (!this.isColumnSortable(column)) {
       return null;
     }
     const isActive = this.sortColumn === column.key;
@@ -416,22 +438,23 @@ export class MudTable {
                   // is the same for inline custom properties and class-based
                   // styles, so this stays CSP-compatible.
                   const widthVar = this.columnWidthStyle(column);
+                  const sortable = this.isColumnSortable(column);
                   return (
                     <th
                       key={column.key}
                       class={{
                         'th': true,
                         [`th--align-${align}`]: true,
-                        'th--sortable': !!column.sortable,
-                        'th--sorted': this.sortColumn === column.key,
+                        'th--sortable': sortable,
+                        'th--sorted': sortable && this.sortColumn === column.key,
                       }}
                       style={widthVar}
                       scope="col"
                       role="columnheader"
                       aria-sort={ariaSort}
-                      tabIndex={column.sortable ? 0 : undefined}
-                      data-sort-key={column.sortable ? column.key : undefined}
-                      onClick={column.sortable ? () => this.handleSort(column) : undefined}
+                      tabIndex={sortable ? 0 : undefined}
+                      data-sort-key={sortable ? column.key : undefined}
+                      onClick={sortable ? () => this.handleSort(column) : undefined}
                     >
                       <span class="th-inner">{this.renderHeaderCellContent(column)}</span>
                     </th>

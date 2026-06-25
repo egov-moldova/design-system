@@ -1,14 +1,17 @@
 :host {
   display: flex;
-  align-items: center;
-  gap: var(--file-item-container-gap);
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--spacing-8);
   min-block-size: var(--file-item-container-min-height);
   padding-block: var(--file-item-container-padding-block);
   padding-inline: var(--file-item-container-padding-inline);
   background-color: var(--file-item-background-default);
-  border: var(--file-item-container-border-width) solid var(--file-item-border-uploaded);
+  /* Resting rows are borderless gray pills; only the error state draws a border. */
+  border: var(--file-item-container-border-width) solid transparent;
   border-radius: var(--file-item-container-border-radius);
   inline-size: 100%;
+  box-sizing: border-box;
   color: var(--file-item-text-filename-color-default);
   font-family: var(--file-item-text-font-family);
   transition:
@@ -17,23 +20,26 @@
       var(--file-item-container-transition-timing-function);
 }
 
-:host(.state-uploading) {
-  border-color: var(--file-item-border-uploading);
-}
-
-:host(.state-success) {
-  border-color: var(--file-item-border-success);
-}
-
+/* Error is the only state with a visible border — on a white fill so it pops. */
 :host(.state-error) {
+  background-color: var(--file-item-background-error);
   border-color: var(--file-item-border-error);
 }
 
 :host(.is-disabled) {
   background-color: var(--file-item-background-disabled);
-  border-color: var(--file-item-border-disabled);
+  border-color: transparent;
   color: var(--file-item-text-filename-color-disabled);
   cursor: not-allowed;
+}
+
+/* ---------- Row (leading icon + body + trailing) ---------- */
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--file-item-container-gap);
+  inline-size: 100%;
 }
 
 /* ---------- Leading icon ---------- */
@@ -43,21 +49,9 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  inline-size: var(--file-item-icon-size);
-  block-size: var(--file-item-icon-size);
+  /* Sizes to its content — the file glyph (≈ chip height) or a square thumbnail.
+     A slotted custom icon keeps the resting theme colour. */
   color: var(--file-item-icon-color-uploaded);
-}
-
-:host(.state-uploading) .leading-icon {
-  color: var(--file-item-icon-color-uploading);
-}
-
-:host(.state-success) .leading-icon {
-  color: var(--file-item-icon-color-success);
-}
-
-:host(.state-error) .leading-icon {
-  color: var(--file-item-icon-color-error);
 }
 
 :host(.is-disabled) .leading-icon {
@@ -69,18 +63,54 @@
   color: inherit;
 }
 
-/* ---------- Body ---------- */
+/* Default white-page file glyph (data-URI illustration); intrinsic 27×30. */
+.file-glyph {
+  display: block;
+}
+
+:host(.is-disabled) .file-glyph {
+  opacity: 0.45;
+}
+
+/* Image-preview thumbnail — square, clipped to a rounded box. */
+.thumbnail {
+  inline-size: var(--file-item-icon-size);
+  block-size: var(--file-item-icon-size);
+  object-fit: cover;
+  border-radius: var(--file-item-container-border-radius);
+}
+
+/* Uploading spinner — occupies the trailing slot in place of the remove button. */
+.spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--file-item-remove-size);
+  block-size: var(--file-item-remove-size);
+}
+
+/* ---------- Body (filename · size on one line) ---------- */
 
 .body {
   display: flex;
   flex: 1 1 auto;
-  flex-direction: column;
+  align-items: baseline;
   min-inline-size: 0;
-  gap: var(--spacing-2);
+  gap: var(--spacing-4);
+}
+
+/* Wraps the filename so the hover tooltip can anchor to it while the name
+   itself still truncates inside the flex row. */
+.filename-wrap {
+  position: relative;
+  display: flex;
+  flex: 0 1 auto;
+  min-inline-size: 0;
 }
 
 .filename {
-  display: block;
+  flex: 1 1 auto;
   font-size: var(--file-item-text-filename-font-size);
   line-height: var(--file-item-text-filename-line-height);
   font-weight: var(--file-item-text-filename-font-weight);
@@ -95,26 +125,96 @@
   color: var(--file-item-text-filename-color-disabled);
 }
 
+/* Hover tooltip with the full filename (only rendered when truncated). Matches
+   the mud-tooltip dark bubble via shared tokens; shows on hover of the name. */
+.filename-tooltip {
+  position: absolute;
+  inset-block-start: calc(100% + var(--tooltip-arrow-size-sm));
+  inset-inline-start: 0;
+  z-index: var(--tooltip-container-z-index);
+  inline-size: max-content;
+  white-space: nowrap;
+  background-color: var(--tooltip-container-background-default);
+  color: var(--tooltip-label-color-default);
+  font-family: var(--tooltip-label-font-family);
+  font-size: var(--tooltip-label-font-size);
+  line-height: var(--tooltip-label-line-height);
+  font-weight: var(--tooltip-label-font-weight);
+  padding-block: var(--tooltip-container-padding-block-sm);
+  padding-inline: var(--tooltip-container-padding-inline-sm);
+  border-radius: var(--tooltip-container-border-radius-sm);
+  box-shadow: var(--tooltip-container-shadow);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--tooltip-container-transition-duration) var(--tooltip-container-transition-timing-function);
+}
+
+/* Up-pointing arrow back at the filename. */
+.filename-tooltip::before {
+  content: '';
+  position: absolute;
+  inset-block-end: 100%;
+  inset-inline-start: var(--tooltip-arrow-edge-margin);
+  border: calc(var(--tooltip-arrow-size-sm) / 2) solid transparent;
+  border-block-end-color: var(--tooltip-container-background-default);
+}
+
+.filename-wrap:hover .filename-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filename-tooltip {
+    transition: none;
+  }
+}
+
 .meta {
+  flex-shrink: 0;
   font-size: var(--file-item-text-meta-font-size);
   line-height: var(--file-item-text-meta-line-height);
   font-weight: var(--file-item-text-meta-font-weight);
   color: var(--file-item-text-meta-color-default);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  /* Truncate long error messages to two lines. */
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  white-space: nowrap;
 }
 
-.meta-error {
-  color: var(--file-item-text-meta-color-error);
+/* Middot separator between filename and size. */
+.meta::before {
+  content: '·';
+  margin-inline-end: var(--spacing-4);
 }
 
 :host(.is-disabled) .meta {
   color: var(--file-item-text-meta-color-disabled);
+}
+
+/* ---------- Trailing slot (status icon + remove / spinner) ---------- */
+
+.trailing {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: var(--spacing-8);
+}
+
+.status {
+  flex-shrink: 0;
+  inline-size: var(--file-item-remove-icon-size);
+  block-size: var(--file-item-remove-icon-size);
+}
+
+/* ---------- Error message (divider + red text below the row) ---------- */
+
+.error-message {
+  margin: 0;
+  padding-block-start: var(--spacing-8);
+  border-block-start: var(--file-item-container-border-width) solid var(--file-item-border-uploaded);
+  font-size: var(--file-item-text-meta-font-size);
+  line-height: var(--file-item-text-meta-line-height);
+  font-weight: var(--file-item-text-meta-font-weight);
+  color: var(--file-item-text-meta-color-error);
 }
 
 /* ---------- Remove button ---------- */

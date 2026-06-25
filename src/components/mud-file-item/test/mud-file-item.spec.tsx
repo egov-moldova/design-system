@@ -71,18 +71,34 @@ describe('mud-file-item', () => {
       expect(queryMeta(root)).toBeNull();
     });
 
-    it('renders error text instead of size when state="error"', async () => {
+    it('keeps the size in meta and shows the error message on its own line when state="error"', async () => {
       const { root } = await render(
         <mud-file-item state="error" filename="x.pdf" size={2048} error-text="Fișier prea mare"></mud-file-item>,
       );
-      const meta = queryMeta(root);
-      expect(meta?.classList.contains('meta-error')).toBe(true);
-      expect(meta?.textContent).toBe('Fișier prea mare');
+      // Size stays in the meta line; the message renders below the divider.
+      expect(queryMeta(root)?.textContent).toBe('2.0 KB');
+      const msg = root?.shadowRoot?.querySelector('.error-message');
+      expect(msg?.textContent).toBe('Fișier prea mare');
     });
 
-    it('renders the size when state="error" but error-text is empty', async () => {
+    it('renders the size and no message when state="error" but error-text is empty', async () => {
       const { root } = await render(<mud-file-item state="error" filename="x.pdf" size={2048}></mud-file-item>);
       expect(queryMeta(root)?.textContent).toBe('2.0 KB');
+      expect(root?.shadowRoot?.querySelector('.error-message')).toBeNull();
+    });
+
+    it('shows the status icon on the right (success ✓ / error !)', async () => {
+      const { root: ok } = await render(<mud-file-item state="success" filename="x.pdf"></mud-file-item>);
+      expect(ok?.shadowRoot?.querySelector('.trailing .status-success')).toBeTruthy();
+      expect(ok?.shadowRoot?.querySelector('button.remove')).toBeNull();
+      const { root: err } = await render(<mud-file-item state="error" filename="x.pdf"></mud-file-item>);
+      expect(err?.shadowRoot?.querySelector('.trailing .status-error')).toBeTruthy();
+      expect(err?.shadowRoot?.querySelector('.trailing button.remove')).toBeTruthy();
+    });
+
+    it('drops the leading icon in the error state', async () => {
+      const { root } = await render(<mud-file-item state="error" filename="x.pdf"></mud-file-item>);
+      expect(root?.shadowRoot?.querySelector('.leading-icon')).toBeNull();
     });
   });
 
@@ -141,6 +157,70 @@ describe('mud-file-item', () => {
       (root as unknown as Instance).handleRemoveKey.call(root, ev);
       await flush();
       expect(onRemove).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('uploading spinner', () => {
+    it('renders a spinner (not the remove button) while uploading', async () => {
+      const { root } = await render(<mud-file-item state="uploading" filename="x.pdf" size={1000}></mud-file-item>);
+      expect(root?.shadowRoot?.querySelector('.spinner mud-spinner')).toBeTruthy();
+      expect(root?.shadowRoot?.querySelector('button.remove')).toBeNull();
+    });
+
+    it('renders the remove button (no spinner) in the uploaded state', async () => {
+      const { root } = await render(<mud-file-item state="uploaded" filename="x.pdf" size={1000}></mud-file-item>);
+      expect(root?.shadowRoot?.querySelector('.spinner')).toBeNull();
+      expect(root?.shadowRoot?.querySelector('button.remove')).toBeTruthy();
+    });
+  });
+
+  describe('image-preview thumbnail', () => {
+    it('renders a thumbnail <img> in place of the icon when preview-src is set', async () => {
+      const { root } = await render(
+        <mud-file-item filename="p.jpg" size={1000} preview-src="blob:abc"></mud-file-item>,
+      );
+      const img = root?.shadowRoot?.querySelector('img.thumbnail');
+      expect(img).toBeTruthy();
+      expect(img?.getAttribute('src')).toBe('blob:abc');
+      // Thumbnail replaces the default file glyph.
+      expect(root?.shadowRoot?.querySelector('.file-glyph')).toBeNull();
+    });
+
+    it('renders the default file glyph when no preview-src is set', async () => {
+      const { root } = await render(<mud-file-item filename="x.pdf" size={1000}></mud-file-item>);
+      expect(root?.shadowRoot?.querySelector('img.thumbnail')).toBeNull();
+      const glyph = root?.shadowRoot?.querySelector('img.file-glyph');
+      expect(glyph).toBeTruthy();
+      expect(glyph?.getAttribute('src')).toContain('data:image/svg+xml');
+    });
+  });
+
+  describe('filename hover tooltip', () => {
+    const longName = 'Government_services_report_final_version_updated.pdf';
+
+    it('keeps the full filename in the DOM (so AT reads it even when visually clipped)', async () => {
+      const { root } = await render(<mud-file-item filename={longName} size={1000}></mud-file-item>);
+      expect(root?.shadowRoot?.querySelector('.filename')?.textContent).toBe(longName);
+    });
+
+    it('does not render the tooltip when the name is not truncated', async () => {
+      const { root } = await render(<mud-file-item filename="x.pdf" size={1000}></mud-file-item>);
+      expect(root?.shadowRoot?.querySelector('.filename-tooltip')).toBeNull();
+    });
+
+    it('renders the full-name tooltip when truncated', async () => {
+      const { root } = await render(<mud-file-item filename={longName} size={1000}></mud-file-item>);
+      // jsdom has no layout, so stub the measured widths and run the detector.
+      const inst = root as unknown as { filenameEl?: HTMLElement; measureTruncation: () => void };
+      if (inst.filenameEl) {
+        Object.defineProperty(inst.filenameEl, 'scrollWidth', { configurable: true, value: 400 });
+        Object.defineProperty(inst.filenameEl, 'clientWidth', { configurable: true, value: 80 });
+      }
+      inst.measureTruncation();
+      await flush();
+      const tip = root?.shadowRoot?.querySelector('.filename-tooltip');
+      expect(tip).toBeTruthy();
+      expect(tip?.textContent).toBe(longName);
     });
   });
 });

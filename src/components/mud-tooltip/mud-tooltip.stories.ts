@@ -152,11 +152,27 @@ type Story = StoryObj<TooltipArgs>;
 // Default — hover trigger, auto position.
 // ---------------------------------------------------------------------------
 export const Default: Story = {
+  // Open + manual so the Controls playground stays visible: every prop
+  // (size, position, variant, max-width, content…) updates the bubble live.
+  // A hover/focus tooltip is invisible until you interact, so the controls
+  // would appear to "do nothing". Switch `trigger` to hover/focus/click in
+  // Controls (and hover/focus the button) to exercise those activation modes.
+  args: { trigger: 'manual', open: true },
   render: args => /*html*/ `
     <div style="${stageStyle}">${renderTooltip(args)}</div>
   `,
   parameters: {
-    docs: { source: { code: docsSourceDefault({ ...meta.args! } as TooltipArgs) } },
+    docs: {
+      // Render the playground inline in Docs (overriding the meta-level
+      // `inline: false`). Controls only propagate to inline Docs stories; an
+      // `inline: false` story lives in an isolated iframe the Controls table
+      // can't reach, so prop changes appear to "do nothing" in Docs.
+      story: { inline: true },
+      source: {
+        type: 'dynamic',
+        transform: (_code: string, { args }: { args: TooltipArgs }) => docsSourceDefault(args),
+      },
+    },
   },
 };
 

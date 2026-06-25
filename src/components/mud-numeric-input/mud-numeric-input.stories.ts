@@ -207,6 +207,67 @@ export const AllSizes: Story = {
   },
 };
 
+/**
+ * Mirrors the Figma "Variations" section: none / prefix / suffix / icon-leading,
+ * shown for both size rungs. Prefix + icon-leading both ride the `icon-start`
+ * slot (a plain text symbol vs a `mud-icon`); suffix uses the `suffix` slot.
+ */
+const variationCells = (size: NumericInputSize) =>
+  [
+    cell('none', /*html*/ `<mud-numeric-input size="${size}" label="Label" value="12345"></mud-numeric-input>`),
+    cell(
+      'prefix',
+      /*html*/ `<mud-numeric-input size="${size}" label="Label" value="12345"><span slot="icon-start">€</span></mud-numeric-input>`,
+    ),
+    cell(
+      'suffix',
+      /*html*/ `<mud-numeric-input size="${size}" label="Label" value="12345"><span slot="suffix">lei</span></mud-numeric-input>`,
+    ),
+    cell(
+      'icon-leading',
+      /*html*/ `<mud-numeric-input size="${size}" label="Label" value="12345"><mud-icon slot="icon-start" name="coins" size="${
+        size === 'lg' ? 24 : 20
+      }"></mud-icon><span slot="suffix">lei</span></mud-numeric-input>`,
+    ),
+  ].join('');
+
+export const Variations: Story = {
+  name: 'Variations',
+  render: () => /*html*/ `
+    <div style="display: flex; flex-direction: column; gap: var(--spacing-32); padding: var(--spacing-24); max-width: 1040px;">
+      <div>
+        <p style="${cellLabelStyle} margin: 0 0 var(--spacing-16);">Medium</p>
+        <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 220px)); gap: var(--spacing-24);">
+          ${variationCells('md')}
+        </div>
+      </div>
+      <div>
+        <p style="${cellLabelStyle} margin: 0 0 var(--spacing-16);">Large</p>
+        <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 220px)); gap: var(--spacing-24);">
+          ${variationCells('lg')}
+        </div>
+      </div>
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The four content variations from the Figma master. `prefix` and `icon-leading` share the `icon-start` slot (text symbol vs `mud-icon`); `suffix` is the trailing unit. Mirrors the "Variations" reference.',
+      },
+      source: {
+        code: [
+          '<mud-numeric-input label="Label" value="12345"></mud-numeric-input>',
+          '<mud-numeric-input label="Label" value="12345"><span slot="icon-start">€</span></mud-numeric-input>',
+          '<mud-numeric-input label="Label" value="12345"><span slot="suffix">lei</span></mud-numeric-input>',
+          '<mud-numeric-input label="Label" value="12345"><mud-icon slot="icon-start" name="coins" size="20"></mud-icon><span slot="suffix">lei</span></mud-numeric-input>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
 export const States: Story = {
   name: 'States',
   render: () =>

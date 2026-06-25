@@ -196,12 +196,11 @@
       "borderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" },
       "borderWidth": { "$value": "{borderWidth.1}", "$type": "dimension" },
       "borderColor": { "$value": "{color.border.base.default}", "$type": "color" },
-      "padding": { "$value": "{spacing.4}", "$type": "dimension" },
-      "gap": { "$value": "{spacing.2}", "$type": "dimension" },
-      "marginBlockStart": { "$value": "{spacing.4}", "$type": "dimension" },
+      "padding": { "$value": "{spacing.8}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "marginBlockStart": { "$value": "{spacing.8}", "$type": "dimension" },
       "shadow": { "$value": "{dropShadow.300}", "$type": "string" },
-      "maxBlockSize": { "$value": "320px", "$type": "dimension" },
-      "minInlineSize": { "$value": "280px", "$type": "dimension" }
+      "maxBlockSize": { "$value": "320px", "$type": "dimension" }
     },
     "option": {
       "minBlockSize": {

@@ -35,6 +35,21 @@ export { MudNotification } from './components/mud-notification/mud-notification'
 export { NOTIFICATION_VARIANTS } from './components/mud-notification/mud-notification.types';
 export type { NotificationVariant } from './components/mud-notification/mud-notification.types';
 
+export { MudInfoBox } from './components/mud-info-box/mud-info-box';
+export { INFO_BOX_VARIANTS, INFO_BOX_EMPHASES } from './components/mud-info-box/mud-info-box.types';
+export type { InfoBoxVariant, InfoBoxEmphasis } from './components/mud-info-box/mud-info-box.types';
+
+export { MudInlineMessage } from './components/mud-inline-message/mud-inline-message';
+export {
+  INLINE_MESSAGE_VARIANTS,
+  INLINE_MESSAGE_SIZES,
+} from './components/mud-inline-message/mud-inline-message.types';
+export type { InlineMessageVariant, InlineMessageSize } from './components/mud-inline-message/mud-inline-message.types';
+
+export { MudBanner } from './components/mud-banner/mud-banner';
+export { BANNER_VARIANTS, BANNER_EMPHASES } from './components/mud-banner/mud-banner.types';
+export type { BannerVariant, BannerEmphasis } from './components/mud-banner/mud-banner.types';
+
 export { MudMenu } from './components/mud-menu/mud-menu';
 export { MudMenuItem } from './components/mud-menu/mud-menu-item';
 export { MENU_TYPES, MENU_ITEM_LEADINGS } from './components/mud-menu/mud-menu.types';

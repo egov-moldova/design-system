@@ -62,6 +62,14 @@ export class MudSegmentedControl {
   @Prop({ reflect: true }) disabled: boolean = false;
 
   /**
+   * Full-width mode. The control fills its container and segments stretch to
+   * equal shares — the mobile breakpoint from Figma 659:8188. When false
+   * (default) the control hugs its content while keeping segments uniform.
+   * @default false
+   */
+  @Prop({ reflect: true }) fluid: boolean = false;
+
+  /**
    * Value of the currently selected segment. Mutable so the control updates it
    * on selection. Like a native form control, `value` is intentionally NOT
    * reflected to the attribute (the attribute represents the default value) —
@@ -317,7 +325,9 @@ export class MudSegmentedControl {
                 {segment.iconName ? (
                   <mud-icon class="segment__icon" name={segment.iconName} size={20}></mud-icon>
                 ) : null}
-                <span class="segment__label">{segment.label}</span>
+                <span class="segment__label" data-label={segment.label}>
+                  <span class="segment__label-text">{segment.label}</span>
+                </span>
               </button>
             );
           })}

@@ -60,7 +60,7 @@
 /* ---------- Variant: info uses regular weight + tighter padding ---------- */
 
 :host([variant='info']) {
-  --_font-weight: var(--tag-label-font-weight-muted);
+  --_font-weight: var(--tag-label-font-weight-info);
   --_padding-inline: var(--tag-container-padding-inline-sm);
 }
 

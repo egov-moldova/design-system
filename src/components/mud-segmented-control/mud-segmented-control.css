@@ -71,10 +71,27 @@
   cursor: not-allowed;
 }
 
+/* Fluid (full-width) — the mobile breakpoint. The host fills its container and
+   the track stretches so the equal-width columns span the full inline size. */
+:host([fluid]) {
+  display: block;
+}
+
+:host([fluid]) .track {
+  display: grid;
+  inline-size: 100%;
+  max-inline-size: none;
+}
+
 /* ---------- Track (container) ---------- */
 
 .track {
-  display: inline-flex;
+  display: inline-grid;
+  grid-auto-flow: column;
+  /* Equal-width segments (Figma "Equal Sizes"): every column resolves to the
+     widest segment's content — clamped to the min-width floor — so siblings
+     stay uniform regardless of label length. The container still hugs. */
+  grid-auto-columns: minmax(var(--_segment-min-width), 1fr);
   align-items: center;
   gap: var(--_container-gap);
   padding: var(--_container-padding);
@@ -95,7 +112,10 @@
   justify-content: center;
   gap: var(--_segment-gap);
   block-size: var(--_segment-height);
-  min-inline-size: var(--_segment-min-width);
+  /* The grid column (minmax floor + 1fr) owns the segment width now; let the
+     button shrink to 0 so long labels truncate instead of forcing overflow. */
+  min-inline-size: 0;
+  inline-size: 100%;
   padding-inline: var(--_segment-padding);
   padding-block: 0;
   margin: 0;
@@ -190,12 +210,33 @@
   color: inherit;
 }
 
+/* The label always reserves its *bold* (selected) width via a hidden sizer
+   stacked in the same grid cell as the visible text. Toggling the medium
+   weight on selection therefore never changes the column width, so switching
+   segments no longer makes the equal-width track grow/shrink ("jump"). */
 .segment__label {
-  display: inline-block;
+  display: inline-grid;
+  align-items: center;
+  justify-items: center;
+  min-inline-size: 0;
+}
+
+.segment__label-text {
+  grid-area: 1 / 1;
+  min-inline-size: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  min-inline-size: 0;
+}
+
+.segment__label::after {
+  content: attr(data-label);
+  grid-area: 1 / 1;
+  font-weight: var(--segmented-control-label-font-weight-selected);
+  white-space: nowrap;
+  visibility: hidden;
+  pointer-events: none;
+  user-select: none;
 }
 
 /* ---------- Disabled state cascade ---------- */

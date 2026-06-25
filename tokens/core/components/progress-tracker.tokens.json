@@ -18,7 +18,13 @@
         "vertical": { "$value": "{spacing.12}", "$type": "dimension" }
       },
       "labelGap": { "$value": "{spacing.8}", "$type": "dimension" },
-      "maxWidth": { "$value": "996px", "$type": "dimension" }
+      "maxWidth": { "$value": "996px", "$type": "dimension" },
+      "verticalStepMinHeight": { "$value": "84px", "$type": "dimension" },
+      "verticalStepMinHeightCompact": {
+        "$value": "{spacing.56}",
+        "$type": "dimension",
+        "$comment": "Tighter vertical rhythm for the compact dot rail (mobile) — still > indicator + 2× labelGap so the connector stays visible."
+      }
     },
     "indicator": {
       "size": { "$value": "{spacing.24}", "$type": "dimension" },
@@ -29,7 +35,16 @@
       "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" }
     },
     "connector": {
-      "thickness": { "$value": "{borderWidth.1-5}", "$type": "dimension" },
+      "thickness": {
+        "$value": "{borderWidth.1-5}",
+        "$type": "dimension",
+        "$comment": "Traveled/coloured rail (completed → brand, error → danger): 1.5px, slightly heavier than the untraveled grey."
+      },
+      "thicknessPending": {
+        "$value": "{borderWidth.1}",
+        "$type": "dimension",
+        "$comment": "Untraveled grey rail (pending / current): 1px — thinner than the filled 1.5px bar per Figma."
+      },
       "minLength": { "$value": "{spacing.16}", "$type": "dimension" }
     },
     "label": {
@@ -39,7 +54,11 @@
     "pending": {
       "indicator": {
         "border": { "$value": "{color.border.base.secondary}", "$type": "color" },
-        "text": { "$value": "{color.text.disabled.default}", "$type": "color", "$comment": "#b2b2b2 per Figma 639:11186 (faded, not-yet-reached step). 2.12:1 on white is below WCAG AA 4.5:1, but the digit is aria-hidden/decorative — the step's status is announced via the <li> aria-label — and a pending step is an inactive UI component. Accepted exception (axe rates it 'needs review', not a violation). Do not re-flag." },
+        "text": {
+          "$value": "{color.text.disabled.default}",
+          "$type": "color",
+          "$comment": "#b2b2b2 per Figma 639:11186 (faded, not-yet-reached step). 2.12:1 on white is below WCAG AA 4.5:1, but the digit is aria-hidden/decorative — the step's status is announced via the <li> aria-label — and a pending step is an inactive UI component. Accepted exception (axe rates it 'needs review', not a violation). Do not re-flag."
+        },
         "background": { "$value": "{color.background.base.default}", "$type": "color" }
       },
       "connector": { "$value": "{color.border.base.secondary}", "$type": "color" },
@@ -52,7 +71,11 @@
         "background": { "$value": "{color.background.base.default}", "$type": "color" }
       },
       "connector": { "$value": "{color.border.brand.default}", "$type": "color" },
-      "label": { "$value": "{color.text.base.secondary}", "$type": "color", "$comment": "#383838 per Figma 639:11161 (was base.default #121212)." },
+      "label": {
+        "$value": "{color.text.base.secondary}",
+        "$type": "color",
+        "$comment": "#383838 per Figma 639:11161 (was base.default #121212)."
+      },
       "labelFontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" }
     },
     "completed": {
@@ -63,7 +86,11 @@
       },
       "connector": { "$value": "{color.border.brand.default}", "$type": "color" },
       "label": { "$value": "{color.text.base.secondary}", "$type": "color" },
-      "labelActionable": { "$value": "{color.text.brand.default}", "$type": "color", "$comment": "Interactive/clickable completed step → brand underlined link per Figma 639:11170." }
+      "labelActionable": {
+        "$value": "{color.text.brand.default}",
+        "$type": "color",
+        "$comment": "Interactive/clickable completed step → brand underlined link per Figma 639:11170."
+      }
     },
     "error": {
       "indicator": {
@@ -72,7 +99,11 @@
         "background": { "$value": "{color.background.base.default}", "$type": "color" }
       },
       "connector": { "$value": "{color.border.danger.default}", "$type": "color" },
-      "label": { "$value": "{color.text.base.secondary}", "$type": "color", "$comment": "#383838 per Figma 639:11202 — only the indicator is danger-red; the label stays neutral (was text.danger #d92d20)." }
+      "label": {
+        "$value": "{color.text.base.secondary}",
+        "$type": "color",
+        "$comment": "#383838 per Figma 639:11202 — only the indicator is danger-red; the label stays neutral (was text.danger #d92d20)."
+      }
     },
     "available": {
       "indicator": {
@@ -80,7 +111,11 @@
         "text": { "$value": "{color.text.brand.default}", "$type": "color" },
         "background": { "$value": "{color.background.base.default}", "$type": "color" }
       },
-      "label": { "$value": "{color.text.brand.default}", "$type": "color", "$comment": "Navigable future step → brand label (underlined when interactive). Figma 639:11225. Connector inherits the pending grey default." }
+      "label": {
+        "$value": "{color.text.brand.default}",
+        "$type": "color",
+        "$comment": "Navigable future step → brand label (underlined when interactive). Figma 639:11225. Connector inherits the pending grey default."
+      }
     },
     "interactive": {
       "padding": {

@@ -1,11 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
-import { DATE_PICKER_BREAKPOINTS, DATE_PICKER_MODES } from './mud-date-picker.types';
-import type { DatePickerBreakpoint, DatePickerMode } from './mud-date-picker.types';
+import { DATE_PICKER_BREAKPOINTS, DATE_PICKER_HEADER_STYLES, DATE_PICKER_MODES } from './mud-date-picker.types';
+import type { DatePickerBreakpoint, DatePickerHeaderStyle, DatePickerMode } from './mud-date-picker.types';
 
 type DatePickerArgs = {
   mode: DatePickerMode;
   breakpoint: DatePickerBreakpoint;
+  headerStyle: DatePickerHeaderStyle;
   value: string;
   rangeStart: string;
   rangeEnd: string;
@@ -23,6 +24,7 @@ const renderDatePicker = (args: DatePickerArgs) => /*html*/ `
   <mud-date-picker
     mode="${args.mode}"
     breakpoint="${args.breakpoint}"
+    header-style="${args.headerStyle}"
     ${args.value ? `value="${args.value}"` : ''}
     ${args.rangeStart ? `range-start="${args.rangeStart}"` : ''}
     ${args.rangeEnd ? `range-end="${args.rangeEnd}"` : ''}
@@ -51,6 +53,12 @@ const meta: Meta<DatePickerArgs> = {
       description: 'Visual breakpoint / placement.',
       table: { defaultValue: { summary: 'desktop' } },
     },
+    headerStyle: {
+      control: 'inline-radio',
+      options: DATE_PICKER_HEADER_STYLES,
+      description: 'Header presentation: single title vs month + year dropdown chips ("advanced").',
+      table: { defaultValue: { summary: 'title' } },
+    },
     value: { control: 'text', description: 'ISO YYYY-MM-DD (single) or comma-separated list (multi).' },
     rangeStart: { control: 'text', description: 'Range mode: ISO start date.' },
     rangeEnd: { control: 'text', description: 'Range mode: ISO end date.' },
@@ -72,6 +80,7 @@ export const Default: Story = {
   args: {
     mode: 'single',
     breakpoint: 'desktop',
+    headerStyle: 'title',
     value: '',
     rangeStart: '',
     rangeEnd: '',
@@ -90,6 +99,27 @@ const cell = (caption: string, body: string) => /*html*/ `
     ${body}
   </div>
 `;
+
+export const Advanced: Story = {
+  name: 'Advanced (dropdown header)',
+  render: () => /*html*/ `
+    <div style="padding: var(--spacing-24);">
+      <mud-date-picker mode="single" header-style="dropdown" value="2026-05-23" locale="ro-RO"></mud-date-picker>
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: '<mud-date-picker mode="single" header-style="dropdown" value="2026-05-23"></mud-date-picker>',
+      },
+      description: {
+        story:
+          'The "advanced" header replaces the single title with separate month + year dropdown chips. Each chip opens its own selection grid (month-picker / year-picker).',
+      },
+    },
+  },
+};
 
 export const Single: Story = {
   name: 'Single',
@@ -186,9 +216,11 @@ export const WithDisabledDates: Story = {
 
 export const Mobile: Story = {
   name: 'Mobile',
+  // SB10 selects the device frame via the viewport global.
+  globals: { viewport: { value: 'mobile2', isRotated: false } },
   render: () => /*html*/ `
-    <div style="max-width: 375px; padding: var(--spacing-16); background: var(--color-background-base-secondary, #f5f5f5);">
-      <mud-date-picker mode="single" breakpoint="mobile" value="2026-05-23" locale="ro-RO"></mud-date-picker>
+    <div style="padding: var(--spacing-16); background: var(--color-background-base-secondary, #f5f5f5);">
+      <mud-date-picker mode="single" breakpoint="mobile" header-style="dropdown" value="2026-05-23" locale="ro-RO"></mud-date-picker>
     </div>
   `,
   parameters: {

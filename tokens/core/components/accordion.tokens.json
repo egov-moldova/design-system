@@ -111,6 +111,10 @@
           "$value": "{spacing.32}",
           "$type": "dimension"
         },
+        "paddingInlineStart": {
+          "$value": "{spacing.24}",
+          "$type": "dimension"
+        },
         "paddingInlineEnd": {
           "$value": "{spacing.48}",
           "$type": "dimension"

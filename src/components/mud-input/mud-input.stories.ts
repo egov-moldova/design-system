@@ -17,6 +17,7 @@ type InputArgs = {
   readonly: boolean;
   loading: boolean;
   invalid: boolean;
+  clearable: boolean;
 };
 
 const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-base-tertiary);';
@@ -36,6 +37,7 @@ const renderInput = (args: InputArgs) => /*html*/ `
     ${args.readonly ? 'readonly' : ''}
     ${args.loading ? 'loading' : ''}
     ${args.invalid ? 'invalid' : ''}
+    ${args.clearable ? 'clearable' : ''}
   ></mud-input>
 `;
 
@@ -54,6 +56,7 @@ const docsSourceDefault = (args: InputArgs) => {
     args.readonly ? 'readonly' : '',
     args.loading ? 'loading' : '',
     args.invalid ? 'invalid' : '',
+    args.clearable ? 'clearable' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -92,6 +95,7 @@ const meta: Meta<InputArgs> = {
     readonly: { control: 'boolean' },
     loading: { control: 'boolean' },
     invalid: { control: 'boolean' },
+    clearable: { control: 'boolean', description: 'Shows a trailing clear (×) button while the field holds a value.' },
   },
 };
 
@@ -115,6 +119,7 @@ export const Default: Story = {
     readonly: false,
     loading: false,
     invalid: false,
+    clearable: false,
   },
   parameters: {
     docs: {
@@ -474,6 +479,48 @@ export const WithIcons: Story = {
         code: [
           '<mud-input size="lg" label="Search" placeholder="Search"><mud-icon slot="icon-start" name="search" size="20"></mud-icon></mud-input>',
           '<mud-input size="lg" label="Date" placeholder="Placeholder"><mud-icon slot="icon-end" name="calendar" size="24"></mud-icon></mud-input>',
+        ].join('\n'),
+      },
+    },
+  },
+};
+
+export const Clearable: Story = {
+  name: 'Clearable',
+  render: () =>
+    wrap(
+      [
+        cell(
+          'filled — clear visible',
+          /*html*/ `<mud-input size="lg" label="Search" value="Chișinău" clearable placeholder="Search"></mud-input>`,
+        ),
+        cell(
+          'empty — clear hidden',
+          /*html*/ `<mud-input size="lg" label="Search" clearable placeholder="Type to reveal ×"></mud-input>`,
+        ),
+        cell(
+          'with leading icon',
+          /*html*/ `<mud-input size="lg" label="Search" value="Bălți" clearable placeholder="Search">
+            <mud-icon slot="icon-start" name="search" size="20"></mud-icon>
+          </mud-input>`,
+        ),
+        cell(
+          'md size',
+          /*html*/ `<mud-input size="md" label="Search" value="Orhei" clearable placeholder="Search"></mud-input>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'The clear (×) button appears as a trailing affordance while the field holds a value. Clearing empties the field, emits `mudInput` + `mudChange`, and returns focus to the input. Hidden when disabled, read-only, or loading. Mirrors the Figma "Clearing Input" reference.',
+      },
+      source: {
+        code: [
+          '<mud-input size="lg" label="Search" value="Chișinău" clearable placeholder="Search"></mud-input>',
+          '<mud-input size="lg" label="Search" clearable placeholder="Type to reveal ×"></mud-input>',
         ].join('\n'),
       },
     },

@@ -209,6 +209,29 @@ export class MudTooltip {
     }
   }
 
+  /**
+   * Geometry-affecting props. When any of these change while the tooltip is
+   * open, re-measure and reposition the bubble. Without this, runtime prop
+   * changes (e.g. Storybook Controls, or a consumer flipping `position` live)
+   * leave the open bubble stuck at its mount-time placement — only the size's
+   * CSS attribute selector would update, not the JS-computed top/left/maxWidth.
+   * Deferred to the next frame so the re-rendered bubble reports its new size.
+   */
+  @Watch('position')
+  @Watch('size')
+  @Watch('variant')
+  @Watch('maxWidth')
+  @Watch('offset')
+  @Watch('showArrow')
+  watchGeometryProps() {
+    if (!this.open) return;
+    if (typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(() => this.updateGeometry());
+    } else {
+      this.updateGeometry();
+    }
+  }
+
   private tooltipId: string = '';
   private showTimer: ReturnType<typeof setTimeout> | null = null;
   private hideTimer: ReturnType<typeof setTimeout> | null = null;

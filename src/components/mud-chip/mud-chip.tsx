@@ -1,7 +1,7 @@
 import { Component, Element, Event, Host, Prop, State, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
-import type { ChipSelectEventDetail, ChipSize, ChipType } from './mud-chip.types';
+import type { ChipSelectEventDetail, ChipSelectionMode, ChipSize, ChipType } from './mud-chip.types';
 
 /**
  * Chip — compact, pill-shaped control for filter selection or token display.
@@ -21,8 +21,11 @@ import type { ChipSelectEventDetail, ChipSize, ChipType } from './mud-chip.types
  *
  * @slot - (default) The label content. Plain text or rich inline content.
  *               Falls back to the `label` prop when empty.
- * @slot icon-start - Optional leading visual: `mud-icon`, an avatar, or any
- *               20×20 element. Inherits text color via `currentColor`.
+ * @slot icon-start - Optional leading visual: `mud-icon` or any 20×20 element.
+ *               Inherits text color via `currentColor`.
+ * @slot avatar - Optional leading avatar (`mud-avatar` or `<img>`), rendered
+ *               flush to the leading edge and sized to ~chip height. Best for
+ *               `type="input"` person/entity chips.
  */
 @Component({
   tag: 'mud-chip',
@@ -51,6 +54,21 @@ export class MudChip {
   @Prop({ reflect: true, mutable: true }) selected: boolean = false;
 
   /**
+   * Selection behaviour for `type="filter"`. In `multi` mode a leading ✓ is
+   * rendered automatically when `selected` (no need to slot a checkmark icon).
+   * Ignored when `type="input"`.
+   * @default 'mono'
+   */
+  @Prop({ reflect: true }) selectionMode: ChipSelectionMode = 'mono';
+
+  /**
+   * Optional numeric badge rendered after the label (e.g. a result count).
+   * The badge colour inverts with the chip surface so it stays legible in both
+   * the default and selected states. Omit (or pass a non-number) to hide it.
+   */
+  @Prop() count?: number;
+
+  /**
    * Disables interactivity. Reflects `aria-disabled` and removes
    * the chip from pointer/keyboard activation paths.
    * @default false
@@ -73,6 +91,7 @@ export class MudChip {
   @Prop({ reflect: true }) removable: boolean = false;
 
   @State() private hasIconStart: boolean = false;
+  @State() private hasAvatar: boolean = false;
   @State() private hasLabelSlot: boolean = false;
 
   @Element() host!: HTMLMudChipElement;
@@ -110,14 +129,18 @@ export class MudChip {
     // fire reliably before componentDidLoad.
     let hasLabel = false;
     let hasIconStart = false;
+    let hasAvatar = false;
     const children = this.host.childNodes as unknown as Node[];
     for (let i = 0; i < children.length; i += 1) {
       const node = children[i];
       if (!node) continue;
       if (node.nodeType === Node.ELEMENT_NODE) {
         const el = node as Element;
-        if (el.getAttribute('slot') === 'icon-start') {
+        const slot = el.getAttribute('slot');
+        if (slot === 'icon-start') {
           hasIconStart = true;
+        } else if (slot === 'avatar') {
+          hasAvatar = true;
         } else if (!el.hasAttribute('slot')) {
           hasLabel = true;
         }
@@ -127,6 +150,7 @@ export class MudChip {
     }
     this.hasLabelSlot = hasLabel;
     this.hasIconStart = hasIconStart;
+    this.hasAvatar = hasAvatar;
   }
 
   private onLabelSlotChange = (ev: Event) => {
@@ -140,6 +164,11 @@ export class MudChip {
   private onIconStartSlotChange = (ev: Event) => {
     const slot = ev.target as HTMLSlotElement;
     this.hasIconStart = slot.assignedElements({ flatten: true }).length > 0;
+  };
+
+  private onAvatarSlotChange = (ev: Event) => {
+    const slot = ev.target as HTMLSlotElement;
+    this.hasAvatar = slot.assignedElements({ flatten: true }).length > 0;
   };
 
   private hasAccessibleName(): boolean {
@@ -202,9 +231,16 @@ export class MudChip {
     // ONLY in the default slot. The `label` prop is an ARIA-only fallback for
     // the button's accessible name when no slot content is provided.
     const ariaLabelAttr = !this.hasLabelSlot ? labelText || undefined : undefined;
+    // `multi` filter chips surface selection with a leading ✓ (Figma 524:3964),
+    // so consumers no longer hand-slot a checkmark icon.
+    const showCheck = isFilter && this.selectionMode === 'multi' && this.selected;
+    const showCount = typeof this.count === 'number' && Number.isFinite(this.count);
 
     const hostClasses = {
       'has-icon-start': this.hasIconStart,
+      'has-avatar': this.hasAvatar,
+      'shows-check': showCheck,
+      'has-count': showCount,
       'is-removable': showRemove,
     };
 
@@ -221,10 +257,21 @@ export class MudChip {
           tabindex={tabIndexAttr}
           onClick={this.handleClick}
         >
+          <span class="avatar">
+            <slot name="avatar" onSlotchange={this.onAvatarSlotChange} />
+          </span>
+          {showCheck ? (
+            <mud-icon class="check" name="checkmark-small" size={this.size === 'sm' ? 16 : 20} aria-hidden="true" />
+          ) : null}
           <slot name="icon-start" onSlotchange={this.onIconStartSlotChange} />
           <span class="label">
             <slot onSlotchange={this.onLabelSlotChange} />
           </span>
+          {showCount ? (
+            <span class="count" part="count">
+              {this.count}
+            </span>
+          ) : null}
         </button>
         {showRemove ? (
           <button

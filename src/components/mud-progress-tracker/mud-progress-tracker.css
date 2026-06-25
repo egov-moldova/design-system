@@ -57,9 +57,14 @@
 
 :host([orientation='horizontal']) .step {
   /* Each step is a row: [body][connector]. The connector flex-grows so the
-   * step itself fills available width proportionally. */
+   * step itself fills available width proportionally.
+   * `flex-start` (not `center`): the body is a column (indicator on top, label
+   * below), so centring would drop the connector to the middle of indicator +
+   * label. Aligning to the top lets the connector's `margin-block` offset land
+   * it exactly on the indicator's vertical centre — the center-to-center rail
+   * from Figma. */
   flex-direction: row;
-  align-items: center;
+  align-items: flex-start;
   flex: 1 1 0;
   min-width: 0;
 }
@@ -175,18 +180,27 @@
 }
 
 /* ---------- Connector line ---------- */
+/* `--_ct` is the per-state rail thickness: the untraveled grey rail (pending /
+   current) is 1px; the filled/coloured rail (completed / error) bumps to 1.5px
+   below. The geometry (height/width + centring) all reads `--_ct` so the rail
+   stays centred on the indicator at either thickness. */
 .connector {
+  --_ct: var(--progress-tracker-connector-thickness-pending);
   display: block;
   background: var(--progress-tracker-pending-connector);
   flex-shrink: 0;
 }
 
 :host([orientation='horizontal']) .connector {
-  height: var(--progress-tracker-connector-thickness);
+  height: var(--_ct);
   flex: 1 1 0;
   min-width: var(--progress-tracker-connector-min-length);
-  margin-block: calc((var(--progress-tracker-indicator-size) - var(--progress-tracker-connector-thickness)) / 2);
+  margin-block: calc((var(--progress-tracker-indicator-size) - var(--_ct)) / 2);
+  /* Symmetric gaps on both sides of the dot — the body is the dot width (the
+     label doesn't widen it, see below), so the flex connector spans the whole
+     gap between consecutive dots. */
   margin-inline-start: var(--progress-tracker-step-indicator-gap);
+  margin-inline-end: var(--progress-tracker-step-indicator-gap);
 }
 
 :host([orientation='horizontal']) .step .step-content,
@@ -198,19 +212,78 @@
   flex-shrink: 0;
 }
 
+/* Even spacing: the label must NOT widen the step body, otherwise a wide label
+   steals space from its connector and the steps space unevenly. Pin the label
+   block to zero inline-size so every body is just the dot width → all connectors
+   come out equal. The label is centred under the dot and overflows the 0-width
+   box symmetrically (kept on one line — it would otherwise collapse to
+   min-content). On a narrow container the tracker auto-switches to the compact
+   dot rail, so the label never needs to wrap here. */
+:host([orientation='horizontal']) .label-block {
+  inline-size: 0;
+  align-items: center;
+}
+
+:host([orientation='horizontal']) .label,
+:host([orientation='horizontal']) .supporting-text {
+  white-space: nowrap;
+}
+
+/* The end labels would otherwise spill past the track edges (a centred label on
+   the first/last dot overflows left/right). Anchor them inward: the first label
+   reads left-aligned from its dot, the last right-aligned. Middle stay centred. */
+:host([orientation='horizontal']) .step:first-child .label-block {
+  align-items: flex-start;
+}
+
+:host([orientation='horizontal']) .step--last .label-block {
+  align-items: flex-end;
+}
+
 :host([orientation='vertical']) .step:not(.step--last) {
   /* Each non-last step must be tall enough to host the vertical connector
    * that drops from its indicator. 84px matches the Figma vertical spacing. */
-  min-height: 84px;
+  min-height: var(--progress-tracker-container-vertical-step-min-height);
 }
 
 :host([orientation='vertical']) .connector {
-  width: var(--progress-tracker-connector-thickness);
+  width: var(--_ct);
   align-self: stretch;
   position: absolute;
-  left: calc(var(--progress-tracker-indicator-size) / 2 - var(--progress-tracker-connector-thickness) / 2);
+  left: calc(var(--progress-tracker-indicator-size) / 2 - var(--_ct) / 2);
+  /* Symmetric gaps: drop the same `labelGap` below this indicator AND above the
+   * next one (the next step's indicator sits at this step's bottom edge), so the
+   * rail floats evenly between circles instead of butting into the lower one. */
   top: calc(var(--progress-tracker-indicator-size) + var(--progress-tracker-container-label-gap));
-  bottom: 0;
+  bottom: var(--progress-tracker-container-label-gap);
+}
+
+/* ---------- Compact (mobile dot rail) ----------
+ * The Figma "Breakpoints — mobile" / "Orientation — Mobile" representation:
+ * a number-less dot rail with labels stripped, connectors retained. The
+ * existing per-status fills already give the right look — completed = filled
+ * brand dot (keeps its white checkmark); current / available / pending = hollow
+ * ring; error = danger ring (keeps its cross). So we keep the indicator at full
+ * size and only hide the step numbers and the labels — the status icons stay.
+ *
+ * Driven by the `is-compact` host class, which the component sets when EITHER
+ * the `compact` prop is on OR the tracker auto-switches on a narrow container
+ * (ResizeObserver). */
+:host(.is-compact) {
+  --progress-tracker-container-vertical-step-min-height: var(
+    --progress-tracker-container-vertical-step-min-height-compact
+  );
+}
+
+:host(.is-compact) .indicator-number,
+:host(.is-compact) .label-block {
+  display: none;
+}
+
+/* Mobile blocked = hollow red ring (Figma), so drop the error glyph in compact.
+   The completed checkmark stays — it's the only FILLED dot and needs the tick. */
+:host(.is-compact) .step--error .indicator mud-icon {
+  display: none;
 }
 
 /* ---------- State: PENDING (default colours) ---------- */
@@ -237,10 +310,13 @@
 }
 
 .step--completed .connector {
+  /* Filled/traveled rail is slightly heavier (1.5px) than the grey 1px. */
+  --_ct: var(--progress-tracker-connector-thickness);
   background: var(--progress-tracker-completed-connector);
 }
 
 .step--error .connector {
+  --_ct: var(--progress-tracker-connector-thickness);
   background: var(--progress-tracker-error-connector);
 }
 

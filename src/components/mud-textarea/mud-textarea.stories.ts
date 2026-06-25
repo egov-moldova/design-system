@@ -510,10 +510,6 @@ export const EdgeCases: Story = {
           'very long content (scroll)',
           /*html*/ `<mud-textarea size="lg" label="Comentarii" value="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."></mud-textarea>`,
         ),
-        cell(
-          'RTL content',
-          /*html*/ `<div dir="rtl"><mud-textarea size="lg" label="تعليقات" placeholder="أضف تعليقًا…" value="هذا نص تجريبي بالعربية."></mud-textarea></div>`,
-        ),
       ].join(''),
     ),
   parameters: {
@@ -524,7 +520,6 @@ export const EdgeCases: Story = {
           '<mud-textarea size="lg" label="…long label…" placeholder="…"></mud-textarea>',
           '<mud-textarea size="lg" label="Descriere" helper-text="…long helper…"></mud-textarea>',
           '<mud-textarea size="lg" label="Comentarii" value="…long content…"></mud-textarea>',
-          '<div dir="rtl"><mud-textarea size="lg" label="تعليقات" value="…"></mud-textarea></div>',
         ].join('\n'),
       },
     },

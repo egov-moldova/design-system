@@ -23,10 +23,16 @@
     },
     "./dist/mud/mud.css": "./dist/mud/mud.css",
     "./dist/mud/tokens/*.css": "./dist/mud/tokens/*.css",
-    "./dist/mud/*": "./dist/mud/*"
+    "./dist/mud/*": "./dist/mud/*",
+    "./dist/components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.js"
+    },
+    "./dist/components/*": "./dist/components/*"
   },
   "workspaces": [
-    "web-components"
+    "web-components",
+    "react"
   ],
   "resolutions": {
     "undici-types": "~7.19.0"
@@ -44,6 +50,7 @@
     "build": "wireit",
     "build.age": "yarn cross-env STORYBOOK_BASE_PATH=/age/ yarn sp.build",
     "build.web": "wireit",
+    "build.react": "stencil build --docs --react && node scripts/copy-component-assets.mjs && yarn workspace @egov-moldova/mud-react build",
     "demo.web": "wireit",
     "demo.web.build": "wireit",
     "build.watch": "stencil build --dev --watch",
@@ -475,6 +482,7 @@
     "@prettier/plugin-oxc": "^0.1.4",
     "@stencil/eslint-plugin": "^1.3.0",
     "@stencil/postcss": "^2.1.0",
+    "@stencil/react-output-target": "^1.5.2",
     "@stencil/vitest": "^1.11.6",
     "@storybook/addon-a11y": "^10.4.0",
     "@storybook/addon-docs": "^10.4.0",

@@ -22,14 +22,16 @@ Two modes:
 
 ## Properties
 
-| Property    | Attribute   | Description                                                                                                                                                                                                                                        | Type                  | Default     |
-| ----------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | ----------- |
-| `disabled`  | `disabled`  | Disables interactivity. Reflects `aria-disabled` and removes the chip from pointer/keyboard activation paths.                                                                                                                                      | `boolean`             | `false`     |
-| `label`     | `label`     | Accessible-name fallback. Used as `aria-label` on the internal `<button>` when the default slot is empty (and no explicit `aria-label` is set). Does NOT render visible text — use the default slot for that. Matches the `mud-button` convention. | `string \| undefined` | `undefined` |
-| `removable` | `removable` | When `type="input"`, renders a trailing close button that emits `mudRemove` on activation. Ignored when `type="filter"`.                                                                                                                           | `boolean`             | `false`     |
-| `selected`  | `selected`  | Selected state for `type="filter"`. Ignored when `type="input"`.                                                                                                                                                                                   | `boolean`             | `false`     |
-| `size`      | `size`      | Visual size rung.                                                                                                                                                                                                                                  | `"md" \| "sm"`        | `'md'`      |
-| `type`      | `type`      | Behavioral mode. - `filter` — toggle on click, emits `mudSelect` - `input` — represents a user-entered value; combine with `removable` for a trailing × button                                                                                     | `"filter" \| "input"` | `'filter'`  |
+| Property        | Attribute        | Description                                                                                                                                                                                                                                        | Type                  | Default     |
+| --------------- | ---------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- | ----------- |
+| `count`         | `count`          | Optional numeric badge rendered after the label (e.g. a result count). The badge colour inverts with the chip surface so it stays legible in both the default and selected states. Omit (or pass a non-number) to hide it.                         | `number \| undefined` | `undefined` |
+| `disabled`      | `disabled`       | Disables interactivity. Reflects `aria-disabled` and removes the chip from pointer/keyboard activation paths.                                                                                                                                      | `boolean`             | `false`     |
+| `label`         | `label`          | Accessible-name fallback. Used as `aria-label` on the internal `<button>` when the default slot is empty (and no explicit `aria-label` is set). Does NOT render visible text — use the default slot for that. Matches the `mud-button` convention. | `string \| undefined` | `undefined` |
+| `removable`     | `removable`      | When `type="input"`, renders a trailing close button that emits `mudRemove` on activation. Ignored when `type="filter"`.                                                                                                                           | `boolean`             | `false`     |
+| `selected`      | `selected`       | Selected state for `type="filter"`. Ignored when `type="input"`.                                                                                                                                                                                   | `boolean`             | `false`     |
+| `selectionMode` | `selection-mode` | Selection behaviour for `type="filter"`. In `multi` mode a leading ✓ is rendered automatically when `selected` (no need to slot a checkmark icon). Ignored when `type="input"`.                                                                    | `"mono" \| "multi"`   | `'mono'`    |
+| `size`          | `size`           | Visual size rung.                                                                                                                                                                                                                                  | `"md" \| "sm"`        | `'md'`      |
+| `type`          | `type`           | Behavioral mode. - `filter` — toggle on click, emits `mudSelect` - `input` — represents a user-entered value; combine with `removable` for a trailing × button                                                                                     | `"filter" \| "input"` | `'filter'`  |
 
 
 ## Events
@@ -42,11 +44,32 @@ Two modes:
 
 ## Slots
 
-| Slot           | Description                                                                                                           |
-| -------------- | --------------------------------------------------------------------------------------------------------------------- |
-|                | (default) The label content. Plain text or rich inline content.         Falls back to the `label` prop when empty.    |
-| `"icon-start"` | Optional leading visual: `mud-icon`, an avatar, or any         20×20 element. Inherits text color via `currentColor`. |
+| Slot           | Description                                                                                                                                                                   |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|                | (default) The label content. Plain text or rich inline content.         Falls back to the `label` prop when empty.                                                            |
+| `"avatar"`     | Optional leading avatar (`mud-avatar` or `<img>`), rendered         flush to the leading edge and sized to ~chip height. Best for         `type="input"` person/entity chips. |
+| `"icon-start"` | Optional leading visual: `mud-icon` or any 20×20 element.         Inherits text color via `currentColor`.                                                                     |
 
+
+## Shadow Parts
+
+| Part      | Description |
+| --------- | ----------- |
+| `"count"` |             |
+
+
+## Dependencies
+
+### Depends on
+
+- [mud-icon](../mud-icon)
+
+### Graph
+```mermaid
+graph TD;
+  mud-chip --> mud-icon
+  style mud-chip fill:#f9f,stroke:#333,stroke-width:4px
+```
 
 ----------------------------------------------
 

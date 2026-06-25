@@ -434,3 +434,28 @@ export const EdgeCases: Story = {
     },
   },
 };
+
+export const MobileBottomSheet: Story = {
+  name: 'Mobile (bottom sheet)',
+  // SB10 selects the device frame via the viewport global (the legacy
+  // `parameters.viewport.defaultViewport` is a no-op). `mobile2` ≈ 414px keeps
+  // the iframe ≤ 640px, so `breakpoint="auto"` resolves to the bottom sheet.
+  globals: { viewport: { value: 'mobile2', isRotated: false } },
+  render: () => /*html*/ `
+    <div style="padding: var(--spacing-24); min-block-size: 480px;">
+      <mud-date-input label="Data nașterii"></mud-date-input>
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: '<!-- breakpoint="auto" (default): bottom sheet below 640px, dropdown above -->\n<mud-date-input label="Data nașterii"></mud-date-input>',
+      },
+      description: {
+        story:
+          'Defaults to `breakpoint="auto"` and renders in a mobile device frame, so opening the calendar shows the full-width bottom sheet with a scrim and the month/year dropdown header. Switch the **Viewport** toolbar to a desktop size to watch it resize back to the anchored dropdown. Tapping the scrim, pressing Escape, or selecting a date dismisses it.',
+      },
+    },
+  },
+};

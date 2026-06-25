@@ -12,8 +12,14 @@ import {
   h,
 } from '@stencil/core';
 
-import { DATE_INPUT_FORMATS, DATE_INPUT_SIZES, DATE_INPUT_VARIANTS } from './mud-date-input.types';
+import {
+  DATE_INPUT_BREAKPOINTS,
+  DATE_INPUT_FORMATS,
+  DATE_INPUT_SIZES,
+  DATE_INPUT_VARIANTS,
+} from './mud-date-input.types';
 import type {
+  DateInputBreakpoint,
   DateInputChangeDetail,
   DateInputFormat,
   DateInputSegment,
@@ -23,6 +29,9 @@ import type {
 } from './mud-date-input.types';
 
 let dateInputInstanceCounter = 0;
+
+/** Viewport query that flips the `auto` breakpoint into the bottom-sheet layout. */
+const MOBILE_VIEWPORT_QUERY = '(max-width: 640px)';
 
 interface SegmentSpec {
   kind: 'DD' | 'MM' | 'YYYY';
@@ -108,6 +117,14 @@ export class MudDateInput {
    * @default 'DD/MM/YYYY'
    */
   @Prop({ reflect: true }) format: DateInputFormat = 'DD/MM/YYYY';
+
+  /**
+   * Calendar-popover placement. `auto` opens a desktop dropdown on wide
+   * viewports and a full-width bottom sheet on narrow ones; `desktop` / `mobile`
+   * force one layout.
+   * @default 'auto'
+   */
+  @Prop({ reflect: true }) breakpoint: DateInputBreakpoint = 'auto';
 
   /**
    * Disables interactivity. The internal control receives `aria-disabled` and
@@ -200,6 +217,7 @@ export class MudDateInput {
   @State() private isFocused: boolean = false;
   @State() private fieldsetDisabled: boolean = false;
   @State() private pickerOpen: boolean = false;
+  @State() private isMobileViewport: boolean = false;
 
   @Element() host!: HTMLMudDateInputElement;
 
@@ -233,6 +251,25 @@ export class MudDateInput {
   private readonly helperId = `mud-date-input-helper-${this.instanceId}`;
   private readonly errorId = `mud-date-input-error-${this.instanceId}`;
   private initialValue: string = '';
+  private mql?: MediaQueryList;
+
+  private handleViewportChange = (ev: MediaQueryListEvent | MediaQueryList) => {
+    this.isMobileViewport = ev.matches;
+  };
+
+  connectedCallback() {
+    // Resolve the `auto` breakpoint from the viewport and keep it in sync.
+    if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+      this.mql = window.matchMedia(MOBILE_VIEWPORT_QUERY);
+      this.isMobileViewport = this.mql.matches;
+      this.mql.addEventListener('change', this.handleViewportChange);
+    }
+  }
+
+  disconnectedCallback() {
+    this.mql?.removeEventListener('change', this.handleViewportChange);
+    this.mql = undefined;
+  }
 
   componentWillLoad() {
     this.initialValue = this.value;
@@ -273,6 +310,25 @@ export class MudDateInput {
       );
       this.format = 'DD/MM/YYYY';
     }
+  }
+
+  @Watch('breakpoint')
+  validateBreakpoint(next: DateInputBreakpoint) {
+    if (!DATE_INPUT_BREAKPOINTS.includes(next)) {
+      console.warn(
+        `[mud-date-input] breakpoint="${String(next)}" is not supported. Supported: ${DATE_INPUT_BREAKPOINTS.join(
+          ', ',
+        )}. Falling back to "auto".`,
+      );
+      this.breakpoint = 'auto';
+    }
+  }
+
+  /** Effective picker placement once `auto` is resolved against the viewport. */
+  private resolvedBreakpoint(): 'desktop' | 'mobile' {
+    if (this.breakpoint === 'desktop') return 'desktop';
+    if (this.breakpoint === 'mobile') return 'mobile';
+    return this.isMobileViewport ? 'mobile' : 'desktop';
   }
 
   @Watch('value')
@@ -598,7 +654,10 @@ export class MudDateInput {
   }
 
   private resolvedPlaceholder(): string {
-    return this.placeholder ?? this.spec().pattern;
+    // Fall back to the format pattern (e.g. "DD/MM/YYYY") whenever no meaningful
+    // placeholder is set. Use a truthy check (not `??`) so an explicit empty
+    // string doesn't blank the format hint — the empty field always shows it.
+    return this.placeholder?.trim() ? this.placeholder : this.spec().pattern;
   }
 
   render() {
@@ -610,6 +669,8 @@ export class MudDateInput {
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.ariaLabel : undefined;
     const placeholder = this.resolvedPlaceholder();
     const iconSize = this.size === 'lg' ? 24 : 20;
+    const pickerBreakpoint = this.resolvedBreakpoint();
+    const isMobilePopover = pickerBreakpoint === 'mobile';
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -716,19 +777,36 @@ export class MudDateInput {
           </button>
         </div>
 
-        {this.pickerOpen ? (
-          <div class="picker-popover" part="picker-popover" role="dialog" id={`date-input-picker-${this.instanceId}`}>
-            <mud-date-picker
-              mode="single"
-              breakpoint="desktop"
-              locale="ro-RO"
-              value={this.toIsoValue(this.value) ?? undefined}
-              min={this.min}
-              max={this.max}
-              onMudChange={this.handlePickerChange}
-            ></mud-date-picker>
-          </div>
-        ) : null}
+        {this.pickerOpen
+          ? [
+              isMobilePopover ? (
+                <div
+                  class="picker-backdrop"
+                  part="picker-backdrop"
+                  aria-hidden="true"
+                  onClick={() => (this.pickerOpen = false)}
+                ></div>
+              ) : null,
+              <div
+                class={{ 'picker-popover': true, 'is-mobile': isMobilePopover }}
+                part="picker-popover"
+                role="dialog"
+                aria-modal={isMobilePopover ? 'true' : undefined}
+                id={`date-input-picker-${this.instanceId}`}
+              >
+                <mud-date-picker
+                  mode="single"
+                  breakpoint={pickerBreakpoint}
+                  header-style={isMobilePopover ? 'dropdown' : 'title'}
+                  locale="ro-RO"
+                  value={this.toIsoValue(this.value) ?? undefined}
+                  min={this.min}
+                  max={this.max}
+                  onMudChange={this.handlePickerChange}
+                ></mud-date-picker>
+              </div>,
+            ]
+          : null}
 
         {this.hasErrorMessage() ? (
           <div class="assistive assistive-error" id={this.errorId} part="error">

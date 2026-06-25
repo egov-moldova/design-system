@@ -37,6 +37,26 @@
       "transitionDuration": { "$value": "150ms", "$type": "duration" },
       "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" }
     },
+    "avatar": {
+      "size": {
+        "md": { "$value": "28px", "$type": "dimension" },
+        "sm": { "$value": "22px", "$type": "dimension" }
+      }
+    },
+    "count": {
+      "size": {
+        "md": { "$value": "18px", "$type": "dimension" },
+        "sm": { "$value": "16px", "$type": "dimension" }
+      },
+      "fontSize": {
+        "md": { "$value": "{fontSize.12}", "$type": "dimension" },
+        "sm": { "$value": "{fontSize.12}", "$type": "dimension" }
+      },
+      "paddingInline": {
+        "md": { "$value": "{spacing.4}", "$type": "dimension" },
+        "sm": { "$value": "{spacing.4}", "$type": "dimension" }
+      }
+    },
     "label": {
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
       "fontSize": {
@@ -72,6 +92,10 @@
       }
     },
     "input": {
+      "minWidth": {
+        "md": { "$value": "64px", "$type": "dimension" },
+        "sm": { "$value": "56px", "$type": "dimension" }
+      },
       "background": {
         "default": { "$value": "{color.background.base.tertiary}", "$type": "color" },
         "hover": { "$value": "{color.background.base.tertiary-hover}", "$type": "color" }

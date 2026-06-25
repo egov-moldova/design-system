@@ -11,7 +11,12 @@
       "headingGap": { "$value": "{spacing.6}", "$type": "dimension" },
       "borderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" },
       "transitionDuration": { "$value": "150ms", "$type": "duration" },
-      "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" }
+      "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" },
+      "appearanceDuration": {
+        "$value": "250ms",
+        "$type": "duration",
+        "$comment": "Entrance animation (slide-down + fade-in) per the Figma Behavior panel; slightly longer than the 150ms hover transition so the motion reads."
+      }
     },
     "icon": {
       "size": { "$value": "{spacing.24}", "$type": "dimension" },
@@ -31,11 +36,24 @@
       "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" }
     },
     "close": {
-      "size": { "$value": "{spacing.24}", "$type": "dimension" },
+      "sizePointer": {
+        "$value": "{spacing.32}",
+        "$type": "dimension",
+        "$comment": "Interactive target per the Figma Target Sizes panel: 32px on pointer devices."
+      },
+      "sizeTouch": {
+        "$value": "{spacing.40}",
+        "$type": "dimension",
+        "$comment": "40px target under `pointer: coarse` for touch ease-of-use."
+      },
       "iconSize": { "$value": "{spacing.16}", "$type": "dimension" },
       "borderRadius": { "$value": "{borderRadius.4}", "$type": "dimension" },
       "backgroundHover": { "$value": "{color.background.base.tertiary-hover}", "$type": "color" },
-      "backgroundHoverOnColor": { "$value": "{color.background.base.tertiary}", "$type": "color" }
+      "backgroundHoverOnColor": {
+        "$value": "{color.background.alpha.overlay-dark}",
+        "$type": "color",
+        "$comment": "Translucent dark veil on the filled info/success/error surfaces: darkening (not lightening) on hover keeps the white × crisp (~7-10:1). A light fill drops it to ~1.1:1; a white veil only reaches ~2.7:1 — both below the 3:1 non-text-contrast floor."
+      }
     },
     "info": {
       "background": { "$value": "{color.background.brand.default}", "$type": "color" },

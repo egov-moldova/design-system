@@ -1,10 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
-import { FILE_INPUT_SIZES } from './mud-file-input.types';
-import type { FileInputSize } from './mud-file-input.types';
+import { FILE_INPUT_SIZES, FILE_INPUT_VARIANTS } from './mud-file-input.types';
+import type { FileInputSize, FileInputVariant } from './mud-file-input.types';
 
 type FileInputArgs = {
   size: FileInputSize;
+  variant: FileInputVariant;
   label: string;
   helperText: string;
   errorText: string;
@@ -27,6 +28,7 @@ const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-
 const renderFileInput = (args: FileInputArgs) => /*html*/ `
   <mud-file-input
     size="${args.size}"
+    variant="${args.variant}"
     label="${args.label}"
     helper-text="${args.helperText}"
     error-text="${args.errorText}"
@@ -48,6 +50,7 @@ const renderFileInput = (args: FileInputArgs) => /*html*/ `
 const docsSourceDefault = (args: FileInputArgs) => {
   const attrs = [
     args.size !== 'md' ? `size="${args.size}"` : '',
+    args.variant !== 'dropzone' ? `variant="${args.variant}"` : '',
     args.label ? `label="${args.label}"` : '',
     args.helperText ? `helper-text="${args.helperText}"` : '',
     args.errorText ? `error-text="${args.errorText}"` : '',
@@ -83,6 +86,12 @@ const meta: Meta<FileInputArgs> = {
       description: 'Visual size rung.',
       table: { defaultValue: { summary: 'md' } },
     },
+    variant: {
+      control: 'inline-radio',
+      options: FILE_INPUT_VARIANTS,
+      description: 'Presentation: dashed dropzone or a plain "Choose file" button.',
+      table: { defaultValue: { summary: 'dropzone' } },
+    },
     label: { control: 'text' },
     helperText: { control: 'text' },
     errorText: { control: 'text' },
@@ -115,6 +124,7 @@ export const Default: Story = {
   render: renderFileInput,
   args: {
     size: 'lg',
+    variant: 'dropzone',
     label: '',
     helperText: '',
     errorText: '',
@@ -142,7 +152,7 @@ export const Default: Story = {
 };
 
 const wrap = (children: string) => /*html*/ `
-  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 360px)); gap: var(--spacing-32) var(--spacing-48); padding: var(--spacing-24); max-width: 800px;">
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-32) var(--spacing-48); padding: var(--spacing-24);">
     ${children}
   </div>
 `;
@@ -169,16 +179,16 @@ export const AllStates: Story = {
           /*html*/ `<mud-file-input size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
         ),
         cell(
-          'hover — point at the dropzone',
-          /*html*/ `<mud-file-input size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
+          'hover',
+          /*html*/ `<mud-file-input class="is-hover-demo" size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
         ),
         cell(
-          'focus — Tab onto the dropzone',
-          /*html*/ `<mud-file-input size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
+          'focus',
+          /*html*/ `<mud-file-input class="is-focus-demo" size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
         ),
         cell(
-          'active — see the `Active` story for the live drag-over render',
-          /*html*/ `<mud-file-input size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
+          'active',
+          /*html*/ `<mud-file-input id="fi-allstates-active" size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>`,
         ),
         cell(
           'disabled',
@@ -190,15 +200,23 @@ export const AllStates: Story = {
         ),
       ].join(''),
     ),
+  // Drive the `active` cell into its drag-over state post-mount so the matrix
+  // shows it statically (hover + focus use the `.is-*-demo` helper classes).
+  play: async ({ canvasElement }) => {
+    await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    const host = canvasElement.querySelector('#fi-allstates-active') as HTMLElement | null;
+    const dropzone = host?.shadowRoot?.querySelector('.dropzone') as HTMLElement | null;
+    dropzone?.dispatchEvent(new DragEvent('dragenter', { bubbles: true, cancelable: true }));
+  },
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
         code: [
           '<mud-file-input size="lg" supported-formats-text="Formate acceptate: jpg, png, pdf" max-size-text="Mărime maximă: 100 MB"></mud-file-input>',
-          '<!-- hover: pointer over dropzone -->',
-          '<!-- focus: Tab onto dropzone -->',
-          '<!-- active: drag a file over the dropzone — see the dedicated Active story -->',
+          '<!-- hover: pointer over dropzone (blue dashed border) -->',
+          '<!-- focus: Tab onto dropzone (blue solid border + ring) -->',
+          '<!-- active: drag a file over the dropzone (blue fill + "Drop files to upload") -->',
           '<mud-file-input size="lg" disabled supported-formats-text="…" max-size-text="…"></mud-file-input>',
           '<mud-file-input size="lg" invalid error-text="…"></mud-file-input>',
         ].join('\n'),
@@ -512,4 +530,78 @@ export const EdgeCases: Story = {
       ].join(''),
     ),
   parameters: { controls: { disable: true } },
+};
+
+// ---------------------------------------------------------------------------
+// UploadButton — variant="button": a plain "Choose file" button (Figma
+// "Upload Button"), no dashed dropzone. Same captions + file list + validation.
+// ---------------------------------------------------------------------------
+export const UploadButton: Story = {
+  name: 'Upload Button (variant)',
+  render: () =>
+    wrap(
+      [
+        cell(
+          'single',
+          /*html*/ `<mud-file-input variant="button" size="lg" label="Încarcă fișiere" choose-files-text="Alege fișier" accept=".pdf,image/png,image/jpeg" max-size="104857600"></mud-file-input>`,
+        ),
+        preloadedHtml(
+          'multiple + uploaded',
+          'variant="button" choose-files-text="Alege fișier" accept=".pdf,image/png,image/jpeg" max-size="104857600"',
+          [
+            { name: 'declaratie-impozit-2025.pdf', size: 1_840_000, state: 'success' },
+            { name: 'contract-utilitati.pdf', size: 1_840_000, state: 'success' },
+          ],
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: '<mud-file-input variant="button" label="Încarcă fișiere" choose-files-text="Alege fișier" accept=".pdf,image/png,image/jpeg" max-size="104857600"></mud-file-input>',
+      },
+      description: {
+        story:
+          'The `button` variant renders a plain "Choose file" button instead of the dashed dropzone (Figma "Upload Button"). Captions, file list and validation are identical.',
+      },
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
+// FileItemExtras — image-preview thumbnail + the uploading spinner on the row.
+// Standalone mud-file-item rows (no live File objects needed).
+// ---------------------------------------------------------------------------
+const SAMPLE_IMG = 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&q=80';
+export const FileItemExtras: Story = {
+  name: 'File Item — preview + uploading',
+  render: () =>
+    wrap(
+      [
+        cell(
+          'image-preview thumbnail',
+          /*html*/ `<mud-file-item state="success" filename="portret.jpg" size="124000" preview-src="${SAMPLE_IMG}"></mud-file-item>`,
+        ),
+        cell(
+          'uploading (spinner)',
+          /*html*/ `<mud-file-item state="uploading" filename="declaratie-impozit-2025.pdf" size="1840000"></mud-file-item>`,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: [
+          '<mud-file-item state="success" filename="portret.jpg" size="124000" preview-src="…"></mud-file-item>',
+          '<mud-file-item state="uploading" filename="declaratie-impozit-2025.pdf" size="1840000"></mud-file-item>',
+        ].join('\n'),
+      },
+      description: {
+        story:
+          'A file row with an image-preview thumbnail (`preview-src`) and the `uploading` state, which now shows a spinner in place of the remove button.',
+      },
+    },
+  },
 };

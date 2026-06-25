@@ -39,42 +39,19 @@ const ROMANIAN_TEAM: Array<{ name: string; photo?: string }> = [
 // Render helpers
 // ---------------------------------------------------------------------------
 
-const renderBadgeChild = (kind: AvatarArgs['badge']): string => {
+const renderBadgeChild = (kind: AvatarArgs['badge'], size: AvatarSize): string => {
   if (kind === 'count') {
-    return /*html*/ `<span slot="badge" class="demo-badge demo-badge--count" aria-label="3 notificări noi">3</span>`;
+    // The badge tracks the avatar's size rung; `xs` is dot-only in Figma, so a
+    // count on an xs avatar degrades to a solid dot inside `mud-badge`.
+    return /*html*/ `<mud-badge slot="badge" type="numbered" variant="danger" size="${size}" count="3" aria-label="3 notificări noi"></mud-badge>`;
   }
   if (kind === 'dot') {
-    return /*html*/ `<span slot="badge" class="demo-badge demo-badge--dot" aria-label="Online"></span>`;
+    return /*html*/ `<mud-badge slot="badge" type="dot" variant="danger" size="${size}" aria-label="Online"></mud-badge>`;
   }
   return '';
 };
 
 const renderAvatar = (args: AvatarArgs) => /*html*/ `
-  <style>
-    .demo-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-sizing: border-box;
-      border-radius: 9999px;
-      background: var(--color-background-danger-default);
-      color: var(--color-text-base-inverse-on-color);
-      font-family: var(--font-family-primary);
-      font-weight: var(--font-weight-medium);
-      font-size: var(--font-size-12);
-      line-height: var(--line-height-16);
-      box-shadow: 0 0 0 2px var(--color-background-base-default);
-    }
-    .demo-badge--count {
-      min-inline-size: 16px;
-      block-size: 16px;
-      padding-inline: var(--spacing-4);
-    }
-    .demo-badge--dot {
-      inline-size: 10px;
-      block-size: 10px;
-    }
-  </style>
   <mud-avatar
     type="${args.type}"
     size="${args.size}"
@@ -84,7 +61,7 @@ const renderAvatar = (args: AvatarArgs) => /*html*/ `
     ${args.initials ? `initials="${args.initials}"` : ''}
     ${args.iconName ? `icon-name="${args.iconName}"` : ''}
     ${args.ariaLabel ? `aria-label="${args.ariaLabel}"` : ''}
-  >${renderBadgeChild(args.badge)}</mud-avatar>
+  >${renderBadgeChild(args.badge, args.size)}</mud-avatar>
 `;
 
 const cellLabelStyle =
@@ -177,43 +154,29 @@ const renderStates = () => /*html*/ `
   </p>
 `;
 
+const renderBadgeRow = (kind: 'count' | 'dot') =>
+  AVATAR_SIZES.map(
+    size => /*html*/ `
+      <div style="${cellWrapStyle}">
+        <mud-avatar type="photo" size="${size}" src="${SAMPLE_PHOTO_ION}" name="Ion Popescu">
+          ${renderBadgeChild(kind, size)}
+        </mud-avatar>
+        <span style="${cellLabelStyle}">${size}</span>
+      </div>`,
+  ).join('');
+
+const rowLabelStyle =
+  'font-size: var(--font-size-14); font-weight: var(--font-weight-medium); color: var(--color-text-base-default); margin: 0 0 var(--spacing-8);';
+
 const renderWithBadge = () => /*html*/ `
-  <style>
-    .demo-badge {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-sizing: border-box;
-      border-radius: 9999px;
-      background: var(--color-background-danger-default);
-      color: var(--color-text-base-inverse-on-color);
-      font-family: var(--font-family-primary);
-      font-weight: var(--font-weight-medium);
-      font-size: var(--font-size-12);
-      line-height: var(--line-height-16);
-      box-shadow: 0 0 0 2px var(--color-background-base-default);
-    }
-    .demo-badge--count { min-inline-size: 16px; block-size: 16px; padding-inline: var(--spacing-4); }
-    .demo-badge--dot { inline-size: 10px; block-size: 10px; }
-  </style>
-  <div style="${wrapStyle}">
-    <div style="${cellWrapStyle}">
-      <mud-avatar type="initials" size="md" name="Ion Popescu">
-        <span slot="badge" class="demo-badge demo-badge--count" aria-label="3 notificări noi">3</span>
-      </mud-avatar>
-      <span style="${cellLabelStyle}">count badge</span>
+  <div style="display: grid; gap: var(--spacing-32); padding: var(--spacing-24);">
+    <div>
+      <p style="${rowLabelStyle}">Count</p>
+      <div style="${wrapStyle}">${renderBadgeRow('count')}</div>
     </div>
-    <div style="${cellWrapStyle}">
-      <mud-avatar type="photo" size="md" src="${SAMPLE_PHOTO_MARIA}" name="Maria Pop">
-        <span slot="badge" class="demo-badge demo-badge--dot" aria-label="Online"></span>
-      </mud-avatar>
-      <span style="${cellLabelStyle}">dot badge</span>
-    </div>
-    <div style="${cellWrapStyle}">
-      <mud-avatar type="icon" size="lg" aria-label="System notifications">
-        <span slot="badge" class="demo-badge demo-badge--count" aria-label="12 notificări noi">12</span>
-      </mud-avatar>
-      <span style="${cellLabelStyle}">large + count</span>
+    <div>
+      <p style="${rowLabelStyle}">Dot</p>
+      <div style="${wrapStyle}">${renderBadgeRow('dot')}</div>
     </div>
   </div>
 `;
@@ -328,7 +291,7 @@ const docsSourceDefault = (args: AvatarArgs) => {
     .filter(Boolean)
     .join(' ');
   const open = attrs ? `<mud-avatar ${attrs}>` : '<mud-avatar>';
-  return `${open}${renderBadgeChild(args.badge)}</mud-avatar>`;
+  return `${open}${renderBadgeChild(args.badge, args.size)}</mud-avatar>`;
 };
 
 const docsSourceAllVariants = /*html*/ `<mud-avatar type="photo" src="…" name="Ion Popescu"></mud-avatar>
@@ -337,12 +300,13 @@ const docsSourceAllVariants = /*html*/ `<mud-avatar type="photo" src="…" name=
 
 const docsSourceAllSizes = AVATAR_SIZES.map(s => `<mud-avatar size="${s}" name="Ion Popescu"></mud-avatar>`).join('\n');
 
-const docsSourceWithBadge = /*html*/ `<mud-avatar type="initials" name="Ion Popescu">
-  <span slot="badge" class="demo-badge demo-badge--count" aria-label="3 notificări noi">3</span>
+const docsSourceWithBadge = /*html*/ `<!-- Compose mud-badge in the badge slot; match its size rung to the avatar's -->
+<mud-avatar type="photo" src="…" name="Ion Popescu" size="md">
+  <mud-badge slot="badge" type="numbered" variant="danger" size="md" count="3"></mud-badge>
 </mud-avatar>
 
-<mud-avatar type="photo" src="…" name="Maria Pop">
-  <span slot="badge" class="demo-badge demo-badge--dot" aria-label="Online"></span>
+<mud-avatar type="photo" src="…" name="Maria Pop" size="md">
+  <mud-badge slot="badge" type="dot" variant="danger" size="md"></mud-badge>
 </mud-avatar>`;
 
 const docsSourceStack = /*html*/ `<!-- Avatar stack composition (no dedicated component) -->
@@ -505,7 +469,7 @@ export const WithBadge: Story = {
       source: { code: docsSourceWithBadge },
       description: {
         story:
-          'The `badge` slot accepts any child — a number, an icon, a status dot. The avatar reserves the top-right corner and does not constrain the badge size; consumers control the badge visuals.',
+          'The `badge` slot composes a `mud-badge` (count or dot) pinned to the avatar’s NE edge. Match the badge’s `size` rung to the avatar so it scales with it — the dot grows from 8 px (xs) to 24 px (xl). `xs` is dot-only in Figma, so a count on an xs avatar degrades to a solid dot.',
       },
     },
   },

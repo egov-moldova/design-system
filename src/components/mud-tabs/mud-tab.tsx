@@ -116,9 +116,11 @@ export class MudTab {
           <slot name="icon-start">
             {this.iconName ? <mud-icon class="tab__icon" name={this.iconName} size={iconSize}></mud-icon> : null}
           </slot>
-          <span class="tab__label" part="label">
-            {this.hasLabelSlot ? null : this.label}
-            <slot onSlotchange={this.onLabelSlotChange} />
+          <span class="tab__label" part="label" data-label={this.label}>
+            <span class="tab__label-text">
+              {this.hasLabelSlot ? null : this.label}
+              <slot onSlotchange={this.onLabelSlotChange} />
+            </span>
           </span>
         </span>
         <slot name="badge">

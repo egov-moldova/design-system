@@ -499,4 +499,64 @@ describe('mud-date-input', () => {
       expect(queryClearButton(root)?.getAttribute('tabindex')).toBe('-1');
     });
   });
+
+  describe('responsive breakpoint', () => {
+    const openPicker = async (root: Element | null | undefined) => {
+      root?.shadowRoot?.querySelector<HTMLButtonElement>('.trailing-icon')?.click();
+      await new Promise<void>(r => setTimeout(r, 0));
+    };
+
+    it('breakpoint="auto" resolves to the bottom sheet when the viewport matches mobile', async () => {
+      // jsdom has no matchMedia — stub it to report a mobile viewport so the
+      // `auto` default resolves to the bottom sheet (mirrors a 375px viewport).
+      const original = window.matchMedia;
+      window.matchMedia = ((query: string) => ({
+        matches: true,
+        media: query,
+        onchange: null,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        addListener: () => {},
+        removeListener: () => {},
+        dispatchEvent: () => false,
+      })) as typeof window.matchMedia;
+      try {
+        const { root } = await render(<mud-date-input label="x"></mud-date-input>);
+        await openPicker(root);
+        const popover = root?.shadowRoot?.querySelector('.picker-popover');
+        expect(popover?.classList.contains('is-mobile')).toBe(true);
+        expect(root?.shadowRoot?.querySelector('mud-date-picker')?.getAttribute('breakpoint')).toBe('mobile');
+      } finally {
+        window.matchMedia = original;
+      }
+    });
+
+    it('opens a desktop dropdown (no backdrop) when breakpoint="desktop"', async () => {
+      const { root } = await render(<mud-date-input label="x" breakpoint="desktop"></mud-date-input>);
+      await openPicker(root);
+      const popover = root?.shadowRoot?.querySelector('.picker-popover');
+      expect(popover).toBeTruthy();
+      expect(popover?.classList.contains('is-mobile')).toBe(false);
+      expect(root?.shadowRoot?.querySelector('.picker-backdrop')).toBeNull();
+      expect(root?.shadowRoot?.querySelector('mud-date-picker')?.getAttribute('breakpoint')).toBe('desktop');
+    });
+
+    it('opens a full-width bottom sheet with a backdrop when breakpoint="mobile"', async () => {
+      const { root } = await render(<mud-date-input label="x" breakpoint="mobile"></mud-date-input>);
+      await openPicker(root);
+      const popover = root?.shadowRoot?.querySelector('.picker-popover');
+      expect(popover?.classList.contains('is-mobile')).toBe(true);
+      expect(popover?.getAttribute('aria-modal')).toBe('true');
+      expect(root?.shadowRoot?.querySelector('.picker-backdrop')).toBeTruthy();
+      expect(root?.shadowRoot?.querySelector('mud-date-picker')?.getAttribute('breakpoint')).toBe('mobile');
+    });
+
+    it('tapping the backdrop dismisses the bottom sheet', async () => {
+      const { root } = await render(<mud-date-input label="x" breakpoint="mobile"></mud-date-input>);
+      await openPicker(root);
+      root?.shadowRoot?.querySelector<HTMLElement>('.picker-backdrop')?.click();
+      await new Promise<void>(r => setTimeout(r, 0));
+      expect(root?.shadowRoot?.querySelector('.picker-popover')).toBeNull();
+    });
+  });
 });

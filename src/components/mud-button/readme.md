@@ -49,6 +49,8 @@ is set) inside shadow DOM. Form participation works via `formAssociated` +
 ### Used by
 
  - [mud-cookie-banner](../mud-cookie-banner)
+ - [mud-file-input](../mud-file-input)
+ - [mud-header-services-menu](../mud-header)
  - [mud-receipt](../mud-receipt)
 
 ### Depends on
@@ -60,6 +62,8 @@ is set) inside shadow DOM. Form participation works via `formAssociated` +
 graph TD;
   mud-button --> mud-spinner
   mud-cookie-banner --> mud-button
+  mud-file-input --> mud-button
+  mud-header-services-menu --> mud-button
   mud-receipt --> mud-button
   style mud-button fill:#f9f,stroke:#333,stroke-width:4px
 ```

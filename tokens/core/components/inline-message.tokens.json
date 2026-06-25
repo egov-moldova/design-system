@@ -1,0 +1,46 @@
+{
+  "inlineMessage": {
+    "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+    "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
+    "gap": {
+      "small": { "$value": "{spacing.4}", "$type": "dimension" },
+      "medium": { "$value": "{spacing.6}", "$type": "dimension" }
+    },
+    "fontSize": {
+      "small": { "$value": "{fontSize.12}", "$type": "dimension" },
+      "medium": { "$value": "{fontSize.14}", "$type": "dimension" }
+    },
+    "lineHeight": {
+      "small": { "$value": "{lineHeight.16}", "$type": "dimension" },
+      "medium": { "$value": "{lineHeight.20}", "$type": "dimension" }
+    },
+    "iconSize": {
+      "small": { "$value": "{spacing.16}", "$type": "dimension" },
+      "medium": { "$value": "{spacing.20}", "$type": "dimension" }
+    },
+    "info": {
+      "text": {
+        "$value": "{color.text.base.secondary}",
+        "$type": "color",
+        "$comment": "Default/info text is neutral (matches the form-control assistive text); only the icon carries the brand colour."
+      },
+      "icon": { "$value": "{color.icon.brand.default}", "$type": "color" }
+    },
+    "warning": {
+      "text": { "$value": "{color.text.warning.default}", "$type": "color" },
+      "icon": { "$value": "{color.icon.warning.default}", "$type": "color" }
+    },
+    "success": {
+      "text": {
+        "$value": "{color.text.positive.on-secondary}",
+        "$type": "color",
+        "$comment": "Darker green (#027948, ~5.2:1 on white). positive.default (#039855) is 3.73:1 and fails WCAG 1.4.3 AA as body text."
+      },
+      "icon": { "$value": "{color.icon.positive.on-secondary}", "$type": "color" }
+    },
+    "error": {
+      "text": { "$value": "{color.text.danger.default}", "$type": "color" },
+      "icon": { "$value": "{color.icon.danger.default}", "$type": "color" }
+    }
+  }
+}

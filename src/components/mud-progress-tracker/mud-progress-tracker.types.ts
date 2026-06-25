@@ -33,10 +33,10 @@ export type ProgressTrackerStep = {
   /** Lifecycle state — see {@link ProgressTrackerStepStatus}. */
   status: ProgressTrackerStepStatus;
   /**
-   * Optional custom indicator icon (e.g. `'checkmark-small'`). When omitted,
+   * Optional custom indicator icon (e.g. `'checkmark-large'`). When omitted,
    * the component picks an indicator based on `status`:
-   *   - `completed` → `checkmark-small`
-   *   - `error`     → `cross-small`
+   *   - `completed` → `checkmark-large`
+   *   - `error`     → `exclamation`
    *   - otherwise   → the step number (1-based index).
    */
   iconName?: string;

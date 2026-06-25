@@ -95,6 +95,12 @@ describe('mud-progress-tracker', () => {
       const { root } = await render(<mud-progress-tracker steps={ROMANIAN_STEPS}></mud-progress-tracker>);
       expect(root?.getAttribute('orientation')).toBe('horizontal');
       expect(root?.hasAttribute('interactive')).toBe(false);
+      expect(root?.hasAttribute('compact')).toBe(false);
+    });
+
+    it('reflects compact on the host when true', async () => {
+      const { root } = await render(<mud-progress-tracker steps={ROMANIAN_STEPS} compact></mud-progress-tracker>);
+      expect(root?.hasAttribute('compact')).toBe(true);
     });
 
     it('renders one <li role="listitem"> per step', async () => {
@@ -167,14 +173,14 @@ describe('mud-progress-tracker', () => {
       const firstStep = querySteps(root)[0];
       const icon = firstStep.querySelector('mud-icon');
       // mud-icon's `name` prop is non-reflecting — read via property, not attribute.
-      expect((icon as unknown as { name: string }).name).toBe('checkmark-small');
+      expect((icon as unknown as { name: string }).name).toBe('checkmark-large');
     });
 
-    it('renders a cross icon for error steps', async () => {
+    it('renders an exclamation icon for error steps', async () => {
       const { root } = await render(<mud-progress-tracker steps={ALL_STATES}></mud-progress-tracker>);
       const errorStep = querySteps(root)[3];
       const icon = errorStep.querySelector('mud-icon');
-      expect((icon as unknown as { name: string }).name).toBe('cross-small');
+      expect((icon as unknown as { name: string }).name).toBe('exclamation');
     });
 
     it('renders the 1-based number for pending and current steps', async () => {

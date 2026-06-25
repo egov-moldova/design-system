@@ -276,6 +276,67 @@ describe('mud-table', () => {
     });
   });
 
+  describe('disableSort (table-level master switch)', () => {
+    it('reflects the disable-sort attribute on the host', async () => {
+      const { root, waitForChanges } = await render(<mud-table />);
+      setProps(root, { columns, rows, disableSort: true });
+      await waitForChanges();
+      expect(root?.hasAttribute('disable-sort')).toBe(true);
+    });
+
+    it('strips sort affordances from every column when true', async () => {
+      const { root, waitForChanges } = await render(<mud-table />);
+      setProps(root, { columns, rows, disableSort: true });
+      await waitForChanges();
+      const headers = queryHeaderCells(root);
+      headers.forEach(th => {
+        // No aria-sort, not focusable, no sort hook on any header.
+        expect(th.hasAttribute('aria-sort')).toBe(false);
+        expect(th.tabIndex).toBeLessThan(0);
+        expect(th.hasAttribute('data-sort-key')).toBe(false);
+      });
+      // Sort chevron is not rendered.
+      expect(root?.shadowRoot?.querySelector('.sort-icon')).toBeNull();
+    });
+
+    it('does not emit mudSort on click when disabled, even for sortable columns', async () => {
+      const { root, waitForChanges } = await render(<mud-table />);
+      setProps(root, { columns, rows, disableSort: true });
+      await waitForChanges();
+      const handler = vi.fn();
+      root?.addEventListener('mudSort', handler as EventListener);
+      const headers = queryHeaderCells(root);
+      headers[0]?.click();
+      await waitForChanges();
+      expect(handler).not.toHaveBeenCalled();
+    });
+
+    it('does not emit mudSort on Enter/Space when disabled', async () => {
+      const { root, waitForChanges } = await render(<mud-table />);
+      setProps(root, { columns, rows, disableSort: true });
+      await waitForChanges();
+      const handler = vi.fn();
+      root?.addEventListener('mudSort', handler as EventListener);
+      const headers = queryHeaderCells(root);
+      headers[0]?.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true, composed: true }));
+      await waitForChanges();
+      expect(handler).not.toHaveBeenCalled();
+    });
+
+    it('restores per-column sorting when toggled back off', async () => {
+      const { root, waitForChanges } = await render(<mud-table />);
+      setProps(root, { columns, rows, disableSort: true });
+      await waitForChanges();
+      setProps(root, { disableSort: false });
+      await waitForChanges();
+      const headers = queryHeaderCells(root);
+      // First column is sortable again; second was never sortable.
+      expect(headers[0]?.getAttribute('aria-sort')).toBe('none');
+      expect(headers[0]?.tabIndex).toBe(0);
+      expect(headers[1]?.hasAttribute('aria-sort')).toBe(false);
+    });
+  });
+
   describe('selection', () => {
     it('emits mudSelectionChange with the row id on row checkbox toggle', async () => {
       const { root, waitForChanges } = await render(<mud-table />);

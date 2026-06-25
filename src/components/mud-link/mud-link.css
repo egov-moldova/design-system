@@ -95,11 +95,11 @@
   --_underline-hover: none;
 }
 
-/* ---------- Standalone (block-level) ---------- */
-
-:host([standalone]) {
-  display: inline-flex;
-}
+/* ---------- Standalone (larger interactive target, content-width) ----------
+ * The host stays `inline-flex` (inherited from the base rule) so the link still
+ * hugs its content; only the inner control gains the 32px (pointer) / 40px
+ * (touch) min-height from the Figma "Target Sizes" spec.
+ */
 
 :host([standalone]) .control {
   min-block-size: var(--link-container-min-height-pointer);

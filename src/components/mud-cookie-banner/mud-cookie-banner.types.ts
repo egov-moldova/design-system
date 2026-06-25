@@ -41,6 +41,8 @@ export const COOKIE_BANNER_DEFAULTS = {
   privacyLabel: 'Politica de confidențialitate',
   requiredLabel: 'Obligatoriu',
   closeLabel: 'Închide',
+  moreLabel: 'Mai mult',
+  lessLabel: 'Mai puțin',
 } as const;
 
 /**

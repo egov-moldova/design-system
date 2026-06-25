@@ -118,15 +118,39 @@ describe('mud-checkbox', () => {
     });
   });
 
-  describe('a11y semantics', () => {
-    it('sets aria-checked="true" when checked', async () => {
-      const { root } = await render(<mud-checkbox label="x" checked></mud-checkbox>);
-      expect(queryNative(root)?.getAttribute('aria-checked')).toBe('true');
+  describe('error message', () => {
+    it('renders the error icon + text when invalid + errorText', async () => {
+      const { root } = await render(<mud-checkbox label="x" invalid error-text="Câmp obligatoriu."></mud-checkbox>);
+      const error = root?.shadowRoot?.querySelector('.error');
+      expect(error).toBeTruthy();
+      expect(error?.querySelector('.error-icon')?.getAttribute('name')).toBe('circle-error-filled');
+      expect(error?.querySelector('.error-text')?.textContent).toContain('Câmp obligatoriu.');
     });
 
-    it('sets aria-checked="false" when unchecked', async () => {
+    it('does not render the error message when errorText is set but not invalid', async () => {
+      const { root } = await render(<mud-checkbox label="x" error-text="Câmp obligatoriu."></mud-checkbox>);
+      expect(root?.shadowRoot?.querySelector('.error')).toBeNull();
+    });
+
+    it('wires aria-describedby to the error message when shown', async () => {
+      const { root } = await render(<mud-checkbox label="x" invalid error-text="Câmp obligatoriu."></mud-checkbox>);
+      const describedBy = queryNative(root)?.getAttribute('aria-describedby');
+      expect(describedBy).toBeTruthy();
+      expect(root?.shadowRoot?.querySelector(`#${describedBy}`)?.classList.contains('error')).toBe(true);
+    });
+  });
+
+  describe('a11y semantics', () => {
+    it('does not set aria-checked when checked (native checked attribute conveys state)', async () => {
+      const { root } = await render(<mud-checkbox label="x" checked></mud-checkbox>);
+      expect(queryNative(root)?.getAttribute('aria-checked')).toBeNull();
+      expect(queryNative(root)?.checked).toBe(true);
+    });
+
+    it('does not set aria-checked when unchecked (absence of native checked conveys state)', async () => {
       const { root } = await render(<mud-checkbox label="x"></mud-checkbox>);
-      expect(queryNative(root)?.getAttribute('aria-checked')).toBe('false');
+      expect(queryNative(root)?.getAttribute('aria-checked')).toBeNull();
+      expect(queryNative(root)?.checked).toBe(false);
     });
 
     it('sets aria-checked="mixed" when indeterminate', async () => {

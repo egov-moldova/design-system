@@ -119,20 +119,24 @@ export const Default: Story = {
   },
 };
 
+const sectionHeading = (text: string) =>
+  `<p style="font-size: var(--font-size-14); font-weight: 500; color: var(--color-text-base-default); margin: 0; padding-block-start: var(--spacing-8);">${text}</p>`;
+
 export const AllVariations: Story = {
   name: 'AllVariations',
   render: () =>
     wrap(
       [
+        sectionHeading('Desktop (md)'),
         cell(
           'regular — label only',
           renderTabsHtml(
             'tabs-var-regular',
             [
-              { value: 'profil', label: 'Profil' },
-              { value: 'documente', label: 'Documente' },
-              { value: 'notificari', label: 'Notificări' },
-              { value: 'setari', label: 'Setări' },
+              { value: 'profil', label: 'Label' },
+              { value: 'documente', label: 'Label' },
+              { value: 'notificari', label: 'Label' },
+              { value: 'setari', label: 'Label' },
             ],
             { value: 'profil', ariaLabel: 'Variație etichetă' },
           ),
@@ -142,12 +146,12 @@ export const AllVariations: Story = {
           renderTabsHtml(
             'tabs-var-icon',
             [
-              { value: 'profil', label: 'Profil', iconName: 'person' },
-              { value: 'documente', label: 'Documente', iconName: 'document-filled' },
-              { value: 'notificari', label: 'Notificări', iconName: 'notification' },
-              { value: 'setari', label: 'Setări', iconName: 'settings' },
+              { value: 'profil', label: 'Label', iconName: 'person' },
+              { value: 'documente', label: 'Label', iconName: 'document-filled' },
+              { value: 'notificari', label: 'Label', iconName: 'notification' },
+              { value: 'setari', label: 'Label', iconName: 'settings' },
             ],
-            { value: 'documente', ariaLabel: 'Variație pictogramă' },
+            { value: 'profil', ariaLabel: 'Variație pictogramă' },
           ),
         ),
         cell(
@@ -155,12 +159,12 @@ export const AllVariations: Story = {
           renderTabsHtml(
             'tabs-var-badge',
             [
-              { value: 'profil', label: 'Profil' },
-              { value: 'documente', label: 'Documente', badgeCount: 3 },
-              { value: 'notificari', label: 'Notificări', badgeCount: 12 },
-              { value: 'setari', label: 'Setări' },
+              { value: 'profil', label: 'Label' },
+              { value: 'documente', label: 'Label', badgeCount: 18 },
+              { value: 'notificari', label: 'Label' },
+              { value: 'setari', label: 'Label' },
             ],
-            { value: 'notificari', ariaLabel: 'Variație contor' },
+            { value: 'profil', ariaLabel: 'Variație contor' },
           ),
         ),
         cell(
@@ -168,12 +172,65 @@ export const AllVariations: Story = {
           renderTabsHtml(
             'tabs-var-icon-badge',
             [
-              { value: 'profil', label: 'Profil', iconName: 'person' },
-              { value: 'notificari', label: 'Notificări', iconName: 'notification', badgeCount: 5 },
-              { value: 'plati', label: 'Plăți', iconName: 'credit-card', badgeCount: 2 },
-              { value: 'istoric', label: 'Istoric', iconName: 'clock' },
+              { value: 'profil', label: 'Label', iconName: 'person' },
+              { value: 'notificari', label: 'Label', iconName: 'notification', badgeCount: 18 },
+              { value: 'plati', label: 'Label', iconName: 'credit-card' },
+              { value: 'istoric', label: 'Label', iconName: 'clock' },
             ],
-            { value: 'notificari', ariaLabel: 'Variație completă' },
+            { value: 'profil', ariaLabel: 'Variație completă' },
+          ),
+        ),
+        sectionHeading('Mobile (sm)'),
+        cell(
+          'regular — label only',
+          renderTabsHtml(
+            'tabs-var-sm-regular',
+            [
+              { value: 'profil', label: 'Label' },
+              { value: 'documente', label: 'Label' },
+              { value: 'notificari', label: 'Label' },
+              { value: 'setari', label: 'Label' },
+            ],
+            { value: 'profil', size: 'sm', ariaLabel: 'Variație etichetă sm' },
+          ),
+        ),
+        cell(
+          'icon — leading icon + label',
+          renderTabsHtml(
+            'tabs-var-sm-icon',
+            [
+              { value: 'profil', label: 'Label', iconName: 'person' },
+              { value: 'documente', label: 'Label', iconName: 'document-filled' },
+              { value: 'notificari', label: 'Label', iconName: 'notification' },
+              { value: 'setari', label: 'Label', iconName: 'settings' },
+            ],
+            { value: 'profil', size: 'sm', ariaLabel: 'Variație pictogramă sm' },
+          ),
+        ),
+        cell(
+          'badge — label + trailing badge count',
+          renderTabsHtml(
+            'tabs-var-sm-badge',
+            [
+              { value: 'profil', label: 'Label' },
+              { value: 'documente', label: 'Label', badgeCount: 18 },
+              { value: 'notificari', label: 'Label' },
+              { value: 'setari', label: 'Label' },
+            ],
+            { value: 'profil', size: 'sm', ariaLabel: 'Variație contor sm' },
+          ),
+        ),
+        cell(
+          'icon + badge — both ornaments',
+          renderTabsHtml(
+            'tabs-var-sm-icon-badge',
+            [
+              { value: 'profil', label: 'Label', iconName: 'person' },
+              { value: 'notificari', label: 'Label', iconName: 'notification', badgeCount: 18 },
+              { value: 'plati', label: 'Label', iconName: 'credit-card' },
+              { value: 'istoric', label: 'Label', iconName: 'clock' },
+            ],
+            { value: 'profil', size: 'sm', ariaLabel: 'Variație completă sm' },
           ),
         ),
       ].join(''),
@@ -183,12 +240,28 @@ export const AllVariations: Story = {
     docs: {
       description: {
         story:
-          'The four Figma variations: label-only (regular), label + leading icon, ' +
-          'label + trailing badge counter, and the combination of both ornaments.',
+          'The four Figma variations (label-only, leading icon, trailing badge, both ornaments) ' +
+          'shown at Desktop (md — 48 px) and Mobile (sm — 40 px) sizes.',
       },
     },
   },
 };
+
+const focusTabHtml = (id: string, selectedValue: string, focusValue: string, ariaLabel: string) => /*html*/ `
+  <mud-tabs id="${id}" aria-label="${ariaLabel}" value="${selectedValue}">
+    <mud-tab value="a" label="Label"></mud-tab>
+    <mud-tab value="b" label="Label"></mud-tab>
+    <mud-tab value="c" label="Label"></mud-tab>
+  </mud-tabs>
+  <script>
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        var tab = document.getElementById('${id}').querySelector('mud-tab[value="${focusValue}"]');
+        if (tab) tab.focus();
+      });
+    });
+  </script>
+`;
 
 export const States: Story = {
   name: 'States',
@@ -196,7 +269,7 @@ export const States: Story = {
     wrap(
       [
         cell(
-          'selected (default state of the active tab)',
+          'selected — active tab (bold label + bottom indicator)',
           renderTabsHtml(
             'tabs-st-selected',
             [
@@ -208,7 +281,7 @@ export const States: Story = {
           ),
         ),
         cell(
-          'unselected (hover the middle tab)',
+          'unselected — inactive tab (secondary label, no indicator)',
           renderTabsHtml(
             'tabs-st-unselected',
             [
@@ -220,16 +293,12 @@ export const States: Story = {
           ),
         ),
         cell(
-          'focus — Tab into the strip then use ←/→',
-          renderTabsHtml(
-            'tabs-st-focus',
-            [
-              { value: 'a', label: 'Label' },
-              { value: 'b', label: 'Label' },
-              { value: 'c', label: 'Label' },
-            ],
-            { value: 'b', ariaLabel: 'Stare focus' },
-          ),
+          'selected: focus — active tab receives keyboard focus (Tab → ←/→)',
+          focusTabHtml('tabs-st-sel-focus', 'b', 'b', 'Stare selected-focus'),
+        ),
+        cell(
+          'unselected: focus — inactive tab receives keyboard focus without activating',
+          focusTabHtml('tabs-st-unsel-focus', 'a', 'b', 'Stare unselected-focus'),
         ),
       ].join(''),
     ),
@@ -238,8 +307,9 @@ export const States: Story = {
     docs: {
       description: {
         story:
-          'The four Figma states. Tab into the tablist to reveal the keyboard focus ring; ' +
-          'arrow keys move selection between enabled tabs (automatic activation mode).',
+          'The four Figma states: selected, unselected, selected+focus, unselected+focus. ' +
+          'Tab into the tablist to see the keyboard focus ring; arrow keys move ' +
+          'between enabled tabs (automatic activation mode — focus = selection).',
       },
     },
   },

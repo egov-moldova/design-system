@@ -107,6 +107,18 @@ export class MudCookieBanner {
   @Prop() closeLabel?: string;
 
   /**
+   * "Show more" toggle label for clamped category descriptions on mobile.
+   * Defaults to Romanian "Mai mult".
+   */
+  @Prop() moreLabel?: string;
+
+  /**
+   * "Show less" toggle label for expanded category descriptions on mobile.
+   * Defaults to Romanian "Mai puțin".
+   */
+  @Prop() lessLabel?: string;
+
+  /**
    * Forwarded to the host as `aria-label`. Use this when the visible title is
    * not descriptive enough for screen-reader users.
    */
@@ -116,6 +128,10 @@ export class MudCookieBanner {
   @State() private hasCategoriesSlot: boolean = false;
   @State() private internalCategories: Record<string, boolean> = {};
   @State() private isMobile: boolean = false;
+  /** Per-category: whether the user has expanded the clamped description (mobile). */
+  @State() private descExpanded: Record<string, boolean> = {};
+  /** Per-category: whether the clamped description actually overflows 2 lines (mobile). */
+  @State() private descOverflowing: Record<string, boolean> = {};
 
   @Element() host!: HTMLMudCookieBannerElement;
 
@@ -137,6 +153,8 @@ export class MudCookieBanner {
   private readonly instanceId = ++bannerInstanceCounter;
   private readonly titleId = `mud-cookie-banner-title-${this.instanceId}`;
   private resizeObserver?: ResizeObserver;
+  private descRefs: Record<string, HTMLParagraphElement | undefined> = {};
+  private measureRaf?: number;
 
   connectedCallback() {
     if (typeof ResizeObserver !== 'undefined') {
@@ -150,6 +168,44 @@ export class MudCookieBanner {
   disconnectedCallback() {
     this.resizeObserver?.disconnect();
     this.resizeObserver = undefined;
+    if (this.measureRaf !== undefined && typeof cancelAnimationFrame !== 'undefined') {
+      cancelAnimationFrame(this.measureRaf);
+      this.measureRaf = undefined;
+    }
+  }
+
+  componentDidRender() {
+    // Defer the measurement (and its state write) to the next frame so it runs
+    // OUTSIDE the render cycle — writing state during render trips Stencil's
+    // "changed during rendering" guard. Coalesced via measureRaf so repeated
+    // renders don't stack frames.
+    if (!this.isMobile || this.measureRaf !== undefined || typeof requestAnimationFrame === 'undefined') return;
+    this.measureRaf = requestAnimationFrame(() => {
+      this.measureRaf = undefined;
+      this.measureDescriptionOverflow();
+    });
+  }
+
+  /**
+   * Check whether each clamped (collapsed, mobile) category description overflows
+   * its 2-line clamp — only then do we offer the "more"/"less" toggle. Guarded so
+   * it only writes state on a real change, avoiding a render loop. Expanded
+   * descriptions are skipped (not clamped, so overflow can't be measured) and
+   * keep their prior value.
+   */
+  private measureDescriptionOverflow() {
+    if (!this.isMobile) return;
+    let changed = false;
+    const next = { ...this.descOverflowing };
+    for (const [id, el] of Object.entries(this.descRefs)) {
+      if (!el || this.descExpanded[id]) continue;
+      const overflowing = el.scrollHeight - el.clientHeight > 1;
+      if (next[id] !== overflowing) {
+        next[id] = overflowing;
+        changed = true;
+      }
+    }
+    if (changed) this.descOverflowing = next;
   }
 
   componentWillLoad() {
@@ -257,6 +313,11 @@ export class MudCookieBanner {
     this.internalCategories = { ...this.internalCategories, [id]: next };
   };
 
+  private toggleDescription = (id: string, ev: Event) => {
+    ev.preventDefault();
+    this.descExpanded = { ...this.descExpanded, [id]: !this.descExpanded[id] };
+  };
+
   private collapseBanner() {
     if (!this.expanded) return;
     this.expanded = false;
@@ -351,6 +412,12 @@ export class MudCookieBanner {
 
   private renderCategoryRow(cat: CookieCategory, isLast: boolean) {
     const enabled = !!this.internalCategories[cat.id];
+    const isDescExpanded = !!this.descExpanded[cat.id];
+    // On mobile the description clamps to 2 lines; offer a "more"/"less" toggle
+    // only when it actually overflows (measured post-render). Full text on desktop.
+    const clamped = this.isMobile && !isDescExpanded;
+    const showDescToggle = this.isMobile && !!this.descOverflowing[cat.id];
+    const descId = `mud-cookie-banner-${this.instanceId}-desc-${cat.id}`;
     return [
       <div class="category" part="category" data-category-id={cat.id}>
         <div class="category-text">
@@ -362,9 +429,28 @@ export class MudCookieBanner {
               <mud-tag size="sm" type="outlined" semantic="brand" label={COOKIE_BANNER_DEFAULTS.requiredLabel} />
             ) : null}
           </div>
-          <p class="category-description" part="category-description">
+          <p
+            id={descId}
+            class={{ 'category-description': true, 'is-clamped': clamped }}
+            part="category-description"
+            ref={el => (this.descRefs[cat.id] = el as HTMLParagraphElement | undefined)}
+          >
             {cat.description}
           </p>
+          {showDescToggle ? (
+            <button
+              type="button"
+              class="category-description-toggle"
+              part="category-description-toggle"
+              aria-expanded={isDescExpanded ? 'true' : 'false'}
+              aria-controls={descId}
+              onClick={(ev: Event) => this.toggleDescription(cat.id, ev)}
+            >
+              {isDescExpanded
+                ? (this.lessLabel ?? COOKIE_BANNER_DEFAULTS.lessLabel)
+                : (this.moreLabel ?? COOKIE_BANNER_DEFAULTS.moreLabel)}
+            </button>
+          ) : null}
         </div>
         {cat.required ? (
           <span class="category-required-icon" aria-hidden="true">

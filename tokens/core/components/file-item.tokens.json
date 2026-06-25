@@ -57,7 +57,8 @@
       "focusRing": { "$value": "{palette.blue-sky.200}", "$type": "color" }
     },
     "background": {
-      "default": { "$value": "{color.background.base.default}", "$type": "color" },
+      "default": { "$value": "{color.background.base.tertiary}", "$type": "color" },
+      "error": { "$value": "{color.background.base.default}", "$type": "color" },
       "disabled": { "$value": "{color.background.disabled.default}", "$type": "color" }
     },
     "border": {

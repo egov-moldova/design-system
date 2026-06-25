@@ -362,4 +362,56 @@ describe('mud-chip', () => {
       warn.mockRestore();
     });
   });
+
+  describe('avatar slot', () => {
+    it('adds the has-avatar class when the avatar slot is populated', async () => {
+      const { root } = await render(
+        <mud-chip type="input">
+          <img slot="avatar" src="x.jpg" alt="" />
+          Ion Popescu
+        </mud-chip>,
+      );
+      expect(root?.classList.contains('has-avatar')).toBe(true);
+    });
+
+    it('does not add has-avatar when the avatar slot is empty', async () => {
+      const { root } = await render(<mud-chip type="input">Ion Popescu</mud-chip>);
+      expect(root?.classList.contains('has-avatar')).toBe(false);
+    });
+  });
+
+  describe('selection-mode (auto checkmark)', () => {
+    it('renders a leading check when multi + selected', async () => {
+      const { root } = await render(
+        <mud-chip selection-mode="multi" selected>
+          Apartament
+        </mud-chip>,
+      );
+      expect(root?.shadowRoot?.querySelector('.check')).toBeTruthy();
+    });
+
+    it('does not render a check when multi but not selected', async () => {
+      const { root } = await render(<mud-chip selection-mode="multi">Apartament</mud-chip>);
+      expect(root?.shadowRoot?.querySelector('.check')).toBeNull();
+    });
+
+    it('does not render a check in mono mode even when selected', async () => {
+      const { root } = await render(<mud-chip selected>Apartament</mud-chip>);
+      expect(root?.shadowRoot?.querySelector('.check')).toBeNull();
+    });
+  });
+
+  describe('count badge', () => {
+    it('renders the count badge with the numeric value', async () => {
+      const { root } = await render(<mud-chip count={3}>Apartament</mud-chip>);
+      const count = root?.shadowRoot?.querySelector('.count');
+      expect(count).toBeTruthy();
+      expect(count?.textContent).toContain('3');
+    });
+
+    it('does not render the count badge when count is omitted', async () => {
+      const { root } = await render(<mud-chip>Apartament</mud-chip>);
+      expect(root?.shadowRoot?.querySelector('.count')).toBeNull();
+    });
+  });
 });

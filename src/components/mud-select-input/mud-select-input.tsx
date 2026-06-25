@@ -523,6 +523,10 @@ export class MudSelectInput {
     const isPlaceholder = !selected;
     const activeDescendantId =
       this.open && this.highlightedIndex >= 0 ? `${this.listboxId}-opt-${this.highlightedIndex}` : undefined;
+    // Chevron + selected-option check scale with the size rung (md 20 / lg 24)
+    // to match the Figma spec; the responsive CSS box sizes the host, this
+    // keeps the SVG glyph dimensions in step so the two never diverge.
+    const iconSize: 20 | 24 = this.size === 'lg' ? 24 : 20;
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -583,7 +587,7 @@ export class MudSelectInput {
             </button>
 
             <span class="control-icon control-icon-end" aria-hidden="true">
-              <mud-icon class="chevron" name="chevron-bottom" size={20} />
+              <mud-icon class="chevron" name="chevron-bottom" size={iconSize} />
             </span>
           </div>
 
@@ -623,7 +627,7 @@ export class MudSelectInput {
                     onMouseEnter={opt.disabled ? undefined : this.handleOptionPointerEnter(index)}
                   >
                     <span class="option-label">{opt.label}</span>
-                    {isSelected ? <mud-icon class="option-check" name="checkmark-small" size={20} /> : null}
+                    {isSelected ? <mud-icon class="option-check" name="checkmark-small" size={iconSize} /> : null}
                   </div>
                 );
               })

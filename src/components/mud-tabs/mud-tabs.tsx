@@ -441,10 +441,6 @@ export class MudTabs {
 
     return (
       <Host
-        role="tablist"
-        aria-label={this.resolvedAriaLabel}
-        aria-labelledby={this.resolvedAriaLabelledby}
-        aria-orientation="horizontal"
         class={{
           'has-overflow': this.hasOverflow,
           'can-scroll-start': this.canScrollStart,
@@ -463,7 +459,23 @@ export class MudTabs {
           <mud-icon name="chevron-left" size={20}></mud-icon>
         </button>
         <div class="scroller" part="scroller" ref={this.setScrollerRef}>
-          <div class="track" part="track">
+          {/*
+            role="tablist" lives here — not on the host — so that both
+            slotted (light-DOM) and data-driven (shadow-DOM) <mud-tab role="tab">
+            elements are DOM-owned children of the tablist in the flat
+            accessibility tree. Placing the role on the host would leave
+            axe-core unable to find owned tab children in data-driven mode
+            (they live in shadow DOM, not the host's light DOM), triggering
+            aria-required-children violations.
+          */}
+          <div
+            class="track"
+            part="track"
+            role="tablist"
+            aria-label={this.resolvedAriaLabel || undefined}
+            aria-labelledby={this.resolvedAriaLabelledby || undefined}
+            aria-orientation="horizontal"
+          >
             <slot></slot>
             {this.renderDataTabs()}
           </div>

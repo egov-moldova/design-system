@@ -6,6 +6,7 @@ type ProgressTrackerArgs = {
   steps: ProgressTrackerStep[];
   orientation: 'horizontal' | 'vertical';
   interactive: boolean;
+  compact?: boolean;
   currentStep?: number;
   ariaLabel: string;
 };
@@ -109,6 +110,7 @@ const renderTracker = (args: ProgressTrackerArgs, steps: ProgressTrackerStep[] =
       id="${id}"
       orientation="${args.orientation}"
       ${args.interactive ? 'interactive' : ''}
+      ${args.compact ? 'compact' : ''}
       ${typeof args.currentStep === 'number' ? `current-step="${args.currentStep}"` : ''}
       ${args.ariaLabel ? `aria-label="${args.ariaLabel}"` : ''}
     ></mud-progress-tracker>
@@ -147,6 +149,11 @@ const meta: Meta<ProgressTrackerArgs> = {
     interactive: {
       control: 'boolean',
       description: 'When true, completed/current steps render as `<button>` and emit `mudStepClick`.',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    compact: {
+      control: 'boolean',
+      description: 'Mobile dot rail — step numbers + labels hidden (status icons kept). Works in both orientations.',
       table: { defaultValue: { summary: 'false' } },
     },
     currentStep: {
@@ -364,24 +371,71 @@ export const IconIndicators: Story = {
 };
 
 // ---------------------------------------------------------------------------
-// StepIndicatorOnly — compact dot row (mini variant).
+// StepIndicatorOnly — compact dot rail (mini variant).
 // ---------------------------------------------------------------------------
 export const StepIndicatorOnly: Story = {
-  render: () => {
-    const dotOnlySteps: ProgressTrackerStep[] = defaultSteps.map(s => ({ ...s, label: '', supportingText: undefined }));
-    return /*html*/ `
+  render: () => /*html*/ `
       <div style="padding: var(--spacing-24); background: var(--color-background-base-default); max-width: 240px;">
-        <p style="${sectionLabelStyle}">Compact step-indicator variant — labels stripped, only the circles + connectors remain. Useful inside cards or tight headers.</p>
+        <p style="${sectionLabelStyle}">Compact <code>compact</code> variant — number-less dot rail, labels stripped (status icons kept). Useful inside cards or tight headers. Step status/labels stay in the accessibility tree.</p>
         ${renderTracker({
-          steps: dotOnlySteps,
+          steps: defaultSteps,
           orientation: 'horizontal',
           interactive: false,
+          compact: true,
           ariaLabel: 'Indicator pași',
         })}
       </div>
-    `;
-  },
+    `,
   parameters: { controls: { disable: true } },
+};
+
+// ---------------------------------------------------------------------------
+// Mobile — the `compact` dot rail in both orientations (Figma mobile breakpoint).
+// ---------------------------------------------------------------------------
+const mobileSteps: ProgressTrackerStep[] = [
+  { label: 'Pasul 1', status: 'completed' },
+  { label: 'Pasul 2', status: 'current' },
+  { label: 'Pasul 3', status: 'pending' },
+  { label: 'Pasul 4', status: 'pending' },
+  { label: 'Pasul 5', status: 'pending' },
+];
+
+export const Mobile: Story = {
+  name: 'Mobile (compact)',
+  render: () => /*html*/ `
+    <div style="display: flex; flex-direction: column; gap: var(--spacing-32); padding: var(--spacing-24); background: var(--color-background-base-default);">
+      <div>
+        <p style="${headingStyle}">horizontal — full-width dot rail (343px)</p>
+        <p style="${sectionLabelStyle}">The Figma "Breakpoints — mobile" representation: <code>compact</code> hides the step numbers + labels, leaving a dot rail. Filled brand + checkmark = completed, hollow ring = current/upcoming.</p>
+        <div style="max-width: 343px;">
+          ${renderTracker({ steps: mobileSteps, orientation: 'horizontal', interactive: false, compact: true, ariaLabel: 'Pași (mobil)' })}
+        </div>
+      </div>
+      <div>
+        <p style="${headingStyle}">vertical — compact dot rail</p>
+        ${renderTracker({ steps: mobileSteps, orientation: 'vertical', interactive: false, compact: true, ariaLabel: 'Pași (mobil, vertical)' })}
+      </div>
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'Set the `compact` attribute for the mobile breakpoint. The step numbers and text labels are hidden, leaving a dot rail; progress is conveyed by the per-status fills (filled brand + checkmark = completed, hollow ring = current / available / pending, danger ring + cross = error). The step labels remain in the accessibility tree.',
+      },
+      source: {
+        code: `<mud-progress-tracker compact aria-label="Pași"></mud-progress-tracker>
+<script>
+  document.querySelector('mud-progress-tracker').steps = [
+    { label: 'Pasul 1', status: 'completed' },
+    { label: 'Pasul 2', status: 'current' },
+    { label: 'Pasul 3', status: 'pending' },
+  ];
+</script>`,
+      },
+    },
+  },
 };
 
 // ---------------------------------------------------------------------------

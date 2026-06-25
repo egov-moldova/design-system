@@ -6,6 +6,7 @@ import type { SegmentedControlSegment, SegmentedControlSize } from './mud-segmen
 type StoryArgs = {
   size: SegmentedControlSize;
   disabled: boolean;
+  fluid: boolean;
   value: string;
   ariaLabel: string;
 };
@@ -15,10 +16,18 @@ const cellLabelStyle = 'font-size: var(--font-size-12); color: var(--color-text-
 const filterSegmented = ['Toate', 'Active', 'Inactive'];
 const filterValues = ['toate', 'active', 'inactive'];
 
+// Each render gets a unique id so the same story re-rendered on one page (e.g.
+// autodocs shows the primary story twice) never produces colliding ids.
+let scRenderUid = 0;
+
 const renderControlScript = (id: string, segments: SegmentedControlSegment[]) => /*html*/ `
   <script>
     (function(){
-      const el = document.getElementById('${id}');
+      // Resolve the control from the script's own position first — robust even
+      // if two controls share an id — then fall back to the unique id.
+      var s = document.currentScript;
+      var prev = s && s.previousElementSibling;
+      var el = prev && prev.tagName === 'MUD-SEGMENTED-CONTROL' ? prev : document.getElementById('${id}');
       if (el) el.segments = ${JSON.stringify(segments)};
     })();
   </script>
@@ -30,16 +39,20 @@ const renderControlHtml = (
   id: string,
   segments: SegmentedControlSegment[],
   args: Partial<StoryArgs> & { value: string },
-) => /*html*/ `
+) => {
+  const elId = `${id}-${++scRenderUid}`;
+  return /*html*/ `
   <mud-segmented-control
-    id="${id}"
+    id="${elId}"
     size="${args.size ?? 'md'}"
     value="${args.value}"
     ${args.disabled ? 'disabled' : ''}
+    ${args.fluid ? 'fluid' : ''}
     aria-label="${args.ariaLabel ?? 'Filtru'}"
   ></mud-segmented-control>
-  ${renderControlScript(id, segments)}
+  ${renderControlScript(elId, segments)}
 `;
+};
 
 const meta: Meta<StoryArgs> = {
   title: 'Atoms/Segmented Control',
@@ -54,6 +67,11 @@ const meta: Meta<StoryArgs> = {
     disabled: {
       control: 'boolean',
       description: 'Disables the whole group.',
+      table: { defaultValue: { summary: 'false' } },
+    },
+    fluid: {
+      control: 'boolean',
+      description: 'Full-width mode — the control fills its container (mobile breakpoint).',
       table: { defaultValue: { summary: 'false' } },
     },
     value: {
@@ -82,6 +100,7 @@ export const Default: Story = {
   args: {
     size: 'md',
     disabled: false,
+    fluid: false,
     value: 'toate',
     ariaLabel: 'Filtru stare',
   },
@@ -238,31 +257,101 @@ export const FivePlus: Story = {
   },
 };
 
+export const Breakpoints: Story = {
+  name: 'Breakpoints',
+  render: () =>
+    wrap(
+      [
+        cell(
+          'desktop — hugs content, segments uniform width',
+          renderControlHtml(
+            'sc-bp-desktop',
+            [
+              { value: 'a', label: 'Label' },
+              { value: 'b', label: 'Label' },
+            ],
+            { value: 'a', ariaLabel: 'Breakpoint desktop' },
+          ),
+        ),
+        cell(
+          'mobile — fluid (full-width, 343px container)',
+          /*html*/ `
+            <div style="inline-size: 343px;">
+              ${renderControlHtml(
+                'sc-bp-mobile',
+                [
+                  { value: 'a', label: 'Label' },
+                  { value: 'b', label: 'Label' },
+                ],
+                { value: 'a', fluid: true, ariaLabel: 'Breakpoint mobil' },
+              )}
+            </div>
+          `,
+        ),
+      ].join(''),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'Per Figma 659:8188 the control hugs its content on desktop and goes full-width on mobile. Set the `fluid` attribute for the mobile breakpoint — the equal-width segments then stretch to fill the container.',
+      },
+      source: {
+        code: `<!-- Desktop: hugs content. -->
+<mud-segmented-control aria-label="Filtru" value="a"></mud-segmented-control>
+
+<!-- Mobile: full-width. -->
+<mud-segmented-control aria-label="Filtru" value="a" fluid></mud-segmented-control>`,
+      },
+    },
+  },
+};
+
+export const EqualSizes: Story = {
+  name: 'EqualSizes',
+  render: () =>
+    wrap(
+      cell(
+        'mixed-length labels render at uniform width',
+        renderControlHtml(
+          'sc-equal',
+          [
+            { value: 'a', label: 'Other Label' },
+            { value: 'b', label: 'Label' },
+            { value: 'c', label: 'Label' },
+          ],
+          { value: 'a', ariaLabel: 'Dimensiuni egale' },
+        ),
+      ),
+    ),
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      description: {
+        story:
+          'Every segment resolves to the width of the widest label, so siblings stay uniform regardless of their own text length (Figma "Equal Sizes" — Do).',
+      },
+    },
+  },
+};
+
 export const AllSizes: Story = {
   name: 'AllSizes',
   render: () =>
     wrap(
-      SEGMENTED_CONTROL_SIZES.map((size, idx) =>
+      SEGMENTED_CONTROL_SIZES.map(size =>
         cell(
           size,
-          /*html*/ `
-            <mud-segmented-control
-              id="sc-size-${size}-${idx}"
-              size="${size}"
-              value="zi"
-              aria-label="Interval (${size})"
-            ></mud-segmented-control>
-            <script>
-              (function(){
-                const el = document.getElementById('sc-size-${size}-${idx}');
-                if (el) el.segments = [
-                  { value: 'zi', label: 'Zi' },
-                  { value: 'saptamana', label: 'Săptămână' },
-                  { value: 'luna', label: 'Lună' },
-                ];
-              })();
-            </script>
-          `,
+          renderControlHtml(
+            `sc-size-${size}`,
+            [
+              { value: 'zi', label: 'Zi' },
+              { value: 'saptamana', label: 'Săptămână' },
+              { value: 'luna', label: 'Lună' },
+            ],
+            { value: 'zi', size, ariaLabel: `Interval (${size})` },
+          ),
         ),
       ).join(''),
     ),
@@ -446,7 +535,7 @@ export const EdgeCases: Story = {
           ),
         ),
         cell(
-          'mobile breakpoint (touch — 343px container)',
+          'mobile breakpoint (fluid — 343px container)',
           /*html*/ `
             <div style="inline-size: 343px;">
               ${renderControlHtml(
@@ -456,7 +545,7 @@ export const EdgeCases: Story = {
                   { value: 'active', label: 'Active' },
                   { value: 'inactive', label: 'Inactive' },
                 ],
-                { value: 'toate', ariaLabel: 'Filtru (mobil)' },
+                { value: 'toate', fluid: true, ariaLabel: 'Filtru (mobil)' },
               )}
             </div>
           `,

@@ -37,6 +37,7 @@ Keyboard:
 | `breakpoint`        | `breakpoint`          | Visual breakpoint / placement.                                                                                                                                                                                                                                                                                                                                   | `"desktop" \| "docked" \| "mobile"` | `'desktop'` |
 | `disabledDates`     | --                    | ISO `YYYY-MM-DD` strings that should be marked disabled (e.g. holidays).                                                                                                                                                                                                                                                                                         | `string[] \| undefined`             | `undefined` |
 | `firstDayOfWeek`    | `first-day-of-week`   | Week starts on this day of the week (0 = Sunday, 1 = Monday). Defaults to 1 (Monday) which matches the Romanian + most European convention.                                                                                                                                                                                                                      | `number`                            | `1`         |
+| `headerStyle`       | `header-style`        | Header presentation. `title` (default) shows one "Month Year" button that cycles views; `dropdown` shows separate month + year dropdown chips (the "advanced" variant from the Figma spec).                                                                                                                                                                      | `"dropdown" \| "title"`             | `'title'`   |
 | `hideTodayShortcut` | `hide-today-shortcut` | Hide the "Today" quick-jump shortcut. Default keeps it visible.                                                                                                                                                                                                                                                                                                  | `boolean`                           | `false`     |
 | `label`             | `label`               | Accessible label for the entire picker. Set the `aria-label` attribute on the host (or use this prop) and the component captures it on connect into `resolvedAriaLabel`, then strips the host attribute to avoid Stencil's attribute-observer / render-loop antipattern (same pattern as mud-radio / mud-switch / mud-tooltip / mud-accordion / mud-breadcrumb). | `string \| undefined`               | `undefined` |
 | `locale`            | `locale`              | BCP-47 locale tag for weekday/month rendering. Defaults to Romanian.                                                                                                                                                                                                                                                                                             | `string`                            | `'ro-RO'`   |
@@ -59,22 +60,25 @@ Keyboard:
 
 ## Shadow Parts
 
-| Part             | Description |
-| ---------------- | ----------- |
-| `"day-cell"`     |             |
-| `"day-grid"`     |             |
-| `"day-label"`    |             |
-| `"day-labels"`   |             |
-| `"drag-handle"`  |             |
-| `"footer"`       |             |
-| `"header"`       |             |
-| `"month-cell"`   |             |
-| `"month-grid"`   |             |
-| `"nav-button"`   |             |
-| `"title"`        |             |
-| `"today-button"` |             |
-| `"year-cell"`    |             |
-| `"year-grid"`    |             |
+| Part                 | Description |
+| -------------------- | ----------- |
+| `"day-cell"`         |             |
+| `"day-grid"`         |             |
+| `"day-label"`        |             |
+| `"day-labels"`       |             |
+| `"drag-handle"`      |             |
+| `"footer"`           |             |
+| `"header"`           |             |
+| `"header-dropdowns"` |             |
+| `"month-cell"`       |             |
+| `"month-dropdown"`   |             |
+| `"month-grid"`       |             |
+| `"nav-button"`       |             |
+| `"title"`            |             |
+| `"today-button"`     |             |
+| `"year-cell"`        |             |
+| `"year-dropdown"`    |             |
+| `"year-grid"`        |             |
 
 
 ## Dependencies

@@ -94,7 +94,8 @@
         },
         "gap": { "$value": "{spacing.2}", "$type": "dimension" },
         "minWidth": { "$value": "{spacing.56}", "$type": "dimension" },
-        "offset": { "$value": "{spacing.4}", "$type": "dimension" }
+        "offset": { "$value": "{spacing.4}", "$type": "dimension" },
+        "maxHeight": { "$value": "264px", "$type": "dimension" }
       },
       "menuItem": {
         "size": {

@@ -45,11 +45,17 @@ No events, no interactivity. ARIA `separator` semantics.
 ### Used by
 
  - [mud-cookie-banner](../mud-cookie-banner)
+ - [mud-header-mega-menu](../mud-header)
+ - [mud-header-mobile](../mud-header)
+ - [mud-sidebar-group](../mud-sidebar)
 
 ### Graph
 ```mermaid
 graph TD;
   mud-cookie-banner --> mud-separator
+  mud-header-mega-menu --> mud-separator
+  mud-header-mobile --> mud-separator
+  mud-sidebar-group --> mud-separator
   style mud-separator fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

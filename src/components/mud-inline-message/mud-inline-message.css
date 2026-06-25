@@ -1,0 +1,84 @@
+:host {
+  /* Size axis (medium default). */
+  --_font-size: var(--inline-message-font-size-medium);
+  --_line-height: var(--inline-message-line-height-medium);
+  --_icon-size: var(--inline-message-icon-size-medium);
+  --_gap: var(--inline-message-gap-medium);
+
+  /* Variant axis (info default). */
+  --_text: var(--inline-message-info-text);
+  --_icon: var(--inline-message-info-icon);
+
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--_gap);
+  vertical-align: middle;
+  color: var(--_text);
+  font-family: var(--inline-message-font-family);
+  font-size: var(--_font-size);
+  line-height: var(--_line-height);
+  font-weight: var(--inline-message-font-weight);
+}
+
+/* ---------- Size axis ---------- */
+
+:host([size='small']) {
+  --_font-size: var(--inline-message-font-size-small);
+  --_line-height: var(--inline-message-line-height-small);
+  --_icon-size: var(--inline-message-icon-size-small);
+  --_gap: var(--inline-message-gap-small);
+}
+
+:host([size='medium']) {
+  --_font-size: var(--inline-message-font-size-medium);
+  --_line-height: var(--inline-message-line-height-medium);
+  --_icon-size: var(--inline-message-icon-size-medium);
+  --_gap: var(--inline-message-gap-medium);
+}
+
+/* ---------- Variant axis ---------- */
+
+:host([variant='info']) {
+  --_text: var(--inline-message-info-text);
+  --_icon: var(--inline-message-info-icon);
+}
+
+:host([variant='warning']) {
+  --_text: var(--inline-message-warning-text);
+  --_icon: var(--inline-message-warning-icon);
+}
+
+:host([variant='success']) {
+  --_text: var(--inline-message-success-text);
+  --_icon: var(--inline-message-success-icon);
+}
+
+:host([variant='error']) {
+  --_text: var(--inline-message-error-text);
+  --_icon: var(--inline-message-error-icon);
+}
+
+/* ---------- Leading icon ---------- */
+
+.icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--_icon-size);
+  /* Match the line box so the icon centres with the first line of text. */
+  block-size: var(--_line-height);
+  color: var(--_icon);
+}
+
+.icon mud-icon {
+  --icon-color: currentcolor;
+}
+
+/* ---------- Text ---------- */
+
+.text {
+  min-inline-size: 0;
+  color: inherit;
+  overflow-wrap: anywhere;
+}

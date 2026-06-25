@@ -106,14 +106,14 @@ numeric keypad.
 
 ### Depends on
 
-- [mud-icon](../mud-icon)
 - [mud-spinner](../mud-spinner)
+- [mud-icon](../mud-icon)
 
 ### Graph
 ```mermaid
 graph TD;
-  mud-numeric-input --> mud-icon
   mud-numeric-input --> mud-spinner
+  mud-numeric-input --> mud-icon
   style mud-numeric-input fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

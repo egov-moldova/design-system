@@ -8,6 +8,7 @@ type StoryArgs = {
   rowStyle: TableRowStyle;
   hoverable: boolean;
   selectable: boolean;
+  disableSort: boolean;
   ariaLabel: string;
 };
 
@@ -91,6 +92,7 @@ const renderTable = (
     `row-style="${args.rowStyle ?? 'divided'}"`,
     args.hoverable ? 'hoverable' : '',
     args.selectable ? 'selectable' : '',
+    args.disableSort ? 'disable-sort' : '',
     args.ariaLabel ? `aria-label="${args.ariaLabel}"` : '',
   ]
     .filter(Boolean)
@@ -138,6 +140,13 @@ const meta: Meta<StoryArgs> = {
       control: 'boolean',
       description: 'Render the leading checkbox column for multi-row selection.',
     },
+    disableSort: {
+      control: 'boolean',
+      name: 'disable-sort',
+      description:
+        'Master switch — disables sorting on every column at once, overriding each column’s `sortable` flag.',
+      table: { defaultValue: { summary: 'false' } },
+    },
     ariaLabel: {
       control: 'text',
       description: 'Accessible label propagated to the rendered `<table>` element.',
@@ -171,6 +180,7 @@ export const Default: Story = {
     rowStyle: 'divided',
     hoverable: false,
     selectable: false,
+    disableSort: false,
     ariaLabel: 'Lista de plăți recente',
   },
   render: args => wrap(renderTable('tbl-default', baseColumns, baseRows, args)),
@@ -240,6 +250,37 @@ export const Sortable: Story = {
         ),
       ].join(''),
     ),
+};
+
+export const DisableSort: Story = {
+  name: 'DisableSort',
+  render: () => {
+    // Same columns as Sortable (name/email/amount marked sortable) — the
+    // table-level `disable-sort` switch overrides them all at once.
+    const sortableColumns: TableColumn[] = [
+      { key: 'name', label: 'Nume', sortable: true },
+      { key: 'email', label: 'Email', sortable: true },
+      { key: 'status', label: 'Status' },
+      { key: 'amount', label: 'Sumă', align: 'end', sortable: true },
+    ];
+    return wrap(
+      [
+        group(
+          'Sorting enabled (per-column `sortable: true`)',
+          renderTable('tbl-sort-on', sortableColumns, baseRows, { ariaLabel: 'Tabel sortabil' }),
+          'Headers show the sort chevron, are focusable, and emit `mudSort`.',
+        ),
+        group(
+          'Sorting disabled (`disable-sort`)',
+          renderTable('tbl-sort-off', sortableColumns, baseRows, {
+            disableSort: true,
+            ariaLabel: 'Tabel cu sortare dezactivată',
+          }),
+          'The same columns now render as plain labels — no chevron, not focusable, no aria-sort, no `mudSort`. Useful for read-only or loading states without touching the columns array.',
+        ),
+      ].join(''),
+    );
+  },
 };
 
 export const Selectable: Story = {
@@ -326,7 +367,7 @@ export const AllDataTypes: Story = {
           <mud-tag slot="cell-status-${idx}" semantic="${tag.semantic}" size="md">${tag.label}</mud-tag>
           <mud-checkbox slot="cell-verified-${idx}" ${row.verified ? 'checked' : ''} aria-label="Confirmat"></mud-checkbox>
           <mud-button slot="cell-actions-${idx}" appearance="text" size="sm" icon-only label="Editează">
-            <mud-icon name="edit" size="20"></mud-icon>
+            <mud-icon slot="icon" name="edit" size="20" color="icon-base-default"></mud-icon>
           </mud-button>
         `;
       })

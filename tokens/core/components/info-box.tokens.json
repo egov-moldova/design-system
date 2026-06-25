@@ -1,0 +1,108 @@
+{
+  "infoBox": {
+    "container": {
+      "paddingBlock": { "$value": "{spacing.12}", "$type": "dimension" },
+      "paddingInline": { "$value": "{spacing.16}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.12}", "$type": "dimension" },
+      "stackGap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "headingGap": { "$value": "{spacing.4}", "$type": "dimension" },
+      "borderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" },
+      "transitionDuration": { "$value": "150ms", "$type": "duration" },
+      "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" }
+    },
+    "icon": {
+      "size": { "$value": "{spacing.20}", "$type": "dimension" }
+    },
+    "heading": {
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSize": { "$value": "{fontSize.16}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.24}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.semibold}", "$type": "fontWeight" }
+    },
+    "body": {
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" }
+    },
+    "close": {
+      "sizePointer": {
+        "$value": "{spacing.32}",
+        "$type": "dimension",
+        "$comment": "Interactive target per the Figma Target Sizes panel: 32px on pointer devices."
+      },
+      "sizeTouch": {
+        "$value": "{spacing.40}",
+        "$type": "dimension",
+        "$comment": "40px target under `pointer: coarse` for touch ease-of-use."
+      },
+      "iconSize": { "$value": "{spacing.16}", "$type": "dimension" },
+      "borderRadius": { "$value": "{borderRadius.4}", "$type": "dimension" },
+      "backgroundHover": {
+        "$value": "{color.background.base.tertiary-hover}",
+        "$type": "color",
+        "$comment": "All variants carry a dark close × on a light surface, so a neutral light-gray hover keeps the icon legible (~6.9:1)."
+      }
+    },
+    "strong": {
+      "info": {
+        "background": { "$value": "{color.background.brand.secondary}", "$type": "color" },
+        "text": { "$value": "{color.text.base.default}", "$type": "color" },
+        "icon": { "$value": "{color.icon.brand.default}", "$type": "color" },
+        "closeIcon": { "$value": "{color.icon.base.secondary}", "$type": "color" }
+      },
+      "info-moderate": {
+        "background": { "$value": "{color.background.brand.secondary}", "$type": "color" },
+        "text": { "$value": "{color.text.base.default}", "$type": "color" },
+        "icon": { "$value": "{color.icon.brand.default}", "$type": "color" },
+        "closeIcon": { "$value": "{color.icon.base.secondary}", "$type": "color" }
+      },
+      "warning": {
+        "background": { "$value": "{color.background.warning.secondary}", "$type": "color" },
+        "text": { "$value": "{color.text.base.default}", "$type": "color" },
+        "icon": { "$value": "{color.icon.warning.default}", "$type": "color" },
+        "closeIcon": { "$value": "{color.icon.base.secondary}", "$type": "color" }
+      },
+      "error": {
+        "background": { "$value": "{color.background.danger.secondary}", "$type": "color" },
+        "text": { "$value": "{color.text.base.default}", "$type": "color" },
+        "icon": { "$value": "{color.icon.danger.default}", "$type": "color" },
+        "closeIcon": { "$value": "{color.icon.base.secondary}", "$type": "color" }
+      }
+    },
+    "subtle": {
+      "info": {
+        "background": { "$value": "{color.background.base.secondary}", "$type": "color" },
+        "text": { "$value": "{color.text.base.default}", "$type": "color" },
+        "icon": {
+          "$value": "{color.icon.base.default}",
+          "$type": "color",
+          "$comment": "Neutral (non-brand) icon — the low-emphasis informational treatment."
+        },
+        "closeIcon": { "$value": "{color.icon.base.secondary}", "$type": "color" }
+      },
+      "info-moderate": {
+        "background": { "$value": "{color.background.base.secondary}", "$type": "color" },
+        "text": { "$value": "{color.text.base.default}", "$type": "color" },
+        "icon": {
+          "$value": "{color.icon.brand.default}",
+          "$type": "color",
+          "$comment": "Brand-blue icon — the moderate-emphasis informational treatment."
+        },
+        "closeIcon": { "$value": "{color.icon.base.secondary}", "$type": "color" }
+      },
+      "warning": {
+        "background": { "$value": "{color.background.base.secondary}", "$type": "color" },
+        "text": { "$value": "{color.text.base.default}", "$type": "color" },
+        "icon": { "$value": "{color.icon.warning.default}", "$type": "color" },
+        "closeIcon": { "$value": "{color.icon.base.secondary}", "$type": "color" }
+      },
+      "error": {
+        "background": { "$value": "{color.background.base.secondary}", "$type": "color" },
+        "text": { "$value": "{color.text.base.default}", "$type": "color" },
+        "icon": { "$value": "{color.icon.danger.default}", "$type": "color" },
+        "closeIcon": { "$value": "{color.icon.base.secondary}", "$type": "color" }
+      }
+    }
+  }
+}

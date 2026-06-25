@@ -250,6 +250,122 @@ describe('mud-cookie-banner', () => {
       const rows = queryShadowAll(root, '.category');
       expect(rows.length).toBeGreaterThanOrEqual(3);
     });
+
+    it('re-syncs the rendered list when the categories prop changes after mount', async () => {
+      const { root, waitForChanges } = await render(
+        <mud-cookie-banner variant="detailed" expanded></mud-cookie-banner>,
+      );
+      await waitForChanges();
+      expect(queryShadowAll(root, '.category').length).toBeGreaterThanOrEqual(3);
+      (root as unknown as { categories: CookieCategory[] }).categories = sampleCategories;
+      await waitForChanges();
+      expect(queryShadowAll(root, '.category')).toHaveLength(2);
+    });
+
+    it('reflects a toggled category switch in the saved selection', async () => {
+      const { root, waitForChanges, spyOnEvent } = await render(
+        <mud-cookie-banner variant="detailed" expanded categories={sampleCategories}></mud-cookie-banner>,
+      );
+      await waitForChanges();
+      const sw = queryShadow<HTMLElement & { checked: boolean }>(root, '.category mud-switch');
+      expect(sw).toBeTruthy();
+      // Simulate the user enabling the optional (analytics) category.
+      sw!.checked = true;
+      sw!.dispatchEvent(new CustomEvent('mudChange', { bubbles: true }));
+      await waitForChanges();
+      const save = spyOnEvent('mudSavePreferences');
+      (queryShadow(root, '.footer--expanded mud-button') as HTMLElement).click();
+      await waitForChanges();
+      const detail = (save.lastEvent as CustomEvent | undefined)?.detail as { categories: Record<string, boolean> };
+      expect(detail.categories.analytics).toBe(true);
+    });
+  });
+
+  // The mobile "more/less" truncation is layout-driven; jsdom has no layout, so the
+  // 2-line clamp cannot be MEASURED here. These tests drive the measurement logic with
+  // synthetic dimensions and force the resolved state to exercise the render branch +
+  // toggle handler. Real overflow detection is verified in the browser (Layer-2 audit).
+  // NOTE: we never stub the global requestAnimationFrame — Stencil's render scheduling
+  // depends on it. Instead we neuter the component's own measureDescriptionOverflow so
+  // the deferred re-measurement (which would read 0 in jsdom) can't clobber forced state.
+  describe('mobile description truncation', () => {
+    it('flags only overflowing descriptions via measureDescriptionOverflow', async () => {
+      const { root } = await render(
+        <mud-cookie-banner variant="detailed" expanded categories={sampleCategories}></mud-cookie-banner>,
+      );
+      await flush();
+      const inst = root as unknown as {
+        isMobile: boolean;
+        descRefs: Record<string, Partial<HTMLParagraphElement> | undefined>;
+        descOverflowing: Record<string, boolean>;
+        measureDescriptionOverflow: () => void;
+      };
+      inst.isMobile = true;
+      // Simulate layout: `necessary` overflows 2 lines, `analytics` fits.
+      inst.descRefs = {
+        necessary: { scrollHeight: 80, clientHeight: 40 },
+        analytics: { scrollHeight: 20, clientHeight: 40 },
+      };
+      inst.measureDescriptionOverflow();
+      // Read synchronously — the @State write lands immediately. (Don't flush here:
+      // a re-render would repopulate descRefs with the real 0-height jsdom nodes.)
+      expect(inst.descOverflowing.necessary).toBe(true);
+      expect(inst.descOverflowing.analytics).toBe(false);
+      // Neuter the deferred re-measure so it can't clobber state after the test ends.
+      inst.measureDescriptionOverflow = () => undefined;
+    });
+
+    it('renders a more/less toggle that clamps and flips the description (forced mobile)', async () => {
+      const { root } = await render(
+        <mud-cookie-banner
+          variant="detailed"
+          expanded
+          categories={sampleCategories}
+          more-label="More"
+          less-label="Less"
+        ></mud-cookie-banner>,
+      );
+      await flush();
+      const inst = root as unknown as {
+        isMobile: boolean;
+        descOverflowing: Record<string, boolean>;
+        measureDescriptionOverflow: () => void;
+      };
+      // Neuter the (layout-dependent) re-measurement so the forced state survives the
+      // post-render rAF in jsdom — without touching the global requestAnimationFrame.
+      inst.measureDescriptionOverflow = () => undefined;
+      inst.isMobile = true;
+      inst.descOverflowing = { necessary: true, analytics: true };
+      await flush();
+
+      const toggles = queryShadowAll<HTMLButtonElement>(root, '.category-description-toggle');
+      expect(toggles).toHaveLength(2);
+      expect(toggles[0].textContent).toBe('More');
+      expect(toggles[0].getAttribute('aria-expanded')).toBe('false');
+      expect(queryShadowAll(root, '.category-description.is-clamped')).toHaveLength(2);
+      // toggle wires aria-controls to the description it expands
+      const descId = toggles[0].getAttribute('aria-controls');
+      expect(descId).toBeTruthy();
+      expect(queryShadow(root, `#${descId}`)).toBeTruthy();
+
+      toggles[0].click();
+      await flush();
+
+      const after = queryShadowAll<HTMLButtonElement>(root, '.category-description-toggle');
+      expect(after[0].textContent).toBe('Less');
+      expect(after[0].getAttribute('aria-expanded')).toBe('true');
+      // the expanded row is no longer clamped; the other still is
+      expect(queryShadowAll(root, '.category-description.is-clamped')).toHaveLength(1);
+    });
+
+    it('renders full descriptions with no toggle on desktop', async () => {
+      const { root } = await render(
+        <mud-cookie-banner variant="detailed" expanded categories={sampleCategories}></mud-cookie-banner>,
+      );
+      await flush();
+      expect(queryShadowAll(root, '.category-description-toggle')).toHaveLength(0);
+      expect(queryShadowAll(root, '.category-description.is-clamped')).toHaveLength(0);
+    });
   });
 
   describe('privacy link', () => {

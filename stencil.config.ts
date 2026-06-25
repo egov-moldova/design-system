@@ -1,12 +1,14 @@
 import { Config } from '@stencil/core';
 import { OutputTarget } from '@stencil/core/internal';
 import { postcss } from '@stencil/postcss';
+import { reactOutputTarget as react } from '@stencil/react-output-target';
 import * as postcssNested from 'postcss-nested';
 // import postcssPresetEnv from 'postcss-preset-env';
 
 const args = process.argv.slice(2);
 const isWatchMode = args.includes('--watch');
 const isDevMode = args.includes('--dev');
+const isReactBuild = args.includes('--react');
 // PERF: Source maps only for non-watch dev builds (dx:stencil:once).
 // Watch mode skips them for faster incremental rebuilds.
 const shouldGenerateSourceMaps = isDevMode && !isWatchMode;
@@ -40,6 +42,27 @@ const outputTargets: OutputTarget[] = [
 const hasDocs = args.includes('--docs');
 if (hasDocs) {
   outputTargets.push({ type: 'docs-readme' });
+}
+
+// React adapter — only emit proxies when explicitly building the React workspace
+// via `yarn build.react`. Keeps the default Stencil build framework-agnostic.
+// dist-custom-elements is a hard prerequisite of @stencil/react-output-target.
+if (isReactBuild) {
+  // Note: Stencil's `dist-custom-elements` target ignores the `copy` option for
+  // `assetsDirs` declared on components (Stencil v4 bug/limitation — copy on
+  // this target type silently no-ops). See `scripts/copy-component-assets.mjs`
+  // for the post-build copy that mirrors `dist/mud/assets/` into
+  // `dist/components/assets/` so consumers of the standalone bundle (React
+  // wrappers) can resolve `getAssetPath('./assets/foo.svg')` correctly.
+  outputTargets.push({ type: 'dist-custom-elements', externalRuntime: false });
+  outputTargets.push(
+    react({
+      outDir: 'react/src/components/stencil-generated',
+      esModules: true,
+      stencilPackageName: '@egov-moldova/mud',
+      excludeComponents: [],
+    }),
+  );
 }
 
 export const config: Config = {

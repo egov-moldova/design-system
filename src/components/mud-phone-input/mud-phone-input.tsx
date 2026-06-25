@@ -1070,7 +1070,7 @@ export class MudPhoneInput {
               <mud-icon
                 class="valid-icon"
                 part="valid-icon"
-                name="checkmark-circle-filled"
+                name="circle-checkmark-filled"
                 size={20}
                 color="icon-positive-default"
               />

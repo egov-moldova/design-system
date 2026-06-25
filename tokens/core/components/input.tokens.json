@@ -82,6 +82,20 @@
         "disabled": { "$value": "{color.icon.disabled.on-disabled}", "$type": "color" }
       }
     },
+    "clearButton": {
+      "size": {
+        "md": { "$value": "{spacing.16}", "$type": "dimension" },
+        "lg": { "$value": "{spacing.20}", "$type": "dimension" }
+      },
+      "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" },
+      "color": {
+        "default": { "$value": "{color.icon.base.secondary}", "$type": "color" },
+        "hover": { "$value": "{color.icon.base.default}", "$type": "color" }
+      },
+      "background": {
+        "hover": { "$value": "{color.background.base.tertiary}", "$type": "color" }
+      }
+    },
     "default": {
       "background": {
         "default": { "$value": "{color.background.base.default}", "$type": "color" },
