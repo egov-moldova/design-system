@@ -8,6 +8,7 @@ WORKDIR /app
 # Copy package files first for better layer caching
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY web-components/package.json ./web-components/
+COPY react/package.json ./react/
 
 # Ensure Yarn 4 via Corepack and install dependencies immutably
 # PERF: BuildKit cache mount for Yarn cache — persists between builds on self-hosted runner
