@@ -25,7 +25,7 @@
     "prepare": "yarn build"
   },
   "dependencies": {
-    "@egov-moldova/mud": "portal:.."
+    "@egov-moldova/mud": "workspace:^"
   },
   "devDependencies": {
     "typescript": "^5.9.3",
