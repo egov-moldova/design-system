@@ -1037,7 +1037,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@egov-moldova/mud-web-components@workspace:web-components"
   dependencies:
-    "@egov-moldova/mud": "portal:.."
+    "@egov-moldova/mud": "workspace:^"
     typescript: "npm:^5.9.3"
     vite: "npm:^8.0.13"
   languageName: unknown
@@ -1051,15 +1051,7 @@ __metadata:
   languageName: node
   linkType: soft
 
-"@egov-moldova/mud@portal:..::locator=%40egov-moldova%2Fmud-web-components%40workspace%3Aweb-components":
-  version: 0.0.0-use.local
-  resolution: "@egov-moldova/mud@portal:..::locator=%40egov-moldova%2Fmud-web-components%40workspace%3Aweb-components"
-  dependencies:
-    "@stencil/core": "npm:^4.43.4"
-  languageName: node
-  linkType: soft
-
-"@egov-moldova/mud@workspace:.":
+"@egov-moldova/mud@workspace:., @egov-moldova/mud@workspace:^":
   version: 0.0.0-use.local
   resolution: "@egov-moldova/mud@workspace:."
   dependencies:
