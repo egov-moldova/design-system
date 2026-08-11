@@ -56,10 +56,9 @@ stages:
         NPM_TOKEN: $(token)
 
     - script: |
-        npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
         cd web-components
         yarn npm publish --access public
       displayName: 'Publish @egov-moldova/mud-web-components'
       env:
-        NPM_TOKEN: $(token)
+        YARN_NPM_AUTH_TOKEN: $(token)
 
