@@ -8,7 +8,7 @@
  * the test runner first; otherwise expects the report to be present.
  *
  * Strategy:
- *   1. (Optional `--run`) execute `yarn test.dev --coverage` and wait.
+ *   1. (Optional `--run`) execute `yarn stencil-test --project spec --coverage` and wait.
  *   2. Read `coverage/coverage-summary.json` (Istanbul-format summary, same
  *      shape produced by Vitest's v8 / istanbul coverage providers).
  *   3. Filter entries to the target component(s) — match by absolute TSX path.
@@ -23,7 +23,7 @@
  *   fast scripts; coverage is typically generated once per CI/pre-PR pipeline.
  *
  * Usage:
- *   yarn test.dev --coverage              # generate coverage report (once)
+ *   yarn stencil-test --project spec --coverage   # generate coverage report (once)
  *   node scripts/audit/06-test-coverage.mjs mud-button --json
  *   node scripts/audit/06-test-coverage.mjs --all --json
  *   node scripts/audit/06-test-coverage.mjs mud-button --run    # force fresh run
@@ -46,7 +46,7 @@ const USAGE = defaultUsage(
   [
     '',
     'Extra options:',
-    '  --run               Run `yarn test.dev --coverage` first (slow; 30-60s)',
+    '  --run               Run `yarn stencil-test --project spec --coverage` first (slow; 30-60s)',
     '  --threshold <N>     Pass threshold for each metric (default: 80)',
   ],
 );
