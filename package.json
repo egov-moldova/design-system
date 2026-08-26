@@ -75,7 +75,7 @@
     "sp.serve": "yarn dlx serve storybook-static -p 6008",
     "start": "stencil build --dev --watch --serve",
     "test": "wireit",
-    "test.dev": "stencil-test --project spec",
+    "test.dev": "vitest --project spec --run",
     "test.watch": "stencil-test --project spec --watch",
     "test.storybook": "vitest --project storybook --run",
     "test.storybook.watch": "wireit",

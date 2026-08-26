@@ -125,7 +125,7 @@ yarn dx:stencil:once           # Single Stencil dev build without docs (~20s)
 
 # Test & Lint
 yarn test                      # Vitest spec project (rebuilds Stencil + token bundle, then `stencil-test --project spec`)
-yarn test.dev                  # `stencil-test --project spec` — fast run without wireit-level cache (rebuilds Stencil once)
+yarn test.dev                  # `vitest --project spec --run` — compiles components from source; does not build dist
 yarn test.watch                # `stencil-test --project spec --watch`
 yarn lint                      # ESLint + Prettier check (cached)
 yarn format                    # Auto-fix code style
