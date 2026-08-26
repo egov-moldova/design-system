@@ -95,11 +95,12 @@ export function checkForbiddenPaths(packedFiles) {
 }
 
 export function checkAbsolutePaths(packedFiles) {
+  // Every segment, index 0 included. An earlier revision skipped the first,
+  // which would have let a declaration emitted at the tarball root (`Users/...`)
+  // through — the exact leak class this exists to catch, escaping at index 0.
+  // Nothing needs skipping: `dist` and `loader` are not roots on the list.
   return packedFiles.filter(file =>
-    file
-      .split('/')
-      .slice(1)
-      .some(segment => ABSOLUTE_PATH_ROOTS.includes(segment) || /^[A-Za-z]:$/.test(segment)),
+    file.split('/').some(segment => ABSOLUTE_PATH_ROOTS.includes(segment) || /^[A-Za-z]:$/.test(segment)),
   );
 }
 
@@ -179,9 +180,10 @@ export function checkBundleAssets(packedFiles, lazyDir, standaloneDir) {
  *      exits non-zero aborts the pack with that code. This package's `prepare`
  *      is `husky install && ...`, so an npm-based gate would reinstall git
  *      hooks as a side effect of a read-only validation.
- *   2. On this package the two packers agree exactly — 1477 files, zero
- *      difference. `yarn validate.package` does not re-derive that; the plan's
- *      Task 6 Step 3 owns it.
+ *   2. On this package the two packers agree exactly — measured at 2037 files,
+ *      zero difference, on a production build carrying dist/components. This
+ *      function does not re-derive that; it is a property to re-check whenever
+ *      `files` or the publish tooling changes, not an invariant to assume.
  *
  * Output is NDJSON: one `{"base":...}` line, then one `{"location":...}` per
  * file, with no `package/` prefix.

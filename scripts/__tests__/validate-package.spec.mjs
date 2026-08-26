@@ -171,6 +171,11 @@ describe('checkAbsolutePaths', () => {
     assert.deepEqual(checkAbsolutePaths(packed), packed);
   });
 
+  it('flags a leak that lands at the tarball root, with no directory above it', () => {
+    const packed = ['Users/Dan/WORK/x/.stencil/stencil.config.d.ts'];
+    assert.deepEqual(checkAbsolutePaths(packed), packed);
+  });
+
   it('leaves a normal declaration tree alone', () => {
     assert.deepEqual(
       checkAbsolutePaths([
