@@ -76,7 +76,7 @@
     "start": "stencil build --dev --watch --serve",
     "test": "wireit",
     "test.dev": "vitest --project spec --run",
-    "test.watch": "stencil-test --project spec --watch",
+    "test.watch": "vitest --project spec --watch",
     "test.storybook": "vitest --project storybook --run",
     "test.storybook.watch": "wireit",
     "test:scripts": "node --test \"scripts/__tests__/**/*.spec.mjs\"",

@@ -40,7 +40,7 @@ Don't pad coverage with tests that re-assert what TypeScript already enforces. A
 ## Runners & commands
 
 ```bash
-yarn test              # canonical: rebuilds tokens + Stencil + runs stencil-test --project spec
+yarn test              # canonical: `vitest run --project spec` through the stderr wrapper; builds nothing
 yarn test.dev          # fast: vitest --project spec --run, compiles from source, never builds dist
 yarn test.watch        # watch mode
 yarn test.storybook    # @vitest/browser-playwright over *.stories.ts

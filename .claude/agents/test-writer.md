@@ -9,7 +9,7 @@ model: sonnet
 
 Generates a `*.spec.tsx` unit test file for a `mud-*` component. Targets > 80% coverage and includes structural accessibility assertions. Respects the `--write-mode` flag.
 
-> **Stack note**: tests run on Vitest via `@stencil/vitest` (Stencil's official Vitest wrapper). The Jest/`newSpecPage` stack is retired — see `vitest.config.ts` + `vitest-setup.ts`. `yarn test` invokes `stencil-test --project spec` which builds Stencil once and then runs Vitest with the `spec` project.
+> **Stack note**: tests run on Vitest via `@stencil/vitest` (Stencil's official Vitest wrapper). The Jest/`newSpecPage` stack is retired — see `vitest.config.ts` + `vitest-setup.ts`. `yarn test` invokes `vitest run --project spec` directly. It builds nothing: the `spec` project compiles components from source through `stencilVitestPlugin()`, so no `dist/` bundle is involved.
 
 ## Inputs (from orchestrator prompt)
 
