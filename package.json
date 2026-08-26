@@ -227,7 +227,9 @@
         "src/**/*.css",
         "src/assets/**/*",
         "stencil.config.ts",
-        "tsconfig.json"
+        "tsconfig.json",
+        "tsconfig.stencil.json",
+        "scripts/copy-component-assets.mjs"
       ],
       "output": [
         "dist/**",
@@ -326,7 +328,8 @@
         "src/**/*.tsx",
         "src/**/*.css",
         "stencil.config.ts",
-        "tsconfig.json"
+        "tsconfig.json",
+        "tsconfig.stencil.json"
       ],
       "output": [
         "dist/**",

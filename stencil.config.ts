@@ -80,6 +80,12 @@ if (isReactBuild) {
 export const config: Config = {
   namespace: 'mud',
   srcDir: 'src',
+  // Stencil compiles only `src`. The root-level `*.ts` files that
+  // `tsconfig.json` includes for `yarn typecheck` (stencil.config.ts,
+  // playwright.config.ts, vitest-setup.ts) must stay out of the emitted
+  // program: they were being written to `dist/*.js`, and their declarations
+  // landed under an absolute build-machine path in `dist/types/`.
+  tsconfig: 'tsconfig.stencil.json',
   globalStyle: 'src/assets/css/index.css',
   sourceMap: shouldGenerateSourceMaps,
   // PERF: Always enable cache — allows incremental rebuilds in watch mode.
