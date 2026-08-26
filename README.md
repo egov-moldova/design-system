@@ -3,49 +3,146 @@
 **Moldova UI Design System** is the official design system of the Republic of Moldova, developed and maintained by the [Electronic Governance Agency (Agenția de Guvernare Electronică — AGE)](https://egov.md). It provides a unified set of UI components, design tokens, and guidelines so that Moldovan government digital services share a consistent look, feel, and accessibility baseline.
 This repository contains two npm packages:
 
-> **Terminology:** **MUD** refers to the *Moldova UI Design
-> System*.
- 
-## Motivation
+| Package | Description |
+| --- | --- |
+| [`@egov-moldova/mud`](https://www.npmjs.com/package/@egov-moldova/mud) | Core Stencil web components — framework-agnostic, Shadow DOM–isolated |
+| [`@egov-moldova/mud-web-components`](https://www.npmjs.com/package/@egov-moldova/mud-web-components) | Vanilla HTML/JS adapter — thin re-export of the Stencil loader for script-tag usage |
 
-Citizens interact with dozens of Moldovan government digital services — tax filings,
-civil registry requests, business licensing, healthcare portals — each historically
-built by different teams, on different stacks, with different visual languages.
-The result is a fragmented experience: a button doesn't look or behave the same way
-twice, form validation patterns differ from one service to the next, and accessibility
-is implemented (or not) inconsistently across properties.
+> **Who should use this?** Any team building a Moldovan e-government product or service. The components implement the MUD visual language and WCAG 2.1 AA accessibility requirements out of the box.
 
-This fragmentation has real costs:
+---
 
-- **Cognitive load for citizens** — every new service requires relearning how to
-  interact with it, instead of transferring familiarity from services they've already used
-- **Duplicated effort for teams** — each product team re-solves the same UI problems
-  (accessible form controls, responsive layouts, error states) from scratch
-- **Inconsistent accessibility** — WCAG compliance becomes optional and team-dependent,
-  rather than guaranteed by default
-- **Slower delivery** — building and QA-ing UI primitives from zero adds weeks to every
-  new service launch
+## Table of Contents
 
-Moldova UI Design System solves this by providing a single, framework-agnostic
-source of truth for the components and visual language used across e-government
-properties. Built on Web Components with Shadow DOM isolation, MUD works identically
-whether a team is using React, Vue, plain HTML, or anything else — so consistency isn't
-contingent on every team adopting the same framework.
+1. [Quick Start - General Steps](#quick-start---general-steps)
+2. [Web Components (Vanilla HTML / JS) Build & Setup](#web-components-vanilla-html--js-build--setup)
+3. [Publishing](#publishing)
+4. [Installing in Applications](#installing-in-applications)
+5. [Troubleshooting](#troubleshooting)
+6. [Development Workflow](#development-workflow)
+7. [Summary Checklist](#summary-checklist)
+8. [Storybook](#storybook--development-production-build-and-preview)
+9. [Tokens](#tokens--sync-audit-lint-and-developer-dx)
+10. [Additional Resources](#additional-resources)
 
-A citizen who learns how to fill out a form on one government site should already know
-how to fill out a form on the next one. That consistency is not a cosmetic nicety —
-it's a measurable reduction in support burden, abandonment rates, and time-to-completion
-across public services.
+---
 
-## Packages
+## Quick Start - General Steps
 
-This repository is a monorepo containing the following published packages:
+### Step 1: Install Dependencies (First Time Only)
 
-| Package                                                                                                       | Description                                                                                                           |
-|---------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
-| [`@egov-moldova/design-system`](https://www.npmjs.com/package/@egov-moldova/mud)                              | Core Stencil web components — framework-agnostic, Shadow DOM–isolated                                                 |
-| [`@egov-moldova/design-system-web-components`](https://www.npmjs.com/package/@egov-moldova/mud-web-components)| Vanilla HTML/JS adapter — thin re-export of the Stencil loader for script-tag usage                                   |
-| `@egov-moldova/design-system-react`                                                                           | ![In Progress](https://img.shields.io/badge/status-in%20progress-yellow)<br>React adapter — typed JSX wrapper components |
+In the `age-design` project root:
+
+```bash
+yarn install
+```
+
+### Step 2: Build Stencil Components (Regular Build)
+
+```bash
+yarn build
+```
+
+This command will:
+
+- Clean and regenerate design tokens
+- Build Stencil components
+- Generate distribution files (`dist/`, `loader/`, `dist/types/`)
+
+---
+
+## Web Components (Vanilla HTML / JS) Build & Setup
+
+For any consumer — bundler-based or plain HTML — use `@egov-moldova/mud-web-components`. Because Stencil already compiles to native custom elements, this adapter is a *thin* re-export of the loader; no framework-specific build step is required.
+
+### Step 1: Build Stencil Components
+
+In the `age-design` project root:
+
+```bash
+yarn build
+```
+
+This produces `dist/`, `loader/`, and `dist/types/` — all the runtime files the vanilla adapter re-exports.
+
+### Step 2: Build the `@egov-moldova/mud-web-components` Package
+
+```bash
+yarn build.web
+```
+
+This command:
+
+- Depends on the base `build` (wireit handles the ordering)
+- Runs `tsc` inside `web-components/` to compile `src/index.ts` → `dist/index.js` + `dist/index.d.ts`
+
+The `web-components/dist/` folder will contain:
+
+- `index.js` — re-exports `defineCustomElements` and `setNonce` from `@egov-moldova/mud/loader`
+- `index.d.ts` — type declarations including full element type augmentation (`HTMLMudButtonElement`, …)
+
+### Step 3: Run the local demo
+
+```bash
+yarn demo.web
+```
+
+Opens `http://localhost:5174` with a live `<mud-button>` showcase (variants + sizes) served by Vite from [`web-components/demo/index.html`](web-components/demo/index.html).
+
+The demo proves the export is *complete* — every component is registered by `defineCustomElements()`, even though the demo only renders the button. Verify in the browser console:
+
+```js
+defineCustomElements().then(() =>
+  console.log(Object.keys(window).filter(k => k.startsWith('HTMLMud')))
+);
+```
+
+You should see the full list (`HTMLMudButtonElement`, `HTMLMudInputElement`, `HTMLMudIconElement`, …).
+
+### Files
+
+```text
+web-components/
+├── src/index.ts              # defineCustomElements + type re-exports
+├── demo/
+│   ├── index.html            # mud-button showcase
+│   ├── main.ts               # CSS imports + defineCustomElements()
+│   ├── demo.css              # @font-face for Onest + body font-family
+│   └── vite.config.ts        # port 5174, allows fs access to portal-linked parent
+├── package.json              # @egov-moldova/mud-web-components
+├── tsconfig.json             # ES2020, declaration: true
+└── README.md
+```
+
+---
+
+## Publishing
+
+Both packages are published to the public npm registry under the `@egov-moldova` scope. Publishing is handled automatically by the Azure Pipelines CI on each run — a new build number is used as the version.
+
+CI runs `yarn validate.package` immediately before publishing, and the run fails rather than shipping if the tarball does not match what `package.json` declares. The gate checks that every declared entrypoint is present, that no source map or development-mode runtime ships, that no build-machine path leaks into the type declarations, and that the standalone custom-elements bundle carries its assets. Run it yourself after `yarn build` before any manual publish.
+
+To publish manually (requires an npm token with write access to `@egov-moldova`):
+
+```bash
+# Stencil core
+yarn build && yarn validate.package
+npm config set //registry.npmjs.org/:_authToken YOUR_NPM_TOKEN
+npm publish --access public
+
+# Vanilla adapter
+cd web-components
+npm config set //registry.npmjs.org/:_authToken YOUR_NPM_TOKEN
+npm publish --access public
+```
+
+For local development without publishing, use local path installs:
+
+```bash
+yarn add file:/absolute/path/to/age-design
+yarn add file:/absolute/path/to/age-design/web-components
+```
+
 ---
 
 ## Getting Started

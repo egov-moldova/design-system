@@ -114,6 +114,7 @@ yarn build                     # Full production build with tokens, custom-eleme
 yarn build.web                 # Build @egovmd/mud-web-components vanilla adapter
 yarn demo.web                  # Serve the @egovmd/mud-web-components demo (http://localhost:5174)
 yarn sp.build                  # Storybook static export (validates everything)
+yarn validate.package          # Publish gate: every declared entrypoint present, no dev build, no leaked paths
 yarn sp.docker                 # Docker-optimized Storybook build
 
 # Build (dev — targeted per change type)

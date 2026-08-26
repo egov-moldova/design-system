@@ -80,6 +80,7 @@
     "test.storybook": "vitest --project storybook --run",
     "test.storybook.watch": "wireit",
     "test:scripts": "node --test \"scripts/__tests__/**/*.spec.mjs\"",
+    "validate.package": "node scripts/validate-package.mjs",
     "check": "wireit",
     "check.ci": "wireit",
     "check.verify": "wireit",
