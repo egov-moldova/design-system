@@ -225,9 +225,12 @@ function percentOf(metric) {
 }
 
 function runVitestCoverage() {
-  // `yarn test.dev` invokes `stencil-test --project spec` (Vitest under the hood).
-  // Vitest reads coverage providers from package.json devDeps; @vitest/coverage-v8
-  // produces a `coverage/coverage-summary.json` compatible with the parsing below.
+  // Invokes the `stencil-test` binary directly, not the `test.dev` script —
+  // `test.dev` now runs `vitest --project spec --run` so it never rebuilds dist.
+  // This audit wants stencil-test's coverage pass-through, so it keeps calling
+  // the binary. Vitest reads coverage providers from package.json devDeps;
+  // @vitest/coverage-v8 produces a `coverage/coverage-summary.json` compatible
+  // with the parsing below.
   const res = spawnSync('yarn', ['stencil-test', '--project', 'spec', '--coverage'], {
     stdio: 'inherit',
     shell: true,
