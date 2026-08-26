@@ -215,7 +215,7 @@
       ]
     },
     "build": {
-      "command": "cross-env NODE_OPTIONS=--max-old-space-size=4096 stencil build --docs",
+      "command": "cross-env NODE_OPTIONS=--max-old-space-size=4096 stencil build --docs && node scripts/copy-component-assets.mjs",
       "dependencies": [
         "tokens.build.prod",
         "wca.custom-elements"

@@ -44,17 +44,29 @@ if (hasDocs) {
   outputTargets.push({ type: 'docs-readme' });
 }
 
-// React adapter — only emit proxies when explicitly building the React workspace
-// via `yarn build.react`. Keeps the default Stencil build framework-agnostic.
-// dist-custom-elements is a hard prerequisite of @stencil/react-output-target.
-if (isReactBuild) {
-  // Note: Stencil's `dist-custom-elements` target ignores the `copy` option for
-  // `assetsDirs` declared on components (Stencil v4 bug/limitation — copy on
-  // this target type silently no-ops). See `scripts/copy-component-assets.mjs`
-  // for the post-build copy that mirrors `dist/mud/assets/` into
-  // `dist/components/assets/` so consumers of the standalone bundle (React
-  // wrappers) can resolve `getAssetPath('./assets/foo.svg')` correctly.
+// The standalone custom-elements bundle is part of the published contract —
+// `package.json` declares `exports["./dist/components"]` unconditionally and
+// `react/src/index.ts` imports `setAssetPath` from it. It is therefore built
+// for every non-dev build, not only under `--react`: what the package contains
+// must not depend on which flag CI happened to pass.
+//
+// `!isDevMode` rather than unconditional, because `yarn dev` / `yarn start`
+// rebuild in watch mode many times an hour and a second full component bundle
+// per rebuild buys nothing there.
+//
+// Note: Stencil's `dist-custom-elements` target ignores the `copy` option for
+// `assetsDirs` declared on components (Stencil v4 bug/limitation — copy on
+// this target type silently no-ops). `scripts/copy-component-assets.mjs`
+// mirrors `dist/mud/assets/` into `dist/components/assets/` afterwards, so
+// consumers of the standalone bundle can resolve `getAssetPath('./assets/x')`.
+// It runs from `wireit.build.command` and from `build.react`.
+if (isReactBuild || !isDevMode) {
   outputTargets.push({ type: 'dist-custom-elements', externalRuntime: false });
+}
+
+// React proxies stay opt-in: they are generated into the React workspace, not
+// into the published package, so `yarn build.react` still owns them.
+if (isReactBuild) {
   outputTargets.push(
     react({
       outDir: 'react/src/components/stencil-generated',
@@ -84,9 +96,7 @@ export const config: Config = {
   },
   plugins: [
     postcss({
-      plugins: [
-        (postcssNested.default ?? postcssNested)(),
-      ],
+      plugins: [(postcssNested.default ?? postcssNested)()],
     }),
   ],
 };
