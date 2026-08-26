@@ -706,18 +706,13 @@ validate-package: FAIL — absolute build-machine path in tarball (3)
   dist/types/<abs-path>/.stencil/vitest-setup.d.ts
 ```
 
-`<abs-path>` is the machine's own checkout path — `Users/Dan/WORK/…` locally, `home/vsts/work/1/s` on the Azure agent. The three `.stencil` declarations appear under BOTH the forbidden-segment and absolute-path categories; that overlap is expected, not a bug.
+`<abs-path>` is the machine's own build path — `Users/Dan/WORK/…` for an in-place build, `private/var/folders/…/T/mud-verify` under a macOS temp directory, `home/vsts/work/1/s` on the Azure agent. The count is 17 declared entries, 4 missing.
 
-The count is 17 declared entries, 4 missing. `source map` and `development runtime` report zero here, because this bar is taken on a production build — they fire in Task 6 Step 5, which is where the dev-build regression is proved.
+The `standalone bundle published without its assets` category does **not** fire here, and the reason is worth knowing before you read it as a pass: `verify_build` runs `scripts/copy-component-assets.mjs`, which creates `dist/components/assets/` from `dist/mud/assets/` whether or not `dist-custom-elements` produced a bundle. So at this point the tarball carries 417 standalone assets beside a `dist/components/` with no `index.js` — which the *missing entrypoint* category is already reporting. The asset category becomes load-bearing in Task 3, once the bundle exists and the copy step could be omitted.
 
-A fourth category fires too, and it must be in the transcript you record:
+`source map` and `development runtime` also report zero, because this bar is taken on a production build. They fire in Task 6 Step 6, which is where the dev-build regression is proved.
 
-```
-validate-package: FAIL — standalone bundle published without its assets (1)
-  dist/components/assets/ is empty while dist/mud/assets/ carries 417 file(s)
-```
-
-`exports["./dist/components"]` is always declared, so `standaloneBundleDir` always resolves; before Task 3 the directory simply is not built, and before Task 3 Step 2 it is built without assets. Both states are the same failure to a consumer, and the gate reports both.
+Observed once more, since it caused a wrong prediction in an earlier revision of this plan: the three `.stencil` declarations appear under BOTH the forbidden-segment and the absolute-path categories. `dist/types/private/...` is not a directory this build emits — it is the head of the macOS absolute path `/private/var/folders/...`.
 
 Record the actual output. A category reporting something not listed above means the plan's model of the defect is wrong somewhere — stop and reconcile before continuing.
 
