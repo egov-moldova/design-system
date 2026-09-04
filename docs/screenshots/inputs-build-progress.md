@@ -13,8 +13,8 @@ and updates PR https://github.com/corlab-org/age-design/pull/5.
 | 2 | `mud-select-input` | `24351877baeb81b99cceea90d885b3455191ac62` | ✅ done | `41171ea` | `docs/screenshots/mud-select-input/` |
 | 3 | `mud-date-input` | `4449e61e554888eb4357b4f2e6e16dacf738fda3` | ✅ done | `f503fec` | `docs/screenshots/mud-date-input/` |
 | 4 | `mud-file-input` + `mud-file-item` | `2e8a0a8cc37b76d197dfdd8af2a4cac5ce8aa884` / `f7e6d1eed8dd15497025e1a9cad9d355403a68b8` | ✅ done | `299c6a2` | `docs/screenshots/mud-file-input/` |
-| 5 | `mud-search-input-rectangular` | `a27b4efaed053f6cd4a57411a032d7391174c425` | ✅ done | `a625494` | `docs/screenshots/mud-search-input-rectangular/` |
-| 6 | `mud-search-input-circular` | `b33c35c72dbe621375862c300c0238c4a4eacc78` | ✅ done | `1a3c4e6` | `docs/screenshots/mud-search-input-circular/` |
+| 5 | `mud-search-input` (Figma "Search Input" — `shape=rectangular\|circular`) | `a27b4efaed053f6cd4a57411a032d7391174c425` | ✅ done | `a625494` | `docs/screenshots/mud-search-input-rectangular/` |
+| 6 | ~~`mud-search-input-circular`~~ — merged into `mud-search-input` (`shape="circular"`) | `b33c35c72dbe621375862c300c0238c4a4eacc78` | ✅ done | `1a3c4e6` | `docs/screenshots/mud-search-input-circular/` |
 | 7 | `mud-numeric-input` | `3029a32fe1e2ca1eb6e2bc68571f1965bded9ef6` | ✅ done | `2b76568` | `docs/screenshots/mud-numeric-input/` |
 | 8 | `mud-phone-input` | `f2ba725de62bbecd5bd84870a1e6b7bb1eb5adfe` | ✅ done | `70df409` | `docs/screenshots/mud-phone-input/` |
 | 9 | `mud-input-chip` | `3168d84c4883c991b5643e4feab97de2cfe8fb7e` | ✅ done | (this commit) | `docs/screenshots/mud-input-chip/` |
@@ -22,6 +22,44 @@ and updates PR https://github.com/corlab-org/age-design/pull/5.
 **Input family complete — 9/9 components shipped. Figma drift fix loop complete 7/7.**
 
 ## Drift fix log
+
+### 2026-09-04 — `mud-search-input-rectangular` + `mud-search-input-circular` merged into `mud-search-input`
+
+Figma "Search Input" (`node-id=2232-81406`) documents **one** component with a
+**Shapes** axis (`rectangular` / `circular`). The two shipped components had
+byte-identical `.tsx` logic, CSS that differed only in comments, and token
+files that differed in exactly **two** values (`container.borderRadius`:
+`{borderRadius.8}` vs `{borderRadius.full}`; `submitButton.borderRadius`:
+`{borderRadius.6}` vs `{borderRadius.full}`).
+
+**Merged** into `src/components/mud-search-input/` — new `shape` prop
+(`'rectangular'` default / `'circular'`), single `search-input.tokens.json`
+with `container.borderRadius.{rectangular,circular}` and
+`submitButton.borderRadius.{rectangular,circular}` shape sub-keys, picked in
+CSS via `:host([shape='circular'])`.
+
+**Figma-alignment changes applied at the same time (per `node-id=2232-81406`):**
+
+- **Sizes renamed** to match Figma: `size` is now `'sm'` (40px, was `'md'`) /
+  `'md'` (48px, was `'lg'`). Same two heights, Figma's names. Default `'sm'`.
+- **Dropped `variant`** (`default` / `destructive`) — Figma "Search Input" has
+  no colour axis.
+- **Dropped `invalid` + `errorText` + the error assistive row / error icon** —
+  Figma has no error state for search inputs.
+- **Dropped `readonly`** — Figma has no read-only state.
+- Kept: `shape`, `size`, `disabled`, `required` (Mandatory Star), `clearable`
+  (Clear Button), `loading`, `with-button` (Button axis), `label`,
+  `helper-text` (Assistive Text), `icon-name` (Leading Icon), `clear-label`,
+  `submit-label`, `value`/`name`/`placeholder`/`autocomplete`/`maxlength`/
+  `minlength`/`aria-label`. Events `mudInput` / `mudChange` / `mudSearch` /
+  `mudClear` / `mudFocus` / `mudBlur` and slots `label` / `helper` /
+  `icon-start` / `icon-end` all unchanged.
+
+Deleted: `mud-search-input-rectangular/`, `mud-search-input-circular/`,
+`search-input-rectangular.tokens.json`, `search-input-circular.tokens.json`,
+`web-components/demo/pages/text-inputs/mud-search-input-circular.html`.
+Storybook title collapsed `Atoms/Input/Search/{Rectangular,Circular}` →
+`Atoms/Input/Search`. No internal component consumed either old tag.
 
 ### 2026-05-23 — `mud-phone-input` realigned to Figma — 4 styles, Type axis, Loading + Read-Only, country flag SVGs
 

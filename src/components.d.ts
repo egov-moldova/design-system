@@ -36,8 +36,7 @@ import { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputD
 import { ProgressTrackerOrientation, ProgressTrackerStep, ProgressTrackerStepClickDetail } from "./components/mud-progress-tracker/mud-progress-tracker.types";
 import { RadioChangeDetail, RadioSize } from "./components/mud-radio/mud-radio.types";
 import { ReceiptActionDetail, ReceiptParty, ReceiptService, ReceiptStatus } from "./components/mud-receipt/mud-receipt.types";
-import { SearchInputCircularChangeDetail, SearchInputCircularSearchDetail, SearchInputCircularSize, SearchInputCircularVariant } from "./components/mud-search-input-circular/mud-search-input-circular.types";
-import { SearchInputRectangularChangeDetail, SearchInputRectangularSearchDetail, SearchInputRectangularSize, SearchInputRectangularVariant } from "./components/mud-search-input-rectangular/mud-search-input-rectangular.types";
+import { SearchInputChangeDetail, SearchInputSearchDetail, SearchInputShape, SearchInputSize } from "./components/mud-search-input/mud-search-input.types";
 import { SegmentedControlChangeDetail, SegmentedControlSegment, SegmentedControlSize } from "./components/mud-segmented-control/mud-segmented-control.types";
 import { SelectChangeDetail, SelectInputSize, SelectInputVariant, SelectOption } from "./components/mud-select-input/mud-select-input.types";
 import { SeparatorOrientation, SeparatorSize, SeparatorVariant } from "./components/mud-separator/mud-separator.types";
@@ -82,8 +81,7 @@ export { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputD
 export { ProgressTrackerOrientation, ProgressTrackerStep, ProgressTrackerStepClickDetail } from "./components/mud-progress-tracker/mud-progress-tracker.types";
 export { RadioChangeDetail, RadioSize } from "./components/mud-radio/mud-radio.types";
 export { ReceiptActionDetail, ReceiptParty, ReceiptService, ReceiptStatus } from "./components/mud-receipt/mud-receipt.types";
-export { SearchInputCircularChangeDetail, SearchInputCircularSearchDetail, SearchInputCircularSize, SearchInputCircularVariant } from "./components/mud-search-input-circular/mud-search-input-circular.types";
-export { SearchInputRectangularChangeDetail, SearchInputRectangularSearchDetail, SearchInputRectangularSize, SearchInputRectangularVariant } from "./components/mud-search-input-rectangular/mud-search-input-rectangular.types";
+export { SearchInputChangeDetail, SearchInputSearchDetail, SearchInputShape, SearchInputSize } from "./components/mud-search-input/mud-search-input.types";
 export { SegmentedControlChangeDetail, SegmentedControlSegment, SegmentedControlSize } from "./components/mud-segmented-control/mud-segmented-control.types";
 export { SelectChangeDetail, SelectInputSize, SelectInputVariant, SelectOption } from "./components/mud-select-input/mud-select-input.types";
 export { SeparatorOrientation, SeparatorSize, SeparatorVariant } from "./components/mud-separator/mud-separator.types";
@@ -2444,154 +2442,28 @@ export namespace Components {
         "transactionIdLabel"?: string;
     }
     /**
-     * Search Input (circular) — single-line search-entry control with a fully
-     * rounded (pill) silhouette.
-     * Pattern B (atom-interactive, form-associated): renders its own
-     * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
-     * icon and an optional trailing clear `×` button that appears whenever the
-     * control carries a value. Behavior, props, slots, events, keyboard contract,
-     * ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
-     * `mud-search-input-rectangular` — the only visual difference is the
-     * silhouette: corners flip to `borderRadius.full` (9999px). The trailing
-     * submit button (when `with-button` is set) inherits the pill silhouette via
-     * `borderRadius.full`, rendering as a perfect circle that hugs the pill end
-     * per Figma master `933:29721`.
-     * The Republic of Moldova Unified Design System library catalogues circular
-     * and rectangular search fields as separate component_sets, so we ship them
-     * as distinct atoms with parallel token namespaces (`--search-input-circular-*`
-     * vs `--search-input-rectangular-*`).
-     * Optional axes per Figma master `933:29721`:
-     * - `loading` — async query is in flight; a trailing spinner appears next to
-     *   the value/placeholder and the control is announced as `aria-busy`.
-     * - `with-button` — adds a trailing brand-blue circular submit button that
-     *   fires `mudSearch` on click. Coexists with the clear button and the
-     *   loading spinner.
-     * @element mud-search-input-circular
-     */
-    interface MudSearchInputCircular {
-        /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
-         */
-        "ariaLabel"?: string;
-        /**
-          * Native `autocomplete` attribute forwarded to the internal control.
-         */
-        "autocomplete"?: string;
-        /**
-          * Accessible label for the trailing clear button. Defaults to Romanian "Șterge" per the institutional voice.
-          * @default 'Șterge'
-         */
-        "clearLabel": string;
-        /**
-          * Shows the trailing clear `×` button when a value is present. Set to `false` to suppress the affordance entirely (useful for read-only or always-on filters).
-          * @default true
-         */
-        "clearable": boolean;
-        /**
-          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
-          * @default false
-         */
-        "disabled": boolean;
-        /**
-          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
-         */
-        "errorText"?: string;
-        /**
-          * Plain-text helper / hint shown below the control.
-         */
-        "helperText"?: string;
-        /**
-          * Icon name for the leading icon (rendered via the local SVG library). Override by providing an element to the `icon-start` slot.
-          * @default 'search'
-         */
-        "iconName": string;
-        /**
-          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
-          * @default false
-         */
-        "invalid": boolean;
-        /**
-          * Plain-text label. Use the `label` slot for richer content.
-         */
-        "label"?: string;
-        /**
-          * Indicates an in-flight query. Keeps the leading magnifying-glass icon as the role indicator and reveals a trailing brand-coloured `mud-spinner` next to the value; the clear `×` is suppressed while the query is in flight and the control is announced as `aria-busy`. The field stays focusable; emitting `mudSearch` while loading is the consumer's responsibility (typically debounced).
-          * @default false
-         */
-        "loading": boolean;
-        /**
-          * Native `maxlength` constraint.
-         */
-        "maxLength"?: number;
-        /**
-          * Native `minlength` constraint.
-         */
-        "minLength"?: number;
-        /**
-          * Form-control `name`. Used during form submission.
-         */
-        "name"?: string;
-        /**
-          * Placeholder shown when the control is empty.
-         */
-        "placeholder"?: string;
-        /**
-          * Renders the field read-only. The control remains focusable; the clear affordance is suppressed.
-          * @default false
-         */
-        "readonly": boolean;
-        /**
-          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
-          * @default false
-         */
-        "required": boolean;
-        /**
-          * Visual size rung.
-          * @default 'md'
-         */
-        "size": SearchInputCircularSize;
-        /**
-          * Accessible label for the trailing submit button. Defaults to Romanian "Caută" per the institutional voice.
-          * @default 'Caută'
-         */
-        "submitLabel": string;
-        /**
-          * Current value of the control. Reflects to the host attribute.
-          * @default ''
-         */
-        "value": string;
-        /**
-          * Color treatment. `destructive` is forced when `invalid` is set.
-          * @default 'default'
-         */
-        "variant": SearchInputCircularVariant;
-        /**
-          * Renders a trailing brand-blue circular submit button (the Figma "Button=True" axis on master `933:29721`). Clicking the button — or pressing Enter inside the input — dispatches `mudSearch` with the current value. When the field is empty or disabled, the button enters a disabled visual state and does not fire the event.
-          * @default false
-         */
-        "withButton": boolean;
-    }
-    /**
-     * Search Input (rectangular) — single-line search-entry control.
+     * Search Input — single-line search-entry control.
      * Pattern B (atom-interactive, form-associated): renders its own
      * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
      * icon and an optional trailing clear `×` button that appears whenever the
      * control carries a value. Visual primitives (border, focus ring, label,
-     * helper / error, sizes, states) are shared with `mud-text-input`; specific
+     * helper, sizes, states) are shared with `mud-text-input`; specific
      * affordances (icon-start, icon-end-clear, submit-button) live in the
-     * `--search-input-rectangular-*` token namespace.
-     * Rectangular shape is the default sibling of `mud-search-input-circular`
-     * (pill). The two ship as distinct components per the Figma component-set
-     * separation in the Republic of Moldova Unified Design System library.
-     * Optional axes per Figma master `933:29099`:
+     * `--search-input-*` token namespace.
+     * Per the Figma "Search Input" component the field has two silhouettes,
+     * selected via the `shape` prop:
+     * - `rectangular` (default) — corners use `borderRadius.8`.
+     * - `circular` — corners flip to `borderRadius.full` (9999px), and the
+     *   trailing submit button becomes a perfect circle.
+     * Optional axes per Figma "Search Input":
      * - `loading` — async query is in flight; a trailing spinner appears next to
      *   the value/placeholder and the control is announced as `aria-busy`.
      * - `with-button` — adds a trailing brand-blue submit button that fires
      *   `mudSearch` on click. Coexists with the clear button and the loading
      *   spinner.
-     * @element mud-search-input-rectangular
+     * @element mud-search-input
      */
-    interface MudSearchInputRectangular {
+    interface MudSearchInput {
         /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
@@ -2606,19 +2478,15 @@ export namespace Components {
          */
         "clearLabel": string;
         /**
-          * Shows the trailing clear `×` button when a value is present. Set to `false` to suppress the affordance entirely (useful for read-only or always-on filters).
+          * Shows the trailing clear `×` button when a value is present. Set to `false` to suppress the affordance entirely (useful for always-on filters).
           * @default true
          */
         "clearable": boolean;
         /**
-          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * Disables interactivity. The internal control receives the native `disabled` attribute.
           * @default false
          */
         "disabled": boolean;
-        /**
-          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
-         */
-        "errorText"?: string;
         /**
           * Plain-text helper / hint shown below the control.
          */
@@ -2628,11 +2496,6 @@ export namespace Components {
           * @default 'search'
          */
         "iconName": string;
-        /**
-          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
-          * @default false
-         */
-        "invalid": boolean;
         /**
           * Plain-text label. Use the `label` slot for richer content.
          */
@@ -2659,20 +2522,20 @@ export namespace Components {
          */
         "placeholder"?: string;
         /**
-          * Renders the field read-only. The control remains focusable; the clear affordance is suppressed.
-          * @default false
-         */
-        "readonly": boolean;
-        /**
           * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
           * @default false
          */
         "required": boolean;
         /**
-          * Visual size rung.
-          * @default 'md'
+          * Silhouette. `rectangular` uses lightly-rounded corners; `circular` renders a fully-rounded (pill) field with a circular submit button.
+          * @default 'rectangular'
          */
-        "size": SearchInputRectangularSize;
+        "shape": SearchInputShape;
+        /**
+          * Visual size rung. `sm` is 40px tall, `md` is 48px tall.
+          * @default 'sm'
+         */
+        "size": SearchInputSize;
         /**
           * Accessible label for the trailing submit button. Defaults to Romanian "Caută" per the institutional voice.
           * @default 'Caută'
@@ -2683,11 +2546,6 @@ export namespace Components {
           * @default ''
          */
         "value": string;
-        /**
-          * Color treatment. `destructive` is forced when `invalid` is set.
-          * @default 'default'
-         */
-        "variant": SearchInputRectangularVariant;
         /**
           * Renders a trailing brand-blue submit button (the Figma "Button=True" axis). Clicking the button — or pressing Enter inside the input — dispatches `mudSearch` with the current value. When the field is empty or disabled, the button enters a disabled visual state and does not fire the event.
           * @default false
@@ -3729,13 +3587,9 @@ export interface MudReceiptCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudReceiptElement;
 }
-export interface MudSearchInputCircularCustomEvent<T> extends CustomEvent<T> {
+export interface MudSearchInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLMudSearchInputCircularElement;
-}
-export interface MudSearchInputRectangularCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLMudSearchInputRectangularElement;
+    target: HTMLMudSearchInputElement;
 }
 export interface MudSegmentedControlCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -4885,94 +4739,49 @@ declare global {
         prototype: HTMLMudReceiptElement;
         new (): HTMLMudReceiptElement;
     };
-    interface HTMLMudSearchInputCircularElementEventMap {
-        "mudInput": SearchInputCircularChangeDetail;
-        "mudChange": SearchInputCircularChangeDetail;
-        "mudSearch": SearchInputCircularSearchDetail;
+    interface HTMLMudSearchInputElementEventMap {
+        "mudInput": SearchInputChangeDetail;
+        "mudChange": SearchInputChangeDetail;
+        "mudSearch": SearchInputSearchDetail;
         "mudClear": void;
         "mudFocus": FocusEvent;
         "mudBlur": FocusEvent;
     }
     /**
-     * Search Input (circular) — single-line search-entry control with a fully
-     * rounded (pill) silhouette.
-     * Pattern B (atom-interactive, form-associated): renders its own
-     * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
-     * icon and an optional trailing clear `×` button that appears whenever the
-     * control carries a value. Behavior, props, slots, events, keyboard contract,
-     * ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
-     * `mud-search-input-rectangular` — the only visual difference is the
-     * silhouette: corners flip to `borderRadius.full` (9999px). The trailing
-     * submit button (when `with-button` is set) inherits the pill silhouette via
-     * `borderRadius.full`, rendering as a perfect circle that hugs the pill end
-     * per Figma master `933:29721`.
-     * The Republic of Moldova Unified Design System library catalogues circular
-     * and rectangular search fields as separate component_sets, so we ship them
-     * as distinct atoms with parallel token namespaces (`--search-input-circular-*`
-     * vs `--search-input-rectangular-*`).
-     * Optional axes per Figma master `933:29721`:
-     * - `loading` — async query is in flight; a trailing spinner appears next to
-     *   the value/placeholder and the control is announced as `aria-busy`.
-     * - `with-button` — adds a trailing brand-blue circular submit button that
-     *   fires `mudSearch` on click. Coexists with the clear button and the
-     *   loading spinner.
-     * @element mud-search-input-circular
-     */
-    interface HTMLMudSearchInputCircularElement extends Components.MudSearchInputCircular, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLMudSearchInputCircularElementEventMap>(type: K, listener: (this: HTMLMudSearchInputCircularElement, ev: MudSearchInputCircularCustomEvent<HTMLMudSearchInputCircularElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLMudSearchInputCircularElementEventMap>(type: K, listener: (this: HTMLMudSearchInputCircularElement, ev: MudSearchInputCircularCustomEvent<HTMLMudSearchInputCircularElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLMudSearchInputCircularElement: {
-        prototype: HTMLMudSearchInputCircularElement;
-        new (): HTMLMudSearchInputCircularElement;
-    };
-    interface HTMLMudSearchInputRectangularElementEventMap {
-        "mudInput": SearchInputRectangularChangeDetail;
-        "mudChange": SearchInputRectangularChangeDetail;
-        "mudSearch": SearchInputRectangularSearchDetail;
-        "mudClear": void;
-        "mudFocus": FocusEvent;
-        "mudBlur": FocusEvent;
-    }
-    /**
-     * Search Input (rectangular) — single-line search-entry control.
+     * Search Input — single-line search-entry control.
      * Pattern B (atom-interactive, form-associated): renders its own
      * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
      * icon and an optional trailing clear `×` button that appears whenever the
      * control carries a value. Visual primitives (border, focus ring, label,
-     * helper / error, sizes, states) are shared with `mud-text-input`; specific
+     * helper, sizes, states) are shared with `mud-text-input`; specific
      * affordances (icon-start, icon-end-clear, submit-button) live in the
-     * `--search-input-rectangular-*` token namespace.
-     * Rectangular shape is the default sibling of `mud-search-input-circular`
-     * (pill). The two ship as distinct components per the Figma component-set
-     * separation in the Republic of Moldova Unified Design System library.
-     * Optional axes per Figma master `933:29099`:
+     * `--search-input-*` token namespace.
+     * Per the Figma "Search Input" component the field has two silhouettes,
+     * selected via the `shape` prop:
+     * - `rectangular` (default) — corners use `borderRadius.8`.
+     * - `circular` — corners flip to `borderRadius.full` (9999px), and the
+     *   trailing submit button becomes a perfect circle.
+     * Optional axes per Figma "Search Input":
      * - `loading` — async query is in flight; a trailing spinner appears next to
      *   the value/placeholder and the control is announced as `aria-busy`.
      * - `with-button` — adds a trailing brand-blue submit button that fires
      *   `mudSearch` on click. Coexists with the clear button and the loading
      *   spinner.
-     * @element mud-search-input-rectangular
+     * @element mud-search-input
      */
-    interface HTMLMudSearchInputRectangularElement extends Components.MudSearchInputRectangular, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLMudSearchInputRectangularElementEventMap>(type: K, listener: (this: HTMLMudSearchInputRectangularElement, ev: MudSearchInputRectangularCustomEvent<HTMLMudSearchInputRectangularElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudSearchInputElement extends Components.MudSearchInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudSearchInputElementEventMap>(type: K, listener: (this: HTMLMudSearchInputElement, ev: MudSearchInputCustomEvent<HTMLMudSearchInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLMudSearchInputRectangularElementEventMap>(type: K, listener: (this: HTMLMudSearchInputRectangularElement, ev: MudSearchInputRectangularCustomEvent<HTMLMudSearchInputRectangularElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudSearchInputElementEventMap>(type: K, listener: (this: HTMLMudSearchInputElement, ev: MudSearchInputCustomEvent<HTMLMudSearchInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLMudSearchInputRectangularElement: {
-        prototype: HTMLMudSearchInputRectangularElement;
-        new (): HTMLMudSearchInputRectangularElement;
+    var HTMLMudSearchInputElement: {
+        prototype: HTMLMudSearchInputElement;
+        new (): HTMLMudSearchInputElement;
     };
     interface HTMLMudSegmentedControlElementEventMap {
         "mudChange": SegmentedControlChangeDetail;
@@ -5419,8 +5228,7 @@ declare global {
         "mud-progress-tracker": HTMLMudProgressTrackerElement;
         "mud-radio": HTMLMudRadioElement;
         "mud-receipt": HTMLMudReceiptElement;
-        "mud-search-input-circular": HTMLMudSearchInputCircularElement;
-        "mud-search-input-rectangular": HTMLMudSearchInputRectangularElement;
+        "mud-search-input": HTMLMudSearchInputElement;
         "mud-segmented-control": HTMLMudSegmentedControlElement;
         "mud-select-input": HTMLMudSelectInputElement;
         "mud-separator": HTMLMudSeparatorElement;
@@ -8111,182 +7919,28 @@ declare namespace LocalJSX {
         "transactionIdLabel"?: string;
     }
     /**
-     * Search Input (circular) — single-line search-entry control with a fully
-     * rounded (pill) silhouette.
-     * Pattern B (atom-interactive, form-associated): renders its own
-     * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
-     * icon and an optional trailing clear `×` button that appears whenever the
-     * control carries a value. Behavior, props, slots, events, keyboard contract,
-     * ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
-     * `mud-search-input-rectangular` — the only visual difference is the
-     * silhouette: corners flip to `borderRadius.full` (9999px). The trailing
-     * submit button (when `with-button` is set) inherits the pill silhouette via
-     * `borderRadius.full`, rendering as a perfect circle that hugs the pill end
-     * per Figma master `933:29721`.
-     * The Republic of Moldova Unified Design System library catalogues circular
-     * and rectangular search fields as separate component_sets, so we ship them
-     * as distinct atoms with parallel token namespaces (`--search-input-circular-*`
-     * vs `--search-input-rectangular-*`).
-     * Optional axes per Figma master `933:29721`:
-     * - `loading` — async query is in flight; a trailing spinner appears next to
-     *   the value/placeholder and the control is announced as `aria-busy`.
-     * - `with-button` — adds a trailing brand-blue circular submit button that
-     *   fires `mudSearch` on click. Coexists with the clear button and the
-     *   loading spinner.
-     * @element mud-search-input-circular
-     */
-    interface MudSearchInputCircular {
-        /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
-         */
-        "ariaLabel"?: string;
-        /**
-          * Native `autocomplete` attribute forwarded to the internal control.
-         */
-        "autocomplete"?: string;
-        /**
-          * Accessible label for the trailing clear button. Defaults to Romanian "Șterge" per the institutional voice.
-          * @default 'Șterge'
-         */
-        "clearLabel"?: string;
-        /**
-          * Shows the trailing clear `×` button when a value is present. Set to `false` to suppress the affordance entirely (useful for read-only or always-on filters).
-          * @default true
-         */
-        "clearable"?: boolean;
-        /**
-          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
-          * @default false
-         */
-        "disabled"?: boolean;
-        /**
-          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
-         */
-        "errorText"?: string;
-        /**
-          * The `id` of a `<form>` element to associate this element with.
-         */
-        "form"?: string;
-        /**
-          * Plain-text helper / hint shown below the control.
-         */
-        "helperText"?: string;
-        /**
-          * Icon name for the leading icon (rendered via the local SVG library). Override by providing an element to the `icon-start` slot.
-          * @default 'search'
-         */
-        "iconName"?: string;
-        /**
-          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
-          * @default false
-         */
-        "invalid"?: boolean;
-        /**
-          * Plain-text label. Use the `label` slot for richer content.
-         */
-        "label"?: string;
-        /**
-          * Indicates an in-flight query. Keeps the leading magnifying-glass icon as the role indicator and reveals a trailing brand-coloured `mud-spinner` next to the value; the clear `×` is suppressed while the query is in flight and the control is announced as `aria-busy`. The field stays focusable; emitting `mudSearch` while loading is the consumer's responsibility (typically debounced).
-          * @default false
-         */
-        "loading"?: boolean;
-        /**
-          * Native `maxlength` constraint.
-         */
-        "maxLength"?: number;
-        /**
-          * Native `minlength` constraint.
-         */
-        "minLength"?: number;
-        /**
-          * Form-control `name`. Used during form submission.
-         */
-        "name"?: string;
-        /**
-          * Fires when the internal control loses focus.
-         */
-        "onMudBlur"?: (event: MudSearchInputCircularCustomEvent<FocusEvent>) => void;
-        /**
-          * Fires when the value is committed (typically on `blur`). `detail.value` is the committed value.
-         */
-        "onMudChange"?: (event: MudSearchInputCircularCustomEvent<SearchInputCircularChangeDetail>) => void;
-        /**
-          * Fires when the value is cleared by the user (clear button or Escape key).
-         */
-        "onMudClear"?: (event: MudSearchInputCircularCustomEvent<void>) => void;
-        /**
-          * Fires when the internal control gains focus.
-         */
-        "onMudFocus"?: (event: MudSearchInputCircularCustomEvent<FocusEvent>) => void;
-        /**
-          * Fires on every keystroke. `detail.value` is the current control value.
-         */
-        "onMudInput"?: (event: MudSearchInputCircularCustomEvent<SearchInputCircularChangeDetail>) => void;
-        /**
-          * Fires when the user submits the query (Enter key). `detail.value` is the submitted query.
-         */
-        "onMudSearch"?: (event: MudSearchInputCircularCustomEvent<SearchInputCircularSearchDetail>) => void;
-        /**
-          * Placeholder shown when the control is empty.
-         */
-        "placeholder"?: string;
-        /**
-          * Renders the field read-only. The control remains focusable; the clear affordance is suppressed.
-          * @default false
-         */
-        "readonly"?: boolean;
-        /**
-          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
-          * @default false
-         */
-        "required"?: boolean;
-        /**
-          * Visual size rung.
-          * @default 'md'
-         */
-        "size"?: SearchInputCircularSize;
-        /**
-          * Accessible label for the trailing submit button. Defaults to Romanian "Caută" per the institutional voice.
-          * @default 'Caută'
-         */
-        "submitLabel"?: string;
-        /**
-          * Current value of the control. Reflects to the host attribute.
-          * @default ''
-         */
-        "value"?: string;
-        /**
-          * Color treatment. `destructive` is forced when `invalid` is set.
-          * @default 'default'
-         */
-        "variant"?: SearchInputCircularVariant;
-        /**
-          * Renders a trailing brand-blue circular submit button (the Figma "Button=True" axis on master `933:29721`). Clicking the button — or pressing Enter inside the input — dispatches `mudSearch` with the current value. When the field is empty or disabled, the button enters a disabled visual state and does not fire the event.
-          * @default false
-         */
-        "withButton"?: boolean;
-    }
-    /**
-     * Search Input (rectangular) — single-line search-entry control.
+     * Search Input — single-line search-entry control.
      * Pattern B (atom-interactive, form-associated): renders its own
      * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
      * icon and an optional trailing clear `×` button that appears whenever the
      * control carries a value. Visual primitives (border, focus ring, label,
-     * helper / error, sizes, states) are shared with `mud-text-input`; specific
+     * helper, sizes, states) are shared with `mud-text-input`; specific
      * affordances (icon-start, icon-end-clear, submit-button) live in the
-     * `--search-input-rectangular-*` token namespace.
-     * Rectangular shape is the default sibling of `mud-search-input-circular`
-     * (pill). The two ship as distinct components per the Figma component-set
-     * separation in the Republic of Moldova Unified Design System library.
-     * Optional axes per Figma master `933:29099`:
+     * `--search-input-*` token namespace.
+     * Per the Figma "Search Input" component the field has two silhouettes,
+     * selected via the `shape` prop:
+     * - `rectangular` (default) — corners use `borderRadius.8`.
+     * - `circular` — corners flip to `borderRadius.full` (9999px), and the
+     *   trailing submit button becomes a perfect circle.
+     * Optional axes per Figma "Search Input":
      * - `loading` — async query is in flight; a trailing spinner appears next to
      *   the value/placeholder and the control is announced as `aria-busy`.
      * - `with-button` — adds a trailing brand-blue submit button that fires
      *   `mudSearch` on click. Coexists with the clear button and the loading
      *   spinner.
-     * @element mud-search-input-rectangular
+     * @element mud-search-input
      */
-    interface MudSearchInputRectangular {
+    interface MudSearchInput {
         /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
@@ -8301,19 +7955,15 @@ declare namespace LocalJSX {
          */
         "clearLabel"?: string;
         /**
-          * Shows the trailing clear `×` button when a value is present. Set to `false` to suppress the affordance entirely (useful for read-only or always-on filters).
+          * Shows the trailing clear `×` button when a value is present. Set to `false` to suppress the affordance entirely (useful for always-on filters).
           * @default true
          */
         "clearable"?: boolean;
         /**
-          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * Disables interactivity. The internal control receives the native `disabled` attribute.
           * @default false
          */
         "disabled"?: boolean;
-        /**
-          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
-         */
-        "errorText"?: string;
         /**
           * The `id` of a `<form>` element to associate this element with.
          */
@@ -8327,11 +7977,6 @@ declare namespace LocalJSX {
           * @default 'search'
          */
         "iconName"?: string;
-        /**
-          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
-          * @default false
-         */
-        "invalid"?: boolean;
         /**
           * Plain-text label. Use the `label` slot for richer content.
          */
@@ -8356,46 +8001,46 @@ declare namespace LocalJSX {
         /**
           * Fires when the internal control loses focus.
          */
-        "onMudBlur"?: (event: MudSearchInputRectangularCustomEvent<FocusEvent>) => void;
+        "onMudBlur"?: (event: MudSearchInputCustomEvent<FocusEvent>) => void;
         /**
           * Fires when the value is committed (typically on `blur`). `detail.value` is the committed value.
          */
-        "onMudChange"?: (event: MudSearchInputRectangularCustomEvent<SearchInputRectangularChangeDetail>) => void;
+        "onMudChange"?: (event: MudSearchInputCustomEvent<SearchInputChangeDetail>) => void;
         /**
           * Fires when the value is cleared by the user (clear button or Escape key).
          */
-        "onMudClear"?: (event: MudSearchInputRectangularCustomEvent<void>) => void;
+        "onMudClear"?: (event: MudSearchInputCustomEvent<void>) => void;
         /**
           * Fires when the internal control gains focus.
          */
-        "onMudFocus"?: (event: MudSearchInputRectangularCustomEvent<FocusEvent>) => void;
+        "onMudFocus"?: (event: MudSearchInputCustomEvent<FocusEvent>) => void;
         /**
           * Fires on every keystroke. `detail.value` is the current control value.
          */
-        "onMudInput"?: (event: MudSearchInputRectangularCustomEvent<SearchInputRectangularChangeDetail>) => void;
+        "onMudInput"?: (event: MudSearchInputCustomEvent<SearchInputChangeDetail>) => void;
         /**
-          * Fires when the user submits the query (Enter key). `detail.value` is the submitted query.
+          * Fires when the user submits the query (Enter key or submit button). `detail.value` is the submitted query.
          */
-        "onMudSearch"?: (event: MudSearchInputRectangularCustomEvent<SearchInputRectangularSearchDetail>) => void;
+        "onMudSearch"?: (event: MudSearchInputCustomEvent<SearchInputSearchDetail>) => void;
         /**
           * Placeholder shown when the control is empty.
          */
         "placeholder"?: string;
-        /**
-          * Renders the field read-only. The control remains focusable; the clear affordance is suppressed.
-          * @default false
-         */
-        "readonly"?: boolean;
         /**
           * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
           * @default false
          */
         "required"?: boolean;
         /**
-          * Visual size rung.
-          * @default 'md'
+          * Silhouette. `rectangular` uses lightly-rounded corners; `circular` renders a fully-rounded (pill) field with a circular submit button.
+          * @default 'rectangular'
          */
-        "size"?: SearchInputRectangularSize;
+        "shape"?: SearchInputShape;
+        /**
+          * Visual size rung. `sm` is 40px tall, `md` is 48px tall.
+          * @default 'sm'
+         */
+        "size"?: SearchInputSize;
         /**
           * Accessible label for the trailing submit button. Defaults to Romanian "Caută" per the institutional voice.
           * @default 'Caută'
@@ -8406,11 +8051,6 @@ declare namespace LocalJSX {
           * @default ''
          */
         "value"?: string;
-        /**
-          * Color treatment. `destructive` is forced when `invalid` is set.
-          * @default 'default'
-         */
-        "variant"?: SearchInputRectangularVariant;
         /**
           * Renders a trailing brand-blue submit button (the Figma "Button=True" axis). Clicking the button — or pressing Enter inside the input — dispatches `mudSearch` with the current value. When the field is empty or disabled, the button enters a disabled visual state and does not fire the event.
           * @default false
@@ -9902,13 +9542,11 @@ declare namespace LocalJSX {
         "emailLabel": string;
         "shareLabel": string;
     }
-    interface MudSearchInputCircularAttributes {
-        "variant": SearchInputCircularVariant;
-        "size": SearchInputCircularSize;
+    interface MudSearchInputAttributes {
+        "shape": SearchInputShape;
+        "size": SearchInputSize;
         "disabled": boolean;
         "required": boolean;
-        "readonly": boolean;
-        "invalid": boolean;
         "clearable": boolean;
         "loading": boolean;
         "withButton": boolean;
@@ -9918,31 +9556,6 @@ declare namespace LocalJSX {
         "placeholder": string;
         "label": string;
         "helperText": string;
-        "errorText": string;
-        "iconName": string;
-        "clearLabel": string;
-        "autocomplete": string;
-        "maxLength": number;
-        "minLength": number;
-        "ariaLabel": string;
-    }
-    interface MudSearchInputRectangularAttributes {
-        "variant": SearchInputRectangularVariant;
-        "size": SearchInputRectangularSize;
-        "disabled": boolean;
-        "required": boolean;
-        "readonly": boolean;
-        "invalid": boolean;
-        "clearable": boolean;
-        "loading": boolean;
-        "withButton": boolean;
-        "submitLabel": string;
-        "value": string;
-        "name": string;
-        "placeholder": string;
-        "label": string;
-        "helperText": string;
-        "errorText": string;
         "iconName": string;
         "clearLabel": string;
         "autocomplete": string;
@@ -10169,8 +9782,7 @@ declare namespace LocalJSX {
         "mud-progress-tracker": Omit<MudProgressTracker, keyof MudProgressTrackerAttributes> & { [K in keyof MudProgressTracker & keyof MudProgressTrackerAttributes]?: MudProgressTracker[K] } & { [K in keyof MudProgressTracker & keyof MudProgressTrackerAttributes as `attr:${K}`]?: MudProgressTrackerAttributes[K] } & { [K in keyof MudProgressTracker & keyof MudProgressTrackerAttributes as `prop:${K}`]?: MudProgressTracker[K] };
         "mud-radio": Omit<MudRadio, keyof MudRadioAttributes> & { [K in keyof MudRadio & keyof MudRadioAttributes]?: MudRadio[K] } & { [K in keyof MudRadio & keyof MudRadioAttributes as `attr:${K}`]?: MudRadioAttributes[K] } & { [K in keyof MudRadio & keyof MudRadioAttributes as `prop:${K}`]?: MudRadio[K] };
         "mud-receipt": Omit<MudReceipt, keyof MudReceiptAttributes> & { [K in keyof MudReceipt & keyof MudReceiptAttributes]?: MudReceipt[K] } & { [K in keyof MudReceipt & keyof MudReceiptAttributes as `attr:${K}`]?: MudReceiptAttributes[K] } & { [K in keyof MudReceipt & keyof MudReceiptAttributes as `prop:${K}`]?: MudReceipt[K] };
-        "mud-search-input-circular": Omit<MudSearchInputCircular, keyof MudSearchInputCircularAttributes> & { [K in keyof MudSearchInputCircular & keyof MudSearchInputCircularAttributes]?: MudSearchInputCircular[K] } & { [K in keyof MudSearchInputCircular & keyof MudSearchInputCircularAttributes as `attr:${K}`]?: MudSearchInputCircularAttributes[K] } & { [K in keyof MudSearchInputCircular & keyof MudSearchInputCircularAttributes as `prop:${K}`]?: MudSearchInputCircular[K] };
-        "mud-search-input-rectangular": Omit<MudSearchInputRectangular, keyof MudSearchInputRectangularAttributes> & { [K in keyof MudSearchInputRectangular & keyof MudSearchInputRectangularAttributes]?: MudSearchInputRectangular[K] } & { [K in keyof MudSearchInputRectangular & keyof MudSearchInputRectangularAttributes as `attr:${K}`]?: MudSearchInputRectangularAttributes[K] } & { [K in keyof MudSearchInputRectangular & keyof MudSearchInputRectangularAttributes as `prop:${K}`]?: MudSearchInputRectangular[K] };
+        "mud-search-input": Omit<MudSearchInput, keyof MudSearchInputAttributes> & { [K in keyof MudSearchInput & keyof MudSearchInputAttributes]?: MudSearchInput[K] } & { [K in keyof MudSearchInput & keyof MudSearchInputAttributes as `attr:${K}`]?: MudSearchInputAttributes[K] } & { [K in keyof MudSearchInput & keyof MudSearchInputAttributes as `prop:${K}`]?: MudSearchInput[K] };
         "mud-segmented-control": Omit<MudSegmentedControl, keyof MudSegmentedControlAttributes> & { [K in keyof MudSegmentedControl & keyof MudSegmentedControlAttributes]?: MudSegmentedControl[K] } & { [K in keyof MudSegmentedControl & keyof MudSegmentedControlAttributes as `attr:${K}`]?: MudSegmentedControlAttributes[K] } & { [K in keyof MudSegmentedControl & keyof MudSegmentedControlAttributes as `prop:${K}`]?: MudSegmentedControl[K] };
         "mud-select-input": Omit<MudSelectInput, keyof MudSelectInputAttributes> & { [K in keyof MudSelectInput & keyof MudSelectInputAttributes]?: MudSelectInput[K] } & { [K in keyof MudSelectInput & keyof MudSelectInputAttributes as `attr:${K}`]?: MudSelectInputAttributes[K] } & { [K in keyof MudSelectInput & keyof MudSelectInputAttributes as `prop:${K}`]?: MudSelectInput[K] };
         "mud-separator": Omit<MudSeparator, keyof MudSeparatorAttributes> & { [K in keyof MudSeparator & keyof MudSeparatorAttributes]?: MudSeparator[K] } & { [K in keyof MudSeparator & keyof MudSeparatorAttributes as `attr:${K}`]?: MudSeparatorAttributes[K] } & { [K in keyof MudSeparator & keyof MudSeparatorAttributes as `prop:${K}`]?: MudSeparator[K] };
@@ -10721,52 +10333,28 @@ declare module "@stencil/core" {
              */
             "mud-receipt": LocalJSX.IntrinsicElements["mud-receipt"] & JSXBase.HTMLAttributes<HTMLMudReceiptElement>;
             /**
-             * Search Input (circular) — single-line search-entry control with a fully
-             * rounded (pill) silhouette.
-             * Pattern B (atom-interactive, form-associated): renders its own
-             * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
-             * icon and an optional trailing clear `×` button that appears whenever the
-             * control carries a value. Behavior, props, slots, events, keyboard contract,
-             * ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
-             * `mud-search-input-rectangular` — the only visual difference is the
-             * silhouette: corners flip to `borderRadius.full` (9999px). The trailing
-             * submit button (when `with-button` is set) inherits the pill silhouette via
-             * `borderRadius.full`, rendering as a perfect circle that hugs the pill end
-             * per Figma master `933:29721`.
-             * The Republic of Moldova Unified Design System library catalogues circular
-             * and rectangular search fields as separate component_sets, so we ship them
-             * as distinct atoms with parallel token namespaces (`--search-input-circular-*`
-             * vs `--search-input-rectangular-*`).
-             * Optional axes per Figma master `933:29721`:
-             * - `loading` — async query is in flight; a trailing spinner appears next to
-             *   the value/placeholder and the control is announced as `aria-busy`.
-             * - `with-button` — adds a trailing brand-blue circular submit button that
-             *   fires `mudSearch` on click. Coexists with the clear button and the
-             *   loading spinner.
-             * @element mud-search-input-circular
-             */
-            "mud-search-input-circular": LocalJSX.IntrinsicElements["mud-search-input-circular"] & JSXBase.HTMLAttributes<HTMLMudSearchInputCircularElement>;
-            /**
-             * Search Input (rectangular) — single-line search-entry control.
+             * Search Input — single-line search-entry control.
              * Pattern B (atom-interactive, form-associated): renders its own
              * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
              * icon and an optional trailing clear `×` button that appears whenever the
              * control carries a value. Visual primitives (border, focus ring, label,
-             * helper / error, sizes, states) are shared with `mud-text-input`; specific
+             * helper, sizes, states) are shared with `mud-text-input`; specific
              * affordances (icon-start, icon-end-clear, submit-button) live in the
-             * `--search-input-rectangular-*` token namespace.
-             * Rectangular shape is the default sibling of `mud-search-input-circular`
-             * (pill). The two ship as distinct components per the Figma component-set
-             * separation in the Republic of Moldova Unified Design System library.
-             * Optional axes per Figma master `933:29099`:
+             * `--search-input-*` token namespace.
+             * Per the Figma "Search Input" component the field has two silhouettes,
+             * selected via the `shape` prop:
+             * - `rectangular` (default) — corners use `borderRadius.8`.
+             * - `circular` — corners flip to `borderRadius.full` (9999px), and the
+             *   trailing submit button becomes a perfect circle.
+             * Optional axes per Figma "Search Input":
              * - `loading` — async query is in flight; a trailing spinner appears next to
              *   the value/placeholder and the control is announced as `aria-busy`.
              * - `with-button` — adds a trailing brand-blue submit button that fires
              *   `mudSearch` on click. Coexists with the clear button and the loading
              *   spinner.
-             * @element mud-search-input-rectangular
+             * @element mud-search-input
              */
-            "mud-search-input-rectangular": LocalJSX.IntrinsicElements["mud-search-input-rectangular"] & JSXBase.HTMLAttributes<HTMLMudSearchInputRectangularElement>;
+            "mud-search-input": LocalJSX.IntrinsicElements["mud-search-input"] & JSXBase.HTMLAttributes<HTMLMudSearchInputElement>;
             /**
              * Segmented control — single-select horizontal switcher.
              * Pattern B (atom-interactive, form-associated): renders an internal

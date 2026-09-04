@@ -1,0 +1,378 @@
+:host {
+  --_height: var(--search-input-container-height-sm);
+  --_padding-inline: var(--search-input-container-padding-inline-sm);
+  --_gap: var(--search-input-container-gap-sm);
+  --_radius: var(--search-input-container-border-radius-rectangular);
+  --_border-width-default: var(--search-input-container-border-width-default);
+  --_border-width-emphasized: var(--search-input-container-border-width-emphasized);
+  --_focus-ring-width: var(--search-input-container-focus-ring-width);
+  --_transition-duration: var(--search-input-container-transition-duration);
+  --_transition-easing: var(--search-input-container-transition-timing-function);
+  --_submit-button-radius: var(--search-input-submit-button-border-radius-rectangular);
+
+  --_control-font-size: var(--search-input-control-font-size-sm);
+  --_control-line-height: var(--search-input-control-line-height-sm);
+  --_icon-start-size: var(--search-input-icon-start-size-sm);
+  --_icon-end-clear-size: var(--search-input-icon-end-clear-size-sm);
+
+  --_bg: var(--search-input-default-background-default);
+  --_text: var(--search-input-default-text-default);
+  --_text-placeholder: var(--search-input-default-text-placeholder);
+  --_border-color: var(--search-input-default-border-default);
+  --_border-color-hover: var(--search-input-default-border-hover);
+  --_border-color-focus: var(--search-input-default-border-focus);
+  --_focus-ring-color: var(--search-input-default-focus-ring);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--search-input-field-gap);
+  inline-size: 100%;
+  font-family: var(--search-input-control-font-family);
+  color: var(--_text);
+}
+
+:host([size='md']) {
+  --_height: var(--search-input-container-height-md);
+  --_padding-inline: var(--search-input-container-padding-inline-md);
+  --_gap: var(--search-input-container-gap-md);
+  --_control-font-size: var(--search-input-control-font-size-md);
+  --_control-line-height: var(--search-input-control-line-height-md);
+  --_icon-start-size: var(--search-input-icon-start-size-md);
+  --_icon-end-clear-size: var(--search-input-icon-end-clear-size-md);
+}
+
+:host([shape='circular']) {
+  --_radius: var(--search-input-container-border-radius-circular);
+  --_submit-button-radius: var(--search-input-submit-button-border-radius-circular);
+}
+
+/* ---------- Label ---------- */
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: var(--search-input-label-gap);
+  font-family: var(--search-input-label-font-family);
+  font-size: var(--search-input-label-font-size);
+  line-height: var(--search-input-label-line-height);
+  font-weight: var(--search-input-label-font-weight);
+  color: var(--search-input-label-color-default);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.label-text {
+  display: block;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.required-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--spacing-12);
+  block-size: var(--spacing-12);
+  color: var(--color-text-danger-default);
+  font-weight: var(--search-input-control-font-weight);
+  line-height: 1;
+}
+
+:host(.is-disabled) .label,
+:host(.is-disabled) .required-mark {
+  color: var(--search-input-label-color-disabled);
+}
+
+/* Hide the label row entirely when no text and no slotted content is present. */
+:host(:not(.has-label)) .label {
+  display: none;
+}
+
+/* ---------- Control row ---------- */
+
+.control {
+  display: flex;
+  align-items: center;
+  gap: var(--_gap);
+  block-size: var(--_height);
+  padding-inline: var(--_padding-inline);
+  background-color: var(--_bg);
+  border: var(--_border-width-default) solid var(--_border-color);
+  border-radius: var(--_radius);
+  transition:
+    border-color var(--_transition-duration) var(--_transition-easing),
+    box-shadow var(--_transition-duration) var(--_transition-easing),
+    background-color var(--_transition-duration) var(--_transition-easing);
+}
+
+:host(:not(.is-disabled):not(.is-focused):hover) .control {
+  border-color: var(--_border-color-hover);
+  box-shadow: inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default))
+    var(--_border-color-hover);
+}
+
+:host(.is-focused:not(.is-disabled)) .control {
+  border-color: var(--_border-color-focus);
+  box-shadow:
+    inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default)) var(--_border-color-focus),
+    0 0 0 var(--spacing-4) var(--_focus-ring-color);
+}
+
+:host(.is-disabled) .control {
+  background-color: var(--search-input-default-background-disabled);
+  border-color: var(--search-input-default-border-disabled);
+  cursor: not-allowed;
+}
+
+/* ---------- Icon slots ---------- */
+
+.control-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--search-input-icon-start-color-default);
+}
+
+.control-icon-start {
+  inline-size: var(--_icon-start-size);
+  block-size: var(--_icon-start-size);
+}
+
+.control-icon-end {
+  inline-size: var(--_icon-end-clear-size);
+  block-size: var(--_icon-end-clear-size);
+}
+
+:host(.is-disabled) .control-icon,
+:host(.is-disabled) .clear-button {
+  color: var(--search-input-icon-start-color-disabled);
+}
+
+/* Hide the trailing slot wrapper when empty (clear button renders separately). */
+:host(:not(.has-value)) .control-icon-end:empty,
+.control-icon-end:not(:has(*)) {
+  display: none;
+}
+
+::slotted([slot='icon-start']),
+::slotted([slot='icon-end']) {
+  color: inherit;
+}
+
+/* Style the default-slotted mud-icon (Shadow DOM dual-selector pattern). */
+.control-icon-start > mud-icon {
+  color: inherit;
+}
+
+/* ---------- Loading spinner (Figma "Search Input" States — spinner sits next
+   to the value, leading magnifying-glass remains as the role indicator). The
+   clear-button suppression while loading happens in the TSX `showClearButton`
+   guard; the spinner owns the trailing slot space when it renders. ---------- */
+
+.control-spinner {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--search-input-loading-spinner-size-sm);
+  block-size: var(--search-input-loading-spinner-size-sm);
+  color: var(--search-input-loading-spinner-color-default);
+}
+
+:host([size='md']) .control-spinner {
+  inline-size: var(--search-input-loading-spinner-size-md);
+  block-size: var(--search-input-loading-spinner-size-md);
+}
+
+:host(.is-disabled) .control-spinner {
+  color: var(--search-input-loading-spinner-color-disabled);
+}
+
+/* ---------- Clear button ---------- */
+
+.clear-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--_icon-end-clear-size);
+  block-size: var(--_icon-end-clear-size);
+  padding: 0;
+  margin: 0;
+  /* Per Figma — the clear button carries a subtle gray oval at rest in the
+     Filled state. The transparent-inactive hardcode in Figma maps to
+     base.tertiary in our semantic system. */
+  background: var(--search-input-icon-end-clear-background-default);
+  border: 0;
+  border-radius: var(--search-input-icon-end-clear-border-radius);
+  color: var(--search-input-icon-end-clear-color-default);
+  cursor: pointer;
+  transition:
+    background-color var(--_transition-duration) var(--_transition-easing),
+    color var(--_transition-duration) var(--_transition-easing);
+}
+
+.clear-button:hover {
+  background-color: var(--search-input-icon-end-clear-background-hover);
+  color: var(--search-input-icon-end-clear-color-hover);
+}
+
+.clear-button:active {
+  background-color: var(--search-input-icon-end-clear-background-active);
+  color: var(--search-input-icon-end-clear-color-active);
+}
+
+.clear-button:focus-visible {
+  outline: var(--border-width-2) solid var(--color-border-brand-default);
+  outline-offset: var(--spacing-2);
+}
+
+/* ---------- Submit button (Figma "Button=True" axis) ---------- */
+
+/* Tighten the right padding so the brand-blue submit button hugs the field
+   edge per Figma. Left padding is preserved. */
+:host(.has-submit-button) .control {
+  padding-inline-end: var(--search-input-submit-button-container-padding-inline-end);
+}
+
+.submit-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--search-input-submit-button-size-sm);
+  block-size: var(--search-input-submit-button-size-sm);
+  padding: 0;
+  margin: 0;
+  background-color: var(--search-input-submit-button-background-default);
+  color: var(--search-input-submit-button-icon-default);
+  border: 0;
+  border-radius: var(--_submit-button-radius);
+  cursor: pointer;
+  transition:
+    background-color var(--_transition-duration) var(--_transition-easing),
+    color var(--_transition-duration) var(--_transition-easing);
+}
+
+:host([size='md']) .submit-button {
+  inline-size: var(--search-input-submit-button-size-md);
+  block-size: var(--search-input-submit-button-size-md);
+}
+
+.submit-button:hover:not(:disabled) {
+  background-color: var(--search-input-submit-button-background-hover);
+}
+
+.submit-button:active:not(:disabled) {
+  background-color: var(--search-input-submit-button-background-active);
+}
+
+.submit-button:focus-visible {
+  outline: var(--border-width-2) solid var(--color-border-brand-default);
+  outline-offset: var(--search-input-submit-button-focus-ring-offset);
+}
+
+.submit-button:disabled {
+  background-color: var(--search-input-submit-button-background-disabled);
+  color: var(--search-input-submit-button-icon-disabled);
+  cursor: not-allowed;
+}
+
+/* ---------- Native input ---------- */
+
+.native {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: var(--_control-font-size);
+  line-height: var(--_control-line-height);
+  font-weight: var(--search-input-control-font-weight);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  text-overflow: ellipsis;
+}
+
+.native::placeholder {
+  color: var(--_text-placeholder);
+  opacity: 1;
+}
+
+.native:disabled {
+  color: var(--search-input-default-text-disabled);
+  cursor: not-allowed;
+  -webkit-text-fill-color: var(--search-input-default-text-disabled);
+}
+
+.native:disabled::placeholder {
+  color: var(--search-input-default-text-disabled);
+  -webkit-text-fill-color: var(--search-input-default-text-disabled);
+}
+
+/* Suppress browser default focus ring — the host handles focus visuals. */
+.native:focus,
+.native:focus-visible {
+  outline: none;
+}
+
+/* Suppress the native search-input × button — we render our own clear button
+   for visual + keyboard parity across engines. */
+.native::-webkit-search-cancel-button,
+.native::-webkit-search-decoration,
+.native::-webkit-search-results-button,
+.native::-webkit-search-results-decoration {
+  display: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.native:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 var(--spacing-120) var(--_bg) inset;
+  -webkit-text-fill-color: var(--_text);
+}
+
+/* ---------- Assistive (helper) ---------- */
+
+.assistive {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--search-input-assistive-gap-default);
+  font-family: var(--search-input-assistive-font-family);
+  font-size: var(--search-input-assistive-font-size);
+  line-height: var(--search-input-assistive-line-height);
+  font-weight: var(--search-input-assistive-font-weight);
+  color: var(--search-input-assistive-color-default);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.assistive-text {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  text-overflow: ellipsis;
+}
+
+/* ---------- prefers-reduced-motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .control,
+  .clear-button,
+  .submit-button {
+    transition: none;
+  }
+}

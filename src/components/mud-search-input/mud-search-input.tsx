@@ -1,71 +1,69 @@
 import { AttachInternals, Component, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
 
-import { SEARCH_INPUT_CIRCULAR_SIZES, SEARCH_INPUT_CIRCULAR_VARIANTS } from './mud-search-input-circular.types';
+import { SEARCH_INPUT_SHAPES, SEARCH_INPUT_SIZES } from './mud-search-input.types';
 import type {
-  SearchInputCircularChangeDetail,
-  SearchInputCircularSearchDetail,
-  SearchInputCircularSize,
-  SearchInputCircularVariant,
-} from './mud-search-input-circular.types';
+  SearchInputChangeDetail,
+  SearchInputSearchDetail,
+  SearchInputShape,
+  SearchInputSize,
+} from './mud-search-input.types';
 
 let searchInputInstanceCounter = 0;
 
 /**
- * Search Input (circular) — single-line search-entry control with a fully
- * rounded (pill) silhouette.
+ * Search Input — single-line search-entry control.
  *
  * Pattern B (atom-interactive, form-associated): renders its own
  * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
  * icon and an optional trailing clear `×` button that appears whenever the
- * control carries a value. Behavior, props, slots, events, keyboard contract,
- * ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
- * `mud-search-input-rectangular` — the only visual difference is the
- * silhouette: corners flip to `borderRadius.full` (9999px). The trailing
- * submit button (when `with-button` is set) inherits the pill silhouette via
- * `borderRadius.full`, rendering as a perfect circle that hugs the pill end
- * per Figma master `933:29721`.
+ * control carries a value. Visual primitives (border, focus ring, label,
+ * helper, sizes, states) are shared with `mud-text-input`; specific
+ * affordances (icon-start, icon-end-clear, submit-button) live in the
+ * `--search-input-*` token namespace.
  *
- * The Republic of Moldova Unified Design System library catalogues circular
- * and rectangular search fields as separate component_sets, so we ship them
- * as distinct atoms with parallel token namespaces (`--search-input-circular-*`
- * vs `--search-input-rectangular-*`).
+ * Per the Figma "Search Input" component the field has two silhouettes,
+ * selected via the `shape` prop:
+ * - `rectangular` (default) — corners use `borderRadius.8`.
+ * - `circular` — corners flip to `borderRadius.full` (9999px), and the
+ *   trailing submit button becomes a perfect circle.
  *
- * Optional axes per Figma master `933:29721`:
+ * Optional axes per Figma "Search Input":
  * - `loading` — async query is in flight; a trailing spinner appears next to
  *   the value/placeholder and the control is announced as `aria-busy`.
- * - `with-button` — adds a trailing brand-blue circular submit button that
- *   fires `mudSearch` on click. Coexists with the clear button and the
- *   loading spinner.
+ * - `with-button` — adds a trailing brand-blue submit button that fires
+ *   `mudSearch` on click. Coexists with the clear button and the loading
+ *   spinner.
  *
- * @element mud-search-input-circular
+ * @element mud-search-input
  *
  * @slot label - Rich label content, replaces the `label` prop when present.
- * @slot helper - Rich helper / hint content, replaces the `helper-text` prop. Hidden when invalid + error-text is shown.
+ * @slot helper - Rich helper / hint content, replaces the `helper-text` prop.
  * @slot icon-start - Leading icon override. Defaults to `mud-icon[name="search"]`.
  * @slot icon-end - Trailing slot. Suppresses the built-in clear `×` button when content is assigned here.
  */
 @Component({
-  tag: 'mud-search-input-circular',
-  styleUrl: 'mud-search-input-circular.css',
+  tag: 'mud-search-input',
+  styleUrl: 'mud-search-input.css',
   shadow: { delegatesFocus: true },
   formAssociated: true,
 })
-export class MudSearchInputCircular {
+export class MudSearchInput {
   /**
-   * Color treatment. `destructive` is forced when `invalid` is set.
-   * @default 'default'
+   * Silhouette. `rectangular` uses lightly-rounded corners; `circular`
+   * renders a fully-rounded (pill) field with a circular submit button.
+   * @default 'rectangular'
    */
-  @Prop({ reflect: true }) variant: SearchInputCircularVariant = 'default';
+  @Prop({ reflect: true }) shape: SearchInputShape = 'rectangular';
 
   /**
-   * Visual size rung.
-   * @default 'md'
+   * Visual size rung. `sm` is 40px tall, `md` is 48px tall.
+   * @default 'sm'
    */
-  @Prop({ reflect: true }) size: SearchInputCircularSize = 'md';
+  @Prop({ reflect: true }) size: SearchInputSize = 'sm';
 
   /**
-   * Disables interactivity. The internal control receives `aria-disabled` and
-   * the native `disabled` attribute.
+   * Disables interactivity. The internal control receives the native
+   * `disabled` attribute.
    * @default false
    */
   @Prop({ reflect: true }) disabled: boolean = false;
@@ -78,23 +76,9 @@ export class MudSearchInputCircular {
   @Prop({ reflect: true }) required: boolean = false;
 
   /**
-   * Renders the field read-only. The control remains focusable; the clear
-   * affordance is suppressed.
-   * @default false
-   */
-  @Prop({ reflect: true }) readonly: boolean = false;
-
-  /**
-   * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`.
-   * Use together with `errorText` to surface the message.
-   * @default false
-   */
-  @Prop({ reflect: true }) invalid: boolean = false;
-
-  /**
    * Shows the trailing clear `×` button when a value is present. Set to
-   * `false` to suppress the affordance entirely (useful for read-only or
-   * always-on filters).
+   * `false` to suppress the affordance entirely (useful for always-on
+   * filters).
    * @default true
    */
   @Prop({ reflect: true }) clearable: boolean = true;
@@ -111,11 +95,11 @@ export class MudSearchInputCircular {
   @Prop({ reflect: true }) loading: boolean = false;
 
   /**
-   * Renders a trailing brand-blue circular submit button (the Figma
-   * "Button=True" axis on master `933:29721`). Clicking the button — or
-   * pressing Enter inside the input — dispatches `mudSearch` with the
-   * current value. When the field is empty or disabled, the button enters
-   * a disabled visual state and does not fire the event.
+   * Renders a trailing brand-blue submit button (the Figma "Button=True"
+   * axis). Clicking the button — or pressing Enter inside the input —
+   * dispatches `mudSearch` with the current value. When the field is empty
+   * or disabled, the button enters a disabled visual state and does not
+   * fire the event.
    * @default false
    */
   @Prop({ reflect: true, attribute: 'with-button' }) withButton: boolean = false;
@@ -144,12 +128,6 @@ export class MudSearchInputCircular {
 
   /** Plain-text helper / hint shown below the control. */
   @Prop({ attribute: 'helper-text' }) helperText?: string;
-
-  /**
-   * Plain-text error message shown below the control when `invalid` is set.
-   * When present it replaces `helperText` and pairs with the error icon.
-   */
-  @Prop({ attribute: 'error-text' }) errorText?: string;
 
   /**
    * Icon name for the leading icon (rendered via the local SVG library).
@@ -189,18 +167,18 @@ export class MudSearchInputCircular {
   @State() private fieldsetDisabled: boolean = false;
   @State() private resolvedAriaLabel?: string;
 
-  @Element() host!: HTMLMudSearchInputCircularElement;
+  @Element() host!: HTMLMudSearchInputElement;
 
   @AttachInternals() internals!: ElementInternals;
 
   /** Fires on every keystroke. `detail.value` is the current control value. */
-  @Event() mudInput!: EventEmitter<SearchInputCircularChangeDetail>;
+  @Event() mudInput!: EventEmitter<SearchInputChangeDetail>;
 
   /** Fires when the value is committed (typically on `blur`). `detail.value` is the committed value. */
-  @Event() mudChange!: EventEmitter<SearchInputCircularChangeDetail>;
+  @Event() mudChange!: EventEmitter<SearchInputChangeDetail>;
 
-  /** Fires when the user submits the query (Enter key). `detail.value` is the submitted query. */
-  @Event() mudSearch!: EventEmitter<SearchInputCircularSearchDetail>;
+  /** Fires when the user submits the query (Enter key or submit button). `detail.value` is the submitted query. */
+  @Event() mudSearch!: EventEmitter<SearchInputSearchDetail>;
 
   /** Fires when the value is cleared by the user (clear button or Escape key). */
   @Event() mudClear!: EventEmitter<void>;
@@ -212,9 +190,8 @@ export class MudSearchInputCircular {
   @Event() mudBlur!: EventEmitter<FocusEvent>;
 
   private readonly instanceId = ++searchInputInstanceCounter;
-  private readonly labelId = `mud-search-input-circular-label-${this.instanceId}`;
-  private readonly helperId = `mud-search-input-circular-helper-${this.instanceId}`;
-  private readonly errorId = `mud-search-input-circular-error-${this.instanceId}`;
+  private readonly labelId = `mud-search-input-label-${this.instanceId}`;
+  private readonly helperId = `mud-search-input-helper-${this.instanceId}`;
   private initialValue: string = '';
   private nativeEl?: HTMLInputElement;
 
@@ -256,27 +233,27 @@ export class MudSearchInputCircular {
     this.internals.setValidity({});
   }
 
-  @Watch('variant')
-  validateVariant(next: SearchInputCircularVariant) {
-    if (!SEARCH_INPUT_CIRCULAR_VARIANTS.includes(next)) {
+  @Watch('shape')
+  validateShape(next: SearchInputShape) {
+    if (!SEARCH_INPUT_SHAPES.includes(next)) {
       console.warn(
-        `[mud-search-input-circular] variant="${String(
+        `[mud-search-input] shape="${String(
           next,
-        )}" is not supported. Supported: ${SEARCH_INPUT_CIRCULAR_VARIANTS.join(', ')}. Falling back to "default".`,
+        )}" is not supported. Supported: ${SEARCH_INPUT_SHAPES.join(', ')}. Falling back to "rectangular".`,
       );
-      this.variant = 'default';
+      this.shape = 'rectangular';
     }
   }
 
   @Watch('size')
-  validateSize(next: SearchInputCircularSize) {
-    if (!SEARCH_INPUT_CIRCULAR_SIZES.includes(next)) {
+  validateSize(next: SearchInputSize) {
+    if (!SEARCH_INPUT_SIZES.includes(next)) {
       console.warn(
-        `[mud-search-input-circular] size="${String(
+        `[mud-search-input] size="${String(
           next,
-        )}" is not supported. Supported: ${SEARCH_INPUT_CIRCULAR_SIZES.join(', ')}. Falling back to "md".`,
+        )}" is not supported. Supported: ${SEARCH_INPUT_SIZES.join(', ')}. Falling back to "sm".`,
       );
-      this.size = 'md';
+      this.size = 'sm';
     }
   }
 
@@ -368,7 +345,7 @@ export class MudSearchInputCircular {
       this.mudSearch.emit({ value: this.value });
       return;
     }
-    if (ev.key === 'Escape' && this.clearable && this.value !== '' && !this.isInert() && !this.readonly) {
+    if (ev.key === 'Escape' && this.clearable && this.value !== '' && !this.isInert()) {
       ev.preventDefault();
       this.clearValue({ refocus: false });
     }
@@ -383,7 +360,7 @@ export class MudSearchInputCircular {
   private handleSubmitClick = (ev: MouseEvent) => {
     ev.preventDefault();
     ev.stopPropagation();
-    if (this.isInert() || this.readonly) return;
+    if (this.isInert()) return;
     this.mudSearch.emit({ value: this.value });
   };
 
@@ -403,65 +380,48 @@ export class MudSearchInputCircular {
     return this.disabled || this.fieldsetDisabled;
   }
 
-  private resolvedVariant(): SearchInputCircularVariant {
-    return this.invalid ? 'destructive' : this.variant;
-  }
-
   private hasVisibleLabel(): boolean {
     return Boolean(this.label && this.label.trim().length > 0) || this.hasLabelSlot;
   }
 
-  private hasErrorMessage(): boolean {
-    return this.invalid && Boolean(this.errorText && this.errorText.trim().length > 0);
-  }
-
   private hasHelperMessage(): boolean {
-    if (this.hasErrorMessage()) return false;
     if (this.helperText && this.helperText.trim().length > 0) return true;
     return this.hasHelperSlot;
   }
 
   private describedBy(): string | undefined {
-    const ids: string[] = [];
-    if (this.hasErrorMessage()) ids.push(this.errorId);
-    else if (this.hasHelperMessage()) ids.push(this.helperId);
-    return ids.length > 0 ? ids.join(' ') : undefined;
+    return this.hasHelperMessage() ? this.helperId : undefined;
   }
 
   private showClearButton(): boolean {
-    // Figma master 933:29721: the clear `×` is suppressed during loading —
+    // Figma "Search Input" States: the clear `×` is suppressed during loading —
     // the spinner owns the trailing affordance space and committing a clear
     // while the previous query is in flight would race the consumer's
-    // debounced search handler. Mirrors the rectangular sibling's contract.
+    // debounced search handler.
     if (this.loading) return false;
-    return this.clearable && !this.isInert() && !this.readonly && this.value !== '' && !this.hasIconEndSlot;
+    return this.clearable && !this.isInert() && this.value !== '' && !this.hasIconEndSlot;
   }
 
   render() {
     const effectivelyDisabled = this.isInert();
-    const variant = this.resolvedVariant();
     const labelText = this.label?.trim();
     const helperText = this.helperText?.trim();
-    const errorText = this.errorText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
-    const iconSize = this.size === 'lg' ? 24 : 20;
-    const submitIconSize: 16 | 20 = this.size === 'lg' ? 20 : 16;
-    const spinnerSize = this.size === 'lg' ? 'md' : 'sm';
+    const iconSize = this.size === 'md' ? 24 : 20;
+    const submitIconSize: 16 | 20 = this.size === 'md' ? 20 : 16;
+    const spinnerSize = this.size === 'md' ? 'md' : 'sm';
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
-      'is-readonly': this.readonly,
-      'is-invalid': this.invalid,
       'is-loading': this.loading,
       'has-submit-button': this.withButton,
       'is-focused': this.isFocused && !effectivelyDisabled,
       'has-label': this.hasVisibleLabel(),
       'has-value': this.value !== '',
-      [`variant-${variant}`]: true,
     };
 
     const showClear = this.showClearButton();
-    const submitDisabled = effectivelyDisabled || this.readonly || this.value === '';
+    const submitDisabled = effectivelyDisabled || this.value === '';
 
     return (
       <Host class={hostClasses}>
@@ -493,7 +453,6 @@ export class MudSearchInputCircular {
             value={this.value}
             placeholder={this.placeholder}
             disabled={effectivelyDisabled}
-            readonly={this.readonly}
             required={this.required}
             autocomplete={this.autocomplete ?? 'off'}
             maxLength={this.maxLength}
@@ -502,7 +461,6 @@ export class MudSearchInputCircular {
             aria-label={ariaLabelAttr}
             aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
             aria-describedby={this.describedBy()}
-            aria-invalid={this.invalid ? 'true' : null}
             aria-busy={this.loading ? 'true' : null}
             onInput={this.handleInput}
             onChange={this.handleChange}
@@ -551,12 +509,7 @@ export class MudSearchInputCircular {
           ) : null}
         </div>
 
-        {this.hasErrorMessage() ? (
-          <div class="assistive assistive-error" id={this.errorId} part="error">
-            <mud-icon class="assistive-icon" name="circle-error-filled" size={20} color="icon-danger-default" />
-            <span class="assistive-text">{errorText}</span>
-          </div>
-        ) : this.hasHelperMessage() ? (
+        {this.hasHelperMessage() ? (
           <div class="assistive assistive-helper" id={this.helperId} part="helper">
             <span class="assistive-text">
               {this.hasHelperSlot ? null : helperText}

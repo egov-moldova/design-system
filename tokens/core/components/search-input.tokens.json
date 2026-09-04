@@ -1,30 +1,33 @@
 {
-  "search-input-circular": {
+  "search-input": {
     "field": {
       "gap": { "$value": "{spacing.8}", "$type": "dimension" }
     },
     "container": {
       "height": {
-        "md": { "$value": "{spacing.40}", "$type": "dimension" },
-        "lg": { "$value": "{spacing.48}", "$type": "dimension" }
+        "sm": { "$value": "{spacing.40}", "$type": "dimension" },
+        "md": { "$value": "{spacing.48}", "$type": "dimension" }
       },
       "paddingInline": {
-        "md": {
-          "$value": "{spacing.12}",
-          "$type": "dimension",
-          "$comment": "Figma master 933:29731 uses spacing.12 at md (same as rectangular sibling) — the pill silhouette doesn't warrant extra inset."
-        },
-        "lg": {
-          "$value": "{spacing.16}",
-          "$type": "dimension",
-          "$comment": "Figma master 933:29722 uses spacing.16 at lg (same as rectangular sibling)."
-        }
+        "sm": { "$value": "{spacing.12}", "$type": "dimension" },
+        "md": { "$value": "{spacing.16}", "$type": "dimension" }
       },
       "gap": {
-        "md": { "$value": "{spacing.8}", "$type": "dimension" },
-        "lg": { "$value": "{spacing.8}", "$type": "dimension" }
+        "sm": { "$value": "{spacing.8}", "$type": "dimension" },
+        "md": { "$value": "{spacing.8}", "$type": "dimension" }
       },
-      "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" },
+      "borderRadius": {
+        "rectangular": {
+          "$value": "{borderRadius.8}",
+          "$type": "dimension",
+          "$comment": "Figma 'Search Input' Shapes — rectangular silhouette."
+        },
+        "circular": {
+          "$value": "{borderRadius.full}",
+          "$type": "dimension",
+          "$comment": "Figma 'Search Input' Shapes — circular (pill) silhouette."
+        }
+      },
       "borderWidth": {
         "default": { "$value": "{borderWidth.1}", "$type": "dimension" },
         "emphasized": { "$value": "{borderWidth.2}", "$type": "dimension" }
@@ -37,12 +40,12 @@
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
       "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
       "fontSize": {
-        "md": { "$value": "{fontSize.14}", "$type": "dimension" },
-        "lg": { "$value": "{fontSize.16}", "$type": "dimension" }
+        "sm": { "$value": "{fontSize.14}", "$type": "dimension" },
+        "md": { "$value": "{fontSize.16}", "$type": "dimension" }
       },
       "lineHeight": {
-        "md": { "$value": "{lineHeight.20}", "$type": "dimension" },
-        "lg": { "$value": "{lineHeight.24}", "$type": "dimension" }
+        "sm": { "$value": "{lineHeight.20}", "$type": "dimension" },
+        "md": { "$value": "{lineHeight.24}", "$type": "dimension" }
       }
     },
     "label": {
@@ -62,19 +65,16 @@
       "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
       "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
       "gap": {
-        "default": { "$value": "{spacing.6}", "$type": "dimension" },
-        "error": { "$value": "{spacing.4}", "$type": "dimension" }
+        "default": { "$value": "{spacing.6}", "$type": "dimension" }
       },
-      "iconSize": { "$value": "{spacing.20}", "$type": "dimension" },
       "color": {
-        "default": { "$value": "{color.text.base.secondary}", "$type": "color" },
-        "error": { "$value": "{color.text.danger.default}", "$type": "color" }
+        "default": { "$value": "{color.text.base.secondary}", "$type": "color" }
       }
     },
     "iconStart": {
       "size": {
-        "md": { "$value": "{spacing.20}", "$type": "dimension" },
-        "lg": { "$value": "{spacing.24}", "$type": "dimension" }
+        "sm": { "$value": "{spacing.20}", "$type": "dimension" },
+        "md": { "$value": "{spacing.24}", "$type": "dimension" }
       },
       "color": {
         "default": { "$value": "{color.icon.base.secondary}", "$type": "color" },
@@ -83,8 +83,8 @@
     },
     "iconEndClear": {
       "size": {
-        "md": { "$value": "{spacing.20}", "$type": "dimension" },
-        "lg": { "$value": "{spacing.24}", "$type": "dimension" }
+        "sm": { "$value": "{spacing.20}", "$type": "dimension" },
+        "md": { "$value": "{spacing.24}", "$type": "dimension" }
       },
       "padding": { "$value": "{spacing.4}", "$type": "dimension" },
       "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" },
@@ -98,7 +98,7 @@
         "default": {
           "$value": "{color.background.base.tertiary}",
           "$type": "color",
-          "$comment": "Per Figma 933:29806 — the clear button carries a subtle gray oval at rest in the Filled state. Hardcoded color in Figma is #1212121a; base.tertiary (#f1f1f1) is the closest design-system semantic."
+          "$comment": "Per Figma — the clear button carries a subtle gray oval at rest in the Filled state. Hardcoded color in Figma is #1212121a; base.tertiary (#f1f1f1) is the closest design-system semantic."
         },
         "hover": { "$value": "{color.background.base.tertiary-hover}", "$type": "color" },
         "active": { "$value": "{color.background.base.tertiary-active}", "$type": "color" }
@@ -122,24 +122,27 @@
       },
       "focusRing": { "$value": "{palette.blue-sky.200}", "$type": "color" }
     },
-    "destructive": {
-      "border": {
-        "default": { "$value": "{color.border.danger.default}", "$type": "color" },
-        "hover": { "$value": "{color.border.danger.default}", "$type": "color" },
-        "focus": { "$value": "{color.border.danger.default}", "$type": "color" }
-      },
-      "focusRing": { "$value": "{palette.red.200}", "$type": "color" }
-    },
     "submitButton": {
       "size": {
-        "md": { "$value": "{spacing.32}", "$type": "dimension" },
-        "lg": { "$value": "{spacing.40}", "$type": "dimension" }
+        "sm": { "$value": "{spacing.32}", "$type": "dimension" },
+        "md": { "$value": "{spacing.40}", "$type": "dimension" }
       },
       "iconSize": {
-        "md": { "$value": "{spacing.16}", "$type": "dimension" },
-        "lg": { "$value": "{spacing.20}", "$type": "dimension" }
+        "sm": { "$value": "{spacing.16}", "$type": "dimension" },
+        "md": { "$value": "{spacing.20}", "$type": "dimension" }
       },
-      "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" },
+      "borderRadius": {
+        "rectangular": {
+          "$value": "{borderRadius.6}",
+          "$type": "dimension",
+          "$comment": "Figma 'Search Input' Variations — rectangular submit button."
+        },
+        "circular": {
+          "$value": "{borderRadius.full}",
+          "$type": "dimension",
+          "$comment": "Figma 'Search Input' Variations — circular submit button hugs the pill end."
+        }
+      },
       "background": {
         "default": { "$value": "{color.background.brand.default}", "$type": "color" },
         "hover": { "$value": "{color.background.brand.default-hover}", "$type": "color" },
@@ -155,8 +158,8 @@
     },
     "loadingSpinner": {
       "size": {
-        "md": { "$value": "{spacing.20}", "$type": "dimension" },
-        "lg": { "$value": "{spacing.24}", "$type": "dimension" }
+        "sm": { "$value": "{spacing.20}", "$type": "dimension" },
+        "md": { "$value": "{spacing.24}", "$type": "dimension" }
       },
       "color": {
         "default": { "$value": "{color.icon.brand.default}", "$type": "color" },

@@ -56,8 +56,7 @@ largest smaller size before giving up.
  - [mud-pagination](../mud-pagination)
  - [mud-phone-input](../mud-phone-input)
  - [mud-progress-tracker](../mud-progress-tracker)
- - [mud-search-input-circular](../mud-search-input-circular)
- - [mud-search-input-rectangular](../mud-search-input-rectangular)
+ - [mud-search-input](../mud-search-input)
  - [mud-segmented-control](../mud-segmented-control)
  - [mud-select-input](../mud-select-input)
  - [mud-sidebar-item](../mud-sidebar)
@@ -94,8 +93,7 @@ graph TD;
   mud-pagination --> mud-icon
   mud-phone-input --> mud-icon
   mud-progress-tracker --> mud-icon
-  mud-search-input-circular --> mud-icon
-  mud-search-input-rectangular --> mud-icon
+  mud-search-input --> mud-icon
   mud-segmented-control --> mud-icon
   mud-select-input --> mud-icon
   mud-sidebar-item --> mud-icon
