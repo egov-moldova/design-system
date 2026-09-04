@@ -9,7 +9,7 @@ and updates PR https://github.com/corlab-org/age-design/pull/5.
 
 | # | Component | Figma componentKey | Status | Commit | Screenshots |
 |---|---|---|---|---|---|
-| 1 | `mud-input` (text-input) | `f035f11544e0883bc29ca99b48309238db82edf8` | ✅ done | `6624b85` | `docs/screenshots/mud-input/` |
+| 1 | `mud-text-input` (text-input) | `f035f11544e0883bc29ca99b48309238db82edf8` | ✅ done | `6624b85` | `docs/screenshots/mud-text-input/` |
 | 2 | `mud-select-input` | `24351877baeb81b99cceea90d885b3455191ac62` | ✅ done | `41171ea` | `docs/screenshots/mud-select-input/` |
 | 3 | `mud-date-input` | `4449e61e554888eb4357b4f2e6e16dacf738fda3` | ✅ done | `f503fec` | `docs/screenshots/mud-date-input/` |
 | 4 | `mud-file-input` + `mud-file-item` | `2e8a0a8cc37b76d197dfdd8af2a4cac5ce8aa884` / `f7e6d1eed8dd15497025e1a9cad9d355403a68b8` | ✅ done | `299c6a2` | `docs/screenshots/mud-file-input/` |
@@ -120,7 +120,7 @@ preserved.
   warning border `#dc6803` (`color.border.warning.default`), warning
   focus-ring `#fedf89` (`palette.apricot.200`), success border `#027948`
   (`color.border.positive.default`), success focus-ring `#cdeadd`
-  (`palette.green.200`) — same shades the `mud-input` v2 fix shipped.
+  (`palette.green.200`) — same shades the `mud-text-input` v2 fix shipped.
 - Added `phoneInput.default.background.readOnly` (=
   `color.background.base.secondary` `#f5f5f5`),
   `phoneInput.default.border.readOnly`,
@@ -476,18 +476,18 @@ component keys. The advertised `search_design_system` MCP tool was not
 available in this environment (only `get_design_context`, `get_screenshot`,
 `get_metadata`, `get_variable_defs` were exposed).
 
-The earlier inputs (`mud-input`, `mud-select-input`, `mud-date-input`) shipped
+The earlier inputs (`mud-text-input`, `mud-select-input`, `mud-date-input`) shipped
 without preserved Figma node references in this repo either, so there was no
 prior anchor to walk from.
 
 **Decision:** continue without a Figma node anchor. The user-provided task
 specification was sufficient to derive the visual contract (input-family
-border / focus ring / label / helper / error — see `mud-input`) and the
+border / focus ring / label / helper / error — see `mud-text-input`) and the
 drop-zone affordance (dashed border, brand-tint background on `is-drag-over`,
 brand-blue solid border on `is-focused`). All other surfaces (typography
 scale, spacing, semantic colors, dark-mode mappings) came from the canonical
 sources: `DESIGN.md`, `.impeccable/design.json`, the existing token bundles,
-and the `mud-input` / `mud-date-input` patterns on disk.
+and the `mud-text-input` / `mud-date-input` patterns on disk.
 
 Future agent runs: if a Figma node-id for either component_set is rediscovered,
 log it here so pixel-perfect comparison against the original can be re-checked.
@@ -534,7 +534,7 @@ above for the full delta.
 form association). LAST input variant — input family is now complete (9/9).
 Pattern B: hosts an internal `<input type="text">` for the next chip plus
 inline pill rendering for confirmed values, all inside a single
-shadow-DOM container that mirrors the `mud-input` visual contract (1px
+shadow-DOM container that mirrors the `mud-text-input` visual contract (1px
 border, brand-blue focus ring, label, helper / error, sizes md/lg, states
 default / hover / focus / filled / disabled / mandatory / destructive).
 Chips kept INTERNAL to `mud-input-chip` (not as a separate `mud-chip`
@@ -595,7 +595,7 @@ Probed the known sibling page nodeId `403:21765` ("Input: Date") via
 `get_screenshot` (PNG rendered successfully — file scope hasn't shifted)
 plus `get_metadata` (returned date-input subtree, no cross-link to
 input-chip). Derivation followed the established graceful-fallback
-pattern from the eight earlier inputs: mud-input provides the canonical
+pattern from the eight earlier inputs: mud-text-input provides the canonical
 container / focus-ring / label / helper / error visual contract;
 mud-file-input provides the multi-value list-inside-container precedent
 plus the `role="status"` live-region pattern. Chip pill styling
@@ -605,7 +605,7 @@ variant's tinting cues (read via `git show origin/feat/mud-button:...`
 without switching branches per the prompt constraint). Romanian copy
 follows PRODUCT.md voice (verbs over nouns, second-person formal
 implied). Validated against `DESIGN.md`, `.impeccable/design.json`, and
-the on-disk `mud-input` / `mud-file-input` / `mud-file-item` /
+the on-disk `mud-text-input` / `mud-file-input` / `mud-file-item` /
 `mud-select-input` / `mud-button` implementations. If the
 component_set's node-id becomes reachable later, re-run pixel-perfect
 comparison and log diff results here.
@@ -663,14 +663,14 @@ reachable through the available `get_metadata` traversal. The advertised
 `403:21765` ("Input: Date") was reachable via `get_screenshot`
 (confirming the file scope hasn't shifted), but it doesn't link back to
 the phone-input page. Derivation followed the well-validated pattern from
-seven earlier components on this branch: mud-input provides the canonical
+seven earlier components on this branch: mud-text-input provides the canonical
 border / focus-ring / label / helper / error visual contract;
 mud-select-input provides the combobox + listbox + keyboard contract; the
 country-trigger / divider / dial-code layout follows ITU-T E.164 + WAI-ARIA
 combobox conventions. The Moldova-first audience (PRODUCT.md) drove the
 defaults: MD as `defaultCountry`, Romanian display names + Romanian error
 copy. Validated against `DESIGN.md`, `.impeccable/design.json`, and the
-on-disk `mud-input` / `mud-select-input` / `mud-date-input` /
+on-disk `mud-text-input` / `mud-select-input` / `mud-date-input` /
 `mud-numeric-input` implementations. If the component_set's node-id
 becomes reachable later, re-run pixel-perfect comparison and log diff
 results here.
@@ -720,12 +720,12 @@ the available `get_metadata` traversal. The known sibling page nodeId
 `403:21765` ("Input: Date") was reachable for screenshot retrieval (date
 input page rendered), confirming the file scope hasn't shifted, but no
 parent reference links from there to the numeric-input page. Derivation
-followed the established pattern (see prior failure-log entries): mud-input
+followed the established pattern (see prior failure-log entries): mud-text-input
 provides the canonical input-family visual contract; the stacked stepper
 affordance (chevron-up over chevron-bottom inside the right edge of the
 control, each ~50% of the input height) follows the task brief and standard
 spinbutton conventions. Validated against `DESIGN.md`,
-`.impeccable/design.json`, and the on-disk `mud-input` / `mud-select-input`
+`.impeccable/design.json`, and the on-disk `mud-text-input` / `mud-select-input`
 (chevron pattern) / `mud-search-input-rectangular` (trailing affordance
 pattern) implementations. If the component_set's node-id becomes reachable
 later, re-run pixel-perfect comparison and log diff results here.
@@ -792,12 +792,12 @@ light + dark, 0 console errors.
 Same MCP file scope as the earlier inputs — `doJ7tDY0PlQ0PqMgbpFVIC` only
 exposes 9 top-level pages and no `search-input-rectangular` node was
 reachable through the available `get_metadata` traversal. Derivation
-followed the established pattern (see prior failure log entry): mud-input
+followed the established pattern (see prior failure log entry): mud-text-input
 provides the canonical input-family visual contract, and the affordance
 specifics (leading search icon, trailing × clear) match
 the documented design-system search pattern (`mdi:magnify` /
 `mdi:close-circle` semantics, render-as-`role="searchbox"`). Validated
-against `DESIGN.md`, `.impeccable/design.json`, and the mud-input on-disk
+against `DESIGN.md`, `.impeccable/design.json`, and the mud-text-input on-disk
 implementation. If the component_set's node-id becomes reachable later,
 re-run pixel-perfect comparison and log diff results here.
 
@@ -826,7 +826,7 @@ form association.
 Docs page `3340:8279`, master component-set `210:2265`. Previous
 implementation shipped 2 styles × 6 visible states; Figma carries
 **3 styles × 7 states × 2 sizes = 42 variants**. Additive change —
-no breaking API delta. **Confirming 3 styles (NOT 4 like `mud-input`)
+no breaking API delta. **Confirming 3 styles (NOT 4 like `mud-text-input`)
 — numeric-input has NO Warning** because numeric values are typically
 out-of-range (Destructive) or confirmed-valid (Success) with no
 in-between state worth a warning tone.
@@ -851,7 +851,7 @@ variant tone. Tokens resolve to: success border `#027948`
 (`color.background.positive.secondary`), destructive filled bg
 `#fee4e2` (`color.background.danger.secondary`). Label `fontWeight`
 corrected to `medium` (500) per `DESIGN.md` "Medium-Weight Label
-Rule" and the v2 `mud-input` precedent — was inheriting `regular`.
+Rule" and the v2 `mud-text-input` precedent — was inheriting `regular`.
 
 **TSX** (`mud-numeric-input.tsx`): `variant` enum widened to
 `'default' | 'destructive' | 'success'` (NUMERIC_INPUT_VARIANTS).
@@ -921,7 +921,7 @@ true, aria-disabled=null, is-readonly class only). 531 specs pass
 light + dark, including `border.positive.default` and
 `background.positive.secondary` pairs against
 `background.base.default` — the new success tokens are already
-audited via the mud-input v2 contrast rationale; no regressions
+audited via the mud-text-input v2 contrast rationale; no regressions
 introduced).
 
 Pixel-perfect: Storybook screenshots visually match Figma master
@@ -952,7 +952,7 @@ Type=Euro. Both are now exercised by the `WithSuffix` story.
 
 ---
 
-### 2026-05-23 — `mud-input` aligned with Figma source-of-truth
+### 2026-05-23 — `mud-text-input` aligned with Figma source-of-truth
 
 Docs page `107:1034`, master component-set `132:3419`. Previous
 implementation shipped 2 styles × 6 visible states; Figma carries
@@ -978,7 +978,7 @@ exact match to the four Figma "Focus Ring/Large/{Default,Warning,Error,
 Success}" effect tokens. Label `fontWeight` corrected to `medium` (500)
 per the DESIGN.md "Medium-Weight Label Rule" — was inheriting `regular`.
 
-**TSX** (`mud-input.tsx`): `variant` enum expanded to
+**TSX** (`mud-text-input.tsx`): `variant` enum expanded to
 `'default' | 'warning' | 'destructive' | 'success'`. New `loading: boolean`
 `@Prop({ reflect: true })` — when true the host carries `aria-busy="true"`
 and a `mud-spinner` (xs for md size, sm for lg) renders in the trailing
@@ -987,7 +987,7 @@ input gets `pointer-events: none` + `opacity: 0.6`. Existing `readonly`
 prop now also sets `aria-readonly="true"` on the native input — required
 to distinguish read-only from disabled at the assistive-tech layer.
 
-**CSS** (`mud-input.css`): added `:host(.variant-warning)`,
+**CSS** (`mud-text-input.css`): added `:host(.variant-warning)`,
 `:host(.variant-success)` blocks that remap the local
 `--_border-color`, `--_border-color-hover`, `--_border-color-focus`,
 `--_focus-ring-color`, `--_assistive-color` to the variant token bundle.
@@ -1000,7 +1000,7 @@ default border, full-contrast label, `cursor: default` (vs disabled's
 unlike disabled which dims to `--input-label-color-disabled` — matches
 Figma's "visible but not editable" semantic.
 
-**Stories** (`mud-input.stories.ts`): added `Loading` (4 cells: lg / md
+**Stories** (`mud-text-input.stories.ts`): added `Loading` (4 cells: lg / md
 / warning+loading / success+loading), `ReadOnly` (3 cells: lg / md /
 disabled-for-comparison), `WithWarning` (Romanian helper "Această
 valoare ar putea cauza probleme"), `WithSuccess` (Romanian helper
@@ -1010,7 +1010,7 @@ including loading + read-only. Existing `WithIcons`, `WithError`,
 `EdgeCases`, `AllSizes`, `WithHelperText`, `Default` preserved
 unchanged.
 
-**Spec** (`mud-input.spec.tsx`): added `loading state` describe block
+**Spec** (`mud-text-input.spec.tsx`): added `loading state` describe block
 (reflects `loading` to host, sets `aria-busy="true"`, renders
 `mud-spinner`, scales md→xs / lg→sm), `variant matrix` describe block
 (asserts all 4 variants reflect without `console.warn`), added
@@ -1025,7 +1025,7 @@ pass WCAG 2.1 AA in light + dark, including new
 `border.warning.default` and `border.positive.default` against
 `background.base.default`).
 
-Screenshots: `docs/screenshots/mud-input/v2/{all-variants,states,
+Screenshots: `docs/screenshots/mud-text-input/v2/{all-variants,states,
 with-warning,with-success,with-destructive,loading,read-only}.png`.
 Figma canonical reference at `/tmp/figma-input-text-canonical.png` and
 master component-set at `/tmp/figma-input-text-master.png`.
@@ -1048,7 +1048,7 @@ Error,Success}`) map to `blue-sky/200`, `apricot/200`, `red/200`,
 matrix already correct: **2 styles (Default / Destructive) × 5 states
 (Default / Hover / Focus / Filled / Disabled) × 2 sizes (md / lg) = 20
 variants** — matches the Figma master exactly (no Warning / Success
-styles, no Loading / ReadOnly states unlike `mud-input`). Two drift
+styles, no Loading / ReadOnly states unlike `mud-text-input`). Two drift
 items found and fixed:
 
 1. **Listbox selected option background** flipped from
@@ -1062,7 +1062,7 @@ items found and fixed:
    (selected + highlighted) flipped to the same `#f5f5f5` so the
    selection state stays stable when the user re-hovers it.
 2. **Field label `fontWeight`** corrected to `medium` (500) — was
-   inheriting `regular` (400). Aligns with the v2 `mud-input` precedent
+   inheriting `regular` (400). Aligns with the v2 `mud-text-input` precedent
    (commit `6624b85`) and the DESIGN.md "Medium-Weight Label Rule" for
    input-family consistency. Figma's variable defs nominally say
    `fw-regular` for "Desktop/Body/Small", but the MUD Design System
@@ -1133,7 +1133,7 @@ Disabled × Large/Medium). The `selection-menu` instance (`454:5903`)
 and the macOS `Menu` (`456:6181`) / iOS `Submenu` (`456:24768`)
 subcomponents on the docs page were reachable via direct nodeId
 screenshots. No `get_design_context` was needed — the screenshots +
-metadata + the prior `mud-input` token map (which covers the same
+metadata + the prior `mud-text-input` token map (which covers the same
 input-family semantic palette) gave full coverage.
 
 2026-05-23 — `mud-file-input` drop-zone realigned to Figma instance

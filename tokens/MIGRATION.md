@@ -175,7 +175,7 @@ Following Style Dictionary best practices, we use a **hybrid approach**:
 | mud-radio-button | 🚧 Pending | MEDIUM | ~15 | ~40 | Hybrid: shared + component-specific |
 | mud-toggle | 🚧 Pending | MEDIUM | ~55 | ~40 | Hybrid: shared + component-specific |
 | mud-select-item | 🚧 Pending | HIGH | ~50 | ~45 | Complex nested elements |
-| mud-input | 🚧 Pending | VERY HIGH | ~120 | ~80 | Many nested elements |
+| mud-text-input | 🚧 Pending | VERY HIGH | ~120 | ~80 | Many nested elements |
 | mud-textarea | 🚧 Pending | VERY HIGH | ~80 | ~70 | Similar to input |
 
 **Legend**:

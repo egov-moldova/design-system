@@ -176,7 +176,7 @@ export const Sizes: Story = {
 // ---------------------------------------------------------------------------
 const renderUsage = () => /*html*/ `
   <div style="display: flex; flex-direction: column; gap: var(--spacing-8); max-width: 320px;">
-    <mud-input label="Label" placeholder="Placeholder" invalid></mud-input>
+    <mud-text-input label="Label" placeholder="Placeholder" invalid></mud-text-input>
     <mud-inline-message variant="error" size="small">Error message displayed here</mud-inline-message>
   </div>
 `;
@@ -191,7 +191,7 @@ export const Usage: Story = {
           'Standalone inline feedback beneath a field. Associate it with the input via `aria-describedby` (and `aria-invalid` for errors) on the consumer side.',
       },
       source: {
-        code: `<mud-input label="Label" placeholder="Placeholder" invalid aria-describedby="err"></mud-input>
+        code: `<mud-text-input label="Label" placeholder="Placeholder" invalid aria-describedby="err"></mud-text-input>
 <mud-inline-message id="err" variant="error" size="small">Error message displayed here</mud-inline-message>`,
       },
     },

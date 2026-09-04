@@ -43,7 +43,7 @@ export const CATEGORIES: Category[] = [
     slug: 'text-inputs',
     title: 'Form — text inputs',
     components: [
-      { tag: 'mud-input', blurb: 'Single-line text field' },
+      { tag: 'mud-text-input', blurb: 'Single-line text field' },
       { tag: 'mud-textarea', blurb: 'Multi-line text field' },
       { tag: 'mud-numeric-input', blurb: 'Stepper numeric field' },
       { tag: 'mud-search-input-rectangular', blurb: 'Rectangular search field' },

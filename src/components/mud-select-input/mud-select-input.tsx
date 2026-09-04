@@ -23,7 +23,7 @@ let selectInstanceCounter = 0;
  * Pattern B (atom-interactive, form-associated): renders a custom-styled
  * trigger button and a listbox popover inside shadow DOM. Form participation
  * works via `formAssociated` + `ElementInternals`. Shares the visual primitives
- * of `mud-input` (border, focus ring, label, helper / error text, sizes,
+ * of `mud-text-input` (border, focus ring, label, helper / error text, sizes,
  * states) and adds a trailing chevron icon, listbox menu, and keyboard
  * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
  * pattern.

@@ -132,7 +132,7 @@ private get isIconOnly(): boolean { return !this.hasDefaultSlotContent; }
 
 ```text
 Does layout change based on slot content?
-├─ NO → CSS :empty selector (e.g., mud-input icons)
+├─ NO → CSS :empty selector (e.g., mud-text-input icons)
 └─ YES → Slot detection + conditional rendering (e.g., mud-link icon-only)
 ```
 

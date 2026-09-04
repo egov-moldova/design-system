@@ -2,14 +2,14 @@
  * Smoke tests for scripts/audit/04-jsdoc-completeness.mjs
  *
  * Strategy:
- *   - Sanity-scan our 3 baseline components (mud-button, mud-input, mud-tooltip) —
+ *   - Sanity-scan our 3 baseline components (mud-button, mud-text-input, mud-tooltip) —
  *     these are mature and should report 0 errors. Some `info` findings are OK
  *     (e.g. missing @default on a freshly-added optional prop).
  *   - Synthetic TSX fixtures injected via analyzeTsxFile() exercise each
  *     finding code (missing prop JSDoc, missing @default, missing @param, etc.).
  *
  * Quality bar (from the plan):
- *   - 0 error-level findings on mud-button, mud-input, mud-tooltip.
+ *   - 0 error-level findings on mud-button, mud-text-input, mud-tooltip.
  *   - Warnings may be present but should match real issues; we don't pin counts.
  */
 import assert from 'node:assert/strict';
@@ -46,8 +46,8 @@ describe('04-jsdoc-completeness: baseline regression', () => {
     assert.ok(api.props > 0, 'expected at least one prop on mud-button');
   });
 
-  it('mud-input and mud-tooltip both produce 0 errors', async () => {
-    for (const name of ['mud-input', 'mud-tooltip']) {
+  it('mud-text-input and mud-tooltip both produce 0 errors', async () => {
+    for (const name of ['mud-text-input', 'mud-tooltip']) {
       const target = resolveComponentPaths(name);
       const { findings } = await analyzeComponent(target);
       const errors = findings.filter(f => f.severity === 'error');

@@ -1,7 +1,7 @@
 import { AttachInternals, Component, Element, Event, EventEmitter, Host, Prop, State, Watch, h } from '@stencil/core';
 
-import { INPUT_SIZES, INPUT_VARIANTS } from './mud-input.types';
-import type { InputChangeDetail, InputSize, InputType, InputVariant } from './mud-input.types';
+import { INPUT_SIZES, INPUT_VARIANTS } from './mud-text-input.types';
+import type { InputChangeDetail, InputSize, InputType, InputVariant } from './mud-text-input.types';
 
 let inputInstanceCounter = 0;
 
@@ -13,7 +13,7 @@ let inputInstanceCounter = 0;
  * `ElementInternals`. The component is the canonical text-input primitive;
  * specialised inputs (date, search, phone, etc.) compose around it.
  *
- * @element mud-input
+ * @element mud-text-input
  *
  * @slot label - Rich label content, replaces the `label` prop when present.
  * @slot helper - Rich helper / hint content, replaces the `helper-text` prop. Hidden when invalid + error-text is shown.
@@ -21,12 +21,12 @@ let inputInstanceCounter = 0;
  * @slot icon-end - Trailing `mud-icon` rendered inside the input control.
  */
 @Component({
-  tag: 'mud-input',
-  styleUrl: 'mud-input.css',
+  tag: 'mud-text-input',
+  styleUrl: 'mud-text-input.css',
   shadow: { delegatesFocus: true },
   formAssociated: true,
 })
-export class MudInput {
+export class MudTextInput {
   /**
    * Color treatment. `destructive` is forced when `invalid` is set.
    * @default 'default'
@@ -146,7 +146,7 @@ export class MudInput {
   @State() private fieldsetDisabled: boolean = false;
   @State() private resolvedAriaLabel?: string;
 
-  @Element() host!: HTMLMudInputElement;
+  @Element() host!: HTMLMudTextInputElement;
 
   @AttachInternals() internals!: ElementInternals;
 
@@ -163,9 +163,9 @@ export class MudInput {
   @Event() mudBlur!: EventEmitter<FocusEvent>;
 
   private readonly instanceId = ++inputInstanceCounter;
-  private readonly labelId = `mud-input-label-${this.instanceId}`;
-  private readonly helperId = `mud-input-helper-${this.instanceId}`;
-  private readonly errorId = `mud-input-error-${this.instanceId}`;
+  private readonly labelId = `mud-text-input-label-${this.instanceId}`;
+  private readonly helperId = `mud-text-input-helper-${this.instanceId}`;
+  private readonly errorId = `mud-text-input-error-${this.instanceId}`;
   private nativeInput?: HTMLInputElement;
   private initialValue: string = '';
 
@@ -238,7 +238,7 @@ export class MudInput {
   validateVariant(next: InputVariant) {
     if (!INPUT_VARIANTS.includes(next)) {
       console.warn(
-        `[mud-input] variant="${String(next)}" is not supported. Supported: ${INPUT_VARIANTS.join(
+        `[mud-text-input] variant="${String(next)}" is not supported. Supported: ${INPUT_VARIANTS.join(
           ', ',
         )}. Falling back to "default".`,
       );
@@ -250,7 +250,7 @@ export class MudInput {
   validateSize(next: InputSize) {
     if (!INPUT_SIZES.includes(next)) {
       console.warn(
-        `[mud-input] size="${String(next)}" is not supported. Supported: ${INPUT_SIZES.join(
+        `[mud-text-input] size="${String(next)}" is not supported. Supported: ${INPUT_SIZES.join(
           ', ',
         )}. Falling back to "md".`,
       );

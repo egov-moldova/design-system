@@ -29,12 +29,12 @@ No slots, no events, no interactivity.
  - [mud-breadcrumb-item](../mud-breadcrumb)
  - [mud-button](../mud-button)
  - [mud-file-item](../mud-file-item)
- - [mud-input](../mud-input)
  - [mud-numeric-input](../mud-numeric-input)
  - [mud-phone-input](../mud-phone-input)
  - [mud-search-input-circular](../mud-search-input-circular)
  - [mud-search-input-rectangular](../mud-search-input-rectangular)
  - [mud-service-button](../mud-service-button)
+ - [mud-text-input](../mud-text-input)
 
 ### Graph
 ```mermaid
@@ -43,12 +43,12 @@ graph TD;
   mud-breadcrumb-item --> mud-spinner
   mud-button --> mud-spinner
   mud-file-item --> mud-spinner
-  mud-input --> mud-spinner
   mud-numeric-input --> mud-spinner
   mud-phone-input --> mud-spinner
   mud-search-input-circular --> mud-spinner
   mud-search-input-rectangular --> mud-spinner
   mud-service-button --> mud-spinner
+  mud-text-input --> mud-spinner
   style mud-spinner fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

@@ -20,7 +20,7 @@ let searchInputInstanceCounter = 0;
  * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
  * icon and an optional trailing clear `×` button that appears whenever the
  * control carries a value. Visual primitives (border, focus ring, label,
- * helper / error, sizes, states) are shared with `mud-input`; specific
+ * helper / error, sizes, states) are shared with `mud-text-input`; specific
  * affordances (icon-start, icon-end-clear, submit-button) live in the
  * `--search-input-rectangular-*` token namespace.
  *

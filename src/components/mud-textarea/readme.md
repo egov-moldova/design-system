@@ -11,7 +11,7 @@ Text Area — multi-line text-entry control.
 
 Pattern B (atom-interactive, form-associated): renders its own `<textarea>`
 inside shadow DOM. Form participation works via `formAssociated` +
-`ElementInternals`. Mirrors the `mud-input` contract for label, helper,
+`ElementInternals`. Mirrors the `mud-text-input` contract for label, helper,
 error and variant treatment, and adds a vertical resize handle plus an
 optional character counter.
 

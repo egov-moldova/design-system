@@ -190,7 +190,7 @@ describe('14-component-contract: inferArchetype (pure)', () => {
     const result = inferArchetype({
       contract: { formAssociated: true, props: [], events: [] },
       tsxContent: '<Host>...</Host>',
-      componentName: 'mud-input',
+      componentName: 'mud-text-input',
     });
     assert.equal(result.value, 'FORM');
     assert.equal(result.confidence, 'high');
@@ -379,11 +379,11 @@ describe('14-component-contract: baseline components', () => {
     assert.ok(contract.slots.some(s => s.name === 'default'));
   });
 
-  it('mud-input — form-associated, has multiple slots', async () => {
-    const target = resolveComponentPaths('mud-input');
+  it('mud-text-input — form-associated, has multiple slots', async () => {
+    const target = resolveComponentPaths('mud-text-input');
     const { contract } = await analyzeComponent(target);
     assert.equal(contract.formAssociated, true);
-    assert.ok(contract.slots.length >= 2, 'mud-input should have multiple named slots');
+    assert.ok(contract.slots.length >= 2, 'mud-text-input should have multiple named slots');
   });
 
   it('mud-tooltip — has events with proper EventEmitter<T> payloads', async () => {

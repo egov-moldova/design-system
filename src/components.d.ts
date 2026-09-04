@@ -24,7 +24,6 @@ import { HeaderLanguage, HeaderLanguageChangeDetail, HeaderMegaMenuSelectDetail,
 import { IconSize } from "./components/mud-icon/mud-icon.types";
 import { InfoBoxEmphasis, InfoBoxVariant } from "./components/mud-info-box/mud-info-box.types";
 import { InlineMessageSize, InlineMessageVariant } from "./components/mud-inline-message/mud-inline-message.types";
-import { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/mud-input/mud-input.types";
 import { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/mud-input-chip/mud-input-chip.types";
 import { LinkSize, LinkUnderline, LinkVariant } from "./components/mud-link/mud-link.types";
 import { LogoName } from "./components/mud-logo/mud-logo.types";
@@ -49,6 +48,7 @@ import { SwitchChangeDetail } from "./components/mud-switch/mud-switch.types";
 import { TableColumn, TableHeaderStyle, TableRowClickDetail, TableRowData, TableRowStyle, TableSelectionChangeDetail, TableSortChangeDetail, TableSortDirection } from "./components/mud-table/mud-table.types";
 import { TabDescriptor, TabsChangeDetail, TabsSize } from "./components/mud-tabs/mud-tabs.types";
 import { TagSemantic, TagSize, TagType, TagVariant } from "./components/mud-tag/mud-tag.types";
+import { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/mud-text-input/mud-text-input.types";
 import { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from "./components/mud-textarea/mud-textarea.types";
 import { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, TooltipVariant } from "./components/mud-tooltip/mud-tooltip.types";
 export { AccordionAppearance, AccordionChangeDetail, AccordionIconPosition, AccordionItemDescriptor, AccordionMode, AccordionSize } from "./components/mud-accordion/mud-accordion.types";
@@ -70,7 +70,6 @@ export { HeaderLanguage, HeaderLanguageChangeDetail, HeaderMegaMenuSelectDetail,
 export { IconSize } from "./components/mud-icon/mud-icon.types";
 export { InfoBoxEmphasis, InfoBoxVariant } from "./components/mud-info-box/mud-info-box.types";
 export { InlineMessageSize, InlineMessageVariant } from "./components/mud-inline-message/mud-inline-message.types";
-export { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/mud-input/mud-input.types";
 export { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/mud-input-chip/mud-input-chip.types";
 export { LinkSize, LinkUnderline, LinkVariant } from "./components/mud-link/mud-link.types";
 export { LogoName } from "./components/mud-logo/mud-logo.types";
@@ -95,6 +94,7 @@ export { SwitchChangeDetail } from "./components/mud-switch/mud-switch.types";
 export { TableColumn, TableHeaderStyle, TableRowClickDetail, TableRowData, TableRowStyle, TableSelectionChangeDetail, TableSortChangeDetail, TableSortDirection } from "./components/mud-table/mud-table.types";
 export { TabDescriptor, TabsChangeDetail, TabsSize } from "./components/mud-tabs/mud-tabs.types";
 export { TagSemantic, TagSize, TagType, TagVariant } from "./components/mud-tag/mud-tag.types";
+export { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/mud-text-input/mud-text-input.types";
 export { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from "./components/mud-textarea/mud-textarea.types";
 export { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, TooltipVariant } from "./components/mud-tooltip/mud-tooltip.types";
 export namespace Components {
@@ -560,7 +560,7 @@ export namespace Components {
          */
         "disabled": boolean;
         /**
-          * Plain-text error message shown below the label when `invalid` is set. Pairs with the `circle-error-filled` icon and is wired to the control via `aria-describedby`. When present (and `invalid`) it replaces the supporting text. Mirrors the `errorText` convention of `mud-input` / `mud-textarea`.
+          * Plain-text error message shown below the label when `invalid` is set. Pairs with the `circle-error-filled` icon and is wired to the control via `aria-describedby`. When present (and `invalid`) it replaces the supporting text. Mirrors the `errorText` convention of `mud-text-input` / `mud-textarea`.
          */
         "errorText"?: string;
         /**
@@ -1457,115 +1457,6 @@ export namespace Components {
         "variant": InlineMessageVariant;
     }
     /**
-     * Input — single-line text-entry control.
-     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
-     * inside shadow DOM. Form participation works via `formAssociated` +
-     * `ElementInternals`. The component is the canonical text-input primitive;
-     * specialised inputs (date, search, phone, etc.) compose around it.
-     * @element mud-input
-     */
-    interface MudInput {
-        /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
-         */
-        "ariaLabel"?: string;
-        /**
-          * Native `autocomplete` attribute forwarded to the internal control.
-         */
-        "autocomplete"?: string;
-        /**
-          * Accessible label for the clear (×) button. Only used when `clearable` is set.
-          * @default 'Golește câmpul'
-         */
-        "clearLabel": string;
-        /**
-          * Shows a trailing clear (×) button while the control holds a value. Clearing empties the field, emits `mudInput` + `mudChange`, and returns focus to the input. Suppressed when disabled, read-only, or loading.
-          * @default false
-         */
-        "clearable": boolean;
-        /**
-          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
-          * @default false
-         */
-        "disabled": boolean;
-        /**
-          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
-         */
-        "errorText"?: string;
-        /**
-          * Plain-text helper / hint shown below the control.
-         */
-        "helperText"?: string;
-        /**
-          * Native `inputmode` hint forwarded to the internal control.
-         */
-        "inputmode"?: string;
-        /**
-          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
-          * @default false
-         */
-        "invalid": boolean;
-        /**
-          * Plain-text label. Use the `label` slot for richer content.
-         */
-        "label"?: string;
-        /**
-          * Loading state. When true the control becomes uninteractive and a trailing spinner replaces the `icon-end` slot. The host carries `aria-busy="true"` for assistive technologies.
-          * @default false
-         */
-        "loading": boolean;
-        /**
-          * Native `maxlength` constraint.
-         */
-        "maxLength"?: number;
-        /**
-          * Native `minlength` constraint.
-         */
-        "minLength"?: number;
-        /**
-          * Form-control `name`. Used during form submission.
-         */
-        "name"?: string;
-        /**
-          * Native `pattern` regex forwarded to the internal control.
-         */
-        "pattern"?: string;
-        /**
-          * Placeholder shown when the control is empty.
-         */
-        "placeholder"?: string;
-        /**
-          * Renders the field read-only. The control remains focusable and copyable.
-          * @default false
-         */
-        "readonly": boolean;
-        /**
-          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
-          * @default false
-         */
-        "required": boolean;
-        /**
-          * Visual size rung.
-          * @default 'md'
-         */
-        "size": InputSize;
-        /**
-          * Native input `type`.
-          * @default 'text'
-         */
-        "type": InputType;
-        /**
-          * Current value of the control. Reflects to the host attribute.
-          * @default ''
-         */
-        "value": string;
-        /**
-          * Color treatment. `destructive` is forced when `invalid` is set.
-          * @default 'default'
-         */
-        "variant": InputVariant;
-    }
-    /**
      * Input Chip — multi-value text-entry control where each confirmed value
      * renders as a removable pill (chip / tag).
      * Pattern B (molecule, internal DOM, form-associated). The host owns:
@@ -1973,7 +1864,7 @@ export namespace Components {
      * Numeric Input — numeric-entry control with stacked step buttons.
      * Pattern B (atom-interactive, form-associated): renders its own `<input>`
      * inside shadow DOM and pairs it with a trailing stepper stack (chevron-up
-     * over chevron-bottom). Shares the visual primitives of `mud-input` (border,
+     * over chevron-bottom). Shares the visual primitives of `mud-text-input` (border,
      * focus ring, label, helper / error, sizes, states) and adds a
      * `--numeric-input-stepper-*` token namespace for the increment / decrement
      * affordance.
@@ -2686,7 +2577,7 @@ export namespace Components {
      * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
      * icon and an optional trailing clear `×` button that appears whenever the
      * control carries a value. Visual primitives (border, focus ring, label,
-     * helper / error, sizes, states) are shared with `mud-input`; specific
+     * helper / error, sizes, states) are shared with `mud-text-input`; specific
      * affordances (icon-start, icon-end-clear, submit-button) live in the
      * `--search-input-rectangular-*` token namespace.
      * Rectangular shape is the default sibling of `mud-search-input-circular`
@@ -2859,7 +2750,7 @@ export namespace Components {
      * Pattern B (atom-interactive, form-associated): renders a custom-styled
      * trigger button and a listbox popover inside shadow DOM. Form participation
      * works via `formAssociated` + `ElementInternals`. Shares the visual primitives
-     * of `mud-input` (border, focus ring, label, helper / error text, sizes,
+     * of `mud-text-input` (border, focus ring, label, helper / error text, sizes,
      * states) and adds a trailing chevron icon, listbox menu, and keyboard
      * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
      * pattern.
@@ -3426,10 +3317,119 @@ export namespace Components {
         "variant": TagVariant;
     }
     /**
+     * Input — single-line text-entry control.
+     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+     * inside shadow DOM. Form participation works via `formAssociated` +
+     * `ElementInternals`. The component is the canonical text-input primitive;
+     * specialised inputs (date, search, phone, etc.) compose around it.
+     * @element mud-text-input
+     */
+    interface MudTextInput {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Native `autocomplete` attribute forwarded to the internal control.
+         */
+        "autocomplete"?: string;
+        /**
+          * Accessible label for the clear (×) button. Only used when `clearable` is set.
+          * @default 'Golește câmpul'
+         */
+        "clearLabel": string;
+        /**
+          * Shows a trailing clear (×) button while the control holds a value. Clearing empties the field, emits `mudInput` + `mudChange`, and returns focus to the input. Suppressed when disabled, read-only, or loading.
+          * @default false
+         */
+        "clearable": boolean;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
+         */
+        "errorText"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Native `inputmode` hint forwarded to the internal control.
+         */
+        "inputmode"?: string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid": boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Loading state. When true the control becomes uninteractive and a trailing spinner replaces the `icon-end` slot. The host carries `aria-busy="true"` for assistive technologies.
+          * @default false
+         */
+        "loading": boolean;
+        /**
+          * Native `maxlength` constraint.
+         */
+        "maxLength"?: number;
+        /**
+          * Native `minlength` constraint.
+         */
+        "minLength"?: number;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Native `pattern` regex forwarded to the internal control.
+         */
+        "pattern"?: string;
+        /**
+          * Placeholder shown when the control is empty.
+         */
+        "placeholder"?: string;
+        /**
+          * Renders the field read-only. The control remains focusable and copyable.
+          * @default false
+         */
+        "readonly": boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required": boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size": InputSize;
+        /**
+          * Native input `type`.
+          * @default 'text'
+         */
+        "type": InputType;
+        /**
+          * Current value of the control. Reflects to the host attribute.
+          * @default ''
+         */
+        "value": string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant": InputVariant;
+    }
+    /**
      * Text Area — multi-line text-entry control.
      * Pattern B (atom-interactive, form-associated): renders its own `<textarea>`
      * inside shadow DOM. Form participation works via `formAssociated` +
-     * `ElementInternals`. Mirrors the `mud-input` contract for label, helper,
+     * `ElementInternals`. Mirrors the `mud-text-input` contract for label, helper,
      * error and variant treatment, and adds a vertical resize handle plus an
      * optional character counter.
      * @element mud-textarea
@@ -3681,10 +3681,6 @@ export interface MudInfoBoxCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudInfoBoxElement;
 }
-export interface MudInputCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLMudInputElement;
-}
 export interface MudInputChipCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudInputChipElement;
@@ -3768,6 +3764,10 @@ export interface MudTableCustomEvent<T> extends CustomEvent<T> {
 export interface MudTabsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudTabsElement;
+}
+export interface MudTextInputCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLMudTextInputElement;
 }
 export interface MudTextareaCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -4458,34 +4458,6 @@ declare global {
         prototype: HTMLMudInlineMessageElement;
         new (): HTMLMudInlineMessageElement;
     };
-    interface HTMLMudInputElementEventMap {
-        "mudInput": InputChangeDetail;
-        "mudChange": InputChangeDetail;
-        "mudFocus": FocusEvent;
-        "mudBlur": FocusEvent;
-    }
-    /**
-     * Input — single-line text-entry control.
-     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
-     * inside shadow DOM. Form participation works via `formAssociated` +
-     * `ElementInternals`. The component is the canonical text-input primitive;
-     * specialised inputs (date, search, phone, etc.) compose around it.
-     * @element mud-input
-     */
-    interface HTMLMudInputElement extends Components.MudInput, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLMudInputElementEventMap>(type: K, listener: (this: HTMLMudInputElement, ev: MudInputCustomEvent<HTMLMudInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLMudInputElementEventMap>(type: K, listener: (this: HTMLMudInputElement, ev: MudInputCustomEvent<HTMLMudInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLMudInputElement: {
-        prototype: HTMLMudInputElement;
-        new (): HTMLMudInputElement;
-    };
     interface HTMLMudInputChipElementEventMap {
         "mudChange": InputChipChangeDetail;
         "mudChipAdd": InputChipAddDetail;
@@ -4708,7 +4680,7 @@ declare global {
      * Numeric Input — numeric-entry control with stacked step buttons.
      * Pattern B (atom-interactive, form-associated): renders its own `<input>`
      * inside shadow DOM and pairs it with a trailing stepper stack (chevron-up
-     * over chevron-bottom). Shares the visual primitives of `mud-input` (border,
+     * over chevron-bottom). Shares the visual primitives of `mud-text-input` (border,
      * focus ring, label, helper / error, sizes, states) and adds a
      * `--numeric-input-stepper-*` token namespace for the increment / decrement
      * affordance.
@@ -4974,7 +4946,7 @@ declare global {
      * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
      * icon and an optional trailing clear `×` button that appears whenever the
      * control carries a value. Visual primitives (border, focus ring, label,
-     * helper / error, sizes, states) are shared with `mud-input`; specific
+     * helper / error, sizes, states) are shared with `mud-text-input`; specific
      * affordances (icon-start, icon-end-clear, submit-button) live in the
      * `--search-input-rectangular-*` token namespace.
      * Rectangular shape is the default sibling of `mud-search-input-circular`
@@ -5045,7 +5017,7 @@ declare global {
      * Pattern B (atom-interactive, form-associated): renders a custom-styled
      * trigger button and a listbox popover inside shadow DOM. Form participation
      * works via `formAssociated` + `ElementInternals`. Shares the visual primitives
-     * of `mud-input` (border, focus ring, label, helper / error text, sizes,
+     * of `mud-text-input` (border, focus ring, label, helper / error text, sizes,
      * states) and adds a trailing chevron icon, listbox menu, and keyboard
      * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
      * pattern.
@@ -5318,6 +5290,34 @@ declare global {
         prototype: HTMLMudTagElement;
         new (): HTMLMudTagElement;
     };
+    interface HTMLMudTextInputElementEventMap {
+        "mudInput": InputChangeDetail;
+        "mudChange": InputChangeDetail;
+        "mudFocus": FocusEvent;
+        "mudBlur": FocusEvent;
+    }
+    /**
+     * Input — single-line text-entry control.
+     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+     * inside shadow DOM. Form participation works via `formAssociated` +
+     * `ElementInternals`. The component is the canonical text-input primitive;
+     * specialised inputs (date, search, phone, etc.) compose around it.
+     * @element mud-text-input
+     */
+    interface HTMLMudTextInputElement extends Components.MudTextInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudTextInputElementEventMap>(type: K, listener: (this: HTMLMudTextInputElement, ev: MudTextInputCustomEvent<HTMLMudTextInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudTextInputElementEventMap>(type: K, listener: (this: HTMLMudTextInputElement, ev: MudTextInputCustomEvent<HTMLMudTextInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLMudTextInputElement: {
+        prototype: HTMLMudTextInputElement;
+        new (): HTMLMudTextInputElement;
+    };
     interface HTMLMudTextareaElementEventMap {
         "mudInput": TextareaChangeDetail;
         "mudChange": TextareaChangeDetail;
@@ -5328,7 +5328,7 @@ declare global {
      * Text Area — multi-line text-entry control.
      * Pattern B (atom-interactive, form-associated): renders its own `<textarea>`
      * inside shadow DOM. Form participation works via `formAssociated` +
-     * `ElementInternals`. Mirrors the `mud-input` contract for label, helper,
+     * `ElementInternals`. Mirrors the `mud-text-input` contract for label, helper,
      * error and variant treatment, and adds a vertical resize handle plus an
      * optional character counter.
      * @element mud-textarea
@@ -5406,7 +5406,6 @@ declare global {
         "mud-icon": HTMLMudIconElement;
         "mud-info-box": HTMLMudInfoBoxElement;
         "mud-inline-message": HTMLMudInlineMessageElement;
-        "mud-input": HTMLMudInputElement;
         "mud-input-chip": HTMLMudInputChipElement;
         "mud-link": HTMLMudLinkElement;
         "mud-logo": HTMLMudLogoElement;
@@ -5435,6 +5434,7 @@ declare global {
         "mud-table": HTMLMudTableElement;
         "mud-tabs": HTMLMudTabsElement;
         "mud-tag": HTMLMudTagElement;
+        "mud-text-input": HTMLMudTextInputElement;
         "mud-textarea": HTMLMudTextareaElement;
         "mud-tooltip": HTMLMudTooltipElement;
     }
@@ -5927,7 +5927,7 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
-          * Plain-text error message shown below the label when `invalid` is set. Pairs with the `circle-error-filled` icon and is wired to the control via `aria-describedby`. When present (and `invalid`) it replaces the supporting text. Mirrors the `errorText` convention of `mud-input` / `mud-textarea`.
+          * Plain-text error message shown below the label when `invalid` is set. Pairs with the `circle-error-filled` icon and is wired to the control via `aria-describedby`. When present (and `invalid`) it replaces the supporting text. Mirrors the `errorText` convention of `mud-text-input` / `mud-textarea`.
          */
         "errorText"?: string;
         /**
@@ -6972,135 +6972,6 @@ declare namespace LocalJSX {
         "variant"?: InlineMessageVariant;
     }
     /**
-     * Input — single-line text-entry control.
-     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
-     * inside shadow DOM. Form participation works via `formAssociated` +
-     * `ElementInternals`. The component is the canonical text-input primitive;
-     * specialised inputs (date, search, phone, etc.) compose around it.
-     * @element mud-input
-     */
-    interface MudInput {
-        /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
-         */
-        "ariaLabel"?: string;
-        /**
-          * Native `autocomplete` attribute forwarded to the internal control.
-         */
-        "autocomplete"?: string;
-        /**
-          * Accessible label for the clear (×) button. Only used when `clearable` is set.
-          * @default 'Golește câmpul'
-         */
-        "clearLabel"?: string;
-        /**
-          * Shows a trailing clear (×) button while the control holds a value. Clearing empties the field, emits `mudInput` + `mudChange`, and returns focus to the input. Suppressed when disabled, read-only, or loading.
-          * @default false
-         */
-        "clearable"?: boolean;
-        /**
-          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
-          * @default false
-         */
-        "disabled"?: boolean;
-        /**
-          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
-         */
-        "errorText"?: string;
-        /**
-          * The `id` of a `<form>` element to associate this element with.
-         */
-        "form"?: string;
-        /**
-          * Plain-text helper / hint shown below the control.
-         */
-        "helperText"?: string;
-        /**
-          * Native `inputmode` hint forwarded to the internal control.
-         */
-        "inputmode"?: string;
-        /**
-          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
-          * @default false
-         */
-        "invalid"?: boolean;
-        /**
-          * Plain-text label. Use the `label` slot for richer content.
-         */
-        "label"?: string;
-        /**
-          * Loading state. When true the control becomes uninteractive and a trailing spinner replaces the `icon-end` slot. The host carries `aria-busy="true"` for assistive technologies.
-          * @default false
-         */
-        "loading"?: boolean;
-        /**
-          * Native `maxlength` constraint.
-         */
-        "maxLength"?: number;
-        /**
-          * Native `minlength` constraint.
-         */
-        "minLength"?: number;
-        /**
-          * Form-control `name`. Used during form submission.
-         */
-        "name"?: string;
-        /**
-          * Fires when the internal control loses focus. The native `FocusEvent` is forwarded as-is.
-         */
-        "onMudBlur"?: (event: MudInputCustomEvent<FocusEvent>) => void;
-        /**
-          * Fires when the value is committed (typically on `blur` or `Enter`). `detail.value` is the committed value.
-         */
-        "onMudChange"?: (event: MudInputCustomEvent<InputChangeDetail>) => void;
-        /**
-          * Fires when the internal control gains focus. The native `FocusEvent` is forwarded as-is.
-         */
-        "onMudFocus"?: (event: MudInputCustomEvent<FocusEvent>) => void;
-        /**
-          * Fires on every keystroke. `detail.value` is the current control value.
-         */
-        "onMudInput"?: (event: MudInputCustomEvent<InputChangeDetail>) => void;
-        /**
-          * Native `pattern` regex forwarded to the internal control.
-         */
-        "pattern"?: string;
-        /**
-          * Placeholder shown when the control is empty.
-         */
-        "placeholder"?: string;
-        /**
-          * Renders the field read-only. The control remains focusable and copyable.
-          * @default false
-         */
-        "readonly"?: boolean;
-        /**
-          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
-          * @default false
-         */
-        "required"?: boolean;
-        /**
-          * Visual size rung.
-          * @default 'md'
-         */
-        "size"?: InputSize;
-        /**
-          * Native input `type`.
-          * @default 'text'
-         */
-        "type"?: InputType;
-        /**
-          * Current value of the control. Reflects to the host attribute.
-          * @default ''
-         */
-        "value"?: string;
-        /**
-          * Color treatment. `destructive` is forced when `invalid` is set.
-          * @default 'default'
-         */
-        "variant"?: InputVariant;
-    }
-    /**
      * Input Chip — multi-value text-entry control where each confirmed value
      * renders as a removable pill (chip / tag).
      * Pattern B (molecule, internal DOM, form-associated). The host owns:
@@ -7556,7 +7427,7 @@ declare namespace LocalJSX {
      * Numeric Input — numeric-entry control with stacked step buttons.
      * Pattern B (atom-interactive, form-associated): renders its own `<input>`
      * inside shadow DOM and pairs it with a trailing stepper stack (chevron-up
-     * over chevron-bottom). Shares the visual primitives of `mud-input` (border,
+     * over chevron-bottom). Shares the visual primitives of `mud-text-input` (border,
      * focus ring, label, helper / error, sizes, states) and adds a
      * `--numeric-input-stepper-*` token namespace for the increment / decrement
      * affordance.
@@ -8401,7 +8272,7 @@ declare namespace LocalJSX {
      * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
      * icon and an optional trailing clear `×` button that appears whenever the
      * control carries a value. Visual primitives (border, focus ring, label,
-     * helper / error, sizes, states) are shared with `mud-input`; specific
+     * helper / error, sizes, states) are shared with `mud-text-input`; specific
      * affordances (icon-start, icon-end-clear, submit-button) live in the
      * `--search-input-rectangular-*` token namespace.
      * Rectangular shape is the default sibling of `mud-search-input-circular`
@@ -8610,7 +8481,7 @@ declare namespace LocalJSX {
      * Pattern B (atom-interactive, form-associated): renders a custom-styled
      * trigger button and a listbox popover inside shadow DOM. Form participation
      * works via `formAssociated` + `ElementInternals`. Shares the visual primitives
-     * of `mud-input` (border, focus ring, label, helper / error text, sizes,
+     * of `mud-text-input` (border, focus ring, label, helper / error text, sizes,
      * states) and adds a trailing chevron icon, listbox menu, and keyboard
      * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
      * pattern.
@@ -9249,10 +9120,139 @@ declare namespace LocalJSX {
         "variant"?: TagVariant;
     }
     /**
+     * Input — single-line text-entry control.
+     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+     * inside shadow DOM. Form participation works via `formAssociated` +
+     * `ElementInternals`. The component is the canonical text-input primitive;
+     * specialised inputs (date, search, phone, etc.) compose around it.
+     * @element mud-text-input
+     */
+    interface MudTextInput {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Native `autocomplete` attribute forwarded to the internal control.
+         */
+        "autocomplete"?: string;
+        /**
+          * Accessible label for the clear (×) button. Only used when `clearable` is set.
+          * @default 'Golește câmpul'
+         */
+        "clearLabel"?: string;
+        /**
+          * Shows a trailing clear (×) button while the control holds a value. Clearing empties the field, emits `mudInput` + `mudChange`, and returns focus to the input. Suppressed when disabled, read-only, or loading.
+          * @default false
+         */
+        "clearable"?: boolean;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
+         */
+        "errorText"?: string;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Native `inputmode` hint forwarded to the internal control.
+         */
+        "inputmode"?: string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid"?: boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Loading state. When true the control becomes uninteractive and a trailing spinner replaces the `icon-end` slot. The host carries `aria-busy="true"` for assistive technologies.
+          * @default false
+         */
+        "loading"?: boolean;
+        /**
+          * Native `maxlength` constraint.
+         */
+        "maxLength"?: number;
+        /**
+          * Native `minlength` constraint.
+         */
+        "minLength"?: number;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Fires when the internal control loses focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onMudBlur"?: (event: MudTextInputCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires when the value is committed (typically on `blur` or `Enter`). `detail.value` is the committed value.
+         */
+        "onMudChange"?: (event: MudTextInputCustomEvent<InputChangeDetail>) => void;
+        /**
+          * Fires when the internal control gains focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onMudFocus"?: (event: MudTextInputCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires on every keystroke. `detail.value` is the current control value.
+         */
+        "onMudInput"?: (event: MudTextInputCustomEvent<InputChangeDetail>) => void;
+        /**
+          * Native `pattern` regex forwarded to the internal control.
+         */
+        "pattern"?: string;
+        /**
+          * Placeholder shown when the control is empty.
+         */
+        "placeholder"?: string;
+        /**
+          * Renders the field read-only. The control remains focusable and copyable.
+          * @default false
+         */
+        "readonly"?: boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required"?: boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size"?: InputSize;
+        /**
+          * Native input `type`.
+          * @default 'text'
+         */
+        "type"?: InputType;
+        /**
+          * Current value of the control. Reflects to the host attribute.
+          * @default ''
+         */
+        "value"?: string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant"?: InputVariant;
+    }
+    /**
      * Text Area — multi-line text-entry control.
      * Pattern B (atom-interactive, form-associated): renders its own `<textarea>`
      * inside shadow DOM. Form participation works via `formAssociated` +
-     * `ElementInternals`. Mirrors the `mud-input` contract for label, helper,
+     * `ElementInternals`. Mirrors the `mud-text-input` contract for label, helper,
      * error and variant treatment, and adds a vertical resize handle plus an
      * optional character counter.
      * @element mud-textarea
@@ -9714,30 +9714,6 @@ declare namespace LocalJSX {
         "hideIcon": boolean;
         "iconName": string;
     }
-    interface MudInputAttributes {
-        "variant": InputVariant;
-        "loading": boolean;
-        "size": InputSize;
-        "type": InputType;
-        "disabled": boolean;
-        "required": boolean;
-        "readonly": boolean;
-        "clearable": boolean;
-        "invalid": boolean;
-        "value": string;
-        "name": string;
-        "placeholder": string;
-        "clearLabel": string;
-        "label": string;
-        "helperText": string;
-        "errorText": string;
-        "autocomplete": string;
-        "maxLength": number;
-        "minLength": number;
-        "inputmode": string;
-        "pattern": string;
-        "ariaLabel": string;
-    }
     interface MudInputChipAttributes {
         "variant": InputChipVariant;
         "size": InputChipSize;
@@ -10093,6 +10069,30 @@ declare namespace LocalJSX {
         "label": string;
         "ariaLabel": string;
     }
+    interface MudTextInputAttributes {
+        "variant": InputVariant;
+        "loading": boolean;
+        "size": InputSize;
+        "type": InputType;
+        "disabled": boolean;
+        "required": boolean;
+        "readonly": boolean;
+        "clearable": boolean;
+        "invalid": boolean;
+        "value": string;
+        "name": string;
+        "placeholder": string;
+        "clearLabel": string;
+        "label": string;
+        "helperText": string;
+        "errorText": string;
+        "autocomplete": string;
+        "maxLength": number;
+        "minLength": number;
+        "inputmode": string;
+        "pattern": string;
+        "ariaLabel": string;
+    }
     interface MudTextareaAttributes {
         "variant": TextareaVariant;
         "size": TextareaSize;
@@ -10156,7 +10156,6 @@ declare namespace LocalJSX {
         "mud-icon": Omit<MudIcon, keyof MudIconAttributes> & { [K in keyof MudIcon & keyof MudIconAttributes]?: MudIcon[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `attr:${K}`]?: MudIconAttributes[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `prop:${K}`]?: MudIcon[K] };
         "mud-info-box": Omit<MudInfoBox, keyof MudInfoBoxAttributes> & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes]?: MudInfoBox[K] } & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes as `attr:${K}`]?: MudInfoBoxAttributes[K] } & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes as `prop:${K}`]?: MudInfoBox[K] };
         "mud-inline-message": Omit<MudInlineMessage, keyof MudInlineMessageAttributes> & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes]?: MudInlineMessage[K] } & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes as `attr:${K}`]?: MudInlineMessageAttributes[K] } & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes as `prop:${K}`]?: MudInlineMessage[K] };
-        "mud-input": Omit<MudInput, keyof MudInputAttributes> & { [K in keyof MudInput & keyof MudInputAttributes]?: MudInput[K] } & { [K in keyof MudInput & keyof MudInputAttributes as `attr:${K}`]?: MudInputAttributes[K] } & { [K in keyof MudInput & keyof MudInputAttributes as `prop:${K}`]?: MudInput[K] };
         "mud-input-chip": Omit<MudInputChip, keyof MudInputChipAttributes> & { [K in keyof MudInputChip & keyof MudInputChipAttributes]?: MudInputChip[K] } & { [K in keyof MudInputChip & keyof MudInputChipAttributes as `attr:${K}`]?: MudInputChipAttributes[K] } & { [K in keyof MudInputChip & keyof MudInputChipAttributes as `prop:${K}`]?: MudInputChip[K] };
         "mud-link": Omit<MudLink, keyof MudLinkAttributes> & { [K in keyof MudLink & keyof MudLinkAttributes]?: MudLink[K] } & { [K in keyof MudLink & keyof MudLinkAttributes as `attr:${K}`]?: MudLinkAttributes[K] } & { [K in keyof MudLink & keyof MudLinkAttributes as `prop:${K}`]?: MudLink[K] };
         "mud-logo": Omit<MudLogo, keyof MudLogoAttributes> & { [K in keyof MudLogo & keyof MudLogoAttributes]?: MudLogo[K] } & { [K in keyof MudLogo & keyof MudLogoAttributes as `attr:${K}`]?: MudLogoAttributes[K] } & { [K in keyof MudLogo & keyof MudLogoAttributes as `prop:${K}`]?: MudLogo[K] };
@@ -10185,6 +10184,7 @@ declare namespace LocalJSX {
         "mud-table": Omit<MudTable, keyof MudTableAttributes> & { [K in keyof MudTable & keyof MudTableAttributes]?: MudTable[K] } & { [K in keyof MudTable & keyof MudTableAttributes as `attr:${K}`]?: MudTableAttributes[K] } & { [K in keyof MudTable & keyof MudTableAttributes as `prop:${K}`]?: MudTable[K] };
         "mud-tabs": Omit<MudTabs, keyof MudTabsAttributes> & { [K in keyof MudTabs & keyof MudTabsAttributes]?: MudTabs[K] } & { [K in keyof MudTabs & keyof MudTabsAttributes as `attr:${K}`]?: MudTabsAttributes[K] } & { [K in keyof MudTabs & keyof MudTabsAttributes as `prop:${K}`]?: MudTabs[K] };
         "mud-tag": Omit<MudTag, keyof MudTagAttributes> & { [K in keyof MudTag & keyof MudTagAttributes]?: MudTag[K] } & { [K in keyof MudTag & keyof MudTagAttributes as `attr:${K}`]?: MudTagAttributes[K] } & { [K in keyof MudTag & keyof MudTagAttributes as `prop:${K}`]?: MudTag[K] };
+        "mud-text-input": Omit<MudTextInput, keyof MudTextInputAttributes> & { [K in keyof MudTextInput & keyof MudTextInputAttributes]?: MudTextInput[K] } & { [K in keyof MudTextInput & keyof MudTextInputAttributes as `attr:${K}`]?: MudTextInputAttributes[K] } & { [K in keyof MudTextInput & keyof MudTextInputAttributes as `prop:${K}`]?: MudTextInput[K] };
         "mud-textarea": Omit<MudTextarea, keyof MudTextareaAttributes> & { [K in keyof MudTextarea & keyof MudTextareaAttributes]?: MudTextarea[K] } & { [K in keyof MudTextarea & keyof MudTextareaAttributes as `attr:${K}`]?: MudTextareaAttributes[K] } & { [K in keyof MudTextarea & keyof MudTextareaAttributes as `prop:${K}`]?: MudTextarea[K] };
         "mud-tooltip": Omit<MudTooltip, keyof MudTooltipAttributes> & { [K in keyof MudTooltip & keyof MudTooltipAttributes]?: MudTooltip[K] } & { [K in keyof MudTooltip & keyof MudTooltipAttributes as `attr:${K}`]?: MudTooltipAttributes[K] } & { [K in keyof MudTooltip & keyof MudTooltipAttributes as `prop:${K}`]?: MudTooltip[K] };
     }
@@ -10516,15 +10516,6 @@ declare module "@stencil/core" {
              */
             "mud-inline-message": LocalJSX.IntrinsicElements["mud-inline-message"] & JSXBase.HTMLAttributes<HTMLMudInlineMessageElement>;
             /**
-             * Input — single-line text-entry control.
-             * Pattern B (atom-interactive, form-associated): renders its own `<input>`
-             * inside shadow DOM. Form participation works via `formAssociated` +
-             * `ElementInternals`. The component is the canonical text-input primitive;
-             * specialised inputs (date, search, phone, etc.) compose around it.
-             * @element mud-input
-             */
-            "mud-input": LocalJSX.IntrinsicElements["mud-input"] & JSXBase.HTMLAttributes<HTMLMudInputElement>;
-            /**
              * Input Chip — multi-value text-entry control where each confirmed value
              * renders as a removable pill (chip / tag).
              * Pattern B (molecule, internal DOM, form-associated). The host owns:
@@ -10628,7 +10619,7 @@ declare module "@stencil/core" {
              * Numeric Input — numeric-entry control with stacked step buttons.
              * Pattern B (atom-interactive, form-associated): renders its own `<input>`
              * inside shadow DOM and pairs it with a trailing stepper stack (chevron-up
-             * over chevron-bottom). Shares the visual primitives of `mud-input` (border,
+             * over chevron-bottom). Shares the visual primitives of `mud-text-input` (border,
              * focus ring, label, helper / error, sizes, states) and adds a
              * `--numeric-input-stepper-*` token namespace for the increment / decrement
              * affordance.
@@ -10761,7 +10752,7 @@ declare module "@stencil/core" {
              * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
              * icon and an optional trailing clear `×` button that appears whenever the
              * control carries a value. Visual primitives (border, focus ring, label,
-             * helper / error, sizes, states) are shared with `mud-input`; specific
+             * helper / error, sizes, states) are shared with `mud-text-input`; specific
              * affordances (icon-start, icon-end-clear, submit-button) live in the
              * `--search-input-rectangular-*` token namespace.
              * Rectangular shape is the default sibling of `mud-search-input-circular`
@@ -10796,7 +10787,7 @@ declare module "@stencil/core" {
              * Pattern B (atom-interactive, form-associated): renders a custom-styled
              * trigger button and a listbox popover inside shadow DOM. Form participation
              * works via `formAssociated` + `ElementInternals`. Shares the visual primitives
-             * of `mud-input` (border, focus ring, label, helper / error text, sizes,
+             * of `mud-text-input` (border, focus ring, label, helper / error text, sizes,
              * states) and adds a trailing chevron icon, listbox menu, and keyboard
              * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
              * pattern.
@@ -10942,10 +10933,19 @@ declare module "@stencil/core" {
              */
             "mud-tag": LocalJSX.IntrinsicElements["mud-tag"] & JSXBase.HTMLAttributes<HTMLMudTagElement>;
             /**
+             * Input — single-line text-entry control.
+             * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+             * inside shadow DOM. Form participation works via `formAssociated` +
+             * `ElementInternals`. The component is the canonical text-input primitive;
+             * specialised inputs (date, search, phone, etc.) compose around it.
+             * @element mud-text-input
+             */
+            "mud-text-input": LocalJSX.IntrinsicElements["mud-text-input"] & JSXBase.HTMLAttributes<HTMLMudTextInputElement>;
+            /**
              * Text Area — multi-line text-entry control.
              * Pattern B (atom-interactive, form-associated): renders its own `<textarea>`
              * inside shadow DOM. Form participation works via `formAssociated` +
-             * `ElementInternals`. Mirrors the `mud-input` contract for label, helper,
+             * `ElementInternals`. Mirrors the `mud-text-input` contract for label, helper,
              * error and variant treatment, and adds a vertical resize handle plus an
              * optional character counter.
              * @element mud-textarea

@@ -48,7 +48,6 @@ largest smaller size before giving up.
  - [mud-header-services-menu](../mud-header)
  - [mud-info-box](../mud-info-box)
  - [mud-inline-message](../mud-inline-message)
- - [mud-input](../mud-input)
  - [mud-input-chip](../mud-input-chip)
  - [mud-menu-item](../mud-menu)
  - [mud-modal](../mud-modal)
@@ -65,6 +64,7 @@ largest smaller size before giving up.
  - [mud-tab](../mud-tabs)
  - [mud-table](../mud-table)
  - [mud-tabs](../mud-tabs)
+ - [mud-text-input](../mud-text-input)
  - [mud-textarea](../mud-textarea)
 
 ### Graph
@@ -86,7 +86,6 @@ graph TD;
   mud-header-services-menu --> mud-icon
   mud-info-box --> mud-icon
   mud-inline-message --> mud-icon
-  mud-input --> mud-icon
   mud-input-chip --> mud-icon
   mud-menu-item --> mud-icon
   mud-modal --> mud-icon
@@ -103,6 +102,7 @@ graph TD;
   mud-tab --> mud-icon
   mud-table --> mud-icon
   mud-tabs --> mud-icon
+  mud-text-input --> mud-icon
   mud-textarea --> mud-icon
   style mud-icon fill:#f9f,stroke:#333,stroke-width:4px
 ```

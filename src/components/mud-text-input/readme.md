@@ -1,4 +1,4 @@
-# mud-input
+# mud-text-input
 
 
 
@@ -86,9 +86,9 @@ specialised inputs (date, search, phone, etc.) compose around it.
 ### Graph
 ```mermaid
 graph TD;
-  mud-input --> mud-icon
-  mud-input --> mud-spinner
-  style mud-input fill:#f9f,stroke:#333,stroke-width:4px
+  mud-text-input --> mud-icon
+  mud-text-input --> mud-spinner
+  style mud-text-input fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------
