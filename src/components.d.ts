@@ -29,7 +29,6 @@ import { LinkSize, LinkUnderline, LinkVariant } from "./components/mud-link/mud-
 import { LogoName } from "./components/mud-logo/mud-logo.types";
 import { MenuChangeDetail, MenuItemLeading, MenuItemSelectDetail, MenuSelectDetail, MenuType } from "./components/mud-menu/mud-menu.types";
 import { ModalActionsLayout, ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/mud-modal/mud-modal.types";
-import { NotificationVariant } from "./components/mud-notification/mud-notification.types";
 import { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/mud-numeric-input/mud-numeric-input.types";
 import { PaginationChangeDetail, PaginationSize } from "./components/mud-pagination/mud-pagination.types";
 import { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/mud-phone-input/mud-phone-input.types";
@@ -49,6 +48,7 @@ import { TabDescriptor, TabsChangeDetail, TabsSize } from "./components/mud-tabs
 import { TagSemantic, TagSize, TagType, TagVariant } from "./components/mud-tag/mud-tag.types";
 import { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/mud-text-input/mud-text-input.types";
 import { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from "./components/mud-textarea/mud-textarea.types";
+import { ToastVariant } from "./components/mud-toast/mud-toast.types";
 import { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, TooltipVariant } from "./components/mud-tooltip/mud-tooltip.types";
 export { AccordionAppearance, AccordionChangeDetail, AccordionIconPosition, AccordionItemDescriptor, AccordionMode, AccordionSize } from "./components/mud-accordion/mud-accordion.types";
 export { AvatarSize, AvatarType } from "./components/mud-avatar/mud-avatar.types";
@@ -74,7 +74,6 @@ export { LinkSize, LinkUnderline, LinkVariant } from "./components/mud-link/mud-
 export { LogoName } from "./components/mud-logo/mud-logo.types";
 export { MenuChangeDetail, MenuItemLeading, MenuItemSelectDetail, MenuSelectDetail, MenuType } from "./components/mud-menu/mud-menu.types";
 export { ModalActionsLayout, ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/mud-modal/mud-modal.types";
-export { NotificationVariant } from "./components/mud-notification/mud-notification.types";
 export { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/mud-numeric-input/mud-numeric-input.types";
 export { PaginationChangeDetail, PaginationSize } from "./components/mud-pagination/mud-pagination.types";
 export { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/mud-phone-input/mud-phone-input.types";
@@ -94,6 +93,7 @@ export { TabDescriptor, TabsChangeDetail, TabsSize } from "./components/mud-tabs
 export { TagSemantic, TagSize, TagType, TagVariant } from "./components/mud-tag/mud-tag.types";
 export { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/mud-text-input/mud-text-input.types";
 export { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from "./components/mud-textarea/mud-textarea.types";
+export { ToastVariant } from "./components/mud-toast/mud-toast.types";
 export { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, TooltipVariant } from "./components/mud-tooltip/mud-tooltip.types";
 export namespace Components {
     /**
@@ -1366,7 +1366,7 @@ export namespace Components {
     /**
      * Informational Box — an inline, in-content callout that highlights key
      * messages, announcements, alerts, or explanations within the page flow.
-     * Unlike `mud-notification` (a fixed-width corner toast) or `mud-banner` (a
+     * Unlike `mud-toast` (a fixed-width corner toast) or `mud-banner` (a
      * full-width page-level bar), the info box sits inside the content column,
      * fills its container's width, and supports rich content: an optional bold
      * heading, a multi-line body (default slot), an optional inline action group
@@ -1379,7 +1379,7 @@ export namespace Components {
      * The box is static in-flow content, so it is **not** an ARIA live region
      * (that would re-announce on every render). The icon is decorative; the
      * heading and body are read in normal reading order. For transient, announced
-     * messages use `mud-notification` / `mud-banner` instead.
+     * messages use `mud-toast` / `mud-banner` instead.
      * @element mud-info-box
      */
     interface MudInfoBox {
@@ -1430,7 +1430,7 @@ export namespace Components {
      * It is plain in-flow text, **not** an ARIA live region. When used as form
      * feedback, associate it with the field via `aria-describedby` (and
      * `aria-invalid` for errors) on the consumer side; for a transient, announced
-     * message use `mud-notification` / `mud-banner`. The icon is decorative.
+     * message use `mud-toast` / `mud-banner`. The icon is decorative.
      * @element mud-inline-message
      */
     interface MudInlineMessage {
@@ -1813,50 +1813,6 @@ export namespace Components {
           * @default 'default'
          */
         "variant": ModalVariant;
-    }
-    /**
-     * Notification — semantic toast message (350px filled surface, 8px radius).
-     * Renders a leading icon, an optional bold heading, the message body
-     * (default slot), an optional inline action group (`actions` slot) and an
-     * optional trailing close button.
-     * Pattern B (atom-display + interactive close): the close affordance lives
-     * inside shadow DOM so it participates in tab order with a real
-     * `button` role. The body itself is not interactive.
-     * `variant` selects the semantic color family — `info`, `warning`, `success`,
-     * or `error` — each a filled toast surface with its own leading icon.
-     * Live-region routing:
-     * - `info` / `success` → `role="status"` + `aria-live="polite"`
-     * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
-     * @element mud-notification
-     */
-    interface MudNotification {
-        /**
-          * Forwarded to the host as `aria-label`. Use this to give the entire notification an explicit accessible name when the body content alone is not descriptive enough.
-         */
-        "ariaLabel"?: string;
-        /**
-          * When `true`, renders a trailing close button. Activating it emits `mudClose`; the consumer is responsible for removing the notification from the DOM.
-          * @default false
-         */
-        "closable": boolean;
-        /**
-          * Close-button accessible label. Defaults to the Romanian "Închide". Provide an alternative for non-Romanian locales.
-          * @default 'Închide'
-         */
-        "closeLabel": string;
-        /**
-          * Override the default `mud-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
-         */
-        "iconName"?: string;
-        /**
-          * Optional bold title rendered above the body.
-         */
-        "titleText"?: string;
-        /**
-          * Semantic color family.
-          * @default 'info'
-         */
-        "variant": NotificationVariant;
     }
     /**
      * Numeric Input — numeric-entry control with stacked step buttons.
@@ -3373,6 +3329,54 @@ export namespace Components {
         "variant": TextareaVariant;
     }
     /**
+     * Toast — semantic toast message (350px filled surface, 8px radius).
+     * Matches the Figma `toast` component (page "Messaging (Notification)"):
+     * a leading icon, an optional bold heading, the message body (default slot),
+     * an optional inline link/action group (`actions` slot) and a trailing close
+     * button (shown by default — `closable` defaults to `true`).
+     * Placement, vertical stacking and auto-dismiss are the consumer's
+     * responsibility — this atom is just the surface. Its entrance animation
+     * (slide-down + fade-in) plays once on mount.
+     * Pattern B (atom-display + interactive close): the close affordance lives
+     * inside shadow DOM so it participates in tab order with a real
+     * `button` role. The body itself is not interactive.
+     * `variant` selects the semantic color family — `info`, `warning`, `success`,
+     * or `error` — each a filled toast surface with its own leading icon.
+     * Live-region routing:
+     * - `info` / `success` → `role="status"` + `aria-live="polite"`
+     * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
+     * @element mud-toast
+     */
+    interface MudToast {
+        /**
+          * Forwarded to the host as `aria-label`. Use this to give the entire toast an explicit accessible name when the body content alone is not descriptive enough.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Renders a trailing close button. Activating it emits `mudClose`; the consumer is responsible for removing the toast from the DOM. Defaults to `true` per the Figma `toast` component (`Close = true`); set `closable="false"` for a toast the user cannot dismiss manually (e.g. one that only auto-dismisses).
+          * @default true
+         */
+        "closable": boolean;
+        /**
+          * Close-button accessible label. Defaults to the Romanian "Închide". Provide an alternative for non-Romanian locales.
+          * @default 'Închide'
+         */
+        "closeLabel": string;
+        /**
+          * Override the default `mud-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
+         */
+        "iconName"?: string;
+        /**
+          * Optional bold title rendered above the body.
+         */
+        "titleText"?: string;
+        /**
+          * Semantic color family.
+          * @default 'info'
+         */
+        "variant": ToastVariant;
+    }
+    /**
      * Tooltip — transient label, structured popover, or coach mark anchored to a
      * trigger element.
      * Pattern B (internal DOM). The host wraps a `trigger` slot and renders the
@@ -3559,10 +3563,6 @@ export interface MudModalCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudModalElement;
 }
-export interface MudNotificationCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLMudNotificationElement;
-}
 export interface MudNumericInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudNumericInputElement;
@@ -3626,6 +3626,10 @@ export interface MudTextInputCustomEvent<T> extends CustomEvent<T> {
 export interface MudTextareaCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudTextareaElement;
+}
+export interface MudToastCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLMudToastElement;
 }
 export interface MudTooltipCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -4260,7 +4264,7 @@ declare global {
     /**
      * Informational Box — an inline, in-content callout that highlights key
      * messages, announcements, alerts, or explanations within the page flow.
-     * Unlike `mud-notification` (a fixed-width corner toast) or `mud-banner` (a
+     * Unlike `mud-toast` (a fixed-width corner toast) or `mud-banner` (a
      * full-width page-level bar), the info box sits inside the content column,
      * fills its container's width, and supports rich content: an optional bold
      * heading, a multi-line body (default slot), an optional inline action group
@@ -4273,7 +4277,7 @@ declare global {
      * The box is static in-flow content, so it is **not** an ARIA live region
      * (that would re-announce on every render). The icon is decorative; the
      * heading and body are read in normal reading order. For transient, announced
-     * messages use `mud-notification` / `mud-banner` instead.
+     * messages use `mud-toast` / `mud-banner` instead.
      * @element mud-info-box
      */
     interface HTMLMudInfoBoxElement extends Components.MudInfoBox, HTMLStencilElement {
@@ -4303,7 +4307,7 @@ declare global {
      * It is plain in-flow text, **not** an ARIA live region. When used as form
      * feedback, associate it with the field via `aria-describedby` (and
      * `aria-invalid` for errors) on the consumer side; for a transient, announced
-     * message use `mud-notification` / `mud-banner`. The icon is decorative.
+     * message use `mud-toast` / `mud-banner`. The icon is decorative.
      * @element mud-inline-message
      */
     interface HTMLMudInlineMessageElement extends Components.MudInlineMessage, HTMLStencilElement {
@@ -4488,38 +4492,6 @@ declare global {
     var HTMLMudModalElement: {
         prototype: HTMLMudModalElement;
         new (): HTMLMudModalElement;
-    };
-    interface HTMLMudNotificationElementEventMap {
-        "mudClose": void;
-    }
-    /**
-     * Notification — semantic toast message (350px filled surface, 8px radius).
-     * Renders a leading icon, an optional bold heading, the message body
-     * (default slot), an optional inline action group (`actions` slot) and an
-     * optional trailing close button.
-     * Pattern B (atom-display + interactive close): the close affordance lives
-     * inside shadow DOM so it participates in tab order with a real
-     * `button` role. The body itself is not interactive.
-     * `variant` selects the semantic color family — `info`, `warning`, `success`,
-     * or `error` — each a filled toast surface with its own leading icon.
-     * Live-region routing:
-     * - `info` / `success` → `role="status"` + `aria-live="polite"`
-     * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
-     * @element mud-notification
-     */
-    interface HTMLMudNotificationElement extends Components.MudNotification, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLMudNotificationElementEventMap>(type: K, listener: (this: HTMLMudNotificationElement, ev: MudNotificationCustomEvent<HTMLMudNotificationElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLMudNotificationElementEventMap>(type: K, listener: (this: HTMLMudNotificationElement, ev: MudNotificationCustomEvent<HTMLMudNotificationElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLMudNotificationElement: {
-        prototype: HTMLMudNotificationElement;
-        new (): HTMLMudNotificationElement;
     };
     interface HTMLMudNumericInputElementEventMap {
         "mudInput": NumericInputChangeDetail;
@@ -5156,6 +5128,42 @@ declare global {
         prototype: HTMLMudTextareaElement;
         new (): HTMLMudTextareaElement;
     };
+    interface HTMLMudToastElementEventMap {
+        "mudClose": void;
+    }
+    /**
+     * Toast — semantic toast message (350px filled surface, 8px radius).
+     * Matches the Figma `toast` component (page "Messaging (Notification)"):
+     * a leading icon, an optional bold heading, the message body (default slot),
+     * an optional inline link/action group (`actions` slot) and a trailing close
+     * button (shown by default — `closable` defaults to `true`).
+     * Placement, vertical stacking and auto-dismiss are the consumer's
+     * responsibility — this atom is just the surface. Its entrance animation
+     * (slide-down + fade-in) plays once on mount.
+     * Pattern B (atom-display + interactive close): the close affordance lives
+     * inside shadow DOM so it participates in tab order with a real
+     * `button` role. The body itself is not interactive.
+     * `variant` selects the semantic color family — `info`, `warning`, `success`,
+     * or `error` — each a filled toast surface with its own leading icon.
+     * Live-region routing:
+     * - `info` / `success` → `role="status"` + `aria-live="polite"`
+     * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
+     * @element mud-toast
+     */
+    interface HTMLMudToastElement extends Components.MudToast, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudToastElementEventMap>(type: K, listener: (this: HTMLMudToastElement, ev: MudToastCustomEvent<HTMLMudToastElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudToastElementEventMap>(type: K, listener: (this: HTMLMudToastElement, ev: MudToastCustomEvent<HTMLMudToastElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLMudToastElement: {
+        prototype: HTMLMudToastElement;
+        new (): HTMLMudToastElement;
+    };
     interface HTMLMudTooltipElementEventMap {
         "mudOpen": void;
         "mudClose": TooltipCloseEventDetail;
@@ -5221,7 +5229,6 @@ declare global {
         "mud-menu": HTMLMudMenuElement;
         "mud-menu-item": HTMLMudMenuItemElement;
         "mud-modal": HTMLMudModalElement;
-        "mud-notification": HTMLMudNotificationElement;
         "mud-numeric-input": HTMLMudNumericInputElement;
         "mud-pagination": HTMLMudPaginationElement;
         "mud-phone-input": HTMLMudPhoneInputElement;
@@ -5244,6 +5251,7 @@ declare global {
         "mud-tag": HTMLMudTagElement;
         "mud-text-input": HTMLMudTextInputElement;
         "mud-textarea": HTMLMudTextareaElement;
+        "mud-toast": HTMLMudToastElement;
         "mud-tooltip": HTMLMudTooltipElement;
     }
 }
@@ -6687,7 +6695,7 @@ declare namespace LocalJSX {
     /**
      * Informational Box — an inline, in-content callout that highlights key
      * messages, announcements, alerts, or explanations within the page flow.
-     * Unlike `mud-notification` (a fixed-width corner toast) or `mud-banner` (a
+     * Unlike `mud-toast` (a fixed-width corner toast) or `mud-banner` (a
      * full-width page-level bar), the info box sits inside the content column,
      * fills its container's width, and supports rich content: an optional bold
      * heading, a multi-line body (default slot), an optional inline action group
@@ -6700,7 +6708,7 @@ declare namespace LocalJSX {
      * The box is static in-flow content, so it is **not** an ARIA live region
      * (that would re-announce on every render). The icon is decorative; the
      * heading and body are read in normal reading order. For transient, announced
-     * messages use `mud-notification` / `mud-banner` instead.
+     * messages use `mud-toast` / `mud-banner` instead.
      * @element mud-info-box
      */
     interface MudInfoBox {
@@ -6755,7 +6763,7 @@ declare namespace LocalJSX {
      * It is plain in-flow text, **not** an ARIA live region. When used as form
      * feedback, associate it with the field via `aria-describedby` (and
      * `aria-invalid` for errors) on the consumer side; for a transient, announced
-     * message use `mud-notification` / `mud-banner`. The icon is decorative.
+     * message use `mud-toast` / `mud-banner`. The icon is decorative.
      * @element mud-inline-message
      */
     interface MudInlineMessage {
@@ -7182,54 +7190,6 @@ declare namespace LocalJSX {
           * @default 'default'
          */
         "variant"?: ModalVariant;
-    }
-    /**
-     * Notification — semantic toast message (350px filled surface, 8px radius).
-     * Renders a leading icon, an optional bold heading, the message body
-     * (default slot), an optional inline action group (`actions` slot) and an
-     * optional trailing close button.
-     * Pattern B (atom-display + interactive close): the close affordance lives
-     * inside shadow DOM so it participates in tab order with a real
-     * `button` role. The body itself is not interactive.
-     * `variant` selects the semantic color family — `info`, `warning`, `success`,
-     * or `error` — each a filled toast surface with its own leading icon.
-     * Live-region routing:
-     * - `info` / `success` → `role="status"` + `aria-live="polite"`
-     * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
-     * @element mud-notification
-     */
-    interface MudNotification {
-        /**
-          * Forwarded to the host as `aria-label`. Use this to give the entire notification an explicit accessible name when the body content alone is not descriptive enough.
-         */
-        "ariaLabel"?: string;
-        /**
-          * When `true`, renders a trailing close button. Activating it emits `mudClose`; the consumer is responsible for removing the notification from the DOM.
-          * @default false
-         */
-        "closable"?: boolean;
-        /**
-          * Close-button accessible label. Defaults to the Romanian "Închide". Provide an alternative for non-Romanian locales.
-          * @default 'Închide'
-         */
-        "closeLabel"?: string;
-        /**
-          * Override the default `mud-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
-         */
-        "iconName"?: string;
-        /**
-          * Fires when the user activates the close button. Payload is `void` — the consumer is responsible for the dismiss animation / DOM removal.
-         */
-        "onMudClose"?: (event: MudNotificationCustomEvent<void>) => void;
-        /**
-          * Optional bold title rendered above the body.
-         */
-        "titleText"?: string;
-        /**
-          * Semantic color family.
-          * @default 'info'
-         */
-        "variant"?: NotificationVariant;
     }
     /**
      * Numeric Input — numeric-entry control with stacked step buttons.
@@ -8998,6 +8958,58 @@ declare namespace LocalJSX {
         "variant"?: TextareaVariant;
     }
     /**
+     * Toast — semantic toast message (350px filled surface, 8px radius).
+     * Matches the Figma `toast` component (page "Messaging (Notification)"):
+     * a leading icon, an optional bold heading, the message body (default slot),
+     * an optional inline link/action group (`actions` slot) and a trailing close
+     * button (shown by default — `closable` defaults to `true`).
+     * Placement, vertical stacking and auto-dismiss are the consumer's
+     * responsibility — this atom is just the surface. Its entrance animation
+     * (slide-down + fade-in) plays once on mount.
+     * Pattern B (atom-display + interactive close): the close affordance lives
+     * inside shadow DOM so it participates in tab order with a real
+     * `button` role. The body itself is not interactive.
+     * `variant` selects the semantic color family — `info`, `warning`, `success`,
+     * or `error` — each a filled toast surface with its own leading icon.
+     * Live-region routing:
+     * - `info` / `success` → `role="status"` + `aria-live="polite"`
+     * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
+     * @element mud-toast
+     */
+    interface MudToast {
+        /**
+          * Forwarded to the host as `aria-label`. Use this to give the entire toast an explicit accessible name when the body content alone is not descriptive enough.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Renders a trailing close button. Activating it emits `mudClose`; the consumer is responsible for removing the toast from the DOM. Defaults to `true` per the Figma `toast` component (`Close = true`); set `closable="false"` for a toast the user cannot dismiss manually (e.g. one that only auto-dismisses).
+          * @default true
+         */
+        "closable"?: boolean;
+        /**
+          * Close-button accessible label. Defaults to the Romanian "Închide". Provide an alternative for non-Romanian locales.
+          * @default 'Închide'
+         */
+        "closeLabel"?: string;
+        /**
+          * Override the default `mud-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
+         */
+        "iconName"?: string;
+        /**
+          * Fires when the user activates the close button. Payload is `void` — the consumer is responsible for the dismiss animation / DOM removal.
+         */
+        "onMudClose"?: (event: MudToastCustomEvent<void>) => void;
+        /**
+          * Optional bold title rendered above the body.
+         */
+        "titleText"?: string;
+        /**
+          * Semantic color family.
+          * @default 'info'
+         */
+        "variant"?: ToastVariant;
+    }
+    /**
      * Tooltip — transient label, structured popover, or coach mark anchored to a
      * trigger element.
      * Pattern B (internal DOM). The host wraps a `trigger` slot and renders the
@@ -9421,14 +9433,6 @@ declare namespace LocalJSX {
         "label": string;
         "closeLabel": string;
     }
-    interface MudNotificationAttributes {
-        "variant": NotificationVariant;
-        "closable": boolean;
-        "titleText": string;
-        "iconName": string;
-        "ariaLabel": string;
-        "closeLabel": string;
-    }
     interface MudNumericInputAttributes {
         "variant": NumericInputVariant;
         "loading": boolean;
@@ -9725,6 +9729,14 @@ declare namespace LocalJSX {
         "showCounter": boolean;
         "ariaLabel": string;
     }
+    interface MudToastAttributes {
+        "variant": ToastVariant;
+        "closable": boolean;
+        "titleText": string;
+        "iconName": string;
+        "ariaLabel": string;
+        "closeLabel": string;
+    }
     interface MudTooltipAttributes {
         "size": TooltipSize;
         "position": TooltipPosition;
@@ -9775,7 +9787,6 @@ declare namespace LocalJSX {
         "mud-menu": Omit<MudMenu, keyof MudMenuAttributes> & { [K in keyof MudMenu & keyof MudMenuAttributes]?: MudMenu[K] } & { [K in keyof MudMenu & keyof MudMenuAttributes as `attr:${K}`]?: MudMenuAttributes[K] } & { [K in keyof MudMenu & keyof MudMenuAttributes as `prop:${K}`]?: MudMenu[K] };
         "mud-menu-item": Omit<MudMenuItem, keyof MudMenuItemAttributes> & { [K in keyof MudMenuItem & keyof MudMenuItemAttributes]?: MudMenuItem[K] } & { [K in keyof MudMenuItem & keyof MudMenuItemAttributes as `attr:${K}`]?: MudMenuItemAttributes[K] } & { [K in keyof MudMenuItem & keyof MudMenuItemAttributes as `prop:${K}`]?: MudMenuItem[K] };
         "mud-modal": Omit<MudModal, keyof MudModalAttributes> & { [K in keyof MudModal & keyof MudModalAttributes]?: MudModal[K] } & { [K in keyof MudModal & keyof MudModalAttributes as `attr:${K}`]?: MudModalAttributes[K] } & { [K in keyof MudModal & keyof MudModalAttributes as `prop:${K}`]?: MudModal[K] };
-        "mud-notification": Omit<MudNotification, keyof MudNotificationAttributes> & { [K in keyof MudNotification & keyof MudNotificationAttributes]?: MudNotification[K] } & { [K in keyof MudNotification & keyof MudNotificationAttributes as `attr:${K}`]?: MudNotificationAttributes[K] } & { [K in keyof MudNotification & keyof MudNotificationAttributes as `prop:${K}`]?: MudNotification[K] };
         "mud-numeric-input": Omit<MudNumericInput, keyof MudNumericInputAttributes> & { [K in keyof MudNumericInput & keyof MudNumericInputAttributes]?: MudNumericInput[K] } & { [K in keyof MudNumericInput & keyof MudNumericInputAttributes as `attr:${K}`]?: MudNumericInputAttributes[K] } & { [K in keyof MudNumericInput & keyof MudNumericInputAttributes as `prop:${K}`]?: MudNumericInput[K] };
         "mud-pagination": Omit<MudPagination, keyof MudPaginationAttributes> & { [K in keyof MudPagination & keyof MudPaginationAttributes]?: MudPagination[K] } & { [K in keyof MudPagination & keyof MudPaginationAttributes as `attr:${K}`]?: MudPaginationAttributes[K] } & { [K in keyof MudPagination & keyof MudPaginationAttributes as `prop:${K}`]?: MudPagination[K] };
         "mud-phone-input": Omit<MudPhoneInput, keyof MudPhoneInputAttributes> & { [K in keyof MudPhoneInput & keyof MudPhoneInputAttributes]?: MudPhoneInput[K] } & { [K in keyof MudPhoneInput & keyof MudPhoneInputAttributes as `attr:${K}`]?: MudPhoneInputAttributes[K] } & { [K in keyof MudPhoneInput & keyof MudPhoneInputAttributes as `prop:${K}`]?: MudPhoneInput[K] };
@@ -9798,6 +9809,7 @@ declare namespace LocalJSX {
         "mud-tag": Omit<MudTag, keyof MudTagAttributes> & { [K in keyof MudTag & keyof MudTagAttributes]?: MudTag[K] } & { [K in keyof MudTag & keyof MudTagAttributes as `attr:${K}`]?: MudTagAttributes[K] } & { [K in keyof MudTag & keyof MudTagAttributes as `prop:${K}`]?: MudTag[K] };
         "mud-text-input": Omit<MudTextInput, keyof MudTextInputAttributes> & { [K in keyof MudTextInput & keyof MudTextInputAttributes]?: MudTextInput[K] } & { [K in keyof MudTextInput & keyof MudTextInputAttributes as `attr:${K}`]?: MudTextInputAttributes[K] } & { [K in keyof MudTextInput & keyof MudTextInputAttributes as `prop:${K}`]?: MudTextInput[K] };
         "mud-textarea": Omit<MudTextarea, keyof MudTextareaAttributes> & { [K in keyof MudTextarea & keyof MudTextareaAttributes]?: MudTextarea[K] } & { [K in keyof MudTextarea & keyof MudTextareaAttributes as `attr:${K}`]?: MudTextareaAttributes[K] } & { [K in keyof MudTextarea & keyof MudTextareaAttributes as `prop:${K}`]?: MudTextarea[K] };
+        "mud-toast": Omit<MudToast, keyof MudToastAttributes> & { [K in keyof MudToast & keyof MudToastAttributes]?: MudToast[K] } & { [K in keyof MudToast & keyof MudToastAttributes as `attr:${K}`]?: MudToastAttributes[K] } & { [K in keyof MudToast & keyof MudToastAttributes as `prop:${K}`]?: MudToast[K] };
         "mud-tooltip": Omit<MudTooltip, keyof MudTooltipAttributes> & { [K in keyof MudTooltip & keyof MudTooltipAttributes]?: MudTooltip[K] } & { [K in keyof MudTooltip & keyof MudTooltipAttributes as `attr:${K}`]?: MudTooltipAttributes[K] } & { [K in keyof MudTooltip & keyof MudTooltipAttributes as `prop:${K}`]?: MudTooltip[K] };
     }
 }
@@ -10093,7 +10105,7 @@ declare module "@stencil/core" {
             /**
              * Informational Box — an inline, in-content callout that highlights key
              * messages, announcements, alerts, or explanations within the page flow.
-             * Unlike `mud-notification` (a fixed-width corner toast) or `mud-banner` (a
+             * Unlike `mud-toast` (a fixed-width corner toast) or `mud-banner` (a
              * full-width page-level bar), the info box sits inside the content column,
              * fills its container's width, and supports rich content: an optional bold
              * heading, a multi-line body (default slot), an optional inline action group
@@ -10106,7 +10118,7 @@ declare module "@stencil/core" {
              * The box is static in-flow content, so it is **not** an ARIA live region
              * (that would re-announce on every render). The icon is decorative; the
              * heading and body are read in normal reading order. For transient, announced
-             * messages use `mud-notification` / `mud-banner` instead.
+             * messages use `mud-toast` / `mud-banner` instead.
              * @element mud-info-box
              */
             "mud-info-box": LocalJSX.IntrinsicElements["mud-info-box"] & JSXBase.HTMLAttributes<HTMLMudInfoBoxElement>;
@@ -10123,7 +10135,7 @@ declare module "@stencil/core" {
              * It is plain in-flow text, **not** an ARIA live region. When used as form
              * feedback, associate it with the field via `aria-describedby` (and
              * `aria-invalid` for errors) on the consumer side; for a transient, announced
-             * message use `mud-notification` / `mud-banner`. The icon is decorative.
+             * message use `mud-toast` / `mud-banner`. The icon is decorative.
              * @element mud-inline-message
              */
             "mud-inline-message": LocalJSX.IntrinsicElements["mud-inline-message"] & JSXBase.HTMLAttributes<HTMLMudInlineMessageElement>;
@@ -10211,22 +10223,6 @@ declare module "@stencil/core" {
              * @element mud-modal
              */
             "mud-modal": LocalJSX.IntrinsicElements["mud-modal"] & JSXBase.HTMLAttributes<HTMLMudModalElement>;
-            /**
-             * Notification — semantic toast message (350px filled surface, 8px radius).
-             * Renders a leading icon, an optional bold heading, the message body
-             * (default slot), an optional inline action group (`actions` slot) and an
-             * optional trailing close button.
-             * Pattern B (atom-display + interactive close): the close affordance lives
-             * inside shadow DOM so it participates in tab order with a real
-             * `button` role. The body itself is not interactive.
-             * `variant` selects the semantic color family — `info`, `warning`, `success`,
-             * or `error` — each a filled toast surface with its own leading icon.
-             * Live-region routing:
-             * - `info` / `success` → `role="status"` + `aria-live="polite"`
-             * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
-             * @element mud-notification
-             */
-            "mud-notification": LocalJSX.IntrinsicElements["mud-notification"] & JSXBase.HTMLAttributes<HTMLMudNotificationElement>;
             /**
              * Numeric Input — numeric-entry control with stacked step buttons.
              * Pattern B (atom-interactive, form-associated): renders its own `<input>`
@@ -10539,6 +10535,26 @@ declare module "@stencil/core" {
              * @element mud-textarea
              */
             "mud-textarea": LocalJSX.IntrinsicElements["mud-textarea"] & JSXBase.HTMLAttributes<HTMLMudTextareaElement>;
+            /**
+             * Toast — semantic toast message (350px filled surface, 8px radius).
+             * Matches the Figma `toast` component (page "Messaging (Notification)"):
+             * a leading icon, an optional bold heading, the message body (default slot),
+             * an optional inline link/action group (`actions` slot) and a trailing close
+             * button (shown by default — `closable` defaults to `true`).
+             * Placement, vertical stacking and auto-dismiss are the consumer's
+             * responsibility — this atom is just the surface. Its entrance animation
+             * (slide-down + fade-in) plays once on mount.
+             * Pattern B (atom-display + interactive close): the close affordance lives
+             * inside shadow DOM so it participates in tab order with a real
+             * `button` role. The body itself is not interactive.
+             * `variant` selects the semantic color family — `info`, `warning`, `success`,
+             * or `error` — each a filled toast surface with its own leading icon.
+             * Live-region routing:
+             * - `info` / `success` → `role="status"` + `aria-live="polite"`
+             * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
+             * @element mud-toast
+             */
+            "mud-toast": LocalJSX.IntrinsicElements["mud-toast"] & JSXBase.HTMLAttributes<HTMLMudToastElement>;
             /**
              * Tooltip — transient label, structured popover, or coach mark anchored to a
              * trigger element.

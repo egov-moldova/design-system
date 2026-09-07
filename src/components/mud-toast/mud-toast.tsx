@@ -1,15 +1,20 @@
 import { Component, Element, Event, Host, Prop, State, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
-import { NOTIFICATION_ASSERTIVE_VARIANTS, NOTIFICATION_DEFAULT_ICONS } from './mud-notification.types';
-import type { NotificationVariant } from './mud-notification.types';
+import { TOAST_ASSERTIVE_VARIANTS, TOAST_DEFAULT_ICONS } from './mud-toast.types';
+import type { ToastVariant } from './mud-toast.types';
 
 /**
- * Notification — semantic toast message (350px filled surface, 8px radius).
+ * Toast — semantic toast message (350px filled surface, 8px radius).
  *
- * Renders a leading icon, an optional bold heading, the message body
- * (default slot), an optional inline action group (`actions` slot) and an
- * optional trailing close button.
+ * Matches the Figma `toast` component (page "Messaging (Notification)"):
+ * a leading icon, an optional bold heading, the message body (default slot),
+ * an optional inline link/action group (`actions` slot) and a trailing close
+ * button (shown by default — `closable` defaults to `true`).
+ *
+ * Placement, vertical stacking and auto-dismiss are the consumer's
+ * responsibility — this atom is just the surface. Its entrance animation
+ * (slide-down + fade-in) plays once on mount.
  *
  * Pattern B (atom-display + interactive close): the close affordance lives
  * inside shadow DOM so it participates in tab order with a real
@@ -22,7 +27,7 @@ import type { NotificationVariant } from './mud-notification.types';
  * - `info` / `success` → `role="status"` + `aria-live="polite"`
  * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
  *
- * @element mud-notification
+ * @element mud-toast
  *
  * @slot - (default) The message body. Plain text or rich inline content.
  * @slot icon-start - Optional override for the leading icon. When supplied,
@@ -33,24 +38,26 @@ import type { NotificationVariant } from './mud-notification.types';
  *                 button when present.
  */
 @Component({
-  tag: 'mud-notification',
-  styleUrl: 'mud-notification.css',
+  tag: 'mud-toast',
+  styleUrl: 'mud-toast.css',
   shadow: true,
 })
-export class MudNotification {
+export class MudToast {
   /**
    * Semantic color family.
    * @default 'info'
    */
-  @Prop({ reflect: true }) variant: NotificationVariant = 'info';
+  @Prop({ reflect: true }) variant: ToastVariant = 'info';
 
   /**
-   * When `true`, renders a trailing close button. Activating it emits
-   * `mudClose`; the consumer is responsible for removing the notification
-   * from the DOM.
-   * @default false
+   * Renders a trailing close button. Activating it emits `mudClose`; the
+   * consumer is responsible for removing the toast from the DOM. Defaults to
+   * `true` per the Figma `toast` component (`Close = true`); set
+   * `closable="false"` for a toast the user cannot dismiss manually (e.g. one
+   * that only auto-dismisses).
+   * @default true
    */
-  @Prop({ reflect: true }) closable: boolean = false;
+  @Prop({ reflect: true }) closable: boolean = true;
 
   /**
    * Optional bold title rendered above the body.
@@ -66,7 +73,7 @@ export class MudNotification {
 
   /**
    * Forwarded to the host as `aria-label`. Use this to give the entire
-   * notification an explicit accessible name when the body content alone is
+   * toast an explicit accessible name when the body content alone is
    * not descriptive enough.
    */
   @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
@@ -81,7 +88,7 @@ export class MudNotification {
   @State() private hasIconStart: boolean = false;
   @State() private hasActions: boolean = false;
 
-  @Element() host!: HTMLMudNotificationElement;
+  @Element() host!: HTMLMudToastElement;
 
   /**
    * Fires when the user activates the close button. Payload is `void` —
@@ -134,15 +141,15 @@ export class MudNotification {
 
   private resolveIconName(): string {
     if (this.iconName && this.iconName.trim().length > 0) return this.iconName;
-    return NOTIFICATION_DEFAULT_ICONS[this.variant];
+    return TOAST_DEFAULT_ICONS[this.variant];
   }
 
   private resolveAriaRole(): 'status' | 'alert' {
-    return NOTIFICATION_ASSERTIVE_VARIANTS.has(this.variant) ? 'alert' : 'status';
+    return TOAST_ASSERTIVE_VARIANTS.has(this.variant) ? 'alert' : 'status';
   }
 
   private resolveAriaLive(): 'polite' | 'assertive' {
-    return NOTIFICATION_ASSERTIVE_VARIANTS.has(this.variant) ? 'assertive' : 'polite';
+    return TOAST_ASSERTIVE_VARIANTS.has(this.variant) ? 'assertive' : 'polite';
   }
 
   render() {

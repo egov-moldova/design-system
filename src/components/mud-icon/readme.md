@@ -51,7 +51,6 @@ largest smaller size before giving up.
  - [mud-input-chip](../mud-input-chip)
  - [mud-menu-item](../mud-menu)
  - [mud-modal](../mud-modal)
- - [mud-notification](../mud-notification)
  - [mud-numeric-input](../mud-numeric-input)
  - [mud-pagination](../mud-pagination)
  - [mud-phone-input](../mud-phone-input)
@@ -65,6 +64,7 @@ largest smaller size before giving up.
  - [mud-tabs](../mud-tabs)
  - [mud-text-input](../mud-text-input)
  - [mud-textarea](../mud-textarea)
+ - [mud-toast](../mud-toast)
 
 ### Graph
 ```mermaid
@@ -88,7 +88,6 @@ graph TD;
   mud-input-chip --> mud-icon
   mud-menu-item --> mud-icon
   mud-modal --> mud-icon
-  mud-notification --> mud-icon
   mud-numeric-input --> mud-icon
   mud-pagination --> mud-icon
   mud-phone-input --> mud-icon
@@ -102,6 +101,7 @@ graph TD;
   mud-tabs --> mud-icon
   mud-text-input --> mud-icon
   mud-textarea --> mud-icon
+  mud-toast --> mud-icon
   style mud-icon fill:#f9f,stroke:#333,stroke-width:4px
 ```
 

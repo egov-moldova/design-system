@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
-import { NOTIFICATION_VARIANTS } from './mud-notification.types';
-import type { NotificationVariant } from './mud-notification.types';
+import { TOAST_VARIANTS } from './mud-toast.types';
+import type { ToastVariant } from './mud-toast.types';
 
-type NotificationArgs = {
-  variant: NotificationVariant;
+type ToastArgs = {
+  variant: ToastVariant;
   closable: boolean;
   titleText: string;
   iconName: string;
@@ -12,14 +12,14 @@ type NotificationArgs = {
   closeLabel: string;
 };
 
-const renderNotification = (args: NotificationArgs) => /*html*/ `
-  <mud-notification
+const renderToast = (args: ToastArgs) => /*html*/ `
+  <mud-toast
     variant="${args.variant}"
-    ${args.closable ? 'closable' : ''}
+    closable="${args.closable}"
     ${args.titleText ? `title-text="${args.titleText}"` : ''}
     ${args.iconName ? `icon-name="${args.iconName}"` : ''}
     close-label="${args.closeLabel}"
-  >${args.body}</mud-notification>
+  >${args.body}</mud-toast>
 `;
 
 const sectionStyle =
@@ -27,15 +27,15 @@ const sectionStyle =
 const captionStyle =
   'font-family: var(--font-family-primary); font-size: 12px; font-weight: 500; color: var(--color-text-base-secondary); margin: 0;';
 
-const meta: Meta<NotificationArgs> = {
-  title: 'Atoms/Notification',
-  component: 'mud-notification',
+const meta: Meta<ToastArgs> = {
+  title: 'Atoms/Toast',
+  component: 'mud-toast',
   parameters: {
     layout: 'padded',
     docs: {
       description: {
         component: /*md*/ `
-**Notification** — semantic toast message: a 350px filled surface (8px radius)
+**Toast** — semantic toast message: a 350px filled surface (8px radius)
 with a leading icon, an optional bold heading, the body, an optional inline
 link/action, and an optional close button.
 
@@ -55,14 +55,14 @@ the consumer is responsible for animating out and removing the element.
   argTypes: {
     variant: {
       control: 'inline-radio',
-      options: NOTIFICATION_VARIANTS,
+      options: TOAST_VARIANTS,
       description: 'Semantic color family.',
       table: { defaultValue: { summary: 'info' } },
     },
     closable: {
       control: 'boolean',
-      description: 'Renders a trailing × button that emits `mudClose`.',
-      table: { defaultValue: { summary: 'false' } },
+      description: 'Renders a trailing × button that emits `mudClose`. Set `false` for a toast the user cannot dismiss manually.',
+      table: { defaultValue: { summary: 'true' } },
     },
     titleText: {
       name: 'title-text',
@@ -93,21 +93,21 @@ the consumer is responsible for animating out and removing the element.
 };
 
 export default meta;
-type Story = StoryObj<NotificationArgs>;
+type Story = StoryObj<ToastArgs>;
 
 // ---------------------------------------------------------------------------
 // Default — info toast with heading + close
 // ---------------------------------------------------------------------------
 export const Default: Story = {
-  render: renderNotification,
+  render: renderToast,
   parameters: {
     docs: {
       source: {
         type: 'dynamic',
-        transform: (_code: string, { args }: { args: NotificationArgs }) =>
-          `<mud-notification variant="${args.variant}"${args.closable ? ' closable' : ''}${
+        transform: (_code: string, { args }: { args: ToastArgs }) =>
+          `<mud-toast variant="${args.variant}"${args.closable ? '' : ' closable="false"'}${
             args.titleText ? ` title-text="${args.titleText}"` : ''
-          }>${args.body}</mud-notification>`,
+          }>${args.body}</mud-toast>`,
       },
     },
   },
@@ -118,14 +118,14 @@ export const Default: Story = {
 // ---------------------------------------------------------------------------
 const renderAllVariants = () => /*html*/ `
   <div style="${sectionStyle}">
-    <mud-notification variant="info" closable title-text="Informație">Vă informăm despre modificările aduse serviciului.</mud-notification>
-    <mud-notification variant="warning" closable title-text="Atenție">Mentenanță programată astăzi între 22:00 și 02:00.</mud-notification>
-    <mud-notification variant="success" closable title-text="Succes">Plata a fost procesată cu succes.</mud-notification>
-    <mud-notification variant="error" closable title-text="Eroare">Eroare la încărcarea documentului. Reîncercați.</mud-notification>
+    <mud-toast variant="info" closable title-text="Informație">Vă informăm despre modificările aduse serviciului.</mud-toast>
+    <mud-toast variant="warning" closable title-text="Atenție">Mentenanță programată astăzi între 22:00 și 02:00.</mud-toast>
+    <mud-toast variant="success" closable title-text="Succes">Plata a fost procesată cu succes.</mud-toast>
+    <mud-toast variant="error" closable title-text="Eroare">Eroare la încărcarea documentului. Reîncercați.</mud-toast>
   </div>
 `;
-const docsSourceAllVariants = NOTIFICATION_VARIANTS.map(
-  v => `<mud-notification variant="${v}" closable title-text="...">Mesaj.</mud-notification>`,
+const docsSourceAllVariants = TOAST_VARIANTS.map(
+  v => `<mud-toast variant="${v}" closable title-text="...">Mesaj.</mud-toast>`,
 ).join('\n');
 export const AllVariants: Story = {
   render: renderAllVariants,
@@ -137,9 +137,9 @@ export const AllVariants: Story = {
 // ---------------------------------------------------------------------------
 const renderNoHeading = () => /*html*/ `
   <div style="${sectionStyle}">
-    <mud-notification variant="info" closable>Sesiunea va expira în 5 minute.</mud-notification>
-    <mud-notification variant="success" closable>Modificările au fost salvate.</mud-notification>
-    <mud-notification variant="error" closable>Conexiune întreruptă.</mud-notification>
+    <mud-toast variant="info" closable>Sesiunea va expira în 5 minute.</mud-toast>
+    <mud-toast variant="success" closable>Modificările au fost salvate.</mud-toast>
+    <mud-toast variant="error" closable>Conexiune întreruptă.</mud-toast>
   </div>
 `;
 export const NoHeading: Story = {
@@ -147,7 +147,28 @@ export const NoHeading: Story = {
   parameters: {
     controls: { disable: true },
     docs: {
-      source: { code: '<mud-notification variant="info" closable>Sesiunea va expira în 5 minute.</mud-notification>' },
+      source: { code: '<mud-toast variant="info">Sesiunea va expira în 5 minute.</mud-toast>' },
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
+// NotClosable — closable="false" (auto-dismiss-only toast, no × button)
+// ---------------------------------------------------------------------------
+const renderNotClosable = () => /*html*/ `
+  <div style="${sectionStyle}">
+    <mud-toast variant="success" closable="false" title-text="Salvat">Modificările au fost salvate.</mud-toast>
+    <mud-toast variant="info" closable="false">Se sincronizează datele…</mud-toast>
+  </div>
+`;
+export const NotClosable: Story = {
+  render: renderNotClosable,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: '<mud-toast variant="success" closable="false" title-text="Salvat">Modificările au fost salvate.</mud-toast>',
+      },
     },
   },
 };
@@ -157,21 +178,21 @@ export const NoHeading: Story = {
 // ---------------------------------------------------------------------------
 const renderWithLink = () => /*html*/ `
   <div style="${sectionStyle}">
-    <mud-notification variant="info" closable title-text="Sesiunea va expira">
+    <mud-toast variant="info" closable title-text="Sesiunea va expira">
       Salvați modificările pentru a evita pierderea datelor.
       <mud-link slot="actions" href="#" underline="always" variant="white">Prelungește sesiunea</mud-link>
-    </mud-notification>
+    </mud-toast>
 
-    <mud-notification variant="error" closable title-text="Plată refuzată">
+    <mud-toast variant="error" closable title-text="Plată refuzată">
       Tranzacția nu a putut fi finalizată.
       <mud-link slot="actions" href="#" underline="always" variant="white">Reîncercați</mud-link>
-    </mud-notification>
+    </mud-toast>
   </div>
 `;
-const docsSourceWithLink = /*html*/ `<mud-notification variant="info" closable title-text="Sesiunea va expira">
+const docsSourceWithLink = /*html*/ `<mud-toast variant="info" closable title-text="Sesiunea va expira">
   Salvați modificările pentru a evita pierderea datelor.
   <mud-link slot="actions" href="#" variant="white">Prelungește sesiunea</mud-link>
-</mud-notification>`;
+</mud-toast>`;
 export const WithLink: Story = {
   render: renderWithLink,
   parameters: { controls: { disable: true }, docs: { source: { code: docsSourceWithLink } } },
@@ -183,22 +204,22 @@ export const WithLink: Story = {
 const renderEdgeCases = () => /*html*/ `
   <div style="${sectionStyle}">
     <p style="${captionStyle}">Conținut lung — se înfășoară pe 2-3 rânduri</p>
-    <mud-notification variant="info" closable title-text="Termeni și condiții actualizate">
+    <mud-toast variant="info" closable title-text="Termeni și condiții actualizate">
       Am actualizat termenii platformei. Modificările intră în vigoare începând cu 1 iunie 2026 și includ actualizări privind procesarea plăților și politica de confidențialitate.
-    </mud-notification>
+    </mud-toast>
 
     <p style="${captionStyle}">Diacritice românești (ă â î ș ț)</p>
-    <mud-notification variant="warning">Înălțime mărită — țineți cont de această modificare.</mud-notification>
+    <mud-toast variant="warning">Înălțime mărită — țineți cont de această modificare.</mud-toast>
 
     <p style="${captionStyle}">Custom icon override</p>
-    <mud-notification variant="success" icon-name="receipt-check-filled" closable title-text="Bon fiscal generat">
+    <mud-toast variant="success" icon-name="receipt-check-filled" closable title-text="Bon fiscal generat">
       Vezi detalii în istoricul plăților.
-    </mud-notification>
+    </mud-toast>
   </div>
 `;
-const docsSourceEdgeCases = /*html*/ `<mud-notification variant="success" icon-name="receipt-check-filled" closable title-text="Bon fiscal generat">
+const docsSourceEdgeCases = /*html*/ `<mud-toast variant="success" icon-name="receipt-check-filled" closable title-text="Bon fiscal generat">
   Vezi detalii în istoricul plăților.
-</mud-notification>`;
+</mud-toast>`;
 export const EdgeCases: Story = {
   render: renderEdgeCases,
   parameters: { controls: { disable: true }, docs: { source: { code: docsSourceEdgeCases } } },
@@ -209,16 +230,16 @@ export const EdgeCases: Story = {
 // ---------------------------------------------------------------------------
 export const CoverageGuard: Story = {
   tags: ['!autodocs', '!dev'],
-  render: () => /*html*/ `<mud-notification>Coverage</mud-notification>`,
+  render: () => /*html*/ `<mud-toast>Coverage</mud-toast>`,
   parameters: {
     controls: { disable: true },
     docs: { disable: true },
   },
   play: async () => {
-    const Ctor = customElements.get('mud-notification') as unknown as
+    const Ctor = customElements.get('mud-toast') as unknown as
       | (new (registerHost: boolean) => unknown)
       | undefined;
-    if (!Ctor) throw new Error('mud-notification constructor missing from registry');
+    if (!Ctor) throw new Error('mud-toast constructor missing from registry');
     const instance = new Ctor(false);
     if (!instance) throw new Error('instance not constructed');
   },

@@ -44,7 +44,7 @@ brand-blue icon; \`warning\` / \`success\` / \`error\` colour both). \`size\` is
 
 It is plain in-flow text, **not** an ARIA live region — associate it with a
 field via \`aria-describedby\` on the consumer side. For transient announced
-messages use \`mud-notification\` / \`mud-banner\`.
+messages use \`mud-toast\` / \`mud-banner\`.
         `.trim(),
       },
     },

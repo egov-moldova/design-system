@@ -1,5 +1,5 @@
 {
-  "notification": {
+  "toast": {
     "container": {
       "width": { "$value": "350px", "$type": "dimension" },
       "paddingTop": { "$value": "{spacing.12}", "$type": "dimension" },
@@ -10,12 +10,11 @@
       "stackGap": { "$value": "{spacing.8}", "$type": "dimension" },
       "headingGap": { "$value": "{spacing.6}", "$type": "dimension" },
       "borderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" },
-      "transitionDuration": { "$value": "150ms", "$type": "duration" },
       "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" },
       "appearanceDuration": {
         "$value": "250ms",
         "$type": "duration",
-        "$comment": "Entrance animation (slide-down + fade-in) per the Figma Behavior panel; slightly longer than the 150ms hover transition so the motion reads."
+        "$comment": "Entrance animation (slide-down + fade-in) per the Figma Behavior panel."
       }
     },
     "icon": {
@@ -47,13 +46,7 @@
         "$comment": "40px target under `pointer: coarse` for touch ease-of-use."
       },
       "iconSize": { "$value": "{spacing.16}", "$type": "dimension" },
-      "borderRadius": { "$value": "{borderRadius.4}", "$type": "dimension" },
-      "backgroundHover": { "$value": "{color.background.base.tertiary-hover}", "$type": "color" },
-      "backgroundHoverOnColor": {
-        "$value": "{color.background.alpha.overlay-dark}",
-        "$type": "color",
-        "$comment": "Translucent dark veil on the filled info/success/error surfaces: darkening (not lightening) on hover keeps the white × crisp (~7-10:1). A light fill drops it to ~1.1:1; a white veil only reaches ~2.7:1 — both below the 3:1 non-text-contrast floor."
-      }
+      "borderRadius": { "$value": "{borderRadius.4}", "$type": "dimension" }
     },
     "info": {
       "background": { "$value": "{color.background.brand.default}", "$type": "color" },

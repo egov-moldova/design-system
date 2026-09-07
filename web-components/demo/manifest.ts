@@ -71,7 +71,7 @@ export const CATEGORIES: Category[] = [
       { tag: 'mud-badge', blurb: 'Numbered / dot badge' },
       { tag: 'mud-tag', blurb: 'Status / info tag' },
       { tag: 'mud-separator', blurb: 'Divider — h/v, sizes, label' },
-      { tag: 'mud-notification', blurb: 'Inline notification banner' },
+      { tag: 'mud-toast', blurb: 'Semantic toast message (info/warning/success/error)' },
       { tag: 'mud-tooltip', blurb: 'Hover / focus / manual tooltip' },
       { tag: 'mud-progress-tracker', blurb: 'Stepped progress (steps prop)' },
     ],

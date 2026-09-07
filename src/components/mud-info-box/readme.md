@@ -10,7 +10,7 @@
 Informational Box — an inline, in-content callout that highlights key
 messages, announcements, alerts, or explanations within the page flow.
 
-Unlike `mud-notification` (a fixed-width corner toast) or `mud-banner` (a
+Unlike `mud-toast` (a fixed-width corner toast) or `mud-banner` (a
 full-width page-level bar), the info box sits inside the content column,
 fills its container's width, and supports rich content: an optional bold
 heading, a multi-line body (default slot), an optional inline action group
@@ -25,7 +25,7 @@ Two axes:
 The box is static in-flow content, so it is **not** an ARIA live region
 (that would re-announce on every render). The icon is decorative; the
 heading and body are read in normal reading order. For transient, announced
-messages use `mud-notification` / `mud-banner` instead.
+messages use `mud-toast` / `mud-banner` instead.
 
 ## Properties
 

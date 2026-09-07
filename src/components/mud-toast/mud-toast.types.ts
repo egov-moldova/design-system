@@ -1,9 +1,9 @@
-export const NOTIFICATION_VARIANTS = ['info', 'warning', 'success', 'error'] as const;
+export const TOAST_VARIANTS = ['info', 'warning', 'success', 'error'] as const;
 
-export type NotificationVariant = (typeof NOTIFICATION_VARIANTS)[number];
+export type ToastVariant = (typeof TOAST_VARIANTS)[number];
 
 /** Default per-variant icon name resolved by `mud-icon` when `iconName` prop is unset. */
-export const NOTIFICATION_DEFAULT_ICONS: Record<NotificationVariant, string> = {
+export const TOAST_DEFAULT_ICONS: Record<ToastVariant, string> = {
   info: 'circle-info-filled',
   warning: 'warning-filled',
   success: 'circle-checkmark-filled',
@@ -14,7 +14,7 @@ export const NOTIFICATION_DEFAULT_ICONS: Record<NotificationVariant, string> = {
  * Variants that imply an assertive live region (urgent) per WCAG status/alert
  * pattern. Everything else uses the polite `status` role.
  */
-export const NOTIFICATION_ASSERTIVE_VARIANTS: ReadonlySet<NotificationVariant> = new Set<NotificationVariant>([
+export const TOAST_ASSERTIVE_VARIANTS: ReadonlySet<ToastVariant> = new Set<ToastVariant>([
   'warning',
   'error',
 ]);

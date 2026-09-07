@@ -22,7 +22,7 @@ brand-blue icon; `warning` / `success` / `error` colour both). `size` is
 It is plain in-flow text, **not** an ARIA live region. When used as form
 feedback, associate it with the field via `aria-describedby` (and
 `aria-invalid` for errors) on the consumer side; for a transient, announced
-message use `mud-notification` / `mud-banner`. The icon is decorative.
+message use `mud-toast` / `mud-banner`. The icon is decorative.
 
 ## Properties
 
