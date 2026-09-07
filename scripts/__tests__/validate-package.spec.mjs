@@ -237,6 +237,46 @@ describe('checkDevSignature', () => {
       [],
     );
   });
+
+  // The default scope, which is what `main()` uses. Scanning only the two bundle
+  // directories left `main`, `module` and all of `loader/` unread — the primary
+  // entrypoints a bare `import '@egov-moldova/mud'` resolves to. The presence
+  // check covered them, but it never opens a file, so a dev-built entrypoint that
+  // exists satisfied both.
+  it('scans the whole tarball when given no directory', () => {
+    const packed = ['dist/index.js', 'dist/index.cjs.js', 'loader/index.js', 'dist/mud/p-abc.js'];
+    const contents = {
+      'dist/index.js': 'const BUILD = { isDev: true };',
+      'dist/index.cjs.js': 'exports.x = 1;',
+      'loader/index.js': 'consoleDevInfo("Running in development mode.")',
+      'dist/mud/p-abc.js': 'const B={isDev:!1};',
+    };
+    assert.deepEqual(
+      checkDevSignature(packed, file => contents[file]),
+      ['dist/index.js', 'loader/index.js'],
+    );
+  });
+
+  // The control for the test above: with the OLD scope, the same tarball reports
+  // clean. Without this pair, a regression back to the bundle-dir-only scope would
+  // leave the suite green.
+  it('and the old bundle-directory scope would have missed both of them', () => {
+    const packed = ['dist/index.js', 'loader/index.js'];
+    const contents = {
+      'dist/index.js': 'const BUILD = { isDev: true };',
+      'loader/index.js': 'consoleDevInfo("Running in development mode.")',
+    };
+    assert.deepEqual(
+      checkDevSignature(packed, file => contents[file], 'dist/mud/'),
+      [],
+    );
+  });
+
+  it('reads a non-.js entrypoint as out of scope', () => {
+    const packed = ['dist/index.d.ts'];
+    const contents = { 'dist/index.d.ts': 'isDev: true' };
+    assert.deepEqual(checkDevSignature(packed, file => contents[file]), []);
+  });
 });
 
 describe('checkPackerAgreement', () => {

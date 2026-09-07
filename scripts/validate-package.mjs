@@ -140,7 +140,30 @@ export function standaloneBundleDir(pkg) {
   return `${path.posix.dirname(normalizePackagePath(target))}/`;
 }
 
-export function checkDevSignature(packedFiles, readText, bundleDir) {
+/**
+ * Every packed `.js` carrying a development-build marker.
+ *
+ * `bundleDir` defaults to the WHOLE TARBALL, and that default is the point. This
+ * check ran over the two bundle directories only — `dist/mud/` and
+ * `dist/components/` — which left `main` (`dist/index.cjs.js`), `module`
+ * (`dist/index.js`) and all of `loader/` unscanned. Those are the primary
+ * entrypoints: a bare `import '@egov-moldova/mud'` resolves to one of them, so
+ * the check furthest from the consumer was the one that ran. `checkDeclaredEntries`
+ * did cover them, but only for PRESENCE — it never opens a file — so a dev-built
+ * `dist/index.js` that exists passes both.
+ *
+ * Scanning everything rather than deriving two more directories is deliberate. A
+ * derived list has to be kept in step with `package.json` forever and silently
+ * under-scans the day a new output target is added; an unfiltered scan cannot go
+ * stale and cannot be vacuous. The scope was measured before it was chosen: on
+ * the current production tree of 461 `.js` files, zero carry either marker, so
+ * completeness costs no false positive. And the markers are not decorative —
+ * `Running in development mode` ships inside `@stencil/core`'s own
+ * `internal/client/patch-browser.js`, so a `--dev` bundle does carry one.
+ *
+ * The parameter is retained so a caller can still ask about a single directory.
+ */
+export function checkDevSignature(packedFiles, readText, bundleDir = '') {
   return packedFiles
     .filter(file => file.startsWith(bundleDir) && file.endsWith('.js'))
     .filter(file => DEV_BUILD_MARKERS.some(marker => marker.test(readText(file))));
@@ -267,10 +290,12 @@ export function main({ cwd = PROJECT_ROOT, log = console.log, error = console.er
     ['source map in tarball (development build)', checkSourceMaps(files)],
     [
       'development runtime in tarball',
-      // Both runtime bundles, not just the lazy one: the tarball carries two,
-      // and the bar says "no development-build artifacts", not "none in the
-      // lazy bundle".
-      [lazyDir, standaloneDir].flatMap(dir => checkDevSignature(files, readText, dir)),
+      // EVERY packed `.js`, not a list of bundle directories. The previous scope
+      // named two dirs and read as complete — the comment here even claimed "the
+      // tarball carries two" — while `main`, `module` and all of `loader/` went
+      // unread. The bar says "no development-build artifacts", so the scope is
+      // the tarball. Rationale and the measurement behind it: `checkDevSignature`.
+      checkDevSignature(files, readText),
     ],
     ['standalone bundle published without its assets', checkBundleAssets(files, lazyDir, standaloneDir)],
   ];
