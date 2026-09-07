@@ -121,7 +121,7 @@ Additional docs worth knowing about:
 | `yarn lint` | ESLint + Stylelint (no fixes) |
 | `yarn format` | ESLint `--fix` + Prettier `--write` |
 | `yarn typecheck` | `tsc --noEmit` |
-| `yarn test` | Full unit test suite (rebuilds tokens + Stencil, then `stencil-test --project spec`) |
+| `yarn test` | Full unit test suite — `vitest run --project spec`, wireit-cached; compiles components from source and builds no `dist/` |
 | `yarn check` | `format` then the full local verify gate (`typecheck` + `lint` + `test`) — run this before opening a PR |
 
 ---
@@ -167,7 +167,7 @@ MUD uses a three-tier design token hierarchy (**palette → semantic → compone
 Every `mud-*` component ships with a co-located `*.spec.tsx` covering rendering, prop reflection, slots, events, and structural ARIA/a11y assertions. Full policy — including the **zero-mocks rule** and the **80% line coverage target** — is documented in [`TESTING.md`](TESTING.md).
 
 ```bash
-yarn test              # canonical: rebuild + stencil-test --project spec
+yarn test              # canonical: vitest run --project spec (wireit-cached, builds nothing)
 yarn test.dev          # fast loop, no wireit cache layer
 yarn test.watch        # watch mode
 yarn test.storybook    # browser-rendered story/interaction tests
