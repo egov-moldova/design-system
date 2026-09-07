@@ -1,7 +1,7 @@
 timeZone: Europe/Chisinau
 
 imagePullSecrets:
-- name: harbor-staging
+  - name: harbor-staging
 
 deployment:
   webui:

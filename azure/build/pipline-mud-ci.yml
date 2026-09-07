@@ -3,17 +3,15 @@ name: '$(Date:yy).$(Date:MM).$(DayOfMonth)$(Rev:.r)'
 trigger: none
 
 variables:
-  DOCKER_VERSION: "29.2.1"
-  HELM_VERSION: "3.18.6"
+  DOCKER_VERSION: '29.2.1'
+  HELM_VERSION: '3.18.6'
   containerRegistry: harbor.staging.egov.md
   containerProject: mud
-  containerTag: "1.$(Build.BuildNumber)"
-
+  containerTag: '1.$(Build.BuildNumber)'
 
   solutionPath: .
   webuiDockerfile: Dockerfile
   webuiContainerRepository: '$(containerProject)/mud-storybook'
-
 
 stages:
   - stage: BuildContainer
@@ -37,8 +35,8 @@ stages:
           - task: Docker@2
             displayName: Docker Login to Staging Registry
             inputs:
-              containerRegistry: "$(containerRegistry)"
-              command: "login"
+              containerRegistry: '$(containerRegistry)'
+              command: 'login'
 
           - task: Docker@2
             displayName: Build WebUI Image

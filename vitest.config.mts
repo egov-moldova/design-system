@@ -99,10 +99,7 @@ export default defineVitestConfig({
             name: 'age:redirect-dist-bundle-to-source-loader',
             enforce: 'pre',
             resolveId(source) {
-              if (
-                source.endsWith('/dist/mud/mud.esm.js') ||
-                source.endsWith('\\dist\\mud\\mud.esm.js')
-              ) {
+              if (source.endsWith('/dist/mud/mud.esm.js') || source.endsWith('\\dist\\mud\\mud.esm.js')) {
                 return path.join(__dirname, '.storybook/vitest-component-loader.ts');
               }
               return null;

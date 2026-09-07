@@ -9,59 +9,58 @@ variables:
     value: '$(Build.BuildNumber)'
 
 stages:
-- stage: Build
-  displayName: Build and Publish
-  jobs:
-  - job: BuildJob
-    displayName: Build and Publish Job
-    pool:
-      name: Azure Pipelines
-    steps:
-    - checkout: self
-      persistCredentials: true
+  - stage: Build
+    displayName: Build and Publish
+    jobs:
+      - job: BuildJob
+        displayName: Build and Publish Job
+        pool:
+          name: Azure Pipelines
+        steps:
+          - checkout: self
+            persistCredentials: true
 
-    - task: NodeTool@0
-      inputs:
-        versionSpec: '24.x'
-      displayName: 'Install Node.js'
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '24.x'
+            displayName: 'Install Node.js'
 
-    - script: corepack enable
-      displayName: 'Enable Corepack'
+          - script: corepack enable
+            displayName: 'Enable Corepack'
 
-    - script: yarn install --immutable
-      displayName: 'Install dependencies'
+          - script: yarn install --immutable
+            displayName: 'Install dependencies'
 
-    - script: |
-        node -e "const fs=require('fs');const pkg=JSON.parse(fs.readFileSync('package.json'));pkg.version='$(packageVersion)';fs.writeFileSync('package.json',JSON.stringify(pkg,null,2)+'\n');"
-        cd web-components
-        node -e "const fs=require('fs');const pkg=JSON.parse(fs.readFileSync('package.json'));pkg.version='$(packageVersion)';fs.writeFileSync('package.json',JSON.stringify(pkg,null,2)+'\n');"
-      displayName: 'Update Package Versions'
+          - script: |
+              node -e "const fs=require('fs');const pkg=JSON.parse(fs.readFileSync('package.json'));pkg.version='$(packageVersion)';fs.writeFileSync('package.json',JSON.stringify(pkg,null,2)+'\n');"
+              cd web-components
+              node -e "const fs=require('fs');const pkg=JSON.parse(fs.readFileSync('package.json'));pkg.version='$(packageVersion)';fs.writeFileSync('package.json',JSON.stringify(pkg,null,2)+'\n');"
+            displayName: 'Update Package Versions'
 
-    - script: |
-        yarn tokens.build
-        yarn build
-        yarn build.web
-      displayName: 'Build All'
-      env:
-        NODE_OPTIONS: '--max-old-space-size=4096'
+          - script: |
+              yarn tokens.build
+              yarn build
+              yarn build.web
+            displayName: 'Build All'
+            env:
+              NODE_OPTIONS: '--max-old-space-size=4096'
 
-    - script: yarn test.dev
-      displayName: 'Run Tests'
+          - script: yarn test.dev
+            displayName: 'Run Tests'
 
-    - script: yarn validate.package
-      displayName: 'Validate Published Package'
+          - script: yarn validate.package
+            displayName: 'Validate Published Package'
 
-    - script: |
-        npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
-        npm publish --access public
-      displayName: 'Publish @egov-moldova/mud'
-      env:
-        NPM_TOKEN: $(token)
+          - script: |
+              npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
+              npm publish --access public
+            displayName: 'Publish @egov-moldova/mud'
+            env:
+              NPM_TOKEN: $(token)
 
-    - script: |
-        cd web-components
-        yarn npm publish --access public
-      displayName: 'Publish @egov-moldova/mud-web-components'
-      env:
-        YARN_NPM_AUTH_TOKEN: $(token)
-
+          - script: |
+              cd web-components
+              yarn npm publish --access public
+            displayName: 'Publish @egov-moldova/mud-web-components'
+            env:
+              YARN_NPM_AUTH_TOKEN: $(token)

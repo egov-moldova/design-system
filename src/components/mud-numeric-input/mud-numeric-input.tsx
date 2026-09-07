@@ -860,7 +860,12 @@ export class MudNumericInput {
           <div class="assistive-row">
             {this.hasErrorMessage() ? (
               <div class="assistive assistive-error" id={this.errorId} part="error">
-                <mud-icon class="assistive-icon" name="circle-error-filled" size={iconSize} color="icon-danger-default" />
+                <mud-icon
+                  class="assistive-icon"
+                  name="circle-error-filled"
+                  size={iconSize}
+                  color="icon-danger-default"
+                />
                 <span class="assistive-text">{errorText}</span>
               </div>
             ) : this.hasHelperMessage() ? (
