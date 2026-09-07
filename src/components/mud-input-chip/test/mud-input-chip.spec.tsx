@@ -28,7 +28,7 @@ const queryLiveRegion = (root: Element | null | undefined): HTMLElement | null =
 const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
 
 // Stencil mock-doc does not propagate `keydown` events to JSX handlers via
-// dispatchEvent (see mud-select-input spec). Invoke the registered handler
+// dispatchEvent (see mud-select spec). Invoke the registered handler
 // off the component instance instead — same contract.
 type ChipInstance = {
   handleInputKeyDown: (ev: KeyboardEvent) => void;

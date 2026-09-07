@@ -1,0 +1,391 @@
+:host {
+  --_height: var(--select-container-height-medium);
+  --_padding-inline: var(--select-container-padding-inline-medium);
+  --_gap: var(--select-container-gap-medium);
+  --_radius: var(--select-container-border-radius);
+  --_border-width-default: var(--select-container-border-width-default);
+  --_border-width-emphasized: var(--select-container-border-width-emphasized);
+  --_focus-ring-width: var(--select-container-focus-ring-width);
+  --_transition-duration: var(--select-container-transition-duration);
+  --_transition-easing: var(--select-container-transition-timing-function);
+
+  --_control-font-size: var(--select-control-font-size-medium);
+  --_control-line-height: var(--select-control-line-height-medium);
+  --_icon-size: var(--select-icon-size-medium);
+  --_chevron-size: var(--select-chevron-size-medium);
+
+  --_option-min-block-size: var(--select-option-min-block-size-medium);
+  --_option-font-size: var(--select-option-font-size-medium);
+  --_option-line-height: var(--select-option-line-height-medium);
+  --_option-icon-size: var(--select-option-icon-size-medium);
+
+  --_bg: var(--select-default-background-default);
+  --_text: var(--select-default-text-default);
+  --_text-placeholder: var(--select-default-text-placeholder);
+  --_border-color: var(--select-default-border-default);
+  --_border-color-hover: var(--select-default-border-hover);
+  --_border-color-focus: var(--select-default-border-focus);
+  --_focus-ring-color: var(--select-default-focus-ring);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--select-field-gap);
+  inline-size: 100%;
+  font-family: var(--select-control-font-family);
+  color: var(--_text);
+}
+
+:host([size='large']) {
+  --_height: var(--select-container-height-large);
+  --_padding-inline: var(--select-container-padding-inline-large);
+  --_gap: var(--select-container-gap-large);
+  --_control-font-size: var(--select-control-font-size-large);
+  --_control-line-height: var(--select-control-line-height-large);
+  --_icon-size: var(--select-icon-size-large);
+  --_chevron-size: var(--select-chevron-size-large);
+  --_option-min-block-size: var(--select-option-min-block-size-large);
+  --_option-font-size: var(--select-option-font-size-large);
+  --_option-line-height: var(--select-option-line-height-large);
+  --_option-icon-size: var(--select-option-icon-size-large);
+}
+
+:host(.variant-destructive) {
+  --_border-color: var(--select-destructive-border-default);
+  --_border-color-hover: var(--select-destructive-border-hover);
+  --_border-color-focus: var(--select-destructive-border-focus);
+  --_focus-ring-color: var(--select-destructive-focus-ring);
+}
+
+/* ---------- Label ---------- */
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: var(--select-label-gap);
+  font-family: var(--select-label-font-family);
+  font-size: var(--select-label-font-size);
+  line-height: var(--select-label-line-height);
+  font-weight: var(--select-label-font-weight);
+  color: var(--select-label-color-default);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.label-text {
+  display: block;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.required-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--select-label-required-mark-size);
+  block-size: var(--select-label-required-mark-size);
+  color: var(--select-label-required-mark-color);
+  font-weight: var(--select-control-font-weight);
+  line-height: 1;
+}
+
+:host(.is-disabled) .label {
+  color: var(--select-label-color-disabled);
+}
+
+:host(.is-disabled) .required-mark {
+  color: var(--select-label-color-disabled);
+}
+
+:host(:not(.has-label)) .label {
+  display: none;
+}
+
+/* ---------- Control row ---------- */
+
+.control-wrapper {
+  position: relative;
+  inline-size: 100%;
+}
+
+.control {
+  display: flex;
+  align-items: center;
+  gap: var(--_gap);
+  block-size: var(--_height);
+  padding-inline: var(--_padding-inline);
+  background-color: var(--_bg);
+  border: var(--_border-width-default) solid var(--_border-color);
+  border-radius: var(--_radius);
+  /* The whole control row opens the listbox (clicks on the chevron / icon-start
+     are forwarded to the trigger), so the pointer cursor covers all of it. */
+  cursor: pointer;
+  transition:
+    border-color var(--_transition-duration) var(--_transition-easing),
+    box-shadow var(--_transition-duration) var(--_transition-easing),
+    background-color var(--_transition-duration) var(--_transition-easing);
+}
+
+:host(:not(.is-disabled):not(.is-focused):not(.is-open):hover) .control {
+  border-color: var(--_border-color-hover);
+  box-shadow: inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default))
+    var(--_border-color-hover);
+}
+
+:host(.is-focused:not(.is-disabled)) .control,
+:host(.is-open:not(.is-disabled)) .control {
+  border-color: var(--_border-color-focus);
+  box-shadow:
+    inset 0 0 0 calc(var(--_border-width-emphasized) - var(--_border-width-default)) var(--_border-color-focus),
+    0 0 0 var(--spacing-4) var(--_focus-ring-color);
+}
+
+:host(.is-readonly:not(.is-disabled)) .control {
+  cursor: default;
+}
+
+:host(.is-disabled) .control {
+  background-color: var(--select-default-background-disabled);
+  border-color: var(--select-default-border-disabled);
+  cursor: not-allowed;
+}
+
+/* ---------- Icon slots / chevron ---------- */
+
+.control-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  inline-size: var(--_icon-size);
+  block-size: var(--_icon-size);
+  color: var(--select-icon-color-default);
+}
+
+.control-icon-end .chevron {
+  inline-size: var(--_chevron-size);
+  block-size: var(--_chevron-size);
+  color: var(--select-chevron-color-default);
+  transition: transform var(--select-chevron-transition-duration)
+    var(--select-chevron-transition-timing-function);
+}
+
+:host(.is-open) .control-icon-end .chevron {
+  transform: rotate(180deg);
+}
+
+:host(.is-disabled) .control-icon,
+:host(.is-disabled) .control-icon-end .chevron {
+  color: var(--select-chevron-color-disabled);
+}
+
+:host(:not(.has-icon-start)) .control-icon-start {
+  display: none;
+}
+
+::slotted([slot='icon-start']) {
+  color: inherit;
+}
+
+/* ---------- Trigger button ---------- */
+
+.trigger {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: var(--_control-font-size);
+  line-height: var(--_control-line-height);
+  font-weight: var(--select-control-font-weight);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  text-align: start;
+  display: flex;
+  align-items: center;
+}
+
+.trigger:disabled {
+  cursor: not-allowed;
+  color: var(--select-default-text-disabled);
+  -webkit-text-fill-color: var(--select-default-text-disabled);
+}
+
+:host(.is-readonly:not(.is-disabled)) .trigger {
+  cursor: default;
+}
+
+.trigger:focus,
+.trigger:focus-visible {
+  outline: none;
+}
+
+.trigger-text {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.trigger-text.is-placeholder {
+  color: var(--_text-placeholder);
+}
+
+/* ---------- Listbox popover ---------- */
+
+.listbox {
+  position: absolute;
+  inset-inline-start: 0;
+  inline-size: 100%;
+  inset-block-start: calc(100% + var(--select-listbox-margin-block-start));
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: var(--select-listbox-gap);
+  padding: var(--select-listbox-padding);
+  background-color: var(--select-listbox-background);
+  border: var(--select-listbox-border-width) solid var(--select-listbox-border-color);
+  border-radius: var(--select-listbox-border-radius);
+  box-shadow: var(--select-listbox-shadow);
+  /* positionListbox() sets `--_listbox-max-block-size` inline to whatever fits
+     the viewport; falls back to the token cap before the first measure. */
+  max-block-size: var(--_listbox-max-block-size, var(--select-listbox-max-block-size));
+  overflow-y: auto;
+}
+
+/* Not enough room below the control → flip the popover above it. */
+:host(.is-drop-up) .listbox {
+  inset-block-start: auto;
+  inset-block-end: calc(100% + var(--select-listbox-margin-block-start));
+}
+
+.listbox[hidden] {
+  display: none;
+}
+
+.listbox-empty {
+  padding: var(--spacing-8) var(--spacing-12);
+  font-size: var(--_option-font-size);
+  line-height: var(--_option-line-height);
+  color: var(--_text-placeholder);
+}
+
+/* ---------- Listbox option ---------- */
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: var(--select-option-gap);
+  min-block-size: var(--_option-min-block-size);
+  padding-block: var(--select-option-padding-block);
+  padding-inline: var(--select-option-padding-inline);
+  border-radius: var(--select-option-border-radius);
+  color: var(--select-option-text-default);
+  font-family: var(--select-option-font-family);
+  font-size: var(--_option-font-size);
+  line-height: var(--_option-line-height);
+  font-weight: var(--select-option-font-weight-default);
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color var(--_transition-duration) var(--_transition-easing),
+    color var(--_transition-duration) var(--_transition-easing);
+}
+
+.option.is-highlighted {
+  background-color: var(--select-option-background-hover);
+}
+
+.option.is-selected {
+  background-color: var(--select-option-background-selected);
+  color: var(--select-option-text-selected);
+  font-weight: var(--select-option-font-weight-selected);
+}
+
+.option.is-selected.is-highlighted {
+  background-color: var(--select-option-background-active);
+}
+
+.option.is-disabled {
+  color: var(--select-option-text-disabled);
+  cursor: not-allowed;
+  background-color: transparent;
+}
+
+.option-label {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.option-check {
+  inline-size: var(--_option-icon-size);
+  block-size: var(--_option-icon-size);
+  flex-shrink: 0;
+  color: var(--select-option-check-color);
+}
+
+/* ---------- Assistive (helper / error) ---------- */
+
+.assistive {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--select-assistive-gap-default);
+  font-family: var(--select-assistive-font-family);
+  font-size: var(--select-assistive-font-size);
+  line-height: var(--select-assistive-line-height);
+  font-weight: var(--select-assistive-font-weight);
+  color: var(--select-assistive-color-default);
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.assistive-error {
+  gap: var(--select-assistive-gap-error);
+  color: var(--select-assistive-color-error);
+}
+
+.assistive-icon {
+  flex-shrink: 0;
+  inline-size: var(--select-assistive-icon-size);
+  block-size: var(--select-assistive-icon-size);
+  margin-block-start: 0;
+}
+
+.assistive-text {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Hidden default slot (option children sink) ---------- */
+
+.default-slot {
+  display: none;
+}
+
+/* ---------- prefers-reduced-motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .control,
+  .option,
+  .control-icon-end .chevron {
+    transition: none;
+  }
+}

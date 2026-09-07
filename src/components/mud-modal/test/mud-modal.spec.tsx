@@ -31,7 +31,7 @@ const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
 
 // Stencil mock-doc does not propagate `keydown` / `cancel` / synthetic `click`
 // events to JSX-attached handlers via dispatchEvent. The pattern used across
-// the design system (see mud-input-chip, mud-chip, mud-select-input specs) is
+// the design system (see mud-input-chip, mud-chip, mud-select specs) is
 // to invoke the registered handler off the component instance directly. The
 // arrow-function class properties on `MudModal` are visible on the host
 // element instance, so we cast through `unknown` to access them.

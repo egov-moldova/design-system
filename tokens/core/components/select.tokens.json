@@ -1,20 +1,20 @@
 {
-  "selectInput": {
+  "select": {
     "field": {
       "gap": { "$value": "{spacing.8}", "$type": "dimension" }
     },
     "container": {
       "height": {
-        "md": { "$value": "{spacing.40}", "$type": "dimension" },
-        "lg": { "$value": "{spacing.48}", "$type": "dimension" }
+        "medium": { "$value": "{spacing.40}", "$type": "dimension" },
+        "large": { "$value": "{spacing.48}", "$type": "dimension" }
       },
       "paddingInline": {
-        "md": { "$value": "{spacing.12}", "$type": "dimension" },
-        "lg": { "$value": "{spacing.16}", "$type": "dimension" }
+        "medium": { "$value": "{spacing.12}", "$type": "dimension" },
+        "large": { "$value": "{spacing.16}", "$type": "dimension" }
       },
       "gap": {
-        "md": { "$value": "{spacing.8}", "$type": "dimension" },
-        "lg": { "$value": "{spacing.8}", "$type": "dimension" }
+        "medium": { "$value": "{spacing.8}", "$type": "dimension" },
+        "large": { "$value": "{spacing.8}", "$type": "dimension" }
       },
       "borderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" },
       "borderWidth": {
@@ -29,12 +29,12 @@
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
       "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" },
       "fontSize": {
-        "md": { "$value": "{fontSize.14}", "$type": "dimension" },
-        "lg": { "$value": "{fontSize.16}", "$type": "dimension" }
+        "medium": { "$value": "{fontSize.14}", "$type": "dimension" },
+        "large": { "$value": "{fontSize.16}", "$type": "dimension" }
       },
       "lineHeight": {
-        "md": { "$value": "{lineHeight.20}", "$type": "dimension" },
-        "lg": { "$value": "{lineHeight.24}", "$type": "dimension" }
+        "medium": { "$value": "{lineHeight.20}", "$type": "dimension" },
+        "large": { "$value": "{lineHeight.24}", "$type": "dimension" }
       }
     },
     "label": {
@@ -52,7 +52,7 @@
         "disabled": {
           "$value": "{color.text.base.secondary}",
           "$type": "color",
-          "$comment": "Stays at base.secondary in disabled state; on-disabled (#b2b2b2) fails WCAG AA on the disabled grey surface. Figma's Disabled SelectInput keeps the label dark."
+          "$comment": "Stays at base.secondary in disabled state; on-disabled (#b2b2b2) fails WCAG AA on the disabled grey surface. Figma's Disabled select keeps the label dark."
         }
       },
       "requiredMark": {
@@ -77,8 +77,8 @@
     },
     "icon": {
       "size": {
-        "md": { "$value": "{spacing.20}", "$type": "dimension" },
-        "lg": { "$value": "{spacing.24}", "$type": "dimension" }
+        "medium": { "$value": "{spacing.20}", "$type": "dimension" },
+        "large": { "$value": "{spacing.24}", "$type": "dimension" }
       },
       "color": {
         "default": { "$value": "{color.icon.base.secondary}", "$type": "color" },
@@ -87,8 +87,8 @@
     },
     "chevron": {
       "size": {
-        "md": { "$value": "{spacing.20}", "$type": "dimension" },
-        "lg": { "$value": "{spacing.24}", "$type": "dimension" }
+        "medium": { "$value": "{spacing.20}", "$type": "dimension" },
+        "large": { "$value": "{spacing.24}", "$type": "dimension" }
       },
       "color": {
         "default": { "$value": "{color.icon.base.secondary}", "$type": "color" },
@@ -152,12 +152,12 @@
     },
     "option": {
       "minBlockSize": {
-        "md": {
+        "medium": {
           "$value": "{spacing.40}",
           "$type": "dimension",
           "$comment": "Figma menu-item-selection: 12px paddingBlock + 16px lh = 40px clickable target."
         },
-        "lg": {
+        "large": {
           "$value": "{spacing.40}",
           "$type": "dimension",
           "$comment": "Floor on the clickable target — intrinsic content (12px paddingBlock × 2 + 20px lh) drives the rendered height to ~44px."
@@ -185,16 +185,16 @@
       },
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
       "fontSize": {
-        "md": { "$value": "{fontSize.14}", "$type": "dimension" },
-        "lg": {
+        "medium": { "$value": "{fontSize.14}", "$type": "dimension" },
+        "large": {
           "$value": "{fontSize.14}",
           "$type": "dimension",
           "$comment": "Figma menu-item-selection renders Body/Small 500 (14px) at both rungs."
         }
       },
       "lineHeight": {
-        "md": { "$value": "{lineHeight.20}", "$type": "dimension" },
-        "lg": { "$value": "{lineHeight.20}", "$type": "dimension" }
+        "medium": { "$value": "{lineHeight.20}", "$type": "dimension" },
+        "large": { "$value": "{lineHeight.20}", "$type": "dimension" }
       },
       "fontWeight": {
         "default": {
@@ -205,8 +205,8 @@
         "selected": { "$value": "{fontWeight.medium}", "$type": "fontWeight" }
       },
       "iconSize": {
-        "md": { "$value": "{spacing.20}", "$type": "dimension" },
-        "lg": {
+        "medium": { "$value": "{spacing.20}", "$type": "dimension" },
+        "large": {
           "$value": "{spacing.24}",
           "$type": "dimension",
           "$comment": "Figma menu-item-selection renders the 24/checkmark-small icon at 24px."

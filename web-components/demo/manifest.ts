@@ -57,7 +57,7 @@ export const CATEGORIES: Category[] = [
       { tag: 'mud-checkbox', blurb: 'Checkbox + indeterminate' },
       { tag: 'mud-radio', blurb: 'Radio group member' },
       { tag: 'mud-switch', blurb: 'On/off toggle' },
-      { tag: 'mud-select-input', blurb: 'Dropdown select (options prop)' },
+      { tag: 'mud-select', blurb: 'Dropdown select (options prop)' },
       { tag: 'mud-segmented-control', blurb: 'Segmented selector (segments prop)' },
       { tag: 'mud-date-input', blurb: 'Masked date field' },
       { tag: 'mud-phone-input', blurb: 'Country-aware phone field' },

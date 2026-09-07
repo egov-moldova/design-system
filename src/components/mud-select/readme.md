@@ -1,4 +1,4 @@
-# mud-select-input
+# mud-select
 
 
 
@@ -7,7 +7,11 @@
 
 ## Overview
 
-Select Input — single-select dropdown atom.
+Select — single-select dropdown atom.
+
+Matches the Figma `select-input` component (page "Select (Dropdown)",
+node 411:23995) — kept here under the shorter `mud-select` name. Size rungs
+follow Figma's own names: `medium` (40px) and `large` (48px).
 
 Pattern B (atom-interactive, form-associated): renders a custom-styled
 trigger button and a listbox popover inside shadow DOM. Form participation
@@ -33,7 +37,7 @@ pattern.
 | `placeholder` | `placeholder` | Placeholder shown when no option is selected.                                                                                                                                                                   | `string \| undefined`         | `undefined` |
 | `readonly`    | `readonly`    | Renders the field read-only. The trigger remains focusable but the listbox cannot be opened.                                                                                                                    | `boolean`                     | `false`     |
 | `required`    | `required`    | Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the trigger.                                                                                                         | `boolean`                     | `false`     |
-| `size`        | `size`        | Visual size rung.                                                                                                                                                                                               | `"lg" \| "md"`                | `'md'`      |
+| `size`        | `size`        | Visual size rung.                                                                                                                                                                                               | `"large" \| "medium"`         | `'medium'`  |
 | `value`       | `value`       | Selected value. Reflects to the host attribute. Set to empty string when no option is selected.                                                                                                                 | `string`                      | `''`        |
 | `variant`     | `variant`     | Color treatment. `destructive` is forced when `invalid` is set.                                                                                                                                                 | `"default" \| "destructive"`  | `'default'` |
 
@@ -80,8 +84,8 @@ pattern.
 ### Graph
 ```mermaid
 graph TD;
-  mud-select-input --> mud-icon
-  style mud-select-input fill:#f9f,stroke:#333,stroke-width:4px
+  mud-select --> mud-icon
+  style mud-select fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------

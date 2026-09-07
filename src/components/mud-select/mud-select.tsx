@@ -12,13 +12,17 @@ import {
   h,
 } from '@stencil/core';
 
-import { SELECT_INPUT_SIZES, SELECT_INPUT_VARIANTS } from './mud-select-input.types';
-import type { SelectChangeDetail, SelectInputSize, SelectInputVariant, SelectOption } from './mud-select-input.types';
+import { SELECT_SIZES, SELECT_VARIANTS } from './mud-select.types';
+import type { SelectChangeDetail, SelectSize, SelectVariant, SelectOption } from './mud-select.types';
 
 let selectInstanceCounter = 0;
 
 /**
- * Select Input — single-select dropdown atom.
+ * Select — single-select dropdown atom.
+ *
+ * Matches the Figma `select-input` component (page "Select (Dropdown)",
+ * node 411:23995) — kept here under the shorter `mud-select` name. Size rungs
+ * follow Figma's own names: `medium` (40px) and `large` (48px).
  *
  * Pattern B (atom-interactive, form-associated): renders a custom-styled
  * trigger button and a listbox popover inside shadow DOM. Form participation
@@ -28,30 +32,30 @@ let selectInstanceCounter = 0;
  * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
  * pattern.
  *
- * @element mud-select-input
+ * @element mud-select
  *
  * @slot label - Rich label content, replaces the `label` prop when present.
  * @slot helper - Rich helper / hint content, replaces the `helper-text` prop. Hidden when invalid + error-text is shown.
  * @slot icon-start - Leading `mud-icon` rendered inside the control row.
  */
 @Component({
-  tag: 'mud-select-input',
-  styleUrl: 'mud-select-input.css',
+  tag: 'mud-select',
+  styleUrl: 'mud-select.css',
   shadow: { delegatesFocus: true },
   formAssociated: true,
 })
-export class MudSelectInput {
+export class MudSelect {
   /**
    * Color treatment. `destructive` is forced when `invalid` is set.
    * @default 'default'
    */
-  @Prop({ reflect: true }) variant: SelectInputVariant = 'default';
+  @Prop({ reflect: true }) variant: SelectVariant = 'default';
 
   /**
    * Visual size rung.
-   * @default 'md'
+   * @default 'medium'
    */
-  @Prop({ reflect: true }) size: SelectInputSize = 'md';
+  @Prop({ reflect: true }) size: SelectSize = 'medium';
 
   /**
    * Disables interactivity. The trigger receives `aria-disabled` and the
@@ -134,8 +138,12 @@ export class MudSelectInput {
   @State() private highlightedIndex: number = -1;
   @State() private slotOptions: SelectOption[] = [];
   @State() private resolvedAriaLabel?: string;
+  /** True when the listbox is flipped above the control (not enough room below). */
+  @State() private dropUp: boolean = false;
+  /** Runtime cap (px) on the listbox height so it never spills past the viewport. */
+  @State() private listboxMaxBlockSize?: number;
 
-  @Element() host!: HTMLMudSelectInputElement;
+  @Element() host!: HTMLMudSelectElement;
 
   @AttachInternals() internals!: ElementInternals;
 
@@ -155,11 +163,11 @@ export class MudSelectInput {
   @Event() mudBlur!: EventEmitter<FocusEvent>;
 
   private readonly instanceId = ++selectInstanceCounter;
-  private readonly labelId = `mud-select-input-label-${this.instanceId}`;
-  private readonly helperId = `mud-select-input-helper-${this.instanceId}`;
-  private readonly errorId = `mud-select-input-error-${this.instanceId}`;
-  private readonly triggerId = `mud-select-input-trigger-${this.instanceId}`;
-  private readonly listboxId = `mud-select-input-listbox-${this.instanceId}`;
+  private readonly labelId = `mud-select-label-${this.instanceId}`;
+  private readonly helperId = `mud-select-helper-${this.instanceId}`;
+  private readonly errorId = `mud-select-error-${this.instanceId}`;
+  private readonly triggerId = `mud-select-trigger-${this.instanceId}`;
+  private readonly listboxId = `mud-select-listbox-${this.instanceId}`;
   private initialValue: string = '';
   private triggerEl?: HTMLButtonElement;
   private listboxEl?: HTMLElement;
@@ -171,6 +179,16 @@ export class MudSelectInput {
     this.internals.setFormValue(this.value, this.value);
     this.syncValidity();
     if (this.open) this.primeHighlight();
+  }
+
+  componentDidLoad() {
+    // An initially-`open` select still needs its popover measured (the `@Watch`
+    // doesn't fire for the starting prop value). componentDidRender handles the
+    // measure; here we only wire the reposition listeners.
+    if (this.open && typeof window !== 'undefined') {
+      window.addEventListener('resize', this.positionListbox);
+      window.addEventListener('scroll', this.positionListbox, true);
+    }
   }
 
   /**
@@ -210,10 +228,10 @@ export class MudSelectInput {
   }
 
   @Watch('variant')
-  validateVariant(next: SelectInputVariant) {
-    if (!SELECT_INPUT_VARIANTS.includes(next)) {
+  validateVariant(next: SelectVariant) {
+    if (!SELECT_VARIANTS.includes(next)) {
       console.warn(
-        `[mud-select-input] variant="${String(next)}" is not supported. Supported: ${SELECT_INPUT_VARIANTS.join(
+        `[mud-select] variant="${String(next)}" is not supported. Supported: ${SELECT_VARIANTS.join(
           ', ',
         )}. Falling back to "default".`,
       );
@@ -222,14 +240,14 @@ export class MudSelectInput {
   }
 
   @Watch('size')
-  validateSize(next: SelectInputSize) {
-    if (!SELECT_INPUT_SIZES.includes(next)) {
+  validateSize(next: SelectSize) {
+    if (!SELECT_SIZES.includes(next)) {
       console.warn(
-        `[mud-select-input] size="${String(next)}" is not supported. Supported: ${SELECT_INPUT_SIZES.join(
+        `[mud-select] size="${String(next)}" is not supported. Supported: ${SELECT_SIZES.join(
           ', ',
-        )}. Falling back to "md".`,
+        )}. Falling back to "medium".`,
       );
-      this.size = 'md';
+      this.size = 'medium';
     }
   }
 
@@ -264,10 +282,67 @@ export class MudSelectInput {
     // Thin sync only — open/close imperative work lives in setListboxOpen().
     if (next) {
       this.primeHighlight();
+      // Once the listbox is in the DOM: decide drop-down vs flip-up and cap its
+      // height to the visible viewport (see positionListbox).
+      requestAnimationFrame(() => this.positionListbox());
+      if (typeof window !== 'undefined') {
+        window.addEventListener('resize', this.positionListbox);
+        window.addEventListener('scroll', this.positionListbox, true);
+      }
       this.mudOpen.emit();
     } else {
       this.highlightedIndex = -1;
+      this.dropUp = false;
+      this.listboxMaxBlockSize = undefined;
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', this.positionListbox);
+        window.removeEventListener('scroll', this.positionListbox, true);
+      }
       this.mudClose.emit();
+    }
+  }
+
+  /**
+   * The listbox stays `position: absolute` under the control (predictable, no
+   * containing-block surprises). This only measures the room above / below the
+   * trigger to (a) flip the popover above it when it doesn't fit below and
+   * (b) cap its height so it never spills past the viewport edge. Pure DOM read
+   * + two primitive `@State` writes — safe to call on scroll / resize.
+   */
+  private positionListbox = () => {
+    if (!this.open || typeof window === 'undefined') return;
+    const control = this.host.shadowRoot?.querySelector('.control') as HTMLElement | null;
+    const listbox = this.listboxEl;
+    if (!control || !listbox) return;
+
+    const rect = control.getBoundingClientRect();
+    const EDGE_MARGIN = 8; // breathing room from the viewport edge
+    const GAP = 4; // matches --select-listbox-margin-block-start
+    const HARD_CAP = 320; // --select-listbox-max-block-size
+    const MIN_HEIGHT = 120;
+
+    const spaceBelow = window.innerHeight - rect.bottom - GAP - EDGE_MARGIN;
+    const spaceAbove = rect.top - GAP - EDGE_MARGIN;
+    // scrollHeight already reflects the current cap; add it back so a listbox
+    // that's *currently* clamped can still un-flip when space opens up on scroll.
+    const naturalHeight = Math.max(listbox.scrollHeight, this.listboxMaxBlockSize ?? 0);
+    const wanted = Math.min(naturalHeight, HARD_CAP);
+
+    const dropUp = spaceBelow < wanted && spaceAbove > spaceBelow;
+    const available = dropUp ? spaceAbove : spaceBelow;
+
+    this.dropUp = dropUp;
+    this.listboxMaxBlockSize = Math.round(Math.max(MIN_HEIGHT, Math.min(HARD_CAP, available)));
+  };
+
+  componentDidRender() {
+    if (this.open) this.positionListbox();
+  }
+
+  disconnectedCallback() {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('resize', this.positionListbox);
+      window.removeEventListener('scroll', this.positionListbox, true);
     }
   }
 
@@ -341,7 +416,7 @@ export class MudSelectInput {
     return this.options && this.options.length > 0 ? this.options : this.slotOptions;
   }
 
-  private resolvedVariant(): SelectInputVariant {
+  private resolvedVariant(): SelectVariant {
     return this.invalid ? 'destructive' : this.variant;
   }
 
@@ -415,6 +490,24 @@ export class MudSelectInput {
   private toggleListbox = (ev?: MouseEvent) => {
     ev?.stopPropagation();
     if (this.isInert() || this.readonly) return;
+    this.setListboxOpen(!this.open);
+  };
+
+  /**
+   * The trailing chevron and the leading icon-start slot sit *beside* the
+   * trigger button, not inside it — a click there would otherwise be dead.
+   * Forward any click within the control box that didn't land on the button
+   * itself (the button's own `onClick` stops propagation, so this never
+   * double-fires) to the trigger: focus it and toggle the listbox.
+   */
+  private handleControlClick = (ev: MouseEvent) => {
+    const target = ev.target as Node | null;
+    if (target && this.triggerEl && (target === this.triggerEl || this.triggerEl.contains(target))) return;
+    // Keep this click from reaching the document listener, which would read it
+    // as an outside-click and immediately close what we just opened.
+    ev.stopPropagation();
+    if (this.isInert() || this.readonly) return;
+    this.triggerEl?.focus();
     this.setListboxOpen(!this.open);
   };
 
@@ -523,10 +616,10 @@ export class MudSelectInput {
     const isPlaceholder = !selected;
     const activeDescendantId =
       this.open && this.highlightedIndex >= 0 ? `${this.listboxId}-opt-${this.highlightedIndex}` : undefined;
-    // Chevron + selected-option check scale with the size rung (md 20 / lg 24)
+    // Chevron + selected-option check scale with the size rung (medium 20 / large 24)
     // to match the Figma spec; the responsive CSS box sizes the host, this
     // keeps the SVG glyph dimensions in step so the two never diverge.
-    const iconSize: 20 | 24 = this.size === 'lg' ? 24 : 20;
+    const iconSize: 20 | 24 = this.size === 'large' ? 24 : 20;
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -534,6 +627,7 @@ export class MudSelectInput {
       'is-invalid': this.invalid,
       'is-focused': this.isFocused && !effectivelyDisabled,
       'is-open': this.open && !effectivelyDisabled,
+      'is-drop-up': this.open && this.dropUp && !effectivelyDisabled,
       'is-placeholder': isPlaceholder,
       'has-label': this.hasVisibleLabel(),
       'has-icon-start': this.hasIconStart,
@@ -555,7 +649,9 @@ export class MudSelectInput {
         </label>
 
         <div class="control-wrapper">
-          <div class="control" part="control">
+          {/* A click on the non-button chrome (chevron / icon-start) is forwarded
+              to the trigger, which stays the keyboard-focusable control. */}
+          <div class="control" part="control" onClick={this.handleControlClick}>
             <span class="control-icon control-icon-start" aria-hidden={this.hasIconStart ? null : 'true'}>
               <slot name="icon-start" onSlotchange={this.onIconStartSlotChange} />
             </span>
@@ -600,6 +696,11 @@ export class MudSelectInput {
             aria-labelledby={this.hasVisibleLabel() ? this.labelId : undefined}
             aria-label={!this.hasVisibleLabel() ? (this.resolvedAriaLabel ?? 'Options') : undefined}
             hidden={!this.open}
+            style={
+              this.listboxMaxBlockSize
+                ? { '--_listbox-max-block-size': `${String(this.listboxMaxBlockSize)}px` }
+                : undefined
+            }
           >
             {opts.length === 0 ? (
               <div class="listbox-empty" role="presentation">
