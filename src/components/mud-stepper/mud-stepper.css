@@ -1,6 +1,6 @@
 /* ============================================================================
- * mud-progress-tracker — visual stepper / progress tracker
- * Figma reference: 267:6905
+ * mud-stepper — visual stepper (a.k.a. progress tracker)
+ * Figma reference: 267:6905 (page "Progress Tracker (Stepper)")
  *
  * Layout strategy:
  *   - The root <ol> is a flex container. In horizontal mode steps line up in a
@@ -9,7 +9,7 @@
  *   - Connector lines are `flex: 1` so they expand to fill the gap between
  *     indicators, naturally producing the proportional "rail" from Figma.
  *   - State colours are applied per-step via `.step--{status}` modifier classes,
- *     all colours coming from the `--progress-tracker-*` token surface.
+ *     all colours coming from the `--stepper-*` token surface.
  *   - The previous step's connector is owned by the **next** step (CSS sibling
  *     selector below) so the connector colour reflects whether the user has
  *     already passed it (= upstream step is completed).
@@ -17,11 +17,11 @@
 
 :host {
   display: block;
-  font-family: var(--progress-tracker-font-family);
-  font-size: var(--progress-tracker-font-size);
-  line-height: var(--progress-tracker-line-height);
-  color: var(--progress-tracker-label-color);
-  max-width: var(--progress-tracker-container-max-width);
+  font-family: var(--stepper-font-family);
+  font-size: var(--stepper-font-size);
+  line-height: var(--stepper-line-height);
+  color: var(--stepper-label-color);
+  max-width: var(--stepper-container-max-width);
 }
 
 .root {
@@ -86,7 +86,7 @@
 .step-trigger {
   display: inline-flex;
   align-items: center;
-  gap: var(--progress-tracker-step-indicator-gap);
+  gap: var(--stepper-step-indicator-gap);
   padding: 0;
   margin: 0;
   background: transparent;
@@ -103,20 +103,16 @@
 
 .step-trigger {
   cursor: pointer;
-  border-radius: var(--progress-tracker-interactive-border-radius);
-  padding-inline: var(--progress-tracker-interactive-padding-inline);
-  padding-block: var(--progress-tracker-interactive-padding-block);
-  transition:
-    background-color var(--progress-tracker-indicator-transition-duration)
-      var(--progress-tracker-indicator-transition-timing-function),
-    color var(--progress-tracker-indicator-transition-duration)
-      var(--progress-tracker-indicator-transition-timing-function);
+  border-radius: var(--stepper-interactive-border-radius);
+  padding-inline: var(--stepper-interactive-padding-inline);
+  padding-block: var(--stepper-interactive-padding-block);
 }
 
-.step-trigger:hover {
-  background: var(--progress-tracker-interactive-hover-background);
-}
-
+/* No hover surface: the Figma `progress-tracker` step has no hover state — an
+   actionable step is signalled by its brand underlined-link label (and the
+   pointer cursor). Only `:focus-visible` paints a ring (WCAG 2.4.7). A box
+   behind the column trigger would dangle awkwardly below the dot toward the
+   label anyway (the label sits in a zero-width box for even connector spacing). */
 .step-trigger:focus-visible {
   outline: none;
   box-shadow:
@@ -132,21 +128,21 @@
   justify-content: center;
   flex-shrink: 0;
   box-sizing: border-box;
-  width: var(--progress-tracker-indicator-size);
-  height: var(--progress-tracker-indicator-size);
-  border-radius: var(--progress-tracker-indicator-border-radius);
-  border: var(--progress-tracker-indicator-border-width) solid transparent;
-  background: var(--progress-tracker-indicator-background);
-  font-weight: var(--progress-tracker-font-weight-indicator);
-  font-size: var(--progress-tracker-font-size);
+  width: var(--stepper-indicator-size);
+  height: var(--stepper-indicator-size);
+  border-radius: var(--stepper-indicator-border-radius);
+  border: var(--stepper-indicator-border-width) solid transparent;
+  background: var(--stepper-indicator-background);
+  font-weight: var(--stepper-font-weight-indicator);
+  font-size: var(--stepper-font-size);
   line-height: 1;
   transition:
-    background-color var(--progress-tracker-indicator-transition-duration)
-      var(--progress-tracker-indicator-transition-timing-function),
-    border-color var(--progress-tracker-indicator-transition-duration)
-      var(--progress-tracker-indicator-transition-timing-function),
-    color var(--progress-tracker-indicator-transition-duration)
-      var(--progress-tracker-indicator-transition-timing-function);
+    background-color var(--stepper-indicator-transition-duration)
+      var(--stepper-indicator-transition-timing-function),
+    border-color var(--stepper-indicator-transition-duration)
+      var(--stepper-indicator-transition-timing-function),
+    color var(--stepper-indicator-transition-duration)
+      var(--stepper-indicator-transition-timing-function);
 }
 
 .indicator-number {
@@ -167,16 +163,16 @@
 }
 
 .label {
-  color: var(--progress-tracker-label-color);
-  font-weight: var(--progress-tracker-font-weight-label);
-  font-size: var(--progress-tracker-font-size);
-  line-height: var(--progress-tracker-line-height);
+  color: var(--stepper-label-color);
+  font-weight: var(--stepper-font-weight-label);
+  font-size: var(--stepper-font-size);
+  line-height: var(--stepper-line-height);
 }
 
 .supporting-text {
-  color: var(--progress-tracker-supporting-text-color);
-  font-size: var(--progress-tracker-supporting-text-font-size);
-  line-height: var(--progress-tracker-supporting-text-line-height);
+  color: var(--stepper-supporting-text-color);
+  font-size: var(--stepper-supporting-text-font-size);
+  line-height: var(--stepper-supporting-text-line-height);
 }
 
 /* ---------- Connector line ---------- */
@@ -185,22 +181,22 @@
    below. The geometry (height/width + centring) all reads `--_ct` so the rail
    stays centred on the indicator at either thickness. */
 .connector {
-  --_ct: var(--progress-tracker-connector-thickness-pending);
+  --_ct: var(--stepper-connector-thickness-pending);
   display: block;
-  background: var(--progress-tracker-pending-connector);
+  background: var(--stepper-pending-connector);
   flex-shrink: 0;
 }
 
 :host([orientation='horizontal']) .connector {
   height: var(--_ct);
   flex: 1 1 0;
-  min-width: var(--progress-tracker-connector-min-length);
-  margin-block: calc((var(--progress-tracker-indicator-size) - var(--_ct)) / 2);
+  min-width: var(--stepper-connector-min-length);
+  margin-block: calc((var(--stepper-indicator-size) - var(--_ct)) / 2);
   /* Symmetric gaps on both sides of the dot — the body is the dot width (the
      label doesn't widen it, see below), so the flex connector spans the whole
      gap between consecutive dots. */
-  margin-inline-start: var(--progress-tracker-step-indicator-gap);
-  margin-inline-end: var(--progress-tracker-step-indicator-gap);
+  margin-inline-start: var(--stepper-step-indicator-gap);
+  margin-inline-end: var(--stepper-step-indicator-gap);
 }
 
 :host([orientation='horizontal']) .step .step-content,
@@ -208,7 +204,7 @@
   /* In horizontal mode, indicator + label stack vertically (label under). */
   flex-direction: column;
   align-items: center;
-  gap: var(--progress-tracker-container-label-gap);
+  gap: var(--stepper-container-label-gap);
   flex-shrink: 0;
 }
 
@@ -230,32 +226,39 @@
 }
 
 /* The end labels would otherwise spill past the track edges (a centred label on
-   the first/last dot overflows left/right). Anchor them inward: the first label
-   reads left-aligned from its dot, the last right-aligned. Middle stay centred. */
+   the first/last dot overflows left/right). Anchor them inward — but to the
+   indicator's *edge*, not its centre. The label-block is a zero-width origin at
+   the indicator centre; `align-items` alone would leave the first label starting
+   half an indicator-width (12px) to the right of the dot. The `translateX` pulls
+   that origin back onto the leading edge so the first label lines up under the
+   left of its dot (and the last under the right of its dot) — matching Figma,
+   where the label box is pinned to the step's edge. Middle labels stay centred. */
 :host([orientation='horizontal']) .step:first-child .label-block {
   align-items: flex-start;
+  transform: translateX(calc(var(--stepper-indicator-size) / -2));
 }
 
 :host([orientation='horizontal']) .step--last .label-block {
   align-items: flex-end;
+  transform: translateX(calc(var(--stepper-indicator-size) / 2));
 }
 
 :host([orientation='vertical']) .step:not(.step--last) {
   /* Each non-last step must be tall enough to host the vertical connector
    * that drops from its indicator. 84px matches the Figma vertical spacing. */
-  min-height: var(--progress-tracker-container-vertical-step-min-height);
+  min-height: var(--stepper-container-vertical-step-min-height);
 }
 
 :host([orientation='vertical']) .connector {
   width: var(--_ct);
   align-self: stretch;
   position: absolute;
-  left: calc(var(--progress-tracker-indicator-size) / 2 - var(--_ct) / 2);
+  left: calc(var(--stepper-indicator-size) / 2 - var(--_ct) / 2);
   /* Symmetric gaps: drop the same `labelGap` below this indicator AND above the
    * next one (the next step's indicator sits at this step's bottom edge), so the
    * rail floats evenly between circles instead of butting into the lower one. */
-  top: calc(var(--progress-tracker-indicator-size) + var(--progress-tracker-container-label-gap));
-  bottom: var(--progress-tracker-container-label-gap);
+  top: calc(var(--stepper-indicator-size) + var(--stepper-container-label-gap));
+  bottom: var(--stepper-container-label-gap);
 }
 
 /* ---------- Compact (mobile dot rail) ----------
@@ -270,8 +273,8 @@
  * the `compact` prop is on OR the tracker auto-switches on a narrow container
  * (ResizeObserver). */
 :host(.is-compact) {
-  --progress-tracker-container-vertical-step-min-height: var(
-    --progress-tracker-container-vertical-step-min-height-compact
+  --stepper-container-vertical-step-min-height: var(
+    --stepper-container-vertical-step-min-height-compact
   );
 }
 
@@ -289,72 +292,72 @@
 /* ---------- State: PENDING (default colours) ---------- */
 
 .step--pending .indicator {
-  border-color: var(--progress-tracker-pending-indicator-border);
-  background: var(--progress-tracker-pending-indicator-background);
-  color: var(--progress-tracker-pending-indicator-text);
+  border-color: var(--stepper-pending-indicator-border);
+  background: var(--stepper-pending-indicator-background);
+  color: var(--stepper-pending-indicator-text);
 }
 
 .step--pending .label {
-  color: var(--progress-tracker-pending-label);
+  color: var(--stepper-pending-label);
 }
 
 /* The connector lives INSIDE the step (after its body), so its colour is
  * derived from the containing step's status — i.e. the connector to the
  * right of a completed step is brand-blue. */
 .step--pending .connector {
-  background: var(--progress-tracker-pending-connector);
+  background: var(--stepper-pending-connector);
 }
 
 .step--current .connector {
-  background: var(--progress-tracker-pending-connector);
+  background: var(--stepper-pending-connector);
 }
 
 .step--completed .connector {
   /* Filled/traveled rail is slightly heavier (1.5px) than the grey 1px. */
-  --_ct: var(--progress-tracker-connector-thickness);
-  background: var(--progress-tracker-completed-connector);
+  --_ct: var(--stepper-connector-thickness);
+  background: var(--stepper-completed-connector);
 }
 
 .step--error .connector {
-  --_ct: var(--progress-tracker-connector-thickness);
-  background: var(--progress-tracker-error-connector);
+  --_ct: var(--stepper-connector-thickness);
+  background: var(--stepper-error-connector);
 }
 
 /* ---------- State: CURRENT ---------- */
 
 .step--current .indicator {
-  border-color: var(--progress-tracker-current-indicator-border);
-  background: var(--progress-tracker-current-indicator-background);
-  color: var(--progress-tracker-current-indicator-text);
+  border-color: var(--stepper-current-indicator-border);
+  background: var(--stepper-current-indicator-background);
+  color: var(--stepper-current-indicator-text);
 }
 
 .step--current .label {
-  color: var(--progress-tracker-current-label);
-  font-weight: var(--progress-tracker-current-label-font-weight);
+  color: var(--stepper-current-label);
+  font-weight: var(--stepper-current-label-font-weight);
 }
 
 /* ---------- State: COMPLETED ---------- */
 
 .step--completed .indicator {
-  border-color: var(--progress-tracker-completed-indicator-border);
-  background: var(--progress-tracker-completed-indicator-background);
-  color: var(--progress-tracker-completed-indicator-text);
+  border-color: var(--stepper-completed-indicator-border);
+  background: var(--stepper-completed-indicator-background);
+  color: var(--stepper-completed-indicator-text);
 }
 
 .step--completed .label {
-  color: var(--progress-tracker-completed-label);
+  color: var(--stepper-completed-label);
 }
 
 /* ---------- State: ERROR ---------- */
 
 .step--error .indicator {
-  border-color: var(--progress-tracker-error-indicator-border);
-  background: var(--progress-tracker-error-indicator-background);
-  color: var(--progress-tracker-error-indicator-text);
+  border-color: var(--stepper-error-indicator-border);
+  background: var(--stepper-error-indicator-background);
+  color: var(--stepper-error-indicator-text);
 }
 
 .step--error .label {
-  color: var(--progress-tracker-error-label);
+  color: var(--stepper-error-label);
 }
 
 /* ---------- State: AVAILABLE (navigable future step) ---------- */
@@ -362,13 +365,13 @@
  * pending grey (base .connector rule) because the path beyond it isn't travelled. */
 
 .step--available .indicator {
-  border-color: var(--progress-tracker-available-indicator-border);
-  background: var(--progress-tracker-available-indicator-background);
-  color: var(--progress-tracker-available-indicator-text);
+  border-color: var(--stepper-available-indicator-border);
+  background: var(--stepper-available-indicator-background);
+  color: var(--stepper-available-indicator-text);
 }
 
 .step--available .label {
-  color: var(--progress-tracker-available-label);
+  color: var(--stepper-available-label);
 }
 
 /* ---------- Navigable (actionable) labels render as brand underlined links ----------
@@ -376,7 +379,7 @@
  * (interactive mode) get a brand colour + underline. `current` stays neutral. */
 
 .step--actionable.step--completed .label {
-  color: var(--progress-tracker-completed-label-actionable);
+  color: var(--stepper-completed-label-actionable);
 }
 
 .step--actionable.step--completed .label,
@@ -388,12 +391,12 @@
 /* ---------- Disabled (in interactive mode) ---------- */
 
 .step--disabled .indicator {
-  border-color: var(--progress-tracker-interactive-disabled-indicator-border);
-  color: var(--progress-tracker-interactive-disabled-indicator-text);
+  border-color: var(--stepper-interactive-disabled-indicator-border);
+  color: var(--stepper-interactive-disabled-indicator-text);
 }
 
 .step--disabled .label {
-  color: var(--progress-tracker-interactive-disabled-label);
+  color: var(--stepper-interactive-disabled-label);
 }
 
 .step--disabled .step-trigger,
@@ -404,8 +407,7 @@
 /* ---------- Reduced motion ---------- */
 
 @media (prefers-reduced-motion: reduce) {
-  .indicator,
-  .step-trigger {
+  .indicator {
     transition: none;
   }
 }

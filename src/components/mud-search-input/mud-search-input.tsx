@@ -408,6 +408,9 @@ export class MudSearchInput {
     const helperText = this.helperText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
     const iconSize = this.size === 'md' ? 24 : 20;
+    // The clear affordance is a constant 20px pill with a 16px `cross-small`
+    // glyph in Figma, regardless of field size (unlike the leading icon).
+    const clearIconSize = 16;
     const submitIconSize: 16 | 20 = this.size === 'md' ? 20 : 16;
     const spinnerSize = this.size === 'md' ? 'md' : 'sm';
 
@@ -489,7 +492,7 @@ export class MudSearchInput {
               onMouseDown={(ev: MouseEvent) => ev.preventDefault()}
               onClick={this.handleClearClick}
             >
-              <mud-icon name="cross-small" size={iconSize} />
+              <mud-icon name="cross-small" size={clearIconSize} />
             </button>
           ) : null}
 

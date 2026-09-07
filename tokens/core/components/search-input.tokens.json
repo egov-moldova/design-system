@@ -83,10 +83,11 @@
     },
     "iconEndClear": {
       "size": {
-        "sm": { "$value": "{spacing.20}", "$type": "dimension" },
-        "md": { "$value": "{spacing.24}", "$type": "dimension" }
+        "$value": "{spacing.20}",
+        "$type": "dimension",
+        "$comment": "Figma 'Search Input' clear affordance is a constant 20px pill (2px pad + 16px `cross-small` glyph) for both the medium and large field."
       },
-      "padding": { "$value": "{spacing.4}", "$type": "dimension" },
+      "padding": { "$value": "{spacing.2}", "$type": "dimension" },
       "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" },
       "color": {
         "default": { "$value": "{color.icon.base.secondary}", "$type": "color" },

@@ -1,5 +1,5 @@
 /**
- * Lifecycle state of a single step in a progress tracker.
+ * Lifecycle state of a single step in a stepper.
  *
  * - `pending`     — step has not yet been reached and is NOT navigable; neutral grey ring + faded number.
  * - `current`     — the step the user is currently on; brand ring + brand number, neutral label.
@@ -9,29 +9,29 @@
  *                   brand underlined link label when interactive (navigable forward).
  * - `error`       — step failed validation or was blocked; danger ring + danger cross, neutral label.
  */
-export type ProgressTrackerStepStatus = 'pending' | 'current' | 'completed' | 'available' | 'error';
+export type StepperStepStatus = 'pending' | 'current' | 'completed' | 'available' | 'error';
 
 /**
  * Orientation of the tracker — horizontal flows steps left-to-right, vertical top-to-bottom.
  */
-export type ProgressTrackerOrientation = 'horizontal' | 'vertical';
+export type StepperOrientation = 'horizontal' | 'vertical';
 
 /**
- * Declarative shape for a single step in `mud-progress-tracker`.
+ * Declarative shape for a single step in `mud-stepper`.
  *
  * The `status` field is the source of truth for visual state and ARIA semantics.
  * `iconName` overrides the default indicator (number for pending/current, checkmark
  * for completed, cross for error).
  */
-export type ProgressTrackerStep = {
+export type StepperStep = {
   /** Optional stable identifier (used as the React-style key when re-ordering). */
   id?: string;
   /** Visible label, e.g. `'Pasul 1: Date personale'`. Used for the accessible name. */
   label: string;
   /** Optional secondary line rendered below the label (rich step variant). */
   supportingText?: string;
-  /** Lifecycle state — see {@link ProgressTrackerStepStatus}. */
-  status: ProgressTrackerStepStatus;
+  /** Lifecycle state — see {@link StepperStepStatus}. */
+  status: StepperStepStatus;
   /**
    * Optional custom indicator icon (e.g. `'checkmark-large'`). When omitted,
    * the component picks an indicator based on `status`:
@@ -45,12 +45,12 @@ export type ProgressTrackerStep = {
 };
 
 /**
- * Emitted by `mud-progress-tracker` when a step is activated via click or keyboard.
+ * Emitted by `mud-stepper` when a step is activated via click or keyboard.
  * Only fires when the tracker is `interactive` and the step is not disabled.
  */
-export type ProgressTrackerStepClickDetail = {
+export type StepperStepClickDetail = {
   /** Zero-based index of the step in the `steps` array. */
   index: number;
   /** The step that was activated. */
-  step: ProgressTrackerStep;
+  step: StepperStep;
 };

@@ -32,7 +32,6 @@ import { ModalActionsLayout, ModalCloseEvent, ModalCloseReason, ModalSize, Modal
 import { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/mud-numeric-input/mud-numeric-input.types";
 import { PaginationChangeDetail, PaginationSize } from "./components/mud-pagination/mud-pagination.types";
 import { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/mud-phone-input/mud-phone-input.types";
-import { ProgressTrackerOrientation, ProgressTrackerStep, ProgressTrackerStepClickDetail } from "./components/mud-progress-tracker/mud-progress-tracker.types";
 import { RadioChangeDetail, RadioSize } from "./components/mud-radio/mud-radio.types";
 import { ReceiptActionDetail, ReceiptParty, ReceiptService, ReceiptStatus } from "./components/mud-receipt/mud-receipt.types";
 import { SearchInputChangeDetail, SearchInputSearchDetail, SearchInputShape, SearchInputSize } from "./components/mud-search-input/mud-search-input.types";
@@ -42,6 +41,7 @@ import { SeparatorOrientation, SeparatorSize, SeparatorVariant } from "./compone
 import { ServiceButtonAppearance, ServiceButtonType } from "./components/mud-service-button/mud-service-button.types";
 import { SidebarItemSelectDetail, SidebarItemToggleDetail } from "./components/mud-sidebar/mud-sidebar.types";
 import { SpinnerSize, SpinnerVariant } from "./components/mud-spinner/mud-spinner.types";
+import { StepperOrientation, StepperStep, StepperStepClickDetail } from "./components/mud-stepper/mud-stepper.types";
 import { SwitchChangeDetail } from "./components/mud-switch/mud-switch.types";
 import { TableColumn, TableHeaderStyle, TableRowClickDetail, TableRowData, TableRowStyle, TableSelectionChangeDetail, TableSortChangeDetail, TableSortDirection } from "./components/mud-table/mud-table.types";
 import { TabDescriptor, TabsChangeDetail, TabsSize } from "./components/mud-tabs/mud-tabs.types";
@@ -77,7 +77,6 @@ export { ModalActionsLayout, ModalCloseEvent, ModalCloseReason, ModalSize, Modal
 export { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/mud-numeric-input/mud-numeric-input.types";
 export { PaginationChangeDetail, PaginationSize } from "./components/mud-pagination/mud-pagination.types";
 export { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/mud-phone-input/mud-phone-input.types";
-export { ProgressTrackerOrientation, ProgressTrackerStep, ProgressTrackerStepClickDetail } from "./components/mud-progress-tracker/mud-progress-tracker.types";
 export { RadioChangeDetail, RadioSize } from "./components/mud-radio/mud-radio.types";
 export { ReceiptActionDetail, ReceiptParty, ReceiptService, ReceiptStatus } from "./components/mud-receipt/mud-receipt.types";
 export { SearchInputChangeDetail, SearchInputSearchDetail, SearchInputShape, SearchInputSize } from "./components/mud-search-input/mud-search-input.types";
@@ -87,6 +86,7 @@ export { SeparatorOrientation, SeparatorSize, SeparatorVariant } from "./compone
 export { ServiceButtonAppearance, ServiceButtonType } from "./components/mud-service-button/mud-service-button.types";
 export { SidebarItemSelectDetail, SidebarItemToggleDetail } from "./components/mud-sidebar/mud-sidebar.types";
 export { SpinnerSize, SpinnerVariant } from "./components/mud-spinner/mud-spinner.types";
+export { StepperOrientation, StepperStep, StepperStepClickDetail } from "./components/mud-stepper/mud-stepper.types";
 export { SwitchChangeDetail } from "./components/mud-switch/mud-switch.types";
 export { TableColumn, TableHeaderStyle, TableRowClickDetail, TableRowData, TableRowStyle, TableSelectionChangeDetail, TableSortChangeDetail, TableSortDirection } from "./components/mud-table/mud-table.types";
 export { TabDescriptor, TabsChangeDetail, TabsSize } from "./components/mud-tabs/mud-tabs.types";
@@ -2147,54 +2147,6 @@ export namespace Components {
         "variant": PhoneInputVariant;
     }
     /**
-     * Progress Tracker (Stepper) — visualises a user's position in a multi-step process.
-     * Two flavours:
-     * - **Display tracker** (`interactive=false`, default) — read-only. Each step is a
-     *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
-     *   submissions where the parent app drives navigation.
-     * - **Interactive tracker** (`interactive=true`) — each completed (and the current)
-     *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
-     *   non-actionable per the WAI-ARIA stepper pattern.
-     * State legend (Figma node 634:10573):
-     *   - `pending`    — neutral grey ring + faded number, non-navigable
-     *   - `current`    — brand ring + brand number, neutral label
-     *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
-     *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
-     *   - `error`      — danger ring + danger cross, neutral label
-     * The component renders an ordered list with `role="list"` for AT compatibility
-     * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
-     * @element mud-progress-tracker
-     */
-    interface MudProgressTracker {
-        /**
-          * Accessible name for the surrounding list landmark. Falls back to `'Progress tracker'` (English) — Romanian consumers can pass `'Pași'`.
-         */
-        "ariaLabel"?: string;
-        /**
-          * Compact "dot rail" rendering — the mobile breakpoint from Figma. Hides the step numbers and labels, leaving a rail of dots; per-status fills convey progress (filled brand + checkmark = completed, hollow ring = current / available / pending, danger ring + cross = error). Status icons are kept; only the numeric indicators and text labels are hidden. Works in both orientations.
-          * @default false
-         */
-        "compact": boolean;
-        /**
-          * Optional zero-based index of the current step. When set, it overrides the `status: 'current'` value in `steps`. Mostly useful for parent-driven flows that mutate a single number rather than the whole array.
-         */
-        "currentStep"?: number;
-        /**
-          * When true, completed, current, and available steps render as `<button>` elements and emit `mudStepClick`. Pending and error steps remain non-actionable in this mode.
-          * @default false
-         */
-        "interactive": boolean;
-        /**
-          * Layout orientation.   - `horizontal` (default): steps flow left to right; labels render under indicators.   - `vertical`: steps stack top to bottom; labels render to the right of indicators.
-          * @default 'horizontal'
-         */
-        "orientation": ProgressTrackerOrientation;
-        /**
-          * Declarative step list. Each item: `{ id?, label, supportingText?, status, iconName?, disabled? }`. `status` drives the visual state and ARIA semantics — see {@link ProgressTrackerStepStatus}.
-         */
-        "steps"?: ProgressTrackerStep[];
-    }
-    /**
      * Radio — single-select form input atom.
      * Pattern B (atom-interactive, form-associated): renders its own
      * `<input type="radio">` inside shadow DOM and paints the visual circle
@@ -2857,6 +2809,56 @@ export namespace Components {
           * @default 'brand'
          */
         "variant": SpinnerVariant;
+    }
+    /**
+     * Stepper — visualises a user's position in a multi-step process.
+     * Matches the Figma `progress-tracker` component (page "Progress Tracker
+     * (Stepper)", node 267:6905) — kept here under the shorter `mud-stepper` name.
+     * Two flavours:
+     * - **Display stepper** (`interactive=false`, default) — read-only. Each step is a
+     *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
+     *   submissions where the parent app drives navigation.
+     * - **Interactive stepper** (`interactive=true`) — each completed (and the current)
+     *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
+     *   non-actionable per the WAI-ARIA stepper pattern.
+     * State legend (Figma node 634:10573):
+     *   - `pending`    — neutral grey ring + faded number, non-navigable
+     *   - `current`    — brand ring + brand number, neutral label
+     *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
+     *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
+     *   - `error`      — danger ring + danger cross, neutral label
+     * The component renders an ordered list with `role="list"` for AT compatibility
+     * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
+     * @element mud-stepper
+     */
+    interface MudStepper {
+        /**
+          * Accessible name for the surrounding list landmark. Falls back to `'Progress tracker'` (English) — Romanian consumers can pass `'Pași'`.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Compact "dot rail" rendering — the mobile breakpoint from Figma. Hides the step numbers and labels, leaving a rail of dots; per-status fills convey progress (filled brand + checkmark = completed, hollow ring = current / available / pending, danger ring + cross = error). Status icons are kept; only the numeric indicators and text labels are hidden. Works in both orientations.
+          * @default false
+         */
+        "compact": boolean;
+        /**
+          * Optional **zero-based** index of the current step (so the 3rd step is `currentStep={2}`). When set it drives the whole progression and the per-item `status` in `steps` is ignored: every step **before** the index renders `'completed'`, the step **at** the index renders `'current'`, every step **after** renders `'pending'`. Pass `currentStep={steps.length}` (one past the last index) to mark the flow finished — every step then renders `'completed'`.  The one exception: a step whose `status` is `'error'` keeps `'error'` regardless of position (a failed step stays failed while you navigate). A negative or non-integer value is ignored and the array's own statuses stand. Use this for parent-driven flows that track a single number; for mixed states (`'available'` future steps, several errors, etc.) drive each step through `steps` and leave `currentStep` unset.
+         */
+        "currentStep"?: number;
+        /**
+          * When true, completed, current, and available steps render as `<button>` elements and emit `mudStepClick`. Pending and error steps remain non-actionable in this mode.
+          * @default false
+         */
+        "interactive": boolean;
+        /**
+          * Layout orientation.   - `horizontal` (default): steps flow left to right; labels render under indicators.   - `vertical`: steps stack top to bottom; labels render to the right of indicators.
+          * @default 'horizontal'
+         */
+        "orientation": StepperOrientation;
+        /**
+          * Declarative step list. Each item: `{ id?, label, supportingText?, status, iconName?, disabled? }`. `status` drives the visual state and ARIA semantics — see {@link StepperStepStatus}.
+         */
+        "steps"?: StepperStep[];
     }
     /**
      * Switch — binary on/off toggle atom (form-associated).
@@ -3575,10 +3577,6 @@ export interface MudPhoneInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudPhoneInputElement;
 }
-export interface MudProgressTrackerCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLMudProgressTrackerElement;
-}
 export interface MudRadioCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudRadioElement;
@@ -3602,6 +3600,10 @@ export interface MudSelectInputCustomEvent<T> extends CustomEvent<T> {
 export interface MudSidebarItemCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudSidebarItemElement;
+}
+export interface MudStepperCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLMudStepperElement;
 }
 export interface MudSwitchCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -4603,42 +4605,6 @@ declare global {
         prototype: HTMLMudPhoneInputElement;
         new (): HTMLMudPhoneInputElement;
     };
-    interface HTMLMudProgressTrackerElementEventMap {
-        "mudStepClick": ProgressTrackerStepClickDetail;
-    }
-    /**
-     * Progress Tracker (Stepper) — visualises a user's position in a multi-step process.
-     * Two flavours:
-     * - **Display tracker** (`interactive=false`, default) — read-only. Each step is a
-     *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
-     *   submissions where the parent app drives navigation.
-     * - **Interactive tracker** (`interactive=true`) — each completed (and the current)
-     *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
-     *   non-actionable per the WAI-ARIA stepper pattern.
-     * State legend (Figma node 634:10573):
-     *   - `pending`    — neutral grey ring + faded number, non-navigable
-     *   - `current`    — brand ring + brand number, neutral label
-     *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
-     *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
-     *   - `error`      — danger ring + danger cross, neutral label
-     * The component renders an ordered list with `role="list"` for AT compatibility
-     * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
-     * @element mud-progress-tracker
-     */
-    interface HTMLMudProgressTrackerElement extends Components.MudProgressTracker, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLMudProgressTrackerElementEventMap>(type: K, listener: (this: HTMLMudProgressTrackerElement, ev: MudProgressTrackerCustomEvent<HTMLMudProgressTrackerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLMudProgressTrackerElementEventMap>(type: K, listener: (this: HTMLMudProgressTrackerElement, ev: MudProgressTrackerCustomEvent<HTMLMudProgressTrackerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLMudProgressTrackerElement: {
-        prototype: HTMLMudProgressTrackerElement;
-        new (): HTMLMudProgressTrackerElement;
-    };
     interface HTMLMudRadioElementEventMap {
         "mudChange": RadioChangeDetail;
         "mudFocus": FocusEvent;
@@ -4904,6 +4870,44 @@ declare global {
     var HTMLMudSpinnerElement: {
         prototype: HTMLMudSpinnerElement;
         new (): HTMLMudSpinnerElement;
+    };
+    interface HTMLMudStepperElementEventMap {
+        "mudStepClick": StepperStepClickDetail;
+    }
+    /**
+     * Stepper — visualises a user's position in a multi-step process.
+     * Matches the Figma `progress-tracker` component (page "Progress Tracker
+     * (Stepper)", node 267:6905) — kept here under the shorter `mud-stepper` name.
+     * Two flavours:
+     * - **Display stepper** (`interactive=false`, default) — read-only. Each step is a
+     *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
+     *   submissions where the parent app drives navigation.
+     * - **Interactive stepper** (`interactive=true`) — each completed (and the current)
+     *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
+     *   non-actionable per the WAI-ARIA stepper pattern.
+     * State legend (Figma node 634:10573):
+     *   - `pending`    — neutral grey ring + faded number, non-navigable
+     *   - `current`    — brand ring + brand number, neutral label
+     *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
+     *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
+     *   - `error`      — danger ring + danger cross, neutral label
+     * The component renders an ordered list with `role="list"` for AT compatibility
+     * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
+     * @element mud-stepper
+     */
+    interface HTMLMudStepperElement extends Components.MudStepper, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudStepperElementEventMap>(type: K, listener: (this: HTMLMudStepperElement, ev: MudStepperCustomEvent<HTMLMudStepperElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudStepperElementEventMap>(type: K, listener: (this: HTMLMudStepperElement, ev: MudStepperCustomEvent<HTMLMudStepperElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLMudStepperElement: {
+        prototype: HTMLMudStepperElement;
+        new (): HTMLMudStepperElement;
     };
     interface HTMLMudSwitchElementEventMap {
         "mudChange": SwitchChangeDetail;
@@ -5232,7 +5236,6 @@ declare global {
         "mud-numeric-input": HTMLMudNumericInputElement;
         "mud-pagination": HTMLMudPaginationElement;
         "mud-phone-input": HTMLMudPhoneInputElement;
-        "mud-progress-tracker": HTMLMudProgressTrackerElement;
         "mud-radio": HTMLMudRadioElement;
         "mud-receipt": HTMLMudReceiptElement;
         "mud-search-input": HTMLMudSearchInputElement;
@@ -5244,6 +5247,7 @@ declare global {
         "mud-sidebar-group": HTMLMudSidebarGroupElement;
         "mud-sidebar-item": HTMLMudSidebarItemElement;
         "mud-spinner": HTMLMudSpinnerElement;
+        "mud-stepper": HTMLMudStepperElement;
         "mud-switch": HTMLMudSwitchElement;
         "mud-tab": HTMLMudTabElement;
         "mud-table": HTMLMudTableElement;
@@ -7592,58 +7596,6 @@ declare namespace LocalJSX {
         "variant"?: PhoneInputVariant;
     }
     /**
-     * Progress Tracker (Stepper) — visualises a user's position in a multi-step process.
-     * Two flavours:
-     * - **Display tracker** (`interactive=false`, default) — read-only. Each step is a
-     *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
-     *   submissions where the parent app drives navigation.
-     * - **Interactive tracker** (`interactive=true`) — each completed (and the current)
-     *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
-     *   non-actionable per the WAI-ARIA stepper pattern.
-     * State legend (Figma node 634:10573):
-     *   - `pending`    — neutral grey ring + faded number, non-navigable
-     *   - `current`    — brand ring + brand number, neutral label
-     *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
-     *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
-     *   - `error`      — danger ring + danger cross, neutral label
-     * The component renders an ordered list with `role="list"` for AT compatibility
-     * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
-     * @element mud-progress-tracker
-     */
-    interface MudProgressTracker {
-        /**
-          * Accessible name for the surrounding list landmark. Falls back to `'Progress tracker'` (English) — Romanian consumers can pass `'Pași'`.
-         */
-        "ariaLabel"?: string;
-        /**
-          * Compact "dot rail" rendering — the mobile breakpoint from Figma. Hides the step numbers and labels, leaving a rail of dots; per-status fills convey progress (filled brand + checkmark = completed, hollow ring = current / available / pending, danger ring + cross = error). Status icons are kept; only the numeric indicators and text labels are hidden. Works in both orientations.
-          * @default false
-         */
-        "compact"?: boolean;
-        /**
-          * Optional zero-based index of the current step. When set, it overrides the `status: 'current'` value in `steps`. Mostly useful for parent-driven flows that mutate a single number rather than the whole array.
-         */
-        "currentStep"?: number;
-        /**
-          * When true, completed, current, and available steps render as `<button>` elements and emit `mudStepClick`. Pending and error steps remain non-actionable in this mode.
-          * @default false
-         */
-        "interactive"?: boolean;
-        /**
-          * Emitted when an interactive step is activated via mouse, keyboard, or AT. Detail carries the `index` and the full `step` object that was clicked. Only fires when `interactive=true` and the step is not disabled.
-         */
-        "onMudStepClick"?: (event: MudProgressTrackerCustomEvent<ProgressTrackerStepClickDetail>) => void;
-        /**
-          * Layout orientation.   - `horizontal` (default): steps flow left to right; labels render under indicators.   - `vertical`: steps stack top to bottom; labels render to the right of indicators.
-          * @default 'horizontal'
-         */
-        "orientation"?: ProgressTrackerOrientation;
-        /**
-          * Declarative step list. Each item: `{ id?, label, supportingText?, status, iconName?, disabled? }`. `status` drives the visual state and ARIA semantics — see {@link ProgressTrackerStepStatus}.
-         */
-        "steps"?: ProgressTrackerStep[];
-    }
-    /**
      * Radio — single-select form input atom.
      * Pattern B (atom-interactive, form-associated): renders its own
      * `<input type="radio">` inside shadow DOM and paints the visual circle
@@ -8410,6 +8362,60 @@ declare namespace LocalJSX {
           * @default 'brand'
          */
         "variant"?: SpinnerVariant;
+    }
+    /**
+     * Stepper — visualises a user's position in a multi-step process.
+     * Matches the Figma `progress-tracker` component (page "Progress Tracker
+     * (Stepper)", node 267:6905) — kept here under the shorter `mud-stepper` name.
+     * Two flavours:
+     * - **Display stepper** (`interactive=false`, default) — read-only. Each step is a
+     *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
+     *   submissions where the parent app drives navigation.
+     * - **Interactive stepper** (`interactive=true`) — each completed (and the current)
+     *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
+     *   non-actionable per the WAI-ARIA stepper pattern.
+     * State legend (Figma node 634:10573):
+     *   - `pending`    — neutral grey ring + faded number, non-navigable
+     *   - `current`    — brand ring + brand number, neutral label
+     *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
+     *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
+     *   - `error`      — danger ring + danger cross, neutral label
+     * The component renders an ordered list with `role="list"` for AT compatibility
+     * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
+     * @element mud-stepper
+     */
+    interface MudStepper {
+        /**
+          * Accessible name for the surrounding list landmark. Falls back to `'Progress tracker'` (English) — Romanian consumers can pass `'Pași'`.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Compact "dot rail" rendering — the mobile breakpoint from Figma. Hides the step numbers and labels, leaving a rail of dots; per-status fills convey progress (filled brand + checkmark = completed, hollow ring = current / available / pending, danger ring + cross = error). Status icons are kept; only the numeric indicators and text labels are hidden. Works in both orientations.
+          * @default false
+         */
+        "compact"?: boolean;
+        /**
+          * Optional **zero-based** index of the current step (so the 3rd step is `currentStep={2}`). When set it drives the whole progression and the per-item `status` in `steps` is ignored: every step **before** the index renders `'completed'`, the step **at** the index renders `'current'`, every step **after** renders `'pending'`. Pass `currentStep={steps.length}` (one past the last index) to mark the flow finished — every step then renders `'completed'`.  The one exception: a step whose `status` is `'error'` keeps `'error'` regardless of position (a failed step stays failed while you navigate). A negative or non-integer value is ignored and the array's own statuses stand. Use this for parent-driven flows that track a single number; for mixed states (`'available'` future steps, several errors, etc.) drive each step through `steps` and leave `currentStep` unset.
+         */
+        "currentStep"?: number;
+        /**
+          * When true, completed, current, and available steps render as `<button>` elements and emit `mudStepClick`. Pending and error steps remain non-actionable in this mode.
+          * @default false
+         */
+        "interactive"?: boolean;
+        /**
+          * Emitted when an interactive step is activated via mouse, keyboard, or AT. Detail carries the `index` and the full `step` object that was clicked. Only fires when `interactive=true` and the step is not disabled.
+         */
+        "onMudStepClick"?: (event: MudStepperCustomEvent<StepperStepClickDetail>) => void;
+        /**
+          * Layout orientation.   - `horizontal` (default): steps flow left to right; labels render under indicators.   - `vertical`: steps stack top to bottom; labels render to the right of indicators.
+          * @default 'horizontal'
+         */
+        "orientation"?: StepperOrientation;
+        /**
+          * Declarative step list. Each item: `{ id?, label, supportingText?, status, iconName?, disabled? }`. `status` drives the visual state and ARIA semantics — see {@link StepperStepStatus}.
+         */
+        "steps"?: StepperStep[];
     }
     /**
      * Switch — binary on/off toggle atom (form-associated).
@@ -9498,13 +9504,6 @@ declare namespace LocalJSX {
         "placeholder": string;
         "ariaLabel": string;
     }
-    interface MudProgressTrackerAttributes {
-        "orientation": ProgressTrackerOrientation;
-        "interactive": boolean;
-        "compact": boolean;
-        "currentStep": number;
-        "ariaLabel": string;
-    }
     interface MudRadioAttributes {
         "size": RadioSize;
         "checked": boolean;
@@ -9640,6 +9639,13 @@ declare namespace LocalJSX {
         "size": SpinnerSize;
         "variant": SpinnerVariant;
         "label": string;
+    }
+    interface MudStepperAttributes {
+        "orientation": StepperOrientation;
+        "interactive": boolean;
+        "compact": boolean;
+        "currentStep": number;
+        "ariaLabel": string;
     }
     interface MudSwitchAttributes {
         "checked": boolean;
@@ -9790,7 +9796,6 @@ declare namespace LocalJSX {
         "mud-numeric-input": Omit<MudNumericInput, keyof MudNumericInputAttributes> & { [K in keyof MudNumericInput & keyof MudNumericInputAttributes]?: MudNumericInput[K] } & { [K in keyof MudNumericInput & keyof MudNumericInputAttributes as `attr:${K}`]?: MudNumericInputAttributes[K] } & { [K in keyof MudNumericInput & keyof MudNumericInputAttributes as `prop:${K}`]?: MudNumericInput[K] };
         "mud-pagination": Omit<MudPagination, keyof MudPaginationAttributes> & { [K in keyof MudPagination & keyof MudPaginationAttributes]?: MudPagination[K] } & { [K in keyof MudPagination & keyof MudPaginationAttributes as `attr:${K}`]?: MudPaginationAttributes[K] } & { [K in keyof MudPagination & keyof MudPaginationAttributes as `prop:${K}`]?: MudPagination[K] };
         "mud-phone-input": Omit<MudPhoneInput, keyof MudPhoneInputAttributes> & { [K in keyof MudPhoneInput & keyof MudPhoneInputAttributes]?: MudPhoneInput[K] } & { [K in keyof MudPhoneInput & keyof MudPhoneInputAttributes as `attr:${K}`]?: MudPhoneInputAttributes[K] } & { [K in keyof MudPhoneInput & keyof MudPhoneInputAttributes as `prop:${K}`]?: MudPhoneInput[K] };
-        "mud-progress-tracker": Omit<MudProgressTracker, keyof MudProgressTrackerAttributes> & { [K in keyof MudProgressTracker & keyof MudProgressTrackerAttributes]?: MudProgressTracker[K] } & { [K in keyof MudProgressTracker & keyof MudProgressTrackerAttributes as `attr:${K}`]?: MudProgressTrackerAttributes[K] } & { [K in keyof MudProgressTracker & keyof MudProgressTrackerAttributes as `prop:${K}`]?: MudProgressTracker[K] };
         "mud-radio": Omit<MudRadio, keyof MudRadioAttributes> & { [K in keyof MudRadio & keyof MudRadioAttributes]?: MudRadio[K] } & { [K in keyof MudRadio & keyof MudRadioAttributes as `attr:${K}`]?: MudRadioAttributes[K] } & { [K in keyof MudRadio & keyof MudRadioAttributes as `prop:${K}`]?: MudRadio[K] };
         "mud-receipt": Omit<MudReceipt, keyof MudReceiptAttributes> & { [K in keyof MudReceipt & keyof MudReceiptAttributes]?: MudReceipt[K] } & { [K in keyof MudReceipt & keyof MudReceiptAttributes as `attr:${K}`]?: MudReceiptAttributes[K] } & { [K in keyof MudReceipt & keyof MudReceiptAttributes as `prop:${K}`]?: MudReceipt[K] };
         "mud-search-input": Omit<MudSearchInput, keyof MudSearchInputAttributes> & { [K in keyof MudSearchInput & keyof MudSearchInputAttributes]?: MudSearchInput[K] } & { [K in keyof MudSearchInput & keyof MudSearchInputAttributes as `attr:${K}`]?: MudSearchInputAttributes[K] } & { [K in keyof MudSearchInput & keyof MudSearchInputAttributes as `prop:${K}`]?: MudSearchInput[K] };
@@ -9802,6 +9807,7 @@ declare namespace LocalJSX {
         "mud-sidebar-group": Omit<MudSidebarGroup, keyof MudSidebarGroupAttributes> & { [K in keyof MudSidebarGroup & keyof MudSidebarGroupAttributes]?: MudSidebarGroup[K] } & { [K in keyof MudSidebarGroup & keyof MudSidebarGroupAttributes as `attr:${K}`]?: MudSidebarGroupAttributes[K] } & { [K in keyof MudSidebarGroup & keyof MudSidebarGroupAttributes as `prop:${K}`]?: MudSidebarGroup[K] };
         "mud-sidebar-item": Omit<MudSidebarItem, keyof MudSidebarItemAttributes> & { [K in keyof MudSidebarItem & keyof MudSidebarItemAttributes]?: MudSidebarItem[K] } & { [K in keyof MudSidebarItem & keyof MudSidebarItemAttributes as `attr:${K}`]?: MudSidebarItemAttributes[K] } & { [K in keyof MudSidebarItem & keyof MudSidebarItemAttributes as `prop:${K}`]?: MudSidebarItem[K] };
         "mud-spinner": Omit<MudSpinner, keyof MudSpinnerAttributes> & { [K in keyof MudSpinner & keyof MudSpinnerAttributes]?: MudSpinner[K] } & { [K in keyof MudSpinner & keyof MudSpinnerAttributes as `attr:${K}`]?: MudSpinnerAttributes[K] } & { [K in keyof MudSpinner & keyof MudSpinnerAttributes as `prop:${K}`]?: MudSpinner[K] };
+        "mud-stepper": Omit<MudStepper, keyof MudStepperAttributes> & { [K in keyof MudStepper & keyof MudStepperAttributes]?: MudStepper[K] } & { [K in keyof MudStepper & keyof MudStepperAttributes as `attr:${K}`]?: MudStepperAttributes[K] } & { [K in keyof MudStepper & keyof MudStepperAttributes as `prop:${K}`]?: MudStepper[K] };
         "mud-switch": Omit<MudSwitch, keyof MudSwitchAttributes> & { [K in keyof MudSwitch & keyof MudSwitchAttributes]?: MudSwitch[K] } & { [K in keyof MudSwitch & keyof MudSwitchAttributes as `attr:${K}`]?: MudSwitchAttributes[K] } & { [K in keyof MudSwitch & keyof MudSwitchAttributes as `prop:${K}`]?: MudSwitch[K] };
         "mud-tab": Omit<MudTab, keyof MudTabAttributes> & { [K in keyof MudTab & keyof MudTabAttributes]?: MudTab[K] } & { [K in keyof MudTab & keyof MudTabAttributes as `attr:${K}`]?: MudTabAttributes[K] } & { [K in keyof MudTab & keyof MudTabAttributes as `prop:${K}`]?: MudTab[K] } & OneOf<"value", MudTab["value"], MudTabAttributes["value"]>;
         "mud-table": Omit<MudTable, keyof MudTableAttributes> & { [K in keyof MudTable & keyof MudTableAttributes]?: MudTable[K] } & { [K in keyof MudTable & keyof MudTableAttributes as `attr:${K}`]?: MudTableAttributes[K] } & { [K in keyof MudTable & keyof MudTableAttributes as `prop:${K}`]?: MudTable[K] };
@@ -10274,26 +10280,6 @@ declare module "@stencil/core" {
              */
             "mud-phone-input": LocalJSX.IntrinsicElements["mud-phone-input"] & JSXBase.HTMLAttributes<HTMLMudPhoneInputElement>;
             /**
-             * Progress Tracker (Stepper) — visualises a user's position in a multi-step process.
-             * Two flavours:
-             * - **Display tracker** (`interactive=false`, default) — read-only. Each step is a
-             *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
-             *   submissions where the parent app drives navigation.
-             * - **Interactive tracker** (`interactive=true`) — each completed (and the current)
-             *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
-             *   non-actionable per the WAI-ARIA stepper pattern.
-             * State legend (Figma node 634:10573):
-             *   - `pending`    — neutral grey ring + faded number, non-navigable
-             *   - `current`    — brand ring + brand number, neutral label
-             *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
-             *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
-             *   - `error`      — danger ring + danger cross, neutral label
-             * The component renders an ordered list with `role="list"` for AT compatibility
-             * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
-             * @element mud-progress-tracker
-             */
-            "mud-progress-tracker": LocalJSX.IntrinsicElements["mud-progress-tracker"] & JSXBase.HTMLAttributes<HTMLMudProgressTrackerElement>;
-            /**
              * Radio — single-select form input atom.
              * Pattern B (atom-interactive, form-associated): renders its own
              * `<input type="radio">` inside shadow DOM and paints the visual circle
@@ -10423,6 +10409,28 @@ declare module "@stencil/core" {
              * @element mud-spinner
              */
             "mud-spinner": LocalJSX.IntrinsicElements["mud-spinner"] & JSXBase.HTMLAttributes<HTMLMudSpinnerElement>;
+            /**
+             * Stepper — visualises a user's position in a multi-step process.
+             * Matches the Figma `progress-tracker` component (page "Progress Tracker
+             * (Stepper)", node 267:6905) — kept here under the shorter `mud-stepper` name.
+             * Two flavours:
+             * - **Display stepper** (`interactive=false`, default) — read-only. Each step is a
+             *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
+             *   submissions where the parent app drives navigation.
+             * - **Interactive stepper** (`interactive=true`) — each completed (and the current)
+             *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
+             *   non-actionable per the WAI-ARIA stepper pattern.
+             * State legend (Figma node 634:10573):
+             *   - `pending`    — neutral grey ring + faded number, non-navigable
+             *   - `current`    — brand ring + brand number, neutral label
+             *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
+             *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
+             *   - `error`      — danger ring + danger cross, neutral label
+             * The component renders an ordered list with `role="list"` for AT compatibility
+             * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
+             * @element mud-stepper
+             */
+            "mud-stepper": LocalJSX.IntrinsicElements["mud-stepper"] & JSXBase.HTMLAttributes<HTMLMudStepperElement>;
             /**
              * Switch — binary on/off toggle atom (form-associated).
              * Pattern B (atom-interactive, form-associated): renders its own

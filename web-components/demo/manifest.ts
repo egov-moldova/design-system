@@ -73,7 +73,7 @@ export const CATEGORIES: Category[] = [
       { tag: 'mud-separator', blurb: 'Divider — h/v, sizes, label' },
       { tag: 'mud-toast', blurb: 'Semantic toast message (info/warning/success/error)' },
       { tag: 'mud-tooltip', blurb: 'Hover / focus / manual tooltip' },
-      { tag: 'mud-progress-tracker', blurb: 'Stepped progress (steps prop)' },
+      { tag: 'mud-stepper', blurb: 'Multi-step progress stepper (steps prop)' },
     ],
   },
   {

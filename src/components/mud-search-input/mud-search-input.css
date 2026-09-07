@@ -13,7 +13,8 @@
   --_control-font-size: var(--search-input-control-font-size-sm);
   --_control-line-height: var(--search-input-control-line-height-sm);
   --_icon-start-size: var(--search-input-icon-start-size-sm);
-  --_icon-end-clear-size: var(--search-input-icon-end-clear-size-sm);
+  /* Constant across both field sizes — see search-input.tokens.json. */
+  --_icon-end-clear-size: var(--search-input-icon-end-clear-size);
 
   --_bg: var(--search-input-default-background-default);
   --_text: var(--search-input-default-text-default);
@@ -38,7 +39,6 @@
   --_control-font-size: var(--search-input-control-font-size-md);
   --_control-line-height: var(--search-input-control-line-height-md);
   --_icon-start-size: var(--search-input-icon-start-size-md);
-  --_icon-end-clear-size: var(--search-input-icon-end-clear-size-md);
 }
 
 :host([shape='circular']) {
@@ -200,7 +200,8 @@
   flex-shrink: 0;
   inline-size: var(--_icon-end-clear-size);
   block-size: var(--_icon-end-clear-size);
-  padding: 0;
+  /* 2px inset so the 16px `cross-small` glyph centres in the 20px pill (Figma). */
+  padding: var(--search-input-icon-end-clear-padding);
   margin: 0;
   /* Per Figma — the clear button carries a subtle gray oval at rest in the
      Filled state. The transparent-inactive hardcode in Figma maps to

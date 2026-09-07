@@ -1,11 +1,11 @@
 import { Component, Element, Event, EventEmitter, Host, Prop, State, h } from '@stencil/core';
 
 import type {
-  ProgressTrackerOrientation,
-  ProgressTrackerStep,
-  ProgressTrackerStepClickDetail,
-  ProgressTrackerStepStatus,
-} from './mud-progress-tracker.types';
+  StepperOrientation,
+  StepperStep,
+  StepperStepClickDetail,
+  StepperStepStatus,
+} from './mud-stepper.types';
 
 /**
  * Below this container inline-size (px) a horizontal tracker auto-switches to
@@ -15,14 +15,17 @@ import type {
 const AUTO_COMPACT_MAX_WIDTH = 600;
 
 /**
- * Progress Tracker (Stepper) — visualises a user's position in a multi-step process.
+ * Stepper — visualises a user's position in a multi-step process.
+ *
+ * Matches the Figma `progress-tracker` component (page "Progress Tracker
+ * (Stepper)", node 267:6905) — kept here under the shorter `mud-stepper` name.
  *
  * Two flavours:
  *
- * - **Display tracker** (`interactive=false`, default) — read-only. Each step is a
+ * - **Display stepper** (`interactive=false`, default) — read-only. Each step is a
  *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
  *   submissions where the parent app drives navigation.
- * - **Interactive tracker** (`interactive=true`) — each completed (and the current)
+ * - **Interactive stepper** (`interactive=true`) — each completed (and the current)
  *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
  *   non-actionable per the WAI-ARIA stepper pattern.
  *
@@ -36,23 +39,23 @@ const AUTO_COMPACT_MAX_WIDTH = 600;
  * The component renders an ordered list with `role="list"` for AT compatibility
  * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
  *
- * @element mud-progress-tracker
+ * @element mud-stepper
  *
  * @slot - (default) Reserved for future slot-mode authoring. Currently unused —
  *         consumers should pass the `steps` prop.
  */
 @Component({
-  tag: 'mud-progress-tracker',
-  styleUrl: 'mud-progress-tracker.css',
+  tag: 'mud-stepper',
+  styleUrl: 'mud-stepper.css',
   shadow: true,
 })
-export class MudProgressTracker {
+export class MudStepper {
   /**
    * Layout orientation.
    *   - `horizontal` (default): steps flow left to right; labels render under indicators.
    *   - `vertical`: steps stack top to bottom; labels render to the right of indicators.
    */
-  @Prop({ reflect: true }) orientation: ProgressTrackerOrientation = 'horizontal';
+  @Prop({ reflect: true }) orientation: StepperOrientation = 'horizontal';
 
   /**
    * When true, completed, current, and available steps render as `<button>` elements
@@ -74,14 +77,25 @@ export class MudProgressTracker {
 
   /**
    * Declarative step list. Each item: `{ id?, label, supportingText?, status, iconName?, disabled? }`.
-   * `status` drives the visual state and ARIA semantics — see {@link ProgressTrackerStepStatus}.
+   * `status` drives the visual state and ARIA semantics — see {@link StepperStepStatus}.
    */
-  @Prop() steps?: ProgressTrackerStep[];
+  @Prop() steps?: StepperStep[];
 
   /**
-   * Optional zero-based index of the current step. When set, it overrides the
-   * `status: 'current'` value in `steps`. Mostly useful for parent-driven flows
-   * that mutate a single number rather than the whole array.
+   * Optional **zero-based** index of the current step (so the 3rd step is
+   * `currentStep={2}`). When set it drives the whole progression and the
+   * per-item `status` in `steps` is ignored: every step **before** the index
+   * renders `'completed'`, the step **at** the index renders `'current'`, every
+   * step **after** renders `'pending'`. Pass `currentStep={steps.length}` (one
+   * past the last index) to mark the flow finished — every step then renders
+   * `'completed'`.
+   *
+   * The one exception: a step whose `status` is `'error'` keeps `'error'`
+   * regardless of position (a failed step stays failed while you navigate).
+   * A negative or non-integer value is ignored and the array's own statuses
+   * stand. Use this for parent-driven flows that track a single number; for
+   * mixed states (`'available'` future steps, several errors, etc.) drive each
+   * step through `steps` and leave `currentStep` unset.
    */
   @Prop() currentStep?: number;
 
@@ -101,7 +115,7 @@ export class MudProgressTracker {
    * Detail carries the `index` and the full `step` object that was clicked.
    * Only fires when `interactive=true` and the step is not disabled.
    */
-  @Event({ bubbles: true, composed: true }) mudStepClick!: EventEmitter<ProgressTrackerStepClickDetail>;
+  @Event({ bubbles: true, composed: true }) mudStepClick!: EventEmitter<StepperStepClickDetail>;
 
   private resizeObserver?: ResizeObserver;
 
@@ -132,20 +146,26 @@ export class MudProgressTracker {
   }
 
   /**
-   * Returns the effective status for a step, honouring `currentStep` override.
-   * When `currentStep` is provided, the step at that index is promoted to
-   * `'current'` regardless of its declared status (unless it is `'error'`,
-   * which we never silently overwrite).
+   * Returns the effective status for a step. With no (or an invalid) `currentStep`
+   * the array's own `status` stands. With a valid `currentStep` (integer `>= 0`)
+   * the progression is derived entirely from the index: `< currentStep` →
+   * `'completed'`, `=== currentStep` → `'current'`, `> currentStep` → `'pending'`
+   * (so `currentStep >= total` makes every step `'completed'`). A step declared
+   * `'error'` keeps `'error'` whatever its position.
    */
-  private effectiveStatus(step: ProgressTrackerStep, index: number): ProgressTrackerStepStatus {
-    if (typeof this.currentStep === 'number' && this.currentStep === index && step.status !== 'error') {
-      return 'current';
+  private effectiveStatus(step: StepperStep, index: number): StepperStepStatus {
+    const target = this.currentStep;
+    if (typeof target !== 'number' || !Number.isInteger(target) || target < 0) {
+      return step.status;
     }
-    return step.status;
+    if (step.status === 'error') return 'error';
+    if (index < target) return 'completed';
+    if (index === target) return 'current';
+    return 'pending';
   }
 
   /** Whether the step is activatable in interactive mode. */
-  private isActionable(step: ProgressTrackerStep, status: ProgressTrackerStepStatus): boolean {
+  private isActionable(step: StepperStep, status: StepperStepStatus): boolean {
     if (!this.interactive) return false;
     if (step.disabled) return false;
     // `completed` (navigable back), `current`, and `available` (navigable forward) are
@@ -154,7 +174,7 @@ export class MudProgressTracker {
   }
 
   /** Pick the right inline indicator (icon name, number, or null for raw text). */
-  private resolveIconName(step: ProgressTrackerStep, status: ProgressTrackerStepStatus): string | null {
+  private resolveIconName(step: StepperStep, status: StepperStepStatus): string | null {
     if (step.iconName) return step.iconName;
     // `-large` checkmark (not `-small`): the small variant is heavily padded, so
     // at 16px it under-fills the 24px indicator. Error uses the bare `exclamation`
@@ -165,7 +185,7 @@ export class MudProgressTracker {
     return null;
   }
 
-  private readonly handleStepClick = (ev: MouseEvent, step: ProgressTrackerStep, index: number) => {
+  private readonly handleStepClick = (ev: MouseEvent, step: StepperStep, index: number) => {
     if (step.disabled) {
       ev.preventDefault();
       return;
@@ -174,14 +194,14 @@ export class MudProgressTracker {
     if (dispatched.defaultPrevented) ev.preventDefault();
   };
 
-  private readonly handleKeyDown = (ev: KeyboardEvent, step: ProgressTrackerStep, index: number) => {
+  private readonly handleKeyDown = (ev: KeyboardEvent, step: StepperStep, index: number) => {
     if (ev.key !== 'Enter' && ev.key !== ' ') return;
     if (step.disabled) return;
     ev.preventDefault();
     this.mudStepClick.emit({ index, step });
   };
 
-  private renderIndicator(step: ProgressTrackerStep, status: ProgressTrackerStepStatus, index: number) {
+  private renderIndicator(step: StepperStep, status: StepperStepStatus, index: number) {
     const iconName = this.resolveIconName(step, status);
     const display = iconName ? (
       <mud-icon name={iconName} size={16} />
@@ -195,7 +215,7 @@ export class MudProgressTracker {
     );
   }
 
-  private renderLabelBlock(step: ProgressTrackerStep) {
+  private renderLabelBlock(step: StepperStep) {
     if (!step.label && !step.supportingText) return null;
     return (
       <span class="label-block">
@@ -205,11 +225,11 @@ export class MudProgressTracker {
     );
   }
 
-  private renderStepBody(step: ProgressTrackerStep, status: ProgressTrackerStepStatus, index: number) {
+  private renderStepBody(step: StepperStep, status: StepperStepStatus, index: number) {
     return [this.renderIndicator(step, status, index), this.renderLabelBlock(step)];
   }
 
-  private renderStep(step: ProgressTrackerStep, index: number, total: number) {
+  private renderStep(step: StepperStep, index: number, total: number) {
     const status = this.effectiveStatus(step, index);
     const actionable = this.isActionable(step, status);
     const isLast = index === total - 1;

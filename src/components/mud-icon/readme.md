@@ -54,11 +54,11 @@ largest smaller size before giving up.
  - [mud-numeric-input](../mud-numeric-input)
  - [mud-pagination](../mud-pagination)
  - [mud-phone-input](../mud-phone-input)
- - [mud-progress-tracker](../mud-progress-tracker)
  - [mud-search-input](../mud-search-input)
  - [mud-segmented-control](../mud-segmented-control)
  - [mud-select-input](../mud-select-input)
  - [mud-sidebar-item](../mud-sidebar)
+ - [mud-stepper](../mud-stepper)
  - [mud-tab](../mud-tabs)
  - [mud-table](../mud-table)
  - [mud-tabs](../mud-tabs)
@@ -91,11 +91,11 @@ graph TD;
   mud-numeric-input --> mud-icon
   mud-pagination --> mud-icon
   mud-phone-input --> mud-icon
-  mud-progress-tracker --> mud-icon
   mud-search-input --> mud-icon
   mud-segmented-control --> mud-icon
   mud-select-input --> mud-icon
   mud-sidebar-item --> mud-icon
+  mud-stepper --> mud-icon
   mud-tab --> mud-icon
   mud-table --> mud-icon
   mud-tabs --> mud-icon

@@ -1,5 +1,5 @@
 {
-  "progress-tracker": {
+  "stepper": {
     "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
     "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
     "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
@@ -123,9 +123,6 @@
         "block": { "$value": "{spacing.2}", "$type": "dimension" }
       },
       "borderRadius": { "$value": "{borderRadius.6}", "$type": "dimension" },
-      "hover": {
-        "background": { "$value": "{color.background.base.tertiary}", "$type": "color" }
-      },
       "disabled": {
         "indicatorBorder": { "$value": "{color.border.disabled.default}", "$type": "color" },
         "indicatorText": { "$value": "{color.text.disabled.default}", "$type": "color" },

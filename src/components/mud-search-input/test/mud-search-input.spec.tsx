@@ -146,6 +146,16 @@ describe('mud-search-input', () => {
       const { root } = await render(<mud-search-input value="hello" disabled></mud-search-input>);
       expect(queryClearButton(root)).toBeNull();
     });
+
+    it('renders a constant 16px cross-small glyph in the clear button for both field sizes', async () => {
+      const sm = await render(<mud-search-input value="x" size="sm"></mud-search-input>);
+      const md = await render(<mud-search-input value="x" size="md"></mud-search-input>);
+      const smIcon = queryClearButton(sm.root)?.querySelector('mud-icon');
+      const mdIcon = queryClearButton(md.root)?.querySelector('mud-icon');
+      expect(smIcon?.getAttribute('name')).toBe('cross-small');
+      expect(smIcon?.getAttribute('size')).toBe('16');
+      expect(mdIcon?.getAttribute('size')).toBe('16');
+    });
   });
 
   describe('value + form association', () => {
