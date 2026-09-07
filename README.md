@@ -139,7 +139,7 @@ web-components/
 │   ├── index.html            # mud-button showcase
 │   ├── main.ts               # CSS imports + defineCustomElements()
 │   ├── demo.css              # @font-face for Onest + body font-family
-│   └── vite.config.ts        # port 5174, allows fs access to portal-linked parent
+│   └── vite.config.ts        # port 5174, allows fs access to the workspace parent
 ├── package.json              # @egov-moldova/mud-web-components
 ├── tsconfig.json             # ES2020, declaration: true
 └── README.md
@@ -156,16 +156,25 @@ CI runs `yarn validate.package` immediately before publishing, and the run fails
 To publish manually (requires an npm token with write access to `@egov-moldova`):
 
 ```bash
-# Stencil core
+# Stencil core — the root package declares no workspace dependencies,
+# so either publisher is safe here.
 yarn build && yarn validate.package
 npm config set //registry.npmjs.org/:_authToken YOUR_NPM_TOKEN
 npm publish --access public
 
-# Vanilla adapter
+# Vanilla adapter — yarn npm publish, NOT npm publish. See the warning below.
 cd web-components
-npm config set //registry.npmjs.org/:_authToken YOUR_NPM_TOKEN
-npm publish --access public
+YARN_NPM_AUTH_TOKEN=YOUR_NPM_TOKEN yarn npm publish --access public
 ```
+
+> **Publish the workspace packages with `yarn npm publish`.** Both
+> `web-components` and `react` depend on the core as `"@egov-moldova/mud":
+> "workspace:^"`. Yarn rewrites that to a real registry range at pack time —
+> `yarn pack` in `web-components` emits `^1.0.6`. **`npm pack` does not**: it
+> leaves `workspace:^` in the manifest verbatim, from inside the directory and
+> with `-w` from the root alike, so an `npm publish` there ships a dependency
+> nobody can install. The CI pipeline already uses `yarn npm publish` for
+> `web-components`; this is the manual path catching up with it.
 
 For local development without publishing, use local path installs:
 

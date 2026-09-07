@@ -20,7 +20,7 @@
     "prepare": "echo 'skip build on link; Vite consumes src directly'"
   },
   "dependencies": {
-    "@egov-moldova/mud": "portal:..",
+    "@egov-moldova/mud": "workspace:^",
     "@stencil/react-output-target": "^1.5.2"
   },
   "peerDependencies": {
