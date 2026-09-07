@@ -10,20 +10,51 @@ This repository contains two npm packages:
 
 > **Who should use this?** Any team building a Moldovan e-government product or service. The components implement the MUD visual language and WCAG 2.1 AA accessibility requirements out of the box.
 
+> **Terminology:** **MUD** refers to the *Moldova UI Design System*.
+
 ---
 
 ## Table of Contents
 
-1. [Quick Start - General Steps](#quick-start---general-steps)
-2. [Web Components (Vanilla HTML / JS) Build & Setup](#web-components-vanilla-html--js-build--setup)
-3. [Publishing](#publishing)
-4. [Installing in Applications](#installing-in-applications)
-5. [Troubleshooting](#troubleshooting)
-6. [Development Workflow](#development-workflow)
-7. [Summary Checklist](#summary-checklist)
-8. [Storybook](#storybook--development-production-build-and-preview)
-9. [Tokens](#tokens--sync-audit-lint-and-developer-dx)
-10. [Additional Resources](#additional-resources)
+1. [Motivation](#motivation)
+2. [Quick Start - General Steps](#quick-start---general-steps)
+3. [Web Components (Vanilla HTML / JS) Build & Setup](#web-components-vanilla-html--js-build--setup)
+4. [Publishing](#publishing)
+5. [Getting Started](#getting-started)
+6. [Additional Resources](#additional-resources)
+
+---
+
+## Motivation
+
+Citizens interact with dozens of Moldovan government digital services — tax filings,
+civil registry requests, business licensing, healthcare portals — each historically
+built by different teams, on different stacks, with different visual languages.
+The result is a fragmented experience: a button doesn't look or behave the same way
+twice, form validation patterns differ from one service to the next, and accessibility
+is implemented (or not) inconsistently across properties.
+
+This fragmentation has real costs:
+
+- **Cognitive load for citizens** — every new service requires relearning how to
+  interact with it, instead of transferring familiarity from services they've already used
+- **Duplicated effort for teams** — each product team re-solves the same UI problems
+  (accessible form controls, responsive layouts, error states) from scratch
+- **Inconsistent accessibility** — WCAG compliance becomes optional and team-dependent,
+  rather than guaranteed by default
+- **Slower delivery** — building and QA-ing UI primitives from zero adds weeks to every
+  new service launch
+
+Moldova UI Design System solves this by providing a single, framework-agnostic
+source of truth for the components and visual language used across e-government
+properties. Built on Web Components with Shadow DOM isolation, MUD works identically
+whether a team is using React, Vue, plain HTML, or anything else — so consistency isn't
+contingent on every team adopting the same framework.
+
+A citizen who learns how to fill out a form on one government site should already know
+how to fill out a form on the next one. That consistency is not a cosmetic nicety —
+it's a measurable reduction in support burden, abandonment rates, and time-to-completion
+across public services.
 
 ---
 
@@ -120,7 +151,7 @@ web-components/
 
 Both packages are published to the public npm registry under the `@egov-moldova` scope. Publishing is handled automatically by the Azure Pipelines CI on each run — a new build number is used as the version.
 
-CI runs `yarn validate.package` immediately before publishing, and the run fails rather than shipping if the tarball does not match what `package.json` declares. The gate checks that every declared entrypoint is present, that no source map or development-mode runtime ships, that no build-machine path leaks into the type declarations, and that the standalone custom-elements bundle carries its assets. Run it yourself after `yarn build` before any manual publish.
+CI runs `yarn validate.package` immediately before publishing, and the run fails rather than shipping if the tarball does not match what `package.json` declares. The gate checks that every declared entrypoint is present, that no source map or development-mode runtime ships, that no build-machine path leaks into the type declarations, that the standalone custom-elements bundle carries its assets, and that `yarn pack` and `npm pack` still resolve the same file list — the gate measures the first, CI publishes the second. Run it yourself after `yarn build` before any manual publish.
 
 To publish manually (requires an npm token with write access to `@egov-moldova`):
 
