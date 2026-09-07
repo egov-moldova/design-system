@@ -56,7 +56,7 @@ largest smaller size before giving up.
  - [mud-phone-input](../mud-phone-input)
  - [mud-search-input](../mud-search-input)
  - [mud-segmented-control](../mud-segmented-control)
- - [mud-select-input](../mud-select-input)
+ - [mud-select](../mud-select)
  - [mud-sidebar-item](../mud-sidebar)
  - [mud-stepper](../mud-stepper)
  - [mud-tab](../mud-tabs)
@@ -93,7 +93,7 @@ graph TD;
   mud-phone-input --> mud-icon
   mud-search-input --> mud-icon
   mud-segmented-control --> mud-icon
-  mud-select-input --> mud-icon
+  mud-select --> mud-icon
   mud-sidebar-item --> mud-icon
   mud-stepper --> mud-icon
   mud-tab --> mud-icon

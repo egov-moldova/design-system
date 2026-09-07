@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
-import { SELECT_INPUT_SIZES, SELECT_INPUT_VARIANTS } from './mud-select-input.types';
-import type { SelectInputSize, SelectInputVariant } from './mud-select-input.types';
+import { SELECT_SIZES, SELECT_VARIANTS } from './mud-select.types';
+import type { SelectSize, SelectVariant } from './mud-select.types';
 
-type SelectInputArgs = {
-  variant: SelectInputVariant;
-  size: SelectInputSize;
+type SelectArgs = {
+  variant: SelectVariant;
+  size: SelectSize;
   label: string;
   placeholder: string;
   value: string;
@@ -26,12 +26,12 @@ const setOptionsScript = (id: string) =>
   /*html*/ `<script>(function(){const el=document.getElementById('${id}');if(el)el.options=${optionsJson};})();</script>`;
 
 let storyInstance = 0;
-const nextId = () => `mud-select-input-story-${++storyInstance}`;
+const nextId = () => `mud-select-story-${++storyInstance}`;
 
-const renderSelect = (args: SelectInputArgs) => {
+const renderSelect = (args: SelectArgs) => {
   const id = nextId();
   return /*html*/ `
-    <mud-select-input
+    <mud-select
       id="${id}"
       variant="${args.variant}"
       size="${args.size}"
@@ -44,15 +44,15 @@ const renderSelect = (args: SelectInputArgs) => {
       ${args.disabled ? 'disabled' : ''}
       ${args.readonly ? 'readonly' : ''}
       ${args.invalid ? 'invalid' : ''}
-    ></mud-select-input>
+    ></mud-select>
     ${setOptionsScript(id)}
   `;
 };
 
-const docsSourceDefault = (args: SelectInputArgs) => {
+const docsSourceDefault = (args: SelectArgs) => {
   const attrs = [
     args.variant !== 'default' ? `variant="${args.variant}"` : '',
-    args.size !== 'md' ? `size="${args.size}"` : '',
+    args.size !== 'medium' ? `size="${args.size}"` : '',
     args.label ? `label="${args.label}"` : '',
     args.placeholder ? `placeholder="${args.placeholder}"` : '',
     args.value ? `value="${args.value}"` : '',
@@ -65,24 +65,24 @@ const docsSourceDefault = (args: SelectInputArgs) => {
   ]
     .filter(Boolean)
     .join(' ');
-  return `<mud-select-input ${attrs}></mud-select-input>`;
+  return `<mud-select ${attrs}></mud-select>`;
 };
 
-const meta: Meta<SelectInputArgs> = {
+const meta: Meta<SelectArgs> = {
   title: 'Atoms/Input/Select',
-  component: 'mud-select-input',
+  component: 'mud-select',
   argTypes: {
     variant: {
       control: 'select',
-      options: SELECT_INPUT_VARIANTS,
+      options: SELECT_VARIANTS,
       description: 'Color treatment. `destructive` is forced when `invalid` is set.',
       table: { defaultValue: { summary: 'default' } },
     },
     size: {
       control: 'select',
-      options: SELECT_INPUT_SIZES,
+      options: SELECT_SIZES,
       description: 'Visual size rung.',
-      table: { defaultValue: { summary: 'md' } },
+      table: { defaultValue: { summary: 'medium' } },
     },
     label: { control: 'text', description: 'Plain-text label.' },
     placeholder: { control: 'text' },
@@ -98,13 +98,13 @@ const meta: Meta<SelectInputArgs> = {
 
 export default meta;
 
-type Story = StoryObj<SelectInputArgs>;
+type Story = StoryObj<SelectArgs>;
 
 export const Default: Story = {
   render: renderSelect,
   args: {
     variant: 'default',
-    size: 'lg',
+    size: 'large',
     label: 'Label',
     placeholder: 'Placeholder',
     value: '',
@@ -119,7 +119,7 @@ export const Default: Story = {
     docs: {
       source: {
         type: 'dynamic',
-        transform: (_code: string, { args }: { args: SelectInputArgs }) => docsSourceDefault(args),
+        transform: (_code: string, { args }: { args: SelectArgs }) => docsSourceDefault(args),
       },
     },
   },
@@ -142,23 +142,23 @@ const optionsTag = (id: string) => setOptionsScript(id);
 
 const selectMarkup = (attrs: string) => {
   const id = nextId();
-  return /*html*/ `<mud-select-input id="${id}" ${attrs}></mud-select-input>${optionsTag(id)}`;
+  return /*html*/ `<mud-select id="${id}" ${attrs}></mud-select>${optionsTag(id)}`;
 };
 
 export const AllVariants: Story = {
   name: 'All Variants',
   render: () =>
     wrap(
-      SELECT_INPUT_VARIANTS.map(variant =>
-        cell(variant, selectMarkup(`variant="${variant}" size="lg" label="Label" placeholder="Placeholder"`)),
+      SELECT_VARIANTS.map(variant =>
+        cell(variant, selectMarkup(`variant="${variant}" size="large" label="Label" placeholder="Placeholder"`)),
       ).join(''),
     ),
   parameters: {
     controls: { disable: true },
     docs: {
       source: {
-        code: SELECT_INPUT_VARIANTS.map(
-          v => `<mud-select-input variant="${v}" size="lg" label="Label" placeholder="Placeholder"></mud-select-input>`,
+        code: SELECT_VARIANTS.map(
+          v => `<mud-select variant="${v}" size="large" label="Label" placeholder="Placeholder"></mud-select>`,
         ).join('\n'),
       },
     },
@@ -169,7 +169,7 @@ export const AllSizes: Story = {
   name: 'All Sizes',
   render: () =>
     wrap(
-      SELECT_INPUT_SIZES.map(size =>
+      SELECT_SIZES.map(size =>
         cell(size, selectMarkup(`size="${size}" label="Label" placeholder="Placeholder"`)),
       ).join(''),
     ),
@@ -177,8 +177,8 @@ export const AllSizes: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: SELECT_INPUT_SIZES.map(
-          s => `<mud-select-input size="${s}" label="Label" placeholder="Placeholder"></mud-select-input>`,
+        code: SELECT_SIZES.map(
+          s => `<mud-select size="${s}" label="Label" placeholder="Placeholder"></mud-select>`,
         ).join('\n'),
       },
     },
@@ -190,14 +190,14 @@ export const States: Story = {
   render: () =>
     wrap(
       [
-        cell('default: default', selectMarkup(`size="lg" label="Label" placeholder="Placeholder"`)),
-        cell('default: filled', selectMarkup(`size="lg" label="Label" value="opt-2"`)),
-        cell('default: disabled', selectMarkup(`size="lg" label="Label" placeholder="Placeholder" disabled`)),
-        cell('default: readonly', selectMarkup(`size="lg" label="Label" value="opt-2" readonly`)),
-        cell('default: mandatory', selectMarkup(`size="lg" label="Label" placeholder="Placeholder" required`)),
+        cell('default: default', selectMarkup(`size="large" label="Label" placeholder="Placeholder"`)),
+        cell('default: filled', selectMarkup(`size="large" label="Label" value="opt-2"`)),
+        cell('default: disabled', selectMarkup(`size="large" label="Label" placeholder="Placeholder" disabled`)),
+        cell('default: readonly', selectMarkup(`size="large" label="Label" value="opt-2" readonly`)),
+        cell('default: mandatory', selectMarkup(`size="large" label="Label" placeholder="Placeholder" required`)),
         cell(
           'destructive: default',
-          selectMarkup(`variant="destructive" size="lg" label="Label" placeholder="Placeholder"`),
+          selectMarkup(`variant="destructive" size="large" label="Label" placeholder="Placeholder"`),
         ),
       ].join(''),
     ),
@@ -206,12 +206,12 @@ export const States: Story = {
     docs: {
       source: {
         code: [
-          '<mud-select-input size="lg" label="Label" placeholder="Placeholder"></mud-select-input>',
-          '<mud-select-input size="lg" label="Label" value="opt-2"></mud-select-input>',
-          '<mud-select-input size="lg" label="Label" placeholder="Placeholder" disabled></mud-select-input>',
-          '<mud-select-input size="lg" label="Label" value="opt-2" readonly></mud-select-input>',
-          '<mud-select-input size="lg" label="Label" placeholder="Placeholder" required></mud-select-input>',
-          '<mud-select-input variant="destructive" size="lg" label="Label" placeholder="Placeholder"></mud-select-input>',
+          '<mud-select size="large" label="Label" placeholder="Placeholder"></mud-select>',
+          '<mud-select size="large" label="Label" value="opt-2"></mud-select>',
+          '<mud-select size="large" label="Label" placeholder="Placeholder" disabled></mud-select>',
+          '<mud-select size="large" label="Label" value="opt-2" readonly></mud-select>',
+          '<mud-select size="large" label="Label" placeholder="Placeholder" required></mud-select>',
+          '<mud-select variant="destructive" size="large" label="Label" placeholder="Placeholder"></mud-select>',
         ].join('\n'),
       },
     },
@@ -225,11 +225,11 @@ export const WithHelperText: Story = {
       [
         cell(
           'default',
-          selectMarkup(`size="lg" label="Label" placeholder="Placeholder" helper-text="Helper message displayed here"`),
+          selectMarkup(`size="large" label="Label" placeholder="Placeholder" helper-text="Helper message displayed here"`),
         ),
         cell(
           'mandatory',
-          selectMarkup(`size="lg" label="Label" placeholder="Placeholder" helper-text="Required field" required`),
+          selectMarkup(`size="large" label="Label" placeholder="Placeholder" helper-text="Required field" required`),
         ),
       ].join(''),
     ),
@@ -238,8 +238,8 @@ export const WithHelperText: Story = {
     docs: {
       source: {
         code: [
-          '<mud-select-input size="lg" label="Label" placeholder="Placeholder" helper-text="Helper message displayed here"></mud-select-input>',
-          '<mud-select-input size="lg" label="Label" placeholder="Placeholder" helper-text="Required field" required></mud-select-input>',
+          '<mud-select size="large" label="Label" placeholder="Placeholder" helper-text="Helper message displayed here"></mud-select>',
+          '<mud-select size="large" label="Label" placeholder="Placeholder" helper-text="Required field" required></mud-select>',
         ].join('\n'),
       },
     },
@@ -254,13 +254,13 @@ export const WithError: Story = {
         cell(
           'invalid + error message',
           selectMarkup(
-            `size="lg" label="Label" placeholder="Placeholder" invalid error-text="Please select an option"`,
+            `size="large" label="Label" placeholder="Placeholder" invalid error-text="Please select an option"`,
           ),
         ),
         cell(
           'explicit destructive',
           selectMarkup(
-            `size="lg" variant="destructive" label="Label" placeholder="Placeholder" error-text="Error message displayed here" invalid`,
+            `size="large" variant="destructive" label="Label" placeholder="Placeholder" error-text="Error message displayed here" invalid`,
           ),
         ),
       ].join(''),
@@ -270,8 +270,8 @@ export const WithError: Story = {
     docs: {
       source: {
         code: [
-          '<mud-select-input size="lg" label="Label" placeholder="Placeholder" invalid error-text="Please select an option"></mud-select-input>',
-          '<mud-select-input size="lg" variant="destructive" label="Label" placeholder="Placeholder" error-text="Error message displayed here" invalid></mud-select-input>',
+          '<mud-select size="large" label="Label" placeholder="Placeholder" invalid error-text="Please select an option"></mud-select>',
+          '<mud-select size="large" variant="destructive" label="Label" placeholder="Placeholder" error-text="Error message displayed here" invalid></mud-select>',
         ].join('\n'),
       },
     },
@@ -287,15 +287,15 @@ export const WithIcons: Story = {
       [
         cell(
           'icon-start',
-          /*html*/ `<mud-select-input id="${id1}" size="lg" label="Country" placeholder="Pick a country">
+          /*html*/ `<mud-select id="${id1}" size="large" label="Country" placeholder="Pick a country">
             <mud-icon slot="icon-start" name="house" size="20"></mud-icon>
-          </mud-select-input>${optionsTag(id1)}`,
+          </mud-select>${optionsTag(id1)}`,
         ),
         cell(
           'with selected value',
-          /*html*/ `<mud-select-input id="${id2}" size="lg" label="Plan" value="opt-1">
+          /*html*/ `<mud-select id="${id2}" size="large" label="Plan" value="opt-1">
             <mud-icon slot="icon-start" name="search" size="20"></mud-icon>
-          </mud-select-input>${optionsTag(id2)}`,
+          </mud-select>${optionsTag(id2)}`,
         ),
       ].join(''),
     );
@@ -305,8 +305,8 @@ export const WithIcons: Story = {
     docs: {
       source: {
         code: [
-          '<mud-select-input size="lg" label="Country" placeholder="Pick a country"><mud-icon slot="icon-start" name="house" size="20"></mud-icon></mud-select-input>',
-          '<mud-select-input size="lg" label="Plan" value="opt-1"><mud-icon slot="icon-start" name="search" size="20"></mud-icon></mud-select-input>',
+          '<mud-select size="large" label="Country" placeholder="Pick a country"><mud-icon slot="icon-start" name="house" size="20"></mud-icon></mud-select>',
+          '<mud-select size="large" label="Plan" value="opt-1"><mud-icon slot="icon-start" name="search" size="20"></mud-icon></mud-select>',
         ].join('\n'),
       },
     },
@@ -322,11 +322,11 @@ export const Open: Story = {
       [
         cell(
           'open: default (no selection)',
-          /*html*/ `<mud-select-input id="${id1}" size="lg" label="Label" placeholder="Placeholder" open></mud-select-input>${optionsTag(id1)}`,
+          /*html*/ `<mud-select id="${id1}" size="large" label="Label" placeholder="Placeholder" open></mud-select>${optionsTag(id1)}`,
         ),
         cell(
           'open: with selection',
-          /*html*/ `<mud-select-input id="${id2}" size="lg" label="Label" value="opt-1" open></mud-select-input>${optionsTag(id2)}`,
+          /*html*/ `<mud-select id="${id2}" size="large" label="Label" value="opt-1" open></mud-select>${optionsTag(id2)}`,
         ),
       ].join(''),
     );
@@ -336,8 +336,8 @@ export const Open: Story = {
     docs: {
       source: {
         code: [
-          '<mud-select-input size="lg" label="Label" placeholder="Placeholder" open></mud-select-input>',
-          '<mud-select-input size="lg" label="Label" value="opt-1" open></mud-select-input>',
+          '<mud-select size="large" label="Label" placeholder="Placeholder" open></mud-select>',
+          '<mud-select size="large" label="Label" value="opt-1" open></mud-select>',
         ].join('\n'),
       },
     },
@@ -357,7 +357,7 @@ export const WithLongOptions: Story = {
     ]);
     return /*html*/ `
       <div style="padding: var(--spacing-24); max-width: 320px;">
-        <mud-select-input id="${id}" size="lg" label="Pick a country" value="opt-4"></mud-select-input>
+        <mud-select id="${id}" size="large" label="Pick a country" value="opt-4"></mud-select>
         <script>(function(){const el=document.getElementById('${id}');if(el)el.options=${longOptions};})();</script>
       </div>
     `;
@@ -366,7 +366,7 @@ export const WithLongOptions: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: '<mud-select-input size="lg" label="Pick a country" value="opt-4"></mud-select-input>',
+        code: '<mud-select size="large" label="Pick a country" value="opt-4"></mud-select>',
       },
     },
   },
@@ -380,13 +380,13 @@ export const EdgeCases: Story = {
         cell(
           'label truncation (single line)',
           selectMarkup(
-            `size="lg" label="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services" placeholder="Placeholder"`,
+            `size="large" label="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services" placeholder="Placeholder"`,
           ),
         ),
         cell(
           'helper truncation (two lines)',
           selectMarkup(
-            `size="lg" label="Label" placeholder="Placeholder" helper-text="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services that respect their time."`,
+            `size="large" label="Label" placeholder="Placeholder" helper-text="Moldova's digital evolution is at the heart of seamless public service delivery, providing every resident with secure, efficient, and accessible online services that respect their time."`,
           ),
         ),
       ].join(''),
@@ -396,8 +396,8 @@ export const EdgeCases: Story = {
     docs: {
       source: {
         code: [
-          '<mud-select-input size="lg" label="…long label…" placeholder="Placeholder"></mud-select-input>',
-          '<mud-select-input size="lg" label="Label" placeholder="Placeholder" helper-text="…long helper text…"></mud-select-input>',
+          '<mud-select size="large" label="…long label…" placeholder="Placeholder"></mud-select>',
+          '<mud-select size="large" label="Label" placeholder="Placeholder" helper-text="…long helper text…"></mud-select>',
         ].join('\n'),
       },
     },

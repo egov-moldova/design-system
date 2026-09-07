@@ -36,7 +36,7 @@ import { RadioChangeDetail, RadioSize } from "./components/mud-radio/mud-radio.t
 import { ReceiptActionDetail, ReceiptParty, ReceiptService, ReceiptStatus } from "./components/mud-receipt/mud-receipt.types";
 import { SearchInputChangeDetail, SearchInputSearchDetail, SearchInputShape, SearchInputSize } from "./components/mud-search-input/mud-search-input.types";
 import { SegmentedControlChangeDetail, SegmentedControlSegment, SegmentedControlSize } from "./components/mud-segmented-control/mud-segmented-control.types";
-import { SelectChangeDetail, SelectInputSize, SelectInputVariant, SelectOption } from "./components/mud-select-input/mud-select-input.types";
+import { SelectChangeDetail, SelectOption, SelectSize, SelectVariant } from "./components/mud-select/mud-select.types";
 import { SeparatorOrientation, SeparatorSize, SeparatorVariant } from "./components/mud-separator/mud-separator.types";
 import { ServiceButtonAppearance, ServiceButtonType } from "./components/mud-service-button/mud-service-button.types";
 import { SidebarItemSelectDetail, SidebarItemToggleDetail } from "./components/mud-sidebar/mud-sidebar.types";
@@ -81,7 +81,7 @@ export { RadioChangeDetail, RadioSize } from "./components/mud-radio/mud-radio.t
 export { ReceiptActionDetail, ReceiptParty, ReceiptService, ReceiptStatus } from "./components/mud-receipt/mud-receipt.types";
 export { SearchInputChangeDetail, SearchInputSearchDetail, SearchInputShape, SearchInputSize } from "./components/mud-search-input/mud-search-input.types";
 export { SegmentedControlChangeDetail, SegmentedControlSegment, SegmentedControlSize } from "./components/mud-segmented-control/mud-segmented-control.types";
-export { SelectChangeDetail, SelectInputSize, SelectInputVariant, SelectOption } from "./components/mud-select-input/mud-select-input.types";
+export { SelectChangeDetail, SelectOption, SelectSize, SelectVariant } from "./components/mud-select/mud-select.types";
 export { SeparatorOrientation, SeparatorSize, SeparatorVariant } from "./components/mud-separator/mud-separator.types";
 export { ServiceButtonAppearance, ServiceButtonType } from "./components/mud-service-button/mud-service-button.types";
 export { SidebarItemSelectDetail, SidebarItemToggleDetail } from "./components/mud-sidebar/mud-sidebar.types";
@@ -2512,7 +2512,10 @@ export namespace Components {
         "value"?: string;
     }
     /**
-     * Select Input — single-select dropdown atom.
+     * Select — single-select dropdown atom.
+     * Matches the Figma `select-input` component (page "Select (Dropdown)",
+     * node 411:23995) — kept here under the shorter `mud-select` name. Size rungs
+     * follow Figma's own names: `medium` (40px) and `large` (48px).
      * Pattern B (atom-interactive, form-associated): renders a custom-styled
      * trigger button and a listbox popover inside shadow DOM. Form participation
      * works via `formAssociated` + `ElementInternals`. Shares the visual primitives
@@ -2520,9 +2523,9 @@ export namespace Components {
      * states) and adds a trailing chevron icon, listbox menu, and keyboard
      * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
      * pattern.
-     * @element mud-select-input
+     * @element mud-select
      */
-    interface MudSelectInput {
+    interface MudSelect {
         /**
           * Accessible name. Mirrors to the trigger's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
@@ -2578,9 +2581,9 @@ export namespace Components {
         "required": boolean;
         /**
           * Visual size rung.
-          * @default 'md'
+          * @default 'medium'
          */
-        "size": SelectInputSize;
+        "size": SelectSize;
         /**
           * Selected value. Reflects to the host attribute. Set to empty string when no option is selected.
           * @default ''
@@ -2590,7 +2593,7 @@ export namespace Components {
           * Color treatment. `destructive` is forced when `invalid` is set.
           * @default 'default'
          */
-        "variant": SelectInputVariant;
+        "variant": SelectVariant;
     }
     /**
      * Separator — visual divider between groups of content or UI components.
@@ -3593,9 +3596,9 @@ export interface MudSegmentedControlCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudSegmentedControlElement;
 }
-export interface MudSelectInputCustomEvent<T> extends CustomEvent<T> {
+export interface MudSelectCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLMudSelectInputElement;
+    target: HTMLMudSelectElement;
 }
 export interface MudSidebarItemCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -4752,7 +4755,7 @@ declare global {
         prototype: HTMLMudSegmentedControlElement;
         new (): HTMLMudSegmentedControlElement;
     };
-    interface HTMLMudSelectInputElementEventMap {
+    interface HTMLMudSelectElementEventMap {
         "mudChange": SelectChangeDetail;
         "mudOpen": void;
         "mudClose": void;
@@ -4760,7 +4763,10 @@ declare global {
         "mudBlur": FocusEvent;
     }
     /**
-     * Select Input — single-select dropdown atom.
+     * Select — single-select dropdown atom.
+     * Matches the Figma `select-input` component (page "Select (Dropdown)",
+     * node 411:23995) — kept here under the shorter `mud-select` name. Size rungs
+     * follow Figma's own names: `medium` (40px) and `large` (48px).
      * Pattern B (atom-interactive, form-associated): renders a custom-styled
      * trigger button and a listbox popover inside shadow DOM. Form participation
      * works via `formAssociated` + `ElementInternals`. Shares the visual primitives
@@ -4768,21 +4774,21 @@ declare global {
      * states) and adds a trailing chevron icon, listbox menu, and keyboard
      * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
      * pattern.
-     * @element mud-select-input
+     * @element mud-select
      */
-    interface HTMLMudSelectInputElement extends Components.MudSelectInput, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLMudSelectInputElementEventMap>(type: K, listener: (this: HTMLMudSelectInputElement, ev: MudSelectInputCustomEvent<HTMLMudSelectInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudSelectElement extends Components.MudSelect, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudSelectElementEventMap>(type: K, listener: (this: HTMLMudSelectElement, ev: MudSelectCustomEvent<HTMLMudSelectElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLMudSelectInputElementEventMap>(type: K, listener: (this: HTMLMudSelectInputElement, ev: MudSelectInputCustomEvent<HTMLMudSelectInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudSelectElementEventMap>(type: K, listener: (this: HTMLMudSelectElement, ev: MudSelectCustomEvent<HTMLMudSelectElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLMudSelectInputElement: {
-        prototype: HTMLMudSelectInputElement;
-        new (): HTMLMudSelectInputElement;
+    var HTMLMudSelectElement: {
+        prototype: HTMLMudSelectElement;
+        new (): HTMLMudSelectElement;
     };
     /**
      * Separator — visual divider between groups of content or UI components.
@@ -5240,7 +5246,7 @@ declare global {
         "mud-receipt": HTMLMudReceiptElement;
         "mud-search-input": HTMLMudSearchInputElement;
         "mud-segmented-control": HTMLMudSegmentedControlElement;
-        "mud-select-input": HTMLMudSelectInputElement;
+        "mud-select": HTMLMudSelectElement;
         "mud-separator": HTMLMudSeparatorElement;
         "mud-service-button": HTMLMudServiceButtonElement;
         "mud-sidebar": HTMLMudSidebarElement;
@@ -8029,7 +8035,10 @@ declare namespace LocalJSX {
         "value"?: string;
     }
     /**
-     * Select Input — single-select dropdown atom.
+     * Select — single-select dropdown atom.
+     * Matches the Figma `select-input` component (page "Select (Dropdown)",
+     * node 411:23995) — kept here under the shorter `mud-select` name. Size rungs
+     * follow Figma's own names: `medium` (40px) and `large` (48px).
      * Pattern B (atom-interactive, form-associated): renders a custom-styled
      * trigger button and a listbox popover inside shadow DOM. Form participation
      * works via `formAssociated` + `ElementInternals`. Shares the visual primitives
@@ -8037,9 +8046,9 @@ declare namespace LocalJSX {
      * states) and adds a trailing chevron icon, listbox menu, and keyboard
      * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
      * pattern.
-     * @element mud-select-input
+     * @element mud-select
      */
-    interface MudSelectInput {
+    interface MudSelect {
         /**
           * Accessible name. Mirrors to the trigger's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
@@ -8077,23 +8086,23 @@ declare namespace LocalJSX {
         /**
           * Fires when the trigger loses focus. The native `FocusEvent` is forwarded as-is.
          */
-        "onMudBlur"?: (event: MudSelectInputCustomEvent<FocusEvent>) => void;
+        "onMudBlur"?: (event: MudSelectCustomEvent<FocusEvent>) => void;
         /**
           * Fires when the selected value changes. `detail.value` is the new value.
          */
-        "onMudChange"?: (event: MudSelectInputCustomEvent<SelectChangeDetail>) => void;
+        "onMudChange"?: (event: MudSelectCustomEvent<SelectChangeDetail>) => void;
         /**
           * Fires when the listbox closes.
          */
-        "onMudClose"?: (event: MudSelectInputCustomEvent<void>) => void;
+        "onMudClose"?: (event: MudSelectCustomEvent<void>) => void;
         /**
           * Fires when the trigger gains focus. The native `FocusEvent` is forwarded as-is.
          */
-        "onMudFocus"?: (event: MudSelectInputCustomEvent<FocusEvent>) => void;
+        "onMudFocus"?: (event: MudSelectCustomEvent<FocusEvent>) => void;
         /**
           * Fires when the listbox opens.
          */
-        "onMudOpen"?: (event: MudSelectInputCustomEvent<void>) => void;
+        "onMudOpen"?: (event: MudSelectCustomEvent<void>) => void;
         /**
           * Reflects the open state of the listbox popover. Read-only externally — use `mudOpen` / `mudClose` to react to changes.
           * @default false
@@ -8119,9 +8128,9 @@ declare namespace LocalJSX {
         "required"?: boolean;
         /**
           * Visual size rung.
-          * @default 'md'
+          * @default 'medium'
          */
-        "size"?: SelectInputSize;
+        "size"?: SelectSize;
         /**
           * Selected value. Reflects to the host attribute. Set to empty string when no option is selected.
           * @default ''
@@ -8131,7 +8140,7 @@ declare namespace LocalJSX {
           * Color treatment. `destructive` is forced when `invalid` is set.
           * @default 'default'
          */
-        "variant"?: SelectInputVariant;
+        "variant"?: SelectVariant;
     }
     /**
      * Separator — visual divider between groups of content or UI components.
@@ -9575,9 +9584,9 @@ declare namespace LocalJSX {
         "ariaLabel": string;
         "ariaLabelledby": string;
     }
-    interface MudSelectInputAttributes {
-        "variant": SelectInputVariant;
-        "size": SelectInputSize;
+    interface MudSelectAttributes {
+        "variant": SelectVariant;
+        "size": SelectSize;
         "disabled": boolean;
         "required": boolean;
         "readonly": boolean;
@@ -9800,7 +9809,7 @@ declare namespace LocalJSX {
         "mud-receipt": Omit<MudReceipt, keyof MudReceiptAttributes> & { [K in keyof MudReceipt & keyof MudReceiptAttributes]?: MudReceipt[K] } & { [K in keyof MudReceipt & keyof MudReceiptAttributes as `attr:${K}`]?: MudReceiptAttributes[K] } & { [K in keyof MudReceipt & keyof MudReceiptAttributes as `prop:${K}`]?: MudReceipt[K] };
         "mud-search-input": Omit<MudSearchInput, keyof MudSearchInputAttributes> & { [K in keyof MudSearchInput & keyof MudSearchInputAttributes]?: MudSearchInput[K] } & { [K in keyof MudSearchInput & keyof MudSearchInputAttributes as `attr:${K}`]?: MudSearchInputAttributes[K] } & { [K in keyof MudSearchInput & keyof MudSearchInputAttributes as `prop:${K}`]?: MudSearchInput[K] };
         "mud-segmented-control": Omit<MudSegmentedControl, keyof MudSegmentedControlAttributes> & { [K in keyof MudSegmentedControl & keyof MudSegmentedControlAttributes]?: MudSegmentedControl[K] } & { [K in keyof MudSegmentedControl & keyof MudSegmentedControlAttributes as `attr:${K}`]?: MudSegmentedControlAttributes[K] } & { [K in keyof MudSegmentedControl & keyof MudSegmentedControlAttributes as `prop:${K}`]?: MudSegmentedControl[K] };
-        "mud-select-input": Omit<MudSelectInput, keyof MudSelectInputAttributes> & { [K in keyof MudSelectInput & keyof MudSelectInputAttributes]?: MudSelectInput[K] } & { [K in keyof MudSelectInput & keyof MudSelectInputAttributes as `attr:${K}`]?: MudSelectInputAttributes[K] } & { [K in keyof MudSelectInput & keyof MudSelectInputAttributes as `prop:${K}`]?: MudSelectInput[K] };
+        "mud-select": Omit<MudSelect, keyof MudSelectAttributes> & { [K in keyof MudSelect & keyof MudSelectAttributes]?: MudSelect[K] } & { [K in keyof MudSelect & keyof MudSelectAttributes as `attr:${K}`]?: MudSelectAttributes[K] } & { [K in keyof MudSelect & keyof MudSelectAttributes as `prop:${K}`]?: MudSelect[K] };
         "mud-separator": Omit<MudSeparator, keyof MudSeparatorAttributes> & { [K in keyof MudSeparator & keyof MudSeparatorAttributes]?: MudSeparator[K] } & { [K in keyof MudSeparator & keyof MudSeparatorAttributes as `attr:${K}`]?: MudSeparatorAttributes[K] } & { [K in keyof MudSeparator & keyof MudSeparatorAttributes as `prop:${K}`]?: MudSeparator[K] };
         "mud-service-button": Omit<MudServiceButton, keyof MudServiceButtonAttributes> & { [K in keyof MudServiceButton & keyof MudServiceButtonAttributes]?: MudServiceButton[K] } & { [K in keyof MudServiceButton & keyof MudServiceButtonAttributes as `attr:${K}`]?: MudServiceButtonAttributes[K] } & { [K in keyof MudServiceButton & keyof MudServiceButtonAttributes as `prop:${K}`]?: MudServiceButton[K] };
         "mud-sidebar": Omit<MudSidebar, keyof MudSidebarAttributes> & { [K in keyof MudSidebar & keyof MudSidebarAttributes]?: MudSidebar[K] } & { [K in keyof MudSidebar & keyof MudSidebarAttributes as `attr:${K}`]?: MudSidebarAttributes[K] } & { [K in keyof MudSidebar & keyof MudSidebarAttributes as `prop:${K}`]?: MudSidebar[K] };
@@ -10353,7 +10362,10 @@ declare module "@stencil/core" {
              */
             "mud-segmented-control": LocalJSX.IntrinsicElements["mud-segmented-control"] & JSXBase.HTMLAttributes<HTMLMudSegmentedControlElement>;
             /**
-             * Select Input — single-select dropdown atom.
+             * Select — single-select dropdown atom.
+             * Matches the Figma `select-input` component (page "Select (Dropdown)",
+             * node 411:23995) — kept here under the shorter `mud-select` name. Size rungs
+             * follow Figma's own names: `medium` (40px) and `large` (48px).
              * Pattern B (atom-interactive, form-associated): renders a custom-styled
              * trigger button and a listbox popover inside shadow DOM. Form participation
              * works via `formAssociated` + `ElementInternals`. Shares the visual primitives
@@ -10361,9 +10373,9 @@ declare module "@stencil/core" {
              * states) and adds a trailing chevron icon, listbox menu, and keyboard
              * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
              * pattern.
-             * @element mud-select-input
+             * @element mud-select
              */
-            "mud-select-input": LocalJSX.IntrinsicElements["mud-select-input"] & JSXBase.HTMLAttributes<HTMLMudSelectInputElement>;
+            "mud-select": LocalJSX.IntrinsicElements["mud-select"] & JSXBase.HTMLAttributes<HTMLMudSelectElement>;
             /**
              * Separator — visual divider between groups of content or UI components.
              * Pattern B (atom-visual): renders a 1D rule, optionally with an inline label.

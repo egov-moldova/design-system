@@ -10,7 +10,7 @@ and updates PR https://github.com/corlab-org/age-design/pull/5.
 | # | Component | Figma componentKey | Status | Commit | Screenshots |
 |---|---|---|---|---|---|
 | 1 | `mud-text-input` (text-input) | `f035f11544e0883bc29ca99b48309238db82edf8` | ✅ done | `6624b85` | `docs/screenshots/mud-text-input/` |
-| 2 | `mud-select-input` | `24351877baeb81b99cceea90d885b3455191ac62` | ✅ done | `41171ea` | `docs/screenshots/mud-select-input/` |
+| 2 | `mud-select` | `24351877baeb81b99cceea90d885b3455191ac62` | ✅ done | `41171ea` | `docs/screenshots/mud-select/` |
 | 3 | `mud-date-input` | `4449e61e554888eb4357b4f2e6e16dacf738fda3` | ✅ done | `f503fec` | `docs/screenshots/mud-date-input/` |
 | 4 | `mud-file-input` + `mud-file-item` | `2e8a0a8cc37b76d197dfdd8af2a4cac5ce8aa884` / `f7e6d1eed8dd15497025e1a9cad9d355403a68b8` | ✅ done | `299c6a2` | `docs/screenshots/mud-file-input/` |
 | 5 | `mud-search-input` (Figma "Search Input" — `shape=rectangular\|circular`) | `a27b4efaed053f6cd4a57411a032d7391174c425` | ✅ done | `a625494` | `docs/screenshots/mud-search-input-rectangular/` |
@@ -514,7 +514,7 @@ component keys. The advertised `search_design_system` MCP tool was not
 available in this environment (only `get_design_context`, `get_screenshot`,
 `get_metadata`, `get_variable_defs` were exposed).
 
-The earlier inputs (`mud-text-input`, `mud-select-input`, `mud-date-input`) shipped
+The earlier inputs (`mud-text-input`, `mud-select`, `mud-date-input`) shipped
 without preserved Figma node references in this repo either, so there was no
 prior anchor to walk from.
 
@@ -644,7 +644,7 @@ without switching branches per the prompt constraint). Romanian copy
 follows PRODUCT.md voice (verbs over nouns, second-person formal
 implied). Validated against `DESIGN.md`, `.impeccable/design.json`, and
 the on-disk `mud-text-input` / `mud-file-input` / `mud-file-item` /
-`mud-select-input` / `mud-button` implementations. If the
+`mud-select` / `mud-button` implementations. If the
 component_set's node-id becomes reachable later, re-run pixel-perfect
 comparison and log diff results here.
 
@@ -703,12 +703,12 @@ reachable through the available `get_metadata` traversal. The advertised
 the phone-input page. Derivation followed the well-validated pattern from
 seven earlier components on this branch: mud-text-input provides the canonical
 border / focus-ring / label / helper / error visual contract;
-mud-select-input provides the combobox + listbox + keyboard contract; the
+mud-select provides the combobox + listbox + keyboard contract; the
 country-trigger / divider / dial-code layout follows ITU-T E.164 + WAI-ARIA
 combobox conventions. The Moldova-first audience (PRODUCT.md) drove the
 defaults: MD as `defaultCountry`, Romanian display names + Romanian error
 copy. Validated against `DESIGN.md`, `.impeccable/design.json`, and the
-on-disk `mud-text-input` / `mud-select-input` / `mud-date-input` /
+on-disk `mud-text-input` / `mud-select` / `mud-date-input` /
 `mud-numeric-input` implementations. If the component_set's node-id
 becomes reachable later, re-run pixel-perfect comparison and log diff
 results here.
@@ -763,7 +763,7 @@ provides the canonical input-family visual contract; the stacked stepper
 affordance (chevron-up over chevron-bottom inside the right edge of the
 control, each ~50% of the input height) follows the task brief and standard
 spinbutton conventions. Validated against `DESIGN.md`,
-`.impeccable/design.json`, and the on-disk `mud-text-input` / `mud-select-input`
+`.impeccable/design.json`, and the on-disk `mud-text-input` / `mud-select`
 (chevron pattern) / `mud-search-input-rectangular` (trailing affordance
 pattern) implementations. If the component_set's node-id becomes reachable
 later, re-run pixel-perfect comparison and log diff results here.
@@ -1081,7 +1081,7 @@ Error,Success}`) map to `blue-sky/200`, `apricot/200`, `red/200`,
 `green/200` palette shades — all already present in
 `tokens/core/palette.tokens.json`.
 
-2026-05-23 — `mud-select-input` audited against Figma source-of-truth
+2026-05-23 — `mud-select` audited against Figma source-of-truth
 (docs page `411:23995`, master component-set `159:1112`). Variant
 matrix already correct: **2 styles (Default / Destructive) × 5 states
 (Default / Hover / Focus / Filled / Disabled) × 2 sizes (md / lg) = 20
@@ -1137,13 +1137,13 @@ tokens via local `--select-input-*` custom properties.
 
 **Gates**: `yarn tokens.build` (rebuilt clean), `yarn lint` (CSS + JS
 pass), `yarn typecheck` (pass), `yarn test.dev` (478/478 pass —
-including 60 `mud-select-input` specs), `yarn sp.build` (clean export),
+including 60 `mud-select` specs), `yarn sp.build` (clean export),
 `yarn audit:contrast` (21 pass / 0 fail across light + dark, including
 the new selected-option pair `text.brand.default` on
 `background.base.secondary` = 5.79:1, well above the 4.5 AA floor).
 Zero console errors across every story.
 
-Screenshots: `docs/screenshots/mud-select-input/audit-v2/` with
+Screenshots: `docs/screenshots/mud-select/audit-v2/` with
 before/after pairs for the open-listbox (selected-option background
 drift) and the label weight (regular → medium across all states).
 Figma canonical reference at `/tmp/figma-select-canonical.png` (full
@@ -1152,7 +1152,7 @@ selection-menu detail at `/tmp/figma-select-selection-menu-hires.png`.
 
 **TODOs** (logged for future work, not blocking):
 
-- `mud-select-input` multi-select mode (`multiple: boolean` prop) with
+- `mud-select` multi-select mode (`multiple: boolean` prop) with
   checkbox-prefixed options — not in current Figma scope; add only
   when a real consumer surfaces the need (rule-of-two,
   PRINCIPLES.md §B).
@@ -1161,7 +1161,7 @@ selection-menu detail at `/tmp/figma-select-selection-menu-hires.png`.
   separate `mud-menu` / `mud-submenu` molecule if a consumer adopts a
   multi-level menu pattern.
 
-### Figma node resolution (mud-select-input)
+### Figma node resolution (mud-select)
 
 The component-set master (`159:1112`) and docs canvas (`411:23995`)
 were reachable via `mcp__figma__get_metadata` + `get_screenshot` at

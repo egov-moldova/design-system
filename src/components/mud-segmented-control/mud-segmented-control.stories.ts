@@ -251,7 +251,7 @@ export const FivePlus: Story = {
     docs: {
       description: {
         story:
-          'Figma 659:8188 recommends up to 5 segments. Past that, consider tabs or a `mud-select-input` instead — the control still works, but the labels start losing legibility.',
+          'Figma 659:8188 recommends up to 5 segments. Past that, consider tabs or a `mud-select` instead — the control still works, but the labels start losing legibility.',
       },
     },
   },
