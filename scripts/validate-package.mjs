@@ -163,9 +163,16 @@ export function standaloneBundleDir(pkg) {
  *
  * The parameter is retained so a caller can still ask about a single directory.
  */
-export function checkDevSignature(packedFiles, readText, bundleDir = '') {
+export function checkDevSignature(packedFiles, readText, bundleDir) {
+  // A default parameter fires on `undefined` only. `null` is the other way a caller
+  // spells "no scope", and it would reach `startsWith(null)`, which coerces to the
+  // literal `"null"` and matches nothing — a scan that silently grades zero files
+  // while returning the empty array that means "clean". That is the exact failure
+  // this function was just widened to remove, one layer up, so it is closed by a
+  // type test rather than by a default.
+  const prefix = typeof bundleDir === 'string' ? bundleDir : '';
   return packedFiles
-    .filter(file => file.startsWith(bundleDir) && file.endsWith('.js'))
+    .filter(file => file.startsWith(prefix) && file.endsWith('.js'))
     .filter(file => DEV_BUILD_MARKERS.some(marker => marker.test(readText(file))));
 }
 

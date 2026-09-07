@@ -272,6 +272,18 @@ describe('checkDevSignature', () => {
     );
   });
 
+  // A default parameter fires on `undefined` only, so `null` — the other way a caller
+  // spells "no scope" — would have reached `startsWith(null)`, coerced to the literal
+  // "null", and graded zero files while returning the empty array that reads as clean.
+  it('treats a null directory as no scope, not as the string "null"', () => {
+    const packed = ['dist/index.js'];
+    const contents = { 'dist/index.js': 'const BUILD = { isDev: true };' };
+    assert.deepEqual(
+      checkDevSignature(packed, file => contents[file], null),
+      ['dist/index.js'],
+    );
+  });
+
   it('reads a non-.js entrypoint as out of scope', () => {
     const packed = ['dist/index.d.ts'];
     const contents = { 'dist/index.d.ts': 'isDev: true' };
