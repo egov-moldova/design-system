@@ -1,6 +1,7 @@
 {
   "name": "@egov-moldova/mud-react",
   "version": "0.0.1",
+  "private": true,
   "description": "React adapter for the MUD Design System — typed React wrappers around the Stencil-compiled mud-* custom elements.",
   "main": "src/index.ts",
   "module": "src/index.ts",
