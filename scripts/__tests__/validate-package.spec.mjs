@@ -7,6 +7,7 @@ import {
   checkDeclaredEntries,
   checkDevSignature,
   checkForbiddenPaths,
+  checkPackerAgreement,
   checkSourceMaps,
   collectDeclaredEntries,
   lazyBundleDir,
@@ -235,5 +236,31 @@ describe('checkDevSignature', () => {
       checkDevSignature(packed, file => contents[file], DIR),
       [],
     );
+  });
+});
+
+describe('checkPackerAgreement', () => {
+  it('passes when both packers resolve the same file list', () => {
+    const files = ['dist/index.js', 'loader/index.js'];
+    assert.deepEqual(checkPackerAgreement(files, [...files].reverse()), []);
+  });
+
+  it('names a file yarn packs and npm does not', () => {
+    assert.deepEqual(checkPackerAgreement(['dist/index.js', 'dist/extra.js'], ['dist/index.js']), [
+      'dist/extra.js — packed by yarn, absent from npm',
+    ]);
+  });
+
+  it('names a file npm packs and yarn does not', () => {
+    assert.deepEqual(checkPackerAgreement(['dist/index.js'], ['dist/index.js', 'dist/extra.js']), [
+      'dist/extra.js — packed by npm, absent from yarn',
+    ]);
+  });
+
+  it('reports both directions of a divergence in one run', () => {
+    assert.deepEqual(checkPackerAgreement(['a.js', 'shared.js'], ['b.js', 'shared.js']), [
+      'a.js — packed by yarn, absent from npm',
+      'b.js — packed by npm, absent from yarn',
+    ]);
   });
 });

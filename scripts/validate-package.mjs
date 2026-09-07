@@ -180,10 +180,10 @@ export function checkBundleAssets(packedFiles, lazyDir, standaloneDir) {
  *      exits non-zero aborts the pack with that code. This package's `prepare`
  *      is `husky install && ...`, so an npm-based gate would reinstall git
  *      hooks as a side effect of a read-only validation.
- *   2. On this package the two packers agree exactly — measured at 2037 files,
- *      zero difference, on a production build carrying dist/components. This
- *      function does not re-derive that; it is a property to re-check whenever
- *      `files` or the publish tooling changes, not an invariant to assume.
+ *   2. On this package the two packers agree exactly. That agreement is what
+ *      lets a yarn-measured list stand for an npm-published tarball, so it is
+ *      not assumed here: `checkPackerAgreement` re-derives it on every run and
+ *      fails the gate the moment the two lists diverge.
  *
  * Output is NDJSON: one `{"base":...}` line, then one `{"location":...}` per
  * file, with no `package/` prefix.
@@ -202,6 +202,49 @@ export function packedFileList(cwd = PROJECT_ROOT) {
     .map(entry => entry.location);
 }
 
+/**
+ * The same list as `packedFileList`, asked of the packer the release path
+ * actually uses (`pipline-mud-publish-npm.yml` publishes with `npm publish`).
+ *
+ * `--ignore-scripts` is required, not cosmetic: without it `npm pack --dry-run`
+ * runs this package's `prepare` (`husky install && ...`), so a read-only
+ * validation would reinstall git hooks as a side effect. It also keeps the
+ * comparison honest — yarn runs no lifecycle script either, so both sides are
+ * measured under the same conditions.
+ *
+ * Output is a JSON array with one entry, whose `files[].path` are the tarball
+ * paths without the `package/` prefix — the same shape yarn's `location` has.
+ */
+export function npmPackedFileList(cwd = PROJECT_ROOT) {
+  const raw = execFileSync('npm', ['pack', '--dry-run', '--json', '--ignore-scripts'], {
+    cwd,
+    encoding: 'utf8',
+    maxBuffer: 64 * 1024 * 1024,
+  });
+  return JSON.parse(raw)[0].files.map(file => file.path);
+}
+
+/**
+ * Every other check in this gate reads a list produced by `yarn pack`, while
+ * the pipeline ships whatever `npm publish` builds. That substitution is only
+ * legitimate while the two packers resolve `files` and the ignore rules
+ * identically — so this asserts it rather than trusting it, and the gate's
+ * verdict stops meaning anything about the published tarball the moment it
+ * fails.
+ *
+ * A divergence is not something to paper over by widening a rule: bring the
+ * publish step onto the same tool (`yarn npm publish`, which `web-components`
+ * already uses) and re-run.
+ */
+export function checkPackerAgreement(yarnFiles, npmFiles) {
+  const yarnSet = new Set(yarnFiles);
+  const npmSet = new Set(npmFiles);
+  return [
+    ...yarnFiles.filter(file => !npmSet.has(file)).map(file => `${file} — packed by yarn, absent from npm`),
+    ...npmFiles.filter(file => !yarnSet.has(file)).map(file => `${file} — packed by npm, absent from yarn`),
+  ];
+}
+
 export function main({ cwd = PROJECT_ROOT, log = console.log, error = console.error } = {}) {
   const pkg = JSON.parse(fs.readFileSync(path.join(cwd, 'package.json'), 'utf8'));
   const declared = collectDeclaredEntries(pkg);
@@ -211,6 +254,10 @@ export function main({ cwd = PROJECT_ROOT, log = console.log, error = console.er
   const standaloneDir = standaloneBundleDir(pkg);
 
   const categories = [
+    // First, because it grades the instrument the other checks read from: if
+    // the two packers disagree, every verdict below is about a tarball that is
+    // not the one being published.
+    ['gate packer disagrees with the publisher packer', checkPackerAgreement(files, npmPackedFileList(cwd))],
     [
       'declared entrypoint missing from tarball',
       checkDeclaredEntries(declared, files).map(entry => `${entry.source} -> ${entry.target}`),
@@ -232,7 +279,7 @@ export function main({ cwd = PROJECT_ROOT, log = console.log, error = console.er
 
   if (failures.length === 0) {
     log(
-      `validate-package: PASS — ${files.length} files packed, ` +
+      `validate-package: PASS — ${files.length} files packed (yarn and npm agree), ` +
         `${declared.length}/${declared.length} declared entrypoints present`,
     );
     return 0;
