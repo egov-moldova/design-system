@@ -38,7 +38,7 @@
   padding-inline: var(--spacing-8, 8px);
   border-radius: var(--border-radius-4, 4px);
   background-color: var(--color-background-base-inverse-default, #1e1e1e);
-  color: var(--color-background-base-inverse-on-color, #ffffff);
+  color: var(--color-background-base-inverse-on-color, #fff);
   font-family: var(--header-nav-item-font-family);
   font-size: var(--font-size-14, 14px);
   line-height: var(--line-height-20, 20px);
