@@ -287,7 +287,10 @@ describe('checkDevSignature', () => {
   it('reads a non-.js entrypoint as out of scope', () => {
     const packed = ['dist/index.d.ts'];
     const contents = { 'dist/index.d.ts': 'isDev: true' };
-    assert.deepEqual(checkDevSignature(packed, file => contents[file]), []);
+    assert.deepEqual(
+      checkDevSignature(packed, file => contents[file]),
+      [],
+    );
   });
 });
 
