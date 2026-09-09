@@ -47,7 +47,7 @@ Use when the component wraps user-provided elements via `<slot />`.
 
 ---
 
-## Pattern B: Internal DOM (mud-input style)
+## Pattern B: Internal DOM (mud-text-input style)
 
 Use when the component renders its own internal markup.
 

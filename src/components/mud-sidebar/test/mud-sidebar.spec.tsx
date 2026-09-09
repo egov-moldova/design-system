@@ -13,7 +13,7 @@ import '../mud-sidebar-item';
 // @Prop values as DOM attributes. By leaving these elements un-upgraded (plain
 // HTMLElement), their JSX-set attributes remain as plain HTML attributes and
 // getAttribute() returns the expected values. This matches the pattern used in
-// mud-search-input-circular.spec.tsx where mud-icon is also not imported.
+// mud-search-input.spec.tsx where mud-icon is also not imported.
 // Note: mud-sidebar-item renders badge as <span class="badge"> (not mud-badge),
 // so mud-badge import is not required here at all.
 
@@ -505,7 +505,7 @@ describe('mud-sidebar-item', () => {
   describe('mudSelect event', () => {
     // Mock-doc does not dispatch JSX onClick through synthetic MouseEvents on
     // shadow DOM elements. We drive the private handleClick handler directly,
-    // matching the pattern from mud-search-input-circular.spec.tsx.
+    // matching the pattern from mud-search-input.spec.tsx.
     const triggerClick = (root: Element | null | undefined, ev?: MouseEvent) => {
       const e = ev ?? new MouseEvent('click', { bubbles: true, cancelable: true });
       (root as unknown as SidebarItemInstance).handleClick.call(root as unknown as SidebarItemInstance, e);

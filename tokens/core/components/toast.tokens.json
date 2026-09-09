@@ -1,0 +1,80 @@
+{
+  "toast": {
+    "container": {
+      "width": { "$value": "350px", "$type": "dimension" },
+      "paddingTop": { "$value": "{spacing.12}", "$type": "dimension" },
+      "paddingBottom": { "$value": "{spacing.16}", "$type": "dimension" },
+      "paddingInline": { "$value": "{spacing.12}", "$type": "dimension" },
+      "gap": { "$value": "{spacing.16}", "$type": "dimension" },
+      "contentGap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "stackGap": { "$value": "{spacing.8}", "$type": "dimension" },
+      "headingGap": { "$value": "{spacing.6}", "$type": "dimension" },
+      "borderRadius": { "$value": "{borderRadius.8}", "$type": "dimension" },
+      "transitionTimingFunction": { "$value": "ease-out", "$type": "cubicBezier" },
+      "appearanceDuration": {
+        "$value": "250ms",
+        "$type": "duration",
+        "$comment": "Entrance animation (slide-down + fade-in) per the Figma Behavior panel."
+      }
+    },
+    "icon": {
+      "size": { "$value": "{spacing.24}", "$type": "dimension" },
+      "padding": { "$value": "{spacing.2}", "$type": "dimension" }
+    },
+    "title": {
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSize": { "$value": "{fontSize.18}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.26}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.semibold}", "$type": "fontWeight" },
+      "letterSpacing": { "$value": "-0.18px", "$type": "dimension" }
+    },
+    "body": {
+      "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
+      "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
+      "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
+      "fontWeight": { "$value": "{fontWeight.regular}", "$type": "fontWeight" }
+    },
+    "close": {
+      "sizePointer": {
+        "$value": "{spacing.32}",
+        "$type": "dimension",
+        "$comment": "Interactive target per the Figma Target Sizes panel: 32px on pointer devices."
+      },
+      "sizeTouch": {
+        "$value": "{spacing.40}",
+        "$type": "dimension",
+        "$comment": "40px target under `pointer: coarse` for touch ease-of-use."
+      },
+      "iconSize": { "$value": "{spacing.16}", "$type": "dimension" },
+      "borderRadius": { "$value": "{borderRadius.4}", "$type": "dimension" }
+    },
+    "info": {
+      "background": { "$value": "{color.background.brand.default}", "$type": "color" },
+      "text": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" },
+      "icon": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" },
+      "closeIcon": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" }
+    },
+    "warning": {
+      "background": { "$value": "{color.background.warning.accent}", "$type": "color" },
+      "text": { "$value": "{color.text.base.default-on-color}", "$type": "color" },
+      "icon": { "$value": "{color.icon.warning.on-secondary}", "$type": "color" },
+      "closeIcon": { "$value": "{color.icon.base.secondary-on-color}", "$type": "color" }
+    },
+    "success": {
+      "background": {
+        "$value": "{color.background.positive.default-hover}",
+        "$type": "color",
+        "$comment": "Darker green (#027948) instead of positive.default (#039855): white on-color text yields 3.73:1 against the lighter green (fails WCAG AA at the 14px body), but 5.48:1 against this rung. Figma's filled-success uses the lighter green; we darken it to keep the on-color text AA-compliant."
+      },
+      "text": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" },
+      "icon": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" },
+      "closeIcon": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" }
+    },
+    "error": {
+      "background": { "$value": "{color.background.danger.default}", "$type": "color" },
+      "text": { "$value": "{color.text.base-inverse.on-color}", "$type": "color" },
+      "icon": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" },
+      "closeIcon": { "$value": "{color.icon.base-inverse.on-color}", "$type": "color" }
+    }
+  }
+}

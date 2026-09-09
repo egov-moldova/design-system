@@ -31,9 +31,9 @@ export type {
   ServiceButtonType,
 } from './components/mud-service-button/mud-service-button.types';
 
-export { MudNotification } from './components/mud-notification/mud-notification';
-export { NOTIFICATION_VARIANTS } from './components/mud-notification/mud-notification.types';
-export type { NotificationVariant } from './components/mud-notification/mud-notification.types';
+export { MudToast } from './components/mud-toast/mud-toast';
+export { TOAST_VARIANTS } from './components/mud-toast/mud-toast.types';
+export type { ToastVariant } from './components/mud-toast/mud-toast.types';
 
 export { MudInfoBox } from './components/mud-info-box/mud-info-box';
 export { INFO_BOX_VARIANTS, INFO_BOX_EMPHASES } from './components/mud-info-box/mud-info-box.types';

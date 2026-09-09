@@ -108,7 +108,7 @@ describe('mud-header', () => {
   describe('mudLanguageChange event', () => {
     // Mock-doc does not always route JSX onClick handlers via dispatchEvent on
     // shadow buttons. Drive the private handler directly, the same way
-    // mud-search-input-circular.spec.tsx drives handleKeyDown.
+    // mud-search-input.spec.tsx drives handleKeyDown.
     type HeaderInstance = {
       handleLanguageClick: (code: string) => void;
       language?: string;
@@ -476,7 +476,7 @@ describe('mud-header-nav-item', () => {
   describe('mudNavSelect event (non-expandable)', () => {
     // Mock-doc does not always route JSX onClick on shadow elements through
     // dispatchEvent. Drive the private handleClick directly, mirroring the
-    // mud-accordion-item and mud-search-input-circular sibling patterns.
+    // mud-accordion-item and mud-search-input sibling patterns.
     type NavItemInstance = {
       handleClick: (ev: MouseEvent) => void;
       disabled: boolean;

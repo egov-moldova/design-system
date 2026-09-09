@@ -139,7 +139,7 @@ yarn add @egov-moldova/design-system @egov-moldova/design-system-web-components
 
 - `defineCustomElements(opts?)` — registers every Stencil custom element on the current document; returns a `Promise<void>`
 - `setNonce(nonce: string)` — applies a CSP nonce to injected `<style>` tags
-- Full element type augmentation (`HTMLMudButtonElement`, `HTMLMudInputElement`, …) and prop / event interfaces are re-exported via `export type *` from `@egov-moldova/mud`
+- Full element type augmentation (`HTMLMudButtonElement`, `HTMLMudTextInputElement`, …) and prop / event interfaces are re-exported via `export type *` from `@egov-moldova/mud`
 
 #### Framework-specific usage
 

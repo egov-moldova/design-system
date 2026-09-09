@@ -30,15 +30,15 @@ Before developing ANY new component:
 
 ## Form-Associated Pattern (CRITICAL)
 
-All form components (`mud-input`, `mud-select`, `mud-textarea`, `mud-checkbox`, `mud-radio`) **MUST** implement:
+All form components (`mud-text-input`, `mud-select`, `mud-textarea`, `mud-checkbox`, `mud-radio`) **MUST** implement:
 
 ```typescript
 @Component({
-  tag: 'mud-input',
+  tag: 'mud-text-input',
   formAssociated: true,  // ✅ REQUIRED
   shadow: true,
 })
-export class MudInput {
+export class MudTextInput {
   @AttachInternals() internals!: ElementInternals;  // ✅ REQUIRED
 
   // ✅ REQUIRED: Sync form value

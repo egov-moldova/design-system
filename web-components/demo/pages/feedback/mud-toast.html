@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mud-toast · @egovmd/mud-web-components</title>
+  </head>
+  <body data-component="mud-toast">
+    <main class="demo-main">
+      <section id="mud-toast" class="component-section">
+        <h2>&lt;mud-toast&gt;</h2>
+
+        <div class="subsection">
+          <h3>Variants (info / warning / success / error)</h3>
+          <div class="row" style="flex-direction: column; align-items: stretch; width: 100%; max-width: 520px">
+            <mud-toast variant="info" title-text="Informație">
+              Cererea dumneavoastră a fost înregistrată cu succes.
+            </mud-toast>
+            <mud-toast variant="warning" title-text="Atenție">Sesiunea expiră în 5 minute.</mud-toast>
+            <mud-toast variant="success" title-text="Succes">Documentul a fost semnat electronic.</mud-toast>
+            <mud-toast variant="error" title-text="Eroare">IDNP-ul introdus nu este valid.</mud-toast>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Text-only (no heading)</h3>
+          <div class="row" style="flex-direction: column; align-items: stretch; width: 100%; max-width: 520px">
+            <mud-toast variant="info">Se sincronizează datele…</mud-toast>
+            <mud-toast variant="success">Modificările au fost salvate.</mud-toast>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Close button (default) + not closable</h3>
+          <div class="row" style="flex-direction: column; align-items: stretch; width: 100%; max-width: 520px">
+            <mud-toast id="demo-toast-closable" variant="info" title-text="Actualizare disponibilă">
+              O nouă versiune a portalului este gata de instalare.
+            </mud-toast>
+            <mud-toast variant="success" closable="false" title-text="Salvat automat">
+              Nu este necesară nicio acțiune.
+            </mud-toast>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Inline link (actions slot)</h3>
+          <div class="row" style="flex-direction: column; align-items: stretch; width: 100%; max-width: 520px">
+            <mud-toast variant="info" title-text="Sesiunea va expira">
+              Salvați modificările pentru a evita pierderea datelor.
+              <mud-link slot="actions" href="#" underline="always" variant="white">Prelungește sesiunea</mud-link>
+            </mud-toast>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Slots — custom icon-start</h3>
+          <div class="row" style="flex-direction: column; align-items: stretch; width: 100%; max-width: 520px">
+            <mud-toast variant="info" title-text="Pictogramă personalizată">
+              <mud-icon slot="icon-start" name="sparkles-filled" size="24"></mud-icon>
+              Funcție nouă: semnătura mobilă.
+            </mud-toast>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div class="row" style="flex-direction: column; align-items: stretch; width: 100%; max-width: 520px">
+            <mud-toast variant="info">Mesaj fără titlu — doar corpul mesajului.</mud-toast>
+            <mud-toast variant="warning" title-text="Corp foarte lung">
+              Acesta este un mesaj deosebit de lung pentru a verifica încadrarea textului pe mai multe rânduri,
+              alinierea pictogramei la prima linie și poziționarea butonului de închidere atunci când conținutul
+              depășește înălțimea unei singure linii. Diacritice: ăâîșțĂÂÎȘȚ.
+            </mud-toast>
+            <mud-toast variant="error" title-text="Cuvânt neîntrerupt">
+              Pneumonoultramicroscopicsilicovolcanoconiosisextraordinarwithoutanyspaces
+            </mud-toast>
+            <mud-toast variant="info" title-text="RTL">
+              مرحبا بكم في البوابة الإلكترونية للخدمات الحكومية
+            </mud-toast>
+          </div>
+        </div>
+      </section>
+      <script type="module">
+        // mudClose only fires the event — the consumer removes the node.
+        customElements.whenDefined('mud-toast').then(() => {
+          const el = document.getElementById('demo-toast-closable');
+          if (!el) return;
+          el.addEventListener('mudClose', () => el.remove());
+        });
+      </script>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

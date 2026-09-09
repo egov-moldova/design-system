@@ -42,7 +42,11 @@
       "fontFamily": { "$value": "{fontFamily.primary}", "$type": "fontFamily" },
       "fontSize": { "$value": "{fontSize.14}", "$type": "dimension" },
       "lineHeight": { "$value": "{lineHeight.20}", "$type": "dimension" },
-      "fontWeight": { "$value": "{fontWeight.medium}", "$type": "fontWeight" },
+      "fontWeight": {
+        "$value": "{fontWeight.regular}",
+        "$type": "fontWeight",
+        "$comment": "Figma `text-input` label node = `Desktop/Body/Small` (Onest 14/20 regular), not a medium-weight label style."
+      },
       "gap": { "$value": "{spacing.4}", "$type": "dimension" },
       "color": {
         "default": { "$value": "{color.text.base.secondary}", "$type": "color" },

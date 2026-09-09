@@ -125,7 +125,7 @@ Snapshot the result. Repeat with `data-theme="dark"` set on `<html>` for dark-mo
 | Component family | Spec contract required | Storybook a11y required | Browser axe required | States to cover |
 |--|--|--|--|--|
 | `mud-button`, `mud-link` | yes | yes | yes | default, disabled, loading, all variants |
-| `mud-input`, `mud-textarea`, `mud-select` | yes | yes | yes | default, invalid (error), disabled, focused, with value, empty |
+| `mud-text-input`, `mud-textarea`, `mud-select` | yes | yes | yes | default, invalid (error), disabled, focused, with value, empty |
 | `mud-checkbox`, `mud-radio-*`, `mud-toggle` | yes | yes | yes | unchecked, checked, disabled, indeterminate (if applicable) |
 | `mud-modal`, `mud-tooltip`, `mud-menu-*`, `mud-tabs` | yes | yes | yes | closed/open, with arrow keys, with Escape |
 | `mud-toast-notification`, `mud-banner-notification`, `mud-inline-notification` | yes | yes | no | each severity (info, success, warning, error) |

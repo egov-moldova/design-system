@@ -46,7 +46,7 @@
 /* ---------- Variant token overrides ---------- */
 /*
  * Borders for warning/destructive/success use the same semantic color across
- * default / hover / focus per Figma. Mirrors mud-input.
+ * default / hover / focus per Figma. Mirrors mud-text-input.
  */
 :host(.variant-warning) {
   --_border-color: var(--input-warning-border-default);
@@ -82,7 +82,7 @@
   font-size: var(--input-label-font-size);
   line-height: var(--input-label-line-height);
   /* Textarea-specific override: Figma 378:17677 uses Onest Regular for the label,
-     while mud-input ships Medium. */
+     while mud-text-input ships Medium. */
   font-weight: var(--textarea-label-font-weight);
   color: var(--input-label-color-default);
   inline-size: 100%;

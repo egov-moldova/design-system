@@ -18,7 +18,7 @@ const flush = () => new Promise<void>(resolve => setTimeout(resolve, 0));
 // Stencil's mock-doc does not route native KeyboardEvent dispatches on the
 // host element to JSX-bound onKeyDown / @Listen handlers in the same way a
 // real browser does. The reliable approach (used across the project, e.g.
-// mud-accordion-item, mud-search-input-circular) is to call the handler
+// mud-accordion-item, mud-search-input) is to call the handler
 // method directly on the component instance.
 type MenuInstance = { handleKeyDown: (ev: KeyboardEvent) => void };
 type MenuItemInstance = { handleKeyDown: (ev: KeyboardEvent) => void };

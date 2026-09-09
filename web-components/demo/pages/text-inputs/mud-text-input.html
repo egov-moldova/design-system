@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>mud-text-input · @egovmd/mud-web-components</title>
+  </head>
+  <body data-component="mud-text-input">
+    <main class="demo-main">
+      <section id="mud-text-input" class="component-section">
+        <h2>&lt;mud-text-input&gt;</h2>
+
+        <div class="subsection">
+          <h3>Variants (size md, prefilled)</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input variant="default" label="Nume complet" value="Ion Creangă"></mud-text-input>
+              </div>
+              <span class="label">default</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input
+                  variant="success"
+                  label="Email"
+                  value="ion@gov.md"
+                  helper-text="Adresă verificată"
+                ></mud-text-input>
+              </div>
+              <span class="label">success</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input
+                  variant="warning"
+                  label="IDNP"
+                  value="2002004012345"
+                  helper-text="Verificați cifra de control"
+                ></mud-text-input>
+              </div>
+              <span class="label">warning</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input variant="destructive" label="Telefon" value="abc" helper-text="Format invalid"></mud-text-input>
+              </div>
+              <span class="label">destructive</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Invalid + error-text (per variant)</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input
+                  label="Email"
+                  value="ion[at]gov.md"
+                  invalid=""
+                  error-text="Adresa de email nu este validă."
+                ></mud-text-input>
+              </div>
+              <span class="label">invalid + error-text</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input
+                  variant="success"
+                  label="Email (success forced to destructive by invalid)"
+                  value="x"
+                  invalid=""
+                  error-text="invalid overrides variant"
+                ></mud-text-input>
+              </div>
+              <span class="label">invalid forces destructive</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input
+                  label="Câmp obligatoriu"
+                  required=""
+                  invalid=""
+                  error-text="Acest câmp este obligatoriu."
+                  placeholder="Introduceți o valoare"
+                ></mud-text-input>
+              </div>
+              <span class="label">required + invalid (placeholder)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Sizes</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input size="md" label="Adresă" value="str. Ștefan cel Mare 1" helper-text="md"></mud-text-input>
+              </div>
+              <span class="label">md</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input size="lg" label="Adresă" value="str. Ștefan cel Mare 1" helper-text="lg"></mud-text-input>
+              </div>
+              <span class="label">lg</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>With icons (icon-start / icon-end slots)</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input label="Utilizator" placeholder="nume.prenume">
+                  <mud-icon slot="icon-start" name="person" size="20"></mud-icon>
+                </mud-text-input>
+              </div>
+              <span class="label">icon-start</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input label="Căutare în dosar" value="hotărâre">
+                  <mud-icon slot="icon-end" name="search" size="20"></mud-icon>
+                </mud-text-input>
+              </div>
+              <span class="label">icon-end</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input type="email" label="Email" value="ion@gov.md">
+                  <mud-icon slot="icon-start" name="envelope" size="20"></mud-icon>
+                </mud-text-input>
+              </div>
+              <span class="label">icon-start + type=email</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Types</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input type="password" label="Parolă" value="secret123">
+                  <mud-icon slot="icon-start" name="lock" size="20"></mud-icon>
+                </mud-text-input>
+              </div>
+              <span class="label">password</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input type="tel" label="Telefon" value="+373 22 250 100" inputmode="tel"></mud-text-input>
+              </div>
+              <span class="label">tel</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input type="url" label="Site web" value="https://gov.md"></mud-text-input>
+              </div>
+              <span class="label">url</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input type="search" label="Căutare" placeholder="Căutați…"></mud-text-input>
+              </div>
+              <span class="label">search</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>States (prefilled vs placeholder)</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input label="Prefilled" value="O valoare introdusă"></mud-text-input>
+              </div>
+              <span class="label">value</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input label="Placeholder only" placeholder="Introduceți textul aici"></mud-text-input>
+              </div>
+              <span class="label">placeholder-only</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input label="Dezactivat" value="Nu se poate edita" disabled=""></mud-text-input>
+              </div>
+              <span class="label">disabled</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input label="Doar citire" value="Valoare read-only" readonly=""></mud-text-input>
+              </div>
+              <span class="label">readonly</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input label="În curs" value="Se validează…" loading=""></mud-text-input>
+              </div>
+              <span class="label">loading</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input label="Obligatoriu" required="" placeholder="Necesită completare"></mud-text-input>
+              </div>
+              <span class="label">required (asterisk)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="subsection">
+          <h3>Edge cases</h3>
+          <div class="row">
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input
+                  label="Long unbroken value"
+                  value="Supercalifragilisticexpialidocious_aaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                ></mud-text-input>
+              </div>
+              <span class="label">overflow: no-space value</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input
+                  label="Etichetă foarte lungă care ar trebui să se înfășoare pe mai multe rânduri în acest container îngust"
+                  value="ok"
+                ></mud-text-input>
+              </div>
+              <span class="label">long wrapping label</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input label="Diacritice românești" value="ăâîșțĂÂÎȘȚ — Chișinău"></mud-text-input>
+              </div>
+              <span class="label">diacritics</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input label="RTL (Arabic)" value="مرحبا بكم" dir="rtl"></mud-text-input>
+              </div>
+              <span class="label">RTL bidi</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input label="Special chars &amp; escaping" value="&amp; < > &quot; ' 🎉"></mud-text-input>
+              </div>
+              <span class="label">special chars + emoji</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input label="Empty value" value="" placeholder=""></mud-text-input>
+              </div>
+              <span class="label">empty value + empty placeholder</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input
+                  aria-label="Fără etichetă vizibilă"
+                  placeholder="No visible label (aria-label only)"
+                ></mud-text-input>
+              </div>
+              <span class="label">no label, aria-label</span>
+            </div>
+            <div class="cell">
+              <div style="width: 100%; max-width: 360px">
+                <mud-text-input
+                  label="maxlength 10"
+                  value="1234567890"
+                  maxlength="10"
+                  helper-text="max 10 chars"
+                ></mud-text-input>
+              </div>
+              <span class="label">maxlength</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script type="module" src="/main.ts"></script>
+  </body>
+</html>

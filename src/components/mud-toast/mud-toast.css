@@ -1,0 +1,282 @@
+:host {
+  /* Color slots — overridden per [variant] below (info default). */
+  --_bg: var(--toast-info-background);
+  --_text: var(--toast-info-text);
+  --_icon: var(--toast-info-icon);
+  --_close-icon: var(--toast-info-close-icon);
+
+  display: flex;
+  align-items: flex-start;
+  gap: var(--toast-container-gap);
+  inline-size: var(--toast-container-width);
+  max-inline-size: 100%;
+  box-sizing: border-box;
+  padding-block-start: var(--toast-container-padding-top);
+  padding-block-end: var(--toast-container-padding-bottom);
+  padding-inline: var(--toast-container-padding-inline);
+  border-radius: var(--toast-container-border-radius);
+  overflow: clip;
+
+  background-color: var(--_bg);
+  color: var(--_text);
+
+  font-family: var(--toast-body-font-family);
+  font-size: var(--toast-body-font-size);
+  line-height: var(--toast-body-line-height);
+  font-weight: var(--toast-body-font-weight);
+
+  /* Appearance: slide down from slightly above + fade in (Figma Behavior panel).
+     Plays once on mount; the dismiss/exit transition stays consumer-owned since
+     the atom cannot defer its own DOM removal. Disabled under reduced-motion. */
+  animation: toast-appear var(--toast-container-appearance-duration)
+    var(--toast-container-transition-timing-function) both;
+}
+
+@keyframes toast-appear {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-1 * var(--spacing-8)));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- variant matrix (filled) ---------- */
+
+:host([variant='info']) {
+  --_bg: var(--toast-info-background);
+  --_text: var(--toast-info-text);
+  --_icon: var(--toast-info-icon);
+  --_close-icon: var(--toast-info-close-icon);
+}
+
+:host([variant='warning']) {
+  --_bg: var(--toast-warning-background);
+  --_text: var(--toast-warning-text);
+  --_icon: var(--toast-warning-icon);
+  --_close-icon: var(--toast-warning-close-icon);
+}
+
+:host([variant='success']) {
+  --_bg: var(--toast-success-background);
+  --_text: var(--toast-success-text);
+  --_icon: var(--toast-success-icon);
+  --_close-icon: var(--toast-success-close-icon);
+}
+
+:host([variant='error']) {
+  --_bg: var(--toast-error-background);
+  --_text: var(--toast-error-text);
+  --_icon: var(--toast-error-icon);
+  --_close-icon: var(--toast-error-close-icon);
+}
+
+/* ---------- main (leading icon + content) ---------- */
+
+.main {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--toast-container-content-gap);
+}
+
+/* Text-only (no heading): the leading icon, the message and the close button
+   sit vertically centered with the single line — per the Figma `toast`
+   `Content = Text-only` variant. With a heading the icon aligns to the
+   heading's first line (flex-start, above). */
+:host(:not(.has-title)) {
+  align-items: center;
+}
+
+:host(:not(.has-title)) .main {
+  align-items: center;
+}
+
+/* ---------- leading icon ---------- */
+
+.icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--toast-icon-padding);
+  color: var(--_icon);
+}
+
+.icon mud-icon {
+  --icon-color: currentcolor;
+}
+
+::slotted([slot='icon-start']) {
+  display: inline-flex;
+  inline-size: var(--toast-icon-size);
+  block-size: var(--toast-icon-size);
+  color: var(--_icon);
+}
+
+::slotted(mud-icon[slot='icon-start']) {
+  --icon-color: currentcolor;
+}
+
+/* ---------- content stack ---------- */
+
+.content {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--toast-container-stack-gap);
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--toast-container-heading-gap);
+}
+
+.title {
+  margin: 0;
+  font-family: var(--toast-title-font-family);
+  font-size: var(--toast-title-font-size);
+  line-height: var(--toast-title-line-height);
+  font-weight: var(--toast-title-font-weight);
+  letter-spacing: var(--toast-title-letter-spacing);
+  color: inherit;
+  /* Heading stays readable in full but clamps to 3 lines with an ellipsis for
+     overly-long titles — matches the Figma `toast` heading node
+     (`-webkit-line-clamp: 3` + `text-overflow: ellipsis`). */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.body {
+  margin: 0;
+  font-family: var(--toast-body-font-family);
+  font-size: var(--toast-body-font-size);
+  line-height: var(--toast-body-line-height);
+  font-weight: var(--toast-body-font-weight);
+  color: inherit;
+  /* Body wraps naturally; overflow-wrap prevents overflow from very long tokens. */
+  overflow-wrap: anywhere;
+}
+
+/* ---------- actions (inline link / button group) ---------- */
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-8);
+}
+
+:host(:not(.has-actions)) .actions {
+  display: none;
+}
+
+::slotted([slot='actions']) {
+  color: inherit;
+}
+::slotted(mud-button[slot='actions']) {
+  --_label: currentcolor;
+  --_label-hover: currentcolor;
+  --_label-active: currentcolor;
+  --_icon: currentcolor;
+  --_border-color: currentcolor;
+  --_border-color-hover: currentcolor;
+  --_border-color-active: currentcolor;
+  --_bg-hover: color-mix(in srgb, currentcolor 16%, transparent);
+  --_bg-active: color-mix(in srgb, currentcolor 28%, transparent);
+}
+
+/* ---------- close button ---------- */
+
+.close {
+  /* The visible × glyph is 16px and sits exactly where the Figma `toast`
+     close-icon does; the button is a larger a11y hit target (Figma
+     "Target Sizes" panel: 32px pointer / 40px touch) whose extra size is
+     bled back into the container padding via negative margins so it neither
+     shifts the glyph nor steals width from the message. The Figma `toast`
+     component defines no hover state for the close control, so the button
+     surface stays transparent on hover — only `:focus-visible` shows a ring
+     (WCAG 2.4.7 baseline). */
+  --_close-bleed: calc((var(--toast-close-size-pointer) - var(--toast-close-icon-size)) / 2);
+
+  flex-shrink: 0;
+  /* w/ heading: the glyph tops with the heading's first line.
+     Text-only: it centres with the single line — overridden below. */
+  align-self: flex-start;
+  margin-block-start: calc(-1 * var(--_close-bleed));
+  margin-inline: calc(-1 * var(--_close-bleed));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--toast-close-size-pointer);
+  block-size: var(--toast-close-size-pointer);
+  padding: 0;
+
+  border: 0;
+  border-radius: var(--toast-close-border-radius);
+  background-color: transparent;
+  color: var(--_close-icon);
+
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+/* Text-only: keep the hit box symmetric so `align-self: center` truly centres
+   the 16px glyph on the single line. */
+:host(:not(.has-title)) .close {
+  align-self: center;
+  margin-block: calc(-1 * var(--_close-bleed));
+}
+
+/* Touch devices: grow the hit target to 40px (Figma Target Sizes panel).
+   The bleed grows with it so the visible glyph stays put. */
+@media (pointer: coarse) {
+  .close {
+    --_close-bleed: calc((var(--toast-close-size-touch) - var(--toast-close-icon-size)) / 2);
+
+    inline-size: var(--toast-close-size-touch);
+    block-size: var(--toast-close-size-touch);
+  }
+}
+
+.close:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
+    0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
+  position: relative;
+  z-index: 1;
+}
+
+.close-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--toast-close-icon-size);
+  block-size: var(--toast-close-icon-size);
+}
+
+.close-icon svg {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  pointer-events: none;
+}
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  :host {
+    animation: none;
+  }
+}

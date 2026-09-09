@@ -70,7 +70,7 @@
         "success": {
           "$value": "{color.background.positive.default-hover}",
           "$type": "color",
-          "$comment": "Darker green (#027948) instead of positive.default (#039855): white on-color label is 3.73:1 on the lighter green (fails WCAG AA at 14px medium) but ~5.5:1 here. Matches mud-notification / mud-badge."
+          "$comment": "Darker green (#027948) instead of positive.default (#039855): white on-color label is 3.73:1 on the lighter green (fails WCAG AA at 14px medium) but ~5.5:1 here. Matches mud-toast / mud-badge."
         },
         "brand": { "$value": "{color.background.brand.default}", "$type": "color" },
         "danger": { "$value": "{color.background.danger.default}", "$type": "color" }

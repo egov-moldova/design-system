@@ -1,0 +1,418 @@
+/* ============================================================================
+ * mud-stepper — visual stepper (a.k.a. progress tracker)
+ * Figma reference: 267:6905 (page "Progress Tracker (Stepper)")
+ *
+ * Layout strategy:
+ *   - The root <ol> is a flex container. In horizontal mode steps line up in a
+ *     row; in vertical mode in a column.
+ *   - Each <li> contains: indicator (circle) + label block + connector line.
+ *   - Connector lines are `flex: 1` so they expand to fill the gap between
+ *     indicators, naturally producing the proportional "rail" from Figma.
+ *   - State colours are applied per-step via `.step--{status}` modifier classes,
+ *     all colours coming from the `--stepper-*` token surface.
+ *   - The previous step's connector is owned by the **next** step (CSS sibling
+ *     selector below) so the connector colour reflects whether the user has
+ *     already passed it (= upstream step is completed).
+ * ============================================================================ */
+
+:host {
+  display: block;
+  font-family: var(--stepper-font-family);
+  font-size: var(--stepper-font-size);
+  line-height: var(--stepper-line-height);
+  color: var(--stepper-label-color);
+  max-width: var(--stepper-container-max-width);
+}
+
+.root {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  align-items: stretch;
+}
+
+/* ---------- Orientation ---------- */
+
+:host([orientation='horizontal']) .root {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 0;
+}
+
+:host([orientation='vertical']) .root {
+  flex-direction: column;
+  gap: 0;
+  align-items: stretch;
+}
+
+/* ---------- Step container ---------- */
+
+.step {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  /* Each step except the last grows to absorb the connector length. */
+}
+
+:host([orientation='horizontal']) .step {
+  /* Each step is a row: [body][connector]. The connector flex-grows so the
+   * step itself fills available width proportionally.
+   * `flex-start` (not `center`): the body is a column (indicator on top, label
+   * below), so centring would drop the connector to the middle of indicator +
+   * label. Aligning to the top lets the connector's `margin-block` offset land
+   * it exactly on the indicator's vertical centre — the center-to-center rail
+   * from Figma. */
+  flex-direction: row;
+  align-items: flex-start;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+:host([orientation='horizontal']) .step.step--last {
+  /* Last step does NOT grow — anchors the indicator at the end of the row. */
+  flex: 0 0 auto;
+}
+
+:host([orientation='vertical']) .step {
+  flex-direction: row;
+  align-items: flex-start;
+  flex: 0 0 auto;
+}
+
+/* ---------- Step body (indicator + label) ---------- */
+
+.step-content,
+.step-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--stepper-step-indicator-gap);
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+}
+
+:host([orientation='vertical']) .step-content,
+:host([orientation='vertical']) .step-trigger {
+  align-items: flex-start;
+}
+
+.step-trigger {
+  cursor: pointer;
+  border-radius: var(--stepper-interactive-border-radius);
+  padding-inline: var(--stepper-interactive-padding-inline);
+  padding-block: var(--stepper-interactive-padding-block);
+}
+
+/* No hover surface: the Figma `progress-tracker` step has no hover state — an
+   actionable step is signalled by its brand underlined-link label (and the
+   pointer cursor). Only `:focus-visible` paints a ring (WCAG 2.4.7). A box
+   behind the column trigger would dangle awkwardly below the dot toward the
+   label anyway (the label sits in a zero-width box for even connector spacing). */
+.step-trigger:focus-visible {
+  outline: none;
+  box-shadow:
+    0 0 0 var(--focus-ring-width-inner) var(--focus-ring-color-inner),
+    0 0 0 calc(var(--focus-ring-width-inner) + var(--focus-ring-width-outer)) var(--focus-ring-color-outer);
+}
+
+/* ---------- Indicator (circle) ---------- */
+
+.indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: var(--stepper-indicator-size);
+  height: var(--stepper-indicator-size);
+  border-radius: var(--stepper-indicator-border-radius);
+  border: var(--stepper-indicator-border-width) solid transparent;
+  background: var(--stepper-indicator-background);
+  font-weight: var(--stepper-font-weight-indicator);
+  font-size: var(--stepper-font-size);
+  line-height: 1;
+  transition:
+    background-color var(--stepper-indicator-transition-duration)
+      var(--stepper-indicator-transition-timing-function),
+    border-color var(--stepper-indicator-transition-duration)
+      var(--stepper-indicator-transition-timing-function),
+    color var(--stepper-indicator-transition-duration)
+      var(--stepper-indicator-transition-timing-function);
+}
+
+.indicator-number {
+  font: inherit;
+  color: inherit;
+  /* The digit's ink box is symmetric about the line-box centre in Onest (cap-top
+     to baseline straddles the centre), so flex `align-items: center` already
+     centres it — no translate nudge (the old -0.5px pushed digits visibly high). */
+}
+
+/* ---------- Label block ---------- */
+
+.label-block {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.label {
+  color: var(--stepper-label-color);
+  font-weight: var(--stepper-font-weight-label);
+  font-size: var(--stepper-font-size);
+  line-height: var(--stepper-line-height);
+}
+
+.supporting-text {
+  color: var(--stepper-supporting-text-color);
+  font-size: var(--stepper-supporting-text-font-size);
+  line-height: var(--stepper-supporting-text-line-height);
+}
+
+/* ---------- Connector line ---------- */
+/* `--_ct` is the per-state rail thickness: the untraveled grey rail (pending /
+   current) is 1px; the filled/coloured rail (completed / error) bumps to 1.5px
+   below. The geometry (height/width + centring) all reads `--_ct` so the rail
+   stays centred on the indicator at either thickness. */
+.connector {
+  --_ct: var(--stepper-connector-thickness-pending);
+  display: block;
+  background: var(--stepper-pending-connector);
+  flex-shrink: 0;
+}
+
+:host([orientation='horizontal']) .connector {
+  height: var(--_ct);
+  flex: 1 1 0;
+  min-width: var(--stepper-connector-min-length);
+  margin-block: calc((var(--stepper-indicator-size) - var(--_ct)) / 2);
+  /* Symmetric gaps on both sides of the dot — the body is the dot width (the
+     label doesn't widen it, see below), so the flex connector spans the whole
+     gap between consecutive dots. */
+  margin-inline-start: var(--stepper-step-indicator-gap);
+  margin-inline-end: var(--stepper-step-indicator-gap);
+}
+
+:host([orientation='horizontal']) .step .step-content,
+:host([orientation='horizontal']) .step .step-trigger {
+  /* In horizontal mode, indicator + label stack vertically (label under). */
+  flex-direction: column;
+  align-items: center;
+  gap: var(--stepper-container-label-gap);
+  flex-shrink: 0;
+}
+
+/* Even spacing: the label must NOT widen the step body, otherwise a wide label
+   steals space from its connector and the steps space unevenly. Pin the label
+   block to zero inline-size so every body is just the dot width → all connectors
+   come out equal. The label is centred under the dot and overflows the 0-width
+   box symmetrically (kept on one line — it would otherwise collapse to
+   min-content). On a narrow container the tracker auto-switches to the compact
+   dot rail, so the label never needs to wrap here. */
+:host([orientation='horizontal']) .label-block {
+  inline-size: 0;
+  align-items: center;
+}
+
+:host([orientation='horizontal']) .label,
+:host([orientation='horizontal']) .supporting-text {
+  white-space: nowrap;
+}
+
+/* The end labels would otherwise spill past the track edges (a centred label on
+   the first/last dot overflows left/right). Anchor them inward — but to the
+   indicator's *edge*, not its centre. The label-block is a zero-width origin at
+   the indicator centre; `align-items` alone would leave the first label starting
+   half an indicator-width (12px) to the right of the dot. The `translateX` pulls
+   that origin back onto the leading edge so the first label lines up under the
+   left of its dot (and the last under the right of its dot) — matching Figma,
+   where the label box is pinned to the step's edge. Middle labels stay centred. */
+:host([orientation='horizontal']) .step:first-child .label-block {
+  align-items: flex-start;
+  transform: translateX(calc(var(--stepper-indicator-size) / -2));
+}
+
+:host([orientation='horizontal']) .step--last .label-block {
+  align-items: flex-end;
+  transform: translateX(calc(var(--stepper-indicator-size) / 2));
+}
+
+:host([orientation='vertical']) .step:not(.step--last) {
+  /* Each non-last step must be tall enough to host the vertical connector
+   * that drops from its indicator. 84px matches the Figma vertical spacing. */
+  min-height: var(--stepper-container-vertical-step-min-height);
+}
+
+:host([orientation='vertical']) .connector {
+  width: var(--_ct);
+  align-self: stretch;
+  position: absolute;
+  left: calc(var(--stepper-indicator-size) / 2 - var(--_ct) / 2);
+  /* Symmetric gaps: drop the same `labelGap` below this indicator AND above the
+   * next one (the next step's indicator sits at this step's bottom edge), so the
+   * rail floats evenly between circles instead of butting into the lower one. */
+  top: calc(var(--stepper-indicator-size) + var(--stepper-container-label-gap));
+  bottom: var(--stepper-container-label-gap);
+}
+
+/* ---------- Compact (mobile dot rail) ----------
+ * The Figma "Breakpoints — mobile" / "Orientation — Mobile" representation:
+ * a number-less dot rail with labels stripped, connectors retained. The
+ * existing per-status fills already give the right look — completed = filled
+ * brand dot (keeps its white checkmark); current / available / pending = hollow
+ * ring; error = danger ring (keeps its cross). So we keep the indicator at full
+ * size and only hide the step numbers and the labels — the status icons stay.
+ *
+ * Driven by the `is-compact` host class, which the component sets when EITHER
+ * the `compact` prop is on OR the tracker auto-switches on a narrow container
+ * (ResizeObserver). */
+:host(.is-compact) {
+  --stepper-container-vertical-step-min-height: var(
+    --stepper-container-vertical-step-min-height-compact
+  );
+}
+
+:host(.is-compact) .indicator-number,
+:host(.is-compact) .label-block {
+  display: none;
+}
+
+/* Mobile blocked = hollow red ring (Figma), so drop the error glyph in compact.
+   The completed checkmark stays — it's the only FILLED dot and needs the tick. */
+:host(.is-compact) .step--error .indicator mud-icon {
+  display: none;
+}
+
+/* ---------- State: PENDING (default colours) ---------- */
+
+.step--pending .indicator {
+  border-color: var(--stepper-pending-indicator-border);
+  background: var(--stepper-pending-indicator-background);
+  color: var(--stepper-pending-indicator-text);
+}
+
+.step--pending .label {
+  color: var(--stepper-pending-label);
+}
+
+/* The connector lives INSIDE the step (after its body), so its colour is
+ * derived from the containing step's status — i.e. the connector to the
+ * right of a completed step is brand-blue. */
+.step--pending .connector {
+  background: var(--stepper-pending-connector);
+}
+
+.step--current .connector {
+  background: var(--stepper-pending-connector);
+}
+
+.step--completed .connector {
+  /* Filled/traveled rail is slightly heavier (1.5px) than the grey 1px. */
+  --_ct: var(--stepper-connector-thickness);
+  background: var(--stepper-completed-connector);
+}
+
+.step--error .connector {
+  --_ct: var(--stepper-connector-thickness);
+  background: var(--stepper-error-connector);
+}
+
+/* ---------- State: CURRENT ---------- */
+
+.step--current .indicator {
+  border-color: var(--stepper-current-indicator-border);
+  background: var(--stepper-current-indicator-background);
+  color: var(--stepper-current-indicator-text);
+}
+
+.step--current .label {
+  color: var(--stepper-current-label);
+  font-weight: var(--stepper-current-label-font-weight);
+}
+
+/* ---------- State: COMPLETED ---------- */
+
+.step--completed .indicator {
+  border-color: var(--stepper-completed-indicator-border);
+  background: var(--stepper-completed-indicator-background);
+  color: var(--stepper-completed-indicator-text);
+}
+
+.step--completed .label {
+  color: var(--stepper-completed-label);
+}
+
+/* ---------- State: ERROR ---------- */
+
+.step--error .indicator {
+  border-color: var(--stepper-error-indicator-border);
+  background: var(--stepper-error-indicator-background);
+  color: var(--stepper-error-indicator-text);
+}
+
+.step--error .label {
+  color: var(--stepper-error-label);
+}
+
+/* ---------- State: AVAILABLE (navigable future step) ---------- */
+/* Same brand-outline indicator as `current`; the connector it owns stays the
+ * pending grey (base .connector rule) because the path beyond it isn't travelled. */
+
+.step--available .indicator {
+  border-color: var(--stepper-available-indicator-border);
+  background: var(--stepper-available-indicator-background);
+  color: var(--stepper-available-indicator-text);
+}
+
+.step--available .label {
+  color: var(--stepper-available-label);
+}
+
+/* ---------- Navigable (actionable) labels render as brand underlined links ----------
+ * Per Figma 639:11170 / 639:11225: completed + available steps that are clickable
+ * (interactive mode) get a brand colour + underline. `current` stays neutral. */
+
+.step--actionable.step--completed .label {
+  color: var(--stepper-completed-label-actionable);
+}
+
+.step--actionable.step--completed .label,
+.step--actionable.step--available .label {
+  text-decoration: underline;
+  text-underline-position: from-font;
+}
+
+/* ---------- Disabled (in interactive mode) ---------- */
+
+.step--disabled .indicator {
+  border-color: var(--stepper-interactive-disabled-indicator-border);
+  color: var(--stepper-interactive-disabled-indicator-text);
+}
+
+.step--disabled .label {
+  color: var(--stepper-interactive-disabled-label);
+}
+
+.step--disabled .step-trigger,
+.step--disabled .step-content {
+  cursor: not-allowed;
+}
+
+/* ---------- Reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .indicator {
+    transition: none;
+  }
+}
+
+/* ---------- Slot fallback (advanced authoring) ---------- */
+::slotted(*) {
+  display: contents;
+}

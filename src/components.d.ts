@@ -24,32 +24,31 @@ import { HeaderLanguage, HeaderLanguageChangeDetail, HeaderMegaMenuSelectDetail,
 import { IconSize } from "./components/mud-icon/mud-icon.types";
 import { InfoBoxEmphasis, InfoBoxVariant } from "./components/mud-info-box/mud-info-box.types";
 import { InlineMessageSize, InlineMessageVariant } from "./components/mud-inline-message/mud-inline-message.types";
-import { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/mud-input/mud-input.types";
 import { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/mud-input-chip/mud-input-chip.types";
 import { LinkSize, LinkUnderline, LinkVariant } from "./components/mud-link/mud-link.types";
 import { LogoName } from "./components/mud-logo/mud-logo.types";
 import { MenuChangeDetail, MenuItemLeading, MenuItemSelectDetail, MenuSelectDetail, MenuType } from "./components/mud-menu/mud-menu.types";
 import { ModalActionsLayout, ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/mud-modal/mud-modal.types";
-import { NotificationVariant } from "./components/mud-notification/mud-notification.types";
 import { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/mud-numeric-input/mud-numeric-input.types";
 import { PaginationChangeDetail, PaginationSize } from "./components/mud-pagination/mud-pagination.types";
 import { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/mud-phone-input/mud-phone-input.types";
-import { ProgressTrackerOrientation, ProgressTrackerStep, ProgressTrackerStepClickDetail } from "./components/mud-progress-tracker/mud-progress-tracker.types";
 import { RadioChangeDetail, RadioSize } from "./components/mud-radio/mud-radio.types";
 import { ReceiptActionDetail, ReceiptParty, ReceiptService, ReceiptStatus } from "./components/mud-receipt/mud-receipt.types";
-import { SearchInputCircularChangeDetail, SearchInputCircularSearchDetail, SearchInputCircularSize, SearchInputCircularVariant } from "./components/mud-search-input-circular/mud-search-input-circular.types";
-import { SearchInputRectangularChangeDetail, SearchInputRectangularSearchDetail, SearchInputRectangularSize, SearchInputRectangularVariant } from "./components/mud-search-input-rectangular/mud-search-input-rectangular.types";
+import { SearchInputChangeDetail, SearchInputSearchDetail, SearchInputShape, SearchInputSize } from "./components/mud-search-input/mud-search-input.types";
 import { SegmentedControlChangeDetail, SegmentedControlSegment, SegmentedControlSize } from "./components/mud-segmented-control/mud-segmented-control.types";
-import { SelectChangeDetail, SelectInputSize, SelectInputVariant, SelectOption } from "./components/mud-select-input/mud-select-input.types";
+import { SelectChangeDetail, SelectOption, SelectSize, SelectVariant } from "./components/mud-select/mud-select.types";
 import { SeparatorOrientation, SeparatorSize, SeparatorVariant } from "./components/mud-separator/mud-separator.types";
 import { ServiceButtonAppearance, ServiceButtonType } from "./components/mud-service-button/mud-service-button.types";
 import { SidebarItemSelectDetail, SidebarItemToggleDetail } from "./components/mud-sidebar/mud-sidebar.types";
 import { SpinnerSize, SpinnerVariant } from "./components/mud-spinner/mud-spinner.types";
+import { StepperOrientation, StepperStep, StepperStepClickDetail } from "./components/mud-stepper/mud-stepper.types";
 import { SwitchChangeDetail } from "./components/mud-switch/mud-switch.types";
 import { TableColumn, TableHeaderStyle, TableRowClickDetail, TableRowData, TableRowStyle, TableSelectionChangeDetail, TableSortChangeDetail, TableSortDirection } from "./components/mud-table/mud-table.types";
 import { TabDescriptor, TabsChangeDetail, TabsSize } from "./components/mud-tabs/mud-tabs.types";
 import { TagSemantic, TagSize, TagType, TagVariant } from "./components/mud-tag/mud-tag.types";
+import { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/mud-text-input/mud-text-input.types";
 import { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from "./components/mud-textarea/mud-textarea.types";
+import { ToastVariant } from "./components/mud-toast/mud-toast.types";
 import { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, TooltipVariant } from "./components/mud-tooltip/mud-tooltip.types";
 export { AccordionAppearance, AccordionChangeDetail, AccordionIconPosition, AccordionItemDescriptor, AccordionMode, AccordionSize } from "./components/mud-accordion/mud-accordion.types";
 export { AvatarSize, AvatarType } from "./components/mud-avatar/mud-avatar.types";
@@ -70,32 +69,31 @@ export { HeaderLanguage, HeaderLanguageChangeDetail, HeaderMegaMenuSelectDetail,
 export { IconSize } from "./components/mud-icon/mud-icon.types";
 export { InfoBoxEmphasis, InfoBoxVariant } from "./components/mud-info-box/mud-info-box.types";
 export { InlineMessageSize, InlineMessageVariant } from "./components/mud-inline-message/mud-inline-message.types";
-export { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/mud-input/mud-input.types";
 export { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/mud-input-chip/mud-input-chip.types";
 export { LinkSize, LinkUnderline, LinkVariant } from "./components/mud-link/mud-link.types";
 export { LogoName } from "./components/mud-logo/mud-logo.types";
 export { MenuChangeDetail, MenuItemLeading, MenuItemSelectDetail, MenuSelectDetail, MenuType } from "./components/mud-menu/mud-menu.types";
 export { ModalActionsLayout, ModalCloseEvent, ModalCloseReason, ModalSize, ModalVariant } from "./components/mud-modal/mud-modal.types";
-export { NotificationVariant } from "./components/mud-notification/mud-notification.types";
 export { NumericInputChangeDetail, NumericInputErrorDetail, NumericInputSize, NumericInputStepDetail, NumericInputVariant } from "./components/mud-numeric-input/mud-numeric-input.types";
 export { PaginationChangeDetail, PaginationSize } from "./components/mud-pagination/mud-pagination.types";
 export { PhoneInputChangeDetail, PhoneInputCountryChangeDetail, PhoneInputInputDetail, PhoneInputSize, PhoneInputType, PhoneInputVariant } from "./components/mud-phone-input/mud-phone-input.types";
-export { ProgressTrackerOrientation, ProgressTrackerStep, ProgressTrackerStepClickDetail } from "./components/mud-progress-tracker/mud-progress-tracker.types";
 export { RadioChangeDetail, RadioSize } from "./components/mud-radio/mud-radio.types";
 export { ReceiptActionDetail, ReceiptParty, ReceiptService, ReceiptStatus } from "./components/mud-receipt/mud-receipt.types";
-export { SearchInputCircularChangeDetail, SearchInputCircularSearchDetail, SearchInputCircularSize, SearchInputCircularVariant } from "./components/mud-search-input-circular/mud-search-input-circular.types";
-export { SearchInputRectangularChangeDetail, SearchInputRectangularSearchDetail, SearchInputRectangularSize, SearchInputRectangularVariant } from "./components/mud-search-input-rectangular/mud-search-input-rectangular.types";
+export { SearchInputChangeDetail, SearchInputSearchDetail, SearchInputShape, SearchInputSize } from "./components/mud-search-input/mud-search-input.types";
 export { SegmentedControlChangeDetail, SegmentedControlSegment, SegmentedControlSize } from "./components/mud-segmented-control/mud-segmented-control.types";
-export { SelectChangeDetail, SelectInputSize, SelectInputVariant, SelectOption } from "./components/mud-select-input/mud-select-input.types";
+export { SelectChangeDetail, SelectOption, SelectSize, SelectVariant } from "./components/mud-select/mud-select.types";
 export { SeparatorOrientation, SeparatorSize, SeparatorVariant } from "./components/mud-separator/mud-separator.types";
 export { ServiceButtonAppearance, ServiceButtonType } from "./components/mud-service-button/mud-service-button.types";
 export { SidebarItemSelectDetail, SidebarItemToggleDetail } from "./components/mud-sidebar/mud-sidebar.types";
 export { SpinnerSize, SpinnerVariant } from "./components/mud-spinner/mud-spinner.types";
+export { StepperOrientation, StepperStep, StepperStepClickDetail } from "./components/mud-stepper/mud-stepper.types";
 export { SwitchChangeDetail } from "./components/mud-switch/mud-switch.types";
 export { TableColumn, TableHeaderStyle, TableRowClickDetail, TableRowData, TableRowStyle, TableSelectionChangeDetail, TableSortChangeDetail, TableSortDirection } from "./components/mud-table/mud-table.types";
 export { TabDescriptor, TabsChangeDetail, TabsSize } from "./components/mud-tabs/mud-tabs.types";
 export { TagSemantic, TagSize, TagType, TagVariant } from "./components/mud-tag/mud-tag.types";
+export { InputChangeDetail, InputSize, InputType, InputVariant } from "./components/mud-text-input/mud-text-input.types";
 export { TextareaChangeDetail, TextareaResize, TextareaSize, TextareaVariant } from "./components/mud-textarea/mud-textarea.types";
+export { ToastVariant } from "./components/mud-toast/mud-toast.types";
 export { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, TooltipVariant } from "./components/mud-tooltip/mud-tooltip.types";
 export namespace Components {
     /**
@@ -560,7 +558,7 @@ export namespace Components {
          */
         "disabled": boolean;
         /**
-          * Plain-text error message shown below the label when `invalid` is set. Pairs with the `circle-error-filled` icon and is wired to the control via `aria-describedby`. When present (and `invalid`) it replaces the supporting text. Mirrors the `errorText` convention of `mud-input` / `mud-textarea`.
+          * Plain-text error message shown below the label when `invalid` is set. Pairs with the `circle-error-filled` icon and is wired to the control via `aria-describedby`. When present (and `invalid`) it replaces the supporting text. Mirrors the `errorText` convention of `mud-text-input` / `mud-textarea`.
          */
         "errorText"?: string;
         /**
@@ -1368,7 +1366,7 @@ export namespace Components {
     /**
      * Informational Box — an inline, in-content callout that highlights key
      * messages, announcements, alerts, or explanations within the page flow.
-     * Unlike `mud-notification` (a fixed-width corner toast) or `mud-banner` (a
+     * Unlike `mud-toast` (a fixed-width corner toast) or `mud-banner` (a
      * full-width page-level bar), the info box sits inside the content column,
      * fills its container's width, and supports rich content: an optional bold
      * heading, a multi-line body (default slot), an optional inline action group
@@ -1381,7 +1379,7 @@ export namespace Components {
      * The box is static in-flow content, so it is **not** an ARIA live region
      * (that would re-announce on every render). The icon is decorative; the
      * heading and body are read in normal reading order. For transient, announced
-     * messages use `mud-notification` / `mud-banner` instead.
+     * messages use `mud-toast` / `mud-banner` instead.
      * @element mud-info-box
      */
     interface MudInfoBox {
@@ -1432,7 +1430,7 @@ export namespace Components {
      * It is plain in-flow text, **not** an ARIA live region. When used as form
      * feedback, associate it with the field via `aria-describedby` (and
      * `aria-invalid` for errors) on the consumer side; for a transient, announced
-     * message use `mud-notification` / `mud-banner`. The icon is decorative.
+     * message use `mud-toast` / `mud-banner`. The icon is decorative.
      * @element mud-inline-message
      */
     interface MudInlineMessage {
@@ -1455,115 +1453,6 @@ export namespace Components {
           * @default 'info'
          */
         "variant": InlineMessageVariant;
-    }
-    /**
-     * Input — single-line text-entry control.
-     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
-     * inside shadow DOM. Form participation works via `formAssociated` +
-     * `ElementInternals`. The component is the canonical text-input primitive;
-     * specialised inputs (date, search, phone, etc.) compose around it.
-     * @element mud-input
-     */
-    interface MudInput {
-        /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
-         */
-        "ariaLabel"?: string;
-        /**
-          * Native `autocomplete` attribute forwarded to the internal control.
-         */
-        "autocomplete"?: string;
-        /**
-          * Accessible label for the clear (×) button. Only used when `clearable` is set.
-          * @default 'Golește câmpul'
-         */
-        "clearLabel": string;
-        /**
-          * Shows a trailing clear (×) button while the control holds a value. Clearing empties the field, emits `mudInput` + `mudChange`, and returns focus to the input. Suppressed when disabled, read-only, or loading.
-          * @default false
-         */
-        "clearable": boolean;
-        /**
-          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
-          * @default false
-         */
-        "disabled": boolean;
-        /**
-          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
-         */
-        "errorText"?: string;
-        /**
-          * Plain-text helper / hint shown below the control.
-         */
-        "helperText"?: string;
-        /**
-          * Native `inputmode` hint forwarded to the internal control.
-         */
-        "inputmode"?: string;
-        /**
-          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
-          * @default false
-         */
-        "invalid": boolean;
-        /**
-          * Plain-text label. Use the `label` slot for richer content.
-         */
-        "label"?: string;
-        /**
-          * Loading state. When true the control becomes uninteractive and a trailing spinner replaces the `icon-end` slot. The host carries `aria-busy="true"` for assistive technologies.
-          * @default false
-         */
-        "loading": boolean;
-        /**
-          * Native `maxlength` constraint.
-         */
-        "maxLength"?: number;
-        /**
-          * Native `minlength` constraint.
-         */
-        "minLength"?: number;
-        /**
-          * Form-control `name`. Used during form submission.
-         */
-        "name"?: string;
-        /**
-          * Native `pattern` regex forwarded to the internal control.
-         */
-        "pattern"?: string;
-        /**
-          * Placeholder shown when the control is empty.
-         */
-        "placeholder"?: string;
-        /**
-          * Renders the field read-only. The control remains focusable and copyable.
-          * @default false
-         */
-        "readonly": boolean;
-        /**
-          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
-          * @default false
-         */
-        "required": boolean;
-        /**
-          * Visual size rung.
-          * @default 'md'
-         */
-        "size": InputSize;
-        /**
-          * Native input `type`.
-          * @default 'text'
-         */
-        "type": InputType;
-        /**
-          * Current value of the control. Reflects to the host attribute.
-          * @default ''
-         */
-        "value": string;
-        /**
-          * Color treatment. `destructive` is forced when `invalid` is set.
-          * @default 'default'
-         */
-        "variant": InputVariant;
     }
     /**
      * Input Chip — multi-value text-entry control where each confirmed value
@@ -1926,54 +1815,10 @@ export namespace Components {
         "variant": ModalVariant;
     }
     /**
-     * Notification — semantic toast message (350px filled surface, 8px radius).
-     * Renders a leading icon, an optional bold heading, the message body
-     * (default slot), an optional inline action group (`actions` slot) and an
-     * optional trailing close button.
-     * Pattern B (atom-display + interactive close): the close affordance lives
-     * inside shadow DOM so it participates in tab order with a real
-     * `button` role. The body itself is not interactive.
-     * `variant` selects the semantic color family — `info`, `warning`, `success`,
-     * or `error` — each a filled toast surface with its own leading icon.
-     * Live-region routing:
-     * - `info` / `success` → `role="status"` + `aria-live="polite"`
-     * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
-     * @element mud-notification
-     */
-    interface MudNotification {
-        /**
-          * Forwarded to the host as `aria-label`. Use this to give the entire notification an explicit accessible name when the body content alone is not descriptive enough.
-         */
-        "ariaLabel"?: string;
-        /**
-          * When `true`, renders a trailing close button. Activating it emits `mudClose`; the consumer is responsible for removing the notification from the DOM.
-          * @default false
-         */
-        "closable": boolean;
-        /**
-          * Close-button accessible label. Defaults to the Romanian "Închide". Provide an alternative for non-Romanian locales.
-          * @default 'Închide'
-         */
-        "closeLabel": string;
-        /**
-          * Override the default `mud-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
-         */
-        "iconName"?: string;
-        /**
-          * Optional bold title rendered above the body.
-         */
-        "titleText"?: string;
-        /**
-          * Semantic color family.
-          * @default 'info'
-         */
-        "variant": NotificationVariant;
-    }
-    /**
      * Numeric Input — numeric-entry control with stacked step buttons.
      * Pattern B (atom-interactive, form-associated): renders its own `<input>`
      * inside shadow DOM and pairs it with a trailing stepper stack (chevron-up
-     * over chevron-bottom). Shares the visual primitives of `mud-input` (border,
+     * over chevron-bottom). Shares the visual primitives of `mud-text-input` (border,
      * focus ring, label, helper / error, sizes, states) and adds a
      * `--numeric-input-stepper-*` token namespace for the increment / decrement
      * affordance.
@@ -2302,54 +2147,6 @@ export namespace Components {
         "variant": PhoneInputVariant;
     }
     /**
-     * Progress Tracker (Stepper) — visualises a user's position in a multi-step process.
-     * Two flavours:
-     * - **Display tracker** (`interactive=false`, default) — read-only. Each step is a
-     *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
-     *   submissions where the parent app drives navigation.
-     * - **Interactive tracker** (`interactive=true`) — each completed (and the current)
-     *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
-     *   non-actionable per the WAI-ARIA stepper pattern.
-     * State legend (Figma node 634:10573):
-     *   - `pending`    — neutral grey ring + faded number, non-navigable
-     *   - `current`    — brand ring + brand number, neutral label
-     *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
-     *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
-     *   - `error`      — danger ring + danger cross, neutral label
-     * The component renders an ordered list with `role="list"` for AT compatibility
-     * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
-     * @element mud-progress-tracker
-     */
-    interface MudProgressTracker {
-        /**
-          * Accessible name for the surrounding list landmark. Falls back to `'Progress tracker'` (English) — Romanian consumers can pass `'Pași'`.
-         */
-        "ariaLabel"?: string;
-        /**
-          * Compact "dot rail" rendering — the mobile breakpoint from Figma. Hides the step numbers and labels, leaving a rail of dots; per-status fills convey progress (filled brand + checkmark = completed, hollow ring = current / available / pending, danger ring + cross = error). Status icons are kept; only the numeric indicators and text labels are hidden. Works in both orientations.
-          * @default false
-         */
-        "compact": boolean;
-        /**
-          * Optional zero-based index of the current step. When set, it overrides the `status: 'current'` value in `steps`. Mostly useful for parent-driven flows that mutate a single number rather than the whole array.
-         */
-        "currentStep"?: number;
-        /**
-          * When true, completed, current, and available steps render as `<button>` elements and emit `mudStepClick`. Pending and error steps remain non-actionable in this mode.
-          * @default false
-         */
-        "interactive": boolean;
-        /**
-          * Layout orientation.   - `horizontal` (default): steps flow left to right; labels render under indicators.   - `vertical`: steps stack top to bottom; labels render to the right of indicators.
-          * @default 'horizontal'
-         */
-        "orientation": ProgressTrackerOrientation;
-        /**
-          * Declarative step list. Each item: `{ id?, label, supportingText?, status, iconName?, disabled? }`. `status` drives the visual state and ARIA semantics — see {@link ProgressTrackerStepStatus}.
-         */
-        "steps"?: ProgressTrackerStep[];
-    }
-    /**
      * Radio — single-select form input atom.
      * Pattern B (atom-interactive, form-associated): renders its own
      * `<input type="radio">` inside shadow DOM and paints the visual circle
@@ -2553,154 +2350,28 @@ export namespace Components {
         "transactionIdLabel"?: string;
     }
     /**
-     * Search Input (circular) — single-line search-entry control with a fully
-     * rounded (pill) silhouette.
-     * Pattern B (atom-interactive, form-associated): renders its own
-     * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
-     * icon and an optional trailing clear `×` button that appears whenever the
-     * control carries a value. Behavior, props, slots, events, keyboard contract,
-     * ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
-     * `mud-search-input-rectangular` — the only visual difference is the
-     * silhouette: corners flip to `borderRadius.full` (9999px). The trailing
-     * submit button (when `with-button` is set) inherits the pill silhouette via
-     * `borderRadius.full`, rendering as a perfect circle that hugs the pill end
-     * per Figma master `933:29721`.
-     * The Republic of Moldova Unified Design System library catalogues circular
-     * and rectangular search fields as separate component_sets, so we ship them
-     * as distinct atoms with parallel token namespaces (`--search-input-circular-*`
-     * vs `--search-input-rectangular-*`).
-     * Optional axes per Figma master `933:29721`:
-     * - `loading` — async query is in flight; a trailing spinner appears next to
-     *   the value/placeholder and the control is announced as `aria-busy`.
-     * - `with-button` — adds a trailing brand-blue circular submit button that
-     *   fires `mudSearch` on click. Coexists with the clear button and the
-     *   loading spinner.
-     * @element mud-search-input-circular
-     */
-    interface MudSearchInputCircular {
-        /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
-         */
-        "ariaLabel"?: string;
-        /**
-          * Native `autocomplete` attribute forwarded to the internal control.
-         */
-        "autocomplete"?: string;
-        /**
-          * Accessible label for the trailing clear button. Defaults to Romanian "Șterge" per the institutional voice.
-          * @default 'Șterge'
-         */
-        "clearLabel": string;
-        /**
-          * Shows the trailing clear `×` button when a value is present. Set to `false` to suppress the affordance entirely (useful for read-only or always-on filters).
-          * @default true
-         */
-        "clearable": boolean;
-        /**
-          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
-          * @default false
-         */
-        "disabled": boolean;
-        /**
-          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
-         */
-        "errorText"?: string;
-        /**
-          * Plain-text helper / hint shown below the control.
-         */
-        "helperText"?: string;
-        /**
-          * Icon name for the leading icon (rendered via the local SVG library). Override by providing an element to the `icon-start` slot.
-          * @default 'search'
-         */
-        "iconName": string;
-        /**
-          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
-          * @default false
-         */
-        "invalid": boolean;
-        /**
-          * Plain-text label. Use the `label` slot for richer content.
-         */
-        "label"?: string;
-        /**
-          * Indicates an in-flight query. Keeps the leading magnifying-glass icon as the role indicator and reveals a trailing brand-coloured `mud-spinner` next to the value; the clear `×` is suppressed while the query is in flight and the control is announced as `aria-busy`. The field stays focusable; emitting `mudSearch` while loading is the consumer's responsibility (typically debounced).
-          * @default false
-         */
-        "loading": boolean;
-        /**
-          * Native `maxlength` constraint.
-         */
-        "maxLength"?: number;
-        /**
-          * Native `minlength` constraint.
-         */
-        "minLength"?: number;
-        /**
-          * Form-control `name`. Used during form submission.
-         */
-        "name"?: string;
-        /**
-          * Placeholder shown when the control is empty.
-         */
-        "placeholder"?: string;
-        /**
-          * Renders the field read-only. The control remains focusable; the clear affordance is suppressed.
-          * @default false
-         */
-        "readonly": boolean;
-        /**
-          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
-          * @default false
-         */
-        "required": boolean;
-        /**
-          * Visual size rung.
-          * @default 'md'
-         */
-        "size": SearchInputCircularSize;
-        /**
-          * Accessible label for the trailing submit button. Defaults to Romanian "Caută" per the institutional voice.
-          * @default 'Caută'
-         */
-        "submitLabel": string;
-        /**
-          * Current value of the control. Reflects to the host attribute.
-          * @default ''
-         */
-        "value": string;
-        /**
-          * Color treatment. `destructive` is forced when `invalid` is set.
-          * @default 'default'
-         */
-        "variant": SearchInputCircularVariant;
-        /**
-          * Renders a trailing brand-blue circular submit button (the Figma "Button=True" axis on master `933:29721`). Clicking the button — or pressing Enter inside the input — dispatches `mudSearch` with the current value. When the field is empty or disabled, the button enters a disabled visual state and does not fire the event.
-          * @default false
-         */
-        "withButton": boolean;
-    }
-    /**
-     * Search Input (rectangular) — single-line search-entry control.
+     * Search Input — single-line search-entry control.
      * Pattern B (atom-interactive, form-associated): renders its own
      * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
      * icon and an optional trailing clear `×` button that appears whenever the
      * control carries a value. Visual primitives (border, focus ring, label,
-     * helper / error, sizes, states) are shared with `mud-input`; specific
+     * helper, sizes, states) are shared with `mud-text-input`; specific
      * affordances (icon-start, icon-end-clear, submit-button) live in the
-     * `--search-input-rectangular-*` token namespace.
-     * Rectangular shape is the default sibling of `mud-search-input-circular`
-     * (pill). The two ship as distinct components per the Figma component-set
-     * separation in the Republic of Moldova Unified Design System library.
-     * Optional axes per Figma master `933:29099`:
+     * `--search-input-*` token namespace.
+     * Per the Figma "Search Input" component the field has two silhouettes,
+     * selected via the `shape` prop:
+     * - `rectangular` (default) — corners use `borderRadius.8`.
+     * - `circular` — corners flip to `borderRadius.full` (9999px), and the
+     *   trailing submit button becomes a perfect circle.
+     * Optional axes per Figma "Search Input":
      * - `loading` — async query is in flight; a trailing spinner appears next to
      *   the value/placeholder and the control is announced as `aria-busy`.
      * - `with-button` — adds a trailing brand-blue submit button that fires
      *   `mudSearch` on click. Coexists with the clear button and the loading
      *   spinner.
-     * @element mud-search-input-rectangular
+     * @element mud-search-input
      */
-    interface MudSearchInputRectangular {
+    interface MudSearchInput {
         /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
@@ -2715,19 +2386,15 @@ export namespace Components {
          */
         "clearLabel": string;
         /**
-          * Shows the trailing clear `×` button when a value is present. Set to `false` to suppress the affordance entirely (useful for read-only or always-on filters).
+          * Shows the trailing clear `×` button when a value is present. Set to `false` to suppress the affordance entirely (useful for always-on filters).
           * @default true
          */
         "clearable": boolean;
         /**
-          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * Disables interactivity. The internal control receives the native `disabled` attribute.
           * @default false
          */
         "disabled": boolean;
-        /**
-          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
-         */
-        "errorText"?: string;
         /**
           * Plain-text helper / hint shown below the control.
          */
@@ -2737,11 +2404,6 @@ export namespace Components {
           * @default 'search'
          */
         "iconName": string;
-        /**
-          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
-          * @default false
-         */
-        "invalid": boolean;
         /**
           * Plain-text label. Use the `label` slot for richer content.
          */
@@ -2768,20 +2430,20 @@ export namespace Components {
          */
         "placeholder"?: string;
         /**
-          * Renders the field read-only. The control remains focusable; the clear affordance is suppressed.
-          * @default false
-         */
-        "readonly": boolean;
-        /**
           * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
           * @default false
          */
         "required": boolean;
         /**
-          * Visual size rung.
-          * @default 'md'
+          * Silhouette. `rectangular` uses lightly-rounded corners; `circular` renders a fully-rounded (pill) field with a circular submit button.
+          * @default 'rectangular'
          */
-        "size": SearchInputRectangularSize;
+        "shape": SearchInputShape;
+        /**
+          * Visual size rung. `sm` is 40px tall, `md` is 48px tall.
+          * @default 'sm'
+         */
+        "size": SearchInputSize;
         /**
           * Accessible label for the trailing submit button. Defaults to Romanian "Caută" per the institutional voice.
           * @default 'Caută'
@@ -2792,11 +2454,6 @@ export namespace Components {
           * @default ''
          */
         "value": string;
-        /**
-          * Color treatment. `destructive` is forced when `invalid` is set.
-          * @default 'default'
-         */
-        "variant": SearchInputRectangularVariant;
         /**
           * Renders a trailing brand-blue submit button (the Figma "Button=True" axis). Clicking the button — or pressing Enter inside the input — dispatches `mudSearch` with the current value. When the field is empty or disabled, the button enters a disabled visual state and does not fire the event.
           * @default false
@@ -2855,17 +2512,20 @@ export namespace Components {
         "value"?: string;
     }
     /**
-     * Select Input — single-select dropdown atom.
+     * Select — single-select dropdown atom.
+     * Matches the Figma `select-input` component (page "Select (Dropdown)",
+     * node 411:23995) — kept here under the shorter `mud-select` name. Size rungs
+     * follow Figma's own names: `medium` (40px) and `large` (48px).
      * Pattern B (atom-interactive, form-associated): renders a custom-styled
      * trigger button and a listbox popover inside shadow DOM. Form participation
      * works via `formAssociated` + `ElementInternals`. Shares the visual primitives
-     * of `mud-input` (border, focus ring, label, helper / error text, sizes,
+     * of `mud-text-input` (border, focus ring, label, helper / error text, sizes,
      * states) and adds a trailing chevron icon, listbox menu, and keyboard
      * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
      * pattern.
-     * @element mud-select-input
+     * @element mud-select
      */
-    interface MudSelectInput {
+    interface MudSelect {
         /**
           * Accessible name. Mirrors to the trigger's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
@@ -2921,9 +2581,9 @@ export namespace Components {
         "required": boolean;
         /**
           * Visual size rung.
-          * @default 'md'
+          * @default 'medium'
          */
-        "size": SelectInputSize;
+        "size": SelectSize;
         /**
           * Selected value. Reflects to the host attribute. Set to empty string when no option is selected.
           * @default ''
@@ -2933,7 +2593,7 @@ export namespace Components {
           * Color treatment. `destructive` is forced when `invalid` is set.
           * @default 'default'
          */
-        "variant": SelectInputVariant;
+        "variant": SelectVariant;
     }
     /**
      * Separator — visual divider between groups of content or UI components.
@@ -3152,6 +2812,56 @@ export namespace Components {
           * @default 'brand'
          */
         "variant": SpinnerVariant;
+    }
+    /**
+     * Stepper — visualises a user's position in a multi-step process.
+     * Matches the Figma `progress-tracker` component (page "Progress Tracker
+     * (Stepper)", node 267:6905) — kept here under the shorter `mud-stepper` name.
+     * Two flavours:
+     * - **Display stepper** (`interactive=false`, default) — read-only. Each step is a
+     *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
+     *   submissions where the parent app drives navigation.
+     * - **Interactive stepper** (`interactive=true`) — each completed (and the current)
+     *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
+     *   non-actionable per the WAI-ARIA stepper pattern.
+     * State legend (Figma node 634:10573):
+     *   - `pending`    — neutral grey ring + faded number, non-navigable
+     *   - `current`    — brand ring + brand number, neutral label
+     *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
+     *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
+     *   - `error`      — danger ring + danger cross, neutral label
+     * The component renders an ordered list with `role="list"` for AT compatibility
+     * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
+     * @element mud-stepper
+     */
+    interface MudStepper {
+        /**
+          * Accessible name for the surrounding list landmark. Falls back to `'Progress tracker'` (English) — Romanian consumers can pass `'Pași'`.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Compact "dot rail" rendering — the mobile breakpoint from Figma. Hides the step numbers and labels, leaving a rail of dots; per-status fills convey progress (filled brand + checkmark = completed, hollow ring = current / available / pending, danger ring + cross = error). Status icons are kept; only the numeric indicators and text labels are hidden. Works in both orientations.
+          * @default false
+         */
+        "compact": boolean;
+        /**
+          * Optional **zero-based** index of the current step (so the 3rd step is `currentStep={2}`). When set it drives the whole progression and the per-item `status` in `steps` is ignored: every step **before** the index renders `'completed'`, the step **at** the index renders `'current'`, every step **after** renders `'pending'`. Pass `currentStep={steps.length}` (one past the last index) to mark the flow finished — every step then renders `'completed'`.  The one exception: a step whose `status` is `'error'` keeps `'error'` regardless of position (a failed step stays failed while you navigate). A negative or non-integer value is ignored and the array's own statuses stand. Use this for parent-driven flows that track a single number; for mixed states (`'available'` future steps, several errors, etc.) drive each step through `steps` and leave `currentStep` unset.
+         */
+        "currentStep"?: number;
+        /**
+          * When true, completed, current, and available steps render as `<button>` elements and emit `mudStepClick`. Pending and error steps remain non-actionable in this mode.
+          * @default false
+         */
+        "interactive": boolean;
+        /**
+          * Layout orientation.   - `horizontal` (default): steps flow left to right; labels render under indicators.   - `vertical`: steps stack top to bottom; labels render to the right of indicators.
+          * @default 'horizontal'
+         */
+        "orientation": StepperOrientation;
+        /**
+          * Declarative step list. Each item: `{ id?, label, supportingText?, status, iconName?, disabled? }`. `status` drives the visual state and ARIA semantics — see {@link StepperStepStatus}.
+         */
+        "steps"?: StepperStep[];
     }
     /**
      * Switch — binary on/off toggle atom (form-associated).
@@ -3426,10 +3136,119 @@ export namespace Components {
         "variant": TagVariant;
     }
     /**
+     * Input — single-line text-entry control.
+     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+     * inside shadow DOM. Form participation works via `formAssociated` +
+     * `ElementInternals`. The component is the canonical text-input primitive;
+     * specialised inputs (date, search, phone, etc.) compose around it.
+     * @element mud-text-input
+     */
+    interface MudTextInput {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Native `autocomplete` attribute forwarded to the internal control.
+         */
+        "autocomplete"?: string;
+        /**
+          * Accessible label for the clear (×) button. Only used when `clearable` is set.
+          * @default 'Golește câmpul'
+         */
+        "clearLabel": string;
+        /**
+          * Shows a trailing clear (×) button while the control holds a value. Clearing empties the field, emits `mudInput` + `mudChange`, and returns focus to the input. Suppressed when disabled, read-only, or loading.
+          * @default false
+         */
+        "clearable": boolean;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
+         */
+        "errorText"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Native `inputmode` hint forwarded to the internal control.
+         */
+        "inputmode"?: string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid": boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Loading state. When true the control becomes uninteractive and a trailing spinner replaces the `icon-end` slot. The host carries `aria-busy="true"` for assistive technologies.
+          * @default false
+         */
+        "loading": boolean;
+        /**
+          * Native `maxlength` constraint.
+         */
+        "maxLength"?: number;
+        /**
+          * Native `minlength` constraint.
+         */
+        "minLength"?: number;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Native `pattern` regex forwarded to the internal control.
+         */
+        "pattern"?: string;
+        /**
+          * Placeholder shown when the control is empty.
+         */
+        "placeholder"?: string;
+        /**
+          * Renders the field read-only. The control remains focusable and copyable.
+          * @default false
+         */
+        "readonly": boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required": boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size": InputSize;
+        /**
+          * Native input `type`.
+          * @default 'text'
+         */
+        "type": InputType;
+        /**
+          * Current value of the control. Reflects to the host attribute.
+          * @default ''
+         */
+        "value": string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant": InputVariant;
+    }
+    /**
      * Text Area — multi-line text-entry control.
      * Pattern B (atom-interactive, form-associated): renders its own `<textarea>`
      * inside shadow DOM. Form participation works via `formAssociated` +
-     * `ElementInternals`. Mirrors the `mud-input` contract for label, helper,
+     * `ElementInternals`. Mirrors the `mud-text-input` contract for label, helper,
      * error and variant treatment, and adds a vertical resize handle plus an
      * optional character counter.
      * @element mud-textarea
@@ -3513,6 +3332,54 @@ export namespace Components {
           * @default 'default'
          */
         "variant": TextareaVariant;
+    }
+    /**
+     * Toast — semantic toast message (350px filled surface, 8px radius).
+     * Matches the Figma `toast` component (page "Messaging (Notification)"):
+     * a leading icon, an optional bold heading, the message body (default slot),
+     * an optional inline link/action group (`actions` slot) and a trailing close
+     * button (shown by default — `closable` defaults to `true`).
+     * Placement, vertical stacking and auto-dismiss are the consumer's
+     * responsibility — this atom is just the surface. Its entrance animation
+     * (slide-down + fade-in) plays once on mount.
+     * Pattern B (atom-display + interactive close): the close affordance lives
+     * inside shadow DOM so it participates in tab order with a real
+     * `button` role. The body itself is not interactive.
+     * `variant` selects the semantic color family — `info`, `warning`, `success`,
+     * or `error` — each a filled toast surface with its own leading icon.
+     * Live-region routing:
+     * - `info` / `success` → `role="status"` + `aria-live="polite"`
+     * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
+     * @element mud-toast
+     */
+    interface MudToast {
+        /**
+          * Forwarded to the host as `aria-label`. Use this to give the entire toast an explicit accessible name when the body content alone is not descriptive enough.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Renders a trailing close button. Activating it emits `mudClose`; the consumer is responsible for removing the toast from the DOM. Defaults to `true` per the Figma `toast` component (`Close = true`); set `closable="false"` for a toast the user cannot dismiss manually (e.g. one that only auto-dismisses).
+          * @default true
+         */
+        "closable": boolean;
+        /**
+          * Close-button accessible label. Defaults to the Romanian "Închide". Provide an alternative for non-Romanian locales.
+          * @default 'Închide'
+         */
+        "closeLabel": string;
+        /**
+          * Override the default `mud-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
+         */
+        "iconName"?: string;
+        /**
+          * Optional bold title rendered above the body.
+         */
+        "titleText"?: string;
+        /**
+          * Semantic color family.
+          * @default 'info'
+         */
+        "variant": ToastVariant;
     }
     /**
      * Tooltip — transient label, structured popover, or coach mark anchored to a
@@ -3681,10 +3548,6 @@ export interface MudInfoBoxCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudInfoBoxElement;
 }
-export interface MudInputCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLMudInputElement;
-}
 export interface MudInputChipCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudInputChipElement;
@@ -3705,10 +3568,6 @@ export interface MudModalCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudModalElement;
 }
-export interface MudNotificationCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLMudNotificationElement;
-}
 export interface MudNumericInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudNumericInputElement;
@@ -3721,10 +3580,6 @@ export interface MudPhoneInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudPhoneInputElement;
 }
-export interface MudProgressTrackerCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLMudProgressTrackerElement;
-}
 export interface MudRadioCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudRadioElement;
@@ -3733,25 +3588,25 @@ export interface MudReceiptCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudReceiptElement;
 }
-export interface MudSearchInputCircularCustomEvent<T> extends CustomEvent<T> {
+export interface MudSearchInputCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLMudSearchInputCircularElement;
-}
-export interface MudSearchInputRectangularCustomEvent<T> extends CustomEvent<T> {
-    detail: T;
-    target: HTMLMudSearchInputRectangularElement;
+    target: HTMLMudSearchInputElement;
 }
 export interface MudSegmentedControlCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudSegmentedControlElement;
 }
-export interface MudSelectInputCustomEvent<T> extends CustomEvent<T> {
+export interface MudSelectCustomEvent<T> extends CustomEvent<T> {
     detail: T;
-    target: HTMLMudSelectInputElement;
+    target: HTMLMudSelectElement;
 }
 export interface MudSidebarItemCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudSidebarItemElement;
+}
+export interface MudStepperCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLMudStepperElement;
 }
 export interface MudSwitchCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -3769,9 +3624,17 @@ export interface MudTabsCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudTabsElement;
 }
+export interface MudTextInputCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLMudTextInputElement;
+}
 export interface MudTextareaCustomEvent<T> extends CustomEvent<T> {
     detail: T;
     target: HTMLMudTextareaElement;
+}
+export interface MudToastCustomEvent<T> extends CustomEvent<T> {
+    detail: T;
+    target: HTMLMudToastElement;
 }
 export interface MudTooltipCustomEvent<T> extends CustomEvent<T> {
     detail: T;
@@ -4406,7 +4269,7 @@ declare global {
     /**
      * Informational Box — an inline, in-content callout that highlights key
      * messages, announcements, alerts, or explanations within the page flow.
-     * Unlike `mud-notification` (a fixed-width corner toast) or `mud-banner` (a
+     * Unlike `mud-toast` (a fixed-width corner toast) or `mud-banner` (a
      * full-width page-level bar), the info box sits inside the content column,
      * fills its container's width, and supports rich content: an optional bold
      * heading, a multi-line body (default slot), an optional inline action group
@@ -4419,7 +4282,7 @@ declare global {
      * The box is static in-flow content, so it is **not** an ARIA live region
      * (that would re-announce on every render). The icon is decorative; the
      * heading and body are read in normal reading order. For transient, announced
-     * messages use `mud-notification` / `mud-banner` instead.
+     * messages use `mud-toast` / `mud-banner` instead.
      * @element mud-info-box
      */
     interface HTMLMudInfoBoxElement extends Components.MudInfoBox, HTMLStencilElement {
@@ -4449,7 +4312,7 @@ declare global {
      * It is plain in-flow text, **not** an ARIA live region. When used as form
      * feedback, associate it with the field via `aria-describedby` (and
      * `aria-invalid` for errors) on the consumer side; for a transient, announced
-     * message use `mud-notification` / `mud-banner`. The icon is decorative.
+     * message use `mud-toast` / `mud-banner`. The icon is decorative.
      * @element mud-inline-message
      */
     interface HTMLMudInlineMessageElement extends Components.MudInlineMessage, HTMLStencilElement {
@@ -4457,34 +4320,6 @@ declare global {
     var HTMLMudInlineMessageElement: {
         prototype: HTMLMudInlineMessageElement;
         new (): HTMLMudInlineMessageElement;
-    };
-    interface HTMLMudInputElementEventMap {
-        "mudInput": InputChangeDetail;
-        "mudChange": InputChangeDetail;
-        "mudFocus": FocusEvent;
-        "mudBlur": FocusEvent;
-    }
-    /**
-     * Input — single-line text-entry control.
-     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
-     * inside shadow DOM. Form participation works via `formAssociated` +
-     * `ElementInternals`. The component is the canonical text-input primitive;
-     * specialised inputs (date, search, phone, etc.) compose around it.
-     * @element mud-input
-     */
-    interface HTMLMudInputElement extends Components.MudInput, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLMudInputElementEventMap>(type: K, listener: (this: HTMLMudInputElement, ev: MudInputCustomEvent<HTMLMudInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLMudInputElementEventMap>(type: K, listener: (this: HTMLMudInputElement, ev: MudInputCustomEvent<HTMLMudInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLMudInputElement: {
-        prototype: HTMLMudInputElement;
-        new (): HTMLMudInputElement;
     };
     interface HTMLMudInputChipElementEventMap {
         "mudChange": InputChipChangeDetail;
@@ -4663,38 +4498,6 @@ declare global {
         prototype: HTMLMudModalElement;
         new (): HTMLMudModalElement;
     };
-    interface HTMLMudNotificationElementEventMap {
-        "mudClose": void;
-    }
-    /**
-     * Notification — semantic toast message (350px filled surface, 8px radius).
-     * Renders a leading icon, an optional bold heading, the message body
-     * (default slot), an optional inline action group (`actions` slot) and an
-     * optional trailing close button.
-     * Pattern B (atom-display + interactive close): the close affordance lives
-     * inside shadow DOM so it participates in tab order with a real
-     * `button` role. The body itself is not interactive.
-     * `variant` selects the semantic color family — `info`, `warning`, `success`,
-     * or `error` — each a filled toast surface with its own leading icon.
-     * Live-region routing:
-     * - `info` / `success` → `role="status"` + `aria-live="polite"`
-     * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
-     * @element mud-notification
-     */
-    interface HTMLMudNotificationElement extends Components.MudNotification, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLMudNotificationElementEventMap>(type: K, listener: (this: HTMLMudNotificationElement, ev: MudNotificationCustomEvent<HTMLMudNotificationElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLMudNotificationElementEventMap>(type: K, listener: (this: HTMLMudNotificationElement, ev: MudNotificationCustomEvent<HTMLMudNotificationElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLMudNotificationElement: {
-        prototype: HTMLMudNotificationElement;
-        new (): HTMLMudNotificationElement;
-    };
     interface HTMLMudNumericInputElementEventMap {
         "mudInput": NumericInputChangeDetail;
         "mudChange": NumericInputChangeDetail;
@@ -4708,7 +4511,7 @@ declare global {
      * Numeric Input — numeric-entry control with stacked step buttons.
      * Pattern B (atom-interactive, form-associated): renders its own `<input>`
      * inside shadow DOM and pairs it with a trailing stepper stack (chevron-up
-     * over chevron-bottom). Shares the visual primitives of `mud-input` (border,
+     * over chevron-bottom). Shares the visual primitives of `mud-text-input` (border,
      * focus ring, label, helper / error, sizes, states) and adds a
      * `--numeric-input-stepper-*` token namespace for the increment / decrement
      * affordance.
@@ -4805,42 +4608,6 @@ declare global {
         prototype: HTMLMudPhoneInputElement;
         new (): HTMLMudPhoneInputElement;
     };
-    interface HTMLMudProgressTrackerElementEventMap {
-        "mudStepClick": ProgressTrackerStepClickDetail;
-    }
-    /**
-     * Progress Tracker (Stepper) — visualises a user's position in a multi-step process.
-     * Two flavours:
-     * - **Display tracker** (`interactive=false`, default) — read-only. Each step is a
-     *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
-     *   submissions where the parent app drives navigation.
-     * - **Interactive tracker** (`interactive=true`) — each completed (and the current)
-     *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
-     *   non-actionable per the WAI-ARIA stepper pattern.
-     * State legend (Figma node 634:10573):
-     *   - `pending`    — neutral grey ring + faded number, non-navigable
-     *   - `current`    — brand ring + brand number, neutral label
-     *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
-     *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
-     *   - `error`      — danger ring + danger cross, neutral label
-     * The component renders an ordered list with `role="list"` for AT compatibility
-     * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
-     * @element mud-progress-tracker
-     */
-    interface HTMLMudProgressTrackerElement extends Components.MudProgressTracker, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLMudProgressTrackerElementEventMap>(type: K, listener: (this: HTMLMudProgressTrackerElement, ev: MudProgressTrackerCustomEvent<HTMLMudProgressTrackerElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLMudProgressTrackerElementEventMap>(type: K, listener: (this: HTMLMudProgressTrackerElement, ev: MudProgressTrackerCustomEvent<HTMLMudProgressTrackerElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLMudProgressTrackerElement: {
-        prototype: HTMLMudProgressTrackerElement;
-        new (): HTMLMudProgressTrackerElement;
-    };
     interface HTMLMudRadioElementEventMap {
         "mudChange": RadioChangeDetail;
         "mudFocus": FocusEvent;
@@ -4913,94 +4680,49 @@ declare global {
         prototype: HTMLMudReceiptElement;
         new (): HTMLMudReceiptElement;
     };
-    interface HTMLMudSearchInputCircularElementEventMap {
-        "mudInput": SearchInputCircularChangeDetail;
-        "mudChange": SearchInputCircularChangeDetail;
-        "mudSearch": SearchInputCircularSearchDetail;
+    interface HTMLMudSearchInputElementEventMap {
+        "mudInput": SearchInputChangeDetail;
+        "mudChange": SearchInputChangeDetail;
+        "mudSearch": SearchInputSearchDetail;
         "mudClear": void;
         "mudFocus": FocusEvent;
         "mudBlur": FocusEvent;
     }
     /**
-     * Search Input (circular) — single-line search-entry control with a fully
-     * rounded (pill) silhouette.
-     * Pattern B (atom-interactive, form-associated): renders its own
-     * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
-     * icon and an optional trailing clear `×` button that appears whenever the
-     * control carries a value. Behavior, props, slots, events, keyboard contract,
-     * ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
-     * `mud-search-input-rectangular` — the only visual difference is the
-     * silhouette: corners flip to `borderRadius.full` (9999px). The trailing
-     * submit button (when `with-button` is set) inherits the pill silhouette via
-     * `borderRadius.full`, rendering as a perfect circle that hugs the pill end
-     * per Figma master `933:29721`.
-     * The Republic of Moldova Unified Design System library catalogues circular
-     * and rectangular search fields as separate component_sets, so we ship them
-     * as distinct atoms with parallel token namespaces (`--search-input-circular-*`
-     * vs `--search-input-rectangular-*`).
-     * Optional axes per Figma master `933:29721`:
-     * - `loading` — async query is in flight; a trailing spinner appears next to
-     *   the value/placeholder and the control is announced as `aria-busy`.
-     * - `with-button` — adds a trailing brand-blue circular submit button that
-     *   fires `mudSearch` on click. Coexists with the clear button and the
-     *   loading spinner.
-     * @element mud-search-input-circular
-     */
-    interface HTMLMudSearchInputCircularElement extends Components.MudSearchInputCircular, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLMudSearchInputCircularElementEventMap>(type: K, listener: (this: HTMLMudSearchInputCircularElement, ev: MudSearchInputCircularCustomEvent<HTMLMudSearchInputCircularElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
-        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLMudSearchInputCircularElementEventMap>(type: K, listener: (this: HTMLMudSearchInputCircularElement, ev: MudSearchInputCircularCustomEvent<HTMLMudSearchInputCircularElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
-        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
-    }
-    var HTMLMudSearchInputCircularElement: {
-        prototype: HTMLMudSearchInputCircularElement;
-        new (): HTMLMudSearchInputCircularElement;
-    };
-    interface HTMLMudSearchInputRectangularElementEventMap {
-        "mudInput": SearchInputRectangularChangeDetail;
-        "mudChange": SearchInputRectangularChangeDetail;
-        "mudSearch": SearchInputRectangularSearchDetail;
-        "mudClear": void;
-        "mudFocus": FocusEvent;
-        "mudBlur": FocusEvent;
-    }
-    /**
-     * Search Input (rectangular) — single-line search-entry control.
+     * Search Input — single-line search-entry control.
      * Pattern B (atom-interactive, form-associated): renders its own
      * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
      * icon and an optional trailing clear `×` button that appears whenever the
      * control carries a value. Visual primitives (border, focus ring, label,
-     * helper / error, sizes, states) are shared with `mud-input`; specific
+     * helper, sizes, states) are shared with `mud-text-input`; specific
      * affordances (icon-start, icon-end-clear, submit-button) live in the
-     * `--search-input-rectangular-*` token namespace.
-     * Rectangular shape is the default sibling of `mud-search-input-circular`
-     * (pill). The two ship as distinct components per the Figma component-set
-     * separation in the Republic of Moldova Unified Design System library.
-     * Optional axes per Figma master `933:29099`:
+     * `--search-input-*` token namespace.
+     * Per the Figma "Search Input" component the field has two silhouettes,
+     * selected via the `shape` prop:
+     * - `rectangular` (default) — corners use `borderRadius.8`.
+     * - `circular` — corners flip to `borderRadius.full` (9999px), and the
+     *   trailing submit button becomes a perfect circle.
+     * Optional axes per Figma "Search Input":
      * - `loading` — async query is in flight; a trailing spinner appears next to
      *   the value/placeholder and the control is announced as `aria-busy`.
      * - `with-button` — adds a trailing brand-blue submit button that fires
      *   `mudSearch` on click. Coexists with the clear button and the loading
      *   spinner.
-     * @element mud-search-input-rectangular
+     * @element mud-search-input
      */
-    interface HTMLMudSearchInputRectangularElement extends Components.MudSearchInputRectangular, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLMudSearchInputRectangularElementEventMap>(type: K, listener: (this: HTMLMudSearchInputRectangularElement, ev: MudSearchInputRectangularCustomEvent<HTMLMudSearchInputRectangularElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudSearchInputElement extends Components.MudSearchInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudSearchInputElementEventMap>(type: K, listener: (this: HTMLMudSearchInputElement, ev: MudSearchInputCustomEvent<HTMLMudSearchInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLMudSearchInputRectangularElementEventMap>(type: K, listener: (this: HTMLMudSearchInputRectangularElement, ev: MudSearchInputRectangularCustomEvent<HTMLMudSearchInputRectangularElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudSearchInputElementEventMap>(type: K, listener: (this: HTMLMudSearchInputElement, ev: MudSearchInputCustomEvent<HTMLMudSearchInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLMudSearchInputRectangularElement: {
-        prototype: HTMLMudSearchInputRectangularElement;
-        new (): HTMLMudSearchInputRectangularElement;
+    var HTMLMudSearchInputElement: {
+        prototype: HTMLMudSearchInputElement;
+        new (): HTMLMudSearchInputElement;
     };
     interface HTMLMudSegmentedControlElementEventMap {
         "mudChange": SegmentedControlChangeDetail;
@@ -5033,7 +4755,7 @@ declare global {
         prototype: HTMLMudSegmentedControlElement;
         new (): HTMLMudSegmentedControlElement;
     };
-    interface HTMLMudSelectInputElementEventMap {
+    interface HTMLMudSelectElementEventMap {
         "mudChange": SelectChangeDetail;
         "mudOpen": void;
         "mudClose": void;
@@ -5041,29 +4763,32 @@ declare global {
         "mudBlur": FocusEvent;
     }
     /**
-     * Select Input — single-select dropdown atom.
+     * Select — single-select dropdown atom.
+     * Matches the Figma `select-input` component (page "Select (Dropdown)",
+     * node 411:23995) — kept here under the shorter `mud-select` name. Size rungs
+     * follow Figma's own names: `medium` (40px) and `large` (48px).
      * Pattern B (atom-interactive, form-associated): renders a custom-styled
      * trigger button and a listbox popover inside shadow DOM. Form participation
      * works via `formAssociated` + `ElementInternals`. Shares the visual primitives
-     * of `mud-input` (border, focus ring, label, helper / error text, sizes,
+     * of `mud-text-input` (border, focus ring, label, helper / error text, sizes,
      * states) and adds a trailing chevron icon, listbox menu, and keyboard
      * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
      * pattern.
-     * @element mud-select-input
+     * @element mud-select
      */
-    interface HTMLMudSelectInputElement extends Components.MudSelectInput, HTMLStencilElement {
-        addEventListener<K extends keyof HTMLMudSelectInputElementEventMap>(type: K, listener: (this: HTMLMudSelectInputElement, ev: MudSelectInputCustomEvent<HTMLMudSelectInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+    interface HTMLMudSelectElement extends Components.MudSelect, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudSelectElementEventMap>(type: K, listener: (this: HTMLMudSelectElement, ev: MudSelectCustomEvent<HTMLMudSelectElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
         addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
-        removeEventListener<K extends keyof HTMLMudSelectInputElementEventMap>(type: K, listener: (this: HTMLMudSelectInputElement, ev: MudSelectInputCustomEvent<HTMLMudSelectInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudSelectElementEventMap>(type: K, listener: (this: HTMLMudSelectElement, ev: MudSelectCustomEvent<HTMLMudSelectElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
         removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
     }
-    var HTMLMudSelectInputElement: {
-        prototype: HTMLMudSelectInputElement;
-        new (): HTMLMudSelectInputElement;
+    var HTMLMudSelectElement: {
+        prototype: HTMLMudSelectElement;
+        new (): HTMLMudSelectElement;
     };
     /**
      * Separator — visual divider between groups of content or UI components.
@@ -5151,6 +4876,44 @@ declare global {
     var HTMLMudSpinnerElement: {
         prototype: HTMLMudSpinnerElement;
         new (): HTMLMudSpinnerElement;
+    };
+    interface HTMLMudStepperElementEventMap {
+        "mudStepClick": StepperStepClickDetail;
+    }
+    /**
+     * Stepper — visualises a user's position in a multi-step process.
+     * Matches the Figma `progress-tracker` component (page "Progress Tracker
+     * (Stepper)", node 267:6905) — kept here under the shorter `mud-stepper` name.
+     * Two flavours:
+     * - **Display stepper** (`interactive=false`, default) — read-only. Each step is a
+     *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
+     *   submissions where the parent app drives navigation.
+     * - **Interactive stepper** (`interactive=true`) — each completed (and the current)
+     *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
+     *   non-actionable per the WAI-ARIA stepper pattern.
+     * State legend (Figma node 634:10573):
+     *   - `pending`    — neutral grey ring + faded number, non-navigable
+     *   - `current`    — brand ring + brand number, neutral label
+     *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
+     *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
+     *   - `error`      — danger ring + danger cross, neutral label
+     * The component renders an ordered list with `role="list"` for AT compatibility
+     * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
+     * @element mud-stepper
+     */
+    interface HTMLMudStepperElement extends Components.MudStepper, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudStepperElementEventMap>(type: K, listener: (this: HTMLMudStepperElement, ev: MudStepperCustomEvent<HTMLMudStepperElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudStepperElementEventMap>(type: K, listener: (this: HTMLMudStepperElement, ev: MudStepperCustomEvent<HTMLMudStepperElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLMudStepperElement: {
+        prototype: HTMLMudStepperElement;
+        new (): HTMLMudStepperElement;
     };
     interface HTMLMudSwitchElementEventMap {
         "mudChange": SwitchChangeDetail;
@@ -5318,6 +5081,34 @@ declare global {
         prototype: HTMLMudTagElement;
         new (): HTMLMudTagElement;
     };
+    interface HTMLMudTextInputElementEventMap {
+        "mudInput": InputChangeDetail;
+        "mudChange": InputChangeDetail;
+        "mudFocus": FocusEvent;
+        "mudBlur": FocusEvent;
+    }
+    /**
+     * Input — single-line text-entry control.
+     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+     * inside shadow DOM. Form participation works via `formAssociated` +
+     * `ElementInternals`. The component is the canonical text-input primitive;
+     * specialised inputs (date, search, phone, etc.) compose around it.
+     * @element mud-text-input
+     */
+    interface HTMLMudTextInputElement extends Components.MudTextInput, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudTextInputElementEventMap>(type: K, listener: (this: HTMLMudTextInputElement, ev: MudTextInputCustomEvent<HTMLMudTextInputElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudTextInputElementEventMap>(type: K, listener: (this: HTMLMudTextInputElement, ev: MudTextInputCustomEvent<HTMLMudTextInputElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLMudTextInputElement: {
+        prototype: HTMLMudTextInputElement;
+        new (): HTMLMudTextInputElement;
+    };
     interface HTMLMudTextareaElementEventMap {
         "mudInput": TextareaChangeDetail;
         "mudChange": TextareaChangeDetail;
@@ -5328,7 +5119,7 @@ declare global {
      * Text Area — multi-line text-entry control.
      * Pattern B (atom-interactive, form-associated): renders its own `<textarea>`
      * inside shadow DOM. Form participation works via `formAssociated` +
-     * `ElementInternals`. Mirrors the `mud-input` contract for label, helper,
+     * `ElementInternals`. Mirrors the `mud-text-input` contract for label, helper,
      * error and variant treatment, and adds a vertical resize handle plus an
      * optional character counter.
      * @element mud-textarea
@@ -5346,6 +5137,42 @@ declare global {
     var HTMLMudTextareaElement: {
         prototype: HTMLMudTextareaElement;
         new (): HTMLMudTextareaElement;
+    };
+    interface HTMLMudToastElementEventMap {
+        "mudClose": void;
+    }
+    /**
+     * Toast — semantic toast message (350px filled surface, 8px radius).
+     * Matches the Figma `toast` component (page "Messaging (Notification)"):
+     * a leading icon, an optional bold heading, the message body (default slot),
+     * an optional inline link/action group (`actions` slot) and a trailing close
+     * button (shown by default — `closable` defaults to `true`).
+     * Placement, vertical stacking and auto-dismiss are the consumer's
+     * responsibility — this atom is just the surface. Its entrance animation
+     * (slide-down + fade-in) plays once on mount.
+     * Pattern B (atom-display + interactive close): the close affordance lives
+     * inside shadow DOM so it participates in tab order with a real
+     * `button` role. The body itself is not interactive.
+     * `variant` selects the semantic color family — `info`, `warning`, `success`,
+     * or `error` — each a filled toast surface with its own leading icon.
+     * Live-region routing:
+     * - `info` / `success` → `role="status"` + `aria-live="polite"`
+     * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
+     * @element mud-toast
+     */
+    interface HTMLMudToastElement extends Components.MudToast, HTMLStencilElement {
+        addEventListener<K extends keyof HTMLMudToastElementEventMap>(type: K, listener: (this: HTMLMudToastElement, ev: MudToastCustomEvent<HTMLMudToastElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | AddEventListenerOptions): void;
+        addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLMudToastElementEventMap>(type: K, listener: (this: HTMLMudToastElement, ev: MudToastCustomEvent<HTMLMudToastElementEventMap[K]>) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof DocumentEventMap>(type: K, listener: (this: Document, ev: DocumentEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener<K extends keyof HTMLElementEventMap>(type: K, listener: (this: HTMLElement, ev: HTMLElementEventMap[K]) => any, options?: boolean | EventListenerOptions): void;
+        removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
+    }
+    var HTMLMudToastElement: {
+        prototype: HTMLMudToastElement;
+        new (): HTMLMudToastElement;
     };
     interface HTMLMudTooltipElementEventMap {
         "mudOpen": void;
@@ -5406,36 +5233,35 @@ declare global {
         "mud-icon": HTMLMudIconElement;
         "mud-info-box": HTMLMudInfoBoxElement;
         "mud-inline-message": HTMLMudInlineMessageElement;
-        "mud-input": HTMLMudInputElement;
         "mud-input-chip": HTMLMudInputChipElement;
         "mud-link": HTMLMudLinkElement;
         "mud-logo": HTMLMudLogoElement;
         "mud-menu": HTMLMudMenuElement;
         "mud-menu-item": HTMLMudMenuItemElement;
         "mud-modal": HTMLMudModalElement;
-        "mud-notification": HTMLMudNotificationElement;
         "mud-numeric-input": HTMLMudNumericInputElement;
         "mud-pagination": HTMLMudPaginationElement;
         "mud-phone-input": HTMLMudPhoneInputElement;
-        "mud-progress-tracker": HTMLMudProgressTrackerElement;
         "mud-radio": HTMLMudRadioElement;
         "mud-receipt": HTMLMudReceiptElement;
-        "mud-search-input-circular": HTMLMudSearchInputCircularElement;
-        "mud-search-input-rectangular": HTMLMudSearchInputRectangularElement;
+        "mud-search-input": HTMLMudSearchInputElement;
         "mud-segmented-control": HTMLMudSegmentedControlElement;
-        "mud-select-input": HTMLMudSelectInputElement;
+        "mud-select": HTMLMudSelectElement;
         "mud-separator": HTMLMudSeparatorElement;
         "mud-service-button": HTMLMudServiceButtonElement;
         "mud-sidebar": HTMLMudSidebarElement;
         "mud-sidebar-group": HTMLMudSidebarGroupElement;
         "mud-sidebar-item": HTMLMudSidebarItemElement;
         "mud-spinner": HTMLMudSpinnerElement;
+        "mud-stepper": HTMLMudStepperElement;
         "mud-switch": HTMLMudSwitchElement;
         "mud-tab": HTMLMudTabElement;
         "mud-table": HTMLMudTableElement;
         "mud-tabs": HTMLMudTabsElement;
         "mud-tag": HTMLMudTagElement;
+        "mud-text-input": HTMLMudTextInputElement;
         "mud-textarea": HTMLMudTextareaElement;
+        "mud-toast": HTMLMudToastElement;
         "mud-tooltip": HTMLMudTooltipElement;
     }
 }
@@ -5927,7 +5753,7 @@ declare namespace LocalJSX {
          */
         "disabled"?: boolean;
         /**
-          * Plain-text error message shown below the label when `invalid` is set. Pairs with the `circle-error-filled` icon and is wired to the control via `aria-describedby`. When present (and `invalid`) it replaces the supporting text. Mirrors the `errorText` convention of `mud-input` / `mud-textarea`.
+          * Plain-text error message shown below the label when `invalid` is set. Pairs with the `circle-error-filled` icon and is wired to the control via `aria-describedby`. When present (and `invalid`) it replaces the supporting text. Mirrors the `errorText` convention of `mud-text-input` / `mud-textarea`.
          */
         "errorText"?: string;
         /**
@@ -6879,7 +6705,7 @@ declare namespace LocalJSX {
     /**
      * Informational Box — an inline, in-content callout that highlights key
      * messages, announcements, alerts, or explanations within the page flow.
-     * Unlike `mud-notification` (a fixed-width corner toast) or `mud-banner` (a
+     * Unlike `mud-toast` (a fixed-width corner toast) or `mud-banner` (a
      * full-width page-level bar), the info box sits inside the content column,
      * fills its container's width, and supports rich content: an optional bold
      * heading, a multi-line body (default slot), an optional inline action group
@@ -6892,7 +6718,7 @@ declare namespace LocalJSX {
      * The box is static in-flow content, so it is **not** an ARIA live region
      * (that would re-announce on every render). The icon is decorative; the
      * heading and body are read in normal reading order. For transient, announced
-     * messages use `mud-notification` / `mud-banner` instead.
+     * messages use `mud-toast` / `mud-banner` instead.
      * @element mud-info-box
      */
     interface MudInfoBox {
@@ -6947,7 +6773,7 @@ declare namespace LocalJSX {
      * It is plain in-flow text, **not** an ARIA live region. When used as form
      * feedback, associate it with the field via `aria-describedby` (and
      * `aria-invalid` for errors) on the consumer side; for a transient, announced
-     * message use `mud-notification` / `mud-banner`. The icon is decorative.
+     * message use `mud-toast` / `mud-banner`. The icon is decorative.
      * @element mud-inline-message
      */
     interface MudInlineMessage {
@@ -6970,135 +6796,6 @@ declare namespace LocalJSX {
           * @default 'info'
          */
         "variant"?: InlineMessageVariant;
-    }
-    /**
-     * Input — single-line text-entry control.
-     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
-     * inside shadow DOM. Form participation works via `formAssociated` +
-     * `ElementInternals`. The component is the canonical text-input primitive;
-     * specialised inputs (date, search, phone, etc.) compose around it.
-     * @element mud-input
-     */
-    interface MudInput {
-        /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
-         */
-        "ariaLabel"?: string;
-        /**
-          * Native `autocomplete` attribute forwarded to the internal control.
-         */
-        "autocomplete"?: string;
-        /**
-          * Accessible label for the clear (×) button. Only used when `clearable` is set.
-          * @default 'Golește câmpul'
-         */
-        "clearLabel"?: string;
-        /**
-          * Shows a trailing clear (×) button while the control holds a value. Clearing empties the field, emits `mudInput` + `mudChange`, and returns focus to the input. Suppressed when disabled, read-only, or loading.
-          * @default false
-         */
-        "clearable"?: boolean;
-        /**
-          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
-          * @default false
-         */
-        "disabled"?: boolean;
-        /**
-          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
-         */
-        "errorText"?: string;
-        /**
-          * The `id` of a `<form>` element to associate this element with.
-         */
-        "form"?: string;
-        /**
-          * Plain-text helper / hint shown below the control.
-         */
-        "helperText"?: string;
-        /**
-          * Native `inputmode` hint forwarded to the internal control.
-         */
-        "inputmode"?: string;
-        /**
-          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
-          * @default false
-         */
-        "invalid"?: boolean;
-        /**
-          * Plain-text label. Use the `label` slot for richer content.
-         */
-        "label"?: string;
-        /**
-          * Loading state. When true the control becomes uninteractive and a trailing spinner replaces the `icon-end` slot. The host carries `aria-busy="true"` for assistive technologies.
-          * @default false
-         */
-        "loading"?: boolean;
-        /**
-          * Native `maxlength` constraint.
-         */
-        "maxLength"?: number;
-        /**
-          * Native `minlength` constraint.
-         */
-        "minLength"?: number;
-        /**
-          * Form-control `name`. Used during form submission.
-         */
-        "name"?: string;
-        /**
-          * Fires when the internal control loses focus. The native `FocusEvent` is forwarded as-is.
-         */
-        "onMudBlur"?: (event: MudInputCustomEvent<FocusEvent>) => void;
-        /**
-          * Fires when the value is committed (typically on `blur` or `Enter`). `detail.value` is the committed value.
-         */
-        "onMudChange"?: (event: MudInputCustomEvent<InputChangeDetail>) => void;
-        /**
-          * Fires when the internal control gains focus. The native `FocusEvent` is forwarded as-is.
-         */
-        "onMudFocus"?: (event: MudInputCustomEvent<FocusEvent>) => void;
-        /**
-          * Fires on every keystroke. `detail.value` is the current control value.
-         */
-        "onMudInput"?: (event: MudInputCustomEvent<InputChangeDetail>) => void;
-        /**
-          * Native `pattern` regex forwarded to the internal control.
-         */
-        "pattern"?: string;
-        /**
-          * Placeholder shown when the control is empty.
-         */
-        "placeholder"?: string;
-        /**
-          * Renders the field read-only. The control remains focusable and copyable.
-          * @default false
-         */
-        "readonly"?: boolean;
-        /**
-          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
-          * @default false
-         */
-        "required"?: boolean;
-        /**
-          * Visual size rung.
-          * @default 'md'
-         */
-        "size"?: InputSize;
-        /**
-          * Native input `type`.
-          * @default 'text'
-         */
-        "type"?: InputType;
-        /**
-          * Current value of the control. Reflects to the host attribute.
-          * @default ''
-         */
-        "value"?: string;
-        /**
-          * Color treatment. `destructive` is forced when `invalid` is set.
-          * @default 'default'
-         */
-        "variant"?: InputVariant;
     }
     /**
      * Input Chip — multi-value text-entry control where each confirmed value
@@ -7505,58 +7202,10 @@ declare namespace LocalJSX {
         "variant"?: ModalVariant;
     }
     /**
-     * Notification — semantic toast message (350px filled surface, 8px radius).
-     * Renders a leading icon, an optional bold heading, the message body
-     * (default slot), an optional inline action group (`actions` slot) and an
-     * optional trailing close button.
-     * Pattern B (atom-display + interactive close): the close affordance lives
-     * inside shadow DOM so it participates in tab order with a real
-     * `button` role. The body itself is not interactive.
-     * `variant` selects the semantic color family — `info`, `warning`, `success`,
-     * or `error` — each a filled toast surface with its own leading icon.
-     * Live-region routing:
-     * - `info` / `success` → `role="status"` + `aria-live="polite"`
-     * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
-     * @element mud-notification
-     */
-    interface MudNotification {
-        /**
-          * Forwarded to the host as `aria-label`. Use this to give the entire notification an explicit accessible name when the body content alone is not descriptive enough.
-         */
-        "ariaLabel"?: string;
-        /**
-          * When `true`, renders a trailing close button. Activating it emits `mudClose`; the consumer is responsible for removing the notification from the DOM.
-          * @default false
-         */
-        "closable"?: boolean;
-        /**
-          * Close-button accessible label. Defaults to the Romanian "Închide". Provide an alternative for non-Romanian locales.
-          * @default 'Închide'
-         */
-        "closeLabel"?: string;
-        /**
-          * Override the default `mud-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
-         */
-        "iconName"?: string;
-        /**
-          * Fires when the user activates the close button. Payload is `void` — the consumer is responsible for the dismiss animation / DOM removal.
-         */
-        "onMudClose"?: (event: MudNotificationCustomEvent<void>) => void;
-        /**
-          * Optional bold title rendered above the body.
-         */
-        "titleText"?: string;
-        /**
-          * Semantic color family.
-          * @default 'info'
-         */
-        "variant"?: NotificationVariant;
-    }
-    /**
      * Numeric Input — numeric-entry control with stacked step buttons.
      * Pattern B (atom-interactive, form-associated): renders its own `<input>`
      * inside shadow DOM and pairs it with a trailing stepper stack (chevron-up
-     * over chevron-bottom). Shares the visual primitives of `mud-input` (border,
+     * over chevron-bottom). Shares the visual primitives of `mud-text-input` (border,
      * focus ring, label, helper / error, sizes, states) and adds a
      * `--numeric-input-stepper-*` token namespace for the increment / decrement
      * affordance.
@@ -7953,58 +7602,6 @@ declare namespace LocalJSX {
         "variant"?: PhoneInputVariant;
     }
     /**
-     * Progress Tracker (Stepper) — visualises a user's position in a multi-step process.
-     * Two flavours:
-     * - **Display tracker** (`interactive=false`, default) — read-only. Each step is a
-     *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
-     *   submissions where the parent app drives navigation.
-     * - **Interactive tracker** (`interactive=true`) — each completed (and the current)
-     *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
-     *   non-actionable per the WAI-ARIA stepper pattern.
-     * State legend (Figma node 634:10573):
-     *   - `pending`    — neutral grey ring + faded number, non-navigable
-     *   - `current`    — brand ring + brand number, neutral label
-     *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
-     *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
-     *   - `error`      — danger ring + danger cross, neutral label
-     * The component renders an ordered list with `role="list"` for AT compatibility
-     * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
-     * @element mud-progress-tracker
-     */
-    interface MudProgressTracker {
-        /**
-          * Accessible name for the surrounding list landmark. Falls back to `'Progress tracker'` (English) — Romanian consumers can pass `'Pași'`.
-         */
-        "ariaLabel"?: string;
-        /**
-          * Compact "dot rail" rendering — the mobile breakpoint from Figma. Hides the step numbers and labels, leaving a rail of dots; per-status fills convey progress (filled brand + checkmark = completed, hollow ring = current / available / pending, danger ring + cross = error). Status icons are kept; only the numeric indicators and text labels are hidden. Works in both orientations.
-          * @default false
-         */
-        "compact"?: boolean;
-        /**
-          * Optional zero-based index of the current step. When set, it overrides the `status: 'current'` value in `steps`. Mostly useful for parent-driven flows that mutate a single number rather than the whole array.
-         */
-        "currentStep"?: number;
-        /**
-          * When true, completed, current, and available steps render as `<button>` elements and emit `mudStepClick`. Pending and error steps remain non-actionable in this mode.
-          * @default false
-         */
-        "interactive"?: boolean;
-        /**
-          * Emitted when an interactive step is activated via mouse, keyboard, or AT. Detail carries the `index` and the full `step` object that was clicked. Only fires when `interactive=true` and the step is not disabled.
-         */
-        "onMudStepClick"?: (event: MudProgressTrackerCustomEvent<ProgressTrackerStepClickDetail>) => void;
-        /**
-          * Layout orientation.   - `horizontal` (default): steps flow left to right; labels render under indicators.   - `vertical`: steps stack top to bottom; labels render to the right of indicators.
-          * @default 'horizontal'
-         */
-        "orientation"?: ProgressTrackerOrientation;
-        /**
-          * Declarative step list. Each item: `{ id?, label, supportingText?, status, iconName?, disabled? }`. `status` drives the visual state and ARIA semantics — see {@link ProgressTrackerStepStatus}.
-         */
-        "steps"?: ProgressTrackerStep[];
-    }
-    /**
      * Radio — single-select form input atom.
      * Pattern B (atom-interactive, form-associated): renders its own
      * `<input type="radio">` inside shadow DOM and paints the visual circle
@@ -8240,182 +7837,28 @@ declare namespace LocalJSX {
         "transactionIdLabel"?: string;
     }
     /**
-     * Search Input (circular) — single-line search-entry control with a fully
-     * rounded (pill) silhouette.
-     * Pattern B (atom-interactive, form-associated): renders its own
-     * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
-     * icon and an optional trailing clear `×` button that appears whenever the
-     * control carries a value. Behavior, props, slots, events, keyboard contract,
-     * ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
-     * `mud-search-input-rectangular` — the only visual difference is the
-     * silhouette: corners flip to `borderRadius.full` (9999px). The trailing
-     * submit button (when `with-button` is set) inherits the pill silhouette via
-     * `borderRadius.full`, rendering as a perfect circle that hugs the pill end
-     * per Figma master `933:29721`.
-     * The Republic of Moldova Unified Design System library catalogues circular
-     * and rectangular search fields as separate component_sets, so we ship them
-     * as distinct atoms with parallel token namespaces (`--search-input-circular-*`
-     * vs `--search-input-rectangular-*`).
-     * Optional axes per Figma master `933:29721`:
-     * - `loading` — async query is in flight; a trailing spinner appears next to
-     *   the value/placeholder and the control is announced as `aria-busy`.
-     * - `with-button` — adds a trailing brand-blue circular submit button that
-     *   fires `mudSearch` on click. Coexists with the clear button and the
-     *   loading spinner.
-     * @element mud-search-input-circular
-     */
-    interface MudSearchInputCircular {
-        /**
-          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
-         */
-        "ariaLabel"?: string;
-        /**
-          * Native `autocomplete` attribute forwarded to the internal control.
-         */
-        "autocomplete"?: string;
-        /**
-          * Accessible label for the trailing clear button. Defaults to Romanian "Șterge" per the institutional voice.
-          * @default 'Șterge'
-         */
-        "clearLabel"?: string;
-        /**
-          * Shows the trailing clear `×` button when a value is present. Set to `false` to suppress the affordance entirely (useful for read-only or always-on filters).
-          * @default true
-         */
-        "clearable"?: boolean;
-        /**
-          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
-          * @default false
-         */
-        "disabled"?: boolean;
-        /**
-          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
-         */
-        "errorText"?: string;
-        /**
-          * The `id` of a `<form>` element to associate this element with.
-         */
-        "form"?: string;
-        /**
-          * Plain-text helper / hint shown below the control.
-         */
-        "helperText"?: string;
-        /**
-          * Icon name for the leading icon (rendered via the local SVG library). Override by providing an element to the `icon-start` slot.
-          * @default 'search'
-         */
-        "iconName"?: string;
-        /**
-          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
-          * @default false
-         */
-        "invalid"?: boolean;
-        /**
-          * Plain-text label. Use the `label` slot for richer content.
-         */
-        "label"?: string;
-        /**
-          * Indicates an in-flight query. Keeps the leading magnifying-glass icon as the role indicator and reveals a trailing brand-coloured `mud-spinner` next to the value; the clear `×` is suppressed while the query is in flight and the control is announced as `aria-busy`. The field stays focusable; emitting `mudSearch` while loading is the consumer's responsibility (typically debounced).
-          * @default false
-         */
-        "loading"?: boolean;
-        /**
-          * Native `maxlength` constraint.
-         */
-        "maxLength"?: number;
-        /**
-          * Native `minlength` constraint.
-         */
-        "minLength"?: number;
-        /**
-          * Form-control `name`. Used during form submission.
-         */
-        "name"?: string;
-        /**
-          * Fires when the internal control loses focus.
-         */
-        "onMudBlur"?: (event: MudSearchInputCircularCustomEvent<FocusEvent>) => void;
-        /**
-          * Fires when the value is committed (typically on `blur`). `detail.value` is the committed value.
-         */
-        "onMudChange"?: (event: MudSearchInputCircularCustomEvent<SearchInputCircularChangeDetail>) => void;
-        /**
-          * Fires when the value is cleared by the user (clear button or Escape key).
-         */
-        "onMudClear"?: (event: MudSearchInputCircularCustomEvent<void>) => void;
-        /**
-          * Fires when the internal control gains focus.
-         */
-        "onMudFocus"?: (event: MudSearchInputCircularCustomEvent<FocusEvent>) => void;
-        /**
-          * Fires on every keystroke. `detail.value` is the current control value.
-         */
-        "onMudInput"?: (event: MudSearchInputCircularCustomEvent<SearchInputCircularChangeDetail>) => void;
-        /**
-          * Fires when the user submits the query (Enter key). `detail.value` is the submitted query.
-         */
-        "onMudSearch"?: (event: MudSearchInputCircularCustomEvent<SearchInputCircularSearchDetail>) => void;
-        /**
-          * Placeholder shown when the control is empty.
-         */
-        "placeholder"?: string;
-        /**
-          * Renders the field read-only. The control remains focusable; the clear affordance is suppressed.
-          * @default false
-         */
-        "readonly"?: boolean;
-        /**
-          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
-          * @default false
-         */
-        "required"?: boolean;
-        /**
-          * Visual size rung.
-          * @default 'md'
-         */
-        "size"?: SearchInputCircularSize;
-        /**
-          * Accessible label for the trailing submit button. Defaults to Romanian "Caută" per the institutional voice.
-          * @default 'Caută'
-         */
-        "submitLabel"?: string;
-        /**
-          * Current value of the control. Reflects to the host attribute.
-          * @default ''
-         */
-        "value"?: string;
-        /**
-          * Color treatment. `destructive` is forced when `invalid` is set.
-          * @default 'default'
-         */
-        "variant"?: SearchInputCircularVariant;
-        /**
-          * Renders a trailing brand-blue circular submit button (the Figma "Button=True" axis on master `933:29721`). Clicking the button — or pressing Enter inside the input — dispatches `mudSearch` with the current value. When the field is empty or disabled, the button enters a disabled visual state and does not fire the event.
-          * @default false
-         */
-        "withButton"?: boolean;
-    }
-    /**
-     * Search Input (rectangular) — single-line search-entry control.
+     * Search Input — single-line search-entry control.
      * Pattern B (atom-interactive, form-associated): renders its own
      * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
      * icon and an optional trailing clear `×` button that appears whenever the
      * control carries a value. Visual primitives (border, focus ring, label,
-     * helper / error, sizes, states) are shared with `mud-input`; specific
+     * helper, sizes, states) are shared with `mud-text-input`; specific
      * affordances (icon-start, icon-end-clear, submit-button) live in the
-     * `--search-input-rectangular-*` token namespace.
-     * Rectangular shape is the default sibling of `mud-search-input-circular`
-     * (pill). The two ship as distinct components per the Figma component-set
-     * separation in the Republic of Moldova Unified Design System library.
-     * Optional axes per Figma master `933:29099`:
+     * `--search-input-*` token namespace.
+     * Per the Figma "Search Input" component the field has two silhouettes,
+     * selected via the `shape` prop:
+     * - `rectangular` (default) — corners use `borderRadius.8`.
+     * - `circular` — corners flip to `borderRadius.full` (9999px), and the
+     *   trailing submit button becomes a perfect circle.
+     * Optional axes per Figma "Search Input":
      * - `loading` — async query is in flight; a trailing spinner appears next to
      *   the value/placeholder and the control is announced as `aria-busy`.
      * - `with-button` — adds a trailing brand-blue submit button that fires
      *   `mudSearch` on click. Coexists with the clear button and the loading
      *   spinner.
-     * @element mud-search-input-rectangular
+     * @element mud-search-input
      */
-    interface MudSearchInputRectangular {
+    interface MudSearchInput {
         /**
           * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
@@ -8430,19 +7873,15 @@ declare namespace LocalJSX {
          */
         "clearLabel"?: string;
         /**
-          * Shows the trailing clear `×` button when a value is present. Set to `false` to suppress the affordance entirely (useful for read-only or always-on filters).
+          * Shows the trailing clear `×` button when a value is present. Set to `false` to suppress the affordance entirely (useful for always-on filters).
           * @default true
          */
         "clearable"?: boolean;
         /**
-          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * Disables interactivity. The internal control receives the native `disabled` attribute.
           * @default false
          */
         "disabled"?: boolean;
-        /**
-          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
-         */
-        "errorText"?: string;
         /**
           * The `id` of a `<form>` element to associate this element with.
          */
@@ -8456,11 +7895,6 @@ declare namespace LocalJSX {
           * @default 'search'
          */
         "iconName"?: string;
-        /**
-          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
-          * @default false
-         */
-        "invalid"?: boolean;
         /**
           * Plain-text label. Use the `label` slot for richer content.
          */
@@ -8485,46 +7919,46 @@ declare namespace LocalJSX {
         /**
           * Fires when the internal control loses focus.
          */
-        "onMudBlur"?: (event: MudSearchInputRectangularCustomEvent<FocusEvent>) => void;
+        "onMudBlur"?: (event: MudSearchInputCustomEvent<FocusEvent>) => void;
         /**
           * Fires when the value is committed (typically on `blur`). `detail.value` is the committed value.
          */
-        "onMudChange"?: (event: MudSearchInputRectangularCustomEvent<SearchInputRectangularChangeDetail>) => void;
+        "onMudChange"?: (event: MudSearchInputCustomEvent<SearchInputChangeDetail>) => void;
         /**
           * Fires when the value is cleared by the user (clear button or Escape key).
          */
-        "onMudClear"?: (event: MudSearchInputRectangularCustomEvent<void>) => void;
+        "onMudClear"?: (event: MudSearchInputCustomEvent<void>) => void;
         /**
           * Fires when the internal control gains focus.
          */
-        "onMudFocus"?: (event: MudSearchInputRectangularCustomEvent<FocusEvent>) => void;
+        "onMudFocus"?: (event: MudSearchInputCustomEvent<FocusEvent>) => void;
         /**
           * Fires on every keystroke. `detail.value` is the current control value.
          */
-        "onMudInput"?: (event: MudSearchInputRectangularCustomEvent<SearchInputRectangularChangeDetail>) => void;
+        "onMudInput"?: (event: MudSearchInputCustomEvent<SearchInputChangeDetail>) => void;
         /**
-          * Fires when the user submits the query (Enter key). `detail.value` is the submitted query.
+          * Fires when the user submits the query (Enter key or submit button). `detail.value` is the submitted query.
          */
-        "onMudSearch"?: (event: MudSearchInputRectangularCustomEvent<SearchInputRectangularSearchDetail>) => void;
+        "onMudSearch"?: (event: MudSearchInputCustomEvent<SearchInputSearchDetail>) => void;
         /**
           * Placeholder shown when the control is empty.
          */
         "placeholder"?: string;
-        /**
-          * Renders the field read-only. The control remains focusable; the clear affordance is suppressed.
-          * @default false
-         */
-        "readonly"?: boolean;
         /**
           * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
           * @default false
          */
         "required"?: boolean;
         /**
-          * Visual size rung.
-          * @default 'md'
+          * Silhouette. `rectangular` uses lightly-rounded corners; `circular` renders a fully-rounded (pill) field with a circular submit button.
+          * @default 'rectangular'
          */
-        "size"?: SearchInputRectangularSize;
+        "shape"?: SearchInputShape;
+        /**
+          * Visual size rung. `sm` is 40px tall, `md` is 48px tall.
+          * @default 'sm'
+         */
+        "size"?: SearchInputSize;
         /**
           * Accessible label for the trailing submit button. Defaults to Romanian "Caută" per the institutional voice.
           * @default 'Caută'
@@ -8535,11 +7969,6 @@ declare namespace LocalJSX {
           * @default ''
          */
         "value"?: string;
-        /**
-          * Color treatment. `destructive` is forced when `invalid` is set.
-          * @default 'default'
-         */
-        "variant"?: SearchInputRectangularVariant;
         /**
           * Renders a trailing brand-blue submit button (the Figma "Button=True" axis). Clicking the button — or pressing Enter inside the input — dispatches `mudSearch` with the current value. When the field is empty or disabled, the button enters a disabled visual state and does not fire the event.
           * @default false
@@ -8606,17 +8035,20 @@ declare namespace LocalJSX {
         "value"?: string;
     }
     /**
-     * Select Input — single-select dropdown atom.
+     * Select — single-select dropdown atom.
+     * Matches the Figma `select-input` component (page "Select (Dropdown)",
+     * node 411:23995) — kept here under the shorter `mud-select` name. Size rungs
+     * follow Figma's own names: `medium` (40px) and `large` (48px).
      * Pattern B (atom-interactive, form-associated): renders a custom-styled
      * trigger button and a listbox popover inside shadow DOM. Form participation
      * works via `formAssociated` + `ElementInternals`. Shares the visual primitives
-     * of `mud-input` (border, focus ring, label, helper / error text, sizes,
+     * of `mud-text-input` (border, focus ring, label, helper / error text, sizes,
      * states) and adds a trailing chevron icon, listbox menu, and keyboard
      * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
      * pattern.
-     * @element mud-select-input
+     * @element mud-select
      */
-    interface MudSelectInput {
+    interface MudSelect {
         /**
           * Accessible name. Mirrors to the trigger's `aria-label` when no visible label is present. Captured into `resolvedAriaLabel` on mount and the host attribute is stripped to avoid Stencil's auto-reflection loop.
          */
@@ -8654,23 +8086,23 @@ declare namespace LocalJSX {
         /**
           * Fires when the trigger loses focus. The native `FocusEvent` is forwarded as-is.
          */
-        "onMudBlur"?: (event: MudSelectInputCustomEvent<FocusEvent>) => void;
+        "onMudBlur"?: (event: MudSelectCustomEvent<FocusEvent>) => void;
         /**
           * Fires when the selected value changes. `detail.value` is the new value.
          */
-        "onMudChange"?: (event: MudSelectInputCustomEvent<SelectChangeDetail>) => void;
+        "onMudChange"?: (event: MudSelectCustomEvent<SelectChangeDetail>) => void;
         /**
           * Fires when the listbox closes.
          */
-        "onMudClose"?: (event: MudSelectInputCustomEvent<void>) => void;
+        "onMudClose"?: (event: MudSelectCustomEvent<void>) => void;
         /**
           * Fires when the trigger gains focus. The native `FocusEvent` is forwarded as-is.
          */
-        "onMudFocus"?: (event: MudSelectInputCustomEvent<FocusEvent>) => void;
+        "onMudFocus"?: (event: MudSelectCustomEvent<FocusEvent>) => void;
         /**
           * Fires when the listbox opens.
          */
-        "onMudOpen"?: (event: MudSelectInputCustomEvent<void>) => void;
+        "onMudOpen"?: (event: MudSelectCustomEvent<void>) => void;
         /**
           * Reflects the open state of the listbox popover. Read-only externally — use `mudOpen` / `mudClose` to react to changes.
           * @default false
@@ -8696,9 +8128,9 @@ declare namespace LocalJSX {
         "required"?: boolean;
         /**
           * Visual size rung.
-          * @default 'md'
+          * @default 'medium'
          */
-        "size"?: SelectInputSize;
+        "size"?: SelectSize;
         /**
           * Selected value. Reflects to the host attribute. Set to empty string when no option is selected.
           * @default ''
@@ -8708,7 +8140,7 @@ declare namespace LocalJSX {
           * Color treatment. `destructive` is forced when `invalid` is set.
           * @default 'default'
          */
-        "variant"?: SelectInputVariant;
+        "variant"?: SelectVariant;
     }
     /**
      * Separator — visual divider between groups of content or UI components.
@@ -8939,6 +8371,60 @@ declare namespace LocalJSX {
           * @default 'brand'
          */
         "variant"?: SpinnerVariant;
+    }
+    /**
+     * Stepper — visualises a user's position in a multi-step process.
+     * Matches the Figma `progress-tracker` component (page "Progress Tracker
+     * (Stepper)", node 267:6905) — kept here under the shorter `mud-stepper` name.
+     * Two flavours:
+     * - **Display stepper** (`interactive=false`, default) — read-only. Each step is a
+     *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
+     *   submissions where the parent app drives navigation.
+     * - **Interactive stepper** (`interactive=true`) — each completed (and the current)
+     *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
+     *   non-actionable per the WAI-ARIA stepper pattern.
+     * State legend (Figma node 634:10573):
+     *   - `pending`    — neutral grey ring + faded number, non-navigable
+     *   - `current`    — brand ring + brand number, neutral label
+     *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
+     *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
+     *   - `error`      — danger ring + danger cross, neutral label
+     * The component renders an ordered list with `role="list"` for AT compatibility
+     * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
+     * @element mud-stepper
+     */
+    interface MudStepper {
+        /**
+          * Accessible name for the surrounding list landmark. Falls back to `'Progress tracker'` (English) — Romanian consumers can pass `'Pași'`.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Compact "dot rail" rendering — the mobile breakpoint from Figma. Hides the step numbers and labels, leaving a rail of dots; per-status fills convey progress (filled brand + checkmark = completed, hollow ring = current / available / pending, danger ring + cross = error). Status icons are kept; only the numeric indicators and text labels are hidden. Works in both orientations.
+          * @default false
+         */
+        "compact"?: boolean;
+        /**
+          * Optional **zero-based** index of the current step (so the 3rd step is `currentStep={2}`). When set it drives the whole progression and the per-item `status` in `steps` is ignored: every step **before** the index renders `'completed'`, the step **at** the index renders `'current'`, every step **after** renders `'pending'`. Pass `currentStep={steps.length}` (one past the last index) to mark the flow finished — every step then renders `'completed'`.  The one exception: a step whose `status` is `'error'` keeps `'error'` regardless of position (a failed step stays failed while you navigate). A negative or non-integer value is ignored and the array's own statuses stand. Use this for parent-driven flows that track a single number; for mixed states (`'available'` future steps, several errors, etc.) drive each step through `steps` and leave `currentStep` unset.
+         */
+        "currentStep"?: number;
+        /**
+          * When true, completed, current, and available steps render as `<button>` elements and emit `mudStepClick`. Pending and error steps remain non-actionable in this mode.
+          * @default false
+         */
+        "interactive"?: boolean;
+        /**
+          * Emitted when an interactive step is activated via mouse, keyboard, or AT. Detail carries the `index` and the full `step` object that was clicked. Only fires when `interactive=true` and the step is not disabled.
+         */
+        "onMudStepClick"?: (event: MudStepperCustomEvent<StepperStepClickDetail>) => void;
+        /**
+          * Layout orientation.   - `horizontal` (default): steps flow left to right; labels render under indicators.   - `vertical`: steps stack top to bottom; labels render to the right of indicators.
+          * @default 'horizontal'
+         */
+        "orientation"?: StepperOrientation;
+        /**
+          * Declarative step list. Each item: `{ id?, label, supportingText?, status, iconName?, disabled? }`. `status` drives the visual state and ARIA semantics — see {@link StepperStepStatus}.
+         */
+        "steps"?: StepperStep[];
     }
     /**
      * Switch — binary on/off toggle atom (form-associated).
@@ -9249,10 +8735,139 @@ declare namespace LocalJSX {
         "variant"?: TagVariant;
     }
     /**
+     * Input — single-line text-entry control.
+     * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+     * inside shadow DOM. Form participation works via `formAssociated` +
+     * `ElementInternals`. The component is the canonical text-input primitive;
+     * specialised inputs (date, search, phone, etc.) compose around it.
+     * @element mud-text-input
+     */
+    interface MudTextInput {
+        /**
+          * Accessible name. Mirrors to the internal control's `aria-label` when no visible label is present. Setting `aria-label` directly on the host also works — captured on connect into `resolvedAriaLabel` and stripped to avoid Stencil's attribute-observer / render-loop antipattern.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Native `autocomplete` attribute forwarded to the internal control.
+         */
+        "autocomplete"?: string;
+        /**
+          * Accessible label for the clear (×) button. Only used when `clearable` is set.
+          * @default 'Golește câmpul'
+         */
+        "clearLabel"?: string;
+        /**
+          * Shows a trailing clear (×) button while the control holds a value. Clearing empties the field, emits `mudInput` + `mudChange`, and returns focus to the input. Suppressed when disabled, read-only, or loading.
+          * @default false
+         */
+        "clearable"?: boolean;
+        /**
+          * Disables interactivity. The internal control receives `aria-disabled` and the native `disabled` attribute.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
+          * Plain-text error message shown below the control when `invalid` is set. When present it replaces `helperText` and pairs with the error icon.
+         */
+        "errorText"?: string;
+        /**
+          * The `id` of a `<form>` element to associate this element with.
+         */
+        "form"?: string;
+        /**
+          * Plain-text helper / hint shown below the control.
+         */
+        "helperText"?: string;
+        /**
+          * Native `inputmode` hint forwarded to the internal control.
+         */
+        "inputmode"?: string;
+        /**
+          * Forces destructive visuals regardless of `variant`. Sets `aria-invalid`. Use together with `errorText` to surface the message.
+          * @default false
+         */
+        "invalid"?: boolean;
+        /**
+          * Plain-text label. Use the `label` slot for richer content.
+         */
+        "label"?: string;
+        /**
+          * Loading state. When true the control becomes uninteractive and a trailing spinner replaces the `icon-end` slot. The host carries `aria-busy="true"` for assistive technologies.
+          * @default false
+         */
+        "loading"?: boolean;
+        /**
+          * Native `maxlength` constraint.
+         */
+        "maxLength"?: number;
+        /**
+          * Native `minlength` constraint.
+         */
+        "minLength"?: number;
+        /**
+          * Form-control `name`. Used during form submission.
+         */
+        "name"?: string;
+        /**
+          * Fires when the internal control loses focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onMudBlur"?: (event: MudTextInputCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires when the value is committed (typically on `blur` or `Enter`). `detail.value` is the committed value.
+         */
+        "onMudChange"?: (event: MudTextInputCustomEvent<InputChangeDetail>) => void;
+        /**
+          * Fires when the internal control gains focus. The native `FocusEvent` is forwarded as-is.
+         */
+        "onMudFocus"?: (event: MudTextInputCustomEvent<FocusEvent>) => void;
+        /**
+          * Fires on every keystroke. `detail.value` is the current control value.
+         */
+        "onMudInput"?: (event: MudTextInputCustomEvent<InputChangeDetail>) => void;
+        /**
+          * Native `pattern` regex forwarded to the internal control.
+         */
+        "pattern"?: string;
+        /**
+          * Placeholder shown when the control is empty.
+         */
+        "placeholder"?: string;
+        /**
+          * Renders the field read-only. The control remains focusable and copyable.
+          * @default false
+         */
+        "readonly"?: boolean;
+        /**
+          * Marks the field as mandatory. Adds a red asterisk to the label and sets `aria-required` on the internal control.
+          * @default false
+         */
+        "required"?: boolean;
+        /**
+          * Visual size rung.
+          * @default 'md'
+         */
+        "size"?: InputSize;
+        /**
+          * Native input `type`.
+          * @default 'text'
+         */
+        "type"?: InputType;
+        /**
+          * Current value of the control. Reflects to the host attribute.
+          * @default ''
+         */
+        "value"?: string;
+        /**
+          * Color treatment. `destructive` is forced when `invalid` is set.
+          * @default 'default'
+         */
+        "variant"?: InputVariant;
+    }
+    /**
      * Text Area — multi-line text-entry control.
      * Pattern B (atom-interactive, form-associated): renders its own `<textarea>`
      * inside shadow DOM. Form participation works via `formAssociated` +
-     * `ElementInternals`. Mirrors the `mud-input` contract for label, helper,
+     * `ElementInternals`. Mirrors the `mud-text-input` contract for label, helper,
      * error and variant treatment, and adds a vertical resize handle plus an
      * optional character counter.
      * @element mud-textarea
@@ -9356,6 +8971,58 @@ declare namespace LocalJSX {
           * @default 'default'
          */
         "variant"?: TextareaVariant;
+    }
+    /**
+     * Toast — semantic toast message (350px filled surface, 8px radius).
+     * Matches the Figma `toast` component (page "Messaging (Notification)"):
+     * a leading icon, an optional bold heading, the message body (default slot),
+     * an optional inline link/action group (`actions` slot) and a trailing close
+     * button (shown by default — `closable` defaults to `true`).
+     * Placement, vertical stacking and auto-dismiss are the consumer's
+     * responsibility — this atom is just the surface. Its entrance animation
+     * (slide-down + fade-in) plays once on mount.
+     * Pattern B (atom-display + interactive close): the close affordance lives
+     * inside shadow DOM so it participates in tab order with a real
+     * `button` role. The body itself is not interactive.
+     * `variant` selects the semantic color family — `info`, `warning`, `success`,
+     * or `error` — each a filled toast surface with its own leading icon.
+     * Live-region routing:
+     * - `info` / `success` → `role="status"` + `aria-live="polite"`
+     * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
+     * @element mud-toast
+     */
+    interface MudToast {
+        /**
+          * Forwarded to the host as `aria-label`. Use this to give the entire toast an explicit accessible name when the body content alone is not descriptive enough.
+         */
+        "ariaLabel"?: string;
+        /**
+          * Renders a trailing close button. Activating it emits `mudClose`; the consumer is responsible for removing the toast from the DOM. Defaults to `true` per the Figma `toast` component (`Close = true`); set `closable="false"` for a toast the user cannot dismiss manually (e.g. one that only auto-dismisses).
+          * @default true
+         */
+        "closable"?: boolean;
+        /**
+          * Close-button accessible label. Defaults to the Romanian "Închide". Provide an alternative for non-Romanian locales.
+          * @default 'Închide'
+         */
+        "closeLabel"?: string;
+        /**
+          * Override the default `mud-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
+         */
+        "iconName"?: string;
+        /**
+          * Fires when the user activates the close button. Payload is `void` — the consumer is responsible for the dismiss animation / DOM removal.
+         */
+        "onMudClose"?: (event: MudToastCustomEvent<void>) => void;
+        /**
+          * Optional bold title rendered above the body.
+         */
+        "titleText"?: string;
+        /**
+          * Semantic color family.
+          * @default 'info'
+         */
+        "variant"?: ToastVariant;
     }
     /**
      * Tooltip — transient label, structured popover, or coach mark anchored to a
@@ -9714,30 +9381,6 @@ declare namespace LocalJSX {
         "hideIcon": boolean;
         "iconName": string;
     }
-    interface MudInputAttributes {
-        "variant": InputVariant;
-        "loading": boolean;
-        "size": InputSize;
-        "type": InputType;
-        "disabled": boolean;
-        "required": boolean;
-        "readonly": boolean;
-        "clearable": boolean;
-        "invalid": boolean;
-        "value": string;
-        "name": string;
-        "placeholder": string;
-        "clearLabel": string;
-        "label": string;
-        "helperText": string;
-        "errorText": string;
-        "autocomplete": string;
-        "maxLength": number;
-        "minLength": number;
-        "inputmode": string;
-        "pattern": string;
-        "ariaLabel": string;
-    }
     interface MudInputChipAttributes {
         "variant": InputChipVariant;
         "size": InputChipSize;
@@ -9805,14 +9448,6 @@ declare namespace LocalJSX {
         "label": string;
         "closeLabel": string;
     }
-    interface MudNotificationAttributes {
-        "variant": NotificationVariant;
-        "closable": boolean;
-        "titleText": string;
-        "iconName": string;
-        "ariaLabel": string;
-        "closeLabel": string;
-    }
     interface MudNumericInputAttributes {
         "variant": NumericInputVariant;
         "loading": boolean;
@@ -9878,13 +9513,6 @@ declare namespace LocalJSX {
         "placeholder": string;
         "ariaLabel": string;
     }
-    interface MudProgressTrackerAttributes {
-        "orientation": ProgressTrackerOrientation;
-        "interactive": boolean;
-        "compact": boolean;
-        "currentStep": number;
-        "ariaLabel": string;
-    }
     interface MudRadioAttributes {
         "size": RadioSize;
         "checked": boolean;
@@ -9926,13 +9554,11 @@ declare namespace LocalJSX {
         "emailLabel": string;
         "shareLabel": string;
     }
-    interface MudSearchInputCircularAttributes {
-        "variant": SearchInputCircularVariant;
-        "size": SearchInputCircularSize;
+    interface MudSearchInputAttributes {
+        "shape": SearchInputShape;
+        "size": SearchInputSize;
         "disabled": boolean;
         "required": boolean;
-        "readonly": boolean;
-        "invalid": boolean;
         "clearable": boolean;
         "loading": boolean;
         "withButton": boolean;
@@ -9942,31 +9568,6 @@ declare namespace LocalJSX {
         "placeholder": string;
         "label": string;
         "helperText": string;
-        "errorText": string;
-        "iconName": string;
-        "clearLabel": string;
-        "autocomplete": string;
-        "maxLength": number;
-        "minLength": number;
-        "ariaLabel": string;
-    }
-    interface MudSearchInputRectangularAttributes {
-        "variant": SearchInputRectangularVariant;
-        "size": SearchInputRectangularSize;
-        "disabled": boolean;
-        "required": boolean;
-        "readonly": boolean;
-        "invalid": boolean;
-        "clearable": boolean;
-        "loading": boolean;
-        "withButton": boolean;
-        "submitLabel": string;
-        "value": string;
-        "name": string;
-        "placeholder": string;
-        "label": string;
-        "helperText": string;
-        "errorText": string;
         "iconName": string;
         "clearLabel": string;
         "autocomplete": string;
@@ -9983,9 +9584,9 @@ declare namespace LocalJSX {
         "ariaLabel": string;
         "ariaLabelledby": string;
     }
-    interface MudSelectInputAttributes {
-        "variant": SelectInputVariant;
-        "size": SelectInputSize;
+    interface MudSelectAttributes {
+        "variant": SelectVariant;
+        "size": SelectSize;
         "disabled": boolean;
         "required": boolean;
         "readonly": boolean;
@@ -10048,6 +9649,13 @@ declare namespace LocalJSX {
         "variant": SpinnerVariant;
         "label": string;
     }
+    interface MudStepperAttributes {
+        "orientation": StepperOrientation;
+        "interactive": boolean;
+        "compact": boolean;
+        "currentStep": number;
+        "ariaLabel": string;
+    }
     interface MudSwitchAttributes {
         "checked": boolean;
         "disabled": boolean;
@@ -10093,6 +9701,30 @@ declare namespace LocalJSX {
         "label": string;
         "ariaLabel": string;
     }
+    interface MudTextInputAttributes {
+        "variant": InputVariant;
+        "loading": boolean;
+        "size": InputSize;
+        "type": InputType;
+        "disabled": boolean;
+        "required": boolean;
+        "readonly": boolean;
+        "clearable": boolean;
+        "invalid": boolean;
+        "value": string;
+        "name": string;
+        "placeholder": string;
+        "clearLabel": string;
+        "label": string;
+        "helperText": string;
+        "errorText": string;
+        "autocomplete": string;
+        "maxLength": number;
+        "minLength": number;
+        "inputmode": string;
+        "pattern": string;
+        "ariaLabel": string;
+    }
     interface MudTextareaAttributes {
         "variant": TextareaVariant;
         "size": TextareaSize;
@@ -10111,6 +9743,14 @@ declare namespace LocalJSX {
         "maxLength": number;
         "showCounter": boolean;
         "ariaLabel": string;
+    }
+    interface MudToastAttributes {
+        "variant": ToastVariant;
+        "closable": boolean;
+        "titleText": string;
+        "iconName": string;
+        "ariaLabel": string;
+        "closeLabel": string;
     }
     interface MudTooltipAttributes {
         "size": TooltipSize;
@@ -10156,36 +9796,35 @@ declare namespace LocalJSX {
         "mud-icon": Omit<MudIcon, keyof MudIconAttributes> & { [K in keyof MudIcon & keyof MudIconAttributes]?: MudIcon[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `attr:${K}`]?: MudIconAttributes[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `prop:${K}`]?: MudIcon[K] };
         "mud-info-box": Omit<MudInfoBox, keyof MudInfoBoxAttributes> & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes]?: MudInfoBox[K] } & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes as `attr:${K}`]?: MudInfoBoxAttributes[K] } & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes as `prop:${K}`]?: MudInfoBox[K] };
         "mud-inline-message": Omit<MudInlineMessage, keyof MudInlineMessageAttributes> & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes]?: MudInlineMessage[K] } & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes as `attr:${K}`]?: MudInlineMessageAttributes[K] } & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes as `prop:${K}`]?: MudInlineMessage[K] };
-        "mud-input": Omit<MudInput, keyof MudInputAttributes> & { [K in keyof MudInput & keyof MudInputAttributes]?: MudInput[K] } & { [K in keyof MudInput & keyof MudInputAttributes as `attr:${K}`]?: MudInputAttributes[K] } & { [K in keyof MudInput & keyof MudInputAttributes as `prop:${K}`]?: MudInput[K] };
         "mud-input-chip": Omit<MudInputChip, keyof MudInputChipAttributes> & { [K in keyof MudInputChip & keyof MudInputChipAttributes]?: MudInputChip[K] } & { [K in keyof MudInputChip & keyof MudInputChipAttributes as `attr:${K}`]?: MudInputChipAttributes[K] } & { [K in keyof MudInputChip & keyof MudInputChipAttributes as `prop:${K}`]?: MudInputChip[K] };
         "mud-link": Omit<MudLink, keyof MudLinkAttributes> & { [K in keyof MudLink & keyof MudLinkAttributes]?: MudLink[K] } & { [K in keyof MudLink & keyof MudLinkAttributes as `attr:${K}`]?: MudLinkAttributes[K] } & { [K in keyof MudLink & keyof MudLinkAttributes as `prop:${K}`]?: MudLink[K] };
         "mud-logo": Omit<MudLogo, keyof MudLogoAttributes> & { [K in keyof MudLogo & keyof MudLogoAttributes]?: MudLogo[K] } & { [K in keyof MudLogo & keyof MudLogoAttributes as `attr:${K}`]?: MudLogoAttributes[K] } & { [K in keyof MudLogo & keyof MudLogoAttributes as `prop:${K}`]?: MudLogo[K] };
         "mud-menu": Omit<MudMenu, keyof MudMenuAttributes> & { [K in keyof MudMenu & keyof MudMenuAttributes]?: MudMenu[K] } & { [K in keyof MudMenu & keyof MudMenuAttributes as `attr:${K}`]?: MudMenuAttributes[K] } & { [K in keyof MudMenu & keyof MudMenuAttributes as `prop:${K}`]?: MudMenu[K] };
         "mud-menu-item": Omit<MudMenuItem, keyof MudMenuItemAttributes> & { [K in keyof MudMenuItem & keyof MudMenuItemAttributes]?: MudMenuItem[K] } & { [K in keyof MudMenuItem & keyof MudMenuItemAttributes as `attr:${K}`]?: MudMenuItemAttributes[K] } & { [K in keyof MudMenuItem & keyof MudMenuItemAttributes as `prop:${K}`]?: MudMenuItem[K] };
         "mud-modal": Omit<MudModal, keyof MudModalAttributes> & { [K in keyof MudModal & keyof MudModalAttributes]?: MudModal[K] } & { [K in keyof MudModal & keyof MudModalAttributes as `attr:${K}`]?: MudModalAttributes[K] } & { [K in keyof MudModal & keyof MudModalAttributes as `prop:${K}`]?: MudModal[K] };
-        "mud-notification": Omit<MudNotification, keyof MudNotificationAttributes> & { [K in keyof MudNotification & keyof MudNotificationAttributes]?: MudNotification[K] } & { [K in keyof MudNotification & keyof MudNotificationAttributes as `attr:${K}`]?: MudNotificationAttributes[K] } & { [K in keyof MudNotification & keyof MudNotificationAttributes as `prop:${K}`]?: MudNotification[K] };
         "mud-numeric-input": Omit<MudNumericInput, keyof MudNumericInputAttributes> & { [K in keyof MudNumericInput & keyof MudNumericInputAttributes]?: MudNumericInput[K] } & { [K in keyof MudNumericInput & keyof MudNumericInputAttributes as `attr:${K}`]?: MudNumericInputAttributes[K] } & { [K in keyof MudNumericInput & keyof MudNumericInputAttributes as `prop:${K}`]?: MudNumericInput[K] };
         "mud-pagination": Omit<MudPagination, keyof MudPaginationAttributes> & { [K in keyof MudPagination & keyof MudPaginationAttributes]?: MudPagination[K] } & { [K in keyof MudPagination & keyof MudPaginationAttributes as `attr:${K}`]?: MudPaginationAttributes[K] } & { [K in keyof MudPagination & keyof MudPaginationAttributes as `prop:${K}`]?: MudPagination[K] };
         "mud-phone-input": Omit<MudPhoneInput, keyof MudPhoneInputAttributes> & { [K in keyof MudPhoneInput & keyof MudPhoneInputAttributes]?: MudPhoneInput[K] } & { [K in keyof MudPhoneInput & keyof MudPhoneInputAttributes as `attr:${K}`]?: MudPhoneInputAttributes[K] } & { [K in keyof MudPhoneInput & keyof MudPhoneInputAttributes as `prop:${K}`]?: MudPhoneInput[K] };
-        "mud-progress-tracker": Omit<MudProgressTracker, keyof MudProgressTrackerAttributes> & { [K in keyof MudProgressTracker & keyof MudProgressTrackerAttributes]?: MudProgressTracker[K] } & { [K in keyof MudProgressTracker & keyof MudProgressTrackerAttributes as `attr:${K}`]?: MudProgressTrackerAttributes[K] } & { [K in keyof MudProgressTracker & keyof MudProgressTrackerAttributes as `prop:${K}`]?: MudProgressTracker[K] };
         "mud-radio": Omit<MudRadio, keyof MudRadioAttributes> & { [K in keyof MudRadio & keyof MudRadioAttributes]?: MudRadio[K] } & { [K in keyof MudRadio & keyof MudRadioAttributes as `attr:${K}`]?: MudRadioAttributes[K] } & { [K in keyof MudRadio & keyof MudRadioAttributes as `prop:${K}`]?: MudRadio[K] };
         "mud-receipt": Omit<MudReceipt, keyof MudReceiptAttributes> & { [K in keyof MudReceipt & keyof MudReceiptAttributes]?: MudReceipt[K] } & { [K in keyof MudReceipt & keyof MudReceiptAttributes as `attr:${K}`]?: MudReceiptAttributes[K] } & { [K in keyof MudReceipt & keyof MudReceiptAttributes as `prop:${K}`]?: MudReceipt[K] };
-        "mud-search-input-circular": Omit<MudSearchInputCircular, keyof MudSearchInputCircularAttributes> & { [K in keyof MudSearchInputCircular & keyof MudSearchInputCircularAttributes]?: MudSearchInputCircular[K] } & { [K in keyof MudSearchInputCircular & keyof MudSearchInputCircularAttributes as `attr:${K}`]?: MudSearchInputCircularAttributes[K] } & { [K in keyof MudSearchInputCircular & keyof MudSearchInputCircularAttributes as `prop:${K}`]?: MudSearchInputCircular[K] };
-        "mud-search-input-rectangular": Omit<MudSearchInputRectangular, keyof MudSearchInputRectangularAttributes> & { [K in keyof MudSearchInputRectangular & keyof MudSearchInputRectangularAttributes]?: MudSearchInputRectangular[K] } & { [K in keyof MudSearchInputRectangular & keyof MudSearchInputRectangularAttributes as `attr:${K}`]?: MudSearchInputRectangularAttributes[K] } & { [K in keyof MudSearchInputRectangular & keyof MudSearchInputRectangularAttributes as `prop:${K}`]?: MudSearchInputRectangular[K] };
+        "mud-search-input": Omit<MudSearchInput, keyof MudSearchInputAttributes> & { [K in keyof MudSearchInput & keyof MudSearchInputAttributes]?: MudSearchInput[K] } & { [K in keyof MudSearchInput & keyof MudSearchInputAttributes as `attr:${K}`]?: MudSearchInputAttributes[K] } & { [K in keyof MudSearchInput & keyof MudSearchInputAttributes as `prop:${K}`]?: MudSearchInput[K] };
         "mud-segmented-control": Omit<MudSegmentedControl, keyof MudSegmentedControlAttributes> & { [K in keyof MudSegmentedControl & keyof MudSegmentedControlAttributes]?: MudSegmentedControl[K] } & { [K in keyof MudSegmentedControl & keyof MudSegmentedControlAttributes as `attr:${K}`]?: MudSegmentedControlAttributes[K] } & { [K in keyof MudSegmentedControl & keyof MudSegmentedControlAttributes as `prop:${K}`]?: MudSegmentedControl[K] };
-        "mud-select-input": Omit<MudSelectInput, keyof MudSelectInputAttributes> & { [K in keyof MudSelectInput & keyof MudSelectInputAttributes]?: MudSelectInput[K] } & { [K in keyof MudSelectInput & keyof MudSelectInputAttributes as `attr:${K}`]?: MudSelectInputAttributes[K] } & { [K in keyof MudSelectInput & keyof MudSelectInputAttributes as `prop:${K}`]?: MudSelectInput[K] };
+        "mud-select": Omit<MudSelect, keyof MudSelectAttributes> & { [K in keyof MudSelect & keyof MudSelectAttributes]?: MudSelect[K] } & { [K in keyof MudSelect & keyof MudSelectAttributes as `attr:${K}`]?: MudSelectAttributes[K] } & { [K in keyof MudSelect & keyof MudSelectAttributes as `prop:${K}`]?: MudSelect[K] };
         "mud-separator": Omit<MudSeparator, keyof MudSeparatorAttributes> & { [K in keyof MudSeparator & keyof MudSeparatorAttributes]?: MudSeparator[K] } & { [K in keyof MudSeparator & keyof MudSeparatorAttributes as `attr:${K}`]?: MudSeparatorAttributes[K] } & { [K in keyof MudSeparator & keyof MudSeparatorAttributes as `prop:${K}`]?: MudSeparator[K] };
         "mud-service-button": Omit<MudServiceButton, keyof MudServiceButtonAttributes> & { [K in keyof MudServiceButton & keyof MudServiceButtonAttributes]?: MudServiceButton[K] } & { [K in keyof MudServiceButton & keyof MudServiceButtonAttributes as `attr:${K}`]?: MudServiceButtonAttributes[K] } & { [K in keyof MudServiceButton & keyof MudServiceButtonAttributes as `prop:${K}`]?: MudServiceButton[K] };
         "mud-sidebar": Omit<MudSidebar, keyof MudSidebarAttributes> & { [K in keyof MudSidebar & keyof MudSidebarAttributes]?: MudSidebar[K] } & { [K in keyof MudSidebar & keyof MudSidebarAttributes as `attr:${K}`]?: MudSidebarAttributes[K] } & { [K in keyof MudSidebar & keyof MudSidebarAttributes as `prop:${K}`]?: MudSidebar[K] };
         "mud-sidebar-group": Omit<MudSidebarGroup, keyof MudSidebarGroupAttributes> & { [K in keyof MudSidebarGroup & keyof MudSidebarGroupAttributes]?: MudSidebarGroup[K] } & { [K in keyof MudSidebarGroup & keyof MudSidebarGroupAttributes as `attr:${K}`]?: MudSidebarGroupAttributes[K] } & { [K in keyof MudSidebarGroup & keyof MudSidebarGroupAttributes as `prop:${K}`]?: MudSidebarGroup[K] };
         "mud-sidebar-item": Omit<MudSidebarItem, keyof MudSidebarItemAttributes> & { [K in keyof MudSidebarItem & keyof MudSidebarItemAttributes]?: MudSidebarItem[K] } & { [K in keyof MudSidebarItem & keyof MudSidebarItemAttributes as `attr:${K}`]?: MudSidebarItemAttributes[K] } & { [K in keyof MudSidebarItem & keyof MudSidebarItemAttributes as `prop:${K}`]?: MudSidebarItem[K] };
         "mud-spinner": Omit<MudSpinner, keyof MudSpinnerAttributes> & { [K in keyof MudSpinner & keyof MudSpinnerAttributes]?: MudSpinner[K] } & { [K in keyof MudSpinner & keyof MudSpinnerAttributes as `attr:${K}`]?: MudSpinnerAttributes[K] } & { [K in keyof MudSpinner & keyof MudSpinnerAttributes as `prop:${K}`]?: MudSpinner[K] };
+        "mud-stepper": Omit<MudStepper, keyof MudStepperAttributes> & { [K in keyof MudStepper & keyof MudStepperAttributes]?: MudStepper[K] } & { [K in keyof MudStepper & keyof MudStepperAttributes as `attr:${K}`]?: MudStepperAttributes[K] } & { [K in keyof MudStepper & keyof MudStepperAttributes as `prop:${K}`]?: MudStepper[K] };
         "mud-switch": Omit<MudSwitch, keyof MudSwitchAttributes> & { [K in keyof MudSwitch & keyof MudSwitchAttributes]?: MudSwitch[K] } & { [K in keyof MudSwitch & keyof MudSwitchAttributes as `attr:${K}`]?: MudSwitchAttributes[K] } & { [K in keyof MudSwitch & keyof MudSwitchAttributes as `prop:${K}`]?: MudSwitch[K] };
         "mud-tab": Omit<MudTab, keyof MudTabAttributes> & { [K in keyof MudTab & keyof MudTabAttributes]?: MudTab[K] } & { [K in keyof MudTab & keyof MudTabAttributes as `attr:${K}`]?: MudTabAttributes[K] } & { [K in keyof MudTab & keyof MudTabAttributes as `prop:${K}`]?: MudTab[K] } & OneOf<"value", MudTab["value"], MudTabAttributes["value"]>;
         "mud-table": Omit<MudTable, keyof MudTableAttributes> & { [K in keyof MudTable & keyof MudTableAttributes]?: MudTable[K] } & { [K in keyof MudTable & keyof MudTableAttributes as `attr:${K}`]?: MudTableAttributes[K] } & { [K in keyof MudTable & keyof MudTableAttributes as `prop:${K}`]?: MudTable[K] };
         "mud-tabs": Omit<MudTabs, keyof MudTabsAttributes> & { [K in keyof MudTabs & keyof MudTabsAttributes]?: MudTabs[K] } & { [K in keyof MudTabs & keyof MudTabsAttributes as `attr:${K}`]?: MudTabsAttributes[K] } & { [K in keyof MudTabs & keyof MudTabsAttributes as `prop:${K}`]?: MudTabs[K] };
         "mud-tag": Omit<MudTag, keyof MudTagAttributes> & { [K in keyof MudTag & keyof MudTagAttributes]?: MudTag[K] } & { [K in keyof MudTag & keyof MudTagAttributes as `attr:${K}`]?: MudTagAttributes[K] } & { [K in keyof MudTag & keyof MudTagAttributes as `prop:${K}`]?: MudTag[K] };
+        "mud-text-input": Omit<MudTextInput, keyof MudTextInputAttributes> & { [K in keyof MudTextInput & keyof MudTextInputAttributes]?: MudTextInput[K] } & { [K in keyof MudTextInput & keyof MudTextInputAttributes as `attr:${K}`]?: MudTextInputAttributes[K] } & { [K in keyof MudTextInput & keyof MudTextInputAttributes as `prop:${K}`]?: MudTextInput[K] };
         "mud-textarea": Omit<MudTextarea, keyof MudTextareaAttributes> & { [K in keyof MudTextarea & keyof MudTextareaAttributes]?: MudTextarea[K] } & { [K in keyof MudTextarea & keyof MudTextareaAttributes as `attr:${K}`]?: MudTextareaAttributes[K] } & { [K in keyof MudTextarea & keyof MudTextareaAttributes as `prop:${K}`]?: MudTextarea[K] };
+        "mud-toast": Omit<MudToast, keyof MudToastAttributes> & { [K in keyof MudToast & keyof MudToastAttributes]?: MudToast[K] } & { [K in keyof MudToast & keyof MudToastAttributes as `attr:${K}`]?: MudToastAttributes[K] } & { [K in keyof MudToast & keyof MudToastAttributes as `prop:${K}`]?: MudToast[K] };
         "mud-tooltip": Omit<MudTooltip, keyof MudTooltipAttributes> & { [K in keyof MudTooltip & keyof MudTooltipAttributes]?: MudTooltip[K] } & { [K in keyof MudTooltip & keyof MudTooltipAttributes as `attr:${K}`]?: MudTooltipAttributes[K] } & { [K in keyof MudTooltip & keyof MudTooltipAttributes as `prop:${K}`]?: MudTooltip[K] };
     }
 }
@@ -10481,7 +10120,7 @@ declare module "@stencil/core" {
             /**
              * Informational Box — an inline, in-content callout that highlights key
              * messages, announcements, alerts, or explanations within the page flow.
-             * Unlike `mud-notification` (a fixed-width corner toast) or `mud-banner` (a
+             * Unlike `mud-toast` (a fixed-width corner toast) or `mud-banner` (a
              * full-width page-level bar), the info box sits inside the content column,
              * fills its container's width, and supports rich content: an optional bold
              * heading, a multi-line body (default slot), an optional inline action group
@@ -10494,7 +10133,7 @@ declare module "@stencil/core" {
              * The box is static in-flow content, so it is **not** an ARIA live region
              * (that would re-announce on every render). The icon is decorative; the
              * heading and body are read in normal reading order. For transient, announced
-             * messages use `mud-notification` / `mud-banner` instead.
+             * messages use `mud-toast` / `mud-banner` instead.
              * @element mud-info-box
              */
             "mud-info-box": LocalJSX.IntrinsicElements["mud-info-box"] & JSXBase.HTMLAttributes<HTMLMudInfoBoxElement>;
@@ -10511,19 +10150,10 @@ declare module "@stencil/core" {
              * It is plain in-flow text, **not** an ARIA live region. When used as form
              * feedback, associate it with the field via `aria-describedby` (and
              * `aria-invalid` for errors) on the consumer side; for a transient, announced
-             * message use `mud-notification` / `mud-banner`. The icon is decorative.
+             * message use `mud-toast` / `mud-banner`. The icon is decorative.
              * @element mud-inline-message
              */
             "mud-inline-message": LocalJSX.IntrinsicElements["mud-inline-message"] & JSXBase.HTMLAttributes<HTMLMudInlineMessageElement>;
-            /**
-             * Input — single-line text-entry control.
-             * Pattern B (atom-interactive, form-associated): renders its own `<input>`
-             * inside shadow DOM. Form participation works via `formAssociated` +
-             * `ElementInternals`. The component is the canonical text-input primitive;
-             * specialised inputs (date, search, phone, etc.) compose around it.
-             * @element mud-input
-             */
-            "mud-input": LocalJSX.IntrinsicElements["mud-input"] & JSXBase.HTMLAttributes<HTMLMudInputElement>;
             /**
              * Input Chip — multi-value text-entry control where each confirmed value
              * renders as a removable pill (chip / tag).
@@ -10609,26 +10239,10 @@ declare module "@stencil/core" {
              */
             "mud-modal": LocalJSX.IntrinsicElements["mud-modal"] & JSXBase.HTMLAttributes<HTMLMudModalElement>;
             /**
-             * Notification — semantic toast message (350px filled surface, 8px radius).
-             * Renders a leading icon, an optional bold heading, the message body
-             * (default slot), an optional inline action group (`actions` slot) and an
-             * optional trailing close button.
-             * Pattern B (atom-display + interactive close): the close affordance lives
-             * inside shadow DOM so it participates in tab order with a real
-             * `button` role. The body itself is not interactive.
-             * `variant` selects the semantic color family — `info`, `warning`, `success`,
-             * or `error` — each a filled toast surface with its own leading icon.
-             * Live-region routing:
-             * - `info` / `success` → `role="status"` + `aria-live="polite"`
-             * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
-             * @element mud-notification
-             */
-            "mud-notification": LocalJSX.IntrinsicElements["mud-notification"] & JSXBase.HTMLAttributes<HTMLMudNotificationElement>;
-            /**
              * Numeric Input — numeric-entry control with stacked step buttons.
              * Pattern B (atom-interactive, form-associated): renders its own `<input>`
              * inside shadow DOM and pairs it with a trailing stepper stack (chevron-up
-             * over chevron-bottom). Shares the visual primitives of `mud-input` (border,
+             * over chevron-bottom). Shares the visual primitives of `mud-text-input` (border,
              * focus ring, label, helper / error, sizes, states) and adds a
              * `--numeric-input-stepper-*` token namespace for the increment / decrement
              * affordance.
@@ -10675,26 +10289,6 @@ declare module "@stencil/core" {
              */
             "mud-phone-input": LocalJSX.IntrinsicElements["mud-phone-input"] & JSXBase.HTMLAttributes<HTMLMudPhoneInputElement>;
             /**
-             * Progress Tracker (Stepper) — visualises a user's position in a multi-step process.
-             * Two flavours:
-             * - **Display tracker** (`interactive=false`, default) — read-only. Each step is a
-             *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
-             *   submissions where the parent app drives navigation.
-             * - **Interactive tracker** (`interactive=true`) — each completed (and the current)
-             *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
-             *   non-actionable per the WAI-ARIA stepper pattern.
-             * State legend (Figma node 634:10573):
-             *   - `pending`    — neutral grey ring + faded number, non-navigable
-             *   - `current`    — brand ring + brand number, neutral label
-             *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
-             *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
-             *   - `error`      — danger ring + danger cross, neutral label
-             * The component renders an ordered list with `role="list"` for AT compatibility
-             * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
-             * @element mud-progress-tracker
-             */
-            "mud-progress-tracker": LocalJSX.IntrinsicElements["mud-progress-tracker"] & JSXBase.HTMLAttributes<HTMLMudProgressTrackerElement>;
-            /**
              * Radio — single-select form input atom.
              * Pattern B (atom-interactive, form-associated): renders its own
              * `<input type="radio">` inside shadow DOM and paints the visual circle
@@ -10730,52 +10324,28 @@ declare module "@stencil/core" {
              */
             "mud-receipt": LocalJSX.IntrinsicElements["mud-receipt"] & JSXBase.HTMLAttributes<HTMLMudReceiptElement>;
             /**
-             * Search Input (circular) — single-line search-entry control with a fully
-             * rounded (pill) silhouette.
-             * Pattern B (atom-interactive, form-associated): renders its own
-             * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
-             * icon and an optional trailing clear `×` button that appears whenever the
-             * control carries a value. Behavior, props, slots, events, keyboard contract,
-             * ARIA wiring, and dimensions (height, padding, gap) are IDENTICAL to
-             * `mud-search-input-rectangular` — the only visual difference is the
-             * silhouette: corners flip to `borderRadius.full` (9999px). The trailing
-             * submit button (when `with-button` is set) inherits the pill silhouette via
-             * `borderRadius.full`, rendering as a perfect circle that hugs the pill end
-             * per Figma master `933:29721`.
-             * The Republic of Moldova Unified Design System library catalogues circular
-             * and rectangular search fields as separate component_sets, so we ship them
-             * as distinct atoms with parallel token namespaces (`--search-input-circular-*`
-             * vs `--search-input-rectangular-*`).
-             * Optional axes per Figma master `933:29721`:
-             * - `loading` — async query is in flight; a trailing spinner appears next to
-             *   the value/placeholder and the control is announced as `aria-busy`.
-             * - `with-button` — adds a trailing brand-blue circular submit button that
-             *   fires `mudSearch` on click. Coexists with the clear button and the
-             *   loading spinner.
-             * @element mud-search-input-circular
-             */
-            "mud-search-input-circular": LocalJSX.IntrinsicElements["mud-search-input-circular"] & JSXBase.HTMLAttributes<HTMLMudSearchInputCircularElement>;
-            /**
-             * Search Input (rectangular) — single-line search-entry control.
+             * Search Input — single-line search-entry control.
              * Pattern B (atom-interactive, form-associated): renders its own
              * `<input type="search">` inside shadow DOM. Adds a leading magnifying-glass
              * icon and an optional trailing clear `×` button that appears whenever the
              * control carries a value. Visual primitives (border, focus ring, label,
-             * helper / error, sizes, states) are shared with `mud-input`; specific
+             * helper, sizes, states) are shared with `mud-text-input`; specific
              * affordances (icon-start, icon-end-clear, submit-button) live in the
-             * `--search-input-rectangular-*` token namespace.
-             * Rectangular shape is the default sibling of `mud-search-input-circular`
-             * (pill). The two ship as distinct components per the Figma component-set
-             * separation in the Republic of Moldova Unified Design System library.
-             * Optional axes per Figma master `933:29099`:
+             * `--search-input-*` token namespace.
+             * Per the Figma "Search Input" component the field has two silhouettes,
+             * selected via the `shape` prop:
+             * - `rectangular` (default) — corners use `borderRadius.8`.
+             * - `circular` — corners flip to `borderRadius.full` (9999px), and the
+             *   trailing submit button becomes a perfect circle.
+             * Optional axes per Figma "Search Input":
              * - `loading` — async query is in flight; a trailing spinner appears next to
              *   the value/placeholder and the control is announced as `aria-busy`.
              * - `with-button` — adds a trailing brand-blue submit button that fires
              *   `mudSearch` on click. Coexists with the clear button and the loading
              *   spinner.
-             * @element mud-search-input-rectangular
+             * @element mud-search-input
              */
-            "mud-search-input-rectangular": LocalJSX.IntrinsicElements["mud-search-input-rectangular"] & JSXBase.HTMLAttributes<HTMLMudSearchInputRectangularElement>;
+            "mud-search-input": LocalJSX.IntrinsicElements["mud-search-input"] & JSXBase.HTMLAttributes<HTMLMudSearchInputElement>;
             /**
              * Segmented control — single-select horizontal switcher.
              * Pattern B (atom-interactive, form-associated): renders an internal
@@ -10792,17 +10362,20 @@ declare module "@stencil/core" {
              */
             "mud-segmented-control": LocalJSX.IntrinsicElements["mud-segmented-control"] & JSXBase.HTMLAttributes<HTMLMudSegmentedControlElement>;
             /**
-             * Select Input — single-select dropdown atom.
+             * Select — single-select dropdown atom.
+             * Matches the Figma `select-input` component (page "Select (Dropdown)",
+             * node 411:23995) — kept here under the shorter `mud-select` name. Size rungs
+             * follow Figma's own names: `medium` (40px) and `large` (48px).
              * Pattern B (atom-interactive, form-associated): renders a custom-styled
              * trigger button and a listbox popover inside shadow DOM. Form participation
              * works via `formAssociated` + `ElementInternals`. Shares the visual primitives
-             * of `mud-input` (border, focus ring, label, helper / error text, sizes,
+             * of `mud-text-input` (border, focus ring, label, helper / error text, sizes,
              * states) and adds a trailing chevron icon, listbox menu, and keyboard
              * navigation (ArrowUp/Down/Home/End/Enter/Escape) per the WAI-ARIA combobox
              * pattern.
-             * @element mud-select-input
+             * @element mud-select
              */
-            "mud-select-input": LocalJSX.IntrinsicElements["mud-select-input"] & JSXBase.HTMLAttributes<HTMLMudSelectInputElement>;
+            "mud-select": LocalJSX.IntrinsicElements["mud-select"] & JSXBase.HTMLAttributes<HTMLMudSelectElement>;
             /**
              * Separator — visual divider between groups of content or UI components.
              * Pattern B (atom-visual): renders a 1D rule, optionally with an inline label.
@@ -10848,6 +10421,28 @@ declare module "@stencil/core" {
              * @element mud-spinner
              */
             "mud-spinner": LocalJSX.IntrinsicElements["mud-spinner"] & JSXBase.HTMLAttributes<HTMLMudSpinnerElement>;
+            /**
+             * Stepper — visualises a user's position in a multi-step process.
+             * Matches the Figma `progress-tracker` component (page "Progress Tracker
+             * (Stepper)", node 267:6905) — kept here under the shorter `mud-stepper` name.
+             * Two flavours:
+             * - **Display stepper** (`interactive=false`, default) — read-only. Each step is a
+             *   `<li>` carrying ARIA semantics. Use for sign-up wizards, KYC flows, document
+             *   submissions where the parent app drives navigation.
+             * - **Interactive stepper** (`interactive=true`) — each completed (and the current)
+             *   step renders as a `<button>` and emits `mudStepClick`. Pending steps remain
+             *   non-actionable per the WAI-ARIA stepper pattern.
+             * State legend (Figma node 634:10573):
+             *   - `pending`    — neutral grey ring + faded number, non-navigable
+             *   - `current`    — brand ring + brand number, neutral label
+             *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
+             *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
+             *   - `error`      — danger ring + danger cross, neutral label
+             * The component renders an ordered list with `role="list"` for AT compatibility
+             * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
+             * @element mud-stepper
+             */
+            "mud-stepper": LocalJSX.IntrinsicElements["mud-stepper"] & JSXBase.HTMLAttributes<HTMLMudStepperElement>;
             /**
              * Switch — binary on/off toggle atom (form-associated).
              * Pattern B (atom-interactive, form-associated): renders its own
@@ -10942,15 +10537,44 @@ declare module "@stencil/core" {
              */
             "mud-tag": LocalJSX.IntrinsicElements["mud-tag"] & JSXBase.HTMLAttributes<HTMLMudTagElement>;
             /**
+             * Input — single-line text-entry control.
+             * Pattern B (atom-interactive, form-associated): renders its own `<input>`
+             * inside shadow DOM. Form participation works via `formAssociated` +
+             * `ElementInternals`. The component is the canonical text-input primitive;
+             * specialised inputs (date, search, phone, etc.) compose around it.
+             * @element mud-text-input
+             */
+            "mud-text-input": LocalJSX.IntrinsicElements["mud-text-input"] & JSXBase.HTMLAttributes<HTMLMudTextInputElement>;
+            /**
              * Text Area — multi-line text-entry control.
              * Pattern B (atom-interactive, form-associated): renders its own `<textarea>`
              * inside shadow DOM. Form participation works via `formAssociated` +
-             * `ElementInternals`. Mirrors the `mud-input` contract for label, helper,
+             * `ElementInternals`. Mirrors the `mud-text-input` contract for label, helper,
              * error and variant treatment, and adds a vertical resize handle plus an
              * optional character counter.
              * @element mud-textarea
              */
             "mud-textarea": LocalJSX.IntrinsicElements["mud-textarea"] & JSXBase.HTMLAttributes<HTMLMudTextareaElement>;
+            /**
+             * Toast — semantic toast message (350px filled surface, 8px radius).
+             * Matches the Figma `toast` component (page "Messaging (Notification)"):
+             * a leading icon, an optional bold heading, the message body (default slot),
+             * an optional inline link/action group (`actions` slot) and a trailing close
+             * button (shown by default — `closable` defaults to `true`).
+             * Placement, vertical stacking and auto-dismiss are the consumer's
+             * responsibility — this atom is just the surface. Its entrance animation
+             * (slide-down + fade-in) plays once on mount.
+             * Pattern B (atom-display + interactive close): the close affordance lives
+             * inside shadow DOM so it participates in tab order with a real
+             * `button` role. The body itself is not interactive.
+             * `variant` selects the semantic color family — `info`, `warning`, `success`,
+             * or `error` — each a filled toast surface with its own leading icon.
+             * Live-region routing:
+             * - `info` / `success` → `role="status"` + `aria-live="polite"`
+             * - `warning` / `error` → `role="alert"` + `aria-live="assertive"`
+             * @element mud-toast
+             */
+            "mud-toast": LocalJSX.IntrinsicElements["mud-toast"] & JSXBase.HTMLAttributes<HTMLMudToastElement>;
             /**
              * Tooltip — transient label, structured popover, or coach mark anchored to a
              * trigger element.

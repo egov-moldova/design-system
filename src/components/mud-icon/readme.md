@@ -48,24 +48,23 @@ largest smaller size before giving up.
  - [mud-header-services-menu](../mud-header)
  - [mud-info-box](../mud-info-box)
  - [mud-inline-message](../mud-inline-message)
- - [mud-input](../mud-input)
  - [mud-input-chip](../mud-input-chip)
  - [mud-menu-item](../mud-menu)
  - [mud-modal](../mud-modal)
- - [mud-notification](../mud-notification)
  - [mud-numeric-input](../mud-numeric-input)
  - [mud-pagination](../mud-pagination)
  - [mud-phone-input](../mud-phone-input)
- - [mud-progress-tracker](../mud-progress-tracker)
- - [mud-search-input-circular](../mud-search-input-circular)
- - [mud-search-input-rectangular](../mud-search-input-rectangular)
+ - [mud-search-input](../mud-search-input)
  - [mud-segmented-control](../mud-segmented-control)
- - [mud-select-input](../mud-select-input)
+ - [mud-select](../mud-select)
  - [mud-sidebar-item](../mud-sidebar)
+ - [mud-stepper](../mud-stepper)
  - [mud-tab](../mud-tabs)
  - [mud-table](../mud-table)
  - [mud-tabs](../mud-tabs)
+ - [mud-text-input](../mud-text-input)
  - [mud-textarea](../mud-textarea)
+ - [mud-toast](../mud-toast)
 
 ### Graph
 ```mermaid
@@ -86,24 +85,23 @@ graph TD;
   mud-header-services-menu --> mud-icon
   mud-info-box --> mud-icon
   mud-inline-message --> mud-icon
-  mud-input --> mud-icon
   mud-input-chip --> mud-icon
   mud-menu-item --> mud-icon
   mud-modal --> mud-icon
-  mud-notification --> mud-icon
   mud-numeric-input --> mud-icon
   mud-pagination --> mud-icon
   mud-phone-input --> mud-icon
-  mud-progress-tracker --> mud-icon
-  mud-search-input-circular --> mud-icon
-  mud-search-input-rectangular --> mud-icon
+  mud-search-input --> mud-icon
   mud-segmented-control --> mud-icon
-  mud-select-input --> mud-icon
+  mud-select --> mud-icon
   mud-sidebar-item --> mud-icon
+  mud-stepper --> mud-icon
   mud-tab --> mud-icon
   mud-table --> mud-icon
   mud-tabs --> mud-icon
+  mud-text-input --> mud-icon
   mud-textarea --> mud-icon
+  mud-toast --> mud-icon
   style mud-icon fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
