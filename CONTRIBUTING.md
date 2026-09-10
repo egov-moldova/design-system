@@ -94,11 +94,7 @@ Additional docs worth knowing about:
 1. **Create a branch** off `main`: `git checkout -b feat/short-description` (or `fix/`, `chore/`, `docs/` — matches the [commit conventions](#commit-messages) below).
 2. **Edit components** in `src/components/` (or `src/hidden/` if the component isn't production-ready yet).
 3. **Run the dev loop**: `yarn dev` — Stencil, Storybook, and token watch run together via Wireit; changes hot-reload in Storybook.
-4. **For vanilla-adapter changes**, verify against the demo:
-   ```bash
-   yarn build && yarn build.web && yarn demo.web
-   ```
-   Opens `http://localhost:5174` with a live `<mud-button>` showcase served from [`web-components/demo/index.html`](web-components/demo/index.html).
+4. **For vanilla-adapter changes**, verify against the demo — see [Vanilla adapter](#vanilla-adapter-web-components) below.
 5. **Lint and typecheck before committing**:
    ```bash
    yarn lint        # ESLint (src/**/*.{ts,tsx}) + Stylelint (src/**/*.css)
@@ -107,6 +103,48 @@ Additional docs worth knowing about:
    ```
 6. **Run tests**: `yarn test` (see [Testing](#testing) below).
 7. **Commit** using [Conventional Commits](#commit-messages), **push**, and **open a PR**.
+
+### Vanilla adapter (`web-components/`)
+
+`@egov-moldova/design-system-web-components` is a *thin* re-export of the Stencil
+loader — because Stencil already compiles to native custom elements, there is no
+framework-specific build step. Two builds and a demo server:
+
+```bash
+yarn build        # tokens + Stencil -> dist/, loader/, dist/types/
+yarn build.web    # depends on `build` (wireit orders it); runs tsc inside web-components/
+yarn demo.web     # http://localhost:5174 — live <mud-button> showcase
+```
+
+`yarn build.web` compiles `web-components/src/index.ts` into:
+
+- `dist/index.js` — re-exports `defineCustomElements` and `setNonce` from the core loader
+- `dist/index.d.ts` — type declarations including full element type augmentation (`HTMLMudButtonElement`, …)
+
+The demo renders only the button, but it proves the export is *complete* — every
+component is registered by `defineCustomElements()`. Verify in the browser console:
+
+```js
+defineCustomElements().then(() =>
+  console.log(Object.keys(window).filter(k => k.startsWith('HTMLMud')))
+);
+```
+
+You should see the full list (`HTMLMudButtonElement`, `HTMLMudInputElement`,
+`HTMLMudIconElement`, …).
+
+```text
+web-components/
+├── src/index.ts              # defineCustomElements + type re-exports
+├── demo/
+│   ├── index.html            # mud-button showcase
+│   ├── main.ts               # CSS imports + defineCustomElements()
+│   ├── demo.css              # @font-face for Onest + body font-family
+│   └── vite.config.ts        # port 5174, allows fs access to the workspace parent
+├── package.json              # @egov-moldova/design-system-web-components
+├── tsconfig.json             # ES2020, declaration: true
+└── README.md
+```
 
 ### Script reference
 

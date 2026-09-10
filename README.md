@@ -12,16 +12,16 @@ This repository contains two npm packages:
 
 > **Terminology:** **MUD** refers to the *Moldova UI Design System*.
 
+> **Contributing to MUD itself?** Cloning the repo, installing dependencies, building the packages locally, the Storybook dev loop and the vanilla-adapter demo are all covered in [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ---
 
 ## Table of Contents
 
 1. [Motivation](#motivation)
-2. [Quick Start - General Steps](#quick-start---general-steps)
-3. [Web Components (Vanilla HTML / JS) Build & Setup](#web-components-vanilla-html--js-build--setup)
-4. [Publishing](#publishing)
-5. [Getting Started](#getting-started)
-6. [Additional Resources](#additional-resources)
+2. [Publishing](#publishing)
+3. [Getting Started](#getting-started)
+4. [Additional Resources](#additional-resources)
 
 ---
 
@@ -55,95 +55,6 @@ A citizen who learns how to fill out a form on one government site should alread
 how to fill out a form on the next one. That consistency is not a cosmetic nicety —
 it's a measurable reduction in support burden, abandonment rates, and time-to-completion
 across public services.
-
----
-
-## Quick Start - General Steps
-
-### Step 1: Install Dependencies (First Time Only)
-
-In the `age-design` project root:
-
-```bash
-yarn install
-```
-
-### Step 2: Build Stencil Components (Regular Build)
-
-```bash
-yarn build
-```
-
-This command will:
-
-- Clean and regenerate design tokens
-- Build Stencil components
-- Generate distribution files (`dist/`, `loader/`, `dist/types/`)
-
----
-
-## Web Components (Vanilla HTML / JS) Build & Setup
-
-For any consumer — bundler-based or plain HTML — use `@egov-moldova/mud-web-components`. Because Stencil already compiles to native custom elements, this adapter is a *thin* re-export of the loader; no framework-specific build step is required.
-
-### Step 1: Build Stencil Components
-
-In the `age-design` project root:
-
-```bash
-yarn build
-```
-
-This produces `dist/`, `loader/`, and `dist/types/` — all the runtime files the vanilla adapter re-exports.
-
-### Step 2: Build the `@egov-moldova/mud-web-components` Package
-
-```bash
-yarn build.web
-```
-
-This command:
-
-- Depends on the base `build` (wireit handles the ordering)
-- Runs `tsc` inside `web-components/` to compile `src/index.ts` → `dist/index.js` + `dist/index.d.ts`
-
-The `web-components/dist/` folder will contain:
-
-- `index.js` — re-exports `defineCustomElements` and `setNonce` from `@egov-moldova/mud/loader`
-- `index.d.ts` — type declarations including full element type augmentation (`HTMLMudButtonElement`, …)
-
-### Step 3: Run the local demo
-
-```bash
-yarn demo.web
-```
-
-Opens `http://localhost:5174` with a live `<mud-button>` showcase (variants + sizes) served by Vite from [`web-components/demo/index.html`](web-components/demo/index.html).
-
-The demo proves the export is *complete* — every component is registered by `defineCustomElements()`, even though the demo only renders the button. Verify in the browser console:
-
-```js
-defineCustomElements().then(() =>
-  console.log(Object.keys(window).filter(k => k.startsWith('HTMLMud')))
-);
-```
-
-You should see the full list (`HTMLMudButtonElement`, `HTMLMudInputElement`, `HTMLMudIconElement`, …).
-
-### Files
-
-```text
-web-components/
-├── src/index.ts              # defineCustomElements + type re-exports
-├── demo/
-│   ├── index.html            # mud-button showcase
-│   ├── main.ts               # CSS imports + defineCustomElements()
-│   ├── demo.css              # @font-face for Onest + body font-family
-│   └── vite.config.ts        # port 5174, allows fs access to the workspace parent
-├── package.json              # @egov-moldova/mud-web-components
-├── tsconfig.json             # ES2020, declaration: true
-└── README.md
-```
 
 ---
 
