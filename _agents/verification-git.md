@@ -125,9 +125,19 @@ rewrites every drifted file in the repo. Observed on PR #12, where `main` was re
 `azure/deploy/values.dev.yaml` (list re-indent), `web-components/CDN_TEST.html`
 (170 lines) — none of them touched by the task.
 
-**Pre-existing drift is its own PR.** Do not carry it in a feature or fix branch,
-and do not revert it either once `yarn lint` depends on it: extract the `style:`
-commits onto a branch of their own, merge that first, then rebase.
+**Pre-existing drift is decided per file, by who owns it.** Reverting a drifted
+file alone turns `yarn lint` red again, since it checks the same repo-wide scope,
+so the revert and the ignore rule always travel together:
+
+| The file is | Do | Because |
+|---|---|---|
+| This repo's own source — `src/`, `.storybook/`, build/test config | Keep it formatted, in an isolated `style:` commit, and say so in the PR description | It has to stay lint-clean; a `style:` commit the reviewer can skip is the honest form |
+| Infrastructure or a hand-maintained artifact — `azure/`, Helm charts, CI pipelines, demo pages | Add it to `.prettierignore`, then `git checkout main -- <path>` | This repo's JS toolchain does not own those files, and formatting them is churn in someone else's review |
+
+Resolved that way on PR #12: `azure/`, the root publish pipeline and
+`web-components/CDN_TEST.html` are ignored and back to main's content; twelve
+source files stayed formatted in two `style:` commits, because `yarn lint` is a
+blocking CI step and was red on main.
 
 To format only what you edited:
 
