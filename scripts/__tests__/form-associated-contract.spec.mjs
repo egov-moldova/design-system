@@ -80,17 +80,26 @@ describe('form-associated components', () => {
     const offenders = [];
     for (const { tsxPath, contract } of contracts) {
       if (contract?.formAssociated !== true) continue;
+      const where = path.relative(COMPONENTS_ROOT, tsxPath);
       const nameProp = (contract.props ?? []).find(p => p.name === 'name');
-      if (!nameProp) continue;
+      // A missing `name` prop is an offender, never a `continue`. Skipping it
+      // would make this assertion vacuous exactly when the extractor stops
+      // reporting props under that key — the assertion would then grade nothing
+      // and still pass, which is the failure the guard above exists to prevent,
+      // one level down. A form-associated control with no `name` cannot take
+      // part in a submission anyway, so there is nothing to exempt.
+      if (!nameProp) {
+        offenders.push(`${where} — form-associated but declares no \`name\` prop`);
+        continue;
+      }
       if (nameProp.reflect !== true) {
-        offenders.push(`${path.relative(COMPONENTS_ROOT, tsxPath)}:${nameProp.line}`);
+        offenders.push(`${where}:${nameProp.line} — \`name\` without reflect: true`);
       }
     }
     assert.deepEqual(
       offenders,
       [],
-      `these form-associated components declare \`name\` without reflect: true, so a ` +
-        `property-assigned name is dropped from FormData:\n  ${offenders.join('\n  ')}`,
+      `these form-associated components cannot submit a property-assigned name:\n  ${offenders.join('\n  ')}`,
     );
   });
 });

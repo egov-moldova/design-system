@@ -463,8 +463,7 @@ export const FormSubmissionContract: Story = {
     };
     // Stencil writes a reflected attribute on the next render tick, not on
     // assignment, so every assertion here polls to a deadline rather than
-    // sleeping a fixed amount: a fixed sleep is either flaky or slow, and this
-    // one was measured — a single macrotask is reliably too early.
+    // sleeping a fixed amount — a fixed sleep is either flaky or slow.
     const waitFor = async (predicate: () => boolean, describe: () => string, timeoutMs = 2000) => {
       const startedAt = performance.now();
       for (;;) {
