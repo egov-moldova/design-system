@@ -154,11 +154,13 @@ export function standaloneBundleDir(pkg) {
  * not closed by anything, and the READMEs staying in step with this list is a
  * convention rather than a mechanism.
  *
- * The three pattern keys — `./tokens/*.css`, `./assets/*`, `./components/*` —
- * are represented by one concrete member each, because `collectDeclaredEntries`
+ * The two pattern keys — `./tokens/*.css` and `./components/mud-*.js` — are
+ * represented by one concrete member each, because `collectDeclaredEntries`
  * skips patterns by design and would otherwise leave them ungraded entirely.
- * Baseline: `yarn pack --dry-run --json | grep -o '"location":"dist/mud/assets/[^"/]*"'`
- * -> `dist/mud/assets/icons.manifest.json` is packed at that exact path today.
+ * Each representative is a shape a consumer actually writes, not the cheapest
+ * string that matches: `mud-button.js` is what the generated React wrappers
+ * import, where `index.js` would have been graded already by the literal
+ * `./components` key and so would have tested nothing new.
  */
 // `./tokens/*.css` is deliberately narrower than a bare `./tokens/*`: the `.css`
 // suffix reserves `./tokens` and `./tokens/*.json` for a future JS/DTCG token
@@ -171,7 +173,6 @@ export const PUBLIC_SPECIFIERS = [
   '@egov-moldova/mud/styles.css',
   '@egov-moldova/mud/tokens/core.tokens.css',
   '@egov-moldova/mud/tokens/core.dark.tokens.css',
-  '@egov-moldova/mud/assets/12/asterisk.svg',
   '@egov-moldova/mud/mud.esm.js',
   '@egov-moldova/mud/components',
   '@egov-moldova/mud/components/mud-button.js',

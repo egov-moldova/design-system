@@ -13,19 +13,28 @@ names the old path but not the new one — the mapping is below.
 | `@egov-moldova/mud/dist/mud/mud.css` | `@egov-moldova/mud/styles.css` |
 | `@egov-moldova/mud/dist/mud/tokens/<name>.css` | `@egov-moldova/mud/tokens/<name>.css` |
 | `@egov-moldova/mud/dist/mud/mud.esm.js` | `@egov-moldova/mud/mud.esm.js` |
-| `@egov-moldova/mud/dist/mud/assets/<size>/<name>.svg` | `@egov-moldova/mud/assets/<size>/<name>.svg` |
 | `@egov-moldova/mud/dist/components` | `@egov-moldova/mud/components` |
-| `@egov-moldova/mud/dist/components/<file>` | `@egov-moldova/mud/components/<file>` |
+| `@egov-moldova/mud/dist/components/mud-<name>.js` | `@egov-moldova/mud/components/mud-<name>.js` |
 
 `.` and `./loader` are unchanged.
 
 **Removed with no replacement**, deliberately. The old `./dist/mud/*` wildcard
-also exposed `dist/mud/index.esm.js` and the `p-*.js` chunk files. Those are
-build output, not API: the chunks are loaded by the bundle itself through
-relative imports, which never consult the `exports` map, and `index.esm.js` has
-no documented use. If you import either by name, use
-`@egov-moldova/mud/mud.esm.js` — the self-registering bundle entry — or
-`defineCustomElements()` from `@egov-moldova/mud/loader`.
+also exposed `dist/mud/index.esm.js`, the `p-*.js` chunk files and everything
+under `dist/mud/assets/`. None of those is API:
+
+- The chunks and `index.esm.js` are loaded by the bundle itself through relative
+  imports, which never consult the `exports` map. If you named either, use
+  `@egov-moldova/mud/mud.esm.js` — the self-registering bundle entry — or
+  `defineCustomElements()` from `@egov-moldova/mud/loader`.
+- **Icons and other assets are not module imports.** `<mud-icon>` fetches its
+  SVG at runtime through Stencil's `getAssetPath()`, which builds a URL relative
+  to the loaded bundle and never goes through module resolution. To serve assets
+  from your own origin instead, copy `dist/mud/assets/**` with a filesystem glob
+  and point `setAssetPath()` at the destination — a build step, not an `import`.
+
+The `./dist/components/*` wildcard is likewise not re-published in full: only
+`./components/mud-*.js` is, which is every component module and none of the 35
+build chunks beside them.
 
 **URLs are not affected, and the new names are not URLs.** Both directions
 matter. A `<link href="/node_modules/@egov-moldova/mud/dist/mud/mud.css">`, a

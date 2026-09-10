@@ -250,7 +250,6 @@ In `scripts/__tests__/validate-package.spec.mjs`, replace the `exports` block of
     },
     './styles.css': './dist/mud/mud.css',
     './tokens/*.css': './dist/mud/tokens/*.css',
-    './assets/*': './dist/mud/assets/*',
     './mud.esm.js': './dist/mud/mud.esm.js',
     './components': {
       types: './dist/components/index.d.ts',
@@ -311,7 +310,6 @@ In `package.json`, replace the whole `exports` block with:
     },
     "./styles.css": "./dist/mud/mud.css",
     "./tokens/*.css": "./dist/mud/tokens/*.css",
-    "./assets/*": "./dist/mud/assets/*",
     "./mud.esm.js": "./dist/mud/mud.esm.js",
     "./components": {
       "types": "./dist/components/index.d.ts",
@@ -426,7 +424,7 @@ git commit -F - <<'EOF'
 feat(exports)!: publish a clean public API surface
 
 Replace the dist-shaped subpaths with named ones: ./styles.css,
-./tokens/*.css, ./assets/*, ./mud.esm.js and ./components*. The
+./tokens/*.css, ./mud.esm.js and ./components*. The
 dist/ paths are no longer exported.
 
 No require condition on ./components: Stencil's dist-custom-elements
@@ -459,15 +457,7 @@ Every existing check in the gate grades *targets* — that a declared path is pr
 - Consumes: the `exports` map produced by Phase 1.
 - Produces: `PUBLIC_SPECIFIERS` (a `string[]` of bare specifiers) and `checkPublicSpecifiers(specifiers, cwd)` returning `string[]` of human-readable failures — empty when every specifier resolves to an existing file.
 
-- [ ] **Step 0: Read the asset representative out of a real tarball, do not guess it**
-
-The `./assets/*` representative is the one entry in `PUBLIC_SPECIFIERS` whose packed path cannot be read off the source tree. The sources live at `src/components/mud-icon/assets/` and `src/components/mud-logo/assets/` under `assetsDirs: ['assets']`, and `scripts/copy-component-assets.mjs` mirrors them again after the build — so whether `icons.manifest.json` lands at `dist/mud/assets/icons.manifest.json`, somewhere nested, or is not packed at all is a property of the build, not of the source. Pick it from the output:
-
-```bash
-yarn pack --dry-run --json | grep -o '"location":"dist/mud/assets/[^"]*"' | head -5
-```
-
-Use a path this prints. A representative chosen from `src/` and wrong here fails every publish from the moment the new category is wired in, and it fails on the gate rather than on anything a developer would recognise.
+**On pattern-key representatives.** `collectDeclaredEntries` skips patterns by design, so each pattern key needs one concrete member in `PUBLIC_SPECIFIERS` or it is graded by nothing. Pick a shape a consumer actually writes, not the cheapest string that matches — `index.js` for `./components/mud-*.js` would be graded already by the literal `./components` key and would test nothing new. And read the member out of a real tarball rather than the source tree when the build moves files: `yarn pack --dry-run --json | grep -o '"location":"<dir>/[^"]*"'`.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -548,13 +538,14 @@ export const PUBLIC_SPECIFIERS = [
   '@egov-moldova/mud/loader',
   '@egov-moldova/mud/styles.css',
   // One representative per PATTERN key. `collectDeclaredEntries` skips patterns
-  // by design (they resolve to many files), so without a representative the
-  // three pattern keys — `./tokens/*.css`, `./assets/*`, `./components/*` —
-  // have no check at all, and `./assets/*` is a key this change introduces.
+  // by design (they resolve to many files), so without a representative the two
+  // pattern keys — `./tokens/*.css` and `./components/mud-*.js` — have no check
+  // at all. Each representative is a shape a consumer actually writes:
+  // `mud-button.js` is what the generated React wrappers import, where
+  // `index.js` is graded already by the literal `./components` key.
   '@egov-moldova/mud/tokens/core.tokens.css',
   '@egov-moldova/mud/tokens/core.dark.tokens.css',
-  '@egov-moldova/mud/assets/<the path Step 0 printed>',
-  '@egov-moldova/mud/components/index.js',
+  '@egov-moldova/mud/components/mud-button.js',
   '@egov-moldova/mud/mud.esm.js',
   '@egov-moldova/mud/components',
 ];
@@ -766,7 +757,11 @@ EOF
 
 ## Self-Review
 
-**Spec coverage.** The issue asks for four renames. `./dist/mud/mud.css` → `./styles.css`, `./dist/mud/tokens/*.css` → `./tokens/*.css` and `./dist/components*` → `./components*` are Phase 1 Step 5. The fourth, `"require": "./dist/components/index.cjs.js"`, is deliberately **not** implemented — the file is not producible by `dist-custom-elements` and declaring it would reproduce the defect class of issue #1 and fail `yarn validate.package`. Recorded in Global Constraints and in the CHANGELOG so a reader of the issue finds the answer without re-deriving it. Two additions beyond the issue — `./assets/*` and `./mud.esm.js` — cover files that would otherwise have no public name once `./dist/mud/*` is gone.
+**Spec coverage.** The issue asks for four renames. `./dist/mud/mud.css` → `./styles.css` and `./dist/mud/tokens/*.css` → `./tokens/*.css` are Phase 1 Step 5; `./dist/components` → `./components` likewise; `./dist/components/*` is renamed AND narrowed to `./components/mud-*.js`, which publishes every component module and none of the 35 build chunks beside them — the argument the issue makes for removing `./dist/mud/*`, applied to the sibling key it did not mention.
+
+The fourth item, `"require": "./dist/components/index.cjs.js"`, is deliberately **not** implemented: the file is not producible by `dist-custom-elements`, declaring it would reproduce issue #1's defect class, and `checkEsmOnlySubpaths` now refuses it mechanically. Recorded in Global Constraints and in the CHANGELOG so a reader of the issue finds the answer without re-deriving it.
+
+One addition beyond the issue survives: `./mud.esm.js`, which gives the self-registering bundle entry a public name it would otherwise lose with the wildcard — `web-components/demo/main.ts` imports it. A second, `./assets/*`, was added and then **removed before merge**: assets are reached at runtime through `getAssetPath()`, or copied with a filesystem glob and pointed at with `setAssetPath()`, and neither path consults `exports`. Two independent review lenses found it had no consumer; the owner's call was to drop it rather than publish a name nobody writes, since adding a key later is additive and removing one after publishing is not.
 
 **Placeholder scan.** No TBD, no "handle edge cases", no "similar to Phase N". Every code step carries the literal content.
 
