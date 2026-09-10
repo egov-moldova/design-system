@@ -2,7 +2,7 @@
 
 ## Scope
 
-Phased verification gates, common troubleshooting, and git/PR conventions. **Read before claiming work complete or creating a PR.**
+Phased verification gates, common troubleshooting, change-scope and docs-audience rules, and git/PR conventions. **Read before claiming work complete or creating a PR.**
 
 ---
 
@@ -103,6 +103,74 @@ Control verification phases and Git workflow independently:
 - **`--fast`**: Phases 1-3 only, no Git workflow
 - **`--git`**: Full verification (phases 1-4) + Git workflow
 - **`--fast --git`**: Phases 1-3 + Git workflow
+
+---
+
+## Change Scope Discipline (always active — not gated on `--git`)
+
+**A PR contains only the files the task required.** Unrelated edits — above all
+formatter noise — inflate the diff and make the reviewer guess which lines are a
+real change and which are Prettier.
+
+### The repo-wide formatter is safe only on a clean repo
+
+`yarn format` ends in `prettier --write .`, and `yarn lint` checks the same scope
+with `prettier --check .`. While `main` is green, `yarn format` is a no-op on
+files you did not edit — that is why it is the sanctioned command in
+[CONTRIBUTING.md](../CONTRIBUTING.md) and inside `yarn check`.
+
+It becomes a scope problem the moment `main` is *not* clean: the formatter then
+rewrites every drifted file in the repo. Observed on PR #12, where `main` was red
+— `azure/deploy/chart/Chart.yaml` (`"1.0"` -> `'1.0'`),
+`azure/deploy/values.dev.yaml` (list re-indent), `web-components/CDN_TEST.html`
+(170 lines) — none of them touched by the task.
+
+**Pre-existing drift is its own PR.** Do not carry it in a feature or fix branch,
+and do not revert it either once `yarn lint` depends on it: extract the `style:`
+commits onto a branch of their own, merge that first, then rebase.
+
+To format only what you edited:
+
+```bash
+git diff --name-only --diff-filter=ACM main...HEAD | xargs -r npx prettier --write --ignore-unknown
+```
+
+### Pre-PR scope check
+
+```bash
+git diff --stat main...HEAD          # every listed file must be explainable by the task
+git diff main...HEAD -- <suspect>    # inspect anything you don't recognise
+git checkout main -- <path>          # revert a file the task never needed
+```
+
+- [ ] Every file in `git diff --stat main...HEAD` is one the task required
+- [ ] No file whose entire diff is quoting, indentation, or shorthand changes
+      (`"x"`→`'x'`, `#ffffff`→`#fff`, list re-indent)
+- [ ] No config, pipeline, chart or fixture touched unless the task was about it
+
+A file that genuinely *needs* reformatting gets its own commit (`style(scope): …`)
+so the reviewer can skip it — never mixed into a feature or fix commit.
+
+---
+
+## Documentation Audience
+
+Two documents, two readers. Putting contributor mechanics in the README makes the
+consumer wade through build steps they will never run.
+
+| File | Reader | Contains |
+|------|--------|----------|
+| `README.md` | Institutions/companies **consuming** `@egovmd/mud` | What the library is, install from the registry, import, framework usage, component overview, versioning/upgrade, links |
+| `CONTRIBUTING.md` | Developers **working on** the library | Clone + `yarn install`, local builds (`yarn build`, `yarn tokens.build`), dev loop, Storybook, demo servers, tests, token workflow, commit conventions, publishing |
+
+**Never add to README**: "Install Dependencies", "Build Stencil Components",
+"Run the local demo", watch modes, Storybook ports, script reference, or
+publishing steps. If such a section is needed, write it in `CONTRIBUTING.md` and
+— only if a consumer really needs a pointer — leave one line in the README
+linking to it.
+
+- [ ] No local-build or dev-server instructions added to `README.md`
+- [ ] Contributor-facing instructions landed in `CONTRIBUTING.md`
 
 ---
 

@@ -91,6 +91,8 @@ The repo ships ready-to-use slash commands and subagents for routine workflows. 
 8. **No Boolean Slot Props**: Use CSS `:empty` or slot detection — never boolean props to control slot visibility
 9. **Shadow DOM Dual Selectors**: If a slot has default content, style BOTH `::slotted()` and direct child
 10. **Minimal Builds**: Use `yarn tokens.build` (~5s) or Stencil watch (~2-5s) during dev; full `yarn build` only for final QA
+11. **Change Scope**: A PR touches only files the task required. `yarn format` is repo-wide (`prettier --write .`) — harmless while the repo is Prettier-clean, but if it rewrites files your task never touched, that drift ships as its own `style:` PR, never mixed into yours. Check `git diff --stat main...HEAD` before opening a PR. See `_agents/verification-git.md`.
+12. **Docs Audience**: `README.md` is written for institutions/companies that *consume* `@egovmd/mud` — install, import, use, upgrade. Contributor mechanics (dependency install, local builds, demo servers, dev loop, publishing steps) belong in `CONTRIBUTING.md`. See `_agents/verification-git.md`.
 
 ---
 
