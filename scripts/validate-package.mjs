@@ -141,6 +141,87 @@ export function standaloneBundleDir(pkg) {
 }
 
 /**
+ * The specifiers the documentation promises a consumer can write. Authored
+ * rather than derived from `exports`: a list generated from the map would only
+ * ask the map about itself and would stay green through any rename. This is the
+ * consumer's side of the contract.
+ *
+ * What enforces it and what does not, stated precisely because it is easy to
+ * assume more. `checkPublicSpecifiers` fails when this list names something
+ * `exports` does not expose. It CANNOT fail when `exports` gains a key nobody
+ * listed, and it never reads a README. The first gap is closed by the
+ * set-membership test in `__tests__/validate-package.spec.mjs`; the second is
+ * not closed by anything, and the READMEs staying in step with this list is a
+ * convention rather than a mechanism.
+ *
+ * The three pattern keys — `./tokens/*.css`, `./assets/*`, `./components/*` —
+ * are represented by one concrete member each, because `collectDeclaredEntries`
+ * skips patterns by design and would otherwise leave them ungraded entirely.
+ * Baseline: `yarn pack --dry-run --json | grep -o '"location":"dist/mud/assets/[^"/]*"'`
+ * -> `dist/mud/assets/icons.manifest.json` is packed at that exact path today.
+ */
+export const PUBLIC_SPECIFIERS = [
+  '@egov-moldova/mud',
+  '@egov-moldova/mud/loader',
+  '@egov-moldova/mud/styles.css',
+  '@egov-moldova/mud/tokens/core.tokens.css',
+  '@egov-moldova/mud/tokens/core.dark.tokens.css',
+  '@egov-moldova/mud/assets/icons.manifest.json',
+  '@egov-moldova/mud/mud.esm.js',
+  '@egov-moldova/mud/components',
+  '@egov-moldova/mud/components/index.js',
+];
+
+/**
+ * Resolves each specifier through Node's own algorithm and confirms the PACKED
+ * TARBALL contains what it resolved to.
+ *
+ * Both halves are needed. `import.meta.resolve` applies the exports map but
+ * never stats, so a key pointing at a missing file resolves happily; and every
+ * other check in this gate grades declared TARGETS, never KEYS, so a renamed or
+ * mistyped key passes them all while no consumer can reach it.
+ *
+ * The membership test is against `packedFileList`, not `fs.existsSync`, for the
+ * reason `checkDevSignature` gives below: a consumer resolves against the
+ * published tarball, so a check that grades the working tree is the one
+ * furthest from the consumer. A file present here and excluded by `files` or an
+ * ignore rule would otherwise pass.
+ *
+ * Self-referencing — a package importing itself by its own name — is what makes
+ * this need no symlink and no extracted tarball. The probe runs in a child
+ * process because resolution is evaluated against the referring module's URL,
+ * and that referrer has to sit inside the package.
+ */
+export function checkPublicSpecifiers(specifiers, cwd, packedFiles) {
+  const probe = [
+    'const specs = JSON.parse(process.argv[1]);',
+    'const out = [];',
+    'for (const spec of specs) {',
+    '  try {',
+    '    out.push({ spec, url: import.meta.resolve(spec) });',
+    '  } catch (err) {',
+    '    out.push({ spec, code: err.code ?? String(err) });',
+    '  }',
+    '}',
+    'console.log(JSON.stringify(out));',
+  ].join('\n');
+
+  const raw = execFileSync(process.execPath, ['--input-type=module', '-e', probe, JSON.stringify(specifiers)], {
+    cwd,
+    encoding: 'utf8',
+  });
+
+  const packed = new Set(packedFiles);
+  return JSON.parse(raw).flatMap(entry => {
+    if (entry.code) {
+      return [`${entry.spec} — does not resolve (${entry.code})`];
+    }
+    const file = path.posix.normalize(path.relative(cwd, fileURLToPath(entry.url)));
+    return packed.has(file) ? [] : [`${entry.spec} — resolves to ${file}, which the tarball does not contain`];
+  });
+}
+
+/**
  * Every packed `.js` carrying a development-build marker.
  *
  * `bundleDir` defaults to the WHOLE TARBALL, and that default is the point. This
@@ -292,6 +373,10 @@ export function main({ cwd = PROJECT_ROOT, log = console.log, error = console.er
       'declared entrypoint missing from tarball',
       checkDeclaredEntries(declared, files).map(entry => `${entry.source} -> ${entry.target}`),
     ],
+    // Keys, not targets. Every check above grades a declared TARGET; this one
+    // asks whether a consumer writing the documented specifier gets a file
+    // back, which is the property a key rename breaks while the rest stay green.
+    ['public specifier does not resolve', checkPublicSpecifiers(PUBLIC_SPECIFIERS, cwd, files)],
     ['build-machine artifact in tarball', checkForbiddenPaths(files)],
     ['absolute build-machine path in tarball', checkAbsolutePaths(files)],
     ['source map in tarball (development build)', checkSourceMaps(files)],

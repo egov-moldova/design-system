@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { describe, it } from 'node:test';
+
+import path from 'node:path';
 
 import {
   checkAbsolutePaths,
@@ -8,10 +11,13 @@ import {
   checkDevSignature,
   checkForbiddenPaths,
   checkPackerAgreement,
+  checkPublicSpecifiers,
   checkSourceMaps,
   collectDeclaredEntries,
   lazyBundleDir,
   normalizePackagePath,
+  PROJECT_ROOT,
+  PUBLIC_SPECIFIERS,
   standaloneBundleDir,
 } from '../validate-package.mjs';
 
@@ -319,5 +325,60 @@ describe('checkPackerAgreement', () => {
       'a.js — packed by yarn, absent from npm',
       'b.js — packed by npm, absent from yarn',
     ]);
+  });
+});
+
+// The fixture package, not the live manifest. Binding these to `package.json`
+// would make the gate's own mutation check redden this suite while it is in
+// place, and would turn any future key rename into a failure of tests that are
+// not about that key.
+const FIXTURE_PKG = path.join(PROJECT_ROOT, 'scripts', '__fixtures__', 'exports-pkg');
+
+describe('checkPublicSpecifiers', () => {
+  it('reports a specifier that the exports map does not expose', () => {
+    const failures = checkPublicSpecifiers(['@egov-moldova/mud/no-such-key'], FIXTURE_PKG, []);
+    assert.equal(failures.length, 1);
+    assert.match(failures[0], /no-such-key/);
+    assert.match(failures[0], /ERR_PACKAGE_PATH_NOT_EXPORTED/);
+  });
+
+  it('reports a specifier that resolves to a path the tarball does not carry', () => {
+    const failures = checkPublicSpecifiers(['@egov-moldova/mud/styles.css'], FIXTURE_PKG, []);
+    assert.equal(failures.length, 1);
+    assert.match(failures[0], /styles\.css/);
+    assert.match(failures[0], /the tarball does not contain/);
+  });
+
+  it('passes a specifier whose resolved path is packed', () => {
+    const failures = checkPublicSpecifiers(['@egov-moldova/mud/styles.css'], FIXTURE_PKG, ['dist/mud/mud.css']);
+    assert.deepEqual(failures, []);
+  });
+
+  it('resolves a pattern key through one representative', () => {
+    const failures = checkPublicSpecifiers(
+      ['@egov-moldova/mud/tokens/core.tokens.css'],
+      FIXTURE_PKG,
+      ['dist/mud/tokens/core.tokens.css'],
+    );
+    assert.deepEqual(failures, []);
+  });
+});
+
+describe('PUBLIC_SPECIFIERS covers the exports map', () => {
+  // Not the tautology a derived list would be: this grades SET MEMBERSHIP
+  // between two independently authored things, where `checkPublicSpecifiers`
+  // grades resolution. It is the half that catches a key added to `exports`
+  // and never given a specifier — the direction the resolve check is blind to.
+  it('names every literal key and at least one representative per pattern key', () => {
+    const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'package.json'), 'utf8'));
+    const missing = Object.keys(pkg.exports).filter(key => {
+      const suffix = key === '.' ? '' : key.slice(1);
+      if (!key.includes('*')) {
+        return !PUBLIC_SPECIFIERS.includes(`@egov-moldova/mud${suffix}`);
+      }
+      const shape = new RegExp(`^@egov-moldova/mud${suffix.replace('*', '.+')}$`);
+      return !PUBLIC_SPECIFIERS.some(specifier => shape.test(specifier));
+    });
+    assert.deepEqual(missing, []);
   });
 });
