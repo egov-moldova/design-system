@@ -15,10 +15,11 @@ Thanks for your interest in contributing! This guide covers everything you need 
 7. [Coding Standards](#coding-standards)
 8. [Testing](#testing)
 9. [Commit Messages](#commit-messages)
-10. [Submitting a Pull Request](#submitting-a-pull-request)
-11. [Publishing](#publishing)
-12. [Troubleshooting](#troubleshooting)
-13. [Getting Help](#getting-help)
+10. [External Contributors](#external-contributors)
+11. [Submitting a Pull Request](#submitting-a-pull-request)
+12. [Publishing](#publishing)
+13. [Troubleshooting](#troubleshooting)
+14. [Getting Help](#getting-help)
 
 ---
 
@@ -196,6 +197,31 @@ docs(contributing): clarify token sync workflow
 ```
 
 Husky hooks run automatically after `yarn install` (via the `prepare` script) — no manual setup needed.
+
+---
+
+## External Contributors
+
+If you're on a team outside egov-moldova, you don't have push access to this repository — contribute via a fork instead of a branch:
+
+1. **Fork the repository** on GitHub (button on the repo page), then clone your fork:
+   ```bash
+   git clone https://github.com/<your-org-or-username>/design-system.git
+   cd design-system
+   git remote add upstream https://github.com/e-government-md/design-system.git
+   ```
+2. **Keep your fork in sync** with `upstream/main` before starting new work:
+   ```bash
+   git fetch upstream
+   git checkout main
+   git merge upstream/main
+   ```
+3. **Create a branch** in your fork following the same [naming conventions](#development-workflow) (`feat/`, `fix/`, `chore/`, `docs/`).
+4. **Develop and validate** exactly as described in [Development Workflow](#development-workflow) and [Submitting a Pull Request](#submitting-a-pull-request) — run `yarn check` and `yarn build` before opening a PR.
+5. **Push to your fork** and **open a pull request from your fork's branch into `e-government-md/design-system:main`**. GitHub's "compare across forks" view handles this automatically when you click "New pull request" from your fork.
+6. A maintainer from the core team will review; address feedback with new commits on the same branch (they'll show up in the PR automatically).
+
+Internal contributors with write access to this repo should continue branching directly in this repository as described above, rather than forking.
 
 ---
 
