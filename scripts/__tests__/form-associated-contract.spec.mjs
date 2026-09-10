@@ -50,6 +50,23 @@ const contracts = listComponentSources().map(tsxPath => ({
 }));
 
 describe('form-associated components', () => {
+  // A file the extractor cannot read returns a null contract, and a null drops
+  // out of BOTH the count below and the offenders loop underneath it — so a
+  // component whose `@Component` decorator the TypeScript scan stops matching
+  // would be graded by neither, silently, while both tests stayed green. The
+  // floor below cannot catch that: it only counts what survived. Every `.tsx`
+  // under `src/components` parses today, so this needs no exemption list.
+  it('reads a contract from every component source (no silent drops)', () => {
+    const unreadable = contracts
+      .filter(({ contract }) => contract === null)
+      .map(({ tsxPath }) => path.relative(COMPONENTS_ROOT, tsxPath));
+    assert.deepEqual(
+      unreadable,
+      [],
+      `the contract extractor returned nothing for these files, so they were graded by no assertion below:\n  ${unreadable.join('\n  ')}`,
+    );
+  });
+
   it('finds the form-associated set (guards against a vacuous scan)', () => {
     const formAssociated = contracts.filter(c => c.contract?.formAssociated === true);
     assert.ok(
