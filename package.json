@@ -8,8 +8,8 @@
   "types": "dist/types/index.d.ts",
   "collection": "dist/collection/collection-manifest.json",
   "collection:main": "dist/collection/index.js",
-  "es2015": "dist/esm/index.mjs",
-  "es2017": "dist/esm/index.mjs",
+  "es2015": "dist/esm/index.js",
+  "es2017": "dist/esm/index.js",
   "exports": {
     ".": {
       "types": "./dist/types/index.d.ts",
@@ -75,11 +75,12 @@
     "sp.serve": "yarn dlx serve storybook-static -p 6008",
     "start": "stencil build --dev --watch --serve",
     "test": "wireit",
-    "test.dev": "stencil-test --project spec",
-    "test.watch": "stencil-test --project spec --watch",
+    "test.dev": "vitest --project spec --run",
+    "test.watch": "vitest --project spec --watch",
     "test.storybook": "vitest --project storybook --run",
     "test.storybook.watch": "wireit",
     "test:scripts": "node --test \"scripts/__tests__/**/*.spec.mjs\"",
+    "validate.package": "node scripts/validate-package.mjs",
     "check": "wireit",
     "check.ci": "wireit",
     "check.verify": "wireit",
@@ -215,7 +216,7 @@
       ]
     },
     "build": {
-      "command": "cross-env NODE_OPTIONS=--max-old-space-size=4096 stencil build --docs",
+      "command": "cross-env NODE_OPTIONS=--max-old-space-size=4096 stencil build --docs && node scripts/copy-component-assets.mjs",
       "dependencies": [
         "tokens.build.prod",
         "wca.custom-elements"
@@ -227,7 +228,9 @@
         "src/**/*.css",
         "src/assets/**/*",
         "stencil.config.ts",
-        "tsconfig.json"
+        "tsconfig.json",
+        "tsconfig.stencil.json",
+        "scripts/copy-component-assets.mjs"
       ],
       "output": [
         "dist/**",
@@ -326,7 +329,8 @@
         "src/**/*.tsx",
         "src/**/*.css",
         "stencil.config.ts",
-        "tsconfig.json"
+        "tsconfig.json",
+        "tsconfig.stencil.json"
       ],
       "output": [
         "dist/**",

@@ -747,7 +747,9 @@ describe('mud-numeric-input', () => {
     });
 
     it('rejects negative values on commit when allow-negative is false', async () => {
-      const { root } = await render(<mud-numeric-input label="Vârstă" allowNegative={false} min={0}></mud-numeric-input>);
+      const { root } = await render(
+        <mud-numeric-input label="Vârstă" allowNegative={false} min={0}></mud-numeric-input>,
+      );
       const native = root?.shadowRoot?.querySelector('input') as HTMLInputElement;
       native.value = '-5';
       native.dispatchEvent(new Event('input', { bubbles: true }));

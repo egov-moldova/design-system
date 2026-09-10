@@ -81,7 +81,7 @@ if (typeof document !== 'undefined') {
 }
 
 // Cleanup decorator to remove toast notifications when switching stories
-const cleanupDecorator = (story) => {
+const cleanupDecorator = story => {
   // Clean up any existing toast notifications from previous stories
   const existingToasts = document.body.querySelectorAll('mud-toast-notification');
   existingToasts.forEach(toast => toast.remove());

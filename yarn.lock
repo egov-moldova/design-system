@@ -1020,7 +1020,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@egov-moldova/mud-react@workspace:react"
   dependencies:
-    "@egov-moldova/mud": "portal:.."
+    "@egov-moldova/mud": "workspace:^"
     "@stencil/react-output-target": "npm:^1.5.2"
     "@types/react": "npm:^18.3.12"
     "@types/react-dom": "npm:^18.3.1"
@@ -1041,14 +1041,6 @@ __metadata:
     typescript: "npm:^5.9.3"
     vite: "npm:^8.0.13"
   languageName: unknown
-  linkType: soft
-
-"@egov-moldova/mud@portal:..::locator=%40egov-moldova%2Fmud-react%40workspace%3Areact":
-  version: 0.0.0-use.local
-  resolution: "@egov-moldova/mud@portal:..::locator=%40egov-moldova%2Fmud-react%40workspace%3Areact"
-  dependencies:
-    "@stencil/core": "npm:^4.43.4"
-  languageName: node
   linkType: soft
 
 "@egov-moldova/mud@workspace:., @egov-moldova/mud@workspace:^":

@@ -8,7 +8,7 @@ Patterns for exercising `shadow: true` `mud-*` components in a **real browser**.
 - Writing custom Playwright tests against the built Storybook
 - Driving the live Storybook story through the Playwright MCP (`mcp__playwright__browser_*`) during `/audit-accessibility`
 
-> **Note**: the project's `vitest.config.ts` currently exposes only the `spec` project (mock-doc + `@stencil/vitest` `render()`). The Stencil 4 `newE2EPage` Puppeteer harness was retired with the Jest → Vitest migration. Live browser interactions are validated either through the Playwright MCP against `storybook-static`, or — when a dedicated browser project is added — through Vitest's Playwright provider. The shadow-DOM patterns below apply to **any** Playwright-driven context (Vitest browser, raw Playwright, MCP).
+> **Note**: the project's `vitest.config.mts` currently exposes only the `spec` project (mock-doc + `@stencil/vitest` `render()`). The Stencil 4 `newE2EPage` Puppeteer harness was retired with the Jest → Vitest migration. Live browser interactions are validated either through the Playwright MCP against `storybook-static`, or — when a dedicated browser project is added — through Vitest's Playwright provider. The shadow-DOM patterns below apply to **any** Playwright-driven context (Vitest browser, raw Playwright, MCP).
 
 ---
 
@@ -121,4 +121,4 @@ When a Vitest `browser` project is added (`@vitest/browser-playwright`), spec fi
 - Mount the component by appending a real custom element node to `page.body` (use `document.createElement('mud-...')` + `appendChild` — avoid `innerHTML`)
 - All shadow-DOM patterns above apply unchanged
 
-Until the browser project is wired into `vitest.config.ts`, exercise live browser behavior through the Playwright MCP (`/audit-accessibility`, `/audit-component --deep`) or a manual Playwright script.
+Until the browser project is wired into `vitest.config.mts`, exercise live browser behavior through the Playwright MCP (`/audit-accessibility`, `/audit-component --deep`) or a manual Playwright script.

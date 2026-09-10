@@ -6,7 +6,7 @@
  * TypeScript compiler API:
  *
  *   - tag                 — from @Component({ tag: '...' })
- *   - shadow              — @Component({ shadow: true|false })
+ *   - shadow              — @Component({ shadow: true|false|{ delegatesFocus } })
  *   - formAssociated      — @Component({ formAssociated: true })
  *   - props               — every @Prop()  → { name, type, default, reflect, mutable, jsDoc, line }
  *   - events              — every @Event() → { name, payloadType, jsDoc, line }
@@ -166,7 +166,7 @@ export function extractContractFromTsx(tsxPath, componentName) {
     file: fileRel,
     className: classNode.name?.text ?? null,
     tag: componentOpts.tag ?? null,
-    shadow: componentOpts.shadow ?? false,
+    shadow: normalizeShadow(componentOpts.shadow),
     formAssociated: componentOpts.formAssociated ?? false,
     styleUrl: componentOpts.styleUrl ?? null,
     classDescription: getJSDocText(classNode) || null,
@@ -435,7 +435,31 @@ function literalValue(node) {
   if (node.kind === ts.SyntaxKind.FalseKeyword) return false;
   if (ts.isNumericLiteral(node)) return Number(node.text);
   if (ts.isNullKeyword?.(node)) return null;
+  // An option can itself be an object — `shadow: { delegatesFocus: true }`.
+  // Returning undefined here dropped the key entirely, which is how 18 of the
+  // library's shadow components were reported as `shadow: false`.
+  if (ts.isObjectLiteralExpression(node)) {
+    const out = {};
+    for (const prop of node.properties) {
+      if (!ts.isPropertyAssignment(prop) || !ts.isIdentifier(prop.name)) continue;
+      const value = literalValue(prop.initializer);
+      if (value !== undefined) out[prop.name.text] = value;
+    }
+    return out;
+  }
   return undefined;
+}
+
+/**
+ * Stencil accepts `shadow: true` and `shadow: { delegatesFocus: true }`, and
+ * both mean shadow DOM. The contract records the question consumers actually
+ * ask — is this component shadow-encapsulated — as a boolean, so the two
+ * spellings cannot produce two different answers. `delegatesFocus` is a
+ * focus-behaviour detail, not part of the encapsulation answer; read it from
+ * the decorator if it is ever needed.
+ */
+function normalizeShadow(value) {
+  return value === true || (typeof value === 'object' && value !== null);
 }
 
 function typeText(typeNode) {
