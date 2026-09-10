@@ -434,11 +434,15 @@ export const EdgeCases: Story = {
 };
 
 // Regression test, not documentation — hidden from the sidebar and autodocs.
-// `uncheckSiblings()` groups radios with the attribute selector
-// `mud-radio[name="…"]`, so before `name` reflected, a group whose name came
-// from a property assignment was never mutually exclusive: checking one left
-// the others checked. Only observable in a real browser — the `spec` project's
-// ElementInternals stub exposes no `form`, which is the query's scope.
+// A group whose `name` comes from a property assignment was never mutually
+// exclusive: `uncheckSiblings()` found its siblings through an attribute, and
+// the attribute was never written. `name` and `checked` are assigned in ONE
+// synchronous commit below, the way a framework applies a render — reflection
+// lands a tick later, so an implementation that reads the attribute still
+// fails here even after `reflect: true`.
+// Only observable in a real browser: under mock-doc the ElementInternals stub's
+// `form` getter always returns null (`vitest-setup.ts:44`), so the query would
+// fall back to document scope and never exercise the form-scoped path.
 export const PropertyNamedGrouping: Story = {
   tags: ['!autodocs', '!dev'],
   render: () => /*html*/ `
@@ -484,17 +488,13 @@ export const PropertyNamedGrouping: Story = {
     const first = await ready('first');
     const second = await ready('second');
 
-    // Grouped by property assignment only — no `name` attribute in the markup.
+    // Grouped by property assignment only — no `name` attribute in the markup,
+    // and deliberately NO wait between naming and checking. Waiting for the
+    // reflected attribute to land first is what a test written around the
+    // implementation would do, and it hides the ordering this exists to pin.
     first.name = 'grouped';
-    second.name = 'grouped';
-    // `uncheckSiblings()` runs on the second radio's own check, and it can only
-    // find its sibling once the reflected attribute is in the DOM.
-    await waitFor(
-      () => first.getAttribute('name') === 'grouped' && second.getAttribute('name') === 'grouped',
-      () => `both radios to carry name="grouped", they carried ${first.outerHTML.slice(0, 80)}`,
-    );
-
     first.checked = true;
+    second.name = 'grouped';
     second.checked = true;
 
     // `getAll` rather than iterating `entries()`: the Stencil program compiles

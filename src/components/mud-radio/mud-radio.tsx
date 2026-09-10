@@ -228,11 +228,19 @@ export class MudRadio {
     // associated form, or by `name` within the document when no form is
     // present. Mirror that scope.
     const scope: ParentNode = this.internals.form ?? document;
-    const selector = `mud-radio[name="${CSS.escape(this.name)}"]`;
-    const siblings = scope.querySelectorAll(selector);
+    // Match on the `name` PROPERTY, not on a `mud-radio[name="…"]` attribute
+    // selector. Reflection is written at the next render tick, so a caller that
+    // assigns `name` and `checked` in one synchronous commit — which is what a
+    // framework does when it applies a render — reaches this query before any
+    // sibling carries the attribute, and the group silently fails to be
+    // exclusive. The property is set by then, so reading it has no such
+    // ordering dependency. It also drops the need to escape the value into a
+    // selector.
+    const siblings = scope.querySelectorAll('mud-radio');
     for (let i = 0; i < siblings.length; i += 1) {
       const sib = siblings[i] as HTMLMudRadioElement | null;
       if (!sib || sib === this.host) continue;
+      if (sib.name !== this.name) continue;
       if (sib.checked) sib.checked = false;
     }
   }
