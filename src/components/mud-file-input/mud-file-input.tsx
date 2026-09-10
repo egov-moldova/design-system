@@ -81,7 +81,7 @@ export class MudFileInput {
   @Prop({ attribute: 'max-files' }) maxFiles?: number;
 
   /** Form-control `name`. Used during form submission. */
-  @Prop() name?: string;
+  @Prop({ reflect: true }) name?: string;
 
   /** Plain-text label. Use the `label` slot for richer content. */
   @Prop() label?: string;

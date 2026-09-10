@@ -84,7 +84,7 @@ export class MudSegmentedControl {
   @Prop() segments?: SegmentedControlSegment[];
 
   /** Form-control `name`. Used during form submission. */
-  @Prop() name?: string;
+  @Prop({ reflect: true }) name?: string;
 
   /**
    * Accessible name for the group. Forwarded to the host's `aria-label`.

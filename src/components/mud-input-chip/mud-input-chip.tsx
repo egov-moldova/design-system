@@ -78,7 +78,7 @@ export class MudInputChip {
   @Prop({ mutable: true }) value: string = '';
 
   /** Form-control `name`. Used during form submission (value: JSON-encoded array). */
-  @Prop() name?: string;
+  @Prop({ reflect: true }) name?: string;
 
   /** Placeholder shown when the inline input is empty and no chips exist. */
   @Prop() placeholder?: string;

@@ -66,7 +66,7 @@ export class MudRadio {
   @Prop({ reflect: true }) readonly: boolean = false;
 
   /** Form-control `name`. Used during form submission and for grouping radios. */
-  @Prop() name?: string;
+  @Prop({ reflect: true }) name?: string;
 
   /** Value submitted with the form when this radio is checked. */
   @Prop() value?: string;
