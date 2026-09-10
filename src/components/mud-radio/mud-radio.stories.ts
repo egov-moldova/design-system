@@ -432,3 +432,80 @@ export const EdgeCases: Story = {
     },
   },
 };
+
+// Regression test, not documentation — hidden from the sidebar and autodocs.
+// `uncheckSiblings()` groups radios with the attribute selector
+// `mud-radio[name="…"]`, so before `name` reflected, a group whose name came
+// from a property assignment was never mutually exclusive: checking one left
+// the others checked. Only observable in a real browser — the `spec` project's
+// ElementInternals stub exposes no `form`, which is the query's scope.
+export const PropertyNamedGrouping: Story = {
+  tags: ['!autodocs', '!dev'],
+  render: () => /*html*/ `
+    <form>
+      <mud-radio id="first" label="First" value="1"></mud-radio>
+      <mud-radio id="second" label="Second" value="2"></mud-radio>
+    </form>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: { disable: true },
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    type Radio = HTMLElement & {
+      name?: string;
+      checked?: boolean;
+      componentOnReady?: () => Promise<unknown>;
+    };
+    // `globalThis.Error` because the local `Error: Story` export shadows the global class in this module.
+    const ready = async (id: string): Promise<Radio> => {
+      const el = canvasElement.querySelector<HTMLElement>(`#${id}`) as Radio | null;
+      if (!el) throw new globalThis.Error(`#${id} did not render`);
+      await el.componentOnReady?.();
+      return el;
+    };
+    // Stencil writes a reflected attribute on the next render tick, not on
+    // assignment, so both the grouping query and the assertions below poll to a
+    // deadline rather than sleeping a fixed amount.
+    const waitFor = async (predicate: () => boolean, describe: () => string, timeoutMs = 2000) => {
+      const startedAt = performance.now();
+      for (;;) {
+        if (predicate()) return;
+        if (performance.now() - startedAt > timeoutMs) {
+          throw new globalThis.Error(`timed out after ${timeoutMs}ms waiting for ${describe()}`);
+        }
+        await new Promise(resolve => setTimeout(resolve, 16));
+      }
+    };
+
+    const form = canvasElement.querySelector('form');
+    if (!form) throw new globalThis.Error('form did not render');
+
+    const first = await ready('first');
+    const second = await ready('second');
+
+    // Grouped by property assignment only — no `name` attribute in the markup.
+    first.name = 'grouped';
+    second.name = 'grouped';
+    // `uncheckSiblings()` runs on the second radio's own check, and it can only
+    // find its sibling once the reflected attribute is in the DOM.
+    await waitFor(
+      () => first.getAttribute('name') === 'grouped' && second.getAttribute('name') === 'grouped',
+      () => `both radios to carry name="grouped", they carried ${first.outerHTML.slice(0, 80)}`,
+    );
+
+    first.checked = true;
+    second.checked = true;
+
+    // `getAll` rather than iterating `entries()`: the Stencil program compiles
+    // without `DOM.Iterable`, so the iterator form does not type-check here. It
+    // also carries the assertion this needs — a group that failed to unselect
+    // its sibling submits two values under the same name.
+    const submitted = () => new FormData(form).getAll('grouped').map(String);
+    await waitFor(
+      () => !first.checked && submitted().join(',') === '2',
+      () =>
+        `the group to be mutually exclusive — first.checked=${String(first.checked)}, FormData "grouped"=[${submitted().join(',')}], expected [2]`,
+    );
+  },
+};
