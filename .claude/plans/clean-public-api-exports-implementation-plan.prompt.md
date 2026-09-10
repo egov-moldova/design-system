@@ -10,7 +10,7 @@
 
 **Spec:** https://github.com/egov-moldova/design-system/issues/2 — the issue states the intent. The Design Decisions section below supersedes its literal `exports` block wherever the two differ, and each difference names the evidence that admits it. There is no separate spec document: this plan is the single artifact both fresh-eyes rounds grade.
 
-**Reviewed:** critic b36509e — four rounds against this artifact id: round 1 preflight (two legs, FORTIFY/FORTIFY), rounds 2, 3 and 4 critic (FORTIFY high each). Twenty-nine findings, fourteen above the bar, all remediated in the revision you are reading.
+**Reviewed:** verify 0ebf237 — the implementation was graded by `/code-review high` and a `fresh-eyes-verify` round over `b36509e...HEAD`; seven findings between them, one converged across both lenses, all remediated. Before that, four rounds against this artifact id: round 1 preflight (two legs, FORTIFY/FORTIFY), rounds 2, 3 and 4 critic (FORTIFY high each). Twenty-nine findings, fourteen above the bar, all remediated in the revision you are reading.
 
 Three things a reader should carry rather than infer. **Round 3 ran on Sonnet 5**, not the critic lane's Opus pin, because the session's Opus limit was reached — a real fresh-context round at less refutation depth. **The loop was stopped by its brake, not by a clean round**: rounds 3 and 4 raised only findings against text the review loop had itself written in an earlier round's remediation, which is the signal that the loop has started paying rent on its own prose. **And round 4's central finding was structural** — that enumerating instances was the wrong instrument for the recurring defect, because a hand-written path list and a hand-written `Files:` block are two copies of one fact. That is why the two acceptance greps now derive their scope from git and match the *form* of a module specifier rather than carrying an allowlist. The gate ledger reads OPEN because round 4's findings were fixed after it reported.
 
@@ -626,6 +626,11 @@ In `main`, add to the `categories` array, after the declared-entries category:
 
 `files` is the packed list `main` already computed on the line above the category array — the same list every other category grades against.
 
+**Two categories beyond the one this phase set out to add, both found by review after the code was written and both proved by mutation.** The ESM probe exercises only the `import` condition, so a `require` condition dropped or mistyped on `.` or `./loader` passed the entire gate while every CommonJS consumer broke: `checkDeclaredEntries` confirms the CJS file is packed, and the ESM probe never asks. That is closed by running the same check a second time under `require`, over `REQUIRE_CAPABLE_SPECIFIERS` — **authored, not derived.** The derived form was written first and is tautological: deleting `exports["./loader"].require` removes the specifier from its own list, so the probe stays green over an empty set. Measured both ways — derived: PASS, authored: `FAIL — @egov-moldova/mud/loader (require) — does not resolve (ERR_PACKAGE_PATH_NOT_EXPORTED)`.
+
+And the zero-tolerance item "no `require` condition on `./components`" had no mechanism at all — it was caught only by accident, when a `require` target happened to name a file the build cannot produce. `checkEsmOnlySubpaths` states it directly. Mutation: adding `"require": "./dist/index.cjs.js"` to `./components` yields `FAIL — ESM-only subpath declares a require condition`.
+
+
 - [ ] **Step 6: Prove the gate catches a real rename**
 
 Temporarily rename `"./styles.css"` to `"./style.css"` in `package.json`, then run `yarn validate.package`.
@@ -712,38 +717,16 @@ Line citations verified 2026-09-10: `.claude/skills/mud-design/SKILL.md:17-18` a
 
 - [ ] **Step 4: Write the migration note**
 
-Create `CHANGELOG.md`:
+Create `CHANGELOG.md`. It must carry, and `CHANGELOG.md` in this repository is the single copy of the text — reproducing it here would be the two-copies-of-one-fact defect this plan's own acceptance greps were rebuilt to avoid:
 
-```markdown
-# Changelog
+- the old→new mapping for all six renamed specifier shapes, since `ERR_PACKAGE_PATH_NOT_EXPORTED` names the old path and not the new one;
+- a statement that `.` and `./loader` are unchanged;
+- what was removed with **no** replacement — `dist/mud/index.esm.js` and the `p-*.js` chunks, which the deleted `./dist/mud/*` wildcard exposed and no new key covers — and where a consumer who named them should go instead;
+- that URLs are unaffected, because a `<link href>`, a jsDelivr URL and a copy step out of `node_modules` all resolve on a filesystem or over HTTP rather than through `exports`;
+- that `./components` is ESM-only, and why;
+- the node10 warning: `moduleResolution: "node"` does not read `exports` at all, so a consumer on it sees `TS2307` for every new name.
 
-## Unreleased
-
-### Changed — public API surface (breaking for deep imports)
-
-The `exports` map no longer exposes build directories. Bare specifiers that
-named `dist/` now fail to resolve with `ERR_PACKAGE_PATH_NOT_EXPORTED`, which
-names the old path but not the new one — the mapping is below.
-
-| Before | After |
-| --- | --- |
-| `@egov-moldova/mud/dist/mud/mud.css` | `@egov-moldova/mud/styles.css` |
-| `@egov-moldova/mud/dist/mud/tokens/<name>.css` | `@egov-moldova/mud/tokens/<name>.css` |
-| `@egov-moldova/mud/dist/mud/mud.esm.js` | `@egov-moldova/mud/mud.esm.js` |
-| `@egov-moldova/mud/dist/mud/assets/<size>/<name>.svg` | `@egov-moldova/mud/assets/<size>/<name>.svg` |
-| `@egov-moldova/mud/dist/components` | `@egov-moldova/mud/components` |
-| `@egov-moldova/mud/dist/components/<file>` | `@egov-moldova/mud/components/<file>` |
-
-`.` and `./loader` are unchanged.
-
-**URLs are not affected.** A `<link href="/node_modules/@egov-moldova/mud/dist/mud/mud.css">`
-or a jsDelivr URL resolves on the filesystem, not through the `exports` map, and
-keeps its `dist/mud/` path.
-
-`@egov-moldova/mud/components` is ESM-only — it has no `require` condition.
-Stencil's `dist-custom-elements` output target cannot emit CommonJS. CommonJS
-consumers use the package root, which does carry a `require` condition.
-```
+**Say what the React fix does and does not do.** It repairs resolution. It does not make the workspace typecheck — `dist/types/index.d.ts` does not export the `Components` and `Mud*CustomEvent` types the generated wrappers import, which is 210 pre-existing errors this plan neither created nor fixes. A note that reads as "the React workspace is fixed" is a claim the tree does not support.
 
 - [ ] **Step 5: Ship the CHANGELOG in the tarball, or it is not a migration path**
 

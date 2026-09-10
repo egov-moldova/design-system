@@ -10,6 +10,7 @@ import {
   checkDeclaredEntries,
   checkDevSignature,
   checkForbiddenPaths,
+  checkEsmOnlySubpaths,
   checkPackerAgreement,
   checkPublicSpecifiers,
   checkSourceMaps,
@@ -18,6 +19,7 @@ import {
   normalizePackagePath,
   PROJECT_ROOT,
   PUBLIC_SPECIFIERS,
+  REQUIRE_CAPABLE_SPECIFIERS,
   standaloneBundleDir,
 } from '../validate-package.mjs';
 
@@ -376,9 +378,48 @@ describe('PUBLIC_SPECIFIERS covers the exports map', () => {
       if (!key.includes('*')) {
         return !PUBLIC_SPECIFIERS.includes(`@egov-moldova/mud${suffix}`);
       }
-      const shape = new RegExp(`^@egov-moldova/mud${suffix.replace('*', '.+')}$`);
+      // Escape first, then substitute: an unescaped key leaves `.` matching any
+      // character, so `./tokens/*.css` would accept `.../tokens/coreXtokensYcss`
+      // — a specifier no consumer could write — and a future key holding `+`,
+      // `(` or `?` would throw here instead of grading anything.
+      const escaped = suffix.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+      const shape = new RegExp(`^@egov-moldova/mud${escaped.replace(String.raw`\*`, '.+')}$`);
       return !PUBLIC_SPECIFIERS.some(specifier => shape.test(specifier));
     });
     assert.deepEqual(missing, []);
+  });
+});
+
+describe('checkEsmOnlySubpaths', () => {
+  it('names a subpath that has grown a require condition', () => {
+    const pkg = { exports: { './components': { import: './dist/components/index.js', require: './x.cjs' } } };
+    const failures = checkEsmOnlySubpaths(pkg);
+    assert.equal(failures.length, 1);
+    assert.match(failures[0], /\.\/components/);
+    assert.match(failures[0], /ESM-only/);
+  });
+
+  it('passes the shape this package actually publishes', () => {
+    const pkg = { exports: { './components': { types: './d.ts', import: './dist/components/index.js' } } };
+    assert.deepEqual(checkEsmOnlySubpaths(pkg), []);
+  });
+
+  it('is silent when the subpath is absent altogether', () => {
+    assert.deepEqual(checkEsmOnlySubpaths({ exports: {} }), []);
+  });
+});
+
+describe('REQUIRE_CAPABLE_SPECIFIERS', () => {
+  // Authored, not derived. A derived list would drop a specifier the moment its
+  // `require` condition disappeared — which is the only failure the CJS probe
+  // exists to catch — so this asserts the list against the map in the direction
+  // that cannot go vacuous: every named specifier must still carry the condition.
+  it('names specifiers whose exports entry declares a require condition', () => {
+    const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'package.json'), 'utf8'));
+    const withoutRequire = REQUIRE_CAPABLE_SPECIFIERS.filter(specifier => {
+      const key = specifier === '@egov-moldova/mud' ? '.' : `.${specifier.slice('@egov-moldova/mud'.length)}`;
+      return typeof pkg.exports?.[key]?.require !== 'string';
+    });
+    assert.deepEqual(withoutRequire, []);
   });
 });
