@@ -23,8 +23,8 @@ import {
 } from '@egov-moldova/mud-react';
 
 // Token + global stylesheets from the underlying @egov-moldova/mud package.
-import '@egov-moldova/mud/dist/mud/tokens/core.tokens.css';
-import '@egov-moldova/mud/dist/mud/design-system.css';
+import '@egov-moldova/mud/tokens/core.tokens.css';
+import '@egov-moldova/mud/styles.css';
 
 // Register the custom elements once at app startup.
 defineCustomElements();

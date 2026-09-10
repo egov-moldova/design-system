@@ -1,11 +1,11 @@
 ---
 name: mud-design
-description: Use when building UI in any project that consumes the MUD Design System (Stencil `mud-*` components via `@egovmd/mud`). Triggers on tasks like "build a form", "add a button", "make a card", "show a status", "tabs", "modal", "footer", "loading state", "table row", "list view" — anywhere you might be tempted to write a styled `<div>` or roll a custom UI element. Refuses to invent components when an MUD one fits; surfaces the right `<mud-name>` and shows the import + minimal example.
+description: Use when building UI in any project that consumes the MUD Design System (Stencil `mud-*` components via `@egov-moldova/mud`). Triggers on tasks like "build a form", "add a button", "make a card", "show a status", "tabs", "modal", "footer", "loading state", "table row", "list view" — anywhere you might be tempted to write a styled `<div>` or roll a custom UI element. Refuses to invent components when an MUD one fits; surfaces the right `<mud-name>` and shows the import + minimal example.
 ---
 
 # MUD Design System — Usage Skill
 
-You are working in a project that consumes the **MUD Design System** (`@egovmd/mud`). MUD is the brand and visual contract; new patterns get contributed to MUD, not invented downstream.
+You are working in a project that consumes the **MUD Design System** (`@egov-moldova/mud`). MUD is the brand and visual contract; new patterns get contributed to MUD, not invented downstream.
 
 **Before writing any UI primitive yourself — button, chip, card, tabs, modal, badge, input — check this catalog first.** If an MUD component fits, use it. If none fits, document the gap in the consuming project's `MUD-COMPONENTS.md` (or local equivalent) **and** justify in the PR description why you diverged. "I didn't know it existed" is not a justification.
 
@@ -13,13 +13,13 @@ You are working in a project that consumes the **MUD Design System** (`@egovmd/m
 
 ```ts
 // once, near app startup (e.g. main.tsx before ReactDOM.createRoot)
-import { defineCustomElements } from '@egovmd/mud-web-components';
-import '@egovmd/mud/dist/mud/tokens/core.tokens.css';
-import '@egovmd/mud/dist/mud/mud.css';
+import { defineCustomElements } from '@egov-moldova/mud-web-components';
+import '@egov-moldova/mud/tokens/core.tokens.css';
+import '@egov-moldova/mud/styles.css';
 
 defineCustomElements();
 // Optional: defineCustomElements({ assetPath: '/your-prod-asset-path/' })
-// In Vite dev hosts the default `/node_modules/@egovmd/mud/dist/components/`
+// In Vite dev hosts the default `/node_modules/@egov-moldova/mud/dist/components/`
 // works automatically. See AGE PR #32 for the asset-path mechanism.
 ```
 
@@ -119,7 +119,7 @@ Each component lives at `src/components/<name>/`:
 - `<name>.stories.ts` — Storybook examples; the canonical "how to use it" reference
 - `readme.md` — auto-generated prop tables
 
-In React: use the components directly from `@egovmd/mud-web-components` (see vanilla usage) or the dedicated `@egovmd/mud-react` package (if available). Events become `onMud<Event>` props; their payload is the Stencil `EventEmitter` detail.
+In React: use the components directly from `@egov-moldova/mud-web-components` (see vanilla usage) or the dedicated `@egov-moldova/mud-react` package (if available). Events become `onMud<Event>` props; their payload is the Stencil `EventEmitter` detail.
 
 Live Storybook: `yarn storybook` in age-design (port 6007). Look at stories before writing wrappers.
 

@@ -40,7 +40,8 @@
   },
   "files": [
     "dist/",
-    "loader/"
+    "loader/",
+    "CHANGELOG.md"
   ],
   "publishConfig": {
     "access": "public",
