@@ -456,14 +456,20 @@ export const FormSubmissionContract: Story = {
     };
     // `globalThis.Error` because the local `Error: Story` export shadows the global class in this module.
     const ready = async (id: string): Promise<Checkbox> => {
+      await customElements.whenDefined('mud-checkbox');
       const el = canvasElement.querySelector<HTMLElement>(`#${id}`) as Checkbox | null;
       if (!el) throw new globalThis.Error(`#${id} did not render`);
+      // `customElements.whenDefined` above is what guarantees the upgrade —
+      // `define` upgrades every connected element synchronously. `componentOnReady`
+      // is optional on purpose: the browser test lane compiles components as
+      // custom elements (`componentExport: 'customelement'`), a build that carries
+      // no such method, so REQUIRING it fails every story in this project.
       await el.componentOnReady?.();
       return el;
     };
-    // Stencil writes a reflected attribute on the next render tick, not on
-    // assignment, so every assertion here polls to a deadline rather than
-    // sleeping a fixed amount — a fixed sleep is either flaky or slow.
+    // Stencil publishes a reflected attribute and the form value on the next
+    // render tick, not on assignment, so the assertion polls to a deadline
+    // rather than sleeping a fixed amount — a fixed sleep is either flaky or slow.
     const waitFor = async (predicate: () => boolean, describe: () => string, timeoutMs = 2000) => {
       const startedAt = performance.now();
       for (;;) {

@@ -206,6 +206,16 @@ export class MudInputChip {
     this.syncValidity(chips);
   }
 
+  // `syncFormValue` publishes nothing while `name` is unset, so the name is an
+  // input to the form value and not only a label for it. Without this watcher a
+  // consumer that assigns `chips` before `name` — the order a framework applies
+  // props in — leaves the control out of the submission permanently: the chips
+  // watcher already ran, and nothing runs again when the name arrives.
+  @Watch('name')
+  handleNameChange() {
+    this.syncFormValue(this.chips ?? []);
+  }
+
   formDisabledCallback(disabled: boolean) {
     this.fieldsetDisabled = disabled;
   }
