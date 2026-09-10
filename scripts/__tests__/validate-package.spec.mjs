@@ -35,9 +35,11 @@ const PKG = {
       import: './loader/index.js',
       require: './loader/index.cjs.js',
     },
-    './dist/mud/mud.css': './dist/mud/mud.css',
-    './dist/mud/tokens/*.css': './dist/mud/tokens/*.css',
-    './dist/components': {
+    './styles.css': './dist/mud/mud.css',
+    './tokens/*.css': './dist/mud/tokens/*.css',
+    './assets/*': './dist/mud/assets/*',
+    './mud.esm.js': './dist/mud/mud.esm.js',
+    './components': {
       types: './dist/components/index.d.ts',
       import: './dist/components/index.js',
     },
@@ -60,13 +62,13 @@ describe('collectDeclaredEntries', () => {
     assert.ok(sources.includes('main'));
     assert.ok(sources.includes('collection:main'));
     assert.ok(sources.includes('$.exports[.][import]'));
-    assert.ok(sources.includes('$.exports[./dist/components][types]'));
+    assert.ok(sources.includes('$.exports[./components][types]'));
   });
 
   it('collects a plain-string exports leaf, not only condition objects', () => {
-    const entry = collectDeclaredEntries(PKG).find(candidate => candidate.source === '$.exports[./dist/mud/mud.css]');
+    const entry = collectDeclaredEntries(PKG).find(candidate => candidate.source === '$.exports[./styles.css]');
     assert.deepEqual(entry, {
-      source: '$.exports[./dist/mud/mud.css]',
+      source: '$.exports[./styles.css]',
       target: './dist/mud/mud.css',
     });
   });

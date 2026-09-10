@@ -21,14 +21,15 @@
       "import": "./loader/index.js",
       "require": "./loader/index.cjs.js"
     },
-    "./dist/mud/mud.css": "./dist/mud/mud.css",
-    "./dist/mud/tokens/*.css": "./dist/mud/tokens/*.css",
-    "./dist/mud/*": "./dist/mud/*",
-    "./dist/components": {
+    "./styles.css": "./dist/mud/mud.css",
+    "./tokens/*.css": "./dist/mud/tokens/*.css",
+    "./assets/*": "./dist/mud/assets/*",
+    "./mud.esm.js": "./dist/mud/mud.esm.js",
+    "./components": {
       "types": "./dist/components/index.d.ts",
       "import": "./dist/components/index.js"
     },
-    "./dist/components/*": "./dist/components/*"
+    "./components/*": "./dist/components/*"
   },
   "workspaces": [
     "web-components",

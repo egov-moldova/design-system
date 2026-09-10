@@ -123,7 +123,7 @@ export function lazyBundleDir(pkg) {
 }
 
 /**
- * Where `exports["./dist/components"]` points. Throws rather than returning
+ * Where `exports["./components"]` points. Throws rather than returning
  * null: a null would make `checkBundleAssets` a silent no-op, which is the same
  * vacuous-scan failure `lazyBundleDir` exists to avoid one function up. If the
  * standalone bundle is ever dropped from the contract deliberately, drop the
@@ -131,10 +131,10 @@ export function lazyBundleDir(pkg) {
  * still reports PASS.
  */
 export function standaloneBundleDir(pkg) {
-  const target = pkg.exports?.['./dist/components']?.import;
+  const target = pkg.exports?.['./components']?.import;
   if (typeof target !== 'string' || !target.includes('/')) {
     throw new Error(
-      'validate-package: cannot locate the standalone bundle — exports["./dist/components"].import is missing or unusable',
+      'validate-package: cannot locate the standalone bundle — exports["./components"].import is missing or unusable',
     );
   }
   return `${path.posix.dirname(normalizePackagePath(target))}/`;
@@ -182,7 +182,7 @@ export function checkDevSignature(packedFiles, readText, bundleDir) {
  * ignores `assetsDirs` — `scripts/copy-component-assets.mjs` mirrors them in as
  * a post-build step. Without it a component with assets "renders empty
  * silently" (that script's own words). Nothing else in the tarball reveals it:
- * `exports["./dist/components/*"]` is a pattern, so checkDeclaredEntries skips
+ * `exports["./components/*"]` is a pattern, so checkDeclaredEntries skips
  * it by design.
  */
 export function checkBundleAssets(packedFiles, lazyDir, standaloneDir) {
