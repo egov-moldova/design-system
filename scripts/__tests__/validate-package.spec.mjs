@@ -357,11 +357,9 @@ describe('checkPublicSpecifiers', () => {
   });
 
   it('resolves a pattern key through one representative', () => {
-    const failures = checkPublicSpecifiers(
-      ['@egov-moldova/mud/tokens/core.tokens.css'],
-      FIXTURE_PKG,
-      ['dist/mud/tokens/core.tokens.css'],
-    );
+    const failures = checkPublicSpecifiers(['@egov-moldova/mud/tokens/core.tokens.css'], FIXTURE_PKG, [
+      'dist/mud/tokens/core.tokens.css',
+    ]);
     assert.deepEqual(failures, []);
   });
 });
