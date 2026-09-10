@@ -27,10 +27,14 @@ no documented use. If you import either by name, use
 `@egov-moldova/mud/mud.esm.js` — the self-registering bundle entry — or
 `defineCustomElements()` from `@egov-moldova/mud/loader`.
 
-**URLs are not affected.** A `<link href="/node_modules/@egov-moldova/mud/dist/mud/mud.css">`,
-a jsDelivr URL, or a build step that copies files out of `node_modules` all
-resolve on a filesystem or over HTTP rather than through the `exports` map, and
-keep their `dist/mud/` paths.
+**URLs are not affected, and the new names are not URLs.** Both directions
+matter. A `<link href="/node_modules/@egov-moldova/mud/dist/mud/mud.css">`, a
+jsDelivr URL, or a build step that copies files out of `node_modules` resolves on
+a filesystem or over HTTP rather than through the `exports` map, and keeps its
+`dist/mud/` path. Equally: the names in the table above resolve **only** through
+`import` or `require`. Writing `/node_modules/@egov-moldova/mud/styles.css` in a
+`<link>`, a `<script src>` or a `new URL()` produces a 404 — the mapping is a
+module-resolution contract, not a path rewrite.
 
 `@egov-moldova/mud/components` is ESM-only — it has no `require` condition.
 Stencil's `dist-custom-elements` output target cannot emit CommonJS. CommonJS
@@ -44,11 +48,18 @@ names have no path on disk and every import of them fails with `TS2307`. Move to
 `bundler`, `node16` or `nodenext`.
 
 This repository's own React workspace was on node10 and has been moved. That
-change fixes *resolution* only: the workspace still does not typecheck, because
-`dist/types/index.d.ts` does not export the `Components` and `Mud*CustomEvent`
-types the generated wrappers import. That debt predates this release and is
-unchanged by it — and it is invisible in CI, because the workspace's build script
-is `tsc || true`.
+change fixes *resolution* only; the workspace still does not typecheck, and a
+consumer moving to `bundler` should expect the same two error classes:
+
+- `TS2305` — `@egov-moldova/mud/components` does not export `Components`
+  (`dist/components/index.d.ts` carries only `getAssetPath`, `setAssetPath`,
+  `setNonce` and the element classes), and `@egov-moldova/mud` does not export
+  the `Mud*CustomEvent` types.
+- `TS2344` — element types declare `ariaLabel` as optional where `HTMLElement`
+  requires it.
+
+That debt predates this release and is unchanged by it. It is invisible in CI
+because the workspace's build script is `tsc || true`.
 
 ### Internal
 

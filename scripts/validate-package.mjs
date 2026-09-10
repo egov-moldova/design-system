@@ -160,16 +160,21 @@ export function standaloneBundleDir(pkg) {
  * Baseline: `yarn pack --dry-run --json | grep -o '"location":"dist/mud/assets/[^"/]*"'`
  * -> `dist/mud/assets/icons.manifest.json` is packed at that exact path today.
  */
+// `./tokens/*.css` is deliberately narrower than a bare `./tokens/*`: the `.css`
+// suffix reserves `./tokens` and `./tokens/*.json` for a future JS/DTCG token
+// surface, which today's Style Dictionary config could emit by adding a second
+// platform. Widening the key later would be an ordinary addition; narrowing it
+// after publishing would be breaking. Do not "simplify" it to `./tokens/*`.
 export const PUBLIC_SPECIFIERS = [
   '@egov-moldova/mud',
   '@egov-moldova/mud/loader',
   '@egov-moldova/mud/styles.css',
   '@egov-moldova/mud/tokens/core.tokens.css',
   '@egov-moldova/mud/tokens/core.dark.tokens.css',
-  '@egov-moldova/mud/assets/icons.manifest.json',
+  '@egov-moldova/mud/assets/12/asterisk.svg',
   '@egov-moldova/mud/mud.esm.js',
   '@egov-moldova/mud/components',
-  '@egov-moldova/mud/components/index.js',
+  '@egov-moldova/mud/components/mud-button.js',
 ];
 
 /**
@@ -185,7 +190,7 @@ export const PUBLIC_SPECIFIERS = [
  * Baseline: `node -e "const p=require('./package.json');console.log(Object.keys(p.exports['./components']))"`
  * -> `[ 'types', 'import' ]`.
  */
-export const ESM_ONLY_SUBPATHS = ['./components', './components/*'];
+export const ESM_ONLY_SUBPATHS = ['./components', './components/mud-*.js'];
 
 /** Any ESM-only subpath that has grown a `require` condition. */
 export function checkEsmOnlySubpaths(pkg, subpaths = ESM_ONLY_SUBPATHS) {
@@ -262,18 +267,28 @@ export function checkPublicSpecifiers(specifiers, cwd, packedFiles, condition = 
   // otherwise throw out of `main` and replace the whole categorised report with a
   // Node stack trace. The gate would still exit non-zero, so nothing is wrongly
   // published; what is lost is every other check's verdict in that run.
-  let raw;
+  let resolved;
   try {
-    raw = execFileSync(process.execPath, ['--input-type=module', '-e', probe, JSON.stringify(specifiers)], {
+    const raw = execFileSync(process.execPath, ['--input-type=module', '-e', probe, JSON.stringify(specifiers)], {
       cwd,
       encoding: 'utf8',
+      // The two packer helpers above raise this for the same reason; the default
+      // 1 MB is generous for today's nine specifiers and silently truncating is
+      // the one failure this whole function exists to make impossible.
+      maxBuffer: 64 * 1024 * 1024,
     });
+    // Inside the guard, not after it. A child that exits 0 having also written
+    // something to stdout — an experimental-feature notice, a NODE_OPTIONS
+    // preload banner, a CI instrumentation line — makes this throw, and outside
+    // the guard that throw escapes `main` and replaces the categorised report
+    // with a stack trace: the exact failure the guard is here to prevent.
+    resolved = JSON.parse(raw);
   } catch (err) {
     return [`could not run the ${condition} resolution probe in ${cwd} — ${err.message.split('\n')[0]}`];
   }
 
   const packed = new Set(packedFiles);
-  return JSON.parse(raw).flatMap(entry => {
+  return resolved.flatMap(entry => {
     if (entry.code) {
       return [`${entry.spec} (${condition}) — does not resolve (${entry.code})`];
     }
@@ -439,7 +454,7 @@ export function main({ cwd = PROJECT_ROOT, log = console.log, error = console.er
     // Keys, not targets. Every check above grades a declared TARGET; this one
     // asks whether a consumer writing the documented specifier gets a file
     // back, which is the property a key rename breaks while the rest stay green.
-    ['public specifier does not resolve', checkPublicSpecifiers(PUBLIC_SPECIFIERS, cwd, files)],
+    ['public specifier does not resolve', checkPublicSpecifiers(PUBLIC_SPECIFIERS, cwd, files, 'import')],
     // The ESM probe above exercises only the `import` condition. A `require`
     // condition dropped or pointed at the wrong file resolves for nobody, and
     // every other check in this gate would still pass.

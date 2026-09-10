@@ -18,6 +18,7 @@ import {
   lazyBundleDir,
   normalizePackagePath,
   PROJECT_ROOT,
+  ESM_ONLY_SUBPATHS,
   PUBLIC_SPECIFIERS,
   REQUIRE_CAPABLE_SPECIFIERS,
   standaloneBundleDir,
@@ -419,5 +420,36 @@ describe('REQUIRE_CAPABLE_SPECIFIERS', () => {
       return typeof pkg.exports?.[key]?.require !== 'string';
     });
     assert.deepEqual(withoutRequire, []);
+  });
+});
+
+describe('ESM_ONLY_SUBPATHS names live keys', () => {
+  // The asymmetry this closes: its two sibling lists are each checked against
+  // the live map, and this one was not. `checkEsmOnlySubpaths` reads
+  // `pkg.exports?.[key]`, so a renamed key drops silently out of the filter and
+  // the guard becomes a permanent no-op for that entry — with nothing failing.
+  // This diff renames four keys, which is exactly how that happens.
+  it('every guarded subpath is still a key in exports', () => {
+    const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'package.json'), 'utf8'));
+    const absent = ESM_ONLY_SUBPATHS.filter(key => !(key in (pkg.exports ?? {})));
+    assert.deepEqual(absent, []);
+  });
+});
+
+describe('the React output target names the exports key', () => {
+  // `customElementsDir` in stencil.config.ts and the `./components/<pattern>` key
+  // in package.json are two copies of one fact: the segment the generated
+  // wrappers put in their import specifiers. Nothing else binds them, and the
+  // only other detector is `tsc --noEmit` in a workspace whose build script is
+  // `tsc || true`. Rename the key without this test and 56 wrappers hold a dead
+  // specifier that no check reports.
+  it('customElementsDir equals the first segment of the components pattern key', () => {
+    const config = fs.readFileSync(path.join(PROJECT_ROOT, 'stencil.config.ts'), 'utf8');
+    const declared = /customElementsDir:\s*'([^']+)'/.exec(config)?.[1];
+    assert.ok(declared, 'stencil.config.ts declares no customElementsDir');
+
+    const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'package.json'), 'utf8'));
+    const patternKey = Object.keys(pkg.exports).find(key => key.startsWith(`./${declared}/`) && key.includes('*'));
+    assert.ok(patternKey, `exports has no pattern key under ./${declared}/ — the generated wrappers would not resolve`);
   });
 });
