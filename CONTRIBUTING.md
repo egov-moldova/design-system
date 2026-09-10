@@ -61,9 +61,9 @@ This is a monorepo (Yarn workspaces) publishing three packages:
 
 | Package | Location | Description |
 | --- | --- | --- |
-| `@egov-moldova/design-system` | repo root | Core Stencil web components — framework-agnostic, Shadow DOM–isolated |
-| `@egov-moldova/design-system-web-components` | `web-components/` | Vanilla HTML/JS adapter — thin re-export of the Stencil loader |
-| `@egov-moldova/design-system-react` | `react/` | React adapter (typed JSX wrappers) — **in progress**, not yet published |
+| `@egov-moldova/mud` | repo root | Core Stencil web components — framework-agnostic, Shadow DOM–isolated |
+| `@egov-moldova/mud-web-components` | `web-components/` | Vanilla HTML/JS adapter — thin re-export of the Stencil loader |
+| `@egov-moldova/mud-react` | `react/` | React adapter (typed JSX wrappers) — **in progress**, not yet published |
 
 Key directories:
 
@@ -107,7 +107,7 @@ Additional docs worth knowing about:
 
 ### Vanilla adapter (`web-components/`)
 
-`@egov-moldova/design-system-web-components` is a *thin* re-export of the Stencil
+`@egov-moldova/mud-web-components` is a *thin* re-export of the Stencil
 loader — because Stencil already compiles to native custom elements, there is no
 framework-specific build step. Two builds and a demo server:
 
@@ -142,7 +142,7 @@ web-components/
 │   ├── main.ts               # CSS imports + defineCustomElements()
 │   ├── demo.css              # @font-face for Onest + body font-family
 │   └── vite.config.ts        # port 5174, allows fs access to the workspace parent
-├── package.json              # @egov-moldova/design-system-web-components
+├── package.json              # @egov-moldova/mud-web-components
 ├── tsconfig.json             # ES2020, declaration: true
 └── README.md
 ```
@@ -153,7 +153,7 @@ web-components/
 | --- | --- |
 | `yarn dev` | Dev server: Stencil watch + Storybook + token watch (port 6007) |
 | `yarn build` | Full build: tokens → Stencil components → `dist/`, `loader/` |
-| `yarn build.web` | Builds `@egov-moldova/design-system-web-components` (depends on `build`) |
+| `yarn build.web` | Builds `@egov-moldova/mud-web-components` (depends on `build`) |
 | `yarn demo.web` | Runs the vanilla-adapter demo at `http://localhost:5174` |
 | `yarn sp.build` | Production Storybook build → `storybook-static/` |
 | `yarn sp.serve` | Serves `storybook-static/` locally at `http://localhost:6008` |
@@ -274,7 +274,34 @@ Internal contributors with write access to this repo should continue branching d
 
 ## Publishing
 
-Publishing to npm (`@egov-moldova` scope) is handled by project maintainers — contributors don't need to publish packages themselves.
+Publishing to npm (`@egov-moldova` scope) is handled by project maintainers — contributors don't need to publish packages themselves. Azure Pipelines publishes on each run, using the build number as the version.
+
+CI runs `yarn validate.package` immediately before publishing, and the run fails rather than shipping if the tarball does not match what `package.json` declares: every declared entrypoint present, no source map or development-mode runtime, no build-machine path leaked into the type declarations, the standalone custom-elements bundle carrying its assets, and `yarn pack` and `npm pack` resolving the same file list — the gate measures the first, CI publishes the second. Run it yourself after `yarn build` before any manual publish.
+
+### Manual publish (maintainers)
+
+Requires an npm token with write access to `@egov-moldova`.
+
+```bash
+# Stencil core — the root package declares no workspace dependencies,
+# so either publisher is safe here.
+yarn build && yarn validate.package
+npm config set //registry.npmjs.org/:_authToken YOUR_NPM_TOKEN
+npm publish --access public
+
+# Vanilla adapter — yarn npm publish, NOT npm publish. See the warning below.
+cd web-components
+YARN_NPM_AUTH_TOKEN=YOUR_NPM_TOKEN yarn npm publish --access public
+```
+
+> **Publish the workspace packages with `yarn npm publish`.** Both
+> `web-components` and `react` depend on the core as `"@egov-moldova/mud":
+> "workspace:^"`. Yarn rewrites that to a real registry range at pack time —
+> `yarn pack` in `web-components` emits `^1.0.6`. **`npm pack` does not**: it
+> leaves `workspace:^` in the manifest verbatim, from inside the directory and
+> with `-w` from the root alike, so an `npm publish` there ships a dependency
+> nobody can install. The CI pipeline already uses `yarn npm publish` for
+> `web-components`; this is the manual path catching up with it.
 
 For local testing against another project without publishing, use path installs:
 
@@ -297,7 +324,7 @@ Not a contributing issue directly, but common when testing a local build — ens
 
 ```ts
 // src/types/mud.d.ts
-import type {} from '@egov-moldova/design-system-web-components';
+import type {} from '@egov-moldova/mud-web-components';
 ```
 
 ### `yarn dev` hangs or Storybook never opens

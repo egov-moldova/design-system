@@ -3,28 +3,9 @@
 **Moldova UI Design System** is the official design system of the Republic of Moldova, developed and maintained by the [Electronic Governance Agency (Agenția de Guvernare Electronică — AGE)](https://egov.md). It provides a unified set of UI components, design tokens, and guidelines so that Moldovan government digital services share a consistent look, feel, and accessibility baseline.
 This repository contains two npm packages:
 
-| Package | Description |
-| --- | --- |
-| [`@egov-moldova/mud`](https://www.npmjs.com/package/@egov-moldova/mud) | Core Stencil web components — framework-agnostic, Shadow DOM–isolated |
-| [`@egov-moldova/mud-web-components`](https://www.npmjs.com/package/@egov-moldova/mud-web-components) | Vanilla HTML/JS adapter — thin re-export of the Stencil loader for script-tag usage |
-
-> **Who should use this?** Any team building a Moldovan e-government product or service. The components implement the MUD visual language and WCAG 2.1 AA accessibility requirements out of the box.
-
-> **Terminology:** **MUD** refers to the *Moldova UI Design System*.
-
-> **Contributing to MUD itself?** Cloning the repo, installing dependencies, building the packages locally, the Storybook dev loop and the vanilla-adapter demo are all covered in [CONTRIBUTING.md](CONTRIBUTING.md).
-
----
-
-## Table of Contents
-
-1. [Motivation](#motivation)
-2. [Publishing](#publishing)
-3. [Getting Started](#getting-started)
-4. [Additional Resources](#additional-resources)
-
----
-
+> **Terminology:** **MUD** refers to the *Moldova UI Design
+> System*.
+ 
 ## Motivation
 
 Citizens interact with dozens of Moldovan government digital services — tax filings,
@@ -56,44 +37,15 @@ how to fill out a form on the next one. That consistency is not a cosmetic nicet
 it's a measurable reduction in support burden, abandonment rates, and time-to-completion
 across public services.
 
----
+## Packages
 
-## Publishing
+This repository is a monorepo containing the following published packages:
 
-Both packages are published to the public npm registry under the `@egov-moldova` scope. Publishing is handled automatically by the Azure Pipelines CI on each run — a new build number is used as the version.
-
-CI runs `yarn validate.package` immediately before publishing, and the run fails rather than shipping if the tarball does not match what `package.json` declares. The gate checks that every declared entrypoint is present, that no source map or development-mode runtime ships, that no build-machine path leaks into the type declarations, that the standalone custom-elements bundle carries its assets, and that `yarn pack` and `npm pack` still resolve the same file list — the gate measures the first, CI publishes the second. Run it yourself after `yarn build` before any manual publish.
-
-To publish manually (requires an npm token with write access to `@egov-moldova`):
-
-```bash
-# Stencil core — the root package declares no workspace dependencies,
-# so either publisher is safe here.
-yarn build && yarn validate.package
-npm config set //registry.npmjs.org/:_authToken YOUR_NPM_TOKEN
-npm publish --access public
-
-# Vanilla adapter — yarn npm publish, NOT npm publish. See the warning below.
-cd web-components
-YARN_NPM_AUTH_TOKEN=YOUR_NPM_TOKEN yarn npm publish --access public
-```
-
-> **Publish the workspace packages with `yarn npm publish`.** Both
-> `web-components` and `react` depend on the core as `"@egov-moldova/mud":
-> "workspace:^"`. Yarn rewrites that to a real registry range at pack time —
-> `yarn pack` in `web-components` emits `^1.0.6`. **`npm pack` does not**: it
-> leaves `workspace:^` in the manifest verbatim, from inside the directory and
-> with `-w` from the root alike, so an `npm publish` there ships a dependency
-> nobody can install. The CI pipeline already uses `yarn npm publish` for
-> `web-components`; this is the manual path catching up with it.
-
-For local development without publishing, use local path installs:
-
-```bash
-yarn add file:/absolute/path/to/age-design
-yarn add file:/absolute/path/to/age-design/web-components
-```
-
+| Package                                                                                                       | Description                                                                                                           |
+|---------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------|
+| [`@egov-moldova/design-system`](https://www.npmjs.com/package/@egov-moldova/mud)                              | Core Stencil web components — framework-agnostic, Shadow DOM–isolated                                                 |
+| [`@egov-moldova/design-system-web-components`](https://www.npmjs.com/package/@egov-moldova/mud-web-components)| Vanilla HTML/JS adapter — thin re-export of the Stencil loader for script-tag usage                                   |
+| `@egov-moldova/design-system-react`                                                                           | ![In Progress](https://img.shields.io/badge/status-in%20progress-yellow)<br>React adapter — typed JSX wrapper components |
 ---
 
 ## Getting Started
