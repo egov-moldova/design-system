@@ -1,126 +1,116 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ro">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MUD Design System - CDN Demo</title>
 
     <!-- 1. Design Tokens (Colors, Spacing, Typography) -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud@1.0.22/dist/mud/tokens/core.tokens.css"
-    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud@1.0.22/dist/mud/tokens/core.tokens.css">
 
     <!-- 2. Optional: Dark Theme Tokens -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud@1.0.22/dist/mud/tokens/core.dark.tokens.css"
-    />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud@1.0.22/dist/mud/tokens/core.dark.tokens.css">
 
     <!-- 3. Global Base Styles (Reset & Helpers) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud@1.0.22/dist/mud/mud.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@egov-moldova/mud@1.0.22/dist/mud/mud.css">
 
     <!-- 4. Web Components Loader -->
     <script type="module" src="https://cdn.jsdelivr.net/npm/@egov-moldova/mud@1.0.22/dist/mud/mud.esm.js"></script>
 
     <style>
-      body {
-        padding: 2rem;
-        font-family: 'Onest', var(--font-family-base, sans-serif);
-        background-color: var(--color-neutral-background-base, #ffffff);
-        color: var(--color-neutral-foreground-default, #1a1a1a);
-      }
-      .demo-section {
-        margin-bottom: 3rem;
-        padding: 1.5rem;
-        border: 1px solid var(--color-neutral-border-default, #e5e5e5);
-        border-radius: var(--radius-md, 8px);
-      }
-      .demo-grid {
-        display: flex;
-        gap: 1rem;
-        flex-wrap: wrap;
-        align-items: center;
-      }
-      h1,
-      h2 {
-        margin-top: 0;
-      }
-      .theme-toggle {
-        position: fixed;
-        top: 1rem;
-        right: 1rem;
-        z-index: 1000;
-      }
+        body {
+            padding: 2rem;
+            font-family: "Onest", var(--font-family-base, sans-serif);
+            background-color: var(--color-neutral-background-base, #ffffff);
+            color: var(--color-neutral-foreground-default, #1a1a1a);
+        }
+        .demo-section {
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            border: 1px solid var(--color-neutral-border-default, #e5e5e5);
+            border-radius: var(--radius-md, 8px);
+        }
+        .demo-grid {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        h1, h2 {
+            margin-top: 0;
+        }
+        .theme-toggle {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
+
     <div class="theme-toggle">
-      <mud-button id="toggle-theme" variant="secondary" size="sm">Toggle Dark Mode</mud-button>
+        <mud-button id="toggle-theme" variant="secondary" size="sm">Toggle Dark Mode</mud-button>
     </div>
 
     <h1>MUD Design System CDN Demo</h1>
     <p>This page tests the integration of MUD components using jsDelivr CDN (v1.0.5).</p>
 
     <div class="demo-section">
-      <h2>Buttons</h2>
-      <div class="demo-grid">
-        <mud-button variant="primary">Primary Button</mud-button>
-        <mud-button variant="secondary">Secondary Button</mud-button>
-        <mud-button variant="tertiary">Tertiary Button</mud-button>
-        <mud-button variant="danger">Danger Button</mud-button>
-        <mud-button variant="primary" disabled>Disabled</mud-button>
-        <mud-button variant="primary" loading>Loading</mud-button>
-      </div>
+        <h2>Buttons</h2>
+        <div class="demo-grid">
+            <mud-button variant="primary">Primary Button</mud-button>
+            <mud-button variant="secondary">Secondary Button</mud-button>
+            <mud-button variant="tertiary">Tertiary Button</mud-button>
+            <mud-button variant="danger">Danger Button</mud-button>
+            <mud-button variant="primary" disabled>Disabled</mud-button>
+            <mud-button variant="primary" loading>Loading</mud-button>
+        </div>
     </div>
 
     <div class="demo-section">
-      <h2>Badges & Tags</h2>
-      <div class="demo-grid">
-        <mud-tag variant="info">Info Tag</mud-tag>
-        <mud-tag variant="success">Success Tag</mud-tag>
-        <mud-tag variant="warning">Warning Tag</mud-tag>
-        <mud-tag variant="error">Error Tag</mud-tag>
-      </div>
+        <h2>Badges & Tags</h2>
+        <div class="demo-grid">
+            <mud-tag variant="info">Info Tag</mud-tag>
+            <mud-tag variant="success">Success Tag</mud-tag>
+            <mud-tag variant="warning">Warning Tag</mud-tag>
+            <mud-tag variant="error">Error Tag</mud-tag>
+        </div>
     </div>
 
     <div class="demo-section">
-      <h2>Form Elements</h2>
-      <div style="max-width: 400px">
-        <mud-input
-          label="Full Name"
-          placeholder="Enter your name"
-          help-text="We will use this for registration"
-        ></mud-input>
-        <br />
-        <mud-checkbox label="I agree to the terms and conditions"></mud-checkbox>
-      </div>
+        <h2>Form Elements</h2>
+        <div style="max-width: 400px;">
+            <mud-input label="Full Name" placeholder="Enter your name" help-text="We will use this for registration"></mud-input>
+            <br>
+            <mud-checkbox label="I agree to the terms and conditions"></mud-checkbox>
+        </div>
     </div>
 
     <div class="demo-section">
-      <h2>Accordions</h2>
-      <mud-accordion-group>
-        <mud-accordion heading="What is MUD?">
-          <p slot="body">MUD is the Moldova Government Design System, built with StencilJS.</p>
-        </mud-accordion>
-        <mud-accordion heading="How to use CDN?">
-          <p slot="body">Just include the tokens, the base CSS, and the ESM loader script.</p>
-        </mud-accordion>
-      </mud-accordion-group>
+        <h2>Accordions</h2>
+        <mud-accordion-group>
+            <mud-accordion heading="What is MUD?">
+                <p slot="body">MUD is the Moldova Government Design System, built with StencilJS.</p>
+            </mud-accordion>
+            <mud-accordion heading="How to use CDN?">
+                <p slot="body">Just include the tokens, the base CSS, and the ESM loader script.</p>
+            </mud-accordion>
+        </mud-accordion-group>
     </div>
 
     <script>
-      // Simple theme toggle logic
-      const btn = document.getElementById('toggle-theme');
-      const html = document.documentElement;
+        // Simple theme toggle logic
+        const btn = document.getElementById('toggle-theme');
+        const html = document.documentElement;
 
-      btn.addEventListener('click', () => {
-        if (html.getAttribute('data-theme') === 'dark') {
-          html.removeAttribute('data-theme');
-        } else {
-          html.setAttribute('data-theme', 'dark');
-        }
-      });
+        btn.addEventListener('click', () => {
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.removeAttribute('data-theme');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+            }
+        });
     </script>
-  </body>
+</body>
 </html>

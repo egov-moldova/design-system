@@ -9,12 +9,12 @@ resources:
       trigger: none
 
 variables:
-  DOCKER_VERSION: '29.2.1'
-  HELM_VERSION: '3.18.6'
+  DOCKER_VERSION: "29.2.1"
+  HELM_VERSION: "3.18.6"
   containerRegistry: harbor.staging.egov.md
   containerProject: mud
   containerRepository: $(containerRegistry)/$(containerProject)
-  containerTag: '1.$(resources.pipeline.build.runName)'
+  containerTag: "1.$(resources.pipeline.build.runName)"
 
   k8sService: mud-dev
   k8sNamespace: mud
@@ -23,51 +23,52 @@ variables:
   storybookImage: $(containerRepository)/mud-storybook
 
 stages:
-  - stage: DeployDev
+- stage: DeployDev
+  displayName: Deploy to Dev
+  pool:
+    name: Azure Pipelines
+    vmImage: ubuntu-latest
+  jobs:
+  - deployment: DeployDev
     displayName: Deploy to Dev
-    pool:
-      name: Azure Pipelines
-      vmImage: ubuntu-latest
-    jobs:
-      - deployment: DeployDev
-        displayName: Deploy to Dev
-        environment: mud-dev
-        workspace:
-          clean: all
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - checkout: self
+    environment: mud-dev
+    workspace:
+      clean: all
+    strategy:
+      runOnce:
+        deploy:
+          steps:
 
-                - bash: 'sed -i ''s/^appVersion:.*$/appVersion: "$(containerTag)"/g'' azure/deploy/chart/Chart.yaml'
-                  displayName: Set AppVersion in Helm Chart
+          - checkout: self
 
-                - publish: azure/deploy
-                  artifact: deploy
-                  displayName: Publish Helm Chart
+          - bash: 'sed -i ''s/^appVersion:.*$/appVersion: "$(containerTag)"/g'' azure/deploy/chart/Chart.yaml'
+            displayName: Set AppVersion in Helm Chart
 
-                - task: Kubernetes@1
-                  displayName: Login to Kubernetes
-                  inputs:
-                    connectionType: Kubernetes Service Connection
-                    kubernetesServiceEndpoint: $(k8sService)
-                    command: login
+          - publish: azure/deploy
+            artifact: deploy
+            displayName: Publish Helm Chart
 
-                - task: HelmInstaller@1
-                  displayName: Install Helm CLI
-                  inputs:
-                    helmVersionToInstall: $(HELM_VERSION)
+          - task: Kubernetes@1
+            displayName: Login to Kubernetes
+            inputs:
+              connectionType: Kubernetes Service Connection
+              kubernetesServiceEndpoint: $(k8sService)
+              command: login
 
-                - bash: >
-                    helm upgrade $(k8sReleaseName) $(Build.SourcesDirectory)/azure/deploy/chart
-                    --install --atomic --wait --timeout=10m
-                    --namespace $(k8sNamespace)
-                    --values $(Build.SourcesDirectory)/azure/deploy/values.dev.yaml
-                    --set deployment.webui.image.tag=$(containerTag)
-                  displayName: Deploy Helm Chart
+          - task: HelmInstaller@1
+            displayName: Install Helm CLI
+            inputs:
+              helmVersionToInstall: $(HELM_VERSION)
 
-                - task: Kubernetes@1
-                  displayName: Logout from Kubernetes
-                  inputs:
-                    command: logout
+          - bash: >
+              helm upgrade $(k8sReleaseName) $(Build.SourcesDirectory)/azure/deploy/chart
+              --install --atomic --wait --timeout=10m
+              --namespace $(k8sNamespace)
+              --values $(Build.SourcesDirectory)/azure/deploy/values.dev.yaml
+              --set deployment.webui.image.tag=$(containerTag)
+            displayName: Deploy Helm Chart
+
+          - task: Kubernetes@1
+            displayName: Logout from Kubernetes
+            inputs:
+              command: logout

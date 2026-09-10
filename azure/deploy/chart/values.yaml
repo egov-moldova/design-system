@@ -5,7 +5,7 @@ serviceAccount:
   create: true
 
 imagePullSecrets:
-  - name: harbor
+- name: harbor
 
 deployment:
   webui:
@@ -29,6 +29,9 @@ deployment:
         dns: true
         publicHttp: true
 
+
+
+
 ingress:
   webui:
     enabled: true
@@ -36,3 +39,4 @@ ingress:
     paths:
       - path: /
     host: mud.egov.md
+
