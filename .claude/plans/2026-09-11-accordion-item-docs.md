@@ -268,8 +268,9 @@ Zero-tolerance:
    parts ['header', 'panel']
    ```
 
-   9 props + 2 events + 4 slots + 2 parts = **17 rows**. Two documented
-   subtractions, both properties of the extractor rather than of this change:
+   9 props + 2 events + 4 slots + 2 parts, minus one key collision = **16 rows**,
+   confirmed against the rendered page rather than computed. Three documented
+   subtractions, all properties of the extractor rather than of this change:
 
    - the **default slot** cannot render. `mapData` filters `item => item && item.name`
      (`node_modules/@storybook/web-components/dist/entry-preview-argtypes.js:49`) and
@@ -282,6 +283,15 @@ Zero-tolerance:
      is no `methods` key for the extractor to read. (The extractor does carry an
      `item.kind === "method"` early return, but nothing in this manifest reaches it.)
      `setOpen` and `focusHeader` stay documented in the generated `readme.md`.
+   - the **`heading` prop and the `heading` slot collapse into one row**.
+     `extractArgTypesFromElements` builds ONE flat keyspace and spreads `slots`
+     after `properties`, so a prop and a slot sharing a name resolve to the slot.
+     The rendered row is the slot's ("Optional rich heading content. Overrides the
+     `heading` prop."), under the Slots category. Both members remain separately
+     documented in the generated `readme.md`, which has its own Properties and
+     Slots tables and no shared keyspace. Not worth trading away: the only fixes
+     are renaming a public slot, or hand-declaring `heading` in the meta, which
+     wins the key back for the prop and loses the slot row instead.
 
    The **`mud-accordion-item` rows** must come from the generated manifest, not from
    hand-authored `argTypes`: a table filled by hand satisfies the letter of this bar
@@ -364,6 +374,34 @@ A second pair, checked and clean: Phase 2's `tags: ['!autodocs']` on the item an
 Phase 3's regeneration cannot interact, because the tag governs Storybook's story
 index and the regeneration governs Stencil's readme output — no artifact is written
 by both.
+
+## Found during execution — the defect that actually blocked issue #8
+
+Three review rounds computed bar 2's row count from the manifest and the extractor
+source, and all three got a number the page could not produce, because the blocker
+was somewhere none of them looked: `.storybook/preview.js` declared
+`extractArgTypes` TWICE inside the same `docs` object literal. The second one wins
+in JavaScript, and it reads `component.__docgenInfo` — which a Stencil `component`,
+being a tag-name string, never has. So it returned `{}` for every tag in the repo and
+the manifest reached no table at all; every API table in this Storybook has been
+filled purely by hand-written `argTypes`.
+
+That is why the first browser check of this phase found the item's table showing
+exactly the 6 `argTypes` the new stories file declares, and the container's exactly
+its 4 — the manifest rows were never in play. It is also why a build-free review
+could not have caught it: the manifest was correct, the blocks were correct, the
+meta was correct, and the defect was a duplicate key in a 200-line config.
+
+Fix, inside the fence: the surviving `extractArgTypes` gains one guarded branch that
+delegates to `@storybook/web-components/entry-preview-argtypes` for
+`mud-accordion` and `mud-accordion-item`, and `extractComponentDescription` — which
+was a flat `() => null` — gains the same guard so the MDX's `<Description />` has
+text. Everything else keeps today's behaviour exactly, verified on the built page:
+`extractArgTypes('mud-button')` still returns `{}` and its description still `null`.
+
+Lifting the guard repo-wide is the obvious follow-up and is deliberately not in this
+PR: it would populate 46 components' API tables in one commit, which is the same
+widening that kept Stencil's `docs-custom-elements-manifest` out of scope.
 
 ## Residual risk — what three review rounds left standing
 

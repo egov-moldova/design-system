@@ -1,4 +1,5 @@
 import { setCustomElements } from '@storybook/web-components-vite';
+import { parameters as webComponentsPreviewParameters } from '@storybook/web-components/entry-preview-argtypes';
 // import { createElement } from 'react';
 // import { createRoot } from 'react-dom/client';
 // import { PageFeedbackToolbarCSS } from 'agentation';
@@ -21,6 +22,17 @@ import './storybook-overrides.css';
 
 // Initialize Stencil custom elements manifest for Storybook
 setCustomElements(customElements);
+
+// The `extractArgTypes` below reads `component.__docgenInfo`. A Stencil `component`
+// is a tag-name STRING and never has one, so it returns {} for every tag and the
+// docs API table is filled only by hand-written `argTypes` — the manifest loaded
+// above reaches no table at all. That is repo-wide, not specific to these two.
+// Baseline, on the built Storybook, before this Set existed:
+//   `(await __STORYBOOK_PREVIEW__.loadStory({storyId:'atoms-button--default'}))
+//    .parameters.docs.extractArgTypes('mud-button')` -> `{}`
+// Widened for the Accordion only, which is what issue #8 needs. Removing the guard
+// would change all 46 components' docs pages at once and belongs in its own PR.
+const MANIFEST_ARG_TYPES = new Set(['mud-accordion', 'mud-accordion-item']);
 
 // Keep data-theme in sync with the mode global at the preview level.
 // The themeDecorator handles story canvas, but docs pages don't re-run
@@ -149,6 +161,12 @@ export const parameters = {
     },
     codePanel: true, // Enable the code panel in Docs view
     extractArgTypes: component => {
+      // The Accordion's two API tables are generated from the custom-elements
+      // manifest — the whole point of issue #8. Everywhere else the branch below
+      // runs unchanged.
+      if (MANIFEST_ARG_TYPES.has(component)) {
+        return webComponentsPreviewParameters.docs.extractArgTypes(component);
+      }
       // Filter out CSS custom properties (@cssprop)
       const argTypes = {};
       if (component.__docgenInfo?.props) {
@@ -160,8 +178,12 @@ export const parameters = {
       }
       return argTypes;
     },
-    // Hide component description from JSDoc
-    extractComponentDescription: () => null,
+    // Hide component description from JSDoc — except for the Accordion, whose MDX
+    // page renders <Description of={AccordionStories} /> and needs the real text.
+    extractComponentDescription: component =>
+      MANIFEST_ARG_TYPES.has(component)
+        ? webComponentsPreviewParameters.docs.extractComponentDescription(component)
+        : null,
   },
   options: {
     storySort: {
