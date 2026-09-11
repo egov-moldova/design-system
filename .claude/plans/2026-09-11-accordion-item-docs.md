@@ -403,6 +403,27 @@ Lifting the guard repo-wide is the obvious follow-up and is deliberately not in 
 PR: it would populate 46 components' API tables in one commit, which is the same
 widening that kept Stencil's `docs-custom-elements-manifest` out of scope.
 
+## Also found during execution — two smaller corrections
+
+**The `host` suppression uses a different mechanism than Phase 2 Steps 2-3 specify.**
+Those steps say to add `host: { table: { disable: true } }` to each meta's `argTypes`.
+That does not compile: `Meta<AccordionArgs>` types `argTypes` as
+`Partial<ArgTypes<AccordionArgs>>`, and `host` is not one of the story args, so
+`yarn sp.build` fails with TS2353 — observed, not predicted. What shipped instead is
+`exclude={['host']}` on the two docs blocks in `mud-accordion.mdx`, which is the
+supported filter and puts both spellings in one file. `Controls` and `ArgTypes` read
+different parameter keys (`docs.controls.exclude` vs `docs.argTypes.exclude`), which
+is the other reason the block-level prop is the tidier home. Net effect on the bar is
+identical: `host` is absent from both rendered tables.
+
+**Free prose inside the docblock lands in the previous tag's description.** The first
+version of Phase 3 Step 1's edit put the explanation for the duplicated tags between
+`@part panel` and `@csspart header`. Stencil concatenates untagged text into the
+PRECEDING tag, so the generated `readme.md`'s Shadow Parts table showed the whole
+paragraph, baseline command included, as the `panel` part's description. The note now
+sits in a `//` comment above the docblock, and the table reads
+`| "panel" | The region revealed when open. |` again.
+
 ## Residual risk — what three review rounds left standing
 
 The loop closed on its 3-round cap, not on a round that found nothing. Round 3

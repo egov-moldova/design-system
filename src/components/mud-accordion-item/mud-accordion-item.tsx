@@ -4,6 +4,15 @@ import type { AccordionIconPosition, AccordionSize } from '../mud-accordion/mud-
 
 let uidSeed = 0;
 
+// `@csspart` duplicates `@part` and `@fires` duplicates the `@Event()` decorators in
+// the docblock below, because two generators read it and neither reads the other's
+// tag: Stencil's readme takes `@part` and the decorators, web-component-analyzer —
+// which writes `.storybook/custom-elements.json`, and so the Storybook API table —
+// takes only `@csspart` and `@fires`. The note sits out here rather than inside the
+// block: Stencil concatenates untagged prose into the PRECEDING tag's description,
+// which is how it once landed inside the `panel` shadow-part row.
+// Baseline: `node -e "const t=require('./.storybook/custom-elements.json').tags.find(t=>t.name==='mud-accordion-item');console.log(t.events.map(e=>e.name),t.cssParts.map(p=>p.name))"`
+// -> both events and both parts; dropping either tag empties its table.
 /**
  * Accordion item — a single collapsible row inside `mud-accordion`.
  *
@@ -22,14 +31,6 @@ let uidSeed = 0;
  *
  * @part header - The button that toggles open/closed.
  * @part panel - The region revealed when open.
- *
- * `@csspart` duplicates `@part` and `@fires` duplicates the `@Event()` decorators
- * because two generators read this block and neither reads the other's tag:
- * Stencil's readme takes `@part` and the decorators, while web-component-analyzer —
- * which writes `.storybook/custom-elements.json`, and so the Storybook API table —
- * takes only `@csspart` and `@fires`.
- * Baseline: `node -e "const t=require('./.storybook/custom-elements.json').tags.find(t=>t.name==='mud-accordion-item');console.log(t.events.map(e=>e.name),t.cssParts&&t.cssParts.map(p=>p.name))"`
- * -> both events and both parts; dropping either tag empties its table.
  *
  * @csspart header - The button that toggles open/closed.
  * @csspart panel - The region revealed when open.

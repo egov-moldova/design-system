@@ -81,10 +81,10 @@ Type: `Promise<void>`
 
 ## Shadow Parts
 
-| Part       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `"header"` | The button that toggles open/closed.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
-| `"panel"`  | The region revealed when open.  `@csspart` duplicates `@part` and `@fires` duplicates the `@Event()` decorators because two generators read this block and neither reads the other's tag: Stencil's readme takes `@part` and the decorators, while web-component-analyzer — which writes `.storybook/custom-elements.json`, and so the Storybook API table — takes only `@csspart` and `@fires`. Baseline: `node -e "const t=require('./.storybook/custom-elements.json').tags.find(t=>t.name==='mud-accordion-item');console.log(t.events.map(e=>e.name),t.cssParts&&t.cssParts.map(p=>p.name))"` -> both events and both parts; dropping either tag empties its table. |
+| Part       | Description                          |
+| ---------- | ------------------------------------ |
+| `"header"` | The button that toggles open/closed. |
+| `"panel"`  | The region revealed when open.       |
 
 
 ## Dependencies
