@@ -36,12 +36,8 @@ let uidSeed = 0;
  * @csspart header - The button that toggles open/closed.
  * @csspart panel - The region revealed when open.
  *
- * @fires mudToggle - Fired when the user activates the header. The container
- *                    listens for this and decides whether to honour it
- *                    (single-mode collapsing of siblings).
- * @fires mudAccordionItemKey - Fired on Arrow/Home/End keypress on the header.
- *                    Consumed by the parent `mud-accordion` for WAI-ARIA
- *                    Accordion Pattern traversal.
+ * @fires mudToggle - Emitted after the item has already toggled itself. The parent `mud-accordion` reacts by collapsing the other items in `mode="single"`; it cannot refuse or reverse this item's own change.
+ * @fires mudAccordionItemKey - Emitted on Arrow/Home/End keypress on the header. Consumed by the parent `mud-accordion` to implement WAI-ARIA Accordion Pattern traversal. Internal contract — consumers typically don't subscribe directly.
  */
 @Component({
   tag: 'mud-accordion-item',
@@ -89,9 +85,9 @@ export class MudAccordionItem {
   @Prop({ reflect: true }) appearance: 'default' | 'trail-sites' = 'default';
 
   /**
-   * Layout breakpoint. Set by the parent based on the resolved size
-   * (desktop ≥ 768px, mobile below). May also be set explicitly by
-   * consumers who need a fixed render at narrow widths.
+   * Layout breakpoint (desktop ≥ 768px, mobile below). Owned by the parent
+   * `mud-accordion`, which assigns it on load and on every viewport crossing —
+   * setting it on an item is overwritten. Configure it on the parent instead.
    * @default 'desktop'
    */
   @Prop({ reflect: true }) breakpoint: 'desktop' | 'mobile' = 'desktop';
@@ -126,9 +122,7 @@ export class MudAccordionItem {
   @Element() host!: HTMLMudAccordionItemElement;
 
   /**
-   * Emitted when the user activates the header (click / Enter / Space).
-   * The parent `mud-accordion` may cancel the implicit toggle in
-   * `mode="single"` to enforce exclusivity.
+   * Emitted after the item has already toggled itself. The parent `mud-accordion` reacts by collapsing the other items in `mode="single"`; it cannot refuse or reverse this item's own change.
    */
   @Event({ eventName: 'mudToggle', bubbles: true, composed: true }) mudToggle!: EventEmitter<{
     open: boolean;
@@ -136,9 +130,7 @@ export class MudAccordionItem {
   }>;
 
   /**
-   * Emitted on Arrow/Home/End keypress on the header. Consumed by the parent
-   * `mud-accordion` to implement WAI-ARIA Accordion Pattern traversal.
-   * Internal contract — consumers typically don't subscribe directly.
+   * Emitted on Arrow/Home/End keypress on the header. Consumed by the parent `mud-accordion` to implement WAI-ARIA Accordion Pattern traversal. Internal contract — consumers typically don't subscribe directly.
    */
   @Event({ eventName: 'mudAccordionItemKey', bubbles: true, composed: true })
   mudAccordionItemKey!: EventEmitter<{ key: string; itemId: string }>;
