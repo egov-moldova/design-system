@@ -113,4 +113,29 @@ describe('mud-accordion-item', () => {
     const instance = new Ctor(false);
     expect(instance).toBeTruthy();
   });
+  it('never writes `disabled` onto slotted content, in either direction (issue #17)', async () => {
+    const { root, waitForChanges } = await render(
+      <mud-accordion-item heading="Payment" disabled>
+        <button slot="trailing" id="authored" disabled>
+          Retry
+        </button>
+        <button slot="trailing" id="untouched">
+          Track
+        </button>
+      </mud-accordion-item>,
+    );
+    const authored = root!.querySelector('#authored')!;
+    const untouched = root!.querySelector('#untouched')!;
+
+    // The consumer authored one and not the other. The component owns neither.
+    expect(authored.hasAttribute('disabled')).toBe(true);
+    expect(untouched.hasAttribute('disabled')).toBe(false);
+
+    (root as HTMLElement).removeAttribute('disabled');
+    await waitForChanges();
+
+    // The transition that issue #17 broke: the authored one must survive it.
+    expect(authored.hasAttribute('disabled')).toBe(true);
+    expect(untouched.hasAttribute('disabled')).toBe(false);
+  });
 });
