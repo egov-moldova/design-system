@@ -19,12 +19,8 @@ The container. It owns coordination (`mode`), and it pushes `appearance`, `size`
 `icon-position` and `breakpoint` down onto its items — set those here, not on the
 individual rows.
 
-{/* `host` is `@Element()`, which `wca` reports as a public property because it
-    lists every public class field. Excluded on the blocks rather than in either
-    meta's `argTypes`: the meta is typed against its own args, so an entry for a
-    name outside them fails `stencil build` with TS2353. The two blocks read
-    different parameter keys (`docs.controls` vs `docs.argTypes`), so doing it
-    here also keeps one spelling instead of two. */}
+{/* `host` is `@Element()`; `wca` reports it as a public property. Excluded on the blocks, not in the metas — a typed `Meta` rejects an arg it does not declare (TS2353). Must stay one line: Prettier parses a multi-line MDX comment as markdown and rewrites `*` to `_`, producing invalid MDX. */}
+
 <Controls exclude={['host']} />
 
 ## `mud-accordion-item`
