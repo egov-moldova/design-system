@@ -151,9 +151,14 @@ export namespace Components {
      * `<div role="region">` panel inside shadow DOM. The container manages
      * exclusivity in `mode="single"`; the item owns its visual state.
      * @element mud-accordion-item
+     * @csspart header - The button that toggles open/closed.
+     * @csspart panel - The region revealed when open.
      * @fires mudToggle - Fired when the user activates the header. The container
      *             listens for this and decides whether to honour it
      *             (single-mode collapsing of siblings).
+     * @fires mudAccordionItemKey - Fired on Arrow/Home/End keypress on the header.
+     *             Consumed by the parent `mud-accordion` for WAI-ARIA
+     *             Accordion Pattern traversal.
      */
     interface MudAccordionItem {
         /**
@@ -3821,9 +3826,14 @@ declare global {
      * `<div role="region">` panel inside shadow DOM. The container manages
      * exclusivity in `mode="single"`; the item owns its visual state.
      * @element mud-accordion-item
+     * @csspart header - The button that toggles open/closed.
+     * @csspart panel - The region revealed when open.
      * @fires mudToggle - Fired when the user activates the header. The container
      *             listens for this and decides whether to honour it
      *             (single-mode collapsing of siblings).
+     * @fires mudAccordionItemKey - Fired on Arrow/Home/End keypress on the header.
+     *             Consumed by the parent `mud-accordion` for WAI-ARIA
+     *             Accordion Pattern traversal.
      */
     interface HTMLMudAccordionItemElement extends Components.MudAccordionItem, HTMLStencilElement {
         addEventListener<K extends keyof HTMLMudAccordionItemElementEventMap>(type: K, listener: (this: HTMLMudAccordionItemElement, ev: MudAccordionItemCustomEvent<HTMLMudAccordionItemElementEventMap[K]>) => any, options?: boolean | AddEventListenerOptions): void;
@@ -5499,9 +5509,14 @@ declare namespace LocalJSX {
      * `<div role="region">` panel inside shadow DOM. The container manages
      * exclusivity in `mode="single"`; the item owns its visual state.
      * @element mud-accordion-item
+     * @csspart header - The button that toggles open/closed.
+     * @csspart panel - The region revealed when open.
      * @fires mudToggle - Fired when the user activates the header. The container
      *             listens for this and decides whether to honour it
      *             (single-mode collapsing of siblings).
+     * @fires mudAccordionItemKey - Fired on Arrow/Home/End keypress on the header.
+     *             Consumed by the parent `mud-accordion` for WAI-ARIA
+     *             Accordion Pattern traversal.
      */
     interface MudAccordionItem {
         /**
@@ -10213,9 +10228,14 @@ declare module "@stencil/core" {
              * `<div role="region">` panel inside shadow DOM. The container manages
              * exclusivity in `mode="single"`; the item owns its visual state.
              * @element mud-accordion-item
+             * @csspart header - The button that toggles open/closed.
+             * @csspart panel - The region revealed when open.
              * @fires mudToggle - Fired when the user activates the header. The container
              *             listens for this and decides whether to honour it
              *             (single-mode collapsing of siblings).
+             * @fires mudAccordionItemKey - Fired on Arrow/Home/End keypress on the header.
+             *             Consumed by the parent `mud-accordion` for WAI-ARIA
+             *             Accordion Pattern traversal.
              */
             "mud-accordion-item": LocalJSX.IntrinsicElements["mud-accordion-item"] & JSXBase.HTMLAttributes<HTMLMudAccordionItemElement>;
             /**

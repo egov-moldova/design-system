@@ -23,9 +23,23 @@ let uidSeed = 0;
  * @part header - The button that toggles open/closed.
  * @part panel - The region revealed when open.
  *
+ * `@csspart` duplicates `@part` and `@fires` duplicates the `@Event()` decorators
+ * because two generators read this block and neither reads the other's tag:
+ * Stencil's readme takes `@part` and the decorators, while web-component-analyzer —
+ * which writes `.storybook/custom-elements.json`, and so the Storybook API table —
+ * takes only `@csspart` and `@fires`.
+ * Baseline: `node -e "const t=require('./.storybook/custom-elements.json').tags.find(t=>t.name==='mud-accordion-item');console.log(t.events.map(e=>e.name),t.cssParts&&t.cssParts.map(p=>p.name))"`
+ * -> both events and both parts; dropping either tag empties its table.
+ *
+ * @csspart header - The button that toggles open/closed.
+ * @csspart panel - The region revealed when open.
+ *
  * @fires mudToggle - Fired when the user activates the header. The container
  *                    listens for this and decides whether to honour it
  *                    (single-mode collapsing of siblings).
+ * @fires mudAccordionItemKey - Fired on Arrow/Home/End keypress on the header.
+ *                    Consumed by the parent `mud-accordion` for WAI-ARIA
+ *                    Accordion Pattern traversal.
  */
 @Component({
   tag: 'mud-accordion-item',

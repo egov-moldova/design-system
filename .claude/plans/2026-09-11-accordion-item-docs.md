@@ -956,6 +956,25 @@ If `src/components.d.ts` changed, inspect the diff: the move changes no tag name
 and no type import path, so a substantive change there is a signal, not noise.
 Revert it if it is pure reordering — it is PR#13's conflict surface.
 
+- [ ] **Step 4b: Fix the container readme's H1 by hand — regeneration does not**
+
+Found during execution; the plan was wrong to expect the generator to close bar 3
+on its own. Stencil's `docs-readme` defaults to `overwriteExisting: false`, which
+means it rewrites only the block BELOW `<!-- Auto Generated Below -->` and preserves
+everything above it as authored content (`stencil.js:276339-276348`). The H1 lives
+above that marker, so `# mud-accordion-item` survived the move and the rebuild with
+the accordion's own generated body underneath it:
+
+```bash
+head -1 src/components/mud-accordion/readme.md   # -> "# mud-accordion-item", after yarn build
+sed -i.bak '1s/.*/# mud-accordion/' src/components/mud-accordion/readme.md && rm -f src/components/mud-accordion/readme.md.bak
+head -1 src/components/mud-accordion/readme.md   # -> "# mud-accordion"
+```
+
+The edit is stable rather than a one-off: the same `overwriteExisting: false` that
+preserved the wrong H1 preserves the right one from now on. The item's own readme
+needs nothing — it was created fresh, so the generator wrote its H1.
+
 - [ ] **Step 5: Verify the two readmes**
 
 ```bash

@@ -1,0 +1,105 @@
+# mud-accordion-item
+
+
+
+<!-- Auto Generated Below -->
+
+
+## Overview
+
+Accordion item — a single collapsible row inside `mud-accordion`.
+
+Pattern B (atom-interactive): renders its own header `<button>` and a
+`<div role="region">` panel inside shadow DOM. The container manages
+exclusivity in `mode="single"`; the item owns its visual state.
+
+## Properties
+
+| Property         | Attribute         | Description                                                                                                                                                                                                                                                                    | Type                         | Default     |
+| ---------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------- | ----------- |
+| `appearance`     | `appearance`      | Visual treatment. - `default` — flat header, neutral background - `trail-sites` — open header gets a brand-tint background per Figma "Trail Sites"  Set by the parent `mud-accordion` via attribute; consumers should set `appearance` on the parent, not on individual items. | `"default" \| "trail-sites"` | `'default'` |
+| `breakpoint`     | `breakpoint`      | Layout breakpoint. Set by the parent based on the resolved size (desktop ≥ 768px, mobile below). May also be set explicitly by consumers who need a fixed render at narrow widths.                                                                                             | `"desktop" \| "mobile"`      | `'desktop'` |
+| `disabled`       | `disabled`        | Marks the item non-interactive. Header receives `aria-disabled`.                                                                                                                                                                                                               | `boolean`                    | `false`     |
+| `heading`        | `heading`         | Header text. Overridden by the `heading` slot when provided.                                                                                                                                                                                                                   | `string \| undefined`        | `undefined` |
+| `iconPosition`   | `icon-position`   | Trigger-icon placement relative to the header content. Set by the parent `mud-accordion`.                                                                                                                                                                                      | `"left" \| "right"`          | `'right'`   |
+| `itemId`         | `item-id`         | Stable identifier used by the parent `mud-accordion` when emitting `mudChange`. Auto-generated if omitted.                                                                                                                                                                     | `string \| undefined`        | `undefined` |
+| `open`           | `open`            | Whether the item is currently expanded.                                                                                                                                                                                                                                        | `boolean`                    | `false`     |
+| `size`           | `size`            | Visual size rung — controls header height, font size, icon size, padding. Set by the parent `mud-accordion` via `size`; consumers should configure size at the container level.                                                                                                | `"md" \| "sm"`               | `'md'`      |
+| `supportingText` | `supporting-text` | Secondary text shown beneath the heading. Overridden by the `supporting` slot.                                                                                                                                                                                                 | `string \| undefined`        | `undefined` |
+
+
+## Events
+
+| Event                 | Description                                                                                                                                                                                                   | Type                                              |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `mudAccordionItemKey` | Emitted on Arrow/Home/End keypress on the header. Consumed by the parent `mud-accordion` to implement WAI-ARIA Accordion Pattern traversal. Internal contract — consumers typically don't subscribe directly. | `CustomEvent<{ key: string; itemId: string; }>`   |
+| `mudToggle`           | Emitted when the user activates the header (click / Enter / Space). The parent `mud-accordion` may cancel the implicit toggle in `mode="single"` to enforce exclusivity.                                      | `CustomEvent<{ open: boolean; itemId: string; }>` |
+
+
+## Methods
+
+### `focusHeader() => Promise<void>`
+
+Returns the focusable header element so the parent can implement the
+Arrow/Home/End traversal contract from WAI-ARIA Accordion Pattern.
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+### `setOpen(open: boolean) => Promise<void>`
+
+Programmatically toggle the item. Bypasses the click pipeline so the
+parent `mud-accordion` does not receive a `mudToggle` event — used by
+the parent itself to coordinate `mode="single"` exclusivity.
+
+#### Parameters
+
+| Name   | Type      | Description |
+| ------ | --------- | ----------- |
+| `open` | `boolean` |             |
+
+#### Returns
+
+Type: `Promise<void>`
+
+
+
+
+## Slots
+
+| Slot           | Description                                                                                                                          |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+|                | (default) Panel body. Rendered only when the item is open.                                                                           |
+| `"heading"`    | Optional rich heading content. Overrides the `heading` prop.                                                                         |
+| `"icon-start"` | Optional leading icon (`mud-icon` recommended).                                                                                      |
+| `"supporting"` | Optional supporting text. Overrides the `supportingText` prop.                                                                       |
+| `"trailing"`   | Optional trailing content (`mud-badge`, `mud-button`, label).             Sits between the heading group and the open/close trigger. |
+
+
+## Shadow Parts
+
+| Part       | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `"header"` | The button that toggles open/closed.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| `"panel"`  | The region revealed when open.  `@csspart` duplicates `@part` and `@fires` duplicates the `@Event()` decorators because two generators read this block and neither reads the other's tag: Stencil's readme takes `@part` and the decorators, while web-component-analyzer — which writes `.storybook/custom-elements.json`, and so the Storybook API table — takes only `@csspart` and `@fires`. Baseline: `node -e "const t=require('./.storybook/custom-elements.json').tags.find(t=>t.name==='mud-accordion-item');console.log(t.events.map(e=>e.name),t.cssParts&&t.cssParts.map(p=>p.name))"` -> both events and both parts; dropping either tag empties its table. |
+
+
+## Dependencies
+
+### Used by
+
+ - [mud-accordion](../mud-accordion)
+
+### Graph
+```mermaid
+graph TD;
+  mud-accordion --> mud-accordion-item
+  style mud-accordion-item fill:#f9f,stroke:#333,stroke-width:4px
+```
+
+----------------------------------------------
+
+*Built with [StencilJS](https://stenciljs.com/)*

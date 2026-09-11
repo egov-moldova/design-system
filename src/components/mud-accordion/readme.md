@@ -1,4 +1,4 @@
-# mud-accordion-item
+# mud-accordion
 
 
 
@@ -7,97 +7,55 @@
 
 ## Overview
 
-Accordion item — a single collapsible row inside `mud-accordion`.
+Accordion — vertical stack of collapsible regions per WAI-ARIA Accordion Pattern.
 
-Pattern B (atom-interactive): renders its own header `<button>` and a
-`<div role="region">` panel inside shadow DOM. The container manages
-exclusivity in `mode="single"`; the item owns its visual state.
+Pattern A (slot container): coordinates child `mud-accordion-item` elements,
+enforces `mode="single"` exclusivity, manages keyboard traversal across
+headers (Arrow Up/Down, Home, End), and dispatches `mudChange` whenever the
+active set changes.
+
+Consumers may either:
+  1. Slot `<mud-accordion-item>` children directly (declarative, recommended), or
+  2. Pass an `items` array (data-driven; the accordion renders the items for you).
 
 ## Properties
 
-| Property         | Attribute         | Description                                                                                                                                                                                                                                                                    | Type                         | Default     |
-| ---------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------- | ----------- |
-| `appearance`     | `appearance`      | Visual treatment. - `default` — flat header, neutral background - `trail-sites` — open header gets a brand-tint background per Figma "Trail Sites"  Set by the parent `mud-accordion` via attribute; consumers should set `appearance` on the parent, not on individual items. | `"default" \| "trail-sites"` | `'default'` |
-| `breakpoint`     | `breakpoint`      | Layout breakpoint. Set by the parent based on the resolved size (desktop ≥ 768px, mobile below). May also be set explicitly by consumers who need a fixed render at narrow widths.                                                                                             | `"desktop" \| "mobile"`      | `'desktop'` |
-| `disabled`       | `disabled`        | Marks the item non-interactive. Header receives `aria-disabled`.                                                                                                                                                                                                               | `boolean`                    | `false`     |
-| `heading`        | `heading`         | Header text. Overridden by the `heading` slot when provided.                                                                                                                                                                                                                   | `string \| undefined`        | `undefined` |
-| `iconPosition`   | `icon-position`   | Trigger-icon placement relative to the header content. Set by the parent `mud-accordion`.                                                                                                                                                                                      | `"left" \| "right"`          | `'right'`   |
-| `itemId`         | `item-id`         | Stable identifier used by the parent `mud-accordion` when emitting `mudChange`. Auto-generated if omitted.                                                                                                                                                                     | `string \| undefined`        | `undefined` |
-| `open`           | `open`            | Whether the item is currently expanded.                                                                                                                                                                                                                                        | `boolean`                    | `false`     |
-| `size`           | `size`            | Visual size rung — controls header height, font size, icon size, padding. Set by the parent `mud-accordion` via `size`; consumers should configure size at the container level.                                                                                                | `"md" \| "sm"`               | `'md'`      |
-| `supportingText` | `supporting-text` | Secondary text shown beneath the heading. Overridden by the `supporting` slot.                                                                                                                                                                                                 | `string \| undefined`        | `undefined` |
+| Property       | Attribute       | Description                                                                                                                                                                                    | Type                                     | Default      |
+| -------------- | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- | ------------ |
+| `appearance`   | `appearance`    | Visual treatment forwarded to every child item.                                                                                                                                                | `"default" \| "trail-sites"`             | `'default'`  |
+| `breakpoint`   | `breakpoint`    | Layout breakpoint forwarded to every child item. Controls heading type size and vertical padding. Omit to let the responsive `@media` rule in the host CSS drive the value (768px breakpoint). | `"desktop" \| "mobile" \| undefined`     | `undefined`  |
+| `iconPosition` | `icon-position` | Trigger-icon placement forwarded to every child item. - `right` (default) — FAQ-style - `left` — sidebar-nav style                                                                             | `"left" \| "right"`                      | `'right'`    |
+| `items`        | --              | Declarative data source. When set, the accordion renders the items for you; the default slot is ignored. Items can still be slotted for advanced use cases — choose one approach per instance. | `AccordionItemDescriptor[] \| undefined` | `undefined`  |
+| `label`        | `label`         | Accessible name forwarded to `aria-label` on the host (paired with `role="group"`). Use when the surrounding heading is not adjacent.                                                          | `string \| undefined`                    | `undefined`  |
+| `mode`         | `mode`          | Coordination mode. - `multiple` (default) — items expand/collapse independently - `single` — opening one item collapses the others                                                             | `"multiple" \| "single"`                 | `'multiple'` |
+| `size`         | `size`          | Size rung forwarded to every child item. Independent of `breakpoint` (responsive); set explicitly when you need a compact accordion regardless of viewport. Mirrors the legacy `size` prop.    | `"md" \| "sm"`                           | `'md'`       |
 
 
 ## Events
 
-| Event                 | Description                                                                                                                                                                                                   | Type                                              |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| `mudAccordionItemKey` | Emitted on Arrow/Home/End keypress on the header. Consumed by the parent `mud-accordion` to implement WAI-ARIA Accordion Pattern traversal. Internal contract — consumers typically don't subscribe directly. | `CustomEvent<{ key: string; itemId: string; }>`   |
-| `mudToggle`           | Emitted when the user activates the header (click / Enter / Space). The parent `mud-accordion` may cancel the implicit toggle in `mode="single"` to enforce exclusivity.                                      | `CustomEvent<{ open: boolean; itemId: string; }>` |
-
-
-## Methods
-
-### `focusHeader() => Promise<void>`
-
-Returns the focusable header element so the parent can implement the
-Arrow/Home/End traversal contract from WAI-ARIA Accordion Pattern.
-
-#### Returns
-
-Type: `Promise<void>`
-
-
-
-### `setOpen(open: boolean) => Promise<void>`
-
-Programmatically toggle the item. Bypasses the click pipeline so the
-parent `mud-accordion` does not receive a `mudToggle` event — used by
-the parent itself to coordinate `mode="single"` exclusivity.
-
-#### Parameters
-
-| Name   | Type      | Description |
-| ------ | --------- | ----------- |
-| `open` | `boolean` |             |
-
-#### Returns
-
-Type: `Promise<void>`
-
-
+| Event       | Description                            | Type                                  |
+| ----------- | -------------------------------------- | ------------------------------------- |
+| `mudChange` | Emitted whenever the open set changes. | `CustomEvent<{ openIds: string[]; }>` |
 
 
 ## Slots
 
-| Slot           | Description                                                                                                                          |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-|                | (default) Panel body. Rendered only when the item is open.                                                                           |
-| `"heading"`    | Optional rich heading content. Overrides the `heading` prop.                                                                         |
-| `"icon-start"` | Optional leading icon (`mud-icon` recommended).                                                                                      |
-| `"supporting"` | Optional supporting text. Overrides the `supportingText` prop.                                                                       |
-| `"trailing"`   | Optional trailing content (`mud-badge`, `mud-button`, label).             Sits between the heading group and the open/close trigger. |
-
-
-## Shadow Parts
-
-| Part       | Description                          |
-| ---------- | ------------------------------------ |
-| `"header"` | The button that toggles open/closed. |
-| `"panel"`  | The region revealed when open.       |
+| Slot | Description                                  |
+| ---- | -------------------------------------------- |
+|      | One or more `<mud-accordion-item>` elements. |
 
 
 ## Dependencies
 
-### Used by
+### Depends on
 
- - [mud-accordion](.)
+- [mud-accordion-item](../mud-accordion-item)
 
 ### Graph
 ```mermaid
 graph TD;
   mud-accordion --> mud-accordion-item
-  style mud-accordion-item fill:#f9f,stroke:#333,stroke-width:4px
+  style mud-accordion fill:#f9f,stroke:#333,stroke-width:4px
 ```
 
 ----------------------------------------------
