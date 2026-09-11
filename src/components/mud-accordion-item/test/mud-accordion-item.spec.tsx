@@ -227,38 +227,53 @@ describe('mud-accordion-item', () => {
         </button>
       </mud-accordion-item>,
     );
-    const el = root!.querySelector('#prop')! as HTMLButtonElement;
-    // A non-reflecting custom element is the real case; a native button is the
-    // reachable stand-in, since setting the property here reflects nothing back
-    // that the component reads other than `.disabled`.
+    const el = root!.querySelector('#prop')!;
+    // A non-reflecting custom element is the real case — React 19 sets unknown
+    // props on custom elements as properties. A native button with the accessor
+    // shadowed is the reachable stand-in.
     el.removeAttribute('disabled');
     Object.defineProperty(el, 'disabled', { value: true, configurable: true });
 
     (root as HTMLElement).setAttribute('disabled', '');
     await waitForChanges();
+
+    // Asserted MID-CYCLE, and that is the whole point: the guard's entire effect
+    // is that it declines to WRITE. Checking `el.disabled` after a full cycle
+    // passes either way, because the shadowed accessor never reads the attribute
+    // — verified by deleting the guard and watching that version stay green.
+    expect(el.hasAttribute('disabled')).toBe(false);
+
     (root as HTMLElement).removeAttribute('disabled');
     await waitForChanges();
-
     expect((el as { disabled?: unknown }).disabled).toBe(true);
   });
 
-  it('gives the attribute back to a control unslotted while the item is disabled', async () => {
+  it('re-applies its writes when the item is reconnected while disabled', async () => {
     const { root, waitForChanges } = await render(
       <mud-accordion-item heading="Payment" disabled>
-        <button slot="trailing" id="leaver">
+        <button slot="trailing" id="ctl">
           Track
         </button>
       </mud-accordion-item>,
     );
-    const leaver = root!.querySelector('#leaver')!;
-    expect(leaver.hasAttribute('disabled')).toBe(true);
+    const host = root as HTMLElement;
+    const ctl = root!.querySelector('#ctl')!;
+    expect(ctl.hasAttribute('disabled')).toBe(true);
 
-    // The consumer moves it out of the header. It is theirs, and it must not
-    // leave carrying an attribute this component wrote.
-    leaver.remove();
-    root!.shadowRoot!.querySelector('slot[name="trailing"]')!.dispatchEvent(new Event('slotchange'));
+    // `disconnectedCallback` hands everything back — correct, the writes live in
+    // DOM that outlives the instance. The risk is the return trip: Stencil does
+    // not re-run `componentDidLoad` on a second connect, and `disabled` never
+    // changed, so nothing else would re-apply them.
+    const parent = host.parentNode!;
+    parent.removeChild(host);
     await waitForChanges();
-    expect(leaver.hasAttribute('disabled')).toBe(false);
+    expect(ctl.hasAttribute('disabled')).toBe(false);
+    expect(ctl.hasAttribute('tabindex')).toBe(false);
+
+    parent.appendChild(host);
+    await waitForChanges();
+    expect(ctl.hasAttribute('disabled')).toBe(true);
+    expect(ctl.getAttribute('tabindex')).toBe('-1');
   });
 
   it('disables a control slotted in while the item is already disabled', async () => {

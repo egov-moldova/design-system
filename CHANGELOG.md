@@ -36,6 +36,11 @@ control would stay Tab-reachable and Enter-activatable while assistive technolog
 told it was unavailable. The stylesheet also keeps `pointer-events: none` on assigned
 elements.
 
+**One small addition.** While the item is disabled, `.trailing` takes the header's
+own disabled colour, so a plain `<span slot="trailing">label</span>` greys with the
+rest of the row instead of staying at full contrast. It is scoped to the disabled
+state only — your trailing content's colour is untouched in every other state.
+
 **What is not covered, stated plainly.** A control NESTED inside a slotted wrapper
 gets no attribute and no `tabindex`; it is blocked from the mouse only if it does not
 set its own `pointer-events`, and it stays keyboard-reachable. `mud-tag` and
@@ -43,6 +48,12 @@ set its own `pointer-events`, and it stays keyboard-reachable. `mud-tag` and
 no disabled design — unchanged from 1.0.6. And this state is a UX affordance, not an
 authorization boundary: an action that must not be reachable while the item is
 disabled needs its own guard, and server-side enforcement if it is security-sensitive.
+
+The `pointer-events` guard is deliberately not overridable — measured, a declaration
+in this component's shadow tree wins even against an inline `!important` on your own
+element. If you have a legitimate affordance that must stay clickable under a disabled
+item (an "unlock", a "why is this disabled?" trigger), open an issue rather than
+fighting the cascade; there is no escape hatch today.
 
 ### Changed — public API surface (breaking for deep imports)
 

@@ -93,6 +93,11 @@
  * That is a deliberate exception to the usual rule against `!important`, not an
  * specificity convenience.
  *
+ * `AGENTS.md:92` rule 9 (dual selectors) is deliberately NOT applied here. The
+ * `heading` and `supporting` slots do render fallback content, but it is a bare
+ * text node — never a hit target — so a direct-child arm would add two selectors
+ * and change nothing observable.
+ *
  * No `opacity` and no `filter`, deliberately. Each slotted control renders its
  * own disabled tokens now; a second dim on top of that was measured at 1.23:1
  * contrast, and `filter` makes every slotted header element a containing block
@@ -212,12 +217,19 @@
   display: none;
   flex-shrink: 0;
   align-items: center;
-  /* Same move `.icon-start` already makes: give slotted content an inherited
-     colour to follow, so a plain `<span slot="trailing">label</span>` greys with
-     the rest of a disabled header instead of staying at full contrast. It does
-     NOT reach a component that paints its own surface — `mud-tag` and
-     `mud-badge` have no disabled design, which is their own issue, not this
-     rule's. */
+}
+
+/* Give slotted content an inherited colour to follow while the item is
+   disabled, so a plain `<span slot="trailing">label</span>` greys with the rest
+   of the header instead of staying at full contrast. It does NOT reach a
+   component that paints its own surface — `mud-tag` and `mud-badge` have no
+   disabled design (issue #21).
+
+   Scoped to `:host([disabled])` deliberately. Unscoped, this inherits
+   `--_trigger-color`, which `:host([open])` and `:host([appearance='trail-sites'])`
+   redefine — so it would repaint trailing content in the ENABLED states too, and
+   flip it blue on every open/close, for every consumer already on 1.0.6. */
+:host([disabled]) .trailing {
   color: var(--_trigger-color);
 }
 

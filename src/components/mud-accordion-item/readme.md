@@ -13,12 +13,15 @@ Pattern B (atom-interactive): renders its own header `<button>` and a
 `<div role="region">` panel inside shadow DOM. The container manages
 exclusivity in `mode="single"`; the item owns its visual state.
 
-Disabled state and slotted content: while the item is disabled it sets
-`disabled` on the elements you place DIRECTLY in the `heading`, `supporting`
-and `trailing` slots, and it removes it again only from the elements it set it
-on. A control you ship already disabled stays disabled — the component keeps a
-record of its own writes rather than clearing the attribute wholesale, which is
-what used to re-enable your control behind your back (issue #17).
+Disabled state and slotted content, and the two halves reach different slots.
+While the item is disabled it sets `disabled` on the elements you place
+directly in the `trailing` slot — the one documented to carry controls — and
+`tabindex="-1"` on the elements you place directly in any of `heading`,
+`supporting` or `trailing`. Both are given back when the item is enabled again,
+and only to the elements it wrote them on: a control you ship already disabled
+stays disabled, and a `tabindex` you authored comes back verbatim. The
+component keeps a record of its own writes rather than clearing wholesale,
+which is what used to re-enable your control behind your back (issue #17).
 
 Two limits, both deliberate, because `disabled` is an attribute and not a
 force field:

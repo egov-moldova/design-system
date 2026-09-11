@@ -47,12 +47,15 @@ const restoreTabindex = (el: Element, previous: string | null) => {
  * `<div role="region">` panel inside shadow DOM. The container manages
  * exclusivity in `mode="single"`; the item owns its visual state.
  *
- * Disabled state and slotted content: while the item is disabled it sets
- * `disabled` on the elements you place DIRECTLY in the `heading`, `supporting`
- * and `trailing` slots, and it removes it again only from the elements it set it
- * on. A control you ship already disabled stays disabled — the component keeps a
- * record of its own writes rather than clearing the attribute wholesale, which is
- * what used to re-enable your control behind your back (issue #17).
+ * Disabled state and slotted content, and the two halves reach different slots.
+ * While the item is disabled it sets `disabled` on the elements you place
+ * directly in the `trailing` slot — the one documented to carry controls — and
+ * `tabindex="-1"` on the elements you place directly in any of `heading`,
+ * `supporting` or `trailing`. Both are given back when the item is enabled again,
+ * and only to the elements it wrote them on: a control you ship already disabled
+ * stays disabled, and a `tabindex` you authored comes back verbatim. The
+ * component keeps a record of its own writes rather than clearing wholesale,
+ * which is what used to re-enable your control behind your back (issue #17).
  *
  * Two limits, both deliberate, because `disabled` is an attribute and not a
  * force field:
@@ -236,6 +239,18 @@ export class MudAccordionItem {
   }
 
   connectedCallback() {
+    // Re-acquire, and this is the other half of `disconnectedCallback`'s release.
+    // Measured against the installed runtime (@stencil/core 4.43.4): a second
+    // connect takes the `else` branch at `internal/client/index.js:4011`, which
+    // fires `connectedCallback` but never `initializeComponent`, so
+    // `componentDidLoad` does not run again; `@Watch('disabled')` does not fire
+    // either, because the value never changed. Without this line an item moved
+    // with `appendChild` — a framework key change, a list reorder, a tab remount
+    // — comes back rendering `disabled` while every slotted control has lost
+    // both writes. It no-ops when the item is not disabled and returns early
+    // before the first render, when the shadow root and slots do not resolve.
+    this.syncSlottedDisabled();
+
     if (!this.itemId) {
       uidSeed += 1;
       this.itemId = `mud-accordion-item-${uidSeed}`;
