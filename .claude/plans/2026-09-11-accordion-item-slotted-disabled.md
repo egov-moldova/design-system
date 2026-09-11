@@ -1,39 +1,40 @@
-# mud-accordion-item — Stop Writing `disabled` Into Slotted Content Implementation Plan
+# mud-accordion-item — Stop Clobbering the Consumer's `disabled` Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** `mud-accordion-item` stops writing the `disabled` attribute into slotted light DOM and expresses the disabled state of header content through its own stylesheet instead, so a consumer's independently disabled control is never silently re-enabled.
+**Goal:** `mud-accordion-item` keeps mirroring its own `disabled` onto the controls a consumer slots into its header, but takes back only what it itself wrote — so a control the consumer shipped already `disabled` is never silently re-enabled.
 
-**Architecture:** Delete `propagateSummaryDisabled` and its two call sites. Replace it with two mechanisms, both inside the component's own shadow DOM. (1) A `:host([disabled]) slot[name='…']::slotted(*)` rule — scoped to the same three header slots the deleted method covered — carrying a token-driven `opacity`/`filter` dim and `pointer-events: none !important`. (2) `inert` on the shadow wrapper that hosts the `trailing` slot, because a disabled native `<button>` does **not** disable its flat-tree slotted descendants: measured, they stay focusable, Tab-reachable and Enter-activatable, so CSS alone would ship a keyboard regression. The consumer's DOM is never mutated by either, so the ownership collision that produced issue #17 becomes unrepresentable rather than compensated for.
+**Architecture:** Option A′. Replace the unconditional subtree walk with a bookkeeping sync: on disable, write `disabled` onto the elements DIRECTLY assigned to the `heading` / `supporting` / `trailing` slots, skipping any that already carry it, and record the ones written in a `Set`; on enable, remove `disabled` from exactly that recorded set and clear it. Elements the consumer disabled never enter the set and are therefore never touched. The sync is additionally wired to the three `slotchange` handlers, which the previous implementation lacked, so content that arrives while the item is already disabled is covered. One `::slotted(*)` rule with `pointer-events: none` remains as a mouse net for controls nested inside a slotted wrapper, which the narrowed write deliberately no longer reaches.
 
-**Tech Stack:** Stencil 4.x (shadow DOM, `@Watch`), Vitest browser project via `@storybook/addon-vitest` + Playwright/Chromium, Storybook 9 CSF3 with `@storybook/web-components-vite`, 3-tier CSS custom-property tokens.
+**Tech Stack:** Stencil 4.x (shadow DOM, `@Watch`, `componentDidLoad`), Vitest `spec` project (mock-doc) via `yarn test.dev`, Vitest `storybook` project (Playwright/Chromium) via `yarn test.storybook`, Storybook 9 CSF3.
 
 **Spec:** https://github.com/egov-moldova/design-system/issues/17 — plus the `### Options` table and `## Decision` section below, which record the contract gate the issue names but deliberately leaves open.
 
-**Reviewed:** preflight c0addf0 critic c0addf0 critic c0addf0 — FORTIFY, RETHINK, FORTIFY across three rounds; 15 above-bar findings, all folded in below
+**Reviewed:** preflight 175b5b1 preflight 175b5b1 preflight 175b5b1 — three preflight legs over THIS revision: leg 1 FORTIFY (2 findings), leg 2 CONFIRM (0), then a closing leg over the fortified text RETHINK (3 findings, all in the fortification itself — an inert discriminator in bar row 9, a bar-row-4 citation pointing at a proof that did not exist, and a numbering slip). All five findings are folded in below and the closing leg's two above-bar ones were re-measured against a captured `yarn test.storybook` run rather than re-argued. No fourth round: every finding landed in text this plan's own revision authored, which is where a review loop starts charging rent on its own prose. Three earlier rounds at c0addf0 (preflight, critic, critic) graded a DIFFERENT decision — option C, "never write the attribute" — which was implemented, failed the merge gate, and is replaced here.
 
 ## The problem
 
-`mud-accordion-item.propagateSummaryDisabled` (`mud-accordion-item.tsx:232`) writes
-`disabled` onto every element assigned to the `heading`, `supporting` and `trailing`
-slots *and onto all of their descendants*, then removes it unconditionally when the
-item is re-enabled. It therefore cannot tell the attributes it set from the ones the
-consumer authored, so a control the consumer shipped as `<mud-button slot="trailing"
-disabled>` comes back enabled the moment the item's own `disabled` goes false — with
-no event and no warning. The symptom this plan removes is that silent loss of
-consumer state; the cause it removes is the component writing into a cell it does not
-own.
+`mud-accordion-item.propagateSummaryDisabled` wrote `disabled` onto every element
+assigned to the `heading`, `supporting` and `trailing` slots *and onto all of their
+descendants*, then removed it unconditionally when the item was re-enabled. It
+therefore could not tell the attributes it set from the ones the consumer authored,
+so a control shipped as `<mud-button slot="trailing" disabled>` came back enabled the
+moment the item's own `disabled` went false — with no event and no warning.
+
+The cause is not that the component writes the attribute. It is that it writes
+without evidence: it has no record of what it wrote, so on the way back it guesses,
+and the guess is "everything". The fix is the record.
 
 ## Global Constraints
 
-- Base branch is `main` at `c0addf0`. The issue's claim that `src/components/mud-accordion-item/` exists only on `fix/issue-6-8-accordion-item-docs` is stale: that branch merged as PR #19. Work on `fix/issue-17-accordion-item-slotted-disabled`.
+- Base branch is `main` at `c0addf0`. Work on `fix/issue-17-accordion-item-slotted-disabled`.
 - Every authored file is English — code, comments, JSDoc, commit messages.
 - Do not touch `src/legacy/cor-accordion/cor-accordion.tsx:92`. It carries the same bug, is archived, is not shipped, and has no test lane of its own.
 - Do not touch the three existing `disabled` spec tests (`src/components/mud-accordion-item/test/mud-accordion-item.spec.tsx:8`, `:46`, `:83`). They must keep passing unchanged.
 - No rebase from PR #13 (`feature/92077-refactor-components`) — it touches no accordion file.
-- Delete the untracked scratch repro `web-components/demo/pages/navigation/_issue17-repro.html` before the final commit. It must not enter the branch.
-- New design values are authored as tokens, per `AGENTS.md:85` ("Token-First: Design tokens are the single source of truth — never hardcode values in CSS"). An earlier draft of this plan claimed `mud-accordion-item.css:39` and `:50` establish a literal-fallback house style; they do not — both fall back to **another token** (`var(--accordion-item-gap-sm, var(--spacing-8))`). The one literal-fallback in the tree is `src/legacy/cor-banner-notification/cor-banner-notification.css:14`, which is legacy and out of scope. Task 1 therefore authors a real token.
-- `readme.md` is fully generated below `<!-- Auto Generated Below -->`; never hand-edit it. Prose reaches it through the class-level JSDoc plus `yarn build` (which runs `stencil build --docs`).
+- Issue #9 will sweep JSDoc across `mud-accordion-item.tsx`. This plan edits the class-level doc block; say so in the PR.
+- `readme.md` is fully generated below `<!-- Auto Generated Below -->`; never hand-edit it. Prose reaches it through the class-level JSDoc plus `yarn build`.
+- `@part header` is a published contract on 1.0.6 and does not move.
 
 ---
 
@@ -43,632 +44,491 @@ own.
 
 | Option | Complexity added now | Cost to build | Cost to maintain | Cost to reverse | Risk | Value |
 | --- | --- | --- | --- | --- | --- | --- |
-| **A′** — write `disabled` only on directly assigned elements, remember what we wrote (`WeakSet`), plus a `::slotted` pointer-events guard | med — introduces a bookkeeping concept (which elements are "ours") that did not exist | med — 3 files | med — the bookkeeping must stay correct across re-slotting and disconnection | high — publishes an attribute-writing contract consumers can build on, and unwinding it later is a breaking change | Residual window survives: a consumer who sets `disabled` on a slotted control *while the item is already disabled* still loses it, because both writers share one cell | Each slotted MUD control keeps rendering its own exact disabled tokens |
-| **B** — keep the subtree walk, add the same bookkeeping | med — same bookkeeping concept, applied wider | med — 3 files | high — subtree walk on every change (the current JSDoc already calls it "heavy-handed") plus bookkeeping | high — same published contract, over a wider surface | Same residual window, now spread across the whole flattened subtree; keeps claiming DOM the consumer never handed over | Nothing visible changes except the bug disappearing — lowest churn on shipped `1.0.6` |
-| **C** — never write the attribute; express the state in the component's own stylesheet | low — no new concept; CSS in our own shadow root plus one component token in the house fallback style | low — 2 files + 1 story | low — no runtime state at all | low — a CSS rule and a deleted method | Slotted `mud-button` / `mud-link` / `mud-chip` lose their own disabled tokens; mitigated by `grayscale(1)`, and `forced-colors` must be handled explicitly or the state is invisible in high contrast | The ownership collision becomes unrepresentable; `mud-tag` and `mud-badge` — which have zero `disabled` support and are exactly what this repo's own stories and demo slot into `trailing` — gain a disabled signal they never had |
+| **A′** ← chosen — write `disabled` only on directly assigned elements, remember exactly what was written | low — one `Set` field and one method, replacing a method that already existed | low — 4 files | low — the set is written and cleared in one place, and its lifetime is one disabled period | low — the public surface is unchanged from shipped 1.0.6; nothing new is published to unwind | A control NESTED inside a slotted wrapper no longer receives the attribute, and keyboard reach into it is not closed | The consumer's `disabled` survives; every slotted control keeps rendering its own exact disabled tokens; slotted form controls stay excluded from submission and validation |
+| **B** — keep the subtree walk, add the same bookkeeping | med — the same bookkeeping, applied to DOM the consumer never handed to a slot | low — 4 files | high — subtree walk on every change (the old JSDoc already called it "heavy-handed"), and the set grows with the subtree | low | Keeps claiming DOM that was never slotted, which is the overreach behind #17's second half | Nothing regresses for nested controls |
+| **C** — never write the attribute; express the state in the component's own stylesheet | low — no runtime state at all | low — 2 files + 1 story | low | high — publishes a visual treatment and a token consumers build on | Slotted controls lose their own disabled tokens; a dimmed-but-not-disabled control was measured at 1.23:1 contrast; `filter` makes each slotted element a containing block; slotted form controls re-enter form submission | The ownership collision becomes unrepresentable |
 
-**Recommendation: C.** The defect is the ownership claim itself, not the absence of bookkeeping; A′ and B both simulate a union (`child.disabled |= item.disabled`) by writing into the consumer's cell and remembering, which leaves a residual window no bookkeeping can close, while C obtains the union structurally by never writing at all.
+**Recommendation: A′,** and this reverses the recommendation the three earlier review
+rounds graded. C was implemented and then failed the merge gate on five counts —
+contrast, form participation, `filter` creating a containing block for `position:
+fixed` descendants, fallback-vs-slotted divergence against `AGENTS.md:92` rule 9, and
+no guard in a lane CI actually runs. Four of those five are structural to "dim from
+outside"; none of them exists under A′, which writes an attribute each control already
+knows how to render and which the `spec` lane — the one CI runs — can assert.
 
 Two further options were raised and are not in the table:
 
-- **D — a second, container-owned cell** (`container-disabled` attribute honoured by each slottable `mud-*`, reusing the pattern `mud-button` already documents at `mud-button.tsx:167-174`: *"Mirrors the disabled state into `fieldsetDisabled` so the control becomes inert without clobbering the consumer-set `disabled` prop"*). Deferred, not scheduled: it is a cross-cutting contract across the design system, it cannot cover non-MUD slotted DOM, and `mud-tag`/`mud-badge` would first need a disabled design that does not exist. Building it now would be paying against a guess about the future.
-- **E — delegate appearance to the consumer.** Already available with no component code: `mud-accordion-item[disabled] [slot="trailing"] { … }` works from the consumer's own stylesheet, verified live in Chromium (rule applies while the host carries `disabled`, retracts when it does not). Rejected as the *default* because only the design system holds the disabled tokens, contrast pairs and dark-mode values, and because `pointer-events` and `forced-colors` are correctness rather than taste and must not be delegatable. C leaves the door to E open through the opacity token.
+- **D — a second, container-owned cell** (`container-disabled` honoured by each slottable `mud-*`, reusing the pattern `mud-button` documents at `mud-button.tsx:167-174`). Deferred: a cross-cutting contract across the design system that cannot cover non-MUD slotted DOM, and `mud-tag`/`mud-badge` would first need a disabled design that does not exist. Building it now would be paying against a guess about the future.
+- **F — render the `trailing` slot as a SIBLING of the header `<button>` rather than a child.** Interactive content inside a `<button>` is invalid HTML, and it is why the platform's own guards behave inconsistently here. Real, and out of scope: it changes the header's accessible name, the Tab order and the published `@part header` shape. It does NOT invalidate A′ — the sync resolves its slots through `shadowRoot.querySelector('slot[name=…]')` and `assignedElements()`, neither of which depends on where the slot is rendered. Opened as its own issue.
 
 ### Measured facts this decision rests on
 
 All measured in Chromium through Playwright against the running demo, not recalled:
 
 1. **The bug.** Item `disabled` → enabled strips a consumer-authored `disabled` from a slotted `mud-button`.
-2. **The subtree claim is real.** A native `<button>` nested inside `<div slot="trailing">` — never handed to the component — also receives `disabled`.
-3. **A disabled native `<button>` ancestor does NOT block mouse clicks on its descendants.** With the item disabled and the slotted button carrying no `disabled`, a real click reached it. Re-adding `disabled` stopped it. So the propagated attribute is today's only interaction guard, and removing it *requires* replacing it — `pointer-events: none` is not optional polish.
-4. **The disabled header button does NOT close keyboard reach** — and an earlier reading of this session's own probe said it did. That reading was confounded: `focus()` was called immediately after removing `disabled` from the slotted `mud-button`, and Stencil re-renders asynchronously, so its inner `<button>` still carried `disabled` and refused focus for its own reason. Re-measured after a settle (`innerDisabled: false`): focus lands (`document.activeElement` → `MUD-BUTTON`, `shadowRoot.activeElement` → `BUTTON`) and activation fires. `disabled` does not propagate across the flat tree — only `<fieldset>` propagates, and only down the DOM tree (fact 5). **So the propagated attribute is today's only keyboard guard, and removing it without a replacement is a WCAG regression against shipped 1.0.6.**
-
-4b. **`inert` on the shadow wrapper closes it, measured on the real component.** With `span.trailing` (`mud-accordion-item.tsx:319`) inert: focus on the slotted control is refused (the previous element keeps it), and `document.elementFromPoint` over the control returns `MUD-ACCORDION-ITEM` rather than the control. The second half also closes the descendant hole — `::slotted(*)` matches only directly assigned elements, and a descendant setting its own `pointer-events` wins over the inherited `none`; that is real in this repo at `src/components/mud-avatar/mud-avatar.css:143`. `::slotted` cannot be followed by a descendant combinator, so CSS alone cannot reach it.
-
-4c. **`forced-colors: active` preserves both `opacity` and `pointer-events`.** Measured with the media genuinely emulated (`matchMedia('(forced-colors: active)').matches === true`): the slotted control computes `opacity: 0.48` and `pointer-events: none`, identical to normal mode. An earlier draft of this plan carried a `forced-colors` block that reset `opacity` to `1` and set `color: GrayText`; both were wrong — the reset would have removed the only working signal, and `GrayText` is inherited `color`, which every slottable MUD control overrides in its own shadow root (`mud-button.css:244`, `mud-tag.css:32`). The block is not in this plan.
-5. **A `<fieldset disabled>` inside the item's shadow root does not reach slotted light-DOM elements** — form association follows the DOM tree, not the flat tree — so `mud-button`'s existing `formDisabledCallback` mechanism cannot be reused across the boundary.
-6. **`mud-tag` and `mud-badge` have zero `disabled` support** (0 occurrences across `.tsx` and `.css`). Today's propagation writes a dead attribute onto exactly the elements this repo's own stories (`mud-accordion.stories.ts:186`) and demo (`web-components/demo/pages/navigation/mud-accordion.html:46`) put in `trailing`.
+2. **The subtree claim is real.** A native `<button>` nested inside `<div slot="trailing">` — never handed to the component — also received `disabled`.
+3. **A disabled native `<button>` ancestor does NOT block mouse clicks on its flat-tree slotted descendants.** A real click reached a slotted control carrying no `disabled` of its own. This is why the `pointer-events` net is kept for the nested case, and why removing the attribute entirely (option C) required replacing it.
+4. **It does not block focus either.** An earlier reading of this session's own probe said it did; that reading was confounded by Stencil's async re-render. Re-measured after a settle: focus lands and activation fires. `disabled` does not propagate across the flat tree — only `<fieldset>` propagates, and only down the DOM tree (fact 5).
+5. **A `<fieldset disabled>` inside the item's shadow root does not reach slotted light-DOM elements** — form association follows the DOM tree, not the flat tree — so `mud-button`'s `formDisabledCallback` cannot be reused across the boundary.
+6. **`mud-tag` and `mud-badge` have zero `disabled` support** (0 occurrences across `.tsx` and `.css`). The attribute A′ writes onto them is inert: they look identical to today under a disabled item. That is not a regression against shipped 1.0.6 — it is exactly today's behaviour — but it is less than option C showed, and it is recorded in § Not Verified rather than claimed as covered.
+7. **mock-doc implements `assignedElements`** (`node_modules/@stencil/core/mock-doc/index.js:8260`). Issue #17's claim that the bug is "unreachable from the `spec` project by construction" is false: a probe of the exact shape in Task 2 Step 1 FAILED under `yarn test.dev` before the fix, with `after re-enable, authored keeps disabled: false`. The `spec` lane is therefore the primary guard, and it is the lane CI runs (`.github/workflows/ci.yml:250`).
+8. **`yarn test.storybook` is blocked repo-wide, before this branch, and it never reaches the test phase.** Run on this branch and the output captured: it dies inside `vite:dep-pre-bundle` with `"./dist/components/<component>.js" is not exported under the conditions ["storybook", …] from … react/node_modules/@egov-moldova/mud`, naming **57 distinct components** — the entire library, `mud-accordion-item.js` included. Cause: `react/src/index.ts` imports paths the narrowed `exports` map no longer exposes. Three properties of that output are what bar row 9 grades against, and all three were read off the captured run rather than assumed: the output contains **no `Test Files` or `Tests` summary line at all** (the run never reaches the test phase, so zero stories execute); it names **no `.stories.ts` file**; and the failure is identical on `mud-checkbox.stories.ts`, which this branch does not touch. It deserves its own issue and is not fixed here.
+9. **mock-doc does not auto-dispatch `slotchange` on `appendChild`, but the handler wiring is still assertable.** Probed with a throwaway spec file against the real component: after `root.appendChild(el)` and `waitForChanges()`, a listener on the trailing `<slot>` counted `fired=0` while `slot.assignedElements()` correctly returned `1`. Dispatching `slotchange` by hand then reached the JSX-bound handler and the component reacted — `.trailing` gained `has-content`. So the `slotchange` call site added in Task 1 Step 4 IS covered in the `spec` lane, provided the test emits the event rather than waiting for mock-doc to. The probe file was deleted.
 
 ### Deviation from the issue's literal acceptance bar
 
-Issue #17's bar item 2 reads: *"a slotted control with no `disabled` of its own is disabled while the item is, and enabled again after."* Under C no attribute is ever written, so that wording cannot hold literally. It is restated in observable terms, which is what the bar was reaching for: **non-interactive and visibly muted while the item is disabled, interactive and normal again after.** Task 1's `play` function asserts exactly that.
+None. Issue #17's bar items 1 and 2 both describe attribute observations, and A′ keeps
+writing the attribute, so both hold literally.
+
+Bar item 4 — "the gate decision is written where the next reader finds it" — is met by
+the class-level JSDoc (which generates `readme.md`) plus `CHANGELOG.md`.
+
+Bar item 3 has two halves and they part company. "The three existing spec tests are
+untouched" holds — bar row 6. "`yarn test.storybook` passes" does NOT, and this is the
+one hard literal requirement of issue #17 this plan does not meet. It is not met because
+it is not currently meetable by anyone: the lane is broken repo-wide, before this branch,
+on a cause that has nothing to do with the accordion (measured fact 8). Bar row 9 grades
+it by that evidence rather than waiving it.
+
+Bar item 7 asks for the regression test in the browser project. That story is written
+(Task 3) in the established `play`-function shape, **but it cannot be executed on this
+branch** — same cause, measured fact 8. The contract it asserts is also asserted in the
+`spec` lane, which does run, and which is where the defect was actually reproduced.
 
 ### Consumer-visible behaviour change
 
-`disabled` will stop appearing on slotted elements. Consumers whose own CSS keys on `mud-button[disabled]` inside an accordion header, or who query `[slot="trailing"][disabled]`, will see that stop. This is the point of the fix, not a side effect, and it must reach the component docs (Task 3 Step 1) AND the repo's `CHANGELOG.md` (Task 3 Step 2) — not only the commit message. `CHANGELOG.md` exists at the repo root and carries an `## Unreleased` section with prose `### Changed — …` subsections; that is the entry's home. There is no `.changeset/` directory and no release tooling that would generate one, so the entry is written by hand.
+Two, both narrower than what option C would have shipped:
+
+1. `disabled` stops appearing on DESCENDANTS of slotted elements. A consumer who wrapped a control in `<div slot="trailing">` and relied on the walk reaching it loses that. Put the control directly in the slot.
+2. A consumer's own `disabled` on a slotted control now survives the item's disable/enable cycle. That is the fix.
 
 ---
 
 ## File Structure
 
-- `src/components/mud-accordion-item/mud-accordion-item.tsx` — remove the propagation method, its `componentDidLoad` call site, and its `@Watch` call site; extend the class-level JSDoc with the ownership contract and the new custom property.
-- `src/components/mud-accordion-item/mud-accordion-item.css` — add the `:host([disabled]) slot[name='…']::slotted(*)` rule. No `forced-colors` counterpart — see the Decision section; the block was measured unnecessary and actively harmful, and must not be re-added here.
-- `src/components/mud-accordion-item/test/mud-accordion-item.spec.tsx` — add ONE new `it()` covering the attribute contract (bar rows 1 and 3). The three existing tests are not touched.
-- `src/components/mud-accordion-item/mud-accordion-item.stories.ts` — add one hidden regression story with a `play` function, covering the half the spec lane cannot see: computed style, hit-testing and focus.
-
-**The lane split, corrected against a measurement.** Issue #17 states the bug is "unreachable from the `spec` project by construction", and an earlier draft of this plan repeated it. **Both are false.** `@stencil/core`'s mock-doc implements `assignedElements` (`node_modules/@stencil/core/mock-doc/index.js:8260`), so the propagation really runs there. Probed by inserting a temporary `it()` into the real spec file and running `yarn test.dev`: it FAILED today with `after re-enable, authored keeps disabled: false` — the exact issue-#17 symptom, in the fast lane. The probe was reverted; the test it proved belongs in Task 1 Step 1b.
-
-So the attribute contract — the actual defect — gets a deterministic guard that needs no browser, and the browser story carries only what mock-doc genuinely cannot render: `getComputedStyle`, `elementFromPoint` and `inert`.
+- `src/components/mud-accordion-item/mud-accordion-item.tsx` — restore a narrowed, bookkeeping propagation method and wire it to `@Watch('disabled')`, `componentDidLoad` and the three `slotchange` handlers; remove `inert` from the trailing wrapper; rewrite the class-level JSDoc contract paragraph.
+- `src/components/mud-accordion-item/mud-accordion-item.css` — replace the dim block with a single `pointer-events: none` rule, no `!important`, no `opacity`, no `filter`.
+- `tokens/core/components/accordion.tokens.json` — remove `item.slottedOpacity`, which loses its only consumer.
+- `src/components/mud-accordion-item/test/mud-accordion-item.spec.tsx` — rewrite the one new `it()` to assert the A′ contract. The three protected tests are not touched.
+- `src/components/mud-accordion-item/mud-accordion-item.stories.ts` — shrink `SlottedDisabledContract` to the A′ contract plus the one thing mock-doc cannot see (hit-testing a nested control).
+- `src/components/mud-accordion/mud-accordion.stories.ts` — retarget the `Disabled` story's contract section at A′.
 - `src/components/mud-accordion-item/readme.md` — regenerated, never hand-edited.
+- `CHANGELOG.md` — rewrite the `## Unreleased` subsection for A′.
 
-Single phase, three sequential tasks — no per-phase execution matrix applies.
+Single phase, four sequential tasks — no per-phase execution matrix applies.
 
 ---
 
-### Task 1: Failing regression story in the browser lane
+### Task 1: Narrow the propagation and give it a memory
 
 **Files:**
-- Modify: `src/components/mud-accordion-item/mud-accordion-item.stories.ts` (append after `States`, which ends at `:128`)
+- Modify: `src/components/mud-accordion-item/mud-accordion-item.tsx`
 
 **Interfaces:**
-- Consumes: the existing `wrapperStyle` const (`mud-accordion-item.stories.ts:15`) and the file's `Story` type alias.
-- Produces: `SlottedDisabledContract` — a `Story` export consumed by nothing but the `storybook` vitest project.
+- Produces: `private syncSlottedDisabled(): void` and `private ownedDisabled: Set<Element>`, consumed by `watchDisabled`, `componentDidLoad` and the three `slotchange` handlers in the same file. Nothing outside the class sees either.
 
-- [ ] **Step 1: Write the failing story**
+- [ ] **Step 1: Add the module-level slot list**
 
-Append to `src/components/mud-accordion-item/mud-accordion-item.stories.ts`:
+Above the class, beside `let uidSeed = 0;`:
 
 ```ts
-// Regression test, not documentation — hidden from the sidebar and autodocs, the
-// same shape mud-checkbox uses for its own browser-only contract tests. This covers
-// the half of issue #17 that mock-doc genuinely cannot render: computed style for the
-// dim, `elementFromPoint` for the pointer guard, and focus for `inert`. The attribute
-// contract itself IS observable under mock-doc and is pinned in the spec file instead.
-export const SlottedDisabledContract: Story = {
-  tags: ['!autodocs', '!dev'],
-  render: () => /*html*/ `
-    <div style="${wrapperStyle}">
-      <button id="parking" type="button">focus parking</button>
-      <mud-accordion mode="multiple">
-        <mud-accordion-item id="authored-disabled" heading="Payment" disabled>
-          <mud-button id="retry" slot="trailing" variant="secondary" size="sm" disabled>Retry</mud-button>
-          Panel body.
-        </mud-accordion-item>
-        <mud-accordion-item id="authored-enabled" disabled>
-          <span id="head-slot" slot="heading">Shipping</span>
-          <span id="sup-slot" slot="supporting">Tracking unavailable</span>
-          <mud-button id="track" slot="trailing" variant="secondary" size="sm">Track</mud-button>
-          <div slot="trailing"><button id="nested" type="button" style="pointer-events: auto">Nested</button></div>
-          Panel body.
-        </mud-accordion-item>
-      </mud-accordion>
-    </div>
-  `,
-  parameters: {
-    controls: { disable: true },
-    docs: { disable: true },
-  },
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-    const find = (id: string): HTMLElement => {
-      const el = canvasElement.querySelector<HTMLElement>(`#${id}`);
-      if (!el) throw new Error(`#${id} did not render`);
-      return el;
-    };
-    // Several frames, not one: `inert` is applied in render(), and Stencil re-renders
-    // asynchronously. A single frame was measured to read the PREVIOUS render's state,
-    // which is how this session first concluded — wrongly — that focus was already blocked.
-    const settle = async () => {
-      for (let i = 0; i < 6; i += 1) await new Promise<void>(r => requestAnimationFrame(() => r()));
-    };
-
-    await customElements.whenDefined('mud-accordion-item');
-    await customElements.whenDefined('mud-button');
-    await settle();
-
-    const authoredDisabled = find('authored-disabled');
-    const authoredEnabled = find('authored-enabled');
-    const retry = find('retry');
-    const track = find('track');
-    // The guard is a three-clause selector list. Cover every clause: a typo in the
-    // `heading` or `supporting` arm would otherwise ship green against a bar that
-    // says "a slotted control" without naming a slot.
-    const slotted = [
-      ['heading', find('head-slot')],
-      ['supporting', find('sup-slot')],
-      ['trailing', track],
-    ] as const;
-
-    // 1. The component never writes into the consumer's cell — in either direction.
-    if (!retry.hasAttribute('disabled')) {
-      throw new Error('slotted control authored `disabled` lost it while the item was disabled');
-    }
-    if (track.hasAttribute('disabled')) {
-      throw new Error('component wrote `disabled` onto a slotted control the consumer left enabled');
-    }
-
-    // 2. While the item is disabled, slotted content is non-interactive. Measured:
-    //    a disabled native <button> ancestor does NOT block mouse clicks on its
-    //    descendants, so this asserts the CSS guard, not a platform freebie.
-    // 3. ...and visibly muted. Both, for every slot the guard names.
-    for (const [name, el] of slotted) {
-      if (getComputedStyle(el).pointerEvents !== 'none') {
-        throw new Error(`slot="${name}" content is still pointer-interactive while the item is disabled`);
-      }
-      if (Number(getComputedStyle(el).opacity) >= 1) {
-        throw new Error(`slot="${name}" content is not visually muted while the item is disabled`);
-      }
-    }
-
-    // 3b. The guard is a mechanism, not a request: an inline style must not defeat it.
-    track.style.pointerEvents = 'auto';
-    if (getComputedStyle(track).pointerEvents !== 'none') {
-      throw new Error('an inline `pointer-events` on the slotted control defeated the guard');
-    }
-    track.style.removeProperty('pointer-events');
-
-    // 3c. KEYBOARD. The shape CSS cannot close: a disabled native <button> does not
-    //     disable its flat-tree slotted descendants, so without `inert` this focuses.
-    const nested = find('nested');
-    // Park focus on a real focusable element OUTSIDE the accordion. Two traps this avoids:
-    // `mud-accordion-item` carries no tabindex, so focusing the item is a no-op and
-    // `activeElement` falls to <body>, which would let the check below pass without
-    // proving focus was REFUSED rather than merely moved; and anything inside a
-    // `trailing` slot is itself inert after the fix, so it cannot hold focus either.
-    const parking = find('parking');
-    parking.focus();
-    if (document.activeElement !== parking) {
-      throw new Error('could not park focus — the keyboard assertion below would be vacuous');
-    }
-    nested.focus();
-    if (document.activeElement !== parking) {
-      throw new Error('a slotted control is keyboard-focusable while the item is disabled');
-    }
-
-    // 3d. DESCENDANT. `::slotted(*)` matches only the assigned element; this button is a
-    //     descendant of a slotted wrapper AND sets its own `pointer-events: auto`, so the
-    //     stylesheet loses here and only `inert` wins. Hit-testing is the observable.
-    //     `scrollIntoView` first and a non-null check second, both load-bearing:
-    //     `elementFromPoint` returns null for any point outside the viewport, so a
-    //     bare `hit !== nested` passes vacuously when the fixture sits below the fold.
-    const hitTest = (el: HTMLElement) => {
-      el.scrollIntoView({ block: 'center' });
-      const box = el.getBoundingClientRect();
-      return document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
-    };
-    const blockedHit = hitTest(nested);
-    if (blockedHit === null) {
-      throw new Error('hit-test point fell outside the viewport — the assertion would pass vacuously');
-    }
-    if (blockedHit !== authoredEnabled) {
-      throw new Error(
-        `expected the inert wrapper to hand hit-testing to the item host, got ${blockedHit?.tagName}`,
-      );
-    }
-
-    // 4. Enabling the item restores interactivity and appearance, and STILL does
-    //    not touch the consumer's cell — this is the exact transition issue #17 broke.
-    authoredDisabled.removeAttribute('disabled');
-    authoredEnabled.removeAttribute('disabled');
-    await settle();
-
-    if (!retry.hasAttribute('disabled')) {
-      throw new Error('re-enabling the item stripped the consumer-authored `disabled` (issue #17)');
-    }
-    for (const [name, el] of slotted) {
-      if (getComputedStyle(el).pointerEvents === 'none') {
-        throw new Error(`slot="${name}" content stayed pointer-blocked after the item was enabled`);
-      }
-      if (Number(getComputedStyle(el).opacity) < 1) {
-        throw new Error(`slot="${name}" content stayed muted after the item was enabled`);
-      }
-    }
-    // ...and the keyboard comes back with it. This is the assertion that catches an
-    // `inert` left permanently on, which would be a worse bug than the one being fixed.
-    parking.focus();
-    nested.focus();
-    if (document.activeElement !== nested) {
-      throw new Error('a slotted control stayed keyboard-unreachable after the item was enabled');
-    }
-    // The mirror of 3d. Without it, 3d proves nothing: a guard that never lifts would
-    // satisfy the disabled-side check forever.
-    if (hitTest(nested) !== nested) {
-      throw new Error('a slotted descendant stayed hit-test-blocked after the item was enabled');
-    }
-  },
-};
+/**
+ * The header slots whose directly assigned elements mirror the item's own
+ * `disabled`. The panel's default slot is deliberately absent: its content is
+ * hidden when closed and is not part of the header's interactive row.
+ */
+const SUMMARY_SLOTS = ['heading', 'supporting', 'trailing'] as const;
 ```
 
-- [ ] **Step 1b: Write the failing spec test**
+- [ ] **Step 2: Add the bookkeeping field**
 
-Append to `src/components/mud-accordion-item/test/mud-accordion-item.spec.tsx`, after the existing `auto-collapses when transitioned to disabled while open` test (`:83`). The three existing tests are not edited.
+As the first private member of the class, above the `@State()` declarations:
+
+```ts
+  /**
+   * The elements this component wrote `disabled` onto, so re-enabling gives back
+   * exactly what was taken. An element that already carried `disabled` when the
+   * item was disabled never enters this set and is never touched — that is the
+   * whole of issue #17.
+   *
+   * Populated on disable and cleared on enable, so it holds references only for
+   * as long as the item is disabled.
+   */
+  private ownedDisabled = new Set<Element>();
+```
+
+- [ ] **Step 3: Add the sync method**
+
+Directly above `private slotHasContent`:
+
+```ts
+  /**
+   * Mirror the item's `disabled` onto the elements directly assigned to the
+   * header slots, recording what was written so it can be taken back precisely.
+   *
+   * Directly assigned ONLY. The previous implementation walked the whole
+   * assigned subtree, which wrote into DOM the consumer never handed to a slot;
+   * a control nested inside a slotted wrapper is not covered here, by design —
+   * put controls directly in the slot.
+   *
+   * No-op before the first render, and in any environment without the slot API.
+   */
+  private syncSlottedDisabled() {
+    if (!this.disabled) {
+      for (const el of this.ownedDisabled) el.removeAttribute('disabled');
+      this.ownedDisabled.clear();
+      return;
+    }
+    const root = this.host.shadowRoot;
+    if (!root) return;
+    for (const name of SUMMARY_SLOTS) {
+      const slot = root.querySelector<HTMLSlotElement>(`slot[name="${name}"]`);
+      if (typeof slot?.assignedElements !== 'function') continue;
+      for (const el of slot.assignedElements({ flatten: true })) {
+        // Already disabled: either the consumer's own value, or ours from a
+        // previous pass. Either way there is nothing to write and nothing to
+        // record — a consumer value must never enter the set.
+        if (el.hasAttribute('disabled')) continue;
+        el.setAttribute('disabled', '');
+        this.ownedDisabled.add(el);
+      }
+    }
+  }
+```
+
+Note the enable branch runs BEFORE the `shadowRoot` guard, deliberately: giving back
+what was taken must not depend on the slots still resolving.
+
+- [ ] **Step 4: Wire the three call sites**
+
+Extend the existing `@Watch('disabled')` handler:
+
+```ts
+  @Watch('disabled')
+  watchDisabled(next: boolean) {
+    if (next && this.open) {
+      this.open = false;
+    }
+    this.syncSlottedDisabled();
+  }
+```
+
+Add `componentDidLoad`, immediately after `connectedCallback` — an item that renders
+with `disabled` already set fires no `@Watch`:
+
+```ts
+  componentDidLoad() {
+    this.syncSlottedDisabled();
+  }
+```
+
+And append the call to each of the three header `slotchange` handlers, e.g.:
+
+```ts
+  private onHeadingSlotChange = (ev: Event) => {
+    this.hasHeadingSlot = this.slotHasContent(ev);
+    this.syncSlottedDisabled();
+  };
+```
+
+Same for `onSupportingSlotChange` and `onTrailingSlotChange`. NOT
+`onIconStartSlotChange` — `icon-start` is not in `SUMMARY_SLOTS` and never was.
+
+This is the one behavioural addition over the pre-fix code: content slotted in while
+the item is already disabled used to stay enabled.
+
+- [ ] **Step 5: Remove `inert` from the trailing wrapper**
+
+In `render()`, restore the wrapper to its shipped shape and delete the comment block
+above it that explains `inert`:
 
 ```tsx
-  it('never writes `disabled` onto slotted content, in either direction (issue #17)', async () => {
+          <span class={{ 'trailing': true, 'has-content': this.hasTrailing }}>
+```
+
+The attribute now carries the keyboard guard for directly slotted controls, so `inert`
+buys nothing and costs accessibility-tree surface.
+
+- [ ] **Step 6: Rewrite the class-level JSDoc contract paragraph**
+
+Replace the whole "Disabled state and slotted content" / "Three slots, two mechanisms" /
+"Override the dim's opacity" block with:
+
+```
+ * Disabled state and slotted content: while the item is disabled it sets
+ * `disabled` on the elements you place DIRECTLY in the `heading`, `supporting`
+ * and `trailing` slots, and it removes it again only from the elements it set it
+ * on. A control you ship already disabled stays disabled — the component keeps a
+ * record of its own writes rather than clearing the attribute wholesale, which is
+ * what used to re-enable your control behind your back (issue #17).
+ *
+ * Directly slotted elements only. A control nested inside a slotted wrapper
+ * (`<div slot="trailing"><button>`) receives nothing: the component does not claim
+ * DOM that was never handed to a slot. Such a control is blocked from the mouse by
+ * a `pointer-events` rule in this component's stylesheet, but it stays
+ * keyboard-reachable while the item is disabled. Put controls directly in the slot.
+```
+
+Also drop `Made inert while the item is disabled — see the note above.` from the
+`@slot trailing` tag, replacing it with
+`Disabled along with the item while directly slotted.`
+
+Keep the paragraph in the untagged block above `@element`: Stencil concatenates
+untagged prose into the PRECEDING tag's description, which the comment at
+`mud-accordion-item.tsx:11-13` records happening before.
+
+- [ ] **Step 7: Typecheck**
+
+Run: `yarn typecheck`
+Expected: clean. A wireit output-tracking race can fail this once under concurrent
+builds; re-run before investigating.
+
+- [ ] **Step 8: Commit**
+
+```bash
+git add src/components/mud-accordion-item/mud-accordion-item.tsx
+git commit -F - <<'EOF'
+fix(accordion-item): take back only the `disabled` it wrote
+
+<body>
+EOF
+```
+
+---
+
+### Task 2: Replace the stylesheet guard and drop the token
+
+**Files:**
+- Modify: `src/components/mud-accordion-item/mud-accordion-item.css:73-106`
+- Modify: `tokens/core/components/accordion.tokens.json:109-111`
+
+- [ ] **Step 1: Replace the dim block**
+
+Delete the block at `mud-accordion-item.css:73-106` in full — comment, `opacity`,
+`filter` and the `!important` — and put this in its place:
+
+```css
+/* Mouse net for what the attribute deliberately does not reach.
+ *
+ * `disabled` is written onto the elements DIRECTLY assigned to these three slots
+ * (see the TSX), which is where controls belong. A control NESTED inside a
+ * slotted wrapper gets no attribute, and a disabled native <button> ancestor does
+ * not block clicks on its flat-tree slotted descendants — measured in Chromium.
+ * This line closes that hole for the mouse. It does not close it for the
+ * keyboard; CSS cannot, and `::slotted` cannot be followed by a descendant
+ * combinator to reach the nested control directly.
+ *
+ * No `!important`: the attribute carries the contract, this is a net. A consumer
+ * who re-enables pointer events on their own element is deciding about their own
+ * DOM, and nothing here should overrule that. */
+:host([disabled]) slot[name='heading']::slotted(*),
+:host([disabled]) slot[name='supporting']::slotted(*),
+:host([disabled]) slot[name='trailing']::slotted(*) {
+  pointer-events: none;
+}
+```
+
+No `opacity` and no `filter`, deliberately: each slotted control renders its own
+disabled tokens now, a second dim on top of that was measured at 1.23:1 contrast, and
+`filter` makes every slotted header element a containing block for `position: fixed`
+descendants.
+
+- [ ] **Step 2: Remove the token**
+
+Delete the three lines at `tokens/core/components/accordion.tokens.json:109-111`
+(`"slottedOpacity": { "disabled": … },`). It has no consumer after Step 1, and a token
+with no consumer is a published value nobody can change safely.
+
+- [ ] **Step 3: Rebuild tokens and prove it is gone**
+
+Run: `yarn tokens.build && grep -c 'accordion-item-slotted-opacity' tokens/generated/core.tokens.css`
+Expected: `0` (grep exits 1; that is the pass).
+
+`tokens/generated/` is gitignored (`.gitignore:7`) — do not try to stage it.
+
+- [ ] **Step 4: Lint**
+
+Run: `yarn lint`
+Expected: clean.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add src/components/mud-accordion-item/mud-accordion-item.css tokens/core/components/accordion.tokens.json
+git commit -F - <<'EOF'
+style(accordion-item): keep only the pointer net, drop the outside dim
+
+<body>
+EOF
+```
+
+---
+
+### Task 3: Pin the contract in both lanes
+
+**Files:**
+- Modify: `src/components/mud-accordion-item/test/mud-accordion-item.spec.tsx:116-140`
+- Modify: `src/components/mud-accordion-item/mud-accordion-item.stories.ts`
+- Modify: `src/components/mud-accordion/mud-accordion.stories.ts`
+
+- [ ] **Step 1: Rewrite the spec test to the A′ contract**
+
+Replace the `it('never writes \`disabled\` onto slotted content…')` block added by
+commit `f6399e8` with:
+
+```tsx
+  it('takes back only the `disabled` it wrote (issue #17)', async () => {
     const { root, waitForChanges } = await render(
       <mud-accordion-item heading="Payment" disabled>
         <button slot="trailing" id="authored" disabled>
           Retry
         </button>
-        <button slot="trailing" id="untouched">
+        <button slot="trailing" id="ours">
           Track
         </button>
+        <div slot="trailing" id="wrapper">
+          <button id="nested">Nested</button>
+        </div>
       </mud-accordion-item>,
     );
     const authored = root!.querySelector('#authored')!;
-    const untouched = root!.querySelector('#untouched')!;
+    const ours = root!.querySelector('#ours')!;
+    const nested = root!.querySelector('#nested')!;
 
-    // The consumer authored one and not the other. The component owns neither.
+    // While disabled: the component's own write lands on the element it was
+    // handed, and nowhere else.
+    expect(ours.hasAttribute('disabled')).toBe(true);
     expect(authored.hasAttribute('disabled')).toBe(true);
-    expect(untouched.hasAttribute('disabled')).toBe(false);
+    expect(nested.hasAttribute('disabled')).toBe(false);
 
     (root as HTMLElement).removeAttribute('disabled');
     await waitForChanges();
 
-    // The transition that issue #17 broke: the authored one must survive it.
+    // After re-enable: it gives back exactly what it took.
+    expect(ours.hasAttribute('disabled')).toBe(false);
     expect(authored.hasAttribute('disabled')).toBe(true);
-    expect(untouched.hasAttribute('disabled')).toBe(false);
   });
 ```
 
-- [ ] **Step 1c: Run the spec lane to verify it fails**
+The `#authored` assertion after re-enable is the regression guard: it fails on `main`.
+
+- [ ] **Step 2: Add a second spec test for the slotchange path**
+
+Immediately after it — this covers the behaviour the pre-fix code did not have, so it
+needs its own row. The explicit `dispatchEvent` is not a convenience: measured fact 9
+records that mock-doc does not fire `slotchange` on `appendChild` while a real browser
+does, so this is the shape that tests the handler wiring in the lane CI runs.
+
+```tsx
+  it('disables a control slotted in while the item is already disabled', async () => {
+    const { root, waitForChanges } = await render(
+      <mud-accordion-item heading="Payment" disabled></mud-accordion-item>,
+    );
+    const late = document.createElement('button');
+    late.setAttribute('slot', 'trailing');
+    root!.appendChild(late);
+    // mock-doc does not fire `slotchange` on appendChild the way a browser does,
+    // but a dispatched one reaches the JSX-bound handler. Emitting it here tests
+    // the wiring; the browser story covers the native firing.
+    root!.shadowRoot!.querySelector('slot[name="trailing"]')!.dispatchEvent(new Event('slotchange'));
+    await waitForChanges();
+    expect(late.hasAttribute('disabled')).toBe(true);
+
+    (root as HTMLElement).removeAttribute('disabled');
+    await waitForChanges();
+    expect(late.hasAttribute('disabled')).toBe(false);
+  });
+```
+
+If this still fails at the first assertion, do not delete it and do not weaken it:
+say so in the completion report, move the coverage to the browser story in Step 3, and
+record it in § Not Verified. A test that cannot run is honest; a test rewritten until it
+passes is not.
+
+- [ ] **Step 3: Shrink `SlottedDisabledContract`**
+
+Rewrite the hidden story added by commit `f6399e8`/`175b5b1` to assert exactly four
+things, dropping every opacity, grayscale, contrast and inline-`!important` assertion,
+which have no referent now:
+
+1. While the item is disabled, `#authored` and `#ours` both carry `disabled`, `#nested` does not.
+2. `document.elementFromPoint` over `#nested` does not return `#nested` — the `pointer-events` net holds for a descendant of a slotted wrapper.
+3. After the item is re-enabled, `#authored` still carries `disabled` and `#ours` does not.
+4. A `mud-button` slotted into `trailing` with no `disabled` of its own is not focusable while the item is disabled, and is focusable again after — driven through the six-frame `settle()` helper already in the file, because Stencil re-renders asynchronously and a one-frame check measures the wrong state.
+5. A control appended to `trailing` WHILE the item is already disabled receives `disabled` — with no manual `dispatchEvent`. This is the assertion bar row 4 cites, and it is the only place the NATIVE `slotchange` firing is exercised: measured fact 9 records that mock-doc does not fire it, so the `spec` lane's version of this test emits the event by hand and this one must not.
+
+Keep the `['!autodocs', '!dev']` tags and the `play` shape from commit `4962bae` on
+`mud-checkbox.stories.ts`.
+
+- [ ] **Step 4: Retarget the `Disabled` docs story**
+
+In `src/components/mud-accordion/mud-accordion.stories.ts`, the contract section added
+to `renderDisabled` and its `docsSourceDisabled` copy describe the C treatment. Rewrite
+both for A′: the visible point is that `#authored-disabled` is still disabled after the
+toggle, and `#retry` is enabled again.
+
+- [ ] **Step 5: Run the spec lane**
 
 Run: `yarn test.dev`
+Expected: all pass, including the three protected `disabled` tests unchanged.
 
-Expected: FAIL. Today `componentDidLoad` propagates at load, so `#untouched` gains `disabled` and the second assertion breaks first; after the re-enable, `#authored` loses its own and the fourth breaks too. Measured before this plan was written: a probe of this exact shape returned `after re-enable, authored keeps disabled: false`.
+- [ ] **Step 6: Prove the guard actually guards**
 
-- [ ] **Step 2: Run the story to verify it fails**
+Run: `git stash push src/components/mud-accordion-item/mud-accordion-item.tsx && yarn test.dev; git stash pop`
+Expected: the two new tests FAIL with the component reverted, then pass again after the
+pop. A guard nobody has seen fail is not known to be a guard.
 
-Run: `yarn test.storybook`
+Note this is the main session running `git stash`, not a dispatched leg.
 
-Expected: FAIL on `SlottedDisabledContract`. The FIRST throw today is assertion 1's second clause — `component wrote 'disabled' onto a slotted control the consumer left enabled` — because `componentDidLoad` (`mud-accordion-item.tsx:155-157`) propagates at load, before the play function runs.
-
-Do NOT expect the pointer clause to pass today. `mud-button` scopes `pointer-events: none` to `.control` INSIDE its own shadow root (`mud-button.css:343-348`); the host's computed `pointer-events` stays `auto` even with `disabled` set, and `#head-slot`/`#sup-slot` are plain `<span>`s on which `disabled` means nothing at all. So once the attribute write is removed, the loop's first failure is `slot="heading" content is still pointer-interactive` — and that is the stronger reason to keep the clause: nothing on the platform provides it today, so the guard is not redundant with anything.
-
-- [ ] **Step 3: Commit the failing test**
+- [ ] **Step 7: Commit**
 
 ```bash
-git add src/components/mud-accordion-item/mud-accordion-item.stories.ts src/components/mud-accordion-item/test/mud-accordion-item.spec.tsx
+git add src/components/mud-accordion-item/test/mud-accordion-item.spec.tsx src/components/mud-accordion-item/mud-accordion-item.stories.ts src/components/mud-accordion/mud-accordion.stories.ts
 git commit -F - <<'EOF'
-test(accordion-item): pin the slotted `disabled` ownership contract
+test(accordion-item): pin the narrowed `disabled` contract in both lanes
 
-Two lanes, because the defect has two halves. The attribute contract — the
-actual bug — is observable under mock-doc: its `assignedElements` is real, so
-the propagation runs there and a spec test sees the re-enable strip the
-consumer's own `disabled`. The other half needs a browser: computed style for
-the dim, `elementFromPoint` for the pointer guard, and focus for `inert`.
-
-Both fail today. Refs #17.
+<body>
 EOF
 ```
 
 ---
 
-### Task 2: Remove the propagation, add the stylesheet guard
+### Task 4: Say what changed, where the next reader looks
 
 **Files:**
-- Modify: `tokens/core/components/accordion.tokens.json` (add one entry under `accordion.item`)
-- Modify: `src/components/mud-accordion-item/mud-accordion-item.tsx:143`, `:155-157`, `:223-248` (the propagation block: JSDoc opens at `:223`, the method closes at `:248` — an earlier draft said `:224-256`, which missed the JSDoc's first line and overshot into `render()`), `:319` (the `trailing` wrapper)
-- Modify: `src/components/mud-accordion-item/mud-accordion-item.css:67-71` (append after this block). Note the file already carries two `::slotted` rules — `:133` scoped to `icon-start`, `:250` a global `margin-block` reset. Neither sets any property this task sets, so there is no cascade interaction.
+- Modify: `src/components/mud-accordion-item/readme.md` (generated)
+- Modify: `CHANGELOG.md:3-35`
 
-**Interfaces:**
-- Consumes: nothing from Task 1 beyond the story it must now satisfy.
-- Produces: removal of the private method `propagateSummaryDisabled(disabled: boolean): void` and of the `componentDidLoad()` lifecycle hook. No public API changes — no prop, event, method or part is added or removed.
-
-- [ ] **Step 1: Author the component token**
-
-In `tokens/core/components/accordion.tokens.json`, add one entry under `accordion.item`,
-alongside the existing `*Color.disabled` entries. Shape matches the file's own precedent for a
-unitless number — `tokens/core/components/tooltip.tokens.json:53` authors `"opacity": { "$value": "0.72", "$type": "number" }`:
-
-```json
-"slottedOpacity": {
-  "disabled": { "$value": "0.5", "$type": "number" }
-}
-```
-
-`0.5` and not something finer: it is what Shoelace's `sl-details` — the direct analog of an
-accordion item — uses to dim its whole disabled header including slotted summary content, it
-is a round half rather than a tuned constant, and combined with `grayscale(1)` it was rendered
-side by side against real `[disabled]` tokens and read as disabled. The repo's only other
-disabled-opacity token is `--service-button-disabled-badge-opacity: 0.3`, which dims a small
-badge, not a whole header region.
-
-`tokens/core.dark/components/` carries no accordion file, so no dark counterpart is owed: a
-unitless opacity is theme-independent, unlike the `{color.text.disabled.default}` references
-beside it.
-
-- [ ] **Step 2: Build the tokens and confirm the variable exists**
-
-Run: `yarn tokens.build`
-
-Expected: `tokens/generated/core.tokens.css` gains `--accordion-item-slotted-opacity-disabled: 0.5;`.
-Confirm with `grep -n 'accordion-item-slotted-opacity-disabled' tokens/generated/core.tokens.css`;
-an empty result means the nesting under `accordion.item` is wrong and the CSS in Step 6 would
-silently compute `opacity: 1`, which the browser lane would catch but only after a full run.
-
-- [ ] **Step 3: Delete the propagation call from the watcher**
-
-In `src/components/mud-accordion-item/mud-accordion-item.tsx`, replace:
-
-```ts
-  @Watch('disabled')
-  watchDisabled(next: boolean) {
-    if (next && this.open) {
-      this.open = false;
-    }
-    this.propagateSummaryDisabled(next);
-  }
-```
-
-with:
-
-```ts
-  @Watch('disabled')
-  watchDisabled(next: boolean) {
-    if (next && this.open) {
-      this.open = false;
-    }
-  }
-```
-
-- [ ] **Step 4: Delete the `componentDidLoad` hook**
-
-Its entire body was the propagation call, so the hook goes with it. Remove:
-
-```ts
-  componentDidLoad() {
-    this.propagateSummaryDisabled(this.disabled);
-  }
-```
-
-- [ ] **Step 5: Delete the propagation method**
-
-Remove the whole block — the JSDoc and the method — from `this.propagateSummaryDisabled`'s definition:
-
-```ts
-  /**
-   * Mirror the item's `disabled` state onto every element currently slotted
-   * into `heading` / `supporting` / `trailing` slots. Legacy parity — when
-   * the consumer's slotted control (e.g. `mud-button`) supports a `disabled`
-   * attribute, it stays in sync with the accordion's own disabled state.
-   *
-   * NOTE: heavy-handed — walks the assigned subtree on every change. Only
-   * runs in browser env (no-op when shadowRoot / slot APIs are missing).
-   */
-  private propagateSummaryDisabled(disabled: boolean) {
-    const root = this.host.shadowRoot;
-    if (!root) return;
-    const slots = ['heading', 'supporting', 'trailing']
-      .map(name => root.querySelector<HTMLSlotElement>(`slot[name="${name}"]`))
-      .filter((s): s is HTMLSlotElement => !!s);
-    for (const slot of slots) {
-      const assigned = slot.assignedElements({ flatten: true });
-      for (const el of assigned) {
-        const children = [el, ...Array.from(el.querySelectorAll('*'))] as HTMLElement[];
-        for (const child of children) {
-          if (disabled) child.setAttribute('disabled', '');
-          else child.removeAttribute('disabled');
-        }
-      }
-    }
-  }
-```
-
-- [ ] **Step 5b: Make the `trailing` wrapper inert while the item is disabled**
-
-In `render()`, the wrapper at `src/components/mud-accordion-item/mud-accordion-item.tsx:319`. Replace:
-
-```tsx
-          <span class={{ 'trailing': true, 'has-content': this.hasTrailing }}>
-            <slot name="trailing" onSlotchange={this.onTrailingSlotChange} />
-          </span>
-```
-
-with:
-
-```tsx
-          {/* `inert`, not CSS, and only here. A disabled native <button> does not disable its
-              flat-tree slotted descendants — measured: they stay focusable, Tab-reachable and
-              Enter-activatable — so the stylesheet guard below closes the mouse but not the
-              keyboard. `inert` closes both, and also covers a descendant of a slotted wrapper
-              that sets its own `pointer-events` (real in this repo at mud-avatar.css:143),
-              which `::slotted` cannot reach because it takes no descendant combinator.
-              Scoped to `trailing` because that is the slot documented to carry controls;
-              `heading` and `supporting` are documented for text and keep the CSS guard only. */}
-          <span class={{ 'trailing': true, 'has-content': this.hasTrailing }} inert={isDisabled}>
-            <slot name="trailing" onSlotchange={this.onTrailingSlotChange} />
-          </span>
-```
-
-`isDisabled` is already in scope — it is bound at `:251` and used on the header button at `:292`.
-
-If Stencil's JSX typings do not carry `inert` on an intrinsic `span`, `yarn lint` at Step 9 will
-say so; the narrow fix is `{...{ inert: isDisabled }}` rather than widening the element's type.
-
-- [ ] **Step 6: Add the stylesheet guard**
-
-In `src/components/mud-accordion-item/mud-accordion-item.css`, append immediately after the existing `:host([disabled])` block (`:67-71` — selector at `:67`, three declarations, closing brace at `:71`):
-
-```css
-/* Slotted header content under a disabled item.
- *
- * The component deliberately writes nothing onto slotted elements — `disabled`
- * is the consumer's cell, and writing into it is what made an independently
- * disabled control silently come back enabled (issue #17). The state is
- * expressed here instead, in our own stylesheet, where it cannot collide.
- *
- * `pointer-events` is correctness, not polish: a disabled native `<button>`
- * ancestor blocks FOCUS on its descendants but not mouse clicks, so without
- * this line a slotted control stays clickable inside a disabled header.
- *
- * Scoped to the three slots the deleted propagation covered, deliberately: a
- * bare `::slotted(*)` would also catch the default panel slot and `icon-start`,
- * widening the change beyond the defect. `icon-start` needs nothing — it already
- * follows the header's `currentcolor` through the rule at the top of this file.
- *
- * The opacity is a component token so a consumer who wants their own treatment
- * can neutralise it and style `mud-accordion-item[disabled] [slot]` from their
- * own stylesheet. The pointer-events guard is not neutralisable, by design —
- * `!important` is what makes that true rather than merely stated. Keyboard reach
- * is closed separately, by `inert` on the trailing wrapper in the TSX: CSS cannot
- * close it, and a disabled ancestor button does not close it either. */
-:host([disabled]) slot[name='heading']::slotted(*),
-:host([disabled]) slot[name='supporting']::slotted(*),
-:host([disabled]) slot[name='trailing']::slotted(*) {
-  opacity: var(--accordion-item-slotted-opacity-disabled);
-  filter: grayscale(1);
-  /* `!important` on this line only, and it is load-bearing. Measured in Chromium:
-   * a plain `::slotted` declaration LOSES to an inline `style="pointer-events:auto"`
-   * on the slotted element (computed `auto`); with `!important` it wins (`none`),
-   * and it still wins against an inline `!important` (`none`). Without it the
-   * inertness guard is defeatable by any consumer, which is exactly the
-   * delegatable failure option E was rejected for. The opacity above is
-   * deliberately NOT important — that one is meant to be overridable. */
-  pointer-events: none !important;
-}
-
-/* No `forced-colors` block, deliberately. Measured with the media emulated
- * (`matchMedia('(forced-colors: active)').matches === true`): `opacity` and
- * `pointer-events` both survive unchanged, so the dim keeps working. An earlier
- * draft carried a block that reset `opacity` to `1` and set `color: GrayText`;
- * it would have REMOVED the only working signal, and `GrayText` is inherited
- * `color`, which every slottable MUD control overrides in its own shadow root
- * (`mud-button.css:244`, `mud-tag.css:32`) — so it could not have reached them. */
-```
-
-- [ ] **Step 7: Run the browser lane to verify it passes**
-
-Run: `yarn test.storybook`
-
-Expected: PASS, `SlottedDisabledContract` included.
-
-- [ ] **Step 8: Run the spec lane to verify the three existing tests are untouched**
-
-Run: `yarn test.dev`
-
-Expected: PASS. Specifically `reflects open and disabled to the host`, `does not toggle when disabled`, and `auto-collapses when transitioned to disabled while open` all still pass — none of them observed the propagation, and the auto-collapse behaviour lives in `watchDisabled`, which keeps its first statement.
-
-- [ ] **Step 9: Run lint**
-
-Run: `yarn lint`
-
-Expected: PASS. `@Element() host` may now be used only by `focusHeader`/`handleKeyDown`; confirm it still has at least one reader before assuming an unused-member warning is spurious.
-
-- [ ] **Step 10: Commit**
-
-```bash
-# `tokens/generated/` is gitignored (.gitignore:7) — staging it makes `git add` exit non-zero
-# and stage NOTHING. It is a build artifact, reproduced by `yarn tokens.build`.
-git add tokens/core/components/accordion.tokens.json src/components/mud-accordion-item/mud-accordion-item.tsx src/components/mud-accordion-item/mud-accordion-item.css
-git commit -F - <<'EOF'
-fix(accordion-item): stop writing `disabled` into slotted content
-
-The component walked the flattened subtree of the heading/supporting/trailing
-slots and set or removed `disabled` on every element, so it could not tell the
-attributes it had set from the ones the consumer authored. Re-enabling the item
-removed both, silently discarding the consumer's state.
-
-Express the state in the component's own shadow DOM instead: a `::slotted` dim
-plus `pointer-events: none !important` for the mouse, and `inert` on the trailing
-wrapper for the keyboard. Both are needed. Measured: a disabled native <button>
-does not disable its flat-tree slotted descendants, so without the CSS guard they
-stay clickable and without `inert` they stay focusable, Tab-reachable and
-Enter-activatable.
-
-Consumer-visible: `disabled` no longer appears on slotted elements.
-
-Closes #17.
-EOF
-```
-
----
-
-### Task 3: Document the contract where the next reader finds it
-
-**Files:**
-- Modify: `src/components/mud-accordion-item/mud-accordion-item.tsx:17-30` (class-level JSDoc block)
-- Modify: `CHANGELOG.md` (append a subsection under the existing `## Unreleased`)
-- Regenerate: `src/components/mud-accordion-item/readme.md`
-
-**Interfaces:**
-- Consumes: the behaviour shipped in Task 2.
-- Produces: prose only. No code contract changes.
-
-> **Note for issue #9:** this task edits the class-level JSDoc block of `mud-accordion-item.tsx`. Issue #9 plans a JSDoc sweep across the same file and will need to preserve or restate the paragraph added here.
-
-- [ ] **Step 1: Extend the class-level JSDoc**
-
-The paragraph goes in the **untagged** prose block at the top of the docblock — `src/components/mud-accordion-item/mud-accordion-item.tsx:17-21`, the block that opens `Accordion item — a single collapsible row inside \`mud-accordion\``. That block is what feeds the readme's Overview.
-
-**Not after `@slot trailing`.** Stencil concatenates untagged prose into the PRECEDING tag's description, so a paragraph placed there lands inside the generated Slots table cell — the file's own comment at `mud-accordion-item.tsx:12-13` records that this already happened once, to the `panel` shadow-part row. An earlier draft of this plan made exactly that mistake.
-
-Append to the untagged block, after the `Pattern B (atom-interactive)` paragraph and before `@element`:
-
-```ts
- *
- * Disabled state and slotted content: this component never writes `disabled`
- * onto elements you slot into it. That attribute is yours, and a component that
- * writes into it cannot tell your value from its own — which is how an
- * independently disabled control used to come back enabled when the item was
- * re-enabled (issue #17). While the item is disabled, slotted header content is
- * dimmed and made non-interactive from this component's own shadow DOM instead:
- * a `::slotted` rule for the mouse, and `inert` on the `trailing` wrapper for
- * the keyboard, because a disabled native `<button>` does not disable its
- * flat-tree slotted descendants. Override the dim with the
- * `--accordion-item-slotted-opacity-disabled` custom property (default `0.5`).
- * The non-interactivity is not overridable, by design.
-```
-
-And leave the `@slot trailing` tag as a one-line pointer:
-
-```ts
- * @slot trailing - Optional trailing content (`mud-badge`, `mud-button`, label).
- *                   Sits between the heading group and the open/close trigger.
- *                   Made inert while the item is disabled — see the note above.
-```
-
-- [ ] **Step 2: Add the changelog entry**
-
-Under the existing `## Unreleased` heading in `CHANGELOG.md`, append a new subsection in the file's established prose style:
-
-```markdown
-### Changed — `mud-accordion-item` no longer writes `disabled` onto slotted content
-
-While an item was disabled it used to set `disabled` on every element in its
-`heading`, `supporting` and `trailing` slots and on all of their descendants, and
-remove it again when the item was re-enabled. It could not distinguish the attributes
-it had set from the ones you authored, so a control you shipped as
-`<mud-button slot="trailing" disabled>` came back enabled with the item.
-
-The attribute is no longer written or removed. Your `disabled` is yours. While the
-item is disabled, slotted header content is made inert and muted from the component's
-own stylesheet instead.
-
-**What changes for you.** CSS or queries keyed on `disabled` appearing on slotted
-elements — `mud-button[disabled]` inside an accordion header,
-`[slot="trailing"][disabled]` — no longer match. Key on the item instead:
-`mud-accordion-item[disabled] [slot="trailing"]`, which works from your own stylesheet
-because both elements live in your tree.
-
-Override the dim with `--accordion-item-slotted-opacity-disabled` (default `0.5`).
-The non-interactivity is not overridable, by design.
-```
-
-- [ ] **Step 3: Regenerate the readme**
+- [ ] **Step 1: Regenerate the readme**
 
 Run: `yarn build`
+Expected: `readme.md`'s Overview carries the Task 1 Step 6 prose; `@slot trailing`
+no longer mentions `inert`.
 
-Expected: `src/components/mud-accordion-item/readme.md` picks up the new Overview prose below `<!-- Auto Generated Below -->`. Confirm with `git diff --stat src/components/mud-accordion-item/readme.md` that only that file changed among docs.
+- [ ] **Step 2: Rewrite the CHANGELOG subsection**
 
-- [ ] **Step 4: Remove the scratch repro page**
+Replace the `### Changed — \`mud-accordion-item\` no longer writes \`disabled\` onto
+slotted content` subsection in full. The new one says, in this order: the consumer's
+`disabled` now survives an item's disable/enable cycle; the attribute is still written,
+but only on directly slotted elements, so a control nested inside a slotted wrapper no
+longer receives it; that nested control is blocked from the mouse but not the keyboard;
+and `--accordion-item-slotted-opacity-disabled`, which existed only on this unreleased
+branch, is gone. Header wording names the narrowing, since that is the part that can
+break a consumer.
+
+- [ ] **Step 3: Confirm the scratch repro is not in the branch**
+
+Run: `git status --short -- web-components/`
+Expected: empty. (Not the bare form — the plan file is untracked and not ignored.)
+
+- [ ] **Step 4: Commit**
 
 ```bash
-rm -f web-components/demo/pages/navigation/_issue17-repro.html
-git status --short
-```
-
-Expected: no untracked files under `web-components/`.
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add src/components/mud-accordion-item/mud-accordion-item.tsx src/components/mud-accordion-item/readme.md CHANGELOG.md
+git add src/components/mud-accordion-item/readme.md CHANGELOG.md
 git commit -F - <<'EOF'
 docs(accordion-item): state who owns `disabled` on slotted content
 
-The decision behind the #17 fix belongs where the next reader hits it, not only
-in a commit message. Names the override token and says plainly that the
-inertness guard is not overridable.
+<body>
 EOF
 ```
 
@@ -676,31 +536,33 @@ EOF
 
 ## Acceptance bar
 
-Graded PASS/FAIL. A non-PASS names the responsible file and line.
+Graded PASS/WARN/FAIL. A non-PASS names the responsible file and line.
 
 | # | Assertion | How it is proven |
 | --- | --- | --- |
-| 1 | A slotted control that arrives already `disabled` still carries `disabled` after the item's own `disabled` goes true and back to false | `SlottedDisabledContract` assertion 4, browser lane |
-| 2 | A slotted control the consumer left enabled is non-interactive and visibly muted while the item is disabled, and interactive and normal again after | `SlottedDisabledContract` assertions 2, 3 and 4, browser lane |
-| 3 | The component writes nothing into the consumer's `disabled` cell, in either direction | `SlottedDisabledContract` assertion 1, browser lane |
-| 4 | `yarn test.storybook` passes | Task 2 Step 7 |
-| 5 | The three existing `disabled` spec tests pass, unmodified | Task 2 Step 8; `git diff` shows the spec file gained only the new `it()` from Task 1 Step 1b, and no change to the three protected tests |
-| 6 | `yarn lint` passes | Task 2 Step 9 |
-| 7 | The contract decision is readable from the component's own docs, not only the commit log | Task 3; `readme.md` Overview contains the paragraph |
-| 8 | The scratch repro page is not in the branch | Task 3 Step 4; `git status --short -- web-components/` is empty. NOT `git status --short` bare — the plan file itself is untracked and not ignored, so the bare form never returns clean and the row would fail with its intent fully met |
-| 9 | The consumer-visible removal is announced in `CHANGELOG.md` under `## Unreleased` | Task 3 Step 2; `git diff CHANGELOG.md` shows the new subsection |
-| 10 | The inertness guard survives an inline `pointer-events` on the slotted control | `SlottedDisabledContract` assertion 3b, browser lane |
-| 11 | The dim and pointer guard hold for all three slots they name, not only `trailing` | `SlottedDisabledContract` assertions 2/3 and 4, which loop over `heading`, `supporting` and `trailing` |
-| 12 | A control slotted into **`trailing`** is not keyboard-reachable while the item is disabled, and is again after | `SlottedDisabledContract` assertions 3c and 4's closing focus check. Deliberately scoped: `heading`/`supporting` carry the CSS guard only, and `pointer-events` does not affect focus, so an unqualified row would promise a WCAG guarantee this change does not deliver — see § Not Verified |
-| 13 | A descendant of a slotted wrapper that sets its own `pointer-events` is still not the hit-test target while disabled | `SlottedDisabledContract` assertion 3d |
-| 14 | `--accordion-item-slotted-opacity-disabled` is a real token, not a literal | Task 2 Step 2; `grep -n 'accordion-item-slotted-opacity-disabled' tokens/generated/core.tokens.css` is non-empty |
+| 1 | A slotted control that arrives already `disabled` still carries `disabled` after the item's own `disabled` goes true and back to false | Task 3 Step 1, assertion 5 (`spec` lane) and Step 3 assertion 3 (browser) |
+| 2 | A directly slotted control with no `disabled` of its own carries it while the item is disabled and not after | Task 3 Step 1, assertions 1 and 4 |
+| 3 | The component writes `disabled` on no element other than those directly assigned to the three header slots | Task 3 Step 1, assertion 3 (`#nested` stays clean) |
+| 4 | A control slotted in WHILE the item is already disabled receives `disabled` | Task 3 Step 2, whose explicit `dispatchEvent` is justified by measured fact 9. Native `slotchange` firing is covered by Task 3 Step 3 in the browser lane |
+| 5 | The two new tests fail with the component reverted | Task 3 Step 6 |
+| 6 | The three existing `disabled` spec tests pass, unmodified | `yarn test.dev` plus `git diff` showing no change to `mud-accordion-item.spec.tsx:8`, `:46`, `:83` |
+| 7 | `yarn test.dev` passes | Task 3 Step 5 |
+| 8 | `yarn lint` and `yarn typecheck` pass | Task 2 Step 4, Task 1 Step 7 |
+| 9 | `yarn test.storybook` fails for the pre-existing reason and no other | **Expected FAIL, pre-existing** — decided by two commands over one captured run, not by judgment. (a) `grep -cE '^[[:space:]]*(Test Files\|Tests)[[:space:]]' <output>` is `0` — the run never reaches the test phase, so no story of this branch's can be the cause; and (b) `grep -c '\.stories' <output>` is `0` — no failure names any story file. Either condition unmet → real FAIL, because a story this branch broke would have to either reach the test phase or be named. A keyword match on `accordion` is NOT the discriminator and was rejected: the pre-existing error text contains `mud-accordion.js` and `mud-accordion-item.js` itself (measured fact 8), so that grep is non-zero in exactly the case this row must pass |
+| 10 | No `!important` DECLARATION is introduced | `grep -cE '^[[:space:]]*[a-z-]+:.*!important' src/components/mud-accordion-item/mud-accordion-item.css` is `0`. The bare keyword grep is not the check — the rule's own comment says the words "No `!important`" and would fail its own bar |
+| 11 | `--accordion-item-slotted-opacity-disabled` exists nowhere | `grep -rn 'slotted-opacity\|slottedOpacity' src tokens` is empty |
+| 12 | `inert` appears nowhere in the component | `grep -c inert src/components/mud-accordion-item/mud-accordion-item.tsx` is `0` |
+| 13 | The contract is readable from the component's own docs | `readme.md` Overview carries the Task 1 Step 6 prose, and says the nested case is uncovered for the keyboard |
+| 14 | Both consumer-visible changes are announced in `CHANGELOG.md` under `## Unreleased` | Task 4 Step 2 |
+| 15 | The scratch repro page is not in the branch | Task 4 Step 3 |
 
 ## Not Verified By This Plan
 
-- **Dark mode.** The dim is opacity + grayscale over whatever the slotted component renders, so it follows the theme by construction, but no dark-mode screenshot is taken.
-- **Real high-contrast rendering on an actual OS.** No `forced-colors` block ships. The dim was measured to survive `forced-colors: active` under Playwright's media emulation, which is not the same as a real Windows High Contrast session; nobody has looked at it there.
-- **Non-Chromium browsers.** The browser project runs Chromium only (`vitest.config.mts:121`). `::slotted`, `pointer-events` and `inert` are all broadly supported, but nothing here measures Firefox or WebKit — and **`inert`'s propagation across the flat tree into slotted light DOM is the least-settled of the three and the one carrying the keyboard/WCAG guarantee.** Everything this plan knows about it is one Chromium measurement.
-- **Consumers in the wild.** Whether any consumer of `@egov-moldova/mud@1.0.6` actually depends on `disabled` appearing on slotted elements is unknown; the change is announced, not surveyed.
-- **The component loaded without the token stylesheet.** `opacity: var(--accordion-item-slotted-opacity-disabled)` carries no literal fallback, so a consumer who loads the bundle without `@egov-moldova/mud/tokens/core.tokens.css` gets an invalid declaration, `opacity: 1`, and `pointer-events: none` still applied — a control that looks normal and silently does nothing. A fallback was considered and NOT taken: the whole stylesheet is token-referencing with no fallbacks (`mud-accordion-item.css:58-64` is one of many such blocks), so that consumer's component is already fully unstyled — colours, spacing, type — and this rule is not where they would notice. Adding one literal here would buy nothing and would contradict `AGENTS.md:85` for the one value in the file that has an alternative.
-- **An interactive control slotted into `heading` or `supporting`.** Those two keep the CSS guard only — no `inert` — so a control placed there stays keyboard-reachable while the item is disabled. They are documented for text (`@slot heading - Optional rich heading content`, `@slot supporting - Optional supporting text`), and making them inert was not taken because the accessible-name cost could not be settled: with all three wrappers inert the header button's name survived intact for a PROP-supplied heading, but the slotted-heading variant was measured inconclusively. If a consumer is found slotting controls into those, that is the trigger to revisit, with the a11y-name question measured first.
-- **The `trailing` slot's a11y shape.** Interactive content nested inside the header `<button>` is invalid HTML and remains so after this change. Out of scope for #17, but it is the reason the platform's own guards behave inconsistently here.
+- **The browser lane does not run.** Measured fact 8. The story in Task 3 Step 3 is written but unexecuted by CI and by this branch; it was hand-driven in a running Storybook instead. Everything the `spec` lane cannot see — hit-testing, focus — rests on that hand-drive.
+- **A consumer who sets `disabled` on a slotted control WHILE the item is already disabled** still loses it on re-enable: the attribute is already present, so the component cannot tell the write happened, and its record says the element is one of its own. The window is narrow (the consumer's write is a visual no-op at the time, and any framework that re-applies attributes on render repairs it at the next render) and closing it would need a `MutationObserver` on every slotted element — cost out of proportion to a case nobody has reported.
+- **A control nested inside a slotted wrapper is not keyboard-blocked** while the item is disabled. The mouse is blocked by the Task 2 Step 1 rule; Tab is not. The pre-fix subtree walk covered it, and dropping that coverage is deliberate — the broad claim is the cause of #17.
+- **`mud-tag` and `mud-badge` show no disabled treatment.** They have no `disabled` support (measured fact 6), so the attribute written onto them does nothing. Identical to shipped 1.0.6, and less than option C showed. The real fix is a disabled design for those two, which is design work, not engineering.
+- **That a real browser's native `slotchange` reaches the new call site.** Measured fact 9 proves the handler reacts to a dispatched event in mock-doc; that the browser fires it on `appendChild` is platform behaviour this branch asserts only in the browser story, which does not run (measured fact 8).
+- **Non-Chromium browsers.** The browser project runs Chromium only (`vitest.config.mts:121`). Nothing here is measured on Firefox or WebKit — though A′ rests on `assignedElements` and an attribute, not on `inert` or `::slotted` cascade edge cases, so the surface is far smaller than option C's.
+- **Consumers in the wild.** Whether any consumer of `@egov-moldova/mud@1.0.6` relies on the attribute reaching nested descendants is unknown; the change is announced, not surveyed.
+- **The `trailing` slot's a11y shape.** Interactive content nested inside the header `<button>` is invalid HTML and remains so. Option F, out of scope, opened separately.
