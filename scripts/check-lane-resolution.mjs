@@ -23,9 +23,27 @@ if (!metaPath || !repoRoot) {
   process.exit(2);
 }
 
-const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
 const depsDir = path.dirname(metaPath);
-const expected = path.join(repoRoot, 'node_modules') + path.sep;
+// `path.resolve`, not `path.join`: `abs` below is always absolute, so a relative
+// <repo root> argument would make every containment test fail and report a correct
+// lane as broken. Normalizing here rather than demanding an absolute path from every
+// caller — the guard belongs at the point they share, not in each invocation.
+const expected = path.resolve(repoRoot, 'node_modules') + path.sep;
+
+// The optimizer's cache outlives the config that produced it: remove the alias,
+// leave `node_modules/.cache/storybook` in place, and the stale metadata still says
+// OK. Grading a cache without asserting it is newer than the config it claims to
+// describe is grading nothing.
+const configPath = path.resolve(repoRoot, 'vitest.config.mts');
+if (fs.existsSync(configPath) && fs.statSync(metaPath).mtimeMs < fs.statSync(configPath).mtimeMs) {
+  console.error(
+    `stale: ${path.relative(repoRoot, metaPath)} predates ${path.relative(repoRoot, configPath)} — ` +
+      'clear node_modules/.cache/storybook and re-run the lane before grading it.',
+  );
+  process.exit(4);
+}
+
+const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
 
 // Two outcomes, two exit codes, because they mean different things. `bad` is the
 // defect this check exists for: something resolved outside `node_modules/`. `missing`

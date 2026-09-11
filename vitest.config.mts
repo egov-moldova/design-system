@@ -1,4 +1,3 @@
-import { createRequire } from 'node:module';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -107,9 +106,20 @@ export default defineVitestConfig({
           // rewrite `react/jsx-runtime` to `.../index.js/jsx-runtime`.
           //
           // `.storybook/vitest.setup.ts` asserts the outcome, so deleting this
-          // fails the lane loudly instead of silently restoring the bug.
+          // fails the lane in the next local `yarn test.storybook`. It does NOT
+          // fail CI: no workflow runs that lane yet (issue #20 owns wiring it).
+          //
+          // Scoped to this project rather than the root: `spec` resolves `react`
+          // correctly today and does not need the entry. The cost of that choice
+          // is that a future project touching React re-acquires #23 silently —
+          // accepted, because the durable fix is the directory rename recorded in
+          // the plan's § Deferred, not a wider alias.
+          //
+          // Same spelling as `getAbsolutePath` in `.storybook/main.mjs` — one
+          // idiom for "the directory of an installed package", measured to work
+          // through Vite's config loading.
           alias: {
-            react: path.dirname(createRequire(import.meta.url).resolve('react/package.json')),
+            react: path.dirname(fileURLToPath(import.meta.resolve('react/package.json'))),
           },
         },
         plugins: [

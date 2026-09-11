@@ -450,6 +450,42 @@ describe('the React output target names the exports key', () => {
   });
 });
 
+describe('exportsKeyPattern', () => {
+  // Three decisions live in this helper's JSDoc and none of them were pinned:
+  // it was reached only through two assertions over the live `exports` map, which
+  // happens to contain no key that discriminates any of them. Reverting any one
+  // would have passed the suite.
+  it('keeps a literal `.` literal, so a wildcard key cannot match a run-together specifier', () => {
+    const pattern = exportsKeyPattern('./tokens/*.css');
+    assert.ok(pattern.test('@egov-moldova/mud/tokens/core.tokens.css'));
+    assert.ok(!pattern.test('@egov-moldova/mud/tokens/coreXtokensYcss'));
+  });
+
+  it('expands EVERY wildcard, not just the first', () => {
+    const pattern = exportsKeyPattern('./a/*/b/*.js');
+    assert.ok(pattern.test('@egov-moldova/mud/a/one/b/two.js'));
+    assert.ok(!pattern.test('@egov-moldova/mud/a/one/b/*.js'.replace('*', 'two') + 'x'));
+  });
+
+  it('treats `*` as zero-or-more, matching Node subpath-pattern semantics', () => {
+    // Node resolves `./p/*` against `./p/` — the empty expansion is legal, so a
+    // translation using `.+` would reject a specifier the package really exports.
+    assert.ok(exportsKeyPattern('./components/mud-*.js').test('@egov-moldova/mud/components/mud-.js'));
+  });
+
+  it('anchors both ends, so a longer specifier does not satisfy a shorter key', () => {
+    const pattern = exportsKeyPattern('./components');
+    assert.ok(pattern.test('@egov-moldova/mud/components'));
+    assert.ok(!pattern.test('@egov-moldova/mud/components/mud-button.js'));
+  });
+
+  it('maps the root key to the bare package name', () => {
+    const pattern = exportsKeyPattern('.');
+    assert.ok(pattern.test('@egov-moldova/mud'));
+    assert.ok(!pattern.test('@egov-moldova/mud/loader'));
+  });
+});
+
 describe('the React workspace names only exported subpaths', () => {
   // `the React output target names the exports key` above binds the CONFIG
   // (`stencil.config.ts`'s `customElementsDir`) to the `exports` key. It cannot
@@ -468,20 +504,32 @@ describe('the React workspace names only exported subpaths', () => {
   const REACT_SRC = path.join(PROJECT_ROOT, 'react/src');
   // Anchored on the quote, not on `from`/`import`: `import("…")` has no space
   // before the quote and `require("…")` uses neither keyword, and a wrapper that
-  // drifted into either would otherwise pass vacuously. Safe because the two
-  // non-import mentions in `react/src/index.ts` both spell the path
-  // `/node_modules/@egov-moldova/mud/…`, so the character after the quote is `/`.
+  // drifted into either would otherwise pass vacuously.
+  //
+  // What keeps it from firing on prose, stated exactly, because an earlier version
+  // of this comment got it wrong: `react/src/index.ts` carries three non-import
+  // mentions. Two (`:14`, `:42`) spell `/node_modules/@egov-moldova/mud/…`, so the
+  // character after the quote is `/` and they do not match. The third (`:30`) is a
+  // JSDoc mention delimited by BACKTICKS, and it is skipped only because backtick
+  // is not in the `["']` class — not because of any path shape. A future doc
+  // mention written with real quotes WOULD be reported, and that is the known edge.
+  //
   // A specifier assembled at runtime from fragments is outside what any static
   // check reads, and outside what this one claims.
   const SPECIFIER_RE = /["'](@egov-moldova\/mud(?:\/[^"']*)?)["']/g;
   const SOURCE_EXT = /\.tsx?$/;
 
+  // `existsSync` before the recursion: without it a pruned, absent or renamed
+  // `react/` workspace dies on a raw ENOENT with a stack trace, instead of the
+  // assertion below — which was written to diagnose exactly that case.
   const walk = dir =>
-    fs.readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
-      const full = path.join(dir, entry.name);
-      if (entry.isDirectory()) return walk(full);
-      return entry.isFile() && SOURCE_EXT.test(full) ? [full] : [];
-    });
+    !fs.existsSync(dir)
+      ? []
+      : fs.readdirSync(dir, { withFileTypes: true }).flatMap(entry => {
+          const full = path.join(dir, entry.name);
+          if (entry.isDirectory()) return walk(full);
+          return entry.isFile() && SOURCE_EXT.test(full) ? [full] : [];
+        });
 
   it('every `@egov-moldova/mud` specifier under react/src resolves through the exports map', () => {
     const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'package.json'), 'utf8'));
