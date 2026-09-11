@@ -128,24 +128,20 @@ export const States: Story = {
 };
 
 // Regression test, not documentation — hidden from the sidebar and autodocs, the
-// same shape mud-checkbox uses for its own browser-only contract tests. This covers
-// the half of issue #17 that mock-doc genuinely cannot render: computed style for the
-// dim, `elementFromPoint` for the pointer guard, and focus for `inert`. The attribute
-// contract itself IS observable under mock-doc and is pinned in the spec file instead.
+// same shape mud-checkbox uses for its own browser-only contract tests. The attribute
+// contract is pinned in the spec file, which is the lane CI runs; this story carries
+// only what mock-doc cannot do — hit-testing, real focus, and a NATIVE `slotchange`
+// (measured: mock-doc does not fire one on appendChild, so the spec test dispatches
+// its own and this one must not).
 export const SlottedDisabledContract: Story = {
   tags: ['!autodocs', '!dev'],
   render: () => /*html*/ `
     <div style="${wrapperStyle}">
       <button id="parking" type="button">focus parking</button>
       <mud-accordion mode="multiple">
-        <mud-accordion-item id="authored-disabled" heading="Payment" disabled>
-          <mud-button id="retry" slot="trailing" variant="secondary" size="sm" disabled>Retry</mud-button>
-          Panel body.
-        </mud-accordion-item>
-        <mud-accordion-item id="authored-enabled" disabled>
-          <span id="head-slot" slot="heading">Shipping</span>
-          <span id="sup-slot" slot="supporting">Tracking unavailable</span>
-          <mud-button id="track" slot="trailing" variant="secondary" size="sm">Track</mud-button>
+        <mud-accordion-item id="item" heading="Payment" disabled>
+          <mud-button id="authored" slot="trailing" variant="secondary" size="sm" disabled>Retry</mud-button>
+          <mud-button id="ours" slot="trailing" variant="secondary" size="sm">Track</mud-button>
           <div slot="trailing"><button id="nested" type="button" style="pointer-events: auto">Nested</button></div>
           Panel body.
         </mud-accordion-item>
@@ -162,123 +158,105 @@ export const SlottedDisabledContract: Story = {
       if (!el) throw new Error(`#${id} did not render`);
       return el;
     };
-    // Several frames, not one: `inert` is applied in render(), and Stencil re-renders
-    // asynchronously. A single frame was measured to read the PREVIOUS render's state,
-    // which is how this session first concluded — wrongly — that focus was already blocked.
+    // Several frames, not one: Stencil re-renders asynchronously, and a single frame
+    // was measured to read the PREVIOUS render's state — which is how this session
+    // first concluded, wrongly, that a slotted control was already unfocusable.
     const settle = async () => {
       for (let i = 0; i < 6; i += 1) await new Promise<void>(r => requestAnimationFrame(() => r()));
+    };
+    const hitTest = (el: HTMLElement) => {
+      // `scrollIntoView` first and the null check at the call site second, both
+      // load-bearing: `elementFromPoint` returns null for any point outside the
+      // viewport, so a bare `hit !== el` passes vacuously below the fold.
+      el.scrollIntoView({ block: 'center' });
+      const box = el.getBoundingClientRect();
+      return document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
     };
 
     await customElements.whenDefined('mud-accordion-item');
     await customElements.whenDefined('mud-button');
     await settle();
 
-    const authoredDisabled = find('authored-disabled');
-    const authoredEnabled = find('authored-enabled');
-    const retry = find('retry');
-    const track = find('track');
-    // The guard is a three-clause selector list. Cover every clause: a typo in the
-    // `heading` or `supporting` arm would otherwise ship green against a bar that
-    // says "a slotted control" without naming a slot.
-    const slotted = [
-      ['heading', find('head-slot')],
-      ['supporting', find('sup-slot')],
-      ['trailing', track],
-    ] as const;
-
-    // 1. The component never writes into the consumer's cell — in either direction.
-    if (!retry.hasAttribute('disabled')) {
-      throw new Error('slotted control authored `disabled` lost it while the item was disabled');
-    }
-    if (track.hasAttribute('disabled')) {
-      throw new Error('component wrote `disabled` onto a slotted control the consumer left enabled');
-    }
-
-    // 2. While the item is disabled, slotted content is non-interactive. Measured:
-    //    a disabled native <button> ancestor does NOT block mouse clicks on its
-    //    descendants, so this asserts the CSS guard, not a platform freebie.
-    // 3. ...and visibly muted. Both, for every slot the guard names.
-    for (const [name, el] of slotted) {
-      if (getComputedStyle(el).pointerEvents !== 'none') {
-        throw new Error(`slot="${name}" content is still pointer-interactive while the item is disabled`);
-      }
-      if (Number(getComputedStyle(el).opacity) >= 1) {
-        throw new Error(`slot="${name}" content is not visually muted while the item is disabled`);
-      }
-    }
-
-    // 3b. The guard is a mechanism, not a request: an inline style must not defeat it.
-    track.style.pointerEvents = 'auto';
-    if (getComputedStyle(track).pointerEvents !== 'none') {
-      throw new Error('an inline `pointer-events` on the slotted control defeated the guard');
-    }
-    track.style.removeProperty('pointer-events');
-
-    // 3c. KEYBOARD. The shape CSS cannot close: a disabled native <button> does not
-    //     disable its flat-tree slotted descendants, so without `inert` this focuses.
+    const item = find('item');
+    const authored = find('authored');
+    const ours = find('ours');
     const nested = find('nested');
-    // Park focus on a real focusable element OUTSIDE the accordion. Two traps this avoids:
-    // `mud-accordion-item` carries no tabindex, so focusing the item is a no-op and
-    // `activeElement` falls to <body>, which would let the check below pass without
-    // proving focus was REFUSED rather than merely moved; and anything inside a
-    // `trailing` slot is itself inert after the fix, so it cannot hold focus either.
+
+    // 1. While disabled: the write reaches the elements handed to the slot, and
+    //    nothing below them.
+    if (!authored.hasAttribute('disabled')) {
+      throw new Error('a slotted control authored `disabled` lost it while the item was disabled');
+    }
+    if (!ours.hasAttribute('disabled')) {
+      throw new Error('the item did not disable a slotted control the consumer left enabled');
+    }
+    if (nested.hasAttribute('disabled')) {
+      throw new Error('`disabled` reached a control nested inside a slotted wrapper');
+    }
+
+    // 2. The nested control gets no attribute, so the stylesheet is all that stands
+    //    between it and the mouse. It sets its own `pointer-events: auto`, which a
+    //    non-`!important` rule loses to — so the net here is the DISABLED ancestor
+    //    chain plus the rule on the wrapper, and hit-testing is the observable.
+    const blocked = hitTest(nested);
+    if (blocked === null) {
+      throw new Error('hit-test point fell outside the viewport — the assertion would pass vacuously');
+    }
+    if (blocked === nested) {
+      throw new Error('a control nested in a slotted wrapper is still the hit-test target while disabled');
+    }
+
+    // 3. KEYBOARD, for a DIRECTLY slotted control. The attribute is what closes this:
+    //    measured, a disabled native <button> ancestor does not refuse focus to its
+    //    flat-tree slotted descendants, so this fails if the attribute is not written.
+    //    Focus is parked on a real element outside the accordion first — the item
+    //    carries no tabindex, so `activeElement` would otherwise fall to <body> and
+    //    the check would pass without proving focus was REFUSED rather than moved.
     const parking = find('parking');
     parking.focus();
     if (document.activeElement !== parking) {
       throw new Error('could not park focus — the keyboard assertion below would be vacuous');
     }
-    nested.focus();
+    ours.focus();
     if (document.activeElement !== parking) {
-      throw new Error('a slotted control is keyboard-focusable while the item is disabled');
+      throw new Error('a directly slotted control is keyboard-focusable while the item is disabled');
     }
 
-    // 3d. DESCENDANT. `::slotted(*)` matches only the assigned element; this button is a
-    //     descendant of a slotted wrapper AND sets its own `pointer-events: auto`, so the
-    //     stylesheet loses here and only `inert` wins. Hit-testing is the observable.
-    //     `scrollIntoView` first and a non-null check second, both load-bearing:
-    //     `elementFromPoint` returns null for any point outside the viewport, so a
-    //     bare `hit !== nested` passes vacuously when the fixture sits below the fold.
-    const hitTest = (el: HTMLElement) => {
-      el.scrollIntoView({ block: 'center' });
-      const box = el.getBoundingClientRect();
-      return document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
-    };
-    const blockedHit = hitTest(nested);
-    if (blockedHit === null) {
-      throw new Error('hit-test point fell outside the viewport — the assertion would pass vacuously');
-    }
-    if (blockedHit !== authoredEnabled) {
-      throw new Error(`expected the inert wrapper to hand hit-testing to the item host, got ${blockedHit?.tagName}`);
+    // 4. A control appended WHILE the item is disabled is disabled too — driven by
+    //    the browser's own `slotchange`, with no dispatchEvent. This is the only
+    //    place native firing is exercised; the spec lane cannot reach it.
+    const late = document.createElement('mud-button');
+    late.setAttribute('slot', 'trailing');
+    late.textContent = 'Late';
+    item.appendChild(late);
+    await settle();
+    if (!late.hasAttribute('disabled')) {
+      throw new Error('a control slotted in while the item was already disabled was not disabled');
     }
 
-    // 4. Enabling the item restores interactivity and appearance, and STILL does
-    //    not touch the consumer's cell — this is the exact transition issue #17 broke.
-    authoredDisabled.removeAttribute('disabled');
-    authoredEnabled.removeAttribute('disabled');
+    // 5. The transition issue #17 broke. `ours` and `late` go back because the
+    //    component recorded writing them; `authored` stays because it never did.
+    item.removeAttribute('disabled');
     await settle();
 
-    if (!retry.hasAttribute('disabled')) {
+    if (!authored.hasAttribute('disabled')) {
       throw new Error('re-enabling the item stripped the consumer-authored `disabled` (issue #17)');
     }
-    for (const [name, el] of slotted) {
-      if (getComputedStyle(el).pointerEvents === 'none') {
-        throw new Error(`slot="${name}" content stayed pointer-blocked after the item was enabled`);
-      }
-      if (Number(getComputedStyle(el).opacity) < 1) {
-        throw new Error(`slot="${name}" content stayed muted after the item was enabled`);
-      }
+    if (ours.hasAttribute('disabled')) {
+      throw new Error('re-enabling the item left its own `disabled` on a slotted control');
     }
-    // ...and the keyboard comes back with it. This is the assertion that catches an
-    // `inert` left permanently on, which would be a worse bug than the one being fixed.
+    if (late.hasAttribute('disabled')) {
+      throw new Error('re-enabling the item left its own `disabled` on a late-slotted control');
+    }
+    // The mirror of 2 and 3. Without them, those prove nothing: a guard that never
+    // lifts would satisfy the disabled-side checks forever.
     parking.focus();
-    nested.focus();
-    if (document.activeElement !== nested) {
+    ours.focus();
+    if (document.activeElement !== ours) {
       throw new Error('a slotted control stayed keyboard-unreachable after the item was enabled');
     }
-    // The mirror of 3d. Without it, 3d proves nothing: a guard that never lifts would
-    // satisfy the disabled-side check forever.
     if (hitTest(nested) !== nested) {
-      throw new Error('a slotted descendant stayed hit-test-blocked after the item was enabled');
+      throw new Error('a nested slotted control stayed hit-test-blocked after the item was enabled');
     }
   },
 };

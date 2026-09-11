@@ -113,29 +113,53 @@ describe('mud-accordion-item', () => {
     const instance = new Ctor(false);
     expect(instance).toBeTruthy();
   });
-  it('never writes `disabled` onto slotted content, in either direction (issue #17)', async () => {
+  it('takes back only the `disabled` it wrote (issue #17)', async () => {
     const { root, waitForChanges } = await render(
       <mud-accordion-item heading="Payment" disabled>
         <button slot="trailing" id="authored" disabled>
           Retry
         </button>
-        <button slot="trailing" id="untouched">
+        <button slot="trailing" id="ours">
           Track
         </button>
+        <div slot="trailing" id="wrapper">
+          <button id="nested">Nested</button>
+        </div>
       </mud-accordion-item>,
     );
     const authored = root!.querySelector('#authored')!;
-    const untouched = root!.querySelector('#untouched')!;
+    const ours = root!.querySelector('#ours')!;
+    const nested = root!.querySelector('#nested')!;
 
-    // The consumer authored one and not the other. The component owns neither.
+    // While disabled: the write lands on the elements the consumer handed to the
+    // slot, and on nothing below them.
+    expect(ours.hasAttribute('disabled')).toBe(true);
     expect(authored.hasAttribute('disabled')).toBe(true);
-    expect(untouched.hasAttribute('disabled')).toBe(false);
+    expect(nested.hasAttribute('disabled')).toBe(false);
 
     (root as HTMLElement).removeAttribute('disabled');
     await waitForChanges();
 
-    // The transition that issue #17 broke: the authored one must survive it.
+    // The transition issue #17 broke. `ours` goes back because the component
+    // recorded writing it; `authored` stays because it never entered that record.
+    expect(ours.hasAttribute('disabled')).toBe(false);
     expect(authored.hasAttribute('disabled')).toBe(true);
-    expect(untouched.hasAttribute('disabled')).toBe(false);
+  });
+
+  it('disables a control slotted in while the item is already disabled', async () => {
+    const { root, waitForChanges } = await render(<mud-accordion-item heading="Payment" disabled></mud-accordion-item>);
+    const late = document.createElement('button');
+    late.setAttribute('slot', 'trailing');
+    root!.appendChild(late);
+    // mock-doc does not fire `slotchange` on appendChild the way a browser does,
+    // but a dispatched one reaches the JSX-bound handler — measured. Emitting it
+    // here tests the wiring; the browser story covers the native firing.
+    root!.shadowRoot!.querySelector('slot[name="trailing"]')!.dispatchEvent(new Event('slotchange'));
+    await waitForChanges();
+    expect(late.hasAttribute('disabled')).toBe(true);
+
+    (root as HTMLElement).removeAttribute('disabled');
+    await waitForChanges();
+    expect(late.hasAttribute('disabled')).toBe(false);
   });
 });

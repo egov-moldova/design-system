@@ -352,9 +352,10 @@ const renderDisabled = () => /*html*/ `
     </mud-accordion>
 
     <p style="${sectionLabelStyle}">
-      Conținut slotat sub un element dezactivat. Componenta nu scrie niciodată
-      <code>disabled</code> pe ce slotați — este atributul dumneavoastră. Apăsați butonul de mai
-      jos: butonul pe care l-ați dezactivat rămâne dezactivat, cel lăsat activ redevine activ.
+      Conținut slotat sub un element dezactivat. Elementul dezactivează butoanele pe care le
+      puneți direct în slot, dar la reactivare le redă exact pe cele pe care le-a dezactivat el.
+      Apăsați butonul de mai jos: cel pe care l-ați dezactivat dumneavoastră rămâne dezactivat,
+      cel lăsat activ redevine activ.
     </p>
     <button
       id="disabled-slot-toggle"
@@ -407,10 +408,9 @@ const docsSourceDisabled = /*html*/ `<mud-accordion mode="multiple">
   <mud-accordion-item heading="Indisponibil temporar" supporting-text="..." disabled>...</mud-accordion-item>
 </mud-accordion>
 
-<!-- Slotted content keeps its own \`disabled\`: the component never writes or removes it.
-     While the item is disabled the slot is dimmed and non-interactive from the item's own
-     stylesheet; put focusable controls in \`trailing\`, the only slot whose keyboard reach
-     is also closed. -->
+<!-- The item sets \`disabled\` on what you slot in directly, and on re-enable removes it
+     only from the elements it set it on — a control you shipped disabled stays disabled.
+     A control nested inside a slotted wrapper gets no attribute: put controls in the slot. -->
 <mud-accordion mode="multiple">
   <mud-accordion-item heading="Plată restantă" disabled>
     <mud-button slot="trailing" variant="secondary" size="sm" disabled>Reia plata</mud-button>
