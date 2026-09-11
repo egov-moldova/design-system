@@ -106,6 +106,9 @@
           "disabled": { "$value": "{color.icon.disabled.default}", "$type": "color" }
         }
       },
+      "slottedOpacity": {
+        "disabled": { "$value": "0.5", "$type": "number" }
+      },
       "panel": {
         "paddingBlockEnd": {
           "$value": "{spacing.32}",

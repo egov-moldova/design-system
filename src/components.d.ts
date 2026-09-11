@@ -150,6 +150,17 @@ export namespace Components {
      * Pattern B (atom-interactive): renders its own header `<button>` and a
      * `<div role="region">` panel inside shadow DOM. The container manages
      * exclusivity in `mode="single"`; the item owns its visual state.
+     * Disabled state and slotted content: this component never writes `disabled`
+     * onto elements you slot into it. That attribute is yours, and a component that
+     * writes into it cannot tell your value from its own — which is how an
+     * independently disabled control used to come back enabled when the item was
+     * re-enabled (issue #17). While the item is disabled, slotted header content is
+     * dimmed and made non-interactive from this component's own shadow DOM instead:
+     * a `::slotted` rule for the mouse, and `inert` on the `trailing` wrapper for
+     * the keyboard, because a disabled native `<button>` does not disable its
+     * flat-tree slotted descendants. Override the dim with the
+     * `--accordion-item-slotted-opacity-disabled` custom property (default `0.5`).
+     * The non-interactivity is not overridable, by design.
      * @element mud-accordion-item
      * @csspart header - The button that toggles open/closed.
      * @csspart panel - The region revealed when open.
@@ -3821,6 +3832,17 @@ declare global {
      * Pattern B (atom-interactive): renders its own header `<button>` and a
      * `<div role="region">` panel inside shadow DOM. The container manages
      * exclusivity in `mode="single"`; the item owns its visual state.
+     * Disabled state and slotted content: this component never writes `disabled`
+     * onto elements you slot into it. That attribute is yours, and a component that
+     * writes into it cannot tell your value from its own — which is how an
+     * independently disabled control used to come back enabled when the item was
+     * re-enabled (issue #17). While the item is disabled, slotted header content is
+     * dimmed and made non-interactive from this component's own shadow DOM instead:
+     * a `::slotted` rule for the mouse, and `inert` on the `trailing` wrapper for
+     * the keyboard, because a disabled native `<button>` does not disable its
+     * flat-tree slotted descendants. Override the dim with the
+     * `--accordion-item-slotted-opacity-disabled` custom property (default `0.5`).
+     * The non-interactivity is not overridable, by design.
      * @element mud-accordion-item
      * @csspart header - The button that toggles open/closed.
      * @csspart panel - The region revealed when open.
@@ -5500,6 +5522,17 @@ declare namespace LocalJSX {
      * Pattern B (atom-interactive): renders its own header `<button>` and a
      * `<div role="region">` panel inside shadow DOM. The container manages
      * exclusivity in `mode="single"`; the item owns its visual state.
+     * Disabled state and slotted content: this component never writes `disabled`
+     * onto elements you slot into it. That attribute is yours, and a component that
+     * writes into it cannot tell your value from its own — which is how an
+     * independently disabled control used to come back enabled when the item was
+     * re-enabled (issue #17). While the item is disabled, slotted header content is
+     * dimmed and made non-interactive from this component's own shadow DOM instead:
+     * a `::slotted` rule for the mouse, and `inert` on the `trailing` wrapper for
+     * the keyboard, because a disabled native `<button>` does not disable its
+     * flat-tree slotted descendants. Override the dim with the
+     * `--accordion-item-slotted-opacity-disabled` custom property (default `0.5`).
+     * The non-interactivity is not overridable, by design.
      * @element mud-accordion-item
      * @csspart header - The button that toggles open/closed.
      * @csspart panel - The region revealed when open.
@@ -10215,6 +10248,17 @@ declare module "@stencil/core" {
              * Pattern B (atom-interactive): renders its own header `<button>` and a
              * `<div role="region">` panel inside shadow DOM. The container manages
              * exclusivity in `mode="single"`; the item owns its visual state.
+             * Disabled state and slotted content: this component never writes `disabled`
+             * onto elements you slot into it. That attribute is yours, and a component that
+             * writes into it cannot tell your value from its own — which is how an
+             * independently disabled control used to come back enabled when the item was
+             * re-enabled (issue #17). While the item is disabled, slotted header content is
+             * dimmed and made non-interactive from this component's own shadow DOM instead:
+             * a `::slotted` rule for the mouse, and `inert` on the `trailing` wrapper for
+             * the keyboard, because a disabled native `<button>` does not disable its
+             * flat-tree slotted descendants. Override the dim with the
+             * `--accordion-item-slotted-opacity-disabled` custom property (default `0.5`).
+             * The non-interactivity is not overridable, by design.
              * @element mud-accordion-item
              * @csspart header - The button that toggles open/closed.
              * @csspart panel - The region revealed when open.
