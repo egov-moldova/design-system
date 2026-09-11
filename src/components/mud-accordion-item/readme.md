@@ -13,6 +13,18 @@ Pattern B (atom-interactive): renders its own header `<button>` and a
 `<div role="region">` panel inside shadow DOM. The container manages
 exclusivity in `mode="single"`; the item owns its visual state.
 
+Disabled state and slotted content: this component never writes `disabled`
+onto elements you slot into it. That attribute is yours, and a component that
+writes into it cannot tell your value from its own — which is how an
+independently disabled control used to come back enabled when the item was
+re-enabled (issue #17). While the item is disabled, slotted header content is
+dimmed and made non-interactive from this component's own shadow DOM instead:
+a `::slotted` rule for the mouse, and `inert` on the `trailing` wrapper for
+the keyboard, because a disabled native `<button>` does not disable its
+flat-tree slotted descendants. Override the dim with the
+`--accordion-item-slotted-opacity-disabled` custom property (default `0.5`).
+The non-interactivity is not overridable, by design.
+
 ## Properties
 
 | Property         | Attribute         | Description                                                                                                                                                                                                                                                                    | Type                         | Default     |
@@ -70,13 +82,13 @@ Type: `Promise<void>`
 
 ## Slots
 
-| Slot           | Description                                                                                                                                |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-|                | (default) Panel body. Always in the DOM; the panel carries `hidden` while the item is closed, so slotted media still loads when collapsed. |
-| `"heading"`    | Optional rich heading content. Overrides the `heading` prop.                                                                               |
-| `"icon-start"` | Optional leading icon (`mud-icon` recommended).                                                                                            |
-| `"supporting"` | Optional supporting text. Overrides the `supportingText` prop.                                                                             |
-| `"trailing"`   | Optional trailing content (`mud-badge`, `mud-button`, label).             Sits between the heading group and the open/close trigger.       |
+| Slot           | Description                                                                                                                                                                                                  |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+|                | (default) Panel body. Always in the DOM; the panel carries `hidden` while the item is closed, so slotted media still loads when collapsed.                                                                   |
+| `"heading"`    | Optional rich heading content. Overrides the `heading` prop.                                                                                                                                                 |
+| `"icon-start"` | Optional leading icon (`mud-icon` recommended).                                                                                                                                                              |
+| `"supporting"` | Optional supporting text. Overrides the `supportingText` prop.                                                                                                                                               |
+| `"trailing"`   | Optional trailing content (`mud-badge`, `mud-button`, label).             Sits between the heading group and the open/close trigger.             Made inert while the item is disabled — see the note above. |
 
 
 ## Shadow Parts

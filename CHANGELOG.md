@@ -2,6 +2,27 @@
 
 ## Unreleased
 
+### Changed — `mud-accordion-item` no longer writes `disabled` onto slotted content
+
+While an item was disabled it used to set `disabled` on every element in its
+`heading`, `supporting` and `trailing` slots and on all of their descendants, and
+remove it again when the item was re-enabled. It could not distinguish the attributes
+it had set from the ones you authored, so a control you shipped as
+`<mud-button slot="trailing" disabled>` came back enabled with the item.
+
+The attribute is no longer written or removed. Your `disabled` is yours. While the
+item is disabled, slotted header content is made inert and muted from the component's
+own stylesheet instead.
+
+**What changes for you.** CSS or queries keyed on `disabled` appearing on slotted
+elements — `mud-button[disabled]` inside an accordion header,
+`[slot="trailing"][disabled]` — no longer match. Key on the item instead:
+`mud-accordion-item[disabled] [slot="trailing"]`, which works from your own stylesheet
+because both elements live in your tree.
+
+Override the dim with `--accordion-item-slotted-opacity-disabled` (default `0.5`).
+The non-interactivity is not overridable, by design.
+
 ### Changed — public API surface (breaking for deep imports)
 
 The `exports` map no longer exposes build directories. Bare specifiers that
