@@ -27,7 +27,8 @@ let uidSeed = 0;
  * @slot icon-start - Optional leading icon (`mud-icon` recommended).
  * @slot trailing - Optional trailing content (`mud-badge`, `mud-button`, label).
  *                   Sits between the heading group and the open/close trigger.
- * @slot - (default) Panel body. Rendered only when the item is open.
+ * @slot - (default) Panel body. Always in the DOM; the panel carries `hidden`
+ * while the item is closed, so slotted media still loads when collapsed.
  *
  * @part header - The button that toggles open/closed.
  * @part panel - The region revealed when open.

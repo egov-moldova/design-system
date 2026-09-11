@@ -70,13 +70,13 @@ Type: `Promise<void>`
 
 ## Slots
 
-| Slot           | Description                                                                                                                          |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-|                | (default) Panel body. Rendered only when the item is open.                                                                           |
-| `"heading"`    | Optional rich heading content. Overrides the `heading` prop.                                                                         |
-| `"icon-start"` | Optional leading icon (`mud-icon` recommended).                                                                                      |
-| `"supporting"` | Optional supporting text. Overrides the `supportingText` prop.                                                                       |
-| `"trailing"`   | Optional trailing content (`mud-badge`, `mud-button`, label).             Sits between the heading group and the open/close trigger. |
+| Slot           | Description                                                                                                                                |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+|                | (default) Panel body. Always in the DOM; the panel carries `hidden` while the item is closed, so slotted media still loads when collapsed. |
+| `"heading"`    | Optional rich heading content. Overrides the `heading` prop.                                                                               |
+| `"icon-start"` | Optional leading icon (`mud-icon` recommended).                                                                                            |
+| `"supporting"` | Optional supporting text. Overrides the `supportingText` prop.                                                                             |
+| `"trailing"`   | Optional trailing content (`mud-badge`, `mud-button`, label).             Sits between the heading group and the open/close trigger.       |
 
 
 ## Shadow Parts
