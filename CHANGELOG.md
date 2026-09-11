@@ -18,20 +18,17 @@ re-enable removes the attribute only from those. A control that already carried
 touched. The record is also released when the item is removed from the document, so a
 control you move elsewhere does not leave carrying an attribute you did not write.
 
-**Three narrowings.** The attribute now reaches only elements assigned to a slot,
-never their descendants: if you wrapped a control in `<div slot="trailing">`, that
-inner control used to be disabled and no longer is. It reaches only the `trailing`
-slot: `disabled` on an `<h3 slot="heading">` was invalid HTML and bought nothing, and
-those two slots are greyed through inherited colour instead. And the dim the item used
-to paint over all slotted header content — an `opacity` plus `filter: grayscale(1)` —
-is gone, along with `--accordion-item-slotted-opacity-disabled`, which existed only on
-an unreleased branch. Slotted controls render their own disabled state.
+**Two narrowings.** The attribute now reaches only elements assigned to a slot, never
+their descendants: if you wrapped a control in `<div slot="trailing">`, that inner
+control used to be disabled and no longer is. And it reaches only the `trailing` slot —
+`disabled` on an `<h3 slot="heading">` was invalid HTML and bought nothing, and those
+two slots are greyed through inherited colour instead.
 
 **What still reaches everything.** While the item is disabled, every element assigned
 to the three header slots gets `tabindex="-1"`, restored to exactly the value you
 authored when the item is enabled again. `disabled` does nothing to an `<a href>`, a
 `<div tabindex>`, or a custom element that does not implement it — 23 of this
-library's 48 components do, and `mud-tag` and `mud-badge` do not — so without this a
+library's components do — `mud-tag` and `mud-badge` do not — so without this a
 control would stay Tab-reachable and Enter-activatable while assistive technology was
 told it was unavailable. The stylesheet also keeps `pointer-events: none` on assigned
 elements.
