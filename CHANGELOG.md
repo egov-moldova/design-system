@@ -11,8 +11,17 @@ it had set from the ones you authored, so a control you shipped as
 `<mud-button slot="trailing" disabled>` came back enabled with the item.
 
 The attribute is no longer written or removed. Your `disabled` is yours. While the
-item is disabled, slotted header content is made inert and muted from the component's
-own stylesheet instead.
+item is disabled, slotted header content is dimmed and desaturated and made
+pointer-inert from the component's own stylesheet, across all three header slots.
+
+**Keyboard reach is closed on `trailing` only.** A disabled native `<button>` does not
+disable its slotted descendants, so the stylesheet cannot close the keyboard; `inert`
+on the `trailing` wrapper does. It is not applied to `heading` or `supporting`, and
+that is a measured trade-off rather than an oversight: with those two inert, Chromium's
+accessibility tree loses the header button's accessible name entirely. If you slot a
+focusable control into `heading` or `supporting`, it stays Tab-reachable while the item
+is disabled — put controls in `trailing`. (Interactive content nested inside the header
+`<button>` is invalid HTML in any case.)
 
 **What changes for you.** CSS or queries keyed on `disabled` appearing on slotted
 elements — `mud-button[disabled]` inside an accordion header,
