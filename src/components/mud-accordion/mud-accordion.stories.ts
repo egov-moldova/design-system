@@ -457,7 +457,11 @@ const meta: Meta<AccordionArgs> = {
   },
   parameters: {
     layout: 'fullscreen',
-    backgrounds: { default: 'canvas' },
+    // The manifest feeds this component's argTypes (see .storybook/preview.js), and
+    // `wca` lists every public class field as a property — so `@Element() host`
+    // arrives as a control over a live DOM node. The docs blocks exclude it too;
+    // this key is what keeps it out of the Canvas Controls panel.
+    controls: { exclude: ['host'] },
   },
 };
 export default meta;

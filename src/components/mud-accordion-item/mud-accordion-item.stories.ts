@@ -1,35 +1,51 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
+import { ACCORDION_ICON_POSITIONS, ACCORDION_SIZES } from '../mud-accordion/mud-accordion.types';
+import type { AccordionIconPosition, AccordionSize } from '../mud-accordion/mud-accordion.types';
+
 type AccordionItemArgs = {
   heading: string;
   supportingText: string;
   open: boolean;
   disabled: boolean;
-  size: 'sm' | 'md';
-  iconPosition: 'left' | 'right';
+  size: AccordionSize;
+  iconPosition: AccordionIconPosition;
 };
 
 const wrapperStyle = 'display: block; padding: var(--spacing-24); max-width: 996px;';
 
+/** Escapes a control value for interpolation into a double-quoted HTML attribute. */
+const attr = (value: string) =>
+  String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;');
+
+// `size` and `icon-position` go on the container, not on the item: `mud-accordion`
+// assigns both onto every child in `propagateToItems()` (mud-accordion.tsx:176) from
+// its own `componentDidLoad`, which runs after the child's — so an item-level value
+// is overwritten before first paint and the control would do nothing.
 const renderItem = (args: AccordionItemArgs) => /*html*/ `
   <div style="${wrapperStyle}">
-    <mud-accordion mode="multiple">
+    <mud-accordion mode="multiple" size="${args.size}" icon-position="${args.iconPosition}">
       <mud-accordion-item
-        heading="${args.heading}"
-        ${args.supportingText ? `supporting-text="${args.supportingText}"` : ''}
-        size="${args.size}"
-        icon-position="${args.iconPosition}"
+        heading="${attr(args.heading)}"
+        ${args.supportingText ? `supporting-text="${attr(args.supportingText)}"` : ''}
         ${args.open ? 'open' : ''}
         ${args.disabled ? 'disabled' : ''}
       >
-        Panel body content. Rendered only while the item is open.
+        Panel body content. Always in the DOM; hidden while the item is closed.
       </mud-accordion-item>
     </mud-accordion>
   </div>
 `;
 
 const docsSourceAllSizes = /*html*/ `<mud-accordion mode="multiple" size="sm">
-  <mud-accordion-item heading="Compact row" supporting-text="Compact header">Panel body.</mud-accordion-item>
+  <mud-accordion-item heading="size=&quot;sm&quot;" supporting-text="Compact header">Panel body.</mud-accordion-item>
+</mud-accordion>
+
+<mud-accordion mode="multiple" size="md">
+  <mud-accordion-item heading="size=&quot;md&quot;" supporting-text="Default header">Panel body.</mud-accordion-item>
 </mud-accordion>`;
 
 const docsSourceStates = /*html*/ `<mud-accordion mode="multiple">
@@ -50,12 +66,16 @@ const meta: Meta<AccordionItemArgs> = {
     supportingText: { control: 'text' },
     open: { control: 'boolean' },
     disabled: { control: 'boolean' },
-    size: { control: 'select', options: ['sm', 'md'] },
-    iconPosition: { control: 'select', options: ['left', 'right'] },
+    size: { control: 'select', options: ACCORDION_SIZES },
+    iconPosition: { control: 'select', options: ACCORDION_ICON_POSITIONS },
   },
   parameters: {
     layout: 'fullscreen',
-    backgrounds: { default: 'canvas' },
+    // The manifest feeds this component's argTypes (see .storybook/preview.js), and
+    // `wca` lists every public class field as a property — so `@Element() host`
+    // arrives as a control over a live DOM node. The docs blocks exclude it too;
+    // this key is what keeps it out of the Canvas Controls panel.
+    controls: { exclude: ['host'] },
   },
 };
 export default meta;

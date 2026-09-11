@@ -379,29 +379,34 @@ by both.
 
 Three review rounds computed bar 2's row count from the manifest and the extractor
 source, and all three got a number the page could not produce, because the blocker
-was somewhere none of them looked: `.storybook/preview.js` declared
-`extractArgTypes` TWICE inside the same `docs` object literal. The second one wins
-in JavaScript, and it reads `component.__docgenInfo` — which a Stencil `component`,
-being a tag-name string, never has. So it returned `{}` for every tag in the repo and
-the manifest reached no table at all; every API table in this Storybook has been
-filled purely by hand-written `argTypes`.
+was somewhere none of them looked: `.storybook/preview.js`'s `extractArgTypes`
+reads `component.__docgenInfo`. A Stencil `component` is a tag-name STRING and never
+has one, so the function returned `{}` for every tag in the repo — the manifest
+reached no table at all, and every API page in this Storybook has been filled purely
+by hand-written `argTypes`.
+
+```derived
+$ git show f528d86:.storybook/preview.js | grep -n "extractArgTypes"
+151:    extractArgTypes: component => {
+```
 
 That is why the first browser check of this phase found the item's table showing
 exactly the 6 `argTypes` the new stories file declares, and the container's exactly
 its 4 — the manifest rows were never in play. It is also why a build-free review
 could not have caught it: the manifest was correct, the blocks were correct, the
-meta was correct, and the defect was a duplicate key in a 200-line config.
+meta was correct, and the defect was one line inside a 200-line config.
 
-Fix, inside the fence: the surviving `extractArgTypes` gains one guarded branch that
-delegates to `@storybook/web-components/entry-preview-argtypes` for
-`mud-accordion` and `mud-accordion-item`, and `extractComponentDescription` — which
-was a flat `() => null` — gains the same guard so the MDX's `<Description />` has
-text. Everything else keeps today's behaviour exactly, verified on the built page:
-`extractArgTypes('mud-button')` still returns `{}` and its description still `null`.
-
-Lifting the guard repo-wide is the obvious follow-up and is deliberately not in this
-PR: it would populate 46 components' API tables in one commit, which is the same
-widening that kept Stencil's `docs-custom-elements-manifest` out of scope.
+**Correction, recorded because the first version of this section was wrong.** It
+said the cause was a DUPLICATE `extractArgTypes` key, the second overriding the
+first. There was no duplicate at `f528d86` — the `derived` fence above is the
+falsifying command, and it returns one hit. The duplicate existed only in this
+session's own intermediate state: the first remediation attempt added a second key,
+the build failed on an unrelated TS2353, and the two keys were then read out of a
+bundle compiled from that broken state and mis-narrated as the repo's pre-existing
+defect. The commit that carries the fix (`2596e1e`) has the same wrong sentence in
+its message; the fix itself was always aimed at the right line. Found by
+`/code-review xhigh` at the merge gate, which ran the command this section now
+carries.
 
 ## Also found during execution — two smaller corrections
 

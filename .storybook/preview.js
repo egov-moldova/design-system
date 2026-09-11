@@ -31,7 +31,9 @@ setCustomElements(customElements);
 //   `(await __STORYBOOK_PREVIEW__.loadStory({storyId:'atoms-button--default'}))
 //    .parameters.docs.extractArgTypes('mud-button')` -> `{}`
 // Widened for the Accordion only, which is what issue #8 needs. Removing the guard
-// would change all 46 components' docs pages at once and belongs in its own PR.
+// would change every docs page at once and belongs in its own PR (issue #18).
+// Baseline for the size of that PR: `node -p "require('./.storybook/custom-elements.json').tags.length"`
+// -> 56 custom-element tags across 47 component directories, not one page per directory.
 const MANIFEST_ARG_TYPES = new Set(['mud-accordion', 'mud-accordion-item']);
 
 // Keep data-theme in sync with the mode global at the preview level.
