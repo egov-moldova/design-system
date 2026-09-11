@@ -1,0 +1,37 @@
+import { Meta, Title, Subtitle, Description, Primary, Controls, Stories, ArgTypes } from '@storybook/addon-docs/blocks';
+
+import * as AccordionStories from './mud-accordion.stories';
+import * as ItemStories from '../mud-accordion-item/mud-accordion-item.stories';
+
+<Meta of={AccordionStories} />
+
+<Title />
+
+<Subtitle>Vertical stack of collapsible regions, per the WAI-ARIA Accordion Pattern.</Subtitle>
+
+<Description of={AccordionStories} />
+
+<Primary />
+
+## `mud-accordion`
+
+The container. It owns coordination (`mode`), and it pushes `appearance`, `size`,
+`icon-position` and `breakpoint` down onto its items — set those here, not on the
+individual rows.
+
+{/* `host` is `@Element()`; `wca` reports it as a public property. Excluded on the blocks, not in the metas — a typed `Meta` rejects an arg it does not declare (TS2353). Must stay one line: Prettier parses a multi-line MDX comment as markdown and rewrites `*` to `_`, producing invalid MDX. */}
+
+<Controls exclude={['host']} />
+
+## `mud-accordion-item`
+
+One collapsible row. Slotted as a child of `mud-accordion`; it renders its own
+header button and panel region in shadow DOM — it is not usable on its own, which is
+why its API is documented here rather than on a page of its own. Rendered examples
+live under **Molecules → Accordion Item** in the sidebar.
+
+<ArgTypes of={ItemStories} exclude={['host']} />
+
+## Stories
+
+<Stories />

@@ -1061,6 +1061,7 @@ __metadata:
     "@storybook/addon-docs": "npm:^10.4.0"
     "@storybook/addon-links": "npm:^10.4.0"
     "@storybook/addon-vitest": "npm:^10.4.0"
+    "@storybook/web-components": "npm:10.4.0"
     "@storybook/web-components-vite": "npm:^10.4.0"
     "@types/node": "npm:^24.12.4"
     "@typescript-eslint/eslint-plugin": "npm:^8.59.4"
