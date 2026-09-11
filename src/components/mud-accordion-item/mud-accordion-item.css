@@ -212,6 +212,13 @@
   display: none;
   flex-shrink: 0;
   align-items: center;
+  /* Same move `.icon-start` already makes: give slotted content an inherited
+     colour to follow, so a plain `<span slot="trailing">label</span>` greys with
+     the rest of a disabled header instead of staying at full contrast. It does
+     NOT reach a component that paints its own surface — `mud-tag` and
+     `mud-badge` have no disabled design, which is their own issue, not this
+     rule's. */
+  color: var(--_trigger-color);
 }
 
 .trailing.has-content {

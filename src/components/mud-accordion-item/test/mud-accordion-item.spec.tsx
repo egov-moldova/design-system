@@ -131,10 +131,15 @@ describe('mud-accordion-item', () => {
     const ours = root!.querySelector('#ours')!;
     const nested = root!.querySelector('#nested')!;
 
+    const wrapper = root!.querySelector('#wrapper')!;
+
     // While disabled: the write lands on the elements the consumer handed to the
-    // slot, and on nothing below them.
+    // slot, and on nothing below them. The wrapper is directly assigned, so it
+    // is written to as well — a narrowing to "form-control-like tags only" must
+    // fail here rather than pass silently.
     expect(ours.hasAttribute('disabled')).toBe(true);
     expect(authored.hasAttribute('disabled')).toBe(true);
+    expect(wrapper.hasAttribute('disabled')).toBe(true);
     expect(nested.hasAttribute('disabled')).toBe(false);
 
     (root as HTMLElement).removeAttribute('disabled');
@@ -143,7 +148,98 @@ describe('mud-accordion-item', () => {
     // The transition issue #17 broke. `ours` goes back because the component
     // recorded writing it; `authored` stays because it never entered that record.
     expect(ours.hasAttribute('disabled')).toBe(false);
+    expect(wrapper.hasAttribute('disabled')).toBe(false);
     expect(authored.hasAttribute('disabled')).toBe(true);
+    expect(nested.hasAttribute('disabled')).toBe(false);
+
+    // A SECOND cycle. A ledger built once at connect-time rather than per
+    // toggle would pass the first cycle and fail here.
+    (root as HTMLElement).setAttribute('disabled', '');
+    await waitForChanges();
+    expect(ours.hasAttribute('disabled')).toBe(true);
+    expect(authored.hasAttribute('disabled')).toBe(true);
+    (root as HTMLElement).removeAttribute('disabled');
+    await waitForChanges();
+    expect(ours.hasAttribute('disabled')).toBe(false);
+    expect(authored.hasAttribute('disabled')).toBe(true);
+  });
+
+  it('writes `disabled` only on the control slot, never on the text slots', async () => {
+    const { root } = await render(
+      <mud-accordion-item disabled>
+        <h3 slot="heading" id="head">
+          Shipping
+        </h3>
+        <span slot="supporting" id="sup">
+          Unavailable
+        </span>
+        <button slot="trailing" id="ctl">
+          Track
+        </button>
+      </mud-accordion-item>,
+    );
+    // `disabled` on an <h3> or a <span> is invalid HTML and buys nothing; those
+    // two slots are documented for text and are greyed by inherited colour.
+    expect(root!.querySelector('#head')!.hasAttribute('disabled')).toBe(false);
+    expect(root!.querySelector('#sup')!.hasAttribute('disabled')).toBe(false);
+    expect(root!.querySelector('#ctl')!.hasAttribute('disabled')).toBe(true);
+
+    // Keyboard reach is closed on all three regardless, which is why narrowing
+    // the attribute leaves nothing operable.
+    expect(root!.querySelector('#head')!.getAttribute('tabindex')).toBe('-1');
+    expect(root!.querySelector('#sup')!.getAttribute('tabindex')).toBe('-1');
+    expect(root!.querySelector('#ctl')!.getAttribute('tabindex')).toBe('-1');
+  });
+
+  it('suppresses and restores `tabindex` on slotted content (WCAG 4.1.2)', async () => {
+    const { root, waitForChanges } = await render(
+      <mud-accordion-item heading="Payment" disabled>
+        <a slot="trailing" id="link" href="#go">
+          Details
+        </a>
+        <button slot="trailing" id="focusable" tabindex="0">
+          Track
+        </button>
+      </mud-accordion-item>,
+    );
+    const link = root!.querySelector('#link')!;
+    const focusable = root!.querySelector('#focusable')!;
+
+    // `disabled` does nothing to an <a href>. Without this, the element stays
+    // Tab-reachable and Enter-activatable while the accessibility tree reports
+    // it disabled — the contradiction WCAG 2.1 SC 4.1.2 forbids.
+    expect(link.getAttribute('tabindex')).toBe('-1');
+    expect(focusable.getAttribute('tabindex')).toBe('-1');
+
+    (root as HTMLElement).removeAttribute('disabled');
+    await waitForChanges();
+
+    // Restored exactly as authored: absent stays absent, `0` comes back as `0`.
+    expect(link.hasAttribute('tabindex')).toBe(false);
+    expect(focusable.getAttribute('tabindex')).toBe('0');
+  });
+
+  it('does not claim a control whose `disabled` is a property, not an attribute', async () => {
+    const { root, waitForChanges } = await render(
+      <mud-accordion-item heading="Payment">
+        <button slot="trailing" id="prop">
+          Track
+        </button>
+      </mud-accordion-item>,
+    );
+    const el = root!.querySelector('#prop')! as HTMLButtonElement;
+    // A non-reflecting custom element is the real case; a native button is the
+    // reachable stand-in, since setting the property here reflects nothing back
+    // that the component reads other than `.disabled`.
+    el.removeAttribute('disabled');
+    Object.defineProperty(el, 'disabled', { value: true, configurable: true });
+
+    (root as HTMLElement).setAttribute('disabled', '');
+    await waitForChanges();
+    (root as HTMLElement).removeAttribute('disabled');
+    await waitForChanges();
+
+    expect((el as { disabled?: unknown }).disabled).toBe(true);
   });
 
   it('gives the attribute back to a control unslotted while the item is disabled', async () => {
@@ -180,5 +276,21 @@ describe('mud-accordion-item', () => {
     (root as HTMLElement).removeAttribute('disabled');
     await waitForChanges();
     expect(late.hasAttribute('disabled')).toBe(false);
+  });
+
+  it('does not claim a control slotted in already disabled while the item is disabled', async () => {
+    const { root, waitForChanges } = await render(<mud-accordion-item heading="Payment" disabled></mud-accordion-item>);
+    const late = document.createElement('button');
+    late.setAttribute('slot', 'trailing');
+    late.setAttribute('disabled', '');
+    root!.appendChild(late);
+    root!.shadowRoot!.querySelector('slot[name="trailing"]')!.dispatchEvent(new Event('slotchange'));
+    await waitForChanges();
+
+    (root as HTMLElement).removeAttribute('disabled');
+    await waitForChanges();
+    // It arrived carrying the consumer's own value, so it never entered the
+    // ledger and must survive the re-enable — issue #17 on the append path.
+    expect(late.hasAttribute('disabled')).toBe(true);
   });
 });

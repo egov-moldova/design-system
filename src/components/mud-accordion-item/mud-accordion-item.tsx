@@ -12,6 +12,25 @@ let uidSeed = 0;
  */
 const SUMMARY_SLOTS = ['heading', 'supporting', 'trailing'] as const;
 
+/**
+ * The one header slot documented to carry controls, and so the only one whose
+ * assigned elements have `disabled` written onto them. `heading` and
+ * `supporting` are text slots: writing `disabled` onto a consumer's `<h3>` or
+ * `<span>` is invalid HTML, is observable from their own CSS, and buys nothing —
+ * those two are already greyed through the inherited `--_heading-color` /
+ * `--_supporting-color`. Their keyboard and mouse reach is still closed, by the
+ * `tabindex` mirror below and by the stylesheet, so nothing operable is left
+ * operable; what a control placed there does NOT get is the disabled semantics
+ * assistive technology and form submission read.
+ */
+const CONTROL_SLOT = 'trailing';
+
+/** Put a `tabindex` back exactly as authored; `null` means it had none. */
+const restoreTabindex = (el: Element, previous: string | null) => {
+  if (previous === null) el.removeAttribute('tabindex');
+  else el.setAttribute('tabindex', previous);
+};
+
 // `@csspart` duplicates `@part` and `@fires` duplicates the `@Event()` decorators in
 // the docblock below, because two generators read it and neither reads the other's
 // tag: Stencil's readme takes `@part` and the decorators, web-component-analyzer —
@@ -38,17 +57,28 @@ const SUMMARY_SLOTS = ['heading', 'supporting', 'trailing'] as const;
  * Two limits, both deliberate, because `disabled` is an attribute and not a
  * force field:
  *
- * 1. It reaches only elements you place DIRECTLY in a slot. A control nested
- *    inside a slotted wrapper (`<div slot="trailing"><button>`) receives nothing —
- *    the component does not claim DOM that was never handed to a slot. The
- *    stylesheet's `pointer-events` rule keeps the mouse off it as long as it does
- *    not set its own `pointer-events`, and nothing keeps the keyboard off it.
- * 2. It does what the element makes of it. Native form controls and `mud-*`
- *    controls become non-interactive; an `<a href>`, a `<div tabindex>`, or a
- *    custom element with no `disabled` behaviour just carries the attribute and
- *    stays focusable.
+ * 1. It reaches the elements ASSIGNED to a slot, never their descendants. A
+ *    control nested inside a slotted wrapper (`<div slot="trailing"><button>`)
+ *    receives nothing — the component does not claim DOM that was never handed
+ *    to a slot. The stylesheet's `pointer-events` rule keeps the mouse off it as
+ *    long as it does not set its own `pointer-events`, and nothing keeps the
+ *    keyboard off it. (Assignment is resolved through the flat tree, so if your
+ *    own component forwards a `<slot slot="trailing">` into this one, what YOUR
+ *    slot distributes is what gets written — measured. That is still content you
+ *    handed to the slot, one component further out.)
+ * 2. `disabled` does what the element makes of it, and that is not universal:
+ *    23 of the 48 components in this library implement it. `mud-tag` and
+ *    `mud-badge` do NOT — the attribute is inert on them, and they render
+ *    identically whether the item is disabled or not. An `<a href>`, a
+ *    `<div tabindex>` or any custom element without `disabled` behaviour is the
+ *    same. For those, `tabindex="-1"` is mirrored alongside the attribute so the
+ *    keyboard at least matches what assistive technology is told; the element is
+ *    still clickable by script and still activates programmatically.
  *
- * Both cases end the same way: put a real control directly in the slot.
+ * So this state is a UX affordance, not an authorization boundary. An action
+ * that must not be reachable while the item is disabled needs its own guard —
+ * a real control with native `disabled` placed directly in the slot, and
+ * server-side enforcement for anything security- or state-sensitive.
  *
  * @element mud-accordion-item
  *
@@ -149,6 +179,26 @@ export class MudAccordionItem {
    */
   private ownedDisabled = new Set<Element>();
 
+  /**
+   * The elements whose `tabindex` this component overwrote, mapped to the value
+   * they had before — `null` for "no attribute". Restored verbatim on enable.
+   *
+   * Why this exists at all: `disabled` removes a native form control from the
+   * tab order, but it does nothing to an `<a href>`, a `<div tabindex>`, or a
+   * custom element that does not implement it. Measured in Chromium, such an
+   * element under a disabled item is still Tab-reachable and still activates on
+   * Enter — while the disabled header `<button>` ancestor makes the
+   * accessibility tree report it as `disabled`. Assistive technology would
+   * announce "unavailable" about a control that works, which is WCAG 2.1
+   * SC 4.1.2. This closes that for directly slotted elements.
+   *
+   * A Map rather than a Set because a consumer's own `tabindex` must come back
+   * exactly as authored, including `tabindex="0"` — the case a Set would have to
+   * skip, and skipping it would leave tab-reachable precisely the elements that
+   * were tab-reachable.
+   */
+  private ownedTabindex = new Map<Element, string | null>();
+
   @State() private headingId: string = '';
 
   @State() private panelId: string = '';
@@ -197,6 +247,14 @@ export class MudAccordionItem {
   componentDidLoad() {
     // An item that renders with `disabled` already set fires no @Watch.
     this.syncSlottedDisabled();
+  }
+
+  disconnectedCallback() {
+    // Acquire/release symmetry (`src/components/AGENTS.md:93`). The writes live
+    // in the consumer's DOM, which outlives this instance: a framework that
+    // unmounts the item, or moves a slotted control into a toolbar, would
+    // otherwise leave it carrying a `disabled` nobody can attribute.
+    this.releaseSlottedWrites();
   }
 
   /**
@@ -251,45 +309,76 @@ export class MudAccordionItem {
    */
   private syncSlottedDisabled() {
     if (!this.disabled) {
-      // Give back exactly what was taken. Deliberately before the shadowRoot
-      // guard: releasing must not depend on the slots still resolving.
-      for (const el of this.ownedDisabled) el.removeAttribute('disabled');
-      this.ownedDisabled.clear();
+      this.releaseSlottedWrites();
       return;
     }
     const root = this.host.shadowRoot;
     if (!root) return;
 
     const assigned = new Set<Element>();
+    const controls = new Set<Element>();
     let resolvedASlot = false;
     for (const name of SUMMARY_SLOTS) {
       const slot = root.querySelector<HTMLSlotElement>(`slot[name="${name}"]`);
       if (typeof slot?.assignedElements !== 'function') continue;
       resolvedASlot = true;
-      for (const el of slot.assignedElements({ flatten: true })) assigned.add(el);
+      for (const el of slot.assignedElements({ flatten: true })) {
+        assigned.add(el);
+        if (name === CONTROL_SLOT) controls.add(el);
+      }
     }
     // Without a single resolvable slot there is no evidence about what is
     // assigned, and an empty `assigned` would read as "everything left".
     if (!resolvedASlot) return;
 
-    // Anything we disabled that has since left the header is no longer ours to
-    // hold. Give the attribute back now: keeping it would leave our `disabled`
-    // stuck on an element that is somewhere else in the consumer's page, and
-    // keeping the reference would pin it until an enable that may never come.
+    // Anything written to that has since left the header is no longer ours to
+    // hold. Give it back now: keeping it would leave our attribute stuck on an
+    // element that is somewhere else in the consumer's page, and keeping the
+    // reference would pin it until an enable that may never come.
     for (const el of this.ownedDisabled) {
-      if (assigned.has(el)) continue;
+      if (controls.has(el)) continue;
       el.removeAttribute('disabled');
       this.ownedDisabled.delete(el);
     }
+    for (const [el, previous] of this.ownedTabindex) {
+      if (assigned.has(el)) continue;
+      restoreTabindex(el, previous);
+      this.ownedTabindex.delete(el);
+    }
 
     for (const el of assigned) {
-      // Already disabled: either the consumer's own value, or ours from an
-      // earlier pass. Either way there is nothing to write — and a consumer
-      // value must never enter the set, or re-enabling would clear it.
+      if (this.ownedTabindex.has(el)) continue;
+      this.ownedTabindex.set(el, el.getAttribute('tabindex'));
+      el.setAttribute('tabindex', '-1');
+    }
+
+    for (const el of controls) {
+      // Already disabled, by attribute OR by property. The property check is
+      // not belt-and-braces: a custom element that does not reflect `disabled`
+      // (React 19 sets unknown props on custom elements as properties) would
+      // otherwise be claimed here and cleared on re-enable — issue #17 again,
+      // in the one shape no in-repo test can reach, since every `mud-*` control
+      // reflects.
       if (el.hasAttribute('disabled')) continue;
+      if ((el as { disabled?: unknown }).disabled === true) continue;
       el.setAttribute('disabled', '');
       this.ownedDisabled.add(el);
     }
+  }
+
+  /**
+   * Hand back every attribute this component wrote, in both ledgers. Called on
+   * re-enable and on disconnect.
+   *
+   * Deliberately independent of the shadow root and of the slots: releasing must
+   * not depend on anything still resolving, because the elements it releases
+   * live in the consumer's DOM and outlive this instance.
+   */
+  private releaseSlottedWrites() {
+    for (const el of this.ownedDisabled) el.removeAttribute('disabled');
+    this.ownedDisabled.clear();
+    for (const [el, previous] of this.ownedTabindex) restoreTabindex(el, previous);
+    this.ownedTabindex.clear();
   }
 
   private slotHasContent(ev: Event): boolean {

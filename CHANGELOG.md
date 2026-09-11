@@ -4,27 +4,45 @@
 
 ### Changed — `mud-accordion-item` no longer writes `disabled` past the slot
 
-While an item is disabled it sets `disabled` on the controls you slot into its
-`heading`, `supporting` and `trailing` slots. It used to also set it on all of their
-descendants, and then remove it from everything when the item was re-enabled. It kept
-no record of what it had written, so it could not tell your attributes from its own —
-a control you shipped as `<mud-button slot="trailing" disabled>` came back enabled with
-the item, with no event and no warning.
+While an item is disabled it sets `disabled` on the controls you place directly in
+its `trailing` slot. It used to set it on every element in `heading`, `supporting`
+and `trailing` AND on all of their descendants, and then remove it from everything
+when the item was re-enabled. It kept no record of what it had written, so it could
+not tell your attributes from its own — a control you shipped as
+`<mud-button slot="trailing" disabled>` came back enabled with the item, with no
+event and no warning.
 
 **Your `disabled` now survives.** The item records the elements it writes to, and on
-re-enable it removes the attribute only from those. A control that already carried
-`disabled` never enters that record and is never touched.
+re-enable removes the attribute only from those. A control that already carried
+`disabled` — as an attribute or as a property — never enters that record and is never
+touched. The record is also released when the item is removed from the document, so a
+control you move elsewhere does not leave carrying an attribute you did not write.
 
-**The write no longer reaches past the slot.** Only elements DIRECTLY assigned to the
-three header slots receive the attribute. If you wrapped a control —
-`<div slot="trailing"><button>…</button></div>` — that inner button used to be disabled
-too and no longer is. It is blocked from the mouse by a `pointer-events` rule in the
-item's own stylesheet, but it stays keyboard-reachable while the item is disabled. Put
-controls directly in the slot.
+**Three narrowings.** The attribute now reaches only elements assigned to a slot,
+never their descendants: if you wrapped a control in `<div slot="trailing">`, that
+inner control used to be disabled and no longer is. It reaches only the `trailing`
+slot: `disabled` on an `<h3 slot="heading">` was invalid HTML and bought nothing, and
+those two slots are greyed through inherited colour instead. And the dim the item used
+to paint over all slotted header content — an `opacity` plus `filter: grayscale(1)` —
+is gone, along with `--accordion-item-slotted-opacity-disabled`, which existed only on
+an unreleased branch. Slotted controls render their own disabled state.
 
-Also gone, and it never shipped: `--accordion-item-slotted-opacity-disabled`, which
-existed only on the unreleased branch that preceded this entry. Slotted controls render
-their own disabled tokens; the item no longer dims them from outside.
+**What still reaches everything.** While the item is disabled, every element assigned
+to the three header slots gets `tabindex="-1"`, restored to exactly the value you
+authored when the item is enabled again. `disabled` does nothing to an `<a href>`, a
+`<div tabindex>`, or a custom element that does not implement it — 23 of this
+library's 48 components do, and `mud-tag` and `mud-badge` do not — so without this a
+control would stay Tab-reachable and Enter-activatable while assistive technology was
+told it was unavailable. The stylesheet also keeps `pointer-events: none` on assigned
+elements.
+
+**What is not covered, stated plainly.** A control NESTED inside a slotted wrapper
+gets no attribute and no `tabindex`; it is blocked from the mouse only if it does not
+set its own `pointer-events`, and it stays keyboard-reachable. `mud-tag` and
+`mud-badge` render identically whether the item is disabled or not, because they have
+no disabled design — unchanged from 1.0.6. And this state is a UX affordance, not an
+authorization boundary: an action that must not be reachable while the item is
+disabled needs its own guard, and server-side enforcement if it is security-sensitive.
 
 ### Changed — public API surface (breaking for deep imports)
 

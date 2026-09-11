@@ -158,16 +158,27 @@ export namespace Components {
      * what used to re-enable your control behind your back (issue #17).
      * Two limits, both deliberate, because `disabled` is an attribute and not a
      * force field:
-     * 1. It reaches only elements you place DIRECTLY in a slot. A control nested
-     *    inside a slotted wrapper (`<div slot="trailing"><button>`) receives nothing —
-     *    the component does not claim DOM that was never handed to a slot. The
-     *    stylesheet's `pointer-events` rule keeps the mouse off it as long as it does
-     *    not set its own `pointer-events`, and nothing keeps the keyboard off it.
-     * 2. It does what the element makes of it. Native form controls and `mud-*`
-     *    controls become non-interactive; an `<a href>`, a `<div tabindex>`, or a
-     *    custom element with no `disabled` behaviour just carries the attribute and
-     *    stays focusable.
-     * Both cases end the same way: put a real control directly in the slot.
+     * 1. It reaches the elements ASSIGNED to a slot, never their descendants. A
+     *    control nested inside a slotted wrapper (`<div slot="trailing"><button>`)
+     *    receives nothing — the component does not claim DOM that was never handed
+     *    to a slot. The stylesheet's `pointer-events` rule keeps the mouse off it as
+     *    long as it does not set its own `pointer-events`, and nothing keeps the
+     *    keyboard off it. (Assignment is resolved through the flat tree, so if your
+     *    own component forwards a `<slot slot="trailing">` into this one, what YOUR
+     *    slot distributes is what gets written — measured. That is still content you
+     *    handed to the slot, one component further out.)
+     * 2. `disabled` does what the element makes of it, and that is not universal:
+     *    23 of the 48 components in this library implement it. `mud-tag` and
+     *    `mud-badge` do NOT — the attribute is inert on them, and they render
+     *    identically whether the item is disabled or not. An `<a href>`, a
+     *    `<div tabindex>` or any custom element without `disabled` behaviour is the
+     *    same. For those, `tabindex="-1"` is mirrored alongside the attribute so the
+     *    keyboard at least matches what assistive technology is told; the element is
+     *    still clickable by script and still activates programmatically.
+     * So this state is a UX affordance, not an authorization boundary. An action
+     * that must not be reachable while the item is disabled needs its own guard —
+     * a real control with native `disabled` placed directly in the slot, and
+     * server-side enforcement for anything security- or state-sensitive.
      * @element mud-accordion-item
      * @csspart header - The button that toggles open/closed.
      * @csspart panel - The region revealed when open.
@@ -3847,16 +3858,27 @@ declare global {
      * what used to re-enable your control behind your back (issue #17).
      * Two limits, both deliberate, because `disabled` is an attribute and not a
      * force field:
-     * 1. It reaches only elements you place DIRECTLY in a slot. A control nested
-     *    inside a slotted wrapper (`<div slot="trailing"><button>`) receives nothing —
-     *    the component does not claim DOM that was never handed to a slot. The
-     *    stylesheet's `pointer-events` rule keeps the mouse off it as long as it does
-     *    not set its own `pointer-events`, and nothing keeps the keyboard off it.
-     * 2. It does what the element makes of it. Native form controls and `mud-*`
-     *    controls become non-interactive; an `<a href>`, a `<div tabindex>`, or a
-     *    custom element with no `disabled` behaviour just carries the attribute and
-     *    stays focusable.
-     * Both cases end the same way: put a real control directly in the slot.
+     * 1. It reaches the elements ASSIGNED to a slot, never their descendants. A
+     *    control nested inside a slotted wrapper (`<div slot="trailing"><button>`)
+     *    receives nothing — the component does not claim DOM that was never handed
+     *    to a slot. The stylesheet's `pointer-events` rule keeps the mouse off it as
+     *    long as it does not set its own `pointer-events`, and nothing keeps the
+     *    keyboard off it. (Assignment is resolved through the flat tree, so if your
+     *    own component forwards a `<slot slot="trailing">` into this one, what YOUR
+     *    slot distributes is what gets written — measured. That is still content you
+     *    handed to the slot, one component further out.)
+     * 2. `disabled` does what the element makes of it, and that is not universal:
+     *    23 of the 48 components in this library implement it. `mud-tag` and
+     *    `mud-badge` do NOT — the attribute is inert on them, and they render
+     *    identically whether the item is disabled or not. An `<a href>`, a
+     *    `<div tabindex>` or any custom element without `disabled` behaviour is the
+     *    same. For those, `tabindex="-1"` is mirrored alongside the attribute so the
+     *    keyboard at least matches what assistive technology is told; the element is
+     *    still clickable by script and still activates programmatically.
+     * So this state is a UX affordance, not an authorization boundary. An action
+     * that must not be reachable while the item is disabled needs its own guard —
+     * a real control with native `disabled` placed directly in the slot, and
+     * server-side enforcement for anything security- or state-sensitive.
      * @element mud-accordion-item
      * @csspart header - The button that toggles open/closed.
      * @csspart panel - The region revealed when open.
@@ -5544,16 +5566,27 @@ declare namespace LocalJSX {
      * what used to re-enable your control behind your back (issue #17).
      * Two limits, both deliberate, because `disabled` is an attribute and not a
      * force field:
-     * 1. It reaches only elements you place DIRECTLY in a slot. A control nested
-     *    inside a slotted wrapper (`<div slot="trailing"><button>`) receives nothing —
-     *    the component does not claim DOM that was never handed to a slot. The
-     *    stylesheet's `pointer-events` rule keeps the mouse off it as long as it does
-     *    not set its own `pointer-events`, and nothing keeps the keyboard off it.
-     * 2. It does what the element makes of it. Native form controls and `mud-*`
-     *    controls become non-interactive; an `<a href>`, a `<div tabindex>`, or a
-     *    custom element with no `disabled` behaviour just carries the attribute and
-     *    stays focusable.
-     * Both cases end the same way: put a real control directly in the slot.
+     * 1. It reaches the elements ASSIGNED to a slot, never their descendants. A
+     *    control nested inside a slotted wrapper (`<div slot="trailing"><button>`)
+     *    receives nothing — the component does not claim DOM that was never handed
+     *    to a slot. The stylesheet's `pointer-events` rule keeps the mouse off it as
+     *    long as it does not set its own `pointer-events`, and nothing keeps the
+     *    keyboard off it. (Assignment is resolved through the flat tree, so if your
+     *    own component forwards a `<slot slot="trailing">` into this one, what YOUR
+     *    slot distributes is what gets written — measured. That is still content you
+     *    handed to the slot, one component further out.)
+     * 2. `disabled` does what the element makes of it, and that is not universal:
+     *    23 of the 48 components in this library implement it. `mud-tag` and
+     *    `mud-badge` do NOT — the attribute is inert on them, and they render
+     *    identically whether the item is disabled or not. An `<a href>`, a
+     *    `<div tabindex>` or any custom element without `disabled` behaviour is the
+     *    same. For those, `tabindex="-1"` is mirrored alongside the attribute so the
+     *    keyboard at least matches what assistive technology is told; the element is
+     *    still clickable by script and still activates programmatically.
+     * So this state is a UX affordance, not an authorization boundary. An action
+     * that must not be reachable while the item is disabled needs its own guard —
+     * a real control with native `disabled` placed directly in the slot, and
+     * server-side enforcement for anything security- or state-sensitive.
      * @element mud-accordion-item
      * @csspart header - The button that toggles open/closed.
      * @csspart panel - The region revealed when open.
@@ -10277,16 +10310,27 @@ declare module "@stencil/core" {
              * what used to re-enable your control behind your back (issue #17).
              * Two limits, both deliberate, because `disabled` is an attribute and not a
              * force field:
-             * 1. It reaches only elements you place DIRECTLY in a slot. A control nested
-             *    inside a slotted wrapper (`<div slot="trailing"><button>`) receives nothing —
-             *    the component does not claim DOM that was never handed to a slot. The
-             *    stylesheet's `pointer-events` rule keeps the mouse off it as long as it does
-             *    not set its own `pointer-events`, and nothing keeps the keyboard off it.
-             * 2. It does what the element makes of it. Native form controls and `mud-*`
-             *    controls become non-interactive; an `<a href>`, a `<div tabindex>`, or a
-             *    custom element with no `disabled` behaviour just carries the attribute and
-             *    stays focusable.
-             * Both cases end the same way: put a real control directly in the slot.
+             * 1. It reaches the elements ASSIGNED to a slot, never their descendants. A
+             *    control nested inside a slotted wrapper (`<div slot="trailing"><button>`)
+             *    receives nothing — the component does not claim DOM that was never handed
+             *    to a slot. The stylesheet's `pointer-events` rule keeps the mouse off it as
+             *    long as it does not set its own `pointer-events`, and nothing keeps the
+             *    keyboard off it. (Assignment is resolved through the flat tree, so if your
+             *    own component forwards a `<slot slot="trailing">` into this one, what YOUR
+             *    slot distributes is what gets written — measured. That is still content you
+             *    handed to the slot, one component further out.)
+             * 2. `disabled` does what the element makes of it, and that is not universal:
+             *    23 of the 48 components in this library implement it. `mud-tag` and
+             *    `mud-badge` do NOT — the attribute is inert on them, and they render
+             *    identically whether the item is disabled or not. An `<a href>`, a
+             *    `<div tabindex>` or any custom element without `disabled` behaviour is the
+             *    same. For those, `tabindex="-1"` is mirrored alongside the attribute so the
+             *    keyboard at least matches what assistive technology is told; the element is
+             *    still clickable by script and still activates programmatically.
+             * So this state is a UX affordance, not an authorization boundary. An action
+             * that must not be reachable while the item is disabled needs its own guard —
+             * a real control with native `disabled` placed directly in the slot, and
+             * server-side enforcement for anything security- or state-sensitive.
              * @element mud-accordion-item
              * @csspart header - The button that toggles open/closed.
              * @csspart panel - The region revealed when open.

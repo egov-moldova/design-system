@@ -140,8 +140,11 @@ export const SlottedDisabledContract: Story = {
       <button id="parking" type="button">focus parking</button>
       <mud-accordion mode="multiple">
         <mud-accordion-item id="item" heading="Payment" disabled>
+          <span id="head-slot" slot="heading">Payment overdue</span>
+          <span id="sup-slot" slot="supporting">Tracking unavailable</span>
           <mud-button id="authored" slot="trailing" variant="secondary" size="sm" disabled>Retry</mud-button>
           <mud-button id="ours" slot="trailing" variant="secondary" size="sm">Track</mud-button>
+          <a id="link" slot="trailing" href="#go">Details</a>
           <div slot="trailing"><button id="nested" type="button">Nested</button></div>
           Panel body.
         </mud-accordion-item>
@@ -192,6 +195,36 @@ export const SlottedDisabledContract: Story = {
     }
     if (nested.hasAttribute('disabled')) {
       throw new Error('`disabled` reached a control nested inside a slotted wrapper');
+    }
+
+    // 1b. The pointer guard is a THREE-clause selector list. Drive every clause:
+    //     a typo in the `heading` or `supporting` arm would otherwise ship green,
+    //     and mock-doc computes no styles, so only this lane can see it.
+    for (const [name, el] of [
+      ['heading', find('head-slot')],
+      ['supporting', find('sup-slot')],
+      ['trailing', ours],
+    ] as const) {
+      if (getComputedStyle(el).pointerEvents !== 'none') {
+        throw new Error(`slot="${name}" content is still pointer-interactive while the item is disabled`);
+      }
+    }
+
+    // 1c. `!important` is load-bearing and this is its only proof: an inline
+    //     declaration on the slotted element must not defeat the guard. Measured
+    //     to hold because for `!important` the INNER (shadow) tree wins.
+    ours.style.setProperty('pointer-events', 'auto', 'important');
+    if (getComputedStyle(ours).pointerEvents !== 'none') {
+      throw new Error('an inline `pointer-events !important` on the slotted control defeated the guard');
+    }
+    ours.style.removeProperty('pointer-events');
+
+    // 1d. The keyboard mirror. `disabled` does nothing to an <a href>, so without
+    //     `tabindex="-1"` this element is Tab-reachable while the accessibility
+    //     tree reports it disabled — WCAG 2.1 SC 4.1.2.
+    const link = find('link');
+    if (link.getAttribute('tabindex') !== '-1') {
+      throw new Error('a slotted <a href> is still in the tab order while the item is disabled');
     }
 
     // 2. The nested control gets no attribute, so the stylesheet is all that stands
@@ -259,6 +292,9 @@ export const SlottedDisabledContract: Story = {
     }
     if (hitTest(nested) !== nested) {
       throw new Error('a nested slotted control stayed hit-test-blocked after the item was enabled');
+    }
+    if (link.hasAttribute('tabindex')) {
+      throw new Error('the tabindex mirror was not removed when the item was enabled');
     }
   },
 };
