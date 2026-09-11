@@ -36,9 +36,10 @@ force field:
    slot distributes is what gets written — measured. That is still content you
    handed to the slot, one component further out.)
 2. `disabled` does what the element makes of it, and that is not universal —
-   28 of this library's 56 components implement it at the time of writing.
-   Recount with `node scripts/count-disabled-props.mjs`. The load-bearing half
-   is that `mud-tag` and `mud-badge` are among those that do NOT (issue #21),
+   27 of this library's 56 components implement it at the time of writing;
+   contributors can recount with `node scripts/count-disabled-props.mjs`, which
+   lives in the repo rather than in the published package. The load-bearing
+   half is that `mud-tag` and `mud-badge` are among those that do NOT (#21),
    so the attribute is inert on them, and they render
    identically whether the item is disabled or not. An `<a href>`, a
    `<div tabindex>` or any custom element without `disabled` behaviour is the

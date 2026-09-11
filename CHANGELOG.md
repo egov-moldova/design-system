@@ -27,8 +27,8 @@ two slots are greyed through inherited colour instead.
 **What still reaches everything.** While the item is disabled, every element assigned
 to the three header slots gets `tabindex="-1"`, restored to exactly the value you
 authored when the item is enabled again. `disabled` does nothing to an `<a href>`, a
-`<div tabindex>`, or a custom element that does not implement it — 23 of this
-library's components do — `mud-tag` and `mud-badge` do not — so without this a
+`<div tabindex>`, or a custom element that does not implement it — `mud-tag` and
+`mud-badge` do not — so without this a
 control would stay Tab-reachable and Enter-activatable while assistive technology was
 told it was unavailable. The stylesheet also keeps `pointer-events: none` on assigned
 elements.

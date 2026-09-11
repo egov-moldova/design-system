@@ -7,11 +7,21 @@
  * `disabled` is not universal across slottable MUD controls. That is a claim
  * about this repo, so it needs a way to be recounted rather than trusted.
  *
- * Counts by the `@Component({ tag: … })` decorator, not by directory. Five
- * components ship from a sibling's directory — `mud-tab` inside `mud-tabs/`,
- * `mud-menu-item` inside `mud-menu/`, and three more — so a per-directory count
- * undercounts, and a glob over every `.tsx` in a directory over-counts against a
- * directory denominator. Both mistakes were made before this script existed.
+ * Counts by the `@Component({ tag: … })` decorator, not by directory. Nine
+ * components ship from five siblings' directories — the four `mud-header-*`
+ * inside `mud-header/`, two `mud-sidebar-*`, `mud-menu-item`, `mud-tab` and
+ * `mud-breadcrumb-item` — so a per-directory count undercounts, and a glob over
+ * every `.tsx` in a directory over-counts against a directory denominator. Both
+ * mistakes were made before this script existed; `--list` against a listing of
+ * the component directories re-derives the nine.
+ *
+ * `src/legacy/` is excluded on purpose: those `cor-*` components are archived and
+ * unshipped, and the claim this script serves is about the `mud-*` set.
+ *
+ * The right-hand anchor on DISABLED_PROP is load-bearing, not tidiness:
+ * `mud-date-picker` declares `@Prop() disabledDates?: string[]` and no `disabled`
+ * prop at all, so an unanchored match counts it and puts it on the wrong side of
+ * the very line the caller is documenting.
  *
  *   node scripts/count-disabled-props.mjs
  *   node scripts/count-disabled-props.mjs --list
@@ -22,7 +32,7 @@ import { fileURLToPath } from 'node:url';
 
 const componentsDir = join(dirname(fileURLToPath(import.meta.url)), '..', 'src', 'components');
 const COMPONENT_TAG = /@Component\(\{[\s\S]*?tag:\s*'([a-z][a-z0-9-]*)'/;
-const DISABLED_PROP = /@Prop\([^)]*\)\s*disabled/;
+const DISABLED_PROP = /@Prop\([^)]*\)\s*disabled\s*[?:=]/;
 
 const components = [];
 for (const dir of readdirSync(componentsDir)) {
