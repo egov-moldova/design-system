@@ -70,39 +70,28 @@
   --_trigger-color: var(--accordion-item-trigger-color-disabled);
 }
 
-/* Slotted header content under a disabled item.
+/* Mouse net for what the attribute deliberately does not reach.
  *
- * The component deliberately writes nothing onto slotted elements — `disabled`
- * is the consumer's cell, and writing into it is what made an independently
- * disabled control silently come back enabled (issue #17). The state is
- * expressed here instead, in our own stylesheet, where it cannot collide.
+ * `disabled` is written onto the elements DIRECTLY assigned to these three slots
+ * (see the TSX), which is where controls belong. A control NESTED inside a
+ * slotted wrapper gets no attribute, and a disabled native <button> ancestor does
+ * not block clicks on its flat-tree slotted descendants — measured in Chromium.
+ * This line closes that hole for the mouse. It does not close it for the
+ * keyboard; CSS cannot, and `::slotted` cannot be followed by a descendant
+ * combinator to reach the nested control directly.
  *
- * `pointer-events` is correctness, not polish: a disabled native `<button>`
- * ancestor blocks neither clicks nor focus on its flat-tree slotted
- * descendants, so without this line a slotted control stays clickable inside a
- * disabled header. `!important` is load-bearing — measured, a plain declaration
- * loses to an inline `style="pointer-events:auto"` on the slotted element.
- * Keyboard reach is closed separately, by `inert` on the trailing wrapper in
- * the TSX: CSS cannot close it.
+ * No `!important`: the attribute carries the contract, this is a net. A consumer
+ * who re-enables pointer events on their own element is deciding about their own
+ * DOM, and nothing here should overrule that.
  *
- * Scoped to the three slots the deleted propagation covered, deliberately: a
- * bare `::slotted(*)` would also catch the default panel slot and `icon-start`,
- * widening the change beyond the defect. `icon-start` needs nothing — it already
- * follows the header's `currentcolor` through the rule further down this file.
- *
- * No `forced-colors` block: measured with the media emulated, `opacity` and
- * `pointer-events` both survive it, so the dim keeps working. A block that reset
- * `opacity` to `1` would remove the only signal that does.
- *
- * The opacity is a component token so a consumer who wants their own treatment
- * can neutralise it and style `mud-accordion-item[disabled] [slot]` from their
- * own stylesheet. The pointer-events guard is not neutralisable, by design. */
+ * No `opacity` and no `filter`, deliberately. Each slotted control renders its
+ * own disabled tokens now; a second dim on top of that was measured at 1.23:1
+ * contrast, and `filter` makes every slotted header element a containing block
+ * for `position: fixed` descendants. */
 :host([disabled]) slot[name='heading']::slotted(*),
 :host([disabled]) slot[name='supporting']::slotted(*),
 :host([disabled]) slot[name='trailing']::slotted(*) {
-  opacity: var(--accordion-item-slotted-opacity-disabled);
-  filter: grayscale(1);
-  pointer-events: none !important;
+  pointer-events: none;
 }
 
 /* ---------- Header (the clickable row) ---------- */

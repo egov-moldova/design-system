@@ -4,6 +4,14 @@ import type { AccordionIconPosition, AccordionSize } from '../mud-accordion/mud-
 
 let uidSeed = 0;
 
+/**
+ * The header slots whose directly assigned elements mirror the item's own
+ * `disabled`. The panel's default slot is deliberately absent — its content is
+ * hidden when closed and is not part of the header's interactive row — and so is
+ * `icon-start`, which carries decoration rather than controls.
+ */
+const SUMMARY_SLOTS = ['heading', 'supporting', 'trailing'] as const;
+
 // `@csspart` duplicates `@part` and `@fires` duplicates the `@Event()` decorators in
 // the docblock below, because two generators read it and neither reads the other's
 // tag: Stencil's readme takes `@part` and the decorators, web-component-analyzer —
@@ -20,27 +28,18 @@ let uidSeed = 0;
  * `<div role="region">` panel inside shadow DOM. The container manages
  * exclusivity in `mode="single"`; the item owns its visual state.
  *
- * Disabled state and slotted content: this component never writes `disabled`
- * onto elements you slot into it. That attribute is yours, and a component that
- * writes into it cannot tell your value from its own — which is how an
- * independently disabled control used to come back enabled when the item was
- * re-enabled (issue #17). While the item is disabled, slotted header content is
- * dimmed and made non-interactive from this component's own shadow DOM instead.
+ * Disabled state and slotted content: while the item is disabled it sets
+ * `disabled` on the elements you place DIRECTLY in the `heading`, `supporting`
+ * and `trailing` slots, and it removes it again only from the elements it set it
+ * on. A control you ship already disabled stays disabled — the component keeps a
+ * record of its own writes rather than clearing the attribute wholesale, which is
+ * what used to re-enable your control behind your back (issue #17).
  *
- * Three slots, two mechanisms, and they do not cover the same ground. The
- * stylesheet dims (`opacity` plus `filter: grayscale(1)`) and blocks the mouse
- * on `heading`, `supporting` and `trailing` alike. `inert` — which is what
- * closes the KEYBOARD, since a disabled native `<button>` does not disable its
- * flat-tree slotted descendants — is applied to the `trailing` wrapper only.
- * Measured: with `heading` and `supporting` inert too, the header button loses
- * its accessible name entirely in Chromium's accessibility tree. So a focusable
- * control slotted into those two stays Tab-reachable while the item is disabled;
- * put controls in `trailing`, where the slot documentation already points them.
- *
- * Override the dim's opacity with the `--accordion-item-slotted-opacity-disabled`
- * custom property (default `0.5`); the grayscale and the pointer guard are not
- * overridable. Note the `filter` also establishes a stacking context on each
- * slotted header element while the item is disabled.
+ * Directly slotted elements only. A control nested inside a slotted wrapper
+ * (`<div slot="trailing"><button>`) receives nothing: the component does not claim
+ * DOM that was never handed to a slot. Such a control is blocked from the mouse by
+ * a `pointer-events` rule in this component's stylesheet, but it stays
+ * keyboard-reachable while the item is disabled. Put controls directly in the slot.
  *
  * @element mud-accordion-item
  *
@@ -49,7 +48,7 @@ let uidSeed = 0;
  * @slot icon-start - Optional leading icon (`mud-icon` recommended).
  * @slot trailing - Optional trailing content (`mud-badge`, `mud-button`, label).
  *                   Sits between the heading group and the open/close trigger.
- *                   Made inert while the item is disabled — see the note above.
+ *                   Disabled along with the item while directly slotted.
  * @slot - (default) Panel body. Always in the DOM; the panel carries `hidden`
  * while the item is closed, so slotted media still loads when collapsed.
  *
@@ -130,6 +129,17 @@ export class MudAccordionItem {
    */
   @Prop({ reflect: true }) iconPosition: AccordionIconPosition = 'right';
 
+  /**
+   * The elements this component wrote `disabled` onto, so re-enabling gives back
+   * exactly what was taken. An element that already carried `disabled` when the
+   * item was disabled never enters this set and is never touched — that is the
+   * whole of issue #17.
+   *
+   * Populated on disable and cleared on enable, so it holds references only for
+   * as long as the item is disabled.
+   */
+  private ownedDisabled = new Set<Element>();
+
   @State() private headingId: string = '';
 
   @State() private panelId: string = '';
@@ -163,6 +173,7 @@ export class MudAccordionItem {
     if (next && this.open) {
       this.open = false;
     }
+    this.syncSlottedDisabled();
   }
 
   connectedCallback() {
@@ -172,6 +183,11 @@ export class MudAccordionItem {
     }
     this.headingId = `${this.itemId}-header`;
     this.panelId = `${this.itemId}-panel`;
+  }
+
+  componentDidLoad() {
+    // An item that renders with `disabled` already set fires no @Watch.
+    this.syncSlottedDisabled();
   }
 
   /**
@@ -196,10 +212,12 @@ export class MudAccordionItem {
 
   private onHeadingSlotChange = (ev: Event) => {
     this.hasHeadingSlot = this.slotHasContent(ev);
+    this.syncSlottedDisabled();
   };
 
   private onSupportingSlotChange = (ev: Event) => {
     this.hasSupportingSlot = this.slotHasContent(ev);
+    this.syncSlottedDisabled();
   };
 
   private onIconStartSlotChange = (ev: Event) => {
@@ -208,7 +226,43 @@ export class MudAccordionItem {
 
   private onTrailingSlotChange = (ev: Event) => {
     this.hasTrailing = this.slotHasContent(ev);
+    this.syncSlottedDisabled();
   };
+
+  /**
+   * Mirror the item's `disabled` onto the elements directly assigned to the
+   * header slots, recording what was written so it can be taken back precisely.
+   *
+   * Directly assigned ONLY. The previous implementation walked the whole assigned
+   * subtree, which wrote into DOM the consumer never handed to a slot; a control
+   * nested inside a slotted wrapper is not covered here, by design — the
+   * stylesheet blocks it from the mouse, and the docs point controls at the slot.
+   *
+   * No-op before the first render, and in any environment without the slot API.
+   */
+  private syncSlottedDisabled() {
+    if (!this.disabled) {
+      // Give back exactly what was taken. Deliberately before the shadowRoot
+      // guard: releasing must not depend on the slots still resolving.
+      for (const el of this.ownedDisabled) el.removeAttribute('disabled');
+      this.ownedDisabled.clear();
+      return;
+    }
+    const root = this.host.shadowRoot;
+    if (!root) return;
+    for (const name of SUMMARY_SLOTS) {
+      const slot = root.querySelector<HTMLSlotElement>(`slot[name="${name}"]`);
+      if (typeof slot?.assignedElements !== 'function') continue;
+      for (const el of slot.assignedElements({ flatten: true })) {
+        // Already disabled: either the consumer's own value, or ours from an
+        // earlier pass. Either way there is nothing to write — and a consumer
+        // value must never enter the set, or re-enabling would clear it.
+        if (el.hasAttribute('disabled')) continue;
+        el.setAttribute('disabled', '');
+        this.ownedDisabled.add(el);
+      }
+    }
+  }
 
   private slotHasContent(ev: Event): boolean {
     const slot = ev.target as HTMLSlotElement;
@@ -307,15 +361,7 @@ export class MudAccordionItem {
               </slot>
             </span>
           </span>
-          {/* `inert`, not CSS, and only here. A disabled native <button> does not disable its
-              flat-tree slotted descendants — measured: they stay focusable, Tab-reachable and
-              Enter-activatable — so the stylesheet guard closes the mouse but not the keyboard.
-              `inert` closes both, and also covers a descendant of a slotted wrapper that sets
-              its own `pointer-events` (real in this repo at mud-avatar.css:143), which
-              `::slotted` cannot reach because it takes no descendant combinator.
-              Scoped to `trailing` because that is the slot documented to carry controls;
-              `heading` and `supporting` are documented for text and keep the CSS guard only. */}
-          <span class={{ 'trailing': true, 'has-content': this.hasTrailing }} inert={isDisabled}>
+          <span class={{ 'trailing': true, 'has-content': this.hasTrailing }}>
             <slot name="trailing" onSlotchange={this.onTrailingSlotChange} />
           </span>
           {!isIconLeft && triggerIcon}
