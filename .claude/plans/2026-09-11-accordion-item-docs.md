@@ -21,7 +21,7 @@ issues are the requirement source).
 
 **Issues:** closes egov-moldova/design-system#6, closes egov-moldova/design-system#8
 
-**Reviewed:** critic · f528d86 — 3 rounds (preflight ×2 legs, then critic ×2),
+**Reviewed:** preflight f528d86, and critic f528d86 — 3 rounds (preflight ×2 legs, then critic ×2),
 28 findings, all 28 folded in. The loop closed on its 3-round cap, not on a clean
 round; § Residual risk records what the last round left standing.
 

@@ -1,6 +1,6 @@
 import { Component, Element, Event, EventEmitter, Host, Method, Prop, State, Watch, h } from '@stencil/core';
 
-import type { AccordionIconPosition, AccordionSize } from './mud-accordion.types';
+import type { AccordionIconPosition, AccordionSize } from '../mud-accordion/mud-accordion.types';
 
 let uidSeed = 0;
 
