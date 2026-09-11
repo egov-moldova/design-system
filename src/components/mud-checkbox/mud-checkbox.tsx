@@ -78,8 +78,11 @@ export class MudCheckbox {
    */
   @Prop({ reflect: true }) readonly: boolean = false;
 
+  // Reflected: a form-associated custom element is submitted under its host
+  // `name` CONTENT attribute, so a property-only assignment — what every
+  // framework binding does — would leave the control out of the FormData.
   /** Form-control `name`. Used during form submission. */
-  @Prop() name?: string;
+  @Prop({ reflect: true }) name?: string;
 
   /** Form value submitted when `checked`. Defaults to `'on'` like native checkboxes. */
   @Prop() value?: string;
@@ -153,6 +156,15 @@ export class MudCheckbox {
   @Watch('checked')
   handleCheckedChange(next: boolean) {
     this.syncFormValue(next);
+  }
+
+  // The submitted value is derived from `value` at sync time, so `value` needs a
+  // watcher of its own: assigned after the box was checked, it would otherwise
+  // never reach `setFormValue` and the form would submit the previous one.
+  // Mirrors mud-switch, which already pairs `checked` and `value`.
+  @Watch('value')
+  handleValueChange() {
+    this.syncFormValue(this.checked);
   }
 
   // `required` flips the validity surface without changing `checked` — refresh

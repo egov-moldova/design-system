@@ -79,7 +79,7 @@ export class MudServiceButton {
   /**
    * Form-control `name`. Used when `type="submit"` and a value is submitted.
    */
-  @Prop() name?: string;
+  @Prop({ reflect: true }) name?: string;
 
   /**
    * Form-control `value` submitted alongside `name`.

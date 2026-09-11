@@ -432,3 +432,139 @@ export const EdgeCases: Story = {
     },
   },
 };
+
+// Shared by the two hidden grouping regression stories below. They were one
+// copy each until a third would have made three — the same helper drifting in
+// parallel is how one of them silently stopped guarding anything.
+type RadioHandle = HTMLElement & {
+  name?: string;
+  checked?: boolean;
+  componentOnReady?: () => Promise<unknown>;
+};
+
+// `globalThis.Error` because the local `Error: Story` export shadows the global class in this module.
+const readyRadio = async (canvasElement: HTMLElement, id: string): Promise<RadioHandle> => {
+  // This is what guarantees the upgrade: `define` upgrades every connected
+  // element synchronously. `componentOnReady` is then optional on purpose — the
+  // browser test lane compiles components as custom elements, a build that
+  // carries no such method, so REQUIRING it fails every story in this project.
+  await customElements.whenDefined('mud-radio');
+  const el = canvasElement.querySelector<HTMLElement>(`#${id}`) as RadioHandle | null;
+  if (!el) throw new globalThis.Error(`#${id} did not render`);
+  await el.componentOnReady?.();
+  return el;
+};
+
+// Stencil publishes reflected attributes and the form value on the next render
+// tick, not on assignment, so assertions poll to a deadline rather than sleeping
+// a fixed amount — a fixed sleep is either flaky or slow.
+const waitForRadio = async (predicate: () => boolean, describe: () => string, timeoutMs = 2000) => {
+  const startedAt = performance.now();
+  for (;;) {
+    if (predicate()) return;
+    if (performance.now() - startedAt > timeoutMs) {
+      throw new globalThis.Error(`timed out after ${timeoutMs}ms waiting for ${describe()}`);
+    }
+    await new Promise(resolve => setTimeout(resolve, 16));
+  }
+};
+
+// Regression test, not documentation — hidden from the sidebar and autodocs.
+// A group whose `name` comes from a property assignment was never mutually
+// exclusive: `uncheckSiblings()` found its siblings through an attribute, and
+// the attribute was never written. `name` and `checked` are assigned in ONE
+// synchronous commit below, the way a framework applies a render — reflection
+// lands a tick later, so an implementation that reads the attribute still
+// fails here even after `reflect: true`.
+// Only observable in a real browser: under mock-doc the ElementInternals stub's
+// `form` getter always returns null (`vitest-setup.ts:44`), so the query would
+// fall back to document scope and never exercise the form-scoped path.
+export const PropertyNamedGrouping: Story = {
+  tags: ['!autodocs', '!dev'],
+  render: () => /*html*/ `
+    <form>
+      <mud-radio id="first" label="First" value="1"></mud-radio>
+      <mud-radio id="second" label="Second" value="2"></mud-radio>
+    </form>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: { disable: true },
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    const form = canvasElement.querySelector('form');
+    if (!form) throw new globalThis.Error('form did not render');
+
+    const first = await readyRadio(canvasElement, 'first');
+    const second = await readyRadio(canvasElement, 'second');
+
+    // Grouped by property assignment only — no `name` attribute in the markup,
+    // and deliberately NO wait between naming and checking. Waiting for the
+    // reflected attribute to land first is what a test written around the
+    // implementation would do, and it hides the ordering this exists to pin.
+    first.name = 'grouped';
+    first.checked = true;
+    second.name = 'grouped';
+    second.checked = true;
+
+    // `getAll` rather than iterating `entries()`: the Stencil program compiles
+    // without `DOM.Iterable`, so the iterator form does not type-check here. It
+    // also carries the assertion this needs — a group that failed to unselect
+    // its sibling submits two values under the same name.
+    const submitted = () => new FormData(form).getAll('grouped').map(String);
+    await waitForRadio(
+      () => !first.checked && submitted().join(',') === '2',
+      () =>
+        `the group to be mutually exclusive — first.checked=${String(first.checked)}, FormData "grouped"=[${submitted().join(',')}], expected [2]`,
+    );
+  },
+};
+
+// The companion to PropertyNamedGrouping, and the reason it is a separate story
+// rather than more assignments inside that one: this covers the ordering that
+// markup plus a user click produces — every radio named BEFORE any is checked —
+// which the interleaved story deliberately does not reach. A timeout here names
+// the attribute path; a timeout there names the same-tick property path.
+// It also pins the half of native grouping that is about NOT acting: a radio
+// carrying a different name must survive its neighbour being selected.
+export const AttributeNamedGrouping: Story = {
+  tags: ['!autodocs', '!dev'],
+  render: () => /*html*/ `
+    <form>
+      <mud-radio id="a" name="grouped" value="1" label="A"></mud-radio>
+      <mud-radio id="b" name="grouped" value="2" label="B"></mud-radio>
+      <mud-radio id="unrelated" name="other" value="3" label="Unrelated"></mud-radio>
+    </form>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: { disable: true },
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    const form = canvasElement.querySelector('form');
+    if (!form) throw new globalThis.Error('form did not render');
+
+    const a = await readyRadio(canvasElement, 'a');
+    const b = await readyRadio(canvasElement, 'b');
+    const unrelated = await readyRadio(canvasElement, 'unrelated');
+
+    unrelated.checked = true;
+    a.checked = true;
+    b.checked = true;
+
+    const grouped = () => new FormData(form).getAll('grouped').map(String);
+    const other = () => new FormData(form).getAll('other').map(String);
+    await waitForRadio(
+      () =>
+        !a.checked &&
+        b.checked === true &&
+        unrelated.checked === true &&
+        grouped().join(',') === '2' &&
+        other().join(',') === '3',
+      () =>
+        `only the last radio of the group to survive and the differently-named one to be untouched — ` +
+        `a.checked=${String(a.checked)}, b.checked=${String(b.checked)}, unrelated.checked=${String(unrelated.checked)}, ` +
+        `FormData "grouped"=[${grouped().join(',')}] expected [2], "other"=[${other().join(',')}] expected [3]`,
+    );
+  },
+};

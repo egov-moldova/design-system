@@ -162,7 +162,7 @@ export class MudDateInput {
   @Prop({ mutable: true, reflect: true }) value: string = '';
 
   /** Form-control `name`. Used during form submission. */
-  @Prop() name?: string;
+  @Prop({ reflect: true }) name?: string;
 
   /**
    * Inclusive lower bound in ISO `YYYY-MM-DD`. The validator rejects entries

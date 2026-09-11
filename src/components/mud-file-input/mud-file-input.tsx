@@ -81,7 +81,7 @@ export class MudFileInput {
   @Prop({ attribute: 'max-files' }) maxFiles?: number;
 
   /** Form-control `name`. Used during form submission. */
-  @Prop() name?: string;
+  @Prop({ reflect: true }) name?: string;
 
   /** Plain-text label. Use the `label` slot for richer content. */
   @Prop() label?: string;
@@ -271,6 +271,17 @@ export class MudFileInput {
   @Watch('files')
   handleFilesChange(next: File[]) {
     this.syncFormValue(next ?? []);
+  }
+
+  // `syncFormValue` publishes nothing while `name` is unset — and skips
+  // `syncValidity` with it — so the name is an input to the form value, not
+  // only a label for it. Without this watcher a consumer that assigns `files`
+  // before `name`, which is the order a framework applies props in, leaves the
+  // upload out of the submission permanently and a `required` input reporting
+  // no `valueMissing` with zero files.
+  @Watch('name')
+  handleNameChange() {
+    this.syncFormValue(this.files ?? []);
   }
 
   formDisabledCallback(disabled: boolean) {

@@ -311,7 +311,7 @@ export class MudPhoneInput {
   @Prop() countries?: string[];
 
   /** Form-control `name`. Used during form submission with the E.164 value. */
-  @Prop() name?: string;
+  @Prop({ reflect: true }) name?: string;
 
   /** Plain-text label. Use the `label` slot for richer content. */
   @Prop() label?: string;

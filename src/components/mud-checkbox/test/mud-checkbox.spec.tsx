@@ -289,6 +289,37 @@ describe('mud-checkbox', () => {
       expect(queryNative(root)?.getAttribute('name')).toBe('terms');
     });
 
+    // The assertion is on the HOST attribute, not the internal input, and that is
+    // the whole point: a form-associated custom element is submitted under its
+    // host `name` CONTENT attribute. The internal input lives in shadow DOM and
+    // never participates in submission, so the test above passes while the field
+    // is silently dropped from FormData. Framework bindings assign the property
+    // (`@lit/react`'s setProperty does `node[name] = value`), which is why the
+    // property path — not the attribute path — is the one that must reflect.
+    it('reflects a property-assigned `name` to the host attribute', async () => {
+      const { root } = await render(<mud-checkbox label="x"></mud-checkbox>);
+      (root as unknown as { name?: string }).name = 'terms';
+      await flush();
+      expect(root?.getAttribute('name')).toBe('terms');
+    });
+
+    // `checked` has a watcher; `value` did not, so a value assigned after the box
+    // was checked never reached `setFormValue` and the form kept submitting the
+    // previous one — the `'on'` fallback, in the common case where no value was
+    // set before the click. mud-switch already pairs both watchers.
+    it('re-syncs the form value when `value` changes after `checked`', async () => {
+      const { root } = await render(<mud-checkbox label="x" name="agree"></mud-checkbox>);
+      const internals = (root as unknown as { internals: ElementInternals }).internals;
+      const setFormValue = vi.spyOn(internals, 'setFormValue');
+
+      (root as unknown as { checked: boolean }).checked = true;
+      await flush();
+      (root as unknown as { value?: string }).value = 'agreed';
+      await flush();
+
+      expect(setFormValue).toHaveBeenLastCalledWith('agreed', 'true');
+    });
+
     it('reflects native `disabled` to the internal input', async () => {
       const { root } = await render(<mud-checkbox label="x" disabled></mud-checkbox>);
       expect(queryNative(root)?.hasAttribute('disabled')).toBe(true);
