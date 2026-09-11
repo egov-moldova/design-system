@@ -461,7 +461,8 @@
       "files": [
         ".storybook/**/*",
         "scripts/cleanup-storybook-fonts.mjs",
-        "src/**/*.stories.ts"
+        "src/**/*.stories.ts",
+        "src/**/*.mdx"
       ],
       "output": [
         "storybook-static/**"
