@@ -10,7 +10,7 @@
 
 **Spec:** https://github.com/egov-moldova/design-system/issues/23 — **read with the corrections in § Corrections to the issue below.** The issue contains two false statements that this plan supersedes; its remediation list is otherwise the spec.
 
-**Reviewed:** preflight c0addf09, critic c0addf09 — both FORTIFY, all findings folded in; see § Review rounds.
+**Reviewed:** preflight c0addf09, critic c0addf09, verify dc0e161 — preflight and critic FORTIFY, verify CONFIRM, all findings folded in; see § Review rounds.
 
 **Status:** implemented — `8a0d5e6` (Task 1) and `1c1693c` (Task 2) on `fix/issue-23-storybook-vitest-lane`. Every acceptance-bar row was re-proven against the landed code, not the temporary patch the § Acceptance bar blocks were captured with; see § As built.
 
@@ -722,7 +722,13 @@ Implemented 2026-09-11 as `8a0d5e6` (Task 1) and `1c1693c` (Task 2). Every bar r
 
 **A restore glob that matches nothing aborts the function in zsh.** Task 2 Step 6's `restore()` used `cp "$WRAPPERS"/mud-*.ts …`. On the second EXIT — backup already emptied by the happy path — zsh's nomatch aborted `restore()` before the line that puts the tracked `react/src/index.ts` back. That is the same class round 3 found in this trap's first version, surviving its own fix in a different shell. Now `cp -R "$WRAPPERS"/. "$GEN"/`, which has no glob. Observed live; nothing was lost, because the explicit restore had already run.
 
-Not verified: the `exit 3` branch of `check-lane-resolution.mjs` (a dependency Vite declines to pre-bundle) was never exercised — no state in this repo produces it today.
+**Two substitutions against what the plan prescribed, both deliberate, recorded here because the plan is what a later reader grades the code against.**
+
+Task 2 Step 3 prescribed `createRequire(import.meta.url).resolve('react/package.json')`. The landed code uses `fileURLToPath(import.meta.resolve('react/package.json'))` — measured to work through Vite's config loading (47/47, 469/469), and it is the spelling `getAbsolutePath` in `.storybook/main.mjs:232` already uses. One idiom for "the directory of an installed package" beats two.
+
+Task 2 Step 3 also prescribed only `yarn add --dev react@^18.3.1`. Landed: `react`, `react-dom` and — added automatically by Yarn's TypeScript plugin alongside each — `@types/react` and `@types/react-dom`. `react-dom` is deliberate and its reasoning is in `dc0e161`; the two `@types` packages are the plugin's doing, kept because they are the correct companions to the runtime packages. Note what they do NOT buy: `tsconfig.json`'s `include` is `["src","types","*.ts"]`, which does not reach `.storybook/vitest.setup.ts`, so nothing in this repo typechecks the one file that imports React. Those types are an editor convenience, and the "no TypeScript-only syntax" rule in that file has no automated gate — which is the same gap as the lane not running in CI (#20).
+
+Not verified: the `exit 3` branch of `check-lane-resolution.mjs` (a dependency Vite declines to pre-bundle) was never exercised — no state in this repo produces it today. Nor was `import.meta.resolve` exercised against a symlinked `node_modules` or a PnP linker; this repo pins `nodeLinker: node-modules`, and the idiom is already load-bearing in `.storybook/main.mjs`.
 
 ---
 
