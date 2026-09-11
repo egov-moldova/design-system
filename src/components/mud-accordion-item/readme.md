@@ -20,11 +20,20 @@ on. A control you ship already disabled stays disabled — the component keeps a
 record of its own writes rather than clearing the attribute wholesale, which is
 what used to re-enable your control behind your back (issue #17).
 
-Directly slotted elements only. A control nested inside a slotted wrapper
-(`<div slot="trailing"><button>`) receives nothing: the component does not claim
-DOM that was never handed to a slot. Such a control is blocked from the mouse by
-a `pointer-events` rule in this component's stylesheet, but it stays
-keyboard-reachable while the item is disabled. Put controls directly in the slot.
+Two limits, both deliberate, because `disabled` is an attribute and not a
+force field:
+
+1. It reaches only elements you place DIRECTLY in a slot. A control nested
+   inside a slotted wrapper (`<div slot="trailing"><button>`) receives nothing —
+   the component does not claim DOM that was never handed to a slot. The
+   stylesheet's `pointer-events` rule keeps the mouse off it as long as it does
+   not set its own `pointer-events`, and nothing keeps the keyboard off it.
+2. It does what the element makes of it. Native form controls and `mud-*`
+   controls become non-interactive; an `<a href>`, a `<div tabindex>`, or a
+   custom element with no `disabled` behaviour just carries the attribute and
+   stays focusable.
+
+Both cases end the same way: put a real control directly in the slot.
 
 ## Properties
 

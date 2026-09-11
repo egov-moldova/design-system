@@ -35,11 +35,20 @@ const SUMMARY_SLOTS = ['heading', 'supporting', 'trailing'] as const;
  * record of its own writes rather than clearing the attribute wholesale, which is
  * what used to re-enable your control behind your back (issue #17).
  *
- * Directly slotted elements only. A control nested inside a slotted wrapper
- * (`<div slot="trailing"><button>`) receives nothing: the component does not claim
- * DOM that was never handed to a slot. Such a control is blocked from the mouse by
- * a `pointer-events` rule in this component's stylesheet, but it stays
- * keyboard-reachable while the item is disabled. Put controls directly in the slot.
+ * Two limits, both deliberate, because `disabled` is an attribute and not a
+ * force field:
+ *
+ * 1. It reaches only elements you place DIRECTLY in a slot. A control nested
+ *    inside a slotted wrapper (`<div slot="trailing"><button>`) receives nothing —
+ *    the component does not claim DOM that was never handed to a slot. The
+ *    stylesheet's `pointer-events` rule keeps the mouse off it as long as it does
+ *    not set its own `pointer-events`, and nothing keeps the keyboard off it.
+ * 2. It does what the element makes of it. Native form controls and `mud-*`
+ *    controls become non-interactive; an `<a href>`, a `<div tabindex>`, or a
+ *    custom element with no `disabled` behaviour just carries the attribute and
+ *    stays focusable.
+ *
+ * Both cases end the same way: put a real control directly in the slot.
  *
  * @element mud-accordion-item
  *
@@ -250,17 +259,36 @@ export class MudAccordionItem {
     }
     const root = this.host.shadowRoot;
     if (!root) return;
+
+    const assigned = new Set<Element>();
+    let resolvedASlot = false;
     for (const name of SUMMARY_SLOTS) {
       const slot = root.querySelector<HTMLSlotElement>(`slot[name="${name}"]`);
       if (typeof slot?.assignedElements !== 'function') continue;
-      for (const el of slot.assignedElements({ flatten: true })) {
-        // Already disabled: either the consumer's own value, or ours from an
-        // earlier pass. Either way there is nothing to write — and a consumer
-        // value must never enter the set, or re-enabling would clear it.
-        if (el.hasAttribute('disabled')) continue;
-        el.setAttribute('disabled', '');
-        this.ownedDisabled.add(el);
-      }
+      resolvedASlot = true;
+      for (const el of slot.assignedElements({ flatten: true })) assigned.add(el);
+    }
+    // Without a single resolvable slot there is no evidence about what is
+    // assigned, and an empty `assigned` would read as "everything left".
+    if (!resolvedASlot) return;
+
+    // Anything we disabled that has since left the header is no longer ours to
+    // hold. Give the attribute back now: keeping it would leave our `disabled`
+    // stuck on an element that is somewhere else in the consumer's page, and
+    // keeping the reference would pin it until an enable that may never come.
+    for (const el of this.ownedDisabled) {
+      if (assigned.has(el)) continue;
+      el.removeAttribute('disabled');
+      this.ownedDisabled.delete(el);
+    }
+
+    for (const el of assigned) {
+      // Already disabled: either the consumer's own value, or ours from an
+      // earlier pass. Either way there is nothing to write — and a consumer
+      // value must never enter the set, or re-enabling would clear it.
+      if (el.hasAttribute('disabled')) continue;
+      el.setAttribute('disabled', '');
+      this.ownedDisabled.add(el);
     }
   }
 

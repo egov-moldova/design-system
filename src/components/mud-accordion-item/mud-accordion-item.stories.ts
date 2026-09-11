@@ -142,7 +142,7 @@ export const SlottedDisabledContract: Story = {
         <mud-accordion-item id="item" heading="Payment" disabled>
           <mud-button id="authored" slot="trailing" variant="secondary" size="sm" disabled>Retry</mud-button>
           <mud-button id="ours" slot="trailing" variant="secondary" size="sm">Track</mud-button>
-          <div slot="trailing"><button id="nested" type="button" style="pointer-events: auto">Nested</button></div>
+          <div slot="trailing"><button id="nested" type="button">Nested</button></div>
           Panel body.
         </mud-accordion-item>
       </mud-accordion>
@@ -195,9 +195,11 @@ export const SlottedDisabledContract: Story = {
     }
 
     // 2. The nested control gets no attribute, so the stylesheet is all that stands
-    //    between it and the mouse. It sets its own `pointer-events: auto`, which a
-    //    non-`!important` rule loses to — so the net here is the DISABLED ancestor
-    //    chain plus the rule on the wrapper, and hit-testing is the observable.
+    //    between it and the mouse — it inherits `pointer-events: none` from the
+    //    wrapper the rule matches. Deliberately a plain button: one that sets its
+    //    own `pointer-events: auto` is hit-testable regardless, since importance
+    //    does not strengthen inheritance and `::slotted` takes no descendant
+    //    combinator. That limit is documented, not asserted away here.
     const blocked = hitTest(nested);
     if (blocked === null) {
       throw new Error('hit-test point fell outside the viewport — the assertion would pass vacuously');

@@ -73,16 +73,25 @@
 /* Mouse net for what the attribute deliberately does not reach.
  *
  * `disabled` is written onto the elements DIRECTLY assigned to these three slots
- * (see the TSX), which is where controls belong. A control NESTED inside a
- * slotted wrapper gets no attribute, and a disabled native <button> ancestor does
- * not block clicks on its flat-tree slotted descendants — measured in Chromium.
- * This line closes that hole for the mouse. It does not close it for the
- * keyboard; CSS cannot, and `::slotted` cannot be followed by a descendant
- * combinator to reach the nested control directly.
+ * (see the TSX), which is where controls belong. It does nothing for two cases,
+ * and this rule is what stands in for it: a control NESTED inside a slotted
+ * wrapper, which gets no attribute at all, and a slotted element that has no
+ * `disabled` behaviour of its own. Neither is covered by the platform — measured
+ * in Chromium, a disabled native <button> ancestor blocks neither clicks nor
+ * focus on its flat-tree slotted descendants.
  *
- * No `!important`: the attribute carries the contract, this is a net. A consumer
- * who re-enables pointer events on their own element is deciding about their own
- * DOM, and nothing here should overrule that.
+ * What it reaches, stated exactly, because an earlier version of this comment
+ * overclaimed: the slotted element itself, and any descendant that does not set
+ * its own `pointer-events`. A descendant that sets `pointer-events: auto` is hit-
+ * testable regardless — `!important` does not strengthen inheritance, and
+ * `::slotted` takes no descendant combinator, so CSS cannot reach it at all.
+ * `mud-avatar.css:143` is a real instance inside this repo.
+ *
+ * `!important` is load-bearing for the case it DOES reach: measured, a plain
+ * declaration loses to an inline `style="pointer-events: auto"` on the slotted
+ * element, and with `!important` it wins even against an inline `!important`.
+ * That is a deliberate exception to the usual rule against `!important`, not an
+ * specificity convenience.
  *
  * No `opacity` and no `filter`, deliberately. Each slotted control renders its
  * own disabled tokens now; a second dim on top of that was measured at 1.23:1
@@ -91,7 +100,7 @@
 :host([disabled]) slot[name='heading']::slotted(*),
 :host([disabled]) slot[name='supporting']::slotted(*),
 :host([disabled]) slot[name='trailing']::slotted(*) {
-  pointer-events: none;
+  pointer-events: none !important;
 }
 
 /* ---------- Header (the clickable row) ---------- */

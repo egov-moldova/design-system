@@ -146,6 +146,25 @@ describe('mud-accordion-item', () => {
     expect(authored.hasAttribute('disabled')).toBe(true);
   });
 
+  it('gives the attribute back to a control unslotted while the item is disabled', async () => {
+    const { root, waitForChanges } = await render(
+      <mud-accordion-item heading="Payment" disabled>
+        <button slot="trailing" id="leaver">
+          Track
+        </button>
+      </mud-accordion-item>,
+    );
+    const leaver = root!.querySelector('#leaver')!;
+    expect(leaver.hasAttribute('disabled')).toBe(true);
+
+    // The consumer moves it out of the header. It is theirs, and it must not
+    // leave carrying an attribute this component wrote.
+    leaver.remove();
+    root!.shadowRoot!.querySelector('slot[name="trailing"]')!.dispatchEvent(new Event('slotchange'));
+    await waitForChanges();
+    expect(leaver.hasAttribute('disabled')).toBe(false);
+  });
+
   it('disables a control slotted in while the item is already disabled', async () => {
     const { root, waitForChanges } = await render(<mud-accordion-item heading="Payment" disabled></mud-accordion-item>);
     const late = document.createElement('button');
