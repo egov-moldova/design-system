@@ -2,35 +2,29 @@
 
 ## Unreleased
 
-### Changed — `mud-accordion-item` no longer writes `disabled` onto slotted content
+### Changed — `mud-accordion-item` no longer writes `disabled` past the slot
 
-While an item was disabled it used to set `disabled` on every element in its
-`heading`, `supporting` and `trailing` slots and on all of their descendants, and
-remove it again when the item was re-enabled. It could not distinguish the attributes
-it had set from the ones you authored, so a control you shipped as
-`<mud-button slot="trailing" disabled>` came back enabled with the item.
+While an item is disabled it sets `disabled` on the controls you slot into its
+`heading`, `supporting` and `trailing` slots. It used to also set it on all of their
+descendants, and then remove it from everything when the item was re-enabled. It kept
+no record of what it had written, so it could not tell your attributes from its own —
+a control you shipped as `<mud-button slot="trailing" disabled>` came back enabled with
+the item, with no event and no warning.
 
-The attribute is no longer written or removed. Your `disabled` is yours. While the
-item is disabled, slotted header content is dimmed and desaturated and made
-pointer-inert from the component's own stylesheet, across all three header slots.
+**Your `disabled` now survives.** The item records the elements it writes to, and on
+re-enable it removes the attribute only from those. A control that already carried
+`disabled` never enters that record and is never touched.
 
-**Keyboard reach is closed on `trailing` only.** A disabled native `<button>` does not
-disable its slotted descendants, so the stylesheet cannot close the keyboard; `inert`
-on the `trailing` wrapper does. It is not applied to `heading` or `supporting`, and
-that is a measured trade-off rather than an oversight: with those two inert, Chromium's
-accessibility tree loses the header button's accessible name entirely. If you slot a
-focusable control into `heading` or `supporting`, it stays Tab-reachable while the item
-is disabled — put controls in `trailing`. (Interactive content nested inside the header
-`<button>` is invalid HTML in any case.)
+**The write no longer reaches past the slot.** Only elements DIRECTLY assigned to the
+three header slots receive the attribute. If you wrapped a control —
+`<div slot="trailing"><button>…</button></div>` — that inner button used to be disabled
+too and no longer is. It is blocked from the mouse by a `pointer-events` rule in the
+item's own stylesheet, but it stays keyboard-reachable while the item is disabled. Put
+controls directly in the slot.
 
-**What changes for you.** CSS or queries keyed on `disabled` appearing on slotted
-elements — `mud-button[disabled]` inside an accordion header,
-`[slot="trailing"][disabled]` — no longer match. Key on the item instead:
-`mud-accordion-item[disabled] [slot="trailing"]`, which works from your own stylesheet
-because both elements live in your tree.
-
-Override the dim with `--accordion-item-slotted-opacity-disabled` (default `0.5`).
-The non-interactivity is not overridable, by design.
+Also gone, and it never shipped: `--accordion-item-slotted-opacity-disabled`, which
+existed only on the unreleased branch that preceded this entry. Slotted controls render
+their own disabled tokens; the item no longer dims them from outside.
 
 ### Changed — public API surface (breaking for deep imports)
 

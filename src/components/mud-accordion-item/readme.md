@@ -13,27 +13,18 @@ Pattern B (atom-interactive): renders its own header `<button>` and a
 `<div role="region">` panel inside shadow DOM. The container manages
 exclusivity in `mode="single"`; the item owns its visual state.
 
-Disabled state and slotted content: this component never writes `disabled`
-onto elements you slot into it. That attribute is yours, and a component that
-writes into it cannot tell your value from its own — which is how an
-independently disabled control used to come back enabled when the item was
-re-enabled (issue #17). While the item is disabled, slotted header content is
-dimmed and made non-interactive from this component's own shadow DOM instead.
+Disabled state and slotted content: while the item is disabled it sets
+`disabled` on the elements you place DIRECTLY in the `heading`, `supporting`
+and `trailing` slots, and it removes it again only from the elements it set it
+on. A control you ship already disabled stays disabled — the component keeps a
+record of its own writes rather than clearing the attribute wholesale, which is
+what used to re-enable your control behind your back (issue #17).
 
-Three slots, two mechanisms, and they do not cover the same ground. The
-stylesheet dims (`opacity` plus `filter: grayscale(1)`) and blocks the mouse
-on `heading`, `supporting` and `trailing` alike. `inert` — which is what
-closes the KEYBOARD, since a disabled native `<button>` does not disable its
-flat-tree slotted descendants — is applied to the `trailing` wrapper only.
-Measured: with `heading` and `supporting` inert too, the header button loses
-its accessible name entirely in Chromium's accessibility tree. So a focusable
-control slotted into those two stays Tab-reachable while the item is disabled;
-put controls in `trailing`, where the slot documentation already points them.
-
-Override the dim's opacity with the `--accordion-item-slotted-opacity-disabled`
-custom property (default `0.5`); the grayscale and the pointer guard are not
-overridable. Note the `filter` also establishes a stacking context on each
-slotted header element while the item is disabled.
+Directly slotted elements only. A control nested inside a slotted wrapper
+(`<div slot="trailing"><button>`) receives nothing: the component does not claim
+DOM that was never handed to a slot. Such a control is blocked from the mouse by
+a `pointer-events` rule in this component's stylesheet, but it stays
+keyboard-reachable while the item is disabled. Put controls directly in the slot.
 
 ## Properties
 
@@ -92,13 +83,13 @@ Type: `Promise<void>`
 
 ## Slots
 
-| Slot           | Description                                                                                                                                                                                                  |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-|                | (default) Panel body. Always in the DOM; the panel carries `hidden` while the item is closed, so slotted media still loads when collapsed.                                                                   |
-| `"heading"`    | Optional rich heading content. Overrides the `heading` prop.                                                                                                                                                 |
-| `"icon-start"` | Optional leading icon (`mud-icon` recommended).                                                                                                                                                              |
-| `"supporting"` | Optional supporting text. Overrides the `supportingText` prop.                                                                                                                                               |
-| `"trailing"`   | Optional trailing content (`mud-badge`, `mud-button`, label).             Sits between the heading group and the open/close trigger.             Made inert while the item is disabled — see the note above. |
+| Slot           | Description                                                                                                                                                                                           |
+| -------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|                | (default) Panel body. Always in the DOM; the panel carries `hidden` while the item is closed, so slotted media still loads when collapsed.                                                            |
+| `"heading"`    | Optional rich heading content. Overrides the `heading` prop.                                                                                                                                          |
+| `"icon-start"` | Optional leading icon (`mud-icon` recommended).                                                                                                                                                       |
+| `"supporting"` | Optional supporting text. Overrides the `supportingText` prop.                                                                                                                                        |
+| `"trailing"`   | Optional trailing content (`mud-badge`, `mud-button`, label).             Sits between the heading group and the open/close trigger.             Disabled along with the item while directly slotted. |
 
 
 ## Shadow Parts
