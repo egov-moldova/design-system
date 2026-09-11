@@ -6,9 +6,10 @@ let uidSeed = 0;
 
 /**
  * The header slots whose directly assigned elements mirror the item's own
- * `disabled`. The panel's default slot is deliberately absent — its content is
- * hidden when closed and is not part of the header's interactive row — and so is
- * `icon-start`, which carries decoration rather than controls.
+ * `tabindex`, of which `CONTROL_SLOT` alone also mirrors `disabled`. The panel's
+ * default slot is deliberately absent — its content is hidden when closed and is
+ * not part of the header's interactive row — and so is `icon-start`, which
+ * carries decoration rather than controls.
  */
 const SUMMARY_SLOTS = ['heading', 'supporting', 'trailing'] as const;
 
@@ -362,8 +363,14 @@ export class MudAccordionItem {
     }
 
     for (const el of assigned) {
-      if (this.ownedTabindex.has(el)) continue;
-      this.ownedTabindex.set(el, el.getAttribute('tabindex'));
+      // Two separate decisions, and conflating them into one guard left a hole.
+      // REMEMBER only on first claim, so the restored value is what the consumer
+      // authored and not a `-1` this component wrote. But WRITE unconditionally,
+      // so a `tabindex` that anything else sets during the disabled window is
+      // suppressed again at the next sync — measured, the `disabled` loop below
+      // already re-asserts because it reads the live attribute, and a mirror that
+      // gives up after one write reopens SC 4.1.2 for the rest of the window.
+      if (!this.ownedTabindex.has(el)) this.ownedTabindex.set(el, el.getAttribute('tabindex'));
       el.setAttribute('tabindex', '-1');
     }
 

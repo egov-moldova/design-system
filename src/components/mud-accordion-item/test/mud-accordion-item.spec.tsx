@@ -248,6 +248,33 @@ describe('mud-accordion-item', () => {
     expect((el as { disabled?: unknown }).disabled).toBe(true);
   });
 
+  it('re-suppresses a `tabindex` written by anyone else during the disabled window', async () => {
+    const { root, waitForChanges } = await render(
+      <mud-accordion-item heading="Payment" disabled>
+        <button slot="trailing" id="ctl">
+          Track
+        </button>
+      </mud-accordion-item>,
+    );
+    const ctl = root!.querySelector('#ctl')!;
+    expect(ctl.getAttribute('tabindex')).toBe('-1');
+
+    // A framework re-render, a roving-tabindex component, the consumer's own
+    // code. The `disabled` mirror re-asserts because it reads the live
+    // attribute; the `tabindex` mirror has to do the same or the element is
+    // Tab-reachable under a header the accessibility tree reports disabled.
+    ctl.setAttribute('tabindex', '0');
+    root!.shadowRoot!.querySelector('slot[name="trailing"]')!.dispatchEvent(new Event('slotchange'));
+    await waitForChanges();
+    expect(ctl.getAttribute('tabindex')).toBe('-1');
+
+    // Restoration is still verbatim — what was authored when we first claimed
+    // it, not what anyone wrote since. That residual is documented.
+    (root as HTMLElement).removeAttribute('disabled');
+    await waitForChanges();
+    expect(ctl.hasAttribute('tabindex')).toBe(false);
+  });
+
   it('re-applies its writes when the item is reconnected while disabled', async () => {
     const { root, waitForChanges } = await render(
       <mud-accordion-item heading="Payment" disabled>
