@@ -45,7 +45,7 @@ if (hasDocs) {
 }
 
 // The standalone custom-elements bundle is part of the published contract —
-// `package.json` declares `exports["./dist/components"]` unconditionally and
+// `package.json` declares `exports["./components"]` unconditionally and
 // `react/src/index.ts` imports `setAssetPath` from it. It is therefore built
 // for every non-dev build, not only under `--react`: what the package contains
 // must not depend on which flag CI happened to pass.
@@ -72,6 +72,20 @@ if (isReactBuild) {
       outDir: 'react/src/components/stencil-generated',
       esModules: true,
       stencilPackageName: '@egov-moldova/mud',
+      // The physical output stays `dist/components/`; this names the segment the
+      // generated wrappers put in their import specifiers, which must match the
+      // `./components/mud-*.js` key in package.json rather than the build
+      // directory. `scripts/__tests__/validate-package.spec.mjs` asserts the two
+      // agree — nothing else does, and the only other detector is `tsc --noEmit`
+      // in a workspace whose build script is `tsc || true`.
+      //
+      // Setting it also takes the early-return branch of react-output-target's
+      // own `validate()`, which otherwise asserts that a `dist-custom-elements`
+      // target exists AND that its `externalRuntime` is false. Removing
+      // `externalRuntime: false` above would therefore no longer fail the build;
+      // the wrappers would generate against an external runtime and break at
+      // runtime instead. Keep the two together.
+      customElementsDir: 'components',
       excludeComponents: [],
     }),
   );

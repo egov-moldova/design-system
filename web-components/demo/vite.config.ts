@@ -1,5 +1,5 @@
 import { defineConfig, type Plugin } from 'vite';
-import { resolve } from 'node:path';
+import { resolve, sep } from 'node:path';
 import { createReadStream, existsSync, statSync, globSync } from 'node:fs';
 import { cp } from 'node:fs/promises';
 
@@ -28,17 +28,24 @@ const MIME_TYPES: Record<string, string> = {
 /**
  * Vite, by default, falls back to `index.html` for unknown URLs under
  * `/node_modules/...`. That breaks Stencil's lazy `getAssetPath()`, which
- * resolves SVGs to `/node_modules/@egovmd/mud/dist/mud/assets/...`.
+ * resolves SVGs to `/node_modules/@egov-moldova/mud/dist/mud/assets/...`.
  *
  * This middleware intercepts those URLs and streams the file directly from
  * `<repo>/dist/mud/`. It is dev-only; production builds serve the
  * assets statically once they are deployed alongside the bundle.
+ *
+ * It is a FALLBACK and, as of the exports rename, it no longer fires in the
+ * ordinary dev path: `@egov-moldova/mud/mud.esm.js` now resolves through the
+ * workspace symlink, so Vite serves the bundle from `/@fs/<repo>/dist/mud/` and
+ * `getAssetPath()` emits `/@fs/...` URLs that never carry the prefix below.
+ * Kept because the prefix is still what a consumer's own dev server produces
+ * when the package is a real `node_modules` dependency rather than a workspace.
  */
 function serveDesignSystemAssets(): Plugin {
-  const urlPrefix = '/node_modules/@egovmd/mud/dist/mud/';
+  const urlPrefix = '/node_modules/@egov-moldova/mud/dist/mud/';
 
   return {
-    name: 'serve-egovmd-mud-assets',
+    name: 'serve-mud-assets',
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         const url = req.url ?? '';
@@ -47,8 +54,11 @@ function serveDesignSystemAssets(): Plugin {
         const relative = url.slice(urlPrefix.length).split('?')[0];
         const filePath = resolve(DESIGN_SYSTEM_DIST, relative);
 
-        // Path-traversal guard.
-        if (!filePath.startsWith(DESIGN_SYSTEM_DIST)) return next();
+        // Path-traversal guard. The trailing separator is not decorative: a bare
+        // `startsWith(DESIGN_SYSTEM_DIST)` also admits a sibling directory whose
+        // name merely begins with `mud` — `dist/mud-internal/` resolves outside
+        // this root and passes the prefix test.
+        if (!filePath.startsWith(`${DESIGN_SYSTEM_DIST}${sep}`)) return next();
         if (!existsSync(filePath) || !statSync(filePath).isFile()) return next();
 
         const ext = filePath.slice(filePath.lastIndexOf('.')).toLowerCase();
@@ -66,7 +76,7 @@ function serveDesignSystemAssets(): Plugin {
  * `import.meta.url` of the bundle that contains it. After `vite build`, that
  * bundle lives in `dist-demo/assets/`, so Stencil looks for the icon/logo SVGs
  * at `dist-demo/assets/assets/...`. The dev middleware short-circuits this by
- * intercepting `/node_modules/@egovmd/mud/dist/mud/...` requests, but in a
+ * intercepting `/node_modules/@egov-moldova/mud/dist/mud/...` requests, but in a
  * deployed build nothing serves those bytes — copy them next to the bundle so
  * `<mud-icon>`, `<mud-logo>`, etc. work from any host (including file://).
  */
@@ -113,6 +123,6 @@ export default defineConfig({
   // Pre-bundling would rewrite the URL into Vite's optimized-deps cache, which
   // doesn't contain the assets/ folder — leaving mud-icon SVGs at 404.
   optimizeDeps: {
-    exclude: ['@egovmd/mud/dist/mud/mud.esm.js'],
+    exclude: ['@egov-moldova/mud/mud.esm.js'],
   },
 });

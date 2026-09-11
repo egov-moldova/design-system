@@ -21,14 +21,14 @@
       "import": "./loader/index.js",
       "require": "./loader/index.cjs.js"
     },
-    "./dist/mud/mud.css": "./dist/mud/mud.css",
-    "./dist/mud/tokens/*.css": "./dist/mud/tokens/*.css",
-    "./dist/mud/*": "./dist/mud/*",
-    "./dist/components": {
+    "./styles.css": "./dist/mud/mud.css",
+    "./tokens/*.css": "./dist/mud/tokens/*.css",
+    "./mud.esm.js": "./dist/mud/mud.esm.js",
+    "./components": {
       "types": "./dist/components/index.d.ts",
       "import": "./dist/components/index.js"
     },
-    "./dist/components/*": "./dist/components/*"
+    "./components/mud-*.js": "./dist/components/mud-*.js"
   },
   "workspaces": [
     "web-components",
@@ -39,7 +39,8 @@
   },
   "files": [
     "dist/",
-    "loader/"
+    "loader/",
+    "CHANGELOG.md"
   ],
   "publishConfig": {
     "access": "public",

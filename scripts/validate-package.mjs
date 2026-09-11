@@ -123,7 +123,7 @@ export function lazyBundleDir(pkg) {
 }
 
 /**
- * Where `exports["./dist/components"]` points. Throws rather than returning
+ * Where `exports["./components"]` points. Throws rather than returning
  * null: a null would make `checkBundleAssets` a silent no-op, which is the same
  * vacuous-scan failure `lazyBundleDir` exists to avoid one function up. If the
  * standalone bundle is ever dropped from the contract deliberately, drop the
@@ -131,13 +131,173 @@ export function lazyBundleDir(pkg) {
  * still reports PASS.
  */
 export function standaloneBundleDir(pkg) {
-  const target = pkg.exports?.['./dist/components']?.import;
+  const target = pkg.exports?.['./components']?.import;
   if (typeof target !== 'string' || !target.includes('/')) {
     throw new Error(
-      'validate-package: cannot locate the standalone bundle — exports["./dist/components"].import is missing or unusable',
+      'validate-package: cannot locate the standalone bundle — exports["./components"].import is missing or unusable',
     );
   }
   return `${path.posix.dirname(normalizePackagePath(target))}/`;
+}
+
+/**
+ * The specifiers the documentation promises a consumer can write. Authored
+ * rather than derived from `exports`: a list generated from the map would only
+ * ask the map about itself and would stay green through any rename. This is the
+ * consumer's side of the contract.
+ *
+ * What enforces it and what does not, stated precisely because it is easy to
+ * assume more. `checkPublicSpecifiers` fails when this list names something
+ * `exports` does not expose. It CANNOT fail when `exports` gains a key nobody
+ * listed, and it never reads a README. The first gap is closed by the
+ * set-membership test in `__tests__/validate-package.spec.mjs`; the second is
+ * not closed by anything, and the READMEs staying in step with this list is a
+ * convention rather than a mechanism.
+ *
+ * The two pattern keys — `./tokens/*.css` and `./components/mud-*.js` — are
+ * represented by one concrete member each, because `collectDeclaredEntries`
+ * skips patterns by design and would otherwise leave them ungraded entirely.
+ * Each representative is a shape a consumer actually writes, not the cheapest
+ * string that matches: `mud-button.js` is what the generated React wrappers
+ * import, where `index.js` would have been graded already by the literal
+ * `./components` key and so would have tested nothing new.
+ */
+// `./tokens/*.css` is deliberately narrower than a bare `./tokens/*`: the `.css`
+// suffix reserves `./tokens` and `./tokens/*.json` for a future JS/DTCG token
+// surface, which today's Style Dictionary config could emit by adding a second
+// platform. Widening the key later would be an ordinary addition; narrowing it
+// after publishing would be breaking. Do not "simplify" it to `./tokens/*`.
+export const PUBLIC_SPECIFIERS = [
+  '@egov-moldova/mud',
+  '@egov-moldova/mud/loader',
+  '@egov-moldova/mud/styles.css',
+  '@egov-moldova/mud/tokens/core.tokens.css',
+  '@egov-moldova/mud/tokens/core.dark.tokens.css',
+  '@egov-moldova/mud/mud.esm.js',
+  '@egov-moldova/mud/components',
+  '@egov-moldova/mud/components/mud-button.js',
+];
+
+/**
+ * Subpaths this package publishes as ESM only, and the reason each one is on the
+ * list. `dist-custom-elements` — the Stencil target that emits `dist/components/`
+ * — has no format option, so a `require` condition here could only ever point at
+ * a file the build cannot produce.
+ *
+ * This exists because the invariant was otherwise enforced only by accident: a
+ * `require` target naming a non-existent file happens to trip
+ * `checkDeclaredEntries`, but one naming a real-but-wrong file trips nothing,
+ * and neither failure would say what rule was broken.
+ * Baseline: `node -e "const p=require('./package.json');console.log(Object.keys(p.exports['./components']))"`
+ * -> `[ 'types', 'import' ]`.
+ */
+export const ESM_ONLY_SUBPATHS = ['./components', './components/mud-*.js'];
+
+/** Any ESM-only subpath that has grown a `require` condition. */
+export function checkEsmOnlySubpaths(pkg, subpaths = ESM_ONLY_SUBPATHS) {
+  return subpaths
+    .filter(key => {
+      const entry = pkg.exports?.[key];
+      return entry !== null && typeof entry === 'object' && typeof entry.require === 'string';
+    })
+    .map(key => `exports["${key}"] declares a require condition, but this subpath is ESM-only`);
+}
+
+/**
+ * The specifiers a CommonJS consumer must be able to `require`. AUTHORED, and
+ * that is the whole point — an earlier revision derived this from the map by
+ * collecting every key that already declared a `require` condition, which made
+ * the check tautological: dropping the condition removed the specifier from its
+ * own list, so the probe stayed green over an empty set.
+ * Verified by mutation: deleting `exports["./loader"].require` with the derived
+ * form produced PASS, and produces FAIL with this one.
+ *
+ * A `require` condition dropped or mistyped would otherwise pass the whole gate
+ * — `checkDeclaredEntries` confirms the CJS file is packed, and the ESM probe
+ * resolves through `import` — while every `require()` of this package failed in
+ * production.
+ */
+export const REQUIRE_CAPABLE_SPECIFIERS = ['@egov-moldova/mud', '@egov-moldova/mud/loader'];
+
+/**
+ * Resolves each specifier through Node's own algorithm and confirms the PACKED
+ * TARBALL contains what it resolved to.
+ *
+ * Both halves are needed. `import.meta.resolve` applies the exports map but
+ * never stats, so a key pointing at a missing file resolves happily; and every
+ * other check in this gate grades declared TARGETS, never KEYS, so a renamed or
+ * mistyped key passes them all while no consumer can reach it.
+ *
+ * The membership test is against `packedFileList`, not `fs.existsSync`, for the
+ * reason `checkDevSignature` gives below: a consumer resolves against the
+ * published tarball, so a check that grades the working tree is the one
+ * furthest from the consumer. A file present here and excluded by `files` or an
+ * ignore rule would otherwise pass.
+ *
+ * Self-referencing — a package importing itself by its own name — is what makes
+ * this need no symlink and no extracted tarball. The probe runs in a child
+ * process because resolution is evaluated against the referring module's URL,
+ * and that referrer has to sit inside the package.
+ */
+export function checkPublicSpecifiers(specifiers, cwd, packedFiles, condition = 'import') {
+  const resolver =
+    condition === 'require'
+      ? [
+          "const { createRequire } = await import('node:module');",
+          "const resolve = createRequire(process.cwd() + '/probe.cjs').resolve;",
+        ]
+      : ['const resolve = spec => fileURLToPath(import.meta.resolve(spec));'];
+
+  const probe = [
+    "const { fileURLToPath } = await import('node:url');",
+    ...resolver,
+    'const specs = JSON.parse(process.argv[1]);',
+    'const out = [];',
+    'for (const spec of specs) {',
+    '  try {',
+    '    out.push({ spec, file: resolve(spec) });',
+    '  } catch (err) {',
+    '    out.push({ spec, code: err.code ?? String(err) });',
+    '  }',
+    '}',
+    'console.log(JSON.stringify(out));',
+  ].join('\n');
+
+  // Guarded, because a child that dies for any reason other than a per-specifier
+  // resolve error — an unreadable `cwd`, no package.json there, an OOM — would
+  // otherwise throw out of `main` and replace the whole categorised report with a
+  // Node stack trace. The gate would still exit non-zero, so nothing is wrongly
+  // published; what is lost is every other check's verdict in that run.
+  let resolved;
+  try {
+    const raw = execFileSync(process.execPath, ['--input-type=module', '-e', probe, JSON.stringify(specifiers)], {
+      cwd,
+      encoding: 'utf8',
+      // The two packer helpers above raise this for the same reason; the default
+      // 1 MB is generous for today's nine specifiers and silently truncating is
+      // the one failure this whole function exists to make impossible.
+      maxBuffer: 64 * 1024 * 1024,
+    });
+    // Inside the guard, not after it. A child that exits 0 having also written
+    // something to stdout — an experimental-feature notice, a NODE_OPTIONS
+    // preload banner, a CI instrumentation line — makes this throw, and outside
+    // the guard that throw escapes `main` and replaces the categorised report
+    // with a stack trace: the exact failure the guard is here to prevent.
+    resolved = JSON.parse(raw);
+  } catch (err) {
+    return [`could not run the ${condition} resolution probe in ${cwd} — ${err.message.split('\n')[0]}`];
+  }
+
+  const packed = new Set(packedFiles);
+  return resolved.flatMap(entry => {
+    if (entry.code) {
+      return [`${entry.spec} (${condition}) — does not resolve (${entry.code})`];
+    }
+    const file = path.posix.normalize(path.relative(cwd, entry.file));
+    return packed.has(file)
+      ? []
+      : [`${entry.spec} (${condition}) — resolves to ${file}, which the tarball does not contain`];
+  });
 }
 
 /**
@@ -182,7 +342,7 @@ export function checkDevSignature(packedFiles, readText, bundleDir) {
  * ignores `assetsDirs` — `scripts/copy-component-assets.mjs` mirrors them in as
  * a post-build step. Without it a component with assets "renders empty
  * silently" (that script's own words). Nothing else in the tarball reveals it:
- * `exports["./dist/components/*"]` is a pattern, so checkDeclaredEntries skips
+ * `exports["./components/*"]` is a pattern, so checkDeclaredEntries skips
  * it by design.
  */
 export function checkBundleAssets(packedFiles, lazyDir, standaloneDir) {
@@ -292,6 +452,18 @@ export function main({ cwd = PROJECT_ROOT, log = console.log, error = console.er
       'declared entrypoint missing from tarball',
       checkDeclaredEntries(declared, files).map(entry => `${entry.source} -> ${entry.target}`),
     ],
+    // Keys, not targets. Every check above grades a declared TARGET; this one
+    // asks whether a consumer writing the documented specifier gets a file
+    // back, which is the property a key rename breaks while the rest stay green.
+    ['public specifier does not resolve', checkPublicSpecifiers(PUBLIC_SPECIFIERS, cwd, files, 'import')],
+    // The ESM probe above exercises only the `import` condition. A `require`
+    // condition dropped or pointed at the wrong file resolves for nobody, and
+    // every other check in this gate would still pass.
+    [
+      'public specifier does not resolve for a CommonJS consumer',
+      checkPublicSpecifiers(REQUIRE_CAPABLE_SPECIFIERS, cwd, files, 'require'),
+    ],
+    ['ESM-only subpath declares a require condition', checkEsmOnlySubpaths(pkg)],
     ['build-machine artifact in tarball', checkForbiddenPaths(files)],
     ['absolute build-machine path in tarball', checkAbsolutePaths(files)],
     ['source map in tarball (development build)', checkSourceMaps(files)],

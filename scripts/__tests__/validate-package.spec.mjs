@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { describe, it } from 'node:test';
+
+import path from 'node:path';
 
 import {
   checkAbsolutePaths,
@@ -7,11 +10,17 @@ import {
   checkDeclaredEntries,
   checkDevSignature,
   checkForbiddenPaths,
+  checkEsmOnlySubpaths,
   checkPackerAgreement,
+  checkPublicSpecifiers,
   checkSourceMaps,
   collectDeclaredEntries,
   lazyBundleDir,
   normalizePackagePath,
+  PROJECT_ROOT,
+  ESM_ONLY_SUBPATHS,
+  PUBLIC_SPECIFIERS,
+  REQUIRE_CAPABLE_SPECIFIERS,
   standaloneBundleDir,
 } from '../validate-package.mjs';
 
@@ -35,9 +44,11 @@ const PKG = {
       import: './loader/index.js',
       require: './loader/index.cjs.js',
     },
-    './dist/mud/mud.css': './dist/mud/mud.css',
-    './dist/mud/tokens/*.css': './dist/mud/tokens/*.css',
-    './dist/components': {
+    './styles.css': './dist/mud/mud.css',
+    './tokens/*.css': './dist/mud/tokens/*.css',
+    './assets/*': './dist/mud/assets/*',
+    './mud.esm.js': './dist/mud/mud.esm.js',
+    './components': {
       types: './dist/components/index.d.ts',
       import: './dist/components/index.js',
     },
@@ -60,13 +71,13 @@ describe('collectDeclaredEntries', () => {
     assert.ok(sources.includes('main'));
     assert.ok(sources.includes('collection:main'));
     assert.ok(sources.includes('$.exports[.][import]'));
-    assert.ok(sources.includes('$.exports[./dist/components][types]'));
+    assert.ok(sources.includes('$.exports[./components][types]'));
   });
 
   it('collects a plain-string exports leaf, not only condition objects', () => {
-    const entry = collectDeclaredEntries(PKG).find(candidate => candidate.source === '$.exports[./dist/mud/mud.css]');
+    const entry = collectDeclaredEntries(PKG).find(candidate => candidate.source === '$.exports[./styles.css]');
     assert.deepEqual(entry, {
-      source: '$.exports[./dist/mud/mud.css]',
+      source: '$.exports[./styles.css]',
       target: './dist/mud/mud.css',
     });
   });
@@ -317,5 +328,128 @@ describe('checkPackerAgreement', () => {
       'a.js — packed by yarn, absent from npm',
       'b.js — packed by npm, absent from yarn',
     ]);
+  });
+});
+
+// The fixture package, not the live manifest. Binding these to `package.json`
+// would make the gate's own mutation check redden this suite while it is in
+// place, and would turn any future key rename into a failure of tests that are
+// not about that key.
+const FIXTURE_PKG = path.join(PROJECT_ROOT, 'scripts', '__fixtures__', 'exports-pkg');
+
+describe('checkPublicSpecifiers', () => {
+  it('reports a specifier that the exports map does not expose', () => {
+    const failures = checkPublicSpecifiers(['@egov-moldova/mud/no-such-key'], FIXTURE_PKG, []);
+    assert.equal(failures.length, 1);
+    assert.match(failures[0], /no-such-key/);
+    assert.match(failures[0], /ERR_PACKAGE_PATH_NOT_EXPORTED/);
+  });
+
+  it('reports a specifier that resolves to a path the tarball does not carry', () => {
+    const failures = checkPublicSpecifiers(['@egov-moldova/mud/styles.css'], FIXTURE_PKG, []);
+    assert.equal(failures.length, 1);
+    assert.match(failures[0], /styles\.css/);
+    assert.match(failures[0], /the tarball does not contain/);
+  });
+
+  it('passes a specifier whose resolved path is packed', () => {
+    const failures = checkPublicSpecifiers(['@egov-moldova/mud/styles.css'], FIXTURE_PKG, ['dist/mud/mud.css']);
+    assert.deepEqual(failures, []);
+  });
+
+  it('resolves a pattern key through one representative', () => {
+    const failures = checkPublicSpecifiers(['@egov-moldova/mud/tokens/core.tokens.css'], FIXTURE_PKG, [
+      'dist/mud/tokens/core.tokens.css',
+    ]);
+    assert.deepEqual(failures, []);
+  });
+});
+
+describe('PUBLIC_SPECIFIERS covers the exports map', () => {
+  // Not the tautology a derived list would be: this grades SET MEMBERSHIP
+  // between two independently authored things, where `checkPublicSpecifiers`
+  // grades resolution. It is the half that catches a key added to `exports`
+  // and never given a specifier — the direction the resolve check is blind to.
+  it('names every literal key and at least one representative per pattern key', () => {
+    const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'package.json'), 'utf8'));
+    const missing = Object.keys(pkg.exports).filter(key => {
+      const suffix = key === '.' ? '' : key.slice(1);
+      if (!key.includes('*')) {
+        return !PUBLIC_SPECIFIERS.includes(`@egov-moldova/mud${suffix}`);
+      }
+      // Escape first, then substitute: an unescaped key leaves `.` matching any
+      // character, so `./tokens/*.css` would accept `.../tokens/coreXtokensYcss`
+      // — a specifier no consumer could write — and a future key holding `+`,
+      // `(` or `?` would throw here instead of grading anything.
+      const escaped = suffix.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+      const shape = new RegExp(`^@egov-moldova/mud${escaped.replace(String.raw`\*`, '.+')}$`);
+      return !PUBLIC_SPECIFIERS.some(specifier => shape.test(specifier));
+    });
+    assert.deepEqual(missing, []);
+  });
+});
+
+describe('checkEsmOnlySubpaths', () => {
+  it('names a subpath that has grown a require condition', () => {
+    const pkg = { exports: { './components': { import: './dist/components/index.js', require: './x.cjs' } } };
+    const failures = checkEsmOnlySubpaths(pkg);
+    assert.equal(failures.length, 1);
+    assert.match(failures[0], /\.\/components/);
+    assert.match(failures[0], /ESM-only/);
+  });
+
+  it('passes the shape this package actually publishes', () => {
+    const pkg = { exports: { './components': { types: './d.ts', import: './dist/components/index.js' } } };
+    assert.deepEqual(checkEsmOnlySubpaths(pkg), []);
+  });
+
+  it('is silent when the subpath is absent altogether', () => {
+    assert.deepEqual(checkEsmOnlySubpaths({ exports: {} }), []);
+  });
+});
+
+describe('REQUIRE_CAPABLE_SPECIFIERS', () => {
+  // Authored, not derived. A derived list would drop a specifier the moment its
+  // `require` condition disappeared — which is the only failure the CJS probe
+  // exists to catch — so this asserts the list against the map in the direction
+  // that cannot go vacuous: every named specifier must still carry the condition.
+  it('names specifiers whose exports entry declares a require condition', () => {
+    const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'package.json'), 'utf8'));
+    const withoutRequire = REQUIRE_CAPABLE_SPECIFIERS.filter(specifier => {
+      const key = specifier === '@egov-moldova/mud' ? '.' : `.${specifier.slice('@egov-moldova/mud'.length)}`;
+      return typeof pkg.exports?.[key]?.require !== 'string';
+    });
+    assert.deepEqual(withoutRequire, []);
+  });
+});
+
+describe('ESM_ONLY_SUBPATHS names live keys', () => {
+  // The asymmetry this closes: its two sibling lists are each checked against
+  // the live map, and this one was not. `checkEsmOnlySubpaths` reads
+  // `pkg.exports?.[key]`, so a renamed key drops silently out of the filter and
+  // the guard becomes a permanent no-op for that entry — with nothing failing.
+  // This diff renames four keys, which is exactly how that happens.
+  it('every guarded subpath is still a key in exports', () => {
+    const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'package.json'), 'utf8'));
+    const absent = ESM_ONLY_SUBPATHS.filter(key => !(key in (pkg.exports ?? {})));
+    assert.deepEqual(absent, []);
+  });
+});
+
+describe('the React output target names the exports key', () => {
+  // `customElementsDir` in stencil.config.ts and the `./components/<pattern>` key
+  // in package.json are two copies of one fact: the segment the generated
+  // wrappers put in their import specifiers. Nothing else binds them, and the
+  // only other detector is `tsc --noEmit` in a workspace whose build script is
+  // `tsc || true`. Rename the key without this test and 56 wrappers hold a dead
+  // specifier that no check reports.
+  it('customElementsDir equals the first segment of the components pattern key', () => {
+    const config = fs.readFileSync(path.join(PROJECT_ROOT, 'stencil.config.ts'), 'utf8');
+    const declared = /customElementsDir:\s*'([^']+)'/.exec(config)?.[1];
+    assert.ok(declared, 'stencil.config.ts declares no customElementsDir');
+
+    const pkg = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'package.json'), 'utf8'));
+    const patternKey = Object.keys(pkg.exports).find(key => key.startsWith(`./${declared}/`) && key.includes('*'));
+    assert.ok(patternKey, `exports has no pattern key under ./${declared}/ — the generated wrappers would not resolve`);
   });
 });

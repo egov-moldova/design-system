@@ -17,8 +17,8 @@ npm install @egov-moldova/mud-web-components @egov-moldova/mud
 ## Usage — with a bundler (Vite, webpack, esbuild, …)
 
 ```ts
-import '@egov-moldova/mud/dist/mud/tokens/core.tokens.css';
-import '@egov-moldova/mud/dist/mud/mud.css';
+import '@egov-moldova/mud/tokens/core.tokens.css';
+import '@egov-moldova/mud/styles.css';
 import { defineCustomElements } from '@egov-moldova/mud-web-components';
 
 defineCustomElements();
