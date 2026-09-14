@@ -48,6 +48,9 @@ stages:
     - script: yarn test.dev
       displayName: 'Run Tests'
 
+    - script: yarn validate.package
+      displayName: 'Validate Published Package'
+
     - script: |
         npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
         npm publish --access public

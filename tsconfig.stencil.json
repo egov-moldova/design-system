@@ -1,0 +1,8 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["@stencil/core", "node"],
+    "tsBuildInfoFile": ".stencil/.tsbuildinfo.stencil"
+  },
+  "include": ["src"]
+}

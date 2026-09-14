@@ -1,0 +1,27 @@
+{
+  "name": "@egov-moldova/mud",
+  "version": "0.0.0-fixture",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs.js"
+    },
+    "./loader": {
+      "types": "./loader/index.d.ts",
+      "import": "./loader/index.js",
+      "require": "./loader/index.cjs.js"
+    },
+    "./styles.css": "./dist/mud/mud.css",
+    "./tokens/*.css": "./dist/mud/tokens/*.css",
+    "./assets/*": "./dist/mud/assets/*",
+    "./mud.esm.js": "./dist/mud/mud.esm.js",
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.js"
+    },
+    "./components/*": "./dist/components/*"
+  }
+}

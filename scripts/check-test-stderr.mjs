@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Test wrapper that fails the build if `stencil-test --project spec` produces
+ * Test wrapper that fails the build if `vitest run --project spec` produces
  * unexpected stderr noise — i.e. a `console.warn`/`console.error` from a
  * `mud-*` component that wasn't silenced by a `vi.spyOn(console, …)` in the
  * test itself.
@@ -16,44 +16,49 @@
  * wrapper turns the leak into a hard build failure so the convention is
  * mechanically enforced in CI.
  *
- * Ignored noise: Node deprecation lines (e.g. DEP0190 from @stencil/vitest's
- * own `spawn('npx', …, { shell: true })`) — those are printed by Node as
- * `(node:NNNN) [DEPxxxx] …` and never start with the `stderr |` prefix that
- * Vitest emits for test-captured output, so they don't trip this check.
+ * Ignored noise: Node deprecation lines are printed as `(node:NNNN) [DEPxxxx] …`
+ * and never start with the `stderr |` prefix Vitest emits for test-captured
+ * output, so they don't trip this check. (Until this wrapper spawned Vitest
+ * directly, the usual source was DEP0190 from `@stencil/vitest`'s own
+ * `spawn('npx', …, { shell: true })`; that spawn is gone.)
  *
  * Escape hatch: set `SKIP_STDERR_CHECK=1` to bypass the assertion (still
- * forwards exit code from stencil-test).
+ * forwards Vitest's exit code).
+ *
+ * Vitest is spawned directly rather than through `@stencil/vitest`'s
+ * `stencil-test` binary, which runs `stencil build --dev` first. That build
+ * suppressed dist/collection, dist/esm, dist/cjs, dist/index.js and loader/,
+ * so running the tests destroyed a production dist/. The `spec` project
+ * compiles components from source via `stencilVitestPlugin()`, so no built
+ * bundle is needed — see `vitest.config.mts` and `vitest-setup.ts`.
  */
 import { spawn } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 
-// `@stencil/vitest` doesn't list the binary under `exports`, only under `bin`,
-// so `require.resolve('@stencil/vitest/dist/bin/stencil-test.js')` is blocked
-// by ERR_PACKAGE_PATH_NOT_EXPORTED. Resolve via the workspace's node_modules
-// layout instead — works under yarn 4 nodeLinker: node-modules.
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const stencilTestBin = path.join(
-  __dirname,
-  '..',
-  'node_modules',
-  '@stencil',
-  'vitest',
-  'dist',
-  'bin',
-  'stencil-test.js',
+// Vitest doesn't list `./vitest.mjs` under `exports`, but it does export
+// `./package.json` — so resolve the manifest and read its own `bin` entry.
+// That reaches the same file through an exported surface instead of a
+// hand-built node_modules path, so it survives a linker change and follows
+// the package if it ever moves the file.
+const require = createRequire(import.meta.url);
+const vitestManifestPath = require.resolve('vitest/package.json');
+const vitestBin = path.resolve(
+  path.dirname(vitestManifestPath),
+  JSON.parse(readFileSync(vitestManifestPath, 'utf8')).bin.vitest,
 );
 
 // Vitest's default reporter hides captured `console.warn`/`error` blocks when
 // stdout is piped (not a TTY) — they only render with the verbose reporter or
 // when running interactively. This wrapper always pipes vitest's output, so
 // force verbose mode to surface every `stderr |` block regardless of TTY.
-// Args are forwarded to vitest via stencil-test's pass-through.
+// Args are forwarded straight to Vitest.
 const userArgs = process.argv.slice(2);
 const hasReporter = userArgs.some(a => a === '--reporter' || a.startsWith('--reporter='));
 const reporterArgs = hasReporter ? [] : ['--reporter=verbose'];
 
-const child = spawn(process.execPath, [stencilTestBin, ...userArgs, ...reporterArgs], {
+const child = spawn(process.execPath, [vitestBin, 'run', ...userArgs, ...reporterArgs], {
   stdio: ['inherit', 'pipe', 'pipe'],
   env: process.env,
 });

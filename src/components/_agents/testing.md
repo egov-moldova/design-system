@@ -10,8 +10,8 @@ The project migrated from Jest + `newSpecPage` (`@stencil/core/testing`) to **Vi
 
 | Command | What it does |
 |---|---|
-| `yarn test` | Wireit-cached run of `stencil-test --project spec` (rebuilds tokens + custom-elements manifest first). Use in pre-PR / CI. |
-| `yarn test.dev` | Direct `stencil-test --project spec` — fast loop without wireit cache. |
+| `yarn test` | Wireit-cached run of `vitest run --project spec`. Builds nothing — no token or Stencil rebuild. Use in pre-PR / CI. |
+| `yarn test.dev` | Direct `vitest --project spec --run` — fast loop without wireit cache. |
 | `yarn test.watch` | Vitest watch mode for specs. |
 | `yarn test.storybook` | Browser-mode story tests via `@storybook/addon-vitest` (Chromium + Playwright). |
 | `yarn test.dev --coverage` | Spec coverage via v8 → `coverage/` HTML report. |

@@ -129,7 +129,7 @@ export class MudNumericInput {
   @Prop() precision?: number;
 
   /** Form-control `name`. Used during form submission. */
-  @Prop() name?: string;
+  @Prop({ reflect: true }) name?: string;
 
   /** Placeholder shown when the control is empty. */
   @Prop() placeholder?: string;
@@ -860,7 +860,12 @@ export class MudNumericInput {
           <div class="assistive-row">
             {this.hasErrorMessage() ? (
               <div class="assistive assistive-error" id={this.errorId} part="error">
-                <mud-icon class="assistive-icon" name="circle-error-filled" size={iconSize} color="icon-danger-default" />
+                <mud-icon
+                  class="assistive-icon"
+                  name="circle-error-filled"
+                  size={iconSize}
+                  color="icon-danger-default"
+                />
                 <span class="assistive-text">{errorText}</span>
               </div>
             ) : this.hasHelperMessage() ? (

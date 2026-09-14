@@ -15,10 +15,11 @@ Thanks for your interest in contributing! This guide covers everything you need 
 7. [Coding Standards](#coding-standards)
 8. [Testing](#testing)
 9. [Commit Messages](#commit-messages)
-10. [Submitting a Pull Request](#submitting-a-pull-request)
-11. [Publishing](#publishing)
-12. [Troubleshooting](#troubleshooting)
-13. [Getting Help](#getting-help)
+10. [External Contributors](#external-contributors)
+11. [Submitting a Pull Request](#submitting-a-pull-request)
+12. [Publishing](#publishing)
+13. [Troubleshooting](#troubleshooting)
+14. [Getting Help](#getting-help)
 
 ---
 
@@ -60,9 +61,9 @@ This is a monorepo (Yarn workspaces) publishing three packages:
 
 | Package | Location | Description |
 | --- | --- | --- |
-| `@egov-moldova/design-system` | repo root | Core Stencil web components — framework-agnostic, Shadow DOM–isolated |
-| `@egov-moldova/design-system-web-components` | `web-components/` | Vanilla HTML/JS adapter — thin re-export of the Stencil loader |
-| `@egov-moldova/design-system-react` | `react/` | React adapter (typed JSX wrappers) — **in progress**, not yet published |
+| `@egov-moldova/mud` | repo root | Core Stencil web components — framework-agnostic, Shadow DOM–isolated |
+| `@egov-moldova/mud-web-components` | `web-components/` | Vanilla HTML/JS adapter — thin re-export of the Stencil loader |
+| `@egov-moldova/mud-react` | `react/` | React adapter (typed JSX wrappers) — **in progress**, not yet published |
 
 Key directories:
 
@@ -94,11 +95,7 @@ Additional docs worth knowing about:
 1. **Create a branch** off `main`: `git checkout -b feat/short-description` (or `fix/`, `chore/`, `docs/` — matches the [commit conventions](#commit-messages) below).
 2. **Edit components** in `src/components/` (or `src/hidden/` if the component isn't production-ready yet).
 3. **Run the dev loop**: `yarn dev` — Stencil, Storybook, and token watch run together via Wireit; changes hot-reload in Storybook.
-4. **For vanilla-adapter changes**, verify against the demo:
-   ```bash
-   yarn build && yarn build.web && yarn demo.web
-   ```
-   Opens `http://localhost:5174` with a live `<mud-button>` showcase served from [`web-components/demo/index.html`](web-components/demo/index.html).
+4. **For vanilla-adapter changes**, verify against the demo — see [Vanilla adapter](#vanilla-adapter-web-components) below.
 5. **Lint and typecheck before committing**:
    ```bash
    yarn lint        # ESLint (src/**/*.{ts,tsx}) + Stylelint (src/**/*.css)
@@ -108,20 +105,62 @@ Additional docs worth knowing about:
 6. **Run tests**: `yarn test` (see [Testing](#testing) below).
 7. **Commit** using [Conventional Commits](#commit-messages), **push**, and **open a PR**.
 
+### Vanilla adapter (`web-components/`)
+
+`@egov-moldova/mud-web-components` is a *thin* re-export of the Stencil
+loader — because Stencil already compiles to native custom elements, there is no
+framework-specific build step. Two builds and a demo server:
+
+```bash
+yarn build        # tokens + Stencil -> dist/, loader/, dist/types/
+yarn build.web    # depends on `build` (wireit orders it); runs tsc inside web-components/
+yarn demo.web     # http://localhost:5174 — live <mud-button> showcase
+```
+
+`yarn build.web` compiles `web-components/src/index.ts` into:
+
+- `dist/index.js` — re-exports `defineCustomElements` and `setNonce` from the core loader
+- `dist/index.d.ts` — type declarations including full element type augmentation (`HTMLMudButtonElement`, …)
+
+The demo renders only the button, but it proves the export is *complete* — every
+component is registered by `defineCustomElements()`. Verify in the browser console:
+
+```js
+defineCustomElements().then(() =>
+  console.log(Object.keys(window).filter(k => k.startsWith('HTMLMud')))
+);
+```
+
+You should see the full list (`HTMLMudButtonElement`, `HTMLMudInputElement`,
+`HTMLMudIconElement`, …).
+
+```text
+web-components/
+├── src/index.ts              # defineCustomElements + type re-exports
+├── demo/
+│   ├── index.html            # mud-button showcase
+│   ├── main.ts               # CSS imports + defineCustomElements()
+│   ├── demo.css              # @font-face for Onest + body font-family
+│   └── vite.config.ts        # port 5174, allows fs access to the workspace parent
+├── package.json              # @egov-moldova/mud-web-components
+├── tsconfig.json             # ES2020, declaration: true
+└── README.md
+```
+
 ### Script reference
 
 | Script | Purpose |
 | --- | --- |
 | `yarn dev` | Dev server: Stencil watch + Storybook + token watch (port 6007) |
 | `yarn build` | Full build: tokens → Stencil components → `dist/`, `loader/` |
-| `yarn build.web` | Builds `@egov-moldova/design-system-web-components` (depends on `build`) |
+| `yarn build.web` | Builds `@egov-moldova/mud-web-components` (depends on `build`) |
 | `yarn demo.web` | Runs the vanilla-adapter demo at `http://localhost:5174` |
 | `yarn sp.build` | Production Storybook build → `storybook-static/` |
 | `yarn sp.serve` | Serves `storybook-static/` locally at `http://localhost:6008` |
 | `yarn lint` | ESLint + Stylelint (no fixes) |
 | `yarn format` | ESLint `--fix` + Prettier `--write` |
 | `yarn typecheck` | `tsc --noEmit` |
-| `yarn test` | Full unit test suite (rebuilds tokens + Stencil, then `stencil-test --project spec`) |
+| `yarn test` | Full unit test suite — `vitest run --project spec`, wireit-cached; compiles components from source and builds no `dist/` |
 | `yarn check` | `format` then the full local verify gate (`typecheck` + `lint` + `test`) — run this before opening a PR |
 
 ---
@@ -167,7 +206,7 @@ MUD uses a three-tier design token hierarchy (**palette → semantic → compone
 Every `mud-*` component ships with a co-located `*.spec.tsx` covering rendering, prop reflection, slots, events, and structural ARIA/a11y assertions. Full policy — including the **zero-mocks rule** and the **80% line coverage target** — is documented in [`TESTING.md`](TESTING.md).
 
 ```bash
-yarn test              # canonical: rebuild + stencil-test --project spec
+yarn test              # canonical: vitest run --project spec (wireit-cached, builds nothing)
 yarn test.dev          # fast loop, no wireit cache layer
 yarn test.watch        # watch mode
 yarn test.storybook    # browser-rendered story/interaction tests
@@ -199,6 +238,31 @@ Husky hooks run automatically after `yarn install` (via the `prepare` script) �
 
 ---
 
+## External Contributors
+
+If you're on a team outside egov-moldova, you don't have push access to this repository — contribute via a fork instead of a branch:
+
+1. **Fork the repository** on GitHub (button on the repo page), then clone your fork:
+   ```bash
+   git clone https://github.com/<your-org-or-username>/design-system.git
+   cd design-system
+   git remote add upstream https://github.com/e-government-md/design-system.git
+   ```
+2. **Keep your fork in sync** with `upstream/main` before starting new work:
+   ```bash
+   git fetch upstream
+   git checkout main
+   git merge upstream/main
+   ```
+3. **Create a branch** in your fork following the same [naming conventions](#development-workflow) (`feat/`, `fix/`, `chore/`, `docs/`).
+4. **Develop and validate** exactly as described in [Development Workflow](#development-workflow) and [Submitting a Pull Request](#submitting-a-pull-request) — run `yarn check` and `yarn build` before opening a PR.
+5. **Push to your fork** and **open a pull request from your fork's branch into `e-government-md/design-system:main`**. GitHub's "compare across forks" view handles this automatically when you click "New pull request" from your fork.
+6. A maintainer from the core team will review; address feedback with new commits on the same branch (they'll show up in the PR automatically).
+
+Internal contributors with write access to this repo should continue branching directly in this repository as described above, rather than forking.
+
+---
+
 ## Submitting a Pull Request
 
 1. Before opening a PR, run the full local verify gate: `yarn check` (format + typecheck + lint + test), plus `yarn build` to confirm generated files are up to date. If you touched a component, commit any resulting diff in `src/components.d.ts`, `src/components/*/readme.md`, etc. — these are auto-generated and must stay in sync with source.
@@ -210,7 +274,34 @@ Husky hooks run automatically after `yarn install` (via the `prepare` script) �
 
 ## Publishing
 
-Publishing to npm (`@egov-moldova` scope) is handled by project maintainers — contributors don't need to publish packages themselves.
+Publishing to npm (`@egov-moldova` scope) is handled by project maintainers — contributors don't need to publish packages themselves. Azure Pipelines publishes on each run, using the build number as the version.
+
+CI runs `yarn validate.package` immediately before publishing, and the run fails rather than shipping if the tarball does not match what `package.json` declares: every declared entrypoint present, no source map or development-mode runtime, no build-machine path leaked into the type declarations, the standalone custom-elements bundle carrying its assets, and `yarn pack` and `npm pack` resolving the same file list — the gate measures the first, CI publishes the second. Run it yourself after `yarn build` before any manual publish.
+
+### Manual publish (maintainers)
+
+Requires an npm token with write access to `@egov-moldova`.
+
+```bash
+# Stencil core — the root package declares no workspace dependencies,
+# so either publisher is safe here.
+yarn build && yarn validate.package
+npm config set //registry.npmjs.org/:_authToken YOUR_NPM_TOKEN
+npm publish --access public
+
+# Vanilla adapter — yarn npm publish, NOT npm publish. See the warning below.
+cd web-components
+YARN_NPM_AUTH_TOKEN=YOUR_NPM_TOKEN yarn npm publish --access public
+```
+
+> **Publish the workspace packages with `yarn npm publish`.** Both
+> `web-components` and `react` depend on the core as `"@egov-moldova/mud":
+> "workspace:^"`. Yarn rewrites that to a real registry range at pack time —
+> `yarn pack` in `web-components` emits `^1.0.6`. **`npm pack` does not**: it
+> leaves `workspace:^` in the manifest verbatim, from inside the directory and
+> with `-w` from the root alike, so an `npm publish` there ships a dependency
+> nobody can install. The CI pipeline already uses `yarn npm publish` for
+> `web-components`; this is the manual path catching up with it.
 
 For local testing against another project without publishing, use path installs:
 
@@ -233,7 +324,7 @@ Not a contributing issue directly, but common when testing a local build — ens
 
 ```ts
 // src/types/mud.d.ts
-import type {} from '@egov-moldova/design-system-web-components';
+import type {} from '@egov-moldova/mud-web-components';
 ```
 
 ### `yarn dev` hangs or Storybook never opens

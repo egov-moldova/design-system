@@ -3,7 +3,7 @@
 export * from './components/stencil-generated/components';
 
 import { defineCustomElements as stencilDefineCustomElements } from '@egov-moldova/mud/loader';
-import { setAssetPath as setStandaloneAssetPath } from '@egov-moldova/mud/dist/components';
+import { setAssetPath as setStandaloneAssetPath } from '@egov-moldova/mud/components';
 
 let registered = false;
 
@@ -27,7 +27,7 @@ export type DefineCustomElementsOptions = {
  *
  * Also wires up Stencil's asset path so asset-driven components (cor-logo,
  * future icons/illustrations) can resolve their SVGs. The React wrappers
- * consume the standalone `dist/components/*` bundle whose `getAssetPath`
+ * consume the standalone `@egov-moldova/mud/components` bundle whose `getAssetPath`
  * throws unless a base URL is registered (see `cor-logo.providers.ts`).
  * Resolving this here means consumers don't need to know any of that;
  * production builds can override via `opts.assetPath`.

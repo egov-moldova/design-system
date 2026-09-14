@@ -1,11 +1,11 @@
-import '@egovmd/mud/dist/mud/tokens/core.tokens.css';
-import '@egovmd/mud/dist/mud/tokens/core.dark.tokens.css';
-import '@egovmd/mud/dist/mud/mud.css';
+import '@egov-moldova/mud/tokens/core.tokens.css';
+import '@egov-moldova/mud/tokens/core.dark.tokens.css';
+import '@egov-moldova/mud/styles.css';
 import './demo.css';
 
 // Import the lazy bundle entry directly so Stencil resolves `getAssetPath()`
 // relative to dist/mud/ (where the SVG assets live) via import.meta.url.
-import '@egovmd/mud/dist/mud/mud.esm.js';
+import '@egov-moldova/mud/mud.esm.js';
 
 import { CATEGORIES, indexPath, locate, pagePath, type ComponentEntry } from './manifest';
 
@@ -98,7 +98,7 @@ function renderComponentChrome(tag: string) {
 
   const header = el('header', { class: 'demo-header' }, lead, nav);
   document.body.insertBefore(header, document.body.firstChild);
-  document.title = `${tag} · @egovmd/mud-web-components`;
+  document.title = `${tag} · @egov-moldova/mud-web-components`;
 }
 
 /* ----------------------------------------------------------------- */
@@ -108,7 +108,7 @@ function renderToc() {
   const header = el(
     'header',
     { class: 'demo-header' },
-    el('div', { class: 'demo-header__lead' }, el('h1', {}, '@egovmd/mud-web-components')),
+    el('div', { class: 'demo-header__lead' }, el('h1', {}, '@egov-moldova/mud-web-components')),
     el('div', { class: 'demo-header__nav' }, buildThemeToggle()),
   );
 
@@ -186,7 +186,7 @@ function renderToc() {
 
   const main = el('main', { class: 'toc' }, intro, search, ...groups, empty);
   document.body.append(header, main);
-  document.title = '@egovmd/mud-web-components — table of contents';
+  document.title = '@egov-moldova/mud-web-components — table of contents';
 }
 
 /* ----------------------------------------------------------------- */
@@ -198,7 +198,7 @@ function boot() {
   else if ('toc' in document.body.dataset) renderToc();
 
   applyTheme(getInitialTheme());
-  console.info('[demo] @egovmd/mud custom elements registered');
+  console.info('[demo] @egov-moldova/mud custom elements registered');
 }
 
 if (document.readyState === 'loading') {

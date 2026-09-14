@@ -50,7 +50,7 @@ export class MudSwitch {
   @Prop({ reflect: true }) required: boolean = false;
 
   /** Form-control `name`. Used during form submission. */
-  @Prop() name?: string;
+  @Prop({ reflect: true }) name?: string;
 
   /**
    * Value submitted with the form when this switch is on.

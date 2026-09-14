@@ -302,15 +302,17 @@
   margin: 0;
   cursor: pointer;
   border-radius: var(--border-radius-4);
-  transition: background-color 150ms ease, color 150ms ease;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
 }
 
 .clear-button:hover {
-  background-color: color-mix(in srgb, currentColor 12%, transparent);
+  background-color: color-mix(in srgb, currentcolor 12%, transparent);
 }
 
 .clear-button:active {
-  background-color: color-mix(in srgb, currentColor 20%, transparent);
+  background-color: color-mix(in srgb, currentcolor 20%, transparent);
 }
 
 .clear-button:focus-visible {

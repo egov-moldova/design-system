@@ -2,7 +2,7 @@
 
 **Project**: `@egovmd/mud` — Stencil.js web components with design tokens, Storybook docs, multi-theme support via Style Dictionary.
 
-**Tech Stack**: StencilJS 4.x, TypeScript 5.x, Storybook 10.x (`@storybook/web-components-vite`, Vite 8 / Rolldown + Oxc, port **6007**), Style Dictionary 4.x (DTCG `$value`/`$type`), Vitest 4.x via `@stencil/vitest` (`yarn test` → `stencil-test --project spec`), Wireit (script orchestration + caching), Yarn 4.x, Node >=22.
+**Tech Stack**: StencilJS 4.x, TypeScript 5.x, Storybook 10.x (`@storybook/web-components-vite`, Vite 8 / Rolldown + Oxc, port **6007**), Style Dictionary 4.x (DTCG `$value`/`$type`), Vitest 4.x with `@stencil/vitest`'s Vite plugin (`yarn test` → `vitest run --project spec`), Wireit (script orchestration + caching), Yarn 4.x, Node >=22.
 
 **MCP servers** (configured in `.mcp.json` at repo root): Playwright (`mcp__playwright__*`), Chrome DevTools (`mcp__chrome-devtools__*` — perf/network/memory/Lighthouse), Figma (`mcp__figma__*`), Context7 (`mcp__context7__*`), Image Compare (`mcp__image-compare__*`), agentation (`mcp__agentation__*`). See `_agents/mcp-tools.md` for full reference.
 
@@ -91,6 +91,8 @@ The repo ships ready-to-use slash commands and subagents for routine workflows. 
 8. **No Boolean Slot Props**: Use CSS `:empty` or slot detection — never boolean props to control slot visibility
 9. **Shadow DOM Dual Selectors**: If a slot has default content, style BOTH `::slotted()` and direct child
 10. **Minimal Builds**: Use `yarn tokens.build` (~5s) or Stencil watch (~2-5s) during dev; full `yarn build` only for final QA
+11. **Change Scope**: A PR touches only files the task required. `yarn format` is repo-wide (`prettier --write .`) — harmless while the repo is Prettier-clean, but if it rewrites files your task never touched, that drift ships as its own `style:` PR, never mixed into yours. Check `git diff --stat main...HEAD` before opening a PR. See `_agents/verification-git.md`.
+12. **Docs Audience**: `README.md` is written for institutions/companies that *consume* `@egovmd/mud` — install, import, use, upgrade. Contributor mechanics (dependency install, local builds, demo servers, dev loop, publishing steps) belong in `CONTRIBUTING.md`. See `_agents/verification-git.md`.
 
 ---
 
@@ -114,6 +116,7 @@ yarn build                     # Full production build with tokens, custom-eleme
 yarn build.web                 # Build @egovmd/mud-web-components vanilla adapter
 yarn demo.web                  # Serve the @egovmd/mud-web-components demo (http://localhost:5174)
 yarn sp.build                  # Storybook static export (validates everything)
+yarn validate.package          # Publish gate: every declared entrypoint present, no dev build, no leaked paths, packers agree
 yarn sp.docker                 # Docker-optimized Storybook build
 
 # Build (dev — targeted per change type)
@@ -124,9 +127,9 @@ yarn tokens.watch              # Watch token files and rebuild on change
 yarn dx:stencil:once           # Single Stencil dev build without docs (~20s)
 
 # Test & Lint
-yarn test                      # Vitest spec project (rebuilds Stencil + token bundle, then `stencil-test --project spec`)
-yarn test.dev                  # `stencil-test --project spec` — fast run without wireit-level cache (rebuilds Stencil once)
-yarn test.watch                # `stencil-test --project spec --watch`
+yarn test                      # Vitest spec project via `vitest run --project spec` (wireit-cached; builds nothing)
+yarn test.dev                  # `vitest --project spec --run` — compiles components from source; does not build dist
+yarn test.watch                # `vitest --project spec --watch`
 yarn lint                      # ESLint + Prettier check (cached)
 yarn format                    # Auto-fix code style
 

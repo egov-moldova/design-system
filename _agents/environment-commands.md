@@ -93,7 +93,7 @@ yarn sp.dev.watch handles all three in watch mode. Only run it once.
 
 ### `yarn test.dev` — Fast Development Testing
 
-**Purpose**: Rapid iteration during development without token rebuild overhead.
+**Purpose**: Rapid iteration during development, bypassing the wireit cache layer.
 
 **Use cases**:
 - Testing specific components during development
@@ -115,11 +115,11 @@ yarn test.dev src/components/mud-button src/components/mud-input
 yarn test.dev
 ```
 
-**Speed**: ~0.8s startup (no token rebuild)
+**Speed**: ~0.8s startup (no wireit freshness check)
 
 ### `yarn test` — Full CI/Production Testing
 
-**Purpose**: Complete verification with token rebuild guarantee.
+**Purpose**: Complete verification of the spec suite, through the stderr wrapper that fails on unsilenced component warnings.
 
 **Use cases**:
 - Pre-commit verification
@@ -127,7 +127,7 @@ yarn test.dev
 - Production readiness checks
 - When token changes may affect tests
 
-**Speed**: ~5-6s startup (includes token build dependency check via wireit)
+**Speed**: ~5-6s startup (wireit freshness check; the script itself builds nothing)
 
 **Note**: Wireit caching means if tokens haven't changed, the overhead is minimal (~0.1s).
 
@@ -163,8 +163,8 @@ yarn tokens.watch              # Watch token files and rebuild on change
 yarn tokens.audit              # Debug missing token references
 
 # Test & Lint
-yarn test                      # Jest unit + Stencil E2E tests (with token rebuild)
-yarn test.dev                  # Fast tests without token rebuild (accepts args for specific components)
+yarn test                      # Vitest spec suite via the stderr wrapper (builds nothing)
+yarn test.dev                  # Same suite, no wireit cache layer (accepts args for specific components)
 yarn test.watch                # Test in watch mode
 yarn lint                      # ESLint (TS/TSX) + Prettier + Stylelint CSS check
 yarn lint.css                  # Stylelint CSS-only lint (src/**/*.css)

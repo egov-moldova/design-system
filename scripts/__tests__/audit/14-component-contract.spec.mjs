@@ -366,14 +366,52 @@ describe('14-component-contract: archetype emission (end-to-end)', () => {
   });
 });
 
+describe('14-component-contract: shadow encapsulation', () => {
+  const component = shadowOption => `
+    import { Component, h } from '@stencil/core';
+    @Component({ tag: 'mud-fixture', shadow: ${shadowOption} })
+    export class MudFixture {
+      render() { return <slot />; }
+    }
+  `;
+
+  const shadowOf = shadowOption =>
+    extractContractFromTsx(tempTsx('mud-fixture', component(shadowOption)), 'mud-fixture').contract.shadow;
+
+  it('reports shadow: true as encapsulated', () => {
+    assert.equal(shadowOf('true'), true);
+  });
+
+  it('reports the object form as encapsulated', () => {
+    // Stencil's `shadow: { delegatesFocus: true }` is shadow DOM. Reading the
+    // option as a non-literal once dropped it, reporting these as `false`.
+    assert.equal(shadowOf('{ delegatesFocus: true }'), true);
+  });
+
+  it('reports shadow: false as not encapsulated', () => {
+    assert.equal(shadowOf('false'), false);
+  });
+
+  it('reports an absent shadow option as not encapsulated', () => {
+    const tsx = `
+      import { Component, h } from '@stencil/core';
+      @Component({ tag: 'mud-fixture' })
+      export class MudFixture { render() { return <slot />; } }
+    `;
+    assert.equal(extractContractFromTsx(tempTsx('mud-fixture', tsx), 'mud-fixture').contract.shadow, false);
+  });
+});
+
 describe('14-component-contract: baseline components', () => {
   it('mud-button — extracts expected shape', async () => {
     const target = resolveComponentPaths('mud-button');
     const { contract, findings } = await analyzeComponent(target);
     assert.equal(findings.filter(f => f.severity === 'error').length, 0);
     assert.equal(contract.tag, 'mud-button');
+    // `shadow: { delegatesFocus: true }` in the decorator — the object form is
+    // still shadow DOM, and the contract must not report it as `false`.
     assert.equal(contract.shadow, true);
-    assert.equal(contract.formAssociated, false);
+    assert.equal(contract.formAssociated, true);
     assert.ok(contract.props.length >= 3, 'mud-button should have >= 3 props');
     // Default slot should be present
     assert.ok(contract.slots.some(s => s.name === 'default'));

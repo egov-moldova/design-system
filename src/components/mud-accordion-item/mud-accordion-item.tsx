@@ -1,9 +1,18 @@
 import { Component, Element, Event, EventEmitter, Host, Method, Prop, State, Watch, h } from '@stencil/core';
 
-import type { AccordionIconPosition, AccordionSize } from './mud-accordion.types';
+import type { AccordionIconPosition, AccordionSize } from '../mud-accordion/mud-accordion.types';
 
 let uidSeed = 0;
 
+// `@csspart` duplicates `@part` and `@fires` duplicates the `@Event()` decorators in
+// the docblock below, because two generators read it and neither reads the other's
+// tag: Stencil's readme takes `@part` and the decorators, web-component-analyzer —
+// which writes `.storybook/custom-elements.json`, and so the Storybook API table —
+// takes only `@csspart` and `@fires`. The note sits out here rather than inside the
+// block: Stencil concatenates untagged prose into the PRECEDING tag's description,
+// which is how it once landed inside the `panel` shadow-part row.
+// Baseline: `node -e "const t=require('./.storybook/custom-elements.json').tags.find(t=>t.name==='mud-accordion-item');console.log(t.events.map(e=>e.name),t.cssParts.map(p=>p.name))"`
+// -> both events and both parts; dropping either tag empties its table.
 /**
  * Accordion item — a single collapsible row inside `mud-accordion`.
  *
@@ -18,14 +27,17 @@ let uidSeed = 0;
  * @slot icon-start - Optional leading icon (`mud-icon` recommended).
  * @slot trailing - Optional trailing content (`mud-badge`, `mud-button`, label).
  *                   Sits between the heading group and the open/close trigger.
- * @slot - (default) Panel body. Rendered only when the item is open.
+ * @slot - (default) Panel body. Always in the DOM; the panel carries `hidden`
+ * while the item is closed, so slotted media still loads when collapsed.
  *
  * @part header - The button that toggles open/closed.
  * @part panel - The region revealed when open.
  *
- * @fires mudToggle - Fired when the user activates the header. The container
- *                    listens for this and decides whether to honour it
- *                    (single-mode collapsing of siblings).
+ * @csspart header - The button that toggles open/closed.
+ * @csspart panel - The region revealed when open.
+ *
+ * @fires mudToggle - Emitted after the item has already toggled itself. The parent `mud-accordion` reacts by collapsing the other items in `mode="single"`; it cannot refuse or reverse this item's own change.
+ * @fires mudAccordionItemKey - Emitted on Arrow/Home/End keypress on the header. Consumed by the parent `mud-accordion` to implement WAI-ARIA Accordion Pattern traversal. Internal contract — consumers typically don't subscribe directly.
  */
 @Component({
   tag: 'mud-accordion-item',
@@ -73,9 +85,9 @@ export class MudAccordionItem {
   @Prop({ reflect: true }) appearance: 'default' | 'trail-sites' = 'default';
 
   /**
-   * Layout breakpoint. Set by the parent based on the resolved size
-   * (desktop ≥ 768px, mobile below). May also be set explicitly by
-   * consumers who need a fixed render at narrow widths.
+   * Layout breakpoint (desktop ≥ 768px, mobile below). Owned by the parent
+   * `mud-accordion`, which assigns it on load and on every viewport crossing —
+   * setting it on an item is overwritten. Configure it on the parent instead.
    * @default 'desktop'
    */
   @Prop({ reflect: true }) breakpoint: 'desktop' | 'mobile' = 'desktop';
@@ -110,9 +122,7 @@ export class MudAccordionItem {
   @Element() host!: HTMLMudAccordionItemElement;
 
   /**
-   * Emitted when the user activates the header (click / Enter / Space).
-   * The parent `mud-accordion` may cancel the implicit toggle in
-   * `mode="single"` to enforce exclusivity.
+   * Emitted after the item has already toggled itself. The parent `mud-accordion` reacts by collapsing the other items in `mode="single"`; it cannot refuse or reverse this item's own change.
    */
   @Event({ eventName: 'mudToggle', bubbles: true, composed: true }) mudToggle!: EventEmitter<{
     open: boolean;
@@ -120,9 +130,7 @@ export class MudAccordionItem {
   }>;
 
   /**
-   * Emitted on Arrow/Home/End keypress on the header. Consumed by the parent
-   * `mud-accordion` to implement WAI-ARIA Accordion Pattern traversal.
-   * Internal contract — consumers typically don't subscribe directly.
+   * Emitted on Arrow/Home/End keypress on the header. Consumed by the parent `mud-accordion` to implement WAI-ARIA Accordion Pattern traversal. Internal contract — consumers typically don't subscribe directly.
    */
   @Event({ eventName: 'mudAccordionItemKey', bubbles: true, composed: true })
   mudAccordionItemKey!: EventEmitter<{ key: string; itemId: string }>;

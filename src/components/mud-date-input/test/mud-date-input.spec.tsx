@@ -459,16 +459,12 @@ describe('mud-date-input', () => {
     });
 
     it('stays hidden when readonly, even with a value', async () => {
-      const { root } = await render(
-        <mud-date-input clearable readonly value="15/04/2025" label="x"></mud-date-input>,
-      );
+      const { root } = await render(<mud-date-input clearable readonly value="15/04/2025" label="x"></mud-date-input>);
       expect(queryClearButton(root)).toBeNull();
     });
 
     it('stays hidden when disabled, even with a value', async () => {
-      const { root } = await render(
-        <mud-date-input clearable disabled value="15/04/2025" label="x"></mud-date-input>,
-      );
+      const { root } = await render(<mud-date-input clearable disabled value="15/04/2025" label="x"></mud-date-input>);
       expect(queryClearButton(root)).toBeNull();
     });
 

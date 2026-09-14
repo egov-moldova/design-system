@@ -479,3 +479,61 @@ export const EdgeCases: Story = {
     ),
   parameters: { controls: { disable: true } },
 };
+
+// Regression test, not documentation — hidden from the sidebar and autodocs.
+// `syncFormValue` publishes nothing while `name` is unset, so a consumer that
+// assigns `chips` first and `name` second — the order a framework applies props
+// in — used to leave the control out of the submission permanently: the chips
+// watcher had already run, and nothing ran again when the name arrived.
+// Reflecting `name` did not fix this; the host carried the attribute and the
+// FormData carried nothing. Only observable in a real browser: the `spec`
+// project's ElementInternals stub makes `setFormValue` a no-op.
+export const LateNameSubmission: Story = {
+  tags: ['!autodocs', '!dev'],
+  render: () => /*html*/ `
+    <form>
+      <mud-input-chip id="late"></mud-input-chip>
+    </form>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: { disable: true },
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    type Chip = HTMLElement & {
+      name?: string;
+      chips?: string[];
+      componentOnReady?: () => Promise<unknown>;
+    };
+    const form = canvasElement.querySelector('form');
+    if (!form) throw new Error('form did not render');
+
+    await customElements.whenDefined('mud-input-chip');
+    const el = canvasElement.querySelector<HTMLElement>('#late') as Chip | null;
+    if (!el) throw new Error('#late did not render');
+    // `customElements.whenDefined` above is what guarantees the upgrade —
+    // `define` upgrades every connected element synchronously. `componentOnReady`
+    // is optional on purpose: the browser test lane compiles components as custom
+    // elements, a build that carries no such method.
+    await el.componentOnReady?.();
+
+    // Data first, name second.
+    el.chips = ['a', 'b'];
+    await new Promise(resolve => setTimeout(resolve, 0));
+    el.name = 'lateChips';
+
+    const submitted = () => new FormData(form).getAll('lateChips').map(String);
+    const startedAt = performance.now();
+    for (;;) {
+      if (submitted().join(',') === JSON.stringify(['a', 'b'])) break;
+      if (performance.now() - startedAt > 2000) {
+        throw new Error(
+          `timed out waiting for FormData "lateChips" to carry the chips — it was [${submitted().join(
+            ',',
+          )}], with the host rendered as ${el.outerHTML.slice(0, 120)}`,
+        );
+      }
+      await new Promise(resolve => setTimeout(resolve, 16));
+    }
+  },
+};

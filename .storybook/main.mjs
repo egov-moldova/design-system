@@ -24,7 +24,7 @@ const devAddons = ['@storybook/addon-docs', '@whitespace/storybook-addon-html', 
 const prodAddons = ['@storybook/addon-docs', '@storybook/addon-links', '@storybook/addon-a11y'];
 
 export default {
-  stories: ['./stories/**/*.mdx', '../src/components/**/*.stories.@(js|jsx|ts|tsx)'],
+  stories: ['./stories/**/*.mdx', '../src/components/**/*.mdx', '../src/components/**/*.stories.@(js|jsx|ts|tsx)'],
   // Map tokens/generated/ → /tokens/generated/ in production build output.
   // In dev mode, the custom middleware in viteFinal serves these files instead.
   // Map illustration SVGs to /assets/assets/ — in production Vite bundles the Stencil ESM into

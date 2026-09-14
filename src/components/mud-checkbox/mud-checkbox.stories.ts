@@ -429,3 +429,95 @@ export const CoverageGuard: Story = {
     if (!instance) throw new globalThis.Error('instance not constructed');
   },
 };
+
+// Regression test, not documentation — hidden from the sidebar and autodocs like
+// CoverageGuard above. The `spec` project cannot cover this: it runs under
+// mock-doc with a stubbed ElementInternals whose `setFormValue` is a no-op, so a
+// FormData round-trip is only observable in a real browser. GitHub issue #10.
+export const FormSubmissionContract: Story = {
+  tags: ['!autodocs', '!dev'],
+  render: () => /*html*/ `
+    <form>
+      <mud-checkbox id="by-attribute" label="attribute" name="byAttribute" value="A"></mud-checkbox>
+      <mud-checkbox id="by-property" label="property"></mud-checkbox>
+      <mud-checkbox id="late-value" label="late value" name="lateValue"></mud-checkbox>
+    </form>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: { disable: true },
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    type Checkbox = HTMLElement & {
+      name?: string;
+      value?: string;
+      checked?: boolean;
+      componentOnReady?: () => Promise<unknown>;
+    };
+    // `globalThis.Error` because the local `Error: Story` export shadows the global class in this module.
+    const ready = async (id: string): Promise<Checkbox> => {
+      await customElements.whenDefined('mud-checkbox');
+      const el = canvasElement.querySelector<HTMLElement>(`#${id}`) as Checkbox | null;
+      if (!el) throw new globalThis.Error(`#${id} did not render`);
+      // `customElements.whenDefined` above is what guarantees the upgrade —
+      // `define` upgrades every connected element synchronously. `componentOnReady`
+      // is optional on purpose: the browser test lane compiles components as
+      // custom elements (`componentExport: 'customelement'`), a build that carries
+      // no such method, so REQUIRING it fails every story in this project.
+      await el.componentOnReady?.();
+      return el;
+    };
+    // Stencil publishes a reflected attribute and the form value on the next
+    // render tick, not on assignment, so the assertion polls to a deadline
+    // rather than sleeping a fixed amount — a fixed sleep is either flaky or slow.
+    const waitFor = async (predicate: () => boolean, describe: () => string, timeoutMs = 2000) => {
+      const startedAt = performance.now();
+      for (;;) {
+        if (predicate()) return;
+        if (performance.now() - startedAt > timeoutMs) {
+          throw new globalThis.Error(`timed out after ${timeoutMs}ms waiting for ${describe()}`);
+        }
+        await new Promise(resolve => setTimeout(resolve, 16));
+      }
+    };
+
+    const form = canvasElement.querySelector('form');
+    if (!form) throw new globalThis.Error('form did not render');
+
+    const byAttribute = await ready('by-attribute');
+    const byProperty = await ready('by-property');
+    const lateValue = await ready('late-value');
+
+    // The defect: `name` assigned as a property, which is what framework
+    // bindings do. Before `reflect: true` this control never reached FormData.
+    byProperty.name = 'byProperty';
+    byProperty.value = 'P';
+
+    byAttribute.checked = true;
+    byProperty.checked = true;
+    lateValue.checked = true;
+
+    // The second defect: a value assigned AFTER the box was checked. Without a
+    // `value` watcher this still submitted the `'on'` fallback.
+    lateValue.value = 'late';
+
+    // `getAll` rather than iterating `entries()`: the Stencil program compiles
+    // without `DOM.Iterable`, so the iterator form does not type-check here.
+    const expected: Array<[string, string]> = [
+      ['byAttribute', 'A'],
+      ['byProperty', 'P'],
+      ['lateValue', 'late'],
+    ];
+    const readAll = () => {
+      const submitted = new FormData(form);
+      return expected.map(([key]) => `${key}=${submitted.getAll(key).map(String).join(',')}`);
+    };
+    const want = expected.map(([key, value]) => `${key}=${value}`);
+
+    await waitFor(
+      () => readAll().join(' | ') === want.join(' | '),
+      () =>
+        `FormData [${want.join(' | ')}] — it was [${readAll().join(' | ')}], with the property-named host rendered as ${byProperty.outerHTML.slice(0, 120)}`,
+    );
+  },
+};

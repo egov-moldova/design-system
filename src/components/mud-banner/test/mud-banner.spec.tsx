@@ -118,8 +118,14 @@ describe('mud-banner', () => {
       // Invoke the handler directly: mock-doc does not route synthetic
       // KeyboardEvents through the JSX listener (mirrors the notification spec).
       type Instance = { handleCloseKeyDown: (ev: KeyboardEvent) => void };
-      (root as unknown as Instance).handleCloseKeyDown.call(root, new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
-      (root as unknown as Instance).handleCloseKeyDown.call(root, new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+      (root as unknown as Instance).handleCloseKeyDown.call(
+        root,
+        new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }),
+      );
+      (root as unknown as Instance).handleCloseKeyDown.call(
+        root,
+        new KeyboardEvent('keydown', { key: ' ', bubbles: true }),
+      );
       await flush();
       expect(onDismiss).toHaveBeenCalledTimes(2);
     });
@@ -132,7 +138,10 @@ describe('mud-banner', () => {
         </mud-banner>,
       );
       type Instance = { handleCloseKeyDown: (ev: KeyboardEvent) => void };
-      (root as unknown as Instance).handleCloseKeyDown.call(root, new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }));
+      (root as unknown as Instance).handleCloseKeyDown.call(
+        root,
+        new KeyboardEvent('keydown', { key: 'Tab', bubbles: true }),
+      );
       await flush();
       expect(onDismiss).not.toHaveBeenCalled();
     });

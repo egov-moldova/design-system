@@ -101,7 +101,7 @@ For a locally installed package (`yarn add @egov-moldova/design-system`) served 
   }
   </script>
   <script type="module">
-    import { defineCustomElements } from '@egov-moldova/design-system/loader';
+    import { defineCustomElements } from '@egov-moldova/mud/loader';
     defineCustomElements();
   </script>
 ```
@@ -120,11 +120,11 @@ yarn add @egov-moldova/design-system @egov-moldova/design-system-web-components
 
 ```js
   // Design tokens as CSS custom properties — required by every component (light + dark themes)                                                                                                                                                                                                                    
-  import '@egov-moldova/tokens/core.tokens.css';
-  import '@egov-moldova/tokens/core.dark.tokens.css';
+  import '@egov-moldova/mud/tokens/core.tokens.css';
+  import '@egov-moldova/mud/tokens/core.dark.tokens.css';
   
   // Global styles — fonts and resets shared across all components                                                                                                                                                                                                                                                 
-  import '@egov-moldova/styles.css';
+  import '@egov-moldova/mud/styles.css';
   
   // Registers every mud-* custom element with the browser via bootstrapLazy.                                                                                                                                                                                                                                      
   // Bare import — requires a bundler to resolve; runs once at startup.                                                                                                                                                                                                                                            

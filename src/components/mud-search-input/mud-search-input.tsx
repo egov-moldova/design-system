@@ -118,7 +118,7 @@ export class MudSearchInput {
   @Prop({ mutable: true, reflect: true }) value: string = '';
 
   /** Form-control `name`. Used during form submission. */
-  @Prop() name?: string;
+  @Prop({ reflect: true }) name?: string;
 
   /** Placeholder shown when the control is empty. */
   @Prop() placeholder?: string;

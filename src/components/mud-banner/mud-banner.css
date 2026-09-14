@@ -77,7 +77,7 @@
 }
 
 .close:hover {
-  background-color: color-mix(in srgb, currentColor 12%, transparent);
+  background-color: color-mix(in srgb, currentcolor 12%, transparent);
 }
 
 .close-icon {
@@ -104,7 +104,7 @@
 /* Strong = filled background, on-color foreground. */
 :host([emphasis='strong'][variant='info']) {
   background: var(--color-background-brand-default, #0058d2);
-  color: var(--color-text-base-inverse-on-color, #ffffff);
+  color: var(--color-text-base-inverse-on-color, #fff);
 }
 
 :host([emphasis='strong'][variant='warning']) {
@@ -114,7 +114,7 @@
 
 :host([emphasis='strong'][variant='error']) {
   background: var(--color-background-danger-default, #d92d20);
-  color: var(--color-text-base-inverse-on-color, #ffffff);
+  color: var(--color-text-base-inverse-on-color, #fff);
 }
 
 /* Subtle = tinted background, dark foreground. */
@@ -136,7 +136,7 @@
 /* On a filled (strong) surface a brand-blue link is low-contrast, so the link
    adopts the on-color foreground and stays underlined. */
 :host([emphasis='strong']) .link {
-  color: currentColor;
+  color: currentcolor;
 }
 
 /* ---------- Narrow / touch: stack content, wrap text, 40x40 close ---------- */

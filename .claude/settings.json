@@ -104,9 +104,7 @@
       "Bash(node -e 'const c=JSON.parse\\(require\\(\"fs\"\\).readFileSync\\(\"coverage/coverage-summary.json\",\"utf8\"\\)\\);const k=Object.keys\\(c\\).find\\(k=>k.includes\\(\"mud-separator/mud-separator.tsx\"\\)\\);const x=c[k];console.log\\(x?`stmts ${x.statements.pct}% branches ${x.branches.pct}% funcs ${x.functions.pct}% lines ${x.lines.pct}%`:\"ABSENT \\(→100%\\)\"\\)')",
       "Bash(node -e \"let s='';process.stdin.on\\('data',d=>s+=d\\).on\\('end',\\(\\)=>{const j=JSON.parse\\(s\\);Object.keys\\(j.entries\\).filter\\(k=>k.includes\\('separator'\\)\\).forEach\\(k=>console.log\\(' •',k\\)\\)}\\)\")"
     ],
-    "additionalDirectories": [
-      "/tmp"
-    ]
+    "additionalDirectories": ["/tmp"]
   },
   "hooks": {
     "PreToolUse": [

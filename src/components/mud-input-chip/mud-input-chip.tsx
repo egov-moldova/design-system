@@ -78,7 +78,7 @@ export class MudInputChip {
   @Prop({ mutable: true }) value: string = '';
 
   /** Form-control `name`. Used during form submission (value: JSON-encoded array). */
-  @Prop() name?: string;
+  @Prop({ reflect: true }) name?: string;
 
   /** Placeholder shown when the inline input is empty and no chips exist. */
   @Prop() placeholder?: string;
@@ -204,6 +204,16 @@ export class MudInputChip {
     const chips = next ?? [];
     this.syncFormValue(chips);
     this.syncValidity(chips);
+  }
+
+  // `syncFormValue` publishes nothing while `name` is unset, so the name is an
+  // input to the form value and not only a label for it. Without this watcher a
+  // consumer that assigns `chips` before `name` — the order a framework applies
+  // props in — leaves the control out of the submission permanently: the chips
+  // watcher already ran, and nothing runs again when the name arrives.
+  @Watch('name')
+  handleNameChange() {
+    this.syncFormValue(this.chips ?? []);
   }
 
   formDisabledCallback(disabled: boolean) {

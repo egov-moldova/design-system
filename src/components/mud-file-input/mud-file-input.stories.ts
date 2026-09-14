@@ -605,3 +605,60 @@ export const FileItemExtras: Story = {
     },
   },
 };
+
+// Regression test, not documentation — hidden from the sidebar and autodocs.
+// Same defect as mud-input-chip's LateNameSubmission: `syncFormValue` publishes
+// nothing while `name` is unset — and skips `syncValidity` with it — so a
+// consumer assigning `files` before `name`, which is the order a framework
+// applies props in, lost the upload from the submission permanently even after
+// `name` reflected. Only observable in a real browser: the `spec` project's
+// ElementInternals stub makes `setFormValue` a no-op.
+export const LateNameSubmission: Story = {
+  tags: ['!autodocs', '!dev'],
+  render: () => /*html*/ `
+    <form>
+      <mud-file-input id="late"></mud-file-input>
+    </form>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: { disable: true },
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    type FileInput = HTMLElement & {
+      name?: string;
+      files?: File[];
+      componentOnReady?: () => Promise<unknown>;
+    };
+    const form = canvasElement.querySelector('form');
+    if (!form) throw new Error('form did not render');
+
+    await customElements.whenDefined('mud-file-input');
+    const el = canvasElement.querySelector<HTMLElement>('#late') as FileInput | null;
+    if (!el) throw new Error('#late did not render');
+    // `customElements.whenDefined` above is what guarantees the upgrade —
+    // `define` upgrades every connected element synchronously. `componentOnReady`
+    // is optional on purpose: the browser test lane compiles components as custom
+    // elements, a build that carries no such method.
+    await el.componentOnReady?.();
+
+    // Data first, name second.
+    el.files = [new File(['x'], 'doc.txt', { type: 'text/plain' })];
+    await new Promise(resolve => setTimeout(resolve, 0));
+    el.name = 'lateFile';
+
+    const submitted = () => new FormData(form).getAll('lateFile');
+    const startedAt = performance.now();
+    for (;;) {
+      const entries = submitted();
+      if (entries.length === 1 && entries[0] instanceof File && entries[0].name === 'doc.txt') break;
+      if (performance.now() - startedAt > 2000) {
+        throw new Error(
+          `timed out waiting for FormData "lateFile" to carry the upload — it had ${entries.length} entr(y/ies), ` +
+            `with the host rendered as ${el.outerHTML.slice(0, 120)}`,
+        );
+      }
+      await new Promise(resolve => setTimeout(resolve, 16));
+    }
+  },
+};

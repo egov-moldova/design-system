@@ -100,7 +100,7 @@ export class MudSelect {
   @Prop({ mutable: true, reflect: true }) value: string = '';
 
   /** Form-control `name`. Used during form submission. */
-  @Prop() name?: string;
+  @Prop({ reflect: true }) name?: string;
 
   /** Placeholder shown when no option is selected. */
   @Prop() placeholder?: string;
