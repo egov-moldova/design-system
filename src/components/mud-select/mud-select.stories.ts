@@ -169,9 +169,9 @@ export const AllSizes: Story = {
   name: 'All Sizes',
   render: () =>
     wrap(
-      SELECT_SIZES.map(size =>
-        cell(size, selectMarkup(`size="${size}" label="Label" placeholder="Placeholder"`)),
-      ).join(''),
+      SELECT_SIZES.map(size => cell(size, selectMarkup(`size="${size}" label="Label" placeholder="Placeholder"`))).join(
+        '',
+      ),
     ),
   parameters: {
     controls: { disable: true },
@@ -225,7 +225,9 @@ export const WithHelperText: Story = {
       [
         cell(
           'default',
-          selectMarkup(`size="large" label="Label" placeholder="Placeholder" helper-text="Helper message displayed here"`),
+          selectMarkup(
+            `size="large" label="Label" placeholder="Placeholder" helper-text="Helper message displayed here"`,
+          ),
         ),
         cell(
           'mandatory',

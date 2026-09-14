@@ -1,11 +1,6 @@
 import { Component, Element, Event, EventEmitter, Host, Prop, State, h } from '@stencil/core';
 
-import type {
-  StepperOrientation,
-  StepperStep,
-  StepperStepClickDetail,
-  StepperStepStatus,
-} from './mud-stepper.types';
+import type { StepperOrientation, StepperStep, StepperStepClickDetail, StepperStepStatus } from './mud-stepper.types';
 
 /**
  * Below this container inline-size (px) a horizontal tracker auto-switches to

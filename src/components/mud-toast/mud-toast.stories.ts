@@ -61,7 +61,8 @@ the consumer is responsible for animating out and removing the element.
     },
     closable: {
       control: 'boolean',
-      description: 'Renders a trailing × button that emits `mudClose`. Set `false` for a toast the user cannot dismiss manually.',
+      description:
+        'Renders a trailing × button that emits `mudClose`. Set `false` for a toast the user cannot dismiss manually.',
       table: { defaultValue: { summary: 'true' } },
     },
     titleText: {
@@ -236,9 +237,7 @@ export const CoverageGuard: Story = {
     docs: { disable: true },
   },
   play: async () => {
-    const Ctor = customElements.get('mud-toast') as unknown as
-      | (new (registerHost: boolean) => unknown)
-      | undefined;
+    const Ctor = customElements.get('mud-toast') as unknown as (new (registerHost: boolean) => unknown) | undefined;
     if (!Ctor) throw new Error('mud-toast constructor missing from registry');
     const instance = new Ctor(false);
     if (!instance) throw new Error('instance not constructed');

@@ -137,12 +137,9 @@
   font-size: var(--stepper-font-size);
   line-height: 1;
   transition:
-    background-color var(--stepper-indicator-transition-duration)
-      var(--stepper-indicator-transition-timing-function),
-    border-color var(--stepper-indicator-transition-duration)
-      var(--stepper-indicator-transition-timing-function),
-    color var(--stepper-indicator-transition-duration)
-      var(--stepper-indicator-transition-timing-function);
+    background-color var(--stepper-indicator-transition-duration) var(--stepper-indicator-transition-timing-function),
+    border-color var(--stepper-indicator-transition-duration) var(--stepper-indicator-transition-timing-function),
+    color var(--stepper-indicator-transition-duration) var(--stepper-indicator-transition-timing-function);
 }
 
 .indicator-number {
@@ -273,9 +270,7 @@
  * the `compact` prop is on OR the tracker auto-switches on a narrow container
  * (ResizeObserver). */
 :host(.is-compact) {
-  --stepper-container-vertical-step-min-height: var(
-    --stepper-container-vertical-step-min-height-compact
-  );
+  --stepper-container-vertical-step-min-height: var(--stepper-container-vertical-step-min-height-compact);
 }
 
 :host(.is-compact) .indicator-number,

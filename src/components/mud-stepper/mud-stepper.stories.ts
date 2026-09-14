@@ -493,9 +493,7 @@ export const CoverageGuard: Story = {
     docs: { disable: true },
   },
   play: async () => {
-    const Ctor = customElements.get('mud-stepper') as unknown as
-      | (new (registerHost: boolean) => unknown)
-      | undefined;
+    const Ctor = customElements.get('mud-stepper') as unknown as (new (registerHost: boolean) => unknown) | undefined;
     if (!Ctor) throw new Error('mud-stepper constructor missing from registry');
     const instance = new Ctor(false);
     if (!instance) throw new Error('mud-stepper did not construct');

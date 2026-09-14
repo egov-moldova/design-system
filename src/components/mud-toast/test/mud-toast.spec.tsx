@@ -162,9 +162,7 @@ describe('mud-toast', () => {
 
   describe('titleText prop', () => {
     it('renders the title element when title-text is provided', async () => {
-      const { root } = await render(
-        <mud-toast title-text="Plată reușită">Tranzacția a fost confirmată.</mud-toast>,
-      );
+      const { root } = await render(<mud-toast title-text="Plată reușită">Tranzacția a fost confirmată.</mud-toast>);
       const title = queryTitle(root);
       expect(title).toBeTruthy();
       expect(title?.textContent).toContain('Plată reușită');
@@ -219,9 +217,7 @@ describe('mud-toast', () => {
     });
 
     it('supports Romanian diacritics in the title', async () => {
-      const { root } = await render(
-        <mud-toast title-text="Sesiunea a expirat">Reconectați-vă</mud-toast>,
-      );
+      const { root } = await render(<mud-toast title-text="Sesiunea a expirat">Reconectați-vă</mud-toast>);
       expect(queryTitle(root)?.textContent).toContain('Sesiunea a expirat');
     });
   });
@@ -243,9 +239,7 @@ describe('mud-toast', () => {
 
   describe('constructor branch coverage', () => {
     it('constructs without registering a host when registerHost=false', () => {
-      const Ctor = customElements.get('mud-toast') as unknown as
-        | (new (registerHost: boolean) => unknown)
-        | undefined;
+      const Ctor = customElements.get('mud-toast') as unknown as (new (registerHost: boolean) => unknown) | undefined;
       expect(Ctor).toBeTruthy();
       const instance = new (Ctor as new (registerHost: boolean) => unknown)(false);
       expect(instance).toBeTruthy();

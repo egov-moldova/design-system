@@ -28,8 +28,8 @@
   /* Appearance: slide down from slightly above + fade in (Figma Behavior panel).
      Plays once on mount; the dismiss/exit transition stays consumer-owned since
      the atom cannot defer its own DOM removal. Disabled under reduced-motion. */
-  animation: toast-appear var(--toast-container-appearance-duration)
-    var(--toast-container-transition-timing-function) both;
+  animation: toast-appear var(--toast-container-appearance-duration) var(--toast-container-transition-timing-function)
+    both;
 }
 
 @keyframes toast-appear {

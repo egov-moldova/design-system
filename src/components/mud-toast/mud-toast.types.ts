@@ -14,7 +14,4 @@ export const TOAST_DEFAULT_ICONS: Record<ToastVariant, string> = {
  * Variants that imply an assertive live region (urgent) per WCAG status/alert
  * pattern. Everything else uses the polite `status` role.
  */
-export const TOAST_ASSERTIVE_VARIANTS: ReadonlySet<ToastVariant> = new Set<ToastVariant>([
-  'warning',
-  'error',
-]);
+export const TOAST_ASSERTIVE_VARIANTS: ReadonlySet<ToastVariant> = new Set<ToastVariant>(['warning', 'error']);

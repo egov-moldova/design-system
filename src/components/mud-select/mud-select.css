@@ -167,8 +167,7 @@
   inline-size: var(--_chevron-size);
   block-size: var(--_chevron-size);
   color: var(--select-chevron-color-default);
-  transition: transform var(--select-chevron-transition-duration)
-    var(--select-chevron-transition-timing-function);
+  transition: transform var(--select-chevron-transition-duration) var(--select-chevron-transition-timing-function);
 }
 
 :host(.is-open) .control-icon-end .chevron {

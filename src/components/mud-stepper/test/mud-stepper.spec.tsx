@@ -72,17 +72,13 @@ describe('mud-stepper', () => {
     });
 
     it('honors a custom aria-label (Romanian)', async () => {
-      const { root } = await render(
-        <mud-stepper steps={ROMANIAN_STEPS} aria-label="Pași"></mud-stepper>,
-      );
+      const { root } = await render(<mud-stepper steps={ROMANIAN_STEPS} aria-label="Pași"></mud-stepper>);
       expect(root?.getAttribute('role')).toBe('list');
       expect(root?.getAttribute('aria-label')).toBe('Pași');
     });
 
     it('reflects orientation on the host', async () => {
-      const { root } = await render(
-        <mud-stepper steps={ROMANIAN_STEPS} orientation="vertical"></mud-stepper>,
-      );
+      const { root } = await render(<mud-stepper steps={ROMANIAN_STEPS} orientation="vertical"></mud-stepper>);
       expect(root?.getAttribute('orientation')).toBe('vertical');
     });
 
@@ -122,9 +118,7 @@ describe('mud-stepper', () => {
     });
 
     it('renders the supporting text line when provided', async () => {
-      const stepsWithSupport: StepperStep[] = [
-        { label: 'Pasul 1', supportingText: 'Detalii', status: 'current' },
-      ];
+      const stepsWithSupport: StepperStep[] = [{ label: 'Pasul 1', supportingText: 'Detalii', status: 'current' }];
       const { root } = await render(<mud-stepper steps={stepsWithSupport}></mud-stepper>);
       const support = root?.shadowRoot?.querySelector('.supporting-text');
       expect(support?.textContent?.trim()).toBe('Detalii');
@@ -302,9 +296,7 @@ describe('mud-stepper', () => {
 
     it('does NOT emit mudStepClick when interactive is false', async () => {
       const onClick = vi.fn();
-      const { root } = await render(
-        <mud-stepper steps={ROMANIAN_STEPS} onMudStepClick={onClick}></mud-stepper>,
-      );
+      const { root } = await render(<mud-stepper steps={ROMANIAN_STEPS} onMudStepClick={onClick}></mud-stepper>);
       // Triggers are not rendered, but the underlying step content also must not
       // emit; we click the first list item to be thorough.
       querySteps(root)[0].click();
@@ -422,9 +414,7 @@ describe('mud-stepper', () => {
     });
 
     it('renders no connector for a single-step tracker', async () => {
-      const { root } = await render(
-        <mud-stepper steps={[{ label: 'Singur', status: 'current' }]}></mud-stepper>,
-      );
+      const { root } = await render(<mud-stepper steps={[{ label: 'Singur', status: 'current' }]}></mud-stepper>);
       expect(queryConnectors(root).length).toBe(0);
     });
 

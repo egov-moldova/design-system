@@ -185,9 +185,9 @@ export const AllSizes: Story = {
     controls: { disable: true },
     docs: {
       source: {
-        code: INPUT_SIZES.map(s => `<mud-text-input size="${s}" label="Label" placeholder="Placeholder"></mud-text-input>`).join(
-          '\n',
-        ),
+        code: INPUT_SIZES.map(
+          s => `<mud-text-input size="${s}" label="Label" placeholder="Placeholder"></mud-text-input>`,
+        ).join('\n'),
       },
     },
   },
@@ -199,12 +199,27 @@ export const States: Story = {
     wrap(
       [
         cell('default', /*html*/ `<mud-text-input size="lg" label="Label" placeholder="Placeholder"></mud-text-input>`),
-        cell('hover (use mouse)', /*html*/ `<mud-text-input size="lg" label="Label" placeholder="Placeholder"></mud-text-input>`),
-        cell('focus (use Tab)', /*html*/ `<mud-text-input size="lg" label="Label" placeholder="Placeholder"></mud-text-input>`),
-        cell('loading', /*html*/ `<mud-text-input size="lg" label="Label" placeholder="Placeholder" loading></mud-text-input>`),
+        cell(
+          'hover (use mouse)',
+          /*html*/ `<mud-text-input size="lg" label="Label" placeholder="Placeholder"></mud-text-input>`,
+        ),
+        cell(
+          'focus (use Tab)',
+          /*html*/ `<mud-text-input size="lg" label="Label" placeholder="Placeholder"></mud-text-input>`,
+        ),
+        cell(
+          'loading',
+          /*html*/ `<mud-text-input size="lg" label="Label" placeholder="Placeholder" loading></mud-text-input>`,
+        ),
         cell('filled', /*html*/ `<mud-text-input size="lg" label="Label" value="15/04/2025"></mud-text-input>`),
-        cell('read-only', /*html*/ `<mud-text-input size="lg" label="Label" value="15/04/2025" readonly></mud-text-input>`),
-        cell('disabled', /*html*/ `<mud-text-input size="lg" label="Label" placeholder="Placeholder" disabled></mud-text-input>`),
+        cell(
+          'read-only',
+          /*html*/ `<mud-text-input size="lg" label="Label" value="15/04/2025" readonly></mud-text-input>`,
+        ),
+        cell(
+          'disabled',
+          /*html*/ `<mud-text-input size="lg" label="Label" placeholder="Placeholder" disabled></mud-text-input>`,
+        ),
         cell(
           'mandatory',
           /*html*/ `<mud-text-input size="lg" label="Label" placeholder="Placeholder" required></mud-text-input>`,

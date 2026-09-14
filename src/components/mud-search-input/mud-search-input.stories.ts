@@ -179,10 +179,7 @@ export const States: Story = {
   render: () =>
     wrap(
       [
-        cell(
-          'default',
-          /*html*/ `<mud-search-input aria-label="Caută" placeholder="Caută…"></mud-search-input>`,
-        ),
+        cell('default', /*html*/ `<mud-search-input aria-label="Caută" placeholder="Caută…"></mud-search-input>`),
         cell(
           'filled (clear button visible)',
           /*html*/ `<mud-search-input aria-label="Caută" value="permis de conducere"></mud-search-input>`,

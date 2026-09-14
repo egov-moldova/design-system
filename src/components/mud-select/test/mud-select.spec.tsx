@@ -196,9 +196,7 @@ describe('mud-select', () => {
     it('emits mudOpen / mudClose when toggling', async () => {
       const onOpen = vi.fn();
       const onClose = vi.fn();
-      const { root } = await render(
-        <mud-select label="x" onMudOpen={onOpen} onMudClose={onClose}></mud-select>,
-      );
+      const { root } = await render(<mud-select label="x" onMudOpen={onOpen} onMudClose={onClose}></mud-select>);
       await setOptions(root, baseOptions);
       const trigger = queryTrigger(root)!;
       trigger.click();
@@ -311,9 +309,7 @@ describe('mud-select', () => {
 
     it('ArrowUp / ArrowDown skip disabled options', async () => {
       const onChange = vi.fn();
-      const { root } = await render(
-        <mud-select label="x" open value="opt-2" onMudChange={onChange}></mud-select>,
-      );
+      const { root } = await render(<mud-select label="x" open value="opt-2" onMudChange={onChange}></mud-select>);
       await setOptions(root, baseOptions);
       // highlight starts at opt-2 (index 1); ArrowDown should skip opt-3 (disabled) to opt-4.
       press(root, 'ArrowDown');

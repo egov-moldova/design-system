@@ -120,7 +120,9 @@ describe('mud-text-input', () => {
     });
 
     it('error message takes priority over helper text', async () => {
-      const { root } = await render(<mud-text-input label="x" invalid helper-text="Hint" error-text="Required"></mud-text-input>);
+      const { root } = await render(
+        <mud-text-input label="x" invalid helper-text="Hint" error-text="Required"></mud-text-input>,
+      );
       const assistive = queryAssistive(root);
       expect(assistive?.textContent).toContain('Required');
       expect(assistive?.textContent).not.toContain('Hint');
@@ -159,7 +161,9 @@ describe('mud-text-input', () => {
     it('emits mudFocus and mudBlur and toggles the is-focused class', async () => {
       const onFocus = vi.fn();
       const onBlur = vi.fn();
-      const { root } = await render(<mud-text-input label="x" onMudFocus={onFocus} onMudBlur={onBlur}></mud-text-input>);
+      const { root } = await render(
+        <mud-text-input label="x" onMudFocus={onFocus} onMudBlur={onBlur}></mud-text-input>,
+      );
       const native = queryNative(root)!;
       native.dispatchEvent(new FocusEvent('focus'));
       await flush();
@@ -383,11 +387,17 @@ describe('mud-text-input', () => {
     });
 
     it('suppresses the clear button when disabled, read-only, or loading', async () => {
-      const { root: disabled } = await render(<mud-text-input label="x" clearable value="hello" disabled></mud-text-input>);
+      const { root: disabled } = await render(
+        <mud-text-input label="x" clearable value="hello" disabled></mud-text-input>,
+      );
       expect(queryClear(disabled)).toBeNull();
-      const { root: readonly } = await render(<mud-text-input label="x" clearable value="hello" readonly></mud-text-input>);
+      const { root: readonly } = await render(
+        <mud-text-input label="x" clearable value="hello" readonly></mud-text-input>,
+      );
       expect(queryClear(readonly)).toBeNull();
-      const { root: loading } = await render(<mud-text-input label="x" clearable value="hello" loading></mud-text-input>);
+      const { root: loading } = await render(
+        <mud-text-input label="x" clearable value="hello" loading></mud-text-input>,
+      );
       expect(queryClear(loading)).toBeNull();
     });
 
