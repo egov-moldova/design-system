@@ -437,7 +437,7 @@
       },
       "fullName_filled": {}
     },
-    "calender-add": {
+    "calendar-add": {
       "sizes_outlined": [
         20,
         24
@@ -449,12 +449,12 @@
       },
       "nodeId_filled": {},
       "fullName_outlined": {
-        "24": "24/calender-add",
-        "20": "20/calender-add"
+        "24": "24/calendar-add",
+        "20": "20/calendar-add"
       },
       "fullName_filled": {}
     },
-    "calender-remove": {
+    "calendar-remove": {
       "sizes_outlined": [
         20,
         24
@@ -472,12 +472,12 @@
         "16": "145:1485"
       },
       "fullName_outlined": {
-        "24": "24/calender-remove",
-        "20": "20/calender-remove"
+        "24": "24/calendar-remove",
+        "20": "20/calendar-remove"
       },
       "fullName_filled": {
-        "20": "20/calender-remove-filled",
-        "16": "16/calender-remove-filled"
+        "20": "20/calendar-remove-filled",
+        "16": "16/calendar-remove-filled"
       }
     },
     "car": {
@@ -3062,7 +3062,7 @@
       "iconCount": 12,
       "iconNames": [
         "16/calendar-filled",
-        "16/calender-remove-filled",
+        "16/calendar-remove-filled",
         "16/chevron-bottom-filled",
         "16/circle-checkmark-filled",
         "16/circle-error-filled",
@@ -3076,7 +3076,7 @@
       ],
       "iconNodeIds": {
         "16/calendar-filled": "145:1466",
-        "16/calender-remove-filled": "145:1485",
+        "16/calendar-remove-filled": "145:1485",
         "16/chevron-bottom-filled": "3290:4138",
         "16/circle-checkmark-filled": "145:1435",
         "16/circle-error-filled": "145:1441",
@@ -3333,13 +3333,13 @@
       "iconCount": 4,
       "iconNames": [
         "24/arrow-left",
-        "24/calender-remove",
+        "24/calendar-remove",
         "24/image",
         "24/upload"
       ],
       "iconNodeIds": {
         "24/arrow-left": "145:381",
-        "24/calender-remove": "145:375",
+        "24/calendar-remove": "145:375",
         "24/image": "145:363",
         "24/upload": "145:369"
       }
@@ -3570,13 +3570,13 @@
       "containerName": "Container",
       "iconCount": 4,
       "iconNames": [
-        "24/calender-add",
+        "24/calendar-add",
         "24/circle-error",
         "24/direction",
         "24/reschedule"
       ],
       "iconNodeIds": {
-        "24/calender-add": "145:725",
+        "24/calendar-add": "145:725",
         "24/circle-error": "145:713",
         "24/direction": "145:731",
         "24/reschedule": "145:719"
@@ -3820,13 +3820,13 @@
       "containerName": "Container",
       "iconCount": 4,
       "iconNames": [
-        "20/calender-remove",
+        "20/calendar-remove",
         "20/qr-code",
         "20/scan",
         "20/upload"
       ],
       "iconNodeIds": {
-        "20/calender-remove": "145:918",
+        "20/calendar-remove": "145:918",
         "20/qr-code": "145:924",
         "20/scan": "145:930",
         "20/upload": "145:912"
@@ -3905,13 +3905,13 @@
       "containerName": "Container",
       "iconCount": 4,
       "iconNames": [
-        "20/calender-add",
+        "20/calendar-add",
         "20/circle-error",
         "20/direction",
         "20/reschedule"
       ],
       "iconNodeIds": {
-        "20/calender-add": "145:1049",
+        "20/calendar-add": "145:1049",
         "20/circle-error": "145:1037",
         "20/direction": "145:1055",
         "20/reschedule": "145:1043"
@@ -4442,7 +4442,7 @@
       "iconNames": [
         "12/asterisk",
         "20/calendar-filled",
-        "20/calender-remove-filled",
+        "20/calendar-remove-filled",
         "20/delete-filled",
         "20/document-filled",
         "20/group-filled",
@@ -4456,7 +4456,7 @@
       "iconNodeIds": {
         "12/asterisk": "145:1217",
         "20/calendar-filled": "145:1398",
-        "20/calender-remove-filled": "145:1385",
+        "20/calendar-remove-filled": "145:1385",
         "20/delete-filled": "145:1379",
         "20/document-filled": "145:1410",
         "20/group-filled": "145:1392",

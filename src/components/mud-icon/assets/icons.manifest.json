@@ -140,6 +140,12 @@
       24
     ]
   },
+  "calendar-add": {
+    "sizes": [
+      20,
+      24
+    ]
+  },
   "calendar-edit": {
     "sizes": [
       20,
@@ -152,19 +158,13 @@
       20
     ]
   },
-  "calender-add": {
+  "calendar-remove": {
     "sizes": [
       20,
       24
     ]
   },
-  "calender-remove": {
-    "sizes": [
-      20,
-      24
-    ]
-  },
-  "calender-remove-filled": {
+  "calendar-remove-filled": {
     "sizes": [
       16,
       20
