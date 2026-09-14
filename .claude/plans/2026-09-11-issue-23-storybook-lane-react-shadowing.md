@@ -10,16 +10,16 @@
 
 **Spec:** https://github.com/egov-moldova/design-system/issues/23 — **read with the corrections in § Corrections to the issue below.** The issue contains two false statements that this plan supersedes; its remediation list is otherwise the spec.
 
-**Reviewed:** preflight c0addf09, critic c0addf09, verify dc0e161 — preflight and critic FORTIFY, verify CONFIRM, all findings folded in; see § Review rounds.
+**Reviewed:** preflight c0addf09, critic c0addf09, verify dc0e161 — preflight and critic FORTIFY, verify CONFIRM, all findings folded in; see § Review rounds. Those three rounds graded the pre-rebase text; § Rebase states what changed under them and what was re-measured rather than re-reviewed.
 
-**Status:** implemented — `8a0d5e6` (Task 1) and `1c1693c` (Task 2) on `fix/issue-23-storybook-vitest-lane`. Every acceptance-bar row was re-proven against the landed code, not the temporary patch the § Acceptance bar blocks were captured with; see § As built.
+**Status:** implemented — rebased onto `fe6d651` on 2026-09-14; commits are now `8f7f9d1` (Task 1), `be986ab` (Task 2), `ab65613` (review remediation). Pre-rebase shas `8a0d5e6` / `1c1693c` / `dc0e161` appear elsewhere in this document and are the same work. Every acceptance-bar row was re-proven against the landed code, not the temporary patch the § Acceptance bar blocks were captured with; see § As built.
 
 ---
 
 ## Global Constraints
 
 - Node `>=24.0.0 <25.0.0` (`package.json:engines`); this machine runs Node 26 locally and it is not a constraint the plan may relax.
-- Vite is pinned to rolldown-vite `^8.0.13`; resolution behaviour described here was measured against that pin and must be re-measured if it moves.
+- Vite is pinned to rolldown-vite `^8.3.0` as of the 2026-09-14 rebase (`^8.0.13` when this plan was written); resolution behaviour must be re-measured whenever that pin moves. It has moved once, and § Rebase records the re-measurement.
 - Everything authored into the repo is English: code, comments, commit messages.
 - Do not touch `.github/` — CI wiring is deferred to #20 by decision (see § Scope).
 - Do not touch `src/components/mud-accordion-item/mud-accordion-item.stories.ts` — PR#24 owns that file.
@@ -729,6 +729,36 @@ Task 2 Step 3 prescribed `createRequire(import.meta.url).resolve('react/package.
 Task 2 Step 3 also prescribed only `yarn add --dev react@^18.3.1`. Landed: `react`, `react-dom` and — added automatically by Yarn's TypeScript plugin alongside each — `@types/react` and `@types/react-dom`. `react-dom` is deliberate and its reasoning is in `dc0e161`; the two `@types` packages are the plugin's doing, kept because they are the correct companions to the runtime packages. Note what they do NOT buy: `tsconfig.json`'s `include` is `["src","types","*.ts"]`, which does not reach `.storybook/vitest.setup.ts`, so nothing in this repo typechecks the one file that imports React. Those types are an editor convenience, and the "no TypeScript-only syntax" rule in that file has no automated gate — which is the same gap as the lane not running in CI (#20).
 
 Not verified: the `exit 3` branch of `check-lane-resolution.mjs` (a dependency Vite declines to pre-bundle) was never exercised — no state in this repo produces it today. Nor was `import.meta.resolve` exercised against a symlinked `node_modules` or a PnP linker; this repo pins `nodeLinker: node-modules`, and the idiom is already load-bearing in `.storybook/main.mjs`.
+
+---
+
+## Rebase — 2026-09-14
+
+The branch was cut at `c0addf09` and sat for three days while `main` took nine commits to `fe6d651`. Rebased; no conflicts. Their set touched six files, overlapping ours on `package.json` and `yarn.lock` only, and git merged both cleanly (their version change and our dependency additions are in different regions). `yarn install --immutable` reports no `YN0028`, and only the two peer warnings that predate this branch.
+
+**One premise moved, and this plan's own Global Constraints said to re-measure it: Vite `^8.0.13` → `^8.3.0`** (`8472f38 upgrade dependencies`). Everything else the measurements rest on is unchanged — Vitest 4.1.6, `@storybook/addon-vitest` 10.4.0, Stencil 4.43.4, `@stencil/vitest` 1.11.6, and the `exports` map byte-identical.
+
+Re-measured on Vite 8.3.0 rather than assumed, because a resolver fix upstream would have turned the alias into dead config:
+
+```derived id=rebase-alias-still-load-bearing
+$ python3 -c "…neutralise only the alias entry in vitest.config.mts…" && rm -rf node_modules/.cache/storybook && yarn test.storybook
+Caused by: Error: the `storybook` project resolved `react` to something that is not React — the `resolve.alias` in vitest.config.mts is missing or ineffective (issue #23)
+ Test Files  47 failed (47)
+      Tests  no tests
+$ node scripts/check-lane-resolution.mjs "$F" "$PWD"; echo "exit=$?"
+react -> /Users/Dan/WORK/corlab/egov-moldova/design-system-issue-23/react/src/index.ts
+react/jsx-runtime -> node_modules
+react-dom/client -> node_modules
+resolution check FAILED:
+  react resolves outside node_modules: /Users/Dan/WORK/corlab/egov-moldova/design-system-issue-23/react/src/index.ts
+exit=1
+```
+
+The shadowing survives the Vite bump, and both guards speak: the in-lane assertion throws and the script exits 1. With the alias restored, all five bar rows re-prove on the new base — row 1 `47 passed (47)` with `.gitkeep` intact, row 2 `345 tests · 344 pass · 1 fail` then `345 pass` restored, row 3 `47 passed (47)`, row 4 three `node_modules` lines and exit 0, row 5 unchanged at 47.
+
+`.github/workflows/ci.yml` was rewritten by PR#25 in that same range. It still runs neither `yarn test.storybook` nor `yarn build.react` — checked, not assumed — so § Scope's deferral to #20 stands unchanged.
+
+**What was re-measured is not what was re-reviewed.** The three gate rounds graded the pre-rebase text; nothing in this section has been through a fresh-eyes round.
 
 ---
 
