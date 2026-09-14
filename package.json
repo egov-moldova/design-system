@@ -1,6 +1,6 @@
 {
   "name": "@egov-moldova/mud",
-  "version": "1.0.6",
+  "version": "0.0.0-development",
   "description": "MUD Design System — Stencil web components",
   "main": "dist/index.cjs.js",
   "unpkg": "dist/mud/mud.esm.js",
