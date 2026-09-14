@@ -9,6 +9,7 @@
 # Documentation
 *.md
 !README.md
+!CHANGELOG.md
 docs/
 
 # IDE
