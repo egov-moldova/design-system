@@ -1,0 +1,29 @@
+name: 'Setup Project'
+description: 'Installs Node.js and npm dependencies with caching'
+
+inputs:
+  node-version:
+    description: 'Node.js version'
+    required: false
+    default: '24'
+
+outputs:
+  cache-hit:
+    description: 'Whether the cache was found'
+    value: ${{ steps.cache-step.outputs.cache-hit }}
+
+runs:
+  using: 'composite'
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: 'yarn'
+
+    - name: Enable Corepack
+      run: corepack enable
+      shell: bash
+
+    - name: Install dependencies
+      run: yarn install --immutable
+      shell: bash
