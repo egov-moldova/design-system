@@ -2,7 +2,8 @@ import { Config } from '@stencil/core';
 import { OutputTarget } from '@stencil/core/internal';
 import { postcss } from '@stencil/postcss';
 import { reactOutputTarget as react } from '@stencil/react-output-target';
-import * as postcssNested from 'postcss-nested';
+
+import { stencilPostcssPlugins } from './stencil-postcss.config.mjs';
 // import postcssPresetEnv from 'postcss-preset-env';
 
 const args = process.argv.slice(2);
@@ -116,7 +117,7 @@ export const config: Config = {
   },
   plugins: [
     postcss({
-      plugins: [(postcssNested.default ?? postcssNested)()],
+      plugins: stencilPostcssPlugins(),
     }),
   ],
 };

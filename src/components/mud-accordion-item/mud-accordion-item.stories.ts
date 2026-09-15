@@ -205,12 +205,14 @@ export const SlottedDisabledContract: Story = {
 
     // 1b. The pointer guard is a THREE-clause selector list. Drive every clause:
     //     a typo in the `heading` or `supporting` arm would otherwise ship green,
-    //     and mock-doc computes no styles, so only this lane can see it.
-    for (const [name, el] of [
+    //     and mock-doc computes no styles, so only this lane can see it. One list for
+    //     this check and its re-enable mirror below, so the two cannot drift apart.
+    const pointerGuardedSlots = [
       ['heading', find('head-slot')],
       ['supporting', find('sup-slot')],
       ['trailing', ours],
-    ] as const) {
+    ] as const;
+    for (const [name, el] of pointerGuardedSlots) {
       if (getComputedStyle(el).pointerEvents !== 'none') {
         throw new Error(`slot="${name}" content is still pointer-interactive while the item is disabled`);
       }
@@ -301,11 +303,7 @@ export const SlottedDisabledContract: Story = {
     }
     // The mirror of 1b, clause by clause: an arm that lost its `:host([disabled])`
     // qualifier blocks the pointer in every ENABLED item too, and only this sees it.
-    for (const [name, el] of [
-      ['heading', find('head-slot')],
-      ['supporting', find('sup-slot')],
-      ['trailing', ours],
-    ] as const) {
+    for (const [name, el] of pointerGuardedSlots) {
       if (getComputedStyle(el).pointerEvents === 'none') {
         throw new Error(`slot="${name}" content stayed pointer-blocked after the item was enabled`);
       }

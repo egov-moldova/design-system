@@ -229,6 +229,7 @@
         "src/**/*.css",
         "src/assets/**/*",
         "stencil.config.ts",
+        "stencil-postcss.config.mjs",
         "tsconfig.json",
         "tsconfig.stencil.json",
         "scripts/copy-component-assets.mjs"
@@ -330,6 +331,7 @@
         "src/**/*.tsx",
         "src/**/*.css",
         "stencil.config.ts",
+        "stencil-postcss.config.mjs",
         "tsconfig.json",
         "tsconfig.stencil.json"
       ],
@@ -427,6 +429,7 @@
         "src/**/*.tsx",
         "src/**/*.css",
         "stencil.config.ts",
+        "stencil-postcss.config.mjs",
         "tsconfig.json",
         "vitest.config.mts",
         "vitest-setup.ts",

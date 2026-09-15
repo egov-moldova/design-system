@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -6,9 +6,10 @@ import { defineVitestConfig } from '@stencil/vitest/config';
 import { stencilVitestPlugin } from '@stencil/vitest/plugin';
 import { playwright } from '@vitest/browser-playwright';
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
+import postcss from 'postcss';
 import type { Plugin } from 'vite';
 
-import { config as stencilConfig } from './stencil.config';
+import { stencilPostcssPlugins } from './stencil-postcss.config.mjs';
 
 // Stencil + Vitest configuration.
 //
@@ -47,14 +48,15 @@ const RESOLVED_APP_GLOBALS = '\0mud-lane:app-globals';
 //    and overlay utilities) — into EVERY shadow root, right after `attachShadow`.
 //    From source, `@stencil/core/internal/app-globals` exports `globalStyles = ""`,
 //    so the lane rendered shadow trees in `content-box`. `dist/mud/mud.css` is that
-//    compiled global style, byte-identical to the string the runtime adopts, and
-//    `.storybook/preview.js` already requires it to exist.
+//    compiled global style, and `.storybook/preview.js` already requires it to exist.
+//    Baseline: `node -e "const f=require('fs'),c=f.readFileSync('dist/mud/mud.css','utf8');console.log(f.readdirSync('dist/mud').some(n=>n.endsWith('.js')&&f.readFileSync('dist/mud/'+n,'utf8').includes(JSON.stringify(c).slice(1,-1))))"`
+//    -> true: the file's content is the string literal the runtime adopts. Being
+//    build output, it reflects `src/assets/css/**` as of the last `yarn build`.
 //
-// 2. PostCSS. The build runs component CSS through the `css` plugins declared in
-//    stencil.config.ts (`postcss-nested`); the plugin hands raw source to Chromium,
-//    whose native nesting drops `&(…)` and `&-suffix` rules that postcss-nested
-//    expands. Those plugins are invoked here from the imported config itself, so
-//    the lane cannot drift from the build's pipeline.
+// 2. PostCSS. The build compiles component CSS with `stencilPostcssPlugins`; the
+//    plugin hands raw source to Chromium. Native nesting agrees with postcss-nested
+//    for every stylesheet today, but not for forms such as `&(…)` or `&-suffix`,
+//    so the lane runs the same list rather than depending on no one writing them.
 //
 // Both files are registered as watch dependencies: the style modules are virtual
 // ids, so without `addWatchFile` an edited `.css` never reruns
@@ -62,21 +64,20 @@ const RESOLVED_APP_GLOBALS = '\0mud-lane:app-globals';
 //
 // Must be listed BEFORE `stencilVitestPlugin`: both are `enforce: 'pre'`, and this
 // transform has to see the raw CSS before that plugin compiles it into a module.
+// `.storybook/vitest.setup.ts` fails the lane if any part of this stops working.
 function laneBuildCssParity(): Plugin {
   const globalStylePath = path.join(__dirname, 'dist/mud/mud.css');
-  const cssPlugins = (stencilConfig.plugins ?? []).filter(
-    plugin => plugin?.pluginType === 'css' && typeof plugin.transform === 'function',
-  );
+  const processor = postcss(stencilPostcssPlugins());
 
   return {
     name: 'mud:lane-build-css-parity',
     enforce: 'pre',
     // The dependency optimizer pre-bundles the Stencil runtime and inlines
     // `app-globals` into that bundle, where `resolveId` below never sees the import.
-    // Both entries, because `@stencil/core` re-exports `../client/index.js`: excluded
-    // together they resolve to one module, so one runtime instance.
+    // Vite matches `exclude` by package name, so this covers every
+    // `@stencil/core/internal/*` entry the runtime is reached through.
     config() {
-      return { optimizeDeps: { exclude: ['@stencil/core', '@stencil/core/internal/client'] } };
+      return { optimizeDeps: { exclude: ['@stencil/core'] } };
     },
     resolveId(source) {
       return source === APP_GLOBALS ? RESOLVED_APP_GLOBALS : null;
@@ -84,35 +85,25 @@ function laneBuildCssParity(): Plugin {
     load(id) {
       if (id !== RESOLVED_APP_GLOBALS) return null;
       this.addWatchFile(globalStylePath);
-      const globalStyles = JSON.stringify(readFileSync(globalStylePath, 'utf8'));
-      return `export const globalScripts = () => {};\nexport const globalStyles = ${globalStyles};\n`;
+      // An empty string rather than a throw when the build output is missing, so the
+      // run stops at the setup guard's "run `yarn build`" message instead of a raw
+      // ENOENT from inside the Stencil runtime's module graph.
+      const css = existsSync(globalStylePath) ? readFileSync(globalStylePath, 'utf8') : '';
+      return `export const globalScripts = () => {};\nexport const globalStyles = ${JSON.stringify(css)};\n`;
     },
     async transform(code, id) {
       if (!id.startsWith(STENCIL_STYLE_PREFIX)) return null;
       const cssPath = `${id.slice(STENCIL_STYLE_PREFIX.length).split('?')[0]}.css`;
       this.addWatchFile(cssPath);
-      let css = code;
-      for (const plugin of cssPlugins) {
-        // The slice of Stencil's plugin context `@stencil/postcss` touches: `rootDir`
-        // for paths, `fs.writeFile` to stash its output in memory (a missing one is
-        // caught inside the plugin and turns into a diagnostic, not a throw), and
-        // `fs.readFileSync` to quote a failing line.
-        const context = {
-          config: { rootDir: __dirname },
-          diagnostics: [] as { level?: string; messageText?: string }[],
-          fs: { writeFile: async () => undefined, readFileSync: (file: string) => readFileSync(file, 'utf8') },
-        };
-        const result = await plugin.transform(css, cssPath, context);
-        // Loud on purpose: a diagnostic leaves the stylesheet unprocessed or replaced
-        // by a comment, and the build would stop on an error-level one.
-        for (const diagnostic of context.diagnostics) {
-          const message = `${plugin.name} on ${cssPath}: ${diagnostic.messageText}`;
-          if (diagnostic.level === 'error') this.error(message);
-          this.warn(message);
-        }
-        if (result && typeof result.code === 'string') css = result.code;
+      const result = await processor.process(code, { from: cssPath });
+      // Loud on purpose: `@stencil/postcss` replaces a stylesheet that raised a
+      // warning with a comment, which here would render one component unstyled
+      // while every story stays green.
+      const warnings = result.warnings();
+      if (warnings.length > 0) {
+        this.error(`PostCSS on ${cssPath}: ${warnings.map(warning => warning.toString()).join('; ')}`);
       }
-      return { code: css, map: null };
+      return { code: result.css, map: null };
     },
   };
 }
