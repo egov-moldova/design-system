@@ -44,7 +44,8 @@ package's only runtime dependency is `@stencil/core`.
    yarn up -R axios brace-expansion browserslist fast-uri form-data js-yaml tar undici
    ```
 
-   The #36 comment measured this at 29 → 2. The 2 left are both `postcss@8.3.11`.
+   The #36 comment measured this at 29 → 2, with the 2 left both `postcss@8.3.11`.
+   That trial was reverted and has not been re-run for this note.
    It was not run through the full gate, so run `yarn lint && yarn typecheck && yarn test && yarn build && yarn test.storybook`
    after it.
 2. **Accept the 2 `postcss@8.3.11` advisories** in `.yarnrc.yml` under
@@ -91,6 +92,14 @@ Options:
 This was left open because `src/legacy/**` is still mid-redesign
 (`src/components/_agents/testing.md`).
 
+**Recommendation:** delete each legacy component's `*.e2e.ts` in the same commit
+that migrates or removes that component, and do not port them to a runner.
+The `mud-*` replacements already carry `*.spec.tsx` and Storybook Vitest
+coverage.
+
+**Decision for the owner:** is `src/legacy/**` still used as behavioural
+reference during the redesign? If not, delete all 15 in one commit.
+
 ## 4. Storybook "Component tests" panel — panel-only unhandled errors
 
 `@storybook/addon-vitest@10.6.0` is re-enabled for dev (`.storybook/main.mjs`).
@@ -107,6 +116,16 @@ The latest test that might've caused the error is "Mobile".
 Vite logs no stack for them. The only unguarded `getElementById(...).querySelector`
 in the stories is `focusTabHtml` in `mud-tabs.stories.ts`, and that helper is
 unused. The source is still unidentified.
+
+**Next check:** run the panel filtered to `mud-tabs.stories.ts` alone, then to the
+story file that runs just before it. If the errors appear only when another
+story runs before it, a `requestAnimationFrame` callback from that earlier story
+is firing after its DOM was torn down.
+
+**Recommendation:** keep the panel enabled. The errors do not fail any test and
+do not appear in the CLI gate. If they block anyone, remove
+`@storybook/addon-vitest` from `devAddons` in `.storybook/main.mjs`; that one-line
+change is the rollback.
 
 ## 5. Stencil past 4.43.x
 
