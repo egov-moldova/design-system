@@ -94,7 +94,10 @@ const restoreTabindex = (el: Element, previous: string | null) => {
  * @slot icon-start - Optional leading icon (`mud-icon` recommended).
  * @slot trailing - Optional trailing content (`mud-badge`, `mud-button`, label).
  *                   Sits between the heading group and the open/close trigger.
- *                   Disabled along with the item while directly slotted.
+ *                   Rendered beside the header button, not inside it: a control
+ *                   here is its own tab stop after the header, is not part of the
+ *                   header's accessible name, and clicking it does not toggle the
+ *                   item. Disabled along with the item while directly slotted.
  * @slot - (default) Panel body. Always in the DOM; the panel carries `hidden`
  * while the item is closed, so slotted media still loads when collapsed.
  *
@@ -194,10 +197,13 @@ export class MudAccordionItem {
    * tab order, but it does nothing to an `<a href>`, a `<div tabindex>`, or a
    * custom element that does not implement it. Measured in Chromium, such an
    * element under a disabled item is still Tab-reachable and still activates on
-   * Enter — while the disabled header `<button>` ancestor makes the
-   * accessibility tree report it as `disabled`. Assistive technology would
-   * announce "unavailable" about a control that works, which is WCAG 2.1
-   * SC 4.1.2. This closes that for directly slotted elements.
+   * Enter. In `heading` and `supporting`, which render inside the disabled header
+   * `<button>`, that ancestor also makes the accessibility tree report it as
+   * `disabled`, so assistive technology would announce "unavailable" about a
+   * control that works — WCAG 2.1 SC 4.1.2. `trailing` renders beside the button
+   * (issue #22) and inherits no such state, but its control would still stay
+   * operable inside an item that is disabled. This closes both for directly
+   * slotted elements.
    *
    * A Map rather than a Set because a consumer's own `tabindex` must come back
    * exactly as authored, including `tabindex="0"` — the case a Set would have to
@@ -468,46 +474,54 @@ export class MudAccordionItem {
 
     return (
       <Host>
-        <button
-          type="button"
-          class="header"
-          part="header"
-          id={this.headingId}
-          aria-expanded={ariaExpanded}
-          aria-controls={this.panelId}
-          aria-disabled={ariaDisabled}
-          disabled={isDisabled}
-          tabindex={tabIndex}
-          onClick={this.handleClick}
-          onKeyDown={this.handleKeyDown}
-        >
-          {isIconLeft && triggerIcon}
-          <span class={{ 'icon-start': true, 'has-content': this.hasIconStart }}>
-            <slot name="icon-start" onSlotchange={this.onIconStartSlotChange} />
-          </span>
-          <span class="text-group">
-            <span class={{ 'heading': true, 'has-slot': this.hasHeadingSlot }}>
-              <slot name="heading" onSlotchange={this.onHeadingSlotChange}>
-                {this.heading}
-              </slot>
+        {/* `trailing` is a sibling of the header button, never a child (issue #22):
+            interactive content inside a <button> is invalid HTML, and everything in
+            the button joins its accessible name. The row is a grid and the button
+            spans all of it through `subgrid`, so `part="header"` keeps its box. */}
+        <div class={{ 'header-row': true, 'has-trailing': this.hasTrailing }}>
+          <button
+            type="button"
+            class="header"
+            part="header"
+            id={this.headingId}
+            aria-expanded={ariaExpanded}
+            aria-controls={this.panelId}
+            aria-disabled={ariaDisabled}
+            disabled={isDisabled}
+            tabindex={tabIndex}
+            onClick={this.handleClick}
+            onKeyDown={this.handleKeyDown}
+          >
+            {isIconLeft && triggerIcon}
+            <span class="lead">
+              <span class={{ 'icon-start': true, 'has-content': this.hasIconStart }}>
+                <slot name="icon-start" onSlotchange={this.onIconStartSlotChange} />
+              </span>
+              <span class="text-group">
+                <span class={{ 'heading': true, 'has-slot': this.hasHeadingSlot }}>
+                  <slot name="heading" onSlotchange={this.onHeadingSlotChange}>
+                    {this.heading}
+                  </slot>
+                </span>
+                <span
+                  class={{
+                    'supporting': true,
+                    'has-slot': this.hasSupportingSlot,
+                    'has-content': Boolean(this.supportingText) || this.hasSupportingSlot,
+                  }}
+                >
+                  <slot name="supporting" onSlotchange={this.onSupportingSlotChange}>
+                    {this.supportingText}
+                  </slot>
+                </span>
+              </span>
             </span>
-            <span
-              class={{
-                'supporting': true,
-                'has-slot': this.hasSupportingSlot,
-                'has-content': Boolean(this.supportingText) || this.hasSupportingSlot,
-              }}
-            >
-              <slot name="supporting" onSlotchange={this.onSupportingSlotChange}>
-                {this.supportingText}
-              </slot>
-            </span>
-          </span>
+            {!isIconLeft && triggerIcon}
+          </button>
           <span class={{ 'trailing': true, 'has-content': this.hasTrailing }}>
             <slot name="trailing" onSlotchange={this.onTrailingSlotChange} />
           </span>
-          {!isIconLeft && triggerIcon}
-        </button>
+        </div>
         <div
           class="panel"
           part="panel"

@@ -228,8 +228,8 @@ export const SlottedDisabledContract: Story = {
     ours.style.removeProperty('pointer-events');
 
     // 1d. The keyboard mirror. `disabled` does nothing to an <a href>, so without
-    //     `tabindex="-1"` this element is Tab-reachable while the accessibility
-    //     tree reports it disabled — WCAG 2.1 SC 4.1.2.
+    //     `tabindex="-1"` this element is Tab-reachable inside an item that is
+    //     disabled.
     const link = find('link');
     if (link.getAttribute('tabindex') !== '-1') {
       throw new Error('a slotted <a href> is still in the tab order while the item is disabled');
@@ -250,8 +250,9 @@ export const SlottedDisabledContract: Story = {
     }
 
     // 3. KEYBOARD, for a DIRECTLY slotted control. The attribute is what closes this:
-    //    measured, a disabled native <button> ancestor does not refuse focus to its
-    //    flat-tree slotted descendants, so this fails if the attribute is not written.
+    //    `trailing` renders beside the header button (issue #22), so no disabled
+    //    ancestor stands between the control and focus — and measured, one would not
+    //    refuse it anyway. This fails if the attribute is not written.
     //    Focus is parked on a real element outside the accordion first — the item
     //    carries no tabindex, so `activeElement` would otherwise fall to <body> and
     //    the check would pass without proving focus was REFUSED rather than moved.
@@ -310,6 +311,66 @@ export const SlottedDisabledContract: Story = {
     }
     if (link.hasAttribute('tabindex')) {
       throw new Error('the tabindex mirror was not removed when the item was enabled');
+    }
+  },
+};
+
+// Regression test for issue #22, hidden like the one above. It needs real event
+// propagation through the flat tree, which mock-doc does not model: while
+// `trailing` rendered inside the header <button>, a click or an Arrow key on a
+// slotted control bubbled through the slot into the button's own handlers, toggled
+// the item and moved focus between items. Rendered beside the button, it must not.
+export const TrailingOutsideHeader: Story = {
+  tags: ['!autodocs', '!dev'],
+  render: () => /*html*/ `
+    <div style="${wrapperStyle}">
+      <mud-accordion mode="multiple">
+        <mud-accordion-item id="item" heading="Payment">
+          <mud-button id="action" slot="trailing" variant="secondary" size="sm">Track</mud-button>
+          Panel body.
+        </mud-accordion-item>
+      </mud-accordion>
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: { disable: true },
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    const settle = async () => {
+      for (let i = 0; i < 6; i += 1) await new Promise<void>(r => requestAnimationFrame(() => r()));
+    };
+    await customElements.whenDefined('mud-accordion-item');
+    await customElements.whenDefined('mud-button');
+    await settle();
+
+    const item = canvasElement.querySelector<HTMLMudAccordionItemElement>('#item');
+    const action = canvasElement.querySelector<HTMLElement>('#action');
+    if (!item || !action) throw new Error('the story did not render');
+
+    const toggles: Event[] = [];
+    const keys: Event[] = [];
+    item.addEventListener('mudToggle', ev => toggles.push(ev));
+    item.addEventListener('mudAccordionItemKey', ev => keys.push(ev));
+
+    action.click();
+    await settle();
+    if (item.open || toggles.length > 0) {
+      throw new Error('clicking a trailing control toggled the item');
+    }
+
+    action.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, composed: true }));
+    await settle();
+    if (keys.length > 0) {
+      throw new Error('an Arrow key on a trailing control reached the header');
+    }
+
+    // The mirror: the header itself still toggles, so the checks above are not
+    // passing on an item that cannot toggle at all.
+    item.shadowRoot?.querySelector<HTMLButtonElement>('button.header')?.click();
+    await settle();
+    if (!item.open || toggles.length !== 1) {
+      throw new Error('the header button no longer toggles the item');
     }
   },
 };

@@ -2,6 +2,34 @@
 
 ## Unreleased
 
+### Changed — `mud-accordion-item` renders the `trailing` slot beside its header button
+
+The `trailing` slot used to render inside the header `<button>`. Controls placed there —
+the slot is documented for `mud-button` — were interactive content inside a button,
+which is invalid HTML. It is now rendered as a sibling of the button, after it.
+`part="header"` stays on the button and still covers the whole row: its box,
+background, hover tint and focus ring are unchanged. `heading`, `supporting` and
+`icon-start` stay inside the button.
+
+What you can observe:
+
+- **Accessible name.** The header's name no longer includes trailing content. A test
+  that asserts the old name (heading followed by badge text) needs updating.
+- **Tab order.** A trailing control is its own tab stop, after the header.
+- **Clicks.** Clicking trailing content no longer toggles the item or emits `mudToggle`.
+  A `mud-button` there no longer needs `stopPropagation` to keep the item still.
+- **Keyboard.** Arrow, Home and End pressed while a trailing control has focus no longer
+  reach the header, so they do not move between items.
+- **Font.** Plain text in `trailing` inherits the item's font instead of the browser's
+  default `<button>` font (13.33px in Chromium). `mud-badge` and `mud-button` set their
+  own and are unaffected.
+- **`::part(header)` styles stop at the button.** Trailing content is no longer inside
+  it, so a `::part(header):hover` rule no longer applies while the pointer is over
+  trailing content, and with `icon-position="left"` an inline padding override does
+  not move trailing content away from the row's end.
+- **Without `subgrid`** (Chromium before 117, Safari before 16) the header falls back to
+  a flex row, with the open/close icon before trailing content instead of after it.
+
 ### Changed — `mud-accordion-item` no longer writes `disabled` past the slot
 
 While an item is disabled it sets `disabled` on the controls you place directly in
