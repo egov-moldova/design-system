@@ -268,3 +268,63 @@ export const SlottedDisabledContract: Story = {
     }
   },
 };
+
+// Regression test for issue #22, hidden like the one above. It needs real event
+// propagation through the flat tree, which mock-doc does not model: while
+// `trailing` rendered inside the header <button>, a click or an Arrow key on a
+// slotted control bubbled through the slot into the button's own handlers, toggled
+// the item and moved focus between items. Rendered beside the button, it must not.
+export const TrailingOutsideHeader: Story = {
+  tags: ['!autodocs', '!dev'],
+  render: () => /*html*/ `
+    <div style="${wrapperStyle}">
+      <mud-accordion mode="multiple">
+        <mud-accordion-item id="item" heading="Payment">
+          <mud-button id="action" slot="trailing" variant="secondary" size="sm">Track</mud-button>
+          Panel body.
+        </mud-accordion-item>
+      </mud-accordion>
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: { disable: true },
+  },
+  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+    const settle = async () => {
+      for (let i = 0; i < 6; i += 1) await new Promise<void>(r => requestAnimationFrame(() => r()));
+    };
+    await customElements.whenDefined('mud-accordion-item');
+    await customElements.whenDefined('mud-button');
+    await settle();
+
+    const item = canvasElement.querySelector<HTMLMudAccordionItemElement>('#item');
+    const action = canvasElement.querySelector<HTMLElement>('#action');
+    if (!item || !action) throw new Error('the story did not render');
+
+    const toggles: Event[] = [];
+    const keys: Event[] = [];
+    item.addEventListener('mudToggle', ev => toggles.push(ev));
+    item.addEventListener('mudAccordionItemKey', ev => keys.push(ev));
+
+    action.click();
+    await settle();
+    if (item.open || toggles.length > 0) {
+      throw new Error('clicking a trailing control toggled the item');
+    }
+
+    action.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true, composed: true }));
+    await settle();
+    if (keys.length > 0) {
+      throw new Error('an Arrow key on a trailing control reached the header');
+    }
+
+    // The mirror: the header itself still toggles, so the checks above are not
+    // passing on an item that cannot toggle at all.
+    item.shadowRoot?.querySelector<HTMLButtonElement>('button.header')?.click();
+    await settle();
+    if (!item.open || toggles.length !== 1) {
+      throw new Error('the header button no longer toggles the item');
+    }
+  },
+};

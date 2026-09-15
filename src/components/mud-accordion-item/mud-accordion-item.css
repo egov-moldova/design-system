@@ -40,10 +40,10 @@
 }
 
 /*
- * Icon position. `right` (default) lays trigger at the trailing edge via
- * the existing flex order. `left` swaps it to lead the row — chevron-style
- * sidebar navigation. The render places the trigger first when `iconPosition`
- * is `left`, so all CSS needs to do is mirror padding nuances.
+ * Icon position. `right` (default) places the trigger in the last grid column
+ * of the header row. `left` moves it to the first — chevron-style sidebar
+ * navigation — and the column lists under "Header row" below follow suit; this
+ * rule adds only the spacing nuance.
  */
 :host([icon-position='left']) .trigger {
   grid-column: 1;
@@ -123,7 +123,9 @@
  * on each side, which would add a gap to every item without trailing content.
  * The trailing track is `minmax(0, max-content)`, not `auto`: trailing content
  * wider than the row would otherwise widen the button past the host and push the
- * trigger out of view; with a zero floor the content wraps inside its track.
+ * trigger out of view. With a zero floor, content that can wrap wraps inside its
+ * track; content that cannot (`white-space: nowrap`) overflows into the trigger's
+ * column, the same class of overflow the flex layout had.
  *
  *   right:  [lead 1fr] [trailing] [trigger]
  *   left:   [trigger] [lead 1fr] [trailing] */
@@ -277,17 +279,18 @@
 
 /* A grid item of the row, painted over the button: `position: relative` is what
    puts it above, because the button is positioned too and would otherwise paint
-   later and take every click. The block margins stand in for the button's own
-   padding, which no longer contains it — margins rather than padding, because a
-   padded box would take the clicks above and below the content that used to
-   toggle the item. */
+   later and take every click.
+
+   No block margin or padding standing in for the button's own padding: the row
+   is as tall as the button, so a `::part(header)` padding override still sets the
+   row height. Only trailing content taller than the heading group plus that
+   padding now grows the row without padding around it. */
 .trailing {
   position: relative;
   display: none;
   grid-column: 2;
   grid-row: 1;
   align-items: center;
-  margin-block: var(--_padding-block);
 }
 
 /* Last column when the trigger leads. The button's inline padding no longer
@@ -394,8 +397,38 @@
 @media (prefers-reduced-motion: reduce) {
   :host,
   .header,
+  .trailing,
   .trigger,
   .trigger-icon-vertical {
     transition: none;
+  }
+}
+
+/* ---------- Without subgrid ---------- */
+
+/* Chromium < 117 and Safari < 16 drop `grid-template-columns: subgrid`, which
+   leaves the button a grid with no columns: the trigger falls onto its own row
+   and the heading slides under trailing content. Degrade to a flex row instead —
+   the trigger then sits before trailing content rather than after it, and
+   everything stays reachable. */
+@supports not (grid-template-columns: subgrid) {
+  .header-row {
+    display: flex;
+    align-items: center;
+  }
+
+  .header {
+    display: flex;
+    flex: 1 1 auto;
+    gap: var(--_gap);
+    min-inline-size: 0;
+  }
+
+  .lead {
+    flex: 1 1 auto;
+  }
+
+  .trailing {
+    margin-inline-start: var(--_gap);
   }
 }
