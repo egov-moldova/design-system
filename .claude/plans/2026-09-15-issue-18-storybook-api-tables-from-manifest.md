@@ -172,6 +172,7 @@ Numeric (over all 56 tags, from the built Storybook in Task 3):
 - Modify: `src/components/mud-accordion/mud-accordion.tsx`
 - Modify: `src/components/mud-accordion-item/mud-accordion-item.tsx`
 - Modify: `src/components.d.ts`
+- Modify: `src/components/mud-accordion/readme.md`
 - Modify: `src/components/mud-accordion/mud-accordion.stories.ts`
 - Modify: `src/components/mud-accordion-item/mud-accordion-item.stories.ts`
 - Modify: `src/components/mud-accordion/mud-accordion.mdx`
