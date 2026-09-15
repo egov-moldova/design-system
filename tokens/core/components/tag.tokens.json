@@ -102,6 +102,22 @@
         "brand": { "$value": "{color.text.brand.on-secondary}", "$type": "color" },
         "danger": { "$value": "{color.text.danger.on-secondary}", "$type": "color" }
       }
+    },
+    "disabled": {
+      "background": {
+        "$value": "{color.background.disabled.default}",
+        "$type": "color",
+        "$comment": "Disabled replaces every semantic color: a disabled tag carries no state meaning. Same semantic pair as mud-chip / mud-input disabled."
+      },
+      "label": { "$value": "{color.text.disabled.on-disabled}", "$type": "color" },
+      "outlined": {
+        "border": { "$value": "{color.border.disabled.default}", "$type": "color" },
+        "label": {
+          "$value": "{color.text.disabled.default}",
+          "$type": "color",
+          "$comment": "Outlined keeps its transparent fill, so the label sits on the container surface — text.disabled.default, not on-disabled."
+        }
+      }
     }
   }
 }

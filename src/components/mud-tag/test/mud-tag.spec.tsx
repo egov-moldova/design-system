@@ -189,4 +189,41 @@ describe('mud-tag', () => {
       expect(root?.getAttribute('semantic')).toBe('brand');
     });
   });
+
+  describe('disabled prop', () => {
+    it('defaults to false and leaves no disabled attribute on the host', async () => {
+      const { root } = await render(<mud-tag>Activ</mud-tag>);
+      expect((root as HTMLMudTagElement).disabled).toBe(false);
+      expect(root?.hasAttribute('disabled')).toBe(false);
+    });
+
+    it('reflects the property onto the host so the disabled design applies', async () => {
+      const { root, waitForChanges } = await render(<mud-tag>Activ</mud-tag>);
+      (root as HTMLMudTagElement).disabled = true;
+      await waitForChanges();
+      expect(root?.hasAttribute('disabled')).toBe(true);
+
+      (root as HTMLMudTagElement).disabled = false;
+      await waitForChanges();
+      expect(root?.hasAttribute('disabled')).toBe(false);
+    });
+
+    it('stays decorative — disabled adds no role or aria-disabled', async () => {
+      const { root } = await render(<mud-tag disabled>Activ</mud-tag>);
+      expect(root?.getAttribute('role')).toBeNull();
+      expect(root?.getAttribute('aria-disabled')).toBeNull();
+    });
+
+    it('is visual only — a disabled tag with aria-label keeps the live-status contract', async () => {
+      const { root } = await render(
+        <mud-tag disabled aria-label="Procesare în curs">
+          Procesare
+        </mud-tag>,
+      );
+      expect(root?.getAttribute('role')).toBe('status');
+      expect(root?.getAttribute('aria-live')).toBe('polite');
+      expect(root?.getAttribute('aria-label')).toBe('Procesare în curs');
+      expect(root?.getAttribute('aria-disabled')).toBeNull();
+    });
+  });
 });

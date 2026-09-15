@@ -50,6 +50,14 @@ export class MudBadge {
   @Prop({ reflect: true }) size: BadgeSize = 'md';
 
   /**
+   * Renders the disabled design, replacing the `variant` colors. Visual only —
+   * `aria-disabled` is not supported on `role="status"`, so the disabled state
+   * is announced by the container that owns the badge.
+   * @default false
+   */
+  @Prop({ reflect: true }) disabled: boolean = false;
+
+  /**
    * Numeric count to display when `type='numbered'`. Ignored for `dot`.
    * Values greater than `max` render as `"{max}+"`.
    */

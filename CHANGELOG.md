@@ -43,7 +43,8 @@ event and no warning.
 **Your `disabled` now survives.** The item records the elements it writes to, and on
 re-enable removes the attribute only from those. A control that already carried
 `disabled` — as an attribute or as a property — never enters that record and is never
-touched. The record is also released when the item is removed from the document, so a
+touched. A `mud-*` control carrying `disabled="false"` reads that as not disabled, so
+the item does claim it. The record is also released when the item is removed from the document, so a
 control you move elsewhere does not leave carrying an attribute you did not write.
 
 **Two narrowings.** The attribute now reaches only elements assigned to a slot, never
@@ -55,8 +56,7 @@ two slots are greyed through inherited colour instead.
 **What still reaches everything.** While the item is disabled, every element assigned
 to the three header slots gets `tabindex="-1"`, restored to exactly the value you
 authored when the item is enabled again. `disabled` does nothing to an `<a href>`, a
-`<div tabindex>`, or a custom element that does not implement it — `mud-tag` and
-`mud-badge` do not — so without this a
+`<div tabindex>`, or a custom element that does not implement it, so without this a
 control would stay Tab-reachable and Enter-activatable while assistive technology was
 told it was unavailable. The stylesheet also keeps `pointer-events: none` on assigned
 elements.
@@ -68,10 +68,8 @@ state only — your trailing content's colour is untouched in every other state.
 
 **What is not covered, stated plainly.** A control NESTED inside a slotted wrapper
 gets no attribute and no `tabindex`; it is blocked from the mouse only if it does not
-set its own `pointer-events`, and it stays keyboard-reachable. `mud-tag` and
-`mud-badge` render identically whether the item is disabled or not, because they have
-no disabled design — unchanged from 1.0.6. And this state is a UX affordance, not an
-authorization boundary: an action that must not be reachable while the item is
+set its own `pointer-events`, and it stays keyboard-reachable. And this state is a UX
+affordance, not an authorization boundary: an action that must not be reachable while the item is
 disabled needs its own guard, and server-side enforcement if it is security-sensitive.
 
 The `pointer-events` guard is deliberately not overridable — measured, a declaration
@@ -178,6 +176,18 @@ are removed with no alias: `<mud-icon>` logs `Icon not found` and renders nothin
 
 The static assets move with them: `assets/<size>/calender-*.svg` is now
 `assets/<size>/calendar-*.svg`.
+
+### Added
+
+- `mud-tag` and `mud-badge` take a `disabled` prop that renders a disabled
+  design, replacing every `type` × `semantic` / `variant` color. The prop is
+  visual only and adds no ARIA; the container announces the state.
+  `mud-sidebar-item` passes its `disabled` to its own tag, and a tag or badge
+  slotted directly into a disabled `mud-accordion-item`'s `trailing` slot is
+  disabled by the item — leave `disabled` off it there, since the item never
+  removes an attribute it did not write. In the item's `heading` or
+  `supporting` slots, and in any other container, set `disabled` on the tag or
+  badge alongside the container's.
 
 ### Internal
 

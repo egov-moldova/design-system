@@ -305,8 +305,9 @@
 /* Give slotted content an inherited colour to follow while the item is
    disabled, so a plain `<span slot="trailing">label</span>` greys with the rest
    of the header instead of staying at full contrast. It does NOT reach a
-   component that paints its own surface — `mud-tag` and `mud-badge` have no
-   disabled design (issue #21).
+   component that paints its own surface — `mud-tag` and `mud-badge` render
+   their own disabled design from the `disabled` the sync writes on them, so
+   do not dim them here as well.
 
    Scoped to `:host([disabled])` deliberately. Unscoped, this inherits
    `--_trigger-color`, which `:host([open])` and `:host([appearance='trail-sites'])`

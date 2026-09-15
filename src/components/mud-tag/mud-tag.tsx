@@ -73,6 +73,14 @@ export class MudTag {
   @Prop({ reflect: true }) semantic: TagSemantic = 'neutral';
 
   /**
+   * Renders the disabled design, replacing the `type` × `semantic` colors.
+   * Visual only — the tag is not interactive, so the disabled state is
+   * announced by the container that owns it, not by the tag.
+   * @default false
+   */
+  @Prop({ reflect: true }) disabled: boolean = false;
+
+  /**
    * Fallback label text rendered when the default slot is empty.
    * Plain text only.
    */

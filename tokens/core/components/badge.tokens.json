@@ -92,6 +92,11 @@
       "danger": {
         "$value": "{color.background.danger.default}",
         "$type": "color"
+      },
+      "disabled": {
+        "$value": "{color.text.disabled.on-disabled}",
+        "$type": "color",
+        "$comment": "Inverted disabled pair, same as the mud-chip count pill: the badge sits on its container's surface, where background.disabled.default (#f1f1f1) is 1.13:1 against white and an xs/sm dot would vanish."
       }
     },
     "text": {
@@ -116,6 +121,11 @@
       "danger": {
         "$value": "{color.text.base-inverse.on-color}",
         "$type": "color"
+      },
+      "disabled": {
+        "$value": "{color.background.disabled.default}",
+        "$type": "color",
+        "$comment": "Inverted against background.disabled — see badge.background.disabled."
       }
     },
     "offset": {

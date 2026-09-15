@@ -169,14 +169,15 @@ export namespace Components {
      *    slot distributes is what gets written — measured. That is still content you
      *    handed to the slot, one component further out.)
      * 2. `disabled` does what the element makes of it, and that is not universal —
-     *    27 of this library's 56 components implement it at the time of writing;
+     *    28 of this library's 55 components implement it at the time of writing;
      *    contributors can recount with `node scripts/count-disabled-props.mjs`, which
-     *    lives in the repo rather than in the published package. The load-bearing
-     *    half is that `mud-tag` and `mud-badge` are among those that do NOT (#21),
-     *    so the attribute is inert on them, and they render
-     *    identically whether the item is disabled or not. An `<a href>`, a
-     *    `<div tabindex>` or any custom element without `disabled` behaviour is the
-     *    same. For those, `tabindex="-1"` is mirrored alongside the attribute so the
+     *    lives in the repo rather than in the published package. `mud-tag` and
+     *    `mud-badge` implement it as a visual state only: in `trailing` they render
+     *    their disabled design, but in `heading` or `supporting` they receive no
+     *    attribute and keep their colors, because they paint their own surface
+     *    instead of inheriting the header's disabled color. An `<a href>`, a
+     *    `<div tabindex>` or any custom element without `disabled` behaviour ignores
+     *    the attribute. For those, `tabindex="-1"` is mirrored alongside it so the
      *    keyboard at least matches what assistive technology is told; the element is
      *    still clickable by script and still activates programmatically.
      * So this state is a UX affordance, not an authorization boundary. An action
@@ -313,6 +314,11 @@ export namespace Components {
           * Numeric count to display when `type='numbered'`. Ignored for `dot`. Values greater than `max` render as `"{max}+"`.
          */
         "count"?: number;
+        /**
+          * Renders the disabled design, replacing the `variant` colors. Visual only — `aria-disabled` is not supported on `role="status"`, so the disabled state is announced by the container that owns the badge.
+          * @default false
+         */
+        "disabled": boolean;
         /**
           * Upper bound for the visible count. Counts above this render as `"{max}+"`.
           * @default 99
@@ -3147,6 +3153,11 @@ export namespace Components {
          */
         "ariaLabel"?: string;
         /**
+          * Renders the disabled design, replacing the `type` × `semantic` colors. Visual only — the tag is not interactive, so the disabled state is announced by the container that owns it, not by the tag.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
           * Fallback label text rendered when the default slot is empty. Plain text only.
          */
         "label"?: string;
@@ -3740,14 +3751,15 @@ declare global {
      *    slot distributes is what gets written — measured. That is still content you
      *    handed to the slot, one component further out.)
      * 2. `disabled` does what the element makes of it, and that is not universal —
-     *    27 of this library's 56 components implement it at the time of writing;
+     *    28 of this library's 55 components implement it at the time of writing;
      *    contributors can recount with `node scripts/count-disabled-props.mjs`, which
-     *    lives in the repo rather than in the published package. The load-bearing
-     *    half is that `mud-tag` and `mud-badge` are among those that do NOT (#21),
-     *    so the attribute is inert on them, and they render
-     *    identically whether the item is disabled or not. An `<a href>`, a
-     *    `<div tabindex>` or any custom element without `disabled` behaviour is the
-     *    same. For those, `tabindex="-1"` is mirrored alongside the attribute so the
+     *    lives in the repo rather than in the published package. `mud-tag` and
+     *    `mud-badge` implement it as a visual state only: in `trailing` they render
+     *    their disabled design, but in `heading` or `supporting` they receive no
+     *    attribute and keep their colors, because they paint their own surface
+     *    instead of inheriting the header's disabled color. An `<a href>`, a
+     *    `<div tabindex>` or any custom element without `disabled` behaviour ignores
+     *    the attribute. For those, `tabindex="-1"` is mirrored alongside it so the
      *    keyboard at least matches what assistive technology is told; the element is
      *    still clickable by script and still activates programmatically.
      * So this state is a UX affordance, not an authorization boundary. An action
@@ -5417,14 +5429,15 @@ declare namespace LocalJSX {
      *    slot distributes is what gets written — measured. That is still content you
      *    handed to the slot, one component further out.)
      * 2. `disabled` does what the element makes of it, and that is not universal —
-     *    27 of this library's 56 components implement it at the time of writing;
+     *    28 of this library's 55 components implement it at the time of writing;
      *    contributors can recount with `node scripts/count-disabled-props.mjs`, which
-     *    lives in the repo rather than in the published package. The load-bearing
-     *    half is that `mud-tag` and `mud-badge` are among those that do NOT (#21),
-     *    so the attribute is inert on them, and they render
-     *    identically whether the item is disabled or not. An `<a href>`, a
-     *    `<div tabindex>` or any custom element without `disabled` behaviour is the
-     *    same. For those, `tabindex="-1"` is mirrored alongside the attribute so the
+     *    lives in the repo rather than in the published package. `mud-tag` and
+     *    `mud-badge` implement it as a visual state only: in `trailing` they render
+     *    their disabled design, but in `heading` or `supporting` they receive no
+     *    attribute and keep their colors, because they paint their own surface
+     *    instead of inheriting the header's disabled color. An `<a href>`, a
+     *    `<div tabindex>` or any custom element without `disabled` behaviour ignores
+     *    the attribute. For those, `tabindex="-1"` is mirrored alongside it so the
      *    keyboard at least matches what assistive technology is told; the element is
      *    still clickable by script and still activates programmatically.
      * So this state is a UX affordance, not an authorization boundary. An action
@@ -5564,6 +5577,11 @@ declare namespace LocalJSX {
           * Numeric count to display when `type='numbered'`. Ignored for `dot`. Values greater than `max` render as `"{max}+"`.
          */
         "count"?: number;
+        /**
+          * Renders the disabled design, replacing the `variant` colors. Visual only — `aria-disabled` is not supported on `role="status"`, so the disabled state is announced by the container that owns the badge.
+          * @default false
+         */
+        "disabled"?: boolean;
         /**
           * Upper bound for the visible count. Counts above this render as `"{max}+"`.
           * @default 99
@@ -8818,6 +8836,11 @@ declare namespace LocalJSX {
          */
         "ariaLabel"?: string;
         /**
+          * Renders the disabled design, replacing the `type` × `semantic` colors. Visual only — the tag is not interactive, so the disabled state is announced by the container that owns it, not by the tag.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
           * Fallback label text rendered when the default slot is empty. Plain text only.
          */
         "label"?: string;
@@ -9264,6 +9287,7 @@ declare namespace LocalJSX {
         "type": BadgeType;
         "variant": BadgeVariant;
         "size": BadgeSize;
+        "disabled": boolean;
         "count": number;
         "max": number;
         "ariaLabel": string;
@@ -9806,6 +9830,7 @@ declare namespace LocalJSX {
         "size": TagSize;
         "type": TagType;
         "semantic": TagSemantic;
+        "disabled": boolean;
         "label": string;
         "ariaLabel": string;
     }
@@ -9980,14 +10005,15 @@ declare module "@stencil/core" {
              *    slot distributes is what gets written — measured. That is still content you
              *    handed to the slot, one component further out.)
              * 2. `disabled` does what the element makes of it, and that is not universal —
-             *    27 of this library's 56 components implement it at the time of writing;
+             *    28 of this library's 55 components implement it at the time of writing;
              *    contributors can recount with `node scripts/count-disabled-props.mjs`, which
-             *    lives in the repo rather than in the published package. The load-bearing
-             *    half is that `mud-tag` and `mud-badge` are among those that do NOT (#21),
-             *    so the attribute is inert on them, and they render
-             *    identically whether the item is disabled or not. An `<a href>`, a
-             *    `<div tabindex>` or any custom element without `disabled` behaviour is the
-             *    same. For those, `tabindex="-1"` is mirrored alongside the attribute so the
+             *    lives in the repo rather than in the published package. `mud-tag` and
+             *    `mud-badge` implement it as a visual state only: in `trailing` they render
+             *    their disabled design, but in `heading` or `supporting` they receive no
+             *    attribute and keep their colors, because they paint their own surface
+             *    instead of inheriting the header's disabled color. An `<a href>`, a
+             *    `<div tabindex>` or any custom element without `disabled` behaviour ignores
+             *    the attribute. For those, `tabindex="-1"` is mirrored alongside it so the
              *    keyboard at least matches what assistive technology is told; the element is
              *    still clickable by script and still activates programmatically.
              * So this state is a UX affordance, not an authorization boundary. An action

@@ -71,14 +71,15 @@ const restoreTabindex = (el: Element, previous: string | null) => {
  *    slot distributes is what gets written — measured. That is still content you
  *    handed to the slot, one component further out.)
  * 2. `disabled` does what the element makes of it, and that is not universal —
- *    27 of this library's 56 components implement it at the time of writing;
+ *    28 of this library's 55 components implement it at the time of writing;
  *    contributors can recount with `node scripts/count-disabled-props.mjs`, which
- *    lives in the repo rather than in the published package. The load-bearing
- *    half is that `mud-tag` and `mud-badge` are among those that do NOT (#21),
- *    so the attribute is inert on them, and they render
- *    identically whether the item is disabled or not. An `<a href>`, a
- *    `<div tabindex>` or any custom element without `disabled` behaviour is the
- *    same. For those, `tabindex="-1"` is mirrored alongside the attribute so the
+ *    lives in the repo rather than in the published package. `mud-tag` and
+ *    `mud-badge` implement it as a visual state only: in `trailing` they render
+ *    their disabled design, but in `heading` or `supporting` they receive no
+ *    attribute and keep their colors, because they paint their own surface
+ *    instead of inheriting the header's disabled color. An `<a href>`, a
+ *    `<div tabindex>` or any custom element without `disabled` behaviour ignores
+ *    the attribute. For those, `tabindex="-1"` is mirrored alongside it so the
  *    keyboard at least matches what assistive technology is told; the element is
  *    still clickable by script and still activates programmatically.
  *
@@ -389,9 +390,13 @@ export class MudAccordionItem {
       // (React 19 sets unknown props on custom elements as properties) would
       // otherwise be claimed here and cleared on re-enable — issue #17 again,
       // in the one shape no in-repo test can reach, since every `mud-*` control
-      // reflects.
-      if (el.hasAttribute('disabled')) continue;
-      if ((el as { disabled?: unknown }).disabled === true) continue;
+      // reflects. An attribute whose element reads it as `false` is not a
+      // consumer's disabled: Stencil parses `disabled="false"` to `false`, and
+      // skipping it would leave a `mud-*` control enabled in a disabled row. A
+      // native control reads any value as disabled, so it still stays unclaimed.
+      const property = (el as { disabled?: unknown }).disabled;
+      if (el.hasAttribute('disabled') && property !== false) continue;
+      if (property === true) continue;
       el.setAttribute('disabled', '');
       this.ownedDisabled.add(el);
     }

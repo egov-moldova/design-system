@@ -137,6 +137,30 @@ describe('mud-badge', () => {
     expect(root?.shadowRoot?.querySelector('.badge-count')?.textContent).toBe('');
   });
 
+  it('defaults disabled to false and leaves no disabled attribute on the host', async () => {
+    const { root } = await render(<mud-badge count={3} />);
+    expect((root as HTMLMudBadgeElement).disabled).toBe(false);
+    expect(root?.hasAttribute('disabled')).toBe(false);
+  });
+
+  it('reflects the disabled property onto the host so the disabled design applies', async () => {
+    const { root, waitForChanges } = await render(<mud-badge count={3} />);
+    (root as HTMLMudBadgeElement).disabled = true;
+    await waitForChanges();
+    expect(root?.hasAttribute('disabled')).toBe(true);
+
+    (root as HTMLMudBadgeElement).disabled = false;
+    await waitForChanges();
+    expect(root?.hasAttribute('disabled')).toBe(false);
+  });
+
+  it('keeps the live-status contract when disabled — no aria-disabled on role=status', async () => {
+    const { root } = await render(<mud-badge count={3} disabled />);
+    expect(root?.getAttribute('role')).toBe('status');
+    expect(root?.getAttribute('aria-label')).toBe('3');
+    expect(root?.getAttribute('aria-disabled')).toBeNull();
+  });
+
   // Coverage guard — exercises the stencilVitestPlugin-injected constructor
   // branch (`if (registerHost !== false) { ... }`). Without this, coverage
   // for the compiled constructor branches caps at 50%.
