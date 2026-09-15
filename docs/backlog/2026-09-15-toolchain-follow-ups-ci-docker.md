@@ -3,7 +3,7 @@
 **Status**: Backlog — documented, not applied. Each item needs a decision from whoever owns the CI/CD and Azure DevOps release path.
 **Captured**: 2026-09-15, measured on `b50b870`
 **Source**: GitHub issue #36 (follow-ups after the 2026-09 toolchain refresh, #37)
-**Affects**: `.github/workflows/ci.yml`, `Dockerfile`, the external Azure DevOps pipelines, `src/legacy/**`, the Storybook "Component tests" panel
+**Affects**: `.github/workflows/ci.yml`, `Dockerfile`, the external Azure DevOps pipelines, `src/legacy/**`, `.storybook/main.mjs` (dev telemetry)
 
 The parts of #36 that stay inside the repo's own code and tests were fixed in the
 PR that closes it. The items below touch CI/CD or the deployed image, so they
@@ -46,7 +46,7 @@ package's only runtime dependency is `@stencil/core`.
 
    The #36 comment measured this at 29 → 2, with the 2 left both `postcss@8.3.11`.
    That trial was reverted and has not been re-run for this note.
-   It was not run through the full gate, so run `yarn lint && yarn typecheck && yarn test && yarn build && yarn test.storybook`
+   It was not run through the full gate, so run `yarn lint && yarn typecheck && yarn test && yarn test:scripts && yarn build && yarn test.storybook`
    after it.
 2. **Accept the 2 `postcss@8.3.11` advisories** in `.yarnrc.yml` under
    `npmAuditIgnoreAdvisories`, with the reason stated next to them. postcss only
@@ -100,32 +100,24 @@ coverage.
 **Decision for the owner:** is `src/legacy/**` still used as behavioural
 reference during the redesign? If not, delete all 15 in one commit.
 
-## 4. Storybook "Component tests" panel — panel-only unhandled errors
+## 4. Two test lanes run nowhere in CI
 
-`@storybook/addon-vitest@10.6.0` is re-enabled for dev (`.storybook/main.mjs`).
-Clicking "Run tests" in the panel passes the same 46 files and 457 tests as
-`yarn test.storybook`. It also reports 2 unhandled errors that the CLI lane does
-not report:
+`.github/workflows/ci.yml` runs `yarn lint`, `yarn typecheck`, `yarn test` and the
+audit. It does not run `yarn test:scripts` or `yarn test.storybook`, and the repo
+has no committed git hooks. That is how the `form-associated-contract` ratchet
+failed on `main` unnoticed: a 0-byte residue from merge `89142a1` and a stale
+floor. It is also how a story's unguarded `requestAnimationFrame` callback in
+`mud-tabs.stories.ts` went unnoticed; it only surfaced in the Storybook panel.
+Both are fixed in the #36 PR, but nothing stops them recurring.
 
-```
-TypeError: Cannot read properties of null (reading 'querySelector')
-This error originated in "src/components/mud-tabs/mud-tabs.stories.ts"
-The latest test that might've caused the error is "Mobile".
-```
+**Recommendation:** add `yarn test:scripts` to the `test` job. It needs no build
+and takes about a second. Add `yarn test.storybook` as a separate job after
+`yarn build && yarn tokens.build` and `yarn playwright install chromium`.
 
-Vite logs no stack for them. The only unguarded `getElementById(...).querySelector`
-in the stories is `focusTabHtml` in `mud-tabs.stories.ts`, and that helper is
-unused. The source is still unidentified.
-
-**Next check:** run the panel filtered to `mud-tabs.stories.ts` alone, then to the
-story file that runs just before it. If the errors appear only when another
-story runs before it, a `requestAnimationFrame` callback from that earlier story
-is firing after its DOM was torn down.
-
-**Recommendation:** keep the panel enabled. The errors do not fail any test and
-do not appear in the CLI gate. If they block anyone, remove
-`@storybook/addon-vitest` from `devAddons` in `.storybook/main.mjs`; that one-line
-change is the rollback.
+**Related, dev only:** `storybook dev` runs without `--disable-telemetry`, so the
+re-enabled `@storybook/addon-vitest` panel reports its test-run events along
+with Storybook's own. If the project's opt-out on build paths is meant to apply
+to dev as well, set `core: { disableTelemetry: true }` in `.storybook/main.mjs`.
 
 ## 5. Stencil past 4.43.x
 
