@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>INTEGRATION — @egovmd/mud</title>
+    <title>INTEGRATION — @egov-moldova/mud</title>
     <meta
       name="description"
       content="Integration guide for consuming the MUD Design System outside a bundler — HTML, PHP, .NET."
@@ -484,7 +484,7 @@
 
       <main>
         <header class="page-head">
-          <div class="eyebrow">@egovmd/mud</div>
+          <div class="eyebrow">@egov-moldova/mud</div>
           <h1>Integration guide — outside a bundler</h1>
           <p class="lede">
             Drop AGE components into anything that emits HTML: a static page, a server-rendered template (PHP, Razor,
@@ -500,11 +500,11 @@
             <a class="anchor" href="#emits" aria-hidden="true">#</a>
           </h2>
           <p class="tldr">
-            <strong>TL;DR</strong> Ship the entire <code>dist/design-system/</code> folder. The lazy loader resolves
+            <strong>TL;DR</strong> Ship the entire <code>dist/mud/</code> folder. The lazy loader resolves
             chunks and SVG assets via <code>import.meta.url</code> — split it and asset resolution breaks at runtime.
           </p>
 
-          <p>After <code>yarn build</code>, the relevant artifacts live in <code>dist/design-system/</code>:</p>
+          <p>After <code>yarn build</code>, the relevant artifacts live in <code>dist/mud/</code>:</p>
 
           <div class="table-wrap">
             <table>
@@ -517,12 +517,12 @@
               </thead>
               <tbody>
                 <tr>
-                  <td><code>design-system.esm.js</code></td>
+                  <td><code>mud.esm.js</code></td>
                   <td>Lazy-loader entry. Discovers and <code>import()</code>s component chunks on demand.</td>
                   <td><strong>Yes</strong></td>
                 </tr>
                 <tr>
-                  <td><code>design-system.css</code></td>
+                  <td><code>mud.css</code></td>
                   <td>Global base styles (reset, body defaults, focus ring helpers).</td>
                   <td><strong>Yes</strong></td>
                 </tr>
@@ -546,6 +546,14 @@
                   <td>SVG sprites (used by <code>mud-icon</code>, <code>mud-logo</code>, …).</td>
                   <td><strong>Yes</strong> — keep alongside the entry</td>
                 </tr>
+                <tr>
+                  <td><code>assets/fonts/</code></td>
+                  <td>
+                    The Onest variable font (<code>onest-variable.woff2</code>, weights 100–900). Requested by
+                    <code>mud.css</code> through a relative URL.
+                  </td>
+                  <td><strong>Yes</strong> — keep relative to <code>mud.css</code></td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -561,8 +569,8 @@
 
           <p>Anywhere you control the <code>&lt;head&gt;</code>:</p>
           <pre><code class="language-html">&lt;link rel="stylesheet" href="/age/tokens/core.tokens.css"&gt;
-&lt;link rel="stylesheet" href="/age/design-system.css"&gt;
-&lt;script type="module" src="/age/design-system.esm.js"&gt;&lt;/script&gt;</code></pre>
+&lt;link rel="stylesheet" href="/age/mud.css"&gt;
+&lt;script type="module" src="/age/mud.esm.js"&gt;&lt;/script&gt;</code></pre>
 
           <p>
             Optional — opt into dark mode by including the dark tokens <em>and</em> setting
@@ -583,7 +591,7 @@
             <a class="anchor" href="#html" aria-hidden="true">#</a>
           </h2>
           <p class="tldr">
-            <strong>TL;DR</strong> Copy <code>dist/design-system/</code> to <code>public/age/</code> and reference it.
+            <strong>TL;DR</strong> Copy <code>dist/mud/</code> to <code>public/age/</code> and reference it.
             Or use a CDN — but pin the version and add SRI.
           </p>
 
@@ -595,8 +603,8 @@
 
     &lt;link rel="stylesheet" href="/age/tokens/core.tokens.css"&gt;
     &lt;link rel="stylesheet" href="/age/tokens/core.dark.tokens.css"&gt;
-    &lt;link rel="stylesheet" href="/age/design-system.css"&gt;
-    &lt;script type="module" src="/age/design-system.esm.js"&gt;&lt;/script&gt;
+    &lt;link rel="stylesheet" href="/age/mud.css"&gt;
+    &lt;script type="module" src="/age/mud.esm.js"&gt;&lt;/script&gt;
   &lt;/head&gt;
   &lt;body&gt;
     &lt;mud-button variant="primary"&gt;Save&lt;/mud-button&gt;
@@ -627,22 +635,22 @@
 
           <pre><code class="language-html">&lt;link
   rel="stylesheet"
-  href="https://unpkg.com/@egovmd/mud@0.0.1/dist/mud/tokens/core.tokens.css"
+  href="https://unpkg.com/@egov-moldova/mud@1.1.9/dist/mud/tokens/core.tokens.css"
   integrity="sha384-REPLACE_WITH_REAL_HASH"
   crossorigin="anonymous"&gt;
 &lt;link
   rel="stylesheet"
-  href="https://unpkg.com/@egovmd/mud@0.0.1/dist/mud/mud.css"
+  href="https://unpkg.com/@egov-moldova/mud@1.1.9/dist/mud/mud.css"
   integrity="sha384-REPLACE_WITH_REAL_HASH"
   crossorigin="anonymous"&gt;
 &lt;script
   type="module"
-  src="https://unpkg.com/@egovmd/mud@0.0.1/dist/mud/mud.esm.js"
+  src="https://unpkg.com/@egov-moldova/mud@1.1.9/dist/mud/mud.esm.js"
   integrity="sha384-REPLACE_WITH_REAL_HASH"
   crossorigin="anonymous"&gt;&lt;/script&gt;</code></pre>
 
           <p>Generate hashes locally against the exact published files:</p>
-          <pre><code class="language-bash">curl -sL https://unpkg.com/@egovmd/mud@0.0.1/dist/mud/mud.esm.js \
+          <pre><code class="language-bash">curl -sL https://unpkg.com/@egov-moldova/mud@1.1.9/dist/mud/mud.esm.js \
   | openssl dgst -sha384 -binary | openssl base64 -A</code></pre>
 
           <div class="callout warn">
@@ -650,7 +658,7 @@
             <div>
               <p>
                 <strong>SRI caveat.</strong> SRI protects the entry file but cannot cover the lazy-loaded
-                <code>p-*.js</code> chunks that <code>design-system.esm.js</code> imports dynamically — the browser has
+                <code>p-*.js</code> chunks that <code>mud.esm.js</code> imports dynamically — the browser has
                 no <code>integrity</code> attribute on dynamic <code>import()</code>.
               </p>
               <p>
@@ -677,8 +685,8 @@
             <pre><code class="language-php">{{-- resources/views/layouts/app.blade.php --}}
 &lt;head&gt;
   &lt;link rel="stylesheet" href="{{ asset('age/tokens/core.tokens.css') }}"&gt;
-  &lt;link rel="stylesheet" href="{{ asset('age/design-system.css') }}"&gt;
-  &lt;script type="module" src="{{ asset('age/design-system.esm.js') }}"&gt;&lt;/script&gt;
+  &lt;link rel="stylesheet" href="{{ asset('age/mud.css') }}"&gt;
+  &lt;script type="module" src="{{ asset('age/mud.esm.js') }}"&gt;&lt;/script&gt;
 &lt;/head&gt;
 
 &lt;body&gt;
@@ -691,8 +699,8 @@
             <h3>Symfony / Twig</h3>
             <pre><code class="language-twig">{# templates/base.html.twig #}
 &lt;link rel="stylesheet" href="{{ asset('age/tokens/core.tokens.css') }}"&gt;
-&lt;link rel="stylesheet" href="{{ asset('age/design-system.css') }}"&gt;
-&lt;script type="module" src="{{ asset('age/design-system.esm.js') }}"&gt;&lt;/script&gt;</code></pre>
+&lt;link rel="stylesheet" href="{{ asset('age/mud.css') }}"&gt;
+&lt;script type="module" src="{{ asset('age/mud.esm.js') }}"&gt;&lt;/script&gt;</code></pre>
           </div>
 
           <div class="sub">
@@ -704,8 +712,8 @@
             </p>
             <pre><code class="language-php">add_action('wp_enqueue_scripts', function () {
     wp_enqueue_style('age-tokens', get_template_directory_uri() . '/age/tokens/core.tokens.css', [], null);
-    wp_enqueue_style('age-base',   get_template_directory_uri() . '/age/design-system.css',     [], null);
-    wp_enqueue_script('age-loader', get_template_directory_uri() . '/age/design-system.esm.js', [], null, true);
+    wp_enqueue_style('age-base',   get_template_directory_uri() . '/age/mud.css',     [], null);
+    wp_enqueue_script('age-loader', get_template_directory_uri() . '/age/mud.esm.js', [], null, true);
 });
 
 // Make the loader a module — WP wraps scripts in classic &lt;script&gt; by default.
@@ -720,8 +728,8 @@ add_filter('script_loader_tag', function ($tag, $handle) {
           <div class="sub">
             <h3>Raw PHP</h3>
             <pre><code class="language-php">&lt;link rel="stylesheet" href="/age/tokens/core.tokens.css"&gt;
-&lt;link rel="stylesheet" href="/age/design-system.css"&gt;
-&lt;script type="module" src="/age/design-system.esm.js"&gt;&lt;/script&gt;
+&lt;link rel="stylesheet" href="/age/mud.css"&gt;
+&lt;script type="module" src="/age/mud.esm.js"&gt;&lt;/script&gt;
 
 &lt;mud-button variant="primary"&gt;&lt;?= htmlspecialchars($label) ?&gt;&lt;/mud-button&gt;</code></pre>
           </div>
@@ -744,8 +752,8 @@ add_filter('script_loader_tag', function ($tag, $handle) {
             <pre><code class="language-razor">@* Views/Shared/_Layout.cshtml *@
 &lt;head&gt;
   &lt;link rel="stylesheet" href="~/age/tokens/core.tokens.css" /&gt;
-  &lt;link rel="stylesheet" href="~/age/design-system.css" /&gt;
-  &lt;script type="module" src="~/age/design-system.esm.js"&gt;&lt;/script&gt;
+  &lt;link rel="stylesheet" href="~/age/mud.css" /&gt;
+  &lt;script type="module" src="~/age/mud.esm.js"&gt;&lt;/script&gt;
 &lt;/head&gt;
 
 &lt;body&gt;
@@ -774,8 +782,8 @@ add_filter('script_loader_tag', function ($tag, $handle) {
 
             <p>Add the assets in <code>App.razor</code> (Server) or <code>wwwroot/index.html</code> (WASM):</p>
             <pre><code class="language-html">&lt;link rel="stylesheet" href="age/tokens/core.tokens.css" /&gt;
-&lt;link rel="stylesheet" href="age/design-system.css" /&gt;
-&lt;script type="module" src="age/design-system.esm.js"&gt;&lt;/script&gt;</code></pre>
+&lt;link rel="stylesheet" href="age/mud.css" /&gt;
+&lt;script type="module" src="age/mud.esm.js"&gt;&lt;/script&gt;</code></pre>
 
             <p><strong>Three caveats:</strong></p>
             <ol>
@@ -786,7 +794,7 @@ add_filter('script_loader_tag', function ($tag, $handle) {
               </li>
               <li>
                 <strong>Render mode</strong>: in interactive Server mode, SSR emits tags before
-                <code>design-system.esm.js</code> runs. That is fine (custom elements upgrade automatically), but JS
+                <code>mud.esm.js</code> runs. That is fine (custom elements upgrade automatically), but JS
                 interop that sets a property must wait for upgrade:
                 <pre><code class="language-csharp">await JS.InvokeVoidAsync(
     "eval",
@@ -986,12 +994,17 @@ document.documentElement.dataset.theme = dark ? 'dark' : 'light';</code></pre>
             <li>
               <strong>Cache headers.</strong> Chunks (<code>p-*.js</code>) are content-hashed and safe to serve with
               <code>Cache-Control: public, max-age=31536000, immutable</code>. The entry
-              <code>design-system.esm.js</code> is <em>not</em> hashed — give it a short cache (e.g. 5 min) or version
+              <code>mud.esm.js</code> is <em>not</em> hashed — give it a short cache (e.g. 5 min) or version
               it via your asset pipeline.
             </li>
             <li>
               <strong>Compression.</strong> Enable Brotli / gzip on <code>.js</code>, <code>.css</code>,
               <code>.svg</code>.
+            </li>
+            <li>
+              <strong>Fonts under CSP.</strong> <code>mud.css</code> loads
+              <code>assets/fonts/onest-variable.woff2</code> relative to itself, so <code>font-src</code> must allow the
+              origin <code>mud.css</code> is served from (<code>'self'</code> when self-hosted, the CDN origin otherwise).
             </li>
             <li>
               <strong>CSP.</strong> The loader uses dynamic <code>import()</code>. Production is CSP-friendly with
@@ -1029,15 +1042,15 @@ document.documentElement.dataset.theme = dark ? 'dark' : 'light';</code></pre>
                   <td><code>&lt;mud-button&gt;</code> renders as plain text, no styling</td>
                   <td>The loader didn't run, or chunks 404</td>
                   <td>
-                    DevTools → Network. If <code>design-system.esm.js</code> is 200 but <code>p-*.js</code> chunks are
-                    404, the folder is split — re-deploy <code>dist/design-system/</code> as a whole.
+                    DevTools → Network. If <code>mud.esm.js</code> is 200 but <code>p-*.js</code> chunks are
+                    404, the folder is split — re-deploy <code>dist/mud/</code> as a whole.
                   </td>
                 </tr>
                 <tr>
                   <td>Icons render as blank squares</td>
                   <td>Asset resolution failed</td>
                   <td>
-                    The SVG sprite path is derived from <code>design-system.esm.js</code>'s URL. Ensure
+                    The SVG sprite path is derived from <code>mud.esm.js</code>'s URL. Ensure
                     <code>dist/mud/assets/</code> is co-located with the entry.
                   </td>
                 </tr>
@@ -1046,7 +1059,15 @@ document.documentElement.dataset.theme = dark ? 'dark' : 'light';</code></pre>
                   <td>Tokens not loaded</td>
                   <td>
                     Verify <code>core.tokens.css</code> is in the document <em>before</em>
-                    <code>design-system.css</code>. Otherwise component CSS resolves variables to fallback.
+                    <code>mud.css</code>. Otherwise component CSS resolves variables to fallback.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Text renders in a system font instead of Onest</td>
+                  <td><code>mud.css</code> was copied without <code>assets/fonts/</code>, or CSP <code>font-src</code> blocks it</td>
+                  <td>
+                    Deploy <code>dist/mud/</code> as a whole; check DevTools → Network for
+                    <code>onest-variable.woff2</code> and the console for a CSP violation.
                   </td>
                 </tr>
                 <tr>

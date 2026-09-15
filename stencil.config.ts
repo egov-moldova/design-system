@@ -30,7 +30,7 @@ const outputTargets: OutputTarget[] = [
             warn: false,
           },
           {
-            src: 'assets/fonts/*.ttf',
+            src: 'assets/fonts/*.woff2',
             dest: 'assets/fonts',
             warn: false,
           },

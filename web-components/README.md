@@ -28,6 +28,8 @@ defineCustomElements();
 <mud-button variant="primary"><button>Click me</button></mud-button>
 ```
 
+`styles.css` also loads the Onest font (`assets/fonts/onest-variable.woff2`, next to it in the package) — do not declare an `@font-face` of your own. Vite, webpack and Angular CLI emit the font automatically; esbuild used directly needs `--loader:.woff2=file`. See the root README's [Fonts](../README.md#fonts) section.
+
 ## Usage — plain HTML with import map
 
 ```html
@@ -60,6 +62,8 @@ defineCustomElements();
   </body>
 </html>
 ```
+
+Serve `node_modules/@egov-moldova/mud/dist/mud/` as a whole: `mud.css` requests its font from `assets/fonts/` beside it.
 
 ## Usage — CDN via jsDelivr
 

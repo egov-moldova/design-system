@@ -1,23 +1,23 @@
+/*
+ * One variable face covers every weight the tokens use (400/500/600/700).
+ * Static faces cannot: a weight between them renders with the nearest face,
+ * which shipped semibold text as bold. Guarded by
+ * scripts/__tests__/font-faces.spec.mjs (`yarn test:scripts`) and by
+ * checkFontFaceCoverage in scripts/validate-package.mjs (`yarn validate.package`,
+ * run before every publish).
+ *
+ * The URL is relative to the built `dist/mud/mud.css`, so CDNs, self-hosted
+ * copies of `dist/mud/` and bundlers with an asset pipeline (Vite, webpack,
+ * Angular CLI, Next.js) resolve it with no consumer config. esbuild used
+ * directly needs `--loader:.woff2=file`.
+ *
+ * Source: assets/font/Onest/Onest-VariableFont_wght.ttf, converted with
+ *   fonttools ttLib.woff2 compress -o src/assets/fonts/onest-variable.woff2 <source>
+ */
 @font-face {
   font-family: 'Onest';
   font-style: normal;
-  font-weight: 400;
+  font-weight: 100 900;
   font-display: swap;
-  src: url('./assets/fonts/onest-regular.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Onest';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url('./assets/fonts/onest-medium.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'Onest';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url('./assets/fonts/onest-bold.ttf') format('truetype');
+  src: url('./assets/fonts/onest-variable.woff2') format('woff2');
 }
