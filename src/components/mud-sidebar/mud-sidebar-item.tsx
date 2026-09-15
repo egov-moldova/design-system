@@ -1,5 +1,6 @@
 import { Component, Element, Event, type EventEmitter, h, Host, Prop } from '@stencil/core';
 
+import type { IconName } from '../mud-icon/mud-icon.types';
 import type { SidebarItemSelectDetail, SidebarItemToggleDetail } from './mud-sidebar.types';
 
 /**
@@ -23,10 +24,10 @@ export class MudSidebarItem {
   @Prop({ reflect: true }) value?: string;
 
   /** Leading icon name. */
-  @Prop() icon?: string;
+  @Prop() icon?: IconName;
 
   /** Leading icon name used while active (e.g. a filled variant). Falls back to `icon`. */
-  @Prop() iconActive?: string;
+  @Prop() iconActive?: IconName;
 
   /** Primary label (overridden by slotted content). */
   @Prop() label?: string;

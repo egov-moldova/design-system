@@ -72,8 +72,8 @@ const numberedSteps: StepperStep[] = [
 ];
 
 const iconSteps: StepperStep[] = [
-  { label: 'Date personale', iconName: 'user', status: 'completed' },
-  { label: 'Documente', iconName: 'file', status: 'current' },
+  { label: 'Date personale', iconName: 'person', status: 'completed' },
+  { label: 'Documente', iconName: 'document', status: 'current' },
   { label: 'Plată', iconName: 'wallet', status: 'pending' },
   { label: 'Confirmare', iconName: 'checkmark-large', status: 'pending' },
 ];

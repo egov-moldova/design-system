@@ -4,9 +4,8 @@ import { setAssetPath } from '@stencil/core';
 import '../mud-icon';
 import manifest from '../assets/icons.manifest.json';
 import { clearIconSvgCache, fetchIconSvg, resolveIconAsset } from '../mud-icon.providers';
-import type { IconManifest } from '../mud-icon.types';
+import { ICON_NAMES, type IconManifest, type IconName } from '../mud-icon.types';
 
-const ICON_NAMES = Object.keys(manifest);
 const NAME_WITH_ALL_SIZES = ICON_NAMES.find(
   n => (manifest as Record<string, { sizes: number[] }>)[n].sizes.length === 4,
 );
@@ -42,7 +41,7 @@ describe('mud-icon', () => {
     fetchSpy.mockRestore();
   });
 
-  it('renders with default props (size=16, name="check")', async () => {
+  it('renders with default props (size=16)', async () => {
     const defaultName = ICON_NAMES[0];
     const { root, waitForChanges } = await render(<mud-icon name={defaultName} />);
     await waitForChanges();
@@ -160,7 +159,7 @@ describe('mud-icon', () => {
   });
 
   it('unknown name → warns, no SVG, but host stays decorative (aria-hidden)', async () => {
-    const { root, waitForChanges } = await render(<mud-icon name="this-icon-does-not-exist" />);
+    const { root, waitForChanges } = await render(<mud-icon name={'this-icon-does-not-exist' as IconName} />);
     await waitForChanges();
     expect(warnSpy).toHaveBeenCalled();
     expect(root?.shadowRoot?.querySelector('.svg-icon')).toBeNull();

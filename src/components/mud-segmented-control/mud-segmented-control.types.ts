@@ -1,3 +1,5 @@
+import type { IconName } from '../mud-icon/mud-icon.types';
+
 export const SEGMENTED_CONTROL_SIZES = ['md', 'sm'] as const;
 
 export type SegmentedControlSize = (typeof SEGMENTED_CONTROL_SIZES)[number];
@@ -19,7 +21,7 @@ export interface SegmentedControlSegment {
    * Optional leading icon. Maps to a registered `mud-icon` name.
    * @see src/components/mud-icon/mud-icon.providers.ts
    */
-  iconName?: string;
+  iconName?: IconName;
 }
 
 /**
