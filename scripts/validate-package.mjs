@@ -435,6 +435,23 @@ export function checkPackerAgreement(yarnFiles, npmFiles) {
   ];
 }
 
+/**
+ * Turn one `exports` key into the RegExp matching the public specifiers it serves.
+ *
+ * Escape first, then substitute the wildcard. An unescaped key leaves `.` matching
+ * any character, so `./tokens/*.css` would accept `.../tokens/coreXtokensYcss` — a
+ * specifier no consumer could write — and a future key holding `+`, `(` or `?`
+ * would throw here instead of matching. `replaceAll`, not `replace`: a key with
+ * two wildcards would otherwise keep the second one literal. And `.*`, not `.+`:
+ * Node's subpath-pattern `*` matches ZERO or more characters, `/` included, so
+ * `.+` would quietly narrow the grammar this is a translation of.
+ */
+export function exportsKeyPattern(key) {
+  const suffix = key === '.' ? '' : key.slice(1);
+  const escaped = suffix.replace(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
+  return new RegExp(`^@egov-moldova/mud${escaped.replaceAll(String.raw`\*`, '.*')}$`);
+}
+
 export function main({ cwd = PROJECT_ROOT, log = console.log, error = console.error } = {}) {
   const pkg = JSON.parse(fs.readFileSync(path.join(cwd, 'package.json'), 'utf8'));
   const declared = collectDeclaredEntries(pkg);
