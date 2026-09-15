@@ -20,7 +20,9 @@ session on 2026-09-15; issue egov-moldova/design-system#18 is the requirement so
 
 **Issues:** closes egov-moldova/design-system#18
 
-**Reviewed:** preflight 1e6902a, critic 361bc07, critic 75266e2, verify 03963a5 (CONFIRM, 0 findings, after /code-review with 0 findings) — 3 rounds (the cap), 21 findings, all dispositioned in the ledger and folded here; round 3's goal-scope finding (9 child tags with no docs table) was decided by Dan on 2026-09-15: `subcomponents` on the parent metas.
+**Reviewed:** preflight 1e6902a, critic 361bc07, critic 75266e2, verify 03963a5 — CONFIRM with 0 findings, after /code-review with 0 findings — 3 rounds (the cap), 21 findings, all dispositioned in the ledger and folded here; round 3's goal-scope finding (9 child tags with no docs table) was decided by Dan on 2026-09-15: `subcomponents` on the parent metas.
+
+**Rebased:** onto `upstream/main` `1d7ec8f` on 2026-09-15 (from `fe6d651`). That base renamed or merged six components (55 tags, was 56); counts in § Context are measured on `fe6d651`, and the § Acceptance bar was re-run on the rebased branch. Result: N1–N5 pass over 55 tags; Z6 over 454 stories shows the same two Accordion control deltas and 0 `initialArgs` differences against a `1d7ec8f` build; `yarn test:scripts` fails 2 tests in `form-associated-contract.spec.mjs`, which fail identically on `1d7ec8f` itself (an empty tracked `mud-search-input-circular.tsx`, and 15 form-associated components against a floor of 16).
 
 ## Global Constraints
 
@@ -149,7 +151,7 @@ Numeric (over all 56 tags, from the built Storybook in Task 3):
 
 | # | Metric | PASS | WARN | FAIL | Instrument |
 | --- | --- | --- | --- | --- | --- |
-| N1 | `mud-input` rows for `label` / `slot:label` / `part:label` | 3 distinct | — | < 3 | Instrument: Task 3 Step 3 probe, field `inputLabel` |
+| N1 | `mud-text-input` rows (was `mud-input` before the rebase onto `1d7ec8f`, which renamed it) for `label` / `slot:label` / `part:label` | 3 distinct | — | < 3 | Instrument: Task 3 Step 3 probe, field `inputLabel` |
 | N2 | `method:*` rows | 5 | — | ≠ 5 | Instrument: Task 3 Step 3 probe, field `methods` |
 | N3 | `slot:default` rows | 27 | — | ≠ 27 | Instrument: Task 3 Step 3 probe, field `defaultSlots` |
 | N4 | Tags whose extracted argTypes are `{}`, and tags that are neither the `component` nor a `subcomponents` value of any story (so no docs page renders their table) | 0 and 0 | — | > 0 | Instrument: Task 3 Step 3 probe, fields `emptyTags` and `undocumentedTags` |
@@ -729,7 +731,7 @@ const expected = d => ({
   'css shadow parts': (d.cssParts ?? []).length,
 });
 ({
-  inputLabel: ['label', 'slot:label', 'part:label'].filter(k => rows['mud-input'][k]).length,
+  inputLabel: ['label', 'slot:label', 'part:label'].filter(k => rows['mud-text-input'][k]).length,
   methods: tags.reduce((n, t) => n + Object.keys(rows[t]).filter(k => k.startsWith('method:')).length, 0),
   defaultSlots: tags.filter(t => rows[t]['slot:default']).length,
   emptyTags: tags.filter(t => Object.keys(rows[t]).length === 0),
