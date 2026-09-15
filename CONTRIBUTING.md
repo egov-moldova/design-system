@@ -140,7 +140,7 @@ web-components/
 ├── demo/
 │   ├── index.html            # mud-button showcase
 │   ├── main.ts               # CSS imports + defineCustomElements()
-│   ├── demo.css              # @font-face for Onest + body font-family
+│   ├── demo.css              # demo layout + body font-family (Onest itself comes from styles.css)
 │   └── vite.config.ts        # port 5174, allows fs access to the workspace parent
 ├── package.json              # @egov-moldova/mud-web-components
 ├── tsconfig.json             # ES2020, declaration: true

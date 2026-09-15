@@ -15,7 +15,7 @@ You are working in a project that consumes the **MUD Design System** (`@egov-mol
 // once, near app startup (e.g. main.tsx before ReactDOM.createRoot)
 import { defineCustomElements } from '@egov-moldova/mud-web-components';
 import '@egov-moldova/mud/tokens/core.tokens.css';
-import '@egov-moldova/mud/styles.css';
+import '@egov-moldova/mud/styles.css'; // also loads Onest (weights 100–900) — never add your own @font-face
 
 defineCustomElements();
 // Optional: defineCustomElements({ assetPath: '/your-prod-asset-path/' })
