@@ -158,6 +158,20 @@
   --_border-color: var(--tag-outlined-border-danger);
 }
 
+/* ---------- Disabled (replaces every type × semantic color) ---------- */
+
+/* Declared after the type × semantic rules; each selector matches their
+   two-attribute specificity, so source order decides. */
+:host([disabled]:not([type='outlined'])) {
+  --_bg: var(--tag-disabled-background);
+  --_label-color: var(--tag-disabled-label);
+}
+
+:host([disabled][type='outlined']) {
+  --_label-color: var(--tag-disabled-outlined-label);
+  --_border-color: var(--tag-disabled-outlined-border);
+}
+
 /* ---------- Asymmetric padding when icons present ---------- */
 
 /* Leading icon → pull leading edge tighter so glyph hugs the surface. */

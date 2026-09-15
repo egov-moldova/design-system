@@ -70,6 +70,14 @@ consumer moving to `bundler` should expect the same two error classes:
 That debt predates this release and is unchanged by it. It is invisible in CI
 because the workspace's build script is `tsc || true`.
 
+### Added
+
+- `mud-tag` and `mud-badge` take a `disabled` prop that renders a disabled
+  design, replacing every `type` × `semantic` / `variant` color. A disabled
+  container does not dim slotted content, so set `disabled` on the tag or badge
+  itself — for example inside a disabled `mud-accordion-item`. The prop is
+  visual only and adds no ARIA; the container announces the state.
+
 ### Internal
 
 - The publish gate now proves that every documented specifier resolves to a file

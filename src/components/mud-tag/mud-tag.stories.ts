@@ -12,6 +12,7 @@ type TagArgs = {
   iconStart?: string;
   iconEnd?: string;
   ariaLabel?: string;
+  disabled?: boolean;
 };
 
 // ---------------------------------------------------------------------------
@@ -61,6 +62,7 @@ const renderTag = (args: TagArgs) => {
     `type="${args.type}"`,
     `semantic="${args.semantic}"`,
     args.ariaLabel ? `aria-label="${args.ariaLabel}"` : '',
+    args.disabled ? 'disabled' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -137,6 +139,11 @@ when the tag conveys a live state and the element will adopt
       control: 'text',
       description: 'Sets role="status" + aria-label when set.',
     },
+    disabled: {
+      control: 'boolean',
+      description: 'Renders the disabled design, replacing the type × semantic colors.',
+      table: { defaultValue: { summary: 'false' } },
+    },
   },
   args: {
     variant: 'status',
@@ -146,6 +153,7 @@ when the tag conveys a live state and the element will adopt
     label: 'Activ',
     iconStart: '',
     iconEnd: '',
+    disabled: false,
   },
 };
 
@@ -242,6 +250,44 @@ export const AllTypes: Story = {
     docs: {
       source: {
         code: TAG_TYPES.map(t => `<mud-tag type="${t}" semantic="brand">Activ</mud-tag>`).join('\n'),
+      },
+    },
+  },
+};
+
+// ---------------------------------------------------------------------------
+// Disabled — one design per surface, whatever the semantic
+// ---------------------------------------------------------------------------
+
+export const Disabled: Story = {
+  render: () => /*html*/ `
+    <div style="${sectionStyle}">
+      <p style="${hintStyle}">
+        Set <code>disabled</code> on a tag inside a disabled container. The tag stays decorative — the container
+        announces the state.
+      </p>
+      ${TAG_TYPES.map(
+        t => /*html*/ `
+          <div>
+            <p style="${captionStyle}">${t}</p>
+            <div style="${rowStyle}">
+              <mud-tag type="${t}" semantic="brand">Activ</mud-tag>
+              <mud-tag type="${t}" semantic="brand" disabled>Activ</mud-tag>
+              <mud-tag type="${t}" semantic="danger" disabled>Refuzat</mud-tag>
+              <mud-tag type="${t}" semantic="success" disabled>
+                <mud-icon slot="icon-start" name="checkmark-small"></mud-icon>Aprobat
+              </mud-tag>
+            </div>
+          </div>
+        `,
+      ).join('')}
+    </div>
+  `,
+  parameters: {
+    controls: { disable: true },
+    docs: {
+      source: {
+        code: TAG_TYPES.map(t => `<mud-tag type="${t}" semantic="brand" disabled>Activ</mud-tag>`).join('\n'),
       },
     },
   },

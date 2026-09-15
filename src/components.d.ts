@@ -279,6 +279,11 @@ export namespace Components {
          */
         "count"?: number;
         /**
+          * Renders the disabled design, replacing the `variant` colors. Visual only — `aria-disabled` is not supported on `role="status"`, so the disabled state is announced by the container that owns the badge.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
           * Upper bound for the visible count. Counts above this render as `"{max}+"`.
           * @default 99
          */
@@ -3112,6 +3117,11 @@ export namespace Components {
          */
         "ariaLabel"?: string;
         /**
+          * Renders the disabled design, replacing the `type` × `semantic` colors. Visual only — the tag is not interactive, so the disabled state is announced by the container that owns it, not by the tag.
+          * @default false
+         */
+        "disabled": boolean;
+        /**
           * Fallback label text rendered when the default slot is empty. Plain text only.
          */
         "label"?: string;
@@ -5459,6 +5469,11 @@ declare namespace LocalJSX {
           * Numeric count to display when `type='numbered'`. Ignored for `dot`. Values greater than `max` render as `"{max}+"`.
          */
         "count"?: number;
+        /**
+          * Renders the disabled design, replacing the `variant` colors. Visual only — `aria-disabled` is not supported on `role="status"`, so the disabled state is announced by the container that owns the badge.
+          * @default false
+         */
+        "disabled"?: boolean;
         /**
           * Upper bound for the visible count. Counts above this render as `"{max}+"`.
           * @default 99
@@ -8713,6 +8728,11 @@ declare namespace LocalJSX {
          */
         "ariaLabel"?: string;
         /**
+          * Renders the disabled design, replacing the `type` × `semantic` colors. Visual only — the tag is not interactive, so the disabled state is announced by the container that owns it, not by the tag.
+          * @default false
+         */
+        "disabled"?: boolean;
+        /**
           * Fallback label text rendered when the default slot is empty. Plain text only.
          */
         "label"?: string;
@@ -9159,6 +9179,7 @@ declare namespace LocalJSX {
         "type": BadgeType;
         "variant": BadgeVariant;
         "size": BadgeSize;
+        "disabled": boolean;
         "count": number;
         "max": number;
         "ariaLabel": string;
@@ -9701,6 +9722,7 @@ declare namespace LocalJSX {
         "size": TagSize;
         "type": TagType;
         "semantic": TagSemantic;
+        "disabled": boolean;
         "label": string;
         "ariaLabel": string;
     }
