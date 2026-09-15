@@ -221,7 +221,16 @@ export default {
           }
         }
 
-        server.httpServer?.on('close', () => watchers.forEach(w => w.close()));
+        // Close with the Vite server, not on `httpServer` 'close': the Vitest
+        // browser lane (`yarn test.storybook`) runs this plugin too, and that event
+        // does not fire before its teardown timeout, so the open recursive watchers
+        // held the process for another 10s ("close timed out after 10000ms").
+        const closeServer = server.close.bind(server);
+        server.close = async () => {
+          watchers.forEach(w => w.close());
+          Object.values(timers).forEach(clearTimeout);
+          return closeServer();
+        };
       },
     });
 
