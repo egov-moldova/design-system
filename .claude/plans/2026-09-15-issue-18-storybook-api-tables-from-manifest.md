@@ -140,7 +140,7 @@ Zero-tolerance (any miss = FAIL):
 | Z1 | Manifest contract passes after `yarn build`, and FAILED on `fe6d651`'s wca manifest | `node --test scripts/__tests__/storybook-manifest.spec.mjs` |
 | Z2 | Extractor unit tests pass | `node --test scripts/__tests__/storybook-manifest-arg-types.spec.mjs` |
 | Z3 | Project checks exit 0 | `yarn lint`, `yarn typecheck`, `yarn test`, `yarn test:scripts`, `yarn sp.build` |
-| Z4 | `yarn build` changes no readme, and `src/components.d.ts` only by the removed accordion `@csspart`/`@fires` JSDoc lines | `git status --short -- 'src/components/**/readme.md'` → empty; `git diff -U0 src/components.d.ts \| grep '^+[^+]'` → empty (no added line), and `git diff -U0 src/components.d.ts \| grep '^-[^-]' \| grep -v '@csspart \|@fires \|item currently open (single entry in \|^- *\*$'` → empty (every removed line is a retired tag, the one continuation line of `@fires mudChange`, or a bare ` *` spacer) |
+| Z4 | `yarn build` changes no readme except `src/components/mud-accordion/readme.md`'s `mudChange` description (which gains the `detail.openIds` sentence moved from the retired `@fires` tag), and `src/components.d.ts` only by the removed accordion `@csspart`/`@fires` JSDoc lines | `git status --short -- 'src/components/**/readme.md'` → only `mud-accordion/readme.md`, whose diff is that one row; `git diff -U0 src/components.d.ts \| grep '^[-+][^-+]' \| grep -v '@csspart \|@fires \|item currently open (single entry in \|Emitted whenever the open set changes\|^- *\*$'` → empty (every removed line is a retired tag, the one continuation line of `@fires mudChange`, or a bare ` *` spacer) |
 | Z8 | No `@csspart` / `@fires` left in component source | `git grep -n "@csspart\|@fires" -- 'src/**/*.tsx'` → empty |
 | Z5 | No trace of wca in the tree | `git grep -n "web-component-analyzer\|wca\.custom-elements\|wca analyze" -- ':!.claude/plans/' ':!CHANGELOG.md'` → empty, and `git grep -nw "wca" -- src .storybook` → empty |
 | Z6 | For every story, `initialArgs` identical before/after, and the set of argType keys carrying a non-null `control` identical before/after (the Controls panel gains no control) | Task 1 Step 1 / Task 3 Step 6 capture (`args`, `argTypes[*].control`), compared per story id → 0 differing stories |
@@ -402,7 +402,7 @@ Docs: `AGENTS.md:139` line becomes a note that `yarn build` writes the manifest;
 
 Remove the duplicate tags wca needed, which nothing reads any more:
 - `src/components/mud-accordion-item/mud-accordion-item.tsx` — delete the explanatory `//` block (lines 7-15) and the `@csspart` / `@fires` lines (36-40) with the blank line before them; `@part` (33-34) stays.
-- `src/components/mud-accordion/mud-accordion.tsx` — delete the `@fires mudChange` tag (lines 28-29) and the blank ` *` line above it. The event's description lives on its `@Event()` JSDoc, which Stencil reads.
+- `src/components/mud-accordion/mud-accordion.tsx` — delete the `@fires mudChange` tag (lines 28-29) and the blank ` *` line above it. Move its `detail.openIds lists every item currently open (single entry in `mode="single"`)` sentence onto the `mudChange` `@Event()` JSDoc (line 89), which Stencil reads, so the detail is not lost.
 - `@element` stays in all 56 components: it is the repo-wide docblock convention, not a duplicate the issue names.
 
 - [ ] **Step 6: Build and run the contract**
