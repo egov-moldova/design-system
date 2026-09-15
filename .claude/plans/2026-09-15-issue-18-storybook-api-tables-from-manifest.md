@@ -143,7 +143,7 @@ Zero-tolerance (any miss = FAIL):
 | Z4 | `yarn build` changes no readme except `src/components/mud-accordion/readme.md`'s `mudChange` description (which gains the `detail.openIds` sentence moved from the retired `@fires` tag), and `src/components.d.ts` only by the removed accordion `@csspart`/`@fires` JSDoc lines | `git status --short -- 'src/components/**/readme.md'` → only `mud-accordion/readme.md`, whose diff is that one row; `git diff -U0 src/components.d.ts \| grep '^[-+][^-+]' \| grep -v '@csspart \|@fires \|item currently open (single entry in \|Emitted whenever the open set changes\|^- *\*$'` → empty (every removed line is a retired tag, the one continuation line of `@fires mudChange`, or a bare ` *` spacer) |
 | Z8 | No `@csspart` / `@fires` left in component source | `git grep -n "@csspart\|@fires" -- 'src/**/*.tsx'` → empty |
 | Z5 | No trace of wca in the tree | `git grep -n "web-component-analyzer\|wca\.custom-elements\|wca analyze" -- ':!.claude/plans/' ':!CHANGELOG.md'` → empty, and `git grep -nw "wca" -- src .storybook` → empty |
-| Z6 | For every story, `initialArgs` identical before/after, and the set of argType keys carrying a non-null `control` identical before/after (the Controls panel gains no control) | Task 1 Step 1 / Task 3 Step 6 capture (`args`, `argTypes[*].control`), compared per story id → 0 differing stories |
+| Z6 | For every story, `initialArgs` identical before/after, and the set of argType keys carrying a non-null `control` identical before/after (the Controls panel gains no control). Measured exception, accepted: the two Accordion story metas lose the 10 controls Storybook had inferred from wca type strings (`size`, `iconPosition`, `items` on `molecules-accordion--default`; `appearance`, `breakpoint`, `itemId` and its event, slot and part rows on `molecules-accordion-item--default`) — all `object`/`text` editors no render function reads, removed by design because manifest rows carry no `type` (Context fact 7) | Task 1 Step 1 / Task 3 Step 6 capture (`args`, `argTypes[*].control`), compared per story id → 0 differing stories |
 
 Numeric (over all 56 tags, from the built Storybook in Task 3):
 
@@ -669,6 +669,16 @@ const MANIFEST_DESCRIPTIONS = new Set(['mud-accordion', 'mud-accordion-item']);
 - `extractComponentDescription`: `MANIFEST_ARG_TYPES` → `MANIFEST_DESCRIPTIONS`, comment unchanged in meaning.
 
 `setCustomElements(customElements)` stays: the description branch still delegates to Storybook's reader.
+
+Restore attribute labels after the merge. Storybook normalizes a story's own `argTypes` with
+`name: <key>` (`node_modules/storybook/dist/_browser-chunks/chunk-SZQXB3JV.js:537-542`) and merges
+them over the extracted rows, so a declared prop would read `ariaLabel` beside an undeclared
+`aria-labelledby`. Add `labelPropertiesWithAttributes(manifest, tagName, argTypes)` to
+`.storybook/manifest-arg-types.mjs` (with unit tests: relabels a property that has an attribute,
+leaves attribute-less properties, other categories and story-only args untouched, returns the input for an
+unknown tag or no manifest) and export from `preview.js`
+`argTypesEnhancers = [context => labelPropertiesWithAttributes(customElements, context.component, context.argTypes)]`
+- project enhancers run after the framework's `enhanceArgTypes` merge.
 
 Retire the `host` exclusions, which existed only because wca listed `@Element() host` as a
 property. Stencil's manifest lists no `host` member on any tag (planning probe over the

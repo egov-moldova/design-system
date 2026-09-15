@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { extractArgTypes } from '../../.storybook/manifest-arg-types.mjs';
+import { extractArgTypes, labelPropertiesWithAttributes } from '../../.storybook/manifest-arg-types.mjs';
 
 const MANIFEST = {
   schemaVersion: '2.1.0',
@@ -109,5 +109,36 @@ describe('extractArgTypes', () => {
     assert.deepEqual(extractArgTypes(MANIFEST, 'mud-missing'), {});
     assert.deepEqual(extractArgTypes({ version: 'experimental', tags: [{ name: 'mud-fixture' }] }, 'mud-fixture'), {});
     assert.deepEqual(extractArgTypes(undefined, 'mud-fixture'), {});
+  });
+});
+
+describe('labelPropertiesWithAttributes', () => {
+  // Storybook normalizes a story's own argTypes with `name: <key>` and merges them over
+  // the extracted rows, so a prop the story declares arrives labelled `fullWidth`.
+  const merged = {
+    'fullWidth': { name: 'fullWidth', control: { type: 'boolean' }, table: { category: 'properties' } },
+    'items': { name: 'items', table: { category: 'properties' } },
+    'slot:label': { name: 'label', table: { category: 'slots' } },
+    'demoOnly': { name: 'demoOnly', control: { type: 'text' } },
+  };
+
+  it('relabels a property with its attribute name and keeps everything else on the row', () => {
+    assert.deepEqual(labelPropertiesWithAttributes(MANIFEST, 'mud-fixture', merged).fullWidth, {
+      name: 'full-width',
+      control: { type: 'boolean' },
+      table: { category: 'properties' },
+    });
+  });
+
+  it('leaves attribute-less properties, other categories and story-only args untouched', () => {
+    const rows = labelPropertiesWithAttributes(MANIFEST, 'mud-fixture', merged);
+    assert.equal(rows.items, merged.items);
+    assert.equal(rows['slot:label'], merged['slot:label']);
+    assert.equal(rows.demoOnly, merged.demoOnly);
+  });
+
+  it('returns the argTypes unchanged for an unknown tag or no manifest', () => {
+    assert.equal(labelPropertiesWithAttributes(MANIFEST, 'mud-missing', merged), merged);
+    assert.equal(labelPropertiesWithAttributes(undefined, 'mud-fixture', merged), merged);
   });
 });
