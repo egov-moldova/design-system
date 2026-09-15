@@ -15,7 +15,8 @@ event and no warning.
 **Your `disabled` now survives.** The item records the elements it writes to, and on
 re-enable removes the attribute only from those. A control that already carried
 `disabled` — as an attribute or as a property — never enters that record and is never
-touched. The record is also released when the item is removed from the document, so a
+touched. A `mud-*` control carrying `disabled="false"` reads that as not disabled, so
+the item does claim it. The record is also released when the item is removed from the document, so a
 control you move elsewhere does not leave carrying an attribute you did not write.
 
 **Two narrowings.** The attribute now reaches only elements assigned to a slot, never
@@ -39,8 +40,8 @@ state only — your trailing content's colour is untouched in every other state.
 
 **What is not covered, stated plainly.** A control NESTED inside a slotted wrapper
 gets no attribute and no `tabindex`; it is blocked from the mouse only if it does not
-set its own `pointer-events`, and it stays keyboard-reachable. And this state is a UX affordance, not an
-authorization boundary: an action that must not be reachable while the item is
+set its own `pointer-events`, and it stays keyboard-reachable. And this state is a UX
+affordance, not an authorization boundary: an action that must not be reachable while the item is
 disabled needs its own guard, and server-side enforcement if it is security-sensitive.
 
 The `pointer-events` guard is deliberately not overridable — measured, a declaration
@@ -116,6 +117,20 @@ consumer moving to `bundler` should expect the same two error classes:
 
 That debt predates this release and is unchanged by it. It is invisible in CI
 because the workspace's build script is `tsc || true`.
+
+### Changed — `mud-icon` names (breaking)
+
+Three icon names were published misspelled and are now corrected. The old names
+are removed with no alias: `<mud-icon>` logs `Icon not found` and renders nothing.
+
+| Before | After |
+| --- | --- |
+| `calender-add` | `calendar-add` |
+| `calender-remove` | `calendar-remove` |
+| `calender-remove-filled` | `calendar-remove-filled` |
+
+The static assets move with them: `assets/<size>/calender-*.svg` is now
+`assets/<size>/calendar-*.svg`.
 
 ### Added
 

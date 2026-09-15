@@ -423,3 +423,17 @@ describe('resolveIconAsset (provider URL builder)', () => {
     expect(r?.resolvedSize).not.toBe(missing);
   });
 });
+
+describe('icons.manifest.json (public icon names)', () => {
+  const realManifest = manifest as IconManifest;
+
+  it('exposes the calendar family under the correct spelling', () => {
+    expect(realManifest['calendar-add']?.sizes).toEqual([20, 24]);
+    expect(realManifest['calendar-remove']?.sizes).toEqual([20, 24]);
+    expect(realManifest['calendar-remove-filled']?.sizes).toEqual([16, 20]);
+  });
+
+  it('no longer exposes the misspelled "calender" names', () => {
+    expect(ICON_NAMES.filter(n => n.includes('calender'))).toEqual([]);
+  });
+});
