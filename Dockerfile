@@ -27,12 +27,12 @@ ENV STORYBOOK_DISABLE_TELEMETRY=1
 ENV NODE_ENV=production
 
 # Build the application with explicit timeout and error handling
-# yarn build runs tokens.build.prod + wca.custom-elements in parallel (Stencil + dist tokens)
+# yarn build runs tokens.build.prod, then Stencil (dist + .storybook/custom-elements.json)
 # yarn tokens.build runs afterwards to write tokens/generated/*.css for Storybook preview-head.html
 # PERF: BuildKit cache mount for Stencil cache — only changed components recompile
 RUN --mount=type=cache,target=/app/.stencil \
     set -e && \
-    echo "[1/2] Building Stencil components + tokens + custom-elements (parallel)..." && \
+    echo "[1/2] Building Stencil components + tokens + custom-elements manifest..." && \
     timeout 600 yarn build || (echo "Build timed out or failed" && exit 1) && \
     echo "[2/2] Building token CSS for Storybook preview..." && \
     yarn tokens.build && \

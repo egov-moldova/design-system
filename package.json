@@ -96,7 +96,6 @@
     "tokens.lint.all": "node scripts/tokens-lint.mjs --root tokens/core --root tokens/core.dark",
     "tokens.validate": "node scripts/tokens-validate.mjs --no-color",
     "tokens.watch": "wireit",
-    "wca.custom-elements": "wireit",
     "svg:remove-size": "svgo -f assets/icons --config svgo.config.icons.js --recursive",
     "svg:remove-fill": "svgo -f assets/icons --config svgo.config.icons.js --recursive",
     "svg:icons": "yarn svg:remove-size && yarn svg:remove-fill && yarn format && node scripts/process-svg.js -i assets/icons -s src/components/mud-icon/assets/local-icons.json",
@@ -202,25 +201,10 @@
         "scripts/tokens-watch.mjs"
       ]
     },
-    "wca.custom-elements": {
-      "command": "wca analyze src/components --format json --outFile .storybook/custom-elements.json && node scripts/ensure-custom-elements-manifest.mjs",
-      "files": [
-        "src/components/**/*.ts",
-        "src/components/**/*.tsx",
-        "scripts/ensure-custom-elements-manifest.mjs"
-      ],
-      "output": [
-        ".storybook/custom-elements.json"
-      ],
-      "packageLocks": [
-        "yarn.lock"
-      ]
-    },
     "build": {
       "command": "cross-env NODE_OPTIONS=--max-old-space-size=4096 stencil build --docs && node scripts/copy-component-assets.mjs",
       "dependencies": [
-        "tokens.build.prod",
-        "wca.custom-elements"
+        "tokens.build.prod"
       ],
       "clean": false,
       "files": [
@@ -235,7 +219,8 @@
       ],
       "output": [
         "dist/**",
-        "loader/**"
+        "loader/**",
+        ".storybook/custom-elements.json"
       ],
       "packageLocks": [
         "yarn.lock"
@@ -284,8 +269,7 @@
     "dx:prepare": {
       "dependencies": [
         "tokens.build",
-        "tokens.build.prod",
-        "wca.custom-elements"
+        "tokens.build.prod"
       ]
     },
     "dev": {
@@ -297,7 +281,7 @@
       ]
     },
     "test.storybook.watch": {
-      "command": "wait-on --interval 200 --timeout 60000 dist/mud/mud.esm.js dist/mud/mud.css tokens/generated/core.tokens.css && vitest --watch --project storybook",
+      "command": "wait-on --interval 200 --timeout 60000 dist/mud/mud.esm.js dist/mud/mud.css tokens/generated/core.tokens.css .storybook/custom-elements.json && vitest --watch --project storybook",
       "dependencies": [
         "dx:prepare"
       ],
@@ -311,13 +295,14 @@
       "service": true
     },
     "dx:storybook": {
-      "command": "wait-on --interval 200 dist/mud/mud.esm.js dist/mud/mud.css tokens/generated/core.tokens.css && storybook dev -p 6007 --no-open",
+      "command": "wait-on --interval 200 dist/mud/mud.esm.js dist/mud/mud.css tokens/generated/core.tokens.css .storybook/custom-elements.json && storybook dev -p 6007 --no-open",
       "dependencies": [
         "dx:prepare"
       ],
       "service": true,
       "files": [
-        ".storybook/**/*"
+        ".storybook/**/*",
+        "!.storybook/custom-elements.json"
       ]
     },
     "dx:stencil:once": {
@@ -454,8 +439,7 @@
     },
     "sp.build": {
       "dependencies": [
-        "build",
-        "wca.custom-elements"
+        "build"
       ],
       "command": "cross-env CI=1 STORYBOOK_DISABLE_TELEMETRY=1 NODE_ENV=production storybook build --disable-telemetry -o storybook-static && node scripts/cleanup-storybook-fonts.mjs",
       "files": [
@@ -538,7 +522,6 @@
     "vite": "^8.3.0",
     "vitest": "^4.1.6",
     "wait-on": "^9.0.3",
-    "web-component-analyzer": "^2.0.0",
     "wireit": "^0.14.12"
   },
   "engines": {

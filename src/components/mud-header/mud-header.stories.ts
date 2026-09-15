@@ -47,6 +47,12 @@ const renderHeader = (args: HeaderArgs) => /*html*/ `
 const meta: Meta<HeaderArgs> = {
   title: 'Organisms/Header',
   component: 'mud-header',
+  subcomponents: {
+    'mud-header-nav-item': 'mud-header-nav-item',
+    'mud-header-mega-menu': 'mud-header-mega-menu',
+    'mud-header-services-menu': 'mud-header-services-menu',
+    'mud-header-mobile': 'mud-header-mobile',
+  },
   parameters: {
     layout: 'fullscreen',
     docs: {

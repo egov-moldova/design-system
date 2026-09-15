@@ -320,6 +320,7 @@ const renderSlotMode = () => /*html*/ `
 const meta: Meta<BreadcrumbArgs> = {
   title: 'Molecules/Breadcrumb',
   component: 'mud-breadcrumb',
+  subcomponents: { 'mud-breadcrumb-item': 'mud-breadcrumb-item' },
   argTypes: {
     items: {
       control: 'object',

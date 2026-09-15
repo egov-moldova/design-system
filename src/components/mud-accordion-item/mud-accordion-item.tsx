@@ -32,15 +32,6 @@ const restoreTabindex = (el: Element, previous: string | null) => {
   else el.setAttribute('tabindex', previous);
 };
 
-// `@csspart` duplicates `@part` and `@fires` duplicates the `@Event()` decorators in
-// the docblock below, because two generators read it and neither reads the other's
-// tag: Stencil's readme takes `@part` and the decorators, web-component-analyzer —
-// which writes `.storybook/custom-elements.json`, and so the Storybook API table —
-// takes only `@csspart` and `@fires`. The note sits out here rather than inside the
-// block: Stencil concatenates untagged prose into the PRECEDING tag's description,
-// which is how it once landed inside the `panel` shadow-part row.
-// Baseline: `node -e "const t=require('./.storybook/custom-elements.json').tags.find(t=>t.name==='mud-accordion-item');console.log(t.events.map(e=>e.name),t.cssParts.map(p=>p.name))"`
-// -> both events and both parts; dropping either tag empties its table.
 /**
  * Accordion item — a single collapsible row inside `mud-accordion`.
  *
@@ -100,12 +91,6 @@ const restoreTabindex = (el: Element, previous: string | null) => {
  *
  * @part header - The button that toggles open/closed.
  * @part panel - The region revealed when open.
- *
- * @csspart header - The button that toggles open/closed.
- * @csspart panel - The region revealed when open.
- *
- * @fires mudToggle - Emitted after the item has already toggled itself. The parent `mud-accordion` reacts by collapsing the other items in `mode="single"`; it cannot refuse or reverse this item's own change.
- * @fires mudAccordionItemKey - Emitted on Arrow/Home/End keypress on the header. Consumed by the parent `mud-accordion` to implement WAI-ARIA Accordion Pattern traversal. Internal contract — consumers typically don't subscribe directly.
  */
 @Component({
   tag: 'mud-accordion-item',
