@@ -2,6 +2,31 @@
 
 ## Unreleased
 
+### Changed — icon names are typed as `IconName`, and `mud-icon` requires `name`
+
+Every prop and data field that names an icon was typed `string`, so a misspelled or
+removed name compiled and rendered nothing. They are now typed `IconName`, the union
+of the names `mud-icon` ships: `mud-icon`'s `name`; `iconName` on `mud-toast`,
+`mud-banner`, `mud-info-box`, `mud-inline-message`, `mud-tab`, `mud-avatar` and
+`mud-search-input`; `icon` on `mud-menu-item`; `icon` and `iconActive` on
+`mud-sidebar-item`; and `StepperStep.iconName`, `TabDescriptor.iconName`,
+`SegmentedControlSegment.iconName` and `BreadcrumbItem.iconStart`.
+
+**If you pass a plain `string`, TypeScript now rejects it.** Type the value as
+`IconName`, or narrow a value that arrives untyped (CMS content, JSON) with
+`isIconName(value)`. `ICON_NAMES`, `IconName` and `isIconName` are exported from the
+package root. Nothing changes at runtime: HTML attributes still accept any string,
+and an unknown name still logs `[mud-icon] Icon not found` and renders nothing.
+
+**`mud-icon` no longer defaults `name` to `'check'`.** No `check` icon exists, so
+that default only ever rendered an empty icon; `name` is now required.
+
+### Fixed — `mud-icon` no longer throws on names like `constructor`
+
+A `name` matching an `Object.prototype` member (`constructor`, `toString`,
+`__proto__`…) passed the known-icon check and threw a `TypeError` while loading.
+Such names now behave like any other unknown name.
+
 ### Changed — `mud-accordion-item` no longer writes `disabled` past the slot
 
 While an item is disabled it sets `disabled` on the controls you place directly in

@@ -76,7 +76,7 @@ Copy `dist/mud/` to your site's static folder (e.g. `public/mud/`) and reference
   </head>
   <body>
     <mud-button variant="primary">Save</mud-button>
-    <mud-icon name="check" size="md"></mud-icon>
+    <mud-icon name="checkmark-small" size="16"></mud-icon>
 
     <mud-modal id="confirm" heading="Delete record?">
       <p slot="body">This action cannot be undone.</p>

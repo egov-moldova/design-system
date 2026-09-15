@@ -1,7 +1,9 @@
+import { execFileSync } from 'node:child_process';
 import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 
 import { describe, expect, it } from '@stencil/vitest';
+import { expectTypeOf } from 'vitest';
 
 import type { Components } from '../../../components';
 import type { BreadcrumbItem } from '../../mud-breadcrumb/mud-breadcrumb.types';
@@ -39,8 +41,12 @@ describe('icon names', () => {
   it('references only manifest names from story markup', () => {
     const unknown = listStoryFiles(COMPONENTS_ROOT).flatMap(file => {
       const source = readFileSync(file, 'utf8');
-      return [...source.matchAll(/<mud-icon\b[^>]*?\sname="([^"$]+)"/g)]
-        .map(match => match[1])
+      return [
+        ...source.matchAll(
+          /<mud-[a-z-]+\b[^>]*?\s(?:icon-name|icon|icon-active|icon-start)="([^"$]+)"|<mud-icon\b[^>]*?\sname="([^"$]+)"/g,
+        ),
+      ]
+        .map(match => match[1] ?? match[2])
         .filter(name => !isIconName(name) && !INTENTIONALLY_UNKNOWN.has(name))
         .map(name => `${path.relative(COMPONENTS_ROOT, file)}: ${name}`);
     });
@@ -48,44 +54,30 @@ describe('icon names', () => {
   });
 
   it('types every icon-name surface as IconName', () => {
-    // Compile-time contract, enforced by `yarn typecheck`: each line below must
-    // stay a type error. An unused `@ts-expect-error` fails the typecheck, so a
-    // surface regressing to `string` breaks the build rather than passing silently.
-    const unknown = 'not-an-icon';
-    const surfaces = [
-      // @ts-expect-error mud-icon name
-      { name: unknown } satisfies Partial<Components.MudIcon>,
-      // @ts-expect-error mud-toast iconName
-      { iconName: unknown } satisfies Partial<Components.MudToast>,
-      // @ts-expect-error mud-banner iconName
-      { iconName: unknown } satisfies Partial<Components.MudBanner>,
-      // @ts-expect-error mud-info-box iconName
-      { iconName: unknown } satisfies Partial<Components.MudInfoBox>,
-      // @ts-expect-error mud-inline-message iconName
-      { iconName: unknown } satisfies Partial<Components.MudInlineMessage>,
-      // @ts-expect-error mud-tab iconName
-      { iconName: unknown } satisfies Partial<Components.MudTab>,
-      // @ts-expect-error mud-avatar iconName
-      { iconName: unknown } satisfies Partial<Components.MudAvatar>,
-      // @ts-expect-error mud-search-input iconName
-      { iconName: unknown } satisfies Partial<Components.MudSearchInput>,
-      // @ts-expect-error mud-menu-item icon
-      { icon: unknown } satisfies Partial<Components.MudMenuItem>,
-      // @ts-expect-error mud-sidebar-item icon
-      { icon: unknown } satisfies Partial<Components.MudSidebarItem>,
-      // @ts-expect-error mud-sidebar-item iconActive
-      { iconActive: unknown } satisfies Partial<Components.MudSidebarItem>,
-      // @ts-expect-error StepperStep iconName
-      { iconName: unknown } satisfies Partial<StepperStep>,
-      // @ts-expect-error TabDescriptor iconName
-      { iconName: unknown } satisfies Partial<TabDescriptor>,
-      // @ts-expect-error SegmentedControlSegment iconName
-      { iconName: unknown } satisfies Partial<SegmentedControlSegment>,
-      // @ts-expect-error BreadcrumbItem iconStart
-      { iconStart: unknown } satisfies Partial<BreadcrumbItem>,
-    ];
-    const known: IconName = 'circle-info-filled';
-    expect(surfaces).toHaveLength(15);
-    expect(known).toBe('circle-info-filled');
+    // Compile-time contract, checked by `yarn typecheck` (a no-op under vitest). Each
+    // assertion fails when a surface widens back to `string` AND when it is renamed or
+    // removed, which a `@ts-expect-error` line would silently absorb.
+    type Optional = IconName | undefined;
+    expectTypeOf<Components.MudIcon['name']>().toEqualTypeOf<IconName>();
+    expectTypeOf<Components.MudToast['iconName']>().toEqualTypeOf<Optional>();
+    expectTypeOf<Components.MudBanner['iconName']>().toEqualTypeOf<Optional>();
+    expectTypeOf<Components.MudInfoBox['iconName']>().toEqualTypeOf<Optional>();
+    expectTypeOf<Components.MudInlineMessage['iconName']>().toEqualTypeOf<Optional>();
+    expectTypeOf<Components.MudTab['iconName']>().toEqualTypeOf<Optional>();
+    expectTypeOf<Components.MudAvatar['iconName']>().toEqualTypeOf<IconName>();
+    expectTypeOf<Components.MudSearchInput['iconName']>().toEqualTypeOf<IconName>();
+    expectTypeOf<Components.MudMenuItem['icon']>().toEqualTypeOf<Optional>();
+    expectTypeOf<Components.MudSidebarItem['icon']>().toEqualTypeOf<Optional>();
+    expectTypeOf<Components.MudSidebarItem['iconActive']>().toEqualTypeOf<Optional>();
+    expectTypeOf<StepperStep['iconName']>().toEqualTypeOf<Optional>();
+    expectTypeOf<TabDescriptor['iconName']>().toEqualTypeOf<Optional>();
+    expectTypeOf<SegmentedControlSegment['iconName']>().toEqualTypeOf<Optional>();
+    expectTypeOf<BreadcrumbItem['iconStart']>().toEqualTypeOf<Optional>();
+    expectTypeOf<'not-an-icon'>().not.toMatchTypeOf<IconName>();
+  });
+
+  it('is what build-registry.mjs would emit from the SVG assets', () => {
+    const script = path.resolve(import.meta.dirname, '../../../../scripts/icons/build-registry.mjs');
+    expect(() => execFileSync(process.execPath, [script, '--check'], { stdio: 'pipe' })).not.toThrow();
   });
 });
