@@ -55,11 +55,12 @@ pattern.
 
 ## Slots
 
-| Slot           | Description                                                                                             |
-| -------------- | ------------------------------------------------------------------------------------------------------- |
-| `"helper"`     | Rich helper / hint content, replaces the `helper-text` prop. Hidden when invalid + error-text is shown. |
-| `"icon-start"` | Leading `mud-icon` rendered inside the control row.                                                     |
-| `"label"`      | Rich label content, replaces the `label` prop when present.                                             |
+| Slot           | Description                                                                                                                                                                                  |
+| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|                | (default) Native `<option>` children, used as the option list when the `options` prop is unset or empty. Not rendered directly: each option's `value`, text and `disabled` feed the listbox. |
+| `"helper"`     | Rich helper / hint content, replaces the `helper-text` prop. Hidden when invalid + error-text is shown.                                                                                      |
+| `"icon-start"` | Leading `mud-icon` rendered inside the control row.                                                                                                                                          |
+| `"label"`      | Rich label content, replaces the `label` prop when present.                                                                                                                                  |
 
 
 ## Shadow Parts
