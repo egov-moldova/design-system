@@ -295,10 +295,10 @@ describe('mud-sidebar-item', () => {
 
   describe('icon rendering', () => {
     it('renders mud-icon with the icon name when icon prop is set', async () => {
-      const { root } = await render(<mud-sidebar-item icon="home" label="Home" />);
+      const { root } = await render(<mud-sidebar-item icon="home-line" label="Home" />);
       const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
       expect(icon).toBeTruthy();
-      expect(icon?.getAttribute('name')).toBe('home');
+      expect(icon?.getAttribute('name')).toBe('home-line');
     });
 
     it('does not render a leading icon when icon is not set', async () => {
@@ -308,22 +308,22 @@ describe('mud-sidebar-item', () => {
 
     it('uses iconActive name when active=true and iconActive is set', async () => {
       const { root } = await render(
-        <mud-sidebar-item icon="home-outline" iconActive="home-filled" active label="Home" />,
+        <mud-sidebar-item icon="home-line" iconActive="home-line-filled" active label="Home" />,
       );
       const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
-      expect(icon?.getAttribute('name')).toBe('home-filled');
+      expect(icon?.getAttribute('name')).toBe('home-line-filled');
     });
 
     it('falls back to icon when active=true but iconActive is not set', async () => {
-      const { root } = await render(<mud-sidebar-item icon="home" active label="Home" />);
+      const { root } = await render(<mud-sidebar-item icon="home-line" active label="Home" />);
       const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
-      expect(icon?.getAttribute('name')).toBe('home');
+      expect(icon?.getAttribute('name')).toBe('home-line');
     });
 
     it('uses icon (not iconActive) when active=false even if iconActive is set', async () => {
-      const { root } = await render(<mud-sidebar-item icon="home-outline" iconActive="home-filled" label="Home" />);
+      const { root } = await render(<mud-sidebar-item icon="home-line" iconActive="home-line-filled" label="Home" />);
       const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
-      expect(icon?.getAttribute('name')).toBe('home-outline');
+      expect(icon?.getAttribute('name')).toBe('home-line');
     });
   });
 
@@ -666,7 +666,7 @@ describe('mud-sidebar-item', () => {
     });
 
     it('mud-icon in shadow DOM is aria-hidden to avoid duplicate announcements', async () => {
-      const { root } = await render(<mud-sidebar-item icon="home" label="Home" />);
+      const { root } = await render(<mud-sidebar-item icon="home-line" label="Home" />);
       const icon = root?.shadowRoot?.querySelector('mud-icon.icon');
       expect(icon?.getAttribute('aria-hidden')).toBe('true');
     });

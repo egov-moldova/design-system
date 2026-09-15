@@ -213,11 +213,11 @@ export const WithIcon: Story = {
   render: () => /*html*/ `
     <div style="display: grid; grid-template-columns: 1fr; gap: var(--spacing-24); padding: var(--spacing-24); inline-size: 480px;">
       <mud-separator>
-        <mud-icon name="info" size="sm"></mud-icon>
+        <mud-icon name="circle-info" size="16"></mud-icon>
         <span>informație</span>
       </mud-separator>
       <mud-separator variant="mild">
-        <mud-icon name="star" size="sm"></mud-icon>
+        <mud-icon name="circle-checkmark-filled" size="16"></mud-icon>
       </mud-separator>
     </div>
   `,
@@ -226,7 +226,7 @@ export const WithIcon: Story = {
     docs: {
       source: {
         code: `<mud-separator>
-  <mud-icon name="info" size="sm"></mud-icon>
+  <mud-icon name="circle-info" size="16"></mud-icon>
   <span>informație</span>
 </mud-separator>`,
       },

@@ -1,6 +1,7 @@
 import { Component, Element, Event, Host, Prop, State, h } from '@stencil/core';
 import type { EventEmitter } from '@stencil/core';
 
+import type { IconName } from '../mud-icon/mud-icon.types';
 import { BANNER_ASSERTIVE_VARIANTS, BANNER_DEFAULT_ICONS } from './mud-banner.types';
 import type { BannerEmphasis, BannerVariant } from './mud-banner.types';
 
@@ -72,7 +73,7 @@ export class MudBanner {
    * Override the default `mud-icon` name for the variant. Ignored when the
    * `icon-start` slot is populated.
    */
-  @Prop() iconName?: string;
+  @Prop() iconName?: IconName;
 
   /** Forwarded to the host as `aria-label`. */
   @Prop({ attribute: 'aria-label' }) ariaLabel?: string;
@@ -126,7 +127,7 @@ export class MudBanner {
     }
   };
 
-  private resolveIconName(): string {
+  private resolveIconName(): IconName {
     if (this.iconName && this.iconName.trim().length > 0) return this.iconName;
     return BANNER_DEFAULT_ICONS[this.variant];
   }

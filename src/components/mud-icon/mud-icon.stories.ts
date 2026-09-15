@@ -31,7 +31,6 @@ const meta: Meta<IconArgs> = {
       control: 'select',
       options: ICON_NAMES,
       description: 'Icon identifier (kebab-case). Suffix `-filled` selects the filled variant.',
-      table: { defaultValue: { summary: 'check' } },
     },
     size: {
       control: 'select',

@@ -2,7 +2,7 @@ import { Component, Element, Host, Prop, State, Watch, h } from '@stencil/core';
 
 import defaultManifest from './assets/icons.manifest.json';
 import { fetchIconSvg, resolveIconAsset } from './mud-icon.providers';
-import type { IconManifest, IconSize } from './mud-icon.types';
+import type { IconManifest, IconName, IconSize } from './mud-icon.types';
 
 /**
  * Icon — renders an inline SVG fetched on-demand from per-size asset files.
@@ -24,10 +24,9 @@ import type { IconManifest, IconSize } from './mud-icon.types';
 })
 export class MudIcon {
   /**
-   * Icon identifier (kebab-case). Suffix `-filled` selects the filled variant.
-   * @default 'check'
+   * Icon identifier (kebab-case), one of `ICON_NAMES`. Suffix `-filled` selects the filled variant.
    */
-  @Prop() name: string = 'check';
+  @Prop() name!: IconName;
 
   /**
    * Pixel size, aligned with Figma Foundations: 12 / 16 / 20 / 24.
@@ -72,7 +71,7 @@ export class MudIcon {
   };
 
   @Watch('name')
-  async onNameChange(newVal: string, oldVal: string): Promise<void> {
+  async onNameChange(newVal: IconName, oldVal: IconName): Promise<void> {
     if (newVal === oldVal) return;
     await this.loadSvg();
   }

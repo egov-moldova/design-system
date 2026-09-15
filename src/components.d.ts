@@ -7,6 +7,7 @@
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 import { AccordionAppearance, AccordionChangeDetail, AccordionIconPosition, AccordionItemDescriptor, AccordionMode, AccordionSize } from "./components/mud-accordion/mud-accordion.types";
 import { AvatarSize, AvatarType } from "./components/mud-avatar/mud-avatar.types";
+import { IconName, IconSize } from "./components/mud-icon/mud-icon.types";
 import { BadgeSize, BadgeType, BadgeVariant } from "./components/mud-badge/mud-badge.types";
 import { BannerEmphasis, BannerVariant } from "./components/mud-banner/mud-banner.types";
 import { BreadcrumbItem, BreadcrumbSelectDetail } from "./components/mud-breadcrumb/mud-breadcrumb.types";
@@ -21,7 +22,6 @@ import { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileI
 import { FileItemRemoveDetail, FileItemState } from "./components/mud-file-item/mud-file-item.types";
 import { FooterContact, FooterLocale, FooterLocaleChangeDetail, FooterPartner, FooterSection, FooterSocial, FooterVariant } from "./components/mud-footer/mud-footer.types";
 import { HeaderLanguage, HeaderLanguageChangeDetail, HeaderMegaMenuSelectDetail, HeaderNavSelectDetail, HeaderNavToggleDetail, HeaderServiceSelectDetail, MegaMenuColumn, ServicePlatform } from "./components/mud-header/mud-header.types";
-import { IconSize } from "./components/mud-icon/mud-icon.types";
 import { InfoBoxEmphasis, InfoBoxVariant } from "./components/mud-info-box/mud-info-box.types";
 import { InlineMessageSize, InlineMessageVariant } from "./components/mud-inline-message/mud-inline-message.types";
 import { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/mud-input-chip/mud-input-chip.types";
@@ -52,6 +52,7 @@ import { ToastVariant } from "./components/mud-toast/mud-toast.types";
 import { TooltipCloseEventDetail, TooltipPosition, TooltipSize, TooltipTrigger, TooltipVariant } from "./components/mud-tooltip/mud-tooltip.types";
 export { AccordionAppearance, AccordionChangeDetail, AccordionIconPosition, AccordionItemDescriptor, AccordionMode, AccordionSize } from "./components/mud-accordion/mud-accordion.types";
 export { AvatarSize, AvatarType } from "./components/mud-avatar/mud-avatar.types";
+export { IconName, IconSize } from "./components/mud-icon/mud-icon.types";
 export { BadgeSize, BadgeType, BadgeVariant } from "./components/mud-badge/mud-badge.types";
 export { BannerEmphasis, BannerVariant } from "./components/mud-banner/mud-banner.types";
 export { BreadcrumbItem, BreadcrumbSelectDetail } from "./components/mud-breadcrumb/mud-breadcrumb.types";
@@ -66,7 +67,6 @@ export { FileInputChangeDetail, FileInputDropDetail, FileInputErrorDetail, FileI
 export { FileItemRemoveDetail, FileItemState } from "./components/mud-file-item/mud-file-item.types";
 export { FooterContact, FooterLocale, FooterLocaleChangeDetail, FooterPartner, FooterSection, FooterSocial, FooterVariant } from "./components/mud-footer/mud-footer.types";
 export { HeaderLanguage, HeaderLanguageChangeDetail, HeaderMegaMenuSelectDetail, HeaderNavSelectDetail, HeaderNavToggleDetail, HeaderServiceSelectDetail, MegaMenuColumn, ServicePlatform } from "./components/mud-header/mud-header.types";
-export { IconSize } from "./components/mud-icon/mud-icon.types";
 export { InfoBoxEmphasis, InfoBoxVariant } from "./components/mud-info-box/mud-info-box.types";
 export { InlineMessageSize, InlineMessageVariant } from "./components/mud-inline-message/mud-inline-message.types";
 export { InputChipAddDetail, InputChipChangeDetail, InputChipErrorDetail, InputChipRemoveDetail, InputChipSize, InputChipVariant } from "./components/mud-input-chip/mud-input-chip.types";
@@ -266,7 +266,7 @@ export namespace Components {
           * Icon glyph for `type="icon"`. Defaults to the generic `person` symbol.
           * @default 'person'
          */
-        "iconName": string;
+        "iconName": IconName;
         /**
           * Pre-computed initials. When omitted, `name` is used to derive them. Trimmed to two characters and uppercased before rendering.
          */
@@ -374,7 +374,7 @@ export namespace Components {
         /**
           * Override the default `mud-icon` name for the variant. Ignored when the `icon-start` slot is populated.
          */
-        "iconName"?: string;
+        "iconName"?: IconName;
         /**
           * Href for the optional inline link. Defaults to `#` when omitted.
          */
@@ -1389,10 +1389,9 @@ export namespace Components {
          */
         "interactive": boolean;
         /**
-          * Icon identifier (kebab-case). Suffix `-filled` selects the filled variant.
-          * @default 'check'
+          * Icon identifier (kebab-case), one of `ICON_NAMES`. Suffix `-filled` selects the filled variant.
          */
-        "name": string;
+        "name": IconName;
         /**
           * Pixel size, aligned with Figma Foundations: 12 / 16 / 20 / 24.
           * @default 16
@@ -1442,7 +1441,7 @@ export namespace Components {
         /**
           * Override the default per-variant `mud-icon` name. Ignored when the `icon-start` slot is populated or `hideIcon` is set.
          */
-        "iconName"?: string;
+        "iconName"?: IconName;
         /**
           * Optional bold heading rendered above the body.
          */
@@ -1478,7 +1477,7 @@ export namespace Components {
         /**
           * Override the default per-variant `mud-icon` name.
          */
-        "iconName"?: string;
+        "iconName"?: IconName;
         /**
           * Size rung — `small` (12px / 16px icon) or `medium` (14px / 20px icon).
           * @default 'medium'
@@ -1726,7 +1725,7 @@ export namespace Components {
         /**
           * Icon name to render when `leading="icon"`.
          */
-        "icon"?: string;
+        "icon"?: IconName;
         /**
           * Fallback text label when no content is slotted.
          */
@@ -2439,7 +2438,7 @@ export namespace Components {
           * Icon name for the leading icon (rendered via the local SVG library). Override by providing an element to the `icon-start` slot.
           * @default 'search'
          */
-        "iconName": string;
+        "iconName": IconName;
         /**
           * Plain-text label. Use the `label` slot for richer content.
          */
@@ -2804,11 +2803,11 @@ export namespace Components {
         /**
           * Leading icon name.
          */
-        "icon"?: string;
+        "icon"?: IconName;
         /**
           * Leading icon name used while active (e.g. a filled variant). Falls back to `icon`.
          */
-        "iconActive"?: string;
+        "iconActive"?: IconName;
         /**
           * Primary label (overridden by slotted content).
          */
@@ -2974,7 +2973,7 @@ export namespace Components {
         /**
           * Optional leading icon name resolved against the `mud-icon` registry.
          */
-        "iconName"?: string;
+        "iconName"?: IconName;
         /**
           * Optional plain-text label when no default slot content is provided.
          */
@@ -3406,7 +3405,7 @@ export namespace Components {
         /**
           * Override the default `mud-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
          */
-        "iconName"?: string;
+        "iconName"?: IconName;
         /**
           * Optional bold title rendered above the body.
          */
@@ -5517,7 +5516,7 @@ declare namespace LocalJSX {
           * Icon glyph for `type="icon"`. Defaults to the generic `person` symbol.
           * @default 'person'
          */
-        "iconName"?: string;
+        "iconName"?: IconName;
         /**
           * Pre-computed initials. When omitted, `name` is used to derive them. Trimmed to two characters and uppercased before rendering.
          */
@@ -5625,7 +5624,7 @@ declare namespace LocalJSX {
         /**
           * Override the default `mud-icon` name for the variant. Ignored when the `icon-start` slot is populated.
          */
-        "iconName"?: string;
+        "iconName"?: IconName;
         /**
           * Href for the optional inline link. Defaults to `#` when omitted.
          */
@@ -6800,10 +6799,9 @@ declare namespace LocalJSX {
          */
         "interactive"?: boolean;
         /**
-          * Icon identifier (kebab-case). Suffix `-filled` selects the filled variant.
-          * @default 'check'
+          * Icon identifier (kebab-case), one of `ICON_NAMES`. Suffix `-filled` selects the filled variant.
          */
-        "name"?: string;
+        "name": IconName;
         /**
           * Pixel size, aligned with Figma Foundations: 12 / 16 / 20 / 24.
           * @default 16
@@ -6853,7 +6851,7 @@ declare namespace LocalJSX {
         /**
           * Override the default per-variant `mud-icon` name. Ignored when the `icon-start` slot is populated or `hideIcon` is set.
          */
-        "iconName"?: string;
+        "iconName"?: IconName;
         /**
           * Fires when the user activates the close button. Payload is `void` — the consumer is responsible for removing the box from the DOM.
          */
@@ -6893,7 +6891,7 @@ declare namespace LocalJSX {
         /**
           * Override the default per-variant `mud-icon` name.
          */
-        "iconName"?: string;
+        "iconName"?: IconName;
         /**
           * Size rung — `small` (12px / 16px icon) or `medium` (14px / 20px icon).
           * @default 'medium'
@@ -7185,7 +7183,7 @@ declare namespace LocalJSX {
         /**
           * Icon name to render when `leading="icon"`.
          */
-        "icon"?: string;
+        "icon"?: IconName;
         /**
           * Fallback text label when no content is slotted.
          */
@@ -8002,7 +8000,7 @@ declare namespace LocalJSX {
           * Icon name for the leading icon (rendered via the local SVG library). Override by providing an element to the `icon-start` slot.
           * @default 'search'
          */
-        "iconName"?: string;
+        "iconName"?: IconName;
         /**
           * Plain-text label. Use the `label` slot for richer content.
          */
@@ -8427,11 +8425,11 @@ declare namespace LocalJSX {
         /**
           * Leading icon name.
          */
-        "icon"?: string;
+        "icon"?: IconName;
         /**
           * Leading icon name used while active (e.g. a filled variant). Falls back to `icon`.
          */
-        "iconActive"?: string;
+        "iconActive"?: IconName;
         /**
           * Primary label (overridden by slotted content).
          */
@@ -8625,7 +8623,7 @@ declare namespace LocalJSX {
         /**
           * Optional leading icon name resolved against the `mud-icon` registry.
          */
-        "iconName"?: string;
+        "iconName"?: IconName;
         /**
           * Optional plain-text label when no default slot content is provided.
          */
@@ -9117,7 +9115,7 @@ declare namespace LocalJSX {
         /**
           * Override the default `mud-icon` name for the variant (e.g. swap `circle-info-filled` for a custom glyph). When the `icon-start` slot is populated, this prop is ignored.
          */
-        "iconName"?: string;
+        "iconName"?: IconName;
         /**
           * Fires when the user activates the close button. Payload is `void` — the consumer is responsible for the dismiss animation / DOM removal.
          */
@@ -9257,7 +9255,7 @@ declare namespace LocalJSX {
         "alt": string;
         "initials": string;
         "name": string;
-        "iconName": string;
+        "iconName": IconName;
         "ariaLabel": string;
     }
     interface MudBadgeAttributes {
@@ -9274,7 +9272,7 @@ declare namespace LocalJSX {
         "dismissible": boolean;
         "linkText": string;
         "linkHref": string;
-        "iconName": string;
+        "iconName": IconName;
         "ariaLabel": string;
         "closeLabel": string;
     }
@@ -9467,7 +9465,7 @@ declare namespace LocalJSX {
         "ariaLabel": string;
     }
     interface MudIconAttributes {
-        "name": string;
+        "name": IconName;
         "size": IconSize;
         "color": string;
         "interactive": boolean;
@@ -9480,14 +9478,14 @@ declare namespace LocalJSX {
         "closable": boolean;
         "hideIcon": boolean;
         "titleText": string;
-        "iconName": string;
+        "iconName": IconName;
         "closeLabel": string;
     }
     interface MudInlineMessageAttributes {
         "variant": InlineMessageVariant;
         "size": InlineMessageSize;
         "hideIcon": boolean;
-        "iconName": string;
+        "iconName": IconName;
     }
     interface MudInputChipAttributes {
         "variant": InputChipVariant;
@@ -9534,7 +9532,7 @@ declare namespace LocalJSX {
     interface MudMenuItemAttributes {
         "value": string;
         "leading": MenuItemLeading;
-        "icon": string;
+        "icon": IconName;
         "selected": boolean;
         "disabled": boolean;
         "heading": boolean;
@@ -9676,7 +9674,7 @@ declare namespace LocalJSX {
         "placeholder": string;
         "label": string;
         "helperText": string;
-        "iconName": string;
+        "iconName": IconName;
         "clearLabel": string;
         "autocomplete": string;
         "maxLength": number;
@@ -9739,8 +9737,8 @@ declare namespace LocalJSX {
     }
     interface MudSidebarItemAttributes {
         "value": string;
-        "icon": string;
-        "iconActive": string;
+        "icon": IconName;
+        "iconActive": IconName;
         "label": string;
         "secondary": string;
         "tag": string;
@@ -9780,7 +9778,7 @@ declare namespace LocalJSX {
         "disabled": boolean;
         "size": 'md' | 'sm';
         "label": string;
-        "iconName": string;
+        "iconName": IconName;
         "badgeCount": number;
         "panelId": string;
     }
@@ -9856,7 +9854,7 @@ declare namespace LocalJSX {
         "variant": ToastVariant;
         "closable": boolean;
         "titleText": string;
-        "iconName": string;
+        "iconName": IconName;
         "ariaLabel": string;
         "closeLabel": string;
     }
@@ -9901,7 +9899,7 @@ declare namespace LocalJSX {
         "mud-header-mobile": Omit<MudHeaderMobile, keyof MudHeaderMobileAttributes> & { [K in keyof MudHeaderMobile & keyof MudHeaderMobileAttributes]?: MudHeaderMobile[K] } & { [K in keyof MudHeaderMobile & keyof MudHeaderMobileAttributes as `attr:${K}`]?: MudHeaderMobileAttributes[K] } & { [K in keyof MudHeaderMobile & keyof MudHeaderMobileAttributes as `prop:${K}`]?: MudHeaderMobile[K] };
         "mud-header-nav-item": Omit<MudHeaderNavItem, keyof MudHeaderNavItemAttributes> & { [K in keyof MudHeaderNavItem & keyof MudHeaderNavItemAttributes]?: MudHeaderNavItem[K] } & { [K in keyof MudHeaderNavItem & keyof MudHeaderNavItemAttributes as `attr:${K}`]?: MudHeaderNavItemAttributes[K] } & { [K in keyof MudHeaderNavItem & keyof MudHeaderNavItemAttributes as `prop:${K}`]?: MudHeaderNavItem[K] };
         "mud-header-services-menu": Omit<MudHeaderServicesMenu, keyof MudHeaderServicesMenuAttributes> & { [K in keyof MudHeaderServicesMenu & keyof MudHeaderServicesMenuAttributes]?: MudHeaderServicesMenu[K] } & { [K in keyof MudHeaderServicesMenu & keyof MudHeaderServicesMenuAttributes as `attr:${K}`]?: MudHeaderServicesMenuAttributes[K] } & { [K in keyof MudHeaderServicesMenu & keyof MudHeaderServicesMenuAttributes as `prop:${K}`]?: MudHeaderServicesMenu[K] };
-        "mud-icon": Omit<MudIcon, keyof MudIconAttributes> & { [K in keyof MudIcon & keyof MudIconAttributes]?: MudIcon[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `attr:${K}`]?: MudIconAttributes[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `prop:${K}`]?: MudIcon[K] };
+        "mud-icon": Omit<MudIcon, keyof MudIconAttributes> & { [K in keyof MudIcon & keyof MudIconAttributes]?: MudIcon[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `attr:${K}`]?: MudIconAttributes[K] } & { [K in keyof MudIcon & keyof MudIconAttributes as `prop:${K}`]?: MudIcon[K] } & OneOf<"name", MudIcon["name"], MudIconAttributes["name"]>;
         "mud-info-box": Omit<MudInfoBox, keyof MudInfoBoxAttributes> & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes]?: MudInfoBox[K] } & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes as `attr:${K}`]?: MudInfoBoxAttributes[K] } & { [K in keyof MudInfoBox & keyof MudInfoBoxAttributes as `prop:${K}`]?: MudInfoBox[K] };
         "mud-inline-message": Omit<MudInlineMessage, keyof MudInlineMessageAttributes> & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes]?: MudInlineMessage[K] } & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes as `attr:${K}`]?: MudInlineMessageAttributes[K] } & { [K in keyof MudInlineMessage & keyof MudInlineMessageAttributes as `prop:${K}`]?: MudInlineMessage[K] };
         "mud-input-chip": Omit<MudInputChip, keyof MudInputChipAttributes> & { [K in keyof MudInputChip & keyof MudInputChipAttributes]?: MudInputChip[K] } & { [K in keyof MudInputChip & keyof MudInputChipAttributes as `attr:${K}`]?: MudInputChipAttributes[K] } & { [K in keyof MudInputChip & keyof MudInputChipAttributes as `prop:${K}`]?: MudInputChip[K] };

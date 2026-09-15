@@ -1,3 +1,5 @@
+import type { IconName } from '../mud-icon/mud-icon.types';
+
 /**
  * Public shape of a single crumb when items are passed declaratively
  * via the `items` prop. Consumers can also build crumbs as nested
@@ -10,7 +12,7 @@ export type BreadcrumbItem = {
   /** Optional navigation target. When omitted, the crumb renders as plain text. */
   href?: string;
   /** Optional mud-icon name shown before the label (Figma "w/ leading-icon"). */
-  iconStart?: string;
+  iconStart?: IconName;
   /** When true, the crumb shows a spinner in place of the label. */
   loading?: boolean;
   /** When true, the crumb is rendered with the visited (magenta) color. */
