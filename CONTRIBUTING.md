@@ -274,11 +274,15 @@ Internal contributors with write access to this repo should continue branching d
 
 ## Publishing
 
-Publishing to npm (`@egov-moldova` scope) is handled by project maintainers — contributors don't need to publish packages themselves. Azure Pipelines publishes on each run, using the build number as the version.
+Publishing to npm (`@egov-moldova` scope) is handled by project maintainers — contributors don't need to publish packages themselves. Release configuration lives in the Azure DevOps `Design.System` operations repository. Its development and production pipelines run manually, check out `main` from this GitHub repository through a service connection, stamp the checked-out `package.json`, build the library, validate the package, and publish it. They never commit generated versions back to GitHub.
 
-CI runs `yarn validate.package` immediately before publishing, and the run fails rather than shipping if the tarball does not match what `package.json` declares: every declared entrypoint present, no source map or development-mode runtime, no build-machine path leaked into the type declarations, the standalone custom-elements bundle carrying its assets, and `yarn pack` and `npm pack` resolving the same file list — the gate measures the first, CI publishes the second. Run it yourself after `yarn build` before any manual publish.
+For example, with npm `latest` at `1.1.9`, development releases use valid SemVer prereleases such as `1.1.10-dev.1`, `1.1.10-dev.2`, and so on under the `dev` dist-tag. Production publishes `1.1.10` under `latest`. The default release base is the next patch after npm `latest`; maintainers can provide an explicit future `x.y.z` base for minor or major releases.
 
-### Manual publish (maintainers)
+The release pipeline runs `yarn validate.package` immediately before publishing, and the run fails rather than shipping if the tarball does not match what `package.json` declares: every declared entrypoint present, no source map or development-mode runtime, no build-machine path leaked into the type declarations, the standalone custom-elements bundle carrying its assets, and `yarn pack` and `npm pack` resolving the same file list — the gate measures the first, while the release pipeline publishes with npm. Run it yourself after `yarn build` before any emergency manual publish.
+
+The Azure release pipelines currently publish only the core `@egov-moldova/mud` package. They do not publish `@egov-moldova/mud-web-components` or the private React adapter.
+
+### Emergency manual publish (maintainers)
 
 Requires an npm token with write access to `@egov-moldova`.
 
@@ -294,14 +298,14 @@ cd web-components
 YARN_NPM_AUTH_TOKEN=YOUR_NPM_TOKEN yarn npm publish --access public
 ```
 
-> **Publish the workspace packages with `yarn npm publish`.** Both
+> **Publish workspace packages with `yarn npm publish`.** Both
 > `web-components` and `react` depend on the core as `"@egov-moldova/mud":
 > "workspace:^"`. Yarn rewrites that to a real registry range at pack time —
-> `yarn pack` in `web-components` emits `^1.0.6`. **`npm pack` does not**: it
+> `yarn pack` in `web-components` emits a compatible concrete range. **`npm pack` does not**: it
 > leaves `workspace:^` in the manifest verbatim, from inside the directory and
 > with `-w` from the root alike, so an `npm publish` there ships a dependency
-> nobody can install. The CI pipeline already uses `yarn npm publish` for
-> `web-components`; this is the manual path catching up with it.
+> nobody can install. This warning applies to a deliberate future adapter
+> release; current Azure release pipelines publish only the core package.
 
 For local testing against another project without publishing, use path installs:
 

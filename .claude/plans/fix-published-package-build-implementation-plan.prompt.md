@@ -1,6 +1,8 @@
 # Fix Published Package Build — Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use `superpowers:subagent-driven-development` (recommended) or `superpowers:executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **Status: archived historical record — do not execute.** Implementation completed before release configuration moved to the Azure DevOps `Design.System` operations repository. Pipeline paths and line references below intentionally describe the former repository layout.
+>
+> **Historical instruction (inactive):** Use `superpowers:subagent-driven-development` (recommended) or `superpowers:executing-plans` to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Make the tarball published to npm satisfy every entrypoint `package.json` declares, built in production mode, with no development artifacts or build-machine paths — and add a gate that fails the pipeline if that ever stops being true.
 
