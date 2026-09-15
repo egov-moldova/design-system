@@ -1,5 +1,6 @@
-import { Config } from '@stencil/core';
-import { OutputTarget } from '@stencil/core/internal';
+// `Config` from `/internal` rather than the `@stencil/core` re-export (`StencilConfig`):
+// only the internal interface declares `buildDocs`, which the compiler reads at runtime.
+import { Config, OutputTarget } from '@stencil/core/internal';
 import { postcss } from '@stencil/postcss';
 import { reactOutputTarget as react } from '@stencil/react-output-target';
 
