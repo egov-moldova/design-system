@@ -34,7 +34,7 @@ describe('mud-search-input', () => {
     it('renders with default props reflected on host', async () => {
       const { root } = await render(<mud-search-input></mud-search-input>);
       expect(root?.getAttribute('shape')).toBe('rectangular');
-      expect(root?.getAttribute('size')).toBe('sm');
+      expect(root?.getAttribute('size')).toBe('md');
       expect(root?.getAttribute('disabled')).toBeNull();
       expect(root?.getAttribute('required')).toBeNull();
       // Stencil reflects `boolean` true as the empty-string attribute presence.
@@ -75,7 +75,7 @@ describe('mud-search-input', () => {
       (root as unknown as { size: string }).size = 'huge';
       await flush();
       expect(warn).toHaveBeenCalledWith(expect.stringContaining('size="huge"'));
-      expect(root?.getAttribute('size')).toBe('sm');
+      expect(root?.getAttribute('size')).toBe('md');
       warn.mockRestore();
     });
   });
@@ -148,13 +148,13 @@ describe('mud-search-input', () => {
     });
 
     it('renders a constant 16px cross-small glyph in the clear button for both field sizes', async () => {
-      const sm = await render(<mud-search-input value="x" size="sm"></mud-search-input>);
       const md = await render(<mud-search-input value="x" size="md"></mud-search-input>);
-      const smIcon = queryClearButton(sm.root)?.querySelector('mud-icon');
+      const lg = await render(<mud-search-input value="x" size="lg"></mud-search-input>);
       const mdIcon = queryClearButton(md.root)?.querySelector('mud-icon');
-      expect(smIcon?.getAttribute('name')).toBe('cross-small');
-      expect(smIcon?.getAttribute('size')).toBe('16');
+      const lgIcon = queryClearButton(lg.root)?.querySelector('mud-icon');
+      expect(mdIcon?.getAttribute('name')).toBe('cross-small');
       expect(mdIcon?.getAttribute('size')).toBe('16');
+      expect(lgIcon?.getAttribute('size')).toBe('16');
     });
   });
 
@@ -399,11 +399,11 @@ describe('mud-search-input', () => {
       expect(querySpinner(root)).toBeTruthy();
     });
 
-    it('uses spinner size "md" on size="md" and "sm" on size="sm"', async () => {
+    it('uses a constant spinner size "sm" regardless of field size', async () => {
+      const { root: lg } = await render(<mud-search-input size="lg" loading></mud-search-input>);
+      expect(querySpinner(lg)?.getAttribute('size')).toBe('sm');
       const { root: md } = await render(<mud-search-input size="md" loading></mud-search-input>);
-      expect(querySpinner(md)?.getAttribute('size')).toBe('md');
-      const { root: sm } = await render(<mud-search-input size="sm" loading></mud-search-input>);
-      expect(querySpinner(sm)?.getAttribute('size')).toBe('sm');
+      expect(querySpinner(md)?.getAttribute('size')).toBe('sm');
     });
 
     it('suppresses the clear button while loading', async () => {

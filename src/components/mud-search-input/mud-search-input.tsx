@@ -56,10 +56,10 @@ export class MudSearchInput {
   @Prop({ reflect: true }) shape: SearchInputShape = 'rectangular';
 
   /**
-   * Visual size rung. `sm` is 40px tall, `md` is 48px tall.
-   * @default 'sm'
+   * Visual size rung. `md` is 40px tall, `lg` is 48px tall.
+   * @default 'md'
    */
-  @Prop({ reflect: true }) size: SearchInputSize = 'sm';
+  @Prop({ reflect: true }) size: SearchInputSize = 'md';
 
   /**
    * Disables interactivity. The internal control receives the native
@@ -251,9 +251,9 @@ export class MudSearchInput {
       console.warn(
         `[mud-search-input] size="${String(
           next,
-        )}" is not supported. Supported: ${SEARCH_INPUT_SIZES.join(', ')}. Falling back to "sm".`,
+        )}" is not supported. Supported: ${SEARCH_INPUT_SIZES.join(', ')}. Falling back to "md".`,
       );
-      this.size = 'sm';
+      this.size = 'md';
     }
   }
 
@@ -407,12 +407,15 @@ export class MudSearchInput {
     const labelText = this.label?.trim();
     const helperText = this.helperText?.trim();
     const ariaLabelAttr = !this.hasVisibleLabel() ? this.resolvedAriaLabel : undefined;
-    const iconSize = this.size === 'md' ? 24 : 20;
+    const iconSize = this.size === 'lg' ? 24 : 20;
     // The clear affordance is a constant 20px pill with a 16px `cross-small`
     // glyph in Figma, regardless of field size (unlike the leading icon).
     const clearIconSize = 16;
-    const submitIconSize: 16 | 20 = this.size === 'md' ? 20 : 16;
-    const spinnerSize = this.size === 'md' ? 'md' : 'sm';
+    const submitIconSize: 16 | 20 = this.size === 'lg' ? 20 : 16;
+    // The loading spinner is a constant 20px in Figma regardless of field
+    // size (unlike the leading icon) — same rule as the clear affordance.
+    // mud-spinner's own `sm` size is 20px on its independent size scale.
+    const spinnerSize = 'sm';
 
     const hostClasses = {
       'is-disabled': effectivelyDisabled,
@@ -421,6 +424,7 @@ export class MudSearchInput {
       'is-focused': this.isFocused && !effectivelyDisabled,
       'has-label': this.hasVisibleLabel(),
       'has-value': this.value !== '',
+      'has-icon-end-slot': this.hasIconEndSlot,
     };
 
     const showClear = this.showClearButton();

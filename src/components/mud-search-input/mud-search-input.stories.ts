@@ -39,7 +39,7 @@ const renderSearch = (args: SearchArgs) => /*html*/ `
 const docsSourceDefault = (args: SearchArgs) => {
   const attrs = [
     args.shape !== 'rectangular' ? `shape="${args.shape}"` : '',
-    args.size !== 'sm' ? `size="${args.size}"` : '',
+    args.size !== 'md' ? `size="${args.size}"` : '',
     args.label ? `label="${args.label}"` : '',
     args.placeholder ? `placeholder="${args.placeholder}"` : '',
     args.value ? `value="${args.value}"` : '',
@@ -68,8 +68,8 @@ const meta: Meta<SearchArgs> = {
     size: {
       control: 'inline-radio',
       options: SEARCH_INPUT_SIZES,
-      description: 'Visual size rung. `sm` is 40px tall, `md` is 48px tall.',
-      table: { defaultValue: { summary: 'sm' } },
+      description: 'Visual size rung. `md` is 40px tall, `lg` is 48px tall.',
+      table: { defaultValue: { summary: 'md' } },
     },
     label: { control: 'text', description: 'Plain-text label.' },
     placeholder: { control: 'text' },
@@ -94,7 +94,7 @@ export const Default: Story = {
   render: renderSearch,
   args: {
     shape: 'rectangular',
-    size: 'sm',
+    size: 'md',
     label: '',
     placeholder: 'Caută…',
     value: '',
@@ -241,8 +241,8 @@ export const WithSubmitButton: Story = {
           /*html*/ `<mud-search-input aria-label="Caută" shape="circular" value="cazier judiciar" with-button></mud-search-input>`,
         ),
         cell(
-          'md — filled + loading',
-          /*html*/ `<mud-search-input aria-label="Caută" size="md" value="permis de conducere" loading with-button></mud-search-input>`,
+          'lg — filled + loading',
+          /*html*/ `<mud-search-input aria-label="Caută" size="lg" value="permis de conducere" loading with-button></mud-search-input>`,
         ),
         cell(
           'labeled + helper',
@@ -258,7 +258,7 @@ export const WithSubmitButton: Story = {
           '<mud-search-input aria-label="Caută" placeholder="Caută…" with-button></mud-search-input>',
           '<mud-search-input aria-label="Caută" value="permis de conducere" with-button></mud-search-input>',
           '<mud-search-input aria-label="Caută" shape="circular" value="cazier judiciar" with-button></mud-search-input>',
-          '<mud-search-input aria-label="Caută" size="md" value="permis de conducere" loading with-button></mud-search-input>',
+          '<mud-search-input aria-label="Caută" size="lg" value="permis de conducere" loading with-button></mud-search-input>',
         ].join('\n'),
       },
     },
@@ -341,8 +341,8 @@ export const EdgeCases: Story = {
           /*html*/ `<mud-search-input aria-label="Caută" placeholder="Caută…"></mud-search-input>`,
         ),
         cell(
-          'circular + md + value',
-          /*html*/ `<mud-search-input aria-label="Caută" shape="circular" size="md" value="permis"></mud-search-input>`,
+          'circular + lg + value',
+          /*html*/ `<mud-search-input aria-label="Caută" shape="circular" size="lg" value="permis"></mud-search-input>`,
         ),
       ].join(''),
     ),
