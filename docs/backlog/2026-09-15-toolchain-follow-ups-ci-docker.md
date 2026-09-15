@@ -131,7 +131,8 @@ required props would get the two-way `OneOf`, without `prop:`.
 
 One step is left. When a Stencil release contains #6855, delete the resolution,
 the patch file, and the `COPY .yarn/patches` line in `Dockerfile` (git keeps no
-empty directory, so that COPY would fail). Then bump the range and run
-`yarn build`. `git diff -- src/components.d.ts` should show no change to
-`OneOf3`. The type contract is guarded by
+empty directory, so that COPY would fail). Then bump the range, run
+`yarn install` (without it the patched 4.45.0 compiler stays in `node_modules`
+and the next check passes vacuously) and `yarn build`. `git diff --
+src/components.d.ts` should show no change to `OneOf3`. The type contract is guarded by
 `src/components/mud-tabs/test/mud-tabs.spec.tsx` § `mud-tab JSX typing`.
