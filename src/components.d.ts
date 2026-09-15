@@ -2863,8 +2863,8 @@ export namespace Components {
      * State legend (Figma node 634:10573):
      *   - `pending`    — neutral grey ring + faded number, non-navigable
      *   - `current`    — brand ring + brand number, neutral label
-     *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
-     *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
+     *   - `completed`  — brand filled circle + white checkmark, brand underlined link label
+     *   - `available`  — brand outline ring + brand number, brand underlined link label, navigable forward
      *   - `error`      — danger ring + danger cross, neutral label
      * The component renders an ordered list with `role="list"` for AT compatibility
      * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
@@ -4966,8 +4966,8 @@ declare global {
      * State legend (Figma node 634:10573):
      *   - `pending`    — neutral grey ring + faded number, non-navigable
      *   - `current`    — brand ring + brand number, neutral label
-     *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
-     *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
+     *   - `completed`  — brand filled circle + white checkmark, brand underlined link label
+     *   - `available`  — brand outline ring + brand number, brand underlined link label, navigable forward
      *   - `error`      — danger ring + danger cross, neutral label
      * The component renders an ordered list with `role="list"` for AT compatibility
      * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
@@ -8494,8 +8494,8 @@ declare namespace LocalJSX {
      * State legend (Figma node 634:10573):
      *   - `pending`    — neutral grey ring + faded number, non-navigable
      *   - `current`    — brand ring + brand number, neutral label
-     *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
-     *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
+     *   - `completed`  — brand filled circle + white checkmark, brand underlined link label
+     *   - `available`  — brand outline ring + brand number, brand underlined link label, navigable forward
      *   - `error`      — danger ring + danger cross, neutral label
      * The component renders an ordered list with `role="list"` for AT compatibility
      * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).
@@ -10579,8 +10579,8 @@ declare module "@stencil/core" {
              * State legend (Figma node 634:10573):
              *   - `pending`    — neutral grey ring + faded number, non-navigable
              *   - `current`    — brand ring + brand number, neutral label
-             *   - `completed`  — brand filled circle + white checkmark (brand underlined link label when interactive)
-             *   - `available`  — brand outline ring + brand number, navigable forward (brand underlined link label when interactive)
+             *   - `completed`  — brand filled circle + white checkmark, brand underlined link label
+             *   - `available`  — brand outline ring + brand number, brand underlined link label, navigable forward
              *   - `error`      — danger ring + danger cross, neutral label
              * The component renders an ordered list with `role="list"` for AT compatibility
              * (Safari + VoiceOver strip implicit list roles when `list-style: none` is set).

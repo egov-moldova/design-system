@@ -3,10 +3,10 @@
  *
  * - `pending`     — step has not yet been reached and is NOT navigable; neutral grey ring + faded number.
  * - `current`     — the step the user is currently on; brand ring + brand number, neutral label.
- * - `completed`   — step is finished; filled brand circle + checkmark. When interactive, its label
- *                   renders as a brand underlined link (navigable back).
- * - `available`   — a future step the user MAY jump to; brand outline ring + brand number, and a
- *                   brand underlined link label when interactive (navigable forward).
+ * - `completed`   — step is finished; filled brand circle + checkmark, label renders as a brand
+ *                   underlined link (navigable back when interactive).
+ * - `available`   — a future step the user MAY jump to; brand outline ring + brand number, label
+ *                   renders as a brand underlined link (navigable forward when interactive).
  * - `error`       — step failed validation or was blocked; danger ring + danger cross, neutral label.
  */
 export type StepperStepStatus = 'pending' | 'current' | 'completed' | 'available' | 'error';
