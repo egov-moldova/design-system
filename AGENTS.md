@@ -136,7 +136,6 @@ yarn format                    # Auto-fix code style
 # Utilities
 yarn generate                  # Stencil component generator scaffolding
 yarn tokens.audit              # Debug missing token references
-yarn wca.custom-elements       # Generate custom-elements.json for Storybook
 yarn svg:icons                 # Process SVG icons (remove size/fill + generate JSON)
 ```
 
