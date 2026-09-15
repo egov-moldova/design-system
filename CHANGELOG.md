@@ -2,6 +2,53 @@
 
 ## Unreleased
 
+### Changed — `mud-accordion-item` no longer writes `disabled` past the slot
+
+While an item is disabled it sets `disabled` on the controls you place directly in
+its `trailing` slot. It used to set it on every element in `heading`, `supporting`
+and `trailing` AND on all of their descendants, and then remove it from everything
+when the item was re-enabled. It kept no record of what it had written, so it could
+not tell your attributes from its own — a control you shipped as
+`<mud-button slot="trailing" disabled>` came back enabled with the item, with no
+event and no warning.
+
+**Your `disabled` now survives.** The item records the elements it writes to, and on
+re-enable removes the attribute only from those. A control that already carried
+`disabled` — as an attribute or as a property — never enters that record and is never
+touched. The record is also released when the item is removed from the document, so a
+control you move elsewhere does not leave carrying an attribute you did not write.
+
+**Two narrowings.** The attribute now reaches only elements assigned to a slot, never
+their descendants: if you wrapped a control in `<div slot="trailing">`, that inner
+control used to be disabled and no longer is. And it reaches only the `trailing` slot —
+`disabled` on an `<h3 slot="heading">` was invalid HTML and bought nothing, and those
+two slots are greyed through inherited colour instead.
+
+**What still reaches everything.** While the item is disabled, every element assigned
+to the three header slots gets `tabindex="-1"`, restored to exactly the value you
+authored when the item is enabled again. `disabled` does nothing to an `<a href>`, a
+`<div tabindex>`, or a custom element that does not implement it, so without this a
+control would stay Tab-reachable and Enter-activatable while assistive technology was
+told it was unavailable. The stylesheet also keeps `pointer-events: none` on assigned
+elements.
+
+**One small addition.** While the item is disabled, `.trailing` takes the header's
+own disabled colour, so a plain `<span slot="trailing">label</span>` greys with the
+rest of the row instead of staying at full contrast. It is scoped to the disabled
+state only — your trailing content's colour is untouched in every other state.
+
+**What is not covered, stated plainly.** A control NESTED inside a slotted wrapper
+gets no attribute and no `tabindex`; it is blocked from the mouse only if it does not
+set its own `pointer-events`, and it stays keyboard-reachable. And this state is a UX affordance, not an
+authorization boundary: an action that must not be reachable while the item is
+disabled needs its own guard, and server-side enforcement if it is security-sensitive.
+
+The `pointer-events` guard is deliberately not overridable — measured, a declaration
+in this component's shadow tree wins even against an inline `!important` on your own
+element. If you have a legitimate affordance that must stay clickable under a disabled
+item (an "unlock", a "why is this disabled?" trigger), open an issue rather than
+fighting the cascade; there is no escape hatch today.
+
 ### Changed — public API surface (breaking for deep imports)
 
 The `exports` map no longer exposes build directories. Bare specifiers that
@@ -75,12 +122,12 @@ because the workspace's build script is `tsc || true`.
 - `mud-tag` and `mud-badge` take a `disabled` prop that renders a disabled
   design, replacing every `type` × `semantic` / `variant` color. The prop is
   visual only and adds no ARIA; the container announces the state.
-  `mud-sidebar-item` passes its `disabled` to its own tag. Elsewhere, set
-  `disabled` on the tag or badge alongside the container's. `mud-accordion-item`
-  also mirrors its `disabled` onto elements in its `heading`, `supporting` and
-  `trailing` slots, but only for content present on load or when its own
-  `disabled` changes — content slotted later, or into `icon-start`, is not
-  reached, so set it explicitly there too.
+  `mud-sidebar-item` passes its `disabled` to its own tag, and a tag or badge
+  slotted directly into a disabled `mud-accordion-item`'s `trailing` slot is
+  disabled by the item — leave `disabled` off it there, since the item never
+  removes an attribute it did not write. In the item's `heading` or
+  `supporting` slots, and in any other container, set `disabled` on the tag or
+  badge alongside the container's.
 
 ### Internal
 
