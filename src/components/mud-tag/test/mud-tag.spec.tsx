@@ -213,5 +213,17 @@ describe('mud-tag', () => {
       expect(root?.getAttribute('role')).toBeNull();
       expect(root?.getAttribute('aria-disabled')).toBeNull();
     });
+
+    it('is visual only — a disabled tag with aria-label keeps the live-status contract', async () => {
+      const { root } = await render(
+        <mud-tag disabled aria-label="Procesare în curs">
+          Procesare
+        </mud-tag>,
+      );
+      expect(root?.getAttribute('role')).toBe('status');
+      expect(root?.getAttribute('aria-live')).toBe('polite');
+      expect(root?.getAttribute('aria-label')).toBe('Procesare în curs');
+      expect(root?.getAttribute('aria-disabled')).toBeNull();
+    });
   });
 });

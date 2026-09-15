@@ -356,6 +356,15 @@ describe('mud-sidebar-item', () => {
       expect(tag?.getAttribute('label')).toBe('NEW');
     });
 
+    it('renders its mud-tag disabled while the item is disabled, and re-enables it', async () => {
+      const { root, waitForChanges } = await render(<mud-sidebar-item label="Beta" tag="NEW" disabled />);
+      expect(root?.shadowRoot?.querySelector('mud-tag.tag')?.hasAttribute('disabled')).toBe(true);
+
+      (root as HTMLMudSidebarItemElement).disabled = false;
+      await waitForChanges();
+      expect(root?.shadowRoot?.querySelector('mud-tag.tag')?.hasAttribute('disabled')).toBe(false);
+    });
+
     it('omits mud-tag when tag prop is not set', async () => {
       const { root } = await render(<mud-sidebar-item label="Item" />);
       expect(root?.shadowRoot?.querySelector('mud-tag.tag')).toBeNull();

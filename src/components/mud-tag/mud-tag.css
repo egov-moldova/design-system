@@ -160,14 +160,15 @@
 
 /* ---------- Disabled (replaces every type × semantic color) ---------- */
 
-/* Declared after the type × semantic rules; each selector matches their
-   two-attribute specificity, so source order decides. */
-:host([disabled]:not([type='outlined'])) {
+/* Declared after the type × semantic rules; each selector is at least as
+   specific as theirs, so it wins. `[disabled='false']` is excluded because
+   Stencil reads that attribute as `disabled = false` but leaves it on the host. */
+:host([disabled]:not([disabled='false']):not([type='outlined'])) {
   --_bg: var(--tag-disabled-background);
   --_label-color: var(--tag-disabled-label);
 }
 
-:host([disabled][type='outlined']) {
+:host([disabled]:not([disabled='false'])[type='outlined']) {
   --_label-color: var(--tag-disabled-outlined-label);
   --_border-color: var(--tag-disabled-outlined-border);
 }

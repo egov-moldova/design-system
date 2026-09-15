@@ -344,7 +344,7 @@ const renderDisabled = () => /*html*/ `
         Conținut accesibil pentru toți cetățenii autentificați.
       </mud-accordion-item>
       <mud-accordion-item heading="Indisponibil temporar" supporting-text="Serviciu suspendat pentru mentenanță" disabled>
-        <mud-badge slot="trailing" variant="warning" count="2" disabled></mud-badge>
+        <mud-badge slot="trailing" variant="warning" count="2"></mud-badge>
         Acest conținut nu poate fi accesat momentan.
       </mud-accordion-item>
       <mud-accordion-item heading="Doar pentru reprezentanți autorizați" supporting-text="Necesită autentificare cu MPower" disabled>
@@ -357,8 +357,8 @@ const renderDisabled = () => /*html*/ `
 const docsSourceDisabled = /*html*/ `<mud-accordion mode="multiple">
   <mud-accordion-item heading="Disponibil" supporting-text="..." open>...</mud-accordion-item>
   <mud-accordion-item heading="Indisponibil temporar" supporting-text="..." disabled>
-    <!-- The item does not dim slotted content: set disabled on the badge itself. -->
-    <mud-badge slot="trailing" variant="warning" count="2" disabled></mud-badge>
+    <!-- The item mirrors its disabled onto header content, so the badge renders its disabled design. -->
+    <mud-badge slot="trailing" variant="warning" count="2"></mud-badge>
     ...
   </mud-accordion-item>
 </mud-accordion>`;

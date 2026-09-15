@@ -99,9 +99,10 @@
   --_color: var(--badge-text-danger);
 }
 
-/* Disabled — replaces every variant color. Declared after the variants so it
-   wins at equal specificity. */
-:host([disabled]) {
+/* Disabled — replaces every variant color. Declared after the variants and at
+   least as specific, so it wins. `[disabled='false']` is excluded because
+   Stencil reads that attribute as `disabled = false` but leaves it on the host. */
+:host([disabled]:not([disabled='false'])) {
   --_background: var(--badge-background-disabled);
   --_color: var(--badge-text-disabled);
 }

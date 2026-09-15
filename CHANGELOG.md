@@ -73,10 +73,12 @@ because the workspace's build script is `tsc || true`.
 ### Added
 
 - `mud-tag` and `mud-badge` take a `disabled` prop that renders a disabled
-  design, replacing every `type` × `semantic` / `variant` color. A disabled
-  container does not dim slotted content, so set `disabled` on the tag or badge
-  itself — for example inside a disabled `mud-accordion-item`. The prop is
+  design, replacing every `type` × `semantic` / `variant` color. The prop is
   visual only and adds no ARIA; the container announces the state.
+  `mud-accordion-item` already mirrors its `disabled` onto the elements slotted
+  into its header, so a tag or badge there now picks up the disabled design;
+  `mud-sidebar-item` passes its `disabled` to its own tag. Anywhere else, set
+  `disabled` on the tag or badge alongside the container's.
 
 ### Internal
 
