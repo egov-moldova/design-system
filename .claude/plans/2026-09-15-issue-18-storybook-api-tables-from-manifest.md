@@ -139,7 +139,7 @@ Zero-tolerance (any miss = FAIL):
 | Z3 | Project checks exit 0 | `yarn lint`, `yarn typecheck`, `yarn test`, `yarn test:scripts`, `yarn sp.build` |
 | Z4 | `yarn build` changes no readme, and `src/components.d.ts` only by the removed accordion `@csspart`/`@fires` JSDoc lines | `git status --short -- 'src/components/**/readme.md'` → empty; `git diff -U0 src/components.d.ts \| grep '^+[^+]'` → empty (no added line), and `git diff -U0 src/components.d.ts \| grep '^-[^-]' \| grep -v '@csspart \|@fires \|item currently open (single entry in \|^- *\*$'` → empty (every removed line is a retired tag, the one continuation line of `@fires mudChange`, or a bare ` *` spacer) |
 | Z8 | No `@csspart` / `@fires` left in component source | `git grep -n "@csspart\|@fires" -- 'src/**/*.tsx'` → empty |
-| Z5 | No trace of wca in the tree | `git grep -n "web-component-analyzer\|wca\.custom-elements\|wca analyze" -- ':!.claude/plans/' ':!CHANGELOG.md'` → empty |
+| Z5 | No trace of wca in the tree | `git grep -n "web-component-analyzer\|wca\.custom-elements\|wca analyze" -- ':!.claude/plans/' ':!CHANGELOG.md'` → empty, and `git grep -nw "wca" -- src .storybook` → empty |
 | Z6 | Every story's `initialArgs` identical before/after (canvas input unchanged) | baseline vs after JSON from Task 1 Step 1 / Task 3 Step 6, `diff` → empty |
 | Z7 | Prettier clean on authored files | `npx prettier --check <changed files>` |
 
@@ -170,6 +170,11 @@ Numeric (over all 56 tags, from the built Storybook in Task 3):
 - Modify: `src/components/mud-accordion/mud-accordion.tsx`
 - Modify: `src/components/mud-accordion-item/mud-accordion-item.tsx`
 - Modify: `src/components.d.ts`
+- Modify: `src/components/mud-accordion/mud-accordion.stories.ts`
+- Modify: `src/components/mud-accordion-item/mud-accordion-item.stories.ts`
+- Modify: `src/components/mud-accordion/mud-accordion.mdx`
+- Modify: `STACK.md`
+- Modify: `_agents/environment-commands.md`
 - Modify: `AGENTS.md`
 - Modify: `Dockerfile`
 - Modify: `.gitattributes`
@@ -227,7 +232,11 @@ const MANIFEST_PATH = path.join(ROOT, '.storybook/custom-elements.json');
 
 function loadManifest() {
   assert.ok(fs.existsSync(MANIFEST_PATH), `${MANIFEST_PATH} is missing — run \`yarn build\` first`);
-  return JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
+  const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
+  // A checkout that last built before this change still holds the old generator's
+  // `version: "experimental"` manifest; name the fix rather than failing on its shape.
+  assert.notEqual(manifest.version, 'experimental', 'stale pre-Stencil manifest on disk — run `yarn build`');
+  return manifest;
 }
 
 function declarations(manifest) {
@@ -289,6 +298,8 @@ describe('.storybook/custom-elements.json', () => {
     ['Events', 'events'],
     ['Shadow Parts', 'cssParts'],
     ['Methods', 'members'],
+    ['Properties', 'members'],
+    ['Slots', 'slots'],
   ]) {
     it(`lists every ${heading.toLowerCase()} entry the component readme documents`, () => {
       const missing = [];
@@ -357,7 +368,8 @@ and in `export const config`:
   // Docs output targets only run when this is true, and Stencil defaults it to false
   // under `--dev`. Forced on so the watch build behind `yarn dev` keeps the Storybook
   // manifest current. `docs-readme` is still added only under `--docs`, so dev builds
-  // write no readme files; measured cost on a dev build is within run-to-run noise.
+  // write no readme files. Measured on a one-shot `stencil build --dev` (3 runs each):
+  // 7.27 s without the manifest target, 7.19 s with it; watch rebuilds were not timed.
   buildDocs: true,
 ```
 
@@ -377,7 +389,7 @@ fnm exec --using 24 -- yarn remove web-component-analyzer
 git rm scripts/ensure-custom-elements-manifest.mjs
 ```
 
-Docs: `AGENTS.md:139` line becomes a note that `yarn build` writes the manifest; `Dockerfile:30` and `:34` comments drop `wca.custom-elements`; `.gitattributes:24` comment names the Stencil build.
+Docs: `AGENTS.md:139` line becomes a note that `yarn build` writes the manifest; `Dockerfile:30` and `:34` comments drop `wca.custom-elements`; `.gitattributes:24` comment names the Stencil build; `STACK.md:23` row drops `web-component-analyzer` (the manifest now comes from `@stencil/core`) and `:36` drops `wca.custom-elements` from the wireit task list; `_agents/environment-commands.md:7` drops it from `yarn build`'s dependencies, `:82` becomes `yarn tokens.build` only (the watch build writes the manifest), and `:181` becomes the same note as `AGENTS.md`.
 
 Remove the duplicate tags wca needed, which nothing reads any more:
 - `src/components/mud-accordion-item/mud-accordion-item.tsx` — delete the explanatory `//` block (lines 7-15) and the `@csspart` / `@fires` lines (36-40) with the blank line before them; `@part` (33-34) stays.
@@ -401,7 +413,7 @@ events and both parts in the manifest (the readme tests cover them).
 
 ```bash
 git add stencil.config.ts package.json yarn.lock scripts/ensure-custom-elements-manifest.mjs \
-  scripts/__tests__/storybook-manifest.spec.mjs AGENTS.md Dockerfile .gitattributes \
+  scripts/__tests__/storybook-manifest.spec.mjs AGENTS.md Dockerfile .gitattributes STACK.md _agents/environment-commands.md \
   src/components/mud-accordion/mud-accordion.tsx src/components/mud-accordion-item/mud-accordion-item.tsx \
   src/components.d.ts .claude/plans/2026-09-15-issue-18-storybook-api-tables-from-manifest.md
 git commit -F - <<'EOF'
@@ -647,6 +659,13 @@ const MANIFEST_DESCRIPTIONS = new Set(['mud-accordion', 'mud-accordion-item']);
 
 `setCustomElements(customElements)` stays: the description branch still delegates to Storybook's reader.
 
+Retire the `host` exclusions, which existed only because wca listed `@Element() host` as a
+property. Stencil's manifest lists no `host` member on any tag (planning probe over the
+56 declarations → `host fields: []`; re-confirm on the Task 1 build with
+`node -e "const c=require('./.storybook/custom-elements.json');console.log(c.modules.flatMap(m=>m.declarations).filter(d=>(d.members||[]).some(x=>x.name==='host')).map(d=>d.tagName))"` → `[]` before editing):
+- `src/components/mud-accordion/mud-accordion.stories.ts:460-464` and `src/components/mud-accordion-item/mud-accordion-item.stories.ts:74-78` — delete the four-line comment and `controls: { exclude: ['host'] },`.
+- `src/components/mud-accordion/mud-accordion.mdx:22` — delete the `{/* … */}` comment line; `:24` `<Controls exclude={['host']} />` → `<Controls />`; `:32` `<ArgTypes of={ItemStories} exclude={['host']} />` → `<ArgTypes of={ItemStories} />`.
+
 - [ ] **Step 2: Build Storybook**
 
 `fnm exec --using 24 -- yarn sp.build` → exit 0.
@@ -690,7 +709,9 @@ the story's own `argTypes` are merged; merged-in story rows are graded by Steps 
 
 - [ ] **Step 4: Look at the rendered tables**
 
-Screenshot the docs pages for Button, Input, Modal and Accordion in light mode.
+Screenshot the docs pages for Button, Input, Modal, Accordion, Receipt and Banner in light mode
+(Receipt and Banner carry story-only `argTypes` keys that are not component props, e.g.
+`senderName`, `body`; they must still render, outside the manifest categories).
 Pass condition per page: rows grouped under properties / events / slots / css shadow parts / methods; Button's `full-width` row carries the story's boolean control; Modal shows `openModal` / `closeModal` under methods; Accordion's two tables render (MDX `exclude={['host']}` still valid); no console errors (`browser_console_messages`).
 
 - [ ] **Step 5: Controls panel spot-check**
@@ -716,7 +737,8 @@ npx prettier --check .storybook/preview.js .storybook/manifest-arg-types.mjs ste
 - [ ] **Step 8: Commit**
 
 ```bash
-git add .storybook/preview.js
+git add .storybook/preview.js src/components/mud-accordion/mud-accordion.stories.ts \
+  src/components/mud-accordion-item/mud-accordion-item.stories.ts src/components/mud-accordion/mud-accordion.mdx
 git commit -F - <<'EOF'
 fix(storybook): generate every component's API table from the manifest
 
