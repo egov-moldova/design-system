@@ -90,16 +90,16 @@
       "padding": { "$value": "{spacing.2}", "$type": "dimension" },
       "borderRadius": { "$value": "{borderRadius.full}", "$type": "dimension" },
       "color": {
-        "default": { "$value": "{color.icon.base.secondary}", "$type": "color" },
+        "default": { "$value": "{color.icon.base.tertiary}", "$type": "color" },
         "hover": { "$value": "{color.icon.base.default}", "$type": "color" },
         "active": { "$value": "{color.icon.base.default}", "$type": "color" },
         "disabled": { "$value": "{color.icon.disabled.on-disabled}", "$type": "color" }
       },
       "background": {
         "default": {
-          "$value": "{color.background.base.tertiary}",
+          "$value": "{color.background.transparent.inactive}",
           "$type": "color",
-          "$comment": "Per Figma — the clear button carries a subtle gray oval at rest in the Filled state. Hardcoded color in Figma is #1212121a; base.tertiary (#f1f1f1) is the closest design-system semantic."
+          "$comment": "Figma 'Search Input' clear-button background (Filled/Focus-populated states) — verified via Dev Mode inspect against color-background-transparent-inactive."
         },
         "hover": { "$value": "{color.background.base.tertiary-hover}", "$type": "color" },
         "active": { "$value": "{color.background.base.tertiary-active}", "$type": "color" }
@@ -159,8 +159,9 @@
     },
     "loadingSpinner": {
       "size": {
-        "sm": { "$value": "{spacing.20}", "$type": "dimension" },
-        "md": { "$value": "{spacing.24}", "$type": "dimension" }
+        "$value": "{spacing.20}",
+        "$type": "dimension",
+        "$comment": "Figma 'Search Input' loading spinner is a constant 20px for both the medium and large field — verified via Dev Mode metadata (spinner instance stays 20×20 in Size=Medium, Size=Large, and Size=Large/Button=True). Matches the clear affordance's own constant sizing (iconEndClear.size)."
       },
       "color": {
         "default": { "$value": "{color.icon.brand.default}", "$type": "color" },

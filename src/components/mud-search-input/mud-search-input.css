@@ -1,3 +1,8 @@
+/* The public `size` prop is `md` | `lg` (aligned with Figma's "medium"/"large"
+   labels and with `mud-text-input`'s own `md`/`lg` scale). The underlying
+   `--search-input-*` tokens keep their original `-sm`/`-md` suffixes — this
+   file is the only place mapping one to the other, so token names didn't
+   need a matching, wider rename. */
 :host {
   --_height: var(--search-input-container-height-sm);
   --_padding-inline: var(--search-input-container-padding-inline-sm);
@@ -32,7 +37,7 @@
   color: var(--_text);
 }
 
-:host([size='md']) {
+:host([size='lg']) {
   --_height: var(--search-input-container-height-md);
   --_padding-inline: var(--search-input-container-padding-inline-md);
   --_gap: var(--search-input-container-gap-md);
@@ -141,20 +146,25 @@
   block-size: var(--_icon-start-size);
 }
 
+/* Collapsed by default — the wrapper always contains a `<slot>` element, so
+   `:empty`/`:has(*)` can never detect an actually-empty slot. Re-shown only
+   via `.has-icon-end-slot`, set from the TSX `hasIconEndSlot` state (real
+   slotted content, tracked on `slotchange`). Otherwise this 20px box stayed
+   in the flex row even with nothing slotted, pushing the spinner/clear-button
+   away from the field's trailing edge. */
 .control-icon-end {
+  display: none;
   inline-size: var(--_icon-end-clear-size);
   block-size: var(--_icon-end-clear-size);
+}
+
+:host(.has-icon-end-slot) .control-icon-end {
+  display: inline-flex;
 }
 
 :host(.is-disabled) .control-icon,
 :host(.is-disabled) .clear-button {
   color: var(--search-input-icon-start-color-disabled);
-}
-
-/* Hide the trailing slot wrapper when empty (clear button renders separately). */
-:host(:not(.has-value)) .control-icon-end:empty,
-.control-icon-end:not(:has(*)) {
-  display: none;
 }
 
 ::slotted([slot='icon-start']),
@@ -177,14 +187,11 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  inline-size: var(--search-input-loading-spinner-size-sm);
-  block-size: var(--search-input-loading-spinner-size-sm);
+  /* Constant across both field sizes, like --_icon-end-clear-size — see
+     search-input.tokens.json. */
+  inline-size: var(--search-input-loading-spinner-size);
+  block-size: var(--search-input-loading-spinner-size);
   color: var(--search-input-loading-spinner-color-default);
-}
-
-:host([size='md']) .control-spinner {
-  inline-size: var(--search-input-loading-spinner-size-md);
-  block-size: var(--search-input-loading-spinner-size-md);
 }
 
 :host(.is-disabled) .control-spinner {
@@ -258,7 +265,7 @@
     color var(--_transition-duration) var(--_transition-easing);
 }
 
-:host([size='md']) .submit-button {
+:host([size='lg']) .submit-button {
   inline-size: var(--search-input-submit-button-size-md);
   block-size: var(--search-input-submit-button-size-md);
 }

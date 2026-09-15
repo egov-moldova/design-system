@@ -2441,8 +2441,8 @@ export namespace Components {
          */
         "shape": SearchInputShape;
         /**
-          * Visual size rung. `sm` is 40px tall, `md` is 48px tall.
-          * @default 'sm'
+          * Visual size rung. `md` is 40px tall, `lg` is 48px tall.
+          * @default 'md'
          */
         "size": SearchInputSize;
         /**
@@ -7958,8 +7958,8 @@ declare namespace LocalJSX {
          */
         "shape"?: SearchInputShape;
         /**
-          * Visual size rung. `sm` is 40px tall, `md` is 48px tall.
-          * @default 'sm'
+          * Visual size rung. `md` is 40px tall, `lg` is 48px tall.
+          * @default 'md'
          */
         "size"?: SearchInputSize;
         /**
