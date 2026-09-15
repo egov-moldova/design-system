@@ -1,4 +1,4 @@
-# INTEGRATION.md — consuming `@egovmd/mud` outside a bundler
+# INTEGRATION.md — consuming `@egov-moldova/mud` outside a bundler
 
 This guide is for integrators who want to drop MUD components into a host that **emits HTML directly**: a static page, a server-rendered template (PHP, Razor, Twig, Blade), or a `WebView` in a desktop app. For bundler-based installs (Vite, Webpack, Rollup, esbuild), see [`README.md`](./README.md).
 
@@ -33,6 +33,7 @@ After `yarn build`, the relevant artifacts live in `dist/mud/`:
 | `tokens/core.dark.tokens.css` | Dark-theme overrides, scoped under `[data-theme='dark']`. | Recommended |
 | `p-*.js` chunks | One per component, lazy-loaded by the entry. | Auto-served alongside the entry |
 | `assets/` | SVG sprites (used by `mud-icon`, `mud-logo`, …). Resolved via `import.meta.url` of the entry. | **Yes** — keep relative to `mud.esm.js` |
+| `assets/fonts/` | The Onest variable font (`onest-variable.woff2`, weights 100–900). Requested by `mud.css` through a relative URL. | **Yes** — keep relative to `mud.css` |
 
 > **Critical:** ship the *entire* `dist/mud/` directory as one unit. The lazy loader uses `import.meta.url` to locate chunks and assets — moving or renaming individual files will break asset resolution at runtime.
 
@@ -93,17 +94,17 @@ The package declares `"unpkg": "dist/mud/mud.esm.js"`, so any npm-mirroring CDN 
 ```html
 <link
   rel="stylesheet"
-  href="https://unpkg.com/@egovmd/mud@0.0.1/dist/mud/tokens/core.tokens.css"
+  href="https://unpkg.com/@egov-moldova/mud@1.1.9/dist/mud/tokens/core.tokens.css"
   integrity="sha384-REPLACE_WITH_REAL_HASH"
   crossorigin="anonymous">
 <link
   rel="stylesheet"
-  href="https://unpkg.com/@egovmd/mud@0.0.1/dist/mud/mud.css"
+  href="https://unpkg.com/@egov-moldova/mud@1.1.9/dist/mud/mud.css"
   integrity="sha384-REPLACE_WITH_REAL_HASH"
   crossorigin="anonymous">
 <script
   type="module"
-  src="https://unpkg.com/@egovmd/mud@0.0.1/dist/mud/mud.esm.js"
+  src="https://unpkg.com/@egov-moldova/mud@1.1.9/dist/mud/mud.esm.js"
   integrity="sha384-REPLACE_WITH_REAL_HASH"
   crossorigin="anonymous"></script>
 ```
@@ -111,7 +112,7 @@ The package declares `"unpkg": "dist/mud/mud.esm.js"`, so any npm-mirroring CDN 
 Generate hashes locally against the exact published files:
 
 ```bash
-curl -sL https://unpkg.com/@egovmd/mud@0.0.1/dist/mud/mud.esm.js \
+curl -sL https://unpkg.com/@egov-moldova/mud@1.1.9/dist/mud/mud.esm.js \
   | openssl dgst -sha384 -binary | openssl base64 -A
 ```
 
@@ -382,7 +383,8 @@ You can also scope dark mode to a subtree — apply `data-theme="dark"` to any w
 - **MIME type**: `.js` files must be served as `application/javascript` (or `text/javascript`). Some legacy servers default to `application/octet-stream` for unknown extensions and the browser will refuse to execute the module. Configure your server to send the right MIME for `.js`, `.css`, and `.svg`.
 - **Cache headers**: chunks (`p-*.js`) are content-hashed, so they can be served with `Cache-Control: public, max-age=31536000, immutable`. The entry file `mud.esm.js` is **not** hashed — give it a short cache (e.g. 5 minutes) or version it via your asset pipeline.
 - **Compression**: enable Brotli/gzip on `.js`, `.css`, `.svg`. The unminified ESM is ~3 KB but each component chunk benefits significantly.
-- **CSP**: the loader uses dynamic `import()` and inline source maps in dev. Production builds are CSP-friendly with `script-src 'self'` plus a nonce — call `setNonce('<your-nonce>')` from `@egovmd/mud/loader` before the loader runs:
+- **Fonts under CSP**: `mud.css` loads `assets/fonts/onest-variable.woff2` relative to itself, so `font-src` must allow the origin `mud.css` is served from (`'self'` when self-hosted, the CDN origin otherwise).
+- **CSP**: the loader uses dynamic `import()` and inline source maps in dev. Production builds are CSP-friendly with `script-src 'self'` plus a nonce — call `setNonce('<your-nonce>')` from `@egov-moldova/mud/loader` before the loader runs:
 
   ```html
   <script type="module" nonce="abc123">
@@ -400,6 +402,7 @@ You can also scope dark mode to a subtree — apply `data-theme="dark"` to any w
 | `<mud-button>` renders as plain text, no styling | The loader didn't run, or chunks 404 | Open DevTools → Network. If `mud.esm.js` is 200 but `p-*.js` chunks are 404, the folder is split — re-deploy `dist/mud/` as a whole. |
 | Icons render as blank squares | Asset resolution failed | The SVG sprite path is derived from `mud.esm.js`'s URL. Ensure `dist/mud/assets/` is co-located with the entry. |
 | Modal/popover positioned wrong | Tokens not loaded | Verify `core.tokens.css` is in the document *before* `mud.css`. Otherwise component CSS resolves variables to their fallback. |
+| Text renders in a system font instead of Onest | `mud.css` was copied without `assets/fonts/`, or CSP `font-src` blocks it | Deploy `dist/mud/` as a whole; check DevTools → Network for `onest-variable.woff2` and the console for a CSP violation. |
 | Dark mode doesn't apply | Missing dark tokens or wrong attribute | Confirm `core.dark.tokens.css` is linked **and** `<html data-theme="dark">` is set. |
 | Blazor: `e.target.value` is empty in event handler | Stencil emits typed `CustomEvent`; `value` lives on `event.detail`, not on the target | Use `e.Detail` (Blazor) or `e.detail` (JS). |
 | `<mud-select>` shows no options after data load | Tried to set `options` as an attribute | Set the JS property after `customElements.whenDefined()`. See [section 6](#6-setting-non-string-props-objects-arrays). |

@@ -52,6 +52,21 @@ element. If you have a legitimate affordance that must stay clickable under a di
 item (an "unlock", a "why is this disabled?" trigger), open an issue rather than
 fighting the cascade; there is no escape hatch today.
 
+### Fixed — semibold text rendered as bold
+
+`styles.css` shipped static Onest faces for weights 400, 500 and 700, while the
+tokens also use 600 (`--font-weight-semibold`). A weight with no face renders with
+the nearest one, so every semibold label rendered bold, and consumers declared
+their own `@font-face` to work around it. `styles.css` now declares one variable
+face covering 100–900, and that workaround can be deleted.
+
+The font is one WOFF2 file, `dist/mud/assets/fonts/onest-variable.woff2`
+(57.5 KB), replacing `onest-regular.ttf`, `onest-medium.ttf` and `onest-bold.ttf`
+(176.7 KB together). Those three paths were never `exports` keys. A page that
+linked one of them directly, rather than through `styles.css`, must link
+`styles.css` instead. esbuild consumers need `--loader:.woff2=file`; see the
+README's Fonts section.
+
 ### Changed — public API surface (breaking for deep imports)
 
 The `exports` map no longer exposes build directories. Bare specifiers that

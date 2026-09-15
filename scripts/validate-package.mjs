@@ -15,6 +15,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { stylesheetUrls } from './font-faces.mjs';
+
 export const PROJECT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 /** package.json fields whose value names exactly one entry file. */
@@ -357,6 +359,36 @@ export function checkBundleAssets(packedFiles, lazyDir, standaloneDir) {
 }
 
 /**
+ * Every relative `url()` in the published global stylesheet names a file the
+ * tarball contains. A bundler resolves those URLs against the stylesheet's own
+ * location and fails the consumer's build when one is missing; a browser loading
+ * it from a CDN or a self-hosted `dist/mud/` just renders the fallback font.
+ * `exports["./styles.css"]` is a literal key, so `checkDeclaredEntries` proves
+ * the stylesheet is packed and says nothing about what it references.
+ *
+ * Absolute URLs, `data:` URIs and fragment-only references (`url(#mask)`) name
+ * no packed file and are skipped.
+ */
+export function checkStylesheetAssets(pkg, packedFiles, readText) {
+  const target = pkg.exports?.['./styles.css'];
+  if (typeof target !== 'string') {
+    throw new Error('validate-package: cannot locate the global stylesheet — exports["./styles.css"] is missing');
+  }
+  const stylesheet = normalizePackagePath(target);
+  if (!packedFiles.includes(stylesheet)) {
+    // `checkDeclaredEntries` already reports the missing stylesheet itself.
+    return [];
+  }
+  const packed = new Set(packedFiles);
+  const baseDir = path.posix.dirname(stylesheet);
+  return stylesheetUrls(readText(stylesheet))
+    .filter(url => !/^([a-z][a-z0-9+.-]*:|\/\/|\/|#)/i.test(url))
+    .map(url => ({ url, file: path.posix.normalize(path.posix.join(baseDir, url.replace(/[?#].*$/, ''))) }))
+    .filter(({ file }) => !packed.has(file))
+    .map(({ url, file }) => `${stylesheet} references ${url}, but the tarball does not contain ${file}`);
+}
+
+/**
  * The exact file list that would be published — `files`, ignore rules and the
  * packer's own built-in rules all applied. Asking the packer beats
  * reimplementing its rules.
@@ -494,6 +526,7 @@ export function main({ cwd = PROJECT_ROOT, log = console.log, error = console.er
       checkDevSignature(files, readText),
     ],
     ['standalone bundle published without its assets', checkBundleAssets(files, lazyDir, standaloneDir)],
+    ['global stylesheet references a file the tarball does not contain', checkStylesheetAssets(pkg, files, readText)],
   ];
 
   const failures = categories.filter(([, offenders]) => offenders.length > 0);

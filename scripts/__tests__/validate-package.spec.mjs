@@ -14,6 +14,7 @@ import {
   checkPackerAgreement,
   checkPublicSpecifiers,
   checkSourceMaps,
+  checkStylesheetAssets,
   collectDeclaredEntries,
   exportsKeyPattern,
   lazyBundleDir,
@@ -165,6 +166,52 @@ describe('checkBundleAssets', () => {
 
   it('is silent when the package has no assets at all', () => {
     assert.deepEqual(checkBundleAssets(['dist/mud/mud.esm.js'], 'dist/mud/', 'dist/components/'), []);
+  });
+});
+
+describe('checkStylesheetAssets', () => {
+  const css = files => file => files[file];
+
+  it('passes when every relative url resolves to a packed file', () => {
+    const read = css({ 'dist/mud/mud.css': "@font-face{src:url('./assets/fonts/onest-variable.woff2')}" });
+    const packed = ['dist/mud/mud.css', 'dist/mud/assets/fonts/onest-variable.woff2'];
+    assert.deepEqual(checkStylesheetAssets(PKG, packed, read), []);
+  });
+
+  it('names the url and the missing file', () => {
+    const read = css({ 'dist/mud/mud.css': "@font-face{src:url('./assets/fonts/onest-variable.woff2')}" });
+    assert.deepEqual(checkStylesheetAssets(PKG, ['dist/mud/mud.css'], read), [
+      'dist/mud/mud.css references ./assets/fonts/onest-variable.woff2, but the tarball does not contain dist/mud/assets/fonts/onest-variable.woff2',
+    ]);
+  });
+
+  it('checks urls outside @font-face too', () => {
+    const read = css({ 'dist/mud/mud.css': '.x{background:url(img/a.svg?v=2)}' });
+    assert.deepEqual(checkStylesheetAssets(PKG, ['dist/mud/mud.css'], read), [
+      'dist/mud/mud.css references img/a.svg?v=2, but the tarball does not contain dist/mud/img/a.svg',
+    ]);
+  });
+
+  it('skips absolute, protocol-relative, data and fragment-only urls', () => {
+    const read = css({
+      'dist/mud/mud.css':
+        '.a{background:url(https://cdn.example/a.svg)} .b{background:url(//cdn.example/b.svg)} ' +
+        '.c{background:url(/abs.svg)} .d{background:url(data:image/svg+xml;base64,AA==)} .e{mask:url(#m)}',
+    });
+    assert.deepEqual(checkStylesheetAssets(PKG, ['dist/mud/mud.css'], read), []);
+  });
+
+  it('leaves a missing stylesheet to checkDeclaredEntries', () => {
+    assert.deepEqual(
+      checkStylesheetAssets(PKG, [], () => {
+        throw new Error('must not read');
+      }),
+      [],
+    );
+  });
+
+  it('throws when the package declares no global stylesheet', () => {
+    assert.throws(() => checkStylesheetAssets({ exports: {} }, [], () => ''), /exports\["\.\/styles\.css"\]/);
   });
 });
 
