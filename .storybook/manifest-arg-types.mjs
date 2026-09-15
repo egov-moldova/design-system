@@ -65,3 +65,20 @@ export function extractArgTypes(manifest, tagName) {
   }
   return argTypes;
 }
+
+// Storybook normalizes a story's own `argTypes` with `name: <key>` before merging them over
+// the extracted rows, so every property a story declares would be labelled by its camelCase
+// key while the rest carry their attribute name. Run as an argTypes enhancer, after that
+// merge, to give every property row the same label.
+export function labelPropertiesWithAttributes(manifest, tagName, argTypes) {
+  const declaration = findDeclaration(manifest, tagName);
+  if (!declaration) return argTypes;
+
+  const relabelled = { ...argTypes };
+  for (const member of declaration.members ?? []) {
+    if (member.kind === 'field' && member.attribute && relabelled[member.name]) {
+      relabelled[member.name] = { ...relabelled[member.name], name: member.attribute };
+    }
+  }
+  return relabelled;
+}
