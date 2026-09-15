@@ -1,6 +1,8 @@
 # Clean Public API Exports Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan phase-by-phase. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **Status: archived historical record — do not execute.** Implementation completed before release configuration moved to the Azure DevOps `Design.System` operations repository. Pipeline paths and line references below intentionally describe the former repository layout.
+>
+> **Historical instruction (inactive):** Use `superpowers:executing-plans` to implement this plan phase-by-phase. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Replace the `dist/`-shaped subpaths in `@egov-moldova/mud`'s `exports` map with a clean public API, and move every mechanism that reads that map in the same commit.
 

@@ -393,8 +393,8 @@ export function packedFileList(cwd = PROJECT_ROOT) {
 }
 
 /**
- * The same list as `packedFileList`, asked of the packer the release path
- * actually uses (`pipline-mud-publish-npm.yml` publishes with `npm publish`).
+ * The same list as `packedFileList`, asked of the packer the Azure DevOps
+ * release path actually uses (`npm publish`).
  *
  * `--ignore-scripts` is required, not cosmetic: without it `npm pack --dry-run`
  * runs this package's `prepare` (`husky install && ...`), so a read-only

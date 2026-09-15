@@ -121,9 +121,8 @@ files you did not edit — that is why it is the sanctioned command in
 
 It becomes a scope problem the moment `main` is *not* clean: the formatter then
 rewrites every drifted file in the repo. Observed on PR #12, where `main` was red
-— `azure/deploy/chart/Chart.yaml` (`"1.0"` -> `'1.0'`),
-`azure/deploy/values.dev.yaml` (list re-indent), `web-components/CDN_TEST.html`
-(170 lines) — none of them touched by the task.
+and unrelated infrastructure plus `web-components/CDN_TEST.html` were rewritten.
+Infrastructure has since moved to the Azure DevOps operations repository.
 
 **Pre-existing drift is decided per file, by who owns it.** Reverting a drifted
 file alone turns `yarn lint` red again, since it checks the same repo-wide scope,
@@ -132,11 +131,11 @@ so the revert and the ignore rule always travel together:
 | The file is | Do | Because |
 |---|---|---|
 | This repo's own source — `src/`, `.storybook/`, build/test config | Keep it formatted, in an isolated `style:` commit, and say so in the PR description | It has to stay lint-clean; a `style:` commit the reviewer can skip is the honest form |
-| Infrastructure or a hand-maintained artifact — `azure/`, Helm charts, CI pipelines, demo pages | Add it to `.prettierignore`, then `git checkout main -- <path>` | This repo's JS toolchain does not own those files, and formatting them is churn in someone else's review |
+| Hand-maintained artifact — for example, demo pages | Add it to `.prettierignore`, then `git checkout main -- <path>` | This repo's JS toolchain does not own those files, and formatting them is churn in someone else's review |
 
-Resolved that way on PR #12: `azure/`, the root publish pipeline and
-`web-components/CDN_TEST.html` are ignored and back to main's content; twelve
-source files stayed formatted in two `style:` commits, because `yarn lint` is a
+Resolved that way on PR #12. The legacy infrastructure files later moved out of
+this source repository; `web-components/CDN_TEST.html` remains ignored. Twelve
+source files stayed formatted in two `style:` commits because `yarn lint` is a
 blocking CI step and was red on main.
 
 To format only what you edited:

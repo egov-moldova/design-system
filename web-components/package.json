@@ -36,7 +36,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://gitlab.com/age/design-system.git"
+    "url": "git+https://github.com/egov-moldova/design-system.git",
+    "directory": "web-components"
   },
   "keywords": [
     "web-components",
