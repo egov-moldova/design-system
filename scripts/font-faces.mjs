@@ -12,19 +12,37 @@ import zlib from 'node:zlib';
 
 import postcss from 'postcss';
 
-const URL_PATTERN = /url\(\s*(['"]?)(.*?)\1\s*\)/g;
+// CSS function names are ASCII case-insensitive: `URL(x)` loads like `url(x)`.
+const URL_PATTERN = /url\(\s*(['"]?)(.*?)\1\s*\)/gi;
 
 const KEYWORD_WEIGHTS = { normal: 400, bold: 700 };
 
-/** Every `url()` target in one declaration value, in source order. */
+// CSS Fonts 4: a `font-weight` number is a plain decimal in [1, 1000].
+const WEIGHT_NUMBER = /^\d+(\.\d+)?$/;
+
+/** Every `url()` target in one value, in source order, percent-decoded as the resolver sees it. */
 function urlsIn(value) {
-  return [...value.matchAll(URL_PATTERN)].map(match => match[2]);
+  return [...value.matchAll(URL_PATTERN)].map(match => {
+    try {
+      return decodeURIComponent(match[2]);
+    } catch {
+      return match[2];
+    }
+  });
 }
 
-/** Every `url()` referenced by any declaration in the stylesheet. */
+/**
+ * Every URL the stylesheet asks a resolver to load: `url()` in any declaration,
+ * plus `@import` targets in either `url()` or bare-string form.
+ */
 export function stylesheetUrls(cssText) {
   const urls = [];
-  postcss.parse(cssText).walkDecls(decl => {
+  const root = postcss.parse(cssText);
+  root.walkAtRules(/^import$/i, rule => {
+    const bare = /^\s*(['"])(.*?)\1/.exec(rule.params);
+    urls.push(...(bare ? [bare[2]] : urlsIn(rule.params)));
+  });
+  root.walkDecls(decl => {
     urls.push(...urlsIn(decl.value));
   });
   return urls;
@@ -32,19 +50,22 @@ export function stylesheetUrls(cssText) {
 
 /**
  * `font-weight` descriptor → inclusive `[min, max]`. A single value is a
- * degenerate range; `normal`/`bold` are the two keywords the descriptor allows.
- * Returns null for anything else, so a malformed rule fails coverage rather
- * than being read as covering everything.
+ * degenerate range; `normal`/`bold` are the two keywords the descriptor allows;
+ * a reversed range is swapped, as browsers do. Returns null for anything a
+ * browser would reject, so a malformed rule fails coverage rather than being
+ * read as covering something.
  */
 export function parseWeightDescriptor(value) {
-  const parts = value
-    .trim()
-    .split(/\s+/)
-    .map(part => KEYWORD_WEIGHTS[part] ?? Number(part));
-  if (parts.length === 0 || parts.length > 2 || parts.some(part => !Number.isFinite(part))) {
+  const tokens = value.trim().split(/\s+/).filter(Boolean);
+  if (tokens.length === 0 || tokens.length > 2) {
     return null;
   }
-  return [parts[0], parts[parts.length - 1]];
+  const parts = tokens.map(token => KEYWORD_WEIGHTS[token] ?? (WEIGHT_NUMBER.test(token) ? Number(token) : NaN));
+  if (parts.some(part => !(part >= 1 && part <= 1000))) {
+    return null;
+  }
+  const [first, last] = [parts[0], parts[parts.length - 1]];
+  return first <= last ? [first, last] : [last, first];
 }
 
 export function parseFontFaces(cssText) {
@@ -72,9 +93,14 @@ export function parseFontFaces(cssText) {
   return faces;
 }
 
-/** The weights no face of `family` covers. */
+/**
+ * The weights no upright face of `family` covers. Upright text is matched
+ * against `font-style: normal` faces only, so an italic face covers nothing here.
+ */
 export function uncoveredWeights(faces, family, weights) {
-  const ranges = faces.filter(face => face.family === family && face.weight !== null).map(face => face.weight);
+  const ranges = faces
+    .filter(face => face.family === family && face.style === 'normal' && face.weight !== null)
+    .map(face => face.weight);
   return weights.filter(weight => !ranges.some(([min, max]) => weight >= min && weight <= max));
 }
 
@@ -99,6 +125,34 @@ export function tokenFontWeights(tokens) {
 }
 
 /**
+ * Every numeric weight a built token stylesheet assigns to a `*font-weight*`
+ * custom property, sorted and unique. Style Dictionary resolves references
+ * before writing, so this is the set the components actually render with,
+ * component tokens included.
+ */
+export function tokenCssFontWeights(cssText) {
+  const weights = new Set();
+  postcss.parse(cssText).walkDecls(/^--.*font-weight/, decl => {
+    if (WEIGHT_NUMBER.test(decl.value.trim())) {
+      weights.add(Number(decl.value.trim()));
+    }
+  });
+  return [...weights].sort((a, b) => a - b);
+}
+
+/** The first family named by `--font-family-primary` in a built token stylesheet, or null. */
+export function tokenCssPrimaryFamily(cssText) {
+  let family = null;
+  postcss.parse(cssText).walkDecls('--font-family-primary', decl => {
+    family ??= decl.value
+      .split(',')[0]
+      .trim()
+      .replace(/^(['"])(.*)\1$/, '$2');
+  });
+  return family;
+}
+
+/**
  * WOFF2 known-table tags, indexed by the low six bits of a table directory
  * entry's flags byte (W3C WOFF2 §5.1, Table 2). Index 63 means an explicit
  * four-byte tag follows instead.
@@ -112,6 +166,10 @@ const WOFF2_KNOWN_TAGS = [
 ]; // prettier-ignore
 
 const WOFF2_HEADER_SIZE = 48;
+
+// Far above any web font (the shipped variable Onest decodes to ~120 KB), far
+// below what a CI runner can allocate.
+const WOFF2_MAX_DECOMPRESSED = 16 * 1024 * 1024;
 
 function readUIntBase128(buffer, offset) {
   let value = 0;
@@ -185,7 +243,23 @@ export function woff2WeightAxis(buffer) {
     return null;
   }
 
-  const stream = zlib.brotliDecompressSync(buffer.subarray(offset, offset + totalCompressedSize));
+  // §5.3: the decompressed stream is exactly the tables' stored lengths, so the
+  // directory already bounds it. Capping the output at that size is what stops a
+  // crafted file from expanding without limit, and a mismatch is a malformed font.
+  if (dataOffset > WOFF2_MAX_DECOMPRESSED) {
+    throw new Error(`woff2: table directory declares ${dataOffset} bytes, over the ${WOFF2_MAX_DECOMPRESSED} cap`);
+  }
+  let stream;
+  try {
+    stream = zlib.brotliDecompressSync(buffer.subarray(offset, offset + totalCompressedSize), {
+      maxOutputLength: Math.max(dataOffset, 1),
+    });
+  } catch (error) {
+    throw new Error(`woff2: compressed stream does not decode to the declared ${dataOffset} bytes (${error.code})`);
+  }
+  if (stream.length !== dataOffset) {
+    throw new Error(`woff2: compressed stream decodes to ${stream.length} bytes, directory declares ${dataOffset}`);
+  }
   const table = stream.subarray(fvar.start, fvar.start + fvar.length);
   const axesArrayOffset = table.readUInt16BE(4);
   const axisCount = table.readUInt16BE(8);

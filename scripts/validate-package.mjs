@@ -15,7 +15,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { stylesheetUrls } from './font-faces.mjs';
+import {
+  parseFontFaces,
+  stylesheetUrls,
+  tokenCssFontWeights,
+  tokenCssPrimaryFamily,
+  uncoveredWeights,
+  woff2WeightAxis,
+} from './font-faces.mjs';
 
 export const PROJECT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -370,22 +377,96 @@ export function checkBundleAssets(packedFiles, lazyDir, standaloneDir) {
  * no packed file and are skipped.
  */
 export function checkStylesheetAssets(pkg, packedFiles, readText) {
-  const target = pkg.exports?.['./styles.css'];
-  if (typeof target !== 'string') {
-    throw new Error('validate-package: cannot locate the global stylesheet — exports["./styles.css"] is missing');
-  }
-  const stylesheet = normalizePackagePath(target);
+  const stylesheet = globalStylesheet(pkg);
   if (!packedFiles.includes(stylesheet)) {
     // `checkDeclaredEntries` already reports the missing stylesheet itself.
     return [];
   }
   const packed = new Set(packedFiles);
-  const baseDir = path.posix.dirname(stylesheet);
   return stylesheetUrls(readText(stylesheet))
-    .filter(url => !/^([a-z][a-z0-9+.-]*:|\/\/|\/|#)/i.test(url))
-    .map(url => ({ url, file: path.posix.normalize(path.posix.join(baseDir, url.replace(/[?#].*$/, ''))) }))
-    .filter(({ file }) => !packed.has(file))
+    .map(url => ({ url, file: packageRelativeTarget(stylesheet, url) }))
+    .filter(({ file }) => file !== null && !packed.has(file))
     .map(({ url, file }) => `${stylesheet} references ${url}, but the tarball does not contain ${file}`);
+}
+
+function globalStylesheet(pkg) {
+  const target = pkg.exports?.['./styles.css'];
+  if (typeof target !== 'string') {
+    throw new Error('validate-package: cannot locate the global stylesheet — exports["./styles.css"] is missing');
+  }
+  return normalizePackagePath(target);
+}
+
+/**
+ * The tarball path a URL in `stylesheet` resolves to, or null for one that names
+ * no packed file: absolute, protocol-relative, `data:`, or fragment-only.
+ */
+function packageRelativeTarget(stylesheet, url) {
+  if (/^([a-z][a-z0-9+.-]*:|\/\/|\/|#)/i.test(url)) {
+    return null;
+  }
+  return path.posix.normalize(path.posix.join(path.posix.dirname(stylesheet), url.replace(/[?#].*$/, '')));
+}
+
+/**
+ * The published global stylesheet gives the primary font family a face for
+ * every weight the published tokens use, and every variable face's file can
+ * actually render the range it declares.
+ *
+ * A weight with no face is not a missing asset a browser reports: it renders
+ * with the nearest face, which shipped semibold text as bold (issue #3). The
+ * weights come from the built light-token stylesheet rather than the token
+ * sources, because Style Dictionary has resolved every component token to its
+ * literal there, so this grades what consumers render. Runs in the publish
+ * pipeline, which `scripts/__tests__/font-faces.spec.mjs` does not.
+ */
+export function checkFontFaceCoverage(pkg, packedFiles, readText, readBuffer) {
+  const stylesheet = globalStylesheet(pkg);
+  const tokensPattern = pkg.exports?.['./tokens/*.css'];
+  if (typeof tokensPattern !== 'string') {
+    throw new Error('validate-package: cannot locate the token stylesheets — exports["./tokens/*.css"] is missing');
+  }
+  const tokens = normalizePackagePath(tokensPattern.replace('*', 'core.tokens'));
+  if (!packedFiles.includes(stylesheet) || !packedFiles.includes(tokens)) {
+    // Missing entries are reported by `checkDeclaredEntries` / `checkPublicSpecifiers`.
+    return [];
+  }
+
+  const tokenCss = readText(tokens);
+  const family = tokenCssPrimaryFamily(tokenCss);
+  if (family === null) {
+    return [`${tokens} declares no --font-family-primary`];
+  }
+  const faces = parseFontFaces(readText(stylesheet));
+  const failures = uncoveredWeights(faces, family, tokenCssFontWeights(tokenCss)).map(
+    weight => `${stylesheet} has no ${family} face covering font-weight ${weight}, which ${tokens} uses`,
+  );
+
+  const packed = new Set(packedFiles);
+  for (const face of faces.filter(candidate => candidate.family === family && candidate.weight !== null)) {
+    const [min, max] = face.weight;
+    if (min === max) {
+      continue;
+    }
+    for (const url of face.srcUrls) {
+      const file = packageRelativeTarget(stylesheet, url);
+      if (file === null || !packed.has(file)) {
+        continue; // `checkStylesheetAssets` reports the missing file.
+      }
+      let axis;
+      try {
+        axis = woff2WeightAxis(readBuffer(file));
+      } catch (error) {
+        failures.push(`${file} is declared for ${family} ${min} ${max} but is not a readable WOFF2 — ${error.message}`);
+        continue;
+      }
+      if (axis === null || axis[0] > min || axis[1] < max) {
+        const renders = axis === null ? 'is a static font' : `renders wght ${axis.join('–')}`;
+        failures.push(`${file} ${renders}, but ${stylesheet} declares it for ${family} ${min} ${max}`);
+      }
+    }
+  }
+  return failures;
 }
 
 /**
@@ -489,6 +570,7 @@ export function main({ cwd = PROJECT_ROOT, log = console.log, error = console.er
   const declared = collectDeclaredEntries(pkg);
   const files = packedFileList(cwd);
   const readText = file => fs.readFileSync(path.join(cwd, file), 'utf8');
+  const readBuffer = file => fs.readFileSync(path.join(cwd, file));
   const lazyDir = lazyBundleDir(pkg);
   const standaloneDir = standaloneBundleDir(pkg);
 
@@ -527,6 +609,10 @@ export function main({ cwd = PROJECT_ROOT, log = console.log, error = console.er
     ],
     ['standalone bundle published without its assets', checkBundleAssets(files, lazyDir, standaloneDir)],
     ['global stylesheet references a file the tarball does not contain', checkStylesheetAssets(pkg, files, readText)],
+    [
+      'global stylesheet does not give the token font weights a face',
+      checkFontFaceCoverage(pkg, files, readText, readBuffer),
+    ],
   ];
 
   const failures = categories.filter(([, offenders]) => offenders.length > 0);

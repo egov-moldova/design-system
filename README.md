@@ -136,11 +136,13 @@ yarn add @egov-moldova/mud @egov-moldova/mud-web-components
 
 `styles.css` brings the Onest typeface with it — no `@font-face` of your own, no font files to copy. It declares one variable WOFF2 face (weights 100–900) referenced by a relative URL, so it resolves wherever `dist/mud/` goes:
 
-- **Bundlers** (Vite, webpack, Angular CLI, Parcel) find `./assets/fonts/onest-variable.woff2` next to the stylesheet and emit it with your build. **esbuild** used directly needs a loader for it: `--loader:.woff2=file`.
+- **Bundlers** (Vite, webpack, Angular CLI, Next.js) find `./assets/fonts/onest-variable.woff2` next to the stylesheet and emit it with your build. **esbuild** used directly needs a loader for it: `--loader:.woff2=file`.
 - **CDN** — the font is fetched from the same CDN path as `mud.css`; jsDelivr and unpkg send the `Access-Control-Allow-Origin` header cross-origin fonts require.
 - **Self-hosted** — serve `dist/mud/` as one directory; copying `mud.css` alone leaves the font behind.
 
 With a Content Security Policy, `font-src` must allow wherever `mud.css` is served from (`'self'`, or the CDN origin).
+
+Releases up to and including 1.1.9 ship three static faces (400/500/700) instead, so semibold text renders bold there — pin a later release in the CDN examples above to get the variable face (see the [changelog](CHANGELOG.md)).
 
 ####  React component wrappers
 > Not yet published. `@egov-moldova/mud-react` is still in development — until it ships, consume the components as raw custom elements via [With a bundler](#with-a-bundler) above.
