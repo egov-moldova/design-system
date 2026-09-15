@@ -1197,7 +1197,7 @@ export namespace Components {
         "language"?: string;
         /**
           * Languages offered by the pre-header switcher.
-          * @default HEADER_DEFAULT_LANGUAGES
+          * @default [   { code: 'ro', label: 'Ro' },   { code: 'ru', label: 'Ru' },   { code: 'en', label: 'En' }, ]
          */
         "languages": readonly HeaderLanguage[];
         /**
@@ -1254,7 +1254,7 @@ export namespace Components {
         "languageLabel": string;
         /**
           * Languages offered by the drawer's language pill.
-          * @default HEADER_DEFAULT_LANGUAGES
+          * @default [   { code: 'ro', label: 'Ro' },   { code: 'ru', label: 'Ru' },   { code: 'en', label: 'En' }, ]
          */
         "languages": readonly HeaderLanguage[];
         /**
@@ -6576,7 +6576,7 @@ declare namespace LocalJSX {
         "language"?: string;
         /**
           * Languages offered by the pre-header switcher.
-          * @default HEADER_DEFAULT_LANGUAGES
+          * @default [   { code: 'ro', label: 'Ro' },   { code: 'ru', label: 'Ru' },   { code: 'en', label: 'En' }, ]
          */
         "languages"?: readonly HeaderLanguage[];
         /**
@@ -6641,7 +6641,7 @@ declare namespace LocalJSX {
         "languageLabel"?: string;
         /**
           * Languages offered by the drawer's language pill.
-          * @default HEADER_DEFAULT_LANGUAGES
+          * @default [   { code: 'ro', label: 'Ro' },   { code: 'ru', label: 'Ru' },   { code: 'en', label: 'En' }, ]
          */
         "languages"?: readonly HeaderLanguage[];
         /**

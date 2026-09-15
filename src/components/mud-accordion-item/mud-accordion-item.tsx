@@ -250,7 +250,7 @@ export class MudAccordionItem {
 
   connectedCallback() {
     // Re-acquire, and this is the other half of `disconnectedCallback`'s release.
-    // Measured against the installed runtime (@stencil/core 4.43.4): a second
+    // Measured against the installed runtime (@stencil/core 4.43.5): a second
     // connect takes the `else` branch at `internal/client/index.js:4011`, which
     // fires `connectedCallback` but never `initializeComponent`, so
     // `componentDidLoad` does not run again; `@Watch('disabled')` does not fire
