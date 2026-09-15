@@ -104,6 +104,9 @@ Row handling (decision 2): Storybook's default extractor (205 duplicates, 44 col
 - `package.json` (modify) — drop `wca.custom-elements` script and wireit task, its three dependents, the devDependency; `build.output` and `dx:storybook` learn the manifest.
 - `yarn.lock` (modify) — result of `yarn remove web-component-analyzer`.
 - `scripts/ensure-custom-elements-manifest.mjs` (delete) — existed only because wca writes nothing for an empty tree.
+- `src/components/mud-accordion/mud-accordion.tsx`, `src/components/mud-accordion-item/mud-accordion-item.tsx` (modify) — drop the `@csspart`/`@fires` tags wca needed; `src/components.d.ts` (regenerated) follows.
+- `src/components/mud-accordion/mud-accordion.stories.ts`, `src/components/mud-accordion-item/mud-accordion-item.stories.ts`, `src/components/mud-accordion/mud-accordion.mdx` (modify) — retire the `host` exclusions wca made necessary.
+- `STACK.md`, `_agents/environment-commands.md` (modify) — stop naming wca and its script.
 - `scripts/__tests__/storybook-manifest.spec.mjs` (create) — contract over the generated manifest (the issue's reproduction).
 - `scripts/__tests__/storybook-manifest-arg-types.spec.mjs` (create) — unit tests for the extractor.
 - `AGENTS.md`, `Dockerfile`, `.gitattributes` (modify) — the three places that name `wca.custom-elements`.
@@ -140,8 +143,7 @@ Zero-tolerance (any miss = FAIL):
 | Z4 | `yarn build` changes no readme, and `src/components.d.ts` only by the removed accordion `@csspart`/`@fires` JSDoc lines | `git status --short -- 'src/components/**/readme.md'` → empty; `git diff -U0 src/components.d.ts \| grep '^+[^+]'` → empty (no added line), and `git diff -U0 src/components.d.ts \| grep '^-[^-]' \| grep -v '@csspart \|@fires \|item currently open (single entry in \|^- *\*$'` → empty (every removed line is a retired tag, the one continuation line of `@fires mudChange`, or a bare ` *` spacer) |
 | Z8 | No `@csspart` / `@fires` left in component source | `git grep -n "@csspart\|@fires" -- 'src/**/*.tsx'` → empty |
 | Z5 | No trace of wca in the tree | `git grep -n "web-component-analyzer\|wca\.custom-elements\|wca analyze" -- ':!.claude/plans/' ':!CHANGELOG.md'` → empty, and `git grep -nw "wca" -- src .storybook` → empty |
-| Z6 | Every story's `initialArgs` identical before/after (canvas input unchanged) | baseline vs after JSON from Task 1 Step 1 / Task 3 Step 6, `diff` → empty |
-| Z7 | Prettier clean on authored files | `npx prettier --check <changed files>` |
+| Z6 | For every story, `initialArgs` identical before/after, and the set of argType keys carrying a non-null `control` identical before/after (the Controls panel gains no control) | Task 1 Step 1 / Task 3 Step 6 capture (`args`, `argTypes[*].control`), compared per story id → 0 differing stories |
 
 Numeric (over all 56 tags, from the built Storybook in Task 3):
 
@@ -161,7 +163,7 @@ Numeric (over all 56 tags, from the built Storybook in Task 3):
 - Create: `.storybook/manifest-arg-types.mjs`
 - Create: `scripts/__tests__/storybook-manifest.spec.mjs`
 - Create: `scripts/__tests__/storybook-manifest-arg-types.spec.mjs`
-- Create: `.claude/plans/2026-09-15-issue-18-storybook-api-tables-from-manifest.md`
+- Modify: `.claude/plans/2026-09-15-issue-18-storybook-api-tables-from-manifest.md`
 - Modify: `.storybook/preview.js`
 - Modify: `stencil.config.ts`
 - Modify: `package.json`
@@ -338,13 +340,14 @@ Expected: FAIL — `schemaVersion` undefined (wca writes `version: "experimental
 
 The `compared > 0` assertion in each readme test is the vacuity guard: a parser that
 finds no reference rows fails rather than passes. On the wca manifest (no `modules[]`)
-every test fails: shape, tag set, and the three readme tests on `compared`. That proves
+every test fails: shape, tag set, and the five readme tests on `compared`. That proves
 the shape defect, not the missing rows, so Step 6 must show the readme tests passing
 with `compared > 0` on the Stencil manifest.
 
-Planning dry-run of this exact spec (session scratchpad, 2026-09-15): Stencil manifest
-6/6 pass; wca manifest 0/6; Stencil manifest with `events` emptied and `cssParts`
-removed → events and shadow-parts tests fail with 392 named `missing` lines (e.g.
+Planning dry-runs (session scratchpad, 2026-09-15): with the Properties and Slots readme
+tests, Stencil manifest 8/8 pass. On the earlier 6-test version: wca manifest 0/6;
+Stencil manifest with `events` emptied and `cssParts` removed → events and shadow-parts
+tests fail with 392 named `missing` lines (e.g.
 `mud-tabs: mudChange`). The readme tests therefore detect the issue's missing rows,
 not only its shape.
 
@@ -380,6 +383,7 @@ and in `export const config`:
 - remove `"wca.custom-elements"` from `wireit.build.dependencies`, `wireit["dx:prepare"].dependencies`, `wireit["sp.build"].dependencies`;
 - add `".storybook/custom-elements.json"` to `wireit.build.output`;
 - `wireit["dx:storybook"].command`: add `.storybook/custom-elements.json` to the `wait-on` list;
+- `wireit["test.storybook.watch"].command`: add `.storybook/custom-elements.json` to its `wait-on` list (the Storybook Vitest project applies `preview.js`, which imports the manifest);
 - `wireit["dx:storybook"].files`: add `"!.storybook/custom-elements.json"` so watch rewrites do not restart the service.
 
 Then:
@@ -412,7 +416,9 @@ events and both parts in the manifest (the readme tests cover them).
 - [ ] **Step 7: Commit**
 
 ```bash
-git add stencil.config.ts package.json yarn.lock scripts/ensure-custom-elements-manifest.mjs \
+# scripts/ensure-custom-elements-manifest.mjs is already staged by Step 5's `git rm`;
+# naming it here makes `git add` exit 128 and stage nothing.
+git add stencil.config.ts package.json yarn.lock \
   scripts/__tests__/storybook-manifest.spec.mjs AGENTS.md Dockerfile .gitattributes STACK.md _agents/environment-commands.md \
   src/components/mud-accordion/mud-accordion.tsx src/components/mud-accordion-item/mud-accordion-item.tsx \
   src/components.d.ts .claude/plans/2026-09-15-issue-18-storybook-api-tables-from-manifest.md
@@ -664,13 +670,13 @@ property. Stencil's manifest lists no `host` member on any tag (planning probe o
 56 declarations → `host fields: []`; re-confirm on the Task 1 build with
 `node -e "const c=require('./.storybook/custom-elements.json');console.log(c.modules.flatMap(m=>m.declarations).filter(d=>(d.members||[]).some(x=>x.name==='host')).map(d=>d.tagName))"` → `[]` before editing):
 - `src/components/mud-accordion/mud-accordion.stories.ts:460-464` and `src/components/mud-accordion-item/mud-accordion-item.stories.ts:74-78` — delete the four-line comment and `controls: { exclude: ['host'] },`.
-- `src/components/mud-accordion/mud-accordion.mdx:22` — delete the `{/* … */}` comment line; `:24` `<Controls exclude={['host']} />` → `<Controls />`; `:32` `<ArgTypes of={ItemStories} exclude={['host']} />` → `<ArgTypes of={ItemStories} />`.
+- `src/components/mud-accordion/mud-accordion.mdx:22` — delete the `{/* … */}` comment line; `:24` `<Controls exclude={['host']} />` → `<Controls />`; `:33` `<ArgTypes of={ItemStories} exclude={['host']} />` → `<ArgTypes of={ItemStories} />`.
 
 - [ ] **Step 2: Build Storybook**
 
 `fnm exec --using 24 -- yarn sp.build` → exit 0.
 
-- [ ] **Step 3: Measure N1–N4 on the built preview**
+- [ ] **Step 3: Measure N1–N5 on the built preview**
 
 Serve `storybook-static/` and evaluate on `iframe.html`, for every tag in the manifest:
 
@@ -712,7 +718,7 @@ the story's own `argTypes` are merged; merged-in story rows are graded by Steps 
 Screenshot the docs pages for Button, Input, Modal, Accordion, Receipt and Banner in light mode
 (Receipt and Banner carry story-only `argTypes` keys that are not component props, e.g.
 `senderName`, `body`; they must still render, outside the manifest categories).
-Pass condition per page: rows grouped under properties / events / slots / css shadow parts / methods; Button's `full-width` row carries the story's boolean control; Modal shows `openModal` / `closeModal` under methods; Accordion's two tables render (MDX `exclude={['host']}` still valid); no console errors (`browser_console_messages`).
+Pass condition per page: rows grouped under properties / events / slots / css shadow parts / methods; Button's `full-width` row carries the story's boolean control; Modal shows `openModal` / `closeModal` under methods; Accordion's two tables render with no `exclude` prop; no console errors (`browser_console_messages`).
 
 - [ ] **Step 5: Controls panel spot-check**
 
@@ -722,7 +728,7 @@ Open `atoms-button--default` canvas: the Controls panel lists the story's contro
 
 Re-run Task 1 Step 1's capture on the new build into `args-before.json`'s sibling `args-after.json`; `diff` → empty.
 
-- [ ] **Step 7: Full project checks (Z3, Z5, Z7)**
+- [ ] **Step 7: Full project checks (Z3, Z5)**
 
 ```bash
 fnm exec --using 24 -- yarn lint
@@ -730,9 +736,10 @@ fnm exec --using 24 -- yarn typecheck
 fnm exec --using 24 -- yarn test
 fnm exec --using 24 -- yarn test:scripts
 git grep -n "web-component-analyzer\|wca\.custom-elements\|wca analyze" -- ':!.claude/plans/' ':!CHANGELOG.md'
-npx prettier --check .storybook/preview.js .storybook/manifest-arg-types.mjs stencil.config.ts package.json \
-  scripts/__tests__/storybook-manifest.spec.mjs scripts/__tests__/storybook-manifest-arg-types.spec.mjs AGENTS.md
+git grep -nw "wca" -- src .storybook
 ```
+
+(`yarn lint` runs `prettier --check .`, which covers every changed file.)
 
 - [ ] **Step 8: Commit**
 
@@ -777,16 +784,16 @@ Items issue #18 lists, and where each lands:
    outputs, so it cannot catch a compiler that is wrong in both; that is accepted — it
    grades "Storybook sees what Stencil sees", and component unit specs grade the API
    itself. The extractor is a second reader of the manifest; its output is checked
-   outside its own unit tests by Task 3 Step 3 (N1–N4 on the built preview) and Step 4.
+   outside its own unit tests by Task 3 Step 3 (N1–N5 on the built preview) and Step 4.
 2. **Letter met, intent violated?** Z1 and Z2 can pass while no page shows a row
    (manifest right, preview not wired) → closed by N4 measured on the built Storybook.
    N4 can pass with rows in wrong categories → Step 4 screenshots. Z6 (args unchanged)
    can pass with controls broken → Step 5.
-3. **Denominators, instruments outside what they grade.** N1–N4 are over all 56 tags
+3. **Denominators, instruments outside what they grade.** N1–N5 are over all 56 tags
    (the § Acceptance bar `derived-volatile` fence); the instrument is the built preview's
    own `parameters.docs.extractArgTypes`, not the unit-test fixture. Z1's readme tests
-   carry `compared > 0` as a vacuity floor and were dry-run: 6/6 on the Stencil manifest,
-   0/6 on wca, 392 named misses on a mutant with events and parts removed.
+   carry `compared > 0` as a vacuity floor and were dry-run: 8/8 on the Stencil manifest;
+   on the 6-test version 0/6 on wca and 392 named misses on a mutant with events and parts removed.
 4. **Rule interactions.** (a) `wait-on .storybook/custom-elements.json` in `dx:storybook`
    × a stale wca manifest left on disk: wait-on passes on the stale file and the
    extractor returns `{}` for its shape (Z2's legacy-shape case), so tables are empty
@@ -800,3 +807,5 @@ Items issue #18 lists, and where each lands:
 - `yarn test:scripts` is not in CI, so the two new specs guard only local runs; wiring it into `.github/workflows/ci.yml` is a separate tooling change.
 - The Stencil CEM target is recent (merged 2026-01-27); an upgrade could change its shape. The contract spec is the tripwire.
 - Story `argTypes` without `table.category` render outside the manifest categories; accepted, seen in Task 3 Step 4.
+- Z1's readme comparison skips the 9 tags whose shared-directory readme is titled for a sibling (Context fact 11); for those, manifest completeness rests on the compiler writing both outputs. Accepted.
+- The extractor ignores the manifest's `deprecated` flag. No component source carries `@deprecated` today (`git grep -c "@deprecated" -- 'src/components/**/*.tsx'` → no output); revisit when the first one lands.
