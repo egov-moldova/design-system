@@ -108,7 +108,18 @@ Row handling (decision 2): Storybook's default extractor (205 duplicates, 44 col
 - `scripts/__tests__/storybook-manifest-arg-types.spec.mjs` (create) — unit tests for the extractor.
 - `AGENTS.md`, `Dockerfile`, `.gitattributes` (modify) — the three places that name `wca.custom-elements`.
 
-## Acceptance Bar
+## Acceptance bar
+
+Numbers below were re-derived at planning time from the Stencil manifest probe
+(`cem.json`) and the Storybook-extractor probe (`rows.mjs`) in the session scratchpad:
+
+```derived-volatile
+$ node rows.mjs   # Storybook's own extractArgTypes over every tag of cem.json
+storybook default : { rows: 1150, dupPairs: 205, propsShownOnlyAsAttributes: 330 }
+attributes removed: { rows: 947, dupPairs: 2, propsShownOnlyAsAttributes: 0 }
+$ node -e "<count customElement declarations, method members, tags with a slot named ''>"
+tags 56 methods 5 defaultSlotTags 27
+```
 
 Zero-tolerance (any miss = FAIL):
 
@@ -117,7 +128,8 @@ Zero-tolerance (any miss = FAIL):
 | Z1 | Manifest contract passes after `yarn build`, and FAILED on `fe6d651`'s wca manifest | `node --test scripts/__tests__/storybook-manifest.spec.mjs` |
 | Z2 | Extractor unit tests pass | `node --test scripts/__tests__/storybook-manifest-arg-types.spec.mjs` |
 | Z3 | Project checks exit 0 | `yarn lint`, `yarn typecheck`, `yarn test`, `yarn test:scripts`, `yarn sp.build` |
-| Z4 | `yarn build` leaves no diff in generated tracked files | `git status --short -- src/components.d.ts 'src/components/**/readme.md'` → empty |
+| Z4 | `yarn build` changes no readme, and `src/components.d.ts` only by the removed accordion `@csspart`/`@fires` JSDoc lines | `git status --short -- 'src/components/**/readme.md'` → empty; `git diff -U0 src/components.d.ts \| grep '^[-+] ' \| grep -v '@csspart\|@fires\|^-  *\* *[a-z(`]'` → empty |
+| Z8 | No `@csspart` / `@fires` left in component source | `git grep -n "@csspart\|@fires" -- 'src/**/*.tsx'` → empty |
 | Z5 | No trace of wca in the tree | `git grep -n "web-component-analyzer\|wca\.custom-elements\|wca analyze" -- ':!.claude/plans/' ':!CHANGELOG.md'` → empty |
 | Z6 | Every story's `initialArgs` identical before/after (canvas input unchanged) | baseline vs after JSON from Task 1 Step 1 / Task 3 Step 6, `diff` → empty |
 | Z7 | Prettier clean on authored files | `npx prettier --check <changed files>` |
@@ -145,6 +157,9 @@ Numeric (over all 56 tags, from the built Storybook in Task 3):
 - Modify: `package.json`
 - Modify: `yarn.lock`
 - Modify: `scripts/ensure-custom-elements-manifest.mjs`
+- Modify: `src/components/mud-accordion/mud-accordion.tsx`
+- Modify: `src/components/mud-accordion-item/mud-accordion-item.tsx`
+- Modify: `src/components.d.ts`
 - Modify: `AGENTS.md`
 - Modify: `Dockerfile`
 - Modify: `.gitattributes`
@@ -354,22 +369,31 @@ git rm scripts/ensure-custom-elements-manifest.mjs
 
 Docs: `AGENTS.md:139` line becomes a note that `yarn build` writes the manifest; `Dockerfile:30` and `:34` comments drop `wca.custom-elements`; `.gitattributes:24` comment names the Stencil build.
 
+Remove the duplicate tags wca needed, which nothing reads any more:
+- `src/components/mud-accordion-item/mud-accordion-item.tsx` — delete the explanatory `//` block (lines 7-15) and the `@csspart` / `@fires` lines (36-40) with the blank line before them; `@part` (33-34) stays.
+- `src/components/mud-accordion/mud-accordion.tsx` — delete the `@fires mudChange` tag (lines 28-29) and the blank ` *` line above it. The event's description lives on its `@Event()` JSDoc, which Stencil reads.
+- `@element` stays in all 56 components: it is the repo-wide docblock convention, not a duplicate the issue names.
+
 - [ ] **Step 6: Build and run the contract**
 
 ```bash
 fnm exec --using 24 -- yarn build
 node --test scripts/__tests__/storybook-manifest.spec.mjs
-git status --short -- src/components.d.ts 'src/components/**/readme.md'
+git status --short -- 'src/components/**/readme.md'
+git diff -U0 src/components.d.ts
 ```
 
-Expected: PASS; no generated tracked file changed (Z4).
+Expected: PASS with `compared > 0`; no readme changed; `src/components.d.ts` differs only by
+the removed `@csspart` / `@fires` JSDoc lines (Z4). The accordion tags still carry both
+events and both parts in the manifest (the readme tests cover them).
 
 - [ ] **Step 7: Commit**
 
 ```bash
 git add stencil.config.ts package.json yarn.lock scripts/ensure-custom-elements-manifest.mjs \
   scripts/__tests__/storybook-manifest.spec.mjs AGENTS.md Dockerfile .gitattributes \
-  .claude/plans/2026-09-15-issue-18-storybook-api-tables-from-manifest.md
+  src/components/mud-accordion/mud-accordion.tsx src/components/mud-accordion-item/mud-accordion-item.tsx \
+  src/components.d.ts .claude/plans/2026-09-15-issue-18-storybook-api-tables-from-manifest.md
 git commit -F - <<'EOF'
 build(storybook): generate the custom-elements manifest with Stencil
 
@@ -377,7 +401,8 @@ web-component-analyzer reads JSDoc tags only, so the manifest behind every
 Storybook API table had no events, shadow parts or attributes for any component
 that documents them with @Event() and @part. Stencil's own
 docs-custom-elements-manifest target now writes it from the same build, dev
-included, and wca is removed.
+included, and wca is removed along with the @csspart/@fires tags the
+Accordion carried only for it.
 
 Refs #18
 EOF
@@ -678,6 +703,49 @@ Accordion.
 Closes #18
 EOF
 ```
+
+## Requirement coverage
+
+Items issue #18 lists, and where each lands:
+
+| Issue item | Disposition |
+| --- | --- |
+| Shadow Parts section generated from `@part` for every component | Task 1 (manifest), Task 3 (rows); Z1, N1 |
+| Events section generated from `@Event()` for every component | Task 1, Task 3; Z1 |
+| Slots and every prop nobody typed out in stories | Task 2 (rows for all fields and slots, incl. default slot); N3, N4 |
+| Replace `wca analyze` with `docs-custom-elements-manifest` | Task 1; Z5 |
+| Remove the `@csspart`/`@fires` duplication | Task 1 Step 5; Z8 |
+| Remove the `wca` dependency | Task 1 Step 5; Z5 |
+| `attributes` empty for every component | Merged into property rows: each property row is labelled with its attribute name (decision 2, approved) — no separate attribute rows |
+| Methods appear nowhere | Task 2 `methods` category; N2 |
+| Lift the accordion-only guard so every component is fed from the manifest | Task 3 Step 1; N4 |
+| Own PR and its own visual check | Task 3 Steps 4-6; this branch carries only #18 |
+
+## Self-refute log
+
+1. **Does the fix reuse the defect's mechanism class?** The defect is two generators
+   reading two tag vocabularies for one fact. The fix has one generator (the compiler)
+   feeding both `readme.md` and the manifest. The contract spec compares those two
+   outputs, so it cannot catch a compiler that is wrong in both; that is accepted — it
+   grades "Storybook sees what Stencil sees", and component unit specs grade the API
+   itself. The extractor is a second reader of the manifest; its output is checked
+   outside its own unit tests by Task 3 Step 3 (N1–N4 on the built preview) and Step 4.
+2. **Letter met, intent violated?** Z1 and Z2 can pass while no page shows a row
+   (manifest right, preview not wired) → closed by N4 measured on the built Storybook.
+   N4 can pass with rows in wrong categories → Step 4 screenshots. Z6 (args unchanged)
+   can pass with controls broken → Step 5.
+3. **Denominators, instruments outside what they grade.** N1–N4 are over all 56 tags
+   (the § Acceptance bar `derived-volatile` fence); the instrument is the built preview's
+   own `parameters.docs.extractArgTypes`, not the unit-test fixture. Z1's readme tests
+   carry `compared > 0` as a vacuity floor and were dry-run: 6/6 on the Stencil manifest,
+   0/6 on wca, 392 named misses on a mutant with events and parts removed.
+4. **Rule interactions.** (a) `wait-on .storybook/custom-elements.json` in `dx:storybook`
+   × a stale wca manifest left on disk: wait-on passes on the stale file and the
+   extractor returns `{}` for its shape (Z2's legacy-shape case), so tables are empty
+   until the first watch build rewrites it — transient, not a failure. (b) The contract
+   spec uses readmes as its reference × multi-component directories overwrite their
+   readme: closed by the `# <tag>` title guard (Context fact 11). (c) `buildDocs: true`
+   × `yarn build --docs` readme generation: the Z4 readme check proves no readme churn.
 
 ## Residual Risk
 
