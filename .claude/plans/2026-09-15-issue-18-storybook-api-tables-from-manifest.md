@@ -20,7 +20,7 @@ session on 2026-09-15; issue egov-moldova/design-system#18 is the requirement so
 
 **Issues:** closes egov-moldova/design-system#18
 
-**Reviewed:** preflight 1e6902a, critic 361bc07, critic 75266e2 — 3 rounds (the cap), 21 findings, all dispositioned in the ledger and folded here; round 3's goal-scope finding (9 child tags with no docs table) was decided by Dan on 2026-09-15: `subcomponents` on the parent metas.
+**Reviewed:** preflight 1e6902a, critic 361bc07, critic 75266e2, verify 03963a5 (CONFIRM, 0 findings, after /code-review with 0 findings) — 3 rounds (the cap), 21 findings, all dispositioned in the ledger and folded here; round 3's goal-scope finding (9 child tags with no docs table) was decided by Dan on 2026-09-15: `subcomponents` on the parent metas.
 
 ## Global Constraints
 
