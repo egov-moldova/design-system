@@ -27,7 +27,7 @@ The stack is fixed by current `package.json` + `AGENTS.md`. Treat this file as t
 ## Decisions (why)
 
 ### Stencil over React / Vue / Angular / Lit / vanilla Web Components
-`mud-*` ship as framework-agnostic standard Custom Elements. Stencil compiles to vanilla web components, so the same build serves React, Vue, Angular, and plain HTML consumers. JSX + TS decorators (`@Prop` / `@State` / `@Event` / `@Listen` / `@Method` / `@Watch`) give us a familiar DX without forcing a runtime framework on integrators. Form-associated custom elements (`mud-input`, `mud-checkbox`) work out of the box.
+`mud-*` ship as framework-agnostic standard Custom Elements. Stencil compiles to vanilla web components, so the same build serves React, Vue, Angular, and plain HTML consumers. JSX + TS decorators (`@Prop` / `@State` / `@Event` / `@Listen` / `@Method` / `@Watch`) give us a familiar DX without forcing a runtime framework on integrators. Form-associated custom elements (`mud-text-input`, `mud-checkbox`) work out of the box.
 
 ### Style Dictionary 4.x for tokens
 Status quo — the current 3-tier pipeline (palette → semantic → component) in `tokens/core` + `tokens/core.dark` works and is the source of truth. DTCG `$value`/`$type` format keeps the export portable to Figma Variables / Tokenhaus. Build-time CSS custom properties = zero runtime token resolution cost.

@@ -10,14 +10,14 @@ describe('07-integration-usage: checkExports', () => {
   it('builds the expected CustomEvent type name', () => {
     assert.equal(checkExports('mud-button', '').expectedTypeName, 'MudButtonCustomEvent');
     assert.equal(checkExports('mud-banner-notification', '').expectedTypeName, 'MudBannerNotificationCustomEvent');
-    assert.equal(checkExports('mud-input', '').expectedTypeName, 'MudInputCustomEvent');
+    assert.equal(checkExports('mud-text-input', '').expectedTypeName, 'MudTextInputCustomEvent');
   });
 
   it('detects the type in index source', () => {
     const indexSource = `
       export type {
         MudButtonCustomEvent,
-        MudInputCustomEvent,
+        MudTextInputCustomEvent,
       };
     `;
     assert.equal(checkExports('mud-button', indexSource).customEventType, true);

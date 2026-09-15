@@ -65,8 +65,7 @@ Each row lists the React export, what it represents, and when to reach for it. *
 | `CorRadio` | Single radio (use a group via `name` for mutually-exclusive choice). | Mutually-exclusive choice from a small set. |
 | `CorSwitch` | On/off toggle. | Settings toggles. **Not** for form fields that need a submit step — use `CorCheckbox`. |
 | `CorFileInput` + `CorFileItem` | File picker with drop zone + per-file display (idle/loading/error/done). | Uploads. Excel imports. Documents. |
-| `CorSearchInputRectangular` | Search input shaped like a form field. | Search bars in lists, tables, filter rails. |
-| `CorSearchInputCircular` | Search input shaped as a pill. | Top-nav search, hero search. |
+| `CorSearchInput` | Search input, `shape="rectangular"` (form-field look) or `shape="circular"` (pill). | Search bars in lists/tables/filter rails; top-nav or hero search. |
 | `CorInputChip` | Input that converts entries to chips on `Enter` or separator. | Tag entry, comma-separated values, "type and tag". |
 | `CorSegmentedControl` | Mutually-exclusive segments. | Small choice with ≤4 options where dropdown feels heavy. Time-range toggles, density toggles. |
 

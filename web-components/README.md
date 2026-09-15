@@ -2,7 +2,7 @@
 
 Vanilla HTML / JavaScript adapter for the **MUD Design System** — the official UI component library of the Republic of Moldova, developed by the [Agency for Electronic Governance (eGov)](https://egov.md).
 
-This package registers every Stencil-compiled MUD custom element (`<mud-button>`, `<mud-input>`, …) so they can be used in any HTML page or non-framework application. It is a thin re-export of the `@egov-moldova/mud` Stencil loader — no framework-specific build step is required.
+This package registers every Stencil-compiled MUD custom element (`<mud-button>`, `<mud-text-input>`, …) so they can be used in any HTML page or non-framework application. It is a thin re-export of the `@egov-moldova/mud` Stencil loader — no framework-specific build step is required.
 
 > For the full component source, design tokens, and Storybook, see the root [`@egov-moldova/mud`](https://www.npmjs.com/package/@egov-moldova/mud) package.
 
@@ -89,7 +89,7 @@ The demo lives in [`demo/index.html`](./demo/index.html) and showcases `<mud-but
 Every component published by `@egov-moldova/mud` is registered. The full list is browseable in [Storybook](../.storybook/). Highlights include:
 
 - `<mud-button>` — primary action button
-- `<mud-input>`, `<mud-textarea>` — form fields
+- `<mud-text-input>`, `<mud-textarea>` — form fields
 - `<mud-select>`, `<mud-date-picker>` — selection controls
 - `<mud-pagination-item>`, `<mud-toast-notification>`, `<mud-avatar>` — and more
 
@@ -99,4 +99,4 @@ Every component published by `@egov-moldova/mud` is registered. The full list is
 
 `setNonce(nonce: string)` — set a CSP nonce that Stencil applies to injected `<style>` tags.
 
-TypeScript users get full element type augmentation (`HTMLMudButtonElement`, `HTMLMudInputElement`, …) and prop interfaces via `export type *` from `@egov-moldova/mud`.
+TypeScript users get full element type augmentation (`HTMLMudButtonElement`, `HTMLMudTextInputElement`, …) and prop interfaces via `export type *` from `@egov-moldova/mud`.

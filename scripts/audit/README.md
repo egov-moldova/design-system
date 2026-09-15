@@ -87,7 +87,7 @@ Every script emits this shape (`scripts/audit/lib/json-output.mjs`):
     {
       "severity": "error",
       "code": "ANTIPATTERN-005-ARRAY-MUTATION",
-      "file": "src/components/mud-input/mud-input.tsx",
+      "file": "src/components/mud-text-input/mud-text-input.tsx",
       "line": 42,
       "column": 8,
       "message": "Direct mutation of a reactive array via push/pop/...",

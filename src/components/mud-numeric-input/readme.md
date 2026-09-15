@@ -11,7 +11,7 @@ Numeric Input — numeric-entry control with stacked step buttons.
 
 Pattern B (atom-interactive, form-associated): renders its own `<input>`
 inside shadow DOM and pairs it with a trailing stepper stack (chevron-up
-over chevron-bottom). Shares the visual primitives of `mud-input` (border,
+over chevron-bottom). Shares the visual primitives of `mud-text-input` (border,
 focus ring, label, helper / error, sizes, states) and adds a
 `--numeric-input-stepper-*` token namespace for the increment / decrement
 affordance.

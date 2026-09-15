@@ -4,7 +4,7 @@
  * Strategy:
  *   - Pure helpers (extractStoryTitle, extractStoryExports, buildStoryId,
  *     computeCoverage) get unit tests via synthetic source files.
- *   - analyzeComponent() runs against mud-button + mud-tooltip + mud-input
+ *   - analyzeComponent() runs against mud-button + mud-tooltip + mud-text-input
  *     for the quality regression bar.
  */
 import assert from 'node:assert/strict';
@@ -358,12 +358,12 @@ describe('05-story-exports: docs.source contract', () => {
 });
 
 describe('05-story-exports: baseline regression', () => {
-  it('mud-input has Default + 0 errors', async () => {
-    const target = resolveComponentPaths('mud-input');
+  it('mud-text-input has Default + 0 errors', async () => {
+    const target = resolveComponentPaths('mud-text-input');
     const { findings, stories, coverage } = await analyzeComponent(target);
     assert.equal(findings.filter(f => f.severity === 'error').length, 0);
-    assert.ok(stories.length > 0, 'mud-input should have stories');
-    assert.equal(coverage.Default, 'Default', 'mud-input should have a Default story');
+    assert.ok(stories.length > 0, 'mud-text-input should have stories');
+    assert.equal(coverage.Default, 'Default', 'mud-text-input should have a Default story');
   });
 
   it('mud-tooltip has Default + 0 errors', async () => {

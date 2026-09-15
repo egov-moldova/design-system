@@ -28,8 +28,8 @@ describe('01-component-structure', () => {
       assert.deepEqual(errors, [], 'mud-button should produce zero errors');
     });
 
-    it('mud-input and mud-tooltip both have all required files', () => {
-      for (const name of ['mud-input', 'mud-tooltip']) {
+    it('mud-text-input and mud-tooltip both have all required files', () => {
+      for (const name of ['mud-text-input', 'mud-tooltip']) {
         const target = resolveComponentPaths(name);
         assert.equal(target.found, true, `${name} should be found`);
         const { requiredMissing } = analyzeComponent(target);

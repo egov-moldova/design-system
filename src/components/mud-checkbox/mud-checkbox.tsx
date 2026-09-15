@@ -105,7 +105,7 @@ export class MudCheckbox {
    * Plain-text error message shown below the label when `invalid` is set.
    * Pairs with the `circle-error-filled` icon and is wired to the control via
    * `aria-describedby`. When present (and `invalid`) it replaces the supporting
-   * text. Mirrors the `errorText` convention of `mud-input` / `mud-textarea`.
+   * text. Mirrors the `errorText` convention of `mud-text-input` / `mud-textarea`.
    */
   @Prop({ attribute: 'error-text' }) errorText?: string;
 

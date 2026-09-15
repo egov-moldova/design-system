@@ -19,7 +19,7 @@ import type { InlineMessageSize, InlineMessageVariant } from './mud-inline-messa
  * It is plain in-flow text, **not** an ARIA live region. When used as form
  * feedback, associate it with the field via `aria-describedby` (and
  * `aria-invalid` for errors) on the consumer side; for a transient, announced
- * message use `mud-notification` / `mud-banner`. The icon is decorative.
+ * message use `mud-toast` / `mud-banner`. The icon is decorative.
  *
  * @element mud-inline-message
  *

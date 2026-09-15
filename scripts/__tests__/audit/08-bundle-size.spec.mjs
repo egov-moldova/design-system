@@ -76,7 +76,7 @@ describe('08-bundle-size: attributeChunksToTag', () => {
   it('finds chunks that mention the component tag in double quotes', () => {
     const dist = tempDistDir();
     writeChunk(dist, 'p-with.entry.js', 'register("mud-button", x);');
-    writeChunk(dist, 'p-without.entry.js', 'register("mud-input", x);');
+    writeChunk(dist, 'p-without.entry.js', 'register("mud-text-input", x);');
     const chunks = [
       { file: path.join(dist, 'p-with.entry.js'), rel: 'p-with.entry.js', sizeKb: 5 },
       { file: path.join(dist, 'p-without.entry.js'), rel: 'p-without.entry.js', sizeKb: 5 },

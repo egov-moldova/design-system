@@ -14,7 +14,7 @@
       "fontWeight": {
         "$value": "{fontWeight.regular}",
         "$type": "fontWeight",
-        "$comment": "Per Figma 378:17677 — Textarea label uses Onest Regular (Desktop/Body/Small), overriding mud-input's medium default."
+        "$comment": "Per Figma 378:17677 — Textarea label uses Onest Regular (Desktop/Body/Small), overriding mud-text-input's medium default."
       }
     },
     "resize": {

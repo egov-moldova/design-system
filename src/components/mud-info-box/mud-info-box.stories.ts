@@ -51,7 +51,7 @@ Two axes: \`variant\` (\`info\` neutral icon / \`info-moderate\` brand-blue icon
 surface).
 
 It is static in-flow content, so it is **not** an ARIA live region. For
-transient, announced messages use \`mud-notification\` (toast) or \`mud-banner\`
+transient, announced messages use \`mud-toast\` (toast) or \`mud-banner\`
 (page bar).
         `.trim(),
       },

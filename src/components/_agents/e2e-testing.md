@@ -19,7 +19,7 @@ Patterns for exercising `shadow: true` `mud-*` components in a **real browser**.
 ### ❌ Anti-Patterns (return null)
 
 ```typescript
-const host = await page.locator('mud-input');
+const host = await page.locator('mud-text-input');
 const input = await host.locator('input');          // ❌ doesn't enter shadow root
 const btn = await host.locator('.clear-button');     // ❌ same
 ```
@@ -33,23 +33,23 @@ const btn = await host.locator('.clear-button');     // ❌ same
 Playwright's default selector engine pierces shadow roots when you reach across with CSS:
 
 ```typescript
-const input = page.locator('mud-input input');
-const btn = page.locator('mud-input .clear-button');
-const items = page.locator('mud-input mud-skeleton');
+const input = page.locator('mud-text-input input');
+const btn = page.locator('mud-text-input .clear-button');
+const items = page.locator('mud-text-input mud-skeleton');
 ```
 
 If you need explicit shadow-root piercing (custom selector engines / older versions):
 
 ```typescript
-const input = page.locator('css:light=mud-input >> css:shadow=input');
+const input = page.locator('css:light=mud-text-input >> css:shadow=input');
 ```
 
 ### 2. Light DOM slotted elements — query from host
 
 ```typescript
-const icon = page.locator('mud-input [slot="icon-left"]');
-const helper = page.locator('mud-input [slot="helper-text"]');
-const child = page.locator('mud-input > mud-icon');
+const icon = page.locator('mud-text-input [slot="icon-left"]');
+const helper = page.locator('mud-text-input [slot="helper-text"]');
+const child = page.locator('mud-text-input > mud-icon');
 ```
 
 ### 3. Complex interactions — `page.evaluate()` with `shadowRoot`
@@ -58,7 +58,7 @@ Preferred for focus/blur/keyboard to avoid double-firing, and required when driv
 
 ```typescript
 await page.evaluate(() => {
-  const el = document.querySelector('mud-input');
+  const el = document.querySelector('mud-text-input');
   el?.shadowRoot?.querySelector('input')?.focus();
 });
 ```
@@ -67,7 +67,7 @@ await page.evaluate(() => {
 
 ```typescript
 const text = await page.evaluate(() => {
-  const el = document.querySelector('mud-input');
+  const el = document.querySelector('mud-text-input');
   return el?.shadowRoot?.textContent || '';
 });
 expect(text).toContain('expected content');
@@ -76,7 +76,7 @@ expect(text).toContain('expected content');
 ### 5. Host properties/attributes
 
 ```typescript
-const host = page.locator('mud-input');
+const host = page.locator('mud-text-input');
 expect(await host.evaluate((el: HTMLElement) => (el as any).value)).toBe('test');
 await expect(host).toHaveAttribute('invalid', '');
 await expect(host).toHaveClass(/hydrated/);
@@ -87,7 +87,7 @@ await expect(host).toHaveClass(/hydrated/);
 ```typescript
 await page.evaluate(() => {
   const events: CustomEvent[] = [];
-  const el = document.querySelector('mud-input');
+  const el = document.querySelector('mud-text-input');
   el?.addEventListener('mudChange', (e) => events.push(e as CustomEvent));
   (globalThis as Record<string, unknown>).__capturedEvents = events;
 });
@@ -100,10 +100,10 @@ await page.evaluate(() => {
 
 | What to Query | Method | Example |
 |---|---|---|
-| Shadow DOM element | `page.locator('host selector')` | `page.locator('mud-input input')` |
-| Shadow DOM list | `page.locator('host selector').all()` | `page.locator('mud-input mud-skeleton').all()` |
-| Light DOM slot | `page.locator('host [slot="name"]')` | `page.locator('mud-input [slot="icon-left"]')` |
-| Light DOM child | `page.locator('host > child-tag')` | `page.locator('mud-input > mud-icon')` |
+| Shadow DOM element | `page.locator('host selector')` | `page.locator('mud-text-input input')` |
+| Shadow DOM list | `page.locator('host selector').all()` | `page.locator('mud-text-input mud-skeleton').all()` |
+| Light DOM slot | `page.locator('host [slot="name"]')` | `page.locator('mud-text-input [slot="icon-left"]')` |
+| Light DOM child | `page.locator('host > child-tag')` | `page.locator('mud-text-input > mud-icon')` |
 | Host property | `host.evaluate(el => el.prop)` | `host.evaluate(el => el.checked)` |
 | Host attribute | `expect(host).toHaveAttribute('attr', val)` | `toHaveAttribute('size', 'lg')` |
 | Focus/blur/keyboard | `page.evaluate(() => {...})` | Avoids double-fire |

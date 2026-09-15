@@ -3,7 +3,7 @@
  * regression-baseline.mjs
  *
  * Captures a deterministic snapshot of `run-all.mjs` output for the canonical
- * regression-test components (mud-button, mud-input, mud-tooltip per the
+ * regression-test components (mud-button, mud-text-input, mud-tooltip per the
  * approved plan) and writes it to `reports/regression-baseline.json`.
  *
  * The snapshot is NORMALIZED: timestamps, durations, and similar non-stable
@@ -27,7 +27,7 @@ import { REPO_ROOT } from './lib/component-paths.mjs';
 
 const TOOL = 'regression-baseline';
 
-const DEFAULT_COMPONENTS = ['mud-button', 'mud-input', 'mud-tooltip'];
+const DEFAULT_COMPONENTS = ['mud-button', 'mud-text-input', 'mud-tooltip'];
 const DEFAULT_OUT = 'reports/regression-baseline.json';
 
 const USAGE = `Usage: node scripts/audit/regression-baseline.mjs [options]

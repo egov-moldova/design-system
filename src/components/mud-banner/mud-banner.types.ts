@@ -15,7 +15,7 @@ export const BANNER_DEFAULT_ICONS: Record<BannerVariant, string> = {
 
 /**
  * Variants that imply an assertive live region (urgent) per the WCAG
- * status/alert pattern. `info` stays polite. Mirrors the mud-notification
+ * status/alert pattern. `info` stays polite. Mirrors mud-toast
  * convention for cross-component consistency.
  */
 export const BANNER_ASSERTIVE_VARIANTS: ReadonlySet<BannerVariant> = new Set<BannerVariant>(['warning', 'error']);
