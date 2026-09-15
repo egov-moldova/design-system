@@ -167,6 +167,14 @@ export const SlottedDisabledContract: Story = {
     const settle = async () => {
       for (let i = 0; i < 6; i += 1) await new Promise<void>(r => requestAnimationFrame(() => r()));
     };
+    const hitTest = (el: HTMLElement) => {
+      // `scrollIntoView` first and the null check at the call site second, both
+      // load-bearing: `elementFromPoint` returns null for any point outside the
+      // viewport, so a bare `hit !== el` passes vacuously below the fold.
+      el.scrollIntoView({ block: 'center' });
+      const box = el.getBoundingClientRect();
+      return document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
+    };
 
     await customElements.whenDefined('mud-accordion-item');
     await customElements.whenDefined('mud-button');
@@ -189,21 +197,27 @@ export const SlottedDisabledContract: Story = {
       throw new Error('`disabled` reached a control nested inside a slotted wrapper');
     }
 
-    // Everything this lane CAN see is asserted below. What it cannot: anything
-    // resting on the component's stylesheet.
-    //
-    // Measured from inside this runner — `item.shadowRoot` exists but carries
-    // `adoptedStyleSheets.length === 0` and no `<style>` tag, so components render
-    // UNSTYLED here. `.storybook/vitest-component-loader.ts` replaces the compiled
-    // `dist/mud/mud.esm.js` with an on-the-fly `customelement` compile so coverage
-    // can see the source, and the CSS does not come with it. This story was the
-    // first in the repo to assert a computed style, which is why nobody had hit it.
-    //
-    // The pointer guard IS in both shipped builds — `dist/mud/p-c908b8c2.entry.js`
-    // and `dist/components/p-C7uEtyEA.js` both carry
-    // `:host([disabled]) slot[name='heading']::slotted(*) … {pointer-events:none !important}`
-    // verbatim — and was measured applying to all three slots in a real page
-    // against `dist/`. Asserting it here would test the loader, not the component.
+    // 1b. The pointer guard is a THREE-clause selector list. Drive every clause:
+    //     a typo in the `heading` or `supporting` arm would otherwise ship green,
+    //     and mock-doc computes no styles, so only this lane can see it.
+    for (const [name, el] of [
+      ['heading', find('head-slot')],
+      ['supporting', find('sup-slot')],
+      ['trailing', ours],
+    ] as const) {
+      if (getComputedStyle(el).pointerEvents !== 'none') {
+        throw new Error(`slot="${name}" content is still pointer-interactive while the item is disabled`);
+      }
+    }
+
+    // 1c. `!important` is load-bearing and this is its only proof: an inline
+    //     declaration on the slotted element must not defeat the guard. Measured
+    //     to hold because for `!important` the INNER (shadow) tree wins.
+    ours.style.setProperty('pointer-events', 'auto', 'important');
+    if (getComputedStyle(ours).pointerEvents !== 'none') {
+      throw new Error('an inline `pointer-events !important` on the slotted control defeated the guard');
+    }
+    ours.style.removeProperty('pointer-events');
 
     // 1d. The keyboard mirror. `disabled` does nothing to an <a href>, so without
     //     `tabindex="-1"` this element is Tab-reachable while the accessibility
@@ -211,6 +225,20 @@ export const SlottedDisabledContract: Story = {
     const link = find('link');
     if (link.getAttribute('tabindex') !== '-1') {
       throw new Error('a slotted <a href> is still in the tab order while the item is disabled');
+    }
+
+    // 2. The nested control gets no attribute, so the stylesheet is all that stands
+    //    between it and the mouse — it inherits `pointer-events: none` from the
+    //    wrapper the rule matches. Deliberately a plain button: one that sets its
+    //    own `pointer-events: auto` is hit-testable regardless, since importance
+    //    does not strengthen inheritance and `::slotted` takes no descendant
+    //    combinator. That limit is documented, not asserted away here.
+    const blocked = hitTest(nested);
+    if (blocked === null) {
+      throw new Error('hit-test point fell outside the viewport — the assertion would pass vacuously');
+    }
+    if (blocked === nested) {
+      throw new Error('a control nested in a slotted wrapper is still the hit-test target while disabled');
     }
 
     // 3. KEYBOARD, for a DIRECTLY slotted control. The attribute is what closes this:
@@ -261,6 +289,9 @@ export const SlottedDisabledContract: Story = {
     ours.focus();
     if (document.activeElement !== ours) {
       throw new Error('a slotted control stayed keyboard-unreachable after the item was enabled');
+    }
+    if (hitTest(nested) !== nested) {
+      throw new Error('a nested slotted control stayed hit-test-blocked after the item was enabled');
     }
     if (link.hasAttribute('tabindex')) {
       throw new Error('the tabindex mirror was not removed when the item was enabled');
