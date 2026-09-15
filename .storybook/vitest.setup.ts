@@ -2,7 +2,7 @@
 //
 // Since Storybook 10.3 the addon applies preview annotations (decorators,
 // parameters) automatically. This file carries no story setup for that reason —
-// only the resolution guard below, which no story needs and the lane does. Add
+// only the guards below, which no story needs and the lane does. Add
 // story hooks here only when one genuinely needs cross-test setup (timers,
 // network mocks, etc.).
 
@@ -40,5 +40,47 @@ if (typeof jsx !== 'function') {
   throw new Error(
     'the `storybook` project resolved `react/jsx-runtime` to something that is not the ' +
       'JSX runtime — the `resolve.alias` in vitest.config.mts broke subpath resolution (issue #23)',
+  );
+}
+
+// Guard for the lane's styling (issue #28). An unstyled lane is SILENT: every
+// story that asserts nothing visual stays green, and one that does fails pointing
+// at the component instead of at this setup. Two independent sources, two checks.
+
+// 1. Design tokens. Storybook links `tokens/generated/*.css` from
+//    `.storybook/preview-head.html`; that directory is git-ignored, so on a clean
+//    checkout the links 404 and every `var(--…)` resolves empty. Measured: the
+//    links have already applied by the time this file runs, so a synchronous read
+//    suffices. `yarn tokens.build` produces them.
+if (getComputedStyle(document.documentElement).getPropertyValue('--spacing-24').trim() === '') {
+  throw new Error(
+    'the `storybook` project has no design tokens — `tokens/generated/core.tokens.css` is ' +
+      'missing, so every `var(--…)` resolves empty. Run `yarn tokens.build` (issue #28)',
+  );
+}
+
+// 2. Component stylesheets. `stencilVitestPlugin` drops each component's CSS unless
+//    it is given `{ css: true }` in vitest.config.mts; the element still defines and
+//    renders, only with an empty shadow root stylesheet list. The loader is imported
+//    here directly because preview.js has not run yet when this file does, and it is
+//    the same module preview.js reaches through the redirect in vitest.config.mts.
+//    Stencil adopts the sheet on first render, measured one frame after append; the
+//    frame budget below is a ceiling, not a delay — the loop exits on the first hit.
+await import('./vitest-component-loader.ts');
+
+const styleProbe = document.createElement('mud-button');
+document.body.appendChild(styleProbe);
+let adoptedRules = 0;
+for (let frame = 0; frame < 30 && adoptedRules === 0; frame += 1) {
+  await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)));
+  const sheets = styleProbe.shadowRoot ? styleProbe.shadowRoot.adoptedStyleSheets : [];
+  adoptedRules = sheets.reduce((count, sheet) => count + sheet.cssRules.length, 0);
+}
+styleProbe.remove();
+
+if (adoptedRules === 0) {
+  throw new Error(
+    'the `storybook` project renders components unstyled — `mud-button` adopted no ' +
+      'stylesheet. `stencilVitestPlugin` in vitest.config.mts needs `{ css: true }` (issue #28)',
   );
 }

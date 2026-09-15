@@ -15,6 +15,12 @@
 //   every element before any story renders. Coverage v8 / istanbul now sees
 //   the real source files in the module graph and produces accurate numbers.
 //
+// Styles: each component's CSS reaches its shadow root only because the
+//   `storybook` project passes `{ css: true }` to `stencilVitestPlugin`. Without
+//   that option the elements still register and render, but UNSTYLED — and
+//   nothing else fails (issue #28). `.storybook/vitest.setup.ts` imports this
+//   file to assert the stylesheet is adopted before any story runs.
+//
 // Wired into Storybook tests via `resolve.alias` in `vitest.config.mts` —
 // the alias rewrites `../dist/mud/mud.esm.js` (in
 // `.storybook/preview.js`) to this file for the `storybook` project only.

@@ -142,7 +142,20 @@ export default defineVitestConfig({
           // `stencilVitestPlugin` compiles each `.tsx` on-the-fly in Vite's
           // transform pipeline (the same trick we use for `spec`). Coverage
           // v8 / istanbul then see the real source files in the module graph.
-          stencilVitestPlugin(),
+          //
+          // `css: true` is what gives the rendered components their stylesheet:
+          // without it the plugin transpiles with `style: null` and every shadow
+          // root adopts nothing, so the lane runs green while unable to see any
+          // computed style, hit-test or layout (issue #28). `spec` omits it on
+          // purpose — mock-doc computes no styles. `.storybook/vitest.setup.ts`
+          // fails the lane if this is dropped.
+          //
+          // The CSS is not run through `postcss-nested` here, unlike the Stencil
+          // build, so nesting is left to Chromium's native CSS nesting. The two agree
+          // for every nested rule in the component sources today — none builds a
+          // selector by concatenation, which native nesting cannot express.
+          // Baseline: `rg -n '&[-_a-zA-Z0-9]' src/components -g '*.css'` -> no matches.
+          stencilVitestPlugin({ css: true }),
           storybookTest({
             configDir: path.join(__dirname, '.storybook'),
             // Storybook dev server URL — must match `yarn sp.dev` port (6007).
