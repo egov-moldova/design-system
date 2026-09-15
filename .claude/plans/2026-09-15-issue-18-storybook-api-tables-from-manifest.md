@@ -20,7 +20,7 @@ session on 2026-09-15; issue egov-moldova/design-system#18 is the requirement so
 
 **Issues:** closes egov-moldova/design-system#18
 
-**Reviewed:** none
+**Reviewed:** preflight 1e6902a, critic 361bc07, critic 75266e2 — 3 rounds (the cap), 21 findings, all dispositioned in the ledger and folded here; round 3's goal-scope finding (9 child tags with no docs table) was decided by Dan on 2026-09-15: `subcomponents` on the parent metas.
 
 ## Global Constraints
 
@@ -152,7 +152,7 @@ Numeric (over all 56 tags, from the built Storybook in Task 3):
 | N1 | `mud-input` rows for `label` / `slot:label` / `part:label` | 3 distinct | — | < 3 | Instrument: Task 3 Step 3 probe, field `inputLabel` |
 | N2 | `method:*` rows | 5 | — | ≠ 5 | Instrument: Task 3 Step 3 probe, field `methods` |
 | N3 | `slot:default` rows | 27 | — | ≠ 27 | Instrument: Task 3 Step 3 probe, field `defaultSlots` |
-| N4 | Tags whose extracted argTypes are `{}` | 0 | — | > 0 | Instrument: Task 3 Step 3 probe, field `emptyTags` |
+| N4 | Tags whose extracted argTypes are `{}`, and tags that are neither the `component` nor a `subcomponents` value of any story (so no docs page renders their table) | 0 and 0 | — | > 0 | Instrument: Task 3 Step 3 probe, fields `emptyTags` and `undocumentedTags` |
 | N5 | Tags where extracted rows per category ≠ manifest entries per category (fields, methods, events, slots, cssParts) | 0 | — | > 0 | Instrument: Task 3 Step 3 probe, field `countMismatches` |
 
 ## Phase 1 — Manifest from Stencil, tables from the manifest
@@ -175,6 +175,11 @@ Numeric (over all 56 tags, from the built Storybook in Task 3):
 - Modify: `src/components/mud-accordion/mud-accordion.stories.ts`
 - Modify: `src/components/mud-accordion-item/mud-accordion-item.stories.ts`
 - Modify: `src/components/mud-accordion/mud-accordion.mdx`
+- Modify: `src/components/mud-breadcrumb/mud-breadcrumb.stories.ts`
+- Modify: `src/components/mud-header/mud-header.stories.ts`
+- Modify: `src/components/mud-menu/mud-menu.stories.ts`
+- Modify: `src/components/mud-sidebar/mud-sidebar.stories.ts`
+- Modify: `src/components/mud-tabs/mud-tabs.stories.ts`
 - Modify: `STACK.md`
 - Modify: `_agents/environment-commands.md`
 - Modify: `AGENTS.md`
@@ -672,6 +677,22 @@ property. Stencil's manifest lists no `host` member on any tag (planning probe o
 - `src/components/mud-accordion/mud-accordion.stories.ts:460-464` and `src/components/mud-accordion-item/mud-accordion-item.stories.ts:74-78` — delete the four-line comment and `controls: { exclude: ['host'] },`.
 - `src/components/mud-accordion/mud-accordion.mdx:22` — delete the `{/* … */}` comment line; `:24` `<Controls exclude={['host']} />` → `<Controls />`; `:33` `<ArgTypes of={ItemStories} exclude={['host']} />` → `<ArgTypes of={ItemStories} />`.
 
+- [ ] **Step 1b: Give the 9 child tags a docs table through `subcomponents`**
+
+Storybook 10.4's `ArgTypes` and `Controls` doc blocks render one tab per `subcomponents` entry, each
+filled by `parameters.docs.extractArgTypes(tagName)` (`node_modules/@storybook/addon-docs/dist/blocks.js`,
+`ArgTypesImpl` and `ControlsImpl`). Add to the default-export meta of:
+
+- `src/components/mud-breadcrumb/mud-breadcrumb.stories.ts:322` → `subcomponents: { 'mud-breadcrumb-item': 'mud-breadcrumb-item' },`
+- `src/components/mud-header/mud-header.stories.ts:49` → `subcomponents: { 'mud-header-nav-item': 'mud-header-nav-item', 'mud-header-mega-menu': 'mud-header-mega-menu', 'mud-header-services-menu': 'mud-header-services-menu', 'mud-header-mobile': 'mud-header-mobile' },`
+- `src/components/mud-menu/mud-menu.stories.ts:87` → `subcomponents: { 'mud-menu-item': 'mud-menu-item' },`
+- `src/components/mud-sidebar/mud-sidebar.stories.ts:528` → `subcomponents: { 'mud-sidebar-group': 'mud-sidebar-group', 'mud-sidebar-item': 'mud-sidebar-item' },`
+- `src/components/mud-tabs/mud-tabs.stories.ts:63` → `subcomponents: { 'mud-tab': 'mud-tab' },`
+
+Each line goes directly after that meta's `component:` line. `yarn typecheck` must accept it
+(the CSF `Meta` types `subcomponents` as `Record<string, component>`, and a web-components
+component is a tag-name string).
+
 - [ ] **Step 2: Build Storybook**
 
 `fnm exec --using 24 -- yarn sp.build` → exit 0.
@@ -701,6 +722,15 @@ const expected = d => ({
   methods: tags.reduce((n, t) => n + Object.keys(rows[t]).filter(k => k.startsWith('method:')).length, 0),
   defaultSlots: tags.filter(t => rows[t]['slot:default']).length,
   emptyTags: tags.filter(t => Object.keys(rows[t]).length === 0),
+  undocumentedTags: await (async () => {
+    const covered = new Set();
+    for (const e of Object.values(preview.storyStoreValue.storyIndex.entries).filter(e => e.type === 'story')) {
+      const s = await preview.storyStoreValue.loadStory({ storyId: e.id });
+      if (typeof s.component === 'string') covered.add(s.component);
+      for (const sub of Object.values(s.subcomponents ?? {})) covered.add(sub);
+    }
+    return tags.filter(t => !covered.has(t));
+  })(),
   countMismatches: tags.filter(t => {
     const got = byCategory(rows[t]);
     return Object.entries(expected(declarations[t])).some(([category, n]) => (got[category] ?? 0) !== n);
@@ -708,7 +738,7 @@ const expected = d => ({
 });
 ```
 
-Expected: `{ inputLabel: 3, methods: 5, defaultSlots: 27, emptyTags: [], countMismatches: [] }`.
+Expected: `{ inputLabel: 3, methods: 5, defaultSlots: 27, emptyTags: [], undocumentedTags: [], countMismatches: [] }`.
 The probe calls the extractor through the story's `parameters.docs.extractArgTypes`, so it
 grades what Storybook actually receives, not the module in isolation. It reads rows before
 the story's own `argTypes` are merged; merged-in story rows are graded by Steps 4-5. (Use any existing story id if `atoms-button--default` differs.)
@@ -745,7 +775,9 @@ git grep -nw "wca" -- src .storybook
 
 ```bash
 git add .storybook/preview.js src/components/mud-accordion/mud-accordion.stories.ts \
-  src/components/mud-accordion-item/mud-accordion-item.stories.ts src/components/mud-accordion/mud-accordion.mdx
+  src/components/mud-accordion-item/mud-accordion-item.stories.ts src/components/mud-accordion/mud-accordion.mdx \
+  src/components/mud-breadcrumb/mud-breadcrumb.stories.ts src/components/mud-header/mud-header.stories.ts \
+  src/components/mud-menu/mud-menu.stories.ts src/components/mud-sidebar/mud-sidebar.stories.ts src/components/mud-tabs/mud-tabs.stories.ts
 git commit -F - <<'EOF'
 fix(storybook): generate every component's API table from the manifest
 
@@ -773,7 +805,7 @@ Items issue #18 lists, and where each lands:
 | Remove the `wca` dependency | Task 1 Step 5; Z5 |
 | `attributes` empty for every component | Merged into property rows: each property row is labelled with its attribute name (decision 2, approved) — no separate attribute rows |
 | Methods appear nowhere | Task 2 `methods` category; N2 |
-| Lift the accordion-only guard so every component is fed from the manifest | Task 3 Step 1; N4 |
+| Lift the accordion-only guard so every component is fed from the manifest | Task 3 Step 1 (extractor for every tag) and Step 1b (`subcomponents` for the 9 child tags with no story meta); N4 `emptyTags` and `undocumentedTags` |
 | Own PR and its own visual check | Task 3 Steps 4-6; this branch carries only #18 |
 
 ## Self-refute log
