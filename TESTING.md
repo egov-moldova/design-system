@@ -33,7 +33,7 @@ Don't pad coverage with tests that re-assert what TypeScript already enforces. A
 
 - **Co-located.** `mud-button.spec.tsx` lives next to `mud-button.tsx` inside `src/components/mud-button/`. No parallel `tests/` tree.
 - **Specs**: `mud-{name}.spec.tsx` — drives Stencil render, asserts DOM/shadow/events.
-- **Stories project**: `*.stories.ts` files are executed by the Storybook Vitest project (`yarn test.storybook`) for browser-rendered visual / interaction coverage.
+- **Stories project**: `*.stories.ts` files are executed by the Storybook Vitest project (`yarn test.storybook`) for browser-rendered visual / interaction coverage (see § Runners & commands for what that lane needs).
 - **Scripts**: `scripts/__tests__/**/*.spec.mjs` via `node --test` (different runner — these test build / token tooling, not components).
 - **Test case names**: describe behavior, not implementation. `"reflects variant to host attribute when variant changes"` not `"calls componentWillUpdate"`.
 
@@ -48,6 +48,8 @@ yarn test:scripts      # node --test on scripts/__tests__/
 ```
 
 The full `yarn test` run is the gate; `yarn test.dev` is the dev-loop tool. Both must pass before a `mud-*` graduates from `src/hidden/` to `src/components/`.
+
+`yarn test.storybook` renders components **styled the way the build ships them**: each component's CSS goes through the same PostCSS plugins as the build (`stencil-postcss.config.mjs`), every shadow root adopts the compiled global style (`dist/mud/mud.css`, so edits under `src/assets/css/` reach the lane after the next `yarn build`), and the design tokens are applied, so a `play` function may assert computed style, hit-testing (`document.elementFromPoint`) and layout. It needs `yarn build` and `yarn tokens.build` to have run — `.storybook/vitest.setup.ts` refuses to start the lane when the tokens, the component stylesheet, the global stylesheet or the PostCSS pass are missing, rather than running every story on styles no consumer gets (issue #28). The spec project stays unstyled by design: mock-doc computes no styles.
 
 ## Cross-references
 
