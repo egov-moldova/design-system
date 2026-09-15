@@ -5350,7 +5350,8 @@ declare global {
     }
 }
 declare namespace LocalJSX {
-    type OneOf<K extends string, PropT, AttrT = PropT> = { [P in K]: PropT } & { [P in `attr:${K}` | `prop:${K}`]?: never } | { [P in `attr:${K}`]: AttrT } & { [P in K | `prop:${K}`]?: never } | { [P in `prop:${K}`]: PropT } & { [P in K | `attr:${K}`]?: never };
+    type OneOf<K extends string, PropT, AttrT = PropT> = { [P in K]: PropT } & { [P in `attr:${K}`]?: never } | { [P in `attr:${K}`]: AttrT } & { [P in K]?: never };
+    type OneOf3<K extends string, PropT, AttrT = PropT> = { [P in K]: PropT } & { [P in `attr:${K}` | `prop:${K}`]?: never } | { [P in `attr:${K}`]: AttrT } & { [P in K | `prop:${K}`]?: never } | { [P in `prop:${K}`]: PropT } & { [P in K | `attr:${K}`]?: never };
 
     /**
      * Accordion — vertical stack of collapsible regions per WAI-ARIA Accordion Pattern.
@@ -9951,7 +9952,7 @@ declare namespace LocalJSX {
         "mud-spinner": Omit<MudSpinner, keyof MudSpinnerAttributes> & { [K in keyof MudSpinner & keyof MudSpinnerAttributes]?: MudSpinner[K] } & { [K in keyof MudSpinner & keyof MudSpinnerAttributes as `attr:${K}`]?: MudSpinnerAttributes[K] } & { [K in keyof MudSpinner & keyof MudSpinnerAttributes as `prop:${K}`]?: MudSpinner[K] };
         "mud-stepper": Omit<MudStepper, keyof MudStepperAttributes> & { [K in keyof MudStepper & keyof MudStepperAttributes]?: MudStepper[K] } & { [K in keyof MudStepper & keyof MudStepperAttributes as `attr:${K}`]?: MudStepperAttributes[K] } & { [K in keyof MudStepper & keyof MudStepperAttributes as `prop:${K}`]?: MudStepper[K] };
         "mud-switch": Omit<MudSwitch, keyof MudSwitchAttributes> & { [K in keyof MudSwitch & keyof MudSwitchAttributes]?: MudSwitch[K] } & { [K in keyof MudSwitch & keyof MudSwitchAttributes as `attr:${K}`]?: MudSwitchAttributes[K] } & { [K in keyof MudSwitch & keyof MudSwitchAttributes as `prop:${K}`]?: MudSwitch[K] };
-        "mud-tab": Omit<MudTab, keyof MudTabAttributes> & { [K in keyof MudTab & keyof MudTabAttributes]?: MudTab[K] } & { [K in keyof MudTab & keyof MudTabAttributes as `attr:${K}`]?: MudTabAttributes[K] } & { [K in keyof MudTab & keyof MudTabAttributes as `prop:${K}`]?: MudTab[K] } & OneOf<"value", MudTab["value"], MudTabAttributes["value"]>;
+        "mud-tab": Omit<MudTab, keyof MudTabAttributes> & { [K in keyof MudTab & keyof MudTabAttributes]?: MudTab[K] } & { [K in keyof MudTab & keyof MudTabAttributes as `attr:${K}`]?: MudTabAttributes[K] } & { [K in keyof MudTab & keyof MudTabAttributes as `prop:${K}`]?: MudTab[K] } & OneOf3<"value", MudTab["value"], MudTabAttributes["value"]>;
         "mud-table": Omit<MudTable, keyof MudTableAttributes> & { [K in keyof MudTable & keyof MudTableAttributes]?: MudTable[K] } & { [K in keyof MudTable & keyof MudTableAttributes as `attr:${K}`]?: MudTableAttributes[K] } & { [K in keyof MudTable & keyof MudTableAttributes as `prop:${K}`]?: MudTable[K] };
         "mud-tabs": Omit<MudTabs, keyof MudTabsAttributes> & { [K in keyof MudTabs & keyof MudTabsAttributes]?: MudTabs[K] } & { [K in keyof MudTabs & keyof MudTabsAttributes as `attr:${K}`]?: MudTabsAttributes[K] } & { [K in keyof MudTabs & keyof MudTabsAttributes as `prop:${K}`]?: MudTabs[K] };
         "mud-tag": Omit<MudTag, keyof MudTagAttributes> & { [K in keyof MudTag & keyof MudTagAttributes]?: MudTag[K] } & { [K in keyof MudTag & keyof MudTagAttributes as `attr:${K}`]?: MudTagAttributes[K] } & { [K in keyof MudTag & keyof MudTagAttributes as `prop:${K}`]?: MudTag[K] };

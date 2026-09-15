@@ -35,7 +35,8 @@
     "react"
   ],
   "resolutions": {
-    "undici-types": "~7.19.0"
+    "undici-types": "~7.19.0",
+    "@stencil/core@npm:~4.45.0": "patch:@stencil/core@npm%3A4.45.0#~/.yarn/patches/@stencil-core-npm-4.45.0-053ef963ac.patch"
   },
   "files": [
     "dist/",
@@ -481,7 +482,7 @@
     }
   },
   "dependencies": {
-    "@stencil/core": "~4.43.5"
+    "@stencil/core": "~4.45.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",
@@ -507,7 +508,7 @@
     "@vitest/browser-playwright": "^4.1.11",
     "@vitest/coverage-v8": "^4.1.11",
     "@whitespace/storybook-addon-html": "^9.0.0",
-    "agent-browser": "latest",
+    "agent-browser": "^0.26.0",
     "agentation": "^3.0.2",
     "commander": "^14.0.3",
     "cross-env": "^10.1.0",
