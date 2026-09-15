@@ -1,0 +1,40 @@
+{{- $fullName := include "app.fullname" . -}}
+{{- range $ingressKey, $ingress := .Values.ingress -}}
+{{- if $ingress.enabled -}}
+{{- $serviceKey := default $ingressKey $ingress.serviceName -}}
+{{- $workload := index $.Values.deployment $serviceKey -}}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ printf "%s-%s" $fullName $ingressKey }}
+  labels:
+    {{- include "app.labels" $ | nindent 4 }}
+{{- with $ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+{{- end }}
+spec:
+  ingressClassName: {{ required "ingress className is required" $ingress.className }}
+  rules:
+    - host: {{ required "ingress host is required" $ingress.host | quote }}
+      http:
+        paths:
+        {{- range $ingress.paths }}
+          - path: {{ .path | quote }}
+            pathType: {{ default "Prefix" .pathType }}
+            backend:
+              service:
+                name: {{ printf "%s-%s" $fullName $serviceKey }}
+                port:
+                  name: {{ required "service portName is required" (default $workload.service.portName .servicePort) }}
+        {{- end }}
+{{- with $ingress.tls }}
+  tls:
+    - hosts:
+        - {{ required "ingress host is required" $ingress.host | quote }}
+      secretName: {{ required "ingress TLS secretName is required" .secretName }}
+{{- end }}
+---
+{{- end }}
+{{- end }}
+
