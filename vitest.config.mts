@@ -152,9 +152,13 @@ export default defineVitestConfig({
           //
           // The CSS is not run through `postcss-nested` here, unlike the Stencil
           // build, so nesting is left to Chromium's native CSS nesting. The two agree
-          // for every nested rule in the component sources today — none builds a
-          // selector by concatenation, which native nesting cannot express.
-          // Baseline: `rg -n '&[-_a-zA-Z0-9]' src/components -g '*.css'` -> no matches.
+          // only while (a) no selector is built by concatenation (`&-suffix`), which
+          // native nesting cannot express, and (b) every nested rule sits under a
+          // single-selector parent — a selector-list parent becomes `:is(…)` natively,
+          // whose specificity is the list's highest rather than per selector.
+          // Both hold today: the only style rules nested inside another style rule
+          // are in `mud-icon.css`, under `.svg-icon` and two single `:host(…)` parents.
+          // Baseline for (a): `rg -n '&[-_a-zA-Z0-9]' src/components -g '*.css'` -> no matches.
           stencilVitestPlugin({ css: true }),
           storybookTest({
             configDir: path.join(__dirname, '.storybook'),

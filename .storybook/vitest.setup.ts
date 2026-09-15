@@ -49,14 +49,21 @@ if (typeof jsx !== 'function') {
 
 // 1. Design tokens. Storybook links `tokens/generated/*.css` from
 //    `.storybook/preview-head.html`; that directory is git-ignored, so on a clean
-//    checkout the links 404 and every `var(--…)` resolves empty. Measured: the
-//    links have already applied by the time this file runs, so a synchronous read
-//    suffices. `yarn tokens.build` produces them.
-if (getComputedStyle(document.documentElement).getPropertyValue('--spacing-24').trim() === '') {
-  throw new Error(
-    'the `storybook` project has no design tokens — `tokens/generated/core.tokens.css` is ' +
-      'missing, so every `var(--…)` resolves empty. Run `yarn tokens.build` (issue #28)',
-  );
+//    checkout the links 404 and every `var(--…)` resolves empty. Both files are
+//    checked by their loaded rules rather than by reading one token, so a renamed
+//    token cannot masquerade as a missing file and a missing dark file cannot hide
+//    behind a present light one. Measured: the links have already loaded by the
+//    time this file runs, so a synchronous read suffices. `yarn tokens.build`
+//    produces them.
+for (const tokenFile of ['core.tokens.css', 'core.dark.tokens.css']) {
+  const link = document.querySelector(`link[rel='stylesheet'][href$='tokens/generated/${tokenFile}']`);
+  const rules = link && link.sheet ? link.sheet.cssRules.length : 0;
+  if (rules === 0) {
+    throw new Error(
+      `the \`storybook\` project has no design tokens — \`tokens/generated/${tokenFile}\` ` +
+        'is missing or empty, so its `var(--…)` values resolve empty. Run `yarn tokens.build` (issue #28)',
+    );
+  }
 }
 
 // 2. Component stylesheets. `stencilVitestPlugin` drops each component's CSS unless
