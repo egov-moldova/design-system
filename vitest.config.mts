@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -5,6 +6,9 @@ import { defineVitestConfig } from '@stencil/vitest/config';
 import { stencilVitestPlugin } from '@stencil/vitest/plugin';
 import { playwright } from '@vitest/browser-playwright';
 import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
+import type { Plugin } from 'vite';
+
+import { config as stencilConfig } from './stencil.config';
 
 // Stencil + Vitest configuration.
 //
@@ -26,6 +30,92 @@ import { storybookTest } from '@storybook/addon-vitest/vitest-plugin';
 //   https://storybook.js.org/docs/writing-tests/integrations/vitest-addon
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+// The prefix `stencilVitestPlugin` gives each component stylesheet module
+// (`node_modules/@stencil/vitest/dist/plugin.js`, its `resolveId`).
+const STENCIL_STYLE_PREFIX = '\0stencil-style:';
+const APP_GLOBALS = '@stencil/core/internal/app-globals';
+const RESOLVED_APP_GLOBALS = '\0mud-lane:app-globals';
+
+// Makes the `storybook` project style components the way the Stencil build does
+// (issue #28). `stencilVitestPlugin({ css: true })` attaches each component's own
+// CSS, but it differs from what ships in two ways, both of which a `play`
+// function asserting layout or computed style would otherwise measure wrongly:
+//
+// 1. Global styles. The shipped runtime adopts `globalStyles` — the compiled
+//    `globalStyle` of stencil.config.ts (`* { box-sizing: border-box }`, scrollbar
+//    and overlay utilities) — into EVERY shadow root, right after `attachShadow`.
+//    From source, `@stencil/core/internal/app-globals` exports `globalStyles = ""`,
+//    so the lane rendered shadow trees in `content-box`. `dist/mud/mud.css` is that
+//    compiled global style, byte-identical to the string the runtime adopts, and
+//    `.storybook/preview.js` already requires it to exist.
+//
+// 2. PostCSS. The build runs component CSS through the `css` plugins declared in
+//    stencil.config.ts (`postcss-nested`); the plugin hands raw source to Chromium,
+//    whose native nesting drops `&(…)` and `&-suffix` rules that postcss-nested
+//    expands. Those plugins are invoked here from the imported config itself, so
+//    the lane cannot drift from the build's pipeline.
+//
+// Both files are registered as watch dependencies: the style modules are virtual
+// ids, so without `addWatchFile` an edited `.css` never reruns
+// `yarn test.storybook.watch` and later runs keep the stale stylesheet.
+//
+// Must be listed BEFORE `stencilVitestPlugin`: both are `enforce: 'pre'`, and this
+// transform has to see the raw CSS before that plugin compiles it into a module.
+function laneBuildCssParity(): Plugin {
+  const globalStylePath = path.join(__dirname, 'dist/mud/mud.css');
+  const cssPlugins = (stencilConfig.plugins ?? []).filter(
+    plugin => plugin?.pluginType === 'css' && typeof plugin.transform === 'function',
+  );
+
+  return {
+    name: 'mud:lane-build-css-parity',
+    enforce: 'pre',
+    // The dependency optimizer pre-bundles the Stencil runtime and inlines
+    // `app-globals` into that bundle, where `resolveId` below never sees the import.
+    // Both entries, because `@stencil/core` re-exports `../client/index.js`: excluded
+    // together they resolve to one module, so one runtime instance.
+    config() {
+      return { optimizeDeps: { exclude: ['@stencil/core', '@stencil/core/internal/client'] } };
+    },
+    resolveId(source) {
+      return source === APP_GLOBALS ? RESOLVED_APP_GLOBALS : null;
+    },
+    load(id) {
+      if (id !== RESOLVED_APP_GLOBALS) return null;
+      this.addWatchFile(globalStylePath);
+      const globalStyles = JSON.stringify(readFileSync(globalStylePath, 'utf8'));
+      return `export const globalScripts = () => {};\nexport const globalStyles = ${globalStyles};\n`;
+    },
+    async transform(code, id) {
+      if (!id.startsWith(STENCIL_STYLE_PREFIX)) return null;
+      const cssPath = `${id.slice(STENCIL_STYLE_PREFIX.length).split('?')[0]}.css`;
+      this.addWatchFile(cssPath);
+      let css = code;
+      for (const plugin of cssPlugins) {
+        // The slice of Stencil's plugin context `@stencil/postcss` touches: `rootDir`
+        // for paths, `fs.writeFile` to stash its output in memory (a missing one is
+        // caught inside the plugin and turns into a diagnostic, not a throw), and
+        // `fs.readFileSync` to quote a failing line.
+        const context = {
+          config: { rootDir: __dirname },
+          diagnostics: [] as { level?: string; messageText?: string }[],
+          fs: { writeFile: async () => undefined, readFileSync: (file: string) => readFileSync(file, 'utf8') },
+        };
+        const result = await plugin.transform(css, cssPath, context);
+        // Loud on purpose: a diagnostic leaves the stylesheet unprocessed or replaced
+        // by a comment, and the build would stop on an error-level one.
+        for (const diagnostic of context.diagnostics) {
+          const message = `${plugin.name} on ${cssPath}: ${diagnostic.messageText}`;
+          if (diagnostic.level === 'error') this.error(message);
+          this.warn(message);
+        }
+        if (result && typeof result.code === 'string') css = result.code;
+      }
+      return { code: css, map: null };
+    },
+  };
+}
 
 export default defineVitestConfig({
   stencilConfig: './stencil.config.ts',
@@ -150,15 +240,9 @@ export default defineVitestConfig({
           // purpose — mock-doc computes no styles. `.storybook/vitest.setup.ts`
           // fails the lane if this is dropped.
           //
-          // The CSS is not run through `postcss-nested` here, unlike the Stencil
-          // build, so nesting is left to Chromium's native CSS nesting. The two agree
-          // only while (a) no selector is built by concatenation (`&-suffix`), which
-          // native nesting cannot express, and (b) every nested rule sits under a
-          // single-selector parent — a selector-list parent becomes `:is(…)` natively,
-          // whose specificity is the list's highest rather than per selector.
-          // Both hold today: the only style rules nested inside another style rule
-          // are in `mud-icon.css`, under `.svg-icon` and two single `:host(…)` parents.
-          // Baseline for (a): `rg -n '&[-_a-zA-Z0-9]' src/components -g '*.css'` -> no matches.
+          // `css: true` alone renders a stylesheet the shipped build does not; the
+          // parity plugin just above closes the two gaps.
+          laneBuildCssParity(),
           stencilVitestPlugin({ css: true }),
           storybookTest({
             configDir: path.join(__dirname, '.storybook'),

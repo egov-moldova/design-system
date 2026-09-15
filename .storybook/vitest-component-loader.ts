@@ -16,10 +16,12 @@
 //   the real source files in the module graph and produces accurate numbers.
 //
 // Styles: each component's CSS reaches its shadow root only because the
-//   `storybook` project passes `{ css: true }` to `stencilVitestPlugin`. Without
-//   that option the elements still register and render, but UNSTYLED — and
-//   nothing else fails (issue #28). `.storybook/vitest.setup.ts` imports this
-//   file to assert the stylesheet is adopted before any story runs.
+//   `storybook` project passes `{ css: true }` to `stencilVitestPlugin`, and it
+//   matches the build only because `laneBuildCssParity` there adds the global
+//   style and the PostCSS pass. Without them the elements still register and
+//   render, but unstyled or styled differently from what ships — and nothing else
+//   fails (issue #28). `.storybook/vitest.setup.ts` imports this file to assert
+//   all three before any story runs.
 //
 // Wired into Storybook tests via `resolve.alias` in `vitest.config.mts` —
 // the alias rewrites `../dist/mud/mud.esm.js` (in

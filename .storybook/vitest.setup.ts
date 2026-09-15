@@ -56,7 +56,9 @@ if (typeof jsx !== 'function') {
 //    time this file runs, so a synchronous read suffices. `yarn tokens.build`
 //    produces them.
 for (const tokenFile of ['core.tokens.css', 'core.dark.tokens.css']) {
-  const link = document.querySelector(`link[rel='stylesheet'][href$='tokens/generated/${tokenFile}']`);
+  // `*=` rather than `$=`: a cache-busting query on the href must not read as a
+  // missing file.
+  const link = document.querySelector(`link[rel='stylesheet'][href*='tokens/generated/${tokenFile}']`);
   const rules = link && link.sheet ? link.sheet.cssRules.length : 0;
   if (rules === 0) {
     throw new Error(
@@ -66,28 +68,57 @@ for (const tokenFile of ['core.tokens.css', 'core.dark.tokens.css']) {
   }
 }
 
-// 2. Component stylesheets. `stencilVitestPlugin` drops each component's CSS unless
-//    it is given `{ css: true }` in vitest.config.mts; the element still defines and
-//    renders, only with an empty shadow root stylesheet list. The loader is imported
-//    here directly because preview.js has not run yet when this file does, and it is
-//    the same module preview.js reaches through the redirect in vitest.config.mts.
-//    Stencil adopts the sheet on first render, measured one frame after append; the
-//    frame budget below is a ceiling, not a delay — the loop exits on the first hit.
+// 2. Shadow-root stylesheets, the three things vitest.config.mts must get right for
+//    a shadow tree to match the shipped build. Each is identified by content, never
+//    by counting sheets, so one present sheet cannot stand in for a missing one:
+//    - the component's own sheet (carries `:host`) — absent without
+//      `stencilVitestPlugin({ css: true })`;
+//    - the global sheet (carries `*`, the `box-sizing` reset of
+//      `src/assets/css/base/html.css`) — absent without `laneBuildCssParity`;
+//    - no nested style rule left in the component sheet — the build flattens nesting
+//      with postcss-nested, so a nested rule means the lane skipped that pipeline.
+//
+//    `mud-icon` is the probe because its source is the one component stylesheet that
+//    nests, so it is the only one that can fail the third check. Baseline:
+//    `rg -n '^\s+[^\s@*/][^;{}]*\{' src/components/mud-icon/mud-icon.css` -> 5 openers,
+//    four of them style rules nested in style rules. If that file ever stops nesting,
+//    move the probe to one that does.
+//
+//    The loader is imported here directly because preview.js has not run yet when
+//    this file does, and it is the same module preview.js reaches through the
+//    redirect in vitest.config.mts. Stencil adopts the component sheet on first
+//    render; the frame budget is a ceiling, not a delay — the loop exits on the first
+//    hit, and a render slower than the ceiling fails loudly rather than passing.
 await import('./vitest-component-loader.ts');
 
-const styleProbe = document.createElement('mud-button');
+const styleProbe = document.createElement('mud-icon');
 document.body.appendChild(styleProbe);
-let adoptedRules = 0;
-for (let frame = 0; frame < 30 && adoptedRules === 0; frame += 1) {
+const rulesOf = sheet => Array.from(sheet.cssRules);
+let componentSheet;
+let globalSheet;
+for (let frame = 0; frame < 30 && !componentSheet; frame += 1) {
   await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)));
-  const sheets = styleProbe.shadowRoot ? styleProbe.shadowRoot.adoptedStyleSheets : [];
-  adoptedRules = sheets.reduce((count, sheet) => count + sheet.cssRules.length, 0);
+  const sheets = styleProbe.shadowRoot ? Array.from(styleProbe.shadowRoot.adoptedStyleSheets) : [];
+  componentSheet = sheets.find(sheet => rulesOf(sheet).some(rule => rule.cssText.includes(':host')));
+  globalSheet = sheets.find(sheet => rulesOf(sheet).some(rule => rule.selectorText === '*'));
 }
 styleProbe.remove();
 
-if (adoptedRules === 0) {
+if (!componentSheet) {
   throw new Error(
-    'the `storybook` project renders components unstyled — `mud-button` adopted no ' +
+    'the `storybook` project renders components unstyled — `mud-icon` adopted no component ' +
       'stylesheet. `stencilVitestPlugin` in vitest.config.mts needs `{ css: true }` (issue #28)',
+  );
+}
+if (!globalSheet) {
+  throw new Error(
+    'the `storybook` project renders shadow trees without the global styles the build adopts ' +
+      '(`dist/mud/mud.css`) — `laneBuildCssParity` in vitest.config.mts is missing or ineffective (issue #28)',
+  );
+}
+if (rulesOf(componentSheet).some(rule => rule.cssRules && rule.cssRules.length > 0 && rule.selectorText)) {
+  throw new Error(
+    'the `storybook` project skipped the PostCSS pipeline of stencil.config.ts — `mud-icon` still ' +
+      'carries nested rules the build flattens. `laneBuildCssParity` in vitest.config.mts (issue #28)',
   );
 }

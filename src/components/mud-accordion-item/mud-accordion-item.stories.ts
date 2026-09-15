@@ -170,9 +170,15 @@ export const SlottedDisabledContract: Story = {
     const hitTest = (el: HTMLElement) => {
       // `scrollIntoView` first and the null check at the call site second, both
       // load-bearing: `elementFromPoint` returns null for any point outside the
-      // viewport, so a bare `hit !== el` passes vacuously below the fold.
+      // viewport, so a bare `hit !== el` passes vacuously below the fold. The empty-box
+      // check is the same hole from the other side: an element that is not laid out
+      // (e.g. its slot wrapper lost `.has-content`) has a zero rect, and the point at
+      // its origin hits some unrelated element that is also "not el".
       el.scrollIntoView({ block: 'center' });
       const box = el.getBoundingClientRect();
+      if (box.width === 0 || box.height === 0) {
+        throw new Error(`#${el.id} has an empty box — a hit-test on it would pass vacuously`);
+      }
       return document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2);
     };
 
@@ -292,6 +298,17 @@ export const SlottedDisabledContract: Story = {
     }
     if (hitTest(nested) !== nested) {
       throw new Error('a nested slotted control stayed hit-test-blocked after the item was enabled');
+    }
+    // The mirror of 1b, clause by clause: an arm that lost its `:host([disabled])`
+    // qualifier blocks the pointer in every ENABLED item too, and only this sees it.
+    for (const [name, el] of [
+      ['heading', find('head-slot')],
+      ['supporting', find('sup-slot')],
+      ['trailing', ours],
+    ] as const) {
+      if (getComputedStyle(el).pointerEvents === 'none') {
+        throw new Error(`slot="${name}" content stayed pointer-blocked after the item was enabled`);
+      }
     }
     if (link.hasAttribute('tabindex')) {
       throw new Error('the tabindex mirror was not removed when the item was enabled');

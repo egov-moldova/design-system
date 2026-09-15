@@ -49,7 +49,7 @@ yarn test:scripts      # node --test on scripts/__tests__/
 
 The full `yarn test` run is the gate; `yarn test.dev` is the dev-loop tool. Both must pass before a `mud-*` graduates from `src/hidden/` to `src/components/`.
 
-`yarn test.storybook` renders components **styled**: each component's CSS and the design tokens are applied, so a `play` function may assert computed style, hit-testing (`document.elementFromPoint`) and layout. It needs `yarn build` and `yarn tokens.build` to have run — `.storybook/vitest.setup.ts` refuses to start the lane when the tokens or a component stylesheet are missing, rather than running every story unstyled (issue #28). The spec project stays unstyled by design: mock-doc computes no styles.
+`yarn test.storybook` renders components **styled the way the build ships them**: each component's CSS goes through the PostCSS plugins of `stencil.config.ts`, every shadow root adopts the compiled global style (`dist/mud/mud.css`), and the design tokens are applied, so a `play` function may assert computed style, hit-testing (`document.elementFromPoint`) and layout. It needs `yarn build` and `yarn tokens.build` to have run — `.storybook/vitest.setup.ts` refuses to start the lane when the tokens, the component stylesheet, the global stylesheet or the PostCSS pass are missing, rather than running every story on styles no consumer gets (issue #28). The spec project stays unstyled by design: mock-doc computes no styles.
 
 ## Cross-references
 
