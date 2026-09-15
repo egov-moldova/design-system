@@ -10,16 +10,25 @@ const isDev = process.env.NODE_ENV !== 'production';
 
 // In order of appearance in the UI (toolbar, addons panel, then docs)
 //
-// `@storybook/addon-vitest@10.4.0` is intentionally omitted: its "Run component
-// tests" UI panel calls the deprecated `vitest.init()` API and re-optimizes
-// Vite's deps mid-session, which crashes `dx:storybook` and tears down the
-// whole `yarn dev` graph. Tests remain runnable from the CLI:
-//   yarn test                  — spec (mock-doc, fast, 1485 assertions)
+// `@storybook/addon-vitest` (dev only) adds the "Component tests" panel. It was
+// omitted on 10.4.0, where "Run tests" crashed `dx:storybook` while Vite
+// re-optimized deps mid-session. On 10.6.0 the panel still logs the deprecated
+// `vitest.init()` warning and still re-optimizes, but the server survives and
+// the run matches the CLI lane (46 files, 457 tests). Panel runs also report 2
+// unhandled `querySelector` of null errors attributed to mud-tabs stories that
+// `yarn test.storybook` does not; see
+// docs/backlog/2026-09-15-toolchain-follow-ups-ci-docker.md. The CLI lanes stay the gate:
+//   yarn test                  — spec (mock-doc)
 //   yarn test.storybook        — storybook one-shot (CI / pre-commit gate)
 //   yarn test.storybook.watch  — storybook watch mode (manual second terminal)
 // The `storybookTest` plugin is imported directly in `vitest.config.mts`, so
-// removing the UI addon does not affect CLI test execution.
-const devAddons = ['@storybook/addon-docs', '@whitespace/storybook-addon-html', '@storybook/addon-a11y'];
+// the panel is optional for CLI test execution.
+const devAddons = [
+  '@storybook/addon-docs',
+  '@whitespace/storybook-addon-html',
+  '@storybook/addon-a11y',
+  '@storybook/addon-vitest',
+];
 
 const prodAddons = ['@storybook/addon-docs', '@storybook/addon-links', '@storybook/addon-a11y'];
 
