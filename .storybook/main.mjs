@@ -14,12 +14,9 @@ const isDev = process.env.NODE_ENV !== 'production';
 // omitted on 10.4.0, where "Run tests" crashed `dx:storybook` while Vite
 // re-optimized deps mid-session. On 10.6.0 the panel still logs the deprecated
 // `vitest.init()` warning and still re-optimizes, but the server survives and
-// the run matches the CLI lane (46 files, 457 tests). Panel runs also report 2
-// unhandled `querySelector` of null errors attributed to mud-tabs stories that
-// `yarn test.storybook` does not; see
-// docs/backlog/2026-09-15-toolchain-follow-ups-ci-docker.md. The CLI lanes stay the gate:
-//   yarn test                  — spec (mock-doc)
-//   yarn test.storybook        — storybook one-shot (CI / pre-commit gate)
+// the panel runs the same tests as `yarn test.storybook`. CLI equivalents:
+//   yarn test                  — spec (mock-doc); the only test lane CI runs
+//   yarn test.storybook        — storybook one-shot (local; not run by CI)
 //   yarn test.storybook.watch  — storybook watch mode (manual second terminal)
 // The `storybookTest` plugin is imported directly in `vitest.config.mts`, so
 // the panel is optional for CLI test execution.
@@ -161,10 +158,9 @@ export default {
     config.plugins.push({
       name: 'stencil-hot-reload',
       // Close on `closeBundle`, which Vite runs from every environment's plugin
-      // container on server close, not on `httpServer` 'close': the Vitest browser
-      // lane (`yarn test.storybook`) runs this plugin too, and that event does not
-      // fire there before the teardown timeout, so the open recursive watchers held
-      // the process until "close timed out after 10000ms".
+      // container on both server close and restart. `httpServer` 'close' is not
+      // enough: in middleware mode `server.httpServer` is null, so that listener was
+      // never attached and the recursive watchers kept the process alive.
       closeBundle() {
         watchers.splice(0).forEach(w => w.close());
         Object.values(timers).forEach(clearTimeout);
@@ -227,6 +223,11 @@ export default {
           'tokens/generated': onTokenChange,
           'dist/mud': onComponentChange,
         };
+
+        // The Vitest lane loads this config too, but its browser server runs with
+        // `watch: null` and compiles components from source, so reloads have no
+        // consumer there.
+        if (process.env.VITEST) return;
 
         for (const [dir, handler] of Object.entries(watchMap)) {
           try {
