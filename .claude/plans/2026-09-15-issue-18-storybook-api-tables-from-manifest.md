@@ -108,6 +108,15 @@ Row handling (decision 2): Storybook's default extractor (205 duplicates, 44 col
 - `scripts/__tests__/storybook-manifest-arg-types.spec.mjs` (create) — unit tests for the extractor.
 - `AGENTS.md`, `Dockerfile`, `.gitattributes` (modify) — the three places that name `wca.custom-elements`.
 
+## reuse-candidates: manifest-arg-types
+
+Homes swept: `.storybook/`, `scripts/`, `scripts/__tests__/`, `src/` (`git grep -ln "extractArgTypes\|custom-elements.json"`), installed deps (`@storybook/web-components`). Stamp: `1e6902a`, 2026-09-15.
+
+- `@storybook/web-components` `entry-preview-argtypes.js` `extractArgTypes` · tier 2 (same role) · rejected-because it keys rows by bare name (44 collisions), drops the default slot and methods, and exposes no hook to change either (Context fact 6).
+- `.storybook/preview.js` inline `extractArgTypes` · tier 1 (same name) · extend — replaced in place by a call to the new module; no parallel copy remains.
+- `scripts/audit/03-git-hygiene.mjs:96` · tier 3 (mentions the manifest) · rejected-because it only flags the file as generated.
+- New specs (`storybook-manifest*.spec.mjs`) · follow `scripts/__tests__/validate-package.spec.mjs`'s `node:test` shape; no existing spec covers the manifest or preview.
+
 ## Acceptance bar
 
 Numbers below were re-derived at planning time from the Stencil manifest probe
@@ -128,7 +137,7 @@ Zero-tolerance (any miss = FAIL):
 | Z1 | Manifest contract passes after `yarn build`, and FAILED on `fe6d651`'s wca manifest | `node --test scripts/__tests__/storybook-manifest.spec.mjs` |
 | Z2 | Extractor unit tests pass | `node --test scripts/__tests__/storybook-manifest-arg-types.spec.mjs` |
 | Z3 | Project checks exit 0 | `yarn lint`, `yarn typecheck`, `yarn test`, `yarn test:scripts`, `yarn sp.build` |
-| Z4 | `yarn build` changes no readme, and `src/components.d.ts` only by the removed accordion `@csspart`/`@fires` JSDoc lines | `git status --short -- 'src/components/**/readme.md'` → empty; `git diff -U0 src/components.d.ts \| grep '^[-+] ' \| grep -v '@csspart\|@fires\|^-  *\* *[a-z(`]'` → empty |
+| Z4 | `yarn build` changes no readme, and `src/components.d.ts` only by the removed accordion `@csspart`/`@fires` JSDoc lines | `git status --short -- 'src/components/**/readme.md'` → empty; `git diff -U0 src/components.d.ts \| grep '^+[^+]'` → empty (no added line), and `git diff -U0 src/components.d.ts \| grep '^-[^-]' \| grep -v '@csspart \|@fires \|item currently open (single entry in \|^- *\*$'` → empty (every removed line is a retired tag, the one continuation line of `@fires mudChange`, or a bare ` *` spacer) |
 | Z8 | No `@csspart` / `@fires` left in component source | `git grep -n "@csspart\|@fires" -- 'src/**/*.tsx'` → empty |
 | Z5 | No trace of wca in the tree | `git grep -n "web-component-analyzer\|wca\.custom-elements\|wca analyze" -- ':!.claude/plans/' ':!CHANGELOG.md'` → empty |
 | Z6 | Every story's `initialArgs` identical before/after (canvas input unchanged) | baseline vs after JSON from Task 1 Step 1 / Task 3 Step 6, `diff` → empty |
@@ -136,12 +145,13 @@ Zero-tolerance (any miss = FAIL):
 
 Numeric (over all 56 tags, from the built Storybook in Task 3):
 
-| # | Metric | PASS | WARN | FAIL |
-| --- | --- | --- | --- | --- |
-| N1 | `mud-input` rows for `label` / `slot:label` / `part:label` | 3 distinct | — | < 3 |
-| N2 | `method:*` rows | 5 | — | ≠ 5 |
-| N3 | `slot:default` rows | 27 | — | ≠ 27 |
-| N4 | Tags whose extracted argTypes are `{}` | 0 | — | > 0 |
+| # | Metric | PASS | WARN | FAIL | Instrument |
+| --- | --- | --- | --- | --- | --- |
+| N1 | `mud-input` rows for `label` / `slot:label` / `part:label` | 3 distinct | — | < 3 | Instrument: Task 3 Step 3 probe, field `inputLabel` |
+| N2 | `method:*` rows | 5 | — | ≠ 5 | Instrument: Task 3 Step 3 probe, field `methods` |
+| N3 | `slot:default` rows | 27 | — | ≠ 27 | Instrument: Task 3 Step 3 probe, field `defaultSlots` |
+| N4 | Tags whose extracted argTypes are `{}` | 0 | — | > 0 | Instrument: Task 3 Step 3 probe, field `emptyTags` |
+| N5 | Tags where extracted rows per category ≠ manifest entries per category (fields, methods, events, slots, cssParts) | 0 | — | > 0 | Instrument: Task 3 Step 3 probe, field `countMismatches` |
 
 ## Phase 1 — Manifest from Stencil, tables from the manifest
 
@@ -652,15 +662,31 @@ const extract = story.parameters.docs.extractArgTypes;
 const manifest = window.__STORYBOOK_CUSTOM_ELEMENTS__;
 const tags = manifest.modules.flatMap(m => m.declarations).filter(d => d.customElement).map(d => d.tagName);
 const rows = Object.fromEntries(tags.map(t => [t, extract(t)]));
+const declarations = Object.fromEntries(manifest.modules.flatMap(m => m.declarations).filter(d => d.customElement).map(d => [d.tagName, d]));
+const byCategory = r => Object.values(r).reduce((acc, row) => ({ ...acc, [row.table.category]: (acc[row.table.category] ?? 0) + 1 }), {});
+const expected = d => ({
+  properties: (d.members ?? []).filter(m => m.kind === 'field').length,
+  methods: (d.members ?? []).filter(m => m.kind === 'method').length,
+  events: (d.events ?? []).length,
+  slots: (d.slots ?? []).length,
+  'css shadow parts': (d.cssParts ?? []).length,
+});
 ({
   inputLabel: ['label', 'slot:label', 'part:label'].filter(k => rows['mud-input'][k]).length,
   methods: tags.reduce((n, t) => n + Object.keys(rows[t]).filter(k => k.startsWith('method:')).length, 0),
   defaultSlots: tags.filter(t => rows[t]['slot:default']).length,
   emptyTags: tags.filter(t => Object.keys(rows[t]).length === 0),
+  countMismatches: tags.filter(t => {
+    const got = byCategory(rows[t]);
+    return Object.entries(expected(declarations[t])).some(([category, n]) => (got[category] ?? 0) !== n);
+  }),
 });
 ```
 
-Expected: `{ inputLabel: 3, methods: 5, defaultSlots: 27, emptyTags: [] }`. (Use any existing story id if `atoms-button--default` differs.)
+Expected: `{ inputLabel: 3, methods: 5, defaultSlots: 27, emptyTags: [], countMismatches: [] }`.
+The probe calls the extractor through the story's `parameters.docs.extractArgTypes`, so it
+grades what Storybook actually receives, not the module in isolation. It reads rows before
+the story's own `argTypes` are merged; merged-in story rows are graded by Steps 4-5. (Use any existing story id if `atoms-button--default` differs.)
 
 - [ ] **Step 4: Look at the rendered tables**
 
@@ -712,7 +738,7 @@ Items issue #18 lists, and where each lands:
 | --- | --- |
 | Shadow Parts section generated from `@part` for every component | Task 1 (manifest), Task 3 (rows); Z1, N1 |
 | Events section generated from `@Event()` for every component | Task 1, Task 3; Z1 |
-| Slots and every prop nobody typed out in stories | Task 2 (rows for all fields and slots, incl. default slot); N3, N4 |
+| Slots and every prop nobody typed out in stories | Task 2 (rows for all fields and slots, incl. default slot); N3, N4, N5 |
 | Replace `wca analyze` with `docs-custom-elements-manifest` | Task 1; Z5 |
 | Remove the `@csspart`/`@fires` duplication | Task 1 Step 5; Z8 |
 | Remove the `wca` dependency | Task 1 Step 5; Z5 |
