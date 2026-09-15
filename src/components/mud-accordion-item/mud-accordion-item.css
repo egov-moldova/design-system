@@ -70,6 +70,44 @@
   --_trigger-color: var(--accordion-item-trigger-color-disabled);
 }
 
+/* Mouse net for what the attribute deliberately does not reach.
+ *
+ * `disabled` is written onto the elements DIRECTLY assigned to these three slots
+ * (see the TSX), which is where controls belong. It does nothing for two cases,
+ * and this rule is what stands in for it: a control NESTED inside a slotted
+ * wrapper, which gets no attribute at all, and a slotted element that has no
+ * `disabled` behaviour of its own. Neither is covered by the platform — measured
+ * in Chromium, a disabled native <button> ancestor blocks neither clicks nor
+ * focus on its flat-tree slotted descendants.
+ *
+ * What it reaches, stated exactly, because an earlier version of this comment
+ * overclaimed: the slotted element itself, and any descendant that does not set
+ * its own `pointer-events`. A descendant that sets `pointer-events: auto` is hit-
+ * testable regardless — `!important` does not strengthen inheritance, and
+ * `::slotted` takes no descendant combinator, so CSS cannot reach it at all.
+ * `mud-avatar.css:143` is a real instance inside this repo.
+ *
+ * `!important` is load-bearing for the case it DOES reach: measured, a plain
+ * declaration loses to an inline `style="pointer-events: auto"` on the slotted
+ * element, and with `!important` it wins even against an inline `!important`.
+ * That is a deliberate exception to the usual rule against `!important`, not an
+ * specificity convenience.
+ *
+ * `AGENTS.md:92` rule 9 (dual selectors) is deliberately NOT applied here. The
+ * `heading` and `supporting` slots do render fallback content, but it is a bare
+ * text node — never a hit target — so a direct-child arm would add two selectors
+ * and change nothing observable.
+ *
+ * No `opacity` and no `filter`, deliberately. Each slotted control renders its
+ * own disabled tokens now; a second dim on top of that was measured at 1.23:1
+ * contrast, and `filter` makes every slotted header element a containing block
+ * for `position: fixed` descendants. */
+:host([disabled]) slot[name='heading']::slotted(*),
+:host([disabled]) slot[name='supporting']::slotted(*),
+:host([disabled]) slot[name='trailing']::slotted(*) {
+  pointer-events: none !important;
+}
+
 /* ---------- Header (the clickable row) ---------- */
 
 .header {
@@ -179,6 +217,20 @@
   display: none;
   flex-shrink: 0;
   align-items: center;
+}
+
+/* Give slotted content an inherited colour to follow while the item is
+   disabled, so a plain `<span slot="trailing">label</span>` greys with the rest
+   of the header instead of staying at full contrast. It does NOT reach a
+   component that paints its own surface — `mud-tag` and `mud-badge` have no
+   disabled design (issue #21).
+
+   Scoped to `:host([disabled])` deliberately. Unscoped, this inherits
+   `--_trigger-color`, which `:host([open])` and `:host([appearance='trail-sites'])`
+   redefine — so it would repaint trailing content in the ENABLED states too, and
+   flip it blue on every open/close, for every consumer already on 1.0.6. */
+:host([disabled]) .trailing {
+  color: var(--_trigger-color);
 }
 
 .trailing.has-content {

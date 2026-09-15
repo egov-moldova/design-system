@@ -350,12 +350,76 @@ const renderDisabled = () => /*html*/ `
         Acces restricționat la cetățenii autentificați prin MPower.
       </mud-accordion-item>
     </mud-accordion>
+
+    <p style="${sectionLabelStyle}">
+      Conținut slotat sub un element dezactivat. Elementul dezactivează butoanele pe care le
+      puneți direct în slot, dar la reactivare le redă exact pe cele pe care le-a dezactivat el.
+      Apăsați butonul de mai jos: cel pe care l-ați dezactivat dumneavoastră rămâne dezactivat,
+      cel lăsat activ redevine activ.
+    </p>
+    <button
+      id="disabled-slot-toggle"
+      type="button"
+      style="align-self: flex-start; margin-block-end: var(--spacing-16); padding: var(--spacing-8) var(--spacing-16); border: 1px solid var(--color-border-base-default); border-radius: var(--border-radius-4); background: var(--color-background-base-default); color: var(--color-text-base-default); font: inherit; font-size: var(--font-size-14); cursor: pointer;"
+    >
+      Comută starea celor două elemente
+    </button>
+    <mud-accordion mode="multiple">
+      <mud-accordion-item
+        id="slot-consumer-disabled"
+        heading="Plată restantă"
+        supporting-text="Butonul a fost dezactivat de dumneavoastră"
+        disabled
+      >
+        <mud-button slot="trailing" variant="secondary" size="sm" disabled>Reia plata</mud-button>
+        Reluarea plății este indisponibilă până la deblocarea dosarului.
+      </mud-accordion-item>
+      <mud-accordion-item
+        id="slot-consumer-enabled"
+        heading="Livrare"
+        supporting-text="Butonul a fost lăsat activ de dumneavoastră"
+        disabled
+      >
+        <mud-button slot="trailing" variant="secondary" size="sm">Urmărește</mud-button>
+        Urmărirea coletului devine disponibilă odată cu elementul.
+      </mud-accordion-item>
+    </mud-accordion>
+
+    <script>
+      // Shows the contract as a TRANSITION, which is what issue #17 broke and a static
+      // frame cannot render: the disabled attribute the consumer authored has to survive
+      // the item going enabled and back. A toggle is the only way a reader sees that here.
+      // No backticks in this block: it lives inside a template literal, which they close.
+      (() => {
+        const ids = ['slot-consumer-disabled', 'slot-consumer-enabled'];
+        document.getElementById('disabled-slot-toggle')?.addEventListener('click', () => {
+          for (const id of ids) {
+            const el = document.getElementById(id);
+            if (el) el.toggleAttribute('disabled');
+          }
+        });
+      })();
+    </script>
   </div>
 `;
 
 const docsSourceDisabled = /*html*/ `<mud-accordion mode="multiple">
   <mud-accordion-item heading="Disponibil" supporting-text="..." open>...</mud-accordion-item>
   <mud-accordion-item heading="Indisponibil temporar" supporting-text="..." disabled>...</mud-accordion-item>
+</mud-accordion>
+
+<!-- The item sets \`disabled\` on what you slot in directly, and on re-enable removes it
+     only from the elements it set it on — a control you shipped disabled stays disabled.
+     A control nested inside a slotted wrapper gets no attribute: put controls in the slot. -->
+<mud-accordion mode="multiple">
+  <mud-accordion-item heading="Plată restantă" disabled>
+    <mud-button slot="trailing" variant="secondary" size="sm" disabled>Reia plata</mud-button>
+    ...
+  </mud-accordion-item>
+  <mud-accordion-item heading="Livrare" disabled>
+    <mud-button slot="trailing" variant="secondary" size="sm">Urmărește</mud-button>
+    ...
+  </mud-accordion-item>
 </mud-accordion>`;
 
 const renderEdgeCases = () => /*html*/ `
