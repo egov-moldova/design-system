@@ -120,6 +120,20 @@ consumer moving to `bundler` should expect the same two error classes:
 That debt predates this release and is unchanged by it. It is invisible in CI
 because the workspace's build script is `tsc || true`.
 
+### Changed — `mud-icon` names (breaking)
+
+Three icon names were published misspelled and are now corrected. The old names
+are removed with no alias: `<mud-icon>` logs `Icon not found` and renders nothing.
+
+| Before | After |
+| --- | --- |
+| `calender-add` | `calendar-add` |
+| `calender-remove` | `calendar-remove` |
+| `calender-remove-filled` | `calendar-remove-filled` |
+
+The static assets move with them: `assets/<size>/calender-*.svg` is now
+`assets/<size>/calendar-*.svg`.
+
 ### Internal
 
 - The publish gate now proves that every documented specifier resolves to a file
