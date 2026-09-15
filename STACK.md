@@ -9,7 +9,7 @@ The stack is fixed by current `package.json` + `AGENTS.md`. Treat this file as t
 | Runtime | Node | `>=24.0.0 <25.0.0` |
 | Package manager | Yarn | `4.12.0` |
 | Language | TypeScript | `^5.9.3` (strict mode) |
-| Component framework | Stencil | `~4.43.5` (4.44+ drops the `prop:` JSX typings — stenciljs/core#6855) |
+| Component framework | Stencil | `~4.45.0` (yarn-patched with stenciljs/core#6855 to restore the `prop:` JSX typings; remove the patch once a release ships it) |
 | Storybook | `@storybook/web-components-vite` | `^10.6.0` (port `6007`) |
 | Bundler | Vite | `^8.3.0` (Rolldown + Oxc) |
 | Design tokens | Style Dictionary | `^5.5.3` (DTCG `$value`/`$type`) |
