@@ -40,7 +40,7 @@ const outputTargets: OutputTarget[] = [
 
 // Storybook builds every API table from this manifest (`.storybook/preview.js`).
 // It is written by Stencil from the same decorators and `@part` tags as `readme.md`,
-// replacing `web-component-analyzer`, which read JSDoc tags only (issue #18).
+// so the tables and the readmes cannot disagree (issue #18).
 outputTargets.push({
   type: 'docs-custom-elements-manifest',
   file: '.storybook/custom-elements.json',
