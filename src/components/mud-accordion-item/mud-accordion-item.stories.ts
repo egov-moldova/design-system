@@ -206,16 +206,17 @@ export const SlottedDisabledContract: Story = {
     // against `dist/`. Asserting it here would test the loader, not the component.
 
     // 1d. The keyboard mirror. `disabled` does nothing to an <a href>, so without
-    //     `tabindex="-1"` this element is Tab-reachable while the accessibility
-    //     tree reports it disabled — WCAG 2.1 SC 4.1.2.
+    //     `tabindex="-1"` this element is Tab-reachable inside an item that is
+    //     disabled.
     const link = find('link');
     if (link.getAttribute('tabindex') !== '-1') {
       throw new Error('a slotted <a href> is still in the tab order while the item is disabled');
     }
 
     // 3. KEYBOARD, for a DIRECTLY slotted control. The attribute is what closes this:
-    //    measured, a disabled native <button> ancestor does not refuse focus to its
-    //    flat-tree slotted descendants, so this fails if the attribute is not written.
+    //    `trailing` renders beside the header button (issue #22), so no disabled
+    //    ancestor stands between the control and focus — and measured, one would not
+    //    refuse it anyway. This fails if the attribute is not written.
     //    Focus is parked on a real element outside the accordion first — the item
     //    carries no tabindex, so `activeElement` would otherwise fall to <body> and
     //    the check would pass without proving focus was REFUSED rather than moved.

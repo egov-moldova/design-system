@@ -30,6 +30,24 @@ describe('mud-accordion-item', () => {
     expect(panel?.getAttribute('role')).toBe('region');
   });
 
+  it('renders the `trailing` slot outside the header button, after it (issue #22)', async () => {
+    const { root } = await render(<mud-accordion-item heading="A"></mud-accordion-item>);
+    const shadow = root?.shadowRoot;
+    const header = shadow?.querySelector<HTMLButtonElement>('button.header');
+    const trailing = shadow?.querySelector('slot[name="trailing"]');
+    expect(header && trailing).toBeTruthy();
+    // Interactive content inside a <button> is invalid HTML and joins the button's accessible name.
+    expect(header?.contains(trailing ?? null)).toBe(false);
+    // Tab order follows the flat tree: the trailing control is its own stop, after the header.
+    // Sibling order rather than `compareDocumentPosition`, which mock-doc answers with 0.
+    const row = Array.from(header?.parentElement?.children ?? []);
+    expect(row.indexOf(trailing!.parentElement!)).toBeGreaterThan(row.indexOf(header!));
+    // The label slots stay the header's name.
+    for (const name of ['icon-start', 'heading', 'supporting']) {
+      expect(header?.contains(shadow?.querySelector(`slot[name="${name}"]`) ?? null)).toBe(true);
+    }
+  });
+
   it('toggles open on header click', async () => {
     const { root } = await render(<mud-accordion-item heading="A"></mud-accordion-item>);
     const header = root?.shadowRoot?.querySelector<HTMLButtonElement>('button.header');

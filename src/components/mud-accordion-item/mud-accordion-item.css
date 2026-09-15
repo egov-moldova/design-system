@@ -46,6 +46,7 @@
  * is `left`, so all CSS needs to do is mirror padding nuances.
  */
 :host([icon-position='left']) .trigger {
+  grid-column: 1;
   margin-inline-start: 0;
   margin-inline-end: var(--accordion-item-gap-icon, var(--spacing-8));
 }
@@ -78,7 +79,8 @@
  * wrapper, which gets no attribute at all, and a slotted element that has no
  * `disabled` behaviour of its own. Neither is covered by the platform — measured
  * in Chromium, a disabled native <button> ancestor blocks neither clicks nor
- * focus on its flat-tree slotted descendants.
+ * focus on its flat-tree slotted descendants, and `trailing` has no such ancestor
+ * at all since it renders beside the header button (issue #22).
  *
  * What it reaches, stated exactly, because an earlier version of this comment
  * overclaimed: the slotted element itself, and any descendant that does not set
@@ -108,14 +110,52 @@
   pointer-events: none !important;
 }
 
-/* ---------- Header (the clickable row) ---------- */
+/* ---------- Header row ---------- */
+
+/* The `trailing` slot sits OUTSIDE the header button (issue #22), yet the button
+ * must keep covering the whole row: `part="header"` is a published contract, and
+ * its box, background, hover tint and focus ring all span the row on 1.0.6.
+ *
+ * So the row is a grid, the button spans every column and shares them through
+ * `subgrid`, and `.trailing` is placed into a column the button leaves empty,
+ * painting over it. The column list is chosen by `has-trailing` rather than
+ * always reserving a trailing track: an empty track still takes a `column-gap`
+ * on each side, which would add a gap to every item without trailing content.
+ * The trailing track is `minmax(0, max-content)`, not `auto`: trailing content
+ * wider than the row would otherwise widen the button past the host and push the
+ * trigger out of view; with a zero floor the content wraps inside its track.
+ *
+ *   right:  [lead 1fr] [trailing] [trigger]
+ *   left:   [trigger] [lead 1fr] [trailing] */
+.header-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: var(--_gap);
+}
+
+.header-row.has-trailing {
+  grid-template-columns: minmax(0, 1fr) minmax(0, max-content) auto;
+}
+
+:host([icon-position='left']) .header-row {
+  grid-template-columns: auto minmax(0, 1fr);
+}
+
+:host([icon-position='left']) .header-row.has-trailing {
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, max-content);
+}
+
+/* ---------- Header (the clickable button) ---------- */
 
 .header {
   position: relative;
-  display: flex;
+  display: grid;
+  grid-template-columns: subgrid;
+  grid-column: 1 / -1;
+  grid-row: 1;
+  align-self: stretch;
   align-items: center;
-  gap: var(--_gap);
-  inline-size: 100%;
   margin: 0;
   padding-block: var(--_padding-block);
   padding-inline: var(--_padding-inline);
@@ -134,9 +174,15 @@
     background-color var(--accordion-item-transition-duration) var(--accordion-item-transition-timing-function);
 }
 
-:host(:not([disabled]):not([open])) .header:hover {
+/* Hover is read off the row, not the button: the pointer over trailing content is
+ * no longer inside the button, and the tint must not drop when it gets there. The
+ * padding is set as the variable so `.trailing`, outside the button, follows it. */
+:host(:not([disabled]):not([open])) .header-row:hover {
+  --_padding-inline: var(--accordion-item-padding-inline-tinted);
+}
+
+:host(:not([disabled]):not([open])) .header-row:hover .header {
   background-color: var(--accordion-item-container-background-hover);
-  padding-inline: var(--accordion-item-padding-inline-tinted);
 }
 
 .header:focus {
@@ -153,6 +199,22 @@
 
 :host([disabled]) .header {
   cursor: not-allowed;
+}
+
+/* ---------- Lead (icon-start + text group) ---------- */
+
+/* One grid item for both, so an empty `icon-start` collapses inside a flex gap
+   instead of leaving an empty grid track with a `column-gap` beside it. */
+.lead {
+  display: flex;
+  grid-column: 1;
+  align-items: center;
+  gap: var(--_gap);
+  min-inline-size: 0;
+}
+
+:host([icon-position='left']) .lead {
+  grid-column: 2;
 }
 
 /* ---------- Icon-start (optional) ---------- */
@@ -213,10 +275,28 @@
 
 /* ---------- Trailing slot (badge / button / label) ---------- */
 
+/* A grid item of the row, painted over the button: `position: relative` is what
+   puts it above, because the button is positioned too and would otherwise paint
+   later and take every click. The block margins stand in for the button's own
+   padding, which no longer contains it — margins rather than padding, because a
+   padded box would take the clicks above and below the content that used to
+   toggle the item. */
 .trailing {
+  position: relative;
   display: none;
-  flex-shrink: 0;
+  grid-column: 2;
+  grid-row: 1;
   align-items: center;
+  margin-block: var(--_padding-block);
+}
+
+/* Last column when the trigger leads. The button's inline padding no longer
+   reaches past it, so it carries the end padding itself and follows the hover
+   tint's padding change with the button's own transition. */
+:host([icon-position='left']) .trailing {
+  grid-column: 3;
+  margin-inline-end: var(--_padding-inline);
+  transition: margin var(--accordion-item-transition-duration) var(--accordion-item-transition-timing-function);
 }
 
 /* Give slotted content an inherited colour to follow while the item is
@@ -228,9 +308,15 @@
    Scoped to `:host([disabled])` deliberately. Unscoped, this inherits
    `--_trigger-color`, which `:host([open])` and `:host([appearance='trail-sites'])`
    redefine — so it would repaint trailing content in the ENABLED states too, and
-   flip it blue on every open/close, for every consumer already on 1.0.6. */
+   flip it blue on every open/close, for every consumer already on 1.0.6.
+
+   `pointer-events`: the slotted content is already pointer-transparent while
+   disabled (see the mouse net above); the wrapper follows, so the pointer lands on
+   the disabled button beneath and gets its `not-allowed` cursor, as it did when
+   the wrapper was inside the button. */
 :host([disabled]) .trailing {
   color: var(--_trigger-color);
+  pointer-events: none;
 }
 
 .trailing.has-content {
@@ -241,7 +327,7 @@
 
 .trigger {
   display: inline-flex;
-  flex-shrink: 0;
+  grid-column: -2;
   align-items: center;
   justify-content: center;
   inline-size: var(--accordion-item-trigger-size);
