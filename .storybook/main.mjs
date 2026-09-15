@@ -156,8 +156,19 @@ export default {
     // Both dirs are gitignored so Vite's chokidar won't see changes — we use Node
     // fs.watch and send a full-reload via Vite's WebSocket.
     config.plugins = config.plugins || [];
+    const timers = {};
+    const watchers = [];
     config.plugins.push({
       name: 'stencil-hot-reload',
+      // Close on `closeBundle`, which Vite runs from every environment's plugin
+      // container on server close, not on `httpServer` 'close': the Vitest browser
+      // lane (`yarn test.storybook`) runs this plugin too, and that event does not
+      // fire there before the teardown timeout, so the open recursive watchers held
+      // the process until "close timed out after 10000ms".
+      closeBundle() {
+        watchers.splice(0).forEach(w => w.close());
+        Object.values(timers).forEach(clearTimeout);
+      },
       configureServer(server) {
         const projectRoot = path.resolve(__dirname, '..');
 
@@ -183,8 +194,6 @@ export default {
         // Watch both gitignored dirs with separate debounce per dir.
         // Token-only changes skip module invalidation (tokens are <link> tags).
         // Component changes invalidate only dist/mud modules.
-        const timers = {};
-        const watchers = [];
 
         function onTokenChange(filename) {
           clearTimeout(timers.tokens);
@@ -229,17 +238,6 @@ export default {
             console.warn(`[stencil-hot-reload] Could not watch ${dir}:`, e.message);
           }
         }
-
-        // Close with the Vite server, not on `httpServer` 'close': the Vitest
-        // browser lane (`yarn test.storybook`) runs this plugin too, and that event
-        // does not fire before its teardown timeout, so the open recursive watchers
-        // held the process for another 10s ("close timed out after 10000ms").
-        const closeServer = server.close.bind(server);
-        server.close = async () => {
-          watchers.forEach(w => w.close());
-          Object.values(timers).forEach(clearTimeout);
-          return closeServer();
-        };
       },
     });
 
