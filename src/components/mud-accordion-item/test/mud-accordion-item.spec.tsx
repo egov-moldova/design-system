@@ -1,6 +1,7 @@
 import { render, h, describe, it, expect, vi } from '@stencil/vitest';
 
 import '../mud-accordion-item';
+import '../../mud-badge/mud-badge';
 
 const flush = () => new Promise(resolve => setTimeout(resolve, 0));
 
@@ -334,5 +335,43 @@ describe('mud-accordion-item', () => {
     // It arrived carrying the consumer's own value, so it never entered the
     // ledger and must survive the re-enable — issue #17 on the append path.
     expect(late.hasAttribute('disabled')).toBe(true);
+  });
+
+  it('claims a `mud-*` control whose `disabled="false"` attribute reads as not disabled', async () => {
+    const { root, waitForChanges } = await render(
+      <mud-accordion-item heading="Payment">
+        <mud-badge slot="trailing" count={2}></mud-badge>
+      </mud-accordion-item>,
+    );
+    const badge = root!.querySelector('mud-badge') as HTMLMudBadgeElement;
+    badge.setAttribute('disabled', 'false');
+    await waitForChanges();
+    expect(badge.disabled).toBe(false);
+
+    (root as HTMLElement).setAttribute('disabled', '');
+    await waitForChanges();
+    // Stencil reads the string "false" as `false`, so the badge is enabled and
+    // skipping it would leave a full-colour badge in a disabled row.
+    expect(badge.getAttribute('disabled')).toBe('');
+    expect(badge.disabled).toBe(true);
+
+    (root as HTMLElement).removeAttribute('disabled');
+    await waitForChanges();
+    expect(badge.hasAttribute('disabled')).toBe(false);
+  });
+
+  it('does not claim a native control carrying `disabled="false"`, which HTML reads as disabled', async () => {
+    const { root, waitForChanges } = await render(<mud-accordion-item heading="Payment"></mud-accordion-item>);
+    const button = document.createElement('button');
+    button.setAttribute('slot', 'trailing');
+    button.setAttribute('disabled', 'false');
+    root!.appendChild(button);
+    root!.shadowRoot!.querySelector('slot[name="trailing"]')!.dispatchEvent(new Event('slotchange'));
+
+    (root as HTMLElement).setAttribute('disabled', '');
+    await waitForChanges();
+    (root as HTMLElement).removeAttribute('disabled');
+    await waitForChanges();
+    expect(button.getAttribute('disabled')).toBe('false');
   });
 });

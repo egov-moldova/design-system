@@ -384,9 +384,13 @@ export class MudAccordionItem {
       // (React 19 sets unknown props on custom elements as properties) would
       // otherwise be claimed here and cleared on re-enable — issue #17 again,
       // in the one shape no in-repo test can reach, since every `mud-*` control
-      // reflects.
-      if (el.hasAttribute('disabled')) continue;
-      if ((el as { disabled?: unknown }).disabled === true) continue;
+      // reflects. An attribute whose element reads it as `false` is not a
+      // consumer's disabled: Stencil parses `disabled="false"` to `false`, and
+      // skipping it would leave a `mud-*` control enabled in a disabled row. A
+      // native control reads any value as disabled, so it still stays unclaimed.
+      const property = (el as { disabled?: unknown }).disabled;
+      if (el.hasAttribute('disabled') && property !== false) continue;
+      if (property === true) continue;
       el.setAttribute('disabled', '');
       this.ownedDisabled.add(el);
     }
