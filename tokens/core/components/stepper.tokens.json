@@ -89,7 +89,7 @@
       "labelActionable": {
         "$value": "{color.text.brand.default}",
         "$type": "color",
-        "$comment": "Interactive/clickable completed step → brand underlined link per Figma 639:11170."
+        "$comment": "Completed step → brand underlined link, always (not gated by `interactive`) per Figma 639:11170 and the full progress-tracker example (634:11061)."
       }
     },
     "error": {

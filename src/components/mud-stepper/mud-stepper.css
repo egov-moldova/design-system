@@ -369,16 +369,18 @@
   color: var(--stepper-available-label);
 }
 
-/* ---------- Navigable (actionable) labels render as brand underlined links ----------
- * Per Figma 639:11170 / 639:11225: completed + available steps that are clickable
- * (interactive mode) get a brand colour + underline. `current` stays neutral. */
+/* ---------- Completed / available labels render as brand underlined links ----------
+ * Per Figma 639:11170 / 639:11225 and the full progress-tracker example (634:11061):
+ * completed + available steps always get a brand colour + underline — the Figma
+ * `.step-desktop` component has no separate "static" variant, so this applies
+ * whether or not the stepper is `interactive`. `current` stays neutral. */
 
-.step--actionable.step--completed .label {
+.step--completed .label {
   color: var(--stepper-completed-label-actionable);
 }
 
-.step--actionable.step--completed .label,
-.step--actionable.step--available .label {
+.step--completed .label,
+.step--available .label {
   text-decoration: underline;
   text-underline-position: from-font;
 }
