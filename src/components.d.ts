@@ -1368,7 +1368,7 @@ export namespace Components {
     /**
      * Icon — renders an inline SVG fetched on-demand from per-size asset files.
      * Names follow the Material Symbols convention: append `-filled` to the base name
-     * to request the filled variant (e.g. `check` outlined vs `check-filled`).
+     * to request the filled variant (e.g. `circle-info` outlined vs `circle-info-filled`).
      * When the exact `size`/`name` combination is missing from the manifest, the
      * provider falls back to the closest larger size (preferred) and then to the
      * largest smaller size before giving up.
@@ -4334,7 +4334,7 @@ declare global {
     /**
      * Icon — renders an inline SVG fetched on-demand from per-size asset files.
      * Names follow the Material Symbols convention: append `-filled` to the base name
-     * to request the filled variant (e.g. `check` outlined vs `check-filled`).
+     * to request the filled variant (e.g. `circle-info` outlined vs `circle-info-filled`).
      * When the exact `size`/`name` combination is missing from the manifest, the
      * provider falls back to the closest larger size (preferred) and then to the
      * largest smaller size before giving up.
@@ -6790,7 +6790,7 @@ declare namespace LocalJSX {
     /**
      * Icon — renders an inline SVG fetched on-demand from per-size asset files.
      * Names follow the Material Symbols convention: append `-filled` to the base name
-     * to request the filled variant (e.g. `check` outlined vs `check-filled`).
+     * to request the filled variant (e.g. `circle-info` outlined vs `circle-info-filled`).
      * When the exact `size`/`name` combination is missing from the manifest, the
      * provider falls back to the closest larger size (preferred) and then to the
      * largest smaller size before giving up.
@@ -10278,7 +10278,7 @@ declare module "@stencil/core" {
             /**
              * Icon — renders an inline SVG fetched on-demand from per-size asset files.
              * Names follow the Material Symbols convention: append `-filled` to the base name
-             * to request the filled variant (e.g. `check` outlined vs `check-filled`).
+             * to request the filled variant (e.g. `circle-info` outlined vs `circle-info-filled`).
              * When the exact `size`/`name` combination is missing from the manifest, the
              * provider falls back to the closest larger size (preferred) and then to the
              * largest smaller size before giving up.

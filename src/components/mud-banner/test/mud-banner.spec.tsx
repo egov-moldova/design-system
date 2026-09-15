@@ -74,8 +74,8 @@ describe('mud-banner', () => {
     });
 
     it('honors the iconName override', async () => {
-      const { root } = await render(<mud-banner icon-name="bell-filled">M</mud-banner>);
-      expect(queryIcon(root)?.getAttribute('name')).toBe('bell-filled');
+      const { root } = await render(<mud-banner icon-name="notification">M</mud-banner>);
+      expect(queryIcon(root)?.getAttribute('name')).toBe('notification');
     });
 
     it('flags has-icon-start when the icon-start slot is filled', async () => {

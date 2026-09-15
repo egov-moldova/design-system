@@ -168,6 +168,26 @@ describe('mud-icon', () => {
     expect(root?.getAttribute('aria-hidden')).toBe('true');
   });
 
+  it('omitted name → warns, no SVG, host stays decorative', async () => {
+    const { root, waitForChanges } = await render(<mud-icon {...({} as { name: IconName })} />);
+    await waitForChanges();
+    expect(root?.hasAttribute('name')).toBe(false);
+    expect(warnSpy).toHaveBeenCalled();
+    expect(root?.shadowRoot?.querySelector('.svg-icon')).toBeNull();
+    expect(root?.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it.each(['constructor', 'toString', 'hasOwnProperty', '__proto__'])(
+    'Object.prototype member name "%s" degrades like an unknown name',
+    async prototypeName => {
+      const { root, waitForChanges } = await render(<mud-icon name={prototypeName as IconName} />);
+      await waitForChanges();
+      expect(warnSpy).toHaveBeenCalled();
+      expect(root?.shadowRoot?.querySelector('.svg-icon')).toBeNull();
+      expect(root?.getAttribute('aria-hidden')).toBe('true');
+    },
+  );
+
   it('renders inline SVG markup in shadow DOM for a known icon', async () => {
     const name = ICON_NAMES[0];
     const { root, waitForChanges } = await render(<mud-icon name={name} size={24} />);

@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/web-components-vite';
 
 import manifest from './assets/icons.manifest.json';
-import { ICON_SIZES } from './mud-icon.types';
-import type { IconSize } from './mud-icon.types';
+import { ICON_NAMES, ICON_SIZES, isIconName } from './mud-icon.types';
+import type { IconName, IconSize } from './mud-icon.types';
 
 type IconArgs = {
-  name: string;
+  name: IconName;
   size: IconSize;
   color: string;
   interactive: boolean;
@@ -13,10 +13,9 @@ type IconArgs = {
   ariaLabel?: string;
 };
 
-const ICON_NAMES = Object.keys(manifest).sort();
-const FILLED_PAIRS = ICON_NAMES.filter(
-  n => n.endsWith('-filled') && ICON_NAMES.includes(n.slice(0, -'-filled'.length)),
-).map(filled => ({ outlined: filled.slice(0, -'-filled'.length), filled }));
+const FILLED_PAIRS = ICON_NAMES.filter(n => n.endsWith('-filled') && isIconName(n.slice(0, -'-filled'.length))).map(
+  filled => ({ outlined: filled.slice(0, -'-filled'.length), filled }),
+);
 
 const cellLabelStyle =
   'font-size: var(--font-size-12); color: var(--color-text-base-tertiary); text-align: center; font-family: monospace;';
