@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -413,5 +414,24 @@ describe('main', () => {
     assert.ok(report.generated.some(entry => entry.relativePath.endsWith(path.join('core.dark', 'color.tokens.json'))));
     assert.ok(report.generated.some(entry => entry.relativePath.endsWith(path.join('core', 'font.tokens.json'))));
     assert.ok(report.generated.some(entry => entry.relativePath.endsWith(path.join('core', 'sizes.tokens.json'))));
+  });
+});
+
+// ── Staging output ────────────────────────────────────────────────────────────
+
+describe('default staging output', () => {
+  // The staging folder is regenerated from tokens-tokenhaus.json on every run, so a
+  // committed copy only drifts from the script that writes it (issue #72).
+  it('is gitignored and holds no tracked files', () => {
+    const { outputBase } = parseCliOptions(['node', 'sync-tokens-from-tokenhaus.mjs']);
+    const relativeBase = path.relative(PROJECT_ROOT, outputBase);
+    const probeFile = path.join(relativeBase, 'core', 'color.tokens.json');
+
+    const tracked = spawnSync('git', ['ls-files', '--', relativeBase], { cwd: PROJECT_ROOT, encoding: 'utf8' });
+    assert.equal(tracked.status, 0, tracked.stderr);
+    assert.equal(tracked.stdout, '', `${relativeBase}/ must not contain tracked files`);
+
+    const ignored = spawnSync('git', ['check-ignore', '--quiet', '--no-index', '--', probeFile], { cwd: PROJECT_ROOT });
+    assert.equal(ignored.status, 0, `${probeFile} must be matched by .gitignore`);
   });
 });
