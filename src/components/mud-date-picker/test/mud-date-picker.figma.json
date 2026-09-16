@@ -1,0 +1,320 @@
+{
+  "$comment": "Figma state manifest for mud-date-picker — values copied from the date-picker (159:904), .day-cell (158:401) and .picker-header (229:5095) component sets and the Date Picker page (470:32032). Checked by scripts/audit/15-style-parity.mjs and 11-pixel-diff-states.mjs. Figma mock dates are illustrative (its January 2025 starts on a Sunday); compare states, not the calendar layout.",
+  "component": "mud-date-picker",
+  "figma": { "fileKey": "doJ7tDY0PlQ0PqMgbpFVIC", "scale": 2 },
+  "defaults": {
+    "story": "molecules-date-picker--default",
+    "clock": "2025-01-07T10:00:00Z",
+    "viewport": { "width": 1280, "height": 900 },
+    "capture": { "selector": "mud-date-picker", "bleed": "auto" }
+  },
+  "states": [
+    {
+      "name": "date-picker",
+      "node": "157:4570",
+      "html": "<mud-date-picker locale=\"en-GB\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker>",
+      "expect": [
+        {
+          "target": "mud-date-picker",
+          "styles": {
+            "boxWidth": "320px",
+            "padding": "12px",
+            "rowGap": "8px",
+            "backgroundColor": "#FFFFFF",
+            "borderTopLeftRadius": "12px",
+            "borderTopWidth": "0px",
+            "boxShadow": "0px 1px 3px 0px rgba(0, 0, 0, 0.08), 0px 5px 12px 0px rgba(0, 0, 0, 0.08), 0px 0px 0.5px 0px rgba(0, 0, 0, 0.15)"
+          }
+        },
+        {
+          "target": "mud-date-picker .nav-button",
+          "node": "226:4608",
+          "styles": {
+            "boxWidth": "40px",
+            "boxHeight": "40px",
+            "backgroundColor": "#F1F1F1",
+            "borderTopLeftRadius": "6px"
+          }
+        },
+        {
+          "target": "mud-date-picker .title",
+          "node": "158:544",
+          "styles": {
+            "fontFamily": "Onest",
+            "fontSize": "16px",
+            "lineHeight": "24px",
+            "fontWeight": "500",
+            "color": "#121212",
+            "textContent": "January 2025"
+          }
+        },
+        { "target": "mud-date-picker .day-grid", "node": "486:7071", "styles": { "rowGap": "4px" } },
+        {
+          "target": "mud-date-picker .day-label",
+          "node": "158:516",
+          "styles": {
+            "boxHeight": "32px",
+            "color": "#757575",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500"
+          }
+        },
+        {
+          "target": "mud-date-picker .footer",
+          "absent": true,
+          "note": "No date-picker variant in 159:904 has a footer (Today shortcut)."
+        }
+      ]
+    },
+    {
+      "name": "day-cell-default",
+      "node": "158:402",
+      "pixel": false,
+      "html": "<mud-date-picker locale=\"en-GB\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker>",
+      "expect": [
+        {
+          "target": "mud-date-picker button.day-cell[data-iso='2025-01-08']",
+          "styles": {
+            "boxHeight": "40px",
+            "borderTopLeftRadius": "6px",
+            "backgroundColor": "transparent",
+            "color": "#121212",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": "500"
+          }
+        }
+      ]
+    },
+    {
+      "name": "day-cell-inactive",
+      "node": "158:453",
+      "pixel": false,
+      "html": "<mud-date-picker locale=\"en-GB\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker>",
+      "expect": [
+        { "target": "mud-date-picker button.day-cell[data-iso='2024-12-30']", "styles": { "color": "#B2B2B2" } }
+      ]
+    },
+    {
+      "name": "day-cell-current",
+      "node": "158:1569",
+      "pixel": false,
+      "html": "<mud-date-picker locale=\"en-GB\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker>",
+      "expect": [
+        {
+          "target": "mud-date-picker button.day-cell[data-iso='2025-01-07']",
+          "styles": {
+            "color": "#0058D2",
+            "borderTopColor": "#0058D2",
+            "borderTopWidth": "1.5px",
+            "backgroundColor": "transparent"
+          }
+        }
+      ]
+    },
+    {
+      "name": "day-cell-active",
+      "node": "158:400",
+      "pixel": false,
+      "html": "<mud-date-picker locale=\"en-GB\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker>",
+      "expect": [
+        {
+          "target": "mud-date-picker button.day-cell[data-iso='2025-01-11']",
+          "styles": { "backgroundColor": "#0058D2", "color": "#FFFFFF", "borderTopLeftRadius": "6px" }
+        }
+      ]
+    },
+    {
+      "name": "day-cell-hover",
+      "node": "489:9029",
+      "pixel": false,
+      "html": "<mud-date-picker locale=\"en-GB\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker>",
+      "interaction": { "type": "hover", "target": "mud-date-picker button.day-cell[data-iso='2025-01-08']" },
+      "expect": [
+        {
+          "target": "mud-date-picker button.day-cell[data-iso='2025-01-08']",
+          "styles": { "backgroundColor": "#F5F5F5", "color": "#121212" }
+        }
+      ]
+    },
+    {
+      "name": "day-cell-current-hover",
+      "node": "489:9033",
+      "pixel": false,
+      "html": "<mud-date-picker locale=\"en-GB\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker>",
+      "interaction": { "type": "hover", "target": "mud-date-picker button.day-cell[data-iso='2025-01-07']" },
+      "expect": [
+        {
+          "target": "mud-date-picker button.day-cell[data-iso='2025-01-07']",
+          "styles": { "backgroundColor": "#F5F5F5", "borderTopColor": "#0058D2", "color": "#0058D2" }
+        }
+      ]
+    },
+    {
+      "name": "day-cell-focus",
+      "node": "494:13074",
+      "pixel": false,
+      "html": "<mud-date-picker locale=\"en-GB\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker>",
+      "interaction": { "type": "focus", "target": "mud-date-picker button.day-cell[data-iso='2025-01-08']" },
+      "expect": [
+        {
+          "target": "mud-date-picker button.day-cell[data-iso='2025-01-08']",
+          "styles": { "boxShadow": "0px 0px 0px 1px #FFFFFF, 0px 0px 0px 3px #3379DB" },
+          "note": "Figma lists Focus Ring/Small as '0 0 0 3px #3379DB, 0 0 0 1px #FFF'; its render (494:13074 at 2x) is a 1px white halo inside a blue band ending 3px out, which is this CSS order."
+        }
+      ]
+    },
+    {
+      "name": "date-range-picker",
+      "node": "159:905",
+      "html": "<mud-date-picker locale=\"en-GB\" mode=\"range\" range-start=\"2025-01-18\" range-end=\"2025-01-22\" view-date=\"2025-01-01\"></mud-date-picker>",
+      "expect": [
+        { "target": "mud-date-picker", "styles": { "rowGap": "6px" } },
+        {
+          "target": "mud-date-picker button.day-cell[data-iso='2025-01-18']",
+          "node": "159:897",
+          "styles": {
+            "backgroundColor": "#0058D2",
+            "color": "#FFFFFF",
+            "borderTopLeftRadius": "6px",
+            "borderTopRightRadius": "0px"
+          }
+        },
+        {
+          "target": "mud-date-picker button.day-cell[data-iso='2025-01-20']",
+          "node": "159:901",
+          "styles": { "backgroundColor": "#E8F0FB", "color": "#121212", "borderTopLeftRadius": "0px" }
+        },
+        {
+          "target": "mud-date-picker button.day-cell[data-iso='2025-01-22']",
+          "node": "159:899",
+          "styles": {
+            "backgroundColor": "#0058D2",
+            "color": "#FFFFFF",
+            "borderTopLeftRadius": "0px",
+            "borderTopRightRadius": "6px"
+          }
+        },
+        { "target": "mud-date-picker .footer", "absent": true }
+      ]
+    },
+    {
+      "name": "advanced-picker",
+      "node": "229:5114",
+      "html": "<mud-date-picker locale=\"en-GB\" header-style=\"dropdown\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker>",
+      "expect": [
+        {
+          "target": "mud-date-picker [part='month-dropdown']",
+          "node": "229:5105",
+          "styles": {
+            "boxHeight": "40px",
+            "paddingLeft": "6px",
+            "paddingRight": "4px",
+            "columnGap": "4px",
+            "borderTopLeftRadius": "4px",
+            "backgroundColor": "transparent"
+          }
+        },
+        {
+          "target": "mud-date-picker [part='month-dropdown'] mud-icon",
+          "node": "229:5107",
+          "styles": { "boxWidth": "16px", "boxHeight": "16px" }
+        },
+        { "target": "mud-date-picker .header-dropdowns", "node": "229:5104", "styles": { "columnGap": "0px" } },
+        { "target": "mud-date-picker .footer", "absent": true }
+      ]
+    },
+    {
+      "name": "month-dropdown-hover",
+      "node": "524:2324",
+      "pixel": false,
+      "html": "<mud-date-picker locale=\"en-GB\" header-style=\"dropdown\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker>",
+      "interaction": { "type": "hover", "target": "mud-date-picker [part='month-dropdown']" },
+      "expect": [{ "target": "mud-date-picker [part='month-dropdown']", "styles": { "backgroundColor": "#F5F5F5" } }]
+    },
+    {
+      "name": "month-dropdown-active",
+      "node": "524:2471",
+      "pixel": false,
+      "html": "<mud-date-picker locale=\"en-GB\" header-style=\"dropdown\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker>",
+      "interaction": { "type": "press", "target": "mud-date-picker [part='month-dropdown']" },
+      "expect": [{ "target": "mud-date-picker [part='month-dropdown']", "styles": { "backgroundColor": "#D9D9D9" } }]
+    },
+    {
+      "name": "month-picker",
+      "node": "524:1973",
+      "html": "<mud-date-picker locale=\"en-GB\" header-style=\"dropdown\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker>",
+      "interaction": [{ "type": "click", "target": "mud-date-picker [part='month-dropdown']" }],
+      "expect": [
+        { "target": "mud-date-picker .header", "absent": true, "note": "Month Picker variant has no .picker-header." },
+        { "target": "mud-date-picker .footer", "absent": true },
+        {
+          "target": "mud-date-picker .month-grid",
+          "node": "494:13446",
+          "styles": { "rowGap": "4px", "columnGap": "0px" }
+        },
+        {
+          "target": "mud-date-picker .picker-cell.is-selected",
+          "node": "494:13448",
+          "styles": {
+            "boxHeight": "40px",
+            "borderTopLeftRadius": "6px",
+            "backgroundColor": "#0058D2",
+            "color": "#FFFFFF",
+            "textContent": "Jan"
+          }
+        }
+      ]
+    },
+    {
+      "name": "year-picker",
+      "node": "524:1858",
+      "html": "<mud-date-picker locale=\"en-GB\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker>",
+      "interaction": [
+        { "type": "click", "target": "mud-date-picker .title" },
+        { "type": "click", "target": "mud-date-picker .title" }
+      ],
+      "expect": [
+        {
+          "target": "mud-date-picker .title",
+          "node": "494:13301",
+          "styles": { "textContent": "2020-2030" },
+          "note": "Figma's grid runs to 2031 under a 2020-2030 title — flagged to design in issue #70."
+        },
+        {
+          "target": "mud-date-picker .year-grid",
+          "node": "494:13302",
+          "styles": { "rowGap": "4px", "columnGap": "0px" }
+        },
+        { "target": "mud-date-picker .picker-cell", "node": "494:13323", "styles": { "textContent": "2020" } },
+        {
+          "target": "mud-date-picker .picker-cell.is-selected",
+          "node": "494:13419",
+          "styles": { "textContent": "2025", "backgroundColor": "#0058D2", "borderTopLeftRadius": "6px" }
+        },
+        { "target": "mud-date-picker .footer", "absent": true }
+      ]
+    },
+    {
+      "name": "mobile-bottom-sheet",
+      "node": "797:37918",
+      "html": "<div style=\"width: 375px\"><mud-date-picker breakpoint=\"mobile\" header-style=\"dropdown\" locale=\"en-GB\" value=\"2025-01-11\" view-date=\"2025-01-01\"></mud-date-picker></div>",
+      "expect": [
+        { "target": "mud-date-picker", "styles": { "boxWidth": "375px", "borderTopWidth": "0px" } },
+        {
+          "target": "mud-date-picker .drag-handle",
+          "node": "797:37920",
+          "styles": { "boxWidth": "48px", "boxHeight": "4px", "backgroundColor": "#D9D9D9" }
+        },
+        {
+          "target": "mud-date-picker .header",
+          "node": "797:37922",
+          "styles": { "boxWidth": "375px", "boxHeight": "40px", "paddingLeft": "20px", "paddingRight": "20px" },
+          "note": "797:37922 stretches across the sheet (no padding on 797:37918) and carries its own 0px 20px padding, so the border box is the full 375px."
+        },
+        { "target": "mud-date-picker .footer", "absent": true }
+      ]
+    }
+  ]
+}
