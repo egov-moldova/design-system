@@ -53,6 +53,12 @@ describe('tokens-lint — key naming', () => {
     const { keys } = lint(root);
     assert.deepEqual(keys.sort(), ['warning:header._comment', 'warning:header.a b']);
   });
+
+  it('does not lint DTCG metadata such as reverse-domain $extensions namespaces', () => {
+    const withMetadata = { ...leaf, $extensions: { 'md.egov.mud': { tierPurityException: 'x' }, 'com.figma': {} } };
+    const { keys } = lint(tokenRoot({ switch: { off: withMetadata } }));
+    assert.deepEqual(keys, []);
+  });
 });
 
 describe('tokens-lint — roots', () => {

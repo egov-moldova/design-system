@@ -200,6 +200,9 @@ async function processFile(filePath) {
   function traverse(node, pathParts) {
     if (node && typeof node === 'object' && !Array.isArray(node)) {
       for (const key of Object.keys(node)) {
+        // DTCG `$` properties ($value, $extensions, ...) are metadata, not token names; `$extensions`
+        // namespaces are reverse-domain by spec (`com.figma`, `md.egov.mud`) and would read as dotted keys.
+        if (key.startsWith('$')) continue;
         // try to find the textual position of this key in fileText after searchPos
         const foundIndex = findKeyIndexSequential(fileText, key, searchPos);
         let position = null;
