@@ -55,6 +55,9 @@ jobs:
       - name: Validate tokens
         run: yarn tokens.validate
 
+      - name: Build
+        run: yarn build
+
       - name: Run token script tests
         run: yarn test:scripts
 
