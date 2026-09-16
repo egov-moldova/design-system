@@ -307,3 +307,29 @@ describe('agent-catalog rule', () => {
     assert.deepEqual(checkAiDocs({ root }), []);
   });
 });
+
+describe('import rule', () => {
+  it('flags a CLAUDE.md import that does not resolve', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      'AGENTS.md': '# Agents\n',
+      'CLAUDE.md': '@AGENTS.md\n@_agents/missing.md\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.file, h.line, h.ruleId]),
+      [['CLAUDE.md', 2, 'import']],
+    );
+  });
+
+  it('passes imports that resolve relative to the importing file', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      'tokens/AGENTS.md': '# Tokens\n',
+      'tokens/CLAUDE.md': '@AGENTS.md\n',
+      '_agents/workflow-rules.md': '# Rules\n',
+      'AGENTS.md': '# Agents\n',
+      'CLAUDE.md': '@AGENTS.md\n@_agents/workflow-rules.md\n',
+    });
+    assert.deepEqual(checkAiDocs({ root }), []);
+  });
+});

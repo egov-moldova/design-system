@@ -21,6 +21,7 @@
  *                     does not exist and is not git-ignored.
  *   agent-slash    — a `.claude/agents/<name>` subagent written as `/<name>`,
  *                     a slash command that does not exist.
+ *   import         — a `CLAUDE.md` `@path` import that does not resolve.
  *   agent-catalog  — a `.claude/agents/<name>.md` with no table row in
  *                     `.claude/agents/README.md`.
  *   package-name   — a reference to the retired npm scope STALE_SCOPE (the
@@ -365,6 +366,30 @@ function checkAgentSlash(relPath, lines, pattern) {
 }
 
 // ---------------------------------------------------------------------------
+// Rule: import
+// ---------------------------------------------------------------------------
+
+// Claude Code skips an `@path` import it cannot resolve without any error, so a
+// typo silently unloads the rules it was meant to load. Imports resolve relative
+// to the importing file.
+function checkImports(relPath, absPath, lines) {
+  const hits = [];
+  let inFence = false;
+  lines.forEach((line, i) => {
+    if (/^(```|~~~)/.test(line.trim())) {
+      inFence = !inFence;
+      return;
+    }
+    if (inFence) return;
+    const m = line.match(/^@(\S+)$/);
+    if (m && !fs.existsSync(path.resolve(path.dirname(absPath), m[1]))) {
+      hits.push(makeHit(relPath, i + 1, 'import', `import target does not exist: ${m[1]}`));
+    }
+  });
+  return hits;
+}
+
+// ---------------------------------------------------------------------------
 // Rule: agent-catalog
 // ---------------------------------------------------------------------------
 
@@ -592,6 +617,7 @@ export function checkAiDocs({ root }) {
 
     if (needsDocScope) hits.push(...checkLinks(relPath, absPath, lines, root));
     if (needsDocScope && relPath.endsWith('.md')) hits.push(...checkPaths(relPath, lines, root));
+    if (path.basename(relPath) === 'CLAUDE.md') hits.push(...checkImports(relPath, absPath, lines));
     if (needsDocScope && agentSlash) hits.push(...checkAgentSlash(relPath, lines, agentSlash));
     if (needsNodeVersion) hits.push(...checkNodeVersion(relPath, lines, allowedMajor));
     if (needsNodeVersion && sdMajor !== null) hits.push(...checkStyleDictionaryVersion(relPath, lines, sdMajor));
