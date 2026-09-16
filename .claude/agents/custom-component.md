@@ -117,11 +117,11 @@ Reference documentation:
 
 Follow file structure and CSS patterns from `src/components/AGENTS.md`.
 
-TypeScript strict mode (MANDATORY):
+TypeScript strict mode:
 
-- `!` on all decorator properties: `@Element() host!: HTMLElement;`, `@Event() corChange!: EventEmitter<T>;`, `@AttachInternals() internals!: ElementInternals;`
-- `Record<string, T>` for object maps (size/variant lookups)
-- `?? ''` after optional chaining
+- `!` on all decorator properties (MANDATORY): `@Element() host!: HTMLElement;`, `@Event() corChange!: EventEmitter<T>;`, `@AttachInternals() internals!: ElementInternals;`
+- `Record<string, T>` for object maps (size/variant lookups) — SHOULD, not MUST; inference already covers a literal map, the annotation documents intent for index lookups
+- `?? ''` after optional chaining (MANDATORY)
 
 Host class management (MANDATORY for interactive components):
 

@@ -26,7 +26,7 @@ Complete list of forbidden patterns. **Read before writing component code.**
 13. **Missing `!` on decorator properties** — `@Element()`, `@Event()`, `@AttachInternals()` MUST have `!`. See `_agents/typescript-strict.md`
 14. **Implicit `any` in story renders** — never leave render args untyped. Use `(args: ComponentArgs) =>` (preferred) or `(args: any) =>` (fallback). See `_agents/typescript-strict.md`
 15. **Optional chaining without `??`** — must use `?? ''`. See `_agents/typescript-strict.md`
-16. **Untyped object maps** — use `Record<string, T>`. See `_agents/typescript-strict.md`
+16. **Untyped object maps** — SHOULD use `Record<string, T>`; not MUST, since inference already covers a literal map — the annotation documents intent for index lookups. See `_agents/typescript-strict.md`
 17. **Inline slot validation constants** — use shared constants from `src/legacy/shared.constants.ts`
 18. **Shadow DOM `element.find()` in E2E** — use `page.find('mud-input >>> input')`. See `src/components/_agents/e2e-testing.md`
 26. **Imperative `classList` manipulation for state-driven classes** — never use `this.host.classList.add/remove()` in lifecycle methods or event handlers for component state. Use declarative `getHostClasses()` pattern. See `src/components/_agents/component-structure.md §Host Class Management`

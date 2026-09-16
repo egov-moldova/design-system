@@ -157,6 +157,7 @@ Releases up to and including 1.1.9 ship three static faces (400/500/700) instead
 
 Because the components are native custom elements, they integrate with every modern framework without a wrapper layer:
 
+- **React 18** sets every prop as a string attribute and does not bind `on*` handlers for custom events (`enableCustomElementPropertySupport` is off) — so pass objects/arrays and listen to `mud*` events through a `ref` and `addEventListener`, not through a prop.
 - **React 19+** treats unknown lowercase tags as custom elements and forwards props/attributes directly. Use `ref` for imperative APIs and standard `addEventListener` for events.
 - **Vue 3** needs `app.config.compilerOptions.isCustomElement = tag => tag.startsWith('mud-')` (or via `vite-plugin-vue`'s `template.compilerOptions`).
 - **Angular 14+** needs `CUSTOM_ELEMENTS_SCHEMA` in the `NgModule`'s `schemas` array (or the standalone component's `schemas`). Use `(event)` bindings against the dispatched custom-event name.

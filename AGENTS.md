@@ -36,6 +36,7 @@
 | `PRODUCT.md` | Users, tone, UX trade-offs | **When a change affects user-facing behavior or copy** |
 | `STACK.md` | Versions and rejected choices | **When you need a version, or the reasoning behind a stack choice** |
 | `DESIGN.md` | Visual language | **When a change touches visual design beyond a single component's tokens** |
+| `TESTING.md` | Coverage floor (80% line, per-component), mocking policy (zero mocks for `mud-*` rendering), what is and is not tested | **When writing or reviewing tests** |
 
 ### Design Extraction & Planning
 
@@ -96,7 +97,7 @@ The repo ships ready-to-use slash commands and subagents for routine workflows. 
 3. **Reuse-First**: Check existing components before creating new ones
 4. **Pixel-Perfect**: Every component MUST pass visual comparison against Figma — all states, all properties
 5. **3-Tier Token Hierarchy**: Component CSS → component/semantic tokens (`--color-{type}-{role}-{variant}`) → palette primitives (`--palette-{family}-{shade}`). Never reference palette primitives directly from component CSS (`yarn lint.colors` fails on `var(--palette-*)`). See `tokens/AGENTS.md` for the Figma Foundations naming map.
-6. **TypeScript Strict**: All decorator properties use `!`, all maps use `Record<>`, all optional chains use `??`. Full rules: `_agents/typescript-strict.md`.
+6. **TypeScript Strict**: All decorator properties use `!`, maps SHOULD use `Record<>` (inference already covers a literal map; the annotation documents intent for index lookups), all optional chains use `??`. Full rules: `_agents/typescript-strict.md`.
 7. **Build Order**: Tokens → component CSS/TSX → stories (always bottom-up: atoms → molecules → organisms)
 8. **No Boolean Slot Props**: Use CSS `:empty` or slot detection — never boolean props to control slot visibility
 9. **Shadow DOM Dual Selectors**: If a slot has default content, style BOTH `::slotted()` and direct child
