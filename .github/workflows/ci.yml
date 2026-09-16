@@ -86,7 +86,7 @@ jobs:
 
   build:
     name: Build
-    needs: [test, dependencies-security-audit]
+    needs: [test, dependencies-security-audit, tokens-validate]
     timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
