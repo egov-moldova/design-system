@@ -1,6 +1,7 @@
 import { execFileSync } from 'node:child_process';
-import { readdirSync, readFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
+import { tmpdir } from 'node:os';
 
 import { describe, expect, it } from '@stencil/vitest';
 import { expectTypeOf } from 'vitest';
@@ -15,6 +16,7 @@ import { ICON_NAMES, type IconName, isIconName } from '../icon-names';
 import type { IconVariant } from '../mud-icon.types';
 
 const COMPONENTS_ROOT = path.resolve(import.meta.dirname, '../..');
+const REGISTRY_SCRIPT = path.resolve(import.meta.dirname, '../../../../scripts/icons/build-registry.mjs');
 
 /** Deliberately unknown names used by stories that demo the missing-icon fallback. */
 const INTENTIONALLY_UNKNOWN = new Set(['this-icon-does-not-exist']);
@@ -78,7 +80,51 @@ describe('icon names', () => {
   });
 
   it('is what build-registry.mjs would emit from the SVG assets', () => {
-    const script = path.resolve(import.meta.dirname, '../../../../scripts/icons/build-registry.mjs');
-    expect(() => execFileSync(process.execPath, [script, '--check'], { stdio: 'pipe' })).not.toThrow();
+    expect(() => execFileSync(process.execPath, [REGISTRY_SCRIPT, '--check'], { stdio: 'pipe' })).not.toThrow();
+  });
+});
+
+describe('build-registry.mjs refusals', () => {
+  // The script derives its project root from its own location, so a fixture
+  // tree is a copy of the script plus the assets folders it scans — nothing in
+  // the real tree is touched, and every refusal below is reachable no other way.
+  function runAgainstFixture(files: Record<string, string>, dirs: string[] = ['outlined', 'filled']): string {
+    const root = mkdtempSync(path.join(tmpdir(), 'mud-icon-registry-'));
+    try {
+      const scriptDir = path.join(root, 'scripts', 'icons');
+      const assetsRoot = path.join(root, 'src', 'components', 'mud-icon', 'assets');
+      mkdirSync(scriptDir, { recursive: true });
+      for (const dir of dirs) mkdirSync(path.join(assetsRoot, dir), { recursive: true });
+      copyFileSync(REGISTRY_SCRIPT, path.join(scriptDir, 'build-registry.mjs'));
+      for (const [rel, body] of Object.entries(files)) {
+        writeFileSync(path.join(assetsRoot, rel), body);
+      }
+      try {
+        execFileSync(process.execPath, [path.join(scriptDir, 'build-registry.mjs')], { stdio: 'pipe' });
+      } catch (err) {
+        return String((err as { stderr?: Buffer }).stderr ?? err);
+      }
+      return '';
+    } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  }
+
+  const SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"></svg>';
+
+  it('refuses a filename that still carries the style suffix', () => {
+    expect(runAgainstFixture({ 'filled/car-filled.svg': SVG })).toContain('style suffix in a filename');
+  });
+
+  it('refuses a name that could inject code into the generated module', () => {
+    expect(runAgainstFixture({ "outlined/car'+process.exit(1)+'.svg": SVG })).toContain('unsafe icon name');
+  });
+
+  it('refuses a missing style directory', () => {
+    expect(runAgainstFixture({ 'outlined/car.svg': SVG }, ['outlined'])).toContain('missing asset directory');
+  });
+
+  it('refuses an empty asset set', () => {
+    expect(runAgainstFixture({})).toContain('no SVG assets found');
   });
 });

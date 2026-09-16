@@ -85,6 +85,26 @@ describe('mud-footer', () => {
       });
     });
 
+    it('renders each social mark in the style it is drawn in', async () => {
+      const { root } = await render(<mud-footer></mud-footer>);
+      const icons = queryShadowAll(root, '.social-link mud-icon');
+      expect(icons.length).toBe(FOOTER_DEFAULT_SOCIAL.length);
+      const rendered = icons.map(icon => `${icon.getAttribute('name')}/${icon.getAttribute('variant')}`);
+      // Every brand mark exists in exactly one style; asking for the other one
+      // renders it anyway but logs a warning on every footer render.
+      expect(rendered).toEqual(['facebook/filled', 'instagram/filled', 'linkedin/filled', 'youtube/filled']);
+    });
+
+    it('renders the contact glyphs filled', async () => {
+      const { root } = await render(<mud-footer></mud-footer>);
+      const icons = queryShadowAll(root, '.contact-item mud-icon');
+      expect(icons.map(icon => `${icon.getAttribute('name')}/${icon.getAttribute('variant')}`)).toEqual([
+        'phone/filled',
+        'envelope/filled',
+        'map-pin/filled',
+      ]);
+    });
+
     it('renders the default partner logos', async () => {
       const { root } = await render(<mud-footer></mud-footer>);
       const items = queryShadowAll(root, '.partner-item');
