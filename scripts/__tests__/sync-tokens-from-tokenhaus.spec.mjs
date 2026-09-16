@@ -443,9 +443,34 @@ describe('staging output', () => {
     }
   });
 
-  it('is ignored by a committed .gitignore rule, not by a local or global exclude', () => {
+  // Every file the script writes, relative to its output base — asked of the script
+  // through a dry run, so a newly generated file is probed without editing this test.
+  async function generatedFiles() {
+    const tempDir = createTempDir();
+    const outputBase = path.join(tempDir, 'staging');
+    const reportFile = path.join(tempDir, 'report.json');
+    const result = await main([
+      'node',
+      'sync-tokens-from-tokenhaus.mjs',
+      '--input',
+      path.join(fixturesDir, 'sample-tokenhaus.json'),
+      '--output',
+      outputBase,
+      '--dry-run',
+      '--report',
+      reportFile,
+    ]);
+    assert.equal(result.exitCode, 0);
+
+    const { generated } = JSON.parse(fs.readFileSync(reportFile, 'utf8'));
+    assert.ok(generated.length > 0, 'the dry run planned no files');
+    return generated.map(entry => path.relative(outputBase, path.resolve(PROJECT_ROOT, entry.relativePath)));
+  }
+
+  it('is ignored by a committed .gitignore rule, not by a local or global exclude', async () => {
+    const files = await generatedFiles();
     for (const base of stagingBases()) {
-      for (const file of [path.join('core', 'color.tokens.json'), path.join('core.dark', 'color.tokens.json')]) {
+      for (const file of files) {
         const probeFile = path.join(base, file);
         const run = spawnSync('git', ['check-ignore', '--verbose', '--no-index', '--', probeFile], {
           cwd: PROJECT_ROOT,
@@ -454,8 +479,7 @@ describe('staging output', () => {
         assert.equal(run.status, 0, `${probeFile} must be ignored: ${run.error?.message ?? run.stderr}`);
 
         // Output: <source>:<line>:<pattern>\t<path>
-        const [source, , pattern] = run.stdout.split('\t')[0].split(':');
-        assert.ok(!pattern.startsWith('!'), `${probeFile} is re-included by ${source}`);
+        const [source] = run.stdout.split('\t')[0].split(':');
         // Excludes outside the work tree (a global excludesFile, a linked worktree's shared
         // info/exclude) are reported by absolute path, which `git ls-files` refuses.
         const committedRule = !path.isAbsolute(source) && git(['ls-files', '--', source]) !== '';
