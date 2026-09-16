@@ -31,7 +31,7 @@
 |------|---------------|--------------|
 | `_agents/composition-interactive.md` | Organism/template section mapping, interactive component states & behaviors table | **When building molecules, organisms, or interactive components** |
 | `_agents/testing.md` | Spec tests with Vitest + `@stencil/vitest`: run commands, spec template, coverage rules, `RenderResult` API, reaching 100% branches | **Before writing any `*.spec.tsx`** |
-| `_agents/e2e-testing.md` | Shadow DOM `>>>` combinator, `page.evaluate()` patterns, test skeleton, decision matrix | **When writing E2E tests** |
+| `_agents/e2e-testing.md` | Browser tests against shadow roots: Playwright shadow-piercing locators, `page.evaluate()` with `shadowRoot`, custom-event listeners, decision matrix | **When writing E2E tests** |
 | `_agents/a11y-testing.md` | WCAG 2.1 AA in three layers: structural contract in `.spec.tsx`, axe via Storybook `addon-a11y`, browser-driven axe via Playwright MCP; coverage matrix per component type | **When writing accessibility assertions or running an accessibility audit** |
 
 ---
