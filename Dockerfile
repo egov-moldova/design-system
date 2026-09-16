@@ -9,6 +9,8 @@ WORKDIR /app
 COPY package.json yarn.lock .yarnrc.yml ./
 COPY web-components/package.json ./web-components/
 COPY react/package.json ./react/
+# yarn.lock resolves patched packages from these files, so the install fails without them
+COPY .yarn/patches ./.yarn/patches
 
 # Ensure Yarn 4 via Corepack and install dependencies immutably
 # PERF: BuildKit cache mount for Yarn cache — persists between builds on self-hosted runner

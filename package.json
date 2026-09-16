@@ -35,7 +35,8 @@
     "react"
   ],
   "resolutions": {
-    "undici-types": "~7.19.0"
+    "undici-types": "~7.19.0",
+    "@stencil/core@npm:~4.45.0": "patch:@stencil/core@npm%3A4.45.0#~/.yarn/patches/@stencil-core-npm-4.45.0-053ef963ac.patch"
   },
   "files": [
     "dist/",
@@ -465,7 +466,7 @@
     }
   },
   "dependencies": {
-    "@stencil/core": "~4.43.5"
+    "@stencil/core": "~4.45.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.2",

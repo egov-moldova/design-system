@@ -121,4 +121,18 @@ to dev as well, set `core: { disableTelemetry: true }` in `.storybook/main.mjs`.
 
 ## 5. Stencil past 4.43.x
 
-Tracked in #43, because the fix waits on stenciljs/core#6855, which is still open.
+Done in #43: `@stencil/core` is on `~4.45.0`, with stenciljs/core#6855 applied
+as a yarn patch (`.yarn/patches/@stencil-core-npm-4.45.0-*.patch`, keyed in root
+`resolutions`).
+
+The patch, like #6855, gives the `prop:` branch only to components with at most 5
+required props. Today the maximum is 1 (`mud-tab`); a component with 6 to 8
+required props would get the two-way `OneOf`, without `prop:`.
+
+One step is left. When a Stencil release contains #6855, delete the resolution,
+the patch file, and the `COPY .yarn/patches` line in `Dockerfile` (git keeps no
+empty directory, so that COPY would fail). Then bump the range, run
+`yarn install` (without it the patched 4.45.0 compiler stays in `node_modules`
+and the next check passes vacuously) and `yarn build`. `git diff --
+src/components.d.ts` should show no change to `OneOf3`. The type contract is guarded by
+`src/components/mud-tabs/test/mud-tabs.spec.tsx` § `mud-tab JSX typing`.
