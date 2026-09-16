@@ -9,8 +9,8 @@
  *   node scripts/sync-tokens-from-tokenhaus.mjs --input <file> [-o <dir>] [--apply] [--dry-run] [--report <file>] [--strict]
  *
  * Default output base is tokens/figma-export: a staging area to diff against
- * tokens/core before promoting anything. It is gitignored, and
- * scripts/__tests__/sync-tokens-from-tokenhaus.spec.mjs fails if that changes.
+ * tokens/core before promoting anything. It is gitignored; `yarn test:scripts`
+ * checks that (scripts/__tests__/sync-tokens-from-tokenhaus.spec.mjs).
  * Pass --apply to overwrite tokens/core and tokens/core.dark and delete the legacy
  * orphan files (clean break).
  *

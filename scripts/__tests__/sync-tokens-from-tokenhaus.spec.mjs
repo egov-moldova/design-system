@@ -429,8 +429,10 @@ describe('staging output', () => {
 
   function stagingBases() {
     const packageJson = JSON.parse(fs.readFileSync(path.join(PROJECT_ROOT, 'package.json'), 'utf8'));
-    const syncArgv = packageJson.scripts['sync:tokens'].split(/\s+/);
-    assert.match(syncArgv[1], /sync-tokens-from-tokenhaus\.mjs$/);
+    const syncScript = packageJson.scripts?.['sync:tokens'];
+    assert.ok(syncScript, 'package.json has no sync:tokens script');
+    const syncArgv = syncScript.split(/\s+/);
+    assert.match(syncArgv[1] ?? '', /sync-tokens-from-tokenhaus\.mjs$/, `unexpected sync:tokens shape: ${syncScript}`);
 
     const defaultBase = parseCliOptions(['node', 'sync-tokens-from-tokenhaus.mjs']).outputBase;
     const syncBase = parseCliOptions(syncArgv).outputBase;
@@ -443,13 +445,11 @@ describe('staging output', () => {
     }
   });
 
-  // Every file the script writes, relative to its output base — asked of the script
-  // through a dry run, so a newly generated file is probed without editing this test.
+  // Every file the script writes, relative to its output base. Asked of the script through a
+  // dry run, so a newly generated file is probed without editing this test.
   async function generatedFiles() {
-    const tempDir = createTempDir();
-    const outputBase = path.join(tempDir, 'staging');
-    const reportFile = path.join(tempDir, 'report.json');
-    const result = await main([
+    const outputBase = path.join(createTempDir(), 'staging');
+    const { exitCode, report } = await main([
       'node',
       'sync-tokens-from-tokenhaus.mjs',
       '--input',
@@ -457,33 +457,51 @@ describe('staging output', () => {
       '--output',
       outputBase,
       '--dry-run',
-      '--report',
-      reportFile,
     ]);
-    assert.equal(result.exitCode, 0);
-
-    const { generated } = JSON.parse(fs.readFileSync(reportFile, 'utf8'));
-    assert.ok(generated.length > 0, 'the dry run planned no files');
-    return generated.map(entry => path.relative(outputBase, path.resolve(PROJECT_ROOT, entry.relativePath)));
+    assert.equal(exitCode, 0);
+    // A skipped extraction would silently drop its file from the probed set.
+    assert.deepEqual(report.skipped, []);
+    return report.generated.map(entry => path.relative(outputBase, entry.filePath));
   }
 
-  it('is ignored by a committed .gitignore rule, not by a local or global exclude', async () => {
+  it('is ignored by the repository .gitignore files alone', async () => {
+    // check-ignore runs against an empty git dir, with system and global config off and
+    // core.excludesFile pointed at an empty file, so only the work tree's .gitignore files
+    // decide: a rule in .git/info/exclude or ~/.config/git/ignore can neither pass nor fail
+    // this. The --quiet exit status also treats a negated (re-included) file as not ignored,
+    // whereas --verbose exits 0 and prints the negation.
+    const tempDir = createTempDir();
+    const gitDir = path.join(tempDir, 'git');
+    const noExcludes = path.join(tempDir, 'no-excludes');
+    fs.writeFileSync(noExcludes, '');
+    const env = { ...process.env, GIT_CONFIG_GLOBAL: os.devNull, GIT_CONFIG_NOSYSTEM: '1' };
+    const init = spawnSync('git', ['init', '--quiet', '--bare', '--template=', gitDir], { env, encoding: 'utf8' });
+    assert.equal(init.status, 0, `git init failed: ${init.error?.message ?? init.stderr}`);
+
     const files = await generatedFiles();
     for (const base of stagingBases()) {
       for (const file of files) {
         const probeFile = path.join(base, file);
-        const run = spawnSync('git', ['check-ignore', '--verbose', '--no-index', '--', probeFile], {
-          cwd: PROJECT_ROOT,
-          encoding: 'utf8',
-        });
-        assert.equal(run.status, 0, `${probeFile} must be ignored: ${run.error?.message ?? run.stderr}`);
-
-        // Output: <source>:<line>:<pattern>\t<path>
-        const [source] = run.stdout.split('\t')[0].split(':');
-        // Excludes outside the work tree (a global excludesFile, a linked worktree's shared
-        // info/exclude) are reported by absolute path, which `git ls-files` refuses.
-        const committedRule = !path.isAbsolute(source) && git(['ls-files', '--', source]) !== '';
-        assert.ok(committedRule, `${probeFile} is ignored only by ${source}, not by a committed .gitignore`);
+        const run = spawnSync(
+          'git',
+          [
+            `--git-dir=${gitDir}`,
+            `--work-tree=${PROJECT_ROOT}`,
+            '-c',
+            `core.excludesFile=${noExcludes}`,
+            'check-ignore',
+            '--quiet',
+            '--no-index',
+            '--',
+            probeFile,
+          ],
+          { cwd: PROJECT_ROOT, env, encoding: 'utf8' },
+        );
+        assert.equal(
+          run.status,
+          0,
+          `${probeFile} must be ignored by a .gitignore in the repository: ${run.error?.message ?? run.stderr}`,
+        );
       }
     }
   });

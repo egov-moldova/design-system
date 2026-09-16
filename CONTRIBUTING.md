@@ -175,7 +175,7 @@ MUD uses a three-tier design token hierarchy (**palette → semantic → compone
 2. Run the sync helper:
    ```bash
    # optional: preview what would be generated, without writing any files
-   node scripts/sync-tokens-from-tokenhaus.mjs --input tokens-tokenhaus.json --output tokens/figma-export --dry-run
+   yarn sync:tokens --dry-run
    # write the generated files
    yarn sync:tokens
    ```
