@@ -348,7 +348,7 @@ if (!SKIP_CSS_DRIFT) {
           file: t.file,
           ...locateKey(t.source, t.path),
           jsonPath: t.path,
-          message: `Token has no matching CSS variable in tokens/generated/core.tokens.css (expected ${cssName}). Run \`yarn tokens.build\`.`,
+          message: `Token has no matching CSS variable in ${relative(REPO_ROOT, cssPath)} (expected ${cssName}). Run \`yarn tokens.build\`.`,
         });
       }
     }
@@ -360,7 +360,7 @@ if (!SKIP_CSS_DRIFT) {
       line: 1,
       col: 1,
       jsonPath: '',
-      message: `tokens/generated/core.tokens.css not found. Run \`yarn tokens.build\`.`,
+      message: `${relative(REPO_ROOT, cssPath)} not found. Run \`yarn tokens.build\`.`,
     });
   }
 }
@@ -370,26 +370,35 @@ if (!SKIP_COMPONENT_CSS) {
   const componentTokenFiles = files.filter(f => f.split(sep).join('/').includes('/tokens/core/components/'));
   // A token root may be camelCase (`dateInput` in date-input.tokens.json); compare generated names.
   const tokenVars = new Set([...tokens.values()].filter(t => t.mode === 'light').map(t => cssVarName(t.path)));
+  const componentsDir = resolve(root, '..', 'src/components');
+  if (componentTokenFiles.length > 0 && !existsSync(componentsDir)) {
+    push({
+      severity: 'warning',
+      code: 'component-css-missing',
+      file: componentsDir,
+      line: 1,
+      col: 1,
+      jsonPath: '',
+      message: `${relative(REPO_ROOT, componentsDir)} not found, so component CSS coverage was not checked. --root must be the tokens directory next to src/.`,
+    });
+  }
   for (const file of componentTokenFiles) {
     const name = basename(file).replace(/\.tokens\.json$/, '');
-    const cssPath = resolve(root, '..', `src/components/mud-${name}/mud-${name}.css`);
+    const cssPath = resolve(componentsDir, `mud-${name}/mud-${name}.css`);
     if (!existsSync(cssPath)) continue;
     const css = readFileSync(cssPath, 'utf8');
     const componentPrefix = `--${name}-`;
     // Custom properties the stylesheet sets itself (`--tooltip-arrow-size: var(--tooltip-arrow-size-sm)`).
     const declaredVars = new Set([...css.matchAll(/(--[a-z0-9-]+)\s*:/g)].map(m => m[1]));
     const usedVars = new Set();
-    const usedWithoutFallback = new Set();
-    for (const m of css.matchAll(/var\(\s*(--[a-z0-9-]+)\s*([,)])/g)) {
-      if (!m[1].startsWith(componentPrefix)) continue;
-      usedVars.add(m[1]);
-      if (m[2] === ')') usedWithoutFallback.add(m[1]);
+    // A fallback does not make a variable intentional: a misspelled token name behind one renders the
+    // fallback silently, so fallback reads are checked like any other.
+    for (const m of css.matchAll(/var\(\s*(--[a-z0-9-]+)/g)) {
+      if (m[1].startsWith(componentPrefix)) usedVars.add(m[1]);
     }
     for (const v of usedVars) {
       const tail = v.slice(componentPrefix.length);
-      // A variable always read with a fallback is a consumer override hook, not a missing token.
-      const isOverrideHook = !usedWithoutFallback.has(v);
-      if (!tokenVars.has(v) && !declaredVars.has(v) && !isOverrideHook) {
+      if (!tokenVars.has(v) && !declaredVars.has(v)) {
         push({
           severity: 'warning',
           code: 'css-uses-undefined-token',

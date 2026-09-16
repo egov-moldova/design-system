@@ -19,7 +19,7 @@ const color = $value => ({ $value, $type: 'color' });
  * Lays out a project the way the repo does — `tokens/core/**`, `tokens/generated/core.tokens.css`,
  * `src/components/mud-<name>/mud-<name>.css` — and runs the validator over its `tokens` root.
  */
-function validate({ component, componentName = 'date-input', css = '', generatedCss = '' }) {
+function validate({ component, componentName = 'date-input', css = '', generatedCss = '', withComponentCss = true }) {
   const project = fs.mkdtempSync(path.join(os.tmpdir(), 'tokens-validate-'));
   tempDirs.push(project);
   const write = (rel, content) => {
@@ -34,7 +34,7 @@ function validate({ component, componentName = 'date-input', css = '', generated
   const foundationCss =
     '  --palette-blue-200: #bbdefb;\n  --palette-blue-500: #2196f3;\n  --color-border-brand-focus-ring: #2196f3;\n';
   write('tokens/generated/core.tokens.css', `:root {\n${foundationCss}${generatedCss}}\n`);
-  write(`src/components/mud-${componentName}/mud-${componentName}.css`, css);
+  if (withComponentCss) write(`src/components/mud-${componentName}/mud-${componentName}.css`, css);
   const out = path.join(project, 'report.json');
   const run = spawnSync(
     process.execPath,
@@ -74,12 +74,17 @@ describe('tokens-validate — component CSS coverage', () => {
     assert.deepEqual(codes, []);
   });
 
-  it('does not require tokens for consumer override hooks that always carry a fallback', () => {
+  it('still reports a variable with no token behind it when every read carries a fallback', () => {
     const { codes } = validate({
       component: { dateInput: {} },
-      css: '.a { color: var(--date-input-link-color, var(--color-border-brand-focus-ring)); }\n',
+      css: '.a { color: var(--date-input-bordr-color, var(--color-border-brand-focus-ring)); }\n',
     });
-    assert.deepEqual(codes, []);
+    assert.deepEqual(codes, ['css-uses-undefined-token date-input.bordr-color']);
+  });
+
+  it('warns instead of silently skipping coverage when the component CSS directory is not there', () => {
+    const { codes } = validate({ component: { dateInput: {} }, withComponentCss: false });
+    assert.deepEqual(codes, ['component-css-missing ']);
   });
 });
 
@@ -91,6 +96,16 @@ describe('tokens-validate — generated CSS drift', () => {
       generatedCss: '  --cookie-banner-container-stack-z-index: 1000;\n',
     });
     assert.deepEqual(codes, []);
+  });
+
+  it('reports a token whose variable is missing from the generated CSS', () => {
+    const { status, codes } = validate({
+      componentName: 'cookie-banner',
+      component: { 'cookie-banner': { container: { stackZIndex: { $value: '1000', $type: 'number' } } } },
+      generatedCss: '  --cookie-banner-container-stack-zindex: 1000;\n',
+    });
+    assert.deepEqual(codes, ['css-drift cookie-banner.container.stackZIndex']);
+    assert.equal(status, 0);
   });
 });
 
