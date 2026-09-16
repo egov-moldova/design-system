@@ -1,3 +1,4 @@
+// hardcoded-colors-disable-file -- flag colours are fixed by each country's flag specification, not themeable
 import { h } from '@stencil/core';
 
 /**

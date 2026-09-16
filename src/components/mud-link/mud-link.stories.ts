@@ -354,7 +354,7 @@ const renderVisited = () => /*html*/ `
   </div>
 `;
 
-const docsSourceVisited = /*html*/ `<!-- Visited links flip to brand magenta (#aa18ce) per DESIGN.md.
+const docsSourceVisited = /*html*/ `<!-- Visited links flip to brand magenta (color.text.brand.visited) per DESIGN.md.
      The :visited pseudo-class is browser-managed and triggers only after
      real navigation to the href. -->
 <mud-link href="https://www.gov.md/ro/about">Despre guvern</mud-link>
