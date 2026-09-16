@@ -4,7 +4,9 @@
  *
  * Scans source files for hardcoded color values that should use design tokens instead.
  * Detects hex colors, rgb/rgba/hsl/hsla functions, modern color functions, and named
- * CSS colors (CSS/SCSS only). Reports file:line:col links like tokens-lint.
+ * CSS colors (CSS/SCSS only), and palette primitives referenced from stylesheets
+ * outside `legacy/` (`var(--palette-*)` — components use semantic tokens). Reports
+ * file:line:col links like tokens-lint.
  *
  * Fixed artwork whose colours are not themeable (flags, illustrations) opts out as a whole file by
  * opening it with this comment (`/* ... *\/` in stylesheets):
@@ -167,6 +169,8 @@ const RE_DISABLE_FILE = new RegExp(`^[\\s*]*${DISABLE_FILE_DIRECTIVE}\\b(?:\\s+-
 
 // Functional color notations — no whitespace before ( to avoid matching prose like "color (description)"
 const RE_FUNCTIONAL = () => /\b(rgba?|hsla?|oklch|oklab|lab|lch|hwb|color)\(/gi;
+
+const RE_PALETTE_VAR = () => /\bvar\(\s*(--palette-[\w-]+)/g;
 
 const STATIC_PATTERNS = [
   { name: 'hex', re: RE_HEX, severity: 'error' },
@@ -538,6 +542,16 @@ async function processFile(filePath) {
       let m;
       while ((m = re.exec(line)) !== null) {
         addResult('named-color', 'warning', m.index, m[0].trim());
+      }
+    }
+
+    // AGENTS.md rule 5: component CSS references component/semantic tokens, never palette
+    // primitives. `legacy/` predates the rule and is excluded from the build.
+    if (isCss && !filePath.split(path.sep).includes('legacy')) {
+      const re = RE_PALETTE_VAR();
+      let m;
+      while ((m = re.exec(line)) !== null) {
+        addResult('palette-var', 'error', m.index, m[1]);
       }
     }
   }
