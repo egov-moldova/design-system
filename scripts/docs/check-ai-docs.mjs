@@ -271,11 +271,17 @@ const REPO_PATH_BACKTICK =
 const PATH_PLACEHOLDER = /mud-x\b|component-name|[$<>{}*]/;
 
 function gitIgnored(root, relPaths) {
-  if (relPaths.length === 0 || !isGitRepo(root)) return new Set();
+  // A path outside the repo cannot be ignored by it, and git aborts the whole
+  // batch on one (exit 128), which would read as "nothing is ignored".
+  const inRepo = relPaths.filter(p => !p.startsWith('../'));
+  if (inRepo.length === 0 || !isGitRepo(root)) return new Set();
   const run = spawnSync('git', ['-C', root, 'check-ignore', '--stdin'], {
-    input: relPaths.join('\n'),
+    input: inRepo.join('\n'),
     encoding: 'utf8',
   });
+  if (run.status !== 0 && run.status !== 1) {
+    throw new Error(`git check-ignore failed (exit ${run.status}): ${String(run.stderr).trim()}`);
+  }
   return new Set(
     String(run.stdout ?? '')
       .split('\n')
@@ -459,7 +465,8 @@ function checkDocOrphan(relPath, root) {
   } catch {
     return [];
   }
-  return index.includes(m[2]) ? [] : [makeHit(relPath, 1, 'doc-orphan', `not indexed in ${indexRel}`)];
+  const named = new RegExp(`(?<![\\w.-])${escapeRegExp(m[2])}(?![\\w-])`).test(index);
+  return named ? [] : [makeHit(relPath, 1, 'doc-orphan', `not indexed in ${indexRel}`)];
 }
 
 // ---------------------------------------------------------------------------
@@ -808,7 +815,17 @@ function main() {
   process.exit(hits.length ? 1 : 0);
 }
 
-const isEntrypoint = process.argv[1] !== undefined && import.meta.url === pathToFileURL(process.argv[1]).href;
+// Compared through realpath: `import.meta.url` is already resolved, and a script
+// reached through a symlinked path (macOS `/tmp`, a linked bin) would otherwise
+// skip main() and exit 0 having checked nothing.
+function isEntrypointPath(argvPath) {
+  try {
+    return import.meta.url === pathToFileURL(fs.realpathSync(argvPath)).href;
+  } catch {
+    return false;
+  }
+}
+const isEntrypoint = process.argv[1] !== undefined && isEntrypointPath(process.argv[1]);
 
 if (isEntrypoint) {
   main();

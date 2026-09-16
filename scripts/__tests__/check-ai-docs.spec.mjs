@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -417,5 +417,45 @@ describe('agent-catalog columns', () => {
         '| Subagent | Purpose | Model | Can write |\n|---|---|---|---|\n| `verifier` | checks | sonnet | No |\n',
     });
     assert.deepEqual(checkAiDocs({ root }), []);
+  });
+});
+
+describe('review fixes', () => {
+  it('runs its checks when invoked through a symlinked path', () => {
+    const root = makeFixture({ 'package.json': pkgJson(), 'NOTES.md': `Install ${STALE_SCOPE}mud.\n` });
+    const link = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'check-ai-docs-link-')), 'docs');
+    fs.symlinkSync(path.dirname(SCRIPT), link);
+    const run = spawnSync(process.execPath, [path.join(link, 'check-ai-docs.mjs'), '--root', root], {
+      encoding: 'utf8',
+    });
+    assert.equal(run.status, 1);
+    assert.match(run.stdout, /package-name/);
+  });
+
+  it('does not count a file as indexed because a longer name ends with it', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      'AGENTS.md': '| `_agents/data.md` | x |\n',
+      '_agents/data.md': '# Data\n',
+      '_agents/a.md': '# A\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.file, h.line, h.ruleId]),
+      [['_agents/a.md', 1, 'doc-orphan']],
+    );
+  });
+
+  it('still honours .gitignore when a path in the batch leaves the repo', () => {
+    const root = makeFixture({
+      'package.json': pkgJson(),
+      '.gitignore': 'dist/\n',
+      '_agents/detail.md': 'See `../../outside/notes.md` and `dist/bundle.js`.\n',
+    });
+    execFileSync('git', ['init', '-q'], { cwd: root });
+    execFileSync('git', ['add', '.'], { cwd: root });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.file, h.line, h.ruleId, h.message]),
+      [['_agents/detail.md', 1, 'path', 'backticked path does not exist: ../../outside/notes.md']],
+    );
   });
 });
