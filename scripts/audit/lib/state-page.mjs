@@ -6,6 +6,7 @@
  *   - device scale factor  → capture resolution matches the Figma export scale
  *   - theme via globals    → the Storybook theme decorator and backgrounds both switch
  *   - optional fixture     → `html` replaces the story canvas with the exact markup
+ *   - optional props       → `props` assigns array / object properties the markup cannot carry
  *   - hydration + fonts    → no unstyled or fallback-font frames
  *   - interactions         → click steps, then hover / keyboard focus (:focus-visible) / press
  *
@@ -56,6 +57,22 @@ export async function openState(browser, state, { baseUrl, scale = 2 }) {
       root.innerHTML = html;
     }, state.html);
     await waitForHydration(page);
+  }
+  if (state.props) {
+    await page.evaluate(props => {
+      for (const [selector, values] of Object.entries(props)) {
+        const els = document.querySelectorAll(selector);
+        if (els.length === 0) throw new Error(`props target not found: ${selector}`);
+        els.forEach(el => Object.assign(el, values));
+      }
+    }, state.props);
+    await page.evaluate(() =>
+      Promise.all(
+        [...document.querySelectorAll('*')]
+          .filter(el => el.tagName.startsWith('MUD-') && el.componentOnReady)
+          .map(el => el.componentOnReady()),
+      ),
+    );
   }
   await page.evaluate(() => document.fonts.ready.then(() => true));
 

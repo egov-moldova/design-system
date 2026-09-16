@@ -123,7 +123,8 @@ const meta: Meta<StoryArgs> = {
     headerStyle: {
       control: 'select',
       options: TABLE_HEADER_STYLES,
-      description: 'Header treatment — `default` is subtle gray; `inverted` is the dark high-emphasis header.',
+      description:
+        'Header treatment — `default` is subtle gray; `inverted` is the dark high-emphasis header; `white` matches the body with a 0.5 px bottom stroke.',
       table: { defaultValue: { summary: 'default' } },
     },
     rowStyle: {
@@ -158,8 +159,8 @@ const meta: Meta<StoryArgs> = {
         component:
           '`mud-table` is a data table molecule built on a native `<table>` for full a11y semantics. ' +
           'It composes `mud-checkbox` (selection column), `mud-icon` (sort chevron), and accepts ' +
-          '`mud-tag` / `mud-button` slotted content per cell. Below the 640 px container width, ' +
-          'rows collapse into vertical key:value cards via a container query.',
+          '`mud-tag` / `mud-button` slotted content per cell. At a viewport width of 640 px or less, ' +
+          'the inline cell padding shrinks from 24 px to 16 px; the table scrolls horizontally when it does not fit.',
       },
     },
   },
@@ -224,6 +225,7 @@ export const AllHeaderStyles: Story = {
       [
         group('default', renderTable('tbl-hdr-default', baseColumns, baseRows, { headerStyle: 'default' })),
         group('inverted', renderTable('tbl-hdr-inverted', baseColumns, baseRows, { headerStyle: 'inverted' })),
+        group('white', renderTable('tbl-hdr-white', baseColumns, baseRows, { headerStyle: 'white' })),
       ].join(''),
     ),
 };
@@ -442,10 +444,12 @@ export const Loading: Story = {
 
 export const Mobile: Story = {
   name: 'Mobile',
+  // The mobile padding follows the viewport, so the story sets a mobile viewport.
+  globals: { viewport: { value: 'mobile2', isRotated: false } },
   render: () => /*html*/ `
     <div style="${sectionStyle}">
-      <p style="${captionStyle}">Container ≤ 640 px collapses to card-per-row layout</p>
-      <p style="${hintStyle}">Resize the wrapper or test on a mobile viewport — the container query triggers automatically.</p>
+      <p style="${captionStyle}">Viewport ≤ 640 px — inline cell padding 16 px</p>
+      <p style="${hintStyle}">The table keeps its structure and scrolls horizontally when it does not fit.</p>
       <div style="max-width: 420px;">
         ${renderTable('tbl-mobile', baseColumns, baseRows, { ariaLabel: 'Tabel mobil', rowStyle: 'divided' })}
       </div>

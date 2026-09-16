@@ -23,7 +23,7 @@ import type {
  * row actions are projected via named slots so consumers can drop in
  * `mud-tag`, `mud-button`, or any custom content per cell.
  *
- * At ≤640 px container width the inline padding shrinks from 24 → 16 to
+ * At a viewport width of ≤640 px the inline padding shrinks from 24 → 16 to
  * match Figma's "Mobile" breakpoint specs (table-header `4930:14358`,
  * table-cell `649:4296`). The table structure itself is preserved; consumers
  * who need a card-stack layout on narrow screens should wrap their own
@@ -421,11 +421,13 @@ export class MudTable {
               <tr class="row row--header">
                 {this.selectable && (
                   <th class="th th--selection" scope="col" data-table-selection="">
-                    <mud-checkbox checked={allSelected} indeterminate={someSelected} onMudChange={this.handleSelectAll}>
-                      <span slot="label" class="visually-hidden">
-                        Selectează toate rândurile
-                      </span>
-                    </mud-checkbox>
+                    <mud-checkbox
+                      size="sm"
+                      label="Selectează toate rândurile"
+                      checked={allSelected}
+                      indeterminate={someSelected}
+                      onMudChange={this.handleSelectAll}
+                    />
                   </th>
                 )}
                 {columns.map(column => {
@@ -483,13 +485,11 @@ export class MudTable {
                       {this.selectable && (
                         <td class="td td--selection" data-table-selection="">
                           <mud-checkbox
+                            size="sm"
+                            label={`Selectează rândul ${rowIndex + 1}`}
                             checked={selected}
                             onMudChange={(event: Event) => this.handleRowSelect(event, rowId)}
-                          >
-                            <span slot="label" class="visually-hidden">
-                              Selectează rândul {rowIndex + 1}
-                            </span>
-                          </mud-checkbox>
+                          />
                         </td>
                       )}
                       {columns.map(column => {
