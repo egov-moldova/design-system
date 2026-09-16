@@ -15,15 +15,16 @@
  *   5. a genuinely low-contrast element still fails — the check is resolved,
  *      not silenced.
  *
- * Skipped (not failed) when the browser cannot produce samples, so
- * `yarn test:scripts` still runs on a machine without Playwright's browsers.
- * The skip reason carries the error, so a real regression inside
- * `launchBrowser` / `withPage` cannot read as "browsers not installed".
+ * Skipped (not failed) only when no browser can run here — Playwright missing
+ * or its Chromium binary not downloaded — so `yarn test:scripts` still runs on
+ * such a machine. Any other rejection, including one thrown by the code under
+ * test, fails the test.
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import { buildPair, measureSamples } from '../../audit/10-contrast-pairs.mjs';
+import { PLAYWRIGHT_INSTALL_HINT } from '../../audit/lib/browser-context.mjs';
 
 // The canvas is BLACK on purpose. With a white one, dropping the walk entirely
 // still produced the right answer through `resolveBackground`'s canvas
@@ -97,29 +98,35 @@ const DARK_CANVAS_FIXTURE = `<!doctype html>
 const asUrl = html => `data:text/html;charset=utf-8,${encodeURIComponent(html)}`;
 
 /**
- * Collect the samples, or the reason the browser could not produce them.
+ * True only for an environment that cannot run a browser at all: Playwright
+ * not installed, or its Chromium binary not downloaded.
  *
- * The whole run is behind this one call rather than behind a separate
- * `launch()` probe: a probe only proves the browser starts, so a page that
- * launches but cannot navigate (a sandboxed CI box, a `data:` URL refused by
- * policy, the goto timeout under load) rejected the unguarded call and errored
- * the file — on exactly the machine the skip exists to protect.
+ * Everything else must FAIL, not skip. The code under test runs inside
+ * `page.evaluate`, so a TypeError in the backdrop walk rejects `measureSamples`
+ * exactly as a missing browser does — and treating every rejection as "browser
+ * unavailable" turned the regression this file exists to catch into a green,
+ * fully skipped run.
+ * Baseline: `grep -rhoE "Executable doesn't exist at" node_modules/playwright-core/lib --include='*.js' | head -1`
+ * -> the launch error Playwright raises when the binary is missing.
  */
+function browserUnavailable(err) {
+  const message = String(err?.message ?? err);
+  return message === PLAYWRIGHT_INSTALL_HINT || message.includes("Executable doesn't exist");
+}
+
+/** Samples, or `{ ok: false, reason }` when no browser can run here. */
 async function collectSamples(url, theme = 'light') {
   try {
     return { ok: true, samples: await measureSamples(url, 'mud-fixture', theme) };
   } catch (err) {
+    if (!browserUnavailable(err)) throw err;
     return { ok: false, reason: `browser unavailable — ${err.message}` };
   }
 }
 
 /**
- * Samples from a second fixture, or a skip.
- *
- * `skip` is computed once, from the first fixture's run, so a later navigation
- * that fails — a goto timeout under load, a sandboxed box refusing another
- * context — would error the file rather than skip it, on exactly the machine
- * the guard exists for. `t.skip()` moves that decision to the test itself.
+ * Samples from a further fixture, or a skip decided by the test itself — the
+ * suite-level `skip` was computed from the first fixture only.
  */
 async function samplesOrSkip(t, url, theme = 'light') {
   const run = await collectSamples(url, theme);
@@ -172,6 +179,26 @@ const SLOTTED_LABEL_FIXTURE = `<!doctype html>
         this.attachShadow({ mode: 'open' }).innerHTML =
           '<style>.btn { background-color: rgb(0, 88, 210); color: rgb(255, 255, 255); border: 0; font-size: 16px; }</style>' +
           '<button class="btn"><slot></slot></button>';
+      }
+    }
+    customElements.define('mud-fixture', MudFixture);
+  </script>
+</body>
+</html>`;
+
+// An `<svg>` that paints a background ahead of any other painted shadow child.
+// On SVG elements `className` is an SVGAnimatedString with no `.split`, so
+// reading the class through it threw inside `page.evaluate` and lost the run.
+const SVG_SURFACE_FIXTURE = `<!doctype html>
+<html>
+<head><style>body { margin: 0; background-color: rgb(255, 255, 255); }</style></head>
+<body>
+  <mud-fixture class="hydrated"></mud-fixture>
+  <script>
+    class MudFixture extends HTMLElement {
+      connectedCallback() {
+        this.attachShadow({ mode: 'open' }).innerHTML =
+          '<svg class="icon" style="background-color: rgb(0, 88, 210)" width="8" height="8"></svg>';
       }
     }
     customElements.define('mud-fixture', MudFixture);
@@ -311,6 +338,14 @@ describe('10-contrast-pairs: backdrop walk in a real browser', async () => {
     assert.equal(host.fg, 'rgb(255, 255, 255)');
     assert.equal(host.bg, 'rgb(0, 88, 210)');
     assert.equal(host.ratio, 6.31);
+  });
+
+  it('reads a host pair off an svg surface without throwing', { skip }, async t => {
+    const svg = await samplesOrSkip(t, asUrl(SVG_SURFACE_FIXTURE));
+    if (!svg) return;
+    const host = svg.find(s => s.tag === 'mud-fixture');
+    assert.ok(host, 'expected a host sample read off the svg');
+    assert.equal(host.source, 'shadow:svg.icon');
   });
 
   it('falls back to the dark canvas when the document declares color-scheme: dark', { skip }, async t => {

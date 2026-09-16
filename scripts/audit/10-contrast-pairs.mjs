@@ -75,6 +75,26 @@ function channel(value) {
 }
 
 /**
+ * One CSS number, as Chromium serializes it: an optional sign, digits with an
+ * optional fraction, and an optional exponent. `color-mix()` of a near-zero
+ * share computes to channels like `3.49681e-7` and alphas like `5.96046e-8`, so
+ * a `[0-9.]+` class both refused a valid color — reported unreadable — and
+ * accepted `.` or `1.2.3`, which became NaN and slipped past the unmeasurable
+ * path as `contrast NaN:1`.
+ */
+const NUM = String.raw`[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?`;
+
+function alphaOf(token) {
+  if (token === undefined) return 1;
+  return token.endsWith('%') ? Number(token.slice(0, -1)) / 100 : Number(token);
+}
+
+/** A color only if every component is a real number; otherwise unreadable. */
+function finiteColor(r, g, b, a) {
+  return [r, g, b, a].every(Number.isFinite) ? { r, g, b, a } : null;
+}
+
+/**
  * Parse `rgb(r, g, b)` / `rgba(r, g, b, a)` / `color(srgb r g b / a)` /
  * `#rrggbb` / `#rgb` into { r, g, b, a } with channels 0..255 and alpha 0..1.
  */
@@ -108,13 +128,11 @@ export function parseColor(input) {
     };
   }
 
-  const rgb = s.match(/^rgba?\(\s*([0-9.]+)\s*[, ]\s*([0-9.]+)\s*[, ]\s*([0-9.]+)\s*(?:[,/]\s*([0-9.]+%?)\s*)?\)$/i);
+  const rgb = s.match(
+    new RegExp(`^rgba?\\(\\s*(${NUM})\\s*[, ]\\s*(${NUM})\\s*[, ]\\s*(${NUM})\\s*(?:[,/]\\s*(${NUM}%?)\\s*)?\\)$`, 'i'),
+  );
   if (rgb) {
-    let alpha = 1;
-    if (rgb[4] !== undefined) {
-      alpha = rgb[4].endsWith('%') ? Number(rgb[4].slice(0, -1)) / 100 : Number(rgb[4]);
-    }
-    return { r: channel(rgb[1]), g: channel(rgb[2]), b: channel(rgb[3]), a: alpha };
+    return finiteColor(channel(rgb[1]), channel(rgb[2]), channel(rgb[3]), alphaOf(rgb[4]));
   }
 
   // `color(srgb r g b / a)` with 0..1 channels. Chromium serializes every
@@ -122,18 +140,16 @@ export function parseColor(input) {
   // this branch those layers are unreadable at runtime.
   // Baseline: `grep -rlc 'color-mix(in srgb' src/components/*/[a-z]*.css` -> 3
   // files (mud-banner, mud-date-input, mud-toast) on 2026-09-16.
-  const srgb = s.match(/^color\(\s*srgb\s+(-?[0-9.]+)\s+(-?[0-9.]+)\s+(-?[0-9.]+)\s*(?:\/\s*([0-9.]+%?)\s*)?\)$/i);
+  const srgb = s.match(
+    new RegExp(`^color\\(\\s*srgb\\s+(${NUM})\\s+(${NUM})\\s+(${NUM})\\s*(?:\\/\\s*(${NUM}%?)\\s*)?\\)$`, 'i'),
+  );
   if (srgb) {
-    let alpha = 1;
-    if (srgb[4] !== undefined) {
-      alpha = srgb[4].endsWith('%') ? Number(srgb[4].slice(0, -1)) / 100 : Number(srgb[4]);
-    }
-    return {
-      r: channel(Number(srgb[1]) * 255),
-      g: channel(Number(srgb[2]) * 255),
-      b: channel(Number(srgb[3]) * 255),
-      a: alpha,
-    };
+    return finiteColor(
+      channel(Number(srgb[1]) * 255),
+      channel(Number(srgb[2]) * 255),
+      channel(Number(srgb[3]) * 255),
+      alphaOf(srgb[4]),
+    );
   }
 
   // Everything else — `color(display-p3 …)`, `oklch(…)`, a gradient keyword —
@@ -236,6 +252,17 @@ export function resolveBackground(layers, { fallback = DEFAULT_CANVAS } = {}) {
  * either color was unparseable.
  */
 export function contrastRatio(fgInput, bgInput) {
+  const exact = exactContrastRatio(fgInput, bgInput);
+  return exact === null ? null : Number(exact.toFixed(2));
+}
+
+/**
+ * The unrounded ratio. A threshold must be compared against THIS, never the
+ * two-decimal display value: `rgb(100, 123, 125)` on white is 4.4957:1, which
+ * rounds to 4.5 and would pass a 4.5:1 threshold it does not meet — a false
+ * PASS on exactly the pairs a gate exists to catch.
+ */
+export function exactContrastRatio(fgInput, bgInput) {
   const fgRaw = typeof fgInput === 'string' ? parseColor(fgInput) : fgInput;
   const bgRaw = typeof bgInput === 'string' ? parseColor(bgInput) : bgInput;
   if (!fgRaw || !bgRaw) return null;
@@ -245,7 +272,7 @@ export function contrastRatio(fgInput, bgInput) {
   const l2 = relativeLuminance(bg);
   const lighter = Math.max(l1, l2);
   const darker = Math.min(l1, l2);
-  return Number(((lighter + 0.05) / (darker + 0.05)).toFixed(2));
+  return (lighter + 0.05) / (darker + 0.05);
 }
 
 /**
@@ -374,6 +401,23 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
 
   const pairs = [...lightSamples, ...darkSamples].map(s => buildPair(s));
 
+  const findings = findingsFromPairs(pairs, relativeToRepo(target.paths.tsx));
+
+  return { findings, pairs, componentName: target.name };
+}
+
+/**
+ * Turn classified pairs into findings. Pure — exported for tests, because the
+ * routing below is three-way and every branch sends the reader somewhere
+ * different; a mis-route is invisible from outside the script.
+ *
+ * Severity follows who can act on it. A ratio below threshold is a COMPONENT
+ * defect: `error`, which `exitCodeFromSummary` maps to a blocking exit. An
+ * unreadable color is a TOOL limit — no token or CSS change makes a gradient
+ * foldable — so it is a `warning`: reported on every run, but never a
+ * permanent CI block that nothing short of deleting the design can clear.
+ */
+export function findingsFromPairs(pairs, file) {
   const findings = [];
   for (const p of pairs) {
     if (p.pass || p.exempt) continue;
@@ -383,31 +427,26 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
     // the tree it sits in (`light` or `shadow`), which narrows the search but
     // does not identify which of several matching elements it was.
     const where = `${p.theme} <${p.tag}> [${p.kind}] (${p.source})`;
-    // An unresolved backdrop is a DIFFERENT defect from a failing ratio: some
-    // layer behind the element used a color spelling the parser cannot read,
-    // so there is no ratio to judge. Reporting it as a contrast failure would
-    // send the reader to the token mapping, which is not where the cause is.
     // Keyed on `bg`, not on the error: `unmeasurable` also fires when the
     // FOREGROUND is the unreadable color and the backdrop resolved fine.
     if (p.bg === null) {
       // Only up to the layer that could not be read — the ones past it were
       // never consumed, so naming them points at surfaces that are innocent.
       // When every layer parsed, the canvas is what stopped the fold, and it
-      // has to be named: otherwise the message reads `layers=[]` and the fix
-      // line asks the reader to teach a spelling it never showed them.
+      // has to be named: otherwise the message reads `layers=[]`.
       const stopped = p.bgStack.findIndex(layer => !parseColor(layer));
       const read = stopped === -1 ? [...p.bgStack, `canvas: ${p.canvas}`] : p.bgStack.slice(0, stopped + 1);
       findings.push(
         finding({
-          severity: 'error',
+          severity: 'warning',
           code: 'CONTRAST-BACKDROP-UNREADABLE',
-          file: relativeToRepo(target.paths.tsx),
+          file,
           message: `${where}: background unresolved. fg=${p.fg} layers=[${read.join(' | ')}].`,
           // An image cannot be taught to `parseColor`; telling the reader to
           // try is how a check gets switched off instead of read.
           fix: read.includes('background-image')
             ? 'A background-image paints behind this text and cannot be folded to one color; judge this pair by eye.'
-            : 'Teach parseColor the unreadable color spelling, or paint the surface in one it already reads.',
+            : 'Teach parseColor the unreadable color spelling, or judge this pair by eye.',
         }),
       );
       continue;
@@ -415,11 +454,11 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
     if (p.error === 'unmeasurable') {
       findings.push(
         finding({
-          severity: 'error',
+          severity: 'warning',
           code: 'CONTRAST-FOREGROUND-UNREADABLE',
-          file: relativeToRepo(target.paths.tsx),
+          file,
           message: `${where}: foreground unresolved. fg=${p.fg} bg=${p.bg}.`,
-          fix: 'Teach parseColor the unreadable color spelling, or set the text color in one it already reads.',
+          fix: 'Teach parseColor the unreadable color spelling, or judge this pair by eye.',
         }),
       );
       continue;
@@ -428,14 +467,13 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
       finding({
         severity: 'error',
         code: 'CONTRAST-BELOW-THRESHOLD',
-        file: relativeToRepo(target.paths.tsx),
+        file,
         message: `${where}: contrast ${p.ratio}:1 (threshold ${p.threshold}:1). fg=${p.fg} bg=${p.bg}.`,
         fix: 'Adjust the token mapping so foreground and background pass WCAG 2.1 AA.',
       }),
     );
   }
-
-  return { findings, pairs, componentName: target.name };
+  return findings;
 }
 
 /**
@@ -451,18 +489,21 @@ export async function analyzeComponent(target, { baseUrl, storyId = null, skipDa
 export function buildPair(sample) {
   const bgStack = sample.bgStack ?? [sample.bg];
   const resolved = resolveBackground(bgStack, { fallback: sample.canvas ?? DEFAULT_CANVAS });
-  const bg = resolved ? formatColor(resolved) : null;
+  const bg = formatColor(resolved);
   // The parsed object, not the formatted string: round-tripping it back
   // through `parseColor` is a second chance to lose what was already resolved.
-  const ratio = contrastRatio(sample.fg, resolved);
-  const cls = classifyContrast(ratio, sample.kind, { disabled: sample.disabled });
+  const exact = exactContrastRatio(sample.fg, resolved);
+  const cls = classifyContrast(exact, sample.kind, { disabled: sample.disabled });
   return {
     ...sample,
     bg,
     bgOwn: sample.bg,
     bgStack,
     error: cls.error ?? null,
-    ratio: cls.ratio,
+    // Classified on the exact value; displayed truncated rather than rounded,
+    // so a reported ratio never reads as meeting a threshold it failed —
+    // 4.4957 shows as 4.49, not as a failing 4.5.
+    ratio: exact === null ? null : Math.floor(exact * 100) / 100,
     threshold: cls.threshold,
     pass: cls.pass,
     exempt: !!cls.exempt,
@@ -581,13 +622,17 @@ export async function measureSamples(url, componentName, theme) {
           //     has no `parentElement`, but it still paints on the host's
           //     ancestors.
           //
-          // Known boundary: a `background-image` is not folded — compositing it
-          // needs geometry and stop interpolation, an unbounded job for an audit
-          // script — so the walk records a marker for it and the row is reported
-          // unresolved rather than scored (see below). An ancestor `opacity`, and
-          // anything out of flow, is not seen at all and still yields a ratio.
-          // Both are documented for the consumer in
-          // `.claude/agents/a11y-verifier.md`.
+          // DEBT(backdrop is modelled as ancestor background colors): a
+          // `background-image` cannot be folded to one color, so the walk
+          // records a marker and the row comes back unresolved rather than
+          // scored. Ancestor or own `opacity`, out-of-flow content, overlapping
+          // siblings and pseudo-element fills are not seen at all and still
+          // yield a ratio; all are documented for the consumer in
+          // `.claude/agents/a11y-verifier.md`. Upgrade path: measure the pixels
+          // actually painted behind the glyphs — hit-test the text box with
+          // `document.elementsFromPoint`, or screenshot the element with its
+          // `color` made transparent — which covers every case above with one
+          // mechanism instead of a branch each.
           const collectBackgroundStack = el => {
             const layers = [];
             let node = el;
@@ -621,17 +666,19 @@ export async function measureSamples(url, componentName, theme) {
           // return BOTH its fg and bg so the contrast pair comes from one
           // element (a valid WCAG measurement, not a host/inner mash-up).
           //
-          // Which element a pair is READ OFF is deliberately left as it was
-          // before this change: the first shadow child that paints a
-          // background, else nothing. A text-presence filter here was tried and
-          // removed. `innerText` does not see text that arrives through a
-          // `<slot>`, so it skipped the real painted surface of a slotted-label
-          // button and fell through to a host pair made of two colors that are
-          // not on screen — reporting a PASS where the label could genuinely
-          // fail — and it counted `display: none` and `opacity: 0` text as
-          // painted. Choosing the measured element well needs a visibility and
-          // slot model, which is a separate change from resolving what is
-          // painted BEHIND the element, the one this file's history is about.
+          // DEBT(element selection has no visibility or slot model): which
+          // element a pair is READ OFF is the first shadow child that paints a
+          // background, else nothing — so a textless fill (a checkbox box, a
+          // switch track, a separator rule) and a visually hidden `<input>` can
+          // each yield a row pairing an inherited `color` with a fill. A
+          // text-presence filter here was tried and removed: `innerText` does
+          // not see text that arrives through a `<slot>`, so it skipped the real
+          // painted surface of a slotted-label button and reported a host pair
+          // of two off-screen colors as a PASS where the label could genuinely
+          // fail, and it counted `display: none` and `opacity: 0` text as
+          // painted. Upgrade path: choose the surface from where glyphs are
+          // actually rendered — the same paint-based measurement named at
+          // `collectBackgroundStack` — rather than from a text heuristic.
           const readPair = (el, source) => {
             const s = window.getComputedStyle(el);
             return { el, fg: s.color, bg: s.backgroundColor, fontSize: s.fontSize, fontWeight: s.fontWeight, source };
@@ -645,7 +692,11 @@ export async function measureSamples(url, componentName, theme) {
             if (root) {
               for (const inner of root.querySelectorAll('*')) {
                 if (!isTransparent(window.getComputedStyle(inner).backgroundColor)) {
-                  const cls = inner.className ? '.' + inner.className.split(/\s+/).join('.') : '';
+                  // `getAttribute('class')`, not `className`: on an SVG element
+                  // `className` is an SVGAnimatedString with no `.split`, and the
+                  // throw rejects `page.evaluate` and loses the whole run.
+                  const classAttr = inner.getAttribute('class');
+                  const cls = classAttr ? '.' + classAttr.trim().split(/\s+/).join('.') : '';
                   return readPair(inner, `shadow:${inner.tagName.toLowerCase()}${cls}`);
                 }
               }

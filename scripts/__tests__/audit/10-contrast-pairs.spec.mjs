@@ -1,8 +1,9 @@
 /**
  * Smoke tests for scripts/audit/10-contrast-pairs.mjs
  *
- * Focus is on the pure WCAG math + color parsers. The browser-driving flow is
- * verified manually with Storybook running + Playwright installed.
+ * Focus is on the pure WCAG math, color parsing, backdrop resolution and the
+ * routing of pairs to findings. The in-page walk, which no pure test can reach,
+ * is covered by `10-contrast-pairs.browser.spec.mjs` against a real Chromium.
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
@@ -17,6 +18,8 @@ import {
   formatColor,
   resolveBackground,
   DEFAULT_CANVAS,
+  exactContrastRatio,
+  findingsFromPairs,
 } from '../../audit/10-contrast-pairs.mjs';
 
 describe('10-contrast-pairs: parseColor', () => {
@@ -345,5 +348,131 @@ describe('10-contrast-pairs: buildPair', () => {
     });
     assert.equal(pair.bg, 'rgb(30, 30, 30)');
     assert.equal(pair.pass, true);
+  });
+});
+
+describe('10-contrast-pairs: parseColor number grammar', () => {
+  it('reads the scientific notation Chromium emits for a near-zero color-mix', () => {
+    assert.deepEqual(parseColor('color(srgb 0 3.49681e-7 8.34465e-7)'), { r: 0, g: 0, b: 0, a: 1 });
+    const faint = parseColor('color(srgb 0 0 0 / 5.96046e-8)');
+    assert.ok(faint && faint.a > 0 && faint.a < 1e-6);
+  });
+
+  it('refuses a malformed number instead of producing NaN', () => {
+    // `[0-9.]+` accepted `.` and `1.2.3`; both became NaN, which escaped the
+    // unmeasurable path and printed as `contrast NaN:1`.
+    assert.equal(parseColor('color(srgb 0 0 0 / .)'), null);
+    assert.equal(parseColor('rgb(1.2.3, 0, 0)'), null);
+    assert.equal(parseColor('rgb(., 0, 0)'), null);
+  });
+});
+
+describe('10-contrast-pairs: threshold is compared on the exact ratio', () => {
+  const pairOn = fg =>
+    buildPair({
+      tag: 'span',
+      fg,
+      bg: 'rgb(255, 255, 255)',
+      bgStack: ['rgb(255, 255, 255)'],
+      canvas: 'rgb(255, 255, 255)',
+      kind: 'normal',
+      disabled: false,
+      theme: 'light',
+    });
+
+  it('fails a pair just under the threshold that rounds up to it', () => {
+    // 4.4957:1 rounds to 4.5 at two decimals and used to pass a 4.5:1 check.
+    assert.ok(exactContrastRatio('rgb(100, 123, 125)', 'rgb(255, 255, 255)') < 4.5);
+    const pair = pairOn('rgb(100, 123, 125)');
+    assert.equal(pair.pass, false);
+    // Truncated for display, so the reported number never reads as meeting it.
+    assert.equal(pair.ratio, 4.49);
+  });
+
+  it('keeps the displayed ratio of a comfortable pair unchanged', () => {
+    assert.equal(pairOn('rgb(0, 88, 210)').ratio, 6.31);
+    assert.equal(pairOn('rgb(0, 0, 0)').ratio, 21);
+  });
+});
+
+describe('10-contrast-pairs: findingsFromPairs', () => {
+  const base = {
+    theme: 'light',
+    tag: 'mud-x',
+    kind: 'normal',
+    source: 'shadow',
+    fg: 'rgb(0, 0, 0)',
+    canvas: 'rgb(255, 255, 255)',
+  };
+  const codes = pairs => findingsFromPairs(pairs, 'src/x.tsx').map(f => [f.code, f.severity]);
+
+  it('reports nothing for a passing or exempt pair', () => {
+    assert.deepEqual(
+      codes([
+        { ...base, pass: true },
+        { ...base, pass: false, exempt: true },
+      ]),
+      [],
+    );
+  });
+
+  it('blocks on a ratio below threshold — a component defect', () => {
+    const pair = { ...base, pass: false, bg: 'rgb(255, 255, 255)', ratio: 1.2, threshold: 4.5, error: null };
+    assert.deepEqual(codes([pair]), [['CONTRAST-BELOW-THRESHOLD', 'error']]);
+  });
+
+  it('warns, and does not block, on an unreadable backdrop — a tool limit', () => {
+    // No token or CSS change makes a gradient foldable; an error here would be
+    // a permanent CI block nothing short of deleting the design could clear.
+    const pair = {
+      ...base,
+      pass: false,
+      bg: null,
+      ratio: null,
+      error: 'unmeasurable',
+      bgStack: ['oklch(0.7 0.1 250)'],
+    };
+    assert.deepEqual(codes([pair]), [['CONTRAST-BACKDROP-UNREADABLE', 'warning']]);
+  });
+
+  it('routes an unreadable foreground over a resolved backdrop to its own code', () => {
+    const pair = {
+      ...base,
+      pass: false,
+      fg: 'oklab(0.5 0 0)',
+      bg: 'rgb(255, 255, 255)',
+      ratio: null,
+      error: 'unmeasurable',
+    };
+    assert.deepEqual(codes([pair]), [['CONTRAST-FOREGROUND-UNREADABLE', 'warning']]);
+  });
+
+  it('names the canvas when it, not a layer, stopped the fold', () => {
+    const pair = {
+      ...base,
+      pass: false,
+      bg: null,
+      ratio: null,
+      error: 'unmeasurable',
+      bgStack: ['rgba(0, 0, 0, 0)'],
+      canvas: 'rgba(0, 0, 0, 0)',
+    };
+    const [f] = findingsFromPairs([pair], 'src/x.tsx');
+    assert.match(f.message, /canvas: rgba\(0, 0, 0, 0\)/);
+    assert.doesNotMatch(f.message, /layers=\[\]/);
+  });
+
+  it('names only the layers read, and tells the truth about an image', () => {
+    const pair = {
+      ...base,
+      pass: false,
+      bg: null,
+      ratio: null,
+      error: 'unmeasurable',
+      bgStack: ['rgba(0, 0, 0, 0)', 'background-image', 'rgb(0, 0, 0)'],
+    };
+    const [f] = findingsFromPairs([pair], 'src/x.tsx');
+    assert.match(f.message, /layers=\[rgba\(0, 0, 0, 0\) \| background-image\]/);
+    assert.match(f.fix, /cannot be folded/);
   });
 });
