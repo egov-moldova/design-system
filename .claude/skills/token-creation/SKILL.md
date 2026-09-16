@@ -58,7 +58,7 @@ Reference semantic tokens following the `color.{type}.{role}.{variant}` scheme �
 1. **No `"components"` wrapper** — the root key IS the component name
 2. **Always use `{token.path}` references** — never raw hex/px values in component tokens
 3. **Always include `"type"`** — valid types: `color`, `dimension`, `fontFamily`, `fontSize`, `fontWeight`, `lineHeight`, `opacity`, `spacing`
-4. **kebab-case** for component names and properties
+4. **camelCase** for compound property keys in JSON (`iconColor`, `optionFontFamily`) — Style Dictionary emits kebab-case CSS variables either way; see `tokens/_agents/naming-conventions.md`
 
 ---
 
@@ -182,7 +182,7 @@ Before running `yarn tokens.build`, verify:
 - [ ] Root key is component name (no `"components"` wrapper)
 - [ ] All `{references}` point to existing tokens in `tokens/core/*.tokens.json`
 - [ ] All entries have `"value"` and `"type"` fields
-- [ ] Naming follows kebab-case convention
+- [ ] Naming follows the camelCase key convention (`yarn tokens.lint.all` exits 0)
 - [ ] State coverage is complete for all variants
 
 ---
@@ -213,7 +213,7 @@ Select-String -Path "dist/mud/tokens/core.tokens.css" -Pattern "undefined"
 | `"components": { "button": { ... } }` wrapper | Remove wrapper — use `"button": { ... }` as root |
 | Raw hex `"value": "#1976D2"` in component tokens | Use reference `"value": "{color.primary.background.default}"` |
 | Missing `"type"` field | Always include: `"type": "color"`, `"type": "dimension"`, etc. |
-| `camelCase` property names | Use `kebab-case`: `font-size` not `fontSize` (exception: top-level core tokens use camelCase per existing convention) |
+| Mixed or capitalised keys: `option-fontFamily`, `OptionColor` | Use camelCase: `optionFontFamily`, `optionColor` |
 | Scale/state before property: `label-md-font-size` | Move scale/state last: `label-font-size-md` |
 | Size before property: `button-sm-size` | Move size last: `button-size-sm` |
 | State before property: `input-focus-border-color` | Move state last: `input-border-color-focus` |

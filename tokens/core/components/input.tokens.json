@@ -119,7 +119,7 @@
         "readOnly": { "$value": "{color.text.base.default}", "$type": "color" },
         "disabled": { "$value": "{color.text.disabled.on-disabled}", "$type": "color" }
       },
-      "focusRing": { "$value": "{palette.blue-sky.200}", "$type": "color" }
+      "focusRing": { "$value": "{focusRing.color.halo.brand}", "$type": "color" }
     },
     "warning": {
       "background": {
@@ -130,7 +130,7 @@
         "hover": { "$value": "{color.border.warning.default}", "$type": "color" },
         "focus": { "$value": "{color.border.warning.default}", "$type": "color" }
       },
-      "focusRing": { "$value": "{palette.apricot.200}", "$type": "color" }
+      "focusRing": { "$value": "{focusRing.color.halo.warning}", "$type": "color" }
     },
     "destructive": {
       "background": {
@@ -141,7 +141,7 @@
         "hover": { "$value": "{color.border.danger.default}", "$type": "color" },
         "focus": { "$value": "{color.border.danger.default}", "$type": "color" }
       },
-      "focusRing": { "$value": "{palette.red.200}", "$type": "color" }
+      "focusRing": { "$value": "{focusRing.color.halo.danger}", "$type": "color" }
     },
     "success": {
       "background": {
@@ -152,7 +152,7 @@
         "hover": { "$value": "{color.border.positive.default}", "$type": "color" },
         "focus": { "$value": "{color.border.positive.default}", "$type": "color" }
       },
-      "focusRing": { "$value": "{palette.green.200}", "$type": "color" }
+      "focusRing": { "$value": "{focusRing.color.halo.positive}", "$type": "color" }
     }
   }
 }
