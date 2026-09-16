@@ -24,7 +24,10 @@ try {
     exit 0
 }
 
+# Native commands never trip $ErrorActionPreference, so check each exit code like `set -e` in the .sh.
 git config merge.ours.name "keep the current branch's generated file; regenerate with yarn build"
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 git config merge.ours.driver true
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 Write-Host '[OK] AGE merge-driver setup complete (merge.ours.driver registered)'
