@@ -181,3 +181,37 @@ describe('CLI', () => {
     assert.equal(status, 2);
   });
 });
+
+describe('sd-version rule', () => {
+  const sdPkg = () =>
+    JSON.stringify({
+      name: '@acme/widgets',
+      engines: { node: '>=24.0.0 <25.0.0' },
+      devDependencies: { 'style-dictionary': '^5.5.3' },
+    });
+
+  it('flags a Style Dictionary major that differs from package.json', () => {
+    const root = makeFixture({
+      'package.json': sdPkg(),
+      'tokens/AGENTS.md':
+        '# Tokens\n\nDTCG format (Style Dictionary v4).\n\nPinned as Style Dictionary 4.4.2.\n\nSD v4 derives CTI.\n',
+    });
+    assert.deepEqual(
+      checkAiDocs({ root }).map(h => [h.file, h.line, h.ruleId]),
+      [
+        ['tokens/AGENTS.md', 3, 'sd-version'],
+        ['tokens/AGENTS.md', 5, 'sd-version'],
+        ['tokens/AGENTS.md', 7, 'sd-version'],
+      ],
+    );
+  });
+
+  it('passes the pinned major and a claim with no version', () => {
+    const root = makeFixture({
+      'package.json': sdPkg(),
+      'STACK.md':
+        'Style Dictionary 5.x builds tokens. Style Dictionary (DTCG) is the pipeline. Pinned to Style Dictionary 5.\n',
+    });
+    assert.deepEqual(checkAiDocs({ root }), []);
+  });
+});

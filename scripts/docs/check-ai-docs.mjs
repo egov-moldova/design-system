@@ -15,6 +15,8 @@
  *                     `(../)*_agents/<name>.md` path, that does not resolve.
  *   node-version   — a Node major-version claim that disagrees with
  *                     package.json's `engines.node` `>=` bound.
+ *   sd-version     — a Style Dictionary major-version claim that disagrees
+ *                     with the `style-dictionary` dependency's major.
  *   package-name   — a reference to the retired npm scope STALE_SCOPE (the
  *                     live name lives in package.json `name`).
  *   settings-path  — a machine-specific `/Users/...` or `C:\Users\...` path
@@ -314,6 +316,47 @@ function checkNodeVersion(relPath, lines, allowedMajor) {
 }
 
 // ---------------------------------------------------------------------------
+// Rule: sd-version
+// ---------------------------------------------------------------------------
+
+// Claims recognised (case-insensitive): `Style Dictionary v4`, `Style Dictionary 4`,
+// `Style Dictionary 4.x`, `Style Dictionary 4.4+`, `Style Dictionary 4.4.2`, and the
+// abbreviation `SD v4`. A trailing sentence full stop does not hide the version.
+const SD_CLAIM = /\b(?:style[ -]dictionary\s+v?|SD\s+v)(\d+)(?:\.(?:\d+|x))*\+?(?!\w)(?!\.\d)/gi;
+
+export function dependencyMajor(pkg, name) {
+  const range = pkg.dependencies?.[name] ?? pkg.devDependencies?.[name];
+  const m = typeof range === 'string' ? range.match(/(\d+)/) : null;
+  return m ? Number(m[1]) : null;
+}
+
+function checkStyleDictionaryVersion(relPath, lines, allowedMajor) {
+  const hits = [];
+  let inFence = false;
+  lines.forEach((line, i) => {
+    if (/^(```|~~~)/.test(line.trim())) {
+      inFence = !inFence;
+      return;
+    }
+    if (inFence) return;
+    for (const m of line.matchAll(SD_CLAIM)) {
+      const major = Number(m[1]);
+      if (major !== allowedMajor) {
+        hits.push(
+          makeHit(
+            relPath,
+            i + 1,
+            'sd-version',
+            `Style Dictionary ${major} claim does not match package.json major ${allowedMajor}`,
+          ),
+        );
+      }
+    }
+  });
+  return hits;
+}
+
+// ---------------------------------------------------------------------------
 // Rule: package-name
 // ---------------------------------------------------------------------------
 
@@ -389,6 +432,7 @@ export function checkAiDocs({ root }) {
   const pkg = readPackage(root);
   const allowedMajor = enginesMajor(pkg);
   const realPackageName = pkg.name;
+  const sdMajor = dependencyMajor(pkg, 'style-dictionary');
 
   const files = enumerateFiles(root);
   const hits = [];
@@ -415,6 +459,7 @@ export function checkAiDocs({ root }) {
 
     if (needsDocScope) hits.push(...checkLinks(relPath, absPath, lines, root));
     if (needsNodeVersion) hits.push(...checkNodeVersion(relPath, lines, allowedMajor));
+    if (needsNodeVersion && sdMajor !== null) hits.push(...checkStyleDictionaryVersion(relPath, lines, sdMajor));
     if (needsPackageName) hits.push(...checkPackageName(relPath, lines, realPackageName));
     if (needsSettingsPath) hits.push(...checkSettingsPath(relPath, lines));
   }
