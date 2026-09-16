@@ -24,11 +24,13 @@ session on 2026-09-15; issue egov-moldova/design-system#18 is the requirement so
 
 **Rebased:** onto `upstream/main` `1d7ec8f` on 2026-09-15 (from `fe6d651`). That base renamed or merged six components (55 tags, was 56); counts in § Context are measured on `fe6d651`, and the § Acceptance bar was re-run on the rebased branch. Result: N1–N5 pass over 55 tags; Z6 over 454 stories shows the same two Accordion control deltas and 0 `initialArgs` differences against a `1d7ec8f` build; `yarn test:scripts` fails 2 tests in `form-associated-contract.spec.mjs`, which fail identically on `1d7ec8f` itself (an empty tracked `mud-search-input-circular.tsx`, and 15 form-associated components against a floor of 16).
 
+**Rebased again:** onto `upstream/main` `602417a` on 2026-09-16 (from `1d7ec8f`). That base carries the 2026-09 toolchain refresh (`@stencil/core` `~4.43.5`, `storybook` 10.6.0, `wireit` `^0.14.13`), so the only conflicts were the `package.json` / `STACK.md` rows and `yarn.lock`, resolved to main's pins without `web-component-analyzer`. The § Acceptance bar was re-run on Node 24 against the new pins. Result: N1–N5 pass over 55 tags; Z6 over 457 stories shows 0 `initialArgs` differences against a `602417a` build, and control deltas only on the two Accordion metas, all inferred wca props, events, slots and parts (`size`, `iconPosition`, `items`, `mudChange`; `appearance`, `breakpoint`, `itemId`, `mudToggle`, `mudAccordionItemKey`, `header`, `panel`, `icon-start`, `supporting`, `trailing`) — 14 keys where the first run recorded 10; that probe was a scratchpad script, so the cause of the difference is not established; Z5 and Z8 are empty; `yarn test:scripts` fails the same 2 `form-associated-contract.spec.mjs` tests, which fail identically on `602417a`. `yarn build` also regenerates `src/components/mud-toast/readme.md`; that drift already exists on `602417a` and is left out of this branch.
+
 ## Global Constraints
 
 - Branch `fix/issue-18-storybook-api-tables-from-manifest`, cut from `upstream/main` at `fe6d651`.
 - Node 24 (`fnm exec --using 24 -- <cmd>`); `package.json` engines `>=24.0.0 <25.0.0`.
-- Pinned versions: `@stencil/core` 4.43.4, `storybook` 10.4.0 — read behaviour from `node_modules`, not memory.
+- Pinned versions: `@stencil/core` 4.43.5, `storybook` 10.6.0 (4.43.4 and 10.4.0 before the 2026-09-16 rebase) — read behaviour from `node_modules`, not memory.
 - Everything authored is English. Conventional Commits (`commitlint.config.js`). No AI attribution in commits.
 - Stage paths explicitly; never `git add -A`. Do not push, do not open the PR.
 - Generated files are never hand-edited: `src/components.d.ts`, `src/components/*/readme.md`, `.storybook/custom-elements.json`.
